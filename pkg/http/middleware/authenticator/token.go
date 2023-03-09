@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/doziestar/tutis-api/pkg/logger"
+	"placio-api/pkg/logger"
 
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
-	"github.com/doziestar/tutis-api/pkg/identity"
+	apperrors "placio-api/pkg/errors"
+	"placio-api/pkg/identity"
 )
 
 // TokenAuthFunc returns Identity from token

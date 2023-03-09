@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"log"
 
-	"github.com/doziestar/tutis-api/pkg/metadata"
 	"github.com/vardius/golog"
+	"placio-api/pkg/metadata"
 )
 
 var Logger golog.Logger

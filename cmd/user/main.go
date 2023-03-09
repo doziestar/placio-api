@@ -7,22 +7,22 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/doziestar/tutis-api/cmd/user/internal/domain"
-	"github.com/doziestar/tutis-api/pkg/grpc/middleware"
+	"placio-api/cmd/user/internal/domain"
+	"placio-api/pkg/grpc/middleware"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/vardius/gocontainer"
 	"google.golang.org/grpc"
 
-	"github.com/doziestar/tutis-api/cmd/user/internal/application/config"
-	"github.com/doziestar/tutis-api/cmd/user/internal/application/services"
-	usergrpc "github.com/doziestar/tutis-api/cmd/user/internal/interfaces/grpc"
-	userhttp "github.com/doziestar/tutis-api/cmd/user/internal/interfaces/http"
-	userproto "github.com/doziestar/tutis-api/cmd/user/proto"
-	"github.com/doziestar/tutis-api/pkg/application"
-	"github.com/doziestar/tutis-api/pkg/buildinfo"
-	grpcutils "github.com/doziestar/tutis-api/pkg/grpc"
-	httputils "github.com/doziestar/tutis-api/pkg/http"
+	"placio-api/cmd/user/internal/application/config"
+	"placio-api/cmd/user/internal/application/services"
+	usergrpc "placio-api/cmd/user/internal/interfaces/grpc"
+	userhttp "placio-api/cmd/user/internal/interfaces/http"
+	userproto "placio-api/cmd/user/proto"
+	"placio-api/pkg/application"
+	"placio-api/pkg/buildinfo"
+	grpcutils "placio-api/pkg/grpc"
+	httputils "placio-api/pkg/http"
 )
 
 func init() {

@@ -5,12 +5,10 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/vardius/gorouter/v4"
-
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
-	"github.com/doziestar/tutis-api/pkg/http/request"
-	json2 "github.com/doziestar/tutis-api/pkg/http/response/json"
-	md "github.com/doziestar/tutis-api/pkg/metadata"
+	apperrors "placio-api/pkg/errors"
+	"placio-api/pkg/http/request"
+	json2 "placio-api/pkg/http/response/json"
+	md "placio-api/pkg/metadata"
 )
 
 const InternalRequestMetadataKey = "m"

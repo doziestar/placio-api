@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
+	apperrors "placio-api/pkg/errors"
 )
 
 // NullInt64 is an alias for sql.NullInt64 data type

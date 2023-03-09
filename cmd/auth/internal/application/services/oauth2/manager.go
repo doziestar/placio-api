@@ -1,12 +1,10 @@
 package oauth2
 
 import (
-	"github.com/dgrijalva/jwt-go"
-	"gopkg.in/oauth2.v4"
 	oauth2manage "gopkg.in/oauth2.v4/manage"
 
-	"github.com/doziestar/tutis-api/cmd/auth/internal/infrastructure/persistence"
-	"github.com/doziestar/tutis-api/pkg/auth"
+	"placio-api/cmd/auth/internal/infrastructure/persistence"
+	"placio-api/pkg/auth"
 )
 
 // NewManager initialize the oauth2 manager service

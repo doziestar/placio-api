@@ -13,7 +13,7 @@ ENV GIT_COMMIT=${GIT_COMMIT}
 ENV GO111MODULE=on
 ENV CGO_ENABLED=0
 
-# SHELL ["/bin/bash", "-c"] 
+# SHELL ["/bin/bash", "-c"]
 
 # Create a location in the container for the source code.
 RUN mkdir -p /app
@@ -28,7 +28,7 @@ COPY go.* /app/
 
 # COPY . .
 
-RUN echo "Downloading dependencies..." 
+RUN echo "Downloading dependencies..."
 RUN pwd
 RUN go mod download
 RUN go mod verify
@@ -44,7 +44,7 @@ COPY cmd/"$BIN" cmd/"$BIN"
 RUN go build \
     -mod=readonly \
     -tags=persistence_mysql \
-    -ldflags "-X github.com/doziestar/tutis-api/pkg/buildinfo.Version=$VERSION -X github.com/doziestar/tutis-api/pkg/buildinfo.GitCommit=$GIT_COMMIT -X 'github.com/doziestar/tutis-api/pkg/buildinfo.BuildTime=$(date -u '+%Y-%m-%d %H:%M:%S')'" \
+    -ldflags "-X placio-api/pkg/buildinfo.Version=$VERSION -X placio-api/pkg/buildinfo.GitCommit=$GIT_COMMIT -X 'placio-api/pkg/buildinfo.BuildTime=$(date -u '+%Y-%m-%d %H:%M:%S')'" \
     -a -o /go/bin/app ./cmd/"$BIN"
 
 FROM scratch

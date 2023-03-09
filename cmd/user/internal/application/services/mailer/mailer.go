@@ -7,9 +7,9 @@ import (
 	"net/smtp"
 	"net/url"
 
-	"github.com/doziestar/tutis-api/cmd/user/internal/application/config"
-	"github.com/doziestar/tutis-api/cmd/user/internal/application/email"
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
+	"placio-api/cmd/user/internal/application/config"
+	"placio-api/cmd/user/internal/application/email"
+	apperrors "placio-api/pkg/errors"
 )
 
 const (

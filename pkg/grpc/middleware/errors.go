@@ -5,10 +5,10 @@ import (
 	"errors"
 	"fmt"
 
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	apperrors "placio-api/pkg/errors"
 )
 
 // TransformUnaryOutgoingError transforms incoming error into app error

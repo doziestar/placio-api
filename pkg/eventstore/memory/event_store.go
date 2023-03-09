@@ -7,8 +7,8 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/doziestar/tutis-api/pkg/domain"
-	baseeventstore "github.com/doziestar/tutis-api/pkg/eventstore"
+	"placio-api/pkg/domain"
+	baseeventstore "placio-api/pkg/eventstore"
 )
 
 type eventStore struct {

@@ -3,13 +3,12 @@ package domain
 import (
 	"context"
 
-	"github.com/dgrijalva/jwt-go"
-	"github.com/doziestar/tutis-api/cmd/user/internal/application/config"
-	"github.com/doziestar/tutis-api/cmd/user/internal/application/eventhandler"
-	"github.com/doziestar/tutis-api/cmd/user/internal/application/services"
-	"github.com/doziestar/tutis-api/cmd/user/internal/domain/user"
-	"github.com/doziestar/tutis-api/pkg/domain"
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
+	"placio-api/cmd/user/internal/application/config"
+	"placio-api/cmd/user/internal/application/eventhandler"
+	"placio-api/cmd/user/internal/application/services"
+	"placio-api/cmd/user/internal/domain/user"
+	"placio-api/pkg/domain"
+	apperrors "placio-api/pkg/errors"
 )
 
 func RegisterUserDomain(ctx context.Context, cfg *config.Config, container *services.ServiceContainer) error {

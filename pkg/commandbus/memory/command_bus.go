@@ -4,11 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/doziestar/tutis-api/pkg/commandbus"
-	"github.com/doziestar/tutis-api/pkg/domain"
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
-	"github.com/doziestar/tutis-api/pkg/logger"
 	messagebus "github.com/vardius/message-bus"
+	"placio-api/pkg/commandbus"
+	"placio-api/pkg/domain"
+	apperrors "placio-api/pkg/errors"
+	"placio-api/pkg/logger"
 )
 
 // New creates in memory command bus

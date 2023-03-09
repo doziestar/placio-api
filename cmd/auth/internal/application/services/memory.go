@@ -6,16 +6,16 @@ package services
 import (
 	"context"
 
-	"github.com/doziestar/tutis-api/cmd/auth/internal/application/config"
-	appoauth2 "github.com/doziestar/tutis-api/cmd/auth/internal/application/services/oauth2"
-	persistence "github.com/doziestar/tutis-api/cmd/auth/internal/infrastructure/persistence/memory"
-	"github.com/doziestar/tutis-api/cmd/auth/internal/infrastructure/repository"
-	authproto "github.com/doziestar/tutis-api/cmd/auth/proto"
-	"github.com/doziestar/tutis-api/pkg/auth"
-	memorycommandbus "github.com/doziestar/tutis-api/pkg/commandbus/memory"
-	memoryeventbus "github.com/doziestar/tutis-api/pkg/eventbus/memory"
-	memoryeventstore "github.com/doziestar/tutis-api/pkg/eventstore/memory"
-	grpcutils "github.com/doziestar/tutis-api/pkg/grpc"
+	"placio-api/cmd/auth/internal/application/config"
+	appoauth2 "placio-api/cmd/auth/internal/application/services/oauth2"
+	persistence "placio-api/cmd/auth/internal/infrastructure/persistence/memory"
+	"placio-api/cmd/auth/internal/infrastructure/repository"
+	authproto "placio-api/cmd/auth/proto"
+	"placio-api/pkg/auth"
+	memorycommandbus "placio-api/pkg/commandbus/memory"
+	memoryeventbus "placio-api/pkg/eventbus/memory"
+	memoryeventstore "placio-api/pkg/eventstore/memory"
+	grpcutils "placio-api/pkg/grpc"
 )
 
 func init() {

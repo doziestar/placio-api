@@ -9,9 +9,9 @@ import (
 
 	"golang.org/x/oauth2"
 
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
-	"github.com/doziestar/tutis-api/pkg/http/middleware"
-	"github.com/doziestar/tutis-api/pkg/metadata"
+	apperrors "placio-api/pkg/errors"
+	"placio-api/pkg/http/middleware"
+	"placio-api/pkg/metadata"
 )
 
 var AllScopes = []Scope{ScopeAll}

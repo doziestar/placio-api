@@ -7,10 +7,9 @@ import (
 	"encoding/json"
 	"time"
 
-	"gopkg.in/oauth2.v4"
 	"gopkg.in/oauth2.v4/models"
 
-	"github.com/doziestar/tutis-api/pkg/mysql"
+	"placio-api/pkg/mysql"
 )
 
 // Token model

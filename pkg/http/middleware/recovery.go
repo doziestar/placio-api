@@ -5,12 +5,10 @@ import (
 	"net/http"
 	"runtime/debug"
 
-	"github.com/doziestar/tutis-api/pkg/logger"
+	"placio-api/pkg/logger"
 
-	"github.com/vardius/gorouter/v4"
-
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
-	"github.com/doziestar/tutis-api/pkg/http/response/json"
+	apperrors "placio-api/pkg/errors"
+	"placio-api/pkg/http/response/json"
 )
 
 // Recover middleware recovers from panic

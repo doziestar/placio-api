@@ -5,13 +5,11 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"gopkg.in/oauth2.v4"
-
-	"github.com/doziestar/tutis-api/cmd/auth/internal/domain/token"
-	"github.com/doziestar/tutis-api/cmd/auth/internal/infrastructure/persistence"
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
-	"github.com/doziestar/tutis-api/pkg/executioncontext"
-	"github.com/doziestar/tutis-api/pkg/metadata"
+	"placio-api/cmd/auth/internal/domain/token"
+	"placio-api/cmd/auth/internal/infrastructure/persistence"
+	apperrors "placio-api/pkg/errors"
+	"placio-api/pkg/executioncontext"
+	"placio-api/pkg/metadata"
 )
 
 // NewTokenStore create a token store instance

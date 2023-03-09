@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
+	apperrors "placio-api/pkg/errors"
 )
 
 func TestJSON(t *testing.T) {

@@ -4,12 +4,10 @@ import (
 	"context"
 	"sync"
 
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
+	apperrors "placio-api/pkg/errors"
 
-	"gopkg.in/oauth2.v4"
-
-	"github.com/doziestar/tutis-api/cmd/auth/internal/application/config"
-	"github.com/doziestar/tutis-api/cmd/auth/internal/infrastructure/persistence"
+	"placio-api/cmd/auth/internal/application/config"
+	"placio-api/cmd/auth/internal/infrastructure/persistence"
 )
 
 type clientRepository struct {

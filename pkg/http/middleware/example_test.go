@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 
-	"github.com/doziestar/tutis-api/pkg/http/middleware"
+	"placio-api/pkg/http/middleware"
 )
 
 func ExampleRecover() {

@@ -7,9 +7,9 @@ import (
 	"testing"
 	"time"
 
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
+	apperrors "placio-api/pkg/errors"
 
-	"github.com/doziestar/tutis-api/pkg/domain"
+	"placio-api/pkg/domain"
 )
 
 type commandMock struct{}

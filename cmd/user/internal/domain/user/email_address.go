@@ -6,7 +6,7 @@ import (
 
 	"github.com/asaskevich/govalidator"
 
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
+	apperrors "placio-api/pkg/errors"
 )
 
 // EmailAddress is an email address value object

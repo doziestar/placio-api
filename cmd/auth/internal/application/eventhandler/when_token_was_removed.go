@@ -4,11 +4,11 @@ import (
 	"context"
 	"time"
 
-	"github.com/doziestar/tutis-api/cmd/auth/internal/domain/token"
-	"github.com/doziestar/tutis-api/cmd/auth/internal/infrastructure/persistence"
-	"github.com/doziestar/tutis-api/pkg/domain"
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
-	"github.com/doziestar/tutis-api/pkg/eventbus"
+	"placio-api/cmd/auth/internal/domain/token"
+	"placio-api/cmd/auth/internal/infrastructure/persistence"
+	"placio-api/pkg/domain"
+	apperrors "placio-api/pkg/errors"
+	"placio-api/pkg/eventbus"
 )
 
 // WhenTokenWasRemoved handles event

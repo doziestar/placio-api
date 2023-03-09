@@ -12,9 +12,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/doziestar/tutis-api/pkg/container"
-	md "github.com/doziestar/tutis-api/pkg/metadata"
 	"github.com/vardius/gocontainer"
+	"placio-api/pkg/container"
+	md "placio-api/pkg/metadata"
 )
 
 func TestHSTS(t *testing.T) {

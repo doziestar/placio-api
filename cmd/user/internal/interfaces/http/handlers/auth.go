@@ -13,10 +13,10 @@ import (
 
 	"golang.org/x/oauth2"
 
-	"github.com/doziestar/tutis-api/cmd/user/internal/domain/user"
-	"github.com/doziestar/tutis-api/pkg/commandbus"
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
-	httpjson "github.com/doziestar/tutis-api/pkg/http/response/json"
+	"placio-api/cmd/user/internal/domain/user"
+	"placio-api/pkg/commandbus"
+	apperrors "placio-api/pkg/errors"
+	httpjson "placio-api/pkg/http/response/json"
 )
 
 type requestBody struct {

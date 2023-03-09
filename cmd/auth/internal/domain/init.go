@@ -3,13 +3,13 @@ package domain
 import (
 	"context"
 
-	"github.com/doziestar/tutis-api/cmd/auth/internal/application/config"
-	"github.com/doziestar/tutis-api/cmd/auth/internal/application/eventhandler"
-	"github.com/doziestar/tutis-api/cmd/auth/internal/application/services"
-	"github.com/doziestar/tutis-api/cmd/auth/internal/domain/client"
-	"github.com/doziestar/tutis-api/cmd/auth/internal/domain/token"
-	"github.com/doziestar/tutis-api/pkg/domain"
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
+	"placio-api/cmd/auth/internal/application/config"
+	"placio-api/cmd/auth/internal/application/eventhandler"
+	"placio-api/cmd/auth/internal/application/services"
+	"placio-api/cmd/auth/internal/domain/client"
+	"placio-api/cmd/auth/internal/domain/token"
+	"placio-api/pkg/domain"
+	apperrors "placio-api/pkg/errors"
 )
 
 func RegisterTokenDomain(ctx context.Context, cfg *config.Config, container *services.ServiceContainer) error {

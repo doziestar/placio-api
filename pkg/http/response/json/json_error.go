@@ -7,7 +7,7 @@ import (
 	"context"
 	"net/http"
 
-	httperrors "github.com/doziestar/tutis-api/pkg/http/errors"
+	httperrors "placio-api/pkg/http/errors"
 )
 
 // JSONError returns data as json response

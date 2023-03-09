@@ -6,8 +6,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/doziestar/tutis-api/pkg/logger"
 	"github.com/vardius/shutdown"
+	"placio-api/pkg/logger"
 )
 
 // Adapter interface

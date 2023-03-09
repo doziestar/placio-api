@@ -4,9 +4,7 @@ import (
 	"net/http"
 
 	httpcors "github.com/rs/cors"
-	"github.com/vardius/gorouter/v4"
-
-	"github.com/doziestar/tutis-api/pkg/identity"
+	"placio-api/pkg/identity"
 )
 
 var (

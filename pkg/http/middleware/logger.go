@@ -5,9 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/doziestar/tutis-api/pkg/logger"
-	mtd "github.com/doziestar/tutis-api/pkg/metadata"
-	"github.com/vardius/gorouter/v4"
+	"placio-api/pkg/logger"
+	mtd "placio-api/pkg/metadata"
 )
 
 // Logger wraps http.Handler with a logger middleware

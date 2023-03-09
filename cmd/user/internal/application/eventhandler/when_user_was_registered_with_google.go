@@ -4,13 +4,13 @@ import (
 	"context"
 	"time"
 
-	"github.com/doziestar/tutis-api/cmd/user/internal/domain/user"
-	"github.com/doziestar/tutis-api/cmd/user/internal/infrastructure/persistence"
-	"github.com/doziestar/tutis-api/pkg/commandbus"
-	"github.com/doziestar/tutis-api/pkg/domain"
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
-	"github.com/doziestar/tutis-api/pkg/eventbus"
-	"github.com/doziestar/tutis-api/pkg/executioncontext"
+	"placio-api/cmd/user/internal/domain/user"
+	"placio-api/cmd/user/internal/infrastructure/persistence"
+	"placio-api/pkg/commandbus"
+	"placio-api/pkg/domain"
+	apperrors "placio-api/pkg/errors"
+	"placio-api/pkg/eventbus"
+	"placio-api/pkg/executioncontext"
 )
 
 // WhenUserWasRegisteredWithGoogle handles event

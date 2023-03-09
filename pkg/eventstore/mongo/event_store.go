@@ -5,14 +5,14 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/doziestar/tutis-api/pkg/domain"
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
-	baseeventstore "github.com/doziestar/tutis-api/pkg/eventstore"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"placio-api/pkg/domain"
+	apperrors "placio-api/pkg/errors"
+	baseeventstore "placio-api/pkg/eventstore"
 )
 
 type eventStore struct {

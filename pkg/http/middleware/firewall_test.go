@@ -7,7 +7,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/doziestar/tutis-api/pkg/identity"
+	"placio-api/pkg/identity"
 )
 
 func TestDoNotGrantAccessFor(t *testing.T) {

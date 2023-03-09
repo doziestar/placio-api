@@ -10,8 +10,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
-	"github.com/doziestar/tutis-api/cmd/auth/internal/infrastructure/persistence"
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
+	"placio-api/cmd/auth/internal/infrastructure/persistence"
+	apperrors "placio-api/pkg/errors"
 )
 
 // NewTokenRepository returns mongo view model repository for token

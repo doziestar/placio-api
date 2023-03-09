@@ -11,15 +11,13 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"google.golang.org/grpc"
-	"gopkg.in/oauth2.v4"
-
-	"github.com/doziestar/tutis-api/cmd/auth/internal/application/config"
-	"github.com/doziestar/tutis-api/cmd/auth/internal/domain/client"
-	"github.com/doziestar/tutis-api/cmd/auth/internal/domain/token"
-	authpersistence "github.com/doziestar/tutis-api/cmd/auth/internal/infrastructure/persistence"
-	"github.com/doziestar/tutis-api/pkg/auth"
-	"github.com/doziestar/tutis-api/pkg/commandbus"
-	"github.com/doziestar/tutis-api/pkg/eventbus"
+	"placio-api/cmd/auth/internal/application/config"
+	"placio-api/cmd/auth/internal/domain/client"
+	"placio-api/cmd/auth/internal/domain/token"
+	authpersistence "placio-api/cmd/auth/internal/infrastructure/persistence"
+	"placio-api/pkg/auth"
+	"placio-api/pkg/commandbus"
+	"placio-api/pkg/eventbus"
 )
 
 type containerFactory func(ctx context.Context, cfg *config.Config) (*ServiceContainer, error)

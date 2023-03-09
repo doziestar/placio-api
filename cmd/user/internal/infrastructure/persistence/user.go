@@ -6,7 +6,7 @@ package persistence
 import (
 	"context"
 
-	"github.com/doziestar/tutis-api/cmd/user/internal/application/access"
+	"placio-api/cmd/user/internal/application/access"
 )
 
 // User persistence model interface

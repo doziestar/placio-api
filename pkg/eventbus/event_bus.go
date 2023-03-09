@@ -3,7 +3,7 @@ package eventbus
 import (
 	"context"
 
-	"github.com/doziestar/tutis-api/pkg/domain"
+	"placio-api/pkg/domain"
 )
 
 // EventHandler function

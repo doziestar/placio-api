@@ -4,8 +4,8 @@ Package mysql holds view model repositories
 package mysql
 
 import (
-	"github.com/doziestar/tutis-api/cmd/user/internal/application/access"
-	"github.com/doziestar/tutis-api/pkg/mysql"
+	"placio-api/cmd/user/internal/application/access"
+	"placio-api/pkg/mysql"
 )
 
 // User model

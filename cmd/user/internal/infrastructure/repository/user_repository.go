@@ -8,10 +8,10 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/doziestar/tutis-api/cmd/user/internal/domain/user"
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
-	"github.com/doziestar/tutis-api/pkg/eventbus"
-	"github.com/doziestar/tutis-api/pkg/eventstore"
+	"placio-api/cmd/user/internal/domain/user"
+	apperrors "placio-api/pkg/errors"
+	"placio-api/pkg/eventbus"
+	"placio-api/pkg/eventstore"
 )
 
 type userRepository struct {

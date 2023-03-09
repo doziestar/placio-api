@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/doziestar/tutis-api/pkg/logger"
+	"placio-api/pkg/logger"
 
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
-	"github.com/doziestar/tutis-api/pkg/identity"
+	apperrors "placio-api/pkg/errors"
+	"placio-api/pkg/identity"
 )
 
 // CredentialsAuthFunc returns Identity from username and password combination

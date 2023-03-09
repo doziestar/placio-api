@@ -4,11 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/dgrijalva/jwt-go"
-
-	"github.com/doziestar/tutis-api/cmd/auth/proto"
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
-	"github.com/doziestar/tutis-api/pkg/identity"
+	"placio-api/cmd/auth/proto"
+	apperrors "placio-api/pkg/errors"
+	"placio-api/pkg/identity"
 )
 
 type TokenAuthorizer interface {

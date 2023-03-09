@@ -6,19 +6,19 @@ package services
 import (
 	"context"
 
-	"github.com/doziestar/tutis-api/cmd/auth/internal/application/config"
-	appoauth2 "github.com/doziestar/tutis-api/cmd/auth/internal/application/services/oauth2"
-	persistence "github.com/doziestar/tutis-api/cmd/auth/internal/infrastructure/persistence/mysql"
-	"github.com/doziestar/tutis-api/cmd/auth/internal/infrastructure/repository"
-	authproto "github.com/doziestar/tutis-api/cmd/auth/proto"
-	"github.com/doziestar/tutis-api/pkg/auth"
-	memorycommandbus "github.com/doziestar/tutis-api/pkg/commandbus/memory"
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
-	memoryeventbus "github.com/doziestar/tutis-api/pkg/eventbus/memory"
-	mysqleventstore "github.com/doziestar/tutis-api/pkg/eventstore/mysql"
-	grpcutils "github.com/doziestar/tutis-api/pkg/grpc"
-	"github.com/doziestar/tutis-api/pkg/mysql"
 	_ "github.com/go-sql-driver/mysql"
+	"placio-api/cmd/auth/internal/application/config"
+	appoauth2 "placio-api/cmd/auth/internal/application/services/oauth2"
+	persistence "placio-api/cmd/auth/internal/infrastructure/persistence/mysql"
+	"placio-api/cmd/auth/internal/infrastructure/repository"
+	authproto "placio-api/cmd/auth/proto"
+	"placio-api/pkg/auth"
+	memorycommandbus "placio-api/pkg/commandbus/memory"
+	apperrors "placio-api/pkg/errors"
+	memoryeventbus "placio-api/pkg/eventbus/memory"
+	mysqleventstore "placio-api/pkg/eventstore/mysql"
+	grpcutils "placio-api/pkg/grpc"
+	"placio-api/pkg/mysql"
 )
 
 func init() {

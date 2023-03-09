@@ -9,13 +9,13 @@ import (
 	"github.com/google/uuid"
 	"gopkg.in/oauth2.v4/models"
 
-	"github.com/doziestar/tutis-api/cmd/auth/internal/application/access"
-	"github.com/doziestar/tutis-api/pkg/commandbus"
-	"github.com/doziestar/tutis-api/pkg/domain"
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
-	"github.com/doziestar/tutis-api/pkg/executioncontext"
-	"github.com/doziestar/tutis-api/pkg/identity"
-	"github.com/doziestar/tutis-api/pkg/metadata"
+	"placio-api/cmd/auth/internal/application/access"
+	"placio-api/pkg/commandbus"
+	"placio-api/pkg/domain"
+	apperrors "placio-api/pkg/errors"
+	"placio-api/pkg/executioncontext"
+	"placio-api/pkg/identity"
+	"placio-api/pkg/metadata"
 )
 
 const (

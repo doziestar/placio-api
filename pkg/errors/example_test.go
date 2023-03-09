@@ -6,7 +6,7 @@ package errors_test
 import (
 	"fmt"
 
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
+	apperrors "placio-api/pkg/errors"
 )
 
 func ExampleNew() {

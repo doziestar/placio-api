@@ -9,9 +9,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/doziestar/tutis-api/cmd/user/internal/infrastructure/persistence"
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
-	"github.com/doziestar/tutis-api/pkg/mysql"
+	"placio-api/cmd/user/internal/infrastructure/persistence"
+	apperrors "placio-api/pkg/errors"
+	"placio-api/pkg/mysql"
 )
 
 const createUsersTableSQL = `

@@ -5,11 +5,11 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/doziestar/tutis-api/cmd/user/internal/infrastructure/persistence"
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"placio-api/cmd/user/internal/infrastructure/persistence"
+	apperrors "placio-api/pkg/errors"
 )
 
 // NewUserRepository returns mongo view model repository for user

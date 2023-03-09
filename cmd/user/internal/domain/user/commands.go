@@ -8,11 +8,11 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/doziestar/tutis-api/cmd/user/internal/infrastructure/persistence"
-	"github.com/doziestar/tutis-api/pkg/commandbus"
-	"github.com/doziestar/tutis-api/pkg/domain"
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
-	"github.com/doziestar/tutis-api/pkg/executioncontext"
+	"placio-api/cmd/user/internal/infrastructure/persistence"
+	"placio-api/pkg/commandbus"
+	"placio-api/pkg/domain"
+	apperrors "placio-api/pkg/errors"
+	"placio-api/pkg/executioncontext"
 )
 
 const (

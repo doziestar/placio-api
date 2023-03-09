@@ -5,9 +5,9 @@ import (
 	"errors"
 	"net/http"
 
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
+	apperrors "placio-api/pkg/errors"
 
-	mtd "github.com/doziestar/tutis-api/pkg/metadata"
+	mtd "placio-api/pkg/metadata"
 )
 
 type HttpError struct {

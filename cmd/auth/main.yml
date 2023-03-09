@@ -1,5 +1,5 @@
 image:
-  repository: docker.pkg.github.com/doziestar/tutis-api/tutis-api-auth
+  repository: docker.pkg.placio-api/tutis-api-auth
   tag: latest
   pullPolicy: IfNotPresent
 service:

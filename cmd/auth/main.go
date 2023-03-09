@@ -7,23 +7,23 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/doziestar/tutis-api/cmd/auth/internal/domain"
-	"github.com/doziestar/tutis-api/pkg/grpc/middleware"
+	"placio-api/cmd/auth/internal/domain"
+	"placio-api/pkg/grpc/middleware"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/vardius/gocontainer"
 	"google.golang.org/grpc"
 
-	"github.com/doziestar/tutis-api/cmd/auth/internal/application/config"
-	"github.com/doziestar/tutis-api/cmd/auth/internal/application/services"
-	"github.com/doziestar/tutis-api/cmd/auth/internal/application/services/oauth2"
-	authgrpc "github.com/doziestar/tutis-api/cmd/auth/internal/interfaces/grpc"
-	authhttp "github.com/doziestar/tutis-api/cmd/auth/internal/interfaces/http"
-	authproto "github.com/doziestar/tutis-api/cmd/auth/proto"
-	"github.com/doziestar/tutis-api/pkg/application"
-	"github.com/doziestar/tutis-api/pkg/buildinfo"
-	grpcutils "github.com/doziestar/tutis-api/pkg/grpc"
-	httputils "github.com/doziestar/tutis-api/pkg/http"
+	"placio-api/cmd/auth/internal/application/config"
+	"placio-api/cmd/auth/internal/application/services"
+	"placio-api/cmd/auth/internal/application/services/oauth2"
+	authgrpc "placio-api/cmd/auth/internal/interfaces/grpc"
+	authhttp "placio-api/cmd/auth/internal/interfaces/http"
+	authproto "placio-api/cmd/auth/proto"
+	"placio-api/pkg/application"
+	"placio-api/pkg/buildinfo"
+	grpcutils "placio-api/pkg/grpc"
+	httputils "placio-api/pkg/http"
 )
 
 func init() {

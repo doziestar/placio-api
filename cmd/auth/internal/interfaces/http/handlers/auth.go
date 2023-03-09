@@ -6,8 +6,8 @@ import (
 
 	"gopkg.in/oauth2.v4/server"
 
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
-	httpjson "github.com/doziestar/tutis-api/pkg/http/response/json"
+	apperrors "placio-api/pkg/errors"
+	httpjson "placio-api/pkg/http/response/json"
 )
 
 // BuildAuthorizeHandler provides authorize handler

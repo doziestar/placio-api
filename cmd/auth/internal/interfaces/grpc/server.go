@@ -10,12 +10,12 @@ import (
 	"github.com/golang/protobuf/ptypes/empty"
 	"gopkg.in/oauth2.v4/server"
 
-	"github.com/doziestar/tutis-api/cmd/auth/internal/domain/client"
-	"github.com/doziestar/tutis-api/cmd/auth/internal/domain/token"
-	"github.com/doziestar/tutis-api/cmd/auth/proto"
-	"github.com/doziestar/tutis-api/pkg/commandbus"
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
-	grpcerrors "github.com/doziestar/tutis-api/pkg/grpc/errors"
+	"placio-api/cmd/auth/internal/domain/client"
+	"placio-api/cmd/auth/internal/domain/token"
+	"placio-api/cmd/auth/proto"
+	"placio-api/pkg/commandbus"
+	apperrors "placio-api/pkg/errors"
+	grpcerrors "placio-api/pkg/grpc/errors"
 )
 
 type authenticationServer struct {

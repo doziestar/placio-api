@@ -8,12 +8,12 @@ import (
 	"sync"
 	"time"
 
-	"github.com/doziestar/tutis-api/pkg/domain"
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
-	"github.com/doziestar/tutis-api/pkg/eventbus"
-	"github.com/doziestar/tutis-api/pkg/logger"
-	"github.com/doziestar/tutis-api/pkg/metadata"
 	pushpullproto "github.com/vardius/pushpull/proto"
+	"placio-api/pkg/domain"
+	apperrors "placio-api/pkg/errors"
+	"placio-api/pkg/eventbus"
+	"placio-api/pkg/logger"
+	"placio-api/pkg/metadata"
 )
 
 // New creates pubsub event bus

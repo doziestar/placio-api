@@ -1,7 +1,7 @@
 package auth
 
 import (
-	apperrors "placio-api/pkg/errors"
+	apperrors "placio-api//pkg/errors"
 )
 
 type Authenticator interface {

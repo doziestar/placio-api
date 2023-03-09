@@ -3,10 +3,8 @@ package auth
 import (
 	"fmt"
 
-	"github.com/dgrijalva/jwt-go"
-
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
-	"github.com/doziestar/tutis-api/pkg/identity"
+	apperrors "placio-api/pkg/errors"
+	"placio-api/pkg/identity"
 )
 
 type Claims struct {

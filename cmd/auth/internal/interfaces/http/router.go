@@ -5,19 +5,18 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/doziestar/tutis-api/cmd/auth/internal/application/config"
-	"github.com/doziestar/tutis-api/cmd/auth/internal/infrastructure/persistence"
-	"github.com/doziestar/tutis-api/cmd/auth/internal/interfaces/http/handlers"
-	"github.com/doziestar/tutis-api/pkg/auth"
-	"github.com/doziestar/tutis-api/pkg/commandbus"
-	httpmiddleware "github.com/doziestar/tutis-api/pkg/http/middleware"
-	httpauthenticator "github.com/doziestar/tutis-api/pkg/http/middleware/authenticator"
-	"github.com/doziestar/tutis-api/pkg/http/response/json"
-	"github.com/doziestar/tutis-api/pkg/identity"
-	"github.com/vardius/gorouter/v4"
 	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc"
 	"gopkg.in/oauth2.v4/server"
+	"placio-api/cmd/auth/internal/application/config"
+	"placio-api/cmd/auth/internal/infrastructure/persistence"
+	"placio-api/cmd/auth/internal/interfaces/http/handlers"
+	"placio-api/pkg/auth"
+	"placio-api/pkg/commandbus"
+	httpmiddleware "placio-api/pkg/http/middleware"
+	httpauthenticator "placio-api/pkg/http/middleware/authenticator"
+	"placio-api/pkg/http/response/json"
+	"placio-api/pkg/identity"
 )
 
 // NewRouter provides new router

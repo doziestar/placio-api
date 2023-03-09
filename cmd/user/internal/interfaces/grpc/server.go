@@ -8,12 +8,12 @@ import (
 
 	"github.com/golang/protobuf/ptypes/empty"
 
-	"github.com/doziestar/tutis-api/cmd/user/internal/domain/user"
-	"github.com/doziestar/tutis-api/cmd/user/internal/infrastructure/persistence"
-	"github.com/doziestar/tutis-api/cmd/user/proto"
-	"github.com/doziestar/tutis-api/pkg/commandbus"
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
-	grpcerrors "github.com/doziestar/tutis-api/pkg/grpc/errors"
+	"placio-api/cmd/user/internal/domain/user"
+	"placio-api/cmd/user/internal/infrastructure/persistence"
+	"placio-api/cmd/user/proto"
+	"placio-api/pkg/commandbus"
+	apperrors "placio-api/pkg/errors"
+	grpcerrors "placio-api/pkg/grpc/errors"
 )
 
 type userServer struct {

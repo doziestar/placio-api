@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
-	"github.com/doziestar/tutis-api/pkg/http/response/json"
+	apperrors "placio-api/pkg/errors"
+	"placio-api/pkg/http/response/json"
 )
 
 func ExampleJSON() {

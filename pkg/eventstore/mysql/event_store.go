@@ -9,9 +9,9 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/doziestar/tutis-api/pkg/domain"
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
-	baseeventstore "github.com/doziestar/tutis-api/pkg/eventstore"
+	"placio-api/pkg/domain"
+	apperrors "placio-api/pkg/errors"
+	baseeventstore "placio-api/pkg/eventstore"
 )
 
 const createTableSQLFormat = `

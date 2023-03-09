@@ -10,9 +10,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/doziestar/tutis-api/cmd/auth/internal/infrastructure/persistence"
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
-	"github.com/doziestar/tutis-api/pkg/mysql"
+	"placio-api/cmd/auth/internal/infrastructure/persistence"
+	apperrors "placio-api/pkg/errors"
+	"placio-api/pkg/mysql"
 )
 
 const createTokenTableSQL = `

@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
-	"github.com/doziestar/tutis-api/pkg/http/response/json"
-	"github.com/doziestar/tutis-api/pkg/identity"
+	apperrors "placio-api/pkg/errors"
+	"placio-api/pkg/http/response/json"
+	"placio-api/pkg/identity"
 )
 
 // GrantAccessFor returns Status Unauthorized if

@@ -3,11 +3,11 @@ package grpc
 import (
 	"time"
 
-	"github.com/doziestar/tutis-api/pkg/grpc/middleware"
-	"github.com/doziestar/tutis-api/pkg/grpc/middleware/firewall"
 	grpcmiddleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/keepalive"
+	"placio-api/pkg/grpc/middleware"
+	"placio-api/pkg/grpc/middleware/firewall"
 )
 
 // ServerConfig provides values for gRPC server configuration

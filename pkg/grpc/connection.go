@@ -6,11 +6,11 @@ import (
 	"os"
 	"time"
 
-	"github.com/doziestar/tutis-api/pkg/grpc/middleware"
-	"github.com/doziestar/tutis-api/pkg/grpc/middleware/firewall"
-	"github.com/doziestar/tutis-api/pkg/logger"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/keepalive"
+	"placio-api/pkg/grpc/middleware"
+	"placio-api/pkg/grpc/middleware/firewall"
+	"placio-api/pkg/logger"
 )
 
 // ConnectionConfig provides values for gRPC connection configuration

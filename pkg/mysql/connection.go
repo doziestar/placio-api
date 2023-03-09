@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/doziestar/tutis-api/pkg/logger"
+	"placio-api/pkg/logger"
 )
 
 // ConnectionConfig provides values for gRPC connection configuration

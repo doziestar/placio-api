@@ -5,7 +5,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/doziestar/tutis-api/pkg/domain"
+	"placio-api/pkg/domain"
 )
 
 // EventStore methods allow to save, load events and event streams

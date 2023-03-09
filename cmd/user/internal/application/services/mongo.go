@@ -7,18 +7,18 @@ import (
 	"context"
 	"fmt"
 
-	authproto "github.com/doziestar/tutis-api/cmd/auth/proto"
-	"github.com/doziestar/tutis-api/cmd/user/internal/application/config"
-	persistence "github.com/doziestar/tutis-api/cmd/user/internal/infrastructure/persistence/mongo"
-	"github.com/doziestar/tutis-api/cmd/user/internal/infrastructure/repository"
-	"github.com/doziestar/tutis-api/pkg/auth"
-	memorycommandbus "github.com/doziestar/tutis-api/pkg/commandbus/memory"
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
-	memoryeventbus "github.com/doziestar/tutis-api/pkg/eventbus/memory"
-	mongoeventstore "github.com/doziestar/tutis-api/pkg/eventstore/mongo"
-	grpcutils "github.com/doziestar/tutis-api/pkg/grpc"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	authproto "placio-api/cmd/auth/proto"
+	"placio-api/cmd/user/internal/application/config"
+	persistence "placio-api/cmd/user/internal/infrastructure/persistence/mongo"
+	"placio-api/cmd/user/internal/infrastructure/repository"
+	"placio-api/pkg/auth"
+	memorycommandbus "placio-api/pkg/commandbus/memory"
+	apperrors "placio-api/pkg/errors"
+	memoryeventbus "placio-api/pkg/eventbus/memory"
+	mongoeventstore "placio-api/pkg/eventstore/mongo"
+	grpcutils "placio-api/pkg/grpc"
 )
 
 func init() {

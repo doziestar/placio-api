@@ -9,8 +9,8 @@ import (
 	"fmt"
 	"net/http"
 
-	httperrors "github.com/doziestar/tutis-api/pkg/http/errors"
-	"github.com/doziestar/tutis-api/pkg/http/response"
+	httperrors "placio-api/pkg/http/errors"
+	"placio-api/pkg/http/response"
 )
 
 type HandlerFunc func(w http.ResponseWriter, r *http.Request) error

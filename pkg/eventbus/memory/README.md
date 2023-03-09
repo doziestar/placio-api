@@ -1,11 +1,11 @@
-# memory [![GoDoc](https://godoc.org/github.com/doziestar/tutis-api/pkg/eventbus/memory?status.svg)](https://godoc.org/github.com/doziestar/tutis-api/pkg/eventbus/memory)
+# memory [![GoDoc](https://godoc.org/placio-api/pkg/eventbus/memory?status.svg)](https://godoc.org/placio-api/pkg/eventbus/memory)
 
 Package memory provides memory implementation of event bus
 
 Download:
 
 ```shell
-go get -u github.com/doziestar/tutis-api/pkg/eventbus/memory
+go get -u placio-api/pkg/eventbus/memory
 ```
 
 ---

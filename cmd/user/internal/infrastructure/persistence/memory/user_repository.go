@@ -7,9 +7,9 @@ import (
 	"context"
 	"sync"
 
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
+	apperrors "placio-api/pkg/errors"
 
-	"github.com/doziestar/tutis-api/cmd/user/internal/infrastructure/persistence"
+	"placio-api/cmd/user/internal/infrastructure/persistence"
 )
 
 // NewUserRepository returns memory view model repository for user

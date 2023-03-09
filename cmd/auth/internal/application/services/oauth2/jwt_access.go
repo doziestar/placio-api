@@ -6,17 +6,15 @@ import (
 	"strings"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
 	id "github.com/google/uuid"
-	"gopkg.in/oauth2.v4"
 	oauth2errors "gopkg.in/oauth2.v4/errors"
 	"gopkg.in/oauth2.v4/utils/uuid"
 
-	"github.com/doziestar/tutis-api/cmd/auth/internal/application/access"
-	"github.com/doziestar/tutis-api/cmd/auth/internal/infrastructure/persistence"
-	"github.com/doziestar/tutis-api/pkg/auth"
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
-	"github.com/doziestar/tutis-api/pkg/identity"
+	"placio-api/cmd/auth/internal/application/access"
+	"placio-api/cmd/auth/internal/infrastructure/persistence"
+	"placio-api/pkg/auth"
+	apperrors "placio-api/pkg/errors"
+	"placio-api/pkg/identity"
 )
 
 // JWTAccessClaims jwt claims

@@ -4,18 +4,17 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	apperrors "placio-api/pkg/errors"
 	"strings"
 	"sync"
 	"time"
 
-	"github.com/doziestar/tutis-api/cmd/auth/internal/application/config"
-	"github.com/doziestar/tutis-api/cmd/auth/internal/infrastructure/persistence"
-	apperrors "github.com/doziestar/tutis-api/pkg/errors"
-	"github.com/doziestar/tutis-api/pkg/identity"
-	"github.com/doziestar/tutis-api/pkg/logger"
-	"gopkg.in/oauth2.v4"
 	oauth2errors "gopkg.in/oauth2.v4/errors"
 	oauth2server "gopkg.in/oauth2.v4/server"
+	"placio-api/cmd/auth/internal/application/config"
+	"placio-api/cmd/auth/internal/infrastructure/persistence"
+	"placio-api/pkg/identity"
+	"placio-api/pkg/logger"
 )
 
 var (

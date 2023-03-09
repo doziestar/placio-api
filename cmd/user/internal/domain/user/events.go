@@ -5,7 +5,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"github.com/doziestar/tutis-api/cmd/user/internal/application/access"
+	"placio-api/cmd/user/internal/application/access"
 )
 
 var (

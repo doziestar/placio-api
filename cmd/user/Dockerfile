@@ -33,7 +33,7 @@ COPY cmd/auth/proto cmd/auth/proto
 RUN go build \
     -mod=readonly \
     -tags=persistence_mysql \
-    -ldflags "-X github.com/doziestar/tutis-api/pkg/buildinfo.Version=$VERSION -X github.com/doziestar/tutis-api/pkg/buildinfo.GitCommit=$GIT_COMMIT -X 'github.com/doziestar/tutis-api/pkg/buildinfo.BuildTime=$(date -u '+%Y-%m-%d %H:%M:%S')'" \
+    -ldflags "-X placio-api/pkg/buildinfo.Version=$VERSION -X placio-api/pkg/buildinfo.GitCommit=$GIT_COMMIT -X 'placio-api/pkg/buildinfo.BuildTime=$(date -u '+%Y-%m-%d %H:%M:%S')'" \
     -a -o /go/bin/app ./cmd/"$BIN"
 
 FROM scratch
