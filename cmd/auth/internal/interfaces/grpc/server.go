@@ -7,8 +7,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/go-oauth2/oauth2/v4/server"
 	"github.com/golang/protobuf/ptypes/empty"
-	"gopkg.in/oauth2.v4/server"
 
 	"placio-api/cmd/auth/internal/domain/client"
 	"placio-api/cmd/auth/internal/domain/token"

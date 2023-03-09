@@ -3,6 +3,7 @@ package oauth2
 import (
 	"context"
 	"fmt"
+	"github.com/go-oauth2/oauth2/v4"
 
 	"github.com/google/uuid"
 	"placio-api/cmd/auth/internal/domain/token"

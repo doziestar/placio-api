@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+	"github.com/golang-jwt/jwt"
 
 	"placio-api/cmd/user/internal/application/config"
 	"placio-api/cmd/user/internal/application/eventhandler"

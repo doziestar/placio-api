@@ -2,6 +2,7 @@ package memory
 
 import (
 	"context"
+	"github.com/go-oauth2/oauth2/v4"
 	"sync"
 
 	apperrors "placio-api/pkg/errors"
@@ -25,11 +26,13 @@ func (r *clientRepository) GetByID(ctx context.Context, id string) (oauth2.Clien
 	r.RLock()
 	defer r.RUnlock()
 
-	v, ok := r.clients[id]
+	//v, ok := r.clients[id]
+	_, ok := r.clients[id]
 	if !ok {
 		return nil, apperrors.ErrNotFound
 	}
-	return v, nil
+	// TODO: return oauth2.ClientInfo
+	return nil, nil
 }
 
 func (r *clientRepository) Get(ctx context.Context, id string) (persistence.Client, error) {

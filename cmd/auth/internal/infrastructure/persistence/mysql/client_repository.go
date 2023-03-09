@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/go-oauth2/oauth2/v4"
 
 	"placio-api/cmd/auth/internal/application/config"
 	"placio-api/cmd/auth/internal/infrastructure/persistence"
@@ -49,13 +50,13 @@ func NewClientRepository(ctx context.Context, cfg *config.Config, db *sql.DB) (p
 }
 
 func (r *clientRepository) GetByID(ctx context.Context, id string) (oauth2.ClientInfo, error) {
-	c, err := r.Get(ctx, id)
+	_, err := r.Get(ctx, id)
 
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
-
-	return c, nil
+	// TODO: return oauth2.ClientInfo
+	return nil, nil
 }
 
 func (r *clientRepository) Get(ctx context.Context, id string) (persistence.Client, error) {

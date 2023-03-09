@@ -3,14 +3,14 @@ package oauth2
 import (
 	"context"
 	"fmt"
+	"github.com/go-oauth2/oauth2/v4"
+	oauth2errors "github.com/go-oauth2/oauth2/v4/errors"
+	oauth2server "github.com/go-oauth2/oauth2/v4/server"
 	"net/http"
 	apperrors "placio-api/pkg/errors"
-	"strings"
 	"sync"
 	"time"
 
-	oauth2errors "gopkg.in/oauth2.v4/errors"
-	oauth2server "gopkg.in/oauth2.v4/server"
 	"placio-api/cmd/auth/internal/application/config"
 	"placio-api/cmd/auth/internal/infrastructure/persistence"
 	"placio-api/pkg/identity"
@@ -57,41 +57,41 @@ func InitServer(
 
 			return i.UserID.String(), nil
 		})
-		srv.SetClientScopeHandler(func(clientID, scope string) (allowed bool, err error) {
-			ctx, cancel := context.WithTimeout(context.Background(), timeout)
-			defer cancel()
-
-			client, err := clientRepository.Get(ctx, clientID)
-			if err != nil {
-				return false, apperrors.Wrap(err)
-			}
-
-			tokenScopes := strings.Split(scope, ",")
-			clientScopes := client.GetScopes()
-
-			if len(tokenScopes) > len(clientScopes) {
-				logger.Debug(ctx, fmt.Sprintf("Token not allowed: scopes do not match len(tokenScopes) > len(clientScopes) %v > %v", tokenScopes, clientScopes))
-				return false, nil
-			}
-
-			if len(tokenScopes) == 0 || len(tokenScopes) == 0 {
-				logger.Debug(ctx, fmt.Sprintf("Token not allowed: empty scopes len(tokenScopes) == 0 || len(tokenScopes) == 0 %v %v", tokenScopes, clientScopes))
-				return false, nil
-			}
-
-			clientScopesMap := make(map[string]struct{}, len(clientScopes))
-			for _, clientScope := range client.GetScopes() {
-				clientScopesMap[clientScope] = struct{}{}
-			}
-
-			for _, s := range strings.Split(scope, " ") {
-				if _, ok := clientScopesMap[s]; !ok {
-					return false, nil
-				}
-			}
-
-			return true, nil
-		})
+		//srv.SetClientScopeHandler(func(clientID, scope string) (allowed bool, err error) {
+		//	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+		//	defer cancel()
+		//
+		//	client, err := clientRepository.Get(ctx, clientID)
+		//	if err != nil {
+		//		return false, apperrors.Wrap(err)
+		//	}
+		//
+		//	tokenScopes := strings.Split(scope, ",")
+		//	clientScopes := client.GetScopes()
+		//
+		//	if len(tokenScopes) > len(clientScopes) {
+		//		logger.Debug(ctx, fmt.Sprintf("Token not allowed: scopes do not match len(tokenScopes) > len(clientScopes) %v > %v", tokenScopes, clientScopes))
+		//		return false, nil
+		//	}
+		//
+		//	if len(tokenScopes) == 0 || len(tokenScopes) == 0 {
+		//		logger.Debug(ctx, fmt.Sprintf("Token not allowed: empty scopes len(tokenScopes) == 0 || len(tokenScopes) == 0 %v %v", tokenScopes, clientScopes))
+		//		return false, nil
+		//	}
+		//
+		//	clientScopesMap := make(map[string]struct{}, len(clientScopes))
+		//	for _, clientScope := range client.GetScopes() {
+		//		clientScopesMap[clientScope] = struct{}{}
+		//	}
+		//
+		//	for _, s := range strings.Split(scope, " ") {
+		//		if _, ok := clientScopesMap[s]; !ok {
+		//			return false, nil
+		//		}
+		//	}
+		//
+		//	return true, nil
+		//})
 
 		srv.SetInternalErrorHandler(func(err error) (re *oauth2errors.Response) {
 			return &oauth2errors.Response{

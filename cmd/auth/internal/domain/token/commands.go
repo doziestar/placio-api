@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/go-oauth2/oauth2/v4/models"
 	"github.com/google/uuid"
-	"gopkg.in/oauth2.v4/models"
 
 	"placio-api/cmd/auth/internal/application/access"
 	"placio-api/pkg/commandbus"

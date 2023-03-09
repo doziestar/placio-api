@@ -1,7 +1,9 @@
 package oauth2
 
 import (
-	oauth2manage "gopkg.in/oauth2.v4/manage"
+	"github.com/go-oauth2/oauth2/v4"
+	oauth2manage "github.com/go-oauth2/oauth2/v4/manage"
+	"github.com/golang-jwt/jwt"
 
 	"placio-api/cmd/auth/internal/infrastructure/persistence"
 	"placio-api/pkg/auth"

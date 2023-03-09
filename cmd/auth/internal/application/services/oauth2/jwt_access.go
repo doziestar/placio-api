@@ -2,13 +2,13 @@ package oauth2
 
 import (
 	"context"
-	"encoding/base64"
-	"strings"
+	"github.com/go-oauth2/oauth2/v4"
+	"github.com/golang-jwt/jwt"
 	"time"
 
+	oauth2errors "github.com/go-oauth2/oauth2/v4/errors"
+	// get the uuid package from oauth2
 	id "github.com/google/uuid"
-	oauth2errors "gopkg.in/oauth2.v4/errors"
-	"gopkg.in/oauth2.v4/utils/uuid"
 
 	"placio-api/cmd/auth/internal/application/access"
 	"placio-api/cmd/auth/internal/infrastructure/persistence"
@@ -107,10 +107,11 @@ func (a *JWTAccess) Token(ctx context.Context, data *oauth2.GenerateBasic, isGen
 	}
 
 	var refresh string
-	if isGenRefresh {
-		refresh = base64.URLEncoding.EncodeToString(uuid.NewSHA1(uuid.Must(uuid.NewRandom()), []byte(access)).Bytes())
-		refresh = strings.ToUpper(strings.TrimRight(refresh, "="))
-	}
+	// TODO: implement refresh token
+	//if isGenRefresh {
+	//	refresh = base64.URLEncoding.EncodeToString(uuid.NewSHA1(uuid.Must(uuid.NewRandom()), []byte(access)))
+	//	refresh = strings.ToUpper(strings.TrimRight(refresh, "="))
+	//}
 
 	return access, refresh, nil
 }

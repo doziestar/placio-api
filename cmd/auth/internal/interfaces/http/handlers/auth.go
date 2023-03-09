@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"gopkg.in/oauth2.v4/server"
+	"github.com/go-oauth2/oauth2/v4/server"
 
 	apperrors "placio-api/pkg/errors"
 	httpjson "placio-api/pkg/http/response/json"

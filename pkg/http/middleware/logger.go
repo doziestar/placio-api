@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"fmt"
+	"github.com/vardius/gorouter/v4"
 	"net/http"
 	"time"
 

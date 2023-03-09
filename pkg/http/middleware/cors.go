@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"github.com/vardius/gorouter/v4"
 	"net/http"
 
 	httpcors "github.com/rs/cors"

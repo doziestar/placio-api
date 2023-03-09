@@ -3,6 +3,7 @@ package middleware
 import (
 	"encoding/base64"
 	"encoding/json"
+	"github.com/vardius/gorouter/v4"
 	"net/http"
 
 	apperrors "placio-api/pkg/errors"

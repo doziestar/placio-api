@@ -2,12 +2,13 @@ package http
 
 import (
 	"database/sql"
+	"github.com/vardius/gorouter/v4"
 	"net/http"
 	"time"
 
+	"github.com/go-oauth2/oauth2/v4/server"
 	"go.mongodb.org/mongo-driver/mongo"
 	"google.golang.org/grpc"
-	"gopkg.in/oauth2.v4/server"
 	"placio-api/cmd/auth/internal/application/config"
 	"placio-api/cmd/auth/internal/infrastructure/persistence"
 	"placio-api/cmd/auth/internal/interfaces/http/handlers"

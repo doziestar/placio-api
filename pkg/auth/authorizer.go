@@ -3,6 +3,7 @@ package auth
 import (
 	"context"
 	"fmt"
+	"github.com/golang-jwt/jwt"
 
 	"placio-api/cmd/auth/proto"
 	apperrors "placio-api/pkg/errors"

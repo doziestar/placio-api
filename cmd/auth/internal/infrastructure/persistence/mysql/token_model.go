@@ -5,9 +5,10 @@ package mysql
 
 import (
 	"encoding/json"
+	"github.com/go-oauth2/oauth2/v4"
 	"time"
 
-	"gopkg.in/oauth2.v4/models"
+	"github.com/go-oauth2/oauth2/v4/models"
 
 	"placio-api/pkg/mysql"
 )

@@ -1,7 +1,8 @@
 package auth
 
 import (
-	apperrors "placio-api//pkg/errors"
+	"github.com/golang-jwt/jwt"
+	apperrors "placio-api/pkg/errors"
 )
 
 type Authenticator interface {

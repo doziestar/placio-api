@@ -6,8 +6,7 @@ package persistence
 import (
 	"context"
 	"encoding/json"
-
-	"gopkg.in/oauth2.v4"
+	"github.com/go-oauth2/oauth2/v4"
 )
 
 // Token the token persistence model interface

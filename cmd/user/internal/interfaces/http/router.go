@@ -3,7 +3,9 @@ package http
 import (
 	"database/sql"
 	"fmt"
+	"github.com/vardius/gorouter/v4"
 	"net/http"
+	"placio-api/pkg/auth"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"

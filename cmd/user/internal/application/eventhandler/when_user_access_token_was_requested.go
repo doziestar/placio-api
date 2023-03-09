@@ -2,6 +2,7 @@ package eventhandler
 
 import (
 	"context"
+	"github.com/golang-jwt/jwt"
 	"time"
 
 	"placio-api/cmd/auth/proto"

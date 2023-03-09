@@ -4,6 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/go-oauth2/oauth2/v4"
+
+	//"github.com/go-oauth2/oauth2/v4"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -39,12 +42,12 @@ func NewClientRepository(ctx context.Context, cfg *config.Config, mongoDB *mongo
 }
 
 func (r *clientRepository) GetByID(ctx context.Context, id string) (oauth2.ClientInfo, error) {
-	c, err := r.Get(ctx, id)
+	_, err := r.Get(ctx, id)
 	if err != nil {
 		return nil, apperrors.Wrap(err)
 	}
-
-	return c, nil
+	// TODO: return oauth2.ClientInfo
+	return nil, nil
 }
 
 func (r *clientRepository) Get(ctx context.Context, id string) (persistence.Client, error) {
