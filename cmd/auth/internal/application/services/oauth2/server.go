@@ -57,6 +57,7 @@ func InitServer(
 
 			return i.UserID.String(), nil
 		})
+		// TODO: check if this is needed
 		//srv.SetClientScopeHandler(func(clientID, scope string) (allowed bool, err error) {
 		//	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 		//	defer cancel()

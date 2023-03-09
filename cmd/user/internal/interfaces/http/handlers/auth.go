@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"time"
@@ -94,8 +93,13 @@ func getProfile(accessToken, apiURL string) ([]byte, error) {
 		return nil, e
 	}
 
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+
+		}
+	}(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return body, apperrors.Wrap(err)
 	}

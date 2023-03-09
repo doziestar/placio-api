@@ -2,13 +2,13 @@ FROM golang:1.19-buster AS buildenv
 
 LABEL maintainer="Chidozie Okafor <Chidosiky2015@gmail.com>"
 
-ARG BIN
-ARG VERSION
-ARG GIT_COMMIT
+# ARG BIN
+# ARG VERSION
+# ARG GIT_COMMIT
 
-ENV BIN=${BIN}
-ENV VERSION=${VERSION}
-ENV GIT_COMMIT=${GIT_COMMIT}
+# ENV BIN=${BIN}
+# ENV VERSION=${VERSION}
+# ENV GIT_COMMIT=${GIT_COMMIT}
 
 ENV GO111MODULE=on
 ENV CGO_ENABLED=0
@@ -35,7 +35,7 @@ RUN go mod verify
 
 # Copy the source code into the container.
 COPY pkg pkg
-COPY cmd/"$BIN" cmd/"$BIN"
+COPY cmd/auth cmd/auth
 # COPY . .
 
 # RUN go mod download
@@ -44,8 +44,8 @@ COPY cmd/"$BIN" cmd/"$BIN"
 RUN go build \
     -mod=readonly \
     -tags=persistence_mysql \
-    -ldflags "-X placio-api/pkg/buildinfo.Version=$VERSION -X placio-api/pkg/buildinfo.GitCommit=$GIT_COMMIT -X 'placio-api/pkg/buildinfo.BuildTime=$(date -u '+%Y-%m-%d %H:%M:%S')'" \
-    -a -o /go/bin/app ./cmd/"$BIN"
+    -ldflags "-X 'placio-api/pkg/buildinfo.BuildTime=$(date -u '+%Y-%m-%d %H:%M:%S')'" \
+    -a -o /go/bin/app ./cmd/auth
 
 FROM scratch
 COPY --from=buildenv /go/bin/app /go/bin/app

@@ -2,9 +2,9 @@ FROM golang:1.17 AS buildenv
 
 LABEL maintainer="Chidozie C. Okafor <chidosiky2015@gmail.com>"
 
-ARG BIN
-ARG VERSION
-ARG GIT_COMMIT
+ARG BIN=user
+ARG VERSION=0.0.1
+ARG GIT_COMMIT=unknown
 
 ENV BIN=${BIN}
 ENV VERSION=${VERSION}
