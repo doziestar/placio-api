@@ -1,14 +1,12 @@
 package main
 
 import (
+	"github.com/gofiber/fiber/v2"
 	"os"
-	"placio-api/pkg/start"
-
-	"github.com/gofiber/fiber"
+	"placio-pkg/start"
 )
 
-
-func main(){
+func main() {
 	// get port from env
 	port := os.Getenv("PORT")
 

@@ -6,4 +6,5 @@ use (
 	./cmd/media
 	./cmd/users
 	./pkg
+	cmd/chats
 )
