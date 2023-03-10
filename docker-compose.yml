@@ -90,6 +90,7 @@ services:
       - kafka
 
   app:
+    container_name: placio-app
     build: 
       context: .
       dockerfile: ./cmd/app/Dockerfile
@@ -106,4 +107,157 @@ services:
       - pgadmin
       - mongo-express
       - redis-commander
-  
+    volumes:
+      - ./cmd/app:/app
+      - ./cmd/app:/app/cmd/app
+      - ./pkg:/app/pkg
+      - ./config:/app/config
+
+  users:
+    container_name: placio-users
+    build: 
+      context: .
+      dockerfile: ./cmd/users/Dockerfile
+    restart: always
+    ports:
+      - "7071:7071"
+    depends_on:
+      - postgres-db
+      - mongo-db
+      - redis
+      - kafka
+      - zookeeper
+      - kafka-ui
+      - pgadmin
+      - mongo-express
+      - redis-commander
+    volumes:
+      - ./cmd/users:/app
+      - ./cmd/users:/app/cmd/users
+      - ./pkg:/app/pkg
+      - ./config:/app/config
+
+  auth:
+    container_name: placio-auth
+    build: 
+      context: .
+      dockerfile: ./cmd/auth/Dockerfile
+    restart: always
+    ports:
+      - "7072:7072"
+    depends_on:
+      - postgres-db
+      - mongo-db
+      - redis
+      - kafka
+      - zookeeper
+      - kafka-ui
+      - pgadmin
+      - mongo-express
+      - redis-commander
+    volumes:
+      - ./cmd/auth:/app
+      - ./cmd/auth:/app/cmd/auth
+      - ./pkg:/app/pkg
+      - ./config:/app/config
+
+  media:
+    container_name: placio-media
+    build: 
+      context: .
+      dockerfile: ./cmd/media/Dockerfile
+    restart: always
+    ports:
+      - "7073:7073"
+    depends_on:
+      - postgres-db
+      - mongo-db
+      - redis
+      - kafka
+      - zookeeper
+      - kafka-ui
+      - pgadmin
+      - mongo-express
+      - redis-commander
+    volumes:
+      - ./cmd/media:/app
+      - ./cmd/media:/app/cmd/media
+      - ./pkg:/app/pkg
+      - ./config:/app/config
+
+  events:
+    container_name: placio-events
+    build: 
+      context: .
+      dockerfile: ./cmd/events/Dockerfile
+    restart: always
+    ports:
+      - "7074:7074"
+    depends_on:
+      - postgres-db
+      - mongo-db
+      - redis
+      - kafka
+      - zookeeper
+      - kafka-ui
+      - pgadmin
+      - mongo-express
+      - redis-commander
+    volumes:
+      - ./cmd/events:/app
+      - ./cmd/events:/app/cmd/events
+      - ./pkg:/app/pkg
+      - ./config:/app/config
+
+  chats:
+    container_name: placio-chats
+    build: 
+      context: .
+      dockerfile: ./cmd/chat/Dockerfile
+    restart: always
+    ports:
+      - "7075:7075"
+    depends_on:
+      - postgres-db
+      - mongo-db
+      - redis
+      - kafka
+      - zookeeper
+      - kafka-ui
+      - pgadmin
+      - mongo-express
+      - redis-commander
+    volumes:
+      - ./cmd/chats:/app
+      - ./cmd/chats:/app/cmd/chats
+      - ./pkg:/app/pkg
+      - ./config:/app/config
+
+  business:
+    container_name: placio-business
+    build: 
+      context: .
+      dockerfile: ./cmd/business/Dockerfile
+    restart: always
+    ports:
+      - "7076:7076"
+    depends_on:
+      - postgres-db
+      - mongo-db
+      - redis
+      - kafka
+      - zookeeper
+      - kafka-ui
+      - pgadmin
+      - mongo-express
+      - redis-commander
+    volumes:
+      - ./cmd/business:/app
+      - ./cmd/business:/app/cmd/business
+      - ./pkg:/app/pkg
+      - ./config:/app/config
+volumes:
+  db_data:
+  pgadmin_data:
+  mongo_data:
+  redis_data: 

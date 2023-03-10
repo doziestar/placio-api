@@ -26,6 +26,9 @@ key: ## [HTTP] Generate key
 cert: ## [HTTP] Generate self signed certificate
 	openssl req -new -x509 -sha256 -key server.key -out server.pem -days 3650
 
+dev: ## [HTTP] Run server in dev mode
+	docker-compose up --build
+
 # DOCKER TASKS
 docker-build: ## [DOCKER] Build given container. Example: `make docker-build BIN=user`
 	docker build -f cmd/$(BIN)/Dockerfile --no-cache --build-arg BIN=$(BIN) --build-arg VERSION=$(VERSION) --build-arg GIT_COMMIT=$(GIT_COMMIT) -t tutis-api-$(BIN) .
