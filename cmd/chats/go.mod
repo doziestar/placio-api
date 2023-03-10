@@ -1,4 +1,4 @@
-module placio
+module placio-chats
 
 go 1.20
 
