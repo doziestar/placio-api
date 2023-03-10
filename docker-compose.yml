@@ -85,8 +85,25 @@ services:
     image: provectuslabs/kafka-ui:latest
     restart: always
     ports:
-      - "8083:8080"
+      - "8083:8083"
     depends_on:
       - kafka
 
+  app:
+    build: 
+      context: .
+      dockerfile: ./cmd/app/Dockerfile
+    restart: always
+    ports:
+      - "7070:7070"
+    depends_on:
+      - postgres-db
+      - mongo-db
+      - redis
+      - kafka
+      - zookeeper
+      - kafka-ui
+      - pgadmin
+      - mongo-express
+      - redis-commander
   
