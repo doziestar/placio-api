@@ -5,5 +5,5 @@ use (
 	./cmd/events
 	./cmd/media
 	./cmd/users
-// ./pkg
+	./pkg
 )

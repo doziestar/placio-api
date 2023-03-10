@@ -2,7 +2,7 @@ package main
 
 import (
 	"os"
-	"placio-api/pkg/start"
+	"placio-pkg/pkg/start"
 
 	"github.com/gofiber/fiber"
 )

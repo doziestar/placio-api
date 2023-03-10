@@ -8,10 +8,13 @@ RUN apk update && apk add --no-cache git
 # Set the Current Working Directory inside the container
 WORKDIR /app
 
+# list all files in the current directory
+# RUN ls -la
+
 # Copy go mod and sum files
 COPY go.mod go.sum ./
 # Copy workspace config
-COPY go.* ./
+# COPY go.* ./
 
 # Download all dependencies. Dependencies will be cached if the go.mod and the go.sum files are not changed
 RUN go mod download
