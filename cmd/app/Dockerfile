@@ -17,6 +17,11 @@ RUN go mod download
 # Copy the source from the current directory to the Working Directory inside the container
 COPY . .
 
+# copy config file, copy pkg, copy .envs
+COPY config ./config
+COPY pkg ./pkg
+COPY .envs ./.envs
+
 ENV CGO_ENABLED=0
 ENV GOOS=linux
 ENV GOARCH=amd64
