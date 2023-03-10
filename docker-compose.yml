@@ -129,7 +129,7 @@ services:
       dockerfile: ./cmd/users/Dockerfile
     restart: always
     ports:
-      - "7071:7071"
+      - "7075:7075"
     depends_on:
       - postgres-db
       - mongo-db
@@ -153,7 +153,7 @@ services:
       dockerfile: ./cmd/auth/Dockerfile
     restart: always
     ports:
-      - "7072:7072"
+      - "7076:7076"
     depends_on:
       - postgres-db
       - mongo-db
@@ -177,7 +177,7 @@ services:
       dockerfile: ./cmd/media/Dockerfile
     restart: always
     ports:
-      - "7073:7073"
+      - "7074:7074"
     depends_on:
       - postgres-db
       - mongo-db
@@ -201,7 +201,7 @@ services:
       dockerfile: ./cmd/events/Dockerfile
     restart: always
     ports:
-      - "7074:7074"
+      - "7073:7073"
     depends_on:
       - postgres-db
       - mongo-db
@@ -249,7 +249,7 @@ services:
       dockerfile: ./cmd/business/Dockerfile
     restart: always
     ports:
-      - "7076:7076"
+      - "7071:7071"
     depends_on:
       - postgres-db
       - mongo-db
