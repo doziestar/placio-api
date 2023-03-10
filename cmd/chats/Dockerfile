@@ -17,6 +17,11 @@ RUN go mod download
 # Copy the source from the current directory to the Working Directory inside the container
 COPY . .
 
+ENV CGO_ENABLED=0
+ENV GOOS=linux
+ENV GOARCH=amd64
+ENV PORT=7072
+
 # Build the Go app
 RUN go build -o main .
 
