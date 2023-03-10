@@ -1,43 +1,53 @@
-ARG GOLANG_VERSION=1.20.1
-FROM golang:${GOLANG_VERSION}-alpine AS builder
+ARG GOLANG_VERSION=1.20
+# Stage 1: Build the application
+FROM golang:${GOLANG_VERSION}-alpine3.17 AS builder
 
-# Install git.
-# Git is required for fetching the dependencies.
-RUN apk update && apk add --no-cache git
-
-# Set the Current Working Directory inside the container
 WORKDIR /app
 
-# Copy go mod and sum files
-COPY go.mod go.sum ./
+#RUN mkdir -p /app/cmd/auth
+#RUN mkdir -p /app/pkg
 
-# Download all dependencies. Dependencies will be cached if the go.mod and the go.sum files are not changed
+RUN #echo "Listing /app"
+RUN #ls -la /app
+
+COPY ./go.* .
+COPY ./pkg/go.* ./pkg/
+COPY ./cmd/auth/go.* ./cmd/auth/
+COPY ./cmd/users/go.* ./cmd/users/
+COPY ./cmd/app/go.* ./cmd/app/
+COPY ./cmd/business/go.* ./cmd/business/
+COPY ./cmd/chats/go.* ./cmd/chats/
+COPY ./cmd/media/go.* ./cmd/media/
+COPY ./cmd/events/go.* ./cmd/events/
+
+# Download dependencies
 RUN go mod download
 
-# Copy the source from the current directory to the Working Directory inside the container
-COPY . .
-COPY config ./config
-COPY pkg ./pkg
-COPY .envs ./.envs
+# Copy the rest of the application source code
+COPY ./pkg ./pkg
+COPY ./cmd/events ./cmd/events
+COPY ./config ./config
 
-ENV CGO_ENABLED=0
-ENV GOOS=linux
-ENV GOARCH=amd64
 ENV PORT=7073
+# Build the application
+#RUN #CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o auth ./cmd/auth
 
-# Build the Go app
-RUN go build -o main .
+# Stage 2: Create the runtime image
+#FROM alpine:3.15
 
-# Start fresh from a smaller image
-FROM alpine:latest
+# Set the working directory to /app
+#WORKDIR /app
 
-RUN apk --no-cache add ca-certificates
+# Copy the compiled binary from the builder stage
+#COPY --from=builder /app/auth .
 
-# Copy the Pre-built binary file from the previous stage
-COPY --from=builder /app/main /app/main
+# Copy the required files from pkg module
+#COPY pkg /app/pkg
+RUN go install github.com/cespare/reflex@latest
 
-# Expose port 8080 to the outside world
-EXPOSE 7073
+# Expose port 8080
+EXPOSE 7070
 
-# Command to run the executable
-CMD ["/app/main"]
+# Run the binary
+#CMD ["./app/auth"]
+CMD ["reflex", "-r", "\\.go$", "-s", "--", "go", "run", "./cmd/events/main.go"]

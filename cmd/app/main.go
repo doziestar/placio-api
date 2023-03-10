@@ -12,6 +12,7 @@ import (
 func main() {
 	// get port from env
 	port := os.Getenv("PORT")
+	// if port is not set, set it to 3000
 
 	ctx := context.Background()
 	log.Println(ctx, "Starting app on port: "+port)

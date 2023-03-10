@@ -1,4 +1,9 @@
 version: "3.8"
+volumes:
+  db_data:
+  pgadmin_data:
+  mongo_data:
+  redis_data:
 
 services:
   postgres-db:
@@ -49,7 +54,7 @@ services:
       - "8081:8081"
     depends_on:
       - mongo-db
-
+#
   redis:
     container_name: placio-redis
     image: redis:latest
@@ -67,6 +72,9 @@ services:
       - "8082:8081"
     depends_on:
       - redis
+    environment:
+      REDIS_HOSTS: "redis://redis:6379"
+      REDIS_PORT: "6379"
 
   kafka:
     container_name: placio-kafka
@@ -100,7 +108,7 @@ services:
 
   app:
     container_name: placio-app
-    build: 
+    build:
       context: .
       dockerfile: ./cmd/app/Dockerfile
     restart: always
@@ -124,7 +132,7 @@ services:
 
   users:
     container_name: placio-users
-    build: 
+    build:
       context: .
       dockerfile: ./cmd/users/Dockerfile
     restart: always
@@ -148,7 +156,7 @@ services:
 
   auth:
     container_name: placio-auth
-    build: 
+    build:
       context: .
       dockerfile: ./cmd/auth/Dockerfile
     restart: always
@@ -162,17 +170,17 @@ services:
       - zookeeper
       - kafka-ui
       - pgadmin
-      - mongo-express
+#      - mongo-express
       - redis-commander
     volumes:
-      - ./cmd/auth:/app
+      - ./:/app
       - ./cmd/auth:/app/cmd/auth
       - ./pkg:/app/pkg
       - ./config:/app/config
 
   media:
     container_name: placio-media
-    build: 
+    build:
       context: .
       dockerfile: ./cmd/media/Dockerfile
     restart: always
@@ -193,10 +201,10 @@ services:
       - ./cmd/media:/app/cmd/media
       - ./pkg:/app/pkg
       - ./config:/app/config
-
+#
   events:
     container_name: placio-events
-    build: 
+    build:
       context: .
       dockerfile: ./cmd/events/Dockerfile
     restart: always
@@ -220,12 +228,12 @@ services:
 
   chats:
     container_name: placio-chats
-    build: 
+    build:
       context: .
       dockerfile: ./cmd/chats/Dockerfile
     restart: always
     ports:
-      - "7075:7075"
+      - "7077:7077"
     depends_on:
       - postgres-db
       - mongo-db
@@ -241,10 +249,10 @@ services:
       - ./cmd/chats:/app/cmd/chats
       - ./pkg:/app/pkg
       - ./config:/app/config
-
+#
   business:
     container_name: placio-business
-    build: 
+    build:
       context: .
       dockerfile: ./cmd/business/Dockerfile
     restart: always
@@ -265,8 +273,3 @@ services:
       - ./cmd/business:/app/cmd/business
       - ./pkg:/app/pkg
       - ./config:/app/config
-volumes:
-  db_data:
-  pgadmin_data:
-  mongo_data:
-  redis_data: 
