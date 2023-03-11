@@ -6,9 +6,9 @@ import (
 
 	"placio-api/cmd/auth/internal/domain/token"
 	"placio-api/cmd/auth/internal/infrastructure/persistence"
-	"placio-api/pkg/domain"
-	apperrors "placio-api/pkg/errors"
-	"placio-api/pkg/eventbus"
+	"placio-pkg/domain"
+	apperrors "placio-pkg/errors"
+	"placio-pkg/eventbus"
 )
 
 // WhenTokenWasRemoved handles event

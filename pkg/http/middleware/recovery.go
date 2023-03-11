@@ -6,10 +6,10 @@ import (
 	"net/http"
 	"runtime/debug"
 
-	"placio-api/pkg/logger"
+	"placio-pkg/logger"
 
-	apperrors "placio-api/pkg/errors"
-	"placio-api/pkg/http/response/json"
+	apperrors "placio-pkg/errors"
+	"placio-pkg/http/response/json"
 )
 
 // Recover middleware recovers from panic

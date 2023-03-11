@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"net/http"
 
-	"placio-api/pkg/logger"
+	"placio-pkg/logger"
 
-	apperrors "placio-api/pkg/errors"
-	"placio-api/pkg/identity"
+	apperrors "placio-pkg/errors"
+	"placio-pkg/identity"
 )
 
 // CredentialsAuthFunc returns Identity from username and password combination

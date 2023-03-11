@@ -11,8 +11,8 @@ import (
 	"time"
 
 	"placio-api/cmd/auth/internal/infrastructure/persistence"
-	apperrors "placio-api/pkg/errors"
-	"placio-api/pkg/mysql"
+	apperrors "placio-pkg/errors"
+	"placio-pkg/mysql"
 )
 
 const createTokenTableSQL = `

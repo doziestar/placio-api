@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"placio-api/cmd/user/internal/infrastructure/persistence"
-	apperrors "placio-api/pkg/errors"
+	apperrors "placio-pkg/errors"
 )
 
 // NewUserRepository returns mongo view model repository for user

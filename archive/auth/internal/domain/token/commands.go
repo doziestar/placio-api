@@ -10,12 +10,12 @@ import (
 	"github.com/google/uuid"
 
 	"placio-api/cmd/auth/internal/application/access"
-	"placio-api/pkg/commandbus"
-	"placio-api/pkg/domain"
-	apperrors "placio-api/pkg/errors"
-	"placio-api/pkg/executioncontext"
-	"placio-api/pkg/identity"
-	"placio-api/pkg/metadata"
+	"placio-pkg/commandbus"
+	"placio-pkg/domain"
+	apperrors "placio-pkg/errors"
+	"placio-pkg/executioncontext"
+	"placio-pkg/identity"
+	"placio-pkg/metadata"
 )
 
 const (

@@ -6,8 +6,8 @@ import (
 	"github.com/golang-jwt/jwt"
 
 	"placio-api/cmd/auth/proto"
-	apperrors "placio-api/pkg/errors"
-	"placio-api/pkg/identity"
+	apperrors "placio-pkg/errors"
+	"placio-pkg/identity"
 )
 
 type TokenAuthorizer interface {

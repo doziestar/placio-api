@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/vardius/gocontainer"
-	"placio-api/pkg/container"
+	"placio-pkg/container"
 )
 
 // WithContainer wraps http.Handler with a container middleware

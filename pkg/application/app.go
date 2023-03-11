@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/vardius/shutdown"
-	"placio-api/pkg/logger"
+	"placio-pkg/logger"
 )
 
 // Adapter interface

@@ -7,7 +7,7 @@ import (
 
 	"google.golang.org/grpc"
 	healthproto "google.golang.org/grpc/health/grpc_health_v1"
-	"placio-api/pkg/logger"
+	"placio-pkg/logger"
 )
 
 // LogOutgoingUnaryRequest logs client request

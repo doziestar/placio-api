@@ -11,11 +11,11 @@ import (
 	persistence "placio-api/cmd/auth/internal/infrastructure/persistence/memory"
 	"placio-api/cmd/auth/internal/infrastructure/repository"
 	authproto "placio-api/cmd/auth/proto"
-	"placio-api/pkg/auth"
-	memorycommandbus "placio-api/pkg/commandbus/memory"
-	memoryeventbus "placio-api/pkg/eventbus/memory"
-	memoryeventstore "placio-api/pkg/eventstore/memory"
-	grpcutils "placio-api/pkg/grpc"
+	"placio-pkg/auth"
+	memorycommandbus "placio-pkg/commandbus/memory"
+	memoryeventbus "placio-pkg/eventbus/memory"
+	memoryeventstore "placio-pkg/eventstore/memory"
+	grpcutils "placio-pkg/grpc"
 )
 
 func init() {

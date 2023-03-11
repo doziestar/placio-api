@@ -14,12 +14,12 @@ import (
 	persistence "placio-api/cmd/auth/internal/infrastructure/persistence/mongo"
 	"placio-api/cmd/auth/internal/infrastructure/repository"
 	authproto "placio-api/cmd/auth/proto"
-	"placio-api/pkg/auth"
-	memorycommandbus "placio-api/pkg/commandbus/memory"
-	apperrors "placio-api/pkg/errors"
-	memoryeventbus "placio-api/pkg/eventbus/memory"
-	mongoeventstore "placio-api/pkg/eventstore/mongo"
-	grpcutils "placio-api/pkg/grpc"
+	"placio-pkg/auth"
+	memorycommandbus "placio-pkg/commandbus/memory"
+	apperrors "placio-pkg/errors"
+	memoryeventbus "placio-pkg/eventbus/memory"
+	mongoeventstore "placio-pkg/eventstore/mongo"
+	grpcutils "placio-pkg/grpc"
 )
 
 func init() {

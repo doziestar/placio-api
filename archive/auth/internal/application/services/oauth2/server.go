@@ -3,18 +3,17 @@ package oauth2
 import (
 	"context"
 	"fmt"
-	"github.com/go-oauth2/oauth2/v4"
 	oauth2errors "github.com/go-oauth2/oauth2/v4/errors"
 	oauth2server "github.com/go-oauth2/oauth2/v4/server"
 	"net/http"
-	apperrors "placio-api/pkg/errors"
+	apperrors "placio-pkg/errors"
 	"sync"
 	"time"
 
 	"placio-api/cmd/auth/internal/application/config"
 	"placio-api/cmd/auth/internal/infrastructure/persistence"
-	"placio-api/pkg/identity"
-	"placio-api/pkg/logger"
+	"placio-pkg/identity"
+	"placio-pkg/logger"
 )
 
 var (

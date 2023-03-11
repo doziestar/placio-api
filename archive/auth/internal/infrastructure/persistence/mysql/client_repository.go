@@ -9,11 +9,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/go-oauth2/oauth2/v4"
-
 	"placio-api/cmd/auth/internal/application/config"
 	"placio-api/cmd/auth/internal/infrastructure/persistence"
-	apperrors "placio-api/pkg/errors"
+	apperrors "placio-pkg/errors"
 )
 
 const createClientTableSQL = `

@@ -3,7 +3,7 @@ package eventbus
 import (
 	"context"
 
-	"placio-api/pkg/domain"
+	"placio-pkg/domain"
 )
 
 // EventHandler function

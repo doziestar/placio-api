@@ -4,8 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/go-oauth2/oauth2/v4"
-
 	//"github.com/go-oauth2/oauth2/v4"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -13,7 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"placio-api/cmd/auth/internal/application/config"
 	"placio-api/cmd/auth/internal/infrastructure/persistence"
-	apperrors "placio-api/pkg/errors"
+	apperrors "placio-pkg/errors"
 )
 
 type clientRepository struct {

@@ -7,13 +7,13 @@ import (
 	"sync"
 
 	messagebus "github.com/vardius/message-bus"
-	"placio-api/pkg/domain"
-	apperrors "placio-api/pkg/errors"
-	"placio-api/pkg/eventbus"
-	"placio-api/pkg/executioncontext"
-	"placio-api/pkg/identity"
-	"placio-api/pkg/logger"
-	"placio-api/pkg/metadata"
+	"placio-pkg/domain"
+	apperrors "placio-pkg/errors"
+	"placio-pkg/eventbus"
+	"placio-pkg/executioncontext"
+	"placio-pkg/identity"
+	"placio-pkg/logger"
+	"placio-pkg/metadata"
 )
 
 // New creates memory event bus

@@ -12,13 +12,13 @@ import (
 	persistence "placio-api/cmd/auth/internal/infrastructure/persistence/mysql"
 	"placio-api/cmd/auth/internal/infrastructure/repository"
 	authproto "placio-api/cmd/auth/proto"
-	"placio-api/pkg/auth"
-	memorycommandbus "placio-api/pkg/commandbus/memory"
-	apperrors "placio-api/pkg/errors"
-	memoryeventbus "placio-api/pkg/eventbus/memory"
-	mysqleventstore "placio-api/pkg/eventstore/mysql"
-	grpcutils "placio-api/pkg/grpc"
-	"placio-api/pkg/mysql"
+	"placio-pkg/auth"
+	memorycommandbus "placio-pkg/commandbus/memory"
+	apperrors "placio-pkg/errors"
+	memoryeventbus "placio-pkg/eventbus/memory"
+	mysqleventstore "placio-pkg/eventstore/mysql"
+	grpcutils "placio-pkg/grpc"
+	"placio-pkg/mysql"
 )
 
 func init() {

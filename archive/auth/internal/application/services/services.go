@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/go-oauth2/oauth2/v4"
 	"sync"
 	"time"
 
@@ -16,9 +15,9 @@ import (
 	"placio-api/cmd/auth/internal/domain/client"
 	"placio-api/cmd/auth/internal/domain/token"
 	authpersistence "placio-api/cmd/auth/internal/infrastructure/persistence"
-	"placio-api/pkg/auth"
-	"placio-api/pkg/commandbus"
-	"placio-api/pkg/eventbus"
+	"placio-pkg/auth"
+	"placio-pkg/commandbus"
+	"placio-pkg/eventbus"
 )
 
 type containerFactory func(ctx context.Context, cfg *config.Config) (*ServiceContainer, error)

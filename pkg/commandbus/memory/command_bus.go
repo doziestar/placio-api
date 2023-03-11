@@ -5,10 +5,10 @@ import (
 	"fmt"
 
 	messagebus "github.com/vardius/message-bus"
-	"placio-api/pkg/commandbus"
-	"placio-api/pkg/domain"
-	apperrors "placio-api/pkg/errors"
-	"placio-api/pkg/logger"
+	"placio-pkg/commandbus"
+	"placio-pkg/domain"
+	apperrors "placio-pkg/errors"
+	"placio-pkg/logger"
 )
 
 // New creates in memory command bus

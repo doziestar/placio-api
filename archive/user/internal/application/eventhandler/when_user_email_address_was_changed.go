@@ -6,9 +6,9 @@ import (
 
 	"placio-api/cmd/user/internal/domain/user"
 	"placio-api/cmd/user/internal/infrastructure/persistence"
-	"placio-api/pkg/domain"
-	apperrors "placio-api/pkg/errors"
-	"placio-api/pkg/eventbus"
+	"placio-pkg/domain"
+	apperrors "placio-pkg/errors"
+	"placio-pkg/eventbus"
 )
 
 // WhenUserEmailAddressWasChanged handles event

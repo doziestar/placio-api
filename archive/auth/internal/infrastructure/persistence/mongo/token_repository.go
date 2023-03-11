@@ -11,7 +11,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 
 	"placio-api/cmd/auth/internal/infrastructure/persistence"
-	apperrors "placio-api/pkg/errors"
+	apperrors "placio-pkg/errors"
 )
 
 // NewTokenRepository returns mongo view model repository for token

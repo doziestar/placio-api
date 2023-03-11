@@ -2,10 +2,9 @@ package memory
 
 import (
 	"context"
-	"github.com/go-oauth2/oauth2/v4"
 	"sync"
 
-	apperrors "placio-api/pkg/errors"
+	apperrors "placio-pkg/errors"
 
 	"placio-api/cmd/auth/internal/application/config"
 	"placio-api/cmd/auth/internal/infrastructure/persistence"

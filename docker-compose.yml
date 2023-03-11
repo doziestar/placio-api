@@ -24,8 +24,9 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: "chidosiky2015@gmail.com"
       PGADMIN_DEFAULT_PASSWORD: "918273645dozie"
+      PGADMIN_LISTEN_PORT: "5050"
     ports:
-      - "5050:80"
+      - "5050:5050"
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     depends_on:
@@ -38,24 +39,29 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: "dozie"
       MONGO_INITDB_ROOT_PASSWORD: "918273645dozie"
+
     volumes:
       - mongo_data:/data/db
     ports:
       - "27017:27017"
 
-  mongo-express:
-    container_name: placio-mongo-express
-    image: mongo-express
-    restart: always
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: "dozie"
-      ME_CONFIG_MONGODB_ADMINPASSWORD: "918273645dozie"
-    ports:
-      - "8081:8081"
-    depends_on:
-      - mongo-db
+#  mongo-express:
+#    container_name: placio-mongo-express
+#    image: mongo-express
+#    restart: always
+#    environment:
+#      ME_CONFIG_MONGODB_ADMINUSERNAME: "dozie"
+#      ME_CONFIG_MONGODB_ADMINPASSWORD: "918273645dozie"
+#      ME_CONFIG_BASICAUTH_USERNAME: "dozie"
+#      ME_CONFIG_BASICAUTH_PASSWORD: "918273645dozie"
+#      ME_CONFIG_MONGODB_PORT: "27017"
+#      ME_CONFIG_MONGODB_SERVER: "mongo-db"
+#    ports:
+#      - "8081:8081"
+#    depends_on:
+#      - mongo-db
 #
-  redis:
+  placio-redis:
     container_name: placio-redis
     image: redis:latest
     restart: always
@@ -64,18 +70,20 @@ services:
     volumes:
       - redis_data:/data
 
-  redis-commander:
-    container_name: placio-redis-commander
-    image: rediscommander/redis-commander:latest
-    restart: always
-    ports:
-      - "8082:8081"
-    depends_on:
-      - redis
-    environment:
-      REDIS_HOSTS: "redis://redis:6379"
-      REDIS_PORT: "6379"
-
+#  redis-commander:
+#    container_name: placio-redis-commander
+#    image: rediscommander/redis-commander:latest
+#    restart: always
+#    ports:
+#      - "8086:8086"
+#    depends_on:
+#      - placio-redis
+#    environment:
+#      REDIS_HOSTS: placio-redis
+#      REDIS_PORT: 6379
+#      REDIS_URL: placio-redis://placio-redis:6379
+#      REDIS_HOST_DOCKER: host.docker.internal
+#      PORT: 8086
   kafka:
     container_name: placio-kafka
     image: wurstmeister/kafka:2.12-2.5.0
@@ -97,14 +105,14 @@ services:
     ports:
       - "2181:2181"
 
-  kafka-ui:
-    container_name: placio-kafka-ui
-    image: provectuslabs/kafka-ui:latest
-    restart: always
-    ports:
-      - "8083:8083"
-    depends_on:
-      - kafka
+#  kafka-ui:
+#    container_name: placio-kafka-ui
+#    image: provectuslabs/kafka-ui:latest
+#    restart: always
+#    ports:
+#      - "8083:8083"
+#    depends_on:
+#      - kafka
 
   app:
     container_name: placio-app
@@ -117,18 +125,21 @@ services:
     depends_on:
       - postgres-db
       - mongo-db
-      - redis
-      - kafka
-      - zookeeper
-      - kafka-ui
-      - pgadmin
-      - mongo-express
-      - redis-commander
+#      - redis
+#      - kafka
+#      - zookeeper
+#      - kafka-ui
+#      - pgadmin
+#      - mongo-express
+#      - redis-commander
     volumes:
-      - ./cmd/app:/app
+      - ./:/app
       - ./cmd/app:/app/cmd/app
       - ./pkg:/app/pkg
       - ./config:/app/config
+
+    environment:
+      DATABASE_URL: "postgres://dozie:918273645dozie@postgres-db:5432/placio?sslmode=disable"
 
   users:
     container_name: placio-users
@@ -141,15 +152,17 @@ services:
     depends_on:
       - postgres-db
       - mongo-db
-      - redis
-      - kafka
-      - zookeeper
-      - kafka-ui
-      - pgadmin
-      - mongo-express
-      - redis-commander
+##      - redis
+#      - kafka
+##      - zookeeper
+#      - kafka-ui
+#      - pgadmin
+#      - mongo-express
+##      - redis-commander
+    environment:
+      DATABASE_URL: "postgres://dozie:918273645dozie@postgres-db:5432/placio?sslmode=disable"
     volumes:
-      - ./cmd/users:/app
+      - ./:/app
       - ./cmd/users:/app/cmd/users
       - ./pkg:/app/pkg
       - ./config:/app/config
@@ -165,18 +178,20 @@ services:
     depends_on:
       - postgres-db
       - mongo-db
-      - redis
-      - kafka
-      - zookeeper
-      - kafka-ui
-      - pgadmin
+#      - redis
+#      - kafka
+#      - zookeeper
+#      - kafka-ui
+#      - pgadmin
 #      - mongo-express
-      - redis-commander
+#      - redis-commander
     volumes:
       - ./:/app
       - ./cmd/auth:/app/cmd/auth
       - ./pkg:/app/pkg
       - ./config:/app/config
+    environment:
+      DATABASE_URL: "postgres://dozie:918273645dozie@postgres-db:5432/placio?sslmode=disable"
 
   media:
     container_name: placio-media
@@ -189,18 +204,20 @@ services:
     depends_on:
       - postgres-db
       - mongo-db
-      - redis
-      - kafka
-      - zookeeper
-      - kafka-ui
-      - pgadmin
-      - mongo-express
-      - redis-commander
+#      - redis
+#      - kafka
+#      - zookeeper
+#      - kafka-ui
+#      - pgadmin
+#      - mongo-express
+#      - redis-commander
     volumes:
-      - ./cmd/media:/app
+      - ./:/app
       - ./cmd/media:/app/cmd/media
       - ./pkg:/app/pkg
       - ./config:/app/config
+    environment:
+      DATABASE_URL: "postgres://dozie:918273645dozie@postgres-db:5432/placio?sslmode=disable"
 #
   events:
     container_name: placio-events
@@ -213,18 +230,20 @@ services:
     depends_on:
       - postgres-db
       - mongo-db
-      - redis
-      - kafka
-      - zookeeper
-      - kafka-ui
-      - pgadmin
-      - mongo-express
-      - redis-commander
+#      - redis
+#      - kafka
+#      - zookeeper
+#      - kafka-ui
+#      - pgadmin
+#      - mongo-express
+#      - redis-commander
     volumes:
-      - ./cmd/events:/app
+      - ./:/app
       - ./cmd/events:/app/cmd/events
       - ./pkg:/app/pkg
       - ./config:/app/config
+    environment:
+      DATABASE_URL: "postgres://dozie:918273645dozie@postgres-db:5432/placio?sslmode=disable"
 
   chats:
     container_name: placio-chats
@@ -237,18 +256,21 @@ services:
     depends_on:
       - postgres-db
       - mongo-db
-      - redis
-      - kafka
-      - zookeeper
-      - kafka-ui
-      - pgadmin
-      - mongo-express
-      - redis-commander
+#      - redis
+#      - kafka
+#      - zookeeper
+#      - kafka-ui
+#      - pgadmin
+#      - mongo-express
+#      - redis-commander
     volumes:
-      - ./cmd/chats:/app
+      - ./:/app
       - ./cmd/chats:/app/cmd/chats
       - ./pkg:/app/pkg
       - ./config:/app/config
+
+    environment:
+      DATABASE_URL: "postgres://dozie:918273645dozie@postgres-db:5432/placio?sslmode=disable"
 #
   business:
     container_name: placio-business
@@ -261,15 +283,18 @@ services:
     depends_on:
       - postgres-db
       - mongo-db
-      - redis
-      - kafka
-      - zookeeper
-      - kafka-ui
-      - pgadmin
-      - mongo-express
-      - redis-commander
+#      - redis
+#      - kafka
+#      - zookeeper
+#      - kafka-ui
+#      - pgadmin
+#      - mongo-express
+#      - redis-commander
     volumes:
-      - ./cmd/business:/app
+      - ./:/app
       - ./cmd/business:/app/cmd/business
       - ./pkg:/app/pkg
       - ./config:/app/config
+
+    environment:
+      DATABASE_URL: "postgres://dozie:918273645dozie@postgres-db:5432/placio?sslmode=disable"

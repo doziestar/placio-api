@@ -2,7 +2,6 @@ package oauth2
 
 import (
 	"context"
-	"github.com/go-oauth2/oauth2/v4"
 	"github.com/golang-jwt/jwt"
 	"time"
 
@@ -12,9 +11,9 @@ import (
 
 	"placio-api/cmd/auth/internal/application/access"
 	"placio-api/cmd/auth/internal/infrastructure/persistence"
-	"placio-api/pkg/auth"
-	apperrors "placio-api/pkg/errors"
-	"placio-api/pkg/identity"
+	"placio-pkg/auth"
+	apperrors "placio-pkg/errors"
+	"placio-pkg/identity"
 )
 
 // JWTAccessClaims jwt claims

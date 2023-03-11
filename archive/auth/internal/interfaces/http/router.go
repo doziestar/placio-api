@@ -2,7 +2,6 @@ package http
 
 import (
 	"database/sql"
-	"github.com/vardius/gorouter/v4"
 	"net/http"
 	"time"
 
@@ -12,12 +11,12 @@ import (
 	"placio-api/cmd/auth/internal/application/config"
 	"placio-api/cmd/auth/internal/infrastructure/persistence"
 	"placio-api/cmd/auth/internal/interfaces/http/handlers"
-	"placio-api/pkg/auth"
-	"placio-api/pkg/commandbus"
-	httpmiddleware "placio-api/pkg/http/middleware"
-	httpauthenticator "placio-api/pkg/http/middleware/authenticator"
-	"placio-api/pkg/http/response/json"
-	"placio-api/pkg/identity"
+	"placio-pkg/auth"
+	"placio-pkg/commandbus"
+	httpmiddleware "placio-pkg/http/middleware"
+	httpauthenticator "placio-pkg/http/middleware/authenticator"
+	"placio-pkg/http/response/json"
+	"placio-pkg/identity"
 )
 
 // NewRouter provides new router

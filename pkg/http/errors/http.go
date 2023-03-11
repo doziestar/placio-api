@@ -5,9 +5,9 @@ import (
 	"errors"
 	"net/http"
 
-	apperrors "placio-api/pkg/errors"
+	apperrors "placio-pkg/errors"
 
-	mtd "placio-api/pkg/metadata"
+	mtd "placio-pkg/metadata"
 )
 
 type HttpError struct {

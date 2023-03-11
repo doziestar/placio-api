@@ -8,8 +8,8 @@ import (
 	"placio-api/cmd/auth/internal/application/services"
 	"placio-api/cmd/auth/internal/domain/client"
 	"placio-api/cmd/auth/internal/domain/token"
-	"placio-api/pkg/domain"
-	apperrors "placio-api/pkg/errors"
+	"placio-pkg/domain"
+	apperrors "placio-pkg/errors"
 )
 
 func RegisterTokenDomain(ctx context.Context, cfg *config.Config, container *services.ServiceContainer) error {

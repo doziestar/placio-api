@@ -3,14 +3,12 @@ package oauth2
 import (
 	"context"
 	"fmt"
-	"github.com/go-oauth2/oauth2/v4"
-
 	"github.com/google/uuid"
 	"placio-api/cmd/auth/internal/domain/token"
 	"placio-api/cmd/auth/internal/infrastructure/persistence"
-	apperrors "placio-api/pkg/errors"
-	"placio-api/pkg/executioncontext"
-	"placio-api/pkg/metadata"
+	apperrors "placio-pkg/errors"
+	"placio-pkg/executioncontext"
+	"placio-pkg/metadata"
 )
 
 // NewTokenStore create a token store instance

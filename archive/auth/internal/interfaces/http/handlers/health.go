@@ -7,12 +7,12 @@ import (
 
 	"go.mongodb.org/mongo-driver/mongo"
 
-	apperrors "placio-api/pkg/errors"
-	httpjson "placio-api/pkg/http/response/json"
+	apperrors "placio-pkg/errors"
+	httpjson "placio-pkg/http/response/json"
 
 	"google.golang.org/grpc"
 
-	grpcutils "placio-api/pkg/grpc"
+	grpcutils "placio-pkg/grpc"
 )
 
 // BuildLivenessHandler provides liveness handler

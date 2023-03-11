@@ -8,8 +8,8 @@ import (
 	"placio-api/cmd/user/internal/application/eventhandler"
 	"placio-api/cmd/user/internal/application/services"
 	"placio-api/cmd/user/internal/domain/user"
-	"placio-api/pkg/domain"
-	apperrors "placio-api/pkg/errors"
+	"placio-pkg/domain"
+	apperrors "placio-pkg/errors"
 )
 
 func RegisterUserDomain(ctx context.Context, cfg *config.Config, container *services.ServiceContainer) error {

@@ -7,7 +7,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	apperrors "placio-api/pkg/errors"
+	apperrors "placio-pkg/errors"
 )
 
 func TestJSON(t *testing.T) {

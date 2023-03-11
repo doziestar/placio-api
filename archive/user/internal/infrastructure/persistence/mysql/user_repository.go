@@ -10,8 +10,8 @@ import (
 	"fmt"
 
 	"placio-api/cmd/user/internal/infrastructure/persistence"
-	apperrors "placio-api/pkg/errors"
-	"placio-api/pkg/mysql"
+	apperrors "placio-pkg/errors"
+	"placio-pkg/mysql"
 )
 
 const createUsersTableSQL = `

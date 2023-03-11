@@ -5,7 +5,7 @@ package mysql
 
 import (
 	"placio-api/cmd/user/internal/application/access"
-	"placio-api/pkg/mysql"
+	"placio-pkg/mysql"
 )
 
 // User model

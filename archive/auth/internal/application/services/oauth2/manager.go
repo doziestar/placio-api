@@ -1,12 +1,11 @@
 package oauth2
 
 import (
-	"github.com/go-oauth2/oauth2/v4"
 	oauth2manage "github.com/go-oauth2/oauth2/v4/manage"
 	"github.com/golang-jwt/jwt"
 
 	"placio-api/cmd/auth/internal/infrastructure/persistence"
-	"placio-api/pkg/auth"
+	"placio-pkg/auth"
 )
 
 // NewManager initialize the oauth2 manager service

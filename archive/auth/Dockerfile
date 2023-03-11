@@ -44,7 +44,7 @@ COPY cmd/auth cmd/auth
 RUN go build \
     -mod=readonly \
     -tags=persistence_mysql \
-    -ldflags "-X 'placio-api/pkg/buildinfo.BuildTime=$(date -u '+%Y-%m-%d %H:%M:%S')'" \
+    -ldflags "-X 'placio-pkg/buildinfo.BuildTime=$(date -u '+%Y-%m-%d %H:%M:%S')'" \
     -a -o /go/bin/app ./cmd/auth
 
 FROM scratch

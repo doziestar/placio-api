@@ -16,9 +16,9 @@ import (
 	"placio-api/cmd/user/internal/application/config"
 	"placio-api/cmd/user/internal/domain/user"
 	userpersistence "placio-api/cmd/user/internal/infrastructure/persistence"
-	"placio-api/pkg/auth"
-	"placio-api/pkg/commandbus"
-	"placio-api/pkg/eventbus"
+	"placio-pkg/auth"
+	"placio-pkg/commandbus"
+	"placio-pkg/eventbus"
 )
 
 type containerFactory func(ctx context.Context, cfg *config.Config) (*ServiceContainer, error)

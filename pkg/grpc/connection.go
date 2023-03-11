@@ -8,9 +8,9 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/keepalive"
-	"placio-api/pkg/grpc/middleware"
-	"placio-api/pkg/grpc/middleware/firewall"
-	"placio-api/pkg/logger"
+	"placio-pkg/grpc/middleware"
+	"placio-pkg/grpc/middleware/firewall"
+	"placio-pkg/logger"
 )
 
 // ConnectionConfig provides values for gRPC connection configuration

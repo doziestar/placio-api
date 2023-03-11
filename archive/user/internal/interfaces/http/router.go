@@ -3,9 +3,8 @@ package http
 import (
 	"database/sql"
 	"fmt"
-	"github.com/vardius/gorouter/v4"
 	"net/http"
-	"placio-api/pkg/auth"
+	"placio-pkg/auth"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -17,11 +16,11 @@ import (
 	"placio-api/cmd/user/internal/domain/user"
 	userpersistence "placio-api/cmd/user/internal/infrastructure/persistence"
 	"placio-api/cmd/user/internal/interfaces/http/handlers"
-	"placio-api/pkg/commandbus"
-	httpmiddleware "placio-api/pkg/http/middleware"
-	httpauthenticator "placio-api/pkg/http/middleware/authenticator"
-	"placio-api/pkg/http/response/json"
-	"placio-api/pkg/identity"
+	"placio-pkg/commandbus"
+	httpmiddleware "placio-pkg/http/middleware"
+	httpauthenticator "placio-pkg/http/middleware/authenticator"
+	"placio-pkg/http/response/json"
+	"placio-pkg/identity"
 )
 
 const googleAPIURL = "https://www.googleapis.com/oauth2/v2/userinfo"

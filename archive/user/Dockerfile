@@ -33,7 +33,7 @@ COPY cmd/auth/proto cmd/auth/proto
 RUN go build \
     -mod=readonly \
     -tags=persistence_mysql \
-    -ldflags "-X placio-api/pkg/buildinfo.Version=$VERSION -X placio-api/pkg/buildinfo.GitCommit=$GIT_COMMIT -X 'placio-api/pkg/buildinfo.BuildTime=$(date -u '+%Y-%m-%d %H:%M:%S')'" \
+    -ldflags "-X placio-pkg/buildinfo.Version=$VERSION -X placio-pkg/buildinfo.GitCommit=$GIT_COMMIT -X 'placio-pkg/buildinfo.BuildTime=$(date -u '+%Y-%m-%d %H:%M:%S')'" \
     -a -o /go/bin/app ./cmd/"$BIN"
 
 FROM scratch

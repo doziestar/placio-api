@@ -9,9 +9,9 @@ import (
 	"github.com/google/uuid"
 
 	"placio-api/cmd/user/internal/domain/user"
-	apperrors "placio-api/pkg/errors"
-	"placio-api/pkg/eventbus"
-	"placio-api/pkg/eventstore"
+	apperrors "placio-pkg/errors"
+	"placio-pkg/eventbus"
+	"placio-pkg/eventstore"
 )
 
 type userRepository struct {

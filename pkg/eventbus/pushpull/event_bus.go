@@ -9,11 +9,11 @@ import (
 	"time"
 
 	pushpullproto "github.com/vardius/pushpull/proto"
-	"placio-api/pkg/domain"
-	apperrors "placio-api/pkg/errors"
-	"placio-api/pkg/eventbus"
-	"placio-api/pkg/logger"
-	"placio-api/pkg/metadata"
+	"placio-pkg/domain"
+	apperrors "placio-pkg/errors"
+	"placio-pkg/eventbus"
+	"placio-pkg/logger"
+	"placio-pkg/metadata"
 )
 
 // New creates pubsub event bus

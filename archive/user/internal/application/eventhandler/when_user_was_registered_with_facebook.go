@@ -6,11 +6,11 @@ import (
 
 	"placio-api/cmd/user/internal/domain/user"
 	"placio-api/cmd/user/internal/infrastructure/persistence"
-	"placio-api/pkg/commandbus"
-	"placio-api/pkg/domain"
-	apperrors "placio-api/pkg/errors"
-	"placio-api/pkg/eventbus"
-	"placio-api/pkg/executioncontext"
+	"placio-pkg/commandbus"
+	"placio-pkg/domain"
+	apperrors "placio-pkg/errors"
+	"placio-pkg/eventbus"
+	"placio-pkg/executioncontext"
 )
 
 // WhenUserWasRegisteredWithFacebook handles event

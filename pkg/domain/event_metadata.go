@@ -3,7 +3,7 @@ package domain
 import (
 	"net"
 
-	"placio-api/pkg/identity"
+	"placio-pkg/identity"
 )
 
 type EventMetadata struct {

@@ -7,11 +7,11 @@ import (
 
 	"github.com/google/uuid"
 
-	"placio-api/pkg/commandbus"
-	"placio-api/pkg/domain"
-	apperrors "placio-api/pkg/errors"
-	"placio-api/pkg/executioncontext"
-	"placio-api/pkg/identity"
+	"placio-pkg/commandbus"
+	"placio-pkg/domain"
+	apperrors "placio-pkg/errors"
+	"placio-pkg/executioncontext"
+	"placio-pkg/identity"
 )
 
 const (

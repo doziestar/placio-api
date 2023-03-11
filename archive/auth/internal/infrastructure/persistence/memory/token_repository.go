@@ -5,7 +5,7 @@ import (
 	"sync"
 
 	"placio-api/cmd/auth/internal/infrastructure/persistence"
-	apperrors "placio-api/pkg/errors"
+	apperrors "placio-pkg/errors"
 )
 
 // NewTokenRepository returns memory view model repository for token

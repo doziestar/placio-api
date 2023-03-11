@@ -8,9 +8,9 @@ import (
 	"sync"
 	"time"
 
-	"placio-api/pkg/logger"
+	"placio-pkg/logger"
 
-	"placio-api/pkg/http/request"
+	"placio-pkg/http/request"
 	// import rate package
 	"golang.org/x/time/rate"
 )

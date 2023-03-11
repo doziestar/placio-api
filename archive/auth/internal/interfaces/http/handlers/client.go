@@ -10,10 +10,10 @@ import (
 
 	"placio-api/cmd/auth/internal/domain/client"
 	"placio-api/cmd/auth/internal/infrastructure/persistence"
-	"placio-api/pkg/commandbus"
-	apperrors "placio-api/pkg/errors"
-	httpjson "placio-api/pkg/http/response/json"
-	"placio-api/pkg/identity"
+	"placio-pkg/commandbus"
+	apperrors "placio-pkg/errors"
+	httpjson "placio-pkg/http/response/json"
+	"placio-pkg/identity"
 )
 
 // BuildClientCommandDispatchHandler dispatches domain command

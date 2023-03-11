@@ -6,7 +6,7 @@ package errors_test
 import (
 	"fmt"
 
-	apperrors "placio-api/pkg/errors"
+	apperrors "placio-pkg/errors"
 )
 
 func ExampleNew() {

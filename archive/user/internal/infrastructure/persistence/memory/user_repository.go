@@ -7,7 +7,7 @@ import (
 	"context"
 	"sync"
 
-	apperrors "placio-api/pkg/errors"
+	apperrors "placio-pkg/errors"
 
 	"placio-api/cmd/user/internal/infrastructure/persistence"
 )

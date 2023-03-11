@@ -9,7 +9,7 @@ import (
 
 	"placio-api/cmd/user/internal/application/config"
 	"placio-api/cmd/user/internal/application/email"
-	apperrors "placio-api/pkg/errors"
+	apperrors "placio-pkg/errors"
 )
 
 const (

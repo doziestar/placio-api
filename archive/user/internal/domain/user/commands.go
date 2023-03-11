@@ -9,10 +9,10 @@ import (
 	"github.com/google/uuid"
 
 	"placio-api/cmd/user/internal/infrastructure/persistence"
-	"placio-api/pkg/commandbus"
-	"placio-api/pkg/domain"
-	apperrors "placio-api/pkg/errors"
-	"placio-api/pkg/executioncontext"
+	"placio-pkg/commandbus"
+	"placio-pkg/domain"
+	apperrors "placio-pkg/errors"
+	"placio-pkg/executioncontext"
 )
 
 const (

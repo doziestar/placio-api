@@ -13,9 +13,9 @@ import (
 	"placio-api/cmd/auth/internal/domain/client"
 	"placio-api/cmd/auth/internal/domain/token"
 	"placio-api/cmd/auth/proto"
-	"placio-api/pkg/commandbus"
-	apperrors "placio-api/pkg/errors"
-	grpcerrors "placio-api/pkg/grpc/errors"
+	"placio-pkg/commandbus"
+	apperrors "placio-pkg/errors"
+	grpcerrors "placio-pkg/grpc/errors"
 )
 
 type authenticationServer struct {

@@ -7,9 +7,9 @@ import (
 
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
-	"placio-api/pkg/domain"
-	apperrors "placio-api/pkg/errors"
-	"placio-api/pkg/identity"
+	"placio-pkg/domain"
+	apperrors "placio-pkg/errors"
+	"placio-pkg/identity"
 )
 
 type DTO struct {

@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"placio-api/cmd/auth/internal/domain"
-	"placio-api/pkg/grpc/middleware"
+	"placio-pkg/grpc/middleware"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/vardius/gocontainer"
@@ -20,10 +20,10 @@ import (
 	authgrpc "placio-api/cmd/auth/internal/interfaces/grpc"
 	authhttp "placio-api/cmd/auth/internal/interfaces/http"
 	authproto "placio-api/cmd/auth/proto"
-	"placio-api/pkg/application"
-	"placio-api/pkg/buildinfo"
-	grpcutils "placio-api/pkg/grpc"
-	httputils "placio-api/pkg/http"
+	"placio-pkg/application"
+	"placio-pkg/buildinfo"
+	grpcutils "placio-pkg/grpc"
+	httputils "placio-pkg/http"
 )
 
 func init() {

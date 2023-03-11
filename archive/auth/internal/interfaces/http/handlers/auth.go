@@ -6,8 +6,8 @@ import (
 
 	"github.com/go-oauth2/oauth2/v4/server"
 
-	apperrors "placio-api/pkg/errors"
-	httpjson "placio-api/pkg/http/response/json"
+	apperrors "placio-pkg/errors"
+	httpjson "placio-pkg/http/response/json"
 )
 
 // BuildAuthorizeHandler provides authorize handler

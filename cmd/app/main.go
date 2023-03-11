@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"os"
+	"placio-pkg/database"
 	"placio-pkg/start"
 
 	"github.com/gofiber/fiber/v2"
@@ -21,6 +22,10 @@ func main() {
 	app := fiber.New()
 
 	log.Println(ctx, "App started on port: "+port)
+
+	// initialize routes
+	// initialize database
+	database.Connect(os.Getenv("DATABASE_URL"))
 	// set port
 	start.Initialize(port, app)
 

@@ -13,9 +13,9 @@ import (
 	"golang.org/x/oauth2"
 
 	"placio-api/cmd/user/internal/domain/user"
-	"placio-api/pkg/commandbus"
-	apperrors "placio-api/pkg/errors"
-	httpjson "placio-api/pkg/http/response/json"
+	"placio-pkg/commandbus"
+	apperrors "placio-pkg/errors"
+	httpjson "placio-pkg/http/response/json"
 )
 
 type requestBody struct {

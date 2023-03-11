@@ -9,10 +9,10 @@ import (
 
 	"github.com/google/uuid"
 
-	"placio-api/pkg/domain"
-	apperrors "placio-api/pkg/errors"
-	"placio-api/pkg/identity"
-	"placio-api/pkg/metadata"
+	"placio-pkg/domain"
+	apperrors "placio-pkg/errors"
+	"placio-pkg/identity"
+	"placio-pkg/metadata"
 )
 
 // StreamName for client domain

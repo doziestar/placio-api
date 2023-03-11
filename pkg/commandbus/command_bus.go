@@ -3,7 +3,7 @@ package commandbus
 import (
 	"context"
 
-	"placio-api/pkg/domain"
+	"placio-pkg/domain"
 )
 
 // CommandHandler function
