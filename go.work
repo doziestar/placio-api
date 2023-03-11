@@ -7,4 +7,5 @@ use (
 	./cmd/users
 	./pkg
 	cmd/chats
+	.
 )
