@@ -8,7 +8,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 
-	mtd "placio-api/pkg/metadata"
+	mtd "placio-pkg/metadata"
 )
 
 const mdMetadataKey = "metadata"

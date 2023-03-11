@@ -5,7 +5,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"placio-api/pkg/domain"
+	"placio-pkg/domain"
 )
 
 // EventStore methods allow to save, load events and event streams

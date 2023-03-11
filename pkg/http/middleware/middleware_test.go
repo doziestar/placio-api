@@ -13,8 +13,8 @@ import (
 	"time"
 
 	"github.com/vardius/gocontainer"
-	"placio-api/pkg/container"
-	md "placio-api/pkg/metadata"
+	"placio-pkg/container"
+	md "placio-pkg/metadata"
 )
 
 func TestHSTS(t *testing.T) {

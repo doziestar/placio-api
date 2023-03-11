@@ -7,7 +7,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"placio-api/pkg/identity"
+	"placio-pkg/identity"
 )
 
 func TestDoNotGrantAccessFor(t *testing.T) {

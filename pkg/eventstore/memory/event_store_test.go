@@ -6,7 +6,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"placio-api/pkg/domain"
+	"placio-pkg/domain"
 )
 
 type rawEventMock struct {

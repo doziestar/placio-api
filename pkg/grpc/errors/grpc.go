@@ -3,7 +3,7 @@ package errors
 import (
 	"errors"
 
-	apperrors "placio-api/pkg/errors"
+	apperrors "placio-pkg/errors"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

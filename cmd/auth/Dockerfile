@@ -1,53 +1,53 @@
-FROM golang:1.19-buster AS buildenv
+ARG GOLANG_VERSION=1.20
+# Stage 1: Build the application
+FROM golang:${GOLANG_VERSION}-alpine3.17 AS builder
 
-LABEL maintainer="Chidozie Okafor <Chidosiky2015@gmail.com>"
-
-ARG BIN
-ARG VERSION
-ARG GIT_COMMIT
-
-ENV BIN=${BIN}
-ENV VERSION=${VERSION}
-ENV GIT_COMMIT=${GIT_COMMIT}
-
-ENV GO111MODULE=on
-ENV CGO_ENABLED=0
-
-# SHELL ["/bin/bash", "-c"]
-
-# Create a location in the container for the source code.
-RUN mkdir -p /app
 WORKDIR /app
 
-# Copy the module files first and then download the dependencies. If this
-# doesn't change, we won't need to do this again in future builds.
-COPY go.* /app/
-# COPY go.sum .
-# COPY go.mod .
+#RUN mkdir -p /app/cmd/auth
+#RUN mkdir -p /app/pkg
 
+RUN #echo "Listing /app"
+RUN #ls -la /app
 
-# COPY . .
+COPY ./go.* .
+COPY ./pkg/go.* ./pkg/
+COPY ./cmd/auth/go.* ./cmd/auth/
+COPY ./cmd/users/go.* ./cmd/users/
+COPY ./cmd/app/go.* ./cmd/app/
+COPY ./cmd/business/go.* ./cmd/business/
+COPY ./cmd/chats/go.* ./cmd/chats/
+COPY ./cmd/media/go.* ./cmd/media/
+COPY ./cmd/events/go.* ./cmd/events/
 
-RUN echo "Downloading dependencies..."
-RUN pwd
+# Download dependencies
 RUN go mod download
-RUN go mod verify
 
-# Copy the source code into the container.
-COPY pkg pkg
-COPY cmd/"$BIN" cmd/"$BIN"
-# COPY . .
+# Copy the rest of the application source code
+COPY ./pkg ./pkg
+COPY ./cmd/auth ./cmd/auth
+COPY ./config ./config
 
-# RUN go mod download
-# RUN go mod verify
+ENV PORT=7076
+# Build the application
+#RUN #CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o auth ./cmd/auth
 
-RUN go build \
-    -mod=readonly \
-    -tags=persistence_mysql \
-    -ldflags "-X placio-api/pkg/buildinfo.Version=$VERSION -X placio-api/pkg/buildinfo.GitCommit=$GIT_COMMIT -X 'placio-api/pkg/buildinfo.BuildTime=$(date -u '+%Y-%m-%d %H:%M:%S')'" \
-    -a -o /go/bin/app ./cmd/"$BIN"
+# Stage 2: Create the runtime image
+#FROM alpine:3.15
 
-FROM scratch
-COPY --from=buildenv /go/bin/app /go/bin/app
-COPY --from=buildenv /etc/ssl/certs /etc/ssl/certs
-ENTRYPOINT ["/go/bin/app"]
+# Set the working directory to /app
+#WORKDIR /app
+
+# Copy the compiled binary from the builder stage
+#COPY --from=builder /app/auth .
+
+# Copy the required files from pkg module
+#COPY pkg /app/pkg
+RUN go install github.com/cespare/reflex@latest
+
+# Expose port 8080
+EXPOSE 7070
+
+# Run the binary
+#CMD ["./app/auth"]
+CMD ["reflex", "-r", "\\.go$", "-s", "--", "go", "run", "./cmd/auth/main.go"]

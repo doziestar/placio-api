@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 
-	apperrors "placio-api/pkg/errors"
-	"placio-api/pkg/http/response/json"
+	apperrors "placio-pkg/errors"
+	"placio-pkg/http/response/json"
 )
 
 func ExampleJSON() {

@@ -3,12 +3,13 @@ package middleware
 import (
 	"encoding/base64"
 	"encoding/json"
+	"github.com/vardius/gorouter/v4"
 	"net/http"
 
-	apperrors "placio-api/pkg/errors"
-	"placio-api/pkg/http/request"
-	json2 "placio-api/pkg/http/response/json"
-	md "placio-api/pkg/metadata"
+	apperrors "placio-pkg/errors"
+	"placio-pkg/http/request"
+	json2 "placio-pkg/http/response/json"
+	md "placio-pkg/metadata"
 )
 
 const InternalRequestMetadataKey = "m"

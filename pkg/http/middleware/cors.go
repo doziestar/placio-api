@@ -1,10 +1,11 @@
 package middleware
 
 import (
+	"github.com/vardius/gorouter/v4"
 	"net/http"
 
 	httpcors "github.com/rs/cors"
-	"placio-api/pkg/identity"
+	"placio-pkg/identity"
 )
 
 var (

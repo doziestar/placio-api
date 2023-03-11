@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
-	apperrors "placio-api/pkg/errors"
-	"placio-api/pkg/http/response/json"
-	"placio-api/pkg/identity"
+	apperrors "placio-pkg/errors"
+	"placio-pkg/http/response/json"
+	"placio-pkg/identity"
 )
 
 // GrantAccessFor returns Status Unauthorized if

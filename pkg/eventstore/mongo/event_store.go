@@ -10,9 +10,9 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"placio-api/pkg/domain"
-	apperrors "placio-api/pkg/errors"
-	baseeventstore "placio-api/pkg/eventstore"
+	"placio-pkg/domain"
+	apperrors "placio-pkg/errors"
+	baseeventstore "placio-pkg/eventstore"
 )
 
 type eventStore struct {

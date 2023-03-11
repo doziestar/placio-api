@@ -6,7 +6,7 @@ import (
 	"log"
 
 	"github.com/vardius/golog"
-	"placio-api/pkg/metadata"
+	"placio-pkg/metadata"
 )
 
 var Logger golog.Logger

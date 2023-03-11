@@ -1,4 +1,10 @@
-
 use (
-	.
+	./cmd/app
+	./cmd/auth
+	./cmd/business
+	./cmd/events
+	./cmd/media
+	./cmd/users
+	./pkg
+	cmd/chats
 )

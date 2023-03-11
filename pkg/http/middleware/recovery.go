@@ -2,13 +2,14 @@ package middleware
 
 import (
 	"fmt"
+	"github.com/vardius/gorouter/v4"
 	"net/http"
 	"runtime/debug"
 
-	"placio-api/pkg/logger"
+	"placio-pkg/logger"
 
-	apperrors "placio-api/pkg/errors"
-	"placio-api/pkg/http/response/json"
+	apperrors "placio-pkg/errors"
+	"placio-pkg/http/response/json"
 )
 
 // Recover middleware recovers from panic

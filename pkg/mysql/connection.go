@@ -7,7 +7,7 @@ import (
 	"os"
 	"time"
 
-	"placio-api/pkg/logger"
+	"placio-pkg/logger"
 )
 
 // ConnectionConfig provides values for gRPC connection configuration

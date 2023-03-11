@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 
-	"placio-api/pkg/http/middleware"
+	"placio-pkg/http/middleware"
 )
 
 func ExampleRecover() {

@@ -6,8 +6,8 @@ import (
 	grpcmiddleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/keepalive"
-	"placio-api/pkg/grpc/middleware"
-	"placio-api/pkg/grpc/middleware/firewall"
+	"placio-pkg/grpc/middleware"
+	"placio-pkg/grpc/middleware/firewall"
 )
 
 // ServerConfig provides values for gRPC server configuration

@@ -6,7 +6,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/bson/bsontype"
 	"go.mongodb.org/mongo-driver/x/bsonx/bsoncore"
-	apperrors "placio-api/pkg/errors"
+	apperrors "placio-pkg/errors"
 )
 
 type JSONRawMessage json.RawMessage

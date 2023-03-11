@@ -7,7 +7,7 @@ import (
 	"context"
 	"net/http"
 
-	httperrors "placio-api/pkg/http/errors"
+	httperrors "placio-pkg/http/errors"
 )
 
 // JSONError returns data as json response

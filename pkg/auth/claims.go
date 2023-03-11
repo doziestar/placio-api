@@ -2,9 +2,10 @@ package auth
 
 import (
 	"fmt"
+	"github.com/golang-jwt/jwt"
 
-	apperrors "placio-api/pkg/errors"
-	"placio-api/pkg/identity"
+	apperrors "placio-pkg/errors"
+	"placio-pkg/identity"
 )
 
 type Claims struct {

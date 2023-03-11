@@ -8,8 +8,8 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 
-	apperrors "placio-api/pkg/errors"
-	"placio-api/pkg/identity"
+	apperrors "placio-pkg/errors"
+	"placio-pkg/identity"
 )
 
 const mdIdentityKey = "identity"

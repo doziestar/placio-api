@@ -2,11 +2,12 @@ package middleware
 
 import (
 	"fmt"
+	"github.com/vardius/gorouter/v4"
 	"net/http"
 	"time"
 
-	"placio-api/pkg/logger"
-	mtd "placio-api/pkg/metadata"
+	"placio-pkg/logger"
+	mtd "placio-pkg/metadata"
 )
 
 // Logger wraps http.Handler with a logger middleware
