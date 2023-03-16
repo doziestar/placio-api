@@ -1,8 +1,9 @@
 package api
 
 import (
-	"github.com/gofiber/fiber/v2"
 	"placio-app/controller"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 func HealthCheckRoutes(app *fiber.App) {
@@ -10,5 +11,6 @@ func HealthCheckRoutes(app *fiber.App) {
 	v1 := apiRouter.Group("/v1")
 	{
 		v1.Get("/health", controller.HealthCheck)
+
 	}
 }

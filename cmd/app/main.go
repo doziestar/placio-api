@@ -1,9 +1,7 @@
 package main
 
 import (
-	"context"
 	"github.com/goccy/go-json"
-	"log"
 	"os"
 	"placio-app/api"
 	"placio-pkg/database"
@@ -32,16 +30,11 @@ func main() {
 	port := os.Getenv("PORT")
 	// if port is not set, set it to 3000
 
-	ctx := context.Background()
-	log.Println(ctx, "Starting app on port: "+port)
-
 	// initialize fiber app
 	app := fiber.New(fiber.Config{
 		JSONEncoder: json.Marshal,
 		JSONDecoder: json.Unmarshal,
 	})
-
-	log.Println(ctx, "App started on port: "+port)
 
 	// initialize routes
 	api.InitializeRoutes(app)
