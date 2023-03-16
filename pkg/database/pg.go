@@ -22,6 +22,8 @@ func NewDatabase(dsn string) (*Database, error) {
 }
 
 func (d *Database) Migrate(models ...interface{}) error {
+	// drop all tables
+	// d.Migrator().DropTable(models...)
 	return d.AutoMigrate(models...)
 }
 
@@ -38,13 +40,18 @@ func Connect(dsn string) (*Database, error) {
 	logger.Info(ctx, "== Connected to database successfully ==")
 	logger.Info(ctx, "======================================")
 
+	err = db.LoadModels()
+	if err != nil {
+		return nil, err
+	}
+
 	return db, nil
 }
 
 // LoadModels load models
 func (d *Database) LoadModels() error {
 	var modelList []interface{}
-	modelList = append(modelList, &models.User{}, &models.Event{}, &models.Ticket{}, &models.Booking{}, &models.Payment{}, models.Business{}, models.Conversation{}, models.Group{}, models.Message{})
+	modelList = append(modelList, &models.User{}, &models.Event{}, &models.Ticket{}, &models.Booking{}, &models.Payment{}, models.Business{}, models.Conversation{}, models.Group{}, models.Message{}, models.Profile{})
 	return d.Migrate(modelList...)
 }
 

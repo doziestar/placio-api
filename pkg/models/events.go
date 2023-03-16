@@ -1,20 +1,25 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type Event struct {
+	*gorm.Model
 	ID          string `gorm:"primaryKey"`
 	Name        string `gorm:"index"`
 	Date        time.Time
 	Time        time.Time
 	Location    string
 	Description string    `gorm:"type:text"`
-	BusinessID  string    `gorm:"foreignKey:Business"`
-	CreatedAt   time.Time `gorm:"default:CURRENT_TIMESTAMP"`
-	UpdatedAt   time.Time `gorm:"default:CURRENT_TIMESTAMP"`
-	Business    Business  `gorm:"foreignKey:BusinessID"`
-	Bookings    []Booking `gorm:"foreignKey:EventID"`
-	Tickets     []Ticket  `gorm:"foreignKey:EventID"`
+	// BusinessID  string    `gorm:"foreignKey:Business"`
+	// CreatedAt   time.Time `gorm:"default:CURRENT_TIMESTAMP"`
+	// UpdatedAt   time.Time `gorm:"default:CURRENT_TIMESTAMP"`
+	// Business    Business  `gorm:"foreignKey:BusinessID"`
+	// Bookings    []Booking `gorm:"foreignKey:EventID"`
+	// Tickets     []Ticket  `gorm:"foreignKey:EventID"`
 }
 
 func (e *Event) TableName() string {
@@ -33,10 +38,13 @@ func BuildEvent(event *Event, businessID string) *Event {
 		Time:        event.Time,
 		Location:    event.Location,
 		Description: event.Description,
-		BusinessID:  businessID,
+		// BusinessID:  businessID,
 	}
 }
 
-func BeforeCreateEvent(event *Event) {
+func (event *Event) BeforeCreate(tx *gorm.DB) (err error) {
 	event.ID = GenerateID()
+	event.CreatedAt = time.Now()
+	event.UpdatedAt = time.Now()
+	return nil
 }

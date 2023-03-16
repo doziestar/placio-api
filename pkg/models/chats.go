@@ -6,45 +6,45 @@ import (
 )
 
 type Conversation struct {
-	gorm.Model
+	*gorm.Model
 	LastMessageTimestamp time.Time
-	Participants         []*User `gorm:"many2many:conversation_participant;"`
-	Messages             []Message
+	// Participants         []*User `gorm:"many2many:conversation_participant;"`
+	// Messages             []Message
 }
 
 type Group struct {
-	gorm.Model
+	*gorm.Model
 	Name        string
 	Description string
-	Members     []*User `gorm:"many2many:group_membership;"`
-	Messages    []Message
+	// Members     []*User `gorm:"many2many:group_membership;"`
+	// Messages    []Message
 }
 
 type Message struct {
-	gorm.Model
-	SenderID       uint
-	RecipientID    uint
-	ConversationID uint
-	GroupID        uint
+	*gorm.Model
+	SenderID       string
+	RecipientID    string
+	ConversationID string
+	GroupID        string
 	MessageText    string
 	MessageType    string
 	Timestamp      time.Time
 	Delivered      bool
 	Read           bool
-	Sender         User `gorm:"foreignKey:SenderID"`
-	Recipient      User `gorm:"foreignKey:RecipientID"`
-	Conversation   Conversation
-	Group          Group
+	// Sender         User `gorm:"foreignKey:SenderID"`
+	// Recipient      User `gorm:"foreignKey:RecipientID"`
+	// Conversation   Conversation
+	// Group          Group
 }
 
 type VoiceNote struct {
-	gorm.Model
-	SenderID      uint
-	RecipientID   uint
+	*gorm.Model
+	SenderID      string
+	RecipientID   string
 	VoiceNoteFile string
 	Timestamp     time.Time
 	Delivered     bool
 	Read          bool
-	Sender        User `gorm:"foreignKey:SenderID"`
-	Recipient     User `gorm:"foreignKey:RecipientID"`
+	// Sender        User `gorm:"foreignKey:SenderID"`
+	// Recipient     User `gorm:"foreignKey:RecipientID"`
 }
