@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/golang-jwt/jwt"
 
-	"placio-api/cmd/auth/proto"
 	apperrors "placio-pkg/errors"
 	"placio-pkg/identity"
 )
@@ -17,14 +16,12 @@ type TokenAuthorizer interface {
 type jwtAuthorizer struct {
 	claimsProvider ClaimsProvider
 	authenticator  Authenticator
-	authClient     proto.AuthenticationServiceClient
 }
 
-func NewJWTTokenAuthorizer(authClient proto.AuthenticationServiceClient, claimsProvider ClaimsProvider, authenticator Authenticator) TokenAuthorizer {
+func NewJWTTokenAuthorizer(claimsProvider ClaimsProvider, authenticator Authenticator) TokenAuthorizer {
 	return &jwtAuthorizer{
 		claimsProvider: claimsProvider,
 		authenticator:  authenticator,
-		authClient:     authClient,
 	}
 }
 
@@ -70,11 +67,11 @@ func (a *jwtAuthorizer) Auth(ctx context.Context, token string) (*identity.Ident
 		return nil, apperrors.Wrap(fmt.Errorf("could not verify token credentials, identity: %w", apperrors.ErrUnauthorized))
 	}
 
-	if _, err := a.authClient.ValidationBearerToken(ctx, &proto.ValidationBearerTokenRequest{
-		Token: token,
-	}); err != nil {
-		return nil, apperrors.Wrap(err)
-	}
+	// if _, err := a.authClient.ValidationBearerToken(ctx, &proto.ValidationBearerTokenRequest{
+	// 	Token: token,
+	// }); err != nil {
+	// 	return nil, apperrors.Wrap(err)
+	// }
 
 	c.Identity.Token = token
 
