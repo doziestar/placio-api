@@ -12,5 +12,11 @@ func AuthRoutes(app *fiber.App) {
 	{
 		v1.Post("/login", controller.Login)
 		v1.Post("/signup", controller.SignUp)
+		v1.Post("/logout", controller.LogOut)
+		v1.Get("/refresh", controller.RefreshToken)
+		v1.Post("/verify", controller.ChangePassword)
+		v1.Post("/verify", controller.VerifyEmail)
+		v1.Post("/reset", controller.ResetPassword)
+		v1.Post("/verify", controller.VerifyPhone)
 	}
 }

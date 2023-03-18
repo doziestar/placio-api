@@ -2,12 +2,11 @@ package main
 
 import (
 	"github.com/goccy/go-json"
+	"github.com/gofiber/fiber/v2"
 	"os"
 	"placio-app/api"
 	"placio-app/database"
 	"placio-app/start"
-
-	"github.com/gofiber/fiber/v2"
 )
 
 // @title Placio Application Api
@@ -39,6 +38,7 @@ func main() {
 	// initialize routes
 	api.InitializeRoutes(app)
 	// initialize database
+	//env, _ := config.LoadConfig("./config")
 	_, err := database.Connect(os.Getenv("DATABASE_URL"))
 	if err != nil {
 		return

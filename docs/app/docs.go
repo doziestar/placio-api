@@ -296,6 +296,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
                 "description": "Create a new user",
                 "consumes": [
                     "*/*"
@@ -1217,14 +1222,26 @@ const docTemplate = `{
                 "password": {
                     "type": "string"
                 },
+                "photo": {
+                    "type": "string"
+                },
                 "profile": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/placio-app_models.Profile"
                     }
                 },
+                "provider": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                },
                 "updatedAt": {
                     "type": "string"
+                },
+                "verified": {
+                    "type": "boolean"
                 }
             }
         },

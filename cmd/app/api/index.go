@@ -9,5 +9,7 @@ import (
 func InitializeRoutes(app *fiber.App) {
 	app.Get("/docs/*", swagger.HandlerDefault)
 	HealthCheckRoutes(app)
+	AuthRoutes(app)
+	UserRoutes(app)
 
 }

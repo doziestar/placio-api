@@ -13,6 +13,10 @@ type User struct {
 	Email    string `gorm:"uniqueIndex"`
 	Password string
 	Profile  []Profile `gorm:"foreignKey:UserID"`
+	Role     string    `gorm:"type:varchar(50);default:'user';not null"`
+	Provider string    `gorm:"type:varchar(50);default:'local';not null"`
+	Photo    string    `gorm:"not null;default:'default.png'"`
+	Verified bool      `gorm:"not null;default:false"`
 	// MessagesSent       []Message      `gorm:"foreignKey:SenderID"`
 	// MessagesReceived   []Message      `gorm:"foreignKey:RecipientID"`
 	// Conversations      []Conversation `gorm:"many2many:conversation_participant"`

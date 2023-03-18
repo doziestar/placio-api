@@ -3,11 +3,12 @@ package Dto
 import "encoding/json"
 
 type SignUpDto struct {
-	Email    string `json:"email" validate:"required,email"`
-	Password string `json:"password" validate:"required"`
-	Name     string `json:"name" validate:"required"`
-	Phone    string `json:"phone" validate:"required"`
-	Role     string `json:"role" validate:"required"`
+	Email           string `json:"email" validate:"required,email"`
+	Password        string `json:"password" validate:"required,min=8"`
+	PasswordConfirm string `json:"passwordConfirm" validate:"required,min=8"`
+	Name            string `json:"name" validate:"required"`
+	Phone           string `json:"phone" validate:"required"`
+	Role            string `json:"role" validate:"required"`
 }
 
 // MarshalJSON is a custom JSON marshaler for SignUpDto.

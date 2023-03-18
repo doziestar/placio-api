@@ -6,6 +6,14 @@ import (
 	"placio-app/models"
 )
 
+//ref
+//https://blog.cloudnativefolks.org/oauth-20-implementation-in-golang
+// https://codevoweb.com/golang-gorm-fiber-jwt-authentication/
+// https://github.com/gofiber/jwt
+// https://dev.to/koddr/build-a-restful-api-on-go-fiber-postgresql-jwt-and-swagger-docs-in-isolated-docker-containers-475j
+// https://github.com/markbates/goth/tree/master/providers/twitterv2
+// https://github.com/gofiber/fiber/issues/292
+
 //users := []models.User{}
 
 // CreateUser godoc
@@ -17,6 +25,7 @@ import (
 // @Param user body models.User true "User"
 // @Success 200 {object} models.User
 // @Failure 400 {object} map[string]interface{}
+// @Security ApiKeyAuth
 // @Router /api/v1/users [post]
 func CreateUser(c *fiber.Ctx) error {
 	user := new(models.User)

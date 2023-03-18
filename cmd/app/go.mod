@@ -7,6 +7,7 @@ require (
 	github.com/go-oauth2/oauth2/v4 v4.5.2
 	github.com/goccy/go-json v0.10.0
 	github.com/gofiber/fiber/v2 v2.42.0
+	github.com/gofiber/helmet/v2 v2.2.24
 	github.com/google/uuid v1.3.0
 	github.com/vardius/trace v1.0.1
 	gorm.io/driver/postgres v1.5.0

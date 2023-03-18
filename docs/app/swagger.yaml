@@ -201,12 +201,20 @@ definitions:
         type: string
       password:
         type: string
+      photo:
+        type: string
       profile:
         items:
           $ref: '#/definitions/placio-app_models.Profile'
         type: array
+      provider:
+        type: string
+      role:
+        type: string
       updatedAt:
         type: string
+      verified:
+        type: boolean
     type: object
   placio-app_models.VoiceNote:
     properties:
@@ -471,6 +479,8 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - ApiKeyAuth: []
       summary: Create a new user
       tags:
       - users
