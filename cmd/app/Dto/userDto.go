@@ -2,13 +2,17 @@ package Dto
 
 import (
 	"encoding/json"
+	"time"
 )
 
 type UserResponseDto struct {
-	ID    uint   `json:"id"`
-	Email string `json:"email"`
-	Name  string `json:"name"`
-	Token Token  `json:"token"`
+	ID                    string        `json:"id"`
+	Email                 string        `json:"email"`
+	Name                  string        `json:"name"`
+	AccessToken           string        `json:"accessToken"`
+	AccessTokenExpiresIn  time.Duration `json:"accessTokenExpiresIn"`
+	RefreshToken          string        `json:"refreshToken"`
+	RefreshTokenExpiresIn time.Duration `json:"refreshTokenExpiresIn"`
 }
 
 // MarshalJSON is a custom JSON marshaller for UserResponseDto.

@@ -5,6 +5,7 @@ import (
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+	"os"
 	"placio-app/Dto"
 	"placio-app/errors"
 	"time"
@@ -66,22 +67,30 @@ func (u *User) GetID() string {
 
 // GenerateToken generates a new token for the user
 func (u *User) GenerateToken(user User) (Dto.Token, error) {
-	tokenByte := jwt.New(jwt.SigningMethodHS256)
+	// Create token object
+	token := jwt.New(jwt.SigningMethodHS256)
 
-	now := time.Now().UTC()
-	claims := tokenByte.Claims.(jwt.MapClaims)
-
+	// Set claims
+	claims := token.Claims.(jwt.MapClaims)
 	claims["sub"] = user.ID
 	claims["name"] = user.Name
-	claims["exp"] = now.Add(69).Unix()
-	claims["iat"] = now.Unix()
-	claims["nbf"] = now.Unix()
+	claims["iat"] = time.Now().UTC().Unix()
+	claims["exp"] = time.Now().UTC().Add(time.Minute * 15).Unix()
 
-	accessToken, err := tokenByte.SignedString([]byte("secret"))
-	refreshToken, err := tokenByte.SignedString([]byte("secret"))
+	// Generate access and refresh tokens
+	accessToken, err := token.SignedString([]byte(os.Getenv("ACCESS_TOKEN_SECRET")))
 	if err != nil {
 		return Dto.Token{}, errors.ErrForbidden
 	}
+
+	refreshToken := uuid.NewString()
+
+	// Set token expiration times
+	accessCreateAt := time.Now().UTC()
+	accessExpiresIn := accessCreateAt.Add(time.Hour * 24 * 7)
+	refreshCreateAt := accessCreateAt
+	refreshExpiresIn := refreshCreateAt.Add(time.Hour * 24 * 30)
+
 	return Dto.Token{
 		ClientID:            "",
 		UserID:              user.ID,
@@ -93,10 +102,10 @@ func (u *User) GenerateToken(user User) (Dto.Token, error) {
 		CodeCreateAt:        time.Time{},
 		CodeExpiresIn:       0,
 		Access:              accessToken,
-		AccessCreateAt:      time.Time{},
-		AccessExpiresIn:     0,
+		AccessCreateAt:      accessCreateAt,
+		AccessExpiresIn:     time.Duration(accessExpiresIn.Unix()),
 		Refresh:             refreshToken,
-		RefreshCreateAt:     time.Time{},
-		RefreshExpiresIn:    0,
+		RefreshCreateAt:     refreshCreateAt,
+		RefreshExpiresIn:    time.Duration(refreshExpiresIn.Unix()),
 	}, nil
 }
