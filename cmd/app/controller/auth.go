@@ -1,11 +1,13 @@
 package controller
 
 import (
+	"context"
 	"github.com/gofiber/fiber/v2"
-	"gorm.io/gorm"
 	Dto "placio-app/Dto"
+	"placio-app/database"
 	"placio-app/models"
 	"placio-app/service"
+	"placio-pkg/logger"
 )
 
 // Login godoc
@@ -31,7 +33,7 @@ func Login(c *fiber.Ctx) error {
 	email, password := data.IsValid()
 
 	// call service
-	auth := service.NewAuth(&gorm.DB{}, &models.User{
+	auth := service.NewAuth(&database.Database{}, &models.User{
 		Email:    email.(string),
 		Password: password.(string),
 	})
@@ -53,26 +55,34 @@ func Login(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 {object} Dto.UserResponseDto
 // @Failure 400 {object} map[string]interface{}
-// @QueryParam email query string true "email"
-// @QueryParam password query string true "password"
+// @Param user body Dto.SignUpDto true "user"
 // @Body 200 {object} Dto.SignUpDto
-// @Router /api/v1/auth/signup [get]
+// @Router /api/v1/auth/signup [post]
 func SignUp(c *fiber.Ctx) error {
-	data := new(Dto.SignUpDto)
-	if err := c.BodyParser(data); err != nil {
-		return c.JSON(fiber.Map{"status": "error", "message": "invalid data", "data": err})
+	var data Dto.SignUpDto
+	logger.Info(context.Background(), string(c.Body()))
+	if err := c.BodyParser(&data); err != nil {
+		logger.Info(context.Background(), data.Email)
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "invalid data", "data": err})
 	}
 
 	// validate data
-	email, password := data.IsValid()
+	userData, err := data.IsValid()
+	if err != nil {
+		logger.Info(context.Background(), err.Error())
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "invalid data", "data": err})
+	}
+	logger.Info(context.Background(), userData.Email)
 
 	// call service
-	auth := service.NewAuth(&gorm.DB{}, &models.User{
-		Email:    email.(string),
-		Password: password.(string),
+	auth := service.NewAuth(&database.Database{}, &models.User{
+		Email:    userData.Email,
+		Password: userData.Password,
+		Name:     userData.Name,
+		Role:     userData.Role,
 	})
 
-	user, err := auth.SignUp(*data)
+	user, err := auth.SignUp(data)
 	if err != nil {
 		return c.JSON(fiber.Map{"status": "error", "message": "invalid data", "data": err})
 	}

@@ -8,7 +8,7 @@ import (
 
 //ref
 //https://blog.cloudnativefolks.org/oauth-20-implementation-in-golang
-// https://codevoweb.com/golang-gorm-fiber-jwt-authentication/
+//
 // https://github.com/gofiber/jwt
 // https://dev.to/koddr/build-a-restful-api-on-go-fiber-postgresql-jwt-and-swagger-docs-in-isolated-docker-containers-475j
 // https://github.com/markbates/goth/tree/master/providers/twitterv2

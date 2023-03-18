@@ -17,6 +17,9 @@ var (
 	ErrInternal          = errors.New("internal system error")
 	ErrTemporaryDisabled = errors.New("temporary disabled")
 	ErrTimeout           = errors.New("timeout")
+	ErrConflict          = errors.New("conflict")
+	ErrUnprocessable     = errors.New("unprocessable")
+	ErrAlreadyExists     = errors.New("already exists")
 )
 
 // New returns new app error that formats as the given text.

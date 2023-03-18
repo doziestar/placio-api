@@ -8,17 +8,20 @@ import (
 	"placio-pkg/logger"
 )
 
+var DB *gorm.DB
+
 type Database struct {
 	*gorm.DB
 }
 
 func NewDatabase(dsn string) (*Database, error) {
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	var err error
+	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
 
-	return &Database{db}, nil
+	return &Database{DB}, nil
 }
 
 func (d *Database) Migrate(models ...interface{}) error {
@@ -29,6 +32,7 @@ func (d *Database) Migrate(models ...interface{}) error {
 
 // Connect to database
 func Connect(dsn string) (*Database, error) {
+	var err error
 	ctx := context.Background()
 	logger.Info(ctx, "Connecting to database")
 	db, err := NewDatabase(dsn)

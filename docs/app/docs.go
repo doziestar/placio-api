@@ -179,7 +179,7 @@ const docTemplate = `{
             }
         },
         "/api/v1/auth/signup": {
-            "get": {
+            "post": {
                 "description": "Sign up to the server",
                 "consumes": [
                     "*/*"
@@ -191,6 +191,17 @@ const docTemplate = `{
                     "Auth"
                 ],
                 "summary": "Sign up",
+                "parameters": [
+                    {
+                        "description": "user",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.SignUpDto"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -927,6 +938,39 @@ const docTemplate = `{
                 }
             }
         },
+        "placio-app_Dto.SignUpDto": {
+            "type": "object",
+            "required": [
+                "email",
+                "name",
+                "password",
+                "passwordConfirm",
+                "phone",
+                "role"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string",
+                    "minLength": 8
+                },
+                "passwordConfirm": {
+                    "type": "string",
+                    "minLength": 8
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                }
+            }
+        },
         "placio-app_Dto.Token": {
             "type": "object",
             "properties": {
@@ -1283,24 +1327,24 @@ const docTemplate = `{
         "time.Duration": {
             "type": "integer",
             "enum": [
-                -9223372036854775808,
-                9223372036854775807,
+                1,
+                1000,
+                1000000,
                 1,
                 1000,
                 1000000,
                 1000000000,
-                60000000000,
-                3600000000000
+                60000000000
             ],
             "x-enum-varnames": [
-                "minDuration",
-                "maxDuration",
+                "Nanosecond",
+                "Microsecond",
+                "Millisecond",
                 "Nanosecond",
                 "Microsecond",
                 "Millisecond",
                 "Second",
-                "Minute",
-                "Hour"
+                "Minute"
             ]
         }
     }

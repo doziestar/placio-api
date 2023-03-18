@@ -1,6 +1,9 @@
 package Dto
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"placio-app/errors"
+)
 
 type SignUpDto struct {
 	Email           string `json:"email" validate:"required,email"`
@@ -35,6 +38,19 @@ func (m *SignUpDto) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (m *SignUpDto) IsValid() (interface{}, interface{}) {
-	return m.Email, m.Password
+func (m *SignUpDto) IsValid() (SignUpDto, error) {
+	if m.Password != m.PasswordConfirm {
+		return SignUpDto{}, errors.ErrInvalid
+	}
+	if m.Role != "business" && m.Role != "user" {
+		return SignUpDto{}, errors.ErrInvalid
+	}
+	return SignUpDto{
+		Email:    m.Email,
+		Password: m.Password,
+		Name:     m.Name,
+		Phone:    m.Phone,
+		Role:     m.Role,
+	}, nil
+
 }

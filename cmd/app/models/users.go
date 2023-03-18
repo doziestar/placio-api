@@ -1,9 +1,13 @@
 package models
 
 import (
+	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 	"placio-app/Dto"
+	"placio-app/errors"
+	"time"
 )
 
 type User struct {
@@ -30,6 +34,21 @@ type User struct {
 
 func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 	u.ID = uuid.New().String()
+	err = u.HashPassword()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// HashPassword hashes the password
+func (u *User) HashPassword() error {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return errors.ErrForbidden
+	}
+
+	u.Password = string(hashedPassword)
 	return nil
 }
 
@@ -47,5 +66,37 @@ func (u *User) GetID() string {
 
 // GenerateToken generates a new token for the user
 func (u *User) GenerateToken(user User) (Dto.Token, error) {
-	return Dto.Token{}, nil
+	tokenByte := jwt.New(jwt.SigningMethodHS256)
+
+	now := time.Now().UTC()
+	claims := tokenByte.Claims.(jwt.MapClaims)
+
+	claims["sub"] = user.ID
+	claims["name"] = user.Name
+	claims["exp"] = now.Add(69).Unix()
+	claims["iat"] = now.Unix()
+	claims["nbf"] = now.Unix()
+
+	accessToken, err := tokenByte.SignedString([]byte("secret"))
+	refreshToken, err := tokenByte.SignedString([]byte("secret"))
+	if err != nil {
+		return Dto.Token{}, errors.ErrForbidden
+	}
+	return Dto.Token{
+		ClientID:            "",
+		UserID:              user.ID,
+		RedirectURI:         "",
+		Scope:               "",
+		Code:                "",
+		CodeChallenge:       "",
+		CodeChallengeMethod: "",
+		CodeCreateAt:        time.Time{},
+		CodeExpiresIn:       0,
+		Access:              accessToken,
+		AccessCreateAt:      time.Time{},
+		AccessExpiresIn:     0,
+		Refresh:             refreshToken,
+		RefreshCreateAt:     time.Time{},
+		RefreshExpiresIn:    0,
+	}, nil
 }
