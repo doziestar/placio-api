@@ -1,4 +1,256 @@
 basePath: /
+definitions:
+  gorm.DeletedAt:
+    properties:
+      time:
+        type: string
+      valid:
+        description: Valid is true if Time is not NULL
+        type: boolean
+    type: object
+  placio-app_Dto.Token:
+    properties:
+      access:
+        description: CodeExpiresIn   time.Time     `bson:"CodeExpiresIn"`
+        type: string
+      accessCreateAt:
+        type: string
+      accessExpiresIn:
+        $ref: '#/definitions/time.Duration'
+      clientID:
+        type: string
+      code:
+        type: string
+      codeChallenge:
+        type: string
+      codeChallengeMethod:
+        type: string
+      codeCreateAt:
+        type: string
+      codeExpiresIn:
+        $ref: '#/definitions/time.Duration'
+      redirectURI:
+        type: string
+      refresh:
+        description: AccessExpiresIn  time.Time `bson:"AccessExpiresIn"`
+        type: string
+      refreshCreateAt:
+        type: string
+      refreshExpiresIn:
+        allOf:
+        - $ref: '#/definitions/time.Duration'
+        description: RefreshExpiresIn time.Time `bson:"RefreshExpiresIn"`
+      scope:
+        type: string
+      userID:
+        type: string
+    type: object
+  placio-app_Dto.UserResponseDto:
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      token:
+        $ref: '#/definitions/placio-app_Dto.Token'
+    type: object
+  placio-app_models.AccountType:
+    enum:
+    - user
+    - business
+    - admin
+    type: string
+    x-enum-varnames:
+    - UserAccount
+    - BusinessAccount
+    - Admin
+  placio-app_models.Booking:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      eventID:
+        type: string
+      id:
+        type: string
+      ticketID:
+        type: string
+      updatedAt:
+        type: string
+      userID:
+        type: string
+    type: object
+  placio-app_models.Conversation:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      lastMessageTimestamp:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  placio-app_models.Group:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  placio-app_models.Message:
+    properties:
+      conversationID:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      delivered:
+        type: boolean
+      groupID:
+        type: string
+      id:
+        type: integer
+      messageText:
+        type: string
+      messageType:
+        type: string
+      read:
+        type: boolean
+      recipientID:
+        type: string
+      senderID:
+        type: string
+      timestamp:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  placio-app_models.Notification:
+    properties:
+      businessID:
+        type: string
+      createdAt:
+        type: string
+      id:
+        type: string
+      message:
+        type: string
+      updatedAt:
+        type: string
+      userID:
+        type: string
+    type: object
+  placio-app_models.Payment:
+    properties:
+      amount:
+        type: integer
+      bookingID:
+        type: string
+      createdAt:
+        type: string
+      id:
+        type: string
+      updatedAt:
+        type: string
+      userID:
+        type: string
+    type: object
+  placio-app_models.Profile:
+    properties:
+      avatar:
+        type: string
+      coverPic:
+        type: string
+      id:
+        type: string
+      phone:
+        type: string
+      type:
+        allOf:
+        - $ref: '#/definitions/placio-app_models.AccountType'
+        description: tyoe should be an enum of user, business, admin
+      userID:
+        type: string
+    type: object
+  placio-app_models.User:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      profile:
+        items:
+          $ref: '#/definitions/placio-app_models.Profile'
+        type: array
+      updatedAt:
+        type: string
+    type: object
+  placio-app_models.VoiceNote:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      delivered:
+        type: boolean
+      id:
+        type: integer
+      read:
+        type: boolean
+      recipientID:
+        type: string
+      senderID:
+        type: string
+      timestamp:
+        type: string
+      updatedAt:
+        type: string
+      voiceNoteFile:
+        type: string
+    type: object
+  time.Duration:
+    enum:
+    - -9223372036854775808
+    - 9223372036854775807
+    - 1
+    - 1000
+    - 1000000
+    - 1000000000
+    - 60000000000
+    - 3600000000000
+    type: integer
+    x-enum-varnames:
+    - minDuration
+    - maxDuration
+    - Nanosecond
+    - Microsecond
+    - Millisecond
+    - Second
+    - Minute
+    - Hour
 host: localhost:7070
 info:
   contact:
@@ -13,6 +265,151 @@ info:
   title: Placio Application Api
   version: "0.01"
 paths:
+  /api/v1/auth/change:
+    get:
+      consumes:
+      - '*/*'
+      description: Change password
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Change password
+      tags:
+      - Auth
+  /api/v1/auth/login:
+    get:
+      consumes:
+      - '*/*'
+      description: Login to the server
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_Dto.UserResponseDto'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Login and get token
+      tags:
+      - Auth
+  /api/v1/auth/logout:
+    get:
+      consumes:
+      - '*/*'
+      description: Log out from the server
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Log out
+      tags:
+      - Auth
+  /api/v1/auth/refresh:
+    get:
+      consumes:
+      - '*/*'
+      description: Refresh token
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Refresh token
+      tags:
+      - Auth
+  /api/v1/auth/reset:
+    get:
+      consumes:
+      - '*/*'
+      description: Reset password
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Reset password
+      tags:
+      - Auth
+  /api/v1/auth/signup:
+    get:
+      consumes:
+      - '*/*'
+      description: Sign up to the server
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_Dto.UserResponseDto'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Sign up
+      tags:
+      - Auth
+  /api/v1/auth/verify:
+    get:
+      consumes:
+      - '*/*'
+      description: Verify phone
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Verify phone
+      tags:
+      - Auth
   /api/v1/health:
     get:
       consumes:
@@ -29,6 +426,441 @@ paths:
       summary: Show the status of server.
       tags:
       - root
+  /api/v1/users:
+    get:
+      consumes:
+      - '*/*'
+      description: Retrieve a list of users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_models.User'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Retrieve a list of users
+      tags:
+      - users
+    post:
+      consumes:
+      - '*/*'
+      description: Create a new user
+      parameters:
+      - description: User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/placio-app_models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_models.User'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create a new user
+      tags:
+      - users
+  /api/v1/users/{id}:
+    delete:
+      consumes:
+      - '*/*'
+      description: Delete a user by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete a user by ID
+      tags:
+      - users
+    get:
+      consumes:
+      - '*/*'
+      description: Retrieve a user by ID
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_models.User'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Retrieve a user by ID
+      tags:
+      - users
+    put:
+      consumes:
+      - '*/*'
+      description: Update an existing user by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/placio-app_models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_models.User'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update an existing user by ID
+      tags:
+      - users
+  /api/v1/users/{id}/bookings:
+    get:
+      consumes:
+      - '*/*'
+      description: Retrieve a list of bookings for a specific user by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_models.Booking'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Retrieve a list of bookings for a specific user by ID
+      tags:
+      - users
+  /api/v1/users/{id}/conversations:
+    get:
+      consumes:
+      - '*/*'
+      description: Retrieve a list of conversations a specific user is a participant
+        in by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_models.Conversation'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Retrieve a list of conversations a specific user is a participant in
+        by ID
+      tags:
+      - users
+  /api/v1/users/{id}/groups:
+    get:
+      consumes:
+      - '*/*'
+      description: Retrieve a list of groups a specific user is a member of by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_models.Group'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Retrieve a list of groups a specific user is a member of by ID
+      tags:
+      - users
+  /api/v1/users/{id}/messages_received:
+    get:
+      consumes:
+      - '*/*'
+      description: Retrieve a list of messages received by a specific user by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_models.Message'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Retrieve a list of messages received by a specific user by ID
+      tags:
+      - users
+  /api/v1/users/{id}/messages_sent:
+    get:
+      consumes:
+      - '*/*'
+      description: Retrieve a list of messages sent by a specific user by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_models.Message'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Retrieve a list of messages sent by a specific user by ID
+      tags:
+      - users
+  /api/v1/users/{id}/notifications:
+    get:
+      consumes:
+      - '*/*'
+      description: Retrieve a list of notifications for a specific user by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_models.Notification'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Retrieve a list of notifications for a specific user by ID
+      tags:
+      - users
+  /api/v1/users/{id}/payments:
+    get:
+      consumes:
+      - '*/*'
+      description: Retrieve a list of payments for a specific user by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_models.Payment'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Retrieve a list of payments for a specific user by ID
+      tags:
+      - users
+  /api/v1/users/{id}/voice_notes:
+    get:
+      consumes:
+      - '*/*'
+      description: Retrieve a list of voice notes a specific user is a participant
+        in by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_models.VoiceNote'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Retrieve a list of voice notes a specific user is a participant in
+        by ID
+      tags:
+      - users
+  /api/v1/users/{id}/voice_notes_received:
+    get:
+      consumes:
+      - '*/*'
+      description: Retrieve a list of voice notes received by a specific user by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_models.VoiceNote'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Retrieve a list of voice notes received by a specific user by ID
+      tags:
+      - users
+  /api/v1/users/{id}/voice_notes_sent:
+    get:
+      consumes:
+      - '*/*'
+      description: Retrieve a list of voice notes sent by a specific user by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_models.VoiceNote'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Retrieve a list of voice notes sent by a specific user by ID
+      tags:
+      - users
+  /api/v1/voice_notes/{id}:
+    get:
+      consumes:
+      - '*/*'
+      description: Retrieve a specific voice note by ID
+      parameters:
+      - description: Voice Note ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_models.VoiceNote'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Retrieve a specific voice note by ID
+      tags:
+      - voice_notes
 schemes:
 - http
 swagger: "2.0"

@@ -12,19 +12,19 @@ RUN #ls -la /app
 
 COPY ./go.* .
 COPY ./pkg/go.* ./pkg/
-COPY ./cmd/auth/go.* ./cmd/auth/
-COPY ./cmd/users/go.* ./cmd/users/
+#COPY ./cmd/auth/go.* ./cmd/auth/
+#COPY ./cmd/users/go.* ./cmd/users/
 COPY ./cmd/app/go.* ./cmd/app/
-COPY ./cmd/business/go.* ./cmd/business/
-COPY ./cmd/chats/go.* ./cmd/chats/
-COPY ./cmd/media/go.* ./cmd/media/
-COPY ./cmd/events/go.* ./cmd/events/
+#COPY ./cmd/business/go.* ./cmd/business/
+#COPY ./cmd/chats/go.* ./cmd/chats/
+#COPY ./cmd/media/go.* ./cmd/media/
+#COPY ./cmd/events/go.* ./cmd/events/
 
 # Download dependencies
 RUN go mod download
 
 # Copy the rest of the application source code
-COPY ./pkg ./pkg
+#COPY ./pkg ./pkg
 COPY ./cmd/app ./cmd/app
 COPY ./config ./config
 

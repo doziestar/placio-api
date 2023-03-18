@@ -4,8 +4,8 @@ import (
 	"github.com/goccy/go-json"
 	"os"
 	"placio-app/api"
-	"placio-pkg/database"
-	"placio-pkg/start"
+	"placio-app/database"
+	"placio-app/start"
 
 	"github.com/gofiber/fiber/v2"
 )
