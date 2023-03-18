@@ -1,10 +1,11 @@
 use (
 	./cmd/app
-	./cmd/auth
-	./cmd/business
-	./cmd/events
-	./cmd/media
-	./cmd/users
+	//./archive/auth
+	//./archive/business
+	//./archive/events
+	//./archive/media
+	//./archive/users
 	./pkg
-	cmd/chats
+	//./archive/chats
+	.
 )
