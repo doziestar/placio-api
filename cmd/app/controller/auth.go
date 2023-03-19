@@ -2,12 +2,15 @@ package controller
 
 import (
 	"context"
-	"github.com/gofiber/fiber/v2"
+	"errors"
 	Dto "placio-app/Dto"
 	"placio-app/database"
 	"placio-app/models"
 	"placio-app/service"
 	"placio-pkg/logger"
+	errs "placio-app/errors"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 // Login godoc
@@ -83,8 +86,8 @@ func SignUp(c *fiber.Ctx) error {
 	})
 
 	user, err := auth.SignUp(data)
-	if err != nil {
-		return c.JSON(fiber.Map{"status": "error", "message": "invalid data", "data": err})
+	if errors.Is(err, errs.ErrAlreadyExists) {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "user already exists", "data": err})
 	}
 
 	return c.JSON(fiber.Map{"status": "ok", "data": user})

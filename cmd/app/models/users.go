@@ -1,37 +1,112 @@
 package models
 
 import (
+	"fmt"
+	"os"
+	"placio-app/Dto"
+	"placio-app/database"
+	errs "placio-app/errors"
+	"time"
+	"errors"
+
 	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
-	"os"
-	"placio-app/Dto"
-	"placio-app/errors"
-	"time"
 )
+
+var db = database.DB
 
 type User struct {
 	gorm.Model
-	ID       string `gorm:"primaryKey"`
-	Name     string
-	Email    string `gorm:"uniqueIndex"`
-	Password string
-	Profile  []Profile `gorm:"foreignKey:UserID"`
-	Role     string    `gorm:"type:varchar(50);default:'user';not null"`
-	Provider string    `gorm:"type:varchar(50);default:'local';not null"`
-	Photo    string    `gorm:"not null;default:'default.png'"`
-	Verified bool      `gorm:"not null;default:false"`
-	// MessagesSent       []Message      `gorm:"foreignKey:SenderID"`
-	// MessagesReceived   []Message      `gorm:"foreignKey:RecipientID"`
-	// Conversations      []Conversation `gorm:"many2many:conversation_participant"`
-	// Groups             []Group        `gorm:"many2many:group_membership"`
-	// VoiceNotesSent     []VoiceNote    `gorm:"foreignKey:SenderID"`
-	// VoiceNotesReceived []VoiceNote    `gorm:"foreignKey:RecipientID"`
-	// Notifications      []Notification
-	// Bookings           []Booking
-	// Payments           []Payment
+	ID                   string `gorm:"primaryKey"`
+	Fingerprint          string
+	Name                 string
+	Email                string
+	Password             string
+	HubStar              bool
+	DateCreated          time.Time
+	LastActive           time.Time
+	Disabled             bool
+	SupportEnabled       bool
+	TwoFactorAuthEnabled bool   `gorm:"column:2fa_enabled"`
+	TwoFASecret          string `gorm:"column:2fa_secret"`
+	TwoFABackupCode      string `gorm:"column:2fa_backup_code"`
+	DefaultAccount       string
+	FacebookID           string `gorm:"column:facebook_id"`
+	TwitterID            string `gorm:"column:twitter_id"`
+	Accounts             []Account
+	IP                   string
+	UserAgent            string
+	Twitter              *TwitterAccount  `gorm:"foreignKey:ID;references:TwitterID"`
+	Facebook             *FacebookAccount `gorm:"foreignKey:ID;references:FacebookID"`
+	Google               *GoogleAccount   `gorm:"foreignKey:ID;references:GoogleID"`
+	HasPassword          bool
+	Onboarded            bool
+	AccountID            string `gorm:"column:account_id"`
+	Permission           string
+	Interests            []string `gorm:"type:text;default:[]"`
+	GeneralSettingsID    uint     `gorm:"column:general_settings_id"`
+	GeneralSettings      *GeneralSettings
 }
+
+type Account struct {
+	gorm.Model
+	ID          string `gorm:"primaryKey"`
+	Permission  string
+	AccountType string
+	AccountID   string
+	Onboarded   bool
+	Interests   []string `gorm:"type:text;default:[]"`
+	UserID      string   `gorm:"column:user_id"`
+}
+
+type TwitterAccount struct {
+	AccessToken  string
+	RefreshToken string
+	UserID       string `gorm:"column:user_id"`
+	UserName     string `gorm:"column:user_name"`
+	CodeVerifier string `gorm:"column:code_verifier"`
+	State        string
+	Name         string
+	DateCreated  time.Time `gorm:"column:date_created"`
+	ExpiresIn    time.Time `gorm:"column:expires_in"`
+}
+
+type FacebookAccount struct {
+	AccessToken  string
+	RefreshToken string
+	UserID       string `gorm:"column:user_id"`
+	UserName     string `gorm:"column:user_name"`
+	CodeVerifier string `gorm:"column:code_verifier"`
+	State        string
+	Name         string
+	DateCreated  time.Time `gorm:"column:date_created"`
+	ExpiresIn    time.Time `gorm:"column:expires_in"`
+}
+
+type GoogleAccount struct {
+	AccessToken  string
+	RefreshToken string
+	UserID       string `gorm:"column:user_id"`
+	Email        string
+	DateCreated  time.Time
+}
+
+type GeneralSettings struct {
+	gorm.Model
+	Language string
+	Theme    string
+}
+
+type Social struct {
+	Provider string
+	ID       string
+}
+
+// func DecryptFingerprint(fingerprint string) (string, error) {
+//     return crypto.Decrypt(fingerprint)
+// }
 
 func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 	u.ID = uuid.New().String()
@@ -42,11 +117,467 @@ func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 	return nil
 }
 
+func CreateUser(user User, account string, db *gorm.DB) (User, error) {
+	// Generate a UUID for the user ID
+	user.ID = uuid.New().String()
+
+	// Set the creation and last active dates
+	now := time.Now()
+	user.DateCreated = now
+	user.LastActive = now
+
+	// Set default values for some fields
+	user.SupportEnabled = false
+	user.TwoFactorAuthEnabled = false
+	user.HasPassword = false
+	user.AccountID = account
+
+	// Encrypt the password if present
+	if user.Password != "" {
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), 10)
+		if err != nil {
+			return User{}, err
+		}
+		user.Password = string(hashedPassword)
+		user.HasPassword = true
+	}
+
+	// Create a new user record in the database
+	err := db.Create(&user).Error
+	if err != nil {
+		return User{}, err
+	}
+
+	return user, nil
+}
+
+func Get(id uuid.UUID, email string, account string, social *Social, permission string) ([]User, error) {
+	var users []User
+	var cond = make(map[string]interface{})
+
+	if account != "" {
+		cond["accounts.id"] = account
+	}
+	if permission != "" {
+		cond["accounts.permission"] = permission
+	}
+
+	if social != nil {
+		providerIDField := fmt.Sprintf("%s_id", social.Provider)
+		cond[providerIDField] = social.ID
+
+		err := database.DB.Joins("JOIN accounts ON users.id = accounts.user_id").
+			Where(cond).Find(&users).Error
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		if id != uuid.Nil {
+			cond["id"] = id
+		}
+		if email != "" {
+			cond["email"] = email
+		}
+
+		err := database.DB.Joins("JOIN accounts ON users.id = accounts.user_id").
+			Where(cond).Find(&users).Error
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	for i, user := range users {
+		user.Accounts = nil
+		user.HasPassword = user.Password != ""
+		user.Password = ""
+		if account != "" {
+			user.AccountID = account
+		} else {
+			user.AccountID = user.DefaultAccount
+		}
+		for _, account := range user.Accounts {
+			if account.ID == user.AccountID {
+				user.Permission = account.Permission
+				user.Onboarded = account.Onboarded
+				break
+			}
+		}
+		users[i] = user
+	}
+
+	return users, nil
+}
+
+
+// GetAccounts returns a list of accounts that the user with the given ID is attached to
+func GetAccounts(db *gorm.DB, userID string) ([]Account, error) {
+    var userAccounts []Account
+
+    // Join the User and Account tables to get the account data
+    err := db.Table("users").
+        Select("users.id, users.email, account.id AS account_id, account.permission, account.name").
+        Joins("LEFT JOIN account ON users.account_id = account.id").
+        Where("users.id = ?", userID).
+        Find(&userAccounts).Error
+
+    if err != nil {
+        return nil, err
+    }
+
+    // Group the accounts by ID and format the results
+    accountMap := make(map[string][]Account)
+    for _, account := range userAccounts {
+        accountMap[account.ID] = append(accountMap[account.ID], account)
+    }
+
+    var results []Account
+    for _, accounts := range accountMap {
+        result := Account{
+            ID:         accounts[0].ID,
+            UserID:     accounts[0].UserID,
+            Permission: accounts[0].Permission,
+        }
+        results = append(results, result)
+    }
+
+    return results, nil
+}
+
+// addInterest adds the specified interest to the user's account
+func AddInterest(userID string, accountID string, interest string) error {
+    // get user by ID
+    var user User
+    result := database.DB.Where("id = ?", userID).First(&user)
+    if result.Error != nil {
+        return result.Error
+    }
+
+    // find account by ID
+    var account Account
+    result = database.DB.Where("id = ?", accountID).First(&account)
+    if result.Error != nil {
+        return result.Error
+    }
+
+    // add interest to account
+    account.Interests = append(account.Interests, interest)
+
+    // save account
+    result = database.DB.Save(&account)
+    if result.Error != nil {
+        return result.Error
+    }
+
+    return nil
+}
+
+// updateInterest updates the specified interest in the user's account
+func UpdateInterest(userID string, accountID string, oldInterest string, newInterest string) error {
+    // get user by ID
+    var user User
+    result := database.DB.Where("id = ?", userID).First(&user)
+    if result.Error != nil {
+        return result.Error
+    }
+
+    // find account by ID
+    var account Account
+    result = database.DB.Where("id = ?", accountID).First(&account)
+    if result.Error != nil {
+        return result.Error
+    }
+
+    // find index of old interest in account interests
+    var index = -1
+    for i, v := range account.Interests {
+        if v == oldInterest {
+            index = i
+            break
+        }
+    }
+
+    // if old interest is not found, return an error
+    if index == -1 {
+        return errors.New("old interest not found")
+    }
+
+    // replace old interest with new interest
+    account.Interests[index] = newInterest
+
+    // save account
+    result = database.DB.Save(&account)
+    if result.Error != nil {
+        return result.Error
+    }
+
+    return nil
+}
+
+// AddAccount assigns a user to an account with a specified permission
+func (u *User) AddAccount(db *gorm.DB, accountID string, permission string) error {
+	var user User
+	result := db.Where("id = ?", u.ID).First(&user)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return errors.New("No user with that ID")
+	}
+	if result.Error != nil {
+		return result.Error
+	}
+
+	account := Account{
+		ID:         accountID,
+		UserID:     u.ID,
+		Permission: permission,
+		Onboarded:  false,
+	}
+
+	user.Accounts = append(user.Accounts, account)
+
+	result = db.Save(&user)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
+
+// DeleteAccount removes a user from an account
+func DeleteAccount(userID string, accountID string) error {
+    var user User
+    err := db.Where("id = ?", userID).First(&user).Error
+    if err != nil {
+        return errors.New("No user with that ID")
+    }
+
+    // Find the index of the account with the given ID
+    var accountIndex int = -1
+    for i, a := range user.Accounts {
+        if a.ID == accountID {
+            accountIndex = i
+            break
+        }
+    }
+
+    if accountIndex == -1 {
+        return errors.New("User is not attached to that account")
+    }
+
+    user.Accounts = append(user.Accounts[:accountIndex], user.Accounts[accountIndex+1:]...)
+
+    return db.Save(&user).Error
+}
+
+// Password returns the hashed password for the specified user and account
+func Password(db *gorm.DB, userID uint, accountID uint) (string, error) {
+    var user User
+    result := db.Joins("Account").First(&user, "users.id = ? AND accounts.id = ?", userID, accountID)
+    if result.Error != nil {
+        if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+            return "", fmt.Errorf("user with id %d and account id %d not found", userID, accountID)
+        }
+        return "", result.Error
+    }
+
+    return user.Password, nil
+}
+
+func VerifyPassword(userID string, accountID string, password string) (*User, error) {
+	var user User
+	result := db.Joins("Account").Where("users.id = ? AND account.id = ?", userID, accountID).First(&user)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	if err != nil {
+		return nil, err
+	}
+
+	user.Password = ""
+	return &user, nil
+}
+
+// SavePassword saves a new password for the user with the given ID.
+// If not executed via a password reset request, the user is notified
+// by email that their password has been changed.
+// passwordReset determines if password update is part of reset.
+func SavePassword(id string, password string, reset bool) error {
+    // Encrypt the password.
+    hash, err := bcrypt.GenerateFromPassword([]byte(password), 10)
+    if err != nil {
+        return err
+    }
+
+    // Save the password hash in the database.
+    user := &User{}
+    result := db.Where("id = ?", id).First(user)
+    if result.Error != nil {
+        return result.Error
+    }
+
+    result = db.Model(user).Update("password", hash)
+    if result.Error != nil {
+        return result.Error
+    }
+
+    return nil
+}
+
+// func (u *User) SaveBackupCode(db *pg.DB, code string) error {
+//     u.BackupCode = code
+//     return u.Update(db)
+// }
+
+// func (u *User) VerifyBackupCode(db *pg.DB, code string) bool {
+//     return u.BackupCode == code
+// }
+
+// func (u *User) SaveTwoFactorToken(db *pg.DB, token string) error {
+//     u.TwoFactorToken = token
+//     return u.Update(db)
+// }
+
+// func (u *User) VerifyTwoFactorToken(db *pg.DB, token string) bool {
+//     return u.TwoFactorToken == token
+// }
+
+// func (u *User) SaveTwoFactorAuth(db *pg.DB, enabled bool) error {
+//     u.TwoFactorAuth = enabled
+//     return u.Update(db)
+// }
+
+// func (u *User) VerifyTwoFactorAuth(db *pg.DB) bool {
+//     return u.TwoFactorAuth
+// }
+
+// // SaveBackupCode saves the hashed backup code for a user
+// func SaveBackupCode(db *pg.DB, id string, code string) error {
+//     // Hash the backup code
+//     hash, err := bcrypt.GenerateFromPassword([]byte(code), 10)
+//     if err != nil {
+//         return err
+//     }
+
+//     // Update the user with the hashed backup code
+//     user := &User{ID: id}
+//     _, err = db.Model(user).
+//         Set("two_factor_auth.backup_code = ?", hash).
+//         Update()
+//     if err != nil {
+//         return err
+//     }
+
+//     return nil
+// }
+
+// // VerifyBackupCode verifies the provided backup code for a user
+// func VerifyBackupCode(db *pg.DB, id string, email string, account string, code string) bool {
+//     // Get the user by ID or email and account
+//     var user User
+//     query := db.Model(&user).
+//         Where("id = ?", id).
+//         Where("email = ?", email).
+//         Where("account_id = ?", account).
+//         Select()
+
+//     if query.Err() != nil {
+//         return false
+//     }
+
+//     // Compare the provided backup code with the user's hashed backup code
+//     err := bcrypt.CompareHashAndPassword(user.TwoFactorAuth.BackupCode, []byte(code))
+//     if err != nil {
+//         return false
+//     }
+
+//     return true
+// }
+
+// // GetSecret returns the 2FA secret for a user
+// func GetSecret(db *pg.DB, id string, email string) (string, error) {
+//     // Get the user by ID or email
+//     var user User
+//     query := db.Model(&user).
+//         Where("id = ?", id).
+//         Where("email = ?", email).
+//         Select()
+
+//     if query.Err() != nil {
+//         return "", query.Err()
+//     }
+
+//     // Decrypt and return the 2FA secret
+//     secret, err := Decrypt(user.TwoFactorAuth.Secret)
+//     if err != nil {
+//         return "", err
+//     }
+
+//     return secret, nil
+// }
+
+// // Decrypt decrypts a 2FA secret
+// func Decrypt(ciphertext string) (string, error) {
+//     // TODO: Implement decryption
+//     return "", nil
+// }
+
+// UpdateUserProfile updates the user profile
+func UpdateUserProfile(id string, accountID string, data map[string]interface{}) error {
+    // Update nested objects
+    if onboarded, ok := data["onboarded"].(bool); ok {
+        var user User
+        result := db.Where("id = ? AND account.id = ?", id, accountID).First(&user)
+        if result.Error != nil {
+            return result.Error
+        }
+        if user.ID == "" {
+            return errors.New("No user with that ID")
+        }
+        user.Accounts[0].Onboarded = onboarded
+        result = db.Save(&user)
+        if result.Error != nil {
+            return result.Error
+        }
+    } else if permission, ok := data["permission"].(string); ok {
+        var user User
+        result := db.Where("id = ? AND account.id = ?", id, accountID).First(&user)
+        if result.Error != nil {
+            return result.Error
+        }
+        if user.ID == "" {
+            return errors.New("No user with that ID")
+        }
+        user.Accounts[0].Permission = permission
+        result = db.Save(&user)
+        if result.Error != nil {
+            return result.Error
+        }
+    } else {
+        result := db.Model(&User{}).Where("id = ? AND account.id = ?", id, accountID).Updates(data)
+        if result.Error != nil {
+            return result.Error
+        }
+    }
+
+    return nil
+}
+
+// DeleteUser deletes the user with the given ID and account ID
+func DeleteUser(id string, account string) error {
+    return db.Where("id = ? AND account.id = ?", id, account).Delete(&User{}).Error
+}
+
+// UpdateTwitter updates the Twitter data for the user with the given ID
+func UpdateTwitter(id string, data interface{}) error {
+    return db.Model(&User{}).Where("id = ?", id).Update("twitter", data).Error
+}
+
 // HashPassword hashes the password
 func (u *User) HashPassword() error {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return errors.ErrForbidden
+		return errs.ErrForbidden
 	}
 
 	u.Password = string(hashedPassword)
@@ -75,12 +606,12 @@ func (u *User) GenerateToken(user User) (Dto.Token, error) {
 	claims["sub"] = user.ID
 	claims["name"] = user.Name
 	claims["iat"] = time.Now().UTC().Unix()
-	claims["exp"] = time.Now().UTC().Add(time.Minute * 15).Unix()
+	claims["exp"] = time.Now().UTC().Add(time.Hour * 24 * 7).Unix()
 
 	// Generate access and refresh tokens
 	accessToken, err := token.SignedString([]byte(os.Getenv("ACCESS_TOKEN_SECRET")))
 	if err != nil {
-		return Dto.Token{}, errors.ErrForbidden
+		return Dto.Token{}, errs.ErrForbidden
 	}
 
 	refreshToken := uuid.NewString()
