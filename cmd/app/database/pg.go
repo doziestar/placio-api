@@ -2,10 +2,10 @@ package database
 
 import (
 	"context"
+	"placio-pkg/logger"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	models2 "placio-app/models"
-	"placio-pkg/logger"
 )
 
 var DB *gorm.DB
@@ -24,12 +24,6 @@ func NewDatabase(dsn string) (*Database, error) {
 	return &Database{DB}, nil
 }
 
-func (d *Database) Migrate(models ...interface{}) error {
-	// drop all tables
-	// d.Migrator().DropTable(models...)
-	return d.AutoMigrate(models...)
-}
-
 // Connect to database
 func Connect(dsn string) (*Database, error) {
 	var err error
@@ -44,7 +38,6 @@ func Connect(dsn string) (*Database, error) {
 	logger.Info(ctx, "== Connected to database successfully ==")
 	logger.Info(ctx, "======================================")
 
-	err = db.LoadModels()
 	if err != nil {
 		return nil, err
 	}
@@ -55,11 +48,6 @@ func Connect(dsn string) (*Database, error) {
 // GetDB returns database connection
 
 // LoadModels load models
-func (d *Database) LoadModels() error {
-	var modelList []interface{}
-	modelList = append(modelList, &models2.User{}, &models2.Event{}, &models2.Ticket{}, &models2.Booking{}, &models2.Payment{}, models2.Business{}, models2.Conversation{}, models2.Group{}, models2.Message{}, models2.Profile{})
-	return d.Migrate(modelList...)
-}
 
 // GetDB Make database connection available to all models and use it to perform database operations
 func (d *Database) GetDB() *gorm.DB {

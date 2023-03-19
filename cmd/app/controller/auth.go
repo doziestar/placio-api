@@ -2,12 +2,15 @@ package controller
 
 import (
 	"context"
-	"github.com/gofiber/fiber/v2"
+	"errors"
 	Dto "placio-app/Dto"
 	"placio-app/database"
 	"placio-app/models"
 	"placio-app/service"
 	"placio-pkg/logger"
+	errs "placio-app/errors"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 // Login godoc
@@ -83,8 +86,8 @@ func SignUp(c *fiber.Ctx) error {
 	})
 
 	user, err := auth.SignUp(data)
-	if err != nil {
-		return c.JSON(fiber.Map{"status": "error", "message": "invalid data", "data": err})
+	if errors.Is(err, errs.ErrAlreadyExists) {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "user already exists", "data": err})
 	}
 
 	return c.JSON(fiber.Map{"status": "ok", "data": user})
@@ -166,4 +169,423 @@ func VerifyEmail(c *fiber.Ctx) error {
 // @Router /api/v1/auth/verify [get]
 func VerifyPhone(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{"status": "ok"})
+}
+
+// SigninRequest defines the request body for the signin route
+type SigninRequest struct {
+	Email     string `json:"email,omitempty"`
+	Password  string `json:"password,omitempty"`
+	Token     string `json:"token,omitempty"`
+	Provider  string `json:"provider,omitempty"`
+	ProviderID string `json:"provider_id,omitempty"`
+	MagicViewURL string `json:"magic_view_url,omitempty"`
+}
+
+// SigninResponse defines the response body for the signin route
+type SigninResponse struct {
+	Message      string `json:"message,omitempty"`
+	TwoFARequired bool   `json:"2fa_required,omitempty"`
+	Token        string `json:"token,omitempty"`
+}
+
+// Signin authenticates a user via email/password or social network
+func Signin(c *fiber.Ctx) error {
+	data := new(SigninRequest)
+	if err := c.BodyParser(data); err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, "Invalid request body")
+	}
+
+	var (
+		userData user.User
+		useEmail bool
+	)
+
+	if data.Email != "" {
+		useEmail = true
+		data.Provider = "app"
+		if err := utility.Validate(data, []string{"email", "password"}); err != nil {
+			return err
+		}
+	} else {
+		if err := utility.Validate(data, []string{"token"}); err != nil {
+			return err
+		}
+		decode, err := auth.Token.Verify(data.Token)
+		if err != nil {
+			return fiber.NewError(fiber.StatusUnauthorized, "Invalid token")
+		}
+		data.Provider = decode.Provider
+		data.ProviderID = decode.ProviderID
+		data.Email = decode.Email
+	}
+
+	// check user exists
+	var err error
+	if useEmail {
+		userData, err = user.Get(nil, data.Email)
+	} else {
+		userData, err = user.Get(nil, "", nil, map[string]string{
+			"provider": data.Provider,
+			"id":       data.ProviderID,
+		})
+	}
+	if err != nil {
+		return fiber.NewError(fiber.StatusUnauthorized, "Please enter the correct login details")
+	}
+
+	// verify password
+	if useEmail {
+		verified, err := user.Password.Verify(userData.ID, userData.AccountID, data.Password)
+		if err != nil {
+			return err
+		}
+		if !verified {
+			return fiber.NewError(fiber.StatusUnauthorized, "Please enter the correct login details")
+		}
+	}
+
+	// get the account
+	accountData, err := account.Get(userData.AccountID)
+	if err != nil {
+		return err
+	}
+	if !accountData.Active {
+		return fiber.NewError(fiber.StatusUnauthorized, "Your account has been deactivated. Please contact support.")
+	}
+
+	// log the sign in and check if it's suspicious
+	log, err := login.Create(userData.ID, c)
+	if err != nil {
+		return err
+	}
+	risk, err := login.Verify(userData.ID, log)
+	if err != nil {
+		return err
+	}
+	if risk {
+		return fiber.NewError(fiber.StatusUnauthorized, "Your account has been flagged for suspicious activity. Please contact support.")
+	}
+
+	// generate the token
+	token, err := auth.Token.Generate(userData.ID, userData.AccountID, data.Provider, data.ProviderID, data.Email)
+	if err != nil {
+		return err
+	}
+
+	// return the token
+	return c.JSON(SigninResponse{
+		Message:      "You have successfully signed in",
+		TwoFARequired: userData.TwoFARequired,
+		Token:        token,
+	})
+}
+
+func Authenticate(c *fiber.Ctx, userData User, data map[string]interface{}) error {
+	accountData, err := GetAccount(userData.AccountID)
+	if err != nil {
+		return err
+	}
+
+	subscription, err := GetSubscription(userData.AccountID)
+	if err != nil {
+		return err
+	}
+
+	userAccounts, err := GetUserAccounts(userData.ID)
+	if err != nil {
+		return err
+	}
+
+	// create & store the token
+	jwt, err := GenerateToken(TokenData{
+		AccountID:  userData.AccountID,
+		UserID:     userData.ID,
+		Permission: userData.Permission,
+		Provider:   data["provider"].(string),
+	})
+	if err != nil {
+		return err
+	}
+
+	err = SaveToken(data["provider"].(string), jwt, userData.ID)
+	if err != nil {
+		return err
+	}
+
+	UpdateUser(userData.ID, userData.AccountID, map[string]interface{}{
+		"last_active": time.Now(),
+		"disabled":    false,
+	})
+
+	// return user to client
+	return c.Status(fiber.StatusOK).JSON(map[string]interface{}{
+		"token":        jwt,
+		"subscription": subscription.Status,
+		"plan":         accountData.Plan,
+		"permission":   userData.Permission,
+		"name":         userData.Name,
+		"accounts":     userAccounts,
+		"account_id":   userData.AccountID,
+		"has_password": userData.HasPassword,
+		"onboarded":    userData.Onboarded,
+	})
+}
+
+func Signout(c *fiber.Ctx) error {
+	// destroy social tokens
+	err := token.Delete(nil, c.Locals("provider").(string), c.Locals("user").(int))
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to sign out",
+		})
+	}
+	return c.SendStatus(fiber.StatusOK)
+}
+
+// auth.switch()
+// let the user switch account
+func Switch(c *fiber.Ctx) error {
+	// Get the user and account ID from the request
+	userID := c.Locals("user").(string)
+	accountID := c.Params("account")
+
+	// Check if the user belongs to this account
+	userData, err := user.Get(userID, "", accountID)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"message": "You don't belong to this account.",
+		})
+	}
+
+	return authenticate(c, userData)
+}
+
+// Impersonate impersonates a user without a password (accessible via master account only)
+func Impersonate(c *fiber.Ctx) error {
+	// Get the token from the request body
+	token := new(struct {
+		Token string `json:"token"`
+	})
+	if err := c.BodyParser(token); err != nil {
+		return errors.Wrap(err, "failed to parse request body")
+	}
+
+	// Verify the authorization token
+	data, err := auth.VerifyToken(token.Token)
+	if err != nil {
+		return errors.Wrap(err, "failed to verify token")
+	}
+
+	// Check if the token is valid and has master permission
+	if data.UserID == "" || data.Permission != "master" {
+		return utility.NewError(fiber.StatusUnauthorized, "Invalid token")
+	}
+
+	// Get the user data
+	userData, err := user.Get(data.UserID)
+	if err != nil {
+		return errors.Wrap(err, "failed to get user data")
+	}
+
+	// Authenticate the user and generate a new token
+	jwt, err := auth.GenerateToken(userData.AccountID, userData.ID, userData.Permission, "app")
+	if err != nil {
+		return errors.Wrap(err, "failed to generate token")
+	}
+
+	// Save the token to the database
+	if err := auth.SaveToken("app", jwt.AccessToken, userData.ID); err != nil {
+		return errors.Wrap(err, "failed to save token to database")
+	}
+
+	// Update user's last active timestamp and disabled status
+	if err := user.Update(userData.ID, userData.AccountID, user.UpdateParams{
+		LastActive: time.Now(),
+		Disabled:   false,
+	}); err != nil {
+		return errors.Wrap(err, "failed to update user")
+	}
+
+	// Return the response
+	return c.JSON(fiber.Map{
+		"token":       jwt.AccessToken,
+		"subscription": "",
+		"plan":        "",
+		"permission":  userData.Permission,
+		"name":        userData.Name,
+		"accounts":    nil,
+		"account_id":  userData.AccountID,
+		"has_password": false,
+		"onboarded":   userData.Onboarded,
+	})
+}
+
+// GetAuthStatus retrieves the auth status of a user
+func GetAuthStatus(c *fiber.Ctx) error {
+	// Check if there's a valid account/user
+	var hasJWT, hasSocialToken, usingSocialSignin bool
+
+	// Check if there's an active JWT
+	if c.Provider() == "app" {
+		usingSocialSignin = false
+		hasJWT = token.Verify("app", c.UserID())
+	}
+
+	// Check if there's an active access token if the user is
+	// signed in via social network or was their account de-authed
+	if c.Provider() != "app" {
+		usingSocialSignin = true
+		hasSocialToken = token.Verify(c.Provider(), c.UserID())
+	}
+
+	// Check if the user has an active subscription
+	subscription := account.Subscription(c.AccountID())
+	userAccounts := user.Accounts(c.UserID())
+	user.UpdateLastActive(c.UserID(), c.AccountID(), time.Now())
+
+	// Return the auth status
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"data": fiber.Map{
+			"jwt_token":      hasJWT,
+			"social_token":   hasSocialToken,
+			"subscription":   subscription.Status,
+			"accounts":       userAccounts,
+			"account_id":     c.AccountID(),
+			"authenticated":  usingSocialSignin && hasSocialToken || !usingSocialSignin && hasJWT,
+		},
+	})
+}
+
+// / MagicVerify verifies a magic token
+func MagicVerify(c *fiber.Ctx) error {
+	data := new(struct {
+		Token string `json:"token"`
+	})
+	if err := c.BodyParser(data); err != nil {
+		return c.Status(fiber.StatusBadRequest).SendString("Invalid request body")
+	}
+
+	magicToken, err := Verify(data.Token)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).SendString("Invalid token")
+	}
+
+	userData, err := user.Get(magicToken.UserID)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).SendString("Invalid token")
+	}
+
+	// log the sign in and check if it's suspicious
+	log, err := login.Create(userData.ID, c)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString("Failed to create login record")
+	}
+	risk, err := login.Verify(userData.ID, log)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString("Failed to verify login risk")
+	}
+
+	// notify the user of suspicious logins
+	if risk.Level > 0 {
+		err = mail.Send(mail.Options{
+			To:        userData.Email,
+			Subject:   "New sign-in on your account",
+			Template:  "new_signin",
+			Variables: mail.Variables{"ip": risk.Flag.IP, "time": risk.Time, "device": risk.Flag.Device, "browser": risk.Flag.Browser},
+		})
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString("Failed to send email")
+		}
+	}
+
+	// 2fa is required
+	if userData.TwoFactorEnabled {
+		// notify the client and use email to identify the user when sending otp
+		// send a token so the otp password screen can't be accessed directly without a password
+		jwt, err := Token(TokenData{Email: userData.Email, Provider: "app"}, nil, time.Minute*5)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).SendString("Failed to generate JWT token")
+		}
+		return c.JSON(fiber.Map{
+			"2fa_required": true,
+			"token":        jwt,
+		})
+	}
+
+	// authenticate the user
+	userAccounts, err := user.Account(userData.ID)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString("Failed to retrieve user accounts")
+	}
+
+	err = TokenSave("app", userData.ID, TokenData{Access: Token(TokenData{AccountID: userData.AccountID, UserID: userData.ID, Permission: userData.Permission})})
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString("Failed to save token")
+	}
+
+	err = user.Update(userData.ID, userData.AccountID, user.UpdateData{LastActive: time.Now(), Disabled: false})
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString("Failed to update user data")
+	}
+
+	return c.JSON(fiber.Map{
+		"token":        Token(TokenData{AccountID: userData.AccountID, UserID: userData.ID, Permission: userData.Permission}),
+		"subscription": subscription.Status,
+		"plan":         accountData.Plan,
+		"permission":   userData.Permission,
+		"name":         userData.Name,
+		"accounts":     userAccounts,
+		"account_id":   userData.AccountID,
+		"has_password": userData.Password != "",
+		"onboarded":    userData.Onboarded,
+	})
+}
+
+func SocialAuthHandler(provider string, signInURL string, socialURL string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// Use the passport-go middleware to authenticate the user
+		if err := passport.Authenticate(c, provider, passport.Options{
+			FailureRedirect: signInURL,
+		}); err != nil {
+			c.Redirect(http.StatusFound, fmt.Sprintf("%s?error=%s", signInURL, url.QueryEscape(err.Error())))
+			return
+		}
+
+		// Get the user's profile from the authenticated session
+		profile, ok := passport.ProfileFromContext(c)
+		if !ok {
+			c.Redirect(http.StatusFound, fmt.Sprintf("%s?error=%s", signInURL, url.QueryEscape("Unable to get user profile")))
+			return
+		}
+
+		// Authenticate the user
+		email := ""
+		if len(profile.Emails) > 0 {
+			email = profile.Emails[0].Value
+		}
+		userData, err := user.Get(nil, email, nil, map[string]interface{}{
+			"provider": provider,
+			"id":       profile.ID,
+		})
+		if err != nil {
+			c.Redirect(http.StatusFound, fmt.Sprintf("%s?error=%s", signInURL, url.QueryEscape("Unable to get user data")))
+			return
+		}
+
+		if userData != nil {
+			// Generate a JWT token and redirect the user to the social URL
+			jwt, err := auth.Token(map[string]interface{}{
+				"provider":    provider,
+				"provider_id": profile.ID,
+				"email":       email,
+			}, nil, 300)
+			if err != nil {
+				c.Redirect(http.StatusFound, fmt.Sprintf("%s?error=%s", signInURL, url.QueryEscape("Unable to generate JWT token")))
+				return
+			}
+			c.Redirect(http.StatusFound, fmt.Sprintf("%s?provider=%s&token=%s", socialURL, provider, jwt))
+		} else {
+			c.Redirect(http.StatusFound, fmt.Sprintf("%s?error=%s", signInURL, url.QueryEscape("You're not registered")))
+		}
+	}
 }
