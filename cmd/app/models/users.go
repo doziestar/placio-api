@@ -50,16 +50,7 @@ type User struct {
 	GeneralSettings      *GeneralSettings
 }
 
-type Account struct {
-	gorm.Model
-	ID          string `gorm:"primaryKey"`
-	Permission  string
-	AccountType string
-	AccountID   string
-	Onboarded   bool
-	Interests   []string `gorm:"type:text;default:[]"`
-	UserID      string   `gorm:"column:user_id"`
-}
+
 
 type TwitterAccount struct {
 	AccessToken  string
