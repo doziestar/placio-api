@@ -8,12 +8,12 @@ import (
 )
 
 type Login struct {
-	ID       string    `gorm:"primaryKey"`
-	UserID   string    `gorm:"not null"`
-	IP       string    `gorm:"not null"`
-	Time     time.Time `gorm:"not null"`
-	Browser  string
-	Device   string
+	ID      string    `gorm:"primaryKey"`
+	UserID  string    `gorm:"not null"`
+	IP      string    `gorm:"not null"`
+	Time    time.Time `gorm:"not null"`
+	Browser string
+	Device  string
 }
 
 // LoginModel is the model for login schema
@@ -97,7 +97,7 @@ func (m *LoginModel) Verify(userID string, current *Login) (*LoginVerification, 
 }
 
 func findIndex(a []Login, f func(int) bool) int {
-	for i, v := range a {
+	for i, _ := range a {
 		if f(i) {
 			return i
 		}

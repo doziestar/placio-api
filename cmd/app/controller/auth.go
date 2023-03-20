@@ -3,12 +3,18 @@ package controller
 import (
 	"context"
 	"errors"
+	"fmt"
+	"github.com/stripe/stripe-go/v74/account"
+	"net/http"
+	"net/url"
 	Dto "placio-app/Dto"
 	"placio-app/database"
+	errs "placio-app/errors"
 	"placio-app/models"
 	"placio-app/service"
+	"placio-app/utility"
 	"placio-pkg/logger"
-	errs "placio-app/errors"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -82,7 +88,7 @@ func SignUp(c *fiber.Ctx) error {
 		Email:    userData.Email,
 		Password: userData.Password,
 		Name:     userData.Name,
-		Role:     userData.Role,
+		//Role:     userData.Role,
 	})
 
 	user, err := auth.SignUp(data)
@@ -173,19 +179,42 @@ func VerifyPhone(c *fiber.Ctx) error {
 
 // SigninRequest defines the request body for the signin route
 type SigninRequest struct {
-	Email     string `json:"email,omitempty"`
-	Password  string `json:"password,omitempty"`
-	Token     string `json:"token,omitempty"`
-	Provider  string `json:"provider,omitempty"`
-	ProviderID string `json:"provider_id,omitempty"`
+	Email        string `json:"email,omitempty"`
+	Password     string `json:"password,omitempty"`
+	Token        string `json:"token,omitempty"`
+	Provider     string `json:"provider,omitempty"`
+	ProviderID   string `json:"provider_id,omitempty"`
 	MagicViewURL string `json:"magic_view_url,omitempty"`
 }
 
 // SigninResponse defines the response body for the signin route
 type SigninResponse struct {
-	Message      string `json:"message,omitempty"`
+	Message       string `json:"message,omitempty"`
 	TwoFARequired bool   `json:"2fa_required,omitempty"`
-	Token        string `json:"token,omitempty"`
+	Token         string `json:"token,omitempty"`
+}
+
+func (s *SigninRequest) IsValid() error {
+	if s.Email == "" && s.Token == "" {
+		return fiber.NewError(fiber.StatusBadRequest, "Email or token is required")
+	}
+	if s.Email != "" && s.Password == "" {
+		return fiber.NewError(fiber.StatusBadRequest, "Password is required")
+	}
+	return nil
+}
+
+// covert SigninRequest to json
+func (s *SigninRequest) ToJson() map[string]interface{} {
+	mySigninRequestMap := map[string]interface{}{
+		"email":          s.Email,
+		"password":       s.Password,
+		"token":          s.Token,
+		"provider":       s.Provider,
+		"provider_id":    s.ProviderID,
+		"magic_view_url": s.MagicViewURL,
+	}
+	return mySigninRequestMap
 }
 
 // Signin authenticates a user via email/password or social network
@@ -196,18 +225,18 @@ func Signin(c *fiber.Ctx) error {
 	}
 
 	var (
-		userData user.User
+		userData models.User
 		useEmail bool
 	)
 
 	if data.Email != "" {
 		useEmail = true
 		data.Provider = "app"
-		if err := utility.Validate(data, []string{"email", "password"}); err != nil {
+		if err := utility.Validate(data.ToJson(), []string{"email", "password"}); err != nil {
 			return err
 		}
 	} else {
-		if err := utility.Validate(data, []string{"token"}); err != nil {
+		if err := utility.Validate(data.ToJson(), []string{"token"}); err != nil {
 			return err
 		}
 		decode, err := auth.Token.Verify(data.Token)
@@ -274,9 +303,9 @@ func Signin(c *fiber.Ctx) error {
 
 	// return the token
 	return c.JSON(SigninResponse{
-		Message:      "You have successfully signed in",
+		Message:       "You have successfully signed in",
 		TwoFARequired: userData.TwoFARequired,
-		Token:        token,
+		Token:         token,
 	})
 }
 
@@ -408,15 +437,15 @@ func Impersonate(c *fiber.Ctx) error {
 
 	// Return the response
 	return c.JSON(fiber.Map{
-		"token":       jwt.AccessToken,
+		"token":        jwt.AccessToken,
 		"subscription": "",
-		"plan":        "",
-		"permission":  userData.Permission,
-		"name":        userData.Name,
-		"accounts":    nil,
-		"account_id":  userData.AccountID,
+		"plan":         "",
+		"permission":   userData.Permission,
+		"name":         userData.Name,
+		"accounts":     nil,
+		"account_id":   userData.AccountID,
 		"has_password": false,
-		"onboarded":   userData.Onboarded,
+		"onboarded":    userData.Onboarded,
 	})
 }
 
@@ -446,12 +475,12 @@ func GetAuthStatus(c *fiber.Ctx) error {
 	// Return the auth status
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"data": fiber.Map{
-			"jwt_token":      hasJWT,
-			"social_token":   hasSocialToken,
-			"subscription":   subscription.Status,
-			"accounts":       userAccounts,
-			"account_id":     c.AccountID(),
-			"authenticated":  usingSocialSignin && hasSocialToken || !usingSocialSignin && hasJWT,
+			"jwt_token":     hasJWT,
+			"social_token":  hasSocialToken,
+			"subscription":  subscription.Status,
+			"accounts":      userAccounts,
+			"account_id":    c.AccountID(),
+			"authenticated": usingSocialSignin && hasSocialToken || !usingSocialSignin && hasJWT,
 		},
 	})
 }
