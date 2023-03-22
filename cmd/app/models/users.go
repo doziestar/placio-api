@@ -715,3 +715,20 @@ func (u *User) ToJson() map[string]string {
 	}
 
 }
+
+func (u *User) UpdateUser(userId string, accountId string, lastActive time.Time, disabled bool) {
+	var user User
+	db.Where("id = ? AND account.id = ?", userId, accountId).First(&user)
+	if user.ID == "" {
+		return
+	}
+	user.Accounts[0].LastActive = lastActive
+	user.Accounts[0].Disabled = disabled
+	db.Save(&user)
+
+}
+
+//
+//func (u *User) Get(id string, s string, id2 string) (interface{}, interface{}) {
+//
+//}

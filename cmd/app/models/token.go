@@ -29,7 +29,7 @@ type Token struct {
 }
 
 // Save creates new or updates an existing token
-func (t *Token) Save(provider string, data map[string]string, user string, db *gorm.DB) error {
+func (t *Token) Save(provider string, data map[string]string, user string) error {
 	if data["access"] != "" {
 		// data["access"] = crypto.Encrypt(data["access"])
 	}

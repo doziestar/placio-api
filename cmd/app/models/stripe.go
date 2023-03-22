@@ -1,9 +1,18 @@
 package models
 
-//import (
-//	"errors"
-//	stripe "github.com/stripe/stripe-go/v74"
-//)
+type Subscription struct {
+	ID   string `gorm:"primaryKey"`
+	Plan string
+}
+
+func (s *Subscription) TableName() string {
+	return "subscriptions"
+}
+
+func (s *Subscription) GetSubscriptionID() string {
+	return s.ID
+}
+
 //
 //func init() {
 //	stripe.Key = "sk_test_..."

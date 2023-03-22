@@ -29,6 +29,9 @@ type Account struct {
 	PayStackSubscriptionID     string
 	PayStackSubscriptionStatus string
 	PayStackCustomerID         string
+	Status                     string    `gorm:"column:status"`
+	LastActive                 time.Time `gorm:"column:last_active"`
+	Disabled                   bool      `gorm:"column:disabled"`
 }
 
 // CreateAccount /*
@@ -45,7 +48,7 @@ func (a *Account) CreateAccount(userId, permission string) (*Account, error) {
 }
 
 // GetAccount /*
-func (a *Account) GetAccount(id string) (*UserAndAccount, error) {
+func (a *Account) GetUserAccount(id string) (*UserAndAccount, error) {
 	result := db.Where("id = ?", id).First(&a)
 	if result.Error != nil {
 		return nil, result.Error
@@ -71,6 +74,12 @@ func (a *Account) GetAccount(id string) (*UserAndAccount, error) {
 		return &userAccount, nil
 	}
 	return nil, nil
+}
+
+// GetAccount /*
+func (a *Account) GetAccount(id string) (*Account, error) {
+	result := db.Where("id = ?", id).First(&a)
+	return a, result.Error
 }
 
 // Subscription /*
@@ -132,3 +141,13 @@ func (a *Account) DeleteAccount(id string) error {
 
 	return tx.Commit().Error
 }
+
+func (a *Account) GetSubscription(id string) (*Account, error) {
+	result := db.Where("id = ?", id).First(&a)
+	return a, result.Error
+}
+
+//
+//func (a *Account) GetUserAccounts(id string) (interface{}, interface{}) {
+//
+//}
