@@ -83,7 +83,8 @@ type GoogleAccount struct {
 }
 
 type GeneralSettings struct {
-	ID       uint `gorm:"primaryKey"`
+	gorm.Model
+	ID       string `gorm:"primaryKey"`
 	Language string
 	Theme    string
 }

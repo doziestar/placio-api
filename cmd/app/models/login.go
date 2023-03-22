@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"gorm.io/gorm"
 	"placio-app/database"
 	"time"
 
@@ -11,6 +12,7 @@ import (
 var DB = database.DB
 
 type Login struct {
+	gorm.Model
 	ID      string    `gorm:"primaryKey"`
 	UserID  string    `gorm:"not null"`
 	IP      string    `gorm:"not null"`
