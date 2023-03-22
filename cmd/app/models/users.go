@@ -404,21 +404,20 @@ func Password(db *gorm.DB, userID uint, accountID uint) (string, error) {
 	return user.Password, nil
 }
 
-func VerifyPassword(userID string, accountID string, password string) (*User, error) {
-	var user User
-	result := db.Joins("Account").Where("users.id = ? AND account.id = ?", userID, accountID).First(&user)
+func (u *User) VerifyPassword(userID string, accountID string, password string) (bool, error) {
+	result := db.Joins("Account").Where("users.id = ? AND account.id = ?", userID, accountID).First(u)
 
 	if result.Error != nil {
-		return nil, result.Error
+		return false, result.Error
 	}
 
-	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
 	if err != nil {
-		return nil, err
+		return false, nil
 	}
 
-	user.Password = ""
-	return &user, nil
+	u.Password = ""
+	return true, nil
 }
 
 // SavePassword saves a new password for the user with the given ID.

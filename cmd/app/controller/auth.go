@@ -189,9 +189,9 @@ type SigninRequest struct {
 
 // SigninResponse defines the response body for the signin route
 type SigninResponse struct {
-	Message       string `json:"message,omitempty"`
-	TwoFARequired bool   `json:"2fa_required,omitempty"`
-	Token         string `json:"token,omitempty"`
+	Message       string       `json:"message,omitempty"`
+	TwoFARequired bool         `json:"2fa_required,omitempty"`
+	Token         models.Token `json:"token,omitempty"`
 }
 
 func (s *SigninRequest) IsValid() error {
@@ -223,10 +223,13 @@ func Signin(c *fiber.Ctx) error {
 	if err := c.BodyParser(data); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "Invalid request body")
 	}
-
+	var token models.Token
+	var user models.User
 	var (
-		userData models.User
+		userData *models.User
 		useEmail bool
+		account  *models.Account
+		login    *models.LoginModel
 	)
 
 	if data.Email != "" {
@@ -239,7 +242,7 @@ func Signin(c *fiber.Ctx) error {
 		if err := utility.Validate(data.ToJson(), []string{"token"}); err != nil {
 			return err
 		}
-		decode, err := (*models.Token).Verify("app", data.Token)
+		decode, err := token.VerifyToken("app", data.Token)
 		if err != nil {
 			return fiber.NewError(fiber.StatusUnauthorized, "Invalid token")
 		}
@@ -251,12 +254,12 @@ func Signin(c *fiber.Ctx) error {
 	// check user exists
 	var err error
 	if useEmail {
-		userData, err = user.Get(nil, data.Email)
+		userData, err = user.GetByEmail(data.Email)
 	} else {
-		userData, err = user.Get(nil, "", nil, map[string]string{
-			"provider": data.Provider,
-			"id":       data.ProviderID,
-		})
+		//userData, err = user.Get(nil, "", nil, map[string]string{
+		//	"provider": data.Provider,
+		//	"id":       data.ProviderID,
+		//})
 	}
 	if err != nil {
 		return fiber.NewError(fiber.StatusUnauthorized, "Please enter the correct login details")
@@ -264,7 +267,7 @@ func Signin(c *fiber.Ctx) error {
 
 	// verify password
 	if useEmail {
-		verified, err := user.Password.Verify(userData.ID, userData.AccountID, data.Password)
+		verified, err := user.VerifyPassword(userData.ID, userData.AccountID, data.Password)
 		if err != nil {
 			return err
 		}
@@ -274,7 +277,7 @@ func Signin(c *fiber.Ctx) error {
 	}
 
 	// get the account
-	accountData, err := account.Get(userData.AccountID)
+	accountData, err := account.GetAccount(userData.AccountID)
 	if err != nil {
 		return err
 	}
@@ -283,20 +286,20 @@ func Signin(c *fiber.Ctx) error {
 	}
 
 	// log the sign in and check if it's suspicious
-	log, err := login.Create(userData.ID, c)
+	log, err := login.Create(userData.ID, c.IP(), c.Get("User-Agent"), c.Get("Device"))
 	if err != nil {
 		return err
 	}
-	risk, err := login.Verify(userData.ID, log)
+	loginVerification, err := login.Verify(userData.ID, log)
 	if err != nil {
 		return err
 	}
-	if risk {
+	if loginVerification.Suspicious {
 		return fiber.NewError(fiber.StatusUnauthorized, "Your account has been flagged for suspicious activity. Please contact support.")
 	}
 
 	// generate the token
-	token, err := (*models.Token).Generate(userData.ID, userData.AccountID, data.Provider, data.ProviderID, data.Email)
+	userToken, err := token.Generate(userData.ID, userData.AccountID, data.Provider, data.ProviderID, data.Email)
 	if err != nil {
 		return err
 	}
@@ -304,8 +307,8 @@ func Signin(c *fiber.Ctx) error {
 	// return the token
 	return c.JSON(SigninResponse{
 		Message:       "You have successfully signed in",
-		TwoFARequired: userData.TwoFARequired,
-		Token:         token,
+		TwoFARequired: userData.TwoFactorAuthEnabled,
+		Token:         *userToken,
 	})
 }
 

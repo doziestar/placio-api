@@ -1,11 +1,14 @@
 package models
 
 import (
+	"github.com/gofiber/fiber/v2"
+	"placio-app/database"
 	"time"
 
 	"github.com/google/uuid"
-	"gorm.io/gorm"
 )
+
+var DB = database.DB
 
 type Login struct {
 	ID      string    `gorm:"primaryKey"`
@@ -16,9 +19,18 @@ type Login struct {
 	Device  string
 }
 
+func (l Login) Create(id string, c *fiber.Ctx) (*Login, error) {
+	m := &LoginModel{}
+	login, err := m.Create(id, c.IP(), c.Get("User-Agent"), c.Get("Device"))
+	if err != nil {
+		return nil, err
+	}
+	return login, nil
+}
+
 // LoginModel is the model for login schema
 type LoginModel struct {
-	DB *gorm.DB
+	//DB *gorm.DB
 }
 
 func (m *LoginModel) Create(userID string, ip string, browser string, device string) (*Login, error) {
@@ -33,7 +45,7 @@ func (m *LoginModel) Create(userID string, ip string, browser string, device str
 		Device:  device,
 	}
 
-	if err := m.DB.Create(login).Error; err != nil {
+	if err := DB.Create(login).Error; err != nil {
 		return nil, err
 	}
 
@@ -47,9 +59,10 @@ type LoginFlag struct {
 }
 
 type LoginVerification struct {
-	Flag  *LoginFlag
-	Level int
-	Time  string
+	Flag       *LoginFlag
+	Level      int
+	Time       string
+	Suspicious bool
 }
 
 func (m *LoginModel) Verify(userID string, current *Login) (*LoginVerification, error) {
@@ -62,7 +75,7 @@ func (m *LoginModel) Verify(userID string, current *Login) (*LoginVerification, 
 	}
 
 	var history []Login
-	if err := m.DB.Where("user_id = ? AND id != ?", userID, current.ID).
+	if err := DB.Where("user_id = ? AND id != ?", userID, current.ID).
 		Limit(500).
 		Find(&history).Error; err != nil {
 		return nil, err
@@ -90,9 +103,10 @@ func (m *LoginModel) Verify(userID string, current *Login) (*LoginVerification, 
 	timeStr := current.Time.Format("2006-01-02 15:04:05")
 
 	return &LoginVerification{
-		Flag:  flag,
-		Level: riskLevel,
-		Time:  timeStr,
+		Flag:       flag,
+		Level:      riskLevel,
+		Time:       timeStr,
+		Suspicious: riskLevel > 0,
 	}, nil
 }
 

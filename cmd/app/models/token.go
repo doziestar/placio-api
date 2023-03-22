@@ -24,6 +24,8 @@ type Token struct {
 	AccessExpiresIn   time.Duration
 	RefreshCreateAt   time.Time
 	RefreshExpiresIn  time.Duration
+	ProviderID        string
+	Email             string
 }
 
 // Save creates new or updates an existing token
@@ -98,6 +100,28 @@ func (t *Token) Verify(provider, user string) bool {
 	return count > 0
 }
 
+// VerifyToken checks if a token is present for the given user and provider
+func (t *Token) VerifyToken(provider string, token string) (*Token, error) {
+	// verify token using jwt
+	tokenData, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SECRET")), nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	// get token data
+	var data Token
+
+	// check if token is valid
+	if claims, ok := tokenData.Claims.(jwt.MapClaims); ok && tokenData.Valid {
+		// get token data
+		db.Where("provider = ? AND user_id = ?", provider, claims["sub"]).First(&data)
+	}
+
+	return &data, nil
+}
+
 // Delete deletes the token with the given ID, provider, and user
 func (t *Token) Delete(id, provider, user string) error {
 	query := db.Where("user_id = ?", user)
@@ -110,8 +134,8 @@ func (t *Token) Delete(id, provider, user string) error {
 	return query.Delete(&Token{}).Error
 }
 
-// GenerateJwt generates a new JWT token for the given user
-func Generate(userId, accountId, provider, providerID, email string) (*Token, error) {
+// Generate GenerateJwt generates a new JWT token for the given user
+func (t *Token) Generate(userId, accountId, provider, providerID, email string) (*Token, error) {
 	// generate a new JWT token
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"sub":   userId,
@@ -135,11 +159,6 @@ func Generate(userId, accountId, provider, providerID, email string) (*Token, er
 		return nil, err
 	}
 
-	// accessCreateAt := time.Now().UTC()
-	// accessExpiresIn := accessCreateAt.Add(time.Hour * 24 * 7)
-	// refreshCreateAt := accessCreateAt
-	// refreshExpiresIn := refreshCreateAt.Add(time.Hour * 24 * 30)
-
 	codeCreateAt := time.Now().UTC()
 
 	return &Token{
@@ -151,8 +170,8 @@ func Generate(userId, accountId, provider, providerID, email string) (*Token, er
 		CodeCreateAt:     codeCreateAt,
 		CodeExpiresIn:    codeCreateAt.Add(time.Hour * 24 * 7).Sub(codeCreateAt),
 		AccessCreateAt:   codeCreateAt,
-		AccessExpiresIn:  time.Duration(time.Hour * 24 * 7),
+		AccessExpiresIn:  time.Hour * 24 * 7,
 		RefreshCreateAt:  codeCreateAt,
-		RefreshExpiresIn: time.Duration(time.Hour * 24 * 30),
+		RefreshExpiresIn: time.Hour * 24 * 30,
 	}, nil
 }
