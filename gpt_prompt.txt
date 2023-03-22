@@ -1,0 +1,536 @@
+This is the signin controller 
+
+// Signin authenticates a user via email/password or social network
+func Signin(c *fiber.Ctx) error {
+	data := new(SigninRequest)
+	if err := c.BodyParser(data); err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, "Invalid request body")
+	}
+
+	var (
+		userData models.User
+		useEmail bool
+	)
+
+	if data.Email != "" {
+		useEmail = true
+		data.Provider = "app"
+		if err := utility.Validate(data.ToJson(), []string{"email", "password"}); err != nil {
+			return err
+		}
+	} else {
+		if err := utility.Validate(data.ToJson(), []string{"token"}); err != nil {
+			return err
+		}
+		decode, err := (*models.Token).Verify("app",data.Token)
+		if err != nil {
+			return fiber.NewError(fiber.StatusUnauthorized, "Invalid token")
+		}
+		data.Provider = decode.Provider
+		data.ProviderID = decode.ProviderID
+		data.Email = decode.Email
+	}
+
+	// check user exists
+	var err error
+	if useEmail {
+		userData, err = user.Get(nil, data.Email)
+	} else {
+		userData, err = user.Get(nil, "", nil, map[string]string{
+			"provider": data.Provider,
+			"id":       data.ProviderID,
+		})
+	}
+	if err != nil {
+		return fiber.NewError(fiber.StatusUnauthorized, "Please enter the correct login details")
+	}
+
+	// verify password
+	if useEmail {
+		verified, err := user.Password.Verify(userData.ID, userData.AccountID, data.Password)
+		if err != nil {
+			return err
+		}
+		if !verified {
+			return fiber.NewError(fiber.StatusUnauthorized, "Please enter the correct login details")
+		}
+	}
+
+	// get the account
+	accountData, err := account.Get(userData.AccountID)
+	if err != nil {
+		return err
+	}
+	if !accountData.Active {
+		return fiber.NewError(fiber.StatusUnauthorized, "Your account has been deactivated. Please contact support.")
+	}
+
+	// log the sign in and check if it's suspicious
+	log, err := login.Create(userData.ID, c)
+	if err != nil {
+		return err
+	}
+	risk, err := login.Verify(userData.ID, log)
+	if err != nil {
+		return err
+	}
+	if risk {
+		return fiber.NewError(fiber.StatusUnauthorized, "Your account has been flagged for suspicious activity. Please contact support.")
+	}
+
+	// generate the token
+	token, err := auth.Token.Generate(userData.ID, userData.AccountID, data.Provider, data.ProviderID, data.Email)
+	if err != nil {
+		return err
+	}
+
+	// return the token
+	return c.JSON(SigninResponse{
+		Message:       "You have successfully signed in",
+		TwoFARequired: userData.TwoFARequired,
+		Token:         token,
+	})
+}
+
+then this is the user model and it's methods
+
+var db = database.DB
+
+type User struct {
+	gorm.Model
+	ID                   string `gorm:"primaryKey"`
+	Fingerprint          string
+	Name                 string
+	Email                string
+	Password             string
+	HubStar              bool
+	DateCreated          time.Time
+	LastActive           time.Time
+	Disabled             bool
+	SupportEnabled       bool
+	TwoFactorAuthEnabled bool   `gorm:"column:2fa_enabled"`
+	TwoFASecret          string `gorm:"column:2fa_secret"`
+	TwoFABackupCode      string `gorm:"column:2fa_backup_code"`
+	DefaultAccount       string
+	FacebookID           string    `gorm:"column:facebook_id"`
+	TwitterID            string    `gorm:"column:twitter_id"`
+	Accounts             []Account `gorm:"foreignKey:UserID"`
+	IP                   string
+	UserAgent            string
+	Twitter              *TwitterAccount
+	Facebook             *FacebookAccount
+	Google               *GoogleAccount
+	HasPassword          bool
+	Onboarded            bool
+	AccountID            string `gorm:"column:account_id"`
+	Permission           string
+	Interests            []string         `gorm:"type:text;default:[]"`
+	GeneralSettingsID    uint             `gorm:"column:general_settings_id"`
+	GeneralSettings      *GeneralSettings `gorm:"foreignKey:GeneralSettingsID"`
+}
+
+type TwitterAccount struct {
+	AccessToken  string
+	RefreshToken string
+	UserID       string `gorm:"column:user_id"`
+	UserName     string `gorm:"column:user_name"`
+	CodeVerifier string `gorm:"column:code_verifier"`
+	State        string
+	Name         string
+	DateCreated  time.Time `gorm:"column:date_created"`
+	ExpiresIn    time.Time `gorm:"column:expires_in"`
+}
+
+type FacebookAccount struct {
+	AccessToken  string
+	RefreshToken string
+	UserID       string `gorm:"column:user_id"`
+	UserName     string `gorm:"column:user_name"`
+	CodeVerifier string `gorm:"column:code_verifier"`
+	State        string
+	Name         string
+	DateCreated  time.Time `gorm:"column:date_created"`
+	ExpiresIn    time.Time `gorm:"column:expires_in"`
+}
+
+type GoogleAccount struct {
+	AccessToken  string
+	RefreshToken string
+	UserID       string `gorm:"column:user_id"`
+	Email        string
+	DateCreated  time.Time
+}
+
+type GeneralSettings struct {
+	ID       uint `gorm:"primaryKey"`
+	Language string
+	Theme    string
+}
+
+type Social struct {
+	Provider string
+	ID       string
+}
+
+// func DecryptFingerprint(fingerprint string) (string, error) {
+//     return crypto.Decrypt(fingerprint)
+// }
+
+func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
+	// u.ID = uuid.New().String()
+	// err = u.HashPassword()
+	// if err != nil {
+	// 	return err
+	// }
+	return nil
+}
+
+func CreateUser(user User, account string) (User, error) {
+	// Generate a UUID for the user ID
+	user.ID = uuid.New().String()
+
+	// Set the creation and last active dates
+	now := time.Now()
+	user.DateCreated = now
+	user.LastActive = now
+
+	// Set default values for some fields
+	user.SupportEnabled = false
+	user.TwoFactorAuthEnabled = false
+	user.HasPassword = false
+	// user.AccountID = account
+
+	// Encrypt the password if present
+	if user.Password != "" {
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), 10)
+		if err != nil {
+			return User{}, err
+		}
+		user.Password = string(hashedPassword)
+		user.HasPassword = true
+	}
+
+	// Create a new user record in the database
+	err := db.Create(&user).Error
+	if err != nil {
+		return User{}, err
+	}
+
+	// Create a new account record in the database
+	accountRecord := Account{
+		ID:         uuid.New().String(),
+		UserID:     user.ID,
+		Permission: "owner",
+		Onboarded:  false,
+	}
+
+	err = db.Create(&accountRecord).Error
+	if err != nil {
+		return User{}, err
+	}
+
+	// Create a new general settings record in the database
+	generalSettingsRecord := GeneralSettings{
+		Language: "en",
+		Theme:    "light",
+	}
+
+	err = db.Create(&generalSettingsRecord).Error
+	if err != nil {
+		return User{}, err
+	}
+
+	// Update the user record with the new general settings ID
+	err = db.Model(&user).Update("general_settings_id", generalSettingsRecord.ID).Error
+	if err != nil {
+		return User{}, err
+	}
+
+	// Update the account record with the account ID
+	err = db.Model(&accountRecord).Update("account_id", accountRecord.ID).Error
+	if err != nil {
+		return User{}, err
+	}
+	return user, nil
+}
+
+func Get(id uuid.UUID, email string, account string, social *Social, permission string) ([]User, error) {
+	var users []User
+	var cond = make(map[string]interface{})
+
+	if account != "" {
+		cond["accounts.id"] = account
+	}
+	if permission != "" {
+		cond["accounts.permission"] = permission
+	}
+
+	if social != nil {
+		providerIDField := fmt.Sprintf("%s_id", social.Provider)
+		cond[providerIDField] = social.ID
+
+		err := database.DB.Joins("JOIN accounts ON users.id = accounts.user_id").
+			Where(cond).Find(&users).Error
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		if id != uuid.Nil {
+			cond["id"] = id
+		}
+		if email != "" {
+			cond["email"] = email
+		}
+
+		err := database.DB.Joins("JOIN accounts ON users.id = accounts.user_id").
+			Where(cond).Find(&users).Error
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	for i, user := range users {
+		user.Accounts = nil
+		user.HasPassword = user.Password != ""
+		user.Password = ""
+		if account != "" {
+			user.AccountID = account
+		} else {
+			user.AccountID = user.DefaultAccount
+		}
+		for _, account := range user.Accounts {
+			if account.ID == user.AccountID {
+				user.Permission = account.Permission
+				user.Onboarded = account.Onboarded
+				break
+			}
+		}
+		users[i] = user
+	}
+
+	return users, nil
+}
+
+// GetAccounts returns a list of accounts that the user with the given ID is attached to
+func GetAccounts(db *gorm.DB, userID string) ([]Account, error) {
+	var userAccounts []Account
+
+	// Join the User and Account tables to get the account data
+	err := db.Table("users").
+		Select("users.id, users.email, account.id AS account_id, account.permission, account.name").
+		Joins("LEFT JOIN account ON users.account_id = account.id").
+		Where("users.id = ?", userID).
+		Find(&userAccounts).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	// Group the accounts by ID and format the results
+	accountMap := make(map[string][]Account)
+	for _, account := range userAccounts {
+		accountMap[account.ID] = append(accountMap[account.ID], account)
+	}
+
+	var results []Account
+	for _, accounts := range accountMap {
+		result := Account{
+			ID:         accounts[0].ID,
+			UserID:     accounts[0].UserID,
+			Permission: accounts[0].Permission,
+		}
+		results = append(results, result)
+	}
+
+	return results, nil
+}
+
+// AddAccount assigns a user to an account with a specified permission
+func (u *User) AddAccount(db *gorm.DB, accountID string, permission string) error {
+	var user User
+	result := db.Where("id = ?", u.ID).First(&user)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return errors.New("No user with that ID")
+	}
+	if result.Error != nil {
+		return result.Error
+	}
+
+	account := Account{
+		ID:         accountID,
+		UserID:     u.ID,
+		Permission: permission,
+		Onboarded:  false,
+	}
+
+	user.Accounts = append(user.Accounts, account)
+
+	result = db.Save(&user)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
+}
+
+this is also account model and it's methods
+
+type UserAndAccount struct {
+	User
+	Account
+}
+
+type Account struct {
+	gorm.Model
+	ID                         string `gorm:"primaryKey"`
+	Permission                 string
+	AccountType                string
+	AccountID                  string
+	Onboarded                  bool
+	Interests                  []string `gorm:"type:text;default:[]"`
+	UserID                     string   `gorm:"column:user_id"`
+	Plan                       string
+	Active                     bool
+	StripeCustomerID           string `gorm:"column:stripe_customer_id"`
+	StripeSubscriptionID       string `gorm:"column:stripe_subscription_id"`
+	StripeSubscriptionStatus   string
+	PayStackSubscriptionID     string
+	PayStackSubscriptionStatus string
+	PayStackCustomerID         string
+}
+
+// CreateAccount /*
+func (a *Account) CreateAccount(userId, permission string) (*Account, error) {
+	a.ID = uuid.New().String()
+	a.Active = true
+	a.Permission = permission
+	a.UserID = userId
+	a.CreatedAt = time.Now()
+	a.UpdatedAt = time.Now()
+
+	result := db.Create(&a)
+	return a, result.Error
+}
+
+// GetAccount /*
+func (a *Account) GetAccount(id string) (*UserAndAccount, error) {
+	result := db.Where("id = ?", id).First(&a)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	// get owner info
+	var userData *User
+
+	result = db.Table("user").
+		Select("name, email").
+		Where("account_id = ? AND (permission = ? OR permission = ?)",
+			id, "owner", "master").
+		Scan(&userData)
+	if result.Error != nil && result.Error != gorm.ErrRecordNotFound {
+		return nil, result.Error
+	}
+
+	if userData != nil {
+		userAccount := UserAndAccount{
+			User:    *userData,
+			Account: *a,
+		}
+		return &userAccount, nil
+	}
+	return nil, nil
+}
+
+this is also login model and it's methods
+
+type Login struct {
+	ID      string    `gorm:"primaryKey"`
+	UserID  string    `gorm:"not null"`
+	IP      string    `gorm:"not null"`
+	Time    time.Time `gorm:"not null"`
+	Browser string
+	Device  string
+}
+
+// LoginModel is the model for login schema
+type LoginModel struct {
+	DB *gorm.DB
+}
+
+func (m *LoginModel) Create(userID string, ip string, browser string, device string) (*Login, error) {
+	now := time.Now()
+
+	login := &Login{
+		ID:      uuid.New().String(),
+		UserID:  userID,
+		IP:      ip,
+		Time:    now,
+		Browser: browser,
+		Device:  device,
+	}
+
+	if err := m.DB.Create(login).Error; err != nil {
+		return nil, err
+	}
+
+	return login, nil
+}
+
+type LoginFlag struct {
+	IP      string
+	Device  string
+	Browser string
+}
+
+type LoginVerification struct {
+	Flag  *LoginFlag
+	Level int
+	Time  string
+}
+
+func (m *LoginModel) Verify(userID string, current *Login) (*LoginVerification, error) {
+	riskLevel := 0
+
+	flag := &LoginFlag{
+		IP:      current.IP,
+		Device:  current.Device,
+		Browser: current.Browser,
+	}
+
+	var history []Login
+	if err := m.DB.Where("user_id = ? AND id != ?", userID, current.ID).
+		Limit(500).
+		Find(&history).Error; err != nil {
+		return nil, err
+	}
+
+	// if this isn't the user's first log in: perform security checks
+	if len(history) > 0 {
+		// has the user logged in from this IP address before?
+		if findIndex(history, func(i int) bool { return history[i].IP == current.IP }) < 0 {
+			riskLevel++
+		}
+
+		// has the user logged in with this browser before?
+		if findIndex(history, func(i int) bool { return history[i].Browser == current.Browser }) < 0 {
+			riskLevel++
+		}
+
+		// if this is a third device, set maximum risk level
+		devices := len(filter(history, func(i int) bool { return history[i].Device != current.Device }))
+		if devices > 1 {
+			riskLevel++
+		}
+	}
+
+	timeStr := current.Time.Format("2006-01-02 15:04:05")
+
+	return &LoginVerification{
+		Flag:  flag,
+		Level: riskLevel,
+		Time:  timeStr,
+	}, nil
+}
+
+
+I want you yo to solve errors in any part of this code and complete the signup and signin process. don't leave any error in the code.

@@ -239,7 +239,7 @@ func Signin(c *fiber.Ctx) error {
 		if err := utility.Validate(data.ToJson(), []string{"token"}); err != nil {
 			return err
 		}
-		decode, err := auth.Token.Verify(data.Token)
+		decode, err := (*models.Token).Verify("app", data.Token)
 		if err != nil {
 			return fiber.NewError(fiber.StatusUnauthorized, "Invalid token")
 		}
@@ -296,7 +296,7 @@ func Signin(c *fiber.Ctx) error {
 	}
 
 	// generate the token
-	token, err := auth.Token.Generate(userData.ID, userData.AccountID, data.Provider, data.ProviderID, data.Email)
+	token, err := (*models.Token).Generate(userData.ID, userData.AccountID, data.Provider, data.ProviderID, data.Email)
 	if err != nil {
 		return err
 	}
