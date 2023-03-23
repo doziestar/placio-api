@@ -1,22 +1,51 @@
 package api
 
 import (
-	"github.com/gofiber/fiber/v2"
 	"placio-app/controller"
+	"placio-app/utility"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 func AuthRoutes(app *fiber.App) {
 	// Auth Routes
 	routerGroup := app.Group("/api")
-	v1 := routerGroup.Group("/v1/auth")
+	api := routerGroup.Group("/api/auth")
 	{
-		v1.Post("/login", controller.Login)
-		v1.Post("/signup", controller.SignUp)
-		v1.Post("/logout", controller.LogOut)
-		v1.Get("/refresh", controller.RefreshToken)
-		v1.Post("/verify", controller.ChangePassword)
-		v1.Post("/verify", controller.VerifyEmail)
-		v1.Post("/reset", controller.ResetPassword)
-		v1.Post("/verify", controller.VerifyPhone)
+		api.Post("/", utility.Use(controller.Signin))
+		api.Post("/signup", utility.Use(controller.SignUp))
+		api.Post("/logout", utility.Use(controller.LogOut))
+		api.Get("/refresh", utility.Use(controller.RefreshToken))
+		api.Post("/verify", utility.Use(controller.ChangePassword))
+		api.Post("/verify", utility.Use(controller.VerifyEmail))
+		api.Post("/reset", utility.Use(controller.ResetPassword))
+		api.Post("/verify", utility.Use(controller.VerifyPhone))
+		// api.post(
+		// 	"/api/auth/otp",
+		// 	use(authController.signin.otp))
+		
+		// api.post(
+		// 	"/api/auth/magic",
+		// 	use(authController.magic))
+		
+		// api.post(
+		// 	"/api/auth/magic/verify",
+		// 	use(authController.magic.verify))
+		
+		// api.post(
+		// 	"/api/auth/password/reset/request",
+		// 	limiter(throttle.password_reset),
+		// 	use(userController.password.reset.request))
+		
+		// api.post(
+		// 	"/api/auth/password/reset",
+		// 	limiter(throttle.password_reset),
+		// 	use(userController.password.reset))
+		
+		// api.post("/api/auth/switch", utility.Verify("user", ""), use(authController.switch))
+		
+		// api.post("/api/auth/impersonate", use(authController.impersonate))
+		
+		// api.delete("/api/auth", auth.verify("user"), use(authController.signout))
 	}
 }

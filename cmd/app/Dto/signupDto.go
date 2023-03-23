@@ -8,7 +8,7 @@ import (
 type SignUpDto struct {
 	Email           string `json:"email" validate:"required,email"`
 	Password        string `json:"password" validate:"required,min=8"`
-	PasswordConfirm string `json:"passwordConfirm" validate:"required,min=8"`
+	ConfirmPassword string `json:"ConfirmPassword" validate:"required,min=8"`
 	Name            string `json:"name" validate:"required"`
 	Phone           string `json:"phone" validate:"required"`
 	Role            string `json:"role" validate:"required"`
@@ -39,7 +39,7 @@ func (m *SignUpDto) UnmarshalJSON(data []byte) error {
 }
 
 func (m *SignUpDto) IsValid() (SignUpDto, error) {
-	if m.Password != m.PasswordConfirm {
+	if m.Password != m.ConfirmPassword {
 		return SignUpDto{}, errors.ErrInvalid
 	}
 	if m.Role != "business" && m.Role != "user" {

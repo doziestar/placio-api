@@ -7,8 +7,10 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 	"path"
 	"strings"
+	"time"
 )
 
 type EmailContent struct {
@@ -25,17 +27,17 @@ var emails map[string]EmailContent
 
 func init() {
 	// Load email content from JSON file
-	content, err := ioutil.ReadFile("../emails/content.json")
-	if err != nil {
-		panic(err)
-	}
-	err = json.Unmarshal(content, &emails)
-	if err != nil {
-		panic(err)
-	}
+	// content, err := ioutil.ReadFile("emails/content.json")
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// err = json.Unmarshal(content, &emails)
+	// if err != nil {
+	// 	panic(err)
+	// }
 }
 
-func Send(to string, template string, data map[string]string) error {
+func (e *EmailContent) Send(to string, template string, data map[string]string) error {
 	// Validate email address
 	if !isValidEmail(to) {
 		return errors.New("Invalid email address")
@@ -55,16 +57,16 @@ func Send(to string, template string, data map[string]string) error {
 
 	// Send email via Mailgun API
 	values := url.Values{}
-	values.Set("from", settings.sender)
+	values.Set("from", os.Getenv("MAILGUN_FROM"))
 	values.Set("to", to)
 	values.Set("subject", content.Subject)
 	values.Set("html", html)
 	client := &http.Client{}
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/%s/messages", settings.baseURL, settings.domain), bytes.NewBufferString(values.Encode()))
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s/%s/messages", os.Getenv("Base_URL"), os.Getenv("Domain")), bytes.NewBufferString(values.Encode()))
 	if err != nil {
 		return err
 	}
-	req.SetBasicAuth("api", settings.apiKey)
+	req.SetBasicAuth("api", os.Getenv("MAILGUN_API_KEY"))
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	resp, err := client.Do(req)
 	if err != nil {
@@ -76,6 +78,10 @@ func Send(to string, template string, data map[string]string) error {
 
 	fmt.Printf("Email sent to: %s\n", to)
 	return nil
+}
+
+func isValidEmail(to string) bool {
+	return strings.Contains(to, "@") && strings.Contains(to, ".")
 }
 
 func createEmail(template string, content EmailContent, values map[string]string) (string, error) {
@@ -108,7 +114,7 @@ func createEmail(template string, content EmailContent, values map[string]string
 	email = strings.ReplaceAll(email, "{{body}}", body)
 	email = strings.ReplaceAll(email, "{{buttonURL}}", content.Button.URL)
 	email = strings.ReplaceAll(email, "{{buttonLabel}}", content.Button.Label)
-	
+
 	email = strings.ReplaceAll(email, "{{year}}", fmt.Sprintf("%d", time.Now().Year()))
 
 	if strings.Contains(email, "{{") {

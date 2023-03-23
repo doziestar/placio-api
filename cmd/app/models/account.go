@@ -1,6 +1,16 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"github.com/google/uuid"
+	"gorm.io/gorm"
+)
+
+type UserAndAccount struct {
+	User
+	Account
+}
 
 type Account struct {
 	gorm.Model
@@ -13,115 +23,102 @@ type Account struct {
 	UserID                     string   `gorm:"column:user_id"`
 	Plan                       string
 	Active                     bool
-	StripeCustomerID           string
-	StripeSubscriptionID       string
+	StripeCustomerID           string `gorm:"column:stripe_customer_id"`
+	StripeSubscriptionID       string `gorm:"column:stripe_subscription_id"`
 	StripeSubscriptionStatus   string
 	PayStackSubscriptionID     string
 	PayStackSubscriptionStatus string
 	PayStackCustomerID         string
+	Status                     string    `gorm:"column:status"`
+	LastActive                 time.Time `gorm:"column:last_active"`
+	Disabled                   bool      `gorm:"column:disabled"`
 }
 
-/*
- * account.create()
- * create a new account and return the account id
- */
- func (a *Account) Create() error {
-	db := getDB()
-
+// CreateAccount /*
+func (a *Account) CreateAccount(userId, permission string) (*Account, error) {
 	a.ID = uuid.New().String()
-	a.Name = "My Account"
 	a.Active = true
-	a.DateCreated = time.Now()
+	a.Permission = permission
+	a.UserID = userId
+	a.CreatedAt = time.Now()
+	a.UpdatedAt = time.Now()
 
 	result := db.Create(&a)
-	return result.Error
+	return a, result.Error
 }
 
-/*
- * account.get()
- * get an account by email or id
- */
-func (a *Account) Get(id string) error {
-	db := getDB()
-
+// GetAccount /*
+func (a *Account) GetUserAccount(id string) (*UserAndAccount, error) {
 	result := db.Where("id = ?", id).First(&a)
 	if result.Error != nil {
-		return result.Error
+		return nil, result.Error
 	}
 
 	// get owner info
-	var userData struct {
-		Name  string
-		Email string
-	}
+	var userData *User
+
 	result = db.Table("user").
 		Select("name, email").
 		Where("account_id = ? AND (permission = ? OR permission = ?)",
 			id, "owner", "master").
 		Scan(&userData)
 	if result.Error != nil && result.Error != gorm.ErrRecordNotFound {
-		return result.Error
+		return nil, result.Error
 	}
 
-	if userData.Name != "" && userData.Email != "" {
-		a.OwnerName = userData.Name
-		a.OwnerEmail = userData.Email
+	if userData != nil {
+		userAccount := UserAndAccount{
+			User:    *userData,
+			Account: *a,
+		}
+		return &userAccount, nil
 	}
-
-	return nil
+	return nil, nil
 }
 
-/*
- * account.subscription()
- * get the subscription status for this account
- */
-func (a *Account) Subscription(id string) (string, error) {
-	db := getDB()
-
+// GetAccount /*
+func (a *Account) GetAccount(id string) (*Account, error) {
 	result := db.Where("id = ?", id).First(&a)
-	if result.Error != nil {
-		return "", result.Error
-	}
-
-	if a.Plan == "free" {
-		return "active", nil
-	}
-
-	if a.StripeSubID == "" {
-		return "inactive", nil
-	}
-
-	subscription, err := stripe.Subscription(a.StripeSubID)
-	if err != nil {
-		return "", err
-	}
-
-	status := subscription.Status
-	if status != "active" && status != "trialing" {
-		// update account to inactive
-		db.Model(&a).Update("active", false)
-	}
-
-	return status, nil
+	return a, result.Error
 }
 
-/*
- * account.update()
- * update the account profile
- */
-func (a *Account) Update(data map[string]interface{}) error {
-	db := getDB()
+// Subscription /*
+//func (a *Account) Subscription(id string) (string, error) {
+//	result := db.Where("id = ?", id).First(&a)
+//	if result.Error != nil {
+//		return "", result.Error
+//	}
+//
+//	if a.Plan == "free" {
+//		return "active", nil
+//	}
+//
+//	if a.StripeSubscriptionID == "" {
+//		return "inactive", nil
+//	}
+//
+//	subscription, err := stripe.Subscription(a.StripeSubID)
+//	if err != nil {
+//		return "", err
+//	}
+//
+//	status := subscription.Status
+//	if status != "active" && status != "trialing" {
+//		// update account to inactive
+//		db.Model(&a).Update("active", false)
+//	}
+//
+//	return status, nil
+//}
 
+// UpdateAccount Update /*
+func (a *Account) UpdateAccount(data map[string]interface{}) error {
 	result := db.Model(&a).Updates(data)
 	return result.Error
 }
 
-/*
- * account.delete()
- * delete the account and all its users
- */
-func (a *Account) Delete(id string) error {
-	db := getDB()
+// DeleteAccount /*
+func (a *Account) DeleteAccount(id string) error {
 
 	tx := db.Begin()
 	if tx.Error != nil {
@@ -142,5 +139,15 @@ func (a *Account) Delete(id string) error {
 		return result.Error
 	}
 
-	return tx
+	return tx.Commit().Error
 }
+
+func (a *Account) GetSubscription(id string) (*Account, error) {
+	result := db.Where("id = ?", id).First(&a)
+	return a, result.Error
+}
+
+//
+//func (a *Account) GetUserAccounts(id string) (interface{}, interface{}) {
+//
+//}
