@@ -2,7 +2,6 @@ package models
 
 import (
 	"bytes"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -28,14 +27,14 @@ var emails map[string]EmailContent
 
 func init() {
 	// Load email content from JSON file
-	content, err := ioutil.ReadFile("../emails/content.json")
-	if err != nil {
-		panic(err)
-	}
-	err = json.Unmarshal(content, &emails)
-	if err != nil {
-		panic(err)
-	}
+	// content, err := ioutil.ReadFile("emails/content.json")
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// err = json.Unmarshal(content, &emails)
+	// if err != nil {
+	// 	panic(err)
+	// }
 }
 
 func (e *EmailContent) Send(to string, template string, data map[string]string) error {

@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"errors"
+	"github.com/golang-jwt/jwt"
 	"os"
 	"strings"
 	"time"
@@ -45,7 +46,7 @@ func VerifyToken(tokenString string, secret string) (*JWTClaims, error) {
 	}
 }
 
-func verify(permission string, scope string) fiber.Handler {
+func Verify(permission string, scope string) fiber.Handler {
 	return func(c *fiber.Ctx) error {
 		header := c.Get("Authorization")
 

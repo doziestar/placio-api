@@ -3,6 +3,9 @@ package utility
 import (
 	"fmt"
 	"strings"
+
+	"github.com/getsentry/sentry-go"
+	"github.com/gofiber/fiber/v2"
 )
 
 func Validate(form map[string]interface{}, fields []string) error {
@@ -75,4 +78,15 @@ func Assert(data interface{}, err string, input map[string]interface{}) bool {
 		panic(m)
 	}
 	return true
+}
+
+func Use(fn func(*fiber.Ctx) error) fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		err := fn(c)
+		if err != nil {
+			sentry.CaptureException(err)
+			return c.Next()
+		}
+		return nil
+	}
 }
