@@ -88,8 +88,8 @@ services:
       - ./:/app
       - ./cmd/app:/app/cmd/app
       - ./config:/app/config
+    env_file:
+      - ./envs/local
+      
 
-    environment:
-      DATABASE_URL: "postgres://dozie:918273645dozie@postgres-db:5432/placio?sslmode=disable"
-      ACCESS_TOKEN_SECRET: "918273645dozie"
 
