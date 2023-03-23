@@ -1,8 +1,10 @@
 package api
 
 import (
-	"github.com/gofiber/fiber/v2"
 	"placio-app/controller"
+	"placio-app/utility"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 func AuthRoutes(app *fiber.App) {
@@ -10,13 +12,13 @@ func AuthRoutes(app *fiber.App) {
 	routerGroup := app.Group("/api")
 	v1 := routerGroup.Group("/v1/auth")
 	{
-		v1.Post("/login", controller.Login)
-		v1.Post("/signup", controller.SignUp)
-		v1.Post("/logout", controller.LogOut)
-		v1.Get("/refresh", controller.RefreshToken)
-		v1.Post("/verify", controller.ChangePassword)
-		v1.Post("/verify", controller.VerifyEmail)
-		v1.Post("/reset", controller.ResetPassword)
-		v1.Post("/verify", controller.VerifyPhone)
+		v1.Post("/auth/signin", utility.Use(controller.Signin))
+		v1.Post("/signup", utility.Use(controller.SignUp))
+		v1.Post("/logout", utility.Use(controller.LogOut))
+		v1.Get("/refresh", utility.Use(controller.RefreshToken))
+		v1.Post("/verify", utility.Use(controller.ChangePassword))
+		v1.Post("/verify", utility.Use(controller.VerifyEmail))
+		v1.Post("/reset", utility.Use(controller.ResetPassword))
+		v1.Post("/verify", utility.Use(controller.VerifyPhone))
 	}
 }

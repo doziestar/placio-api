@@ -222,6 +222,27 @@ func (s *SigninRequest) ToJson() map[string]interface{} {
 }
 
 // Signin authenticates a user via email/password or social network
+// Signin authenticates a user and returns an access token.
+// The function performs the following steps:
+// 1. Parses the incoming request body into a SigninRequest.
+// 2. Validates the input data.
+// 3. Checks if the user exists.
+// 4. Verifies the user's password.
+// 5. Retrieves the user's account data.
+// 6. Logs the sign-in attempt and checks for suspicious activity.
+// 7. Generates an access token for the authenticated user.
+// 8. Returns the access token in a SigninResponse.
+//
+// @Summary Authenticate a user
+// @Description Authenticate a user and return an access token
+// @Tags authentication
+// @Accept json
+// @Produce json
+// @Param SigninRequest body SigninRequest true "Sign In Data"
+// @Success 200 {object} SigninResponse "Successfully signed in"
+// @Failure 400 {object} fiber.Error "Bad Request"
+// @Failure 401 {object} fiber.Error "Unauthorized"
+// @Router /api/v1/auth/signin [post]
 func Signin(c *fiber.Ctx) error {
 	data := new(SigninRequest)
 	if err := c.BodyParser(data); err != nil {

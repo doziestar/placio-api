@@ -8,6 +8,26 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// CreateAccount creates a new user account and assigns the user to the account.
+// The function performs the following steps:
+// 1. Parses the incoming request body into a SignUpDto.
+// 2. Validates the input data.
+// 3. Checks if the user has already registered an account.
+// 4. Creates a new account and assigns the user to it.
+// 5. Sends a welcome email to the user.
+// 6. Authenticates the user (currently commented out).
+//
+// @Summary Create a new account
+// @Description Create a new account and assign the user to it
+// @Tags accounts
+// @Accept json
+// @Produce json
+// @Param SignUpDto body Dto.SignUpDto true "Sign Up Data"
+// @Success 200 {object} models.Account "Successfully created account"
+// @Failure 400 {object} map[string]string "Bad Request"
+// @Failure 403 {object} map[string]string "Forbidden"
+// @Failure 500 {object} map[string]string "Internal Server Error"
+// @Router /api/v1/accounts [post]
 func CreateAccount(c *fiber.Ctx) error {
 	data := new(Dto.SignUpDto)
 
