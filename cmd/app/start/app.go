@@ -23,6 +23,9 @@ func Initialize(PORT string, app *fiber.App) {
 		// of transactions for performance monitoring.
 		// We recommend adjusting this value in production,
 		TracesSampleRate: 1.0,
+		ServerName:       "placio-api",
+		Release:          "1.0.0",
+		Environment:      "development",
 	})
 	if err != nil {
 		log.Fatalf("sentry.Init: %s", err)

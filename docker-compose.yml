@@ -89,7 +89,7 @@ services:
       - ./cmd/app:/app/cmd/app
       - ./config:/app/config
     env_file:
-      - ./envs/local
+      - ./.envs/.local
       
 
 
