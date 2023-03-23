@@ -51,3 +51,41 @@ func UserRoutes(app *fiber.App) {
 		v1.Get("/:id/payments", utility.Use(controller.GetUserPayments))
 	}
 }
+
+// api.post('/api/user', limiter(throttle.signup), use(userController.create));
+
+// api.get('/api/user', auth.verify('user', 'user.read'), use(userController.get));
+
+// api.get('/api/user/account', auth.verify('user'), use(userController.account));
+
+// api.get(
+// 	'/api/user/permissions',
+// 	auth.verify('user', 'user.read'),
+// 	use(userController.permissions)
+// );
+
+// api.patch(
+// 	'/api/user',
+// 	auth.verify('user', 'user.update'),
+// 	use(userController.update)
+// );
+
+// api.put(
+// 	'/api/user/password',
+// 	auth.verify('user'),
+// 	use(userController.password)
+// );
+
+// api.put('/api/user/2fa', auth.verify('user'), use(userController['2fa']));
+
+// api.post(
+// 	'/api/user/2fa/verify',
+// 	auth.verify('user'),
+// 	use(userController['2fa'].verify)
+// );
+
+// api.delete(
+// 	'/api/user',
+// 	auth.verify('user', 'user.delete'),
+// 	use(userController.delete)
+// );
