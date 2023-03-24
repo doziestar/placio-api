@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/getsentry/sentry-go"
+	sentry "github.com/getsentry/sentry-go"
 	"github.com/gofiber/fiber/v2"
 )
 
