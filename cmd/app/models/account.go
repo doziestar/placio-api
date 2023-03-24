@@ -1,6 +1,8 @@
 package models
 
 import (
+	"context"
+	"placio-pkg/logger"
 	"time"
 
 	"github.com/google/uuid"
@@ -19,7 +21,7 @@ type Account struct {
 	AccountType                string
 	AccountID                  string
 	Onboarded                  bool
-	Interests                  []string `gorm:"type:text;default:[]"`
+	Interests                  []string `gorm:"type:text[]"`
 	UserID                     string   `gorm:"column:user_id"`
 	Plan                       string
 	Active                     bool
@@ -35,13 +37,15 @@ type Account struct {
 }
 
 // CreateAccount /*
-func (a *Account) CreateAccount(userId, permission string) (*Account, error) {
+func (a *Account) CreateAccount(userID, permission string, db *gorm.DB) (*Account, error) {
+	logger.Info(context.Background(), "Creating account")
 	a.ID = uuid.New().String()
 	a.Active = true
 	a.Permission = permission
-	a.UserID = userId
+	a.UserID = userID
 	a.CreatedAt = time.Now()
 	a.UpdatedAt = time.Now()
+	a.Interests = []string{}
 
 	result := db.Create(&a)
 	return a, result.Error

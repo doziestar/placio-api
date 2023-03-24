@@ -65,9 +65,9 @@ func (a *Auth) LogIn(data Dto.LoginDto) (Dto.UserResponseDto, error) {
 	// get user details
 	//userDetails := a.DB.Model(&a.User).Association("UserDetails").Find(&a.User.UserDetails)
 	userData := models.User{
-		ID:    a.User.ID,
-		Name:  a.User.Name,
-		Email: a.User.Email,
+		UserID: a.User.UserID,
+		Name:   a.User.Name,
+		Email:  a.User.Email,
 	}
 	// generate token
 	token, err := a.User.GenerateToken(userData)
@@ -77,7 +77,7 @@ func (a *Auth) LogIn(data Dto.LoginDto) (Dto.UserResponseDto, error) {
 
 	// return user details
 	return Dto.UserResponseDto{
-		ID:                    a.User.ID,
+		ID:                    a.User.UserID,
 		Email:                 a.User.Email,
 		Name:                  a.User.Name,
 		AccessToken:           token.Access,
@@ -119,7 +119,7 @@ func (a *Auth) SignUp(data Dto.SignUpDto) (userRespDto Dto.UserResponseDto, err 
 			}
 
 			userRespDto = Dto.UserResponseDto{
-				ID:                    newUser.ID,
+				ID:                    newUser.UserID,
 				Email:                 newUser.Email,
 				Name:                  newUser.Name,
 				AccessToken:           token.Access,
