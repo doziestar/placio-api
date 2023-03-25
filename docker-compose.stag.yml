@@ -65,7 +65,6 @@ services:
     ports:
       - "5050:5050"
     networks:
-      - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
       - default
     depends_on:
       - db
