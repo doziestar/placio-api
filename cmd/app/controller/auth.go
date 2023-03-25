@@ -92,7 +92,7 @@ func SignUp(c *fiber.Ctx) error {
 		Email:    userData.Email,
 		Password: userData.Password,
 		Name:     userData.Name,
-		//Role:     userData.Role,
+		//AccountType:     userData.AccountType,
 	})
 
 	user, err := auth.SignUp(data)

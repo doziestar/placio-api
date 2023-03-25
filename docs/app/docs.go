@@ -24,6 +24,67 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/accounts": {
+            "post": {
+                "description": "Create a new account and assign the user to it",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "accounts"
+                ],
+                "summary": "Create a new account",
+                "parameters": [
+                    {
+                        "description": "Sign Up Data",
+                        "name": "SignUpDto",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.SignUpDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully created account",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.UserResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/auth/change": {
             "get": {
                 "description": "Change password",
@@ -173,6 +234,52 @@ const docTemplate = `{
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/signin": {
+            "post": {
+                "description": "Authenticate a user and return an access token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "authentication"
+                ],
+                "summary": "Authenticate a user",
+                "parameters": [
+                    {
+                        "description": "Sign In Data",
+                        "name": "SigninRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/cmd_app_controller.SigninRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully signed in",
+                        "schema": {
+                            "$ref": "#/definitions/cmd_app_controller.SigninResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/fiber.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/fiber.Error"
                         }
                     }
                 }
@@ -926,6 +1033,54 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "cmd_app_controller.SigninRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "magic_view_url": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "provider": {
+                    "type": "string"
+                },
+                "provider_id": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "cmd_app_controller.SigninResponse": {
+            "type": "object",
+            "properties": {
+                "2fa_required": {
+                    "type": "boolean"
+                },
+                "message": {
+                    "type": "string"
+                },
+                "token": {
+                    "$ref": "#/definitions/placio-app_models.Token"
+                }
+            }
+        },
+        "fiber.Error": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
         "gorm.DeletedAt": {
             "type": "object",
             "properties": {
@@ -938,17 +1093,79 @@ const docTemplate = `{
                 }
             }
         },
+        "placio-app_Dto.Account": {
+            "type": "object",
+            "properties": {
+                "AccountID": {
+                    "type": "string"
+                },
+                "AccountType": {
+                    "type": "string"
+                },
+                "Active": {
+                    "type": "boolean"
+                },
+                "Disabled": {
+                    "type": "boolean"
+                },
+                "ID": {
+                    "type": "string"
+                },
+                "Interests": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "Onboarded": {
+                    "type": "boolean"
+                },
+                "Permission": {
+                    "type": "string"
+                },
+                "Plan": {
+                    "type": "string"
+                },
+                "Status": {
+                    "type": "string"
+                },
+                "UserID": {
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_Dto.GeneralSettings": {
+            "type": "object",
+            "properties": {
+                "ID": {
+                    "type": "string"
+                },
+                "Language": {
+                    "type": "string"
+                },
+                "Theme": {
+                    "type": "string"
+                }
+            }
+        },
         "placio-app_Dto.SignUpDto": {
             "type": "object",
             "required": [
+                "account_type",
+                "confirm_password",
                 "email",
                 "name",
                 "password",
-                "passwordConfirm",
-                "phone",
-                "role"
+                "phone"
             ],
             "properties": {
+                "account_type": {
+                    "type": "string"
+                },
+                "confirm_password": {
+                    "type": "string",
+                    "minLength": 8
+                },
                 "email": {
                     "type": "string"
                 },
@@ -959,104 +1176,168 @@ const docTemplate = `{
                     "type": "string",
                     "minLength": 8
                 },
-                "passwordConfirm": {
-                    "type": "string",
-                    "minLength": 8
-                },
                 "phone": {
-                    "type": "string"
-                },
-                "role": {
                     "type": "string"
                 }
             }
         },
-        "placio-app_Dto.Token": {
+        "placio-app_Dto.User": {
             "type": "object",
             "properties": {
-                "access": {
-                    "description": "CodeExpiresIn   time.Time     ` + "`" + `bson:\"CodeExpiresIn\"` + "`" + `",
+                "Account": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_Dto.Account"
+                    }
+                },
+                "Disabled": {
+                    "type": "boolean"
+                },
+                "Email": {
                     "type": "string"
                 },
-                "accessCreateAt": {
+                "GeneralSettings": {
+                    "$ref": "#/definitions/placio-app_Dto.GeneralSettings"
+                },
+                "HasPassword": {
+                    "type": "boolean"
+                },
+                "ID": {
                     "type": "string"
                 },
-                "accessExpiresIn": {
-                    "$ref": "#/definitions/time.Duration"
-                },
-                "clientID": {
+                "Name": {
                     "type": "string"
                 },
-                "code": {
+                "Onboarded": {
+                    "type": "boolean"
+                },
+                "Permission": {
                     "type": "string"
+                }
+            }
+        },
+        "placio-app_Dto.UserResponse": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "$ref": "#/definitions/placio-app_Dto.UserToken"
                 },
-                "codeChallenge": {
-                    "type": "string"
-                },
-                "codeChallengeMethod": {
-                    "type": "string"
-                },
-                "codeCreateAt": {
-                    "type": "string"
-                },
-                "codeExpiresIn": {
-                    "$ref": "#/definitions/time.Duration"
-                },
-                "redirectURI": {
-                    "type": "string"
-                },
-                "refresh": {
-                    "description": "AccessExpiresIn  time.Time ` + "`" + `bson:\"AccessExpiresIn\"` + "`" + `",
-                    "type": "string"
-                },
-                "refreshCreateAt": {
-                    "type": "string"
-                },
-                "refreshExpiresIn": {
-                    "description": "RefreshExpiresIn time.Time ` + "`" + `bson:\"RefreshExpiresIn\"` + "`" + `",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/time.Duration"
-                        }
-                    ]
-                },
-                "scope": {
-                    "type": "string"
-                },
-                "userID": {
-                    "type": "string"
+                "user": {
+                    "$ref": "#/definitions/placio-app_Dto.User"
                 }
             }
         },
         "placio-app_Dto.UserResponseDto": {
             "type": "object",
             "properties": {
+                "accessToken": {
+                    "type": "string"
+                },
+                "accessTokenExpiresIn": {
+                    "$ref": "#/definitions/time.Duration"
+                },
                 "email": {
                     "type": "string"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "name": {
                     "type": "string"
                 },
-                "token": {
-                    "$ref": "#/definitions/placio-app_Dto.Token"
+                "refreshToken": {
+                    "type": "string"
+                },
+                "refreshTokenExpiresIn": {
+                    "$ref": "#/definitions/time.Duration"
                 }
             }
         },
-        "placio-app_models.AccountType": {
-            "type": "string",
-            "enum": [
-                "user",
-                "business",
-                "admin"
-            ],
-            "x-enum-varnames": [
-                "UserAccount",
-                "BusinessAccount",
-                "Admin"
-            ]
+        "placio-app_Dto.UserToken": {
+            "type": "object",
+            "properties": {
+                "Access": {
+                    "type": "string"
+                },
+                "AccessExpiresIn": {
+                    "type": "integer"
+                },
+                "Refresh": {
+                    "type": "string"
+                },
+                "RefreshExpiresIn": {
+                    "type": "integer"
+                },
+                "UserID": {
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_models.Account": {
+            "type": "object",
+            "properties": {
+                "accountID": {
+                    "type": "string"
+                },
+                "accountType": {
+                    "type": "string"
+                },
+                "active": {
+                    "type": "boolean"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "$ref": "#/definitions/gorm.DeletedAt"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "lastActive": {
+                    "type": "string"
+                },
+                "onboarded": {
+                    "type": "boolean"
+                },
+                "payStackCustomerID": {
+                    "type": "string"
+                },
+                "payStackSubscriptionID": {
+                    "type": "string"
+                },
+                "payStackSubscriptionStatus": {
+                    "type": "string"
+                },
+                "permission": {
+                    "type": "string"
+                },
+                "plan": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "stripeCustomerID": {
+                    "type": "string"
+                },
+                "stripeSubscriptionID": {
+                    "type": "string"
+                },
+                "stripeSubscriptionStatus": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "userID": {
+                    "description": "Interests                  []string ` + "`" + `gorm:\"type:text[]\"` + "`" + `",
+                    "type": "string"
+                }
+            }
         },
         "placio-app_models.Booking": {
             "type": "object",
@@ -1100,6 +1381,82 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_models.FacebookAccount": {
+            "type": "object",
+            "properties": {
+                "accessToken": {
+                    "type": "string"
+                },
+                "codeVerifier": {
+                    "type": "string"
+                },
+                "dateCreated": {
+                    "type": "string"
+                },
+                "expiresIn": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "refreshToken": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "userID": {
+                    "type": "string"
+                },
+                "userName": {
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_models.GeneralSettings": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "description": "gorm.Model",
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "language": {
+                    "type": "string"
+                },
+                "theme": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_models.GoogleAccount": {
+            "type": "object",
+            "properties": {
+                "accessToken": {
+                    "type": "string"
+                },
+                "dateCreated": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "refreshToken": {
+                    "type": "string"
+                },
+                "userID": {
                     "type": "string"
                 }
             }
@@ -1217,42 +1574,26 @@ const docTemplate = `{
                 }
             }
         },
-        "placio-app_models.Profile": {
+        "placio-app_models.Token": {
             "type": "object",
             "properties": {
-                "avatar": {
+                "access": {
                     "type": "string"
                 },
-                "coverPic": {
+                "accessCreateAt": {
                     "type": "string"
                 },
-                "id": {
+                "accessExpiresIn": {
+                    "$ref": "#/definitions/time.Duration"
+                },
+                "accessTokenExpiry": {
                     "type": "string"
                 },
-                "phone": {
+                "codeCreateAt": {
                     "type": "string"
                 },
-                "type": {
-                    "description": "tyoe should be an enum of user, business, admin",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/placio-app_models.AccountType"
-                        }
-                    ]
-                },
-                "userID": {
-                    "type": "string"
-                }
-            }
-        },
-        "placio-app_models.User": {
-            "type": "object",
-            "properties": {
-                "createdAt": {
-                    "type": "string"
-                },
-                "deletedAt": {
-                    "$ref": "#/definitions/gorm.DeletedAt"
+                "codeExpiresIn": {
+                    "$ref": "#/definitions/time.Duration"
                 },
                 "email": {
                     "type": "string"
@@ -1260,32 +1601,158 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
-                "name": {
+                "jwt": {
                     "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "photo": {
-                    "type": "string"
-                },
-                "profile": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/placio-app_models.Profile"
-                    }
                 },
                 "provider": {
                     "type": "string"
                 },
-                "role": {
+                "providerID": {
                     "type": "string"
+                },
+                "refresh": {
+                    "type": "string"
+                },
+                "refreshCreateAt": {
+                    "type": "string"
+                },
+                "refreshExpiresIn": {
+                    "$ref": "#/definitions/time.Duration"
+                },
+                "userID": {
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_models.TwitterAccount": {
+            "type": "object",
+            "properties": {
+                "accessToken": {
+                    "type": "string"
+                },
+                "codeVerifier": {
+                    "type": "string"
+                },
+                "dateCreated": {
+                    "type": "string"
+                },
+                "expiresIn": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "refreshToken": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "userID": {
+                    "type": "string"
+                },
+                "userName": {
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_models.User": {
+            "type": "object",
+            "properties": {
+                "accountID": {
+                    "type": "string"
+                },
+                "accounts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_models.Account"
+                    }
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "dateCreated": {
+                    "type": "string"
+                },
+                "defaultAccount": {
+                    "type": "string"
+                },
+                "deletedAt": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "facebook": {
+                    "$ref": "#/definitions/placio-app_models.FacebookAccount"
+                },
+                "facebookID": {
+                    "type": "string"
+                },
+                "fingerprint": {
+                    "description": "UserID               string     ` + "`" + `gorm:\"primaryKey,unique,column:user_id\"` + "`" + `",
+                    "type": "string"
+                },
+                "generalSettings": {
+                    "$ref": "#/definitions/placio-app_models.GeneralSettings"
+                },
+                "generalSettingsID": {
+                    "description": "Interests            []string         ` + "`" + `gorm:\"type:text[]\"` + "`" + ` // ` + "`" + `gorm:\"type:text[]\"` + "`" + `",
+                    "type": "string"
+                },
+                "google": {
+                    "$ref": "#/definitions/placio-app_models.GoogleAccount"
+                },
+                "hasPassword": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "ip": {
+                    "type": "string"
+                },
+                "lastActive": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "onboarded": {
+                    "type": "boolean"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "permission": {
+                    "type": "string"
+                },
+                "supportEnabled": {
+                    "type": "boolean"
+                },
+                "twitter": {
+                    "$ref": "#/definitions/placio-app_models.TwitterAccount"
+                },
+                "twitterID": {
+                    "type": "string"
+                },
+                "twoFABackupCode": {
+                    "type": "string"
+                },
+                "twoFASecret": {
+                    "type": "string"
+                },
+                "twoFactorAuthEnabled": {
+                    "type": "boolean"
                 },
                 "updatedAt": {
                     "type": "string"
                 },
-                "verified": {
-                    "type": "boolean"
+                "userAgent": {
+                    "type": "string"
                 }
             }
         },
@@ -1327,9 +1794,14 @@ const docTemplate = `{
         "time.Duration": {
             "type": "integer",
             "enum": [
+                -9223372036854775808,
+                9223372036854775807,
                 1,
                 1000,
                 1000000,
+                1000000000,
+                60000000000,
+                3600000000000,
                 1,
                 1000,
                 1000000,
@@ -1337,9 +1809,14 @@ const docTemplate = `{
                 60000000000
             ],
             "x-enum-varnames": [
+                "minDuration",
+                "maxDuration",
                 "Nanosecond",
                 "Microsecond",
                 "Millisecond",
+                "Second",
+                "Minute",
+                "Hour",
                 "Nanosecond",
                 "Microsecond",
                 "Millisecond",

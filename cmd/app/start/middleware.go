@@ -80,7 +80,7 @@ func Middleware(app *fiber.App) {
 	//app.Use(redirect.New())
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: "*",
-		AllowHeaders: "Origin, Content-Type, Accept",
+		AllowHeaders: "Origin, Content-AccountType, Accept",
 	}))
 	app.Use(cache.New(cache.Config{
 		Next: func(c *fiber.Ctx) bool {

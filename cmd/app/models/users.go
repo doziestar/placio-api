@@ -167,10 +167,11 @@ func (user *User) CreateUser(userData Dto.SignUpDto, c *fiber.Ctx, db *gorm.DB) 
 
 	// Create a new account record in the database
 	accountRecord := Account{
-		ID:         uuid.New().String(),
-		UserID:     user.ID,
-		Permission: "owner",
-		Onboarded:  false,
+		ID:          uuid.New().String(),
+		UserID:      user.ID,
+		Permission:  "owner",
+		Onboarded:   false,
+		AccountType: userData.AccountType,
 	}
 
 	err = db.Create(&accountRecord).Error
@@ -643,8 +644,8 @@ func (u *User) GenerateToken(user User) (Dto.Token, error) {
 	// Set claims
 	claims := token.Claims.(jwt.MapClaims)
 	claims["sub"] = user.ID
-	claims["name"] = user.Name
-	claims["email"] = user.Email
+	//claims["name"] = user.Name
+	//claims["email"] = user.Email
 	//claims["account"] = user.Accounts[0].ID
 	claims["iat"] = time.Now().UTC().Unix()
 	claims["exp"] = time.Now().UTC().Add(time.Hour * 24 * 7).Unix()
@@ -674,6 +675,67 @@ func (u *User) GenerateToken(user User) (Dto.Token, error) {
 		RefreshCreateAt:  refreshCreateAt,
 		RefreshExpiresIn: time.Duration(refreshExpiresIn.Unix()),
 	}, nil
+}
+
+func (u *User) GenereateUserResponse(token *Token) Dto.UserResponse {
+	return Dto.UserResponse{
+		User: &Dto.User{
+			ID:          u.ID,
+			Name:        u.Name,
+			Email:       u.Email,
+			Disabled:    false,
+			HasPassword: false,
+			Onboarded:   false,
+			Account: func(db *gorm.DB) []Dto.Account {
+				var account []Account
+				// find accounts with user id
+				err := db.Where("user_id = ?", u.ID).First(&account).Error
+				if err != nil {
+					return []Dto.Account{}
+				}
+				// convert to dto
+				var dto []Dto.Account
+				for _, a := range account {
+					dto = append(dto, Dto.Account{
+						ID:          a.ID,
+						Permission:  a.Permission,
+						AccountType: a.AccountType,
+						AccountID:   a.AccountID,
+						Onboarded:   a.Onboarded,
+						//Interests:   a.Interests,
+						UserID:   a.UserID,
+						Plan:     a.Plan,
+						Active:   a.Active,
+						Status:   a.Status,
+						Disabled: a.Disabled,
+					})
+				}
+				return dto
+			}(database.DB),
+			Permission: "",
+			GeneralSettings: func(db *gorm.DB) Dto.GeneralSettings {
+				var settings GeneralSettings
+				// find settings with user id
+				err := db.Where("ID = ?", u.GeneralSettingsID).First(&settings).Error
+				if err != nil {
+					return Dto.GeneralSettings{}
+				}
+				// convert to dto
+				return Dto.GeneralSettings{
+					ID:       settings.ID,
+					Language: settings.Language,
+					Theme:    settings.Theme,
+				}
+			}(database.DB),
+		},
+		Token: &Dto.UserToken{
+			UserID:           u.ID,
+			Access:           token.Access,
+			AccessExpiresIn:  int64(token.AccessExpiresIn),
+			Refresh:          token.Refresh,
+			RefreshExpiresIn: int64(token.RefreshExpiresIn),
+		},
+	}
 }
 
 func (u *User) Login(c *fiber.Ctx, db *gorm.DB) error {

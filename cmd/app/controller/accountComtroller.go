@@ -29,7 +29,7 @@ import (
 // @Accept json
 // @Produce json
 // @Param SignUpDto body Dto.SignUpDto true "Sign Up Data"
-// @Success 200 {object} models.Account "Successfully created account"
+// @Success 200 {object} Dto.UserResponse "Successfully created account"
 // @Failure 400 {object} map[string]string "Bad Request"
 // @Failure 403 {object} map[string]string "Forbidden"
 // @Failure 500 {object} map[string]string "Internal Server Error"
@@ -169,8 +169,9 @@ func CreateAccount(c *fiber.Ctx) error {
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"token": tokenData,
-		"user":  newUser,
+		"data":    user.GenereateUserResponse(newData),
+		"message": "Account created successfully",
+		"status":  "success",
 	})
 }
 

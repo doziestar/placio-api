@@ -8,10 +8,10 @@ import (
 type SignUpDto struct {
 	Email           string `json:"email" validate:"required,email"`
 	Password        string `json:"password" validate:"required,min=8"`
-	ConfirmPassword string `json:"confirmPassword" validate:"required,min=8"`
+	ConfirmPassword string `json:"confirm_password" validate:"required,min=8"`
 	Name            string `json:"name" validate:"required"`
 	Phone           string `json:"phone" validate:"required"`
-	Role            string `json:"role" validate:"required"`
+	AccountType     string `json:"account_type" validate:"required"`
 }
 
 // MarshalJSON is a custom JSON marshaler for SignUpDto.
@@ -42,15 +42,15 @@ func (m *SignUpDto) IsValid() (SignUpDto, error) {
 	if m.Password != m.ConfirmPassword {
 		return SignUpDto{}, errors.ErrInvalid
 	}
-	if m.Role != "business" && m.Role != "user" {
+	if m.AccountType != "business" && m.AccountType != "user" {
 		return SignUpDto{}, errors.ErrInvalid
 	}
 	return SignUpDto{
-		Email:    m.Email,
-		Password: m.Password,
-		Name:     m.Name,
-		Phone:    m.Phone,
-		Role:     m.Role,
+		Email:       m.Email,
+		Password:    m.Password,
+		Name:        m.Name,
+		Phone:       m.Phone,
+		AccountType: m.AccountType,
 	}, nil
 
 }
