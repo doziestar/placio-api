@@ -18,4 +18,4 @@ bin
 
 archive
 *.txt
-.envs
+# .envs
