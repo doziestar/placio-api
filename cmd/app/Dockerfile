@@ -26,7 +26,7 @@ RUN go mod download
 # Copy the rest of the application source code
 #COPY ./pkg ./pkg
 COPY ./cmd/app ./cmd/app
-COPY ./config ./config
+# COPY ./config ./config
 
 ENV PORT=7070
 # Build the application
