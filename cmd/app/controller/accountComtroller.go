@@ -88,7 +88,7 @@ func CreateAccount(c *fiber.Ctx) error {
 
 		// save the new password if it exists and user doesn't have one
 		if !hasPassword && data.Password != "" {
-			if err := user.SavePassword(userData.UserID, data.Password); err != nil {
+			if err := user.SavePassword(userData.ID, data.Password); err != nil {
 				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 					"error": "Internal Server Error",
 				})
@@ -114,6 +114,8 @@ func CreateAccount(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Internal Server Error",
 		})
+	} else {
+		return c.Status(fiber.StatusOK).JSON(newUser)
 	}
 
 	//// create the account
@@ -131,13 +133,13 @@ func CreateAccount(c *fiber.Ctx) error {
 	//	})
 	//}
 
-	mail := new(models.EmailContent)
-	// send welcome email
-	if err := mail.Send(newUser.Email, "new-account", userData.ToJson()); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Internal Server Error",
-		})
-	}
+	//mail := new(models.EmailContent)
+	//// send welcome email
+	//if err := mail.Send(newUser.Email, "new-account", userData.ToJson()); err != nil {
+	//	return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+	//		"error": "Internal Server Error",
+	//	})
+	//}
 
 	// authenticate the user
 	//return authController.Signup(c)

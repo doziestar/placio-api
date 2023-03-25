@@ -286,7 +286,7 @@ func Signin(c *fiber.Ctx) error {
 
 	// verify password
 	if useEmail {
-		verified, err := user.VerifyPassword(userData.UserID, userData.AccountID, data.Password)
+		verified, err := user.VerifyPassword(userData.ID, userData.AccountID, data.Password)
 		if err != nil {
 			return err
 		}
@@ -305,11 +305,11 @@ func Signin(c *fiber.Ctx) error {
 	}
 
 	// log the sign in and check if it's suspicious
-	log, err := login.Create(userData.UserID, c.IP(), c.Get("User-Agent"), c.Get("Device"))
+	log, err := login.Create(userData.ID, c.IP(), c.Get("User-Agent"), c.Get("Device"))
 	if err != nil {
 		return err
 	}
-	loginVerification, err := login.Verify(userData.UserID, log)
+	loginVerification, err := login.Verify(userData.ID, log)
 	if err != nil {
 		return err
 	}
@@ -318,7 +318,7 @@ func Signin(c *fiber.Ctx) error {
 	}
 
 	// generate the token
-	userToken, err := token.Generate(userData.UserID, userData.AccountID, data.Provider, data.ProviderID, data.Email)
+	userToken, err := token.Generate(userData.ID, userData.AccountID, data.Provider, data.ProviderID, data.Email)
 	if err != nil {
 		return err
 	}
@@ -342,13 +342,13 @@ func Authenticate(c *fiber.Ctx, userData models.User) error {
 		return err
 	}
 
-	userAccounts, err := account.GetUserAccount(userData.UserID)
+	userAccounts, err := account.GetUserAccount(userData.ID)
 	if err != nil {
 		return err
 	}
 
 	// create & store the token
-	jwt, err := token.Generate(userData.UserID, userData.AccountID, "app", userData.AccountID, userData.Email)
+	jwt, err := token.Generate(userData.ID, userData.AccountID, "app", userData.AccountID, userData.Email)
 	if err != nil {
 		return err
 	}
@@ -360,12 +360,12 @@ func Authenticate(c *fiber.Ctx, userData models.User) error {
 		"refreshToken": jwt.Refresh,
 		//"expires":     jwt.AccessExpiresIn,
 
-	}, userData.UserID)
+	}, userData.ID)
 	if err != nil {
 		return err
 	}
 
-	userData.UpdateUser(userData.UserID, userData.AccountID, time.Now(), false)
+	userData.UpdateUser(userData.ID, userData.AccountID, time.Now(), false)
 
 	// return user to client
 	return c.Status(fiber.StatusOK).JSON(map[string]interface{}{

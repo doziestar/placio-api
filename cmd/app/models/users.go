@@ -4,13 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/gofiber/fiber/v2"
 	"os"
 	"placio-app/Dto"
 	"placio-app/database"
 	errs "placio-app/errors"
 	"placio-pkg/logger"
 	"time"
+
+	"github.com/gofiber/fiber/v2"
 
 	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"
@@ -21,35 +22,38 @@ import (
 var db = database.DB
 
 type User struct {
-	gorm.Model
-	UserID               string `gorm:"primaryKey,column:user_id"`
-	Fingerprint          string
-	Name                 string
-	Email                string
-	Password             string
-	DateCreated          time.Time
-	LastActive           time.Time
-	Disabled             bool
-	SupportEnabled       bool
-	TwoFactorAuthEnabled bool   `gorm:"column:2fa_enabled"`
-	TwoFASecret          string `gorm:"column:2fa_secret"`
-	TwoFABackupCode      string `gorm:"column:2fa_backup_code"`
-	DefaultAccount       string
+	ID        string     `gorm:"primaryKey,unique,column:id"`
+	CreatedAt time.Time  `gorm:"column:created_at"`
+	UpdatedAt time.Time  `gorm:"column:updated_at"`
+	DeletedAt *time.Time `gorm:"column:deleted_at"`
+	//UserID               string     `gorm:"primaryKey,unique,column:user_id"`
+	Fingerprint          string    `gorm:"column:fingerprint"`
+	Name                 string    `gorm:"column:name"`
+	Email                string    `gorm:"unique,column:email"`
+	Password             string    `gorm:"column:password"`
+	DateCreated          time.Time `gorm:"column:date_created"`
+	LastActive           time.Time `gorm:"column:last_active"`
+	Disabled             bool      `gorm:"column:disabled"`
+	SupportEnabled       bool      `gorm:"column:support_enabled"`
+	TwoFactorAuthEnabled bool      `gorm:"column:2fa_enabled"`
+	TwoFASecret          string    `gorm:"column:2fa_secret"`
+	TwoFABackupCode      string    `gorm:"column:2fa_backup_code"`
+	DefaultAccount       string    `gorm:"column:default_account"`
 	FacebookID           string    `gorm:"column:facebook_id"`
 	TwitterID            string    `gorm:"column:twitter_id"`
 	Accounts             []Account `gorm:"foreignKey:UserID"`
-	IP                   string
-	UserAgent            string
+	IP                   string    `gorm:"column:ip"`
+	UserAgent            string    `gorm:"column:user_agent"`
 	Twitter              *TwitterAccount
 	Facebook             *FacebookAccount
 	Google               *GoogleAccount
-	HasPassword          bool
-	Onboarded            bool
+	HasPassword          bool   `gorm:"column:has_password"`
+	Onboarded            bool   `gorm:"column:onboarded"`
 	AccountID            string `gorm:"column:account_id"`
-	Permission           string
-	Interests            []string         `gorm:"type:text[]"` // `gorm:"type:text[]"`
-	GeneralSettingsID    uint             `gorm:"column:general_settings_id"`
-	GeneralSettings      *GeneralSettings `gorm:"foreignKey:GeneralSettingsID"`
+	Permission           string `gorm:"column:permission"`
+	// Interests            []string         `gorm:"type:text[]"` // `gorm:"type:text[]"`
+	GeneralSettingsID string
+	GeneralSettings   GeneralSettings
 }
 
 type TwitterAccount struct {
@@ -84,13 +88,6 @@ type GoogleAccount struct {
 	DateCreated  time.Time
 }
 
-type GeneralSettings struct {
-	gorm.Model
-	ID       string `gorm:"primaryKey"`
-	Language string
-	Theme    string
-}
-
 type Social struct {
 	Provider string
 	ID       string
@@ -111,7 +108,7 @@ func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 
 func (user *User) CreateUser(userData Dto.SignUpDto, c *fiber.Ctx, db *gorm.DB) (*User, error) {
 	// Generate a UUID for the user ID
-	user.UserID = uuid.New().String()
+	user.ID = GenerateID()
 
 	// Set the creation and last active dates
 	now := time.Now()
@@ -122,7 +119,14 @@ func (user *User) CreateUser(userData Dto.SignUpDto, c *fiber.Ctx, db *gorm.DB) 
 	user.SupportEnabled = false
 	user.TwoFactorAuthEnabled = false
 	user.HasPassword = false
-	user.Interests = []string{}
+	user.Onboarded = false
+	user.Disabled = false
+	user.Fingerprint = c.Get("fingerprint")
+	user.TwoFABackupCode = ""
+	user.TwoFASecret = ""
+	user.Permission = "user"
+	//user.AccountID = ""
+	// user.Interests = []string{}
 	user.UserAgent = c.Get("user-agents")
 	user.IP = c.IP()
 	user.Email = userData.Email
@@ -141,9 +145,22 @@ func (user *User) CreateUser(userData Dto.SignUpDto, c *fiber.Ctx, db *gorm.DB) 
 	}
 
 	logger.Info(context.Background(), fmt.Sprintf("Creating user %s", user.Password))
+	// Create a new general settings record in the database
+	generalSettingsRecord := GeneralSettings{
+		Language: "en",
+		Theme:    "light",
+	}
+	db = db.Debug()
+
+	err := db.Create(&generalSettingsRecord).Error
+	if err != nil {
+		return &User{}, err
+	}
+
+	user.GeneralSettingsID = generalSettingsRecord.ID
 
 	// Create a new user record in the database
-	err := db.Create(&user).Error
+	err = db.Create(&user).Error
 	if err != nil {
 		return &User{}, err
 	}
@@ -151,7 +168,7 @@ func (user *User) CreateUser(userData Dto.SignUpDto, c *fiber.Ctx, db *gorm.DB) 
 	// Create a new account record in the database
 	accountRecord := Account{
 		ID:         uuid.New().String(),
-		UserID:     user.UserID,
+		UserID:     user.ID,
 		Permission: "owner",
 		Onboarded:  false,
 	}
@@ -161,22 +178,11 @@ func (user *User) CreateUser(userData Dto.SignUpDto, c *fiber.Ctx, db *gorm.DB) 
 		return &User{}, err
 	}
 
-	// Create a new general settings record in the database
-	generalSettingsRecord := GeneralSettings{
-		Language: "en",
-		Theme:    "light",
-	}
-
-	err = db.Create(&generalSettingsRecord).Error
-	if err != nil {
-		return &User{}, err
-	}
-
 	// Update the user record with the new general settings ID
-	err = db.Model(&user).Update("general_settings_id", generalSettingsRecord.ID).Error
-	if err != nil {
-		return &User{}, err
-	}
+	//err = db.Model(&user).Update("general_settings_id", generalSettingsRecord.ID).Error
+	//if err != nil {
+	//	return &User{}, err
+	//}
 
 	// Update the account record with the account ID
 	err = db.Model(&accountRecord).Update("account_id", accountRecord.ID).Error
@@ -294,7 +300,7 @@ func AddInterest(userID string, accountID string, interest string) error {
 	}
 
 	// add interest to account
-	account.Interests = append(account.Interests, interest)
+	// account.Interests = append(account.Interests, interest)
 
 	// save account
 	result = database.DB.Save(&account)
@@ -323,12 +329,12 @@ func UpdateInterest(userID string, accountID string, oldInterest string, newInte
 
 	// find index of old interest in account interests
 	var index = -1
-	for i, v := range account.Interests {
-		if v == oldInterest {
-			index = i
-			break
-		}
-	}
+	// for i, v := range account.Interests {
+	// 	if v == oldInterest {
+	// 		index = i
+	// 		break
+	// 	}
+	// }
 
 	// if old interest is not found, return an error
 	if index == -1 {
@@ -336,7 +342,7 @@ func UpdateInterest(userID string, accountID string, oldInterest string, newInte
 	}
 
 	// replace old interest with new interest
-	account.Interests[index] = newInterest
+	// account.Interests[index] = newInterest
 
 	// save account
 	result = database.DB.Save(&account)
@@ -360,7 +366,7 @@ func (u *User) AddAccount(db *gorm.DB, accountID string, permission string) erro
 
 	account := Account{
 		ID:         accountID,
-		UserID:     u.UserID,
+		UserID:     u.ID,
 		Permission: permission,
 		Onboarded:  false,
 	}
@@ -564,7 +570,7 @@ func UpdateUserProfile(id string, accountID string, data map[string]interface{})
 		if result.Error != nil {
 			return result.Error
 		}
-		if user.UserID == "" {
+		if user.ID == "" {
 			return errors.New("No user with that ID")
 		}
 		user.Accounts[0].Onboarded = onboarded
@@ -578,7 +584,7 @@ func UpdateUserProfile(id string, accountID string, data map[string]interface{})
 		if result.Error != nil {
 			return result.Error
 		}
-		if user.UserID == "" {
+		if user.ID == "" {
 			return errors.New("No user with that ID")
 		}
 		user.Accounts[0].Permission = permission
@@ -626,7 +632,7 @@ func (u *User) SetPassword(password string) {
 }
 
 func (u *User) GetID() string {
-	return u.UserID
+	return u.ID
 }
 
 // GenerateToken generates a new token for the user
@@ -657,7 +663,7 @@ func (u *User) GenerateToken(user User) (Dto.Token, error) {
 
 	return Dto.Token{
 		ClientID:            "",
-		UserID:              user.UserID,
+		UserID:              user.ID,
 		RedirectURI:         "",
 		Scope:               "",
 		Code:                "",
@@ -696,7 +702,7 @@ func (u *User) SavePassword(id string, password string) error {
 
 func (u *User) Create(userData *Dto.SignUpDto, ctx *fiber.Ctx, db *gorm.DB) (*User, error) {
 	user := &User{
-		UserID:    uuid.NewString(),
+		ID:        uuid.NewString(),
 		Email:     userData.Email,
 		Name:      userData.Name,
 		IP:        ctx.IP(),
@@ -726,7 +732,7 @@ func (u *User) AddToAccount(id string, id2 string, s string) interface{} {
 
 func (u *User) ToJson() map[string]string {
 	return map[string]string{
-		"UserId": string(u.UserID),
+		"UserId": u.ID,
 		"email":  u.Email,
 		"name":   u.Name,
 	}
@@ -736,7 +742,7 @@ func (u *User) ToJson() map[string]string {
 func (u *User) UpdateUser(userId string, accountId string, lastActive time.Time, disabled bool) {
 	var user User
 	db.Where("id = ? AND account.id = ?", userId, accountId).First(&user)
-	if user.UserID == "" {
+	if user.ID == "" {
 		return
 	}
 	user.Accounts[0].LastActive = lastActive

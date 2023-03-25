@@ -3,5 +3,9 @@ package models
 import "github.com/google/uuid"
 
 func GenerateID() string {
-	return uuid.New().String()
+	uid, err := uuid.NewRandom()
+	if err != nil {
+		return ""
+	}
+	return uid.String()
 }
