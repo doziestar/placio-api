@@ -155,37 +155,23 @@ func CreateAccount(c *fiber.Ctx) error {
 		return err
 	}
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"token": tokenData,
-		"user":  newUser,
-	})
-
-	//// create the account
-	//accountData, err := account.CreateAccount(newUser.UserID, permission, database.DB)
-	//if err != nil {
-	//	return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-	//		"error": "Internal Server Error",
-	//	})
-	//}
-	//c.Locals("account_id", accountData.ID)
-	//
-	//if err := user.AddToAccount(userData.UserID, accountData.ID, "owner"); err != nil {
-	//	return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-	//		"error": "Internal Server Error",
-	//	})
-	//}
-
-	//mail := new(models.EmailContent)
-	//// send welcome email
+	mail := new(models.EmailContent)
+	// send welcome email
 	//if err := mail.Send(newUser.Email, "new-account", userData.ToJson()); err != nil {
 	//	return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 	//		"error": "Internal Server Error",
 	//	})
 	//}
+	if err := mail.SendEmailToTerminal(newUser.Email); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Internal Server Error",
+		})
+	}
 
-	// authenticate the user
-	//return authController.Signup(c)
-	//return nil
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"token": tokenData,
+		"user":  newUser,
+	})
 }
 
 func validate(email string, name string, password string) error {
