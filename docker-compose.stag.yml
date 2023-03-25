@@ -12,7 +12,7 @@ services:
       - "8090:8080"
       - "443:443"
     env_file:
-      - ./.envs/.local
+      - ./.envs/.stag
 
     volumes:
       - /etc/localtime:/etc/localtime:ro
@@ -51,7 +51,7 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data/pgdata
     env_file:
-      - ./.envs/.local
+      - ./.envs/.stag
     networks:
       - default
 
@@ -73,7 +73,7 @@ services:
     depends_on:
       - placio-db
     env_file:
-      - ./.envs/.local
+      - ./.envs/.stag
     labels:
       - traefik.enable=true
       - traefik.docker.network=default
@@ -95,7 +95,7 @@ services:
     ports:
       - "7070:7070"
     env_file:
-      - ./.envs/.local
+      - ./.envs/.stag
     volumes:
       - ./:/app
       - ./cmd/app:/app/cmd/app
