@@ -102,7 +102,7 @@ services:
       - ./config:/app/config
     build:
       context: .
-      dockerfile: ./cmd/app/stag.dockerfile
+      dockerfile: ./cmd/app/Dockerfile
     networks:
       - default
     # command: bash -c "while true; do sleep 1; done"  # Infinite loop to keep container live doing nothing
