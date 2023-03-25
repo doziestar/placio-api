@@ -1,0 +1,183 @@
+version: "3.3"
+services:
+
+  proxy:
+    image: traefik:latest
+    ports:
+      - "80:80"
+      - "8090:8080"
+      - "443:443"
+    env_file:
+      - .env
+
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik-data/traefik.yml:/traefik.yml
+      - ./traefik-data/acme.json:/acme.json
+      - ./traefik-data/configurations:/configurations
+    command:
+      # Enable Docker in Traefik, so that it reads labels from Docker services
+      # - --providers.docker
+      # Add a constraint to only use services with the label for this stack
+      # from the env var TRAEFIK_TAG
+      # - --providers.docker.constraints=Label(`traefik.constraint-label-stack`, `${TRAEFIK_TAG?Variable not set}`)
+      # Do not expose all Docker services, only the ones explicitly exposed
+      # - --providers.docker.exposedbydefault=false
+      # Disable Docker Swarm mode for local development
+      # - --providers.docker.swarmmode
+      # Enable the access log, with HTTP requests
+      - --accesslog
+      # Enable the Traefik log, for configurations and errors
+      - --log
+      # Enable the Dashboard and API
+      - --api
+      # Enable the Dashboard and API in insecure mode for local development
+      - --api.insecure=true
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.docker.network=default'
+      - 'traefik.http.routers.traefik-secure.entrypoints=websecure'
+      - 'traefik.http.routers.traefik-secure.rule=Host(`traefik.palnight.com`)'
+      # - 'traefik.http.routers.traefik-secure.middlewares=user-auth@file'
+      - 'traefik.http.routers.traefik-secure.service=api@internal'
+
+  db:
+    image: postgres:14
+    volumes:
+      - app-db-data2:/var/lib/postgresql/data/pgdata
+    env_file:
+      - .env
+    environment:
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    networks:
+      - default
+      - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
+
+  zookeeper:
+    image: 'bitnami/zookeeper:latest'
+    networks:
+      - traefik-public
+  kafka:
+    image: 'bitnami/kafka:latest'
+    networks:
+      - traefik-public
+
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - "5050:5050"
+    networks:
+      - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
+      - default
+    depends_on:
+      - db
+    env_file:
+      - .env
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=default
+      - 'traefik.http.routers.pgadmin-secure.entrypoints=websecure'
+      - 'traefik.http.routers.pgadmin-secure.rule=Host(`pgadmin.palnight.com`)'
+      - 'traefik.http.routers.pgadmin-secure.service=pgadmin'
+      - traefik.http.services.pgadmin.loadbalancer.server.port=5050
+
+  portainer:
+    image: portainer/portainer-ce:latest
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    container_name: portainer
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - default
+    env_file:
+      - .env
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./portainer-data:/data
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.docker.network=default'
+      - 'traefik.http.routers.portainer-secure.entrypoints=websecure'
+      - 'traefik.http.routers.portainer-secure.rule=Host(`portainer.palnight.com`)'
+      - 'traefik.http.routers.portainer-secure.service=portainer'
+      - 'traefik.http.services.portainer.loadbalancer.server.port=9000'
+    
+
+  queue:
+    image: rabbitmq:3
+  
+  flower:
+    image: mher/flower
+    ports:
+      - "5555:5555"
+    networks:
+      - ${TRAEFIK_PUBLIC_NETWORK?Variable not set}
+      - default
+    env_file:
+      - .env
+    environment:
+      - CELERY_BROKER_URL=amqp://guest@queue:5672//
+
+  backend:
+    ports:
+      - "8888:8888"
+    env_file:
+      - .env
+    volumes:
+      - ./backend/app:/app
+    environment:
+      - JUPYTER=jupyter lab --ip=0.0.0.0 --allow-root --NotebookApp.custom_display_url=http://127.0.0.1:8888
+      - SERVER_HOST=http://api.palnight.com
+    build:
+      context: ./backend
+      dockerfile: backend.dockerfile
+      args:
+        INSTALL_DEV: ${INSTALL_DEV-true}
+        INSTALL_JUPYTER: ${INSTALL_JUPYTER-true}
+    # command: bash -c "while true; do sleep 1; done"  # Infinite loop to keep container live doing nothing
+    command: /start-reload.sh
+    labels:
+      # - traefik.http.routers.backend-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
+      # - traefik.http.services.backend.loadbalancer.server.port=80
+      # - traefik.enable=true
+      # # - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
+      # - traefik.http.routers.backend-http.rule=Host(`api.palnight.com`)
+      # - traefik.http.routers.backend-http.entrypoints=http
+      # # - traefik.http.routers.backend-http.middlewares=${STACK_NAME?Variable not set}-https-redirect
+      # - traefik.http.routers.backend-https.rule=Host(`api.palnight.com`)
+      # - traefik.http.routers.backend-https.entrypoints=https
+      # - traefik.http.routers.backend-https.tls=true
+      - traefik.enable=true
+      - traefik.docker.network=default
+      - 'traefik.http.routers.backend-secure.entrypoints=websecure'
+      - 'traefik.http.routers.backend-secure.rule=Host(`api.palnight.com`)'
+      - 'traefik.http.routers.backend-secure.service=backend'
+      - traefik.http.services.backend.loadbalancer.server.port=80
+      # add path prefix strip
+
+  celeryworker:
+    volumes:
+      - ./backend/app:/app
+    env_file:
+      - .env
+    environment:
+      - RUN=celery worker -A app.worker -l info -Q main-queue -c 1
+      - JUPYTER=jupyter lab --ip=0.0.0.0 --allow-root --NotebookApp.custom_display_url=http://127.0.0.1:8888
+      - SERVER_HOST=http://palnight.com
+    build:
+      context: ./backend
+      dockerfile: celeryworker.dockerfile
+      args:
+        INSTALL_DEV: ${INSTALL_DEV-true}
+        INSTALL_JUPYTER: ${INSTALL_JUPYTER-true}
+
+volumes:
+  app-db-data2:
+networks:
+  traefik-public:
+    # For local dev, don't expect an external Traefik network
+    external: false
