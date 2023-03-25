@@ -106,45 +106,45 @@ func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 	return nil
 }
 
-func (user *User) CreateUser(userData Dto.SignUpDto, c *fiber.Ctx, db *gorm.DB) (*User, error) {
+func (u *User) CreateUser(userData Dto.SignUpDto, c *fiber.Ctx, db *gorm.DB) (*User, error) {
 	// Generate a UUID for the user ID
-	user.ID = GenerateID()
+	u.ID = GenerateID()
 
 	// Set the creation and last active dates
 	now := time.Now()
-	user.DateCreated = now
-	user.LastActive = now
+	u.DateCreated = now
+	u.LastActive = now
 
 	// Set default values for some fields
-	user.SupportEnabled = false
-	user.TwoFactorAuthEnabled = false
-	user.HasPassword = false
-	user.Onboarded = false
-	user.Disabled = false
-	user.Fingerprint = c.Get("fingerprint")
-	user.TwoFABackupCode = ""
-	user.TwoFASecret = ""
-	user.Permission = "user"
+	u.SupportEnabled = false
+	u.TwoFactorAuthEnabled = false
+	u.HasPassword = false
+	u.Onboarded = false
+	u.Disabled = false
+	u.Fingerprint = c.Get("fingerprint")
+	u.TwoFABackupCode = ""
+	u.TwoFASecret = ""
+	u.Permission = "user"
 	//user.AccountID = ""
 	// user.Interests = []string{}
-	user.UserAgent = c.Get("user-agents")
-	user.IP = c.IP()
-	user.Email = userData.Email
-	user.Name = userData.Name
-	user.Password = userData.Password
+	u.UserAgent = c.Get("user-agents")
+	u.IP = c.IP()
+	u.Email = userData.Email
+	u.Name = userData.Name
+	u.Password = userData.Password
 	// user.AccountID = account
 
 	// Encrypt the password if present
-	if user.Password != "" {
+	if u.Password != "" {
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(userData.Password), 10)
 		if err != nil {
 			return &User{}, err
 		}
-		user.Password = string(hashedPassword)
-		user.HasPassword = true
+		u.Password = string(hashedPassword)
+		u.HasPassword = true
 	}
 
-	logger.Info(context.Background(), fmt.Sprintf("Creating user %s", user.Password))
+	logger.Info(context.Background(), fmt.Sprintf("Creating user %s", u.Password))
 	// Create a new general settings record in the database
 	generalSettingsRecord := GeneralSettings{
 		Language: "en",
@@ -157,20 +157,24 @@ func (user *User) CreateUser(userData Dto.SignUpDto, c *fiber.Ctx, db *gorm.DB) 
 		return &User{}, err
 	}
 
-	user.GeneralSettingsID = generalSettingsRecord.ID
+	u.GeneralSettingsID = generalSettingsRecord.ID
 
 	// Create a new user record in the database
-	err = db.Create(&user).Error
+	err = db.Create(&u).Error
 	if err != nil {
 		return &User{}, err
 	}
 
 	// Create a new account record in the database
 	accountRecord := Account{
-		ID:         uuid.New().String(),
-		UserID:     user.ID,
-		Permission: "owner",
-		Onboarded:  false,
+		ID:          uuid.New().String(),
+		UserID:      u.ID,
+		Permission:  "owner",
+		Onboarded:   false,
+		Active:      true,
+		Selected:    true,
+		Default:     true,
+		AccountType: userData.AccountType,
 	}
 
 	err = db.Create(&accountRecord).Error
@@ -189,7 +193,7 @@ func (user *User) CreateUser(userData Dto.SignUpDto, c *fiber.Ctx, db *gorm.DB) 
 	if err != nil {
 		return &User{}, err
 	}
-	return user, nil
+	return u, nil
 }
 
 func Get(id uuid.UUID, email string, account string, social *Social, permission string) ([]User, error) {
@@ -247,6 +251,17 @@ func Get(id uuid.UUID, email string, account string, social *Social, permission 
 	}
 
 	return users, nil
+}
+
+func (u *User) GetUserById(id string, db *gorm.DB) (*User, error) {
+	err := db.Debug().Model(&User{}).Where("id = ?", id).Take(&u).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New("User not found")
+		}
+		return nil, err
+	}
+	return u, nil
 }
 
 // GetAccounts returns a list of accounts that the user with the given ID is attached to
@@ -421,16 +436,18 @@ func Password(db *gorm.DB, userID uint, accountID uint) (string, error) {
 	return user.Password, nil
 }
 
-func (u *User) VerifyPassword(userID string, accountID string, password string) (bool, error) {
-	result := db.Joins("Account").Where("users.id = ? AND account.id = ?", userID, accountID).First(u)
-
-	if result.Error != nil {
-		return false, result.Error
-	}
-
-	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
+func (u *User) VerifyPassword(plainPassword string) (bool, error) {
+	//result := db.Joins("JOIN accounts ON users.account_id = accounts.id").Where("users.id = ? AND accounts.id = ?", userID, accountID).First(u)
+	//
+	//if result.Error != nil {
+	//	return false, result.Error
+	//}
+	logger.Info(context.Background(), fmt.Sprintf("password: %s", plainPassword))
+	logger.Info(context.Background(), fmt.Sprintf("u.Password: %s", u.Password))
+	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(plainPassword))
 	if err != nil {
-		return false, nil
+		logger.Error(context.Background(), fmt.Sprintf("error comparing password hashes: %s", err))
+		return false, err
 	}
 
 	u.Password = ""
@@ -643,9 +660,13 @@ func (u *User) GenerateToken(user User) (Dto.Token, error) {
 	// Set claims
 	claims := token.Claims.(jwt.MapClaims)
 	claims["sub"] = user.ID
-	claims["name"] = user.Name
-	claims["email"] = user.Email
-	//claims["account"] = user.Accounts[0].ID
+	//claims["name"] = user.Name
+	//claims["email"] = user.Email
+	////claims["account"] = user.Accounts[0].ID
+	//claims["permissions"] = user.Accounts[0].Permission
+	//claims["onboarded"] = user.Accounts[0].Onboarded
+	//claims["provider"] = "app"
+	//claims["accountID"] = user.Accounts[0].ID
 	claims["iat"] = time.Now().UTC().Unix()
 	claims["exp"] = time.Now().UTC().Add(time.Hour * 24 * 7).Unix()
 
@@ -674,6 +695,67 @@ func (u *User) GenerateToken(user User) (Dto.Token, error) {
 		RefreshCreateAt:  refreshCreateAt,
 		RefreshExpiresIn: time.Duration(refreshExpiresIn.Unix()),
 	}, nil
+}
+
+func (u *User) GenereateUserResponse(token *Token) Dto.UserResponse {
+	return Dto.UserResponse{
+		User: &Dto.User{
+			ID:          u.ID,
+			Name:        u.Name,
+			Email:       u.Email,
+			Disabled:    false,
+			HasPassword: false,
+			Onboarded:   false,
+			Account: func(db *gorm.DB) []Dto.Account {
+				var account []Account
+				// find accounts with user id
+				err := db.Where("user_id = ?", u.ID).First(&account).Error
+				if err != nil {
+					return []Dto.Account{}
+				}
+				// convert to dto
+				var dto []Dto.Account
+				for _, a := range account {
+					dto = append(dto, Dto.Account{
+						ID:          a.ID,
+						Permission:  a.Permission,
+						AccountType: a.AccountType,
+						AccountID:   a.AccountID,
+						Onboarded:   a.Onboarded,
+						//Interests:   a.Interests,
+						UserID:   a.UserID,
+						Plan:     a.Plan,
+						Active:   a.Active,
+						Status:   a.Status,
+						Disabled: a.Disabled,
+					})
+				}
+				return dto
+			}(database.DB),
+			Permission: "",
+			GeneralSettings: func(db *gorm.DB) Dto.GeneralSettings {
+				var settings GeneralSettings
+				// find settings with user id
+				err := db.Where("ID = ?", u.GeneralSettingsID).First(&settings).Error
+				if err != nil {
+					return Dto.GeneralSettings{}
+				}
+				// convert to dto
+				return Dto.GeneralSettings{
+					ID:       settings.ID,
+					Language: settings.Language,
+					Theme:    settings.Theme,
+				}
+			}(database.DB),
+		},
+		Token: &Dto.UserToken{
+			UserID:           u.ID,
+			Access:           token.Access,
+			AccessExpiresIn:  int64(token.AccessExpiresIn),
+			Refresh:          token.Refresh,
+			RefreshExpiresIn: int64(token.RefreshExpiresIn),
+		},
+	}
 }
 
 func (u *User) Login(c *fiber.Ctx, db *gorm.DB) error {
@@ -711,10 +793,11 @@ func (u *User) Login(c *fiber.Ctx, db *gorm.DB) error {
 
 func (u *User) GetByEmail(email string, db *gorm.DB) (*User, error) {
 	var user *User
-	err := db.Where("email = ?", email).First(&user).Error
+	err := db.Preload("Accounts").Preload("GeneralSettings").Where("email = ?", email).First(&user).Error
 	if err != nil {
 		return nil, err
 	}
+	logger.Info(context.Background(), fmt.Sprintf("User with email %s found", user))
 	return user, err
 }
 

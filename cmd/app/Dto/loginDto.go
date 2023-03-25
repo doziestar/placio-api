@@ -2,6 +2,8 @@ package Dto
 
 import (
 	"encoding/json"
+
+	"github.com/gofiber/fiber/v2"
 )
 
 type LoginDto struct {
@@ -39,4 +41,39 @@ func (m *LoginDto) IsValid() (interface{}, interface{}) {
 		return nil, nil
 	}
 	return m.Email, m.Password
+}
+
+// SigninRequest defines the request body for the signin route
+type SigninRequest struct {
+	Email    string `json:"email,omitempty"`
+	Password string `json:"password,omitempty"`
+	Token    string `json:"token,omitempty"`
+	Provider string `json:"provider,omitempty"`
+	// ProviderID   string `json:"provider_id,omitempty"`
+	MagicViewURL string `json:"magic_view_url,omitempty"`
+}
+
+// SigninResponse defines the response body for the signin route
+
+func (s *SigninRequest) IsValid() error {
+	if s.Email == "" && s.Token == "" {
+		return fiber.NewError(fiber.StatusBadRequest, "Email or token is required")
+	}
+	if s.Email != "" && s.Password == "" {
+		return fiber.NewError(fiber.StatusBadRequest, "Password is required")
+	}
+	return nil
+}
+
+// covert SigninRequest to json
+func (s *SigninRequest) ToJson() map[string]interface{} {
+	mySigninRequestMap := map[string]interface{}{
+		"email":    s.Email,
+		"password": s.Password,
+		"token":    s.Token,
+		"provider": s.Provider,
+		// "provider_id":    s.ProviderID,
+		"magic_view_url": s.MagicViewURL,
+	}
+	return mySigninRequestMap
 }

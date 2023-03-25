@@ -10,7 +10,7 @@ import (
 func XSS() gorouter.MiddlewareFunc {
 	m := func(next http.Handler) http.Handler {
 		fn := func(w http.ResponseWriter, r *http.Request) {
-			// Add X-Content-Type-Options header
+			// Add X-Content-AccountType-Options header
 			w.Header().Add("X-Content-Type-Options", "nosniff")
 			// Prevent page from being displayed in an iframe
 			w.Header().Add("X-Frame-Options", "DENY")
