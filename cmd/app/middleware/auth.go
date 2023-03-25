@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt"
+	"log"
 	"os"
 	"placio-app/database"
 	"placio-app/models"
@@ -136,7 +137,7 @@ func Verify(permission string) fiber.Handler {
 		logger.Info(context.Background(), fmt.Sprintf("token: %s", token))
 
 		claims, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
-			return []byte(os.Getenv("JWT_SECRET")), nil
+			return []byte(os.Getenv("ACCESS_TOKEN_SECRET")), nil
 		})
 
 		if err != nil {
@@ -185,7 +186,10 @@ func Verify(permission string) fiber.Handler {
 		}
 
 		if permission == "user" || permissions[userAccount.Permission][permission] {
-			c.Locals("account", userAccount.Accounts[0].ID)
+			//c.Locals("account", userAccount.Accounts[0].ID)
+			//logger.Info(context.Background(), fmt.Sprintf("userAccount.ID: %s", userAccount.ID))
+			//logger.Info(context.Background(), fmt.Sprintf("userAccount.Permission: %s", userAccount.Permission))
+			log.Println("user permissions", permissions[userAccount.Permission][permission])
 			c.Locals("user", userAccount.ID)
 			c.Locals("permission", userAccount.Permission)
 			c.Locals("provider", "app")

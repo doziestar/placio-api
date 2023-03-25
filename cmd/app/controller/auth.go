@@ -3,6 +3,7 @@ package controller
 import (
 	"context"
 	"errors"
+	"fmt"
 	Dto "placio-app/Dto"
 	"placio-app/database"
 	errs "placio-app/errors"
@@ -113,6 +114,10 @@ func SignUp(c *fiber.Ctx) error {
 // @Failure 400 {object} map[string]interface{}
 // @Router /api/v1/auth/logout [post]
 func LogOut(c *fiber.Ctx) error {
+	logger.Info(context.Background(), "logout")
+	logger.Info(context.Background(), fmt.Sprintf("%v", c.Locals("user")))
+	logger.Info(context.Background(), fmt.Sprintf("%v", c.Locals("provider")))
+	logger.Info(context.Background(), fmt.Sprintf("%v", c.Locals("token")))
 	return c.JSON(fiber.Map{"status": "ok"})
 }
 
