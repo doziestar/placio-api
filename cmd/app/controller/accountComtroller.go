@@ -143,7 +143,7 @@ func CreateAccount(c *fiber.Ctx) error {
 
 	// authenticate the user
 	//return authController.Signup(c)
-	return nil
+	//return nil
 }
 
 func validate(email string, name string, password string) error {
