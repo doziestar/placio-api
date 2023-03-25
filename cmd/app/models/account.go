@@ -33,6 +33,8 @@ type Account struct {
 	Status                     string    `gorm:"column:status"`
 	LastActive                 time.Time `gorm:"column:last_active"`
 	Disabled                   bool      `gorm:"column:disabled"`
+	Selected                   bool      `gorm:"column:selected"`
+	Default                    bool      `gorm:"column:default"`
 }
 
 // BeforeCreate /*
@@ -86,6 +88,7 @@ func (a *Account) GetUserAccount(id string) (*UserAndAccount, error) {
 
 // GetAccount /*
 func (a *Account) GetAccount(id string) (*Account, error) {
+	logger.Info(context.Background(), "Getting account")
 	result := db.Where("id = ?", id).First(&a)
 	return a, result.Error
 }

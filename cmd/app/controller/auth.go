@@ -111,7 +111,7 @@ func SignUp(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 {object} map[string]interface{}
 // @Failure 400 {object} map[string]interface{}
-// @Router /api/v1/auth/logout [get]
+// @Router /api/v1/auth/logout [post]
 func LogOut(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{"status": "ok"})
 }
@@ -181,46 +181,6 @@ func VerifyPhone(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{"status": "ok"})
 }
 
-// SigninRequest defines the request body for the signin route
-type SigninRequest struct {
-	Email        string `json:"email,omitempty"`
-	Password     string `json:"password,omitempty"`
-	Token        string `json:"token,omitempty"`
-	Provider     string `json:"provider,omitempty"`
-	ProviderID   string `json:"provider_id,omitempty"`
-	MagicViewURL string `json:"magic_view_url,omitempty"`
-}
-
-// SigninResponse defines the response body for the signin route
-type SigninResponse struct {
-	Message       string       `json:"message,omitempty"`
-	TwoFARequired bool         `json:"2fa_required,omitempty"`
-	Token         models.Token `json:"token,omitempty"`
-}
-
-func (s *SigninRequest) IsValid() error {
-	if s.Email == "" && s.Token == "" {
-		return fiber.NewError(fiber.StatusBadRequest, "Email or token is required")
-	}
-	if s.Email != "" && s.Password == "" {
-		return fiber.NewError(fiber.StatusBadRequest, "Password is required")
-	}
-	return nil
-}
-
-// covert SigninRequest to json
-func (s *SigninRequest) ToJson() map[string]interface{} {
-	mySigninRequestMap := map[string]interface{}{
-		"email":          s.Email,
-		"password":       s.Password,
-		"token":          s.Token,
-		"provider":       s.Provider,
-		"provider_id":    s.ProviderID,
-		"magic_view_url": s.MagicViewURL,
-	}
-	return mySigninRequestMap
-}
-
 // Signin authenticates a user via email/password or social network
 // Signin authenticates a user and returns an access token.
 // The function performs the following steps:
@@ -242,13 +202,14 @@ func (s *SigninRequest) ToJson() map[string]interface{} {
 // @Success 200 {object} Dto.UserResponse "Successfully signed in"
 // @Failure 400 {object} fiber.Error "Bad Request"
 // @Failure 401 {object} fiber.Error "Unauthorized"
-// @Router /api/v1/auth/signin [post]
+// @Router /api/v1/auth [post]
 func Signin(c *fiber.Ctx) error {
-	data := new(SigninRequest)
+	//defer sentry.Recover()
+	data := new(Dto.SigninRequest)
+	logger.Info(context.Background(), string(c.Body()))
 	if err := c.BodyParser(data); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "Invalid request body")
 	}
-	var token models.Token
 	var user models.User
 
 	if data.Email != "" {
@@ -266,13 +227,14 @@ func Signin(c *fiber.Ctx) error {
 			return fiber.NewError(fiber.StatusUnauthorized, "Invalid token")
 		}
 		data.Provider = decode.Provider
-		data.ProviderID = decode.ProviderID
+		// data.ProviderID = decode.ProviderID
 		data.Email = decode.Email
 	}
 
 	// check user exists
 	var err error
 	if useEmail {
+		logger.Info(context.Background(), "use email")
 		userData, err = user.GetByEmail(data.Email, database.DB)
 	} else {
 		//userData, err = user.Get(nil, "", nil, map[string]string{
@@ -286,30 +248,52 @@ func Signin(c *fiber.Ctx) error {
 
 	// verify password
 	if useEmail {
-		verified, err := user.VerifyPassword(userData.ID, userData.AccountID, data.Password)
+		verified, err := userData.VerifyPassword(data.Password)
 		if err != nil {
 			return err
 		}
+		//logger.Info(context.Background(), fmt.Sprintf("verified: %v", verified))
 		if !verified {
 			return fiber.NewError(fiber.StatusUnauthorized, "Please enter the correct login details")
 		}
 	}
 
-	// get the account
-	accountData, err := account.GetAccount(userData.AccountID)
-	if err != nil {
-		return err
+	//// get the account
+	//accountData, err := account.GetAccount(userData.AccountID)
+	//if err != nil {
+	//	return err
+	//}
+	var selectedAccount *models.Account
+
+	if len(userData.Accounts) > 1 {
+		for _, account := range userData.Accounts {
+			if account.Selected {
+				selectedAccount = &account
+				break
+			}
+		}
+		if selectedAccount == nil {
+			for _, account := range userData.Accounts {
+				if account.Default {
+					selectedAccount = &account
+					break
+				}
+			}
+		}
+	} else {
+		selectedAccount = &userData.Accounts[0]
 	}
-	if !accountData.Active {
-		return fiber.NewError(fiber.StatusUnauthorized, "Your account has been deactivated. Please contact support.")
+
+	if !selectedAccount.Active {
+		return fiber.NewError(fiber.StatusUnauthorized, "Your account is not active. Please contact support.")
 	}
 
 	// log the sign in and check if it's suspicious
-	log, err := login.Create(userData.ID, c.IP(), c.Get("User-Agent"), c.Get("Device"))
+	log, err := login.Create(userData.ID, c.IP(), c.Get("User-Agent"), c.Get("Device"), database.DB)
 	if err != nil {
 		return err
 	}
-	loginVerification, err := login.Verify(userData.ID, log)
+	loginVerification, err := login.Verify(userData.ID, log, database.DB)
 	if err != nil {
 		return err
 	}
@@ -318,16 +302,33 @@ func Signin(c *fiber.Ctx) error {
 	}
 
 	// generate the token
-	//userToken, err := token.Generate(userData.ID, userData.AccountID, data.Provider, data.ProviderID, data.Email)
+	tokenData, err := user.GenerateToken(user)
+
+	var newData = &models.Token{
+		Provider: "app",
+		Jwt:      tokenData.Access,
+		Access:   tokenData.Access,
+		//AccessTokenExpiry: tokenData.AccessExpiresIn,
+		Refresh:          tokenData.Refresh,
+		UserID:           tokenData.UserID,
+		CodeCreateAt:     time.Time{},
+		CodeExpiresIn:    tokenData.CodeExpiresIn,
+		AccessCreateAt:   time.Time{},
+		AccessExpiresIn:  tokenData.AccessExpiresIn,
+		RefreshCreateAt:  time.Time{},
+		RefreshExpiresIn: tokenData.RefreshExpiresIn,
+	}
+
+	err = newData.Save(database.DB)
 	if err != nil {
 		return err
 	}
 
 	// return the token
-	return c.JSON(SigninResponse{
-		Message:       "You have successfully signed in",
-		TwoFARequired: userData.TwoFactorAuthEnabled,
-		//Token:         *userToken,
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"data":    userData.GenereateUserResponse(newData),
+		"message": "Successfully signed in",
+		"status":  "success",
 	})
 }
 
