@@ -1,4 +1,8 @@
-FROM node:18.0.1-alpine3.14 AS builder
+ARG NODE_ENV=development
+# ARG NODE_ENV=staging
+ARG NODE_VERSION=19-alpine3.16
+
+FROM node:${NODE_VERSION} AS node
 
 WORKDIR /app
 

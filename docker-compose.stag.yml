@@ -125,6 +125,36 @@ services:
       - traefik.http.services.backend.loadbalancer.server.port=7070
       # add path prefix strip
 
+  docs:
+    container_name: placio-docs
+    build:
+      context: .
+      dockerfile: ./docs/Dockerfile
+    restart: always
+    ports:
+      - "8080:6060"
+    volumes:
+      - ./:/app
+      - ./docs:/app/docs
+
+    labels:
+      # - traefik.http.routers.backend-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
+      # - traefik.http.services.backend.loadbalancer.server.port=80
+      # - traefik.enable=true
+      # # - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
+      # - traefik.http.routers.backend-http.rule=Host(`api.palnight.com`)
+      # - traefik.http.routers.backend-http.entrypoints=http
+      # # - traefik.http.routers.backend-http.middlewares=${STACK_NAME?Variable not set}-https-redirect
+      # - traefik.http.routers.backend-https.rule=Host(`api.palnight.com`)
+      # - traefik.http.routers.backend-https.entrypoints=https
+      # - traefik.http.routers.backend-https.tls=true
+      - traefik.enable=true
+      - traefik.docker.network=default
+      - 'traefik.http.routers.docs-secure.entrypoints=websecure'
+      - 'traefik.http.routers.docs-secure.rule=Host(`docs.palnight.com`)'
+      - 'traefik.http.routers.docs-secure.service=docs'
+      - traefik.http.services.docs.loadbalancer.server.port=6060
+      # add path prefix strip
 
 # volumes:
 #   app-db-data2:

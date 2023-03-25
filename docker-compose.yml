@@ -38,7 +38,17 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
-
+  docs:
+    container_name: placio-docs
+    build:
+      context: .
+      dockerfile: ./docs/Dockerfile
+    restart: always
+    ports:
+      - "8080:6060"
+    volumes:
+      - ./:/app
+      - ./docs:/app/docs
   # kafka:
   #   container_name: placio-kafka
   #   image: wurstmeister/kafka:2.12-2.5.0
