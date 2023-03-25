@@ -122,7 +122,7 @@ services:
       - 'traefik.http.routers.backend-secure.entrypoints=websecure'
       - 'traefik.http.routers.backend-secure.rule=Host(`api.palnight.com`)'
       - 'traefik.http.routers.backend-secure.service=backend'
-      - traefik.http.services.backend.loadbalancer.server.port=80
+      - traefik.http.services.backend.loadbalancer.server.port=7070
       # add path prefix strip
 
 
