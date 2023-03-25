@@ -1,0 +1,32 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - feat/deploy
+
+jobs:
+  deploy-stag:
+    runs-on: self-hosted
+    env:
+      TAG: stag
+    steps:
+      - name: remove old stack
+        run: echo ${{ secrets.VPS_PASSWORD }} | 
+          sudo -S rm -rf /home/dozie/placio-api/_work/nightout-server/placio-api/backend
+      - name: remove old stack
+        run: echo ${{ secrets.VPS_PASSWORD }} | 
+          sudo -S rm -rf /home/dozie/placio-api/_work/placio-api/placio-api/portainer
+      - name: remove old stack
+        run: echo ${{ secrets.VPS_PASSWORD }} | 
+          sudo -S rm -rf /home/dozie/placio-api/_work/placio-api/placio-api/traefik
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Add Permission To acme.json
+        run: |
+          chmod 600 ./traefik/acme.json
+      - name: Start Docker Container
+        run: echo "Starting containers" |
+          echo ${{ secrets.VPS_PASSWORD }} |
+          sudo -S docker-compose -f docker-compose.stag.yml up --build -d
+

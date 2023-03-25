@@ -29,8 +29,14 @@ cert: ## [HTTP] Generate self signed certificate
 dev: ## [HTTP] Run server in dev mode
 	docker-compose up --build
 
-docs: ## [HTTP] Generate docs
+docs: ## Generate docs
 	swag init -g cmd/app/main.go --output docs/app --parseDependency
+
+redoc: ##  Generate redoc
+	redocly bundle docs/app/swagger.yaml --output docs/redoc.yml
+
+docs-preview: ## Generate documentation
+	redocly preview-docs docs/redoc.yml
 
 # DOCKER TASKS
 docker-build: ## [DOCKER] Build given container. Example: `make docker-build BIN=user`

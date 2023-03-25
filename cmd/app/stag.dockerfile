@@ -30,24 +30,24 @@ COPY ./cmd/app ./cmd/app
 
 ENV PORT=7070
 # Build the application
-#RUN #CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o auth ./cmd/auth
+RUN #CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o app ./cmd/app
 
 # Stage 2: Create the runtime image
-#FROM alpine:3.15
+FROM alpine:3.15
 
 # Set the working directory to /app
-#WORKDIR /app
+WORKDIR /app
 
 # Copy the compiled binary from the builder stage
-#COPY --from=builder /app/auth .
+COPY --from=builder /app/app .
 
 # Copy the required files from pkg module
 #COPY pkg /app/pkg
-RUN go install github.com/cespare/reflex@latest
+# RUN go install github.com/cespare/reflex@latest
 
 # Expose port 8080
 EXPOSE 7070
 
 # Run the binary
-#CMD ["./app/auth"]
-CMD ["reflex", "-r", "\\.go$", "-s", "--", "go", "run", "./cmd/app/main.go"]
+CMD ["./app/app"]
+# CMD ["reflex", "-r", "\\.go$", "-s", "--", "go", "run", "./cmd/app/main.go"]

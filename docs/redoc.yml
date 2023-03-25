@@ -1,0 +1,1221 @@
+basePath: /
+definitions:
+  cmd_app_controller.SigninRequest:
+    properties:
+      email:
+        type: string
+      magic_view_url:
+        type: string
+      password:
+        type: string
+      provider:
+        type: string
+      provider_id:
+        type: string
+      token:
+        type: string
+    type: object
+  cmd_app_controller.SigninResponse:
+    properties:
+      2fa_required:
+        type: boolean
+      message:
+        type: string
+      token:
+        $ref: '#/definitions/placio-app_models.Token'
+    type: object
+  fiber.Error:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+    type: object
+  gorm.DeletedAt:
+    properties:
+      time:
+        type: string
+      valid:
+        description: Valid is true if Time is not NULL
+        type: boolean
+    type: object
+  placio-app_Dto.Account:
+    properties:
+      AccountID:
+        type: string
+      AccountType:
+        type: string
+      Active:
+        type: boolean
+      Disabled:
+        type: boolean
+      ID:
+        type: string
+      Interests:
+        items:
+          type: string
+        type: array
+      Onboarded:
+        type: boolean
+      Permission:
+        type: string
+      Plan:
+        type: string
+      Status:
+        type: string
+      UserID:
+        type: string
+    type: object
+  placio-app_Dto.GeneralSettings:
+    properties:
+      ID:
+        type: string
+      Language:
+        type: string
+      Theme:
+        type: string
+    type: object
+  placio-app_Dto.SignUpDto:
+    properties:
+      account_type:
+        type: string
+      confirm_password:
+        minLength: 8
+        type: string
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        minLength: 8
+        type: string
+      phone:
+        type: string
+    required:
+      - account_type
+      - confirm_password
+      - email
+      - name
+      - password
+      - phone
+    type: object
+  placio-app_Dto.User:
+    properties:
+      Account:
+        items:
+          $ref: '#/definitions/placio-app_Dto.Account'
+        type: array
+      Disabled:
+        type: boolean
+      Email:
+        type: string
+      GeneralSettings:
+        $ref: '#/definitions/placio-app_Dto.GeneralSettings'
+      HasPassword:
+        type: boolean
+      ID:
+        type: string
+      Name:
+        type: string
+      Onboarded:
+        type: boolean
+      Permission:
+        type: string
+    type: object
+  placio-app_Dto.UserResponse:
+    properties:
+      token:
+        $ref: '#/definitions/placio-app_Dto.UserToken'
+      user:
+        $ref: '#/definitions/placio-app_Dto.User'
+    type: object
+  placio-app_Dto.UserResponseDto:
+    properties:
+      accessToken:
+        type: string
+      accessTokenExpiresIn:
+        $ref: '#/definitions/time.Duration'
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      refreshToken:
+        type: string
+      refreshTokenExpiresIn:
+        $ref: '#/definitions/time.Duration'
+    type: object
+  placio-app_Dto.UserToken:
+    properties:
+      Access:
+        type: string
+      AccessExpiresIn:
+        type: integer
+      Refresh:
+        type: string
+      RefreshExpiresIn:
+        type: integer
+      UserID:
+        type: string
+    type: object
+  placio-app_models.Account:
+    properties:
+      accountID:
+        type: string
+      accountType:
+        type: string
+      active:
+        type: boolean
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      disabled:
+        type: boolean
+      id:
+        type: string
+      lastActive:
+        type: string
+      onboarded:
+        type: boolean
+      payStackCustomerID:
+        type: string
+      payStackSubscriptionID:
+        type: string
+      payStackSubscriptionStatus:
+        type: string
+      permission:
+        type: string
+      plan:
+        type: string
+      status:
+        type: string
+      stripeCustomerID:
+        type: string
+      stripeSubscriptionID:
+        type: string
+      stripeSubscriptionStatus:
+        type: string
+      updatedAt:
+        type: string
+      userID:
+        description: Interests                  []string `gorm:"type:text[]"`
+        type: string
+    type: object
+  placio-app_models.Booking:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      eventID:
+        type: string
+      id:
+        type: string
+      ticketID:
+        type: string
+      updatedAt:
+        type: string
+      userID:
+        type: string
+    type: object
+  placio-app_models.Conversation:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      lastMessageTimestamp:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  placio-app_models.FacebookAccount:
+    properties:
+      accessToken:
+        type: string
+      codeVerifier:
+        type: string
+      dateCreated:
+        type: string
+      expiresIn:
+        type: string
+      name:
+        type: string
+      refreshToken:
+        type: string
+      state:
+        type: string
+      userID:
+        type: string
+      userName:
+        type: string
+    type: object
+  placio-app_models.GeneralSettings:
+    properties:
+      createdAt:
+        description: gorm.Model
+        type: string
+      deletedAt:
+        type: string
+      id:
+        type: string
+      language:
+        type: string
+      theme:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  placio-app_models.GoogleAccount:
+    properties:
+      accessToken:
+        type: string
+      dateCreated:
+        type: string
+      email:
+        type: string
+      refreshToken:
+        type: string
+      userID:
+        type: string
+    type: object
+  placio-app_models.Group:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  placio-app_models.Message:
+    properties:
+      conversationID:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      delivered:
+        type: boolean
+      groupID:
+        type: string
+      id:
+        type: integer
+      messageText:
+        type: string
+      messageType:
+        type: string
+      read:
+        type: boolean
+      recipientID:
+        type: string
+      senderID:
+        type: string
+      timestamp:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  placio-app_models.Notification:
+    properties:
+      businessID:
+        type: string
+      createdAt:
+        type: string
+      id:
+        type: string
+      message:
+        type: string
+      updatedAt:
+        type: string
+      userID:
+        type: string
+    type: object
+  placio-app_models.Payment:
+    properties:
+      amount:
+        type: integer
+      bookingID:
+        type: string
+      createdAt:
+        type: string
+      id:
+        type: string
+      updatedAt:
+        type: string
+      userID:
+        type: string
+    type: object
+  placio-app_models.Token:
+    properties:
+      access:
+        type: string
+      accessCreateAt:
+        type: string
+      accessExpiresIn:
+        $ref: '#/definitions/time.Duration'
+      accessTokenExpiry:
+        type: string
+      codeCreateAt:
+        type: string
+      codeExpiresIn:
+        $ref: '#/definitions/time.Duration'
+      email:
+        type: string
+      id:
+        type: string
+      jwt:
+        type: string
+      provider:
+        type: string
+      providerID:
+        type: string
+      refresh:
+        type: string
+      refreshCreateAt:
+        type: string
+      refreshExpiresIn:
+        $ref: '#/definitions/time.Duration'
+      userID:
+        type: string
+    type: object
+  placio-app_models.TwitterAccount:
+    properties:
+      accessToken:
+        type: string
+      codeVerifier:
+        type: string
+      dateCreated:
+        type: string
+      expiresIn:
+        type: string
+      name:
+        type: string
+      refreshToken:
+        type: string
+      state:
+        type: string
+      userID:
+        type: string
+      userName:
+        type: string
+    type: object
+  placio-app_models.User:
+    properties:
+      accountID:
+        type: string
+      accounts:
+        items:
+          $ref: '#/definitions/placio-app_models.Account'
+        type: array
+      createdAt:
+        type: string
+      dateCreated:
+        type: string
+      defaultAccount:
+        type: string
+      deletedAt:
+        type: string
+      disabled:
+        type: boolean
+      email:
+        type: string
+      facebook:
+        $ref: '#/definitions/placio-app_models.FacebookAccount'
+      facebookID:
+        type: string
+      fingerprint:
+        description: UserID               string     `gorm:"primaryKey,unique,column:user_id"`
+        type: string
+      generalSettings:
+        $ref: '#/definitions/placio-app_models.GeneralSettings'
+      generalSettingsID:
+        description: Interests            []string         `gorm:"type:text[]"` // `gorm:"type:text[]"`
+        type: string
+      google:
+        $ref: '#/definitions/placio-app_models.GoogleAccount'
+      hasPassword:
+        type: boolean
+      id:
+        type: string
+      ip:
+        type: string
+      lastActive:
+        type: string
+      name:
+        type: string
+      onboarded:
+        type: boolean
+      password:
+        type: string
+      permission:
+        type: string
+      supportEnabled:
+        type: boolean
+      twitter:
+        $ref: '#/definitions/placio-app_models.TwitterAccount'
+      twitterID:
+        type: string
+      twoFABackupCode:
+        type: string
+      twoFASecret:
+        type: string
+      twoFactorAuthEnabled:
+        type: boolean
+      updatedAt:
+        type: string
+      userAgent:
+        type: string
+    type: object
+  placio-app_models.VoiceNote:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      delivered:
+        type: boolean
+      id:
+        type: integer
+      read:
+        type: boolean
+      recipientID:
+        type: string
+      senderID:
+        type: string
+      timestamp:
+        type: string
+      updatedAt:
+        type: string
+      voiceNoteFile:
+        type: string
+    type: object
+  time.Duration:
+    enum:
+      - -9223372036854776000
+      - 9223372036854776000
+      - 1
+      - 1000
+      - 1000000
+      - 1000000000
+      - 60000000000
+      - 3600000000000
+      - 1
+      - 1000
+      - 1000000
+      - 1000000000
+      - 60000000000
+    type: integer
+    x-enum-varnames:
+      - minDuration
+      - maxDuration
+      - Nanosecond
+      - Microsecond
+      - Millisecond
+      - Second
+      - Minute
+      - Hour
+      - Nanosecond
+      - Microsecond
+      - Millisecond
+      - Second
+      - Minute
+host: localhost:7070
+info:
+  contact:
+    email: support@placio.io
+    name: Darc Technologies
+    url: https://placio.io
+  description: This is the documentation for the Placio Application Api
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: https://placio.io/terms
+  title: Placio Application Api
+  version: '0.01'
+paths:
+  /api/v1/accounts:
+    post:
+      consumes:
+        - application/json
+      description: Create a new account and assign the user to it
+      parameters:
+        - description: Sign Up Data
+          in: body
+          name: SignUpDto
+          required: true
+          schema:
+            $ref: '#/definitions/placio-app_Dto.SignUpDto'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully created account
+          schema:
+            $ref: '#/definitions/placio-app_Dto.UserResponse'
+        '400':
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        '403':
+          description: Forbidden
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        '500':
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new account
+      tags:
+        - accounts
+  /api/v1/auth/change:
+    get:
+      consumes:
+        - '*/*'
+      description: Change password
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        '400':
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Change password
+      tags:
+        - Auth
+  /api/v1/auth/login:
+    get:
+      consumes:
+        - '*/*'
+      description: Login to the server
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_Dto.UserResponseDto'
+        '400':
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Login and get token
+      tags:
+        - Auth
+  /api/v1/auth/logout:
+    get:
+      consumes:
+        - '*/*'
+      description: Log out from the server
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        '400':
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Log out
+      tags:
+        - Auth
+  /api/v1/auth/refresh:
+    get:
+      consumes:
+        - '*/*'
+      description: Refresh token
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        '400':
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Refresh token
+      tags:
+        - Auth
+  /api/v1/auth/reset:
+    get:
+      consumes:
+        - '*/*'
+      description: Reset password
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        '400':
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Reset password
+      tags:
+        - Auth
+  /api/v1/auth/signin:
+    post:
+      consumes:
+        - application/json
+      description: Authenticate a user and return an access token
+      parameters:
+        - description: Sign In Data
+          in: body
+          name: SigninRequest
+          required: true
+          schema:
+            $ref: '#/definitions/cmd_app_controller.SigninRequest'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully signed in
+          schema:
+            $ref: '#/definitions/cmd_app_controller.SigninResponse'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/fiber.Error'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/fiber.Error'
+      summary: Authenticate a user
+      tags:
+        - authentication
+  /api/v1/auth/signup:
+    post:
+      consumes:
+        - '*/*'
+      description: Sign up to the server
+      parameters:
+        - description: user
+          in: body
+          name: user
+          required: true
+          schema:
+            $ref: '#/definitions/placio-app_Dto.SignUpDto'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_Dto.UserResponseDto'
+        '400':
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Sign up
+      tags:
+        - Auth
+  /api/v1/auth/verify:
+    get:
+      consumes:
+        - '*/*'
+      description: Verify phone
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        '400':
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Verify phone
+      tags:
+        - Auth
+  /api/v1/health:
+    get:
+      consumes:
+        - '*/*'
+      description: get the status of server.
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Show the status of server.
+      tags:
+        - root
+  /api/v1/users:
+    get:
+      consumes:
+        - '*/*'
+      description: Retrieve a list of users
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_models.User'
+            type: array
+        '400':
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Retrieve a list of users
+      tags:
+        - users
+    post:
+      consumes:
+        - '*/*'
+      description: Create a new user
+      parameters:
+        - description: User
+          in: body
+          name: user
+          required: true
+          schema:
+            $ref: '#/definitions/placio-app_models.User'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_models.User'
+        '400':
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+        - ApiKeyAuth: []
+      summary: Create a new user
+      tags:
+        - users
+  /api/v1/users/{id}:
+    delete:
+      consumes:
+        - '*/*'
+      description: Delete a user by ID
+      parameters:
+        - description: User ID
+          in: path
+          name: id
+          required: true
+          type: integer
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        '400':
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete a user by ID
+      tags:
+        - users
+    get:
+      consumes:
+        - '*/*'
+      description: Retrieve a user by ID
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_models.User'
+        '400':
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Retrieve a user by ID
+      tags:
+        - users
+    put:
+      consumes:
+        - '*/*'
+      description: Update an existing user by ID
+      parameters:
+        - description: User ID
+          in: path
+          name: id
+          required: true
+          type: integer
+        - description: User
+          in: body
+          name: user
+          required: true
+          schema:
+            $ref: '#/definitions/placio-app_models.User'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_models.User'
+        '400':
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update an existing user by ID
+      tags:
+        - users
+  /api/v1/users/{id}/bookings:
+    get:
+      consumes:
+        - '*/*'
+      description: Retrieve a list of bookings for a specific user by ID
+      parameters:
+        - description: User ID
+          in: path
+          name: id
+          required: true
+          type: integer
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_models.Booking'
+            type: array
+        '400':
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Retrieve a list of bookings for a specific user by ID
+      tags:
+        - users
+  /api/v1/users/{id}/conversations:
+    get:
+      consumes:
+        - '*/*'
+      description: Retrieve a list of conversations a specific user is a participant in by ID
+      parameters:
+        - description: User ID
+          in: path
+          name: id
+          required: true
+          type: integer
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_models.Conversation'
+            type: array
+        '400':
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Retrieve a list of conversations a specific user is a participant in by ID
+      tags:
+        - users
+  /api/v1/users/{id}/groups:
+    get:
+      consumes:
+        - '*/*'
+      description: Retrieve a list of groups a specific user is a member of by ID
+      parameters:
+        - description: User ID
+          in: path
+          name: id
+          required: true
+          type: integer
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_models.Group'
+            type: array
+        '400':
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Retrieve a list of groups a specific user is a member of by ID
+      tags:
+        - users
+  /api/v1/users/{id}/messages_received:
+    get:
+      consumes:
+        - '*/*'
+      description: Retrieve a list of messages received by a specific user by ID
+      parameters:
+        - description: User ID
+          in: path
+          name: id
+          required: true
+          type: integer
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_models.Message'
+            type: array
+        '400':
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Retrieve a list of messages received by a specific user by ID
+      tags:
+        - users
+  /api/v1/users/{id}/messages_sent:
+    get:
+      consumes:
+        - '*/*'
+      description: Retrieve a list of messages sent by a specific user by ID
+      parameters:
+        - description: User ID
+          in: path
+          name: id
+          required: true
+          type: integer
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_models.Message'
+            type: array
+        '400':
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Retrieve a list of messages sent by a specific user by ID
+      tags:
+        - users
+  /api/v1/users/{id}/notifications:
+    get:
+      consumes:
+        - '*/*'
+      description: Retrieve a list of notifications for a specific user by ID
+      parameters:
+        - description: User ID
+          in: path
+          name: id
+          required: true
+          type: integer
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_models.Notification'
+            type: array
+        '400':
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Retrieve a list of notifications for a specific user by ID
+      tags:
+        - users
+  /api/v1/users/{id}/payments:
+    get:
+      consumes:
+        - '*/*'
+      description: Retrieve a list of payments for a specific user by ID
+      parameters:
+        - description: User ID
+          in: path
+          name: id
+          required: true
+          type: integer
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_models.Payment'
+            type: array
+        '400':
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Retrieve a list of payments for a specific user by ID
+      tags:
+        - users
+  /api/v1/users/{id}/voice_notes:
+    get:
+      consumes:
+        - '*/*'
+      description: Retrieve a list of voice notes a specific user is a participant in by ID
+      parameters:
+        - description: User ID
+          in: path
+          name: id
+          required: true
+          type: integer
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_models.VoiceNote'
+            type: array
+        '400':
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Retrieve a list of voice notes a specific user is a participant in by ID
+      tags:
+        - users
+  /api/v1/users/{id}/voice_notes_received:
+    get:
+      consumes:
+        - '*/*'
+      description: Retrieve a list of voice notes received by a specific user by ID
+      parameters:
+        - description: User ID
+          in: path
+          name: id
+          required: true
+          type: integer
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_models.VoiceNote'
+            type: array
+        '400':
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Retrieve a list of voice notes received by a specific user by ID
+      tags:
+        - users
+  /api/v1/users/{id}/voice_notes_sent:
+    get:
+      consumes:
+        - '*/*'
+      description: Retrieve a list of voice notes sent by a specific user by ID
+      parameters:
+        - description: User ID
+          in: path
+          name: id
+          required: true
+          type: integer
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_models.VoiceNote'
+            type: array
+        '400':
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Retrieve a list of voice notes sent by a specific user by ID
+      tags:
+        - users
+  /api/v1/voice_notes/{id}:
+    get:
+      consumes:
+        - '*/*'
+      description: Retrieve a specific voice note by ID
+      parameters:
+        - description: Voice Note ID
+          in: path
+          name: id
+          required: true
+          type: integer
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_models.VoiceNote'
+        '400':
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Retrieve a specific voice note by ID
+      tags:
+        - voice_notes
+schemes:
+  - http
+swagger: '2.0'
