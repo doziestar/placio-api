@@ -17,3 +17,5 @@
 bin
 
 archive
+*.txt
+.envs

@@ -11,5 +11,6 @@ func InitializeRoutes(app *fiber.App) {
 	HealthCheckRoutes(app)
 	AuthRoutes(app)
 	UserRoutes(app)
+	AccountRoutes(app)
 
 }

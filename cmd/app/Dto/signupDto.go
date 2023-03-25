@@ -8,7 +8,7 @@ import (
 type SignUpDto struct {
 	Email           string `json:"email" validate:"required,email"`
 	Password        string `json:"password" validate:"required,min=8"`
-	ConfirmPassword string `json:"ConfirmPassword" validate:"required,min=8"`
+	ConfirmPassword string `json:"confirmPassword" validate:"required,min=8"`
 	Name            string `json:"name" validate:"required"`
 	Phone           string `json:"phone" validate:"required"`
 	Role            string `json:"role" validate:"required"`

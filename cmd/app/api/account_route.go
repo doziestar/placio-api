@@ -11,7 +11,7 @@ import (
 func AccountRoutes(app *fiber.App) {
 	api := app.Group("/api/v1/accounts")
 	{
-		api.Post("/api/account", utility.Use(controller.CreateAccount))
+		api.Post("/", utility.Use(controller.CreateAccount))
 
 		// api.Post("/api/account/plan", middleware.Verify("owner", ""), utility.Use(controller.plan))
 

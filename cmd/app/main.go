@@ -45,7 +45,10 @@ func main() {
 	if err != nil {
 		return
 	}
-	models.Migrate(db.GetDB())
+	err = models.Migrate(db.GetDB())
+	if err != nil {
+		return
+	}
 	// set port
 	start.Initialize(port, app)
 
