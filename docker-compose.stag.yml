@@ -67,7 +67,7 @@ services:
     networks:
       - default
     depends_on:
-      - db
+      - placio-db
     env_file:
       - ./.envs/.local
     labels:
