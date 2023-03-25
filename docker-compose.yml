@@ -12,10 +12,8 @@ services:
     restart: always
     ports:
       - "5432:5432"
-    environment:
-      POSTGRES_PASSWORD: "918273645dozie"
-      POSTGRES_USER : "dozie"
-      POSTGRES_DB: "placio"
+    env_file:
+      - ./.envs/.local
     volumes:
       - db_data:/var/lib/postgresql/data
 
@@ -23,10 +21,8 @@ services:
     container_name: placio-pgadmin
     image: dpage/pgadmin4
     restart: always
-    environment:
-      PGADMIN_DEFAULT_EMAIL: "chidosiky2015@gmail.com"
-      PGADMIN_DEFAULT_PASSWORD: "918273645dozie"
-      PGADMIN_LISTEN_PORT: "5050"
+    env_file:
+      - ./.envs/.local
     ports:
       - "5050:5050"
     volumes:
