@@ -1,4 +1,8 @@
 version: "3.3"
+volumes:
+  db_data:
+  pgadmin_data:
+  redis_data:
 services:
 
   placio-proxy:
@@ -122,8 +126,8 @@ services:
       # add path prefix strip
 
 
-volumes:
-  app-db-data2:
+# volumes:
+#   app-db-data2:
 networks:
   traefik-public:
     # For local dev, don't expect an external Traefik network
