@@ -644,6 +644,8 @@ func (u *User) GenerateToken(user User) (Dto.Token, error) {
 	claims := token.Claims.(jwt.MapClaims)
 	claims["sub"] = user.ID
 	claims["name"] = user.Name
+	claims["email"] = user.Email
+	//claims["account"] = user.Accounts[0].ID
 	claims["iat"] = time.Now().UTC().Unix()
 	claims["exp"] = time.Now().UTC().Add(time.Hour * 24 * 7).Unix()
 
@@ -662,22 +664,49 @@ func (u *User) GenerateToken(user User) (Dto.Token, error) {
 	refreshExpiresIn := refreshCreateAt.Add(time.Hour * 24 * 30)
 
 	return Dto.Token{
-		ClientID:            "",
-		UserID:              user.ID,
-		RedirectURI:         "",
-		Scope:               "",
-		Code:                "",
-		CodeChallenge:       "",
-		CodeChallengeMethod: "",
-		CodeCreateAt:        time.Time{},
-		CodeExpiresIn:       0,
-		Access:              accessToken,
-		AccessCreateAt:      accessCreateAt,
-		AccessExpiresIn:     time.Duration(accessExpiresIn.Unix()),
-		Refresh:             refreshToken,
-		RefreshCreateAt:     refreshCreateAt,
-		RefreshExpiresIn:    time.Duration(refreshExpiresIn.Unix()),
+		UserID:           user.ID,
+		CodeCreateAt:     time.Time{},
+		CodeExpiresIn:    time.Duration(accessExpiresIn.Unix()),
+		Access:           accessToken,
+		AccessCreateAt:   accessCreateAt,
+		AccessExpiresIn:  time.Duration(accessExpiresIn.Unix()),
+		Refresh:          refreshToken,
+		RefreshCreateAt:  refreshCreateAt,
+		RefreshExpiresIn: time.Duration(refreshExpiresIn.Unix()),
 	}, nil
+}
+
+func (u *User) Login(c *fiber.Ctx, db *gorm.DB) error {
+	var login *Login
+
+	err := db.Where("email = ?", u.Email).First(&login).Error
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			login = &Login{
+				IP:      c.IP(),
+				Browser: c.Get("User-Agent"),
+				Time:    time.Now(),
+				Device:  c.Get("Device"),
+				UserID:  u.ID,
+			}
+			err := db.Create(&login).Error
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	login.IP = c.IP()
+	login.Browser = c.Get("User-Agent")
+	login.Time = time.Now()
+	login.Device = c.Get("Device")
+	login.UserID = u.ID
+
+	err = db.Save(&login).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (u *User) GetByEmail(email string, db *gorm.DB) (*User, error) {

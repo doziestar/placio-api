@@ -9,6 +9,7 @@ import (
 	"placio-app/database"
 	"placio-app/models"
 	"placio-pkg/logger"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -114,9 +115,50 @@ func CreateAccount(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Internal Server Error",
 		})
-	} else {
-		return c.Status(fiber.StatusOK).JSON(newUser)
 	}
+
+	//var token *models.Token
+
+	tokenData, err := user.GenerateToken(*newUser)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Internal Server Error",
+		})
+	}
+
+	//c.Locals("token", tokenData)
+	var newData = &models.Token{
+		Provider: "app",
+		Jwt:      tokenData.Access,
+		Access:   tokenData.Access,
+		//AccessTokenExpiry: tokenData.AccessExpiresIn,
+		Refresh:          tokenData.Refresh,
+		UserID:           tokenData.UserID,
+		CodeCreateAt:     time.Time{},
+		CodeExpiresIn:    tokenData.CodeExpiresIn,
+		AccessCreateAt:   time.Time{},
+		AccessExpiresIn:  tokenData.AccessExpiresIn,
+		RefreshCreateAt:  time.Time{},
+		RefreshExpiresIn: tokenData.RefreshExpiresIn,
+		ProviderID:       "",
+	}
+
+	err = newData.Save(database.DB)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Internal Server Error",
+		})
+	}
+
+	err = user.Login(c, database.DB)
+	if err != nil {
+		return err
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"token": tokenData,
+		"user":  newUser,
+	})
 
 	//// create the account
 	//accountData, err := account.CreateAccount(newUser.UserID, permission, database.DB)

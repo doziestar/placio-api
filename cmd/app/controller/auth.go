@@ -318,7 +318,7 @@ func Signin(c *fiber.Ctx) error {
 	}
 
 	// generate the token
-	userToken, err := token.Generate(userData.ID, userData.AccountID, data.Provider, data.ProviderID, data.Email)
+	//userToken, err := token.Generate(userData.ID, userData.AccountID, data.Provider, data.ProviderID, data.Email)
 	if err != nil {
 		return err
 	}
@@ -327,7 +327,7 @@ func Signin(c *fiber.Ctx) error {
 	return c.JSON(SigninResponse{
 		Message:       "You have successfully signed in",
 		TwoFARequired: userData.TwoFactorAuthEnabled,
-		Token:         *userToken,
+		//Token:         *userToken,
 	})
 }
 
@@ -348,19 +348,19 @@ func Authenticate(c *fiber.Ctx, userData models.User) error {
 	}
 
 	// create & store the token
-	jwt, err := token.Generate(userData.ID, userData.AccountID, "app", userData.AccountID, userData.Email)
+	//jwt, err := token.Generate(userData.ID, userData.AccountID, "app", userData.AccountID, userData.Email)
 	if err != nil {
 		return err
 	}
-
-	err = token.Save("app", map[string]string{
-		"provider_id":  userData.AccountID,
-		"email":        userData.Email,
-		"accessToken":  jwt.Access,
-		"refreshToken": jwt.Refresh,
-		//"expires":     jwt.AccessExpiresIn,
-
-	}, userData.ID)
+	//
+	//err = token.Save("app", map[string]string{
+	//	"provider_id":  userData.AccountID,
+	//	"email":        userData.Email,
+	//	"accessToken":  jwt.Access,
+	//	"refreshToken": jwt.Refresh,
+	//	//"expires":     jwt.AccessExpiresIn,
+	//
+	//}, userData.ID)
 	if err != nil {
 		return err
 	}
@@ -369,7 +369,7 @@ func Authenticate(c *fiber.Ctx, userData models.User) error {
 
 	// return user to client
 	return c.Status(fiber.StatusOK).JSON(map[string]interface{}{
-		"token":        jwt,
+		//"token":        jwt,
 		"subscription": subscription.Status,
 		"plan":         accountData.Plan,
 		"permission":   userData.Permission,
