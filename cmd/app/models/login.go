@@ -21,6 +21,12 @@ type Login struct {
 	Device  string
 }
 
+// BeforeCreate is a hook that is called before creating a login
+func (l *Login) BeforeCreate(tx *gorm.DB) error {
+	l.ID = GenerateID()
+	return nil
+}
+
 func (l Login) Create(id string, c *fiber.Ctx) (*Login, error) {
 	m := &LoginModel{}
 	login, err := m.Create(id, c.IP(), c.Get("User-Agent"), c.Get("Device"))

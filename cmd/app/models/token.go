@@ -28,39 +28,45 @@ type Token struct {
 	Email             string
 }
 
+// BeforeCreate is a hook that is called before creating a token
+func (t *Token) BeforeCreate(tx *gorm.DB) error {
+	t.ID = GenerateID()
+	return nil
+}
+
 // Save creates new or updates an existing token
-func (t *Token) Save(provider string, data map[string]string, user string) error {
-	if data["access"] != "" {
+func (t *Token) Save(db *gorm.DB) error {
+	if t.Access != "" {
 		// data["access"] = crypto.Encrypt(data["access"])
 	}
-	if data["refresh"] != "" {
+	if t.Refresh != "" {
 		// data["refresh"] = crypto.Encrypt(data["refresh"])
 	}
 
 	// is there already a token for this provider?
 	var tokenData Token
-	if err := db.Where("provider = ? AND user_id = ?", provider, user).First(&tokenData).Error; err == nil {
+	if err := db.Where("provider = ? AND user_id = ?", t.Provider, t.UserID).First(&tokenData).Error; err == nil {
 		// update existing token
-		tokenData.Jwt = data["jwt"]
-		tokenData.Access = data["access"]
-		tokenData.Refresh = data["refresh"]
+		tokenData.Jwt = t.Jwt
+		tokenData.Access = t.Access
+		tokenData.Refresh = t.Refresh
 		return db.Save(&tokenData).Error
 	}
 
 	// create a new token
 	newToken := Token{
-		ID:            uuid.NewString(),
-		Provider:      provider,
-		Jwt:           data["jwt"],
-		Access:        data["access"],
-		Refresh:       data["refresh"],
-		UserID:        user,
-		CodeCreateAt:  time.Time{},
-		CodeExpiresIn: 0,
-		// AccessCreateAt:   accessCreateAt,
-		// AccessExpiresIn:  time.Duration(accessExpiresIn.Unix()),
-		// RefreshCreateAt:  refreshCreateAt,
-		// RefreshExpiresIn: time.Duration(refreshExpiresIn.Unix()),
+		ID:               uuid.NewString(),
+		Provider:         t.Provider,
+		Jwt:              t.Jwt,
+		Access:           t.Access,
+		Refresh:          t.Refresh,
+		UserID:           t.UserID,
+		CodeCreateAt:     time.Time{},
+		CodeExpiresIn:    0,
+		AccessCreateAt:   t.AccessCreateAt,
+		AccessExpiresIn:  t.AccessExpiresIn,
+		RefreshCreateAt:  t.RefreshCreateAt,
+		RefreshExpiresIn: t.RefreshExpiresIn,
 	}
 	return db.Create(&newToken).Error
 }
@@ -135,13 +141,13 @@ func (t *Token) Delete(id, provider, user string) error {
 }
 
 // Generate GenerateJwt generates a new JWT token for the given user
-func (t *Token) Generate(userId, accountId, provider, providerID, email string) (*Token, error) {
+func (t *Token) Generate(userId, accountId, provider, email string) (*Token, error) {
 	// generate a new JWT token
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"sub":   userId,
-		"aud":   accountId,
-		"iss":   provider,
-		"jti":   providerID,
+		"sub": userId,
+		"aud": accountId,
+		"iss": provider,
+		// "jti":   providerID,
 		"exp":   time.Now().Add(time.Hour * 24 * 30).Unix(),
 		"iat":   time.Now().Unix(),
 		"email": email,

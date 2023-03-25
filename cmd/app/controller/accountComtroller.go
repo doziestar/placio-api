@@ -1,9 +1,15 @@
 package controller
 
 import (
+	"context"
 	"errors"
+	"fmt"
+	"log"
 	"placio-app/Dto"
+	"placio-app/database"
 	"placio-app/models"
+	"placio-pkg/logger"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -36,6 +42,7 @@ func CreateAccount(c *fiber.Ctx) error {
 			"error": "Bad Request",
 		})
 	}
+	log.Println("CreateAccount", data)
 
 	// validate input
 	if err := validate(data.Email, data.Name, data.Password); err != nil {
@@ -45,7 +52,7 @@ func CreateAccount(c *fiber.Ctx) error {
 	}
 
 	// confirm_password field is a dummy field to prevent bot signups
-	if data.ConfirmPassword != "" {
+	if data.ConfirmPassword == "" {
 		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
 			"error": "You need to confirm your password",
 		})
@@ -54,12 +61,17 @@ func CreateAccount(c *fiber.Ctx) error {
 	user := new(models.User)
 
 	// check if user has already registered an account
-	userData, err := user.GetByEmail(data.Email)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Internal Server Error",
-		})
-	}
+	userData, _ := user.GetByEmail(data.Email, database.DB)
+
+	//if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+	//	// continue if user doesn't exist
+	//} else {
+	//	return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+	//		"error": "Internal Server Error",
+	//	})
+	//}
+
+	logger.Info(context.Background(), fmt.Sprintf("userData: %v", userData))
 
 	if userData != nil {
 		// user already owns an account
@@ -87,41 +99,79 @@ func CreateAccount(c *fiber.Ctx) error {
 		c.Locals("duplicate_user", duplicateUser)
 		c.Locals("has_password", hasPassword)
 	}
+	//permission := func() string {
+	//	if userData != nil {
+	//		return userData.Permission
+	//	}
+	//	return "owner"
+	//}()
+	logger.Info(context.Background(), "CreateAccount")
 
-	account := new(models.Account)
-	// create the account
-	accountData, err := account.CreateAccount(userData.ID, userData.Permission)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Internal Server Error",
-		})
-	}
-	c.Locals("account_id", accountData.ID)
+	//account := new(models.Account)
 
 	// create the user and assign to account
-	userData, err = user.Create(data.Email, data.Name, accountData.ID)
+	newUser, err := user.CreateUser(*data, c, database.DB)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Internal Server Error",
 		})
 	}
-	if err := user.AddToAccount(userData.ID, accountData.ID, "owner"); err != nil {
+
+	//var token *models.Token
+
+	tokenData, err := user.GenerateToken(*newUser)
+	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Internal Server Error",
 		})
+	}
+
+	//c.Locals("token", tokenData)
+	var newData = &models.Token{
+		Provider: "app",
+		Jwt:      tokenData.Access,
+		Access:   tokenData.Access,
+		//AccessTokenExpiry: tokenData.AccessExpiresIn,
+		Refresh:          tokenData.Refresh,
+		UserID:           tokenData.UserID,
+		CodeCreateAt:     time.Time{},
+		CodeExpiresIn:    tokenData.CodeExpiresIn,
+		AccessCreateAt:   time.Time{},
+		AccessExpiresIn:  tokenData.AccessExpiresIn,
+		RefreshCreateAt:  time.Time{},
+		RefreshExpiresIn: tokenData.RefreshExpiresIn,
+		ProviderID:       "",
+	}
+
+	err = newData.Save(database.DB)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Internal Server Error",
+		})
+	}
+
+	err = user.Login(c, database.DB)
+	if err != nil {
+		return err
 	}
 
 	mail := new(models.EmailContent)
 	// send welcome email
-	if err := mail.Send(userData.Email, "new-account", userData.ToJson()); err != nil {
+	//if err := mail.Send(newUser.Email, "new-account", userData.ToJson()); err != nil {
+	//	return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+	//		"error": "Internal Server Error",
+	//	})
+	//}
+	if err := mail.SendEmailToTerminal(newUser.Email); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Internal Server Error",
 		})
 	}
 
-	// authenticate the user
-	//return authController.Signup(c)
-	return nil
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"token": tokenData,
+		"user":  newUser,
+	})
 }
 
 func validate(email string, name string, password string) error {

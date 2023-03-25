@@ -2,10 +2,9 @@ package utility
 
 import (
 	"fmt"
-	"strings"
-
-	"github.com/getsentry/sentry-go"
+	sentry "github.com/getsentry/sentry-go"
 	"github.com/gofiber/fiber/v2"
+	"strings"
 )
 
 func Validate(form map[string]interface{}, fields []string) error {
@@ -81,6 +80,9 @@ func Assert(data interface{}, err string, input map[string]interface{}) bool {
 }
 
 func Use(fn func(*fiber.Ctx) error) fiber.Handler {
+	//logger.Info(context.Background(), "middleware.Use")
+	defer sentry.Recover()
+	//defer sentry.Flush(2 * time.Second)
 	return func(c *fiber.Ctx) error {
 		err := fn(c)
 		if err != nil {

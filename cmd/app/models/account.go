@@ -1,9 +1,10 @@
 package models
 
 import (
+	"context"
+	"placio-pkg/logger"
 	"time"
 
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -14,13 +15,13 @@ type UserAndAccount struct {
 
 type Account struct {
 	gorm.Model
-	ID                         string `gorm:"primaryKey"`
-	Permission                 string
-	AccountType                string
-	AccountID                  string
-	Onboarded                  bool
-	Interests                  []string `gorm:"type:text;default:[]"`
-	UserID                     string   `gorm:"column:user_id"`
+	ID          string `gorm:"primaryKey"`
+	Permission  string
+	AccountType string
+	AccountID   string
+	Onboarded   bool
+	// Interests                  []string `gorm:"type:text[]"`
+	UserID                     string `gorm:"column:user_id"`
 	Plan                       string
 	Active                     bool
 	StripeCustomerID           string `gorm:"column:stripe_customer_id"`
@@ -34,14 +35,21 @@ type Account struct {
 	Disabled                   bool      `gorm:"column:disabled"`
 }
 
-// CreateAccount /*
-func (a *Account) CreateAccount(userId, permission string) (*Account, error) {
-	a.ID = uuid.New().String()
-	a.Active = true
-	a.Permission = permission
-	a.UserID = userId
+// BeforeCreate /*
+func (a *Account) BeforeCreate(tx *gorm.DB) error {
+	a.ID = GenerateID()
 	a.CreatedAt = time.Now()
 	a.UpdatedAt = time.Now()
+	return nil
+}
+
+// CreateAccount /*
+func (a *Account) CreateAccount(userID, permission string, db *gorm.DB) (*Account, error) {
+	logger.Info(context.Background(), "Creating account")
+	a.Active = true
+	a.Permission = permission
+	a.UserID = userID
+	// a.Interests = []string{}
 
 	result := db.Create(&a)
 	return a, result.Error
