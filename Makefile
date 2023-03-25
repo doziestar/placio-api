@@ -29,6 +29,9 @@ cert: ## [HTTP] Generate self signed certificate
 dev: ## [HTTP] Run server in dev mode
 	docker-compose up --build
 
+docs: ## [HTTP] Generate docs
+	swag init -g cmd/app/main.go --output docs/app --parseDependency
+
 # DOCKER TASKS
 docker-build: ## [DOCKER] Build given container. Example: `make docker-build BIN=user`
 	docker build -f cmd/$(BIN)/Dockerfile --no-cache --build-arg BIN=$(BIN) --build-arg VERSION=$(VERSION) --build-arg GIT_COMMIT=$(GIT_COMMIT) -t tutis-api-$(BIN) .

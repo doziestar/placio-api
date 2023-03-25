@@ -239,7 +239,7 @@ func (s *SigninRequest) ToJson() map[string]interface{} {
 // @Accept json
 // @Produce json
 // @Param SigninRequest body SigninRequest true "Sign In Data"
-// @Success 200 {object} SigninResponse "Successfully signed in"
+// @Success 200 {object} Dto.UserResponse "Successfully signed in"
 // @Failure 400 {object} fiber.Error "Bad Request"
 // @Failure 401 {object} fiber.Error "Unauthorized"
 // @Router /api/v1/auth/signin [post]
