@@ -6,10 +6,10 @@ FROM node:${NODE_VERSION} AS node
 
 WORKDIR /app
 
-RUN npm install @redocly/cli
+RUN npm install -g @redocly/cli
 
 COPY ./docs ./docs
 
-RUN npx redocly bundle ./docs/app/swagger.yaml --output ./docs/placio.yml
+RUN redocly bundle ./docs/app/swagger.yaml --output ./docs/redoc.yml
 
-CMD ["redocly", "preview-docs", "./docs/placio.yml"]
+CMD redocly preview-docs --host=0.0.0.0 --port=6060 ./docs/redoc.yml

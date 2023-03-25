@@ -45,9 +45,9 @@ services:
       dockerfile: ./docs/Dockerfile
     restart: always
     ports:
-      - "8080:6060"
+      - "6060:6060"
     volumes:
-      - ./:/app
+      # - ./:/app
       - ./docs:/app/docs
   # kafka:
   #   container_name: placio-kafka
