@@ -1,7 +1,11 @@
 package models
 
 import (
+	"context"
+	"errors"
+	"fmt"
 	"os"
+	"placio-pkg/logger"
 	"time"
 
 	"github.com/golang-jwt/jwt"
@@ -14,6 +18,7 @@ type Token struct {
 	ID                string `gorm:"primaryKey"`
 	Provider          string `gorm:"not null"`
 	Jwt               string
+	TokenID           string
 	Access            string
 	AccessTokenExpiry time.Time
 	Refresh           string
@@ -31,6 +36,7 @@ type Token struct {
 // BeforeCreate is a hook that is called before creating a token
 func (t *Token) BeforeCreate(tx *gorm.DB) error {
 	t.ID = GenerateID()
+	//t.TokenID = GenerateID()
 	return nil
 }
 
@@ -57,6 +63,7 @@ func (t *Token) Save(db *gorm.DB) error {
 	newToken := Token{
 		ID:               uuid.NewString(),
 		Provider:         t.Provider,
+		TokenID:          t.TokenID,
 		Jwt:              t.Jwt,
 		Access:           t.Access,
 		Refresh:          t.Refresh,
@@ -129,15 +136,27 @@ func (t *Token) VerifyToken(provider string, token string) (*Token, error) {
 }
 
 // Delete deletes the token with the given ID, provider, and user
-func (t *Token) Delete(id, provider, user string) error {
-	query := db.Where("user_id = ?", user)
+func (t *Token) Delete(id, provider, user string, db *gorm.DB) error {
+	query := db.Model(&Token{}).Where("user_id = ?", user)
 	if id != "" {
-		query = query.Where("id = ?", id)
+		logger.Info(context.Background(), fmt.Sprintf("Delete id: %s", id))
+		query = query.Where("token_id = ?", id)
 	}
 	if provider != "" {
+		logger.Info(context.Background(), fmt.Sprintf("Delete provider: %s", provider))
 		query = query.Where("provider = ?", provider)
 	}
-	return query.Delete(&Token{}).Error
+	logger.Info(context.Background(), fmt.Sprintf("Delete query: %s", query.Statement.SQL.String()))
+	result := query.Delete(&Token{})
+	if result.Error != nil {
+		return result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return errors.New("no token found")
+	}
+	return nil
+	//return query.Delete(&Token{}).Error
 }
 
 // Generate GenerateJwt generates a new JWT token for the given user

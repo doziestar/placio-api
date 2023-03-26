@@ -2,7 +2,6 @@ package controller
 
 import (
 	"context"
-	"fmt"
 	Dto "placio-app/Dto"
 	"placio-app/database"
 	"placio-app/models"
@@ -29,13 +28,22 @@ var (
 // @Produce json
 // @Success 200 {object} map[string]interface{}
 // @Failure 400 {object} map[string]interface{}
-// @Router /auth/logout [post]
+// @Router /auth/sign-out [post]
 func SignOut(c *fiber.Ctx) error {
-	logger.Info(context.Background(), "logout")
-	logger.Info(context.Background(), fmt.Sprintf("%v", c.Locals("user")))
-	logger.Info(context.Background(), fmt.Sprintf("%v", c.Locals("provider")))
-	logger.Info(context.Background(), fmt.Sprintf("%v", c.Locals("token")))
-	return c.JSON(fiber.Map{"status": "ok"})
+	err := token.Delete(c.Locals("tokenID").(string), c.Locals("provider").(string), c.Locals("user").(string), database.DB)
+	if err != nil {
+		logger.Error(context.Background(), err.Error())
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Unable to sign out",
+		})
+	}
+	// remove all from context
+	c.Locals("user", nil)
+	c.Locals("provider", nil)
+	c.Locals("token", nil)
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "Signed out successfully",
+	})
 }
 
 // RefreshToken godoc

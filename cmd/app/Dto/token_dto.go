@@ -45,24 +45,22 @@ func NewTokenInit() *Token {
 
 // Token token model
 type Token struct {
-	ClientID            string        `bson:"ClientID"`
-	UserID              string        `bson:"UserID"`
-	RedirectURI         string        `bson:"RedirectURI"`
-	Scope               string        `bson:"Scope"`
-	Code                string        `bson:"Code"`
-	CodeChallenge       string        `bson:"CodeChallenge"`
-	CodeChallengeMethod string        `bson:"CodeChallengeMethod"`
-	CodeCreateAt        time.Time     `bson:"CodeCreateAt"`
-	CodeExpiresIn       time.Duration `bson:"CodeExpiresIn"`
-	//CodeExpiresIn   time.Time     `bson:"CodeExpiresIn"`
-	Access          string        `bson:"Access"`
-	AccessCreateAt  time.Time     `bson:"AccessCreateAt"`
-	AccessExpiresIn time.Duration `bson:"AccessExpiresIn"`
-	//AccessExpiresIn  time.Time `bson:"AccessExpiresIn"`
-	Refresh         string    `bson:"Refresh"`
-	RefreshCreateAt time.Time `bson:"RefreshCreateAt"`
-	//RefreshExpiresIn time.Time `bson:"RefreshExpiresIn"`
-	RefreshExpiresIn time.Duration `bson:"RefreshExpiresIn"`
+	TokenID             string        `json:"TokenID"`
+	ClientID            string        `json:"ClientID"`
+	UserID              string        `json:"UserID"`
+	Scope               string        `json:"Scope"`
+	Code                string        `json:"Code"`
+	CodeCreateAt        time.Time     `json:"CodeCreateAt"`
+	CodeExpiresIn       time.Duration `json:"CodeExpiresIn"`
+	Access              string        `json:"Access"`
+	AccessCreateAt      time.Time     `json:"AccessCreateAt"`
+	AccessExpiresIn     time.Duration `json:"AccessExpiresIn"`
+	Refresh             string        `json:"Refresh"`
+	RefreshCreateAt     time.Time     `json:"RefreshCreateAt"`
+	RefreshExpiresIn    time.Duration `json:"RefreshExpiresIn"`
+	RedirectURI         string        `json:"RedirectURI"`
+	CodeChallengeMethod string        `json:"CodeChallengeMethod"`
+	CodeChallenge       string        `json:"CodeChallenge"`
 }
 
 // New create to token model instance

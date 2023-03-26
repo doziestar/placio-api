@@ -254,7 +254,7 @@ func Get(id uuid.UUID, email string, account string, social *Social, permission 
 }
 
 func (u *User) GetUserById(id string, db *gorm.DB) (*User, error) {
-	err := db.Debug().Model(&User{}).Where("id = ?", id).Take(&u).Error
+	err := db.Model(&User{}).Where("id = ?", id).First(&u).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("User not found")
@@ -656,7 +656,7 @@ func (u *User) GetID() string {
 func (u *User) GenerateToken(user User) (Dto.Token, error) {
 	// Create token object
 	token := jwt.New(jwt.SigningMethodHS256)
-
+	tokenID := GenerateID()
 	// Set claims
 	claims := token.Claims.(jwt.MapClaims)
 	claims["sub"] = user.ID
@@ -667,6 +667,7 @@ func (u *User) GenerateToken(user User) (Dto.Token, error) {
 	//claims["onboarded"] = user.Accounts[0].Onboarded
 	//claims["provider"] = "app"
 	//claims["accountID"] = user.Accounts[0].ID
+	claims["jti"] = tokenID
 	claims["iat"] = time.Now().UTC().Unix()
 	claims["exp"] = time.Now().UTC().Add(time.Hour * 24 * 7).Unix()
 
@@ -686,6 +687,7 @@ func (u *User) GenerateToken(user User) (Dto.Token, error) {
 
 	return Dto.Token{
 		UserID:           user.ID,
+		TokenID:          tokenID,
 		CodeCreateAt:     time.Time{},
 		CodeExpiresIn:    time.Duration(accessExpiresIn.Unix()),
 		Access:           accessToken,

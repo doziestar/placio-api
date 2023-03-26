@@ -191,6 +191,7 @@ func Verify(permission string) fiber.Handler {
 			//logger.Info(context.Background(), fmt.Sprintf("userAccount.Permission: %s", userAccount.Permission))
 			log.Println("user permissions", permissions[userAccount.Permission][permission])
 			c.Locals("user", userAccount.ID)
+			c.Locals("tokenID", customClaims["jti"].(string))
 			c.Locals("permission", userAccount.Permission)
 			c.Locals("provider", "app")
 			return c.Next()
