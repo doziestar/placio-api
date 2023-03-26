@@ -37,6 +37,7 @@ import (
 func CreateAccount(c *fiber.Ctx) error {
 	data := new(Dto.SignUpDto)
 
+	logger.Info(context.Background(), fmt.Sprintf("data: %v", data))
 	if err := c.BodyParser(data); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Bad Request",
@@ -131,6 +132,7 @@ func CreateAccount(c *fiber.Ctx) error {
 		Provider: "app",
 		Jwt:      tokenData.Access,
 		Access:   tokenData.Access,
+		TokenID:  tokenData.TokenID,
 		//AccessTokenExpiry: tokenData.AccessExpiresIn,
 		Refresh:          tokenData.Refresh,
 		UserID:           tokenData.UserID,
