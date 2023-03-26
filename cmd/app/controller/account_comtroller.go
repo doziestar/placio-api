@@ -145,10 +145,11 @@ func CreateAccount(c *fiber.Ctx) error {
 		ProviderID:       "",
 	}
 
+	logger.Info(context.Background(), fmt.Sprintf("newData: %v", newData))
 	err = newData.Save(database.DB)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Internal Server Error",
+			"error": err.Error(),
 		})
 	}
 

@@ -63,6 +63,15 @@ type Token struct {
 	CodeChallenge       string        `json:"CodeChallenge"`
 }
 
+type TokenResponse struct {
+	AccessToken      string        `json:"Access"`
+	ExpiresIn        time.Duration `json:"ExpiresIn"`
+	RefreshToken     string        `json:"Refresh"`
+	RefreshExpiresIn time.Duration `json:"RefreshExpiresIn"`
+	UserId           string        `json:"UserId"`
+	TokenID          string        `json:"TokenID"`
+}
+
 // New create to token model instance
 func (t *Token) New() oauth2.TokenInfo {
 	return NewTokenInit()

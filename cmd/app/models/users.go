@@ -167,7 +167,7 @@ func (u *User) CreateUser(userData Dto.SignUpDto, c *fiber.Ctx, db *gorm.DB) (*U
 
 	// Create a new account record in the database
 	accountRecord := Account{
-		ID:          uuid.New().String(),
+		ID:          GenerateID(),
 		UserID:      u.ID,
 		Permission:  "owner",
 		Onboarded:   false,
@@ -188,7 +188,7 @@ func (u *User) CreateUser(userData Dto.SignUpDto, c *fiber.Ctx, db *gorm.DB) (*U
 	//	return &User{}, err
 	//}
 
-	// Update the account record with the account ID
+	//// Update the account record with the account ID
 	err = db.Model(&accountRecord).Update("account_id", accountRecord.ID).Error
 	if err != nil {
 		return &User{}, err
