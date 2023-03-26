@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"fmt"
 	Dto "placio-app/Dto"
 	"placio-app/database"
 	"placio-app/models"
@@ -52,11 +53,28 @@ func SignOut(c *fiber.Ctx) error {
 // @Tags Auth
 // @Accept */*
 // @Produce json
-// @Success 200 {object} map[string]interface{}
+// @Success 200 {object} Dto.TokenResponse
 // @Failure 400 {object} map[string]interface{}
 // @Router /api/v1/auth/refresh [get]
 func RefreshToken(c *fiber.Ctx) error {
-	return c.JSON(fiber.Map{"status": "ok"})
+	// get the refresh token from the request
+	refreshToken := c.Get("refresh_token")
+	if refreshToken == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Missing refresh token",
+		})
+	}
+
+	tokens, err := token.RefreshTokens(refreshToken, database.DB)
+	if err != nil {
+		return err
+	}
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"data":    tokens,
+		"message": "Token refreshed successfully",
+		"status":  "ok",
+	})
+
 }
 
 // ResetPassword godoc
@@ -232,12 +250,14 @@ func Signin(c *fiber.Ctx) error {
 	}
 
 	// generate the token
-	tokenData, err := user.GenerateToken(user)
+	tokenData, err := user.GenerateToken(*userData)
 
 	var newData = &models.Token{
 		Provider: "app",
 		Jwt:      tokenData.Access,
 		Access:   tokenData.Access,
+		ID:       tokenData.TokenID,
+		TokenID:  tokenData.TokenID,
 		//AccessTokenExpiry: tokenData.AccessExpiresIn,
 		Refresh:          tokenData.Refresh,
 		UserID:           tokenData.UserID,
@@ -248,6 +268,8 @@ func Signin(c *fiber.Ctx) error {
 		RefreshCreateAt:  time.Time{},
 		RefreshExpiresIn: tokenData.RefreshExpiresIn,
 	}
+
+	logger.Info(context.Background(), fmt.Sprintf("newData: %v", newData))
 
 	err = newData.Save(database.DB)
 	if err != nil {

@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"placio-app/Dto"
+	"placio-pkg/hash"
 	"placio-pkg/logger"
 	"time"
 
@@ -40,31 +42,141 @@ func (t *Token) BeforeCreate(tx *gorm.DB) error {
 	return nil
 }
 
+// VerifyRefreshToken verifies the provided refresh token and returns the user ID associated with it.
+func (t *Token) VerifyRefreshToken(refreshToken string, db *gorm.DB) (string, error) {
+	var tokenData Token
+	//hashedRefreshToken, err := hash.DecryptString(refreshToken, "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6")
+	//if err != nil {
+	//	logger.Error(context.Background(), err.Error())
+	//	return "", errors.New("invalid refresh token")
+	//}
+	if err := db.Where("refresh = ?", refreshToken).First(&tokenData).Error; err != nil {
+		return "", errors.New("invalid refresh token")
+	}
+
+	return tokenData.UserID, nil
+}
+
+// GenerateTokens generates a new access token and refresh token for the given user ID.
+func GenerateTokens(userID string) (string, string, string, error) {
+	tokenId := GenerateID()
+	// Generate access token
+	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"sub": userID,
+		"jti": tokenId,
+		"iat": time.Now().Unix(),
+		"exp": time.Now().Add(1 * time.Hour).Unix(),
+	})
+
+	accessTokenString, err := accessToken.SignedString([]byte(os.Getenv("JWT_SECRET")))
+	if err != nil {
+		return "", "", "", err
+	}
+
+	// Generate refresh token
+	refreshToken := uuid.NewString()
+
+	return accessTokenString, refreshToken, tokenId, nil
+}
+
+// RefreshTokens refreshes the access token and refresh token using the provided refresh token.
+func (t *Token) RefreshTokens(refreshToken string, db *gorm.DB) (*Dto.TokenResponse, error) {
+	// Verify refresh token and get user ID
+	userID, err := t.VerifyRefreshToken(refreshToken, db)
+	if err != nil {
+		return nil, err
+	}
+
+	logger.Info(context.Background(), fmt.Sprintf("User ID: %s", userID))
+	// Generate new access and refresh tokens
+	newAccessToken, newRefreshToken, tokenID, err := GenerateTokens(userID)
+	logger.Info(context.Background(), fmt.Sprintf("New Access Token: %s", newAccessToken))
+	logger.Info(context.Background(), fmt.Sprintf("New Refresh Token: %s", newRefreshToken))
+	if err != nil {
+		return nil, err
+	}
+
+	// Update the token record in the database with the new access and refresh tokens
+	var tokenData Token
+	if err := db.Where("refresh = ?", refreshToken).First(&tokenData).Error; err != nil {
+		return nil, errors.New("could not find token to update")
+	}
+
+	tokenData.Access = newAccessToken
+	tokenData.TokenID = tokenID
+	tokenData.UserID = userID
+	tokenData.Refresh = newRefreshToken
+	tokenData.AccessCreateAt = time.Now()
+	tokenData.AccessExpiresIn = 1 * time.Hour * 24 * 7 // 7 days
+	tokenData.RefreshCreateAt = time.Now()
+	tokenData.RefreshExpiresIn = 1 * time.Hour * 24 * 30 // 30 days
+
+	err = tokenData.Save(db)
+	if err != nil {
+		logger.Error(context.Background(), err.Error())
+		return nil, errors.New("could not update token")
+	}
+
+	return &Dto.TokenResponse{
+		AccessToken:      tokenData.Access,
+		ExpiresIn:        1 * time.Hour * 24 * 7, // 7 days
+		RefreshToken:     tokenData.Refresh,
+		RefreshExpiresIn: 1 * time.Hour * 24 * 30, // 30 days
+		UserId:           userID,
+		TokenID:          tokenID,
+	}, nil
+}
+
 // Save creates new or updates an existing token
 func (t *Token) Save(db *gorm.DB) error {
+	var err error
 	if t.Access != "" {
-		// data["access"] = crypto.Encrypt(data["access"])
+		logger.Info(context.Background(), "encrypting access token")
+		logger.Info(context.Background(), t.Access)
+		t.Access, err = hash.EncryptString(t.Access, "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6")
+		if err != nil {
+			return errors.New("could not encrypt access token")
+		}
 	}
 	if t.Refresh != "" {
-		// data["refresh"] = crypto.Encrypt(data["refresh"])
+		logger.Info(context.Background(), "encrypting refresh token")
+		logger.Info(context.Background(), t.Refresh)
+		t.Refresh, err = hash.EncryptString(t.Refresh, "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6")
+		if err != nil {
+			return errors.New("could not encrypt refresh token")
+		}
 	}
 
 	// is there already a token for this provider?
 	var tokenData Token
+	logger.Info(context.Background(), "checking for existing token")
+	logger.Info(context.Background(), t.Provider)
+	logger.Info(context.Background(), t.UserID)
 	if err := db.Where("provider = ? AND user_id = ?", t.Provider, t.UserID).First(&tokenData).Error; err == nil {
 		// update existing token
+		fmt.Println("updating token")
 		tokenData.Jwt = t.Jwt
 		tokenData.Access = t.Access
 		tokenData.Refresh = t.Refresh
-		return db.Save(&tokenData).Error
+		return db.Save(&t).Error
 	}
+
+	//access, err := hash.EncryptString(t.Access, "access")
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//refresh, err := hash.EncryptString(t.Refresh, "refresh")
+	//if err != nil {
+	//	return err
+	//}
 
 	// create a new token
 	newToken := Token{
 		ID:               uuid.NewString(),
 		Provider:         t.Provider,
 		TokenID:          t.TokenID,
-		Jwt:              t.Jwt,
+		Jwt:              t.Access,
 		Access:           t.Access,
 		Refresh:          t.Refresh,
 		UserID:           t.UserID,
@@ -75,6 +187,7 @@ func (t *Token) Save(db *gorm.DB) error {
 		RefreshCreateAt:  t.RefreshCreateAt,
 		RefreshExpiresIn: t.RefreshExpiresIn,
 	}
+	logger.Info(context.Background(), "creating new token")
 	return db.Create(&newToken).Error
 }
 
