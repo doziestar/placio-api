@@ -1,6 +1,7 @@
 package api
 
 import (
+	"placio-app/middleware"
 	"placio-app/utility"
 
 	"placio-app/controller"
@@ -8,63 +9,60 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func AccountRoutes(app *fiber.App) {
-	api := app.Group("/api/v1/accounts")
-	{
-		api.Post("/", utility.Use(controller.CreateAccount))
+func AccountRoutes(api fiber.Router) {
+	api.Post("/", utility.Use(controller.CreateAccount))
 
-		// api.Post("/api/account/plan", middleware.Verify("owner", ""), utility.Use(controller.plan))
+	api.Post("/plan", middleware.Verify("owner"), utility.Use(controller.Plan))
 
-		// api.Patch("/api/account/plan", middleware.Verify("owner", "billing.update"), utility.Use(controller.plan.update))
+	api.Patch("/plan", middleware.Verify("owner"), utility.Use(controller.UpdatePlan))
 
-		// api.Get(
-		// 	"/api/account",
-		// 	middleware.Verify("owner", "account.read"),
-		// 	utility.Use(controller.get))
+	api.Get(
+		"/",
+		middleware.Verify("owner"),
+		utility.Use(controller.GetAccounts))
 
-		// api.Get(
-		// 	"/api/account/card",
-		// 	middleware.Verify("owner", "billing.read"),
-		// 	utility.Use(controller.card))
+	api.Get(
+		"/card",
+		middleware.Verify("owner"),
+		utility.Use(controller.GetAccount))
 
-		// api.Patch(
-		// 	"/api/account/card",
-		// 	middleware.Verify("owner", "billing.update"),
-		// 	utility.Use(controller.card.update))
+	api.Patch(
+		"/card",
+		middleware.Verify("owner"),
+		utility.Use(controller.UpdateInvoice))
 
-		// api.Get(
-		// 	"/api/account/invoice",
-		// 	middleware.Verify("owner", "billing.read"),
-		// 	utility.Use(controller.invoice))
+	api.Get(
+		"/invoice",
+		middleware.Verify("owner"),
+		utility.Use(controller.GetInvoice))
 
-		// api.Get(
-		// 	"/api/account/plans",
-		// 	middleware.Verify("public"),
-		// 	utility.Use(controller.plans))
+	api.Get(
+		"/plans",
+		middleware.Verify("public"),
+		utility.Use(controller.GetPlans))
 
-		// api.Get(
-		// 	"/api/account/utility.Users",
-		// 	middleware.Verify("admin", "account.read"),
-		// 	utility.Use(controller.utility.Users))
+	// api.Get(
+	// 	"/api/account/utility.Users",
+	// 	middleware.Verify("admin", "account.read"),
+	// 	utility.Use(controller.utility.Users))
 
-		// api.Get(
-		// 	"/api/account/subscription",
-		// 	middleware.Verify("utility.User", "billing.read"),
-		// 	utility.Use(controller.subscription))
+	api.Get(
+		"/subscription",
+		middleware.Verify("utility.User"),
+		utility.Use(controller.GetSubscription))
 
-		// api.Post(
-		// 	"/api/account/upgrade",
-		// 	middleware.Verify("owner", "billing.update"),
-		// 	utility.Use(controller.upgrade))
+	api.Post(
+		"/upgrade",
+		middleware.Verify("owner"),
+		utility.Use(controller.UpgradePlan))
 
-		// api.Delete(
-		// 	"/api/account",
-		// 	middleware.Verify("owner", "account.delete"),
-		// 	utility.Use(controller.close))
+	api.Delete(
+		"/",
+		middleware.Verify("owner"),
+		utility.Use(controller.CancelSubscription))
 
-		// api.Delete(
-		// 	"/api/account/:id",
-		// 	middleware.Verify("owner", "account.delete"),
-		// 	utility.Use(controller.close))
-	}
+	api.Delete(
+		"/:id",
+		middleware.Verify("owner"),
+		utility.Use(controller.DeleteAccount))
 }

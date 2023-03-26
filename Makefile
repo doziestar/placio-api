@@ -29,9 +29,8 @@ cert: ## [HTTP] Generate self signed certificate
 dev: ## [HTTP] Run server in dev mode
 	docker-compose up --build
 
-docs: ## Generate docs
-	swag init -g cmd/app/main.go --output docs/app --parseDependency
-
+swagger: ## Generate docs
+	swag init -g cmd/app/main.go --output docs/app --parseDependency --parseInternal
 redoc: ##  Generate redoc
 	redocly bundle docs/app/swagger.yaml --output docs/redoc.yml
 
