@@ -85,7 +85,7 @@ func RefreshToken(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 {object} map[string]interface{}
 // @Failure 400 {object} map[string]interface{}
-// @Router /api/v1/auth/reset [get]
+// @Router /auth/reset [get]
 func ResetPassword(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{"status": "ok"})
 }
@@ -98,7 +98,7 @@ func ResetPassword(c *fiber.Ctx) error {
 // @Produce json
 // @Success 200 {object} map[string]interface{}
 // @Failure 400 {object} map[string]interface{}
-// @Router /api/v1/auth/change [get]
+// @Router /auth/change [get]
 func ChangePassword(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{"status": "ok"})
 }
