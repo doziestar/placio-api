@@ -19,7 +19,7 @@ import (
 // CreateUser godoc
 // @Summary Create a new user
 // @Description Create a new user
-// @Tags users
+// @Tags User
 // @Accept */*
 // @Produce json
 // @Param user body models.User true "User"
@@ -40,7 +40,7 @@ func CreateUser(c *fiber.Ctx) error {
 // GetAllUsers godoc
 // @Summary Retrieve a list of users
 // @Description Retrieve a list of users
-// @Tags users
+// @Tags User
 // @Accept */*
 // @Produce json
 // @Success 200 {object} []models.User
@@ -54,7 +54,7 @@ func GetAllUsers(c *fiber.Ctx) error {
 // GetUserByID godoc
 // @Summary Retrieve a user by ID
 // @Description Retrieve a user by ID
-// @Tags users
+// @Tags User
 // @Accept */*
 // @Produce json
 // @Success 200 {object} models.User
@@ -73,7 +73,7 @@ func GetUserByID(c *fiber.Ctx) error {
 // UpdateUser godoc
 // @Summary Update an existing user by ID
 // @Description Update an existing user by ID
-// @Tags users
+// @Tags User
 // @Accept */*
 // @Produce json
 // @Param id path int true "User ID"
@@ -97,7 +97,7 @@ func UpdateUser(c *fiber.Ctx) error {
 // DeleteUser godoc
 // @Summary Delete a user by ID
 // @Description Delete a user by ID
-// @Tags users
+// @Tags User
 // @Accept */*
 // @Produce json
 // @Param id path int true "User ID"
@@ -118,7 +118,7 @@ func DeleteUser(c *fiber.Ctx) error {
 // GetMessagesSent godoc
 // @Summary Retrieve a list of messages sent by a specific user by ID
 // @Description Retrieve a list of messages sent by a specific user by ID
-// @Tags users
+// @Tags User
 // @Accept */*
 // @Produce json
 // @Param id path int true "User ID"
@@ -138,7 +138,7 @@ func GetMessagesSent(c *fiber.Ctx) error {
 // GetMessagesReceived godoc
 // @Summary Retrieve a list of messages received by a specific user by ID
 // @Description Retrieve a list of messages received by a specific user by ID
-// @Tags users
+// @Tags User
 // @Accept */*
 // @Produce json
 // @Param id path int true "User ID"
@@ -158,7 +158,7 @@ func GetMessagesReceived(c *fiber.Ctx) error {
 // GetConversations godoc
 // @Summary Retrieve a list of conversations a specific user is a participant in by ID
 // @Description Retrieve a list of conversations a specific user is a participant in by ID
-// @Tags users
+// @Tags User
 // @Accept */*
 // @Produce json
 // @Param id path int true "User ID"
@@ -178,7 +178,7 @@ func GetConversations(c *fiber.Ctx) error {
 // GetGroups godoc
 // @Summary Retrieve a list of groups a specific user is a member of by ID
 // @Description Retrieve a list of groups a specific user is a member of by ID
-// @Tags users
+// @Tags User
 // @Accept */*
 // @Produce json
 // @Param id path int true "User ID"
@@ -198,7 +198,7 @@ func GetGroups(c *fiber.Ctx) error {
 // GetVoiceNotesSent godoc
 // @Summary Retrieve a list of voice notes sent by a specific user by ID
 // @Description Retrieve a list of voice notes sent by a specific user by ID
-// @Tags users
+// @Tags User
 // @Accept */*
 // @Produce json
 // @Param id path int true "User ID"
@@ -218,7 +218,7 @@ func GetVoiceNotesSent(c *fiber.Ctx) error {
 // GetVoiceNotesReceived godoc
 // @Summary Retrieve a list of voice notes received by a specific user by ID
 // @Description Retrieve a list of voice notes received by a specific user by ID
-// @Tags users
+// @Tags User
 // @Accept */*
 // @Produce json
 // @Param id path int true "User ID"
@@ -238,7 +238,7 @@ func GetVoiceNotesReceived(c *fiber.Ctx) error {
 // GetVoiceNotes godoc
 // @Summary Retrieve a list of voice notes a specific user is a participant in by ID
 // @Description Retrieve a list of voice notes a specific user is a participant in by ID
-// @Tags users
+// @Tags User
 // @Accept */*
 // @Produce json
 // @Param id path int true "User ID"
@@ -258,7 +258,7 @@ func GetVoiceNotes(c *fiber.Ctx) error {
 // GetVoiceNote godoc
 // @Summary Retrieve a specific voice note by ID
 // @Description Retrieve a specific voice note by ID
-// @Tags voice_notes
+// @Tags User
 // @Accept */*
 // @Produce json
 // @Param id path int true "Voice Note ID"
@@ -278,7 +278,7 @@ func GetVoiceNote(c *fiber.Ctx) error {
 // GetUserNotifications godoc
 // @Summary Retrieve a list of notifications for a specific user by ID
 // @Description Retrieve a list of notifications for a specific user by ID
-// @Tags users
+// @Tags User
 // @Accept */*
 // @Produce json
 // @Param id path int true "User ID"
@@ -298,7 +298,7 @@ func GetUserNotifications(c *fiber.Ctx) error {
 // GetUserBookings godoc
 // @Summary Retrieve a list of bookings for a specific user by ID
 // @Description Retrieve a list of bookings for a specific user by ID
-// @Tags users
+// @Tags User
 // @Accept */*
 // @Produce json
 // @Param id path int true "User ID"
@@ -318,7 +318,7 @@ func GetUserBookings(c *fiber.Ctx) error {
 // GetUserPayments godoc
 // @Summary Retrieve a list of payments for a specific user by ID
 // @Description Retrieve a list of payments for a specific user by ID
-// @Tags users
+// @Tags User
 // @Accept */*
 // @Produce json
 // @Param id path int true "User ID"

@@ -8,9 +8,27 @@ import (
 
 func InitializeRoutes(app *fiber.App) {
 	app.Get("/docs/*", swagger.HandlerDefault)
-	HealthCheckRoutes(app)
-	AuthRoutes(app)
-	UserRoutes(app)
-	AccountRoutes(app)
+	routerGroupV1 := app.Group("/api/v1")
+
+	healthApi := routerGroupV1.Group("/health")
+	{
+		HealthCheckRoutes(healthApi)
+	}
+	authApi := routerGroupV1.Group("/auth")
+	{
+		AuthRoutes(authApi)
+	}
+	userApi := routerGroupV1.Group("/users")
+	{
+		UserRoutes(userApi)
+	}
+	accountApi := routerGroupV1.Group("/accounts")
+	{
+		AccountRoutes(accountApi)
+	}
+	//utilityApi := routerGroupV1.Group("/utility")
+	//{
+	//	UtilityRoutes(utilityApi)
+	//}
 
 }
