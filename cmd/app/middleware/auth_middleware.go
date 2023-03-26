@@ -13,6 +13,7 @@ import (
 	"placio-pkg/hash"
 	"placio-pkg/logger"
 	"strings"
+	"time"
 )
 
 type JWTClaims struct {
@@ -184,6 +185,13 @@ func Verify(permission string) fiber.Handler {
 		if err != nil {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 				"message": "Invalid auth token",
+			})
+		}
+
+		// check token expiration time
+		if customClaims["exp"].(float64) < float64(time.Now().Unix()) {
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"message": "Token expired",
 			})
 		}
 
