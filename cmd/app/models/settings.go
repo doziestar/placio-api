@@ -19,8 +19,11 @@ type GeneralSettings struct {
 	UserID        string                `gorm:"ForeignKey:ID"`
 	Privacy       string                `gorm:"default:'public'"`
 	Notifications NotificationsSettings `gorm:"ForeignKey:ID"`
-	Account       AccountSettings       `gorm:"ForeignKey:ID"`
-	Content       ContentSettings       `gorm:"ForeignKey:ID"`
+	//NotificationID string
+	//AccountID      string
+	Account AccountSettings `gorm:"ForeignKey:ID"`
+	//ContentID      string
+	Content ContentSettings `gorm:"ForeignKey:ID"`
 }
 
 // BeforeCreate OnCreateGeneralSettings /*
