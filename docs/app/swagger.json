@@ -791,37 +791,6 @@
                 }
             }
         },
-        "/api/v1/auth/change": {
-            "get": {
-                "description": "Change password",
-                "consumes": [
-                    "*/*"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Change password",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/auth/refresh": {
             "get": {
                 "description": "Refresh token",
@@ -839,39 +808,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/auth/reset": {
-            "get": {
-                "description": "Reset password",
-                "consumes": [
-                    "*/*"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Reset password",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
+                            "$ref": "#/definitions/placio-app_Dto.TokenResponse"
                         }
                     },
                     "400": {
@@ -1589,6 +1526,37 @@
                 }
             }
         },
+        "/auth/change": {
+            "get": {
+                "description": "Change password",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Change password",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
         "/auth/impersonate/{account}/{user}": {
             "post": {
                 "description": "Lets an admin impersonate another user",
@@ -1635,37 +1603,6 @@
                         "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/fiber.Map"
-                        }
-                    }
-                }
-            }
-        },
-        "/auth/logout": {
-            "post": {
-                "description": "Log out from the server",
-                "consumes": [
-                    "*/*"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "Log out",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
                         }
                     }
                 }
@@ -1853,6 +1790,68 @@
                 }
             }
         },
+        "/auth/reset": {
+            "get": {
+                "description": "Reset password",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Reset password",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/sign-out": {
+            "post": {
+                "description": "Log out from the server",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Log out",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
         "/auth/status": {
             "get": {
                 "description": "Returns the auth status of the user",
@@ -1927,6 +1926,279 @@
                         "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/fiber.Map"
+                        }
+                    }
+                }
+            }
+        },
+        "/settings/account": {
+            "get": {
+                "description": "Get account settings",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Settings"
+                ],
+                "summary": "Get account settings",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.AccountSettings"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update account settings",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Settings"
+                ],
+                "summary": "Update account settings",
+                "parameters": [
+                    {
+                        "description": "Account settings",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.AccountSettings"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.AccountSettings"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/settings/content": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get content settings",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Settings"
+                ],
+                "summary": "Get content settings",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.ContentSettings"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update content settings",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Settings"
+                ],
+                "summary": "Update content settings",
+                "parameters": [
+                    {
+                        "description": "Content settings",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.ContentSettings"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.ContentSettings"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/settings/general": {
+            "get": {
+                "description": "Get general settings",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Settings"
+                ],
+                "summary": "Get general settings",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.GeneralSettings"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update general settings",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Settings"
+                ],
+                "summary": "Update general settings",
+                "parameters": [
+                    {
+                        "description": "General settings",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.GeneralSettings"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.GeneralSettings"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/settings/notifications": {
+            "get": {
+                "description": "Get notifications settings",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Settings"
+                ],
+                "summary": "Get notifications settings",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.NotificationsSettings"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update notifications settings",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Settings"
+                ],
+                "summary": "Update notifications settings",
+                "parameters": [
+                    {
+                        "description": "Notifications settings",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.NotificationsSettings"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.NotificationsSettings"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.ErrorResponse"
                         }
                     }
                 }
@@ -2156,6 +2428,29 @@
                 }
             }
         },
+        "placio-app_Dto.TokenResponse": {
+            "type": "object",
+            "properties": {
+                "Access": {
+                    "type": "string"
+                },
+                "ExpiresIn": {
+                    "$ref": "#/definitions/time.Duration"
+                },
+                "Refresh": {
+                    "type": "string"
+                },
+                "RefreshExpiresIn": {
+                    "$ref": "#/definitions/time.Duration"
+                },
+                "TokenID": {
+                    "type": "string"
+                },
+                "UserId": {
+                    "type": "string"
+                }
+            }
+        },
         "placio-app_Dto.User": {
             "type": "object",
             "properties": {
@@ -2294,6 +2589,33 @@
                 }
             }
         },
+        "placio-app_models.AccountSettings": {
+            "type": "object",
+            "properties": {
+                "blockedUsers": {
+                    "description": "ConnectedAccounts       []ConnectedAccount `gorm:\"type:json,ForeignKey:ID\"`",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "mutedUsers": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "twoFactorAuthentication": {
+                    "type": "boolean"
+                },
+                "userID": {
+                    "type": "string"
+                }
+            }
+        },
         "placio-app_models.Booking": {
             "type": "object",
             "properties": {
@@ -2320,6 +2642,32 @@
                 }
             }
         },
+        "placio-app_models.ContentSettings": {
+            "type": "object",
+            "properties": {
+                "autoplayVideos": {
+                    "type": "boolean"
+                },
+                "defaultPostPrivacy": {
+                    "type": "string"
+                },
+                "displaySensitiveMedia": {
+                    "type": "boolean"
+                },
+                "explicitContentFilter": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "mediaVisibility": {
+                    "type": "string"
+                },
+                "userID": {
+                    "type": "string"
+                }
+            }
+        },
         "placio-app_models.Conversation": {
             "type": "object",
             "properties": {
@@ -2337,6 +2685,25 @@
                 },
                 "updatedAt": {
                     "type": "string"
+                }
+            }
+        },
+        "placio-app_models.Error": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_models.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "$ref": "#/definitions/placio-app_models.Error"
                 }
             }
         },
@@ -2375,6 +2742,12 @@
         "placio-app_models.GeneralSettings": {
             "type": "object",
             "properties": {
+                "account": {
+                    "$ref": "#/definitions/placio-app_models.AccountSettings"
+                },
+                "content": {
+                    "$ref": "#/definitions/placio-app_models.ContentSettings"
+                },
                 "createdAt": {
                     "description": "gorm.Model",
                     "type": "string"
@@ -2388,10 +2761,19 @@
                 "language": {
                     "type": "string"
                 },
+                "notifications": {
+                    "$ref": "#/definitions/placio-app_models.NotificationsSettings"
+                },
+                "privacy": {
+                    "type": "string"
+                },
                 "theme": {
                     "type": "string"
                 },
                 "updatedAt": {
+                    "type": "string"
+                },
+                "userID": {
                     "type": "string"
                 }
             }
@@ -2500,6 +2882,38 @@
                 },
                 "updatedAt": {
                     "type": "string"
+                },
+                "userID": {
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_models.NotificationsSettings": {
+            "type": "object",
+            "properties": {
+                "commentNotifications": {
+                    "type": "boolean"
+                },
+                "directMessageNotifications": {
+                    "type": "boolean"
+                },
+                "emailNotifications": {
+                    "type": "boolean"
+                },
+                "followNotifications": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "likeNotifications": {
+                    "type": "boolean"
+                },
+                "mentionNotifications": {
+                    "type": "boolean"
+                },
+                "pushNotifications": {
+                    "type": "boolean"
                 },
                 "userID": {
                     "type": "string"
@@ -2695,6 +3109,29 @@
                     "type": "string"
                 }
             }
+        },
+        "time.Duration": {
+            "type": "integer",
+            "enum": [
+                -9223372036854775808,
+                9223372036854775807,
+                1,
+                1000,
+                1000000,
+                1000000000,
+                60000000000,
+                3600000000000
+            ],
+            "x-enum-varnames": [
+                "minDuration",
+                "maxDuration",
+                "Nanosecond",
+                "Microsecond",
+                "Millisecond",
+                "Second",
+                "Minute",
+                "Hour"
+            ]
         }
     }
 }

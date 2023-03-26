@@ -4,6 +4,9 @@ import (
 	swagger "github.com/arsmn/fiber-swagger/v2"
 	"github.com/gofiber/fiber/v2"
 	_ "placio-api/docs/app"
+	"placio-app/controller"
+	"placio-app/database"
+	"placio-app/models"
 )
 
 func InitializeRoutes(app *fiber.App) {
@@ -26,6 +29,9 @@ func InitializeRoutes(app *fiber.App) {
 	{
 		AccountRoutes(accountApi)
 	}
+	store := models.NewSettingsService(database.DB)
+	settingsController := controller.NewSettingsController(store)
+	settingsController.RegisterRoutes(routerGroupV1, nil)
 	//utilityApi := routerGroupV1.Group("/utility")
 	//{
 	//	UtilityRoutes(utilityApi)

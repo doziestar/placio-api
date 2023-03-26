@@ -1,6 +1,9 @@
 package models
 
 import (
+	"database/sql/driver"
+	"encoding/json"
+	"errors"
 	"gorm.io/gorm"
 	"time"
 )
@@ -13,11 +16,11 @@ type GeneralSettings struct {
 	ID            string     `gorm:"primaryKey"`
 	Language      string
 	Theme         string
-	UserID        string `gorm:"ForeignKey:ID"`
-	Privacy       string `gorm:"default:'public'"`
-	Notifications NotificationsSettings
-	Account       AccountSettings
-	Content       ContentSettings
+	UserID        string                `gorm:"ForeignKey:ID"`
+	Privacy       string                `gorm:"default:'public'"`
+	Notifications NotificationsSettings `gorm:"ForeignKey:ID"`
+	Account       AccountSettings       `gorm:"ForeignKey:ID"`
+	Content       ContentSettings       `gorm:"ForeignKey:ID"`
 }
 
 // BeforeCreate OnCreateGeneralSettings /*
@@ -29,6 +32,8 @@ func (g *GeneralSettings) BeforeCreate(tx *gorm.DB) error {
 }
 
 type NotificationsSettings struct {
+	ID                         string `gorm:"primaryKey"`
+	UserID                     string `gorm:"ForeignKey:ID"`
 	EmailNotifications         bool
 	PushNotifications          bool
 	DirectMessageNotifications bool
@@ -39,23 +44,59 @@ type NotificationsSettings struct {
 }
 
 type AccountSettings struct {
+	ID                      string `gorm:"primaryKey"`
+	UserID                  string `gorm:"ForeignKey:ID"`
 	TwoFactorAuthentication bool
-	ConnectedAccounts       []ConnectedAccount
-	BlockedUsers            []string
-	MutedUsers              []string
+	//ConnectedAccounts       []ConnectedAccount `gorm:"type:json,ForeignKey:ID"`
+	BlockedUsers []string `gorm:"type:json"`
+	MutedUsers   []string `gorm:"type:json"`
 }
 
 type ConnectedAccount struct {
+	ID       string `gorm:"primaryKey"`
 	Provider string
 	UserID   string
 }
 
 type ContentSettings struct {
+	ID                    string `gorm:"primaryKey"`
 	MediaVisibility       string
 	ExplicitContentFilter string
 	DefaultPostPrivacy    string
 	AutoplayVideos        bool
 	DisplaySensitiveMedia bool
+	UserID                string `gorm:"ForeignKey:ID"`
+}
+
+type StringSlice []string
+
+func (s *StringSlice) Scan(src interface{}) error {
+	if src == nil {
+		*s = nil
+		return nil
+	}
+
+	source, ok := src.([]byte)
+	if !ok {
+		return errors.New("incompatible type for StringSlice")
+	}
+
+	var tempSlice []string
+	err := json.Unmarshal(source, &tempSlice)
+	if err != nil {
+		return err
+	}
+
+	*s = StringSlice(tempSlice)
+	return nil
+}
+
+func (s *StringSlice) Value() (driver.Value, error) {
+	if s == nil {
+		return nil, nil
+	}
+
+	return nil, nil
 }
 
 type UserSettingsService interface {
@@ -98,7 +139,7 @@ func NewSettingsService(db *gorm.DB) *SettingsService {
 func (s *SettingsService) GetGeneralSettings(userID string) (*GeneralSettings, error) {
 	generalSettings := &GeneralSettings{UserID: userID}
 
-	if err := s.db.Where("user_id = ?", userID).First(generalSettings).Error; err != nil {
+	if err := s.db.Preload("ContentSettings").Preload("NotificationsSettings").Preload("AccountSettings").Where("user_id = ?", userID).First(generalSettings).Error; err != nil {
 		return nil, err
 	}
 

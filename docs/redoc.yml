@@ -148,6 +148,21 @@ definitions:
       subscription_price:
         type: string
     type: object
+  placio-app_Dto.TokenResponse:
+    properties:
+      Access:
+        type: string
+      ExpiresIn:
+        $ref: '#/definitions/time.Duration'
+      Refresh:
+        type: string
+      RefreshExpiresIn:
+        $ref: '#/definitions/time.Duration'
+      TokenID:
+        type: string
+      UserId:
+        type: string
+    type: object
   placio-app_Dto.User:
     properties:
       Account:
@@ -239,6 +254,24 @@ definitions:
         description: Interests                  []string `gorm:"type:text[]"`
         type: string
     type: object
+  placio-app_models.AccountSettings:
+    properties:
+      blockedUsers:
+        description: ConnectedAccounts       []ConnectedAccount `gorm:"type:json,ForeignKey:ID"`
+        items:
+          type: string
+        type: array
+      id:
+        type: string
+      mutedUsers:
+        items:
+          type: string
+        type: array
+      twoFactorAuthentication:
+        type: boolean
+      userID:
+        type: string
+    type: object
   placio-app_models.Booking:
     properties:
       createdAt:
@@ -256,6 +289,23 @@ definitions:
       userID:
         type: string
     type: object
+  placio-app_models.ContentSettings:
+    properties:
+      autoplayVideos:
+        type: boolean
+      defaultPostPrivacy:
+        type: string
+      displaySensitiveMedia:
+        type: boolean
+      explicitContentFilter:
+        type: string
+      id:
+        type: string
+      mediaVisibility:
+        type: string
+      userID:
+        type: string
+    type: object
   placio-app_models.Conversation:
     properties:
       createdAt:
@@ -268,6 +318,18 @@ definitions:
         type: string
       updatedAt:
         type: string
+    type: object
+  placio-app_models.Error:
+    properties:
+      code:
+        type: integer
+      message:
+        type: string
+    type: object
+  placio-app_models.ErrorResponse:
+    properties:
+      error:
+        $ref: '#/definitions/placio-app_models.Error'
     type: object
   placio-app_models.FacebookAccount:
     properties:
@@ -292,6 +354,10 @@ definitions:
     type: object
   placio-app_models.GeneralSettings:
     properties:
+      account:
+        $ref: '#/definitions/placio-app_models.AccountSettings'
+      content:
+        $ref: '#/definitions/placio-app_models.ContentSettings'
       createdAt:
         description: gorm.Model
         type: string
@@ -301,9 +367,15 @@ definitions:
         type: string
       language:
         type: string
+      notifications:
+        $ref: '#/definitions/placio-app_models.NotificationsSettings'
+      privacy:
+        type: string
       theme:
         type: string
       updatedAt:
+        type: string
+      userID:
         type: string
     type: object
   placio-app_models.GoogleAccount:
@@ -375,6 +447,27 @@ definitions:
         type: string
       updatedAt:
         type: string
+      userID:
+        type: string
+    type: object
+  placio-app_models.NotificationsSettings:
+    properties:
+      commentNotifications:
+        type: boolean
+      directMessageNotifications:
+        type: boolean
+      emailNotifications:
+        type: boolean
+      followNotifications:
+        type: boolean
+      id:
+        type: string
+      likeNotifications:
+        type: boolean
+      mentionNotifications:
+        type: boolean
+      pushNotifications:
+        type: boolean
       userID:
         type: string
     type: object
@@ -504,6 +597,26 @@ definitions:
       voiceNoteFile:
         type: string
     type: object
+  time.Duration:
+    enum:
+      - -9223372036854776000
+      - 9223372036854776000
+      - 1
+      - 1000
+      - 1000000
+      - 1000000000
+      - 60000000000
+      - 3600000000000
+    type: integer
+    x-enum-varnames:
+      - minDuration
+      - maxDuration
+      - Nanosecond
+      - Microsecond
+      - Millisecond
+      - Second
+      - Minute
+      - Hour
 host: https://api.palnight.com
 info:
   contact:
@@ -1029,27 +1142,6 @@ paths:
       summary: Authenticate a user
       tags:
         - Auth
-  /api/v1/auth/change:
-    get:
-      consumes:
-        - '*/*'
-      description: Change password
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: OK
-          schema:
-            additionalProperties: true
-            type: object
-        '400':
-          description: Bad Request
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Change password
-      tags:
-        - Auth
   /api/v1/auth/refresh:
     get:
       consumes:
@@ -1061,35 +1153,13 @@ paths:
         '200':
           description: OK
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/placio-app_Dto.TokenResponse'
         '400':
           description: Bad Request
           schema:
             additionalProperties: true
             type: object
       summary: Refresh token
-      tags:
-        - Auth
-  /api/v1/auth/reset:
-    get:
-      consumes:
-        - '*/*'
-      description: Reset password
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: OK
-          schema:
-            additionalProperties: true
-            type: object
-        '400':
-          description: Bad Request
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Reset password
       tags:
         - Auth
   /api/v1/auth/verify:
@@ -1562,6 +1632,27 @@ paths:
       summary: Retrieve a specific voice note by ID
       tags:
         - User
+  /auth/change:
+    get:
+      consumes:
+        - '*/*'
+      description: Change password
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        '400':
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Change password
+      tags:
+        - Auth
   /auth/impersonate/{account}/{user}:
     post:
       consumes:
@@ -1594,27 +1685,6 @@ paths:
           schema:
             $ref: '#/definitions/fiber.Map'
       summary: Impersonate user
-      tags:
-        - Auth
-  /auth/logout:
-    post:
-      consumes:
-        - '*/*'
-      description: Log out from the server
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: OK
-          schema:
-            additionalProperties: true
-            type: object
-        '400':
-          description: Bad Request
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Log out
       tags:
         - Auth
   /auth/magic:
@@ -1736,6 +1806,48 @@ paths:
       summary: Request password reset
       tags:
         - Auth
+  /auth/reset:
+    get:
+      consumes:
+        - '*/*'
+      description: Reset password
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        '400':
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Reset password
+      tags:
+        - Auth
+  /auth/sign-out:
+    post:
+      consumes:
+        - '*/*'
+      description: Log out from the server
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        '400':
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Log out
+      tags:
+        - Auth
   /auth/status:
     get:
       consumes:
@@ -1788,6 +1900,184 @@ paths:
       summary: Switch account
       tags:
         - Auth
+  /settings/account:
+    get:
+      consumes:
+        - application/json
+      description: Get account settings
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_models.AccountSettings'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_models.ErrorResponse'
+      summary: Get account settings
+      tags:
+        - Settings
+    put:
+      consumes:
+        - application/json
+      description: Update account settings
+      parameters:
+        - description: Account settings
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/placio-app_models.AccountSettings'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_models.AccountSettings'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_models.ErrorResponse'
+      summary: Update account settings
+      tags:
+        - Settings
+  /settings/content:
+    get:
+      consumes:
+        - application/json
+      description: Get content settings
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_models.ContentSettings'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_models.ErrorResponse'
+      security:
+        - BearerAuth: []
+      summary: Get content settings
+      tags:
+        - Settings
+    put:
+      consumes:
+        - application/json
+      description: Update content settings
+      parameters:
+        - description: Content settings
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/placio-app_models.ContentSettings'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_models.ContentSettings'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_models.ErrorResponse'
+      summary: Update content settings
+      tags:
+        - Settings
+  /settings/general:
+    get:
+      consumes:
+        - application/json
+      description: Get general settings
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_models.GeneralSettings'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_models.ErrorResponse'
+      summary: Get general settings
+      tags:
+        - Settings
+    put:
+      consumes:
+        - application/json
+      description: Update general settings
+      parameters:
+        - description: General settings
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/placio-app_models.GeneralSettings'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_models.GeneralSettings'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_models.ErrorResponse'
+      summary: Update general settings
+      tags:
+        - Settings
+  /settings/notifications:
+    get:
+      consumes:
+        - application/json
+      description: Get notifications settings
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_models.NotificationsSettings'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_models.ErrorResponse'
+      summary: Get notifications settings
+      tags:
+        - Settings
+    put:
+      consumes:
+        - application/json
+      description: Update notifications settings
+      parameters:
+        - description: Notifications settings
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/placio-app_models.NotificationsSettings'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_models.NotificationsSettings'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_models.ErrorResponse'
+      summary: Update notifications settings
+      tags:
+        - Settings
 schemes:
   - http
 swagger: '2.0'
