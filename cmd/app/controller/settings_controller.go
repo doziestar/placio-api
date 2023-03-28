@@ -17,17 +17,17 @@ func NewSettingsController(store models.ISettingsService) *SettingsController {
 func (c *SettingsController) RegisterRoutes(app fiber.Router, session *session.Store) {
 	settingsGroup := app.Group("/settings")
 
-	settingsGroup.Get("/general", c.GetGeneralSettings)
-	settingsGroup.Put("/general", c.UpdateUserSettings)
+	settingsGroup.Get("/general", c.getGeneralSettings)
+	settingsGroup.Put("/general", c.updateUserSettings)
 
-	settingsGroup.Get("/notifications", c.GetNotificationsSettings)
-	settingsGroup.Put("/notifications", c.UpdateNotificationsSettings)
+	settingsGroup.Get("/notifications", c.getNotificationsSettings)
+	settingsGroup.Put("/notifications", c.updateNotificationsSettings)
 
-	settingsGroup.Get("/account", c.GetAccountSettings)
-	settingsGroup.Put("/account", c.UpdateAccountSettings)
+	settingsGroup.Get("/account", c.getAccountSettings)
+	settingsGroup.Put("/account", c.updateAccountSettings)
 
-	settingsGroup.Get("/content", c.GetContentSettings)
-	settingsGroup.Put("/content", c.UpdateContentSettings)
+	settingsGroup.Get("/content", c.getContentSettings)
+	settingsGroup.Put("/content", c.updateContentSettings)
 }
 
 // GetGeneralSettings godoc
@@ -39,7 +39,7 @@ func (c *SettingsController) RegisterRoutes(app fiber.Router, session *session.S
 // @Success 200 {object} models.GeneralSettings
 // @Failure 500 {object} models.ErrorResponse
 // @Router /settings/general [get]
-func (c *SettingsController) GetGeneralSettings(ctx *fiber.Ctx) error {
+func (c *SettingsController) getGeneralSettings(ctx *fiber.Ctx) error {
 	userID := ctx.Locals("UserID").(string)
 
 	settings, err := c.store.GetGeneralSettings(userID)
@@ -62,7 +62,7 @@ func (c *SettingsController) GetGeneralSettings(ctx *fiber.Ctx) error {
 // @Success 200 {object} models.GeneralSettings
 // @Failure 500 {object} models.ErrorResponse
 // @Router /settings/general [put]
-func (c *SettingsController) UpdateUserSettings(ctx *fiber.Ctx) error {
+func (c *SettingsController) updateUserSettings(ctx *fiber.Ctx) error {
 	userID := ctx.Locals("UserID").(string)
 
 	var settings models.GeneralSettings
@@ -93,7 +93,7 @@ func (c *SettingsController) UpdateUserSettings(ctx *fiber.Ctx) error {
 // @Success 200 {object} models.NotificationsSettings
 // @Failure 500 {object} models.ErrorResponse
 // @Router /settings/notifications [get]
-func (c *SettingsController) GetNotificationsSettings(ctx *fiber.Ctx) error {
+func (c *SettingsController) getNotificationsSettings(ctx *fiber.Ctx) error {
 	userID := ctx.Locals("UserID").(string)
 
 	settings, err := c.store.GetNotificationsSettings(userID)
@@ -116,7 +116,7 @@ func (c *SettingsController) GetNotificationsSettings(ctx *fiber.Ctx) error {
 // @Success 200 {object} models.NotificationsSettings
 // @Failure 500 {object} models.ErrorResponse
 // @Router /settings/notifications [put]
-func (c *SettingsController) UpdateNotificationsSettings(ctx *fiber.Ctx) error {
+func (c *SettingsController) updateNotificationsSettings(ctx *fiber.Ctx) error {
 	userID := ctx.Locals("UserID").(string)
 
 	var settings models.NotificationsSettings
@@ -146,7 +146,7 @@ func (c *SettingsController) UpdateNotificationsSettings(ctx *fiber.Ctx) error {
 // @Success 200 {object} models.AccountSettings
 // @Failure 500 {object} models.ErrorResponse
 // @Router /settings/account [get]
-func (c *SettingsController) GetAccountSettings(ctx *fiber.Ctx) error {
+func (c *SettingsController) getAccountSettings(ctx *fiber.Ctx) error {
 	userID := ctx.Locals("UserID").(string)
 
 	settings, err := c.store.GetAccountSettings(userID)
@@ -169,7 +169,7 @@ func (c *SettingsController) GetAccountSettings(ctx *fiber.Ctx) error {
 // @Success 200 {object} models.AccountSettings
 // @Failure 500 {object} models.ErrorResponse
 // @Router /settings/account [put]
-func (c *SettingsController) UpdateAccountSettings(ctx *fiber.Ctx) error {
+func (c *SettingsController) updateAccountSettings(ctx *fiber.Ctx) error {
 	userID := ctx.Locals("UserID").(string)
 
 	var settings models.AccountSettings
@@ -200,7 +200,7 @@ func (c *SettingsController) UpdateAccountSettings(ctx *fiber.Ctx) error {
 // @Success 200 {object} models.ContentSettings
 // @Failure 500 {object} models.ErrorResponse
 // @Router /settings/content [get]
-func (c *SettingsController) GetContentSettings(ctx *fiber.Ctx) error {
+func (c *SettingsController) getContentSettings(ctx *fiber.Ctx) error {
 	userID := ctx.Locals("UserID").(string)
 
 	settings, err := c.store.GetContentSettings(userID)
@@ -223,7 +223,7 @@ func (c *SettingsController) GetContentSettings(ctx *fiber.Ctx) error {
 // @Success 200 {object} models.ContentSettings
 // @Failure 500 {object} models.ErrorResponse
 // @Router /settings/content [put]
-func (c *SettingsController) UpdateContentSettings(ctx *fiber.Ctx) error {
+func (c *SettingsController) updateContentSettings(ctx *fiber.Ctx) error {
 	userID := ctx.Locals("UserID").(string)
 	var settings models.ContentSettings
 	if err := ctx.BodyParser(&settings); err != nil {

@@ -6,15 +6,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/gofiber/fiber/v2"
 	"log"
 	"placio-app/Dto"
-	"placio-app/database"
-	"placio-app/models"
+	"placio-app/middleware"
 	"placio-app/service"
+	"placio-app/utility"
 	"placio-pkg/logger"
-	"time"
-
-	"github.com/gofiber/fiber/v2"
 )
 
 type AccountController struct {
@@ -27,10 +25,41 @@ func NewAccountController(store service.IAccountService) *AccountController {
 
 func (c *AccountController) RegisterRoutes(app fiber.Router) {
 	accountGroup := app.Group("/accounts")
-	accountGroup.Post("/create", c.CreateAccount)
+	accountGroup.Post("/create", utility.Use(c.createAccount))
+	accountGroup.Post("/plan", middleware.Verify("owner"), utility.Use(c.plan))
+	accountGroup.Patch("/plan", middleware.Verify("owner"), utility.Use(c.updatePlan))
+	accountGroup.Get("/", middleware.Verify("owner"), utility.Use(c.getAccounts))
+	accountGroup.Get("/card", middleware.Verify("owner"), utility.Use(c.getAccount))
+	accountGroup.Patch("/card", middleware.Verify("owner"), utility.Use(c.updateInvoice))
+	accountGroup.Get("/invoice", middleware.Verify("owner"), utility.Use(c.getInvoice))
+	accountGroup.Get("/plans", middleware.Verify("owner"), utility.Use(c.getPlans))
+	accountGroup.Get("/subscription", middleware.Verify("owner"), utility.Use(c.getSubscription))
+	accountGroup.Post("/upgrade", middleware.Verify("owner"), utility.Use(c.upgradePlan))
+	accountGroup.Delete("/", middleware.Verify("owner"), utility.Use(c.deleteAccount))
+
 }
 
-func (c *AccountController) CreateAccount(ctx *fiber.Ctx) error {
+// CreateAccount creates a new user account and assigns the user to the account.
+// The function performs the following steps:
+// 1. Parses the incoming request body into a SignUpDto.
+// 2. Validates the input data.
+// 3. Checks if the user has already registered an account.
+// 4. Creates a new account and assigns the user to it.
+// 5. Sends a welcome email to the user.
+// 6. Authenticates the user (currently commented out).
+//
+// @Summary Create a new account
+// @Description Create a new account and assign the user to it
+// @Tags Account
+// @Accept json
+// @Produce json
+// @Param SignUpDto body Dto.SignUpDto true "Sign Up Data"
+// @Success 200 {object} Dto.UserResponse "Successfully created account"
+// @Failure 400 {object} map[string]string "Bad Request"
+// @Failure 403 {object} map[string]string "Forbidden"
+// @Failure 500 {object} map[string]string "Internal Server Error"
+// @Router /api/v1/accounts [post]
+func (c *AccountController) createAccount(ctx *fiber.Ctx) error {
 	data := new(Dto.SignUpDto)
 
 	logger.Info(context.Background(), fmt.Sprintf("data: %v", data))
@@ -65,170 +94,6 @@ func (c *AccountController) CreateAccount(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusOK).JSON(response)
 }
 
-// CreateAccount creates a new user account and assigns the user to the account.
-// The function performs the following steps:
-// 1. Parses the incoming request body into a SignUpDto.
-// 2. Validates the input data.
-// 3. Checks if the user has already registered an account.
-// 4. Creates a new account and assigns the user to it.
-// 5. Sends a welcome email to the user.
-// 6. Authenticates the user (currently commented out).
-//
-// @Summary Create a new account
-// @Description Create a new account and assign the user to it
-// @Tags Account
-// @Accept json
-// @Produce json
-// @Param SignUpDto body Dto.SignUpDto true "Sign Up Data"
-// @Success 200 {object} Dto.UserResponse "Successfully created account"
-// @Failure 400 {object} map[string]string "Bad Request"
-// @Failure 403 {object} map[string]string "Forbidden"
-// @Failure 500 {object} map[string]string "Internal Server Error"
-// @Router /api/v1/accounts [post]
-func CreateAccount(c *fiber.Ctx) error {
-	data := new(Dto.SignUpDto)
-
-	logger.Info(context.Background(), fmt.Sprintf("data: %v", data))
-	if err := c.BodyParser(data); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Bad Request",
-		})
-	}
-	log.Println("CreateAccount", data)
-
-	// validate input
-	if err := validate(data.Email, data.Name, data.Password); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": err.Error(),
-		})
-	}
-
-	// confirm_password field is a dummy field to prevent bot signups
-	if data.ConfirmPassword == "" {
-		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
-			"error": "You need to confirm your password",
-		})
-	}
-
-	user := new(models.User)
-
-	// check if user has already registered an account
-	userData, _ := user.GetByEmail(data.Email, database.DB)
-
-	//if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-	//	// continue if user doesn't exist
-	//} else {
-	//	return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-	//		"error": "Internal Server Error",
-	//	})
-	//}
-
-	logger.Info(context.Background(), fmt.Sprintf("userData: %v", userData))
-
-	if userData != nil {
-		// user already owns an account
-		if userData.Permission == "owner" {
-			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-				"inputError": "email",
-				"message":    "You have already registered an account",
-			})
-		}
-
-		// flag for authController to notify onboarding ui
-		// that the user's existing account was used
-		duplicateUser := true
-		hasPassword := userData.HasPassword
-
-		// save the new password if it exists and user doesn't have one
-		if !hasPassword && data.Password != "" {
-			if err := user.SavePassword(userData.ID, data.Password); err != nil {
-				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-					"error": "Internal Server Error",
-				})
-			}
-		}
-
-		c.Locals("duplicate_user", duplicateUser)
-		c.Locals("has_password", hasPassword)
-	}
-	//permission := func() string {
-	//	if userData != nil {
-	//		return userData.Permission
-	//	}
-	//	return "owner"
-	//}()
-	logger.Info(context.Background(), "CreateAccount")
-
-	//account := new(models.Account)
-
-	// create the user and assign to account
-	newUser, err := user.CreateUser(*data, c, database.DB)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Internal Server Error",
-		})
-	}
-
-	//var token *models.Token
-
-	tokenData, err := user.GenerateToken(*newUser)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Internal Server Error",
-		})
-	}
-
-	//c.Locals("token", tokenData)
-	var newData = &models.Token{
-		Provider: "app",
-		Jwt:      tokenData.Access,
-		Access:   tokenData.Access,
-		TokenID:  tokenData.TokenID,
-		//AccessTokenExpiry: tokenData.AccessExpiresIn,
-		Refresh:          tokenData.Refresh,
-		UserID:           tokenData.UserID,
-		CodeCreateAt:     time.Time{},
-		CodeExpiresIn:    tokenData.CodeExpiresIn,
-		AccessCreateAt:   time.Time{},
-		AccessExpiresIn:  tokenData.AccessExpiresIn,
-		RefreshCreateAt:  time.Time{},
-		RefreshExpiresIn: tokenData.RefreshExpiresIn,
-		ProviderID:       "",
-	}
-
-	logger.Info(context.Background(), fmt.Sprintf("newData: %v", newData))
-	err = newData.Save(database.DB)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": err.Error(),
-		})
-	}
-
-	err = user.Login(c, database.DB)
-	if err != nil {
-		return err
-	}
-
-	mail := new(models.EmailContent)
-	// send welcome email
-	//if err := mail.Send(newUser.Email, "new-account", userData.ToJson()); err != nil {
-	//	return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-	//		"error": "Internal Server Error",
-	//	})
-	//}
-	if err := mail.SendEmailToTerminal(newUser.Email); err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Internal Server Error",
-		})
-	}
-
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"data":    user.GenereateUserResponse(newData),
-		"message": "Account created successfully",
-		"status":  "success",
-	})
-}
-
 func validate(email string, name string, password string) error {
 	if email == "" {
 		return errors.New("Email is required")
@@ -261,7 +126,7 @@ func validate(email string, name string, password string) error {
 // @Failure 400 {object} map[string]string "inputError": "plan", "message": "Plan is required"
 // @Failure 500 {object} map[string]string "error": "Internal Server Error"
 // @Router /accounts/plan [post]
-func Plan(c *fiber.Ctx) error {
+func (c *AccountController) plan(ctx *fiber.Ctx) error {
 	//	data := new(struct {
 	//		Plan   string              `json:"plan"`
 	//		Token  *stripe.TokenParams `json:"token,omitempty"`
@@ -416,7 +281,7 @@ func SendMail(to, template string, content map[string]interface{}) error {
 // @Failure 404 {object} map[string]interface{} "Not Found"
 // @Failure 500 {object} map[string]interface{} "Internal Server Error"
 // @Router /accounts/{id}/plan [put]
-func UpdatePlan(c *fiber.Ctx) error {
+func (c *AccountController) updatePlan(ctx *fiber.Ctx) error {
 	//	data := new(struct {
 	//		ID   string `json:"id"`
 	//		Plan string `json:"plan"`
@@ -557,7 +422,7 @@ func UpdatePlan(c *fiber.Ctx) error {
 // @Failure 404 {object} fiber.Map
 // @Failure 500 {object} fiber.Map
 // @Router /accounts [get]
-func GetAccounts(c *fiber.Ctx) error {
+func (c *AccountController) getAccounts(ctx *fiber.Ctx) error {
 	//	// implementation of utility.validate()
 	//	// return an error if the request body is invalid
 	//
@@ -684,7 +549,7 @@ func GetAccounts(c *fiber.Ctx) error {
 	//		}
 	//	}
 	//
-	return c.JSON(fiber.Map{
+	return ctx.JSON(fiber.Map{
 		//"account": account,
 		"status": "success",
 		//			"plan":             plan,
@@ -704,7 +569,7 @@ func GetAccounts(c *fiber.Ctx) error {
 // @Failure 404 {object} fiber.Map
 // @Failure 500 {object} fiber.Map
 // @Router /accounts/{id} [get]
-func GetAccount(c *fiber.Ctx) error {
+func (c *AccountController) getAccount(ctx *fiber.Ctx) error {
 	return nil
 }
 
@@ -722,7 +587,7 @@ func GetAccount(c *fiber.Ctx) error {
 // @Failure 404 {object} fiber.Map
 // @Failure 500 {object} fiber.Map
 // @Router /accounts/invoice/{id} [put]
-func UpdateInvoice(c *fiber.Ctx) error {
+func (c *AccountController) updateInvoice(ctx *fiber.Ctx) error {
 	return nil
 }
 
@@ -739,7 +604,7 @@ func UpdateInvoice(c *fiber.Ctx) error {
 // @Failure 404 {object} fiber.Map
 // @Failure 500 {object} fiber.Map
 // @Router /accounts/invoice/{id} [get]
-func GetInvoice(c *fiber.Ctx) error {
+func (c *AccountController) getInvoice(ctx *fiber.Ctx) error {
 	return nil
 }
 
@@ -755,7 +620,7 @@ func GetInvoice(c *fiber.Ctx) error {
 // @Failure 404 {object} fiber.Map
 // @Failure 500 {object} fiber.Map
 // @Router /accounts/plans [get]
-func GetPlans(c *fiber.Ctx) error {
+func (c *AccountController) getPlans(ctx *fiber.Ctx) error {
 	return nil
 }
 
@@ -772,7 +637,7 @@ func GetPlans(c *fiber.Ctx) error {
 // @Failure 404 {object} fiber.Map
 // @Failure 500 {object} fiber.Map
 // @Router /accounts/subscription/{id} [get]
-func GetSubscription(c *fiber.Ctx) error {
+func (c *AccountController) getSubscription(ctx *fiber.Ctx) error {
 	return nil
 }
 
@@ -790,7 +655,7 @@ func GetSubscription(c *fiber.Ctx) error {
 // @Failure 404 {object} fiber.Map
 // @Failure 500 {object} fiber.Map
 // @Router /accounts/subscription/{id} [put]
-func UpgradePlan(c *fiber.Ctx) error {
+func (c *AccountController) upgradePlan(ctx *fiber.Ctx) error {
 	return nil
 }
 
@@ -807,7 +672,7 @@ func UpgradePlan(c *fiber.Ctx) error {
 // @Failure 404 {object} fiber.Map
 // @Failure 500 {object} fiber.Map
 // @Router /accounts/subscription/{id} [delete]
-func CancelSubscription(c *fiber.Ctx) error {
+func (c *AccountController) cancelSubscription(ctx *fiber.Ctx) error {
 	return nil
 }
 
@@ -824,6 +689,6 @@ func CancelSubscription(c *fiber.Ctx) error {
 // @Failure 404 {object} fiber.Map
 // @Failure 500 {object} fiber.Map
 // @Router /accounts/{id} [delete]
-func DeleteAccount(c *fiber.Ctx) error {
+func (c *AccountController) deleteAccount(ctx *fiber.Ctx) error {
 	return nil
 }
