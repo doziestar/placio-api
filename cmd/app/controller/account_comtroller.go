@@ -1,5 +1,7 @@
 package controller
 
+//https://docs.gofiber.io/guide/validation
+
 import (
 	"context"
 	"errors"
@@ -8,11 +10,60 @@ import (
 	"placio-app/Dto"
 	"placio-app/database"
 	"placio-app/models"
+	"placio-app/service"
 	"placio-pkg/logger"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
 )
+
+type AccountController struct {
+	store service.IAccountService
+}
+
+func NewAccountController(store service.IAccountService) *AccountController {
+	return &AccountController{store: store}
+}
+
+func (c *AccountController) RegisterRoutes(app fiber.Router) {
+	accountGroup := app.Group("/accounts")
+	accountGroup.Post("/create", c.CreateAccount)
+}
+
+func (c *AccountController) CreateAccount(ctx *fiber.Ctx) error {
+	data := new(Dto.SignUpDto)
+
+	logger.Info(context.Background(), fmt.Sprintf("data: %v", data))
+	if err := ctx.BodyParser(data); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Bad Request",
+		})
+	}
+	log.Println("CreateAccount", data)
+
+	// validate input
+	if err := validate(data.Email, data.Name, data.Password); err != nil {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	// confirm_password field is a dummy field to prevent bot signups
+	if data.ConfirmPassword == "" {
+		return ctx.Status(fiber.StatusForbidden).JSON(fiber.Map{
+			"error": "You need to confirm your password",
+		})
+	}
+
+	response, err := c.store.CreateUserAccount(data, ctx)
+	if err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Internal Server Error",
+		})
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(response)
+}
 
 // CreateAccount creates a new user account and assigns the user to the account.
 // The function performs the following steps:
