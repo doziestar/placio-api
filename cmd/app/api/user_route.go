@@ -9,16 +9,6 @@ import (
 
 func UserRoutes(v1 fiber.Router) {
 	// POST /api/users - Create a new user
-	v1.Post("/", utility.Use(controller.CreateUser))
-
-	// GET /api/users/:id - Retrieve a specific user by ID
-	v1.Get("/:id", utility.Use(controller.GetUserByID))
-
-	// PUT /api/users/:id - Update an existing user by ID
-	v1.Put("/:id", utility.Use(controller.UpdateUser))
-
-	// DELETE /api/users/:id - Delete a user by ID
-	v1.Delete("/:id", utility.Use(controller.DeleteUser))
 
 	// GET /api/users/:id/messages_sent - Retrieve a list of messages sent by a specific user by ID
 	v1.Get("/:id/messages_sent", utility.Use(controller.GetMessagesSent))

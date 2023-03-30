@@ -458,27 +458,27 @@ func (u *User) VerifyPassword(plainPassword string) (bool, error) {
 // If not executed via a password reset request, the user is notified
 // by email that their password has been changed.
 // passwordReset determines if password update is part of reset.
-func SavePassword(id string, password string, reset bool) error {
-	// Encrypt the password.
-	hash, err := bcrypt.GenerateFromPassword([]byte(password), 10)
-	if err != nil {
-		return err
-	}
-
-	// Save the password hash in the database.
-	user := &User{}
-	result := db.Where("id = ?", id).First(user)
-	if result.Error != nil {
-		return result.Error
-	}
-
-	result = db.Model(user).Update("password", hash)
-	if result.Error != nil {
-		return result.Error
-	}
-
-	return nil
-}
+//func (u *User) SavePassword(id string, password string, reset bool) error {
+//	// Encrypt the password.
+//	hash, err := bcrypt.GenerateFromPassword([]byte(password), 10)
+//	if err != nil {
+//		return err
+//	}
+//
+//	// Save the password hash in the database.
+//	user := &User{}
+//	result := db.Where("id = ?", id).First(user)
+//	if result.Error != nil {
+//		return result.Error
+//	}
+//
+//	result = db.Model(user).Update("password", hash)
+//	if result.Error != nil {
+//		return result.Error
+//	}
+//
+//	return nil
+//}
 
 // func (u *User) SaveBackupCode(db *pg.DB, code string) error {
 //     u.BackupCode = code
@@ -699,7 +699,7 @@ func (u *User) GenerateToken(user User) (Dto.Token, error) {
 	}, nil
 }
 
-func (u *User) GenereateUserResponse(token *Token) Dto.UserResponse {
+func (u *User) GenerateUserResponse(token *Token) Dto.UserResponse {
 	return Dto.UserResponse{
 		User: &Dto.User{
 			ID:          u.ID,

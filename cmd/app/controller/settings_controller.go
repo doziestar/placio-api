@@ -4,13 +4,14 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
 	"placio-app/models"
+	"placio-app/service"
 )
 
 type SettingsController struct {
-	store models.ISettingsService
+	store service.ISettingsService
 }
 
-func NewSettingsController(store models.ISettingsService) *SettingsController {
+func NewSettingsController(store service.ISettingsService) *SettingsController {
 	return &SettingsController{store: store}
 }
 

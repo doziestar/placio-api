@@ -139,7 +139,7 @@ func (s *AccountService) CreateUserAccount(data *Dto.SignUpDto, ctx *fiber.Ctx) 
 		}, err
 	}
 
-	responseData := user.GenereateUserResponse(newData)
+	responseData := user.GenerateUserResponse(newData)
 
 	return &fiber.Map{
 		"message": "Account created successfully",
