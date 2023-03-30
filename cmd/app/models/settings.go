@@ -101,3 +101,76 @@ func (s *StringSlice) Value() (driver.Value, error) {
 
 	return nil, nil
 }
+
+// CreateGeneralSettings /*
+func (g *GeneralSettings) CreateGeneralSettings(userID string, db *gorm.DB) (*GeneralSettings, error) {
+	g.UserID = userID
+	g.Privacy = "public"
+	g.Language = "en"
+	g.Theme = "light"
+
+	var n NotificationsSettings
+	var a AccountSettings
+	var c ContentSettings
+
+	notifications, err := n.createNotificationsSettings(userID, db)
+	if err != nil {
+		return nil, err
+	}
+
+	account, err := a.createAccountSettings(userID, db)
+	if err != nil {
+		return nil, err
+	}
+
+	content, err := c.createContentSettings(userID, db)
+	if err != nil {
+		return nil, err
+	}
+
+	g.Notifications = *notifications
+	g.Account = *account
+	g.Content = *content
+
+	result := db.Create(&g)
+	return g, result.Error
+}
+
+// CreateNotificationsSettings /*
+func (n *NotificationsSettings) createNotificationsSettings(userID string, db *gorm.DB) (*NotificationsSettings, error) {
+	n.ID = GenerateID()
+	n.UserID = userID
+	n.EmailNotifications = true
+	n.PushNotifications = true
+	n.DirectMessageNotifications = true
+	n.LikeNotifications = true
+	n.CommentNotifications = true
+	n.MentionNotifications = true
+	n.FollowNotifications = true
+	result := db.Create(&n)
+	return n, result.Error
+}
+
+// CreateAccountSettings /*
+func (a *AccountSettings) createAccountSettings(userID string, db *gorm.DB) (*AccountSettings, error) {
+	a.ID = GenerateID()
+	a.UserID = userID
+	a.TwoFactorAuthentication = false
+	a.BlockedUsers = []string{}
+	a.MutedUsers = []string{}
+	result := db.Create(&a)
+	return a, result.Error
+}
+
+// CreateContentSettings /*
+func (c *ContentSettings) createContentSettings(userID string, db *gorm.DB) (*ContentSettings, error) {
+	c.ID = GenerateID()
+	c.UserID = userID
+	c.MediaVisibility = "public"
+	c.ExplicitContentFilter = "off"
+	c.DefaultPostPrivacy = "public"
+	c.AutoplayVideos = true
+	c.DisplaySensitiveMedia = true
+	result := db.Create(&c)
+	return c, result.Error
+}

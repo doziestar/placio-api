@@ -106,8 +106,8 @@ func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 	return nil
 }
 
-func (u *User) CreateUser(userData Dto.SignUpDto, c *fiber.Ctx, db *gorm.DB) (*User, error) {
-	// Generate a UUID for the user ID
+func (u *User) GenerateUserFields(userData Dto.SignUpDto, c *fiber.Ctx) {
+	// Generate and set fields for the user
 	u.ID = GenerateID()
 
 	// Set the creation and last active dates
@@ -132,32 +132,37 @@ func (u *User) CreateUser(userData Dto.SignUpDto, c *fiber.Ctx, db *gorm.DB) (*U
 	u.Email = userData.Email
 	u.Name = userData.Name
 	u.Password = userData.Password
-	// user.AccountID = account
 
+}
+
+func (u *User) EncryptPassword(password string) error {
 	// Encrypt the password if present
 	if u.Password != "" {
-		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(userData.Password), 10)
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 10)
 		if err != nil {
-			return &User{}, err
+			return err
 		}
 		u.Password = string(hashedPassword)
 		u.HasPassword = true
 	}
+	return nil
+}
 
-	logger.Info(context.Background(), fmt.Sprintf("Creating user %s", u.Password))
+func (u *User) CreateUser(userData Dto.SignUpDto, c *fiber.Ctx, db *gorm.DB) (*User, error) {
+	// Generate and set fields for the user
+	u.GenerateUserFields(userData, c)
+
+	// Encrypt the password if present
+	err := u.EncryptPassword(userData.Password)
+
 	// Create a new general settings record in the database
-	generalSettingsRecord := GeneralSettings{
-		Language: "en",
-		Theme:    "light",
-	}
-	db = db.Debug()
-
-	err := db.Create(&generalSettingsRecord).Error
+	var settings GeneralSettings
+	userSettings, err := settings.CreateGeneralSettings(u.ID, db)
 	if err != nil {
 		return &User{}, err
 	}
 
-	u.GeneralSettingsID = generalSettingsRecord.ID
+	u.GeneralSettingsID = userSettings.ID
 
 	// Create a new user record in the database
 	err = db.Create(&u).Error
@@ -166,30 +171,14 @@ func (u *User) CreateUser(userData Dto.SignUpDto, c *fiber.Ctx, db *gorm.DB) (*U
 	}
 
 	// Create a new account record in the database
-	accountRecord := Account{
-		ID:          GenerateID(),
-		UserID:      u.ID,
-		Permission:  "owner",
-		Onboarded:   false,
-		Active:      true,
-		Selected:    true,
-		Default:     true,
-		AccountType: userData.AccountType,
-	}
-
-	err = db.Create(&accountRecord).Error
+	var accountRecord Account
+	account, err := accountRecord.CreateAccount(u.ID, "owner", userData.AccountType, db)
 	if err != nil {
 		return &User{}, err
 	}
 
-	// Update the user record with the new general settings ID
-	//err = db.Model(&user).Update("general_settings_id", generalSettingsRecord.ID).Error
-	//if err != nil {
-	//	return &User{}, err
-	//}
-
 	//// Update the account record with the account ID
-	err = db.Model(&accountRecord).Update("account_id", accountRecord.ID).Error
+	err = db.Model(&accountRecord).Update("account_id", account.ID).Update("default_account_id", account.ID).Error
 	if err != nil {
 		return &User{}, err
 	}
