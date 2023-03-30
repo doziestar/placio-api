@@ -36,12 +36,12 @@ type IAuth interface {
 }
 
 type Auth struct {
-	*database.Database
-	*models.User
+	db *gorm.DB
+	models.User
 }
 
-func NewAuth(db *database.Database, user *models.User) IAuth {
-	return &Auth{db, user}
+func NewAuthService(db *gorm.DB, user *models.User) IAuth {
+	return &Auth{db, *user}
 }
 
 func (a *Auth) LogIn(data Dto.LoginDto) (Dto.UserResponseDto, error) {
@@ -52,7 +52,7 @@ func (a *Auth) LogIn(data Dto.LoginDto) (Dto.UserResponseDto, error) {
 	}
 
 	// check user exists
-	user := a.DB.Where("email = ?", email).First(&a.User)
+	user := a.db.Where("email = ?", email).First(&a.User)
 	if user.Error != nil {
 		return Dto.UserResponseDto{}, errs.ErrNotFound
 	}

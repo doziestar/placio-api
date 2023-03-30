@@ -18,10 +18,11 @@ func InitializeRoutes(app *fiber.App) {
 	{
 		HealthCheckRoutes(healthApi)
 	}
-	authApi := routerGroupV1.Group("/auth")
-	{
-		AuthRoutes(authApi)
-	}
+
+	// auth
+	authService := service.NewAuthService(database.DB, &models.User{})
+	authController := controller.NewAuthController(authService)
+	authController.RegisterRoutes(routerGroupV1)
 
 	// user
 	userService := service.NewUserService(database.DB, &models.User{})

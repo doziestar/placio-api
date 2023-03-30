@@ -5,13 +5,44 @@ import (
 	"fmt"
 	Dto "placio-app/Dto"
 	"placio-app/database"
+	"placio-app/middleware"
 	"placio-app/models"
+	"placio-app/service"
 	"placio-app/utility"
 	"placio-pkg/logger"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
 )
+
+type AuthController struct {
+	AuthService service.IAuth
+}
+
+func NewAuthController(authService service.IAuth) *AuthController {
+	return &AuthController{AuthService: authService}
+}
+
+func (controller *AuthController) RegisterRoutes(app fiber.Router) {
+	authGroup := app.Group("/auth")
+
+	//authGroup.Post("/auth/sign-in", utility.Use(a.SignIn))
+	//authGroup.Post("/auth/sign-up", utility.Use(a.SignUp))
+	authGroup.Post("/sign-out", middleware.Verify("user"), utility.Use(controller.signOut))
+	authGroup.Get("/refresh", middleware.Verify("user"), utility.Use(controller.refreshToken))
+	authGroup.Post("/verify/password", middleware.Verify("user"), utility.Use(controller.changePassword))
+	authGroup.Post("/verify/email", middleware.Verify("user"), utility.Use(controller.verifyEmail))
+	authGroup.Post("/reset", utility.Use(controller.resetPassword))
+	authGroup.Post("/verify/phone", middleware.Verify("user"), utility.Use(controller.verifyPhone))
+	authGroup.Get("/status", middleware.Verify("user"), utility.Use(controller.getAuthStatus))
+	authGroup.Post("/otp", middleware.Verify("user"), utility.Use(controller.getOTP))
+	authGroup.Post("/magic", middleware.Verify("user"), utility.Use(controller.GetMagicLink))
+	authGroup.Post("/magic/verify", middleware.Verify("user"), utility.Use(controller.verifyMagicLink))
+	authGroup.Post("/password/reset/request", middleware.Verify("user"), utility.Use(controller.requestPasswordReset))
+	authGroup.Post("/switch-account", middleware.Verify("user"), utility.Use(controller.switchAccount))
+	authGroup.Post("/impersonate", middleware.Verify("user"), utility.Use(controller.impersonateUser))
+
+}
 
 var (
 	userData *models.User
@@ -30,7 +61,7 @@ var (
 // @Success 200 {object} map[string]interface{}
 // @Failure 400 {object} map[string]interface{}
 // @Router /auth/sign-out [post]
-func SignOut(c *fiber.Ctx) error {
+func (controller *AuthController) signOut(c *fiber.Ctx) error {
 	err := token.Delete(c.Locals("tokenID").(string), c.Locals("provider").(string), c.Locals("user").(string), database.DB)
 	if err != nil {
 		logger.Error(context.Background(), err.Error())
@@ -56,7 +87,7 @@ func SignOut(c *fiber.Ctx) error {
 // @Success 200 {object} Dto.TokenResponse
 // @Failure 400 {object} map[string]interface{}
 // @Router /api/v1/auth/refresh [get]
-func RefreshToken(c *fiber.Ctx) error {
+func (controller *AuthController) refreshToken(c *fiber.Ctx) error {
 	// get the refresh token from the request
 	refreshToken := c.Get("refresh_token")
 	if refreshToken == "" {
@@ -86,7 +117,7 @@ func RefreshToken(c *fiber.Ctx) error {
 // @Success 200 {object} map[string]interface{}
 // @Failure 400 {object} map[string]interface{}
 // @Router /auth/reset [get]
-func ResetPassword(c *fiber.Ctx) error {
+func (controller *AuthController) resetPassword(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{"status": "ok"})
 }
 
@@ -99,7 +130,7 @@ func ResetPassword(c *fiber.Ctx) error {
 // @Success 200 {object} map[string]interface{}
 // @Failure 400 {object} map[string]interface{}
 // @Router /auth/change [get]
-func ChangePassword(c *fiber.Ctx) error {
+func (controller *AuthController) changePassword(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{"status": "ok"})
 }
 
@@ -112,7 +143,7 @@ func ChangePassword(c *fiber.Ctx) error {
 // @Success 200 {object} map[string]interface{}
 // @Failure 400 {object} map[string]interface{}
 // @Router /api/v1/auth/verify [get]
-func VerifyEmail(c *fiber.Ctx) error {
+func (controller *AuthController) verifyEmail(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{"status": "ok"})
 }
 
@@ -125,7 +156,7 @@ func VerifyEmail(c *fiber.Ctx) error {
 // @Success 200 {object} map[string]interface{}
 // @Failure 400 {object} map[string]interface{}
 // @Router /api/v1/auth/verify [get]
-func VerifyPhone(c *fiber.Ctx) error {
+func (controller *AuthController) verifyPhone(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{"status": "ok"})
 }
 
@@ -151,7 +182,7 @@ func VerifyPhone(c *fiber.Ctx) error {
 // @Failure 400 {object} fiber.Error "Bad Request"
 // @Failure 401 {object} fiber.Error "Unauthorized"
 // @Router /api/v1/auth [post]
-func Signin(c *fiber.Ctx) error {
+func (controller *AuthController) signIn(c *fiber.Ctx) error {
 	//defer sentry.Recover()
 	data := new(Dto.SigninRequest)
 	logger.Info(context.Background(), string(c.Body()))
@@ -284,7 +315,7 @@ func Signin(c *fiber.Ctx) error {
 	})
 }
 
-func Authenticate(c *fiber.Ctx, userData models.User) error {
+func (controller *AuthController) authenticate(c *fiber.Ctx, userData models.User) error {
 	accountData, err := account.GetAccount(userData.AccountID)
 	if err != nil {
 		return err
@@ -356,7 +387,7 @@ func Authenticate(c *fiber.Ctx, userData models.User) error {
 // @Failure 401 {object} fiber.Map "Unauthorized"
 // @Failure 500 {object} fiber.Map "Internal Server Error"
 // @Router /auth/switch-account/{account} [post]
-func SwitchAccount(c *fiber.Ctx) error {
+func (controller *AuthController) switchAccount(c *fiber.Ctx) error {
 	// Get the user and account ID from the request
 	//userID := c.Locals("user").(string)
 	//accountID := c.Params("account")
@@ -385,7 +416,7 @@ func SwitchAccount(c *fiber.Ctx) error {
 // @Failure 401 {object} fiber.Map "Unauthorized"
 // @Failure 500 {object} fiber.Map "Internal Server Error"
 // @Router /auth/impersonate/{account}/{user} [post]
-func ImpersonateUser(c *fiber.Ctx) error {
+func (controller *AuthController) impersonateUser(c *fiber.Ctx) error {
 	//	// Get the token from the request body
 	//	token := new(struct {
 	//		Token string `json:"token"`
@@ -455,7 +486,7 @@ func ImpersonateUser(c *fiber.Ctx) error {
 // @Failure 401 {object} fiber.Map "Unauthorized"
 // @Failure 500 {object} fiber.Map "Internal Server Error"
 // @Router /auth/status [get]
-func GetAuthStatus(c *fiber.Ctx) error {
+func (controller *AuthController) getAuthStatus(c *fiber.Ctx) error {
 	//	// Check if there's a valid account/user
 	//	var hasJWT, hasSocialToken, usingSocialSignin bool
 	//
@@ -502,7 +533,7 @@ func GetAuthStatus(c *fiber.Ctx) error {
 // @Failure 401 {object} fiber.Map "Unauthorized"
 // @Failure 500 {object} fiber.Map "Internal Server Error"
 // @Router /auth/magic/verify [post]
-func VerifyMagicLink(c *fiber.Ctx) error {
+func (controller *AuthController) verifyMagicLink(c *fiber.Ctx) error {
 	//	data := new(struct {
 	//		Token string `json:"token"`
 	//	})
@@ -598,7 +629,7 @@ func VerifyMagicLink(c *fiber.Ctx) error {
 // @Failure 401 {object} fiber.Map "Unauthorized"
 // @Failure 500 {object} fiber.Map "Internal Server Error"
 // @Router /auth/otp [get]
-func GetOTP(c *fiber.Ctx) error {
+func (controller *AuthController) getOTP(c *fiber.Ctx) error {
 	return nil
 }
 
@@ -613,7 +644,7 @@ func GetOTP(c *fiber.Ctx) error {
 // @Failure 401 {object} fiber.Map "Unauthorized"
 // @Failure 500 {object} fiber.Map "Internal Server Error"
 // @Router /auth/magic [post]
-func GetMagicLink(c *fiber.Ctx) error {
+func (controller *AuthController) GetMagicLink(c *fiber.Ctx) error {
 	return nil
 }
 
@@ -628,7 +659,7 @@ func GetMagicLink(c *fiber.Ctx) error {
 // @Failure 401 {object} fiber.Map "Unauthorized"
 // @Failure 500 {object} fiber.Map "Internal Server Error"
 // @Router /auth/password/reset/request [post]
-func RequestPasswordReset(c *fiber.Ctx) error {
+func (controller *AuthController) requestPasswordReset(c *fiber.Ctx) error {
 	return nil
 }
 
