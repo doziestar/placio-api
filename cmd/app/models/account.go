@@ -33,8 +33,6 @@ type Account struct {
 	Status                     string    `gorm:"column:status"`
 	LastActive                 time.Time `gorm:"column:last_active"`
 	Disabled                   bool      `gorm:"column:disabled"`
-	Selected                   bool      `gorm:"column:selected"`
-	Default                    bool      `gorm:"column:default"`
 }
 
 // BeforeCreate /*

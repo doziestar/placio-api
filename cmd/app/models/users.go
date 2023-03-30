@@ -41,6 +41,7 @@ type User struct {
 	DefaultAccount       string    `gorm:"column:default_account"`
 	FacebookID           string    `gorm:"column:facebook_id"`
 	TwitterID            string    `gorm:"column:twitter_id"`
+	DefaultAccountID     string    `gorm:"column:default_account_id"`
 	Accounts             []Account `gorm:"foreignKey:UserID"`
 	IP                   string    `gorm:"column:ip"`
 	UserAgent            string    `gorm:"column:user_agent"`
@@ -51,9 +52,8 @@ type User struct {
 	Onboarded            bool   `gorm:"column:onboarded"`
 	AccountID            string `gorm:"column:account_id"`
 	Permission           string `gorm:"column:permission"`
-	// Interests            []string         `gorm:"type:text[]"` // `gorm:"type:text[]"`
-	GeneralSettingsID string
-	GeneralSettings   GeneralSettings
+	GeneralSettingsID    string
+	GeneralSettings      GeneralSettings
 }
 
 type TwitterAccount struct {
