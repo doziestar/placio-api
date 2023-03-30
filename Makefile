@@ -29,6 +29,13 @@ cert: ## [HTTP] Generate self signed certificate
 dev: ## [HTTP] Run server in dev mode
 	docker-compose up --build
 
+test: ## [HTTP] Run tests
+	go test -v -coverprofile cover.out ./cmd/app/tests/...
+	go tool cover -html=cover.out -o cover.html
+
+open: ## [HTTP] Run linters
+	open cover.html
+
 swagger: ## Generate docs
 	swag init -g cmd/app/main.go --output docs/app --parseDependency --parseInternal
 redoc: ##  Generate redoc
