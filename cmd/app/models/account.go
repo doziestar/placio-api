@@ -29,6 +29,8 @@ type Account struct {
 	StripeSubscriptionStatus   string
 	PayStackSubscriptionID     string
 	PayStackSubscriptionStatus string
+	Selected                   bool
+	Default                    bool
 	PayStackCustomerID         string
 	Status                     string    `gorm:"column:status"`
 	LastActive                 time.Time `gorm:"column:last_active"`

@@ -22,29 +22,28 @@ import (
 var db = database.DB
 
 type User struct {
-	ID        string     `gorm:"primaryKey,unique,column:id"`
-	CreatedAt time.Time  `gorm:"column:created_at"`
-	UpdatedAt time.Time  `gorm:"column:updated_at"`
-	DeletedAt *time.Time `gorm:"column:deleted_at"`
-	//UserID               string     `gorm:"primaryKey,unique,column:user_id"`
-	Fingerprint          string    `gorm:"column:fingerprint"`
-	Name                 string    `gorm:"column:name"`
-	Email                string    `gorm:"unique,column:email"`
-	Password             string    `gorm:"column:password"`
-	DateCreated          time.Time `gorm:"column:date_created"`
-	LastActive           time.Time `gorm:"column:last_active"`
-	Disabled             bool      `gorm:"column:disabled"`
-	SupportEnabled       bool      `gorm:"column:support_enabled"`
-	TwoFactorAuthEnabled bool      `gorm:"column:2fa_enabled"`
-	TwoFASecret          string    `gorm:"column:2fa_secret"`
-	TwoFABackupCode      string    `gorm:"column:2fa_backup_code"`
-	DefaultAccount       string    `gorm:"column:default_account"`
-	FacebookID           string    `gorm:"column:facebook_id"`
-	TwitterID            string    `gorm:"column:twitter_id"`
-	DefaultAccountID     string    `gorm:"column:default_account_id"`
-	Accounts             []Account `gorm:"foreignKey:UserID"`
-	IP                   string    `gorm:"column:ip"`
-	UserAgent            string    `gorm:"column:user_agent"`
+	ID                   string     `gorm:"primaryKey,unique,column:id"`
+	CreatedAt            time.Time  `gorm:"column:created_at"`
+	UpdatedAt            time.Time  `gorm:"column:updated_at"`
+	DeletedAt            *time.Time `gorm:"column:deleted_at"`
+	Fingerprint          string     `gorm:"column:fingerprint"`
+	Name                 string     `gorm:"column:name"`
+	Email                string     `gorm:"unique,column:email"`
+	Password             string     `gorm:"column:password"`
+	DateCreated          time.Time  `gorm:"column:date_created"`
+	LastActive           time.Time  `gorm:"column:last_active"`
+	Disabled             bool       `gorm:"column:disabled"`
+	SupportEnabled       bool       `gorm:"column:support_enabled"`
+	TwoFactorAuthEnabled bool       `gorm:"column:2fa_enabled"`
+	TwoFASecret          string     `gorm:"column:2fa_secret"`
+	TwoFABackupCode      string     `gorm:"column:2fa_backup_code"`
+	DefaultAccount       string     `gorm:"column:default_account"`
+	FacebookID           string     `gorm:"column:facebook_id"`
+	TwitterID            string     `gorm:"column:twitter_id"`
+	DefaultAccountID     string     `gorm:"column:default_account_id"`
+	Accounts             []Account  `gorm:"foreignKey:UserID"`
+	IP                   string     `gorm:"column:ip"`
+	UserAgent            string     `gorm:"column:user_agent"`
 	Twitter              *TwitterAccount
 	Facebook             *FacebookAccount
 	Google               *GoogleAccount

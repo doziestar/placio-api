@@ -36,6 +36,12 @@ test: ## [HTTP] Run tests
 open: ## [HTTP] Run linters
 	open cover.html
 
+integration-test: ## [HTTP] Run integration tests
+	docker-compose up --build -d
+	go test -v -coverprofile cover.out ./cmd/app/tests/...
+	go tool cover -html=cover.out -o cover.html
+	docker-compose down
+
 swagger: ## Generate docs
 	swag init -g cmd/app/main.go --output docs/app --parseDependency --parseInternal
 redoc: ##  Generate redoc
