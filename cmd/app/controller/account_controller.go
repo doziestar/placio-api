@@ -23,9 +23,17 @@ func NewAccountController(store service.IAccountService) *AccountController {
 	return &AccountController{store: store}
 }
 
+func requestLogger() fiber.Handler {
+	return func(c *fiber.Ctx) error {
+		fmt.Printf("Request: %s %s\n", c.Method(), c.Path())
+		return c.Next()
+	}
+}
+
 func (c *AccountController) RegisterRoutes(app fiber.Router) {
+	//app.Use(requestLogger())
 	accountGroup := app.Group("/accounts")
-	accountGroup.Post("/create", utility.Use(c.createAccount))
+	accountGroup.Post("/create-account", utility.Use(c.createAccount))
 	accountGroup.Post("/plan", middleware.Verify("owner"), utility.Use(c.plan))
 	accountGroup.Patch("/plan", middleware.Verify("owner"), utility.Use(c.updatePlan))
 	accountGroup.Get("/", middleware.Verify("owner"), utility.Use(c.getAccounts))
@@ -60,6 +68,7 @@ func (c *AccountController) RegisterRoutes(app fiber.Router) {
 // @Failure 500 {object} map[string]string "Internal Server Error"
 // @Router /api/v1/accounts [post]
 func (c *AccountController) createAccount(ctx *fiber.Ctx) error {
+	fmt.Println("Entering createAccount function")
 	data := new(Dto.SignUpDto)
 
 	logger.Info(context.Background(), fmt.Sprintf("data: %v", data))
@@ -91,7 +100,7 @@ func (c *AccountController) createAccount(ctx *fiber.Ctx) error {
 		})
 	}
 
-	return ctx.Status(fiber.StatusOK).JSON(response)
+	return ctx.Status(fiber.StatusCreated).JSON(response)
 }
 
 func validate(email string, name string, password string) error {

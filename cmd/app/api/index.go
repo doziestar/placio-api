@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	swagger "github.com/arsmn/fiber-swagger/v2"
 	"github.com/gofiber/fiber/v2"
 	_ "placio-api/docs/app"
@@ -11,6 +12,7 @@ import (
 )
 
 func InitializeRoutes(app *fiber.App) {
+	fmt.Println("Initializing routes...")
 	app.Get("/docs/*", swagger.HandlerDefault)
 	routerGroupV1 := app.Group("/api/v1")
 
@@ -37,6 +39,6 @@ func InitializeRoutes(app *fiber.App) {
 	// account
 	accountService := service.NewAccountService(database.DB)
 	accountController := controller.NewAccountController(accountService)
-	accountController.RegisterRoutes(app)
+	accountController.RegisterRoutes(routerGroupV1)
 
 }

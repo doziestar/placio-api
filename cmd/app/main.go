@@ -35,8 +35,6 @@ func main() {
 		JSONDecoder: json.Unmarshal,
 	})
 
-	// initialize routes
-	api.InitializeRoutes(app)
 	// initialize database
 	//env, _ := config.LoadConfig("./config")
 	db, err := database.Connect(os.Getenv("DATABASE_URL"))
@@ -47,6 +45,9 @@ func main() {
 	if err != nil {
 		return
 	}
+
+	// initialize routes
+	api.InitializeRoutes(app)
 	// set port
 	start.Initialize(port, app)
 

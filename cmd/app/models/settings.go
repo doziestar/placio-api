@@ -9,24 +9,19 @@ import (
 )
 
 type GeneralSettings struct {
-	//gorm.Model
 	CreatedAt     time.Time  `gorm:"column:created_at"`
 	UpdatedAt     time.Time  `gorm:"column:updated_at"`
 	DeletedAt     *time.Time `gorm:"column:deleted_at"`
 	ID            string     `gorm:"primaryKey"`
 	Language      string
 	Theme         string
-	UserID        string                `gorm:"ForeignKey:ID"`
+	UserID        string                `gorm:"unique"`
 	Privacy       string                `gorm:"default:'public'"`
-	Notifications NotificationsSettings `gorm:"ForeignKey:ID"`
-	//NotificationID string
-	//AccountID      string
-	Account AccountSettings `gorm:"ForeignKey:ID"`
-	//ContentID      string
-	Content ContentSettings `gorm:"ForeignKey:ID"`
+	Notifications NotificationsSettings `gorm:"foreignKey:UserID"`
+	Account       AccountSettings       `gorm:"foreignKey:UserID"`
+	Content       ContentSettings       `gorm:"foreignKey:UserID"`
 }
 
-// BeforeCreate OnCreateGeneralSettings /*
 func (g *GeneralSettings) BeforeCreate(tx *gorm.DB) error {
 	g.ID = GenerateID()
 	g.CreatedAt = time.Now()
@@ -36,7 +31,7 @@ func (g *GeneralSettings) BeforeCreate(tx *gorm.DB) error {
 
 type NotificationsSettings struct {
 	ID                         string `gorm:"primaryKey"`
-	UserID                     string `gorm:"ForeignKey:ID"`
+	UserID                     string `gorm:"unique"`
 	EmailNotifications         bool
 	PushNotifications          bool
 	DirectMessageNotifications bool
@@ -48,11 +43,10 @@ type NotificationsSettings struct {
 
 type AccountSettings struct {
 	ID                      string `gorm:"primaryKey"`
-	UserID                  string `gorm:"ForeignKey:ID"`
+	UserID                  string `gorm:"unique"`
 	TwoFactorAuthentication bool
-	//ConnectedAccounts       []ConnectedAccount `gorm:"type:json,ForeignKey:ID"`
-	BlockedUsers []string `gorm:"type:json"`
-	MutedUsers   []string `gorm:"type:json"`
+	BlockedUsers            []string `gorm:"type:json"`
+	MutedUsers              []string `gorm:"type:json"`
 }
 
 type ConnectedAccount struct {
@@ -68,7 +62,7 @@ type ContentSettings struct {
 	DefaultPostPrivacy    string
 	AutoplayVideos        bool
 	DisplaySensitiveMedia bool
-	UserID                string `gorm:"ForeignKey:ID"`
+	UserID                string `gorm:"unique"`
 }
 
 type StringSlice []string
@@ -102,35 +96,67 @@ func (s *StringSlice) Value() (driver.Value, error) {
 	return nil, nil
 }
 
+//// CreateGeneralSettings /*
+//func (g *GeneralSettings) CreateGeneralSettings(userID string, db *gorm.DB) (*GeneralSettings, error) {
+//	g.UserID = userID
+//	g.Privacy = "public"
+//	g.Language = "en"
+//	g.Theme = "light"
+//	g.ID = GenerateID()
+//
+//	var n NotificationsSettings
+//	var a AccountSettings
+//	var c ContentSettings
+//
+//	notifications, err := n.createNotificationsSettings(userID, db)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	account, err := a.createAccountSettings(userID, db)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	content, err := c.createContentSettings(userID, db)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	g.Notifications = *notifications
+//	g.Account = *account
+//	g.Content = *content
+//
+//	result := db.Create(&g)
+//	return g, result.Error
+//}
+
 // CreateGeneralSettings /*
 func (g *GeneralSettings) CreateGeneralSettings(userID string, db *gorm.DB) (*GeneralSettings, error) {
 	g.UserID = userID
 	g.Privacy = "public"
 	g.Language = "en"
 	g.Theme = "light"
+	g.ID = GenerateID()
 
 	var n NotificationsSettings
 	var a AccountSettings
 	var c ContentSettings
 
-	notifications, err := n.createNotificationsSettings(userID, db)
+	_, err := n.createNotificationsSettings(userID, db)
 	if err != nil {
 		return nil, err
 	}
 
-	account, err := a.createAccountSettings(userID, db)
+	_, err = a.createAccountSettings(userID, db)
 	if err != nil {
 		return nil, err
 	}
 
-	content, err := c.createContentSettings(userID, db)
+	_, err = c.createContentSettings(userID, db)
 	if err != nil {
 		return nil, err
 	}
-
-	g.Notifications = *notifications
-	g.Account = *account
-	g.Content = *content
 
 	result := db.Create(&g)
 	return g, result.Error

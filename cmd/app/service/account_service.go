@@ -76,6 +76,7 @@ func (s *AccountService) CreateUserAccount(data *Dto.SignUpDto, ctx *fiber.Ctx) 
 
 	//account := new(models.Account)
 
+	fmt.Println("data.AccountType", data.AccountType)
 	// create the user and assign to account
 	newUser, err := user.CreateUser(*data, ctx, database.DB)
 	if err != nil {
