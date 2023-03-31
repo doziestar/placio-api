@@ -3,8 +3,12 @@ name: Run Tests
 on:
   push:
     branches:
-      - main
-#      - master
+      - master
+
+  pull_request:
+    branches:
+      - master
+
   pull_request_target:
     branches:
       - master
