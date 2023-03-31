@@ -14,6 +14,7 @@ import (
 
 type IAccountService interface {
 	CreateUserAccount(data *Dto.SignUpDto, ctx *fiber.Ctx) (*fiber.Map, error)
+	SwitchUserAccount(ctx *fiber.Ctx) (*fiber.Map, error)
 }
 
 type AccountService struct {
@@ -144,6 +145,69 @@ func (s *AccountService) CreateUserAccount(data *Dto.SignUpDto, ctx *fiber.Ctx) 
 
 	return &fiber.Map{
 		"message": "Account created successfully",
+		"data":    responseData,
+	}, nil
+}
+
+func (s *AccountService) SwitchUserAccount(ctx *fiber.Ctx) (*fiber.Map, error) {
+	// get user from context
+	user := ctx.Locals("user").(*models.User)
+
+	// get account from context
+	//account := ctx.Locals("account").(*models.Account)
+
+	// get token from context
+	token := ctx.Locals("token").(*models.Token)
+
+	// get the user's account
+	//userAccount, err := user.GetAccount(database.DB)
+	//if err != nil {
+	//	return &fiber.Map{
+	//		"error": "Internal Server Error",
+	//	}, err
+	//}
+	//
+	//// check if user is owner of account
+	//if userAccount.Permission != "owner" {
+	//	return &fiber.Map{
+	//		"error": "Unauthorized",
+	//	}, nil
+	//}
+
+	// get the user's token
+	//userToken, err := user.GetToken(database.DB)
+	//if err != nil {
+	//	return &fiber.Map{
+	//		"error": "Internal Server Error",
+	//	}, err
+	//}
+	//
+	//// check if token is valid
+	//if !userToken.IsValid() {
+	//	return &fiber.Map{
+	//		"error": "Unauthorized",
+	//	}, nil
+	//}
+
+	// switch the user's account
+	//if err := user.SwitchAccount(account.ID, database.DB); err != nil {
+	//	return &fiber.Map{
+	//		"error": "Internal Server Error",
+	//	}, err
+	//}
+
+	//// switch the user's token
+	//if err := user.SwitchToken(token.ID, database.DB); err != nil {
+	//	return &fiber.Map{
+	//		"error": "Internal Server Error",
+	//	}, err
+	//}
+
+	// generate response data
+	responseData := user.GenerateUserResponse(token)
+
+	return &fiber.Map{
+		"message": "Account switched successfully",
 		"data":    responseData,
 	}, nil
 }

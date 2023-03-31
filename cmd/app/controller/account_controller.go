@@ -35,6 +35,7 @@ func (c *AccountController) RegisterRoutes(app fiber.Router) {
 	//app.Use(requestLogger())
 	accountGroup := app.Group("/accounts")
 	accountGroup.Post("/create-account", utility.Use(c.createAccount))
+	accountGroup.Post("/switch-account", middleware.Verify("owner"), utility.Use(c.switchAccount))
 	accountGroup.Post("/plan", middleware.Verify("owner"), utility.Use(c.plan))
 	accountGroup.Patch("/plan", middleware.Verify("owner"), utility.Use(c.updatePlan))
 	accountGroup.Get("/", middleware.Verify("owner"), utility.Use(c.getAccounts))
@@ -119,6 +120,50 @@ func validate(email string, name string, password string) error {
 	}
 
 	return nil
+}
+
+// SwitchAccount switches the user to a different account.
+// The function performs the following steps:
+// 1. Parses the incoming request body into a SwitchAccountDto.
+// 2. Validates the input data.
+// 3. Checks if the user is a member of the account.
+// 4. Switches the user to the account.
+//
+// @Summary Switch to a different account
+// @Description Switch to a different account
+// @Tags Account
+// @Accept json
+// @Produce json
+// @Param SwitchAccountDto body Dto.SwitchAccountDto true "Switch Account Data"
+// @Success 200 {object} Dto.UserResponse "Successfully switched account"
+// @Failure 400 {object} map[string]string "Bad Request"
+// @Failure 403 {object} map[string]string "Forbidden"
+// @Failure 500 {object} map[string]string "Internal Server Error"
+// @Router /api/v1/accounts/switch-account [post]
+func (c *AccountController) switchAccount(ctx *fiber.Ctx) error {
+	//data := new(Dto.SwitchAccountDto)
+
+	//if err := ctx.BodyParser(data); err != nil {
+	//	return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+	//		"error": "Bad Request",
+	//	})
+	//}
+
+	//// validate input
+	//if err := validateSwitchAccount(data.AccountID); err != nil {
+	//	return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+	//		"error": err.Error(),
+	//	})
+	//}
+
+	response, err := c.store.SwitchUserAccount(ctx)
+	if err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Internal Server Error",
+		})
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(response)
 }
 
 // Plan godoc
