@@ -13,6 +13,19 @@ import (
 	"testing"
 )
 
+var (
+	user     models.User
+	userData = Dto.SignUpDto{
+		Name:        "Test User",
+		Email:       "test@example.com",
+		Password:    "test_password",
+		AccountType: "user",
+	}
+
+	app = fiber.New(fiber.Config{})
+	ctx = app.AcquireCtx(&fasthttp.RequestCtx{})
+)
+
 func TestAccountCreationProcess(t *testing.T) {
 	// Setup
 	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{})
@@ -20,27 +33,19 @@ func TestAccountCreationProcess(t *testing.T) {
 
 	db.AutoMigrate(&models.User{}, &models.GeneralSettings{}, &models.NotificationsSettings{}, &models.AccountSettings{}, &models.ContentSettings{}, &models.Account{})
 
-	// Create user data and context for testing
-	userData := Dto.SignUpDto{
-		Name:        "Test User",
-		Email:       "test@example.com",
-		Password:    "test_password",
-		AccountType: "user",
-	}
-
 	app := fiber.New()
 	c := app.AcquireCtx(&fasthttp.RequestCtx{})
 	defer app.ReleaseCtx(c)
 
 	// Test GenerateUserFields
-	user := &models.User{}
+
 	user.GenerateUserFields(userData, c)
 	assert.Equal(t, userData.Email, user.Email)
 	assert.Equal(t, userData.Name, user.Name)
 	assert.Equal(t, userData.Password, user.Password)
 
 	// Test EncryptPassword
-	err = user.EncryptPassword(userData.Password)
+	err = user.EncryptPassword()
 	assert.NoError(t, err)
 	assert.NotEqual(t, userData.Password, user.Password)
 
@@ -69,4 +74,27 @@ func TestAccountCreationProcess(t *testing.T) {
 
 	// Tear down
 	db.Migrator().DropTable(&models.User{}, &models.GeneralSettings{}, &models.NotificationsSettings{}, &models.AccountSettings{}, &models.ContentSettings{}, &models.Account{})
+}
+
+func TestGenerateUserFields(t *testing.T) {
+
+	user.GenerateUserFields(userData, ctx)
+
+	assert.Equal(t, user.Email, "test@example.com")
+	assert.False(t, user.HasPassword)
+	assert.Equal(t, user.Permission, "user")
+	assert.Equal(t, user.Name, "Test User")
+	assert.Equal(t, user.IP, "0.0.0.0")
+}
+
+func TestEncryptPassword(t *testing.T) {
+	user.GenerateUserFields(userData, ctx)
+
+	assert.NotNil(t, user.Password)
+	assert.Equal(t, user.Password, userData.Password)
+
+	err := user.EncryptPassword()
+	assert.NoError(t, err)
+
+	assert.NotEqual(t, userData.Password, user.Password)
 }

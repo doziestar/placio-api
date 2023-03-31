@@ -107,6 +107,7 @@ func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 
 func (u *User) GenerateUserFields(userData Dto.SignUpDto, c *fiber.Ctx) {
 	// Generate and set fields for the user
+	logger.Info(context.Background(), "Generating user fields")
 	u.ID = GenerateID()
 
 	// Set the creation and last active dates
@@ -125,7 +126,6 @@ func (u *User) GenerateUserFields(userData Dto.SignUpDto, c *fiber.Ctx) {
 	u.TwoFASecret = ""
 	u.Permission = "user"
 	//user.AccountID = ""
-	// user.Interests = []string{}
 	u.UserAgent = c.Get("user-agents")
 	u.IP = c.IP()
 	u.Email = userData.Email
@@ -134,10 +134,10 @@ func (u *User) GenerateUserFields(userData Dto.SignUpDto, c *fiber.Ctx) {
 
 }
 
-func (u *User) EncryptPassword(password string) error {
+func (u *User) EncryptPassword() error {
 	// Encrypt the password if present
 	if u.Password != "" {
-		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 10)
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), 10)
 		if err != nil {
 			return err
 		}
@@ -152,7 +152,7 @@ func (u *User) CreateUser(userData Dto.SignUpDto, c *fiber.Ctx, db *gorm.DB) (*U
 	u.GenerateUserFields(userData, c)
 
 	// Encrypt the password if present
-	err := u.EncryptPassword(userData.Password)
+	err := u.EncryptPassword()
 
 	// Create a new general settings record in the database
 	var settings GeneralSettings
