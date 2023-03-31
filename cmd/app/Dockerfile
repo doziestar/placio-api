@@ -10,11 +10,14 @@ WORKDIR /app
 RUN #echo "Listing /app"
 RUN #ls -la /app
 
-COPY ./go.*/ .
-COPY ./pkg/go.*/ ./pkg/
+COPY ./go.mod .
+COPY ./go.sum .
+COPY ./pkg/go.mod ./pkg/
+COPY ./pkg/go.sum ./pkg/
 #COPY ./cmd/auth/go.* ./cmd/auth/
 #COPY ./cmd/users/go.* ./cmd/users/
-COPY ./cmd/app/go.*/ ./cmd/app/
+COPY ./cmd/app/go.mod ./cmd/app/
+COPY ./cmd/app/go.sum ./cmd/app/
 #COPY ./cmd/business/go.* ./cmd/business/
 #COPY ./cmd/chats/go.* ./cmd/chats/
 #COPY ./cmd/media/go.* ./cmd/media/
