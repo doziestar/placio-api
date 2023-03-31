@@ -1,15 +1,18 @@
 package api
 
 import (
+	"fmt"
 	swagger "github.com/arsmn/fiber-swagger/v2"
 	"github.com/gofiber/fiber/v2"
 	_ "placio-api/docs/app"
 	"placio-app/controller"
 	"placio-app/database"
 	"placio-app/models"
+	"placio-app/service"
 )
 
 func InitializeRoutes(app *fiber.App) {
+	fmt.Println("Initializing routes...")
 	app.Get("/docs/*", swagger.HandlerDefault)
 	routerGroupV1 := app.Group("/api/v1")
 
@@ -17,24 +20,25 @@ func InitializeRoutes(app *fiber.App) {
 	{
 		HealthCheckRoutes(healthApi)
 	}
-	authApi := routerGroupV1.Group("/auth")
-	{
-		AuthRoutes(authApi)
-	}
-	userApi := routerGroupV1.Group("/users")
-	{
-		UserRoutes(userApi)
-	}
-	accountApi := routerGroupV1.Group("/accounts")
-	{
-		AccountRoutes(accountApi)
-	}
-	store := models.NewSettingsService(database.DB)
+
+	// auth
+	authService := service.NewAuthService(database.DB, &models.User{})
+	authController := controller.NewAuthController(authService)
+	authController.RegisterRoutes(routerGroupV1)
+
+	// user
+	userService := service.NewUserService(database.DB, &models.User{})
+	userController := controller.NewUserController(userService)
+	userController.RegisterRoutes(routerGroupV1)
+
+	// settings
+	store := service.NewSettingsService(database.DB)
 	settingsController := controller.NewSettingsController(store)
 	settingsController.RegisterRoutes(routerGroupV1, nil)
-	//utilityApi := routerGroupV1.Group("/utility")
-	//{
-	//	UtilityRoutes(utilityApi)
-	//}
+
+	// account
+	accountService := service.NewAccountService(database.DB)
+	accountController := controller.NewAccountController(accountService)
+	accountController.RegisterRoutes(routerGroupV1)
 
 }

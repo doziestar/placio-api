@@ -8,6 +8,6 @@ import (
 )
 
 func HealthCheckRoutes(api fiber.Router) {
-	api.Get("/health", utility.Use(controller.HealthCheck))
+	api.Get("/", utility.Use(controller.HealthCheck))
 
 }

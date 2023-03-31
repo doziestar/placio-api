@@ -22,28 +22,28 @@ import (
 var db = database.DB
 
 type User struct {
-	ID        string     `gorm:"primaryKey,unique,column:id"`
-	CreatedAt time.Time  `gorm:"column:created_at"`
-	UpdatedAt time.Time  `gorm:"column:updated_at"`
-	DeletedAt *time.Time `gorm:"column:deleted_at"`
-	//UserID               string     `gorm:"primaryKey,unique,column:user_id"`
-	Fingerprint          string    `gorm:"column:fingerprint"`
-	Name                 string    `gorm:"column:name"`
-	Email                string    `gorm:"unique,column:email"`
-	Password             string    `gorm:"column:password"`
-	DateCreated          time.Time `gorm:"column:date_created"`
-	LastActive           time.Time `gorm:"column:last_active"`
-	Disabled             bool      `gorm:"column:disabled"`
-	SupportEnabled       bool      `gorm:"column:support_enabled"`
-	TwoFactorAuthEnabled bool      `gorm:"column:2fa_enabled"`
-	TwoFASecret          string    `gorm:"column:2fa_secret"`
-	TwoFABackupCode      string    `gorm:"column:2fa_backup_code"`
-	DefaultAccount       string    `gorm:"column:default_account"`
-	FacebookID           string    `gorm:"column:facebook_id"`
-	TwitterID            string    `gorm:"column:twitter_id"`
-	Accounts             []Account `gorm:"foreignKey:UserID"`
-	IP                   string    `gorm:"column:ip"`
-	UserAgent            string    `gorm:"column:user_agent"`
+	ID                   string     `gorm:"primaryKey,unique,column:id"`
+	CreatedAt            time.Time  `gorm:"column:created_at"`
+	UpdatedAt            time.Time  `gorm:"column:updated_at"`
+	DeletedAt            *time.Time `gorm:"column:deleted_at"`
+	Fingerprint          string     `gorm:"column:fingerprint"`
+	Name                 string     `gorm:"column:name"`
+	Email                string     `gorm:"unique,column:email"`
+	Password             string     `gorm:"column:password"`
+	DateCreated          time.Time  `gorm:"column:date_created"`
+	LastActive           time.Time  `gorm:"column:last_active"`
+	Disabled             bool       `gorm:"column:disabled"`
+	SupportEnabled       bool       `gorm:"column:support_enabled"`
+	TwoFactorAuthEnabled bool       `gorm:"column:2fa_enabled"`
+	TwoFASecret          string     `gorm:"column:2fa_secret"`
+	TwoFABackupCode      string     `gorm:"column:2fa_backup_code"`
+	DefaultAccount       string     `gorm:"column:default_account"`
+	FacebookID           string     `gorm:"column:facebook_id"`
+	TwitterID            string     `gorm:"column:twitter_id"`
+	DefaultAccountID     string     `gorm:"column:default_account_id"`
+	Accounts             []Account  `gorm:"foreignKey:UserID"`
+	IP                   string     `gorm:"column:ip"`
+	UserAgent            string     `gorm:"column:user_agent"`
 	Twitter              *TwitterAccount
 	Facebook             *FacebookAccount
 	Google               *GoogleAccount
@@ -51,9 +51,8 @@ type User struct {
 	Onboarded            bool   `gorm:"column:onboarded"`
 	AccountID            string `gorm:"column:account_id"`
 	Permission           string `gorm:"column:permission"`
-	// Interests            []string         `gorm:"type:text[]"` // `gorm:"type:text[]"`
-	GeneralSettingsID string
-	GeneralSettings   GeneralSettings
+	//GeneralSettingsID    string
+	GeneralSettings GeneralSettings `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 }
 
 type TwitterAccount struct {
@@ -106,8 +105,9 @@ func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 	return nil
 }
 
-func (u *User) CreateUser(userData Dto.SignUpDto, c *fiber.Ctx, db *gorm.DB) (*User, error) {
-	// Generate a UUID for the user ID
+func (u *User) GenerateUserFields(userData Dto.SignUpDto, c *fiber.Ctx) {
+	// Generate and set fields for the user
+	logger.Info(context.Background(), "Generating user fields")
 	u.ID = GenerateID()
 
 	// Set the creation and last active dates
@@ -126,70 +126,106 @@ func (u *User) CreateUser(userData Dto.SignUpDto, c *fiber.Ctx, db *gorm.DB) (*U
 	u.TwoFASecret = ""
 	u.Permission = "user"
 	//user.AccountID = ""
-	// user.Interests = []string{}
 	u.UserAgent = c.Get("user-agents")
 	u.IP = c.IP()
 	u.Email = userData.Email
 	u.Name = userData.Name
 	u.Password = userData.Password
-	// user.AccountID = account
 
+}
+
+func (u *User) EncryptPassword() error {
 	// Encrypt the password if present
 	if u.Password != "" {
-		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(userData.Password), 10)
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(u.Password), 10)
 		if err != nil {
-			return &User{}, err
+			return err
 		}
 		u.Password = string(hashedPassword)
 		u.HasPassword = true
 	}
+	return nil
+}
 
-	logger.Info(context.Background(), fmt.Sprintf("Creating user %s", u.Password))
-	// Create a new general settings record in the database
-	generalSettingsRecord := GeneralSettings{
-		Language: "en",
-		Theme:    "light",
-	}
-	db = db.Debug()
+//func (u *User) CreateUser(userData Dto.SignUpDto, c *fiber.Ctx, db *gorm.DB) (*User, error) {
+//	logger.Info(context.Background(), "Creating user")
+//	// Generate and set fields for the user
+//	u.GenerateUserFields(userData, c)
+//
+//	// Encrypt the password if present
+//	err := u.EncryptPassword()
+//
+//	if err != nil {
+//		return &User{}, err
+//	}
+//
+//	// Create a new user record in the database
+//	err = db.Create(&u).Error
+//	if err != nil {
+//		return &User{}, err
+//	}
+//
+//	// Create a new general settings record in the database
+//	var settings GeneralSettings
+//	userSettings, err := settings.CreateGeneralSettings(u.ID, db)
+//	if err != nil {
+//		return &User{}, err
+//	}
+//
+//	// Update the user record with the general settings ID
+//	err = db.Model(&u).Update("general_settings_id", userSettings.ID).Error
+//	if err != nil {
+//		return &User{}, err
+//	}
+//
+//	// Create a new account record in the database
+//	var accountRecord Account
+//	account, err := accountRecord.CreateAccount(u.ID, "owner", userData.AccountType, db)
+//	if err != nil {
+//		return &User{}, err
+//	}
+//
+//	// Update the account record with the account ID
+//	err = db.Model(&accountRecord).Update("account_id", account.ID).Update("default_account_id", account.ID).Error
+//	if err != nil {
+//		return &User{}, err
+//	}
+//	return u, nil
+//}
 
-	err := db.Create(&generalSettingsRecord).Error
-	if err != nil {
-		return &User{}, err
-	}
+func (u *User) CreateUser(userData Dto.SignUpDto, c *fiber.Ctx, db *gorm.DB) (*User, error) {
+	logger.Info(context.Background(), "Creating user")
+	// Generate and set fields for the user
+	u.GenerateUserFields(userData, c)
 
-	u.GeneralSettingsID = generalSettingsRecord.ID
+	// Encrypt the password if present
+	err := u.EncryptPassword()
 
-	// Create a new user record in the database
+	// Create a new general settings record
+	var settings GeneralSettings
+	settings.UserID = u.ID
+	settings.Privacy = "public"
+	settings.Language = "en"
+	settings.Theme = "light"
+	settings.ID = GenerateID()
+
+	u.GeneralSettings = settings
+
+	// Create a new user record in the database along with its general settings
 	err = db.Create(&u).Error
 	if err != nil {
 		return &User{}, err
 	}
 
 	// Create a new account record in the database
-	accountRecord := Account{
-		ID:          GenerateID(),
-		UserID:      u.ID,
-		Permission:  "owner",
-		Onboarded:   false,
-		Active:      true,
-		Selected:    true,
-		Default:     true,
-		AccountType: userData.AccountType,
-	}
-
-	err = db.Create(&accountRecord).Error
+	var accountRecord Account
+	account, err := accountRecord.CreateAccount(u.ID, "owner", userData.AccountType, db)
 	if err != nil {
 		return &User{}, err
 	}
 
-	// Update the user record with the new general settings ID
-	//err = db.Model(&user).Update("general_settings_id", generalSettingsRecord.ID).Error
-	//if err != nil {
-	//	return &User{}, err
-	//}
-
-	//// Update the account record with the account ID
-	err = db.Model(&accountRecord).Update("account_id", accountRecord.ID).Error
+	// Update the account record with the account ID
+	err = db.Model(&accountRecord).Update("account_id", account.ID).Update("default_account_id", account.ID).Error
 	if err != nil {
 		return &User{}, err
 	}
@@ -458,27 +494,27 @@ func (u *User) VerifyPassword(plainPassword string) (bool, error) {
 // If not executed via a password reset request, the user is notified
 // by email that their password has been changed.
 // passwordReset determines if password update is part of reset.
-func SavePassword(id string, password string, reset bool) error {
-	// Encrypt the password.
-	hash, err := bcrypt.GenerateFromPassword([]byte(password), 10)
-	if err != nil {
-		return err
-	}
-
-	// Save the password hash in the database.
-	user := &User{}
-	result := db.Where("id = ?", id).First(user)
-	if result.Error != nil {
-		return result.Error
-	}
-
-	result = db.Model(user).Update("password", hash)
-	if result.Error != nil {
-		return result.Error
-	}
-
-	return nil
-}
+//func (u *User) SavePassword(id string, password string, reset bool) error {
+//	// Encrypt the password.
+//	hash, err := bcrypt.GenerateFromPassword([]byte(password), 10)
+//	if err != nil {
+//		return err
+//	}
+//
+//	// Save the password hash in the database.
+//	user := &User{}
+//	result := db.Where("id = ?", id).First(user)
+//	if result.Error != nil {
+//		return result.Error
+//	}
+//
+//	result = db.Model(user).Update("password", hash)
+//	if result.Error != nil {
+//		return result.Error
+//	}
+//
+//	return nil
+//}
 
 // func (u *User) SaveBackupCode(db *pg.DB, code string) error {
 //     u.BackupCode = code
@@ -699,7 +735,7 @@ func (u *User) GenerateToken(user User) (Dto.Token, error) {
 	}, nil
 }
 
-func (u *User) GenereateUserResponse(token *Token) Dto.UserResponse {
+func (u *User) GenerateUserResponse(token *Token) Dto.UserResponse {
 	return Dto.UserResponse{
 		User: &Dto.User{
 			ID:          u.ID,
@@ -738,7 +774,7 @@ func (u *User) GenereateUserResponse(token *Token) Dto.UserResponse {
 			GeneralSettings: func(db *gorm.DB) Dto.GeneralSettings {
 				var settings GeneralSettings
 				// find settings with user id
-				err := db.Where("ID = ?", u.GeneralSettingsID).First(&settings).Error
+				err := db.Where("user_id = ?", u.ID).First(&settings).Error
 				if err != nil {
 					return Dto.GeneralSettings{}
 				}

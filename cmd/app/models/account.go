@@ -29,12 +29,12 @@ type Account struct {
 	StripeSubscriptionStatus   string
 	PayStackSubscriptionID     string
 	PayStackSubscriptionStatus string
+	Selected                   bool
+	Default                    bool
 	PayStackCustomerID         string
 	Status                     string    `gorm:"column:status"`
 	LastActive                 time.Time `gorm:"column:last_active"`
 	Disabled                   bool      `gorm:"column:disabled"`
-	Selected                   bool      `gorm:"column:selected"`
-	Default                    bool      `gorm:"column:default"`
 }
 
 // BeforeCreate /*
@@ -46,13 +46,14 @@ func (a *Account) BeforeCreate(tx *gorm.DB) error {
 }
 
 // CreateAccount /*
-func (a *Account) CreateAccount(userID, permission string, db *gorm.DB) (*Account, error) {
+func (a *Account) CreateAccount(userID, permission, accountType string, db *gorm.DB) (*Account, error) {
 	logger.Info(context.Background(), "Creating account")
 	a.Active = true
 	a.Permission = permission
 	a.UserID = userID
-	// a.Interests = []string{}
-
+	a.AccountID = GenerateID()
+	a.Onboarded = false
+	a.AccountType = accountType
 	result := db.Create(&a)
 	return a, result.Error
 }

@@ -19,3 +19,4 @@ bin
 archive
 *.txt
 # .envs
+test.db
