@@ -23,9 +23,7 @@ jobs:
 
       - name: Run tests
         run: |
-          curl -sSL https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh > wait-for-it.sh
           chmod +x wait-for-it.sh
-          ./wait-for-it.sh localhost:7070 --timeout=15 --strict -- make test
-
-      - name: Shutdown Docker Compose
-        run: docker-compose down
+          chmod +x wait-for-server.sh
+          chmod +x test.sh
+          ./test.sh
