@@ -6,6 +6,7 @@ on:
       - main
       - master
   pull_request:
+    types: [ opened, synchronize, reopened, created, edited ]
     branches:
       - main
       - master
