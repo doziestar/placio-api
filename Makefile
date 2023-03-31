@@ -30,8 +30,18 @@ dev: ## [HTTP] Run server in dev mode
 	docker-compose up --build
 
 test: ## [HTTP] Run tests
-	go test -v -coverprofile cover.out ./cmd/app/tests/...
-	go tool cover -html=cover.out -o cover.html
+	go test -v -coverprofile cover.out ./cmd/app/...
+	go test -coverprofile=coverage.out -covermode=atomic ./cmd/app/...
+	go tool cover -html=coverage.out -o coverage.html
+	#open coverage.html
+	go tool cover -html=cover.out -o cover.htmltest:
+
+test-pkg:## [HTTP] Run tests
+	#go test -v -coverprofile test-cover.out ./pkg/...
+	go test -coverprofile=coverage.out -covermode=atomic ./cmd/app/...
+	go tool cover -html=coverage.out -o coverage.html
+	#open coverage.html
+	#go tool cover -html=cover.out -o cover.html
 
 open: ## [HTTP] Run linters
 	open cover.html
