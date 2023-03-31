@@ -9,24 +9,19 @@ import (
 )
 
 type GeneralSettings struct {
-	//gorm.Model
 	CreatedAt     time.Time  `gorm:"column:created_at"`
 	UpdatedAt     time.Time  `gorm:"column:updated_at"`
 	DeletedAt     *time.Time `gorm:"column:deleted_at"`
 	ID            string     `gorm:"primaryKey"`
 	Language      string
 	Theme         string
-	UserID        string                `gorm:"ForeignKey:ID"`
+	UserID        string                `gorm:"unique"`
 	Privacy       string                `gorm:"default:'public'"`
-	Notifications NotificationsSettings `gorm:"ForeignKey:ID"`
-	//NotificationID string
-	//AccountID      string
-	Account AccountSettings `gorm:"ForeignKey:ID"`
-	//ContentID      string
-	Content ContentSettings `gorm:"ForeignKey:ID"`
+	Notifications NotificationsSettings `gorm:"foreignKey:UserID"`
+	Account       AccountSettings       `gorm:"foreignKey:UserID"`
+	Content       ContentSettings       `gorm:"foreignKey:UserID"`
 }
 
-// BeforeCreate OnCreateGeneralSettings /*
 func (g *GeneralSettings) BeforeCreate(tx *gorm.DB) error {
 	g.ID = GenerateID()
 	g.CreatedAt = time.Now()
@@ -36,7 +31,7 @@ func (g *GeneralSettings) BeforeCreate(tx *gorm.DB) error {
 
 type NotificationsSettings struct {
 	ID                         string `gorm:"primaryKey"`
-	UserID                     string `gorm:"ForeignKey:ID"`
+	UserID                     string `gorm:"unique"`
 	EmailNotifications         bool
 	PushNotifications          bool
 	DirectMessageNotifications bool
@@ -48,11 +43,10 @@ type NotificationsSettings struct {
 
 type AccountSettings struct {
 	ID                      string `gorm:"primaryKey"`
-	UserID                  string `gorm:"ForeignKey:ID"`
+	UserID                  string `gorm:"unique"`
 	TwoFactorAuthentication bool
-	//ConnectedAccounts       []ConnectedAccount `gorm:"type:json,ForeignKey:ID"`
-	BlockedUsers []string `gorm:"type:json"`
-	MutedUsers   []string `gorm:"type:json"`
+	BlockedUsers            []string `gorm:"type:json"`
+	MutedUsers              []string `gorm:"type:json"`
 }
 
 type ConnectedAccount struct {
@@ -68,7 +62,7 @@ type ContentSettings struct {
 	DefaultPostPrivacy    string
 	AutoplayVideos        bool
 	DisplaySensitiveMedia bool
-	UserID                string `gorm:"ForeignKey:ID"`
+	UserID                string `gorm:"unique"`
 }
 
 type StringSlice []string
@@ -102,115 +96,107 @@ func (s *StringSlice) Value() (driver.Value, error) {
 	return nil, nil
 }
 
-type UserSettingsService interface {
-	GetGeneralSettings(userID string) (*GeneralSettings, error)
-	UpdateUserSettings(userID string, settings *GeneralSettings) error
-}
+//// CreateGeneralSettings /*
+//func (g *GeneralSettings) CreateGeneralSettings(userID string, db *gorm.DB) (*GeneralSettings, error) {
+//	g.UserID = userID
+//	g.Privacy = "public"
+//	g.Language = "en"
+//	g.Theme = "light"
+//	g.ID = GenerateID()
+//
+//	var n NotificationsSettings
+//	var a AccountSettings
+//	var c ContentSettings
+//
+//	notifications, err := n.createNotificationsSettings(userID, db)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	account, err := a.createAccountSettings(userID, db)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	content, err := c.createContentSettings(userID, db)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	g.Notifications = *notifications
+//	g.Account = *account
+//	g.Content = *content
+//
+//	result := db.Create(&g)
+//	return g, result.Error
+//}
 
-type NotificationsSettingsService interface {
-	GetNotificationsSettings(userID string) (*NotificationsSettings, error)
-	UpdateNotificationsSettings(userID string, settings *NotificationsSettings) error
-}
+// CreateGeneralSettings /*
+func (g *GeneralSettings) CreateGeneralSettings(userID string, db *gorm.DB) (*GeneralSettings, error) {
+	g.UserID = userID
+	g.Privacy = "public"
+	g.Language = "en"
+	g.Theme = "light"
+	g.ID = GenerateID()
 
-type AccountSettingsService interface {
-	GetAccountSettings(userID string) (*AccountSettings, error)
-	UpdateAccountSettings(userID string, settings *AccountSettings) error
-	ConnectAccount(userID string, connectedAccount *ConnectedAccount) error
-	DisconnectAccount(userID string, provider string) error
-}
+	var n NotificationsSettings
+	var a AccountSettings
+	var c ContentSettings
 
-type ContentSettingsService interface {
-	GetContentSettings(userID string) (*ContentSettings, error)
-	UpdateContentSettings(userID string, settings *ContentSettings) error
-}
-
-type ISettingsService interface {
-	UserSettingsService
-	NotificationsSettingsService
-	AccountSettingsService
-	ContentSettingsService
-}
-
-type SettingsService struct {
-	db *gorm.DB
-}
-
-func NewSettingsService(db *gorm.DB) *SettingsService {
-	return &SettingsService{db: db}
-}
-
-func (s *SettingsService) GetGeneralSettings(userID string) (*GeneralSettings, error) {
-	generalSettings := &GeneralSettings{UserID: userID}
-
-	if err := s.db.Preload("ContentSettings").Preload("NotificationsSettings").Preload("AccountSettings").Where("user_id = ?", userID).First(generalSettings).Error; err != nil {
-		return nil, err
-	}
-
-	return generalSettings, nil
-}
-
-func (s *SettingsService) UpdateUserSettings(userID string, settings *GeneralSettings) error {
-	if err := s.db.Model(&GeneralSettings{}).Where("user_id = ?", userID).Updates(settings).Error; err != nil {
-		return err
-	}
-	return nil
-}
-
-func (s *SettingsService) GetNotificationsSettings(userID string) (*NotificationsSettings, error) {
-	generalSettings, err := s.GetGeneralSettings(userID)
+	_, err := n.createNotificationsSettings(userID, db)
 	if err != nil {
 		return nil, err
 	}
-	return &generalSettings.Notifications, nil
-}
 
-func (s *SettingsService) UpdateNotificationsSettings(userID string, settings *NotificationsSettings) error {
-	if err := s.db.Model(&GeneralSettings{}).Where("user_id = ?", userID).Updates(settings).Error; err != nil {
-		return err
-	}
-	return nil
-}
-
-func (s *SettingsService) GetAccountSettings(userID string) (*AccountSettings, error) {
-	generalSettings, err := s.GetGeneralSettings(userID)
+	_, err = a.createAccountSettings(userID, db)
 	if err != nil {
 		return nil, err
 	}
-	return &generalSettings.Account, nil
-}
 
-func (s *SettingsService) UpdateAccountSettings(userID string, settings *AccountSettings) error {
-	if err := s.db.Model(&GeneralSettings{}).Where("user_id = ?", userID).Updates(settings).Error; err != nil {
-		return err
-	}
-	return nil
-}
-
-func (s *SettingsService) ConnectAccount(userID string, connectedAccount *ConnectedAccount) error {
-	if err := s.db.Model(&GeneralSettings{}).Where("user_id = ?", userID).Updates(connectedAccount).Error; err != nil {
-		return err
-	}
-	return nil
-}
-
-func (s *SettingsService) DisconnectAccount(userID string, provider string) error {
-	//if err := s.db.Model(&GeneralSettings{}).Where("user_id = ?", userID).Updates(connectedAccount).Error; err != nil {
-	//	return err
-	//}
-	return nil
-}
-
-func (s *SettingsService) GetContentSettings(userID string) (*ContentSettings, error) {
-	generalSettings, err := s.GetGeneralSettings(userID)
+	_, err = c.createContentSettings(userID, db)
 	if err != nil {
 		return nil, err
 	}
-	return &generalSettings.Content, nil
+
+	result := db.Create(&g)
+	return g, result.Error
 }
 
-func (s *SettingsService) UpdateContentSettings(userID string, settings *ContentSettings) error {
-	if err := s.db.Model(&GeneralSettings{}).Where("user_id = ?", userID).Updates(settings).Error; err != nil {
-		return err
-	}
-	return nil
+// CreateNotificationsSettings /*
+func (n *NotificationsSettings) createNotificationsSettings(userID string, db *gorm.DB) (*NotificationsSettings, error) {
+	n.ID = GenerateID()
+	n.UserID = userID
+	n.EmailNotifications = true
+	n.PushNotifications = true
+	n.DirectMessageNotifications = true
+	n.LikeNotifications = true
+	n.CommentNotifications = true
+	n.MentionNotifications = true
+	n.FollowNotifications = true
+	result := db.Create(&n)
+	return n, result.Error
+}
+
+// CreateAccountSettings /*
+func (a *AccountSettings) createAccountSettings(userID string, db *gorm.DB) (*AccountSettings, error) {
+	a.ID = GenerateID()
+	a.UserID = userID
+	a.TwoFactorAuthentication = false
+	a.BlockedUsers = []string{}
+	a.MutedUsers = []string{}
+	result := db.Create(&a)
+	return a, result.Error
+}
+
+// CreateContentSettings /*
+func (c *ContentSettings) createContentSettings(userID string, db *gorm.DB) (*ContentSettings, error) {
+	c.ID = GenerateID()
+	c.UserID = userID
+	c.MediaVisibility = "public"
+	c.ExplicitContentFilter = "off"
+	c.DefaultPostPrivacy = "public"
+	c.AutoplayVideos = true
+	c.DisplaySensitiveMedia = true
+	result := db.Create(&c)
+	return c, result.Error
 }
