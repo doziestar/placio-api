@@ -687,7 +687,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/accounts": {
+        "/api/v1/accounts/create-account": {
             "post": {
                 "description": "Create a new account and assign the user to it",
                 "consumes": [
@@ -2596,7 +2596,6 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "blockedUsers": {
-                    "description": "ConnectedAccounts       []ConnectedAccount ` + "`" + `gorm:\"type:json,ForeignKey:ID\"` + "`" + `",
                     "type": "array",
                     "items": {
                         "type": "string"
@@ -2752,7 +2751,6 @@ const docTemplate = `{
                     "$ref": "#/definitions/placio-app_models.ContentSettings"
                 },
                 "createdAt": {
-                    "description": "gorm.Model",
                     "type": "string"
                 },
                 "deletedAt": {
@@ -2999,6 +2997,9 @@ const docTemplate = `{
                 "defaultAccount": {
                     "type": "string"
                 },
+                "defaultAccountID": {
+                    "type": "string"
+                },
                 "deletedAt": {
                     "type": "string"
                 },
@@ -3015,15 +3016,15 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "fingerprint": {
-                    "description": "UserID               string     ` + "`" + `gorm:\"primaryKey,unique,column:user_id\"` + "`" + `",
                     "type": "string"
                 },
                 "generalSettings": {
-                    "$ref": "#/definitions/placio-app_models.GeneralSettings"
-                },
-                "generalSettingsID": {
-                    "description": "Interests            []string         ` + "`" + `gorm:\"type:text[]\"` + "`" + ` // ` + "`" + `gorm:\"type:text[]\"` + "`" + `",
-                    "type": "string"
+                    "description": "GeneralSettingsID    string",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_models.GeneralSettings"
+                        }
+                    ]
                 },
                 "google": {
                     "$ref": "#/definitions/placio-app_models.GoogleAccount"

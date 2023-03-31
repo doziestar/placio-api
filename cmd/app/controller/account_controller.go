@@ -10,6 +10,7 @@ import (
 	"log"
 	"placio-app/Dto"
 	"placio-app/middleware"
+	_ "placio-app/models"
 	"placio-app/service"
 	"placio-app/utility"
 	"placio-pkg/logger"
@@ -66,7 +67,7 @@ func (c *AccountController) RegisterRoutes(app fiber.Router) {
 // @Failure 400 {object} map[string]string "Bad Request"
 // @Failure 403 {object} map[string]string "Forbidden"
 // @Failure 500 {object} map[string]string "Internal Server Error"
-// @Router /api/v1/accounts [post]
+// @Router /api/v1/accounts/create-account [post]
 func (c *AccountController) createAccount(ctx *fiber.Ctx) error {
 	fmt.Println("Entering createAccount function")
 	data := new(Dto.SignUpDto)
