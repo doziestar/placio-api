@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"github.com/getsentry/sentry-go"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 	"placio-app/Dto"
@@ -15,6 +16,7 @@ import (
 type IAccountService interface {
 	CreateUserAccount(data *Dto.SignUpDto, ctx *fiber.Ctx) (*fiber.Map, error)
 	SwitchUserAccount(ctx *fiber.Ctx) (*fiber.Map, error)
+	CreateBusinessAccount(data *Dto.AddAccountDto, ctx *fiber.Ctx) (*fiber.Map, error)
 }
 
 type AccountService struct {
@@ -149,65 +151,57 @@ func (s *AccountService) CreateUserAccount(data *Dto.SignUpDto, ctx *fiber.Ctx) 
 	}, nil
 }
 
-func (s *AccountService) SwitchUserAccount(ctx *fiber.Ctx) (*fiber.Map, error) {
-	// get user from context
-	user := ctx.Locals("user").(*models.User)
-
-	// get account from context
-	//account := ctx.Locals("account").(*models.Account)
-
-	// get token from context
-	token := ctx.Locals("token").(*models.Token)
+func (s *AccountService) CreateBusinessAccount(data *Dto.AddAccountDto, ctx *fiber.Ctx) (*fiber.Map, error) {
+	// get the user from the context
+	userID := ctx.Locals("user").(string)
+	logger.Info(context.Background(), fmt.Sprintf("user: %v", userID))
 
 	// get the user's account
-	//userAccount, err := user.GetAccount(database.DB)
-	//if err != nil {
-	//	return &fiber.Map{
-	//		"error": "Internal Server Error",
-	//	}, err
-	//}
-	//
-	//// check if user is owner of account
-	//if userAccount.Permission != "owner" {
-	//	return &fiber.Map{
-	//		"error": "Unauthorized",
-	//	}, nil
-	//}
+	account := new(models.Account)
+	user := new(models.User)
 
-	// get the user's token
-	//userToken, err := user.GetToken(database.DB)
-	//if err != nil {
-	//	return &fiber.Map{
-	//		"error": "Internal Server Error",
-	//	}, err
-	//}
-	//
-	//// check if token is valid
-	//if !userToken.IsValid() {
-	//	return &fiber.Map{
-	//		"error": "Unauthorized",
-	//	}, nil
-	//}
+	userData, err := user.GetUserById(userID, database.DB)
+	if err != nil {
+		sentry.CaptureException(err)
+		return &fiber.Map{
+			"error": "Internal Server Error",
+		}, err
+	}
+
+	// create the business account
+	businessAccount, err := account.CreateBusinessAccount(userData, *data, database.DB)
+	if err != nil {
+		sentry.CaptureException(err)
+		return &fiber.Map{
+			"error": "Internal Server Error",
+		}, err
+	}
+	return &fiber.Map{
+		"message": "Account created successfully",
+		"data":    businessAccount.GenerateUserAccountResponse(),
+	}, nil
+}
+
+func (s *AccountService) SwitchUserAccount(ctx *fiber.Ctx) (*fiber.Map, error) {
+	// get the user from the context
+	userID := ctx.Locals("user").(string)
+	logger.Info(context.Background(), fmt.Sprintf("user: %v", userID))
+
+	// get the user's account
+	userModel := new(models.User)
 
 	// switch the user's account
-	//if err := user.SwitchAccount(account.ID, database.DB); err != nil {
-	//	return &fiber.Map{
-	//		"error": "Internal Server Error",
-	//	}, err
-	//}
+	if err := userModel.SwitchAccount(userID, database.DB); err != nil {
+		sentry.CaptureException(err)
+		return &fiber.Map{
+			"error": "Internal Server Error",
+		}, err
+	}
 
-	//// switch the user's token
-	//if err := user.SwitchToken(token.ID, database.DB); err != nil {
-	//	return &fiber.Map{
-	//		"error": "Internal Server Error",
-	//	}, err
-	//}
-
-	// generate response data
-	responseData := user.GenerateUserResponse(token)
+	userAccount := userModel.GenerateUserAccountResponse()
 
 	return &fiber.Map{
 		"message": "Account switched successfully",
-		"data":    responseData,
+		"data":    userAccount,
 	}, nil
 }

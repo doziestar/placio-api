@@ -40,19 +40,18 @@ type User struct {
 	DefaultAccount       string     `gorm:"column:default_account"`
 	FacebookID           string     `gorm:"column:facebook_id"`
 	TwitterID            string     `gorm:"column:twitter_id"`
-	DefaultAccountID     string     `gorm:"column:default_account_id"`
+	CurrentActiveAccount string     `gorm:"column:current_active_account"`
 	Accounts             []Account  `gorm:"foreignKey:UserID"`
 	IP                   string     `gorm:"column:ip"`
 	UserAgent            string     `gorm:"column:user_agent"`
 	Twitter              *TwitterAccount
 	Facebook             *FacebookAccount
 	Google               *GoogleAccount
-	HasPassword          bool   `gorm:"column:has_password"`
-	Onboarded            bool   `gorm:"column:onboarded"`
-	AccountID            string `gorm:"column:account_id"`
-	Permission           string `gorm:"column:permission"`
-	//GeneralSettingsID    string
-	GeneralSettings GeneralSettings `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	HasPassword          bool            `gorm:"column:has_password"`
+	Onboarded            bool            `gorm:"column:onboarded"`
+	AccountID            string          `gorm:"column:account_id"`
+	Permission           string          `gorm:"column:permission"`
+	GeneralSettings      GeneralSettings `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 }
 
 type TwitterAccount struct {
@@ -290,7 +289,7 @@ func Get(id uuid.UUID, email string, account string, social *Social, permission 
 }
 
 func (u *User) GetUserById(id string, db *gorm.DB) (*User, error) {
-	err := db.Model(&User{}).Where("id = ?", id).First(&u).Error
+	err := db.Model(&User{}).Preload("accounts").Where("id = ?", id).First(&u).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("User not found")
@@ -899,6 +898,35 @@ func (u *User) UpdateUser(userId string, accountId string, lastActive time.Time,
 	user.Accounts[0].Disabled = disabled
 	db.Save(&user)
 
+}
+
+func (u *User) SwitchAccount(id string, d *gorm.DB) error {
+	// get user by id
+	user, err := u.GetUserById(id, d)
+	if err != nil {
+		return err
+	}
+
+	// loop through accounts and replace the current account with the next one
+	for i, a := range user.Accounts {
+		if a.ID == user.CurrentActiveAccount {
+			if i+1 == len(user.Accounts) {
+				user.CurrentActiveAccount = user.Accounts[0].ID
+			} else {
+				user.CurrentActiveAccount = user.Accounts[i+1].ID
+			}
+			break
+		}
+	}
+
+	// save user
+	err = d.Save(&user).Error
+	return nil
+}
+
+func (u *User) GenerateUserAccountResponse() error {
+
+	return nil
 }
 
 //

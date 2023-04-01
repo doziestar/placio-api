@@ -2,6 +2,9 @@ package models
 
 import (
 	"context"
+	"github.com/getsentry/sentry-go"
+	"placio-app/Dto"
+	"placio-app/database"
 	"placio-pkg/logger"
 	"time"
 
@@ -20,6 +23,7 @@ type Account struct {
 	AccountType string
 	AccountID   string
 	Onboarded   bool
+	Name        string `gorm:"column:name"`
 	// Interests                  []string `gorm:"type:text[]"`
 	UserID                     string `gorm:"column:user_id"`
 	Plan                       string
@@ -31,6 +35,7 @@ type Account struct {
 	PayStackSubscriptionStatus string
 	Selected                   bool
 	Default                    bool
+	AccountSetting             AccountSettings `gorm:"foreignKey:AccountID"`
 	PayStackCustomerID         string
 	Status                     string    `gorm:"column:status"`
 	LastActive                 time.Time `gorm:"column:last_active"`
@@ -157,6 +162,65 @@ func (a *Account) DeleteAccount(id string) error {
 func (a *Account) GetSubscription(id string) (*Account, error) {
 	result := db.Where("id = ?", id).First(&a)
 	return a, result.Error
+}
+
+func (a *Account) CreateBusinessAccount(user *User, data Dto.AddAccountDto, d *gorm.DB) (*Account, error) {
+	a.Active = true
+	a.Permission = "owner"
+	a.UserID = user.ID
+	a.AccountID = GenerateID()
+	a.Onboarded = false
+	a.AccountType = "business"
+	a.Name = data.AccountName
+	a.Status = "active"
+	a.LastActive = time.Now()
+	a.Disabled = false
+	result := d.Create(&a)
+	return a, result.Error
+}
+
+func (a *Account) GenerateUserAccountResponse() *Dto.UserAccountResponse {
+	// get owner info
+	var userData *User
+	user, err := userData.GetUserById(a.UserID, database.DB)
+	if err != nil {
+		sentry.CaptureException(err)
+		return nil
+	}
+
+	// get the account that matches the user's account id
+	var accountData *Account
+	for _, account := range user.Accounts {
+		if account.ID == a.ID {
+			accountData = &account
+		}
+	}
+
+	if accountData == nil {
+		return nil
+	}
+
+	// get the account settings
+	var accountSettingsData *AccountSettings
+	accountSettings, err := accountSettingsData.GetAccountSettings(a.ID, database.DB)
+	if err != nil {
+		sentry.CaptureException(err)
+		return nil
+	}
+
+	accountData.AccountSetting = *accountSettings
+
+	// generate the response
+	response := Dto.UserAccountResponse{
+		Name:           user.Name,
+		Email:          user.Email,
+		Disabled:       user.Disabled,
+		SupportEnabled: user.SupportEnabled,
+		UserId:         user.ID,
+		Account:        accountData,
+	}
+
+	return &response
 }
 
 //

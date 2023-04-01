@@ -17,11 +17,12 @@ import (
 )
 
 type AccountController struct {
-	store service.IAccountService
+	store   service.IAccountService
+	utility utility.IUtility
 }
 
-func NewAccountController(store service.IAccountService) *AccountController {
-	return &AccountController{store: store}
+func NewAccountController(store service.IAccountService, utility utility.IUtility) *AccountController {
+	return &AccountController{store: store, utility: utility}
 }
 
 func requestLogger() fiber.Handler {
@@ -35,7 +36,8 @@ func (c *AccountController) RegisterRoutes(app fiber.Router) {
 	//app.Use(requestLogger())
 	accountGroup := app.Group("/accounts")
 	accountGroup.Post("/create-account", utility.Use(c.createAccount))
-	accountGroup.Post("/switch-account", middleware.Verify("owner"), utility.Use(c.switchAccount))
+	accountGroup.Post("/switch-account", middleware.Verify("user"), utility.Use(c.switchAccount))
+	accountGroup.Post("/add-account", middleware.Verify("user"), utility.Use(c.addAccount)) // add account to owner
 	accountGroup.Post("/plan", middleware.Verify("owner"), utility.Use(c.plan))
 	accountGroup.Patch("/plan", middleware.Verify("owner"), utility.Use(c.updatePlan))
 	accountGroup.Get("/", middleware.Verify("owner"), utility.Use(c.getAccounts))
@@ -141,21 +143,6 @@ func validate(email string, name string, password string) error {
 // @Failure 500 {object} map[string]string "Internal Server Error"
 // @Router /api/v1/accounts/switch-account [post]
 func (c *AccountController) switchAccount(ctx *fiber.Ctx) error {
-	//data := new(Dto.SwitchAccountDto)
-
-	//if err := ctx.BodyParser(data); err != nil {
-	//	return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-	//		"error": "Bad Request",
-	//	})
-	//}
-
-	//// validate input
-	//if err := validateSwitchAccount(data.AccountID); err != nil {
-	//	return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-	//		"error": err.Error(),
-	//	})
-	//}
-
 	response, err := c.store.SwitchUserAccount(ctx)
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -746,4 +733,49 @@ func (c *AccountController) cancelSubscription(ctx *fiber.Ctx) error {
 // @Router /accounts/{id} [delete]
 func (c *AccountController) deleteAccount(ctx *fiber.Ctx) error {
 	return nil
+}
+
+// AddAccount godoc
+// @Summary Add account
+// @Description Add account
+// @Tags Account
+// @Accept json
+// @Produce json
+// @Param body body Dto.AddAccountDto true "Account"
+// @Success 200 {object} fiber.Map{"status": "success", "account": "Account"}
+// @Failure 400 {object} fiber.Map
+// @Failure 401 {object} fiber.Map
+// @Failure 404 {object} fiber.Map
+// @Failure 500 {object} fiber.Map
+// @Router /accounts/add-account [post]
+func (c *AccountController) addAccount(ctx *fiber.Ctx) error {
+	var accountDto *Dto.AddAccountDto
+	if err := ctx.BodyParser(&accountDto); err != nil {
+		return ctx.Status(400).JSON(fiber.Map{
+			"status":  "error",
+			"message": "Invalid request",
+		})
+	}
+
+	// Validate request
+	//if err := c.utility.Validate(accountDto, "accountName, accountType"); err != nil {
+	//	return ctx.Status(400).JSON(fiber.Map{
+	//		"status":  "error",
+	//		"message": err.Error(),
+	//	})
+	//}
+
+	// Create account
+	accountData, err := c.store.CreateBusinessAccount(accountDto, ctx)
+	if err != nil {
+		return ctx.Status(500).JSON(fiber.Map{
+			"status":  "error",
+			"message": err.Error(),
+		})
+	}
+
+	return ctx.Status(200).JSON(fiber.Map{
+		"status":  "success",
+		"account": accountData,
+	})
 }
