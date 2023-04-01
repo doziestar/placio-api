@@ -53,12 +53,21 @@ func (a *Account) BeforeCreate(tx *gorm.DB) error {
 // CreateAccount /*
 func (a *Account) CreateAccount(userID, permission, accountType string, db *gorm.DB) (*Account, error) {
 	logger.Info(context.Background(), "Creating account")
+	id := GenerateID()
 	a.Active = true
 	a.Permission = permission
 	a.UserID = userID
-	a.AccountID = GenerateID()
+	a.ID = id
+	a.AccountID = id
 	a.Onboarded = false
 	a.AccountType = accountType
+	a.AccountSetting = AccountSettings{
+		ID:                      GenerateID(),
+		AccountID:               id,
+		TwoFactorAuthentication: false,
+		BlockedUsers:            nil,
+		MutedUsers:              nil,
+	}
 	result := db.Create(&a)
 	return a, result.Error
 }
@@ -217,7 +226,22 @@ func (a *Account) GenerateUserAccountResponse() *Dto.UserAccountResponse {
 		Disabled:       user.Disabled,
 		SupportEnabled: user.SupportEnabled,
 		UserId:         user.ID,
-		Account:        accountData,
+		Account: &Dto.Account{
+			ID:          a.ID,
+			AccountType: a.AccountType,
+			AccountID:   a.AccountID,
+			AccountSetting: Dto.AccountSetting{
+				ID:                      accountSettings.ID,
+				AccountID:               accountSettings.AccountID,
+				TwoFactorAuthentication: false,
+			},
+			Onboarded: a.Onboarded,
+			UserID:    a.UserID,
+			Plan:      a.Plan,
+			Active:    a.Active,
+			Status:    a.Status,
+			Disabled:  a.Disabled,
+		},
 	}
 
 	return &response

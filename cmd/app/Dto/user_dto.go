@@ -48,15 +48,16 @@ type UserToken struct {
 }
 
 type User struct {
-	ID              string          `json:"ID"`
-	Name            string          `json:"Name"`
-	Email           string          `json:"Email"`
-	Disabled        bool            `json:"Disabled"`
-	HasPassword     bool            `json:"HasPassword"`
-	Onboarded       bool            `json:"Onboarded"`
-	Account         []Account       `json:"Account"`
-	Permission      string          `json:"Permission"`
-	GeneralSettings GeneralSettings `json:"GeneralSettings"`
+	ID                   string          `json:"ID"`
+	Name                 string          `json:"Name"`
+	Email                string          `json:"Email"`
+	Disabled             bool            `json:"Disabled"`
+	HasPassword          bool            `json:"HasPassword"`
+	Onboarded            bool            `json:"Onboarded"`
+	Account              []Account       `json:"Account"`
+	Permission           string          `json:"Permission"`
+	CurrentActiveAccount Account         `json:"CurrentActiveAccount"`
+	GeneralSettings      GeneralSettings `json:"GeneralSettings"`
 }
 
 type GeneralSettings struct {
@@ -68,18 +69,4 @@ type GeneralSettings struct {
 type UserResponse struct {
 	User  *User      `json:"user"`
 	Token *UserToken `json:"token"`
-}
-
-type Account struct {
-	ID          string   `json:"ID"`
-	Permission  string   `json:"Permission"`
-	AccountType string   `json:"AccountType"`
-	AccountID   string   `json:"AccountID"`
-	Onboarded   bool     `json:"Onboarded"`
-	Interests   []string `json:"Interests"`
-	UserID      string   `json:"UserID"`
-	Plan        string   `json:"Plan"`
-	Active      bool     `json:"Active"`
-	Status      string   `json:"Status"`
-	Disabled    bool     `json:"Disabled"`
 }

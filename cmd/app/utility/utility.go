@@ -11,18 +11,24 @@ import (
 
 type IUtility interface {
 	Validate(form map[string]interface{}, fields []string) error
-	ValidateEmail(email string) error
-	ValidatePassword(password string) error
-	ValidatePhone(phone string) error
-	ValidateName(name string) error
-	ValidateAddress(address string) error
-	ValidateDate(date string) error
-	ValidateTime(time string) error
-	ValidatePasswordMatch(password string, confirmPassword string) error
-	ValidatePasswordStrength(password string) error
+	//ValidateEmail(email string) error
+	//ValidatePassword(password string) error
+	//ValidatePhone(phone string) error
+	//ValidateName(name string) error
+	//ValidateAddress(address string) error
+	//ValidateDate(date string) error
+	//ValidateTime(time string) error
+	//ValidatePasswordMatch(password string, confirmPassword string) error
+	//ValidatePasswordStrength(password string) error
 }
 
-func Validate(form map[string]interface{}, fields []string) error {
+type Utility struct {
+}
+
+func NewUtility() *Utility {
+	return &Utility{}
+}
+func (u *Utility) Validate(form map[string]interface{}, fields []string) error {
 	// sanitise the input
 	for f, v := range form {
 		// sanitise

@@ -4,10 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"placio-app/Dto"
 	"placio-app/database"
 	errs "placio-app/errors"
+	"placio-pkg/hash"
 	"placio-pkg/logger"
 	"time"
 
@@ -223,8 +225,13 @@ func (u *User) CreateUser(userData Dto.SignUpDto, c *fiber.Ctx, db *gorm.DB) (*U
 		return &User{}, err
 	}
 
+	logger.Info(context.Background(), "Account created")
 	// Update the account record with the account ID
-	err = db.Model(&accountRecord).Update("account_id", account.ID).Update("default_account_id", account.ID).Error
+	err = db.Model(User{}).Where("id", u.ID).Updates(map[string]interface{}{
+		"account_id":             account.ID,
+		"default_account":        account.ID,
+		"current_active_account": account.ID,
+	}).Error
 	if err != nil {
 		return &User{}, err
 	}
@@ -735,6 +742,11 @@ func (u *User) GenerateToken(user User) (Dto.Token, error) {
 }
 
 func (u *User) GenerateUserResponse(token *Token) Dto.UserResponse {
+	refresh, err := hash.EncryptString(token.Refresh, "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6")
+	if err != nil {
+		log.Println(err)
+
+	}
 	return Dto.UserResponse{
 		User: &Dto.User{
 			ID:          u.ID,
@@ -785,11 +797,12 @@ func (u *User) GenerateUserResponse(token *Token) Dto.UserResponse {
 				}
 			}(database.DB),
 		},
+
 		Token: &Dto.UserToken{
 			UserID:           u.ID,
 			Access:           token.Access,
 			AccessExpiresIn:  int64(token.AccessExpiresIn),
-			Refresh:          token.Refresh,
+			Refresh:          refresh,
 			RefreshExpiresIn: int64(token.RefreshExpiresIn),
 		},
 	}

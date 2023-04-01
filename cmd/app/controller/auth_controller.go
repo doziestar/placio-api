@@ -17,10 +17,11 @@ import (
 
 type AuthController struct {
 	AuthService service.IAuth
+	utility     utility.IUtility
 }
 
-func NewAuthController(authService service.IAuth) *AuthController {
-	return &AuthController{AuthService: authService}
+func NewAuthController(authService service.IAuth, utility utility.IUtility) *AuthController {
+	return &AuthController{AuthService: authService, utility: utility}
 }
 
 func (controller *AuthController) RegisterRoutes(app fiber.Router) {
@@ -194,11 +195,11 @@ func (controller *AuthController) signIn(c *fiber.Ctx) error {
 	if data.Email != "" {
 		useEmail = true
 		data.Provider = "app"
-		if err := utility.Validate(data.ToJson(), []string{"email", "password"}); err != nil {
+		if err := controller.utility.Validate(data.ToJson(), []string{"email", "password"}); err != nil {
 			return err
 		}
 	} else {
-		if err := utility.Validate(data.ToJson(), []string{"token"}); err != nil {
+		if err := controller.utility.Validate(data.ToJson(), []string{"token"}); err != nil {
 			return err
 		}
 		decode, err := token.VerifyToken("app", data.Token)

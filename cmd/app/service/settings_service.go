@@ -16,7 +16,7 @@ type NotificationsSettingsService interface {
 }
 
 type AccountSettingsService interface {
-	GetAccountSettings(userID string) (*models.AccountSettings, error)
+	//GetAccountSettings(userID string) (*models.AccountSettings, error)
 	UpdateAccountSettings(userID string, settings *models.AccountSettings) error
 	ConnectAccount(userID string, connectedAccount *models.ConnectedAccount) error
 	DisconnectAccount(userID string, provider string) error
@@ -74,13 +74,14 @@ func (s *SettingsService) UpdateNotificationsSettings(userID string, settings *m
 	return nil
 }
 
-func (s *SettingsService) GetAccountSettings(userID string) (*models.AccountSettings, error) {
-	generalSettings, err := s.GetGeneralSettings(userID)
-	if err != nil {
-		return nil, err
-	}
-	return &generalSettings.Account, nil
-}
+//
+//func (s *SettingsService) GetAccountSettings(userID string) (*models.AccountSettings, error) {
+//	generalSettings, err := s.GetGeneralSettings(userID)
+//	if err != nil {
+//		return nil, err
+//	}
+//	return &generalSettings.Account, nil
+//}
 
 func (s *SettingsService) UpdateAccountSettings(userID string, settings *models.AccountSettings) error {
 	if err := s.db.Model(&models.GeneralSettings{}).Where("user_id = ?", userID).Updates(settings).Error; err != nil {

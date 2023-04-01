@@ -24,7 +24,7 @@ func (c *SettingsController) RegisterRoutes(app fiber.Router, session *session.S
 	settingsGroup.Get("/notifications", c.getNotificationsSettings)
 	settingsGroup.Put("/notifications", c.updateNotificationsSettings)
 
-	settingsGroup.Get("/account", c.getAccountSettings)
+	//settingsGroup.Get("/account", c.getAccountSettings)
 	settingsGroup.Put("/account", c.updateAccountSettings)
 
 	settingsGroup.Get("/content", c.getContentSettings)
@@ -147,18 +147,18 @@ func (c *SettingsController) updateNotificationsSettings(ctx *fiber.Ctx) error {
 // @Success 200 {object} models.AccountSettings
 // @Failure 500 {object} models.ErrorResponse
 // @Router /settings/account [get]
-func (c *SettingsController) getAccountSettings(ctx *fiber.Ctx) error {
-	userID := ctx.Locals("UserID").(string)
-
-	settings, err := c.store.GetAccountSettings(userID)
-	if err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Failed to fetch account settings",
-		})
-	}
-
-	return ctx.JSON(settings)
-}
+//func (c *SettingsController) getAccountSettings(ctx *fiber.Ctx) error {
+//	userID := ctx.Locals("UserID").(string)
+//
+//	settings, err := c.store.GetAccountSettings(userID)
+//	if err != nil {
+//		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+//			"error": "Failed to fetch account settings",
+//		})
+//	}
+//
+//	return ctx.JSON(settings)
+//}
 
 // UpdateAccountSettings godoc
 // @Summary Update account settings

@@ -9,6 +9,7 @@ import (
 	"placio-app/database"
 	"placio-app/models"
 	"placio-app/service"
+	"placio-app/utility"
 )
 
 func InitializeRoutes(app *fiber.App) {
@@ -21,9 +22,12 @@ func InitializeRoutes(app *fiber.App) {
 		HealthCheckRoutes(healthApi)
 	}
 
+	// utility
+	utility := utility.NewUtility()
+
 	// auth
 	authService := service.NewAuthService(database.DB, &models.User{})
-	authController := controller.NewAuthController(authService)
+	authController := controller.NewAuthController(authService, utility)
 	authController.RegisterRoutes(routerGroupV1)
 
 	// user
@@ -38,7 +42,7 @@ func InitializeRoutes(app *fiber.App) {
 
 	// account
 	accountService := service.NewAccountService(database.DB)
-	accountController := controller.NewAccountController(accountService)
+	accountController := controller.NewAccountController(accountService, utility)
 	accountController.RegisterRoutes(routerGroupV1)
 
 }

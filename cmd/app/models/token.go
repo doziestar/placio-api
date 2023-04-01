@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"placio-app/Dto"
-	"placio-pkg/hash"
 	"placio-pkg/logger"
 	"time"
 
@@ -129,22 +128,24 @@ func (t *Token) RefreshTokens(refreshToken string, db *gorm.DB) (*Dto.TokenRespo
 
 // Save creates new or updates an existing token
 func (t *Token) Save(db *gorm.DB) error {
-	var err error
+	//var err error
 	if t.Access != "" {
 		logger.Info(context.Background(), "encrypting access token")
 		logger.Info(context.Background(), t.Access)
-		t.Access, err = hash.EncryptString(t.Access, "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6")
-		if err != nil {
-			return errors.New("could not encrypt access token")
-		}
+		//t.Access, err = hash.EncryptString(t.Access, "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6")
+		//if err != nil {
+		//	return errors.New("could not encrypt access token")
+		//}
+		t.Access = t.Access
 	}
 	if t.Refresh != "" {
 		logger.Info(context.Background(), "encrypting refresh token")
 		logger.Info(context.Background(), t.Refresh)
-		t.Refresh, err = hash.EncryptString(t.Refresh, "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6")
-		if err != nil {
-			return errors.New("could not encrypt refresh token")
-		}
+		//t.Refresh, err = hash.EncryptString(t.Refresh, "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6")
+		//if err != nil {
+		//	return errors.New("could not encrypt refresh token")
+		//}
+		t.Refresh = t.Refresh
 	}
 
 	// is there already a token for this provider?
