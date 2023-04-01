@@ -60,11 +60,11 @@ var (
 // @Accept */*
 // @Produce json
 // @Success 200 {object} map[string]interface{}
-// @Failure 400 {object} Dto.ErrorDto
-// @Failure 401 {object} Dto.ErrorDto
-// @Failure 403 {object} Dto.ErrorDto
-// @Failure 404 {object} Dto.ErrorDto
-// @Failure 500 {object} Dto.ErrorDto
+// @Failure 400 {object} Dto.ErrorDTO
+// @Failure 401 {object} Dto.ErrorDTO
+// @Failure 403 {object} Dto.ErrorDTO
+// @Failure 404 {object} Dto.ErrorDTO
+// @Failure 500 {object} Dto.ErrorDTO
 // @Security ApiKeyAuth
 // @Router /auth/sign-out [post]
 func (controller *AuthController) signOut(c *fiber.Ctx) error {
@@ -91,11 +91,11 @@ func (controller *AuthController) signOut(c *fiber.Ctx) error {
 // @Accept */*
 // @Produce json
 // @Success 200 {object} Dto.TokenResponse
-// @Failure 400 {object} Dto.ErrorDto
-// @Failure 401 {object} Dto.ErrorDto
-// @Failure 403 {object} Dto.ErrorDto
-// @Failure 404 {object} Dto.ErrorDto
-// @Failure 500 {object} Dto.ErrorDto
+// @Failure 400 {object} Dto.ErrorDTO
+// @Failure 401 {object} Dto.ErrorDTO
+// @Failure 403 {object} Dto.ErrorDTO
+// @Failure 404 {object} Dto.ErrorDTO
+// @Failure 500 {object} Dto.ErrorDTO
 // @Router /api/v1/auth/refresh [get]
 func (controller *AuthController) refreshToken(c *fiber.Ctx) error {
 	// get the refresh token from the request
@@ -125,11 +125,11 @@ func (controller *AuthController) refreshToken(c *fiber.Ctx) error {
 // @Accept */*
 // @Produce json
 // @Success 200 {object} map[string]interface{}
-// @Failure 400 {object} Dto.ErrorDto
-// @Failure 401 {object} Dto.ErrorDto
-// @Failure 403 {object} Dto.ErrorDto
-// @Failure 404 {object} Dto.ErrorDto
-// @Failure 500 {object} Dto.ErrorDto
+// @Failure 400 {object} Dto.ErrorDTO
+// @Failure 401 {object} Dto.ErrorDTO
+// @Failure 403 {object} Dto.ErrorDTO
+// @Failure 404 {object} Dto.ErrorDTO
+// @Failure 500 {object} Dto.ErrorDTO
 // @Router /auth/reset [get]
 func (controller *AuthController) resetPassword(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{"status": "ok"})
@@ -142,11 +142,11 @@ func (controller *AuthController) resetPassword(c *fiber.Ctx) error {
 // @Accept */*
 // @Produce json
 // @Success 200 {object} map[string]interface{}
-// @Failure 400 {object} Dto.ErrorDto
-// @Failure 401 {object} Dto.ErrorDto
-// @Failure 403 {object} Dto.ErrorDto
-// @Failure 404 {object} Dto.ErrorDto
-// @Failure 500 {object} Dto.ErrorDto
+// @Failure 400 {object} Dto.ErrorDTO
+// @Failure 401 {object} Dto.ErrorDTO
+// @Failure 403 {object} Dto.ErrorDTO
+// @Failure 404 {object} Dto.ErrorDTO
+// @Failure 500 {object} Dto.ErrorDTO
 // @Router /auth/change [get]
 func (controller *AuthController) changePassword(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{"status": "ok"})
@@ -159,11 +159,11 @@ func (controller *AuthController) changePassword(c *fiber.Ctx) error {
 // @Accept */*
 // @Produce json
 // @Success 200 {object} map[string]interface{}
-// @Failure 400 {object} Dto.ErrorDto
-// @Failure 401 {object} Dto.ErrorDto
-// @Failure 403 {object} Dto.ErrorDto
-// @Failure 404 {object} Dto.ErrorDto
-// @Failure 500 {object} Dto.ErrorDto
+// @Failure 400 {object} Dto.ErrorDTO
+// @Failure 401 {object} Dto.ErrorDTO
+// @Failure 403 {object} Dto.ErrorDTO
+// @Failure 404 {object} Dto.ErrorDTO
+// @Failure 500 {object} Dto.ErrorDTO
 // @Router /api/v1/auth/verify [get]
 func (controller *AuthController) verifyEmail(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{"status": "ok"})
@@ -176,11 +176,11 @@ func (controller *AuthController) verifyEmail(c *fiber.Ctx) error {
 // @Accept */*
 // @Produce json
 // @Success 200 {object} map[string]interface{}
-// @Failure 400 {object} Dto.ErrorDto "Bad request"
-// @Failure 401 {object} Dto.ErrorDto "Unauthorized"
-// @Failure 403 {object} Dto.ErrorDto "Forbidden"
-// @Failure 404 {object} Dto.ErrorDto "Not found"
-// @Failure 500 {object} Dto.ErrorDto "Internal server error"
+// @Failure 400 {object} Dto.ErrorDTO "Bad request"
+// @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
+// @Failure 403 {object} Dto.ErrorDTO "Forbidden"
+// @Failure 404 {object} Dto.ErrorDTO "Not found"
+// @Failure 500 {object} Dto.ErrorDTO "Internal server error"
 // @Router /api/v1/auth/verify [get]
 func (controller *AuthController) verifyPhone(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{"status": "ok"})
@@ -412,11 +412,11 @@ func (controller *AuthController) authenticate(c *fiber.Ctx, userData models.Use
 // @Produce json
 // @Param account path string true "Account ID"
 // @Success 200 {object} Dto.UserResponse "User"
-// @Failure 400 {object} Dto.ErrorDto "Bad Request"
-// @Failure 401 {object} Dto.ErrorDto "Unauthorized"
-// @Failure 403 {object} Dto.ErrorDto "Forbidden"
-// @Failure 404 {object} Dto.ErrorDto "Not Found"
-// @Failure 500 {object} Dto.ErrorDto "Internal Server Error"
+// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
+// @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
+// @Failure 403 {object} Dto.ErrorDTO "Forbidden"
+// @Failure 404 {object} Dto.ErrorDTO "Not Found"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /auth/switch-account/{account} [post]
 func (controller *AuthController) switchAccount(c *fiber.Ctx) error {
 	// Get the user and account ID from the request
@@ -444,10 +444,10 @@ func (controller *AuthController) switchAccount(c *fiber.Ctx) error {
 // @Param account path string true "Account ID"
 // @Param user path string true "User ID"
 // @Success 200 {object} Dto.UserResponse "User"
-// @Failure 401 {object} Dto.ErrorDto "Unauthorized"
-// @Failure 403 {object} Dto.ErrorDto "Forbidden"
-// @Failure 404 {object} Dto.ErrorDto "Not Found"
-// @Failure 500 {object} Dto.ErrorDto "Internal Server Error"
+// @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
+// @Failure 403 {object} Dto.ErrorDTO "Forbidden"
+// @Failure 404 {object} Dto.ErrorDTO "Not Found"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /auth/impersonate/{account}/{user} [post]
 func (controller *AuthController) impersonateUser(c *fiber.Ctx) error {
 	//	// Get the token from the request body
@@ -563,10 +563,10 @@ func (controller *AuthController) getAuthStatus(c *fiber.Ctx) error {
 // @Produce json
 // @Param token body string true "Magic link token"
 // @Success 200 {object} Dto.UserResponse "User"
-// @Failure 400 {object} Dto.ErrorDto "Bad Request"
-// @Failure 401 {object} Dto.ErrorDto "Unauthorized"
-// @Failure 404 {object} Dto.ErrorDto "Not Found"
-// @Failure 500 {object} Dto.ErrorDto "Internal Server Error"
+// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
+// @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
+// @Failure 404 {object} Dto.ErrorDTO "Not Found"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /auth/magic/verify [post]
 func (controller *AuthController) verifyMagicLink(c *fiber.Ctx) error {
 	//	data := new(struct {
@@ -677,11 +677,11 @@ func (controller *AuthController) getOTP(c *fiber.Ctx) error {
 // @Param email body string true "Email"
 // @Success 200 {object} fiber.Map "Magic link"
 // @Failure 401 {object} fiber.Map "Unauthorized"
-// @Failure 401 {object} Dto.ErrorDto "Unauthorized"
-// @Failure 400 {object} Dto.ErrorDto "Bad Request"
-// @Failure 404 {object} Dto.ErrorDto "Not Found"
-// @Failure 409 {object} Dto.ErrorDto "Conflict"
-// @Failure 500 {object} Dto.ErrorDto "Internal Server Error"
+// @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
+// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
+// @Failure 404 {object} Dto.ErrorDTO "Not Found"
+// @Failure 409 {object} Dto.ErrorDTO "Conflict"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /auth/magic [post]
 func (controller *AuthController) GetMagicLink(c *fiber.Ctx) error {
 	return nil
@@ -695,8 +695,8 @@ func (controller *AuthController) GetMagicLink(c *fiber.Ctx) error {
 // @Produce json
 // @Param email body string true "Email"
 // @Success 200 {object} fiber.Map "Password reset"
-// @Failure 401 {object} Dto.ErrorDto "Unauthorized"
-// @Failure 500 {object} Dto.ErrorDto "Internal Server Error"
+// @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /auth/password/reset/request [post]
 func (controller *AuthController) requestPasswordReset(c *fiber.Ctx) error {
 	return nil

@@ -22,6 +22,8 @@ definitions:
     properties:
       AccountID:
         type: string
+      AccountSetting:
+        $ref: '#/definitions/placio-app_Dto.AccountSetting'
       AccountType:
         type: string
       Active:
@@ -45,10 +47,44 @@ definitions:
       UserID:
         type: string
     type: object
+  placio-app_Dto.AccountSetting:
+    properties:
+      accountID:
+        type: string
+      blockedUsers:
+        items:
+          type: string
+        type: array
+      id:
+        type: string
+      mutedUsers:
+        items:
+          type: string
+        type: array
+      twoFactorAuthentication:
+        type: boolean
+    type: object
+  placio-app_Dto.AddAccountDto:
+    properties:
+      account_name:
+        type: string
+      account_type:
+        type: string
+    required:
+      - account_name
+      - account_type
+    type: object
   placio-app_Dto.AuthStatusResponse:
     properties:
       auth_status:
         type: string
+    type: object
+  placio-app_Dto.ErrorDTO:
+    properties:
+      message:
+        type: string
+      status:
+        type: integer
     type: object
   placio-app_Dto.GeneralSettings:
     properties:
@@ -169,6 +205,8 @@ definitions:
         items:
           $ref: '#/definitions/placio-app_Dto.Account'
         type: array
+      CurrentActiveAccount:
+        $ref: '#/definitions/placio-app_Dto.Account'
       Disabled:
         type: boolean
       Email:
@@ -210,6 +248,8 @@ definitions:
     properties:
       accountID:
         type: string
+      accountSetting:
+        $ref: '#/definitions/placio-app_models.AccountSettings'
       accountType:
         type: string
       active:
@@ -225,6 +265,8 @@ definitions:
       id:
         type: string
       lastActive:
+        type: string
+      name:
         type: string
       onboarded:
         type: boolean
@@ -256,6 +298,8 @@ definitions:
     type: object
   placio-app_models.AccountSettings:
     properties:
+      accountID:
+        type: string
       blockedUsers:
         items:
           type: string
@@ -268,8 +312,6 @@ definitions:
         type: array
       twoFactorAuthentication:
         type: boolean
-      userID:
-        type: string
     type: object
   placio-app_models.Booking:
     properties:
@@ -353,8 +395,6 @@ definitions:
     type: object
   placio-app_models.GeneralSettings:
     properties:
-      account:
-        $ref: '#/definitions/placio-app_models.AccountSettings'
       content:
         $ref: '#/definitions/placio-app_models.ContentSettings'
       createdAt:
@@ -515,11 +555,11 @@ definitions:
         type: array
       createdAt:
         type: string
+      currentActiveAccount:
+        type: string
       dateCreated:
         type: string
       defaultAccount:
-        type: string
-      defaultAccountID:
         type: string
       deletedAt:
         type: string
@@ -534,9 +574,7 @@ definitions:
       fingerprint:
         type: string
       generalSettings:
-        allOf:
-          - $ref: '#/definitions/placio-app_models.GeneralSettings'
-        description: GeneralSettingsID    string
+        $ref: '#/definitions/placio-app_models.GeneralSettings'
       google:
         $ref: '#/definitions/placio-app_models.GoogleAccount'
       hasPassword:
@@ -629,7 +667,7 @@ info:
   title: Placio Application Api
   version: '0.01'
 paths:
-  /accounts:
+  /accounts/{accountId}:
     get:
       consumes:
         - application/json
@@ -644,25 +682,25 @@ paths:
         - application/json
       responses:
         '200':
-          description: OK
+          description: Account
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_models.Account'
         '400':
           description: Bad Request
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         '401':
           description: Unauthorized
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         '404':
           description: Not Found
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         '500':
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
       summary: Get account
       tags:
         - Account
@@ -687,56 +725,20 @@ paths:
         '400':
           description: Bad Request
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         '401':
           description: Unauthorized
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         '404':
           description: Not Found
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         '500':
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
       summary: Delete account
-      tags:
-        - Account
-    get:
-      consumes:
-        - application/json
-      description: Get account
-      parameters:
-        - description: Account ID
-          in: path
-          name: id
-          required: true
-          type: string
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/fiber.Map'
-        '400':
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/fiber.Map'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/fiber.Map'
-        '404':
-          description: Not Found
-          schema:
-            $ref: '#/definitions/fiber.Map'
-        '500':
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/fiber.Map'
-      summary: Get account
       tags:
         - Account
   /accounts/{id}/plan:
@@ -767,24 +769,132 @@ paths:
         '400':
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         '401':
           description: Unauthorized
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         '404':
           description: Not Found
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         '500':
           description: Internal Server Error
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
       summary: Update account plan
+      tags:
+        - Account
+  /accounts/add-account:
+    post:
+      consumes:
+        - application/json
+      description: Add account
+      parameters:
+        - description: Account
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/placio-app_Dto.AddAccountDto'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_models.Account'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '404':
+          description: Not Found
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Add account
+      tags:
+        - Account
+  /accounts/get-user-accounts:
+    get:
+      consumes:
+        - application/json
+      description: Get account
+      parameters:
+        - description: Account ID
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Account
+          schema:
+            $ref: '#/definitions/placio-app_models.Account'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '404':
+          description: Not Found
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Get account
+      tags:
+        - Account
+  /accounts/get-user-active-account:
+    get:
+      consumes:
+        - application/json
+      description: Get account
+      parameters:
+        - description: Account ID
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Account
+          schema:
+            $ref: '#/definitions/placio-app_models.Account'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '401':
+          description: Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '404':
+          description: Not Found
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Get account
       tags:
         - Account
   /accounts/invoice/{id}:
@@ -808,19 +918,19 @@ paths:
         '400':
           description: Bad Request
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         '401':
           description: Unauthorized
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         '404':
           description: Not Found
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         '500':
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
       summary: Get invoice
       tags:
         - Account
@@ -850,19 +960,19 @@ paths:
         '400':
           description: Bad Request
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         '401':
           description: Unauthorized
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         '404':
           description: Not Found
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         '500':
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
       summary: Update invoice
       tags:
         - Account
@@ -912,15 +1022,11 @@ paths:
         '400':
           description: 'inputError": "plan", "message": "Plan is required'
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         '500':
           description: 'error": "Internal Server Error'
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
       summary: subscribe to a plan
       tags:
         - Account
@@ -939,19 +1045,19 @@ paths:
         '400':
           description: Bad Request
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         '401':
           description: Unauthorized
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         '404':
           description: Not Found
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         '500':
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
       summary: Get plans
       tags:
         - Account
@@ -976,19 +1082,19 @@ paths:
         '400':
           description: Bad Request
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         '401':
           description: Unauthorized
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         '404':
           description: Not Found
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         '500':
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
       summary: Cancel subscription
       tags:
         - Account
@@ -1012,19 +1118,19 @@ paths:
         '400':
           description: Bad Request
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         '401':
           description: Unauthorized
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         '404':
           description: Not Found
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         '500':
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
       summary: Get subscription
       tags:
         - Account
@@ -1054,19 +1160,19 @@ paths:
         '400':
           description: Bad Request
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         '401':
           description: Unauthorized
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         '404':
           description: Not Found
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         '500':
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
       summary: Upgrade plan
       tags:
         - Account
@@ -1092,22 +1198,50 @@ paths:
         '400':
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         '403':
           description: Forbidden
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         '500':
           description: Internal Server Error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
       summary: Create a new account
+      tags:
+        - Account
+  /api/v1/accounts/switch-account:
+    post:
+      consumes:
+        - application/json
+      description: Switch to a different account
+      parameters:
+        - description: Switch Account Data
+          in: body
+          name: SwitchAccountDto
+          required: true
+          schema:
+            type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully switched account
+          schema:
+            $ref: '#/definitions/placio-app_Dto.UserResponse'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Switch to a different account
       tags:
         - Account
   /api/v1/auth:
@@ -1137,6 +1271,14 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/fiber.Error'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/fiber.Error'
+        '404':
+          description: Not Found
+          schema:
+            $ref: '#/definitions/fiber.Error'
       summary: Authenticate a user
       tags:
         - Auth
@@ -1155,8 +1297,23 @@ paths:
         '400':
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '404':
+          description: Not Found
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
       summary: Refresh token
       tags:
         - Auth
@@ -1174,10 +1331,25 @@ paths:
             additionalProperties: true
             type: object
         '400':
-          description: Bad Request
+          description: Bad request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '404':
+          description: Not found
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
       summary: Verify phone
       tags:
         - Auth
@@ -1646,8 +1818,23 @@ paths:
         '400':
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '404':
+          description: Not Found
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
       summary: Change password
       tags:
         - Auth
@@ -1677,11 +1864,19 @@ paths:
         '401':
           description: Unauthorized
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '404':
+          description: Not Found
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         '500':
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
       summary: Impersonate user
       tags:
         - Auth
@@ -1704,14 +1899,26 @@ paths:
           description: Magic link
           schema:
             $ref: '#/definitions/fiber.Map'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         '401':
           description: Unauthorized
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '404':
+          description: Not Found
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '409':
+          description: Conflict
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         '500':
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
       summary: Get magic link
       tags:
         - Auth
@@ -1734,14 +1941,22 @@ paths:
           description: User
           schema:
             $ref: '#/definitions/placio-app_Dto.UserResponse'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         '401':
           description: Unauthorized
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '404':
+          description: Not Found
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         '500':
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
       summary: Verify magic link
       tags:
         - Auth
@@ -1796,11 +2011,11 @@ paths:
         '401':
           description: Unauthorized
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         '500':
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
       summary: Request password reset
       tags:
         - Auth
@@ -1820,8 +2035,23 @@ paths:
         '400':
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '404':
+          description: Not Found
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
       summary: Reset password
       tags:
         - Auth
@@ -1841,8 +2071,25 @@ paths:
         '400':
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '404':
+          description: Not Found
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      security:
+        - ApiKeyAuth: []
       summary: Log out
       tags:
         - Auth
@@ -1887,36 +2134,30 @@ paths:
           description: User
           schema:
             $ref: '#/definitions/placio-app_Dto.UserResponse'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         '401':
           description: Unauthorized
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '403':
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '404':
+          description: Not Found
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         '500':
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
       summary: Switch account
       tags:
         - Auth
   /settings/account:
-    get:
-      consumes:
-        - application/json
-      description: Get account settings
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/placio-app_models.AccountSettings'
-        '500':
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_models.ErrorResponse'
-      summary: Get account settings
-      tags:
-        - Settings
     put:
       consumes:
         - application/json
