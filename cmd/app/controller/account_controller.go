@@ -40,8 +40,9 @@ func (c *AccountController) RegisterRoutes(app fiber.Router) {
 	accountGroup.Post("/add-account", middleware.Verify("user"), utility.Use(c.addAccount)) // add account to owner
 	accountGroup.Post("/plan", middleware.Verify("owner"), utility.Use(c.plan))
 	accountGroup.Patch("/plan", middleware.Verify("owner"), utility.Use(c.updatePlan))
-	accountGroup.Get("/", middleware.Verify("owner"), utility.Use(c.getAccounts))
-	accountGroup.Get("/card", middleware.Verify("owner"), utility.Use(c.getAccount))
+	accountGroup.Get("/get-user-accounts", middleware.Verify("user"), utility.Use(c.getAccounts))
+	accountGroup.Get("/get-user-active-account", middleware.Verify("user"), utility.Use(c.getUserActiveAccount))
+	accountGroup.Get("/get-user-account/:accountId", middleware.Verify("user"), utility.Use(c.getUserAccount))
 	accountGroup.Patch("/card", middleware.Verify("owner"), utility.Use(c.updateInvoice))
 	accountGroup.Get("/invoice", middleware.Verify("owner"), utility.Use(c.getInvoice))
 	accountGroup.Get("/plans", middleware.Verify("owner"), utility.Use(c.getPlans))
@@ -463,8 +464,17 @@ func (c *AccountController) updatePlan(ctx *fiber.Ctx) error {
 // @Failure 401 {object} fiber.Map
 // @Failure 404 {object} fiber.Map
 // @Failure 500 {object} fiber.Map
-// @Router /accounts [get]
+// @Router /accounts/get-user-accounts [get]
 func (c *AccountController) getAccounts(ctx *fiber.Ctx) error {
+
+	accounts, err := c.store.GetAccounts(ctx)
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "Internal Server Error")
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+		"accounts": accounts,
+	})
 	//	// implementation of utility.validate()
 	//	// return an error if the request body is invalid
 	//
@@ -610,9 +620,17 @@ func (c *AccountController) getAccounts(ctx *fiber.Ctx) error {
 // @Failure 401 {object} fiber.Map
 // @Failure 404 {object} fiber.Map
 // @Failure 500 {object} fiber.Map
-// @Router /accounts/{id} [get]
-func (c *AccountController) getAccount(ctx *fiber.Ctx) error {
-	return nil
+// @Router /accounts/get-user-active-account [get]
+func (c *AccountController) getUserActiveAccount(ctx *fiber.Ctx) error {
+	log.Println("Get user active account")
+	account, err := c.store.GetAccount(ctx)
+	if err != nil {
+		return fiber.ErrNotFound
+	}
+
+	return ctx.JSON(fiber.Map{
+		"account": account,
+	})
 }
 
 // UpdateInvoice godoc
@@ -768,14 +786,54 @@ func (c *AccountController) addAccount(ctx *fiber.Ctx) error {
 	// Create account
 	accountData, err := c.store.CreateBusinessAccount(accountDto, ctx)
 	if err != nil {
-		return ctx.Status(500).JSON(fiber.Map{
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status":  "error",
 			"message": err.Error(),
 		})
 	}
 
-	return ctx.Status(200).JSON(fiber.Map{
-		"status":  "success",
-		"account": accountData,
+	return ctx.Status(fiber.StatusCreated).JSON(fiber.Map{
+		"status": "success",
+		"data":   accountData,
+	})
+}
+
+// GetAccount godoc
+// @Summary Get account
+// @Description Get account
+// @Tags Account
+// @Accept json
+// @Produce json
+// @Param id path string true "Account ID"
+// @Success 200 {object} fiber.Map
+// @Failure 400 {object} fiber.Map
+// @Failure 401 {object} fiber.Map
+// @Failure 404 {object} fiber.Map
+// @Failure 500 {object} fiber.Map
+// @Router /accounts/{accountId} [get]
+func (c *AccountController) getUserAccount(ctx *fiber.Ctx) error {
+	accountId := ctx.Params("accountId")
+	if accountId == "" {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"status":  "error",
+			"message": "Account ID is required",
+		})
+	}
+
+	ctx.Locals("accountId", accountId)
+	ctx.Set("accountId", accountId)
+
+	// Get account
+	accountData, err := c.store.GetAccount(ctx)
+	if err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"status":  "error",
+			"message": err.Error(),
+		})
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+		"status": "success",
+		"data":   accountData,
 	})
 }

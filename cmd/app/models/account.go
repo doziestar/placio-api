@@ -2,6 +2,7 @@ package models
 
 import (
 	"context"
+	"fmt"
 	"github.com/getsentry/sentry-go"
 	"placio-app/Dto"
 	"placio-app/database"
@@ -184,11 +185,19 @@ func (a *Account) CreateBusinessAccount(user *User, data Dto.AddAccountDto, d *g
 	a.Status = "active"
 	a.LastActive = time.Now()
 	a.Disabled = false
+	a.AccountSetting = AccountSettings{
+		ID:                      GenerateID(),
+		AccountID:               a.AccountID,
+		TwoFactorAuthentication: false,
+		BlockedUsers:            nil,
+		MutedUsers:              nil,
+	}
 	result := d.Create(&a)
 	return a, result.Error
 }
 
-func (a *Account) GenerateUserAccountResponse() *Dto.UserAccountResponse {
+func (a *Account) GenerateUserAccountResponse(db *gorm.DB) *Dto.UserAccountResponse {
+	logger.Info(context.Background(), "Generating user account response")
 	// get owner info
 	var userData *User
 	user, err := userData.GetUserById(a.UserID, database.DB)
@@ -197,9 +206,13 @@ func (a *Account) GenerateUserAccountResponse() *Dto.UserAccountResponse {
 		return nil
 	}
 
+	//logger.Info(context.Background(), fmt.Sprintf("user: %+v", user))
 	// get the account that matches the user's account id
 	var accountData *Account
 	for _, account := range user.Accounts {
+		// change the active account
+		account.Active = false
+		db.Save(&account)
 		if account.ID == a.ID {
 			accountData = &account
 		}
@@ -209,16 +222,22 @@ func (a *Account) GenerateUserAccountResponse() *Dto.UserAccountResponse {
 		return nil
 	}
 
+	// set the active account
+	accountData.Active = true
+	db.Save(&accountData)
+
+	//logger.Info(context.Background(), fmt.Sprintf("account is active: %+v", accountData))
 	// get the account settings
-	var accountSettingsData *AccountSettings
-	accountSettings, err := accountSettingsData.GetAccountSettings(a.ID, database.DB)
-	if err != nil {
-		sentry.CaptureException(err)
-		return nil
-	}
+	//var accountSettingsData *AccountSettings
+	//accountSettings, err := accountSettingsData.GetAccountSettings(accountData.ID, db)
+	//if err != nil {
+	//	sentry.CaptureException(err)
+	//	return nil
+	//}
 
-	accountData.AccountSetting = *accountSettings
+	//accountData.AccountSetting = *accountSettings
 
+	logger.Info(context.Background(), fmt.Sprintf("account: %+v", accountData))
 	// generate the response
 	response := Dto.UserAccountResponse{
 		Name:           user.Name,
@@ -231,9 +250,11 @@ func (a *Account) GenerateUserAccountResponse() *Dto.UserAccountResponse {
 			AccountType: a.AccountType,
 			AccountID:   a.AccountID,
 			AccountSetting: Dto.AccountSetting{
-				ID:                      accountSettings.ID,
-				AccountID:               accountSettings.AccountID,
-				TwoFactorAuthentication: false,
+				ID:                      a.AccountSetting.ID,
+				AccountID:               a.AccountSetting.AccountID,
+				TwoFactorAuthentication: a.AccountSetting.TwoFactorAuthentication,
+				BlockedUsers:            a.AccountSetting.BlockedUsers,
+				MutedUsers:              a.AccountSetting.MutedUsers,
 			},
 			Onboarded: a.Onboarded,
 			UserID:    a.UserID,

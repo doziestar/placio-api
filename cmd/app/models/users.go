@@ -294,16 +294,16 @@ func Get(id uuid.UUID, email string, account string, social *Social, permission 
 
 	return users, nil
 }
-
 func (u *User) GetUserById(id string, db *gorm.DB) (*User, error) {
-	err := db.Model(&User{}).Preload("accounts").Where("id = ?", id).First(&u).Error
+	var user User
+	err := db.Preload("Accounts").Where("id = ?", id).First(&user).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("User not found")
 		}
 		return nil, err
 	}
-	return u, nil
+	return &user, nil
 }
 
 // GetAccounts returns a list of accounts that the user with the given ID is attached to

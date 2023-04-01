@@ -76,7 +76,8 @@ func Verify(permission string) fiber.Handler {
 		customClaims, ok := claims.Claims.(jwt.MapClaims)
 
 		logger.Info(context.Background(), fmt.Sprintf("customClaims: %v", customClaims))
-
+		logger.Info(context.Background(), fmt.Sprintf("ok: %v", ok))
+		logger.Info(context.Background(), fmt.Sprintf("claims.Valid: %v", claims.Valid))
 		if !ok || !claims.Valid {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 				"message": "Invalid auth token",
@@ -105,6 +106,7 @@ func Verify(permission string) fiber.Handler {
 		var user *models.User
 		//var account *models.Account
 
+		logger.Info(context.Background(), fmt.Sprintf("customClaims[\"sub\"]: %v", customClaims["sub"].(string)))
 		userAccount, err := user.GetUserById(customClaims["sub"].(string), database.DB)
 		logger.Info(context.Background(), fmt.Sprintf("userAccount: %v", userAccount))
 		if err != nil {
