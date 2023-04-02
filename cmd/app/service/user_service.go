@@ -23,7 +23,7 @@ type IUser interface {
 	DeleteAccount(userId, accountId string, db *gorm.DB) error
 	UpdateUserProfile(userId, accountId string, data Dto.UpdateProfileDto, db *gorm.DB) error
 	DeleteUser(userId, accountID string, db *gorm.DB) error
-	GetLoggedInUser(ctx *fiber.Ctx) (*Dto.UserAccountResponse, error)
+	GetLoggedInUser(userId string) (*models.User, error)
 }
 
 type UserService struct {
@@ -37,48 +37,14 @@ func NewUserService(db *gorm.DB, user *models.User, account *models.Account) *Us
 }
 
 // Get Logged in user
-func (u *UserService) GetLoggedInUser(ctx *fiber.Ctx) (*Dto.UserAccountResponse, error) {
-	// get user from context
-	user := ctx.Locals("user").(string)
-	logger.Info(ctx.Context(), "user: "+user)
+func (u *UserService) GetLoggedInUser(userId string) (*models.User, error) {
 	// get user from db
-	userData, err := u.user.GetUserById(user, u.db)
+	userData, err := u.user.GetUserById(userId, u.db)
 	if err != nil {
 		return nil, err
 	}
 
-	// get current active account
-	account, err := u.account.GetAccount(userData.CurrentActiveAccount, u.db)
-
-	response := &Dto.UserAccountResponse{
-		Name:           userData.Name,
-		Email:          userData.Email,
-		Disabled:       userData.Disabled,
-		SupportEnabled: userData.SupportEnabled,
-		UserId:         userData.ID,
-		Account: &Dto.Account{
-			ID:          account.ID,
-			Permission:  account.Permission,
-			AccountType: account.AccountType,
-			AccountID:   account.AccountID,
-			AccountSetting: Dto.AccountSetting{
-				ID:                      account.AccountSetting.ID,
-				AccountID:               account.AccountSetting.AccountID,
-				TwoFactorAuthentication: account.AccountSetting.TwoFactorAuthentication,
-				BlockedUsers:            account.AccountSetting.BlockedUsers,
-				MutedUsers:              account.AccountSetting.MutedUsers,
-			},
-			Onboarded: account.Onboarded,
-			//Interests:      account.Interests,
-			UserID:   account.UserID,
-			Plan:     account.Plan,
-			Active:   account.Active,
-			Status:   account.Status,
-			Disabled: account.Disabled,
-		},
-	}
-
-	return response, nil
+	return userData, nil
 
 }
 
@@ -91,7 +57,12 @@ func (u *UserService) Get(id, email, account, permission string, social *models.
 }
 
 func (u *UserService) GetUserByID(userID string, db *gorm.DB) (*models.User, error) {
-	return nil, nil
+	logger.Info(db.Statement.Context, "user id: "+userID)
+	user, err := u.user.GetUserById(userID, db)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }
 
 func (u *UserService) GetByEmail(email string, db *gorm.DB) (*models.User, error) {

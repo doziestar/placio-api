@@ -98,7 +98,7 @@ type Social struct {
 // }
 
 func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
-	// u.ID = uuid.New().String()
+	//u.ID = uuid.New().String()
 	//err = u.HashPassword()
 	// if err != nil {
 	// 	return err
@@ -296,6 +296,7 @@ func Get(id uuid.UUID, email string, account string, social *Social, permission 
 }
 func (u *User) GetUserById(id string, db *gorm.DB) (*User, error) {
 	var user User
+	logger.Info(context.Background(), fmt.Sprintf("Getting user with id %s", id))
 	err := db.Preload("Accounts").Where("id = ?", id).First(&user).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -810,7 +811,6 @@ func (u *User) GenerateUserResponse(token *Token) Dto.UserResponse {
 
 func (u *User) Login(c *fiber.Ctx, db *gorm.DB) error {
 	var login *Login
-
 	err := db.Where("email = ?", u.Email).First(&login).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {

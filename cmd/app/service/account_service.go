@@ -25,11 +25,11 @@ type IAccountService interface {
 
 type AccountService struct {
 	db      *gorm.DB
-	account *models.Account
-	user    *models.User
+	account models.Account
+	user    models.User
 }
 
-func NewAccountService(db *gorm.DB, account *models.Account, user *models.User) *AccountService {
+func NewAccountService(db *gorm.DB, account models.Account, user models.User) *AccountService {
 	return &AccountService{db: db, account: account, user: user}
 }
 
@@ -83,8 +83,6 @@ func (s *AccountService) CreateUserAccount(data *Dto.SignUpDto, ctx *fiber.Ctx) 
 	logger.Info(context.Background(), "CreateAccount")
 
 	//account := new(models.Account)
-
-	fmt.Println("data.AccountType", data.AccountType)
 	// create the user and assign to account
 	newUser, err := s.user.CreateUser(*data, ctx, database.DB)
 	if err != nil {
