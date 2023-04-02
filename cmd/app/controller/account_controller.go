@@ -36,7 +36,8 @@ func (c *AccountController) RegisterRoutes(app fiber.Router) {
 	//app.Use(requestLogger())
 	accountGroup := app.Group("/accounts")
 	accountGroup.Post("/create-account", utility.Use(c.createAccount))
-	accountGroup.Post("/switch-account", middleware.Verify("user"), utility.Use(c.switchAccount))
+	accountGroup.Post("/:accountId/switch-account/", middleware.Verify("user"), utility.Use(c.switchAccount))
+	accountGroup.Post("/:accountId/make-default/", middleware.Verify("user"), utility.Use(c.makeAccountDefault))
 	accountGroup.Post("/add-account", middleware.Verify("user"), utility.Use(c.addAccount)) // add account to owner
 	accountGroup.Post("/plan", middleware.Verify("owner"), utility.Use(c.plan))
 	accountGroup.Patch("/plan", middleware.Verify("owner"), utility.Use(c.updatePlan))
@@ -138,12 +139,12 @@ func validate(email string, name string, password string) error {
 // @Tags Account
 // @Accept json
 // @Produce json
-// @Param SwitchAccountDto body string true "Switch Account Data"
+// @Param accountId path string true "Account ID"
 // @Success 200 {object} Dto.UserResponse "Successfully switched account"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 403 {object} Dto.ErrorDTO "Forbidden"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
-// @Router /api/v1/accounts/switch-account [post]
+// @Router /api/v1/accounts/{accountId}/switch-account [post]
 func (c *AccountController) switchAccount(ctx *fiber.Ctx) error {
 	response, err := c.store.SwitchUserAccount(ctx)
 	if err != nil {
@@ -836,5 +837,42 @@ func (c *AccountController) getUserAccount(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
 		"status": "success",
 		"data":   accountData,
+	})
+}
+
+// MakeAccountDefault godoc
+// @Summary Make account default
+// @Description Make account default
+// @Tags Account
+// @Accept json
+// @Produce json
+// @Param accountId path string true "Account ID"
+// @Success 200 {object} Dto.UserAccountResponse
+// @Failure 400 {object} Dto.ErrorDTO
+// @Failure 401 {object} Dto.ErrorDTO
+// @Failure 404 {object} Dto.ErrorDTO
+// @Failure 500 {object} Dto.ErrorDTO
+// @Router /accounts/{accountId}/make-default [put]
+func (c *AccountController) makeAccountDefault(ctx *fiber.Ctx) error {
+	accountId := ctx.Params("accountId")
+	if accountId == "" {
+		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"status":  "error",
+			"message": "Account ID is required",
+		})
+	}
+
+	// Make account default
+	account, err := c.store.MakeAccountDefault(accountId, ctx)
+	if err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"status":  "error",
+			"message": err.Error(),
+		})
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+		"status": "success",
+		"data":   account,
 	})
 }

@@ -22,6 +22,10 @@ func InitializeRoutes(app *fiber.App) {
 		HealthCheckRoutes(healthApi)
 	}
 
+	// instances
+	var user *models.User
+	var account *models.Account
+
 	// utility
 	utility := utility.NewUtility()
 
@@ -41,7 +45,7 @@ func InitializeRoutes(app *fiber.App) {
 	settingsController.RegisterRoutes(routerGroupV1, nil)
 
 	// account
-	accountService := service.NewAccountService(database.DB)
+	accountService := service.NewAccountService(database.DB, account, user)
 	accountController := controller.NewAccountController(accountService, utility)
 	accountController.RegisterRoutes(routerGroupV1)
 

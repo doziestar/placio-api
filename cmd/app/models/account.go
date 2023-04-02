@@ -239,7 +239,13 @@ func (a *Account) GenerateUserAccountResponse(db *gorm.DB) *Dto.UserAccountRespo
 
 	logger.Info(context.Background(), fmt.Sprintf("account: %+v", accountData))
 	// generate the response
-	response := Dto.UserAccountResponse{
+	response := accountData.GenerateUserAccountData(user)
+
+	return response
+}
+
+func (a *Account) GenerateUserAccountData(user *User) *Dto.UserAccountResponse {
+	return &Dto.UserAccountResponse{
 		Name:           user.Name,
 		Email:          user.Email,
 		Disabled:       user.Disabled,
@@ -247,6 +253,7 @@ func (a *Account) GenerateUserAccountResponse(db *gorm.DB) *Dto.UserAccountRespo
 		UserId:         user.ID,
 		Account: &Dto.Account{
 			ID:          a.ID,
+			Permission:  a.Permission,
 			AccountType: a.AccountType,
 			AccountID:   a.AccountID,
 			AccountSetting: Dto.AccountSetting{
@@ -257,15 +264,15 @@ func (a *Account) GenerateUserAccountResponse(db *gorm.DB) *Dto.UserAccountRespo
 				MutedUsers:              a.AccountSetting.MutedUsers,
 			},
 			Onboarded: a.Onboarded,
-			UserID:    a.UserID,
-			Plan:      a.Plan,
-			Active:    a.Active,
-			Status:    a.Status,
-			Disabled:  a.Disabled,
+			//Interests:     a.Interests,
+			UserID:   a.UserID,
+			Plan:     a.Plan,
+			Active:   a.Active,
+			Status:   a.Status,
+			Disabled: a.Disabled,
 		},
 	}
 
-	return &response
 }
 
 //
