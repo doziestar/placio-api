@@ -35,7 +35,7 @@ func InitializeRoutes(app *fiber.App) {
 	authController.RegisterRoutes(routerGroupV1)
 
 	// user
-	userService := service.NewUserService(database.DB, &models.User{})
+	userService := service.NewUserService(database.DB, user, account)
 	userController := controller.NewUserController(userService)
 	userController.RegisterRoutes(routerGroupV1)
 

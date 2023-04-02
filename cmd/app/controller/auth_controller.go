@@ -344,7 +344,7 @@ func (controller *AuthController) signIn(c *fiber.Ctx) error {
 }
 
 func (controller *AuthController) authenticate(c *fiber.Ctx, userData models.User) error {
-	accountData, err := account.GetAccount(userData.AccountID)
+	accountData, err := account.GetAccount(userData.AccountID, database.DB)
 	if err != nil {
 		return err
 	}

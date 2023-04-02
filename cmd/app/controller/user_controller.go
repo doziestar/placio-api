@@ -34,7 +34,8 @@ func (c *UserController) RegisterRoutes(app fiber.Router) {
 	userGroup.Get("/:id", middleware.Verify("user"), utility.Use(c.GetUserByID))
 	userGroup.Put("/:id", middleware.Verify("user"), utility.Use(c.UpdateUser))
 	userGroup.Delete("/:id", middleware.Verify("user"), utility.Use(c.DeleteUser))
-	userGroup.Get("", middleware.Verify("user"), utility.Use(c.GetAllUsers))
+	userGroup.Get("/", middleware.Verify("user"), utility.Use(c.GetAllUsers))
+	userGroup.Get("/me", middleware.Verify("user"), utility.Use(c.GetMe))
 	userGroup.Get("/:id/messages_sent", middleware.Verify("user"), utility.Use(c.GetMessagesSent))
 	userGroup.Get("/:id/messages_received", middleware.Verify("user"), utility.Use(c.GetMessagesReceived))
 	userGroup.Get("/:id/conversations", middleware.Verify("user"), utility.Use(c.GetConversations))
@@ -364,4 +365,21 @@ func (controller *UserController) GetUserPayments(c *fiber.Ctx) error {
 	//	}
 	//}
 	return c.Status(fiber.StatusNotFound).SendString("User not found")
+}
+
+// GetMe godoc
+// @Summary Retrieve the current user
+// @Description Retrieve the current user
+// @Tags User
+// @Accept */*
+// @Produce json
+// @Success 200 {object} Dto.UserAccountResponse
+// @Failure 400 {object} map[string]interface{}
+// @Router /api/v1/users/me [get]
+func (c *UserController) GetMe(ctx *fiber.Ctx) error {
+	userData, err := c.service.GetLoggedInUser(ctx)
+	if err != nil {
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
+	}
+	return ctx.Status(fiber.StatusOK).JSON(userData)
 }

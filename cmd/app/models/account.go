@@ -103,9 +103,9 @@ func (a *Account) GetUserAccount(id string) (*UserAndAccount, error) {
 }
 
 // GetAccount /*
-func (a *Account) GetAccount(id string) (*Account, error) {
+func (a *Account) GetAccount(id string, db *gorm.DB) (*Account, error) {
 	logger.Info(context.Background(), "Getting account")
-	result := db.Where("id = ?", id).First(&a)
+	result := db.Preload("AccountSetting").Where("id = ?", id).First(&a)
 	return a, result.Error
 }
 
