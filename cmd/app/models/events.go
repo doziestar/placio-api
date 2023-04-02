@@ -8,18 +8,34 @@ import (
 
 type Event struct {
 	*gorm.Model
-	ID          string `gorm:"primaryKey"`
-	Name        string `gorm:"index"`
-	Date        time.Time
-	Time        time.Time
-	Location    string
-	Description string `gorm:"type:text"`
-	// BusinessID  string    `gorm:"foreignKey:Business"`
-	// CreatedAt   time.Time `gorm:"default:CURRENT_TIMESTAMP"`
-	// UpdatedAt   time.Time `gorm:"default:CURRENT_TIMESTAMP"`
-	// Business    Business  `gorm:"foreignKey:BusinessID"`
-	// Bookings    []Booking `gorm:"foreignKey:EventID"`
-	// Tickets     []Ticket  `gorm:"foreignKey:EventID"`
+	ID             string `gorm:"primaryKey"`
+	Name           string `gorm:"index"`
+	Date           time.Time
+	Time           time.Time
+	EndDate        time.Time
+	EndTime        time.Time
+	Location       string
+	Address        string
+	City           string
+	State          string
+	Country        string
+	Description    string `gorm:"type:text"`
+	Category       string
+	Tags           []string `gorm:"type:text[]"`
+	ImageURL       string
+	Organizer      string
+	OrganizerEmail string
+	OrganizerPhone string
+	Website        string
+	TicketURL      string
+	PriceRange     string
+	Capacity       int
+	IsFree         bool
+	IsPublic       bool
+	IsOnline       bool
+	AccountID      string    `gorm:"column:account_id"` // Foreign key to Account
+	CreatedAt      time.Time `gorm:"column:created_at"`
+	UpdatedAt      time.Time `gorm:"column:updated_at"`
 }
 
 func (e *Event) TableName() string {
