@@ -39,21 +39,23 @@ type User struct {
 	TwoFactorAuthEnabled bool       `gorm:"column:2fa_enabled"`
 	TwoFASecret          string     `gorm:"column:2fa_secret"`
 	TwoFABackupCode      string     `gorm:"column:2fa_backup_code"`
-	DefaultAccount       string     `gorm:"column:default_account"`
 	FacebookID           string     `gorm:"column:facebook_id"`
 	TwitterID            string     `gorm:"column:twitter_id"`
-	CurrentActiveAccount string     `gorm:"column:current_active_account"`
-	Accounts             []Account  `gorm:"foreignKey:UserID"`
-	IP                   string     `gorm:"column:ip"`
-	UserAgent            string     `gorm:"column:user_agent"`
-	Twitter              *TwitterAccount
-	Facebook             *FacebookAccount
-	Google               *GoogleAccount
-	HasPassword          bool            `gorm:"column:has_password"`
-	Onboarded            bool            `gorm:"column:onboarded"`
-	AccountID            string          `gorm:"column:account_id"`
-	Permission           string          `gorm:"column:permission"`
-	GeneralSettings      GeneralSettings `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	DefaultAccountID     string     `gorm:"column:default_account_id"`
+	//DefaultAccount       Account    `gorm:"foreignKey:DefaultAccountID"`
+	ActiveAccountID string `gorm:"column:active_account_id"`
+	//ActiveAccount        Account    `gorm:"foreignKey:ActiveAccountID"`
+	Accounts    []Account `gorm:"foreignKey:UserID"`
+	IP          string    `gorm:"column:ip"`
+	UserAgent   string    `gorm:"column:user_agent"`
+	Twitter     *TwitterAccount
+	Facebook    *FacebookAccount
+	Google      *GoogleAccount
+	HasPassword bool `gorm:"column:has_password"`
+	Onboarded   bool `gorm:"column:onboarded"`
+	//AccountID       string          `gorm:"column:account_id"`
+	Permission      string          `gorm:"column:permission"`
+	GeneralSettings GeneralSettings `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 }
 
 type TwitterAccount struct {
@@ -98,7 +100,7 @@ type Social struct {
 // }
 
 func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
-	// u.ID = uuid.New().String()
+	//u.ID = uuid.New().String()
 	//err = u.HashPassword()
 	// if err != nil {
 	// 	return err
@@ -148,52 +150,6 @@ func (u *User) EncryptPassword() error {
 	return nil
 }
 
-//func (u *User) CreateUser(userData Dto.SignUpDto, c *fiber.Ctx, db *gorm.DB) (*User, error) {
-//	logger.Info(context.Background(), "Creating user")
-//	// Generate and set fields for the user
-//	u.GenerateUserFields(userData, c)
-//
-//	// Encrypt the password if present
-//	err := u.EncryptPassword()
-//
-//	if err != nil {
-//		return &User{}, err
-//	}
-//
-//	// Create a new user record in the database
-//	err = db.Create(&u).Error
-//	if err != nil {
-//		return &User{}, err
-//	}
-//
-//	// Create a new general settings record in the database
-//	var settings GeneralSettings
-//	userSettings, err := settings.CreateGeneralSettings(u.ID, db)
-//	if err != nil {
-//		return &User{}, err
-//	}
-//
-//	// Update the user record with the general settings ID
-//	err = db.Model(&u).Update("general_settings_id", userSettings.ID).Error
-//	if err != nil {
-//		return &User{}, err
-//	}
-//
-//	// Create a new account record in the database
-//	var accountRecord Account
-//	account, err := accountRecord.CreateAccount(u.ID, "owner", userData.AccountType, db)
-//	if err != nil {
-//		return &User{}, err
-//	}
-//
-//	// Update the account record with the account ID
-//	err = db.Model(&accountRecord).Update("account_id", account.ID).Update("default_account_id", account.ID).Error
-//	if err != nil {
-//		return &User{}, err
-//	}
-//	return u, nil
-//}
-
 func (u *User) CreateUser(userData Dto.SignUpDto, c *fiber.Ctx, db *gorm.DB) (*User, error) {
 	logger.Info(context.Background(), "Creating user")
 	// Generate and set fields for the user
@@ -227,11 +183,17 @@ func (u *User) CreateUser(userData Dto.SignUpDto, c *fiber.Ctx, db *gorm.DB) (*U
 
 	logger.Info(context.Background(), "Account created")
 	// Update the account record with the account ID
-	err = db.Model(User{}).Where("id", u.ID).Updates(map[string]interface{}{
-		"account_id":             account.ID,
-		"default_account":        account.ID,
-		"current_active_account": account.ID,
+	err = db.Model(User{}).Where("id = ?", u.ID).Updates(map[string]interface{}{
+		"account_id":         account.ID,
+		"default_account_id": account.ID,
+		"active_account_id":  account.ID,
 	}).Error
+	if err != nil {
+		return &User{}, err
+	}
+
+	// Reload the user object with the updated account information
+	err = db.Preload("Accounts").First(u, "id = ?", u.ID).Error
 	if err != nil {
 		return &User{}, err
 	}
@@ -273,29 +235,30 @@ func Get(id uuid.UUID, email string, account string, social *Social, permission 
 		}
 	}
 
-	for i, user := range users {
-		user.Accounts = nil
-		user.HasPassword = user.Password != ""
-		user.Password = ""
-		if account != "" {
-			user.AccountID = account
-		} else {
-			user.AccountID = user.DefaultAccount
-		}
-		for _, account := range user.Accounts {
-			if account.ID == user.AccountID {
-				user.Permission = account.Permission
-				user.Onboarded = account.Onboarded
-				break
-			}
-		}
-		users[i] = user
-	}
+	//for i, user := range users {
+	//	user.Accounts = nil
+	//	user.HasPassword = user.Password != ""
+	//	user.Password = ""
+	//	if account != "" {
+	//		user.AccountID = account
+	//	} else {
+	//		user.AccountID = user.DefaultAccountID
+	//	}
+	//	for _, account := range user.Accounts {
+	//		if account.ID == user.AccountID {
+	//			user.Permission = account.Permission
+	//			user.Onboarded = account.Onboarded
+	//			break
+	//		}
+	//	}
+	//	users[i] = user
+	//}
 
 	return users, nil
 }
 func (u *User) GetUserById(id string, db *gorm.DB) (*User, error) {
 	var user User
+	logger.Info(context.Background(), fmt.Sprintf("Getting user with id %s", id))
 	err := db.Preload("Accounts").Where("id = ?", id).First(&user).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -340,7 +303,7 @@ func GetAccounts(db *gorm.DB, userID string) ([]Account, error) {
 	return results, nil
 }
 
-// addInterest adds the specified interest to the user's account
+// AddInterest addInterest adds the specified interest to the user's account
 func AddInterest(userID string, accountID string, interest string) error {
 	// get user by ID
 	var user User
@@ -758,7 +721,8 @@ func (u *User) GenerateUserResponse(token *Token) Dto.UserResponse {
 			Account: func(db *gorm.DB) []Dto.Account {
 				var account []Account
 				// find accounts with user id
-				err := db.Where("user_id = ?", u.ID).First(&account).Error
+				logger.Info(context.Background(), "Finding accounts with user id: "+u.ID)
+				err := db.Preload("AccountSetting").Where("user_id = ?", u.ID).Find(&account).Error
 				if err != nil {
 					return []Dto.Account{}
 				}
@@ -769,7 +733,7 @@ func (u *User) GenerateUserResponse(token *Token) Dto.UserResponse {
 						ID:          a.ID,
 						Permission:  a.Permission,
 						AccountType: a.AccountType,
-						AccountID:   a.AccountID,
+						AccountID:   a.ID,
 						Onboarded:   a.Onboarded,
 						//Interests:   a.Interests,
 						UserID:   a.UserID,
@@ -777,11 +741,45 @@ func (u *User) GenerateUserResponse(token *Token) Dto.UserResponse {
 						Active:   a.Active,
 						Status:   a.Status,
 						Disabled: a.Disabled,
+						AccountSetting: Dto.AccountSetting{
+							ID:                      a.AccountSetting.ID,
+							AccountID:               a.AccountSetting.AccountID,
+							TwoFactorAuthentication: a.AccountSetting.TwoFactorAuthentication,
+						},
 					})
 				}
 				return dto
 			}(database.DB),
-			Permission: "",
+			Permission: u.Permission,
+			CurrentActiveAccount: func(db *gorm.DB) Dto.Account {
+				var account Account
+				// find accounts with user id
+				logger.Info(context.Background(), "Finding accounts with user id: "+u.ID)
+				err := db.Preload("AccountSetting").Where("user_id = ?", u.ID).First(&account).Error
+				if err != nil {
+					return Dto.Account{}
+				}
+				// convert to dto
+				dto := Dto.Account{
+					ID:          account.ID,
+					Permission:  account.Permission,
+					AccountType: account.AccountType,
+					AccountID:   account.ID,
+					Onboarded:   account.Onboarded,
+					//Interests:   a.Interests,
+					UserID:   account.UserID,
+					Plan:     account.Plan,
+					Active:   account.Active,
+					Status:   account.Status,
+					Disabled: account.Disabled,
+					AccountSetting: Dto.AccountSetting{
+						ID:                      account.AccountSetting.ID,
+						AccountID:               account.AccountSetting.AccountID,
+						TwoFactorAuthentication: account.AccountSetting.TwoFactorAuthentication,
+					},
+				}
+				return dto
+			}(database.DB),
 			GeneralSettings: func(db *gorm.DB) Dto.GeneralSettings {
 				var settings GeneralSettings
 				// find settings with user id
@@ -810,7 +808,6 @@ func (u *User) GenerateUserResponse(token *Token) Dto.UserResponse {
 
 func (u *User) Login(c *fiber.Ctx, db *gorm.DB) error {
 	var login *Login
-
 	err := db.Where("email = ?", u.Email).First(&login).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
@@ -844,6 +841,7 @@ func (u *User) Login(c *fiber.Ctx, db *gorm.DB) error {
 func (u *User) GetByEmail(email string, db *gorm.DB) (*User, error) {
 	var user *User
 	err := db.Preload("Accounts").Preload("GeneralSettings").Where("email = ?", email).First(&user).Error
+	logger.Info(context.Background(), fmt.Sprintf(" %s user accounts found", len(user.Accounts)))
 	if err != nil {
 		return nil, err
 	}
@@ -884,8 +882,8 @@ func (u *User) AddToAccount(id string, id2 string, s string) interface{} {
 		return err
 	}
 	user.Accounts = append(user.Accounts, Account{
-		ID:        id2,
-		AccountID: s,
+		ID: id2,
+		//AccountID: s,
 	})
 	err = db.Save(&user).Error
 	return err
@@ -913,27 +911,17 @@ func (u *User) UpdateUser(userId string, accountId string, lastActive time.Time,
 
 }
 
-func (u *User) SwitchAccount(id string, d *gorm.DB) error {
+func (u *User) SwitchAccount(accountId, userId string, d *gorm.DB) error {
 	// get user by id
-	user, err := u.GetUserById(id, d)
+	userData, err := u.GetUserById(userId, d)
 	if err != nil {
 		return err
 	}
 
-	// loop through accounts and replace the current account with the next one
-	for i, a := range user.Accounts {
-		if a.ID == user.CurrentActiveAccount {
-			if i+1 == len(user.Accounts) {
-				user.CurrentActiveAccount = user.Accounts[0].ID
-			} else {
-				user.CurrentActiveAccount = user.Accounts[i+1].ID
-			}
-			break
-		}
-	}
+	userData.ActiveAccountID = accountId
 
 	// save user
-	err = d.Save(&user).Error
+	err = d.Save(&userData).Error
 	return nil
 }
 

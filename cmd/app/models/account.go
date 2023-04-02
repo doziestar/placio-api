@@ -18,13 +18,13 @@ type UserAndAccount struct {
 }
 
 type Account struct {
-	gorm.Model
+	//gorm.Model
 	ID          string `gorm:"primaryKey"`
 	Permission  string
 	AccountType string
-	AccountID   string
-	Onboarded   bool
-	Name        string `gorm:"column:name"`
+	//AccountID   string
+	Onboarded bool
+	Name      string `gorm:"column:name"`
 	// Interests                  []string `gorm:"type:text[]"`
 	UserID                     string `gorm:"column:user_id"`
 	Plan                       string
@@ -41,6 +41,8 @@ type Account struct {
 	Status                     string    `gorm:"column:status"`
 	LastActive                 time.Time `gorm:"column:last_active"`
 	Disabled                   bool      `gorm:"column:disabled"`
+	CreatedAt                  time.Time `gorm:"column:created_at"`
+	UpdatedAt                  time.Time `gorm:"column:updated_at"`
 }
 
 // BeforeCreate /*
@@ -59,7 +61,7 @@ func (a *Account) CreateAccount(userID, permission, accountType string, db *gorm
 	a.Permission = permission
 	a.UserID = userID
 	a.ID = id
-	a.AccountID = id
+	//a.AccountID = id
 	a.Onboarded = false
 	a.AccountType = accountType
 	a.AccountSetting = AccountSettings{
@@ -103,9 +105,9 @@ func (a *Account) GetUserAccount(id string) (*UserAndAccount, error) {
 }
 
 // GetAccount /*
-func (a *Account) GetAccount(id string) (*Account, error) {
+func (a *Account) GetAccount(id string, db *gorm.DB) (*Account, error) {
 	logger.Info(context.Background(), "Getting account")
-	result := db.Where("id = ?", id).First(&a)
+	result := db.Preload("AccountSetting").Where("id = ?", id).First(&a)
 	return a, result.Error
 }
 
@@ -178,7 +180,7 @@ func (a *Account) CreateBusinessAccount(user *User, data Dto.AddAccountDto, d *g
 	a.Active = true
 	a.Permission = "owner"
 	a.UserID = user.ID
-	a.AccountID = GenerateID()
+	//a.AccountID = GenerateID()
 	a.Onboarded = false
 	a.AccountType = "business"
 	a.Name = data.AccountName
@@ -187,7 +189,7 @@ func (a *Account) CreateBusinessAccount(user *User, data Dto.AddAccountDto, d *g
 	a.Disabled = false
 	a.AccountSetting = AccountSettings{
 		ID:                      GenerateID(),
-		AccountID:               a.AccountID,
+		AccountID:               a.ID,
 		TwoFactorAuthentication: false,
 		BlockedUsers:            nil,
 		MutedUsers:              nil,
@@ -255,7 +257,7 @@ func (a *Account) GenerateUserAccountData(user *User) *Dto.UserAccountResponse {
 			ID:          a.ID,
 			Permission:  a.Permission,
 			AccountType: a.AccountType,
-			AccountID:   a.AccountID,
+			//AccountID:   a.AccountID,
 			AccountSetting: Dto.AccountSetting{
 				ID:                      a.AccountSetting.ID,
 				AccountID:               a.AccountSetting.AccountID,

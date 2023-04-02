@@ -5,6 +5,7 @@ import (
 	"gorm.io/gorm"
 	"placio-app/Dto"
 	"placio-app/models"
+	"placio-pkg/logger"
 	"time"
 )
 
@@ -22,15 +23,29 @@ type IUser interface {
 	DeleteAccount(userId, accountId string, db *gorm.DB) error
 	UpdateUserProfile(userId, accountId string, data Dto.UpdateProfileDto, db *gorm.DB) error
 	DeleteUser(userId, accountID string, db *gorm.DB) error
+	GetLoggedInUser(userId string) (*models.User, error)
 }
 
 type UserService struct {
-	*models.User
-	db *gorm.DB
+	user    *models.User
+	db      *gorm.DB
+	account *models.Account
 }
 
-func NewUserService(db *gorm.DB, user *models.User) *UserService {
-	return &UserService{user, db}
+func NewUserService(db *gorm.DB, user *models.User, account *models.Account) *UserService {
+	return &UserService{user, db, account}
+}
+
+// Get Logged in user
+func (u *UserService) GetLoggedInUser(userId string) (*models.User, error) {
+	// get user from db
+	userData, err := u.user.GetUserById(userId, u.db)
+	if err != nil {
+		return nil, err
+	}
+
+	return userData, nil
+
 }
 
 func (u *UserService) CreateUser(userData Dto.SignUpDto, ctx *fiber.Ctx, db *gorm.DB) (*models.User, error) {
@@ -42,7 +57,12 @@ func (u *UserService) Get(id, email, account, permission string, social *models.
 }
 
 func (u *UserService) GetUserByID(userID string, db *gorm.DB) (*models.User, error) {
-	return nil, nil
+	logger.Info(db.Statement.Context, "user id: "+userID)
+	user, err := u.user.GetUserById(userID, db)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
 }
 
 func (u *UserService) GetByEmail(email string, db *gorm.DB) (*models.User, error) {

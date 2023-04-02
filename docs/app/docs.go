@@ -671,6 +671,62 @@ const docTemplate = `{
                 }
             }
         },
+        "/accounts/{accountId}/make-default": {
+            "put": {
+                "description": "Make account default",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Account"
+                ],
+                "summary": "Make account default",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "accountId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.UserAccountResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
         "/accounts/{id}": {
             "delete": {
                 "description": "Delete account",
@@ -845,7 +901,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/accounts/switch-account": {
+        "/api/v1/accounts/{accountId}/switch-account": {
             "post": {
                 "description": "Switch to a different account",
                 "consumes": [
@@ -860,13 +916,11 @@ const docTemplate = `{
                 "summary": "Switch to a different account",
                 "parameters": [
                     {
-                        "description": "Switch Account Data",
-                        "name": "SwitchAccountDto",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
-                        }
+                        "type": "string",
+                        "description": "Account ID",
+                        "name": "accountId",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -889,7 +943,7 @@ const docTemplate = `{
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Internaxxl Server Error",
                         "schema": {
                             "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
                         }
@@ -1146,6 +1200,36 @@ const docTemplate = `{
                         }
                     }
                 ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/me": {
+            "get": {
+                "description": "Retrieve the current user",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Retrieve the current user",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -2861,6 +2945,29 @@ const docTemplate = `{
                 }
             }
         },
+        "placio-app_Dto.UserAccountResponse": {
+            "type": "object",
+            "properties": {
+                "account": {
+                    "$ref": "#/definitions/placio-app_Dto.Account"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "support_enabled": {
+                    "type": "boolean"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
         "placio-app_Dto.UserResponse": {
             "type": "object",
             "properties": {
@@ -2895,9 +3002,6 @@ const docTemplate = `{
         "placio-app_models.Account": {
             "type": "object",
             "properties": {
-                "accountID": {
-                    "type": "string"
-                },
                 "accountSetting": {
                     "$ref": "#/definitions/placio-app_models.AccountSettings"
                 },
@@ -2913,13 +3017,11 @@ const docTemplate = `{
                 "default": {
                     "type": "boolean"
                 },
-                "deletedAt": {
-                    "$ref": "#/definitions/gorm.DeletedAt"
-                },
                 "disabled": {
                     "type": "boolean"
                 },
                 "id": {
+                    "description": "gorm.Model",
                     "type": "string"
                 },
                 "lastActive": {
@@ -2929,6 +3031,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "onboarded": {
+                    "description": "AccountID   string",
                     "type": "boolean"
                 },
                 "payStackCustomerID": {
@@ -3354,25 +3457,24 @@ const docTemplate = `{
         "placio-app_models.User": {
             "type": "object",
             "properties": {
-                "accountID": {
-                    "type": "string"
-                },
                 "accounts": {
+                    "description": "ActiveAccount        Account    ` + "`" + `gorm:\"foreignKey:ActiveAccountID\"` + "`" + `",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/placio-app_models.Account"
                     }
                 },
-                "createdAt": {
+                "activeAccountID": {
+                    "description": "DefaultAccount       Account    ` + "`" + `gorm:\"foreignKey:DefaultAccountID\"` + "`" + `",
                     "type": "string"
                 },
-                "currentActiveAccount": {
+                "createdAt": {
                     "type": "string"
                 },
                 "dateCreated": {
                     "type": "string"
                 },
-                "defaultAccount": {
+                "defaultAccountID": {
                     "type": "string"
                 },
                 "deletedAt": {
@@ -3421,6 +3523,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "permission": {
+                    "description": "AccountID       string          ` + "`" + `gorm:\"column:account_id\"` + "`" + `",
                     "type": "string"
                 },
                 "supportEnabled": {

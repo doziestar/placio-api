@@ -108,7 +108,7 @@ func Verify(permission string) fiber.Handler {
 
 		logger.Info(context.Background(), fmt.Sprintf("customClaims[\"sub\"]: %v", customClaims["sub"].(string)))
 		userAccount, err := user.GetUserById(customClaims["sub"].(string), database.DB)
-		logger.Info(context.Background(), fmt.Sprintf("userAccount: %v", userAccount))
+		//logger.Info(context.Background(), fmt.Sprintf("userAccount: %v", userAccount))
 		if err != nil {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 				"message": "Invalid auth token",
@@ -128,6 +128,7 @@ func Verify(permission string) fiber.Handler {
 			//logger.Info(context.Background(), fmt.Sprintf("userAccount.Permission: %s", userAccount.Permission))
 			log.Println("user permissions", permissions[userAccount.Permission][permission])
 			c.Locals("user", userAccount.ID)
+			c.Locals("account", userAccount.ActiveAccountID)
 			c.Locals("tokenID", customClaims["jti"].(string))
 			c.Locals("permission", userAccount.Permission)
 			c.Locals("provider", "app")

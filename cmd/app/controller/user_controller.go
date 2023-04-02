@@ -1,12 +1,17 @@
 package controller
 
 import (
+	"context"
+	"fmt"
+	"github.com/getsentry/sentry-go"
 	"github.com/gofiber/fiber/v2"
 	_ "gorm.io/gorm"
+	"placio-app/database"
 	"placio-app/middleware"
 	"placio-app/models"
 	"placio-app/service"
 	"placio-app/utility"
+	"placio-pkg/logger"
 )
 
 //ref
@@ -31,10 +36,11 @@ func (c *UserController) RegisterRoutes(app fiber.Router) {
 	userGroup := app.Group("/users")
 
 	userGroup.Post("/", utility.Use(c.CreateUser))
-	userGroup.Get("/:id", middleware.Verify("user"), utility.Use(c.GetUserByID))
+	userGroup.Get("/", middleware.Verify("user"), utility.Use(c.GetAllUsers))
+	userGroup.Get("/me", middleware.Verify("user"), utility.Use(c.GetMe))
+	userGroup.Get("/:userId", middleware.Verify("user"), utility.Use(c.GetUserByID))
 	userGroup.Put("/:id", middleware.Verify("user"), utility.Use(c.UpdateUser))
 	userGroup.Delete("/:id", middleware.Verify("user"), utility.Use(c.DeleteUser))
-	userGroup.Get("", middleware.Verify("user"), utility.Use(c.GetAllUsers))
 	userGroup.Get("/:id/messages_sent", middleware.Verify("user"), utility.Use(c.GetMessagesSent))
 	userGroup.Get("/:id/messages_received", middleware.Verify("user"), utility.Use(c.GetMessagesReceived))
 	userGroup.Get("/:id/conversations", middleware.Verify("user"), utility.Use(c.GetConversations))
@@ -92,13 +98,24 @@ func (c *UserController) GetAllUsers(ctx *fiber.Ctx) error {
 // @Failure 400 {object} map[string]interface{}
 // @Router /api/v1/users/{id} [get]
 func (c *UserController) GetUserByID(ctx *fiber.Ctx) error {
-	//id := c.Params("id")
-	//for _, user := range users {
-	//	if strconv.Itoa(user.ID) == id {
-	//		return c.JSON(user)
-	//	}
-	//}
-	return ctx.Status(fiber.StatusNotFound).SendString("User not found")
+	// get user id from the path
+	id := ctx.Params("userId")
+	// get user from the user service
+	user, err := c.service.GetUserByID(id, database.DB)
+	if err != nil {
+		sentry.CaptureException(err)
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	items, err := utility.RemoveSensitiveFields(user)
+	if err != nil {
+		sentry.CaptureException(err)
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+	}
+	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+		"status": "ok",
+		"data":   items,
+	})
 }
 
 // UpdateUser godoc
@@ -364,4 +381,29 @@ func (controller *UserController) GetUserPayments(c *fiber.Ctx) error {
 	//	}
 	//}
 	return c.Status(fiber.StatusNotFound).SendString("User not found")
+}
+
+// GetMe godoc
+// @Summary Retrieve the current user
+// @Description Retrieve the current user
+// @Tags User
+// @Accept */*
+// @Produce json
+// @Success 200 {object} models.User
+// @Failure 400 {object} map[string]interface{}
+// @Router /api/v1/users/me [get]
+func (c *UserController) GetMe(ctx *fiber.Ctx) error {
+	userId := ctx.Locals("user").(string)
+	logger.Info(context.Background(), fmt.Sprintf("GetMe: %s", userId))
+	userData, err := c.service.GetLoggedInUser(userId)
+	if err != nil {
+		sentry.CaptureException(err)
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
+	}
+
+	userInfo, err := utility.RemoveSensitiveFields(userData)
+	if err != nil {
+		sentry.CaptureException(err)
+	}
+	return ctx.Status(fiber.StatusOK).JSON(userInfo)
 }

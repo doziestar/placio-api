@@ -1,11 +1,9 @@
 package utility
 
 import (
-	"context"
 	"fmt"
 	sentry "github.com/getsentry/sentry-go"
 	"github.com/gofiber/fiber/v2"
-	"placio-pkg/logger"
 	"strings"
 )
 
@@ -101,8 +99,8 @@ func Assert(data interface{}, err string, input map[string]interface{}) bool {
 }
 
 func Use(fn func(*fiber.Ctx) error) fiber.Handler {
-	fmt.Println("Entering utility.Use function")
-	logger.Info(context.Background(), "middleware.Use")
+	//fmt.Println("Entering utility.Use function")
+	//logger.Info(context.Background(), "middleware.Use")
 	defer sentry.Recover()
 	//defer sentry.Flush(2 * time.Second)
 	return func(c *fiber.Ctx) error {

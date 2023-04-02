@@ -16,7 +16,7 @@ import (
 
 type IAccountService interface {
 	CreateUserAccount(data *Dto.SignUpDto, ctx *fiber.Ctx) (*fiber.Map, error)
-	SwitchUserAccount(ctx *fiber.Ctx) (*fiber.Map, error)
+	SwitchUserAccount(accountId, userId string) (*models.User, error)
 	CreateBusinessAccount(data *Dto.AddAccountDto, ctx *fiber.Ctx) (*Dto.UserAccountResponse, error)
 	GetAccount(ctx *fiber.Ctx) (*Dto.UserAccountResponse, error)
 	GetAccounts(ctx *fiber.Ctx) (*[]models.Account, error)
@@ -25,29 +25,28 @@ type IAccountService interface {
 
 type AccountService struct {
 	db      *gorm.DB
-	account *models.Account
-	user    *models.User
+	account models.Account
+	user    models.User
 }
 
-func NewAccountService(db *gorm.DB, account *models.Account, user *models.User) *AccountService {
+func NewAccountService(db *gorm.DB, account models.Account, user models.User) *AccountService {
 	return &AccountService{db: db, account: account, user: user}
 }
 
 func (s *AccountService) CreateUserAccount(data *Dto.SignUpDto, ctx *fiber.Ctx) (*fiber.Map, error) {
 
 	// check if user has already registered an account
-	userData, _ := s.user.GetByEmail(data.Email, database.DB)
+	userData, err := s.user.GetByEmail(data.Email, database.DB)
 
 	//if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 	//	// continue if user doesn't exist
 	//} else {
-	//	return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+	//	return &fiber.Map{
 	//		"error": "Internal Server Error",
-	//	})
+	//	}, err
 	//}
 
-	logger.Info(context.Background(), fmt.Sprintf("userData: %v", userData))
-
+	// check if user has already registered an account
 	if userData != nil {
 		// user already owns an account
 		if userData.Permission == "owner" {
@@ -83,8 +82,6 @@ func (s *AccountService) CreateUserAccount(data *Dto.SignUpDto, ctx *fiber.Ctx) 
 	logger.Info(context.Background(), "CreateAccount")
 
 	//account := new(models.Account)
-
-	fmt.Println("data.AccountType", data.AccountType)
 	// create the user and assign to account
 	newUser, err := s.user.CreateUser(*data, ctx, database.DB)
 	if err != nil {
@@ -104,11 +101,9 @@ func (s *AccountService) CreateUserAccount(data *Dto.SignUpDto, ctx *fiber.Ctx) 
 
 	//c.Locals("token", tokenData)
 	var newData = &models.Token{
-		Provider: "app",
-		Jwt:      tokenData.Access,
-		Access:   tokenData.Access,
-		TokenID:  tokenData.TokenID,
-		//AccessTokenExpiry: tokenData.AccessExpiresIn,
+		Provider:         "app",
+		Access:           tokenData.Access,
+		TokenID:          tokenData.TokenID,
 		Refresh:          tokenData.Refresh,
 		UserID:           tokenData.UserID,
 		CodeCreateAt:     time.Time{},
@@ -117,7 +112,6 @@ func (s *AccountService) CreateUserAccount(data *Dto.SignUpDto, ctx *fiber.Ctx) 
 		AccessExpiresIn:  tokenData.AccessExpiresIn,
 		RefreshCreateAt:  time.Time{},
 		RefreshExpiresIn: tokenData.RefreshExpiresIn,
-		ProviderID:       "",
 	}
 
 	logger.Info(context.Background(), fmt.Sprintf("newData: %v", newData))
@@ -180,28 +174,22 @@ func (s *AccountService) CreateBusinessAccount(data *Dto.AddAccountDto, ctx *fib
 	return businessAccount.GenerateUserAccountResponse(database.DB), nil
 }
 
-func (s *AccountService) SwitchUserAccount(ctx *fiber.Ctx) (*fiber.Map, error) {
-	// get the user from the context
-	userID := ctx.Locals("user").(string)
-	logger.Info(context.Background(), fmt.Sprintf("user: %v", userID))
-
-	// get the user's account
-	userModel := new(models.User)
+func (s *AccountService) SwitchUserAccount(accountId, userId string) (*models.User, error) {
 
 	// switch the user's account
-	if err := userModel.SwitchAccount(userID, database.DB); err != nil {
+	if err := s.user.SwitchAccount(accountId, userId, database.DB); err != nil {
 		sentry.CaptureException(err)
-		return &fiber.Map{
-			"error": "Internal Server Error",
-		}, err
+		return nil, err
 	}
 
-	userAccount := userModel.GenerateUserAccountResponse()
+	// get the user's account
+	userData, err := s.user.GetUserById(userId, database.DB)
+	if err != nil {
+		sentry.CaptureException(err)
+		return nil, err
+	}
 
-	return &fiber.Map{
-		"message": "Account switched successfully",
-		"data":    userAccount,
-	}, nil
+	return userData, nil
 }
 
 func (s *AccountService) GetAccount(ctx *fiber.Ctx) (*Dto.UserAccountResponse, error) {
@@ -230,9 +218,9 @@ func (s *AccountService) GetAccount(ctx *fiber.Ctx) (*Dto.UserAccountResponse, e
 	}
 
 	for _, account := range userData.Accounts {
-		if account.ID == userData.CurrentActiveAccount {
+		if account.ID == userData.ActiveAccountID {
 			return account.GenerateUserAccountResponse(database.DB), nil
-		} else if account.ID == userData.DefaultAccount {
+		} else if account.ID == userData.DefaultAccountID {
 			return account.GenerateUserAccountResponse(database.DB), nil
 		}
 	}
@@ -272,7 +260,7 @@ func (s *AccountService) MakeAccountDefault(accountId string, ctx *fiber.Ctx) (*
 
 	for _, account := range user.Accounts {
 		if account.ID == accountId {
-			user.DefaultAccount = accountId
+			user.DefaultAccountID = account.ID
 			if err := s.db.Save(&user).Error; err != nil {
 				sentry.CaptureException(err)
 				return nil, err

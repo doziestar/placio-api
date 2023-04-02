@@ -27,7 +27,7 @@ func NewAuthController(authService service.IAuth, utility utility.IUtility) *Aut
 func (controller *AuthController) RegisterRoutes(app fiber.Router) {
 	authGroup := app.Group("/auth")
 
-	//authGroup.Post("/auth/sign-in", utility.Use(a.SignIn))
+	authGroup.Post("/sign-in", utility.Use(controller.signIn))
 	//authGroup.Post("/auth/sign-up", utility.Use(a.SignUp))
 	authGroup.Post("/sign-out", middleware.Verify("user"), utility.Use(controller.signOut))
 	authGroup.Get("/refresh", middleware.Verify("user"), utility.Use(controller.refreshToken))
@@ -265,36 +265,6 @@ func (controller *AuthController) signIn(c *fiber.Ctx) error {
 		}
 	}
 
-	//// get the account
-	//accountData, err := account.GetAccount(userData.AccountID)
-	//if err != nil {
-	//	return err
-	//}
-	var selectedAccount *models.Account
-
-	if len(userData.Accounts) > 1 {
-		for _, account := range userData.Accounts {
-			if account.Selected {
-				selectedAccount = &account
-				break
-			}
-		}
-		if selectedAccount == nil {
-			for _, account := range userData.Accounts {
-				if account.Default {
-					selectedAccount = &account
-					break
-				}
-			}
-		}
-	} else {
-		selectedAccount = &userData.Accounts[0]
-	}
-
-	if !selectedAccount.Active {
-		return fiber.NewError(fiber.StatusUnauthorized, "Your account is not active. Please contact support.")
-	}
-
 	// log the sign in and check if it's suspicious
 	log, err := login.Create(userData.ID, c.IP(), c.Get("User-Agent"), c.Get("Device"), database.DB)
 	if err != nil {
@@ -343,55 +313,55 @@ func (controller *AuthController) signIn(c *fiber.Ctx) error {
 	})
 }
 
-func (controller *AuthController) authenticate(c *fiber.Ctx, userData models.User) error {
-	accountData, err := account.GetAccount(userData.AccountID)
-	if err != nil {
-		return err
-	}
-
-	subscription, err := account.GetSubscription(userData.AccountID)
-	if err != nil {
-		return err
-	}
-
-	userAccounts, err := account.GetUserAccount(userData.ID)
-	if err != nil {
-		return err
-	}
-
-	// create & store the token
-	//jwt, err := token.Generate(userData.ID, userData.AccountID, "app", userData.AccountID, userData.Email)
-	if err != nil {
-		return err
-	}
-	//
-	//err = token.Save("app", map[string]string{
-	//	"provider_id":  userData.AccountID,
-	//	"email":        userData.Email,
-	//	"accessToken":  jwt.Access,
-	//	"refreshToken": jwt.Refresh,
-	//	//"expires":     jwt.AccessExpiresIn,
-	//
-	//}, userData.ID)
-	if err != nil {
-		return err
-	}
-
-	userData.UpdateUser(userData.ID, userData.AccountID, time.Now(), false)
-
-	// return user to client
-	return c.Status(fiber.StatusOK).JSON(map[string]interface{}{
-		//"token":        jwt,
-		"subscription": subscription.Status,
-		"plan":         accountData.Plan,
-		"permission":   userData.Permission,
-		"name":         userData.Name,
-		"accounts":     userAccounts,
-		"account_id":   userData.AccountID,
-		"has_password": userData.HasPassword,
-		"onboarded":    userData.Onboarded,
-	})
-}
+//func (controller *AuthController) authenticate(c *fiber.Ctx, userData models.User) error {
+//	accountData, err := account.GetAccount(userData.AccountID, database.DB)
+//	if err != nil {
+//		return err
+//	}
+//
+//	subscription, err := account.GetSubscription(userData.AccountID)
+//	if err != nil {
+//		return err
+//	}
+//
+//	userAccounts, err := account.GetUserAccount(userData.ID)
+//	if err != nil {
+//		return err
+//	}
+//
+//	// create & store the token
+//	//jwt, err := token.Generate(userData.ID, userData.AccountID, "app", userData.AccountID, userData.Email)
+//	if err != nil {
+//		return err
+//	}
+//	//
+//	//err = token.Save("app", map[string]string{
+//	//	"provider_id":  userData.AccountID,
+//	//	"email":        userData.Email,
+//	//	"accessToken":  jwt.Access,
+//	//	"refreshToken": jwt.Refresh,
+//	//	//"expires":     jwt.AccessExpiresIn,
+//	//
+//	//}, userData.ID)
+//	if err != nil {
+//		return err
+//	}
+//
+//	userData.UpdateUser(userData.ID, userData.AccountID, time.Now(), false)
+//
+//	// return user to client
+//	return c.Status(fiber.StatusOK).JSON(map[string]interface{}{
+//		//"token":        jwt,
+//		"subscription": subscription.Status,
+//		"plan":         accountData.Plan,
+//		"permission":   userData.Permission,
+//		"name":         userData.Name,
+//		"accounts":     userAccounts,
+//		"account_id":   userData.AccountID,
+//		"has_password": userData.HasPassword,
+//		"onboarded":    userData.Onboarded,
+//	})
+//}
 
 //func Signout(c *fiber.Ctx) error {
 //	// destroy social tokens
