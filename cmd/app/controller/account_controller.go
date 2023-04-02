@@ -146,14 +146,22 @@ func validate(email string, name string, password string) error {
 // @Failure 500 {object} Dto.ErrorDTO "Internaxxl Server Error"
 // @Router /api/v1/accounts/{accountId}/switch-account [post]
 func (c *AccountController) switchAccount(ctx *fiber.Ctx) error {
-	response, err := c.store.SwitchUserAccount(ctx)
+	accountId := ctx.Params("accountId")
+	userId := ctx.Locals("user").(string)
+	response, err := c.store.SwitchUserAccount(accountId, userId)
 	if err != nil {
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Internal Server Error",
 		})
 	}
 
-	return ctx.Status(fiber.StatusOK).JSON(response)
+	data, err := utility.RemoveSensitiveFields(response)
+
+	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "Successfully switched account",
+		"data":    data,
+		"status":  "success",
+	})
 }
 
 // Plan godoc

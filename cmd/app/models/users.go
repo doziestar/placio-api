@@ -45,15 +45,15 @@ type User struct {
 	//DefaultAccount       Account    `gorm:"foreignKey:DefaultAccountID"`
 	ActiveAccountID string `gorm:"column:active_account_id"`
 	//ActiveAccount        Account    `gorm:"foreignKey:ActiveAccountID"`
-	Accounts        []Account `gorm:"foreignKey:UserID"`
-	IP              string    `gorm:"column:ip"`
-	UserAgent       string    `gorm:"column:user_agent"`
-	Twitter         *TwitterAccount
-	Facebook        *FacebookAccount
-	Google          *GoogleAccount
-	HasPassword     bool            `gorm:"column:has_password"`
-	Onboarded       bool            `gorm:"column:onboarded"`
-	AccountID       string          `gorm:"column:account_id"`
+	Accounts    []Account `gorm:"foreignKey:UserID"`
+	IP          string    `gorm:"column:ip"`
+	UserAgent   string    `gorm:"column:user_agent"`
+	Twitter     *TwitterAccount
+	Facebook    *FacebookAccount
+	Google      *GoogleAccount
+	HasPassword bool `gorm:"column:has_password"`
+	Onboarded   bool `gorm:"column:onboarded"`
+	//AccountID       string          `gorm:"column:account_id"`
 	Permission      string          `gorm:"column:permission"`
 	GeneralSettings GeneralSettings `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 }
@@ -235,24 +235,24 @@ func Get(id uuid.UUID, email string, account string, social *Social, permission 
 		}
 	}
 
-	for i, user := range users {
-		user.Accounts = nil
-		user.HasPassword = user.Password != ""
-		user.Password = ""
-		if account != "" {
-			user.AccountID = account
-		} else {
-			user.AccountID = user.DefaultAccountID
-		}
-		for _, account := range user.Accounts {
-			if account.ID == user.AccountID {
-				user.Permission = account.Permission
-				user.Onboarded = account.Onboarded
-				break
-			}
-		}
-		users[i] = user
-	}
+	//for i, user := range users {
+	//	user.Accounts = nil
+	//	user.HasPassword = user.Password != ""
+	//	user.Password = ""
+	//	if account != "" {
+	//		user.AccountID = account
+	//	} else {
+	//		user.AccountID = user.DefaultAccountID
+	//	}
+	//	for _, account := range user.Accounts {
+	//		if account.ID == user.AccountID {
+	//			user.Permission = account.Permission
+	//			user.Onboarded = account.Onboarded
+	//			break
+	//		}
+	//	}
+	//	users[i] = user
+	//}
 
 	return users, nil
 }
@@ -733,7 +733,7 @@ func (u *User) GenerateUserResponse(token *Token) Dto.UserResponse {
 						ID:          a.ID,
 						Permission:  a.Permission,
 						AccountType: a.AccountType,
-						AccountID:   a.AccountID,
+						AccountID:   a.ID,
 						Onboarded:   a.Onboarded,
 						//Interests:   a.Interests,
 						UserID:   a.UserID,
@@ -764,7 +764,7 @@ func (u *User) GenerateUserResponse(token *Token) Dto.UserResponse {
 					ID:          account.ID,
 					Permission:  account.Permission,
 					AccountType: account.AccountType,
-					AccountID:   account.AccountID,
+					AccountID:   account.ID,
 					Onboarded:   account.Onboarded,
 					//Interests:   a.Interests,
 					UserID:   account.UserID,
@@ -841,6 +841,7 @@ func (u *User) Login(c *fiber.Ctx, db *gorm.DB) error {
 func (u *User) GetByEmail(email string, db *gorm.DB) (*User, error) {
 	var user *User
 	err := db.Preload("Accounts").Preload("GeneralSettings").Where("email = ?", email).First(&user).Error
+	logger.Info(context.Background(), fmt.Sprintf(" %s user accounts found", len(user.Accounts)))
 	if err != nil {
 		return nil, err
 	}
@@ -881,8 +882,8 @@ func (u *User) AddToAccount(id string, id2 string, s string) interface{} {
 		return err
 	}
 	user.Accounts = append(user.Accounts, Account{
-		ID:        id2,
-		AccountID: s,
+		ID: id2,
+		//AccountID: s,
 	})
 	err = db.Save(&user).Error
 	return err
@@ -910,27 +911,17 @@ func (u *User) UpdateUser(userId string, accountId string, lastActive time.Time,
 
 }
 
-func (u *User) SwitchAccount(id string, d *gorm.DB) error {
+func (u *User) SwitchAccount(accountId, userId string, d *gorm.DB) error {
 	// get user by id
-	user, err := u.GetUserById(id, d)
+	userData, err := u.GetUserById(userId, d)
 	if err != nil {
 		return err
 	}
 
-	// loop through accounts and replace the current account with the next one
-	//for i, a := range user.Accounts {
-	//	if a.ID == user.CurrentActiveAccount.ID {
-	//		if i+1 == len(user.Accounts) {
-	//			user.CurrentActiveAccount = user.Accounts[0].ID
-	//		} else {
-	//			user.CurrentActiveAccount = user.Accounts[i+1].ID
-	//		}
-	//		break
-	//	}
-	//}
+	userData.ActiveAccountID = accountId
 
 	// save user
-	err = d.Save(&user).Error
+	err = d.Save(&userData).Error
 	return nil
 }
 
