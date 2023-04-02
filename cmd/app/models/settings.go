@@ -18,7 +18,6 @@ type GeneralSettings struct {
 	UserID        string                `gorm:"unique"`
 	Privacy       string                `gorm:"default:'public'"`
 	Notifications NotificationsSettings `gorm:"foreignKey:UserID"`
-	Account       AccountSettings       `gorm:"foreignKey:UserID"`
 	Content       ContentSettings       `gorm:"foreignKey:UserID"`
 }
 
@@ -43,7 +42,7 @@ type NotificationsSettings struct {
 
 type AccountSettings struct {
 	ID                      string `gorm:"primaryKey"`
-	UserID                  string `gorm:"unique"`
+	AccountID               string `gorm:"unique"`
 	TwoFactorAuthentication bool
 	BlockedUsers            []string `gorm:"type:json"`
 	MutedUsers              []string `gorm:"type:json"`
@@ -140,7 +139,7 @@ func (g *GeneralSettings) CreateGeneralSettings(userID string, db *gorm.DB) (*Ge
 	g.ID = GenerateID()
 
 	var n NotificationsSettings
-	var a AccountSettings
+	//var a AccountSettings
 	var c ContentSettings
 
 	_, err := n.createNotificationsSettings(userID, db)
@@ -148,10 +147,10 @@ func (g *GeneralSettings) CreateGeneralSettings(userID string, db *gorm.DB) (*Ge
 		return nil, err
 	}
 
-	_, err = a.createAccountSettings(userID, db)
-	if err != nil {
-		return nil, err
-	}
+	//_, err = a.createAccountSettings(userID, db)
+	//if err != nil {
+	//	return nil, err
+	//}
 
 	_, err = c.createContentSettings(userID, db)
 	if err != nil {
@@ -178,14 +177,20 @@ func (n *NotificationsSettings) createNotificationsSettings(userID string, db *g
 }
 
 // CreateAccountSettings /*
-func (a *AccountSettings) createAccountSettings(userID string, db *gorm.DB) (*AccountSettings, error) {
+func (a *AccountSettings) createAccountSettings(accountID string, db *gorm.DB) (*AccountSettings, error) {
 	a.ID = GenerateID()
-	a.UserID = userID
+	a.AccountID = accountID
 	a.TwoFactorAuthentication = false
 	a.BlockedUsers = []string{}
 	a.MutedUsers = []string{}
 	result := db.Create(&a)
 	return a, result.Error
+}
+
+func (a *AccountSettings) GetAccountSettings(id string, d *gorm.DB) (*AccountSettings, error) {
+	var accountSettings AccountSettings
+	result := d.First(&accountSettings, "account_id = ?", id)
+	return &accountSettings, result.Error
 }
 
 // CreateContentSettings /*

@@ -4,10 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"placio-app/Dto"
 	"placio-app/database"
 	errs "placio-app/errors"
+	"placio-pkg/hash"
 	"placio-pkg/logger"
 	"time"
 
@@ -40,19 +42,18 @@ type User struct {
 	DefaultAccount       string     `gorm:"column:default_account"`
 	FacebookID           string     `gorm:"column:facebook_id"`
 	TwitterID            string     `gorm:"column:twitter_id"`
-	DefaultAccountID     string     `gorm:"column:default_account_id"`
+	CurrentActiveAccount string     `gorm:"column:current_active_account"`
 	Accounts             []Account  `gorm:"foreignKey:UserID"`
 	IP                   string     `gorm:"column:ip"`
 	UserAgent            string     `gorm:"column:user_agent"`
 	Twitter              *TwitterAccount
 	Facebook             *FacebookAccount
 	Google               *GoogleAccount
-	HasPassword          bool   `gorm:"column:has_password"`
-	Onboarded            bool   `gorm:"column:onboarded"`
-	AccountID            string `gorm:"column:account_id"`
-	Permission           string `gorm:"column:permission"`
-	//GeneralSettingsID    string
-	GeneralSettings GeneralSettings `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	HasPassword          bool            `gorm:"column:has_password"`
+	Onboarded            bool            `gorm:"column:onboarded"`
+	AccountID            string          `gorm:"column:account_id"`
+	Permission           string          `gorm:"column:permission"`
+	GeneralSettings      GeneralSettings `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 }
 
 type TwitterAccount struct {
@@ -224,8 +225,13 @@ func (u *User) CreateUser(userData Dto.SignUpDto, c *fiber.Ctx, db *gorm.DB) (*U
 		return &User{}, err
 	}
 
+	logger.Info(context.Background(), "Account created")
 	// Update the account record with the account ID
-	err = db.Model(&accountRecord).Update("account_id", account.ID).Update("default_account_id", account.ID).Error
+	err = db.Model(User{}).Where("id", u.ID).Updates(map[string]interface{}{
+		"account_id":             account.ID,
+		"default_account":        account.ID,
+		"current_active_account": account.ID,
+	}).Error
 	if err != nil {
 		return &User{}, err
 	}
@@ -288,16 +294,16 @@ func Get(id uuid.UUID, email string, account string, social *Social, permission 
 
 	return users, nil
 }
-
 func (u *User) GetUserById(id string, db *gorm.DB) (*User, error) {
-	err := db.Model(&User{}).Where("id = ?", id).First(&u).Error
+	var user User
+	err := db.Preload("Accounts").Where("id = ?", id).First(&user).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("User not found")
 		}
 		return nil, err
 	}
-	return u, nil
+	return &user, nil
 }
 
 // GetAccounts returns a list of accounts that the user with the given ID is attached to
@@ -736,6 +742,11 @@ func (u *User) GenerateToken(user User) (Dto.Token, error) {
 }
 
 func (u *User) GenerateUserResponse(token *Token) Dto.UserResponse {
+	refresh, err := hash.EncryptString(token.Refresh, "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6")
+	if err != nil {
+		log.Println(err)
+
+	}
 	return Dto.UserResponse{
 		User: &Dto.User{
 			ID:          u.ID,
@@ -786,11 +797,12 @@ func (u *User) GenerateUserResponse(token *Token) Dto.UserResponse {
 				}
 			}(database.DB),
 		},
+
 		Token: &Dto.UserToken{
 			UserID:           u.ID,
 			Access:           token.Access,
 			AccessExpiresIn:  int64(token.AccessExpiresIn),
-			Refresh:          token.Refresh,
+			Refresh:          refresh,
 			RefreshExpiresIn: int64(token.RefreshExpiresIn),
 		},
 	}
@@ -899,6 +911,35 @@ func (u *User) UpdateUser(userId string, accountId string, lastActive time.Time,
 	user.Accounts[0].Disabled = disabled
 	db.Save(&user)
 
+}
+
+func (u *User) SwitchAccount(id string, d *gorm.DB) error {
+	// get user by id
+	user, err := u.GetUserById(id, d)
+	if err != nil {
+		return err
+	}
+
+	// loop through accounts and replace the current account with the next one
+	for i, a := range user.Accounts {
+		if a.ID == user.CurrentActiveAccount {
+			if i+1 == len(user.Accounts) {
+				user.CurrentActiveAccount = user.Accounts[0].ID
+			} else {
+				user.CurrentActiveAccount = user.Accounts[i+1].ID
+			}
+			break
+		}
+	}
+
+	// save user
+	err = d.Save(&user).Error
+	return nil
+}
+
+func (u *User) GenerateUserAccountResponse() error {
+
+	return nil
 }
 
 //

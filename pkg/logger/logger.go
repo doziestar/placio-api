@@ -32,6 +32,7 @@ func Warning(ctx context.Context, v string) {
 }
 
 func Error(ctx context.Context, v string) {
+	//sentry.CaptureException(v)
 	Logger.Error(ctx, messageWithMeta(ctx, v))
 }
 

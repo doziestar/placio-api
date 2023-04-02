@@ -10,7 +10,6 @@ import (
 	"os"
 	"placio-app/database"
 	"placio-app/models"
-	"placio-pkg/hash"
 	"placio-pkg/logger"
 	"strings"
 	"time"
@@ -62,8 +61,8 @@ func Verify(permission string) fiber.Handler {
 		}
 		var err error
 		token := parts[1]
-		token, err = hash.DecryptString(token, "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6")
-		logger.Info(context.Background(), fmt.Sprintf("token: %s", token))
+		//token, err = hash.DecryptString(token, "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6")
+		//logger.Info(context.Background(), fmt.Sprintf("token: %s", token))
 
 		claims, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
 			return []byte(os.Getenv("ACCESS_TOKEN_SECRET")), nil
@@ -77,7 +76,8 @@ func Verify(permission string) fiber.Handler {
 		customClaims, ok := claims.Claims.(jwt.MapClaims)
 
 		logger.Info(context.Background(), fmt.Sprintf("customClaims: %v", customClaims))
-
+		logger.Info(context.Background(), fmt.Sprintf("ok: %v", ok))
+		logger.Info(context.Background(), fmt.Sprintf("claims.Valid: %v", claims.Valid))
 		if !ok || !claims.Valid {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 				"message": "Invalid auth token",
@@ -106,6 +106,7 @@ func Verify(permission string) fiber.Handler {
 		var user *models.User
 		//var account *models.Account
 
+		logger.Info(context.Background(), fmt.Sprintf("customClaims[\"sub\"]: %v", customClaims["sub"].(string)))
 		userAccount, err := user.GetUserById(customClaims["sub"].(string), database.DB)
 		logger.Info(context.Background(), fmt.Sprintf("userAccount: %v", userAccount))
 		if err != nil {
