@@ -224,6 +224,21 @@ definitions:
       Permission:
         type: string
     type: object
+  placio-app_Dto.UserAccountResponse:
+    properties:
+      account:
+        $ref: '#/definitions/placio-app_Dto.Account'
+      disabled:
+        type: boolean
+      email:
+        type: string
+      name:
+        type: string
+      support_enabled:
+        type: boolean
+      user_id:
+        type: string
+    type: object
   placio-app_Dto.UserResponse:
     properties:
       token:
@@ -246,8 +261,6 @@ definitions:
     type: object
   placio-app_models.Account:
     properties:
-      accountID:
-        type: string
       accountSetting:
         $ref: '#/definitions/placio-app_models.AccountSettings'
       accountType:
@@ -258,17 +271,17 @@ definitions:
         type: string
       default:
         type: boolean
-      deletedAt:
-        $ref: '#/definitions/gorm.DeletedAt'
       disabled:
         type: boolean
       id:
+        description: gorm.Model
         type: string
       lastActive:
         type: string
       name:
         type: string
       onboarded:
+        description: AccountID   string
         type: boolean
       payStackCustomerID:
         type: string
@@ -547,19 +560,19 @@ definitions:
     type: object
   placio-app_models.User:
     properties:
-      accountID:
-        type: string
       accounts:
+        description: ActiveAccount        Account    `gorm:"foreignKey:ActiveAccountID"`
         items:
           $ref: '#/definitions/placio-app_models.Account'
         type: array
-      createdAt:
+      activeAccountID:
+        description: DefaultAccount       Account    `gorm:"foreignKey:DefaultAccountID"`
         type: string
-      currentActiveAccount:
+      createdAt:
         type: string
       dateCreated:
         type: string
-      defaultAccount:
+      defaultAccountID:
         type: string
       deletedAt:
         type: string
@@ -592,6 +605,7 @@ definitions:
       password:
         type: string
       permission:
+        description: AccountID       string          `gorm:"column:account_id"`
         type: string
       supportEnabled:
         type: boolean
@@ -702,6 +716,43 @@ paths:
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
       summary: Get account
+      tags:
+      - Account
+  /accounts/{accountId}/make-default:
+    put:
+      consumes:
+      - application/json
+      description: Make account default
+      parameters:
+      - description: Account ID
+        in: path
+        name: accountId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_Dto.UserAccountResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Make account default
       tags:
       - Account
   /accounts/{id}:
@@ -1176,6 +1227,39 @@ paths:
       summary: Upgrade plan
       tags:
       - Account
+  /api/v1/accounts/{accountId}/switch-account:
+    post:
+      consumes:
+      - application/json
+      description: Switch to a different account
+      parameters:
+      - description: Account ID
+        in: path
+        name: accountId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully switched account
+          schema:
+            $ref: '#/definitions/placio-app_Dto.UserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "500":
+          description: Internaxxl Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Switch to a different account
+      tags:
+      - Account
   /api/v1/accounts/create-account:
     post:
       consumes:
@@ -1208,40 +1292,6 @@ paths:
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
       summary: Create a new account
-      tags:
-      - Account
-  /api/v1/accounts/switch-account:
-    post:
-      consumes:
-      - application/json
-      description: Switch to a different account
-      parameters:
-      - description: Switch Account Data
-        in: body
-        name: SwitchAccountDto
-        required: true
-        schema:
-          type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully switched account
-          schema:
-            $ref: '#/definitions/placio-app_Dto.UserResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Switch to a different account
       tags:
       - Account
   /api/v1/auth:
@@ -1778,6 +1828,26 @@ paths:
             additionalProperties: true
             type: object
       summary: Retrieve a list of voice notes sent by a specific user by ID
+      tags:
+      - User
+  /api/v1/users/me:
+    get:
+      consumes:
+      - '*/*'
+      description: Retrieve the current user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_models.User'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Retrieve the current user
       tags:
       - User
   /api/v1/voice_notes/{id}:
