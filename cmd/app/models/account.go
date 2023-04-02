@@ -43,6 +43,7 @@ type Account struct {
 	Disabled                   bool      `gorm:"column:disabled"`
 	CreatedAt                  time.Time `gorm:"column:created_at"`
 	UpdatedAt                  time.Time `gorm:"column:updated_at"`
+	Events                     []Event   `gorm:"foreignKey:AccountID"`
 }
 
 // BeforeCreate /*
