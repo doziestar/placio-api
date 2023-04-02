@@ -11,6 +11,11 @@ type ErrorDTO struct {
 	Message string `json:"message"`
 }
 
+type SuccessDTO struct {
+	Status  int    `json:"status"`
+	Message string `json:"message"`
+}
+
 // NewErrorDTO creates a new ErrorDTO instance with the provided status and message.
 func NewErrorDTO(status int, message string) *ErrorDTO {
 	return &ErrorDTO{Status: status, Message: message}
