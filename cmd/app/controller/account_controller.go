@@ -143,7 +143,7 @@ func validate(email string, name string, password string) error {
 // @Success 200 {object} Dto.UserResponse "Successfully switched account"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 403 {object} Dto.ErrorDTO "Forbidden"
-// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
+// @Failure 500 {object} Dto.ErrorDTO "Internaxxl Server Error"
 // @Router /api/v1/accounts/{accountId}/switch-account [post]
 func (c *AccountController) switchAccount(ctx *fiber.Ctx) error {
 	response, err := c.store.SwitchUserAccount(ctx)
