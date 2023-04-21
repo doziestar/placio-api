@@ -10,20 +10,21 @@ import (
 )
 
 type IUser interface {
-	CreateUser(userData Dto.SignUpDto, ctx *fiber.Ctx, db *gorm.DB) (*models.User, error)
-	Get(id, email, account, permission string, social *models.Social, db *gorm.DB) (*[]models.User, error)
-	GetUserByID(userID string, db *gorm.DB) (*models.User, error)
-	GetByEmail(email string, db *gorm.DB) (*models.User, error)
+	CreateUser(userData Dto.SignUpDto, ctx *fiber.Ctx) (*models.User, error)
+	Get(id, email, account, permission string, social *models.Social) (*[]models.User, error)
+	GetUserByID(userID string) (*models.User, error)
+	GetByEmail(email string) (*models.User, error)
 	AddToAccount(userID, accountId, secondAccountId string)
 	UpdateUser(userId string, accountId string, lastActive time.Time, disabled bool)
-	GetUserAccounts(userID string, db *gorm.DB) (*[]models.Account, error)
+	GetUserAccounts(userID string) (*[]models.Account, error)
 	AddInterest(userID, accountID, interest string) error
 	UpdateInterest(userID, accountID, oldInterest, newInterest string) error
-	AddAccount(accountID, permission string, db *gorm.DB) error
-	DeleteAccount(userId, accountId string, db *gorm.DB) error
-	UpdateUserProfile(userId, accountId string, data Dto.UpdateProfileDto, db *gorm.DB) error
-	DeleteUser(userId, accountID string, db *gorm.DB) error
+	AddAccount(accountID, permission string) error
+	DeleteAccount(userId, accountId string) error
+	UpdateUserProfile(userId, accountId string, data Dto.UpdateProfileDto) error
+	DeleteUser(userId, accountID string) error
 	GetLoggedInUser(userId string) (*models.User, error)
+	CheckIfUserNameOrEmailExists(userName, email string) (bool, error)
 }
 
 type UserService struct {
@@ -36,7 +37,7 @@ func NewUserService(db *gorm.DB, user *models.User, account *models.Account) *Us
 	return &UserService{user, db, account}
 }
 
-// Get Logged in user
+// GetLoggedInUser Logged in user
 func (u *UserService) GetLoggedInUser(userId string) (*models.User, error) {
 	// get user from db
 	userData, err := u.user.GetUserById(userId, u.db)
@@ -48,24 +49,24 @@ func (u *UserService) GetLoggedInUser(userId string) (*models.User, error) {
 
 }
 
-func (u *UserService) CreateUser(userData Dto.SignUpDto, ctx *fiber.Ctx, db *gorm.DB) (*models.User, error) {
+func (u *UserService) CreateUser(userData Dto.SignUpDto, ctx *fiber.Ctx) (*models.User, error) {
 	return nil, nil
 }
 
-func (u *UserService) Get(id, email, account, permission string, social *models.Social, db *gorm.DB) (*[]models.User, error) {
+func (u *UserService) Get(id, email, account, permission string, social *models.Social) (*[]models.User, error) {
 	return nil, nil
 }
 
-func (u *UserService) GetUserByID(userID string, db *gorm.DB) (*models.User, error) {
-	logger.Info(db.Statement.Context, "user id: "+userID)
-	user, err := u.user.GetUserById(userID, db)
+func (u *UserService) GetUserByID(userID string) (*models.User, error) {
+	logger.Info(u.db.Statement.Context, "user id: "+userID)
+	user, err := u.user.GetUserById(userID, u.db)
 	if err != nil {
 		return nil, err
 	}
 	return user, nil
 }
 
-func (u *UserService) GetByEmail(email string, db *gorm.DB) (*models.User, error) {
+func (u *UserService) GetByEmail(email string) (*models.User, error) {
 	return nil, nil
 }
 
@@ -77,7 +78,7 @@ func (u *UserService) UpdateUser(userId string, accountId string, lastActive tim
 
 }
 
-func (u *UserService) GetUserAccounts(userID string, db *gorm.DB) (*[]models.Account, error) {
+func (u *UserService) GetUserAccounts(userID string) (*[]models.Account, error) {
 	return nil, nil
 }
 
@@ -89,18 +90,40 @@ func (u *UserService) UpdateInterest(userID, accountID, oldInterest, newInterest
 	return nil
 }
 
-func (u *UserService) AddAccount(accountID, permission string, db *gorm.DB) error {
+func (u *UserService) AddAccount(accountID, permission string) error {
 	return nil
 }
 
-func (u *UserService) DeleteAccount(userId, accountId string, db *gorm.DB) error {
+func (u *UserService) DeleteAccount(userId, accountId string) error {
 	return nil
 }
 
-func (u *UserService) UpdateUserProfile(userId, accountId string, data Dto.UpdateProfileDto, db *gorm.DB) error {
+func (u *UserService) UpdateUserProfile(userId, accountId string, data Dto.UpdateProfileDto) error {
 	return nil
 }
 
-func (u *UserService) DeleteUser(userId, accountID string, db *gorm.DB) error {
+func (u *UserService) DeleteUser(userId, accountID string) error {
 	return nil
+}
+
+// CheckIfUserNameOrEmailExists checks if username or email exists
+func (u *UserService) CheckIfUserNameOrEmailExists(userName, email string) (bool, error) {
+	if userName != "" {
+		user, err := u.user.GetUserByUserName(userName, u.db)
+		if err != nil {
+			return false, err
+		}
+		if user != nil {
+			return true, nil
+		}
+	} else if email != "" {
+		user, err := u.user.GetUserByEmail(email, u.db)
+		if err != nil {
+			return false, err
+		}
+		if user != nil {
+			return true, nil
+		}
+	}
+	return false, nil
 }

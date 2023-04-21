@@ -17,12 +17,12 @@ type GeneralSettings struct {
 	Theme         string
 	UserID        string                `gorm:"unique"`
 	Privacy       string                `gorm:"default:'public'"`
-	Notifications NotificationsSettings `gorm:"foreignKey:UserID"`
-	Content       ContentSettings       `gorm:"foreignKey:UserID"`
+	Notifications NotificationsSettings `gorm:"foreignKey:UserID;references:ID"`
+	Content       ContentSettings       `gorm:"foreignKey:UserID;references:ID"`
 }
 
 func (g *GeneralSettings) BeforeCreate(tx *gorm.DB) error {
-	g.ID = GenerateID()
+	//g.ID = GenerateID()
 	g.CreatedAt = time.Now()
 	g.UpdatedAt = time.Now()
 	return nil
@@ -95,74 +95,34 @@ func (s *StringSlice) Value() (driver.Value, error) {
 	return nil, nil
 }
 
-//// CreateGeneralSettings /*
-//func (g *GeneralSettings) CreateGeneralSettings(userID string, db *gorm.DB) (*GeneralSettings, error) {
-//	g.UserID = userID
-//	g.Privacy = "public"
-//	g.Language = "en"
-//	g.Theme = "light"
-//	g.ID = GenerateID()
-//
-//	var n NotificationsSettings
-//	var a AccountSettings
-//	var c ContentSettings
-//
-//	notifications, err := n.createNotificationsSettings(userID, db)
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	account, err := a.createAccountSettings(userID, db)
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	content, err := c.createContentSettings(userID, db)
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	g.Notifications = *notifications
-//	g.Account = *account
-//	g.Content = *content
-//
-//	result := db.Create(&g)
-//	return g, result.Error
-//}
-
 // CreateGeneralSettings /*
-func (g *GeneralSettings) CreateGeneralSettings(userID string, db *gorm.DB) (*GeneralSettings, error) {
+func (g GeneralSettings) CreateGeneralSettings(userID string, db *gorm.DB) error {
 	g.UserID = userID
 	g.Privacy = "public"
 	g.Language = "en"
 	g.Theme = "light"
 	g.ID = GenerateID()
 
-	var n NotificationsSettings
-	//var a AccountSettings
-	var c ContentSettings
+	result := db.Create(&g)
 
-	_, err := n.createNotificationsSettings(userID, db)
-	if err != nil {
-		return nil, err
-	}
-
-	//_, err = a.createAccountSettings(userID, db)
+	//var notificationsSettings = NotificationsSettings{}
+	//var contentSettings = ContentSettings{}
+	//
+	//err := notificationsSettings.createNotificationsSettings(userID, db)
 	//if err != nil {
-	//	return nil, err
+	//	return err
+	//}
+	//
+	//err = contentSettings.createContentSettings(userID, db)
+	//if err != nil {
+	//	return err
 	//}
 
-	_, err = c.createContentSettings(userID, db)
-	if err != nil {
-		return nil, err
-	}
-
-	result := db.Create(&g)
-	return g, result.Error
+	return result.Error
 }
 
 // CreateNotificationsSettings /*
-func (n *NotificationsSettings) createNotificationsSettings(userID string, db *gorm.DB) (*NotificationsSettings, error) {
+func (n *NotificationsSettings) createNotificationsSettings(userID string, db *gorm.DB) error {
 	n.ID = GenerateID()
 	n.UserID = userID
 	n.EmailNotifications = true
@@ -173,7 +133,7 @@ func (n *NotificationsSettings) createNotificationsSettings(userID string, db *g
 	n.MentionNotifications = true
 	n.FollowNotifications = true
 	result := db.Create(&n)
-	return n, result.Error
+	return result.Error
 }
 
 // CreateAccountSettings /*
@@ -194,7 +154,7 @@ func (a *AccountSettings) GetAccountSettings(id string, d *gorm.DB) (*AccountSet
 }
 
 // CreateContentSettings /*
-func (c *ContentSettings) createContentSettings(userID string, db *gorm.DB) (*ContentSettings, error) {
+func (c *ContentSettings) createContentSettings(userID string, db *gorm.DB) error {
 	c.ID = GenerateID()
 	c.UserID = userID
 	c.MediaVisibility = "public"
@@ -203,5 +163,5 @@ func (c *ContentSettings) createContentSettings(userID string, db *gorm.DB) (*Co
 	c.AutoplayVideos = true
 	c.DisplaySensitiveMedia = true
 	result := db.Create(&c)
-	return c, result.Error
+	return result.Error
 }

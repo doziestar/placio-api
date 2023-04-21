@@ -943,7 +943,7 @@ const docTemplate = `{
                         }
                     },
                     "500": {
-                        "description": "Internaxxl Server Error",
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
                         }
@@ -1205,6 +1205,50 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/placio-app_models.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/check_user": {
+            "get": {
+                "description": "Check if user exists",
+                "consumes": [
+                    "*/*"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Check if user exists",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Username",
+                        "name": "username",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Email",
+                        "name": "email",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/fiber.Map"
                         }
                     },
                     "400": {
@@ -3206,7 +3250,8 @@ const docTemplate = `{
                 "email",
                 "name",
                 "password",
-                "phone"
+                "phone",
+                "username"
             ],
             "properties": {
                 "account_type": {
@@ -3227,6 +3272,9 @@ const docTemplate = `{
                     "minLength": 8
                 },
                 "phone": {
+                    "type": "string"
+                },
+                "username": {
                     "type": "string"
                 }
             }
@@ -3965,23 +4013,18 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "accounts": {
-                    "description": "ActiveAccount        Account    ` + "`" + `gorm:\"foreignKey:ActiveAccountID\"` + "`" + `",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/placio-app_models.Account"
                     }
                 },
                 "activeAccountID": {
-                    "description": "DefaultAccount       Account    ` + "`" + `gorm:\"foreignKey:DefaultAccountID\"` + "`" + `",
                     "type": "string"
                 },
                 "createdAt": {
                     "type": "string"
                 },
                 "dateCreated": {
-                    "type": "string"
-                },
-                "defaultAccountID": {
                     "type": "string"
                 },
                 "deletedAt": {
@@ -4030,7 +4073,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "permission": {
-                    "description": "AccountID       string          ` + "`" + `gorm:\"column:account_id\"` + "`" + `",
                     "type": "string"
                 },
                 "supportEnabled": {
@@ -4055,6 +4097,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "userAgent": {
+                    "type": "string"
+                },
+                "username": {
                     "type": "string"
                 }
             }

@@ -4,7 +4,6 @@ package controller
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"log"
@@ -35,6 +34,7 @@ func requestLogger() fiber.Handler {
 func (c *AccountController) RegisterRoutes(app fiber.Router) {
 	//app.Use(requestLogger())
 	accountGroup := app.Group("/accounts")
+	accountGroup.Get("/", middleware.Verify("user"), utility.Use(c.getUserAccount))
 	accountGroup.Post("/create-account", utility.Use(c.createAccount))
 	accountGroup.Post("/:accountId/switch-account/", middleware.Verify("user"), utility.Use(c.switchAccount))
 	accountGroup.Post("/:accountId/make-default/", middleware.Verify("user"), utility.Use(c.makeAccountDefault))
@@ -44,7 +44,6 @@ func (c *AccountController) RegisterRoutes(app fiber.Router) {
 	accountGroup.Get("/get-user-accounts", middleware.Verify("user"), utility.Use(c.getAccounts))
 	accountGroup.Get("/get-user-active-account", middleware.Verify("user"), utility.Use(c.getUserActiveAccount))
 	accountGroup.Get("/:accountId", middleware.Verify("user"), utility.Use(c.getUserAccount))
-	accountGroup.Get("/", middleware.Verify("user"), utility.Use(c.getUserAccount))
 	accountGroup.Patch("/card", middleware.Verify("owner"), utility.Use(c.updateInvoice))
 	accountGroup.Get("/invoice", middleware.Verify("owner"), utility.Use(c.getInvoice))
 	accountGroup.Get("/plans", middleware.Verify("owner"), utility.Use(c.getPlans))
@@ -87,7 +86,7 @@ func (c *AccountController) createAccount(ctx *fiber.Ctx) error {
 	log.Println("CreateAccount", data)
 
 	// validate input
-	if err := validate(data.Email, data.Name, data.Password); err != nil {
+	if err := utility.Validate(data.Email, data.Name, data.Password, data.Username); err != nil {
 		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": err.Error(),
 		})
@@ -110,23 +109,6 @@ func (c *AccountController) createAccount(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusCreated).JSON(response)
 }
 
-func validate(email string, name string, password string) error {
-	if email == "" {
-		return errors.New("Email is required")
-	}
-	if name == "" {
-		return errors.New("Name is required")
-	}
-	if password == "" {
-		return errors.New("Password is required")
-	}
-	if len(password) < 8 {
-		return errors.New("Password must be at least 8 characters")
-	}
-
-	return nil
-}
-
 // SwitchAccount switches the user to a different account.
 // The function performs the following steps:
 // 1. Parses the incoming request body into a SwitchAccountDto.
@@ -143,7 +125,7 @@ func validate(email string, name string, password string) error {
 // @Success 200 {object} Dto.UserResponse "Successfully switched account"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 403 {object} Dto.ErrorDTO "Forbidden"
-// @Failure 500 {object} Dto.ErrorDTO "Internaxxl Server Error"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/accounts/{accountId}/switch-account [post]
 func (c *AccountController) switchAccount(ctx *fiber.Ctx) error {
 	accountId := ctx.Params("accountId")

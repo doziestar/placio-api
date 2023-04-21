@@ -24,12 +24,13 @@ import (
 var db = database.DB
 
 type User struct {
-	ID                   string     `gorm:"primaryKey,unique,column:id"`
+	ID                   string     `gorm:"primaryKey,unique,column:user_id"`
 	CreatedAt            time.Time  `gorm:"column:created_at"`
 	UpdatedAt            time.Time  `gorm:"column:updated_at"`
 	DeletedAt            *time.Time `gorm:"column:deleted_at"`
 	Fingerprint          string     `gorm:"column:fingerprint"`
 	Name                 string     `gorm:"column:name"`
+	Username             string     `gorm:"unique,column:name"`
 	Email                string     `gorm:"unique,column:email"`
 	Password             string     `gorm:"column:password"`
 	DateCreated          time.Time  `gorm:"column:date_created"`
@@ -41,70 +42,24 @@ type User struct {
 	TwoFABackupCode      string     `gorm:"column:2fa_backup_code"`
 	FacebookID           string     `gorm:"column:facebook_id"`
 	TwitterID            string     `gorm:"column:twitter_id"`
-	DefaultAccountID     string     `gorm:"column:default_account_id"`
-	//DefaultAccount       Account    `gorm:"foreignKey:DefaultAccountID"`
-	ActiveAccountID string `gorm:"column:active_account_id"`
-	//ActiveAccount        Account    `gorm:"foreignKey:ActiveAccountID"`
-	Accounts    []Account `gorm:"foreignKey:UserID"`
-	IP          string    `gorm:"column:ip"`
-	UserAgent   string    `gorm:"column:user_agent"`
-	Twitter     *TwitterAccount
-	Facebook    *FacebookAccount
-	Google      *GoogleAccount
-	HasPassword bool `gorm:"column:has_password"`
-	Onboarded   bool `gorm:"column:onboarded"`
-	//AccountID       string          `gorm:"column:account_id"`
-	Permission      string          `gorm:"column:permission"`
-	GeneralSettings GeneralSettings `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	ActiveAccountID      string     `gorm:"column:active_account_id"`
+	Accounts             []Account  `gorm:"foreignKey:user_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	IP                   string     `gorm:"column:ip"`
+	UserAgent            string     `gorm:"column:user_agent"`
+	Twitter              *TwitterAccount
+	Facebook             *FacebookAccount
+	Google               *GoogleAccount
+	HasPassword          bool            `gorm:"column:has_password"`
+	Onboarded            bool            `gorm:"column:onboarded"`
+	Permission           string          `gorm:"column:permission"`
+	GeneralSettings      GeneralSettings `gorm:"foreignKey:user_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 }
-
-type TwitterAccount struct {
-	AccessToken  string
-	RefreshToken string
-	UserID       string `gorm:"column:user_id"`
-	UserName     string `gorm:"column:user_name"`
-	CodeVerifier string `gorm:"column:code_verifier"`
-	State        string
-	Name         string
-	DateCreated  time.Time `gorm:"column:date_created"`
-	ExpiresIn    time.Time `gorm:"column:expires_in"`
-}
-
-type FacebookAccount struct {
-	AccessToken  string
-	RefreshToken string
-	UserID       string `gorm:"column:user_id"`
-	UserName     string `gorm:"column:user_name"`
-	CodeVerifier string `gorm:"column:code_verifier"`
-	State        string
-	Name         string
-	DateCreated  time.Time `gorm:"column:date_created"`
-	ExpiresIn    time.Time `gorm:"column:expires_in"`
-}
-
-type GoogleAccount struct {
-	AccessToken  string
-	RefreshToken string
-	UserID       string `gorm:"column:user_id"`
-	Email        string
-	DateCreated  time.Time
-}
-
-type Social struct {
-	Provider string
-	ID       string
-}
-
-// func DecryptFingerprint(fingerprint string) (string, error) {
-//     return crypto.Decrypt(fingerprint)
-// }
 
 func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
-	//u.ID = uuid.New().String()
-	//err = u.HashPassword()
-	// if err != nil {
-	// 	return err
-	// }
+	err = u.EncryptPassword()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -134,6 +89,7 @@ func (u *User) GenerateUserFields(userData Dto.SignUpDto, c *fiber.Ctx) {
 	u.Email = userData.Email
 	u.Name = userData.Name
 	u.Password = userData.Password
+	u.Username = userData.Username
 
 }
 
@@ -155,43 +111,41 @@ func (u *User) CreateUser(userData Dto.SignUpDto, c *fiber.Ctx, db *gorm.DB) (*U
 	// Generate and set fields for the user
 	u.GenerateUserFields(userData, c)
 
-	// Encrypt the password if present
-	err := u.EncryptPassword()
-
-	// Create a new general settings record
-	var settings GeneralSettings
-	settings.UserID = u.ID
-	settings.Privacy = "public"
-	settings.Language = "en"
-	settings.Theme = "light"
-	settings.ID = GenerateID()
-
-	u.GeneralSettings = settings
-
 	// Create a new user record in the database along with its general settings
-	err = db.Create(&u).Error
+	err := db.Create(&u).Error
 	if err != nil {
 		return &User{}, err
 	}
 
+	// Create a new general settings record
+	var settings = &GeneralSettings{}
+	err = settings.CreateGeneralSettings(u.ID, db)
+	if err != nil {
+		return nil, err
+	}
+
+	u.GeneralSettings = *settings
+
 	// Create a new account record in the database
-	var accountRecord Account
-	account, err := accountRecord.CreateAccount(u.ID, "owner", userData.AccountType, db)
+	var accountRecord = &Account{}
+	account, err := accountRecord.CreateAccount(u.ID, "user", userData.AccountType, db)
 	if err != nil {
 		return &User{}, err
 	}
 
 	logger.Info(context.Background(), "Account created")
 	// Update the account record with the account ID
-	err = db.Model(User{}).Where("id = ?", u.ID).Updates(map[string]interface{}{
-		"account_id":         account.ID,
-		"default_account_id": account.ID,
-		"active_account_id":  account.ID,
-	}).Error
+	err = db.Model(&u).Update("active_account_id", account.ID).Error
+
 	if err != nil {
 		return &User{}, err
 	}
 
+	// save user db
+	err = db.Save(&u).Error
+	if err != nil {
+		return &User{}, err
+	}
 	// Reload the user object with the updated account information
 	err = db.Preload("Accounts").First(u, "id = ?", u.ID).Error
 	if err != nil {
@@ -256,6 +210,7 @@ func Get(id uuid.UUID, email string, account string, social *Social, permission 
 
 	return users, nil
 }
+
 func (u *User) GetUserById(id string, db *gorm.DB) (*User, error) {
 	var user User
 	logger.Info(context.Background(), fmt.Sprintf("Getting user with id %s", id))
@@ -263,6 +218,34 @@ func (u *User) GetUserById(id string, db *gorm.DB) (*User, error) {
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("User not found")
+		}
+		return nil, err
+	}
+	return &user, nil
+}
+
+// GetUserByUserName returns a user with the given username
+func (u *User) GetUserByUserName(username string, db *gorm.DB) (*User, error) {
+	var user User
+	logger.Info(context.Background(), fmt.Sprintf("Getting user with username %s", username))
+	err := db.Preload("Accounts").Where("username = ?", username).First(&user).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New("user not found")
+		}
+		return nil, err
+	}
+	return &user, nil
+}
+
+// GetUserByEmail returns a user by their email address
+func (u *User) GetUserByEmail(email string, db *gorm.DB) (*User, error) {
+	var user User
+	logger.Info(context.Background(), fmt.Sprintf("Getting user with username %s", email))
+	err := db.Preload("Accounts").Where("email = ?", email).First(&user).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New("user not found")
 		}
 		return nil, err
 	}

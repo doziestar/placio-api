@@ -64,23 +64,23 @@ services:
   #   networks:
   #     - traefik-public
 
-  placio-pgadmin:
-    image: dpage/pgadmin4
-    ports:
-      - "5050:5050"
-    networks:
-      - default
-    depends_on:
-      - placio-db
-    env_file:
-      - ./.envs/.stag
-    labels:
-      - traefik.enable=true
-      - traefik.docker.network=default
-      - 'traefik.http.routers.pgadmin-secure.entrypoints=websecure'
-      - 'traefik.http.routers.pgadmin-secure.rule=Host(`pgadmin.palnight.com`)'
-      - 'traefik.http.routers.pgadmin-secure.service=pgadmin'
-      - traefik.http.services.pgadmin.loadbalancer.server.port=5050
+#  placio-pgadmin:
+#    image: dpage/pgadmin4
+#    ports:
+#      - "5050:5050"
+#    networks:
+#      - default
+#    depends_on:
+#      - placio-db
+#    env_file:
+#      - ./.envs/.stag
+#    labels:
+#      - traefik.enable=true
+#      - traefik.docker.network=default
+#      - 'traefik.http.routers.pgadmin-secure.entrypoints=websecure'
+#      - 'traefik.http.routers.pgadmin-secure.rule=Host(`pgadmin.palnight.com`)'
+#      - 'traefik.http.routers.pgadmin-secure.service=pgadmin'
+#      - traefik.http.services.pgadmin.loadbalancer.server.port=5050
 
   placio-redis:
     container_name: placio-redis

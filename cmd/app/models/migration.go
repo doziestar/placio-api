@@ -35,17 +35,17 @@ func Migrate(Db *gorm.DB) error {
 	//	return err
 	//}
 	// Migrate User model first
-	if err := db.AutoMigrate(&User{}); err != nil {
+	if err := db.AutoMigrate(modelList...); err != nil {
 		logger.Error(context.Background(), err.Error())
 		return err
 	}
 
 	// Migrate other models
-	for _, model := range modelList[1:] {
-		if err := db.AutoMigrate(model); err != nil {
-			return err
-		}
-	}
+	//for _, model := range modelList[1:] {
+	//	if err := db.AutoMigrate(model); err != nil {
+	//		return err
+	//	}
+	//}
 
 	return nil
 }

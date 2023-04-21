@@ -27,11 +27,11 @@ func InitializeRoutes(app *fiber.App) {
 	var account models.Account
 
 	// utility
-	utility := utility.NewUtility()
+	newUtils := utility.NewUtility()
 
 	// auth
 	authService := service.NewAuthService(database.DB, &models.User{})
-	authController := controller.NewAuthController(authService, utility)
+	authController := controller.NewAuthController(authService, newUtils)
 	authController.RegisterRoutes(routerGroupV1)
 
 	// user
@@ -46,7 +46,7 @@ func InitializeRoutes(app *fiber.App) {
 
 	// account
 	accountService := service.NewAccountService(database.DB, account, user)
-	accountController := controller.NewAccountController(accountService, utility)
+	accountController := controller.NewAccountController(accountService, newUtils)
 	accountController.RegisterRoutes(routerGroupV1)
 
 }

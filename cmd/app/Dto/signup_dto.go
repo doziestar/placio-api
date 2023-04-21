@@ -9,6 +9,7 @@ type SignUpDto struct {
 	Email           string `json:"email" validate:"required,email"`
 	Password        string `json:"password" validate:"required,min=8"`
 	ConfirmPassword string `json:"confirm_password" validate:"required,min=8"`
+	Username        string `json:"username" validate:"required"`
 	Name            string `json:"name" validate:"required"`
 	Phone           string `json:"phone" validate:"required"`
 	AccountType     string `json:"account_type" validate:"required"`
