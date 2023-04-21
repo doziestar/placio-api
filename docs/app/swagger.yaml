@@ -300,6 +300,14 @@ definitions:
         items:
           $ref: '#/definitions/placio-app_models.Event'
         type: array
+      followers:
+        items:
+          $ref: '#/definitions/placio-app_models.Follow'
+        type: array
+      following:
+        items:
+          $ref: '#/definitions/placio-app_models.Follow'
+        type: array
       id:
         description: gorm.Model
         type: string
@@ -495,6 +503,17 @@ definitions:
       userID:
         type: string
       userName:
+        type: string
+    type: object
+  placio-app_models.Follow:
+    properties:
+      createdAt:
+        type: string
+      followerID:
+        type: string
+      followingID:
+        type: string
+      id:
         type: string
     type: object
   placio-app_models.GeneralSettings:
@@ -1348,6 +1367,132 @@ paths:
       summary: Switch to a different account
       tags:
       - Account
+  /api/v1/accounts/{id}/follow:
+    post:
+      consumes:
+      - application/json
+      description: Follow another account by ID
+      parameters:
+      - description: Follower Account ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Following Account ID
+        in: formData
+        name: following_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully followed account
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Follow an account
+      tags:
+      - Followers
+  /api/v1/accounts/{id}/followers:
+    get:
+      consumes:
+      - application/json
+      description: Get the list of accounts following the specified account
+      parameters:
+      - description: Account ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved followers
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_models.Account'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get followers
+      tags:
+      - Followers
+  /api/v1/accounts/{id}/following:
+    get:
+      consumes:
+      - application/json
+      description: Get the list of accounts the specified account is following
+      parameters:
+      - description: Account ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved following accounts
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_models.Account'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get following
+      tags:
+      - Followers
+  /api/v1/accounts/{id}/unfollow:
+    post:
+      consumes:
+      - application/json
+      description: Unfollow another account by ID
+      parameters:
+      - description: Follower Account ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Following Account ID
+        in: formData
+        name: following_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully unfollowed account
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Unfollow an account
+      tags:
+      - Followers
   /api/v1/accounts/create-account:
     post:
       consumes:
@@ -1382,7 +1527,42 @@ paths:
       summary: Create a new account
       tags:
       - Account
-  /api/v1/auth:
+  /api/v1/auth/refresh:
+    get:
+      consumes:
+      - '*/*'
+      description: Refresh token
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_Dto.TokenResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Refresh token
+      tags:
+      - Auth
+  /api/v1/auth/sign-in:
     post:
       consumes:
       - application/json
@@ -1418,41 +1598,6 @@ paths:
           schema:
             $ref: '#/definitions/fiber.Error'
       summary: Authenticate a user
-      tags:
-      - Auth
-  /api/v1/auth/refresh:
-    get:
-      consumes:
-      - '*/*'
-      description: Refresh token
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/placio-app_Dto.TokenResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Refresh token
       tags:
       - Auth
   /api/v1/auth/verify:

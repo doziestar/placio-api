@@ -98,7 +98,7 @@ func (s *SettingsService) ConnectAccount(userID string, connectedAccount *models
 }
 
 func (s *SettingsService) DisconnectAccount(userID string, provider string) error {
-	//if err := s.db.Model(&GeneralSettings{}).Where("user_id = ?", userID).Updates(connectedAccount).Error; err != nil {
+	//if err := s.DB.Model(&GeneralSettings{}).Where("user_id = ?", userID).Updates(connectedAccount).Error; err != nil {
 	//	return err
 	//}
 	return nil

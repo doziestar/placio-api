@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"log"
+	"net/http"
 	"placio-app/Dto"
 	"placio-app/middleware"
 	_ "placio-app/models"
@@ -50,6 +51,10 @@ func (c *AccountController) RegisterRoutes(app fiber.Router) {
 	accountGroup.Get("/subscription", middleware.Verify("owner"), utility.Use(c.getSubscription))
 	accountGroup.Post("/upgrade", middleware.Verify("owner"), utility.Use(c.upgradePlan))
 	accountGroup.Delete("/", middleware.Verify("owner"), utility.Use(c.deleteAccount))
+	accountGroup.Post("/:id/follow", middleware.Verify("user"), utility.Use(c.followAccount))
+	accountGroup.Post("/:id/unfollow", middleware.Verify("user"), utility.Use(c.unfollowAccount))
+	accountGroup.Get("/:id/followers", middleware.Verify("user"), utility.Use(c.getFollowers))
+	accountGroup.Get("/:id/following", middleware.Verify("user"), utility.Use(c.getFollowing))
 
 }
 
@@ -865,4 +870,88 @@ func (c *AccountController) makeAccountDefault(ctx *fiber.Ctx) error {
 		"status": "success",
 		"data":   account,
 	})
+}
+
+// @Summary Follow an account
+// @Description Follow another account by ID
+// @Tags Followers
+// @Accept json
+// @Produce json
+// @Param id path string true "Follower Account ID"
+// @Param following_id formData string true "Following Account ID"
+// @Success 200 {object} map[string]string "Successfully followed account"
+// @Failure 400 {object} map[string]string "Bad Request"
+// @Router /api/v1/accounts/{id}/follow [post]
+func (c *AccountController) followAccount(ctx *fiber.Ctx) error {
+	followerID := ctx.Params("id")
+	followingID := ctx.FormValue("following_id")
+
+	err := c.store.Follow(followerID, followingID)
+	if err != nil {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	return ctx.JSON(fiber.Map{"status": "success"})
+}
+
+// @Summary Unfollow an account
+// @Description Unfollow another account by ID
+// @Tags Followers
+// @Accept json
+// @Produce json
+// @Param id path string true "Follower Account ID"
+// @Param following_id formData string true "Following Account ID"
+// @Success 200 {object} map[string]string "Successfully unfollowed account"
+// @Failure 400 {object} map[string]string "Bad Request"
+// @Router /api/v1/accounts/{id}/unfollow [post]
+func (c *AccountController) unfollowAccount(ctx *fiber.Ctx) error {
+	followerID := ctx.Params("id")
+	followingID := ctx.FormValue("following_id")
+
+	err := c.store.Unfollow(followerID, followingID)
+	if err != nil {
+		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	return ctx.JSON(fiber.Map{"status": "success"})
+}
+
+// @Summary Get followers
+// @Description Get the list of accounts following the specified account
+// @Tags Followers
+// @Accept json
+// @Produce json
+// @Param id path string true "Account ID"
+// @Success 200 {array} models.Account "Successfully retrieved followers"
+// @Failure 500 {object} map[string]string "Internal Server Error"
+// @Router /api/v1/accounts/{id}/followers [get]
+func (c *AccountController) getFollowers(ctx *fiber.Ctx) error {
+	accountID := ctx.Params("id")
+
+	followers, err := c.store.ListFollowers(accountID)
+	if err != nil {
+		return ctx.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	return ctx.JSON(fiber.Map{"followers": followers})
+}
+
+// @Summary Get following
+// @Description Get the list of accounts the specified account is following
+// @Tags Followers
+// @Accept json
+// @Produce json
+// @Param id path string true "Account ID"
+// @Success 200 {array} models.Account "Successfully retrieved following accounts"
+// @Failure 500 {object} map[string]string "Internal Server Error"
+// @Router /api/v1/accounts/{id}/following [get]
+func (c *AccountController) getFollowing(ctx *fiber.Ctx) error {
+	accountID := ctx.Params("id")
+
+	following, err := c.store.ListFollowing(accountID)
+	if err != nil {
+		return ctx.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+	}
+
+	return ctx.JSON(fiber.Map{"following": following})
 }
