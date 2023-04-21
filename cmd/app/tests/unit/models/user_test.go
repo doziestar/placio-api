@@ -5,6 +5,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/valyala/fasthttp"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"log"
@@ -87,14 +88,43 @@ func TestGenerateUserFields(t *testing.T) {
 	assert.Equal(t, user.IP, "0.0.0.0")
 }
 
+//func TestEncryptPassword(t *testing.T) {
+//	user.GenerateUserFields(userData, ctx)
+//
+//	assert.NotNil(t, user.Password)
+//	assert.Equal(t, user.Password, userData.Password)
+//
+//	err := user.EncryptPassword()
+//	assert.NoError(t, err)
+//
+//	assert.NotEqual(t, userData.Password, user.Password)
+//}
+
 func TestEncryptPassword(t *testing.T) {
-	user.GenerateUserFields(userData, ctx)
+	// Create a user with a password
+	u := &models.User{
+		Password: "test_password",
+	}
 
-	assert.NotNil(t, user.Password)
-	assert.Equal(t, user.Password, userData.Password)
+	// Call EncryptPassword
+	err := u.EncryptPassword()
 
-	err := user.EncryptPassword()
-	assert.NoError(t, err)
+	// Assertions
+	assert.NoError(t, err, "EncryptPassword should not return an error")
 
-	assert.NotEqual(t, userData.Password, user.Password)
+	assert.True(t, u.HasPassword, "HasPassword should be set to true")
+
+	// Check if the hashed password matches the original password
+	err = bcrypt.CompareHashAndPassword([]byte(u.Password), []byte("test_password"))
+	assert.NoError(t, err, "The hashed password should match the original password")
+
+	// Test with an empty password
+	u = &models.User{
+		Password: "",
+	}
+
+	err = u.EncryptPassword()
+
+	assert.NoError(t, err, "EncryptPassword should not return an error with an empty password")
+	assert.False(t, u.HasPassword, "HasPassword should be set to false with an empty password")
 }

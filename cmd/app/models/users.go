@@ -42,69 +42,25 @@ type User struct {
 	FacebookID           string     `gorm:"column:facebook_id"`
 	TwitterID            string     `gorm:"column:twitter_id"`
 	DefaultAccountID     string     `gorm:"column:default_account_id"`
-	//DefaultAccount       Account    `gorm:"foreignKey:DefaultAccountID"`
-	ActiveAccountID string `gorm:"column:active_account_id"`
-	//ActiveAccount        Account    `gorm:"foreignKey:ActiveAccountID"`
-	Accounts    []Account `gorm:"foreignKey:UserID"`
-	IP          string    `gorm:"column:ip"`
-	UserAgent   string    `gorm:"column:user_agent"`
-	Twitter     *TwitterAccount
-	Facebook    *FacebookAccount
-	Google      *GoogleAccount
-	HasPassword bool `gorm:"column:has_password"`
-	Onboarded   bool `gorm:"column:onboarded"`
-	//AccountID       string          `gorm:"column:account_id"`
-	Permission      string          `gorm:"column:permission"`
-	GeneralSettings GeneralSettings `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	ActiveAccountID      string     `gorm:"column:active_account_id"`
+	Accounts             []Account  `gorm:"foreignKey:UserID"`
+	IP                   string     `gorm:"column:ip"`
+	UserAgent            string     `gorm:"column:user_agent"`
+	Twitter              *TwitterAccount
+	Facebook             *FacebookAccount
+	Google               *GoogleAccount
+	HasPassword          bool            `gorm:"column:has_password"`
+	Onboarded            bool            `gorm:"column:onboarded"`
+	Permission           string          `gorm:"column:permission"`
+	GeneralSettings      GeneralSettings `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 }
-
-type TwitterAccount struct {
-	AccessToken  string
-	RefreshToken string
-	UserID       string `gorm:"column:user_id"`
-	UserName     string `gorm:"column:user_name"`
-	CodeVerifier string `gorm:"column:code_verifier"`
-	State        string
-	Name         string
-	DateCreated  time.Time `gorm:"column:date_created"`
-	ExpiresIn    time.Time `gorm:"column:expires_in"`
-}
-
-type FacebookAccount struct {
-	AccessToken  string
-	RefreshToken string
-	UserID       string `gorm:"column:user_id"`
-	UserName     string `gorm:"column:user_name"`
-	CodeVerifier string `gorm:"column:code_verifier"`
-	State        string
-	Name         string
-	DateCreated  time.Time `gorm:"column:date_created"`
-	ExpiresIn    time.Time `gorm:"column:expires_in"`
-}
-
-type GoogleAccount struct {
-	AccessToken  string
-	RefreshToken string
-	UserID       string `gorm:"column:user_id"`
-	Email        string
-	DateCreated  time.Time
-}
-
-type Social struct {
-	Provider string
-	ID       string
-}
-
-// func DecryptFingerprint(fingerprint string) (string, error) {
-//     return crypto.Decrypt(fingerprint)
-// }
 
 func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 	//u.ID = uuid.New().String()
-	//err = u.HashPassword()
-	// if err != nil {
-	// 	return err
-	// }
+	err = u.EncryptPassword()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -155,39 +111,36 @@ func (u *User) CreateUser(userData Dto.SignUpDto, c *fiber.Ctx, db *gorm.DB) (*U
 	// Generate and set fields for the user
 	u.GenerateUserFields(userData, c)
 
-	// Encrypt the password if present
-	err := u.EncryptPassword()
-
 	// Create a new general settings record
-	var settings GeneralSettings
+	var settings = &GeneralSettings{}
 	settings.UserID = u.ID
 	settings.Privacy = "public"
 	settings.Language = "en"
 	settings.Theme = "light"
 	settings.ID = GenerateID()
 
-	u.GeneralSettings = settings
+	u.GeneralSettings = *settings
 
 	// Create a new user record in the database along with its general settings
-	err = db.Create(&u).Error
+	err := db.Create(&u).Error
 	if err != nil {
 		return &User{}, err
 	}
 
 	// Create a new account record in the database
-	var accountRecord Account
-	account, err := accountRecord.CreateAccount(u.ID, "owner", userData.AccountType, db)
+	var accountRecord = &Account{}
+	account, err := accountRecord.CreateAccount(u.ID, "user", userData.AccountType, db)
 	if err != nil {
 		return &User{}, err
 	}
 
 	logger.Info(context.Background(), "Account created")
 	// Update the account record with the account ID
-	err = db.Model(User{}).Where("id = ?", u.ID).Updates(map[string]interface{}{
-		"account_id":         account.ID,
+	err = db.Model(&u).Where("id = ?", u.ID).Updates(map[string]interface{}{
 		"default_account_id": account.ID,
 		"active_account_id":  account.ID,
 	}).Error
+
 	if err != nil {
 		return &User{}, err
 	}
