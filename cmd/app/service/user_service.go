@@ -28,19 +28,19 @@ type IUser interface {
 }
 
 type UserService struct {
-	user    *models.User
-	db      *gorm.DB
-	account *models.Account
+	User    *models.User
+	DB      *gorm.DB
+	Account *models.Account
 }
 
 func NewUserService(db *gorm.DB, user *models.User, account *models.Account) *UserService {
 	return &UserService{user, db, account}
 }
 
-// GetLoggedInUser Logged in user
+// GetLoggedInUser Logged in User
 func (u *UserService) GetLoggedInUser(userId string) (*models.User, error) {
-	// get user from db
-	userData, err := u.user.GetUserById(userId, u.db)
+	// get User from DB
+	userData, err := u.User.GetUserById(userId, u.DB)
 	if err != nil {
 		return nil, err
 	}
@@ -58,8 +58,8 @@ func (u *UserService) Get(id, email, account, permission string, social *models.
 }
 
 func (u *UserService) GetUserByID(userID string) (*models.User, error) {
-	logger.Info(u.db.Statement.Context, "user id: "+userID)
-	user, err := u.user.GetUserById(userID, u.db)
+	logger.Info(u.DB.Statement.Context, "User id: "+userID)
+	user, err := u.User.GetUserById(userID, u.DB)
 	if err != nil {
 		return nil, err
 	}
@@ -109,7 +109,7 @@ func (u *UserService) DeleteUser(userId, accountID string) error {
 // CheckIfUserNameOrEmailExists checks if username or email exists
 func (u *UserService) CheckIfUserNameOrEmailExists(userName, email string) (bool, error) {
 	if userName != "" {
-		user, err := u.user.GetUserByUserName(userName, u.db)
+		user, err := u.User.GetUserByUserName(userName, u.DB)
 		if err != nil {
 			return false, err
 		}
@@ -117,7 +117,7 @@ func (u *UserService) CheckIfUserNameOrEmailExists(userName, email string) (bool
 			return true, nil
 		}
 	} else if email != "" {
-		user, err := u.user.GetUserByEmail(email, u.db)
+		user, err := u.User.GetUserByEmail(email, u.DB)
 		if err != nil {
 			return false, err
 		}

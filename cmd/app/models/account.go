@@ -44,6 +44,8 @@ type Account struct {
 	CreatedAt                  time.Time `gorm:"column:created_at"`
 	UpdatedAt                  time.Time `gorm:"column:updated_at"`
 	Events                     []Event   `gorm:"foreignKey:AccountID"`
+	Followers                  []Follow  `gorm:"foreignKey:FollowerID"`
+	Following                  []Follow  `gorm:"foreignKey:FollowingID"`
 }
 
 // BeforeCreate /*

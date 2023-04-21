@@ -209,7 +209,7 @@ func (controller *AuthController) verifyPhone(c *fiber.Ctx) error {
 // @Failure 401 {object} fiber.Error "Unauthorized"
 // @Failure 403 {object} fiber.Error "Forbidden"
 // @Failure 404 {object} fiber.Error "Not Found"
-// @Router /api/v1/auth [post]
+// @Router /api/v1/auth/sign-in [post]
 func (controller *AuthController) signIn(c *fiber.Ctx) error {
 	//defer sentry.Recover()
 	data := new(Dto.SigninRequest)

@@ -51,7 +51,7 @@ func (a *Auth) LogIn(data Dto.LoginDto) (Dto.UserResponseDto, error) {
 		return Dto.UserResponseDto{}, errs.ErrInvalid
 	}
 
-	// check user exists
+	// check User exists
 	user := a.db.Where("email = ?", email).First(&a.User)
 	if user.Error != nil {
 		return Dto.UserResponseDto{}, errs.ErrNotFound
@@ -62,7 +62,7 @@ func (a *Auth) LogIn(data Dto.LoginDto) (Dto.UserResponseDto, error) {
 		return Dto.UserResponseDto{}, errs.ErrInvalid
 	}
 
-	// get user details
+	// get User details
 	//userDetails := a.DB.Model(&a.User).Association("UserDetails").Find(&a.User.UserDetails)
 	userData := models.User{
 		ID:    a.User.ID,
@@ -75,7 +75,7 @@ func (a *Auth) LogIn(data Dto.LoginDto) (Dto.UserResponseDto, error) {
 		return Dto.UserResponseDto{}, errs.ErrInternal
 	}
 
-	// return user details
+	// return User details
 	return Dto.UserResponseDto{
 		ID:                    a.User.ID,
 		Email:                 a.User.Email,
@@ -94,12 +94,12 @@ func (a *Auth) LogOut() {
 func (a *Auth) SignUp(data Dto.SignUpDto) (userRespDto Dto.UserResponseDto, err error) {
 	logger.Info(context.Background(), data.Email)
 
-	// Check if user already exists
+	// Check if User already exists
 	var user models.User
 	err = database.DB.Where("email = ?", data.Email).First(&user).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			// User does not exist, so create a new user
+			// User does not exist, so create a new User
 			newUser := &models.User{
 				Name:     data.Name,
 				Email:    data.Email,
