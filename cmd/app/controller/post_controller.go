@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/gofiber/fiber/v2"
+	_ "placio-app/Dto"
 	"placio-app/middleware"
 	"placio-app/models"
 	"placio-app/service"
@@ -35,8 +36,8 @@ func (pc *PostController) RegisterRoutes(router fiber.Router) {
 // @Produce json
 // @Param CreatePostDto body models.Post true "Post Data"
 // @Success 201 {object} models.Post "Successfully created post"
-// @Failure 400 {object} dto.ErrorDTO "Bad Request"
-// @Failure 500 {object} dto.ErrorDTO "Internal Server Error"
+// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/posts/ [post]
 func (c *PostController) createPost(ctx *fiber.Ctx) error {
 	data := new(models.Post)
@@ -67,8 +68,8 @@ func (c *PostController) createPost(ctx *fiber.Ctx) error {
 // @Produce json
 // @Param postID path string true "Post ID"
 // @Success 200 {object} models.Post "Successfully retrieved post"
-// @Failure 404 {object} dto.ErrorDTO "Post Not Found"
-// @Failure 500 {object} dto.ErrorDTO "Internal Server Error"
+// @Failure 404 {object} Dto.ErrorDTO "Post Not Found"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/posts/{postID} [get]
 func (c *PostController) getPost(ctx *fiber.Ctx) error {
 	postID := ctx.Params("postID")
@@ -95,11 +96,11 @@ func (c *PostController) getPost(ctx *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param postID path string true "Post ID"
-// @Param UpdatePostDto body dto.UpdatePostDto true "Post Data"
+// @Param UpdatePostDto body models.Post true "Post Data"
 // @Success 200 {object} models.Post "Successfully updated post"
-// @Failure 400 {object} dto.ErrorDTO "Bad Request"
-// @Failure 404 {object} dto.ErrorDTO "Post Not Found"
-// @Failure 500 {object} dto.ErrorDTO "Internal Server Error"
+// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
+// @Failure 404 {object} Dto.ErrorDTO "Post Not Found"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/posts/{postID} [put]
 func (c *PostController) updatePost(ctx *fiber.Ctx) error {
 	postID := ctx.Params("postID")
@@ -140,8 +141,8 @@ func (c *PostController) updatePost(ctx *fiber.Ctx) error {
 // @Produce json
 // @Param postID path string true "Post ID"
 // @Success 204 "Successfully deleted post"
-// @Failure 404 {object} dto.ErrorDTO "Post Not Found"
-// @Failure 500 {object} dto.ErrorDTO "Internal Server Error"
+// @Failure 404 {object} Dto.ErrorDTO "Post Not Found"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/posts/{postID} [delete]
 func (c *PostController) deletePost(ctx *fiber.Ctx) error {
 	postID := ctx.Params("postID")
@@ -160,7 +161,7 @@ func (c *PostController) deletePost(ctx *fiber.Ctx) error {
 // @Tags Post
 // @Produce json
 // @Success 200 {array} models.Post "Successfully retrieved posts"
-// @Failure 500 {object} dto.ErrorDTO "Internal Server Error"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/posts/ [get]
 func (c *PostController) listPosts(ctx *fiber.Ctx) error {
 	posts, err := c.postService.ListPosts()

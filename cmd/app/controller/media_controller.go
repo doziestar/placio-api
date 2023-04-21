@@ -2,6 +2,8 @@ package controller
 
 import (
 	"github.com/gofiber/fiber/v2"
+	_ "placio-app/Dto"
+	_ "placio-app/models"
 	"placio-app/service"
 )
 
@@ -32,8 +34,8 @@ func (mc *MediaController) RegisterRoutes(router fiber.Router) {
 // @Param file formData file true "Media file"
 // @Param postID formData string true "Post ID"
 // @Success 201 {object} models.Media "Successfully uploaded media"
-// @Failure 400 {object} dto.ErrorDTO "Bad Request"
-// @Failure 500 {object} dto.ErrorDTO "Internal Server Error"
+// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/media/ [post]
 func (c *MediaController) uploadMedia(ctx *fiber.Ctx) error {
 	file, err := ctx.FormFile("file")
@@ -66,8 +68,8 @@ func (c *MediaController) uploadMedia(ctx *fiber.Ctx) error {
 // @Produce json
 // @Param mediaID path string true "Media ID"
 // @Success 200 {object} models.Media "Successfully retrieved media"
-// @Failure 404 {object} dto.ErrorDTO "Media Not Found"
-// @Failure 500 {object} dto.ErrorDTO "Internal Server Error"
+// @Failure 404 {object} Dto.ErrorDTO "Media Not Found"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/media/{mediaID} [get]
 func (c *MediaController) getMedia(ctx *fiber.Ctx) error {
 	mediaID := ctx.Params("mediaID")
@@ -94,8 +96,8 @@ func (c *MediaController) getMedia(ctx *fiber.Ctx) error {
 // @Produce json
 // @Param mediaID path string true "Media ID"
 // @Success 204 "Successfully deleted media"
-// @Failure 404 {object} dto.ErrorDTO "Media Not Found"
-// @Failure 500 {object} dto.ErrorDTO "Internal Server Error"
+// @Failure 404 {object} Dto.ErrorDTO "Media Not Found"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/media/{mediaID} [delete]
 func (c *MediaController) deleteMedia(ctx *fiber.Ctx) error {
 	mediaID := ctx.Params("mediaID")
@@ -116,7 +118,7 @@ func (c *MediaController) deleteMedia(ctx *fiber.Ctx) error {
 // @Produce json
 // @Param postID path string true "Post ID"
 // @Success 200 {array} models.Media "Successfully retrieved media"
-// @Failure 500 {object} dto.ErrorDTO "Internal Server Error"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/media/post/{postID} [get]
 func (c *MediaController) listMedia(ctx *fiber.Ctx) error {
 	postID := ctx.Params("postID")

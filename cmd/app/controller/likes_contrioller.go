@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/gofiber/fiber/v2"
+	_ "placio-app/Dto"
 	"placio-app/service"
 	"placio-app/utility"
 )
@@ -35,9 +36,9 @@ func (lc *LikesController) RegisterRoutes(router fiber.Router) {
 // @Accept json
 // @Produce json
 // @Param postID path string true "Post ID"
-// @Success 201 {object} dto.MessageDTO "Successfully liked post"
-// @Failure 400 {object} dto.ErrorDTO "Bad Request"
-// @Failure 500 {object} dto.ErrorDTO "Internal Server Error"
+// @Success 201 {object} fiber.Map "Successfully liked post"
+// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/likes/{postID} [post]
 func (c *LikesController) likePost(ctx *fiber.Ctx) error {
 	postID := ctx.Params("postID")
@@ -60,9 +61,9 @@ func (c *LikesController) likePost(ctx *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param postID path string true "Post ID"
-// @Success 200 {object} dto.MessageDTO "Successfully unliked post"
-// @Failure 400 {object} dto.ErrorDTO "Bad Request"
-// @Failure 500 {object} dto.ErrorDTO "Internal Server Error"
+// @Success 200 {object} fiber.Map "Successfully unliked post"
+// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/likes/{postID} [delete]
 func (c *LikesController) unlikePost(ctx *fiber.Ctx) error {
 	postID := ctx.Params("postID")
@@ -84,8 +85,8 @@ func (c *LikesController) unlikePost(ctx *fiber.Ctx) error {
 // @Tags Likes
 // @Produce json
 // @Param postID path string true "Post ID"
-// @Success 200 {object} dto.LikeCountDTO "Successfully retrieved like count"
-// @Failure 500 {object} dto.ErrorDTO "Internal Server Error"
+// @Success 200 {object} fiber.Map "Successfully retrieved like count"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/likes/{postID}/count [get]
 func (c *LikesController) getLikeCount(ctx *fiber.Ctx) error {
 	postID := ctx.Params("postID")

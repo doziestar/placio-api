@@ -2,6 +2,7 @@ package controller
 
 import (
 	"github.com/gofiber/fiber/v2"
+	_ "placio-app/Dto"
 	"placio-app/models"
 	"placio-app/service"
 )
@@ -32,8 +33,8 @@ func (cc *CommentController) RegisterRoutes(router fiber.Router) {
 // @Produce json
 // @Param CreateCommentDto body models.Comment true "Comment Data"
 // @Success 201 {object} models.Comment "Successfully created comment"
-// @Failure 400 {object} dto.ErrorDTO "Bad Request"
-// @Failure 500 {object} dto.ErrorDTO "Internal Server Error"
+// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/comments/ [post]
 func (c *CommentController) createComment(ctx *fiber.Ctx) error {
 	data := new(models.Comment)
@@ -65,8 +66,8 @@ func (c *CommentController) createComment(ctx *fiber.Ctx) error {
 // @Produce json
 // @Param commentID path string true "Comment ID"
 // @Success 200 {object} models.Comment "Successfully retrieved comment"
-// @Failure 404 {object} dto.ErrorDTO "Comment Not Found"
-// @Failure 500 {object} dto.ErrorDTO "Internal Server Error"
+// @Failure 404 {object} Dto.ErrorDTO "Comment Not Found"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/comments/{commentID} [get]
 func (c *CommentController) getComment(ctx *fiber.Ctx) error {
 	commentID := ctx.Params("commentID")
@@ -95,9 +96,9 @@ func (c *CommentController) getComment(ctx *fiber.Ctx) error {
 // @Param commentID path string true "Comment ID"
 // @Param UpdateCommentDto body models.Comment true "Comment Data"
 // @Success 200 {object} models.Comment "Successfully updated comment"
-// @Failure 400 {object} dto.ErrorDTO "Bad Request"
-// @Failure 404 {object} dto.ErrorDTO "Comment Not Found"
-// @Failure 500 {object} dto.ErrorDTO "Internal Server Error"
+// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
+// @Failure 404 {object} Dto.ErrorDTO "Comment Not Found"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/comments/{commentID} [put]
 func (c *CommentController) updateComment(ctx *fiber.Ctx) error {
 	commentID := ctx.Params("commentID")
@@ -138,8 +139,8 @@ func (c *CommentController) updateComment(ctx *fiber.Ctx) error {
 // @Produce json
 // @Param commentID path string true "Comment ID"
 // @Success 204 "Successfully deleted comment"
-// @Failure 404 {object} dto.ErrorDTO "Comment Not Found"
-// @Failure 500 {object} dto.ErrorDTO "Internal Server Error"
+// @Failure 404 {object} Dto.ErrorDTO "Comment Not Found"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/comments/{commentID} [delete]
 func (c *CommentController) deleteComment(ctx *fiber.Ctx) error {
 	commentID := ctx.Params("commentID")
@@ -159,7 +160,7 @@ func (c *CommentController) deleteComment(ctx *fiber.Ctx) error {
 // @Produce json
 // @Param postID path string true "Post ID"
 // @Success 200 {array} models.Comment "Successfully retrieved comments"
-// @Failure 500 {object} dto.ErrorDTO "Internal Server Error"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/comments/post/{postID} [get]
 func (c *CommentController) listComments(ctx *fiber.Ctx) error {
 	postID := ctx.Params("postID")
