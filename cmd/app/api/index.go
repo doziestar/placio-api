@@ -49,4 +49,19 @@ func InitializeRoutes(app *fiber.App) {
 	accountController := controller.NewAccountController(accountService, newUtils)
 	accountController.RegisterRoutes(routerGroupV1)
 
+	// posts
+	postService := service.NewPostService(database.DB)
+	postController := controller.NewPostController(postService)
+	postController.RegisterRoutes(routerGroupV1)
+
+	// comments
+	commentService := service.NewCommentService(database.DB)
+	commentController := controller.NewCommentController(commentService)
+	commentController.RegisterRoutes(routerGroupV1)
+
+	// media
+	mediaService := service.NewMediaService(database.DB)
+	mediaController := controller.NewMediaController(mediaService)
+	mediaController.RegisterRoutes(routerGroupV1)
+
 }

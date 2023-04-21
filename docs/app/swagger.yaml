@@ -378,6 +378,21 @@ definitions:
       userID:
         type: string
     type: object
+  placio-app_models.Comment:
+    properties:
+      accountID:
+        type: string
+      content:
+        type: string
+      createdAt:
+        type: string
+      id:
+        type: string
+      postID:
+        type: string
+      updatedAt:
+        type: string
+    type: object
   placio-app_models.ContentSettings:
     properties:
       autoplayVideos:
@@ -567,6 +582,35 @@ definitions:
       updatedAt:
         type: string
     type: object
+  placio-app_models.Like:
+    properties:
+      accountID:
+        type: string
+      createdAt:
+        type: string
+      id:
+        type: string
+      postID:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  placio-app_models.Media:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: string
+      mediaType:
+        description: '"image", "gif", or "video"'
+        type: string
+      postID:
+        type: string
+      updatedAt:
+        type: string
+      url:
+        type: string
+    type: object
   placio-app_models.Message:
     properties:
       conversationID:
@@ -645,6 +689,31 @@ definitions:
       updatedAt:
         type: string
       userID:
+        type: string
+    type: object
+  placio-app_models.Post:
+    properties:
+      accountID:
+        type: string
+      comments:
+        items:
+          $ref: '#/definitions/placio-app_models.Comment'
+        type: array
+      content:
+        type: string
+      createdAt:
+        type: string
+      id:
+        type: string
+      likes:
+        items:
+          $ref: '#/definitions/placio-app_models.Like'
+        type: array
+      medias:
+        items:
+          $ref: '#/definitions/placio-app_models.Media'
+        type: array
+      updatedAt:
         type: string
     type: object
   placio-app_models.TwitterAccount:
@@ -1636,6 +1705,150 @@ paths:
       summary: Verify phone
       tags:
       - Auth
+  /api/v1/comments/:
+    post:
+      consumes:
+      - application/json
+      description: Create a new comment for the specified post
+      parameters:
+      - description: Comment Data
+        in: body
+        name: CreateCommentDto
+        required: true
+        schema:
+          $ref: '#/definitions/placio-app_models.Comment'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Successfully created comment
+          schema:
+            $ref: '#/definitions/placio-app_models.Comment'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Create a new comment
+      tags:
+      - Comment
+  /api/v1/comments/{commentID}:
+    delete:
+      description: Delete a comment by its ID
+      parameters:
+      - description: Comment ID
+        in: path
+        name: commentID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Successfully deleted comment
+        "404":
+          description: Comment Not Found
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Delete a comment
+      tags:
+      - Comment
+    get:
+      description: Retrieve a comment by its ID
+      parameters:
+      - description: Comment ID
+        in: path
+        name: commentID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved comment
+          schema:
+            $ref: '#/definitions/placio-app_models.Comment'
+        "404":
+          description: Comment Not Found
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Get a comment
+      tags:
+      - Comment
+    put:
+      consumes:
+      - application/json
+      description: Update a comment by its ID
+      parameters:
+      - description: Comment ID
+        in: path
+        name: commentID
+        required: true
+        type: string
+      - description: Comment Data
+        in: body
+        name: UpdateCommentDto
+        required: true
+        schema:
+          $ref: '#/definitions/placio-app_models.Comment'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully updated comment
+          schema:
+            $ref: '#/definitions/placio-app_models.Comment'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "404":
+          description: Comment Not Found
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Update a comment
+      tags:
+      - Comment
+  /api/v1/comments/post/{postID}:
+    get:
+      description: Retrieve all comments for the specified post
+      parameters:
+      - description: Post ID
+        in: path
+        name: postID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved comments
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_models.Comment'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: List all comments for a post
+      tags:
+      - Comment
   /api/v1/health:
     get:
       consumes:
@@ -1652,6 +1865,333 @@ paths:
       summary: Show the status of server.
       tags:
       - root
+  /api/v1/likes/{postID}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove a like from a post
+      parameters:
+      - description: Post ID
+        in: path
+        name: postID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully unliked post
+          schema:
+            $ref: '#/definitions/fiber.Map'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Unlike a post
+      tags:
+      - Likes
+    post:
+      consumes:
+      - application/json
+      description: Add a like to a post
+      parameters:
+      - description: Post ID
+        in: path
+        name: postID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Successfully liked post
+          schema:
+            $ref: '#/definitions/fiber.Map'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Like a post
+      tags:
+      - Likes
+  /api/v1/likes/{postID}/count:
+    get:
+      description: Retrieve the number of likes for a post
+      parameters:
+      - description: Post ID
+        in: path
+        name: postID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved like count
+          schema:
+            $ref: '#/definitions/fiber.Map'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Get like count for a post
+      tags:
+      - Likes
+  /api/v1/media/:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload a media file (image, gif, or video) for a post
+      parameters:
+      - description: Media file
+        in: formData
+        name: file
+        required: true
+        type: file
+      - description: Post ID
+        in: formData
+        name: postID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Successfully uploaded media
+          schema:
+            $ref: '#/definitions/placio-app_models.Media'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Upload media
+      tags:
+      - Media
+  /api/v1/media/{mediaID}:
+    delete:
+      description: Delete media by its ID
+      parameters:
+      - description: Media ID
+        in: path
+        name: mediaID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Successfully deleted media
+        "404":
+          description: Media Not Found
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Delete media
+      tags:
+      - Media
+    get:
+      description: Retrieve media by its ID
+      parameters:
+      - description: Media ID
+        in: path
+        name: mediaID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved media
+          schema:
+            $ref: '#/definitions/placio-app_models.Media'
+        "404":
+          description: Media Not Found
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Get media
+      tags:
+      - Media
+  /api/v1/media/post/{postID}:
+    get:
+      description: Retrieve all media for the specified post
+      parameters:
+      - description: Post ID
+        in: path
+        name: postID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved media
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_models.Media'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: List all media for a post
+      tags:
+      - Media
+  /api/v1/posts/:
+    get:
+      description: Retrieve all posts
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved posts
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_models.Post'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: List all posts
+      tags:
+      - Post
+    post:
+      consumes:
+      - application/json
+      description: Create a new post for the authenticated user
+      parameters:
+      - description: Post Data
+        in: body
+        name: CreatePostDto
+        required: true
+        schema:
+          $ref: '#/definitions/placio-app_models.Post'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Successfully created post
+          schema:
+            $ref: '#/definitions/placio-app_models.Post'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Create a new post
+      tags:
+      - Post
+  /api/v1/posts/{postID}:
+    delete:
+      description: Delete a post by its ID
+      parameters:
+      - description: Post ID
+        in: path
+        name: postID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Successfully deleted post
+        "404":
+          description: Post Not Found
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Delete a post
+      tags:
+      - Post
+    get:
+      description: Retrieve a post by its ID
+      parameters:
+      - description: Post ID
+        in: path
+        name: postID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved post
+          schema:
+            $ref: '#/definitions/placio-app_models.Post'
+        "404":
+          description: Post Not Found
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Get a post
+      tags:
+      - Post
+    put:
+      consumes:
+      - application/json
+      description: Update a post by its ID
+      parameters:
+      - description: Post ID
+        in: path
+        name: postID
+        required: true
+        type: string
+      - description: Post Data
+        in: body
+        name: UpdatePostDto
+        required: true
+        schema:
+          $ref: '#/definitions/placio-app_models.Post'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully updated post
+          schema:
+            $ref: '#/definitions/placio-app_models.Post'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "404":
+          description: Post Not Found
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Update a post
+      tags:
+      - Post
   /api/v1/users:
     get:
       consumes:
