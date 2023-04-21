@@ -24,12 +24,13 @@ import (
 var db = database.DB
 
 type User struct {
-	ID                   string     `gorm:"primaryKey,unique,column:id"`
+	ID                   string     `gorm:"primaryKey,unique,column:user_id"`
 	CreatedAt            time.Time  `gorm:"column:created_at"`
 	UpdatedAt            time.Time  `gorm:"column:updated_at"`
 	DeletedAt            *time.Time `gorm:"column:deleted_at"`
 	Fingerprint          string     `gorm:"column:fingerprint"`
 	Name                 string     `gorm:"column:name"`
+	Username             string     `gorm:"unique,column:name"`
 	Email                string     `gorm:"unique,column:email"`
 	Password             string     `gorm:"column:password"`
 	DateCreated          time.Time  `gorm:"column:date_created"`
@@ -41,9 +42,8 @@ type User struct {
 	TwoFABackupCode      string     `gorm:"column:2fa_backup_code"`
 	FacebookID           string     `gorm:"column:facebook_id"`
 	TwitterID            string     `gorm:"column:twitter_id"`
-	DefaultAccountID     string     `gorm:"column:default_account_id"`
 	ActiveAccountID      string     `gorm:"column:active_account_id"`
-	Accounts             []Account  `gorm:"foreignKey:UserID"`
+	Accounts             []Account  `gorm:"foreignKey:user_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 	IP                   string     `gorm:"column:ip"`
 	UserAgent            string     `gorm:"column:user_agent"`
 	Twitter              *TwitterAccount
@@ -52,11 +52,10 @@ type User struct {
 	HasPassword          bool            `gorm:"column:has_password"`
 	Onboarded            bool            `gorm:"column:onboarded"`
 	Permission           string          `gorm:"column:permission"`
-	GeneralSettings      GeneralSettings `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	GeneralSettings      GeneralSettings `gorm:"foreignKey:user_id;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 }
 
 func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
-	//u.ID = uuid.New().String()
 	err = u.EncryptPassword()
 	if err != nil {
 		return err
@@ -90,6 +89,7 @@ func (u *User) GenerateUserFields(userData Dto.SignUpDto, c *fiber.Ctx) {
 	u.Email = userData.Email
 	u.Name = userData.Name
 	u.Password = userData.Password
+	u.Username = userData.Username
 
 }
 
@@ -111,21 +111,20 @@ func (u *User) CreateUser(userData Dto.SignUpDto, c *fiber.Ctx, db *gorm.DB) (*U
 	// Generate and set fields for the user
 	u.GenerateUserFields(userData, c)
 
-	// Create a new general settings record
-	var settings = &GeneralSettings{}
-	settings.UserID = u.ID
-	settings.Privacy = "public"
-	settings.Language = "en"
-	settings.Theme = "light"
-	settings.ID = GenerateID()
-
-	u.GeneralSettings = *settings
-
 	// Create a new user record in the database along with its general settings
 	err := db.Create(&u).Error
 	if err != nil {
 		return &User{}, err
 	}
+
+	// Create a new general settings record
+	var settings = &GeneralSettings{}
+	err = settings.CreateGeneralSettings(u.ID, db)
+	if err != nil {
+		return nil, err
+	}
+
+	u.GeneralSettings = *settings
 
 	// Create a new account record in the database
 	var accountRecord = &Account{}
@@ -136,15 +135,17 @@ func (u *User) CreateUser(userData Dto.SignUpDto, c *fiber.Ctx, db *gorm.DB) (*U
 
 	logger.Info(context.Background(), "Account created")
 	// Update the account record with the account ID
-	err = db.Model(&u).Where("id = ?", u.ID).Updates(map[string]interface{}{
-		"default_account_id": account.ID,
-		"active_account_id":  account.ID,
-	}).Error
+	err = db.Model(&u).Update("active_account_id", account.ID).Error
 
 	if err != nil {
 		return &User{}, err
 	}
 
+	// save user db
+	err = db.Save(&u).Error
+	if err != nil {
+		return &User{}, err
+	}
 	// Reload the user object with the updated account information
 	err = db.Preload("Accounts").First(u, "id = ?", u.ID).Error
 	if err != nil {
@@ -209,6 +210,7 @@ func Get(id uuid.UUID, email string, account string, social *Social, permission 
 
 	return users, nil
 }
+
 func (u *User) GetUserById(id string, db *gorm.DB) (*User, error) {
 	var user User
 	logger.Info(context.Background(), fmt.Sprintf("Getting user with id %s", id))
@@ -216,6 +218,34 @@ func (u *User) GetUserById(id string, db *gorm.DB) (*User, error) {
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, errors.New("User not found")
+		}
+		return nil, err
+	}
+	return &user, nil
+}
+
+// GetUserByUserName returns a user with the given username
+func (u *User) GetUserByUserName(username string, db *gorm.DB) (*User, error) {
+	var user User
+	logger.Info(context.Background(), fmt.Sprintf("Getting user with username %s", username))
+	err := db.Preload("Accounts").Where("username = ?", username).First(&user).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New("user not found")
+		}
+		return nil, err
+	}
+	return &user, nil
+}
+
+// GetUserByEmail returns a user by their email address
+func (u *User) GetUserByEmail(email string, db *gorm.DB) (*User, error) {
+	var user User
+	logger.Info(context.Background(), fmt.Sprintf("Getting user with username %s", email))
+	err := db.Preload("Accounts").Where("email = ?", email).First(&user).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, errors.New("user not found")
 		}
 		return nil, err
 	}

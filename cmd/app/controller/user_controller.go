@@ -6,7 +6,6 @@ import (
 	"github.com/getsentry/sentry-go"
 	"github.com/gofiber/fiber/v2"
 	_ "gorm.io/gorm"
-	"placio-app/database"
 	"placio-app/middleware"
 	"placio-app/models"
 	"placio-app/service"
@@ -36,11 +35,12 @@ func (c *UserController) RegisterRoutes(app fiber.Router) {
 	userGroup := app.Group("/users")
 
 	userGroup.Post("/", utility.Use(c.CreateUser))
-	userGroup.Get("/", middleware.Verify("user"), utility.Use(c.GetAllUsers))
+	userGroup.Get("/", middleware.Verify("user"), utility.Use(c.getAllUsers))
 	userGroup.Get("/me", middleware.Verify("user"), utility.Use(c.GetMe))
-	userGroup.Get("/:userId", middleware.Verify("user"), utility.Use(c.GetUserByID))
+	userGroup.Get("/check_user", utility.Use(c.checkIfUserExist))
+	userGroup.Get("/:userId", middleware.Verify("user"), utility.Use(c.getUserByID))
 	userGroup.Put("/:id", middleware.Verify("user"), utility.Use(c.UpdateUser))
-	userGroup.Delete("/:id", middleware.Verify("user"), utility.Use(c.DeleteUser))
+	userGroup.Delete("/:id", middleware.Verify("user"), utility.Use(c.deleteUser))
 	userGroup.Get("/:id/messages_sent", middleware.Verify("user"), utility.Use(c.GetMessagesSent))
 	userGroup.Get("/:id/messages_received", middleware.Verify("user"), utility.Use(c.GetMessagesReceived))
 	userGroup.Get("/:id/conversations", middleware.Verify("user"), utility.Use(c.GetConversations))
@@ -74,7 +74,7 @@ func (c *UserController) CreateUser(ctx *fiber.Ctx) error {
 	return ctx.JSON(user)
 }
 
-// GetAllUsers godoc
+// getAllUsers godoc
 // @Summary Retrieve a list of users
 // @Description Retrieve a list of users
 // @Tags User
@@ -83,12 +83,12 @@ func (c *UserController) CreateUser(ctx *fiber.Ctx) error {
 // @Success 200 {object} []models.User
 // @Failure 400 {object} map[string]interface{}
 // @Router /api/v1/users [get]
-func (c *UserController) GetAllUsers(ctx *fiber.Ctx) error {
+func (c *UserController) getAllUsers(ctx *fiber.Ctx) error {
 	//return c.JSON(users)
 	return ctx.JSON(fiber.Map{"status": "ok"})
 }
 
-// GetUserByID godoc
+// getUserByID godoc
 // @Summary Retrieve a user by ID
 // @Description Retrieve a user by ID
 // @Tags User
@@ -97,11 +97,11 @@ func (c *UserController) GetAllUsers(ctx *fiber.Ctx) error {
 // @Success 200 {object} models.User
 // @Failure 400 {object} map[string]interface{}
 // @Router /api/v1/users/{id} [get]
-func (c *UserController) GetUserByID(ctx *fiber.Ctx) error {
+func (c *UserController) getUserByID(ctx *fiber.Ctx) error {
 	// get user id from the path
 	id := ctx.Params("userId")
 	// get user from the user service
-	user, err := c.service.GetUserByID(id, database.DB)
+	user, err := c.service.GetUserByID(id)
 	if err != nil {
 		sentry.CaptureException(err)
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
@@ -115,6 +115,35 @@ func (c *UserController) GetUserByID(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
 		"status": "ok",
 		"data":   items,
+	})
+}
+
+// checkIfUserExist godoc
+// @Summary Check if user exists
+// @Description Check if user exists
+// @Tags User
+// @Accept */*
+// @Produce json
+// @Param username query string false "Username"
+// @Param email query string false "Email"
+// @Success 200 {object} fiber.Map
+// @Failure 400 {object} map[string]interface{}
+// @Router /api/v1/users/check_user [get]c
+func (c *UserController) checkIfUserExist(ctx *fiber.Ctx) error {
+	username := ctx.Query("username")
+	email := ctx.Query("email")
+
+	user, err := c.service.CheckIfUserNameOrEmailExists(username, email)
+	if err != nil {
+		if err.Error() == "user not found" {
+			return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{"status": "ok", "exist": false})
+		}
+		sentry.CaptureException(err)
+		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+	}
+	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+		"status": "ok",
+		"exist":  user,
 	})
 }
 
@@ -142,7 +171,7 @@ func (c *UserController) UpdateUser(ctx *fiber.Ctx) error {
 	return ctx.Status(fiber.StatusNotFound).SendString("User not found")
 }
 
-// DeleteUser godoc
+// deleteUser godoc
 // @Summary Delete a user by ID
 // @Description Delete a user by ID
 // @Tags User
@@ -152,7 +181,7 @@ func (c *UserController) UpdateUser(ctx *fiber.Ctx) error {
 // @Success 200 {object} map[string]interface{}
 // @Failure 400 {object} map[string]interface{}
 // @Router /api/v1/users/{id} [delete]
-func (c *UserController) DeleteUser(ctx *fiber.Ctx) error {
+func (c *UserController) deleteUser(ctx *fiber.Ctx) error {
 	//id := c.Params("id")
 	//for i, user := range users {
 	//	if strconv.Itoa(user.ID) == id {

@@ -158,6 +158,8 @@ definitions:
         type: string
       phone:
         type: string
+      username:
+        type: string
     required:
     - account_type
     - confirm_password
@@ -165,6 +167,7 @@ definitions:
     - name
     - password
     - phone
+    - username
     type: object
   placio-app_Dto.SigninRequest:
     properties:
@@ -649,18 +652,14 @@ definitions:
   placio-app_models.User:
     properties:
       accounts:
-        description: ActiveAccount        Account    `gorm:"foreignKey:ActiveAccountID"`
         items:
           $ref: '#/definitions/placio-app_models.Account'
         type: array
       activeAccountID:
-        description: DefaultAccount       Account    `gorm:"foreignKey:DefaultAccountID"`
         type: string
       createdAt:
         type: string
       dateCreated:
-        type: string
-      defaultAccountID:
         type: string
       deletedAt:
         type: string
@@ -693,7 +692,6 @@ definitions:
       password:
         type: string
       permission:
-        description: AccountID       string          `gorm:"column:account_id"`
         type: string
       supportEnabled:
         type: boolean
@@ -710,6 +708,8 @@ definitions:
       updatedAt:
         type: string
       userAgent:
+        type: string
+      username:
         type: string
     type: object
   placio-app_models.VoiceNote:
@@ -1342,7 +1342,7 @@ paths:
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         "500":
-          description: Internaxxl Server Error
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
       summary: Switch to a different account
@@ -1916,6 +1916,35 @@ paths:
             additionalProperties: true
             type: object
       summary: Retrieve a list of voice notes sent by a specific user by ID
+      tags:
+      - User
+  /api/v1/users/check_user:
+    get:
+      consumes:
+      - '*/*'
+      description: Check if user exists
+      parameters:
+      - description: Username
+        in: query
+        name: username
+        type: string
+      - description: Email
+        in: query
+        name: email
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/fiber.Map'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Check if user exists
       tags:
       - User
   /api/v1/users/me:

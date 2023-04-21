@@ -19,7 +19,7 @@ type UserAndAccount struct {
 
 type Account struct {
 	//gorm.Model
-	ID          string `gorm:"primaryKey"`
+	ID          string `gorm:"primaryKey,unique"`
 	Permission  string
 	AccountType string
 	//AccountID   string
@@ -48,7 +48,7 @@ type Account struct {
 
 // BeforeCreate /*
 func (a *Account) BeforeCreate(tx *gorm.DB) error {
-	a.ID = GenerateID()
+	//a.ID = GenerateID()
 	a.CreatedAt = time.Now()
 	a.UpdatedAt = time.Now()
 	return nil

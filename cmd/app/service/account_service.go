@@ -220,8 +220,6 @@ func (s *AccountService) GetAccount(ctx *fiber.Ctx) (*Dto.UserAccountResponse, e
 	for _, account := range userData.Accounts {
 		if account.ID == userData.ActiveAccountID {
 			return account.GenerateUserAccountResponse(database.DB), nil
-		} else if account.ID == userData.DefaultAccountID {
-			return account.GenerateUserAccountResponse(database.DB), nil
 		}
 	}
 
@@ -260,7 +258,7 @@ func (s *AccountService) MakeAccountDefault(accountId string, ctx *fiber.Ctx) (*
 
 	for _, account := range user.Accounts {
 		if account.ID == accountId {
-			user.DefaultAccountID = account.ID
+			//user.DefaultAccountID = account.ID
 			if err := s.db.Save(&user).Error; err != nil {
 				sentry.CaptureException(err)
 				return nil, err
