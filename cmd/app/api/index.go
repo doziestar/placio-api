@@ -64,4 +64,9 @@ func InitializeRoutes(app *fiber.App) {
 	mediaController := controller.NewMediaController(mediaService)
 	mediaController.RegisterRoutes(routerGroupV1)
 
+	// likes
+	likeService := service.NewLikeService(database.DB)
+	likeController := controller.NewLikeController(likeService)
+	likeController.RegisterRoutes(routerGroupV1)
+
 }
