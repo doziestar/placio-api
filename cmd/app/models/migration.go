@@ -29,7 +29,12 @@ func Migrate(Db *gorm.DB) error {
 		&NotificationsSettings{},
 		&AccountSettings{},
 		&ContentSettings{},
-		&ConnectedAccount{})
+		&ConnectedAccount{},
+		&Post{},
+		&Comment{},
+		&Like{},
+		&Media{},
+		&Follow{})
 	//err := db.Migrator().DropTable(modelList...)
 	//if err != nil {
 	//	return err

@@ -69,4 +69,24 @@ func InitializeRoutes(app *fiber.App) {
 	likeController := controller.NewLikeController(likeService)
 	likeController.RegisterRoutes(routerGroupV1)
 
+	// ratings
+	ratingService := service.NewRatingService(database.DB)
+	ratingController := controller.NewRatingController(ratingService)
+	ratingController.RegisterRoutes(routerGroupV1)
+
+	// tickets
+	ticketService := service.NewTicketService(database.DB)
+	ticketController := controller.NewTicketController(ticketService)
+	ticketController.RegisterRoutes(routerGroupV1)
+
+	// attendee
+	attendeeService := service.NewAttendeeService(database.DB)
+	attendeeController := controller.NewAttendeeController(attendeeService)
+	attendeeController.RegisterRoutes(routerGroupV1)
+
+	// ticketOption
+	ticketOptionService := service.NewTicketOptionService(database.DB)
+	ticketOptionController := controller.NewTicketOptionController(ticketOptionService)
+	ticketOptionController.RegisterRoutes(routerGroupV1)
+
 }

@@ -7,7 +7,6 @@ import (
 )
 
 type Event struct {
-	*gorm.Model
 	ID             string `gorm:"primaryKey"`
 	Name           string `gorm:"index"`
 	Date           time.Time
