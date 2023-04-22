@@ -11,8 +11,8 @@ type Ticket struct {
 	UpdatedAt     time.Time      `gorm:"default:CURRENT_TIMESTAMP"`
 	TicketOptions []TicketOption `gorm:"foreignKey:EventID"`
 	Attendees     []Attendee     `gorm:"foreignKey:EventID"`
-	Comments      []Comment      `gorm:"foreignKey:EventID"`
-	Ratings       []Rating       `gorm:"foreignKey:EventID"`
+	//Comments      []Comment      `gorm:"foreignKey:EventID"`
+	Ratings []Rating `gorm:"foreignKey:EventID"`
 	// Event     Event     `gorm:"foreignKey:EventID"`
 	// Bookings  []Booking `gorm:"foreignKey:TicketID"`
 }
