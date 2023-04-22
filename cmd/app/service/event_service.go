@@ -8,13 +8,14 @@ import (
 
 type IEventService interface {
 	CreateEvent(data *Dto.EventDto) (*models.Event, error)
-	GetEventID(eventId string) (*models.Event, error)
+	GetEventByID(eventId string) (*models.Event, error)
 	GetEventByLocation(locationId string) (*[]models.Event, error)
 	GetEventByCategory(categoryId string) (*[]models.Event, error)
 	GetEventByDate(date string) (*[]models.Event, error)
 	DeleteEvent(eventId string) error
 	UpdateEvent(eventId string, data *Dto.EventDto) (*models.Event, error)
 	GetEventParticipants(eventId string) (*[]models.User, error)
+	GetEventsByAccount(accountID string) ([]models.Event, error)
 }
 
 type EventService struct {
@@ -31,7 +32,7 @@ func (s *EventService) CreateEvent(data *Dto.EventDto) (*models.Event, error) {
 	return nil, nil
 }
 
-func (s *EventService) GetEventID(eventId string) (*models.Event, error) {
+func (s *EventService) GetEventByID(eventId string) (*models.Event, error) {
 	return nil, nil
 }
 
@@ -57,4 +58,10 @@ func (s *EventService) UpdateEvent(eventId string, data *Dto.EventDto) (*models.
 
 func (s *EventService) GetEventParticipants(eventId string) (*[]models.User, error) {
 	return nil, nil
+}
+
+func (s *EventService) GetEventsByAccount(accountID string) ([]models.Event, error) {
+	var events []models.Event
+	err := s.db.Where("account_id = ?", accountID).Find(&events).Error
+	return events, err
 }

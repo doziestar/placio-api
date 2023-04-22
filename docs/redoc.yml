@@ -361,6 +361,23 @@ definitions:
       twoFactorAuthentication:
         type: boolean
     type: object
+  placio-app_models.Attendee:
+    properties:
+      attended:
+        type: boolean
+      createdAt:
+        type: string
+      eventID:
+        type: string
+      id:
+        type: string
+      ticketID:
+        type: string
+      updatedAt:
+        type: string
+      userID:
+        type: string
+    type: object
   placio-app_models.Booking:
     properties:
       createdAt:
@@ -454,8 +471,6 @@ definitions:
         type: string
       date:
         type: string
-      deletedAt:
-        $ref: '#/definitions/gorm.DeletedAt'
       description:
         type: string
       endDate:
@@ -713,6 +728,71 @@ definitions:
         items:
           $ref: '#/definitions/placio-app_models.Media'
         type: array
+      updatedAt:
+        type: string
+    type: object
+  placio-app_models.Rating:
+    properties:
+      createdAt:
+        type: string
+      eventID:
+        type: string
+      id:
+        type: string
+      review:
+        type: string
+      score:
+        type: integer
+      updatedAt:
+        type: string
+      userID:
+        type: string
+    type: object
+  placio-app_models.Ticket:
+    properties:
+      attendees:
+        items:
+          $ref: '#/definitions/placio-app_models.Attendee'
+        type: array
+      comments:
+        items:
+          $ref: '#/definitions/placio-app_models.Comment'
+        type: array
+      createdAt:
+        type: string
+      eventID:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      price:
+        type: integer
+      ratings:
+        items:
+          $ref: '#/definitions/placio-app_models.Rating'
+        type: array
+      ticketOptions:
+        items:
+          $ref: '#/definitions/placio-app_models.TicketOption'
+        type: array
+      updatedAt:
+        type: string
+    type: object
+  placio-app_models.TicketOption:
+    properties:
+      createdAt:
+        type: string
+      eventID:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+      quantity:
+        type: integer
       updatedAt:
         type: string
     type: object
@@ -1596,6 +1676,137 @@ paths:
       summary: Create a new account
       tags:
         - Account
+  /api/v1/attendees/:
+    post:
+      consumes:
+        - application/json
+      description: Add an attendee to the specified event
+      parameters:
+        - description: Attendee Data
+          in: body
+          name: AddAttendeeDto
+          required: true
+          schema:
+            $ref: '#/definitions/placio-app_models.Attendee'
+      produces:
+        - application/json
+      responses:
+        '201':
+          description: Successfully added attendee
+          schema:
+            $ref: '#/definitions/placio-app_models.Attendee'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Add attendee to an event
+      tags:
+        - Attendee
+  /api/v1/attendees/{id}:
+    delete:
+      consumes:
+        - application/json
+      description: Remove an attendee from the specified event by their ID
+      parameters:
+        - description: Attendee ID
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '204':
+          description: Successfully removed attendee
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '404':
+          description: Attendee Not Found
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Remove attendee from an event
+      tags:
+        - Attendee
+    get:
+      consumes:
+        - application/json
+      description: Get attendee details by their ID
+      parameters:
+        - description: Attendee ID
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully retrieved attendee
+          schema:
+            $ref: '#/definitions/placio-app_models.Attendee'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '404':
+          description: Attendee Not Found
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Get attendee by ID
+      tags:
+        - Attendee
+    put:
+      consumes:
+        - application/json
+      description: Update an attendee's details by their ID
+      parameters:
+        - description: Attendee ID
+          in: path
+          name: id
+          required: true
+          type: string
+        - description: Attendee Data
+          in: body
+          name: UpdateAttendeeDto
+          required: true
+          schema:
+            $ref: '#/definitions/placio-app_models.Attendee'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully updated attendee
+          schema:
+            $ref: '#/definitions/placio-app_models.Attendee'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '404':
+          description: Attendee Not Found
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Update attendee details
+      tags:
+        - Attendee
   /api/v1/auth/refresh:
     get:
       consumes:
@@ -1849,6 +2060,68 @@ paths:
       summary: List all comments for a post
       tags:
         - Comment
+  /api/v1/events/{eventId}/attendees:
+    get:
+      consumes:
+        - application/json
+      description: Get all attendees for a specific event by event ID
+      parameters:
+        - description: Event ID
+          in: path
+          name: eventId
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully retrieved attendees
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_models.Attendee'
+            type: array
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Get attendees by event
+      tags:
+        - Attendee
+  /api/v1/events/{eventId}/ticket-options:
+    get:
+      consumes:
+        - application/json
+      description: Get all ticket options for an event by its ID
+      parameters:
+        - description: Event ID
+          in: path
+          name: eventId
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully retrieved ticket options for event
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_models.TicketOption'
+            type: array
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Get ticket options by event ID
+      tags:
+        - TicketOption
   /api/v1/health:
     get:
       consumes:
@@ -2192,6 +2465,423 @@ paths:
       summary: Update a post
       tags:
         - Post
+  /api/v1/ratings/:
+    post:
+      consumes:
+        - application/json
+      description: Create a new rating for the specified event
+      parameters:
+        - description: Rating Data
+          in: body
+          name: CreateRatingDto
+          required: true
+          schema:
+            $ref: '#/definitions/placio-app_models.Rating'
+      produces:
+        - application/json
+      responses:
+        '201':
+          description: Successfully created rating
+          schema:
+            $ref: '#/definitions/placio-app_models.Rating'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Create a new rating
+      tags:
+        - Rating
+  /api/v1/ratings/{id}:
+    delete:
+      consumes:
+        - application/json
+      description: Delete a rating by its ID
+      parameters:
+        - description: Rating ID
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '204':
+          description: Successfully deleted rating
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '404':
+          description: Rating Not Found
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Delete rating by ID
+      tags:
+        - Rating
+    get:
+      consumes:
+        - application/json
+      description: Retrieve a rating by its ID
+      parameters:
+        - description: Rating ID
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully retrieved rating
+          schema:
+            $ref: '#/definitions/placio-app_models.Rating'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '404':
+          description: Rating Not Found
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Get rating by ID
+      tags:
+        - Rating
+    put:
+      consumes:
+        - application/json
+      description: Update a rating by its ID
+      parameters:
+        - description: Rating ID
+          in: path
+          name: id
+          required: true
+          type: string
+        - description: Rating Data
+          in: body
+          name: UpdateRatingDto
+          required: true
+          schema:
+            $ref: '#/definitions/placio-app_models.Rating'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully updated rating
+          schema:
+            $ref: '#/definitions/placio-app_models.Rating'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '404':
+          description: Rating Not Found
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Update rating by ID
+      tags:
+        - Rating
+  /api/v1/ratings/event/{eventID}:
+    get:
+      consumes:
+        - application/json
+      description: Retrieve all ratings for a given event
+      parameters:
+        - description: Event ID
+          in: path
+          name: eventID
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully retrieved ratings
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_models.Rating'
+            type: array
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Get all ratings for an event
+      tags:
+        - Rating
+  /api/v1/ticket-options/:
+    post:
+      consumes:
+        - application/json
+      description: Create a new ticket option for the specified event
+      parameters:
+        - description: Ticket Option Data
+          in: body
+          name: CreateTicketOptionDto
+          required: true
+          schema:
+            $ref: '#/definitions/placio-app_models.TicketOption'
+      produces:
+        - application/json
+      responses:
+        '201':
+          description: Successfully created ticket option
+          schema:
+            $ref: '#/definitions/placio-app_models.TicketOption'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Create a new ticket option
+      tags:
+        - TicketOption
+  /api/v1/ticket-options/{id}:
+    delete:
+      consumes:
+        - application/json
+      description: Delete a ticket option by its ID
+      parameters:
+        - description: Ticket Option ID
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '204':
+          description: Successfully deleted ticket option
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '404':
+          description: Ticket Option Not Found
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Delete ticket option by ID
+      tags:
+        - TicketOption
+    get:
+      consumes:
+        - application/json
+      description: Get a ticket option by its ID
+      parameters:
+        - description: Ticket Option ID
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully retrieved ticket option
+          schema:
+            $ref: '#/definitions/placio-app_models.TicketOption'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '404':
+          description: Ticket Option Not Found
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Get ticket option by ID
+      tags:
+        - TicketOption
+    put:
+      consumes:
+        - application/json
+      description: Update a ticket option by its ID
+      parameters:
+        - description: Ticket Option ID
+          in: path
+          name: id
+          required: true
+          type: string
+        - description: Ticket Option Data
+          in: body
+          name: UpdateTicketOptionDto
+          required: true
+          schema:
+            $ref: '#/definitions/placio-app_models.TicketOption'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully updated ticket option
+          schema:
+            $ref: '#/definitions/placio-app_models.TicketOption'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '404':
+          description: Ticket Option Not Found
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Update ticket option by ID
+      tags:
+        - TicketOption
+  /api/v1/tickets/:
+    post:
+      consumes:
+        - application/json
+      description: Create a new ticket for the specified event
+      parameters:
+        - description: Ticket Data
+          in: body
+          name: CreateTicketDto
+          required: true
+          schema:
+            $ref: '#/definitions/placio-app_models.Ticket'
+      produces:
+        - application/json
+      responses:
+        '201':
+          description: Successfully created ticket
+          schema:
+            $ref: '#/definitions/placio-app_models.Ticket'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Create a new ticket
+      tags:
+        - Ticket
+  /api/v1/tickets/{id}:
+    delete:
+      consumes:
+        - application/json
+      description: Delete a ticket by its ID
+      parameters:
+        - description: Ticket ID
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '204':
+          description: Successfully deleted ticket
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '404':
+          description: Ticket Not Found
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Delete ticket by ID
+      tags:
+        - Ticket
+    get:
+      consumes:
+        - application/json
+      description: Get a ticket by its ID
+      parameters:
+        - description: Ticket ID
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully retrieved ticket
+          schema:
+            $ref: '#/definitions/placio-app_models.Ticket'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '404':
+          description: Ticket Not Found
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Get ticket by ID
+      tags:
+        - Ticket
+  /api/v1/tickets/event/{eventId}:
+    get:
+      consumes:
+        - application/json
+      description: Get all tickets for a specific event
+      parameters:
+        - description: Event ID
+          in: path
+          name: eventId
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully retrieved tickets
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_models.Ticket'
+            type: array
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Get tickets by event ID
+      tags:
+        - Ticket
   /api/v1/users:
     get:
       consumes:

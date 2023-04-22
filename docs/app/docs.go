@@ -1141,6 +1141,204 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/attendees/": {
+            "post": {
+                "description": "Add an attendee to the specified event",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Attendee"
+                ],
+                "summary": "Add attendee to an event",
+                "parameters": [
+                    {
+                        "description": "Attendee Data",
+                        "name": "AddAttendeeDto",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.Attendee"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Successfully added attendee",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.Attendee"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/attendees/{id}": {
+            "get": {
+                "description": "Get attendee details by their ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Attendee"
+                ],
+                "summary": "Get attendee by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Attendee ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved attendee",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.Attendee"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Attendee Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update an attendee's details by their ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Attendee"
+                ],
+                "summary": "Update attendee details",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Attendee ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Attendee Data",
+                        "name": "UpdateAttendeeDto",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.Attendee"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully updated attendee",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.Attendee"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Attendee Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Remove an attendee from the specified event by their ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Attendee"
+                ],
+                "summary": "Remove attendee from an event",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Attendee ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successfully removed attendee"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Attendee Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/auth/refresh": {
             "get": {
                 "description": "Refresh token",
@@ -1511,6 +1709,100 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Comment Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/events/{eventId}/attendees": {
+            "get": {
+                "description": "Get all attendees for a specific event by event ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Attendee"
+                ],
+                "summary": "Get attendees by event",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Event ID",
+                        "name": "eventId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved attendees",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/placio-app_models.Attendee"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/events/{eventId}/ticket-options": {
+            "get": {
+                "description": "Get all ticket options for an event by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "TicketOption"
+                ],
+                "summary": "Get ticket options by event ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Event ID",
+                        "name": "eventId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved ticket options for event",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/placio-app_models.TicketOption"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
                         }
@@ -2029,6 +2321,637 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Post Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/ratings/": {
+            "post": {
+                "description": "Create a new rating for the specified event",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Rating"
+                ],
+                "summary": "Create a new rating",
+                "parameters": [
+                    {
+                        "description": "Rating Data",
+                        "name": "CreateRatingDto",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.Rating"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Successfully created rating",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.Rating"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/ratings/event/{eventID}": {
+            "get": {
+                "description": "Retrieve all ratings for a given event",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Rating"
+                ],
+                "summary": "Get all ratings for an event",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Event ID",
+                        "name": "eventID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved ratings",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/placio-app_models.Rating"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/ratings/{id}": {
+            "get": {
+                "description": "Retrieve a rating by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Rating"
+                ],
+                "summary": "Get rating by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Rating ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved rating",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.Rating"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Rating Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update a rating by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Rating"
+                ],
+                "summary": "Update rating by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Rating ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Rating Data",
+                        "name": "UpdateRatingDto",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.Rating"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully updated rating",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.Rating"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Rating Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a rating by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Rating"
+                ],
+                "summary": "Delete rating by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Rating ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successfully deleted rating"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Rating Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/ticket-options/": {
+            "post": {
+                "description": "Create a new ticket option for the specified event",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "TicketOption"
+                ],
+                "summary": "Create a new ticket option",
+                "parameters": [
+                    {
+                        "description": "Ticket Option Data",
+                        "name": "CreateTicketOptionDto",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.TicketOption"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Successfully created ticket option",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.TicketOption"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/ticket-options/{id}": {
+            "get": {
+                "description": "Get a ticket option by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "TicketOption"
+                ],
+                "summary": "Get ticket option by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Ticket Option ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved ticket option",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.TicketOption"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Ticket Option Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update a ticket option by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "TicketOption"
+                ],
+                "summary": "Update ticket option by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Ticket Option ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Ticket Option Data",
+                        "name": "UpdateTicketOptionDto",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.TicketOption"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully updated ticket option",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.TicketOption"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Ticket Option Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a ticket option by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "TicketOption"
+                ],
+                "summary": "Delete ticket option by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Ticket Option ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successfully deleted ticket option"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Ticket Option Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/tickets/": {
+            "post": {
+                "description": "Create a new ticket for the specified event",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ticket"
+                ],
+                "summary": "Create a new ticket",
+                "parameters": [
+                    {
+                        "description": "Ticket Data",
+                        "name": "CreateTicketDto",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.Ticket"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Successfully created ticket",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.Ticket"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/tickets/event/{eventId}": {
+            "get": {
+                "description": "Get all tickets for a specific event",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ticket"
+                ],
+                "summary": "Get tickets by event ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Event ID",
+                        "name": "eventId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved tickets",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/placio-app_models.Ticket"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/tickets/{id}": {
+            "get": {
+                "description": "Get a ticket by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ticket"
+                ],
+                "summary": "Get ticket by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Ticket ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved ticket",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.Ticket"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Ticket Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a ticket by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ticket"
+                ],
+                "summary": "Delete ticket by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Ticket ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Successfully deleted ticket"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Ticket Not Found",
                         "schema": {
                             "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
                         }
@@ -4472,6 +5395,32 @@ const docTemplate = `{
                 }
             }
         },
+        "placio-app_models.Attendee": {
+            "type": "object",
+            "properties": {
+                "attended": {
+                    "type": "boolean"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "eventID": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "ticketID": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "userID": {
+                    "type": "string"
+                }
+            }
+        },
         "placio-app_models.Booking": {
             "type": "object",
             "properties": {
@@ -4613,9 +5562,6 @@ const docTemplate = `{
                 },
                 "date": {
                     "type": "string"
-                },
-                "deletedAt": {
-                    "$ref": "#/definitions/gorm.DeletedAt"
                 },
                 "description": {
                     "type": "string"
@@ -5007,6 +5953,105 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/placio-app_models.Media"
                     }
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_models.Rating": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "eventID": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "review": {
+                    "type": "string"
+                },
+                "score": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "userID": {
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_models.Ticket": {
+            "type": "object",
+            "properties": {
+                "attendees": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_models.Attendee"
+                    }
+                },
+                "comments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_models.Comment"
+                    }
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "eventID": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "ratings": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_models.Rating"
+                    }
+                },
+                "ticketOptions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_models.TicketOption"
+                    }
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_models.TicketOption": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "eventID": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "number"
+                },
+                "quantity": {
+                    "type": "integer"
                 },
                 "updatedAt": {
                     "type": "string"
