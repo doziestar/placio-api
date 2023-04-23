@@ -2,6 +2,8 @@ package utility
 
 import (
 	"errors"
+	"gorm.io/gorm"
+	"log"
 	"placio-app/database"
 	"placio-app/models"
 	"regexp"
@@ -23,6 +25,7 @@ func Validate(email, name, password, username string) error {
 		return errors.New("invalid username: username must be at least 4 characters, and contain only letters, numbers, and underscores")
 	}
 
+	log.Println("Checking if username or email exists")
 	exists, err := checkIfUserNameOrEmailExists(username, email)
 	if err != nil {
 		return err
@@ -73,7 +76,11 @@ func isValidUsername(username string) bool {
 func checkIfUserNameOrEmailExists(username, email string) (bool, error) {
 	var count int64
 	if err := database.DB.Model(&models.User{}).Where("username = ? OR email = ?", username, email).Count(&count).Error; err != nil {
-		return false, err
+		if err == gorm.ErrRecordNotFound {
+			return true, nil
+		} else {
+			return false, err
+		}
 	}
 	return count > 0, nil
 }
