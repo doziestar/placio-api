@@ -136,7 +136,7 @@ func (c *UserController) checkIfUserExist(ctx *fiber.Ctx) error {
 	user, err := c.service.CheckIfUserNameOrEmailExists(username, email)
 	if err != nil {
 		if err.Error() == "user not found" {
-			return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{"status": "ok", "exist": false})
+			return ctx.Status(fiber.StatusOK).JSON(fiber.Map{"status": "ok", "exist": false})
 		}
 		sentry.CaptureException(err)
 		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})

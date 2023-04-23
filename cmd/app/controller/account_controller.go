@@ -93,7 +93,7 @@ func (c *AccountController) createAccount(ctx *fiber.Ctx) error {
 
 	// validate input
 	if err := utility.Validate(data.Email, data.Name, data.Password, data.Username); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+		return ctx.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
 			"error": err.Error(),
 		})
 	}
