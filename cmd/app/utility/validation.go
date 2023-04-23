@@ -2,6 +2,8 @@ package utility
 
 import (
 	"errors"
+	"placio-app/database"
+	"placio-app/models"
 	"regexp"
 	"strings"
 )
@@ -19,6 +21,14 @@ func Validate(email, name, password, username string) error {
 	}
 	if !isValidUsername(username) {
 		return errors.New("invalid username: username must be at least 4 characters, and contain only letters, numbers, and underscores")
+	}
+
+	exists, err := checkIfUserNameOrEmailExists(username, email)
+	if err != nil {
+		return err
+	}
+	if exists {
+		return errors.New("username or email already exists")
 	}
 	return nil
 }
@@ -58,4 +68,12 @@ func isValidUsername(username string) bool {
 	usernameRegex := `^[\w]{4,}$`
 	re := regexp.MustCompile(usernameRegex)
 	return re.MatchString(username)
+}
+
+func checkIfUserNameOrEmailExists(username, email string) (bool, error) {
+	var count int64
+	if err := database.DB.Model(&models.User{}).Where("username = ? OR email = ?", username, email).Count(&count).Error; err != nil {
+		return false, err
+	}
+	return count > 0, nil
 }

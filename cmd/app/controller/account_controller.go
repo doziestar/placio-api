@@ -18,6 +18,7 @@ import (
 
 type AccountController struct {
 	store   service.IAccountService
+	user    service.IUser
 	utility utility.IUtility
 }
 

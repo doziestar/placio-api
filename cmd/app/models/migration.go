@@ -34,7 +34,11 @@ func Migrate(Db *gorm.DB) error {
 		&Comment{},
 		&Like{},
 		&Media{},
-		&Follow{})
+		&Follow{},
+		&Ticket{},
+		&TicketOption{},
+		&Attendee{},
+		&Rating{})
 	//err := db.Migrator().DropTable(modelList...)
 	//if err != nil {
 	//	return err
