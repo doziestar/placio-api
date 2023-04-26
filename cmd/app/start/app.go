@@ -1,20 +1,14 @@
 package start
 
 import (
+	"github.com/gin-gonic/gin"
 	"log"
+	"time"
 
 	"github.com/getsentry/sentry-go"
-	"github.com/gofiber/fiber/v2"
-
-	//"github.com/gofiber/secure/v2"
-	"time"
-	//"github.com/gofiber/fiber/v2/middleware/recover"
-	//"github.com/gofiber/fiber/v2/middleware/timeout"\
-	// import sqlite3 driver\
 )
 
-func Initialize(PORT string, app *fiber.App) {
-
+func Initialize(PORT string, app *gin.Engine) {
 	Middleware(app)
 
 	err := sentry.Init(sentry.ClientOptions{
@@ -32,7 +26,7 @@ func Initialize(PORT string, app *fiber.App) {
 	}
 	// Flush buffered events before the program terminates.
 	defer sentry.Flush(2 * time.Second)
-	err = app.Listen(":" + PORT)
+	err = app.Run(":" + PORT)
 	if err != nil {
 		return
 	}
