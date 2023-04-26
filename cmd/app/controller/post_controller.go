@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/gofiber/fiber/v2"
 	_ "placio-app/Dto"
 	"placio-app/middleware"
@@ -17,7 +18,7 @@ func NewPostController(postService service.PostService) *PostController {
 	return &PostController{postService: postService}
 }
 
-func (pc *PostController) RegisterRoutes(router fiber.Router) {
+func (pc *PostController) RegisterRoutes(router *gin.RouterGroup) {
 	postRouter := router.Group("/posts")
 	{
 		//postRouter.Get("/", middleware.Verify("user"), pc.getAllPosts)

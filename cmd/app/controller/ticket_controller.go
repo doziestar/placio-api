@@ -2,6 +2,7 @@ package controller
 
 import (
 	"errors"
+	"github.com/gin-gonic/gin"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 	_ "placio-app/Dto"
@@ -18,7 +19,7 @@ func NewTicketController(ticketService service.TicketService) *TicketController 
 	return &TicketController{ticketService: ticketService}
 }
 
-func (tc *TicketController) RegisterRoutes(router fiber.Router) {
+func (tc *TicketController) RegisterRoutes(router *gin.RouterGroup) {
 	ticketRouter := router.Group("/tickets")
 	{
 		ticketRouter.Post("/", tc.createTicket)

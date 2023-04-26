@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/gofiber/fiber/v2"
 	_ "placio-app/Dto"
 	"placio-app/service"
@@ -15,7 +16,7 @@ func NewLikeController(likeService service.LikeService) *LikesController {
 	return &LikesController{likesService: likeService}
 }
 
-func (lc *LikesController) RegisterRoutes(router fiber.Router) {
+func (lc *LikesController) RegisterRoutes(router *gin.RouterGroup) {
 	likeRouter := router.Group("/likes")
 	{
 		//likeRouter.Get("/", lc.getAllLikes)

@@ -2,6 +2,7 @@ package controller
 
 import (
 	"errors"
+	"github.com/gin-gonic/gin"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 	_ "placio-app/Dto"
@@ -17,7 +18,7 @@ func NewAttendeeController(attendeeService service.AttendeeService) *AttendeeCon
 	return &AttendeeController{attendeeService: attendeeService}
 }
 
-func (ac *AttendeeController) RegisterRoutes(router fiber.Router) {
+func (ac *AttendeeController) RegisterRoutes(router *gin.RouterGroup) {
 	attendeeRouter := router.Group("/attendees")
 	{
 		attendeeRouter.Post("/", ac.addAttendee)

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/gofiber/fiber/v2"
 	_ "placio-app/Dto"
 	"placio-app/models"
@@ -15,7 +16,7 @@ func NewCommentController(commentService service.CommentService) *CommentControl
 	return &CommentController{commentService: commentService}
 }
 
-func (cc *CommentController) RegisterRoutes(router fiber.Router) {
+func (cc *CommentController) RegisterRoutes(router *gin.RouterGroup) {
 	commentRouter := router.Group("/comments")
 	{
 		//commentRouter.Get("/", cc.getAllComments)

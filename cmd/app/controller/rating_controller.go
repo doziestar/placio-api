@@ -2,6 +2,7 @@ package controller
 
 import (
 	"errors"
+	"github.com/gin-gonic/gin"
 	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
 	_ "placio-app/Dto"
@@ -17,7 +18,7 @@ func NewRatingController(ratingService service.RatingService) *RatingController 
 	return &RatingController{ratingService: ratingService}
 }
 
-func (rc *RatingController) RegisterRoutes(router fiber.Router) {
+func (rc *RatingController) RegisterRoutes(router *gin.RouterGroup) {
 	ratingRouter := router.Group("/ratings")
 	{
 		ratingRouter.Post("/", rc.createRating)

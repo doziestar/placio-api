@@ -5,6 +5,7 @@ package controller
 import (
 	"context"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/gofiber/fiber/v2"
 	"log"
 	"net/http"
@@ -33,7 +34,7 @@ func requestLogger() fiber.Handler {
 	}
 }
 
-func (c *AccountController) RegisterRoutes(app fiber.Router) {
+func (c *AccountController) RegisterRoutes(app *gin.RouterGroup) {
 	//app.Use(requestLogger())
 	accountGroup := app.Group("/accounts")
 	accountGroup.Get("/", middleware.Verify("user"), utility.Use(c.getUserAccount))

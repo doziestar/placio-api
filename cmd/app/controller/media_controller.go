@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/gofiber/fiber/v2"
 	_ "placio-app/Dto"
 	_ "placio-app/models"
@@ -15,7 +16,7 @@ func NewMediaController(mediaService service.MediaService) *MediaController {
 	return &MediaController{mediaService: mediaService}
 }
 
-func (mc *MediaController) RegisterRoutes(router fiber.Router) {
+func (mc *MediaController) RegisterRoutes(router *gin.RouterGroup) {
 	mediaRouter := router.Group("/media")
 	{
 		//mediaRouter.Get("/", mc.getAllMedia)

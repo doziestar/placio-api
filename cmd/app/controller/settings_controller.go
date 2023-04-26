@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/session"
 	"placio-app/models"
@@ -15,7 +16,7 @@ func NewSettingsController(store service.ISettingsService) *SettingsController {
 	return &SettingsController{store: store}
 }
 
-func (c *SettingsController) RegisterRoutes(app fiber.Router, session *session.Store) {
+func (c *SettingsController) RegisterRoutes(app *gin.RouterGroup, session *session.Store) {
 	settingsGroup := app.Group("/settings")
 
 	settingsGroup.Get("/general", c.getGeneralSettings)
