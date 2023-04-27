@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/getsentry/sentry-go"
+	"github.com/gin-gonic/gin"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -16,12 +17,12 @@ import (
 )
 
 type IAccountService interface {
-	CreateUserAccount(data *Dto.SignUpDto, ctx *fiber.Ctx) (*fiber.Map, error)
+	CreateUserAccount(data *Dto.SignUpDto, ctx *gin.Context) (*fiber.Map, error)
 	SwitchUserAccount(accountId, userId string) (*models.User, error)
-	CreateBusinessAccount(data *Dto.AddAccountDto, ctx *fiber.Ctx) (*Dto.UserAccountResponse, error)
-	GetAccount(ctx *fiber.Ctx) (*Dto.UserAccountResponse, error)
-	GetAccounts(ctx *fiber.Ctx) (*[]models.Account, error)
-	MakeAccountDefault(accountId string, ctx *fiber.Ctx) (*Dto.UserAccountResponse, error)
+	CreateBusinessAccount(data *Dto.AddAccountDto, ctx *gin.Context) (*Dto.UserAccountResponse, error)
+	GetAccount(ctx *gin.Context) (*Dto.UserAccountResponse, error)
+	GetAccounts(ctx *gin.Context) (*[]models.Account, error)
+	MakeAccountDefault(accountId string, ctx *gin.Context) (*Dto.UserAccountResponse, error)
 	Follow(followerID, followingID string) error
 	Unfollow(followerID, followingID string) error
 	ListFollowers(accountID string) ([]models.Account, error)
@@ -38,7 +39,7 @@ func NewAccountService(db *gorm.DB, account models.Account, user models.User) *A
 	return &AccountService{db: db, account: account, user: user}
 }
 
-func (s *AccountService) CreateUserAccount(data *Dto.SignUpDto, ctx *fiber.Ctx) (*fiber.Map, error) {
+func (s *AccountService) CreateUserAccount(data *Dto.SignUpDto, ctx *gin.Context) (*fiber.Map, error) {
 
 	// check if User has already registered an Account
 	userData, err := s.user.GetByEmail(data.Email, database.DB)
@@ -75,8 +76,8 @@ func (s *AccountService) CreateUserAccount(data *Dto.SignUpDto, ctx *fiber.Ctx) 
 			}
 		}
 
-		ctx.Locals("duplicate_user", duplicateUser)
-		ctx.Locals("has_password", hasPassword)
+		ctx.Set("duplicate_user", duplicateUser)
+		ctx.Set("has_password", hasPassword)
 	}
 	//permission := func() string {
 	//	if userData != nil {
@@ -155,16 +156,19 @@ func (s *AccountService) CreateUserAccount(data *Dto.SignUpDto, ctx *fiber.Ctx) 
 	}, nil
 }
 
-func (s *AccountService) CreateBusinessAccount(data *Dto.AddAccountDto, ctx *fiber.Ctx) (*Dto.UserAccountResponse, error) {
+func (s *AccountService) CreateBusinessAccount(data *Dto.AddAccountDto, ctx *gin.Context) (*Dto.UserAccountResponse, error) {
 	// get the User from the context
-	userID := ctx.Locals("User").(string)
+	userID, ok := ctx.Get("User")
+	if !ok {
+		return nil, errors.New("User not found")
+	}
 	logger.Info(context.Background(), fmt.Sprintf("User: %v", userID))
 
 	// get the User's Account
 	account := new(models.Account)
 	user := new(models.User)
 
-	userData, err := user.GetUserById(userID, database.DB)
+	userData, err := user.GetUserById(userID.(string), database.DB)
 	if err != nil {
 		sentry.CaptureException(err)
 		return nil, err
@@ -197,10 +201,13 @@ func (s *AccountService) SwitchUserAccount(accountId, userId string) (*models.Us
 	return userData, nil
 }
 
-func (s *AccountService) GetAccount(ctx *fiber.Ctx) (*Dto.UserAccountResponse, error) {
+func (s *AccountService) GetAccount(ctx *gin.Context) (*Dto.UserAccountResponse, error) {
 	// get the User from the context
-	userID := ctx.Locals("User").(string)
-	accountId := ctx.Params("accountId")
+	userID, ok := ctx.Get("User")
+	if !ok {
+		return nil, errors.New("User not found")
+	}
+	accountId := ctx.Param("accountId")
 	logger.Info(context.Background(), fmt.Sprintf("User: %v", userID))
 	logger.Info(context.Background(), fmt.Sprintf("accountId: %v", accountId))
 	logger.Info(context.Background(), fmt.Sprintf("User: %v", userID))
@@ -208,7 +215,7 @@ func (s *AccountService) GetAccount(ctx *fiber.Ctx) (*Dto.UserAccountResponse, e
 	// get the User's Account
 	userModel := new(models.User)
 
-	userData, err := userModel.GetUserById(userID, database.DB)
+	userData, err := userModel.GetUserById(userID.(string), database.DB)
 	if err != nil {
 		sentry.CaptureException(err)
 		return nil, err
@@ -231,15 +238,18 @@ func (s *AccountService) GetAccount(ctx *fiber.Ctx) (*Dto.UserAccountResponse, e
 	return nil, errors.New("no Account found")
 }
 
-func (s *AccountService) GetAccounts(ctx *fiber.Ctx) (*[]models.Account, error) {
+func (s *AccountService) GetAccounts(ctx *gin.Context) (*[]models.Account, error) {
 	// get the User from the context
-	userID := ctx.Locals("User").(string)
+	userID, ok := ctx.Get("User")
+	if !ok {
+		return nil, errors.New("User not found")
+	}
 	logger.Info(context.Background(), fmt.Sprintf("User: %v", userID))
 
 	// get the User's Account
 	userModel := new(models.User)
 
-	userData, err := userModel.GetUserById(userID, database.DB)
+	userData, err := userModel.GetUserById(userID.(string), database.DB)
 	if err != nil {
 		sentry.CaptureException(err)
 		return nil, err
@@ -248,14 +258,17 @@ func (s *AccountService) GetAccounts(ctx *fiber.Ctx) (*[]models.Account, error) 
 	return &userData.Accounts, nil
 }
 
-func (s *AccountService) MakeAccountDefault(accountId string, ctx *fiber.Ctx) (*Dto.UserAccountResponse, error) {
+func (s *AccountService) MakeAccountDefault(accountId string, ctx *gin.Context) (*Dto.UserAccountResponse, error) {
 	// get the User from the context
-	userID := ctx.Locals("User").(string)
+	userID, ok := ctx.Get("User")
+	if !ok {
+		return nil, errors.New("User not found")
+	}
 	logger.Info(context.Background(), fmt.Sprintf("User: %v", userID))
 
 	// get the User's Account
 	var user models.User
-	userData := s.db.Preload("Accounts").Where("id = ?", userID).First(&user)
+	userData := s.db.Preload("Accounts").Where("id = ?", userID.(string)).First(&user)
 	if userData.Error != nil {
 		sentry.CaptureException(userData.Error)
 		return nil, userData.Error

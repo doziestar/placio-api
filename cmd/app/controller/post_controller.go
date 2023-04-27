@@ -2,7 +2,7 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/gofiber/fiber/v2"
+	"net/http"
 	_ "placio-app/Dto"
 	"placio-app/middleware"
 	"placio-app/models"
@@ -22,10 +22,10 @@ func (pc *PostController) RegisterRoutes(router *gin.RouterGroup) {
 	postRouter := router.Group("/posts")
 	{
 		//postRouter.Get("/", middleware.Verify("user"), pc.getAllPosts)
-		postRouter.Get("/:id", middleware.Verify("user"), utility.Use(pc.getPost))
-		postRouter.Post("/", middleware.Verify("user"), utility.Use(pc.createPost))
-		postRouter.Put("/:id", middleware.Verify("user"), utility.Use(pc.updatePost))
-		postRouter.Delete("/:id", middleware.Verify("user"), utility.Use(pc.deletePost))
+		postRouter.GET("/:id", middleware.Verify("user"), utility.Use(pc.getPost))
+		postRouter.POST("/", middleware.Verify("user"), utility.Use(pc.createPost))
+		postRouter.PUT("/:id", middleware.Verify("user"), utility.Use(pc.updatePost))
+		postRouter.DELETE("/:id", middleware.Verify("user"), utility.Use(pc.deletePost))
 
 	}
 }
@@ -40,12 +40,13 @@ func (pc *PostController) RegisterRoutes(router *gin.RouterGroup) {
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/posts/ [post]
-func (c *PostController) createPost(ctx *fiber.Ctx) error {
+func (c *PostController) createPost(ctx *gin.Context) error {
 	data := new(models.Post)
-	if err := ctx.BodyParser(data); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+	if err := ctx.BindJSON(data); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": "Bad Request",
 		})
+		return err
 	}
 
 	post := &models.Post{
@@ -55,12 +56,14 @@ func (c *PostController) createPost(ctx *fiber.Ctx) error {
 
 	newPost, err := c.postService.CreatePost(post)
 	if err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Internal Server Error",
 		})
+		return err
 	}
 
-	return ctx.Status(fiber.StatusCreated).JSON(newPost)
+	ctx.JSON(http.StatusCreated, newPost)
+	return nil
 }
 
 // @Summary Get a post
@@ -72,23 +75,26 @@ func (c *PostController) createPost(ctx *fiber.Ctx) error {
 // @Failure 404 {object} Dto.ErrorDTO "Post Not Found"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/posts/{postID} [get]
-func (c *PostController) getPost(ctx *fiber.Ctx) error {
-	postID := ctx.Params("postID")
+func (c *PostController) getPost(ctx *gin.Context) error {
+	postID := ctx.Param("postID")
 
 	post, err := c.postService.GetPost(postID)
 	if err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Internal Server Error",
 		})
+		return err
 	}
 
 	if post == nil {
-		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
+		ctx.JSON(http.StatusNotFound, gin.H{
 			"error": "Post Not Found",
 		})
+		return nil
 	}
 
-	return ctx.JSON(post)
+	ctx.JSON(http.StatusOK, post)
+	return nil
 }
 
 // @Summary Update a post
@@ -103,37 +109,41 @@ func (c *PostController) getPost(ctx *fiber.Ctx) error {
 // @Failure 404 {object} Dto.ErrorDTO "Post Not Found"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/posts/{postID} [put]
-func (c *PostController) updatePost(ctx *fiber.Ctx) error {
-	postID := ctx.Params("postID")
+func (c *PostController) updatePost(ctx *gin.Context) error {
+	postID := ctx.Param("postID")
 	data := new(models.Post)
-	if err := ctx.BodyParser(data); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+	if err := ctx.BindJSON(data); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": "Bad Request",
 		})
+		return err
 	}
-
 	post, err := c.postService.GetPost(postID)
 	if err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Internal Server Error",
 		})
+		return err
 	}
 
 	if post == nil {
-		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
+		ctx.JSON(http.StatusNotFound, gin.H{
 			"error": "Post Not Found",
 		})
+		return nil
 	}
 
 	//post.Content = data.Content
 	updatedPost, err := c.postService.UpdatePost(post)
 	if err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Internal Server Error",
 		})
+		return err
 	}
 
-	return ctx.JSON(updatedPost)
+	ctx.JSON(http.StatusOK, updatedPost)
+	return nil
 }
 
 // @Summary Delete a post
@@ -145,16 +155,18 @@ func (c *PostController) updatePost(ctx *fiber.Ctx) error {
 // @Failure 404 {object} Dto.ErrorDTO "Post Not Found"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/posts/{postID} [delete]
-func (c *PostController) deletePost(ctx *fiber.Ctx) error {
-	postID := ctx.Params("postID")
+func (c *PostController) deletePost(ctx *gin.Context) error {
+	postID := ctx.Param("postID")
 	err := c.postService.DeletePost(postID)
 	if err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Internal Server Error",
 		})
+		return err
 	}
 
-	return ctx.SendStatus(fiber.StatusNoContent)
+	ctx.Status(http.StatusNoContent)
+	return nil
 }
 
 // @Summary List all posts
@@ -164,13 +176,15 @@ func (c *PostController) deletePost(ctx *fiber.Ctx) error {
 // @Success 200 {array} models.Post "Successfully retrieved posts"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/posts/ [get]
-func (c *PostController) listPosts(ctx *fiber.Ctx) error {
+func (c *PostController) listPosts(ctx *gin.Context) error {
 	posts, err := c.postService.ListPosts()
 	if err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Internal Server Error",
 		})
+		return err
 	}
-	return ctx.JSON(posts)
+	ctx.JSON(http.StatusOK, posts)
+	return nil
 
 }

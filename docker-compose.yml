@@ -80,14 +80,14 @@ services:
 #      - kafka
 
   app:
-    container_name: placio-app
+#    container_name: placio-app
     platform: linux/x86_64
     build:
       context: .
       dockerfile: ./cmd/app/Dockerfile
     restart: always
-    ports:
-      - "7070:7070"
+#    ports:
+#      - "7070:7070"
     depends_on:
       - postgres-db
     volumes:

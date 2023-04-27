@@ -3,11 +3,12 @@ package controller
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
-	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
+	"net/http"
 	_ "placio-app/Dto"
 	"placio-app/models"
 	"placio-app/service"
+	"placio-app/utility"
 )
 
 type AttendeeController struct {
@@ -21,11 +22,11 @@ func NewAttendeeController(attendeeService service.AttendeeService) *AttendeeCon
 func (ac *AttendeeController) RegisterRoutes(router *gin.RouterGroup) {
 	attendeeRouter := router.Group("/attendees")
 	{
-		attendeeRouter.Post("/", ac.addAttendee)
-		attendeeRouter.Get("/:id", ac.getAttendee)
-		attendeeRouter.Put("/:id", ac.updateAttendee)
-		attendeeRouter.Delete("/:id", ac.removeAttendee)
-		attendeeRouter.Get("/event/:eventID", ac.getAttendeesByEvent)
+		attendeeRouter.POST("/", utility.Use(ac.addAttendee))
+		attendeeRouter.GET("/:id", utility.Use(ac.getAttendee))
+		attendeeRouter.PUT("/:id", utility.Use(ac.updateAttendee))
+		attendeeRouter.DELETE("/:id", utility.Use(ac.removeAttendee))
+		attendeeRouter.GET("/event/:eventID", utility.Use(ac.getAttendeesByEvent))
 	}
 }
 
@@ -40,12 +41,13 @@ func (ac *AttendeeController) RegisterRoutes(router *gin.RouterGroup) {
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/attendees/ [post]
-func (ac *AttendeeController) addAttendee(ctx *fiber.Ctx) error {
+func (ac *AttendeeController) addAttendee(ctx *gin.Context) error {
 	data := new(models.Attendee)
-	if err := ctx.BodyParser(data); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+	if err := ctx.BindJSON(data); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": "Bad Request",
 		})
+		return err
 	}
 
 	attendee := &models.Attendee{
@@ -55,12 +57,14 @@ func (ac *AttendeeController) addAttendee(ctx *fiber.Ctx) error {
 
 	newAttendee := ac.attendeeService.AddAttendee(attendee)
 	if newAttendee == nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Internal Server Error",
 		})
+		return errors.New("internal server error")
 	}
 
-	return ctx.Status(fiber.StatusCreated).JSON(newAttendee)
+	ctx.JSON(http.StatusCreated, newAttendee)
+	return nil
 }
 
 // getAttendee retrieves an attendee by their ID
@@ -75,21 +79,23 @@ func (ac *AttendeeController) addAttendee(ctx *fiber.Ctx) error {
 // @Failure 404 {object} Dto.ErrorDTO "Attendee Not Found"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/attendees/{id} [get]
-func (ac *AttendeeController) getAttendee(ctx *fiber.Ctx) error {
-	attendeeID := ctx.Params("id")
+func (ac *AttendeeController) getAttendee(ctx *gin.Context) error {
+	attendeeID := ctx.Param("id")
 	attendee, err := ac.attendeeService.GetAttendeesByEvent(attendeeID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			ctx.JSON(http.StatusNotFound, gin.H{
 				"error": "Attendee Not Found",
 			})
+			return err
 		}
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Internal Server Error",
 		})
 	}
 
-	return ctx.Status(fiber.StatusOK).JSON(attendee)
+	ctx.JSON(http.StatusOK, attendee)
+	return nil
 }
 
 // updateAttendee updates an attendee's details
@@ -105,24 +111,27 @@ func (ac *AttendeeController) getAttendee(ctx *fiber.Ctx) error {
 // @Failure 404 {object} Dto.ErrorDTO "Attendee Not Found"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/attendees/{id} [put]
-func (ac *AttendeeController) updateAttendee(ctx *fiber.Ctx) error {
-	attendeeID := ctx.Params("id")
+func (ac *AttendeeController) updateAttendee(ctx *gin.Context) error {
+	attendeeID := ctx.Param("id")
 	data := new(models.Attendee)
-	if err := ctx.BodyParser(data); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+	if err := ctx.BindJSON(data); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": "Bad Request",
 		})
+		return err
 	}
 	attendee, err := ac.attendeeService.GetAttendeesByEvent(attendeeID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			ctx.JSON(http.StatusNotFound, gin.H{
 				"error": "Attendee Not Found",
 			})
+			return err
 		}
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Internal Server Error",
 		})
+		return err
 	}
 
 	//attendee.EventID = data.EventID
@@ -135,8 +144,8 @@ func (ac *AttendeeController) updateAttendee(ctx *fiber.Ctx) error {
 	//	})
 	//}
 
-	return ctx.Status(fiber.StatusOK).JSON(attendee)
-
+	ctx.JSON(http.StatusOK, attendee)
+	return nil
 }
 
 // removeAttendee removes an attendee from an event
@@ -151,20 +160,22 @@ func (ac *AttendeeController) updateAttendee(ctx *fiber.Ctx) error {
 // @Failure 404 {object} Dto.ErrorDTO "Attendee Not Found"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/attendees/{id} [delete]
-func (ac *AttendeeController) removeAttendee(ctx *fiber.Ctx) error {
-	attendeeID := ctx.Params("id")
+func (ac *AttendeeController) removeAttendee(ctx *gin.Context) error {
+	attendeeID := ctx.Param("id")
 	err := ac.attendeeService.RemoveAttendee(attendeeID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			ctx.JSON(http.StatusNotFound, gin.H{
 				"error": "Attendee Not Found",
 			})
+			return err
 		}
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Internal Server Error",
 		})
 	}
-	return ctx.Status(fiber.StatusNoContent).SendStream(nil)
+	ctx.JSON(http.StatusNoContent, nil)
+	return nil
 }
 
 // getAttendeesByEvent retrieves all attendees for a specific event
@@ -178,14 +189,16 @@ func (ac *AttendeeController) removeAttendee(ctx *fiber.Ctx) error {
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/events/{eventId}/attendees [get]
-func (ac *AttendeeController) getAttendeesByEvent(ctx *fiber.Ctx) error {
-	eventID := ctx.Params("eventId")
+func (ac *AttendeeController) getAttendeesByEvent(ctx *gin.Context) error {
+	eventID := ctx.Param("eventId")
 	attendees, err := ac.attendeeService.GetAttendeesByEvent(eventID)
 	if err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Internal Server Error",
 		})
+		return err
 	}
 
-	return ctx.Status(fiber.StatusOK).JSON(attendees)
+	ctx.JSON(http.StatusOK, attendees)
+	return nil
 }

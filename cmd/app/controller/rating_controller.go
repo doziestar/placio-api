@@ -3,11 +3,12 @@ package controller
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
-	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
+	"net/http"
 	_ "placio-app/Dto"
 	"placio-app/models"
 	"placio-app/service"
+	"placio-app/utility"
 )
 
 type RatingController struct {
@@ -21,11 +22,11 @@ func NewRatingController(ratingService service.RatingService) *RatingController 
 func (rc *RatingController) RegisterRoutes(router *gin.RouterGroup) {
 	ratingRouter := router.Group("/ratings")
 	{
-		ratingRouter.Post("/", rc.createRating)
-		ratingRouter.Get("/:id", rc.getRating)
-		ratingRouter.Put("/:id", rc.updateRating)
-		ratingRouter.Delete("/:id", rc.deleteRating)
-		ratingRouter.Get("/event/:eventID", rc.getRatingsByEvent)
+		ratingRouter.POST("/", utility.Use(rc.createRating))
+		ratingRouter.GET("/:id", utility.Use(rc.getRating))
+		ratingRouter.PUT("/:id", utility.Use(rc.updateRating))
+		ratingRouter.DELETE("/:id", utility.Use(rc.deleteRating))
+		ratingRouter.GET("/event/:eventID", utility.Use(rc.getRatingsByEvent))
 	}
 }
 
@@ -40,12 +41,11 @@ func (rc *RatingController) RegisterRoutes(router *gin.RouterGroup) {
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/ratings/ [post]
-func (rc *RatingController) createRating(ctx *fiber.Ctx) error {
+func (rc *RatingController) createRating(ctx *gin.Context) error {
 	data := new(models.Rating)
-	if err := ctx.BodyParser(data); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Bad Request",
-		})
+	if err := ctx.BindJSON(data); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return err
 	}
 
 	rating := &models.Rating{
@@ -56,16 +56,17 @@ func (rc *RatingController) createRating(ctx *fiber.Ctx) error {
 
 	newRating := rc.ratingService.CreateRating(rating)
 	if newRating == nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Internal Server Error",
-		})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+		return errors.New("internal server error")
 	}
 
-	return ctx.Status(fiber.StatusCreated).JSON(newRating)
+	ctx.JSON(http.StatusCreated, newRating)
+	return nil
+
 }
 
 // getRating retrieves a rating by its ID
-// @Summary Get rating by ID
+// @Summary GET rating by ID
 // @Description Retrieve a rating by its ID
 // @Tags Rating
 // @Accept json
@@ -76,21 +77,20 @@ func (rc *RatingController) createRating(ctx *fiber.Ctx) error {
 // @Failure 404 {object} Dto.ErrorDTO "Rating Not Found"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/ratings/{id} [get]
-func (rc *RatingController) getRating(ctx *fiber.Ctx) error {
-	ratingID := ctx.Params("id")
+func (rc *RatingController) getRating(ctx *gin.Context) error {
+	ratingID := ctx.Param("id")
 	rating, err := rc.ratingService.GetRatingsByEvent(ratingID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
-				"error": "Rating Not Found",
-			})
+			ctx.JSON(http.StatusNotFound, gin.H{"error": "Rating Not Found"})
+			return err
 		}
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Internal Server Error",
-		})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+		return err
 	}
 
-	return ctx.Status(fiber.StatusOK).JSON(rating)
+	ctx.JSON(http.StatusOK, rating)
+	return nil
 }
 
 // updateRating updates a rating by its ID
@@ -106,25 +106,22 @@ func (rc *RatingController) getRating(ctx *fiber.Ctx) error {
 // @Failure 404 {object} Dto.ErrorDTO "Rating Not Found"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/ratings/{id} [put]
-func (rc *RatingController) updateRating(ctx *fiber.Ctx) error {
-	ratingID := ctx.Params("id")
+func (rc *RatingController) updateRating(ctx *gin.Context) error {
+	ratingID := ctx.Param("id")
 	data := new(models.Rating)
-	if err := ctx.BodyParser(data); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Bad Request",
-		})
+	if err := ctx.BindJSON(data); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return err
 	}
 
 	_, err := rc.ratingService.GetRatingsByEvent(ratingID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
-				"error": "Rating Not Found",
-			})
+			ctx.JSON(http.StatusNotFound, gin.H{"error": "Rating Not Found"})
+			return err
 		}
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Internal Server Error",
-		})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+		return err
 	}
 
 	//rating.RateValue = data.RateValue
@@ -135,7 +132,8 @@ func (rc *RatingController) updateRating(ctx *fiber.Ctx) error {
 	//	})
 	//}
 
-	return ctx.Status(fiber.StatusOK).JSON("updatedRating")
+	ctx.JSON(http.StatusOK, data)
+	return nil
 }
 
 // deleteRating deletes a rating by its ID
@@ -150,24 +148,23 @@ func (rc *RatingController) updateRating(ctx *fiber.Ctx) error {
 // @Failure 404 {object} Dto.ErrorDTO "Rating Not Found"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/ratings/{id} [delete]
-func (rc *RatingController) deleteRating(ctx *fiber.Ctx) error {
-	ratingID := ctx.Params("id")
+func (rc *RatingController) deleteRating(ctx *gin.Context) error {
+	ratingID := ctx.Param("id")
 	err := rc.ratingService.DeleteRating(ratingID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
-				"error": "Rating Not Found",
-			})
+			ctx.JSON(http.StatusNotFound, gin.H{"error": "Rating Not Found"})
+			return err
 		}
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Internal Server Error",
-		})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+		return err
 	}
-	return ctx.Status(fiber.StatusNoContent).SendString("")
+	ctx.JSON(http.StatusNoContent, nil)
+	return nil
 }
 
 // getRatingsByEvent retrieves all ratings for a given event
-// @Summary Get all ratings for an event
+// @Summary GET all ratings for an event
 // @Description Retrieve all ratings for a given event
 // @Tags Rating
 // @Accept json
@@ -177,14 +174,14 @@ func (rc *RatingController) deleteRating(ctx *fiber.Ctx) error {
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/ratings/event/{eventID} [get]
-func (rc *RatingController) getRatingsByEvent(ctx *fiber.Ctx) error {
-	eventID := ctx.Params("eventID")
+func (rc *RatingController) getRatingsByEvent(ctx *gin.Context) error {
+	eventID := ctx.Param("eventID")
 	ratings, err := rc.ratingService.GetRatingsByEvent(eventID)
 	if err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Internal Server Error",
-		})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+		return err
 	}
 
-	return ctx.Status(fiber.StatusOK).JSON(ratings)
+	ctx.JSON(http.StatusOK, ratings)
+	return nil
 }

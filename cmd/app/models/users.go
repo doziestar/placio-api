@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"log"
 	"os"
 	"placio-app/Dto"
@@ -12,8 +13,6 @@ import (
 	"placio-pkg/hash"
 	"placio-pkg/logger"
 	"time"
-
-	"github.com/gofiber/fiber/v2"
 
 	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"
@@ -63,7 +62,7 @@ func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
 	return nil
 }
 
-func (u *User) GenerateUserFields(userData Dto.SignUpDto, c *fiber.Ctx) {
+func (u *User) GenerateUserFields(userData Dto.SignUpDto, c *gin.Context) {
 	// Generate and set fields for the user
 	logger.Info(context.Background(), "Generating user fields")
 	u.ID = GenerateID()
@@ -79,13 +78,23 @@ func (u *User) GenerateUserFields(userData Dto.SignUpDto, c *fiber.Ctx) {
 	u.HasPassword = false
 	u.Onboarded = false
 	u.Disabled = false
-	u.Fingerprint = c.Get("fingerprint")
+	u.Fingerprint = func(c *gin.Context) string {
+		fingerprint, ok := c.Get("fingerprint")
+		if !ok {
+			return ""
+		}
+		finger, err := hash.EncryptString(fingerprint.(string), os.Getenv("HASH_KEY"))
+		if err != nil {
+			return ""
+		}
+		return finger
+	}(c)
 	u.TwoFABackupCode = ""
 	u.TwoFASecret = ""
 	u.Permission = "user"
 	//user.AccountID = ""
-	u.UserAgent = c.Get("user-agents")
-	u.IP = c.IP()
+	u.UserAgent = c.Request.UserAgent()
+	u.IP = c.ClientIP()
 	u.Email = userData.Email
 	u.Name = userData.Name
 	u.Password = userData.Password
@@ -106,7 +115,7 @@ func (u *User) EncryptPassword() error {
 	return nil
 }
 
-func (u *User) CreateUser(userData Dto.SignUpDto, c *fiber.Ctx, db *gorm.DB) (*User, error) {
+func (u *User) CreateUser(userData Dto.SignUpDto, c *gin.Context, db *gorm.DB) (*User, error) {
 	logger.Info(context.Background(), "Creating user")
 	// Generate and set fields for the user
 	u.GenerateUserFields(userData, c)
@@ -789,17 +798,17 @@ func (u *User) GenerateUserResponse(token *Token) Dto.UserResponse {
 	}
 }
 
-func (u *User) Login(c *fiber.Ctx, db *gorm.DB) error {
+func (u *User) Login(c *gin.Context, db *gorm.DB) error {
 	var login *Login
 	err := db.Where("email = ?", u.Email).First(&login).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			login = &Login{
-				IP:      c.IP(),
-				Browser: c.Get("User-Agent"),
+				IP:      c.ClientIP(),
+				Browser: c.Request.UserAgent(),
 				Time:    time.Now(),
-				Device:  c.Get("Device"),
-				UserID:  u.ID,
+				//Device:
+				UserID: u.ID,
 			}
 			err := db.Create(&login).Error
 			if err != nil {
@@ -808,10 +817,10 @@ func (u *User) Login(c *fiber.Ctx, db *gorm.DB) error {
 		}
 	}
 
-	login.IP = c.IP()
-	login.Browser = c.Get("User-Agent")
+	login.IP = c.ClientIP()
+	login.Browser = c.Request.UserAgent()
 	login.Time = time.Now()
-	login.Device = c.Get("Device")
+	//login.Device = c.Get("Device")
 	login.UserID = u.ID
 
 	err = db.Save(&login).Error
@@ -843,13 +852,13 @@ func (u *User) SavePassword(id string, password string) error {
 	return err
 }
 
-func (u *User) Create(userData *Dto.SignUpDto, ctx *fiber.Ctx, db *gorm.DB) (*User, error) {
+func (u *User) Create(userData *Dto.SignUpDto, ctx *gin.Context, db *gorm.DB) (*User, error) {
 	user := &User{
 		ID:        uuid.NewString(),
 		Email:     userData.Email,
 		Name:      userData.Name,
-		IP:        ctx.IP(),
-		UserAgent: ctx.Get("User-Agent"),
+		IP:        ctx.ClientIP(),
+		UserAgent: ctx.Request.UserAgent(),
 
 		Password: userData.Password,
 	}

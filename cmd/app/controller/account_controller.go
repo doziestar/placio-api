@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"placio-app/Dto"
+	"placio-app/errors"
 	"placio-app/middleware"
 	_ "placio-app/models"
 	"placio-app/service"
@@ -27,36 +28,37 @@ func NewAccountController(store service.IAccountService, utility utility.IUtilit
 	return &AccountController{store: store, utility: utility}
 }
 
-func requestLogger() fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		fmt.Printf("Request: %s %s\n", c.Method(), c.Path())
-		return c.Next()
-	}
-}
+//
+//func requestLogger() gin.HandlerFunc {
+//	return func(c *gin.Context) error {
+//		fmt.Printf("Request: %s %s\n", c.Method(), c.Path())
+//		return c.Next()
+//	}
+//}
 
 func (c *AccountController) RegisterRoutes(app *gin.RouterGroup) {
 	//app.Use(requestLogger())
 	accountGroup := app.Group("/accounts")
-	accountGroup.Get("/", middleware.Verify("user"), utility.Use(c.getUserAccount))
-	accountGroup.Post("/create-account", utility.Use(c.createAccount))
-	accountGroup.Post("/:accountId/switch-account/", middleware.Verify("user"), utility.Use(c.switchAccount))
-	accountGroup.Post("/:accountId/make-default/", middleware.Verify("user"), utility.Use(c.makeAccountDefault))
-	accountGroup.Post("/add-account", middleware.Verify("user"), utility.Use(c.addAccount)) // add account to owner
-	accountGroup.Post("/plan", middleware.Verify("owner"), utility.Use(c.plan))
-	accountGroup.Patch("/plan", middleware.Verify("owner"), utility.Use(c.updatePlan))
-	accountGroup.Get("/get-user-accounts", middleware.Verify("user"), utility.Use(c.getAccounts))
-	accountGroup.Get("/get-user-active-account", middleware.Verify("user"), utility.Use(c.getUserActiveAccount))
-	accountGroup.Get("/:accountId", middleware.Verify("user"), utility.Use(c.getUserAccount))
-	accountGroup.Patch("/card", middleware.Verify("owner"), utility.Use(c.updateInvoice))
-	accountGroup.Get("/invoice", middleware.Verify("owner"), utility.Use(c.getInvoice))
-	accountGroup.Get("/plans", middleware.Verify("owner"), utility.Use(c.getPlans))
-	accountGroup.Get("/subscription", middleware.Verify("owner"), utility.Use(c.getSubscription))
-	accountGroup.Post("/upgrade", middleware.Verify("owner"), utility.Use(c.upgradePlan))
-	accountGroup.Delete("/", middleware.Verify("owner"), utility.Use(c.deleteAccount))
-	accountGroup.Post("/:id/follow", middleware.Verify("user"), utility.Use(c.followAccount))
-	accountGroup.Post("/:id/unfollow", middleware.Verify("user"), utility.Use(c.unfollowAccount))
-	accountGroup.Get("/:id/followers", middleware.Verify("user"), utility.Use(c.getFollowers))
-	accountGroup.Get("/:id/following", middleware.Verify("user"), utility.Use(c.getFollowing))
+	accountGroup.GET("/", middleware.Verify("user"), utility.Use(c.getUserAccount))
+	accountGroup.POST("/create-account", utility.Use(c.createAccount))
+	accountGroup.POST("/:accountId/switch-account/", middleware.Verify("user"), utility.Use(c.switchAccount))
+	accountGroup.POST("/:accountId/make-default/", middleware.Verify("user"), utility.Use(c.makeAccountDefault))
+	accountGroup.POST("/add-account", middleware.Verify("user"), utility.Use(c.addAccount)) // add account to owner
+	accountGroup.POST("/plan", middleware.Verify("owner"), utility.Use(c.plan))
+	accountGroup.PATCH("/plan", middleware.Verify("owner"), utility.Use(c.updatePlan))
+	accountGroup.GET("/get-user-accounts", middleware.Verify("user"), utility.Use(c.getAccounts))
+	accountGroup.GET("/get-user-active-account", middleware.Verify("user"), utility.Use(c.getUserActiveAccount))
+	accountGroup.GET("/:accountId", middleware.Verify("user"), utility.Use(c.getUserAccount))
+	accountGroup.PATCH("/card", middleware.Verify("owner"), utility.Use(c.updateInvoice))
+	accountGroup.GET("/invoice", middleware.Verify("owner"), utility.Use(c.getInvoice))
+	accountGroup.GET("/plans", middleware.Verify("owner"), utility.Use(c.getPlans))
+	accountGroup.GET("/subscription", middleware.Verify("owner"), utility.Use(c.getSubscription))
+	accountGroup.POST("/upgrade", middleware.Verify("owner"), utility.Use(c.upgradePlan))
+	accountGroup.DELETE("/", middleware.Verify("owner"), utility.Use(c.deleteAccount))
+	accountGroup.POST("/:id/follow", middleware.Verify("user"), utility.Use(c.followAccount))
+	accountGroup.POST("/:id/unfollow", middleware.Verify("user"), utility.Use(c.unfollowAccount))
+	accountGroup.GET("/:id/followers", middleware.Verify("user"), utility.Use(c.getFollowers))
+	accountGroup.GET("/:id/following", middleware.Verify("user"), utility.Use(c.getFollowing))
 
 }
 
@@ -80,40 +82,37 @@ func (c *AccountController) RegisterRoutes(app *gin.RouterGroup) {
 // @Failure 403 {object} Dto.ErrorDTO "Forbidden"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/accounts/create-account [post]
-func (c *AccountController) createAccount(ctx *fiber.Ctx) error {
+func (c *AccountController) createAccount(ctx *gin.Context) error {
 	fmt.Println("Entering createAccount function")
 	data := new(Dto.SignUpDto)
 
 	logger.Info(context.Background(), fmt.Sprintf("data: %v", data))
-	if err := ctx.BodyParser(data); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Bad Request",
-		})
+	if err := ctx.BindJSON(data); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return err
 	}
 	log.Println("CreateAccount", data)
 
 	// validate input
 	if err := utility.Validate(data.Email, data.Name, data.Password, data.Username); err != nil {
-		return ctx.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
-			"error": err.Error(),
-		})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return err
 	}
 
 	// confirm_password field is a dummy field to prevent bot signups
 	if data.ConfirmPassword == "" {
-		return ctx.Status(fiber.StatusForbidden).JSON(fiber.Map{
-			"error": "You need to confirm your password",
-		})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Confirm password is required"})
+		return errors.ErrInvalid
 	}
 
 	response, err := c.store.CreateUserAccount(data, ctx)
 	if err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Internal Server Error",
-		})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return err
 	}
 
-	return ctx.Status(fiber.StatusCreated).JSON(response)
+	ctx.JSON(http.StatusOK, response)
+	return nil
 }
 
 // SwitchAccount switches the user to a different account.
@@ -134,23 +133,23 @@ func (c *AccountController) createAccount(ctx *fiber.Ctx) error {
 // @Failure 403 {object} Dto.ErrorDTO "Forbidden"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/accounts/{accountId}/switch-account [post]
-func (c *AccountController) switchAccount(ctx *fiber.Ctx) error {
-	accountId := ctx.Params("accountId")
-	userId := ctx.Locals("user").(string)
-	response, err := c.store.SwitchUserAccount(accountId, userId)
+func (c *AccountController) switchAccount(ctx *gin.Context) error {
+	accountId := ctx.Param("accountId")
+	userId, ok := ctx.Get("user")
+	if !ok {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
+		return nil
+	}
+	response, err := c.store.SwitchUserAccount(accountId, userId.(string))
 	if err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Internal Server Error",
-		})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return err
 	}
 
 	data, err := utility.RemoveSensitiveFields(response)
 
-	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
-		"message": "Successfully switched account",
-		"data":    data,
-		"status":  "success",
-	})
+	ctx.JSON(http.StatusOK, gin.H{"message": "Successfully switched account", "data": data, "status": "success"})
+	return nil
 }
 
 // Plan godoc
@@ -168,7 +167,7 @@ func (c *AccountController) switchAccount(ctx *fiber.Ctx) error {
 // @Failure 400 {object} Dto.ErrorDTO "inputError": "plan", "message": "Plan is required"
 // @Failure 500 {object} Dto.ErrorDTO "error": "Internal Server Error"
 // @Router /accounts/plan [post]
-func (c *AccountController) plan(ctx *fiber.Ctx) error {
+func (c *AccountController) plan(ctx *gin.Context) error {
 	//	data := new(struct {
 	//		Plan   string              `json:"plan"`
 	//		Token  *stripe.TokenParams `json:"token,omitempty"`
@@ -184,13 +183,13 @@ func (c *AccountController) plan(ctx *fiber.Ctx) error {
 	//	})
 	//
 	//	if err := c.BodyParser(data); err != nil {
-	//		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+	//		return c.Status(fiber.StatusBadRequest).JSON(gin.H{
 	//			"error": "Bad request",
 	//		})
 	//	}
 	//
 	//	if data.Plan == "" {
-	//		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+	//		return c.Status(fiber.StatusBadRequest).JSON(gin.H{
 	//			"error": "Plan is required",
 	//		})
 	//	}
@@ -198,14 +197,14 @@ func (c *AccountController) plan(ctx *fiber.Ctx) error {
 	//	// check the plan exists
 	//	plan, ok := settings.Plans[data.Plan]
 	//	if !ok {
-	//		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+	//		return c.Status(fiber.StatusBadRequest).JSON(gin.H{
 	//			"error": "Plan doesn't exist",
 	//		})
 	//	}
 	//
-	//	accountData, err := account.Get(c)
+	//	accountData, err := account.GET(c)
 	//	if err != nil {
-	//		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+	//		return c.Status(fiber.StatusNotFound).JSON(gin.H{
 	//			"error": "No account with that ID",
 	//		})
 	//	}
@@ -223,7 +222,7 @@ func (c *AccountController) plan(ctx *fiber.Ctx) error {
 	//			} "json:\"subscription,omitempty\""
 	//		}{}) {
 	//			if data.Token == nil || data.Token.ID == "" {
-	//				return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+	//				return c.Status(fiber.StatusBadRequest).JSON(gin.H{
 	//					"error": "Please enter your credit card details",
 	//				})
 	//			}
@@ -234,7 +233,7 @@ func (c *AccountController) plan(ctx *fiber.Ctx) error {
 	//				data.Token.ID,
 	//			)
 	//			if err != nil {
-	//				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+	//				return c.Status(fiber.StatusInternalServerError).JSON(gin.H{
 	//					"error": err.Error(),
 	//				})
 	//			}
@@ -245,7 +244,7 @@ func (c *AccountController) plan(ctx *fiber.Ctx) error {
 	//				data.Plan,
 	//			)
 	//			if err != nil {
-	//				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+	//				return c.Status(fiber.StatusInternalServerError).JSON(gin.H{
 	//					"error": err.Error(),
 	//				})
 	//			}
@@ -255,12 +254,12 @@ func (c *AccountController) plan(ctx *fiber.Ctx) error {
 	//			if subscription.LatestInvoice.PaymentIntent.Status == "requires_action" {
 	//				log.Println("Stripe payment requires further action")
 	//
-	//				return c.Status(fiber.StatusOK).JSON(fiber.Map{
+	//				return c.Status(fiber.StatusOK).JSON(gin.H{
 	//					"requires_payment_action": true,
-	//					"customer": fiber.Map{
+	//					"customer": gin.H{
 	//						"id": data.Stripe.Customer.ID,
 	//					},
-	//					"subscription": fiber.Map{
+	//					"subscription": gin.H{
 	//						"id":    data.Stripe.Subscription.ID,
 	//						"price": data.Stripe.Subscription.Price,
 	//					},
@@ -271,7 +270,7 @@ func (c *AccountController) plan(ctx *fiber.Ctx) error {
 	//
 	//		// stripe info hasn't been passed back as part of 2
 	//		if data.Stripe.Customer.ID == "" || data.Stripe.Subscription.ID == "" {
-	//			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+	//			return c.Status(fiber.StatusBadRequest).JSON(gin.H{
 	//				"error": "Stripe customer or subscription ID is missing",
 	//			})
 	//		}
@@ -283,7 +282,7 @@ func (c *AccountController) plan(ctx *fiber.Ctx) error {
 	//			data.Plan,
 	//		)
 	//		if err != nil {
-	//			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+	//			return c.Status(fiber.StatusInternalServerError).JSON(gin.H{
 	//				"error": err.Error(),
 	//			})
 	//		}
@@ -292,12 +291,12 @@ func (c *AccountController) plan(ctx *fiber.Ctx) error {
 	//
 	//	// update the account plan
 	//	if err := account.UpdatePlan(accountData.ID, data.Plan, data.Stripe.Customer.ID, data.Stripe.Subscription.ID); err != nil {
-	//		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+	//		return c.Status(fiber.StatusInternalServerError).JSON(gin.H{
 	//			"error": "Internal Server Error",
 	//		})
 	//	}
 	//
-	//	c.Status(fiber.StatusOK).JSON(fiber.Map{
+	//	c.Status(fiber.StatusOK).JSON(gin.H{
 	//		"success": true,
 	//	})
 	//
@@ -323,7 +322,7 @@ func SendMail(to, template string, content map[string]interface{}) error {
 // @Failure 404 {object} Dto.ErrorDTO "Not Found"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /accounts/{id}/plan [put]
-func (c *AccountController) updatePlan(ctx *fiber.Ctx) error {
+func (c *AccountController) updatePlan(ctx *gin.Context) error {
 	//	data := new(struct {
 	//		ID   string `json:"id"`
 	//		Plan string `json:"plan"`
@@ -364,7 +363,7 @@ func (c *AccountController) updatePlan(ctx *fiber.Ctx) error {
 	//		if c.Locals("permission") == "master" {
 	//			return fiber.NewError(fiber.StatusForbidden, "The account holder will need to enter their card details and upgrade to a paid plan.")
 	//		} else {
-	//			return c.Status(fiber.StatusPaymentRequired).JSON(fiber.Map{
+	//			return c.Status(fiber.StatusPaymentRequired).JSON(gin.H{
 	//				"message": "Please upgrade your account",
 	//				"plan":    plan.ID,
 	//			})
@@ -374,7 +373,7 @@ func (c *AccountController) updatePlan(ctx *fiber.Ctx) error {
 	//	if plan.ID == "free" {
 	//		// user is downgrading - cancel the stripe subscription
 	//		if accountData.StripeSubscriptionID != "" {
-	//			subscription, err := sub.Get(accountData.StripeSubscriptionID, nil)
+	//			subscription, err := sub.GET(accountData.StripeSubscriptionID, nil)
 	//			if err != nil {
 	//				return err
 	//			}
@@ -398,18 +397,18 @@ func (c *AccountController) updatePlan(ctx *fiber.Ctx) error {
 	//		// user is switching to a different paid plan
 	//		if accountData.StripeSubscriptionID != "" {
 	//			// check for an incomplete payment that requires 2-factor authentication
-	//			subscription, err := sub.Get(accountData.StripeSubscriptionID, nil)
+	//			subscription, err := sub.GET(accountData.StripeSubscriptionID, nil)
 	//			if err != nil {
 	//				return err
 	//			}
 	//
 	//			if subscription.LatestInvoice.PaymentIntent.Status == "requires_action" {
-	//				return c.Status(fiber.StatusOK).JSON(fiber.Map{
+	//				return c.Status(fiber.StatusOK).JSON(gin.H{
 	//					"requires_payment_action": true,
-	//					"customer": fiber.Map{
+	//					"customer": gin.H{
 	//						"id": accountData.StripeCustomerID,
 	//					},
-	//					"subscription": fiber.Map{
+	//					"subscription": gin.H{
 	//						"id":    accountData.StripeSubscriptionID,
 	//						"price": plan.Price,
 	//					},
@@ -439,7 +438,7 @@ func (c *AccountController) updatePlan(ctx *fiber.Ctx) error {
 	//			}
 	//
 	//			// send an email to the account holder
-	//			err = sendMail(accountData.Email, "plan-upgraded", fiber.Map{
+	//			err = sendMail(accountData.Email, "plan-upgraded", gin.H{
 	//				"plan": plan.Name,
 	//			})
 	//			if err != nil {
@@ -452,8 +451,8 @@ func (c *AccountController) updatePlan(ctx *fiber.Ctx) error {
 }
 
 // GetAccounts godoc
-// @Summary Get account
-// @Description Get account
+// @Summary GET account
+// @Description GET account
 // @Tags Account
 // @Accept json
 // @Produce json
@@ -464,16 +463,15 @@ func (c *AccountController) updatePlan(ctx *fiber.Ctx) error {
 // @Failure 404 {object} Dto.ErrorDTO "Not Found"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /accounts/get-user-accounts [get]
-func (c *AccountController) getAccounts(ctx *fiber.Ctx) error {
+func (c *AccountController) getAccounts(ctx *gin.Context) error {
 
 	accounts, err := c.store.GetAccounts(ctx)
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "Internal Server Error")
 	}
 
-	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
-		"accounts": accounts,
-	})
+	ctx.JSON(fiber.StatusOK, accounts)
+	return nil
 	//	// implementation of utility.validate()
 	//	// return an error if the request body is invalid
 	//
@@ -501,7 +499,7 @@ func (c *AccountController) getAccounts(ctx *fiber.Ctx) error {
 	//	// get the subscription
 	//	subscription := Subscription{}
 	//	if accountData.StripeSubscriptionID != "" {
-	//		s, err := sub.Get(accountData.StripeSubscriptionID, nil)
+	//		s, err := sub.GET(accountData.StripeSubscriptionID, nil)
 	//		if err != nil {
 	//			return err
 	//		}
@@ -600,16 +598,16 @@ func (c *AccountController) getAccounts(ctx *fiber.Ctx) error {
 	//		}
 	//	}
 	//
-	return ctx.JSON(fiber.Map{
-		//"account": account,
-		"status": "success",
-		//			"plan":             plan,
+	ctx.JSON(http.StatusOK, gin.H{
+		"account": account,
 	})
+
+	return nil
 }
 
 // GetAccount godoc
-// @Summary Get account
-// @Description Get account
+// @Summary GET account
+// @Description GET account
 // @Tags Account
 // @Accept json
 // @Produce json
@@ -620,16 +618,17 @@ func (c *AccountController) getAccounts(ctx *fiber.Ctx) error {
 // @Failure 404 {object} Dto.ErrorDTO
 // @Failure 500 {object} Dto.ErrorDTO
 // @Router /accounts/get-user-active-account [get]
-func (c *AccountController) getUserActiveAccount(ctx *fiber.Ctx) error {
-	log.Println("Get user active account")
+func (c *AccountController) getUserActiveAccount(ctx *gin.Context) error {
+	log.Println("GET user active account")
 	account, err := c.store.GetAccount(ctx)
 	if err != nil {
 		return fiber.ErrNotFound
 	}
 
-	return ctx.JSON(fiber.Map{
+	ctx.JSON(http.StatusOK, gin.H{
 		"account": account,
 	})
+	return nil
 }
 
 // UpdateInvoice godoc
@@ -640,63 +639,63 @@ func (c *AccountController) getUserActiveAccount(ctx *fiber.Ctx) error {
 // @Produce json
 // @Param id path string true "Invoice ID"
 // @Param body body Dto.Invoice true "Invoice"
-// @Success 200 {object} fiber.Map
+// @Success 200 {object} gin.H
 // @Failure 400 {object} Dto.ErrorDTO
 // @Failure 401 {object} Dto.ErrorDTO
 // @Failure 404 {object} Dto.ErrorDTO
 // @Failure 500 {object} Dto.ErrorDTO
 // @Router /accounts/invoice/{id} [put]
-func (c *AccountController) updateInvoice(ctx *fiber.Ctx) error {
+func (c *AccountController) updateInvoice(ctx *gin.Context) error {
 	return nil
 }
 
 // GetInvoice godoc
-// @Summary Get invoice
-// @Description Get invoice
+// @Summary GET invoice
+// @Description GET invoice
 // @Tags Account
 // @Accept json
 // @Produce json
 // @Param id path string true "Invoice ID"
-// @Success 200 {object} fiber.Map
+// @Success 200 {object} gin.H
 // @Failure 400 {object} Dto.ErrorDTO
 // @Failure 401 {object} Dto.ErrorDTO
 // @Failure 404 {object} Dto.ErrorDTO
 // @Failure 500 {object} Dto.ErrorDTO
 // @Router /accounts/invoice/{id} [get]
-func (c *AccountController) getInvoice(ctx *fiber.Ctx) error {
+func (c *AccountController) getInvoice(ctx *gin.Context) error {
 	return nil
 }
 
 // GetPlans godoc
-// @Summary Get plans
-// @Description Get plans
+// @Summary GET plans
+// @Description GET plans
 // @Tags Account
 // @Accept json
 // @Produce json
-// @Success 200 {object} fiber.Map
+// @Success 200 {object} gin.H
 // @Failure 400 {object} Dto.ErrorDTO
 // @Failure 401 {object} Dto.ErrorDTO
 // @Failure 404 {object} Dto.ErrorDTO
 // @Failure 500 {object} Dto.ErrorDTO
 // @Router /accounts/plans [get]
-func (c *AccountController) getPlans(ctx *fiber.Ctx) error {
+func (c *AccountController) getPlans(ctx *gin.Context) error {
 	return nil
 }
 
 // GetSubscription godoc
-// @Summary Get subscription
-// @Description Get subscription
+// @Summary GET subscription
+// @Description GET subscription
 // @Tags Account
 // @Accept json
 // @Produce json
 // @Param id path string true "Subscription ID"
-// @Success 200 {object} fiber.Map
+// @Success 200 {object} gin.H
 // @Failure 400 {object} Dto.ErrorDTO
 // @Failure 401 {object} Dto.ErrorDTO
 // @Failure 404 {object} Dto.ErrorDTO
 // @Failure 500 {object} Dto.ErrorDTO
 // @Router /accounts/subscription/{id} [get]
-func (c *AccountController) getSubscription(ctx *fiber.Ctx) error {
+func (c *AccountController) getSubscription(ctx *gin.Context) error {
 	return nil
 }
 
@@ -708,13 +707,13 @@ func (c *AccountController) getSubscription(ctx *fiber.Ctx) error {
 // @Produce json
 // @Param id path string true "Subscription ID"
 // @Param body body Dto.Subscription true "Subscription"
-// @Success 200 {object} fiber.Map
+// @Success 200 {object} gin.H
 // @Failure 400 {object} Dto.ErrorDTO
 // @Failure 401 {object} Dto.ErrorDTO
 // @Failure 404 {object} Dto.ErrorDTO
 // @Failure 500 {object} Dto.ErrorDTO
 // @Router /accounts/subscription/{id} [put]
-func (c *AccountController) upgradePlan(ctx *fiber.Ctx) error {
+func (c *AccountController) upgradePlan(ctx *gin.Context) error {
 	return nil
 }
 
@@ -725,13 +724,13 @@ func (c *AccountController) upgradePlan(ctx *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "Subscription ID"
-// @Success 200 {object} fiber.Map
+// @Success 200 {object} gin.H
 // @Failure 400 {object} Dto.ErrorDTO
 // @Failure 401 {object} Dto.ErrorDTO
 // @Failure 404 {object} Dto.ErrorDTO
 // @Failure 500 {object} Dto.ErrorDTO
 // @Router /accounts/subscription/{id} [delete]
-func (c *AccountController) cancelSubscription(ctx *fiber.Ctx) error {
+func (c *AccountController) cancelSubscription(ctx *gin.Context) error {
 	return nil
 }
 
@@ -742,13 +741,13 @@ func (c *AccountController) cancelSubscription(ctx *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "Account ID"
-// @Success 200 {object} fiber.Map
+// @Success 200 {object} gin.H
 // @Failure 400 {object} Dto.ErrorDTO
 // @Failure 401 {object} Dto.ErrorDTO
 // @Failure 404 {object} Dto.ErrorDTO
 // @Failure 500 {object} Dto.ErrorDTO
 // @Router /accounts/{id} [delete]
-func (c *AccountController) deleteAccount(ctx *fiber.Ctx) error {
+func (c *AccountController) deleteAccount(ctx *gin.Context) error {
 	return nil
 }
 
@@ -765,18 +764,18 @@ func (c *AccountController) deleteAccount(ctx *fiber.Ctx) error {
 // @Failure 404 {object} Dto.ErrorDTO
 // @Failure 500 {object} Dto.ErrorDTO
 // @Router /accounts/add-account [post]
-func (c *AccountController) addAccount(ctx *fiber.Ctx) error {
+func (c *AccountController) addAccount(ctx *gin.Context) error {
 	var accountDto *Dto.AddAccountDto
-	if err := ctx.BodyParser(&accountDto); err != nil {
-		return ctx.Status(400).JSON(fiber.Map{
-			"status":  "error",
-			"message": "Invalid request",
+	if err := ctx.BindJSON(&accountDto); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
 		})
+		return err
 	}
 
 	// Validate request
 	//if err := c.utility.Validate(accountDto, "accountName, accountType"); err != nil {
-	//	return ctx.Status(400).JSON(fiber.Map{
+	//	return ctx.Status(400).JSON(gin.H{
 	//		"status":  "error",
 	//		"message": err.Error(),
 	//	})
@@ -785,21 +784,24 @@ func (c *AccountController) addAccount(ctx *fiber.Ctx) error {
 	// Create account
 	accountData, err := c.store.CreateBusinessAccount(accountDto, ctx)
 	if err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"status":  "error",
-			"message": err.Error(),
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status": "error",
 		})
+		return err
 	}
 
-	return ctx.Status(fiber.StatusCreated).JSON(fiber.Map{
-		"status": "success",
-		"data":   accountData,
+	ctx.JSON(http.StatusOK, gin.H{
+		"status":  "success",
+		"message": "Account created successfully",
+		"data":    accountData,
 	})
+
+	return nil
 }
 
 // GetAccount godoc
-// @Summary Get account
-// @Description Get account
+// @Summary GET account
+// @Description GET account
 // @Tags Account
 // @Accept json
 // @Produce json
@@ -810,31 +812,34 @@ func (c *AccountController) addAccount(ctx *fiber.Ctx) error {
 // @Failure 404 {object} Dto.ErrorDTO
 // @Failure 500 {object} Dto.ErrorDTO
 // @Router /accounts/{accountId} [get]
-func (c *AccountController) getUserAccount(ctx *fiber.Ctx) error {
-	accountId := ctx.Params("accountId")
+func (c *AccountController) getUserAccount(ctx *gin.Context) error {
+	accountId := ctx.Param("accountId")
 	if accountId == "" {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"status":  "error",
-			"message": "Account ID is required",
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
 		})
+		return errors.New("account id is required")
 	}
 
-	ctx.Locals("accountId", accountId)
+	ctx.Set("accountId", accountId)
 	ctx.Set("accountId", accountId)
 
-	// Get account
+	// GET account
 	accountData, err := c.store.GetAccount(ctx)
 	if err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"status":  "error",
-			"message": err.Error(),
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status": "error",
 		})
+		return err
 	}
 
-	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
-		"status": "success",
-		"data":   accountData,
+	ctx.JSON(http.StatusOK, gin.H{
+		"status":  "success",
+		"message": "Account retrieved successfully",
+		"data":    accountData,
 	})
+
+	return nil
 }
 
 // MakeAccountDefault godoc
@@ -850,28 +855,31 @@ func (c *AccountController) getUserAccount(ctx *fiber.Ctx) error {
 // @Failure 404 {object} Dto.ErrorDTO
 // @Failure 500 {object} Dto.ErrorDTO
 // @Router /accounts/{accountId}/make-default [put]
-func (c *AccountController) makeAccountDefault(ctx *fiber.Ctx) error {
-	accountId := ctx.Params("accountId")
+func (c *AccountController) makeAccountDefault(ctx *gin.Context) error {
+	accountId := ctx.Param("accountId")
 	if accountId == "" {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"status":  "error",
-			"message": "Account ID is required",
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
 		})
+		return errors.New("account id is required")
 	}
 
 	// Make account default
 	account, err := c.store.MakeAccountDefault(accountId, ctx)
 	if err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"status":  "error",
-			"message": err.Error(),
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"status": "error",
 		})
+		return err
 	}
 
-	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
-		"status": "success",
-		"data":   account,
+	ctx.JSON(http.StatusOK, gin.H{
+		"status":  "success",
+		"message": "Account made default successfully",
+		"data":    account,
 	})
+
+	return nil
 }
 
 // @Summary Follow an account
@@ -884,16 +892,18 @@ func (c *AccountController) makeAccountDefault(ctx *fiber.Ctx) error {
 // @Success 200 {object} map[string]string "Successfully followed account"
 // @Failure 400 {object} map[string]string "Bad Request"
 // @Router /api/v1/accounts/{id}/follow [post]
-func (c *AccountController) followAccount(ctx *fiber.Ctx) error {
-	followerID := ctx.Params("id")
-	followingID := ctx.FormValue("following_id")
+func (c *AccountController) followAccount(ctx *gin.Context) error {
+	followerID := ctx.Param("id")
+	followingID := ctx.Param("following_id")
 
 	err := c.store.Follow(followerID, followingID)
 	if err != nil {
-		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return err
 	}
 
-	return ctx.JSON(fiber.Map{"status": "success"})
+	ctx.JSON(http.StatusOK, gin.H{"status": "success", "message": "Successfully followed account"})
+	return nil
 }
 
 // @Summary Unfollow an account
@@ -906,20 +916,22 @@ func (c *AccountController) followAccount(ctx *fiber.Ctx) error {
 // @Success 200 {object} map[string]string "Successfully unfollowed account"
 // @Failure 400 {object} map[string]string "Bad Request"
 // @Router /api/v1/accounts/{id}/unfollow [post]
-func (c *AccountController) unfollowAccount(ctx *fiber.Ctx) error {
-	followerID := ctx.Params("id")
-	followingID := ctx.FormValue("following_id")
+func (c *AccountController) unfollowAccount(ctx *gin.Context) error {
+	followerID := ctx.Param("id")
+	followingID := ctx.Param("following_id")
 
 	err := c.store.Unfollow(followerID, followingID)
 	if err != nil {
-		return ctx.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return err
 	}
 
-	return ctx.JSON(fiber.Map{"status": "success"})
+	ctx.JSON(http.StatusOK, gin.H{"status": "success", "message": "Successfully unfollowed account"})
+	return nil
 }
 
-// @Summary Get followers
-// @Description Get the list of accounts following the specified account
+// @Summary GET followers
+// @Description GET the list of accounts following the specified account
 // @Tags Followers
 // @Accept json
 // @Produce json
@@ -927,19 +939,21 @@ func (c *AccountController) unfollowAccount(ctx *fiber.Ctx) error {
 // @Success 200 {array} models.Account "Successfully retrieved followers"
 // @Failure 500 {object} map[string]string "Internal Server Error"
 // @Router /api/v1/accounts/{id}/followers [get]
-func (c *AccountController) getFollowers(ctx *fiber.Ctx) error {
-	accountID := ctx.Params("id")
+func (c *AccountController) getFollowers(ctx *gin.Context) error {
+	accountID := ctx.Param("id")
 
 	followers, err := c.store.ListFollowers(accountID)
 	if err != nil {
-		return ctx.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return err
 	}
 
-	return ctx.JSON(fiber.Map{"followers": followers})
+	ctx.JSON(http.StatusOK, gin.H{"followers": followers})
+	return nil
 }
 
-// @Summary Get following
-// @Description Get the list of accounts the specified account is following
+// @Summary GET following
+// @Description GET the list of accounts the specified account is following
 // @Tags Followers
 // @Accept json
 // @Produce json
@@ -947,13 +961,15 @@ func (c *AccountController) getFollowers(ctx *fiber.Ctx) error {
 // @Success 200 {array} models.Account "Successfully retrieved following accounts"
 // @Failure 500 {object} map[string]string "Internal Server Error"
 // @Router /api/v1/accounts/{id}/following [get]
-func (c *AccountController) getFollowing(ctx *fiber.Ctx) error {
-	accountID := ctx.Params("id")
+func (c *AccountController) getFollowing(ctx *gin.Context) error {
+	accountID := ctx.Param("id")
 
 	following, err := c.store.ListFollowing(accountID)
 	if err != nil {
-		return ctx.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return err
 	}
 
-	return ctx.JSON(fiber.Map{"following": following})
+	ctx.JSON(http.StatusOK, gin.H{"following": following})
+	return nil
 }

@@ -3,11 +3,13 @@ package controller
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
-	"github.com/gofiber/fiber/v2"
 	"gorm.io/gorm"
+	"net/http"
 	_ "placio-app/Dto"
+	"placio-app/middleware"
 	"placio-app/models"
 	"placio-app/service"
+	"placio-app/utility"
 )
 
 type TicketOptionController struct {
@@ -20,13 +22,12 @@ func NewTicketOptionController(ticketOptionService service.TicketOptionService) 
 
 func (toc *TicketOptionController) RegisterRoutes(router *gin.RouterGroup) {
 	ticketOptionRouter := router.Group("/ticketOptions")
-	{
-		ticketOptionRouter.Post("/", toc.createTicketOption)
-		ticketOptionRouter.Get("/:id", toc.getTicketOption)
-		ticketOptionRouter.Put("/:id", toc.updateTicketOption)
-		ticketOptionRouter.Delete("/:id", toc.deleteTicketOption)
-		ticketOptionRouter.Get("/event/:eventID", toc.getTicketOptionsByEvent)
-	}
+	ticketOptionRouter.Use(middleware.Verify("user"))
+	ticketOptionRouter.POST("/", utility.Use(toc.createTicketOption))
+	ticketOptionRouter.GET("/:id", utility.Use(toc.getTicketOption))
+	ticketOptionRouter.PUT("/:id", utility.Use(toc.updateTicketOption))
+	ticketOptionRouter.DELETE("/:id", utility.Use(toc.deleteTicketOption))
+	ticketOptionRouter.GET("/event/:eventID", utility.Use(toc.getTicketOptionsByEvent))
 }
 
 // Implement the handlers (createTicketOption, getTicketOption, updateTicketOption, deleteTicketOption, getTicketOptionsByEvent) similar to the CommentController handlers.
@@ -42,12 +43,13 @@ func (toc *TicketOptionController) RegisterRoutes(router *gin.RouterGroup) {
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/ticket-options/ [post]
-func (toc *TicketOptionController) createTicketOption(ctx *fiber.Ctx) error {
+func (toc *TicketOptionController) createTicketOption(ctx *gin.Context) error {
 	data := new(models.TicketOption)
-	if err := ctx.BodyParser(data); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+	if err := ctx.BindJSON(data); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": "Bad Request",
 		})
+		return err
 	}
 
 	ticketOption := &models.TicketOption{
@@ -59,17 +61,19 @@ func (toc *TicketOptionController) createTicketOption(ctx *fiber.Ctx) error {
 
 	newTicketOption := toc.ticketOptionService.CreateTicketOption(ticketOption)
 	if newTicketOption == nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Internal Server Error",
 		})
+		return errors.New("ticket option not created")
 	}
 
-	return ctx.Status(fiber.StatusCreated).JSON(newTicketOption)
+	ctx.JSON(http.StatusCreated, newTicketOption)
+	return nil
 }
 
 // getTicketOption retrieves a ticket option by its ID
-// @Summary Get ticket option by ID
-// @Description Get a ticket option by its ID
+// @Summary GET ticket option by ID
+// @Description GET a ticket option by its ID
 // @Tags TicketOption
 // @Accept json
 // @Produce json
@@ -79,21 +83,24 @@ func (toc *TicketOptionController) createTicketOption(ctx *fiber.Ctx) error {
 // @Failure 404 {object} Dto.ErrorDTO "Ticket Option Not Found"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/ticket-options/{id} [get]
-func (toc *TicketOptionController) getTicketOption(ctx *fiber.Ctx) error {
-	ticketOptionID := ctx.Params("id")
+func (toc *TicketOptionController) getTicketOption(ctx *gin.Context) error {
+	ticketOptionID := ctx.Param("id")
 	ticketOption, err := toc.ticketOptionService.GetTicketOptionsByEvent(ticketOptionID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			ctx.JSON(http.StatusNotFound, gin.H{
 				"error": "Ticket Option Not Found",
 			})
+			return err
 		}
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Internal Server Error",
 		})
+		return err
 	}
 
-	return ctx.Status(fiber.StatusOK).JSON(ticketOption)
+	ctx.JSON(http.StatusOK, ticketOption)
+	return nil
 }
 
 // updateTicketOption updates a ticket option by its ID
@@ -109,13 +116,14 @@ func (toc *TicketOptionController) getTicketOption(ctx *fiber.Ctx) error {
 // @Failure 404 {object} Dto.ErrorDTO "Ticket Option Not Found"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/ticket-options/{id} [put]
-func (toc *TicketOptionController) updateTicketOption(ctx *fiber.Ctx) error {
-	ticketOptionID := ctx.Params("id")
+func (toc *TicketOptionController) updateTicketOption(ctx *gin.Context) error {
+	ticketOptionID := ctx.Param("id")
 	data := new(models.TicketOption)
-	if err := ctx.BodyParser(data); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+	if err := ctx.BindJSON(data); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": "Bad Request",
 		})
+		return err
 	}
 	data.ID = ticketOptionID
 	//updatedTicketOption, err := toc.ticketOptionService.UpdateTicketOption(data)
@@ -130,7 +138,8 @@ func (toc *TicketOptionController) updateTicketOption(ctx *fiber.Ctx) error {
 	//	})
 	//}
 
-	return ctx.Status(fiber.StatusOK).JSON(data)
+	ctx.JSON(http.StatusOK, data)
+	return nil
 }
 
 // deleteTicketOption deletes a ticket option by its ID
@@ -145,25 +154,29 @@ func (toc *TicketOptionController) updateTicketOption(ctx *fiber.Ctx) error {
 // @Failure 404 {object} Dto.ErrorDTO "Ticket Option Not Found"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/ticket-options/{id} [delete]
-func (toc *TicketOptionController) deleteTicketOption(ctx *fiber.Ctx) error {
-	ticketOptionID := ctx.Params("id")
+func (toc *TicketOptionController) deleteTicketOption(ctx *gin.Context) error {
+	ticketOptionID := ctx.Param("id")
 	if err := toc.ticketOptionService.DeleteTicketOption(ticketOptionID); err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			ctx.JSON(http.StatusNotFound, gin.H{
 				"error": "Ticket Option Not Found",
 			})
+			return err
+
 		}
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Internal Server Error",
 		})
+		return err
 	}
 
-	return ctx.Status(fiber.StatusNoContent).JSON(fiber.Map{})
+	ctx.JSON(http.StatusNoContent, nil)
+	return nil
 }
 
 // getTicketOptionsByEvent retrieves all ticket options for an event by its ID
-// @Summary Get ticket options by event ID
-// @Description Get all ticket options for an event by its ID
+// @Summary GET ticket options by event ID
+// @Description GET all ticket options for an event by its ID
 // @Tags TicketOption
 // @Accept json
 // @Produce json
@@ -172,14 +185,22 @@ func (toc *TicketOptionController) deleteTicketOption(ctx *fiber.Ctx) error {
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/events/{eventId}/ticket-options [get]
-func (toc *TicketOptionController) getTicketOptionsByEvent(ctx *fiber.Ctx) error {
-	eventID := ctx.Params("eventId")
+func (toc *TicketOptionController) getTicketOptionsByEvent(ctx *gin.Context) error {
+	eventID := ctx.Param("eventId")
 	ticketOptions, err := toc.ticketOptionService.GetTicketOptionsByEvent(eventID)
 	if err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			ctx.JSON(http.StatusNotFound, gin.H{
+				"error": "Ticket Options Not Found",
+			})
+			return err
+		}
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Internal Server Error",
 		})
+		return err
 	}
 
-	return ctx.Status(fiber.StatusOK).JSON(ticketOptions)
+	ctx.JSON(http.StatusOK, ticketOptions)
+	return nil
 }

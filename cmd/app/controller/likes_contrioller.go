@@ -2,7 +2,7 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/gofiber/fiber/v2"
+	"net/http"
 	_ "placio-app/Dto"
 	"placio-app/service"
 	"placio-app/utility"
@@ -19,14 +19,14 @@ func NewLikeController(likeService service.LikeService) *LikesController {
 func (lc *LikesController) RegisterRoutes(router *gin.RouterGroup) {
 	likeRouter := router.Group("/likes")
 	{
-		//likeRouter.Get("/", lc.getAllLikes)
-		//likeRouter.Get("/:id", lc.getLike)
+		//likeRouter.GET("/", lc.getAllLikes)
+		//likeRouter.GET("/:id", lc.getLike)
 		//likeRouter.Post("/", lc.createLike)
 		//likeRouter.Put("/:id", lc.updateLike)
 		//likeRouter.Delete("/:id", lc.deleteLike)
-		likeRouter.Post("/:postID", utility.Use(lc.likePost))
-		likeRouter.Delete("/:postID", utility.Use(lc.unlikePost))
-		likeRouter.Get("/:postID/count", utility.Use(lc.getLikeCount))
+		likeRouter.POST("/:postID", utility.Use(lc.likePost))
+		likeRouter.DELETE("/:postID", utility.Use(lc.unlikePost))
+		likeRouter.GET("/:postID/count", utility.Use(lc.getLikeCount))
 
 	}
 }
@@ -41,19 +41,21 @@ func (lc *LikesController) RegisterRoutes(router *gin.RouterGroup) {
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/likes/{postID} [post]
-func (c *LikesController) likePost(ctx *fiber.Ctx) error {
-	postID := ctx.Params("postID")
+func (c *LikesController) likePost(ctx *gin.Context) error {
+	postID := ctx.Param("postID")
 
 	err := c.likesService.LikePost(postID, "")
 	if err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Internal Server Error",
 		})
+		return err
 	}
 
-	return ctx.Status(fiber.StatusCreated).JSON(fiber.Map{
+	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Successfully liked post",
 	})
+	return nil
 }
 
 // @Summary Unlike a post
@@ -66,22 +68,24 @@ func (c *LikesController) likePost(ctx *fiber.Ctx) error {
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/likes/{postID} [delete]
-func (c *LikesController) unlikePost(ctx *fiber.Ctx) error {
-	postID := ctx.Params("postID")
+func (c *LikesController) unlikePost(ctx *gin.Context) error {
+	postID := ctx.Param("postID")
 
 	err := c.likesService.UnlikePost(postID, "")
 	if err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Internal Server Error",
 		})
+		return err
 	}
 
-	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Successfully unliked post",
 	})
+	return nil
 }
 
-// @Summary Get like count for a post
+// @Summary GET like count for a post
 // @Description Retrieve the number of likes for a post
 // @Tags Likes
 // @Produce json
@@ -89,17 +93,19 @@ func (c *LikesController) unlikePost(ctx *fiber.Ctx) error {
 // @Success 200 {object} fiber.Map "Successfully retrieved like count"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/likes/{postID}/count [get]
-func (c *LikesController) getLikeCount(ctx *fiber.Ctx) error {
-	postID := ctx.Params("postID")
+func (c *LikesController) getLikeCount(ctx *gin.Context) error {
+	postID := ctx.Param("postID")
 
 	count, err := c.likesService.GetLikeCount(postID)
 	if err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Internal Server Error",
 		})
+		return err
 	}
 
-	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
+	ctx.JSON(http.StatusOK, gin.H{
 		"count": count,
 	})
+	return nil
 }
