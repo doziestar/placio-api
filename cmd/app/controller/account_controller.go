@@ -37,17 +37,16 @@ func NewAccountController(store service.IAccountService, utility utility.IUtilit
 //}
 
 func (c *AccountController) RegisterRoutes(app *gin.RouterGroup) {
-	//app.Use(requestLogger())
 	accountGroup := app.Group("/accounts")
 	accountGroup.GET("/", middleware.Verify("user"), utility.Use(c.getUserAccount))
-	accountGroup.POST("/create-account", utility.Use(c.createAccount))
-	accountGroup.POST("/:accountId/switch-account/", middleware.Verify("user"), utility.Use(c.switchAccount))
-	accountGroup.POST("/:accountId/make-default/", middleware.Verify("user"), utility.Use(c.makeAccountDefault))
-	accountGroup.POST("/add-account", middleware.Verify("user"), utility.Use(c.addAccount)) // add account to owner
+	accountGroup.POST("/", utility.Use(c.createAccount))
+	accountGroup.PATCH("/:accountId/switch", middleware.Verify("user"), utility.Use(c.switchAccount))
+	accountGroup.PATCH("/:accountId/make-default", middleware.Verify("user"), utility.Use(c.makeAccountDefault))
+	accountGroup.POST("/add", middleware.Verify("user"), utility.Use(c.addAccount)) // add account to owner
 	accountGroup.POST("/plan", middleware.Verify("owner"), utility.Use(c.plan))
 	accountGroup.PATCH("/plan", middleware.Verify("owner"), utility.Use(c.updatePlan))
-	accountGroup.GET("/get-user-accounts", middleware.Verify("user"), utility.Use(c.getAccounts))
-	accountGroup.GET("/get-user-active-account", middleware.Verify("user"), utility.Use(c.getUserActiveAccount))
+	accountGroup.GET("/user-accounts", middleware.Verify("user"), utility.Use(c.getAccounts))
+	accountGroup.GET("/active", middleware.Verify("user"), utility.Use(c.getUserActiveAccount))
 	accountGroup.GET("/:accountId", middleware.Verify("user"), utility.Use(c.getUserAccount))
 	accountGroup.PATCH("/card", middleware.Verify("owner"), utility.Use(c.updateInvoice))
 	accountGroup.GET("/invoice", middleware.Verify("owner"), utility.Use(c.getInvoice))
@@ -55,11 +54,10 @@ func (c *AccountController) RegisterRoutes(app *gin.RouterGroup) {
 	accountGroup.GET("/subscription", middleware.Verify("owner"), utility.Use(c.getSubscription))
 	accountGroup.POST("/upgrade", middleware.Verify("owner"), utility.Use(c.upgradePlan))
 	accountGroup.DELETE("/", middleware.Verify("owner"), utility.Use(c.deleteAccount))
-	accountGroup.POST("/:id/follow", middleware.Verify("user"), utility.Use(c.followAccount))
-	accountGroup.POST("/:id/unfollow", middleware.Verify("user"), utility.Use(c.unfollowAccount))
-	accountGroup.GET("/:id/followers", middleware.Verify("user"), utility.Use(c.getFollowers))
-	accountGroup.GET("/:id/following", middleware.Verify("user"), utility.Use(c.getFollowing))
-
+	accountGroup.POST("/:accountId/follow", middleware.Verify("user"), utility.Use(c.followAccount))
+	accountGroup.POST("/:accountId/unfollow", middleware.Verify("user"), utility.Use(c.unfollowAccount))
+	accountGroup.GET("/:accountId/followers", middleware.Verify("user"), utility.Use(c.getFollowers))
+	accountGroup.GET("/:accountId/following", middleware.Verify("user"), utility.Use(c.getFollowing))
 }
 
 // CreateAccount creates a new user account and assigns the user to the account.

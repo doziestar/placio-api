@@ -15,7 +15,7 @@ import (
 
 func InitializeRoutes(app *gin.Engine, db *gorm.DB) {
 	fmt.Println("Initializing routes...")
-	app.GET("/docs/*", ginSwagger.WrapHandler(swaggerfiles.Handler))
+	app.GET("/docs/*files", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	routerGroupV1 := app.Group("/api/v1")
 
 	// instances

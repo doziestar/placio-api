@@ -1,13 +1,12 @@
 package api
 
 import (
+	"github.com/gin-gonic/gin"
 	"placio-app/controller"
 	"placio-app/utility"
-
-	"github.com/gofiber/fiber/v2"
 )
 
-func HealthCheckRoutes(api fiber.Router) {
-	api.Get("/", utility.Use(controller.HealthCheck))
+func HealthCheckRoutes(api *gin.RouterGroup) {
+	api.GET("/", utility.Use(controller.HealthCheck))
 
 }

@@ -39,20 +39,19 @@ func (c *UserController) RegisterRoutes(app *gin.RouterGroup) {
 	userGroup.POST("/", utility.Use(c.CreateUser))
 	userGroup.GET("/", middleware.Verify("user"), utility.Use(c.getAllUsers))
 	userGroup.GET("/me", middleware.Verify("user"), utility.Use(c.GetMe))
-	userGroup.GET("/check_user", utility.Use(c.checkIfUserExist))
-	userGroup.GET("/:userId", middleware.Verify("user"), utility.Use(c.getUserByID))
+	userGroup.GET("/exists", utility.Use(c.checkIfUserExist))
+	userGroup.GET("/:id", middleware.Verify("user"), utility.Use(c.getUserByID))
 	userGroup.PUT("/:id", middleware.Verify("user"), utility.Use(c.UpdateUser))
 	userGroup.DELETE("/:id", middleware.Verify("user"), utility.Use(c.deleteUser))
-	userGroup.GET("/:id/messages_sent", middleware.Verify("user"), utility.Use(c.GetMessagesSent))
-	userGroup.GET("/:id/messages_received", middleware.Verify("user"), utility.Use(c.GetMessagesReceived))
+	userGroup.GET("/:id/sent_messages", middleware.Verify("user"), utility.Use(c.GetMessagesSent))
+	userGroup.GET("/:id/received_messages", middleware.Verify("user"), utility.Use(c.GetMessagesReceived))
 	userGroup.GET("/:id/conversations", middleware.Verify("user"), utility.Use(c.GetConversations))
 	userGroup.GET("/:id/groups", middleware.Verify("user"), utility.Use(c.GetGroups))
-	userGroup.GET("/:id/voice_notes_sent", middleware.Verify("user"), utility.Use(c.GetVoiceNotesSent))
-	userGroup.GET("/:id/voice_notes_received", middleware.Verify("user"), utility.Use(c.GetVoiceNotesReceived))
+	userGroup.GET("/:id/sent_voice_notes", middleware.Verify("user"), utility.Use(c.GetVoiceNotesSent))
+	userGroup.GET("/:id/received_voice_notes", middleware.Verify("user"), utility.Use(c.GetVoiceNotesReceived))
 	userGroup.GET("/:id/notifications", middleware.Verify("user"), utility.Use(c.GetUserNotifications))
 	userGroup.GET("/:id/bookings", middleware.Verify("user"), utility.Use(c.GetUserBookings))
 	userGroup.GET("/:id/payments", middleware.Verify("user"), utility.Use(c.GetUserPayments))
-
 }
 
 // CreateUser godoc

@@ -127,7 +127,7 @@ func Middleware(app *gin.Engine) {
 	app.Use(ginprom.PromMiddleware(nil))
 
 	// register the `/metrics` route.
-	app.GET("/metrics", ginprom.PromHandler(promhttp.Handler()))
+	app.GET("/metrics-new", ginprom.PromHandler(promhttp.Handler()))
 
 	p.Use(app)
 
