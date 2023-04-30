@@ -109,7 +109,7 @@ func (c *AccountController) createAccount(ctx *gin.Context) error {
 		return err
 	}
 
-	ctx.JSON(http.StatusOK, response)
+	ctx.JSON(http.StatusCreated, response)
 	return nil
 }
 

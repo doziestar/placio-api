@@ -28,8 +28,8 @@ func formatDate(t time.Time) string {
 }
 
 func Middleware(app *gin.Engine) {
-	app.Use(gin.Logger())
-	app.Use(gin.Recovery())
+	//app.Use(gin.Logger())
+	//app.Use(gin.Recovery())
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"PUT", "PATCH", "POST", "GET", "DELETE", "OPTIONS"},

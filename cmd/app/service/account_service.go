@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/getsentry/sentry-go"
 	"github.com/gin-gonic/gin"
-	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"placio-app/Dto"
@@ -17,7 +16,7 @@ import (
 )
 
 type IAccountService interface {
-	CreateUserAccount(data *Dto.SignUpDto, ctx *gin.Context) (*fiber.Map, error)
+	CreateUserAccount(data *Dto.SignUpDto, ctx *gin.Context) (*Dto.UserResponse, error)
 	SwitchUserAccount(accountId, userId string) (*models.User, error)
 	CreateBusinessAccount(data *Dto.AddAccountDto, ctx *gin.Context) (*Dto.UserAccountResponse, error)
 	GetAccount(ctx *gin.Context) (*Dto.UserAccountResponse, error)
@@ -39,7 +38,7 @@ func NewAccountService(db *gorm.DB, account models.Account, user models.User) *A
 	return &AccountService{db: db, account: account, user: user}
 }
 
-func (s *AccountService) CreateUserAccount(data *Dto.SignUpDto, ctx *gin.Context) (*fiber.Map, error) {
+func (s *AccountService) CreateUserAccount(data *Dto.SignUpDto, ctx *gin.Context) (*Dto.UserResponse, error) {
 
 	// check if User has already registered an Account
 	userData, err := s.user.GetByEmail(data.Email, database.DB)
@@ -56,10 +55,7 @@ func (s *AccountService) CreateUserAccount(data *Dto.SignUpDto, ctx *gin.Context
 	if userData != nil {
 		// User already owns an Account
 		if userData.Permission == "owner" {
-			return &fiber.Map{
-				"inputError": "email",
-				"message":    "You have already registered an Account",
-			}, nil
+			return nil, errors.New("User already owns an Account")
 		}
 
 		// flag for authController to notify onboarding ui
@@ -70,9 +66,7 @@ func (s *AccountService) CreateUserAccount(data *Dto.SignUpDto, ctx *gin.Context
 		// save the new password if it exists and User doesn't have one
 		if !hasPassword && data.Password != "" {
 			if err := s.user.SavePassword(userData.ID, data.Password); err != nil {
-				return &fiber.Map{
-					"error": "Internal Server Error",
-				}, err
+				return nil, err
 			}
 		}
 
@@ -91,18 +85,14 @@ func (s *AccountService) CreateUserAccount(data *Dto.SignUpDto, ctx *gin.Context
 	// create the User and assign to Account
 	newUser, err := s.user.CreateUser(*data, ctx, database.DB)
 	if err != nil {
-		return &fiber.Map{
-			"error": "Internal Server Error",
-		}, err
+		return nil, err
 	}
 
 	//var token *models.Token
 
 	tokenData, err := s.user.GenerateToken(*newUser)
 	if err != nil {
-		return &fiber.Map{
-			"error": "Internal Server Error",
-		}, err
+		return nil, err
 	}
 
 	//c.Locals("token", tokenData)
@@ -123,16 +113,12 @@ func (s *AccountService) CreateUserAccount(data *Dto.SignUpDto, ctx *gin.Context
 	logger.Info(context.Background(), fmt.Sprintf("newData: %v", newData))
 	err = newData.Save(database.DB)
 	if err != nil {
-		return &fiber.Map{
-			"error": err.Error(),
-		}, err
+		return nil, err
 	}
 
 	err = s.user.Login(ctx, database.DB)
 	if err != nil {
-		return &fiber.Map{
-			"error": err.Error(),
-		}, err
+		return nil, err
 	}
 
 	mail := new(models.EmailContent)
@@ -143,17 +129,12 @@ func (s *AccountService) CreateUserAccount(data *Dto.SignUpDto, ctx *gin.Context
 	//	})
 	//}
 	if err := mail.SendEmailToTerminal(newUser.Email); err != nil {
-		return &fiber.Map{
-			"error": "Internal Server Error",
-		}, err
+		return nil, err
 	}
 
 	responseData := s.user.GenerateUserResponse(newData)
 
-	return &fiber.Map{
-		"message": "Account created successfully",
-		"data":    responseData,
-	}, nil
+	return &responseData, nil
 }
 
 func (s *AccountService) CreateBusinessAccount(data *Dto.AddAccountDto, ctx *gin.Context) (*Dto.UserAccountResponse, error) {

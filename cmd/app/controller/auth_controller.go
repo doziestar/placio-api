@@ -339,11 +339,7 @@ func (controller *AuthController) signIn(c *gin.Context) error {
 	}
 
 	// return the token
-	c.JSON(http.StatusOK, gin.H{
-		"data":    userData.GenerateUserResponse(newData),
-		"message": "Successfully signed in",
-		"status":  "success",
-	})
+	c.JSON(http.StatusOK, userData.GenerateUserResponse(newData))
 	return nil
 }
 

@@ -143,7 +143,7 @@ func VerifyToken(tokenString string, secret string) (*JWTClaims, error) {
 //}
 
 func Verify(permission string) gin.HandlerFunc {
-	logger.Info(context.Background(), fmt.Sprintf("permission: %s", permission))
+	//logger.Info(context.Background(), fmt.Sprintf("permission: %s", permission))
 	return func(c *gin.Context) {
 		header := c.GetHeader("Authorization")
 
