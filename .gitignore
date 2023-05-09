@@ -20,3 +20,5 @@ archive
 *.txt
 # .envs
 test.db
+
+node_modules

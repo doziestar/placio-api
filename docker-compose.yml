@@ -6,111 +6,6 @@ volumes:
   redis_data:
 
 services:
-  postgres-db:
-    container_name: placio-postgres
-    image: postgres:15
-    restart: always
-    ports:
-      - "5432:5432"
-    env_file:
-      - ./.envs/.local
-    volumes:
-      - db_data:/var/lib/postgresql/data
-
-  #  pgadmin:
-  #    container_name: placio-pgadmin
-  #    image: dpage/pgadmin4
-  #    restart: always
-  #    env_file:
-  #      - ./.envs/.local
-  #    ports:
-  #      - "5050:5050"
-  #    volumes:
-  #      - pgadmin_data:/var/lib/pgadmin
-  #    depends_on:
-  #      - postgres-db
-
-  #   placio-proxy:
-  #     image: traefik:latest
-  #     ports:
-  #       - "80:80"
-  #       - "8090:8080"
-  #       # - "443:443"
-  #     env_file:
-  #       - ./.envs/.stag
-
-  #     volumes:
-  #       - /etc/localtime:/etc/localtime:ro
-  #       - /var/run/docker.sock:/var/run/docker.sock:ro
-  #       - ./traefik/traefik.yml:/traefik.yml
-  # #      - ./traefik/acme.json:/acme.json
-  #       - ./traefik/configurations:/configurations
-  #     command:
-  #       - "--log.level=DEBUG"
-  #       - "--api.insecure=true"
-  #       - "--providers.docker=true"
-  #       - "--providers.docker.exposedbydefault=false"
-  #       - "--entrypoints.web.address=:80"
-  #     labels:
-  #       - "traefik.enable=true"
-  #       - "traefik.docker.network=default"
-  #       - "traefik.http.routers.traefik-secure.entrypoints=web"
-  #       - "traefik.http.routers.traefik-secure.rule=Host(`proxy.localhost`)"
-  #       # - 'traefik.http.routers.traefik-secure.middlewares=user-auth@file'
-  #       - "traefik.http.routers.traefik-secure.service=api@internal"
-  #       - "--metrics.prometheus=true"
-  #       - "--metrics.prometheus.buckets=0.1,0.3,1.2,5.0"
-
-  # grafana:
-  #   image: grafana/grafana:latest
-  #   labels:
-  #     - "traefik.enable=true"
-  #     - "traefik.docker.network=backend"
-  #     - "traefik.http.routers.grafana-secure.entrypoints=web"
-  #     - "traefik.http.routers.grafana-secure.rule=Host(`metrics.localhost`)"
-  #     - "traefik.http.routers.grafana-secure.service=grafana"
-  #     - "traefik.http.services.grafana.loadbalancer.server.port=3000"
-  #   #    networks:
-  #   #      # - proxy
-  #   #      - backend
-  #   logging:
-  #     driver: "json-file"
-  #     options:
-  #       max-size: "200k"
-  #       max-file: "10"
-
-  # prometheus:
-  #   image: prom/prometheus:latest
-  #   volumes:
-  #     - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-  #   command:
-  #     - "--config.file=/etc/prometheus/prometheus.yml"
-  #   ports:
-  #     - "9090:9090"
-  #   labels:
-  #     - "traefik.enable=true"
-  #     - "traefik.docker.network=backend"
-  #     - "traefik.http.routers.prometheus-secure.entrypoints=web"
-  #     - "traefik.http.routers.prometheus-secure.rule=Host(`logs.localhost`)"
-  #     - "traefik.http.routers.prometheus-secure.service=prometheus"
-  #     - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
-  #   #    networks:
-  #   #      # - proxy
-  #   #      - backend
-  #   logging:
-  #     driver: "json-file"
-  #     options:
-  #       max-size: "200k"
-  #       max-file: "10"
-
-  placio-redis:
-    container_name: placio-redis
-    image: redis:latest
-    restart: always
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
   docs:
     container_name: placio-docs
     build:
@@ -122,26 +17,6 @@ services:
     volumes:
       # - ./:/app
       - ./docs:/app/docs
-  # kafka:
-  #   container_name: placio-kafka
-  #   image: wurstmeister/kafka:2.12-2.5.0
-  #   restart: always
-  #   ports:
-  #     - "9092:9092"
-  #   environment:
-  #     KAFKA_ADVERTISED_HOST_NAME: localhost
-  #     KAFKA_ADVERTISED_PORT: 9092
-  #     KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-  #     KAFKA_CREATE_TOPICS: "placio:1:1"
-  #   depends_on:
-  #     - zookeeper
-
-  # zookeeper:
-  #   container_name: placio-zookeeper
-  #   image: wurstmeister/zookeeper:latest
-  #   restart: always
-  #   ports:
-  #     - "2181:2181"
 
   #  kafka-ui:
   #    container_name: placio-kafka-ui
@@ -161,22 +36,11 @@ services:
     restart: always
     ports:
       - "7070:7070"
-    depends_on:
-      - postgres-db
+#    depends_on:
+#      - postgres-db
     volumes:
       - ./:/app
       - ./cmd/app:/app/cmd/app
       - ./config:/app/config
     env_file:
       - ./.envs/.local
-    labels:
-      # This is enableing treafik to proxy this service
-      - "traefik.enable=true"
-      # Here we have to define the URL
-      - "traefik.http.routers.app.rule=Host(`api.localhost`)"
-      # Here we are defining wich entrypoint should be used by clients to access this service
-      - "traefik.http.routers.app.entrypoints=web"
-      # Here we define in wich network treafik can find this service
-      - "traefik.docker.network=default"
-      # This is the port that traefik should proxy
-      - "traefik.http.services.app.loadbalancer.server.port=7070"

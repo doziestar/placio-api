@@ -15,6 +15,8 @@ import { Routes } from '@interfaces/routes.interface';
 import { ErrorMiddleware } from '@middlewares/error.middleware';
 import { logger, stream } from '@utils/logger';
 
+// mongodb+srv://dozie:<password>@cluster0.jmf27wp.mongodb.net/?retryWrites=true&w=majority
+
 export class App {
   public app: express.Application;
   public env: string;
@@ -23,7 +25,7 @@ export class App {
   constructor(routes: Routes[]) {
     this.app = express();
     this.env = NODE_ENV || 'development';
-    this.port = PORT || 3000;
+    this.port = PORT || 3004;
 
     this.connectToDatabase();
     this.initializeMiddlewares();
@@ -74,9 +76,9 @@ export class App {
     const options = {
       swaggerDefinition: {
         info: {
-          title: 'REST API',
+          title: 'Placio Auth API',
           version: '1.0.0',
-          description: 'Example docs',
+          description: 'Placio Auth API',
         },
       },
       apis: ['swagger.yaml'],

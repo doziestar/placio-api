@@ -4,7 +4,7 @@ import "time"
 
 type Post struct {
 	ID        string    `gorm:"primaryKey,unique"`
-	AccountID string    `gorm:"index"`
+	AccountID string    `gorm:"index;foreignKey:ID"`
 	Content   string    `gorm:"type:text"`
 	Medias    []Media   `gorm:"foreignKey:PostID"`
 	Comments  []Comment `gorm:"foreignKey:PostID"`

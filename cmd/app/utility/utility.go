@@ -98,6 +98,7 @@ func Assert(data interface{}, err string, input map[string]interface{}) bool {
 	return true
 }
 
+//
 //func Use(fn func(*fiber.Ctx) error) fiber.Handler {
 //	//fmt.Println("Entering utility.Use function")
 //	//logger.Info(context.Background(), "middleware.Use")
