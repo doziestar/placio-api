@@ -36,11 +36,23 @@ services:
     restart: always
     ports:
       - "7070:7070"
-#    depends_on:
-#      - postgres-db
+    #    depends_on:
+    #      - postgres-db
     volumes:
       - ./:/app
       - ./cmd/app:/app/cmd/app
       - ./config:/app/config
     env_file:
       - ./.envs/.local
+
+  server:
+    # container_name: server
+    build:
+      context: ./placio-auth
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3004:3004"
+    volumes:
+      - ./placio-auth:/app
+      - /app/node_modules
+    restart: "unless-stopped"
