@@ -2,10 +2,12 @@ package controller
 
 import (
 	"errors"
-	"github.com/gofiber/fiber/v2"
+	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+	"net/http"
 	_ "placio-app/Dto"
 	"placio-app/models"
+	"placio-app/utility"
 
 	"placio-app/service"
 )
@@ -18,14 +20,14 @@ func NewTicketController(ticketService service.TicketService) *TicketController 
 	return &TicketController{ticketService: ticketService}
 }
 
-func (tc *TicketController) RegisterRoutes(router fiber.Router) {
+func (tc *TicketController) RegisterRoutes(router *gin.RouterGroup) {
 	ticketRouter := router.Group("/tickets")
 	{
-		ticketRouter.Post("/", tc.createTicket)
-		ticketRouter.Get("/:id", tc.getTicket)
-		ticketRouter.Put("/:id", tc.updateTicket)
-		ticketRouter.Delete("/:id", tc.deleteTicket)
-		ticketRouter.Get("/event/:eventId", tc.getTicketsByEvent)
+		ticketRouter.POST("/", utility.Use(tc.createTicket))
+		ticketRouter.GET("/:id", utility.Use(tc.getTicket))
+		ticketRouter.PUT("/:id", utility.Use(tc.updateTicket))
+		ticketRouter.DELETE("/:id", utility.Use(tc.deleteTicket))
+		ticketRouter.GET("/event/:eventId", utility.Use(tc.getTicketsByEvent))
 	}
 }
 
@@ -40,12 +42,13 @@ func (tc *TicketController) RegisterRoutes(router fiber.Router) {
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/tickets/ [post]
-func (tc *TicketController) createTicket(ctx *fiber.Ctx) error {
+func (tc *TicketController) createTicket(ctx *gin.Context) error {
 	data := new(models.Ticket)
-	if err := ctx.BodyParser(data); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+	if err := ctx.BindJSON(data); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": "Bad Request",
 		})
+		return err
 	}
 
 	ticket := &models.Ticket{
@@ -56,17 +59,19 @@ func (tc *TicketController) createTicket(ctx *fiber.Ctx) error {
 
 	err := tc.ticketService.CreateTicket(ticket)
 	if err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": "Internal Server Error",
 		})
+		return err
 	}
 
-	return ctx.Status(fiber.StatusCreated).JSON(ticket)
+	ctx.JSON(http.StatusCreated, ticket)
+	return nil
 }
 
 // getTicket retrieves a ticket by its ID
-// @Summary Get ticket by ID
-// @Description Get a ticket by its ID
+// @Summary GET ticket by ID
+// @Description GET a ticket by its ID
 // @Tags Ticket
 // @Accept json
 // @Produce json
@@ -76,21 +81,23 @@ func (tc *TicketController) createTicket(ctx *fiber.Ctx) error {
 // @Failure 404 {object} Dto.ErrorDTO "Ticket Not Found"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/tickets/{id} [get]
-func (tc *TicketController) getTicket(ctx *fiber.Ctx) error {
-	ticketID := ctx.Params("id")
+func (tc *TicketController) getTicket(ctx *gin.Context) error {
+	ticketID := ctx.Param("id")
 	ticket, err := tc.ticketService.GetTicketByEvent(ticketID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			ctx.JSON(http.StatusNotFound, gin.H{
 				"error": "Ticket Not Found",
 			})
+			return err
 		}
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Internal Server Error",
 		})
 	}
 
-	return ctx.Status(fiber.StatusOK).JSON(ticket)
+	ctx.JSON(http.StatusOK, ticket)
+	return nil
 }
 
 // updateTicket updates a ticket by its ID
@@ -106,13 +113,14 @@ func (tc *TicketController) getTicket(ctx *fiber.Ctx) error {
 // // @Failure 404 {object} Dto.ErrorDTO "Ticket Not Found"
 // // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // // @Router /api/v1/tickets/{id} [put]
-func (tc *TicketController) updateTicket(ctx *fiber.Ctx) error {
-	ticketID := ctx.Params("id")
+func (tc *TicketController) updateTicket(ctx *gin.Context) error {
+	ticketID := ctx.Param("id")
 	data := new(models.Ticket)
-	if err := ctx.BodyParser(data); err != nil {
-		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+	if err := ctx.BindJSON(data); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": "Bad Request",
 		})
+		return err
 	}
 
 	ticket := &models.Ticket{
@@ -124,16 +132,19 @@ func (tc *TicketController) updateTicket(ctx *fiber.Ctx) error {
 	err := tc.ticketService.UpdateTicket(ticket)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			ctx.JSON(http.StatusNotFound, gin.H{
 				"error": "Ticket Not Found",
 			})
+			return err
 		}
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Internal Server Error",
 		})
+		return err
 	}
 
-	return ctx.Status(fiber.StatusOK).JSON("Ticket updated successfully")
+	ctx.JSON(http.StatusOK, ticket)
+	return nil
 }
 
 // deleteTicket deletes a ticket by its ID
@@ -148,26 +159,29 @@ func (tc *TicketController) updateTicket(ctx *fiber.Ctx) error {
 // @Failure 404 {object} Dto.ErrorDTO "Ticket Not Found"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/tickets/{id} [delete]
-func (tc *TicketController) deleteTicket(ctx *fiber.Ctx) error {
-	ticketID := ctx.Params("id")
+func (tc *TicketController) deleteTicket(ctx *gin.Context) error {
+	ticketID := ctx.Param("id")
 	err := tc.ticketService.DeleteTicket(ticketID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			ctx.JSON(http.StatusNotFound, gin.H{
 				"error": "Ticket Not Found",
 			})
+			return err
 		}
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Internal Server Error",
 		})
+		return err
 	}
 
-	return ctx.Status(fiber.StatusNoContent).JSON("Ticket deleted successfully")
+	ctx.Status(http.StatusNoContent)
+	return nil
 }
 
 // getTicketsByEvent retrieves all tickets for an event
-// @Summary Get tickets by event ID
-// @Description Get all tickets for a specific event
+// @Summary GET tickets by event ID
+// @Description GET all tickets for a specific event
 // @Tags Ticket
 // @Accept json
 // @Produce json
@@ -176,14 +190,16 @@ func (tc *TicketController) deleteTicket(ctx *fiber.Ctx) error {
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/tickets/event/{eventId} [get]
-func (tc *TicketController) getTicketsByEvent(ctx *fiber.Ctx) error {
-	eventID := ctx.Params("eventId")
+func (tc *TicketController) getTicketsByEvent(ctx *gin.Context) error {
+	eventID := ctx.Param("eventId")
 	tickets, err := tc.ticketService.GetTicketByEvent(eventID)
 	if err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Internal Server Error",
 		})
+		return err
 	}
 
-	return ctx.Status(fiber.StatusOK).JSON(tickets)
+	ctx.JSON(http.StatusOK, tickets)
+	return nil
 }

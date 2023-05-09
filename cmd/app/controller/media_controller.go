@@ -1,10 +1,13 @@
 package controller
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/gofiber/fiber/v2"
+	"net/http"
 	_ "placio-app/Dto"
 	_ "placio-app/models"
 	"placio-app/service"
+	"placio-app/utility"
 )
 
 type MediaController struct {
@@ -15,14 +18,14 @@ func NewMediaController(mediaService service.MediaService) *MediaController {
 	return &MediaController{mediaService: mediaService}
 }
 
-func (mc *MediaController) RegisterRoutes(router fiber.Router) {
+func (mc *MediaController) RegisterRoutes(router *gin.RouterGroup) {
 	mediaRouter := router.Group("/media")
 	{
 		//mediaRouter.Get("/", mc.getAllMedia)
-		mediaRouter.Get("/:id", mc.getMedia)
+		mediaRouter.GET("/:id", utility.Use(mc.getMedia))
 		//mediaRouter.Post("/", mc.createMedia)
 		//mediaRouter.Put("/:id", mc.updateMedia)
-		mediaRouter.Delete("/:id", mc.deleteMedia)
+		mediaRouter.POST("/:id", utility.Use(mc.deleteMedia))
 	}
 }
 
@@ -71,23 +74,26 @@ func (c *MediaController) uploadMedia(ctx *fiber.Ctx) error {
 // @Failure 404 {object} Dto.ErrorDTO "Media Not Found"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/media/{mediaID} [get]
-func (c *MediaController) getMedia(ctx *fiber.Ctx) error {
-	mediaID := ctx.Params("mediaID")
+func (c *MediaController) getMedia(ctx *gin.Context) error {
+	mediaID := ctx.Param("mediaID")
 
 	media, err := c.mediaService.GetMedia(mediaID)
 	if err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Internal Server Error",
 		})
+		return err
 	}
 
 	if media == nil {
-		return ctx.Status(fiber.StatusNotFound).JSON(fiber.Map{
+		ctx.JSON(http.StatusNotFound, gin.H{
 			"error": "Media Not Found",
 		})
+		return nil
 	}
 
-	return ctx.JSON(media)
+	ctx.JSON(http.StatusOK, media)
+	return nil
 }
 
 // @Summary Delete media
@@ -99,17 +105,19 @@ func (c *MediaController) getMedia(ctx *fiber.Ctx) error {
 // @Failure 404 {object} Dto.ErrorDTO "Media Not Found"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/media/{mediaID} [delete]
-func (c *MediaController) deleteMedia(ctx *fiber.Ctx) error {
-	mediaID := ctx.Params("mediaID")
+func (c *MediaController) deleteMedia(ctx *gin.Context) error {
+	mediaID := ctx.Param("mediaID")
 
 	err := c.mediaService.DeleteMedia(mediaID)
 	if err != nil {
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Internal Server Error",
 		})
+		return err
 	}
 
-	return ctx.Status(fiber.StatusNoContent).SendString("")
+	ctx.JSON(http.StatusNoContent, nil)
+	return nil
 }
 
 // @Summary List all media for a post

@@ -1,14 +1,12 @@
 package main
 
 import (
+	"github.com/gin-gonic/gin"
 	"os"
 	"placio-app/api"
 	"placio-app/database"
 	"placio-app/models"
 	"placio-app/start"
-
-	"github.com/goccy/go-json"
-	"github.com/gofiber/fiber/v2"
 )
 
 // @title Placio Application Api
@@ -23,31 +21,29 @@ import (
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 // @host https://api.palnight.com
 // @BasePath /qpi/v1
-// @schemes http
+// @schemes http https
 func main() {
 	// get port from env
 	port := os.Getenv("PORT")
 	// if port is not set, set it to 3000
 
 	// initialize fiber app
-	app := fiber.New(fiber.Config{
-		JSONEncoder: json.Marshal,
-		JSONDecoder: json.Unmarshal,
-	})
+	app := gin.Default()
 
 	// initialize database
 	//env, _ := config.LoadConfig("./config")
-	db, err := database.Connect(os.Getenv("DATABASE_URL"))
+	databaseInstance, err := database.Connect(os.Getenv("POSTGRES_URL"))
 	if err != nil {
 		return
 	}
-	err = models.Migrate(db.GetDB())
+	db := databaseInstance.GetDB()
+	err = models.Migrate(db)
 	if err != nil {
 		return
 	}
 
 	// initialize routes
-	api.InitializeRoutes(app)
+	api.InitializeRoutes(app, db)
 	// set port
 	start.Initialize(port, app)
 

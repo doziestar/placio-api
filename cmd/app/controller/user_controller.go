@@ -4,8 +4,10 @@ import (
 	"context"
 	"fmt"
 	"github.com/getsentry/sentry-go"
+	"github.com/gin-gonic/gin"
 	"github.com/gofiber/fiber/v2"
 	_ "gorm.io/gorm"
+	"net/http"
 	"placio-app/middleware"
 	"placio-app/models"
 	"placio-app/service"
@@ -31,26 +33,25 @@ func NewUserController(service service.IUser) *UserController {
 	return &UserController{service: service}
 } // GET /api/users/:id/messages_sent - Retrieve a list of messages sent by a specific user by ID
 
-func (c *UserController) RegisterRoutes(app fiber.Router) {
+func (c *UserController) RegisterRoutes(app *gin.RouterGroup) {
 	userGroup := app.Group("/users")
 
-	userGroup.Post("/", utility.Use(c.CreateUser))
-	userGroup.Get("/", middleware.Verify("user"), utility.Use(c.getAllUsers))
-	userGroup.Get("/me", middleware.Verify("user"), utility.Use(c.GetMe))
-	userGroup.Get("/check_user", utility.Use(c.checkIfUserExist))
-	userGroup.Get("/:userId", middleware.Verify("user"), utility.Use(c.getUserByID))
-	userGroup.Put("/:id", middleware.Verify("user"), utility.Use(c.UpdateUser))
-	userGroup.Delete("/:id", middleware.Verify("user"), utility.Use(c.deleteUser))
-	userGroup.Get("/:id/messages_sent", middleware.Verify("user"), utility.Use(c.GetMessagesSent))
-	userGroup.Get("/:id/messages_received", middleware.Verify("user"), utility.Use(c.GetMessagesReceived))
-	userGroup.Get("/:id/conversations", middleware.Verify("user"), utility.Use(c.GetConversations))
-	userGroup.Get("/:id/groups", middleware.Verify("user"), utility.Use(c.GetGroups))
-	userGroup.Get("/:id/voice_notes_sent", middleware.Verify("user"), utility.Use(c.GetVoiceNotesSent))
-	userGroup.Get("/:id/voice_notes_received", middleware.Verify("user"), utility.Use(c.GetVoiceNotesReceived))
-	userGroup.Get("/:id/notifications", middleware.Verify("user"), utility.Use(c.GetUserNotifications))
-	userGroup.Get("/:id/bookings", middleware.Verify("user"), utility.Use(c.GetUserBookings))
-	userGroup.Get("/:id/payments", middleware.Verify("user"), utility.Use(c.GetUserPayments))
-
+	userGroup.POST("/", utility.Use(c.CreateUser))
+	userGroup.GET("/", middleware.Verify("user"), utility.Use(c.getAllUsers))
+	userGroup.GET("/me", middleware.Verify("user"), utility.Use(c.GetMe))
+	userGroup.GET("/exists", utility.Use(c.checkIfUserExist))
+	userGroup.GET("/:id", middleware.Verify("user"), utility.Use(c.getUserByID))
+	userGroup.PUT("/:id", middleware.Verify("user"), utility.Use(c.UpdateUser))
+	userGroup.DELETE("/:id", middleware.Verify("user"), utility.Use(c.deleteUser))
+	userGroup.GET("/:id/sent_messages", middleware.Verify("user"), utility.Use(c.GetMessagesSent))
+	userGroup.GET("/:id/received_messages", middleware.Verify("user"), utility.Use(c.GetMessagesReceived))
+	userGroup.GET("/:id/conversations", middleware.Verify("user"), utility.Use(c.GetConversations))
+	userGroup.GET("/:id/groups", middleware.Verify("user"), utility.Use(c.GetGroups))
+	userGroup.GET("/:id/sent_voice_notes", middleware.Verify("user"), utility.Use(c.GetVoiceNotesSent))
+	userGroup.GET("/:id/received_voice_notes", middleware.Verify("user"), utility.Use(c.GetVoiceNotesReceived))
+	userGroup.GET("/:id/notifications", middleware.Verify("user"), utility.Use(c.GetUserNotifications))
+	userGroup.GET("/:id/bookings", middleware.Verify("user"), utility.Use(c.GetUserBookings))
+	userGroup.GET("/:id/payments", middleware.Verify("user"), utility.Use(c.GetUserPayments))
 }
 
 // CreateUser godoc
@@ -64,14 +65,17 @@ func (c *UserController) RegisterRoutes(app fiber.Router) {
 // @Failure 400 {object} map[string]interface{}
 // @Security ApiKeyAuth
 // @Router /api/v1/users [post]
-func (c *UserController) CreateUser(ctx *fiber.Ctx) error {
+func (c *UserController) CreateUser(ctx *gin.Context) error {
 	user := new(models.User)
-	if err := ctx.BodyParser(user); err != nil {
+	if err := ctx.ShouldBindJSON(user); err != nil {
+		logger.Error(ctx, fmt.Sprintf("error while binding user data: %v", err))
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return err
 	}
 	//user.ID = len(users) + 1
 	//users = append(users, *user)
-	return ctx.JSON(user)
+	ctx.JSON(http.StatusOK, user)
+	return nil
 }
 
 // getAllUsers godoc
@@ -83,9 +87,10 @@ func (c *UserController) CreateUser(ctx *fiber.Ctx) error {
 // @Success 200 {object} []models.User
 // @Failure 400 {object} map[string]interface{}
 // @Router /api/v1/users [get]
-func (c *UserController) getAllUsers(ctx *fiber.Ctx) error {
+func (c *UserController) getAllUsers(ctx *gin.Context) error {
 	//return c.JSON(users)
-	return ctx.JSON(fiber.Map{"status": "ok"})
+	ctx.JSON(http.StatusOK, "users")
+	return nil
 }
 
 // getUserByID godoc
@@ -97,25 +102,26 @@ func (c *UserController) getAllUsers(ctx *fiber.Ctx) error {
 // @Success 200 {object} models.User
 // @Failure 400 {object} map[string]interface{}
 // @Router /api/v1/users/{id} [get]
-func (c *UserController) getUserByID(ctx *fiber.Ctx) error {
+func (c *UserController) getUserByID(ctx *gin.Context) error {
 	// get user id from the path
-	id := ctx.Params("userId")
+	id := ctx.Param("id")
 	// get user from the user service
 	user, err := c.service.GetUserByID(id)
 	if err != nil {
 		sentry.CaptureException(err)
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return err
 	}
 
 	items, err := utility.RemoveSensitiveFields(user)
 	if err != nil {
 		sentry.CaptureException(err)
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return err
 	}
-	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
-		"status": "ok",
-		"data":   items,
-	})
+
+	ctx.JSON(http.StatusOK, gin.H{"status": "ok", "data": items})
+	return nil
 }
 
 // checkIfUserExist godoc
@@ -129,22 +135,21 @@ func (c *UserController) getUserByID(ctx *fiber.Ctx) error {
 // @Success 200 {object} fiber.Map
 // @Failure 400 {object} map[string]interface{}
 // @Router /api/v1/users/check_user [get]c
-func (c *UserController) checkIfUserExist(ctx *fiber.Ctx) error {
+func (c *UserController) checkIfUserExist(ctx *gin.Context) error {
 	username := ctx.Query("username")
 	email := ctx.Query("email")
 
 	user, err := c.service.CheckIfUserNameOrEmailExists(username, email)
 	if err != nil {
 		if err.Error() == "user not found" {
-			return ctx.Status(fiber.StatusOK).JSON(fiber.Map{"status": "ok", "exist": false})
+			ctx.JSON(http.StatusOK, gin.H{"status": "ok", "exist": false})
+			return nil
 		}
 		sentry.CaptureException(err)
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
-	return ctx.Status(fiber.StatusOK).JSON(fiber.Map{
-		"status": "ok",
-		"exist":  user,
-	})
+	ctx.JSON(http.StatusOK, gin.H{"status": "ok", "exist": true, "user": user})
+	return nil
 }
 
 // UpdateUser godoc
@@ -158,7 +163,7 @@ func (c *UserController) checkIfUserExist(ctx *fiber.Ctx) error {
 // @Success 200 {object} models.User
 // @Failure 400 {object} map[string]interface{}
 // @Router /api/v1/users/{id} [put]
-func (c *UserController) UpdateUser(ctx *fiber.Ctx) error {
+func (c *UserController) UpdateUser(ctx *gin.Context) error {
 	//id := c.Params("id")
 	//for i, user := range users {
 	//	if strconv.Itoa(user.ID) == id {
@@ -168,7 +173,8 @@ func (c *UserController) UpdateUser(ctx *fiber.Ctx) error {
 	//		return c.JSON(user)
 	//	}
 	//}
-	return ctx.Status(fiber.StatusNotFound).SendString("User not found")
+	ctx.JSON(http.StatusOK, "user")
+	return nil
 }
 
 // deleteUser godoc
@@ -181,7 +187,7 @@ func (c *UserController) UpdateUser(ctx *fiber.Ctx) error {
 // @Success 200 {object} map[string]interface{}
 // @Failure 400 {object} map[string]interface{}
 // @Router /api/v1/users/{id} [delete]
-func (c *UserController) deleteUser(ctx *fiber.Ctx) error {
+func (c *UserController) deleteUser(ctx *gin.Context) error {
 	//id := c.Params("id")
 	//for i, user := range users {
 	//	if strconv.Itoa(user.ID) == id {
@@ -189,7 +195,8 @@ func (c *UserController) deleteUser(ctx *fiber.Ctx) error {
 	//		return c.SendStatus(fiber.StatusNoContent)
 	//	}
 	//}
-	return ctx.Status(fiber.StatusNotFound).SendString("User not found")
+	ctx.JSON(http.StatusOK, "user")
+	return nil
 }
 
 // GetMessagesSent godoc
@@ -202,14 +209,15 @@ func (c *UserController) deleteUser(ctx *fiber.Ctx) error {
 // @Success 200 {object} []models.Message
 // @Failure 400 {object} map[string]interface{}
 // @Router /api/v1/users/{id}/messages_sent [get]
-func (c *UserController) GetMessagesSent(ctx *fiber.Ctx) error {
+func (c *UserController) GetMessagesSent(ctx *gin.Context) error {
 	//id := c.Params("id")
 	//for _, user := range users {
 	//	if strconv.Itoa(user.ID) == id {
 	//		return c.JSON(user.MessagesSent)
 	//	}
 	//}
-	return ctx.Status(fiber.StatusNotFound).SendString("User not found")
+	ctx.JSON(http.StatusOK, "user")
+	return nil
 }
 
 // GetMessagesReceived godoc
@@ -222,14 +230,15 @@ func (c *UserController) GetMessagesSent(ctx *fiber.Ctx) error {
 // @Success 200 {object} []models.Message
 // @Failure 400 {object} map[string]interface{}
 // @Router /api/v1/users/{id}/messages_received [get]
-func (controller *UserController) GetMessagesReceived(c *fiber.Ctx) error {
+func (controller *UserController) GetMessagesReceived(c *gin.Context) error {
 	//id := c.Params("id")
 	//for _, user := range users {
 	//	if strconv.Itoa(user.ID) == id {
 	//		return c.JSON(user.MessagesReceived)
 	//	}
 	//}
-	return c.Status(fiber.StatusNotFound).SendString("User not found")
+	c.JSON(http.StatusOK, "user")
+	return nil
 }
 
 // GetConversations godoc
@@ -242,14 +251,16 @@ func (controller *UserController) GetMessagesReceived(c *fiber.Ctx) error {
 // @Success 200 {object} []models.Conversation
 // @Failure 400 {object} map[string]interface{}
 // @Router /api/v1/users/{id}/conversations [get]
-func (controller *UserController) GetConversations(c *fiber.Ctx) error {
+func (controller *UserController) GetConversations(c *gin.Context) error {
 	//id := c.Params("id")
 	//for _, user := range users {
 	//	if strconv.Itoa(user.ID) == id {
 	//		return c.JSON(user.Conversations)
 	//	}
 	//}
-	return c.Status(fiber.StatusNotFound).SendString("User not found")
+
+	c.JSON(http.StatusOK, "user")
+	return nil
 }
 
 // GetGroups godoc
@@ -262,14 +273,15 @@ func (controller *UserController) GetConversations(c *fiber.Ctx) error {
 // @Success 200 {object} []models.Group
 // @Failure 400 {object} map[string]interface{}
 // @Router /api/v1/users/{id}/groups [get]
-func (controller *UserController) GetGroups(c *fiber.Ctx) error {
+func (controller *UserController) GetGroups(c *gin.Context) error {
 	//id := c.Params("id")
 	//for _, user := range users {
 	//	if strconv.Itoa(user.ID) == id {
 	//		return c.JSON(user.Groups)
 	//	}
 	//}
-	return c.Status(fiber.StatusNotFound).SendString("User not found")
+	c.JSON(http.StatusOK, "user")
+	return nil
 }
 
 // GetVoiceNotesSent godoc
@@ -282,14 +294,15 @@ func (controller *UserController) GetGroups(c *fiber.Ctx) error {
 // @Success 200 {object} []models.VoiceNote
 // @Failure 400 {object} map[string]interface{}
 // @Router /api/v1/users/{id}/voice_notes_sent [get]
-func (controller *UserController) GetVoiceNotesSent(c *fiber.Ctx) error {
+func (controller *UserController) GetVoiceNotesSent(c *gin.Context) error {
 	//id := c.Params("id")
 	//for _, user := range users {
 	//	if strconv.Itoa(user.ID) == id {
 	//		return c.JSON(user.VoiceNotesSent)
 	//	}
 	//}
-	return c.Status(fiber.StatusNotFound).SendString("User not found")
+	c.JSON(http.StatusOK, "user")
+	return nil
 }
 
 // GetVoiceNotesReceived godoc
@@ -302,14 +315,15 @@ func (controller *UserController) GetVoiceNotesSent(c *fiber.Ctx) error {
 // @Success 200 {object} []models.VoiceNote
 // @Failure 400 {object} map[string]interface{}
 // @Router /api/v1/users/{id}/voice_notes_received [get]
-func (controller *UserController) GetVoiceNotesReceived(c *fiber.Ctx) error {
+func (controller *UserController) GetVoiceNotesReceived(c *gin.Context) error {
 	//id := c.Params("id")
 	//for _, user := range users {
 	//	if strconv.Itoa(user.ID) == id {
 	//		return c.JSON(user.VoiceNotesReceived)
 	//	}
 	//}
-	return c.Status(fiber.StatusNotFound).SendString("User not found")
+	c.JSON(http.StatusOK, "user")
+	return nil
 }
 
 // GetVoiceNotes godoc
@@ -322,14 +336,15 @@ func (controller *UserController) GetVoiceNotesReceived(c *fiber.Ctx) error {
 // @Success 200 {object} []models.VoiceNote
 // @Failure 400 {object} map[string]interface{}
 // @Router /api/v1/users/{id}/voice_notes [get]
-func (controller *UserController) GetVoiceNotes(c *fiber.Ctx) error {
+func (controller *UserController) GetVoiceNotes(c *gin.Context) error {
 	//id := c.Params("id")
 	//for _, user := range users {
 	//	if strconv.Itoa(user.ID) == id {
 	//		return c.JSON(user.VoiceNotes)
 	//	}
 	//}
-	return c.Status(fiber.StatusNotFound).SendString("User not found")
+	c.JSON(http.StatusOK, "user")
+	return nil
 }
 
 // GetVoiceNote godoc
@@ -342,14 +357,15 @@ func (controller *UserController) GetVoiceNotes(c *fiber.Ctx) error {
 // @Success 200 {object} models.VoiceNote
 // @Failure 400 {object} map[string]interface{}
 // @Router /api/v1/voice_notes/{id} [get]
-func (controller *UserController) GetVoiceNote(c *fiber.Ctx) error {
+func (controller *UserController) GetVoiceNote(c *gin.Context) error {
 	//id := c.Params("id")
 	//for _, voiceNote := range voiceNotes {
 	//	if strconv.Itoa(voiceNote.ID) == id {
 	//		return c.JSON(voiceNote)
 	//	}
 	//}
-	return c.Status(fiber.StatusNotFound).SendString("Voice note not found")
+	c.JSON(http.StatusOK, "user")
+	return nil
 }
 
 // GetUserNotifications godoc
@@ -362,14 +378,15 @@ func (controller *UserController) GetVoiceNote(c *fiber.Ctx) error {
 // @Success 200 {object} []models.Notification
 // @Failure 400 {object} map[string]interface{}
 // @Router /api/v1/users/{id}/notifications [get]
-func (controller *UserController) GetUserNotifications(c *fiber.Ctx) error {
+func (controller *UserController) GetUserNotifications(c *gin.Context) error {
 	//id := c.Params("id")
 	//for _, user := range users {
 	//	if strconv.Itoa(user.ID) == id {
 	//		return c.JSON(user.Notifications)
 	//	}
 	//}
-	return c.Status(fiber.StatusNotFound).SendString("User not found")
+	c.JSON(http.StatusOK, "user")
+	return nil
 }
 
 // GetUserBookings godoc
@@ -382,14 +399,15 @@ func (controller *UserController) GetUserNotifications(c *fiber.Ctx) error {
 // @Success 200 {object} []models.Booking
 // @Failure 400 {object} map[string]interface{}
 // @Router /api/v1/users/{id}/bookings [get]
-func (controller *UserController) GetUserBookings(c *fiber.Ctx) error {
+func (controller *UserController) GetUserBookings(c *gin.Context) error {
 	//id := c.Params("id")
 	//for _, user := range users {
 	//	if strconv.Itoa(user.ID) == id {
 	//		return c.JSON(user.Bookings)
 	//	}
 	//}
-	return c.Status(fiber.StatusNotFound).SendString("User not found")
+	c.JSON(http.StatusOK, "user")
+	return nil
 }
 
 // GetUserPayments godoc
@@ -402,14 +420,15 @@ func (controller *UserController) GetUserBookings(c *fiber.Ctx) error {
 // @Success 200 {object} []models.Payment
 // @Failure 400 {object} map[string]interface{}
 // @Router /api/v1/users/{id}/payments [get]
-func (controller *UserController) GetUserPayments(c *fiber.Ctx) error {
+func (controller *UserController) GetUserPayments(c *gin.Context) error {
 	//id := c.Params("id")
 	//for _, user := range users {
 	//	if strconv.Itoa(user.ID) == id {
 	//		return c.JSON(user.Payments)
 	//	}
 	//}
-	return c.Status(fiber.StatusNotFound).SendString("User not found")
+	c.JSON(http.StatusOK, "user")
+	return nil
 }
 
 // GetMe godoc
@@ -421,18 +440,30 @@ func (controller *UserController) GetUserPayments(c *fiber.Ctx) error {
 // @Success 200 {object} models.User
 // @Failure 400 {object} map[string]interface{}
 // @Router /api/v1/users/me [get]
-func (c *UserController) GetMe(ctx *fiber.Ctx) error {
-	userId := ctx.Locals("user").(string)
-	logger.Info(context.Background(), fmt.Sprintf("GetMe: %s", userId))
+func (c *UserController) GetMe(ctx *gin.Context) error {
+	userIdValue, exist := ctx.Get("user")
+	if !exist {
+		sentry.CaptureMessage("User not found")
+		ctx.JSON(http.StatusInternalServerError, fiber.Map{"message": "User not found"})
+	}
+	logger.Info(context.Background(), fmt.Sprintf("GetMe: %s", userIdValue))
+	userId, ok := userIdValue.(string)
+	if !ok {
+		sentry.CaptureMessage("User ID is not a string")
+		ctx.JSON(http.StatusInternalServerError, gin.H{"message": "User ID has an invalid type"})
+		return nil
+	}
 	userData, err := c.service.GetLoggedInUser(userId)
 	if err != nil {
 		sentry.CaptureException(err)
-		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"message": "User not found"})
+		return nil
 	}
 
 	userInfo, err := utility.RemoveSensitiveFields(userData)
 	if err != nil {
 		sentry.CaptureException(err)
 	}
-	return ctx.Status(fiber.StatusOK).JSON(userInfo)
+	ctx.JSON(http.StatusOK, userInfo)
+	return nil
 }

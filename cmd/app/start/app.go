@@ -1,20 +1,19 @@
 package start
 
 import (
+	"context"
+	"github.com/gin-gonic/gin"
 	"log"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/getsentry/sentry-go"
-	"github.com/gofiber/fiber/v2"
-
-	//"github.com/gofiber/secure/v2"
-	"time"
-	//"github.com/gofiber/fiber/v2/middleware/recover"
-	//"github.com/gofiber/fiber/v2/middleware/timeout"\
-	// import sqlite3 driver\
 )
 
-func Initialize(PORT string, app *fiber.App) {
-
+func Initialize(PORT string, app *gin.Engine) {
 	Middleware(app)
 
 	err := sentry.Init(sentry.ClientOptions{
@@ -30,10 +29,40 @@ func Initialize(PORT string, app *fiber.App) {
 	if err != nil {
 		log.Fatalf("sentry.Init: %s", err)
 	}
+
+	srv := &http.Server{
+		Addr:    ":" + PORT,
+		Handler: app,
+	}
+
+	go func() {
+		// service connections
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("listen: %s\n", err)
+		}
+	}()
+
+	// Wait for interrupt signal to gracefully shutdown the server with
+	// a timeout of 5 seconds.
+	quit := make(chan os.Signal)
+	// kill (no param) default send syscanll.SIGTERM
+	// kill -2 is syscall.SIGINT
+	// kill -9 is syscall. SIGKILL but can"t be catch, so don't need add it
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+	log.Println("Shutdown Server ...")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := srv.Shutdown(ctx); err != nil {
+		log.Fatal("Server Shutdown:", err)
+	}
+	// catching ctx.Done(). timeout of 5 seconds.
+	select {
+	case <-ctx.Done():
+		log.Println("timeout of 5 seconds.")
+	}
+	log.Println("Server exiting")
 	// Flush buffered events before the program terminates.
 	defer sentry.Flush(2 * time.Second)
-	err = app.Listen(":" + PORT)
-	if err != nil {
-		return
-	}
 }

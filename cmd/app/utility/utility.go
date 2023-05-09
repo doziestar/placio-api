@@ -3,7 +3,7 @@ package utility
 import (
 	"fmt"
 	sentry "github.com/getsentry/sentry-go"
-	"github.com/gofiber/fiber/v2"
+	"github.com/gin-gonic/gin"
 	"strings"
 )
 
@@ -98,17 +98,32 @@ func Assert(data interface{}, err string, input map[string]interface{}) bool {
 	return true
 }
 
-func Use(fn func(*fiber.Ctx) error) fiber.Handler {
+//
+//func Use(fn func(*fiber.Ctx) error) fiber.Handler {
+//	//fmt.Println("Entering utility.Use function")
+//	//logger.Info(context.Background(), "middleware.Use")
+//	defer sentry.Recover()
+//	//defer sentry.Flush(2 * time.Second)
+//	return func(c *fiber.Ctx) error {
+//		err := fn(c)
+//		if err != nil {
+//			sentry.CaptureException(err)
+//			return c.Next()
+//		}
+//		return nil
+//	}
+//}
+
+func Use(fn func(*gin.Context) error) gin.HandlerFunc {
 	//fmt.Println("Entering utility.Use function")
 	//logger.Info(context.Background(), "middleware.Use")
 	defer sentry.Recover()
 	//defer sentry.Flush(2 * time.Second)
-	return func(c *fiber.Ctx) error {
+	return func(c *gin.Context) {
 		err := fn(c)
 		if err != nil {
 			sentry.CaptureException(err)
-			return c.Next()
+			c.Next()
 		}
-		return nil
 	}
 }

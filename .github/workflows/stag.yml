@@ -12,14 +12,16 @@ jobs:
     env:
       TAG: stag
     steps:
+      - name: Update coverage report
+        uses: ncruces/go-coverage-report@main
       - name: remove old stack
-        run: echo ${{ secrets.VPS_PASSWORD }} | 
+        run: echo ${{ secrets.VPS_PASSWORD }} |
           sudo -S rm -rf /home/dozie/placio-api/_work/nightout-server/placio-api/backend
       - name: remove old stack
-        run: echo ${{ secrets.VPS_PASSWORD }} | 
+        run: echo ${{ secrets.VPS_PASSWORD }} |
           sudo -S rm -rf /home/dozie/placio-api/_work/placio-api/placio-api/portainer
       - name: remove old stack
-        run: echo ${{ secrets.VPS_PASSWORD }} | 
+        run: echo ${{ secrets.VPS_PASSWORD }} |
           sudo -S rm -rf /home/dozie/placio-api/_work/placio-api/placio-api/traefik
       - name: Checkout code
         uses: actions/checkout@v2

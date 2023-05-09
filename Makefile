@@ -29,6 +29,12 @@ cert: ## [HTTP] Generate self signed certificate
 dev: ## [HTTP] Run server in dev mode
 	docker-compose up --build
 
+scale-dev: ## [HTTP] Scale server
+	docker-compose up --build --scale app=3
+
+scale-prod: ## [HTTP] Scale server
+	docker-compose -f docker-compose.stage.yml up --build --scale placio-backend=3
+
 test: ## [HTTP] Run tests
 	go test -v -coverprofile cover.out ./cmd/app/...
 	go test -coverprofile=coverage.out -covermode=atomic ./cmd/app/...

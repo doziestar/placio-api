@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/getsentry/sentry-go"
-	"github.com/gofiber/fiber/v2"
+	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"placio-app/Dto"
@@ -16,12 +16,12 @@ import (
 )
 
 type IAccountService interface {
-	CreateUserAccount(data *Dto.SignUpDto, ctx *fiber.Ctx) (*fiber.Map, error)
+	CreateUserAccount(data *Dto.SignUpDto, ctx *gin.Context) (*Dto.UserResponse, error)
 	SwitchUserAccount(accountId, userId string) (*models.User, error)
-	CreateBusinessAccount(data *Dto.AddAccountDto, ctx *fiber.Ctx) (*Dto.UserAccountResponse, error)
-	GetAccount(ctx *fiber.Ctx) (*Dto.UserAccountResponse, error)
-	GetAccounts(ctx *fiber.Ctx) (*[]models.Account, error)
-	MakeAccountDefault(accountId string, ctx *fiber.Ctx) (*Dto.UserAccountResponse, error)
+	CreateBusinessAccount(data *Dto.AddAccountDto, ctx *gin.Context) (*Dto.UserAccountResponse, error)
+	GetAccount(ctx *gin.Context) (*Dto.UserAccountResponse, error)
+	GetAccounts(ctx *gin.Context) (*[]models.Account, error)
+	MakeAccountDefault(accountId string, ctx *gin.Context) (*Dto.UserAccountResponse, error)
 	Follow(followerID, followingID string) error
 	Unfollow(followerID, followingID string) error
 	ListFollowers(accountID string) ([]models.Account, error)
@@ -38,7 +38,7 @@ func NewAccountService(db *gorm.DB, account models.Account, user models.User) *A
 	return &AccountService{db: db, account: account, user: user}
 }
 
-func (s *AccountService) CreateUserAccount(data *Dto.SignUpDto, ctx *fiber.Ctx) (*fiber.Map, error) {
+func (s *AccountService) CreateUserAccount(data *Dto.SignUpDto, ctx *gin.Context) (*Dto.UserResponse, error) {
 
 	// check if User has already registered an Account
 	userData, err := s.user.GetByEmail(data.Email, database.DB)
@@ -55,10 +55,7 @@ func (s *AccountService) CreateUserAccount(data *Dto.SignUpDto, ctx *fiber.Ctx) 
 	if userData != nil {
 		// User already owns an Account
 		if userData.Permission == "owner" {
-			return &fiber.Map{
-				"inputError": "email",
-				"message":    "You have already registered an Account",
-			}, nil
+			return nil, errors.New("User already owns an Account")
 		}
 
 		// flag for authController to notify onboarding ui
@@ -69,14 +66,12 @@ func (s *AccountService) CreateUserAccount(data *Dto.SignUpDto, ctx *fiber.Ctx) 
 		// save the new password if it exists and User doesn't have one
 		if !hasPassword && data.Password != "" {
 			if err := s.user.SavePassword(userData.ID, data.Password); err != nil {
-				return &fiber.Map{
-					"error": "Internal Server Error",
-				}, err
+				return nil, err
 			}
 		}
 
-		ctx.Locals("duplicate_user", duplicateUser)
-		ctx.Locals("has_password", hasPassword)
+		ctx.Set("duplicate_user", duplicateUser)
+		ctx.Set("has_password", hasPassword)
 	}
 	//permission := func() string {
 	//	if userData != nil {
@@ -90,18 +85,14 @@ func (s *AccountService) CreateUserAccount(data *Dto.SignUpDto, ctx *fiber.Ctx) 
 	// create the User and assign to Account
 	newUser, err := s.user.CreateUser(*data, ctx, database.DB)
 	if err != nil {
-		return &fiber.Map{
-			"error": "Internal Server Error",
-		}, err
+		return nil, err
 	}
 
 	//var token *models.Token
 
 	tokenData, err := s.user.GenerateToken(*newUser)
 	if err != nil {
-		return &fiber.Map{
-			"error": "Internal Server Error",
-		}, err
+		return nil, err
 	}
 
 	//c.Locals("token", tokenData)
@@ -122,16 +113,12 @@ func (s *AccountService) CreateUserAccount(data *Dto.SignUpDto, ctx *fiber.Ctx) 
 	logger.Info(context.Background(), fmt.Sprintf("newData: %v", newData))
 	err = newData.Save(database.DB)
 	if err != nil {
-		return &fiber.Map{
-			"error": err.Error(),
-		}, err
+		return nil, err
 	}
 
 	err = s.user.Login(ctx, database.DB)
 	if err != nil {
-		return &fiber.Map{
-			"error": err.Error(),
-		}, err
+		return nil, err
 	}
 
 	mail := new(models.EmailContent)
@@ -142,29 +129,27 @@ func (s *AccountService) CreateUserAccount(data *Dto.SignUpDto, ctx *fiber.Ctx) 
 	//	})
 	//}
 	if err := mail.SendEmailToTerminal(newUser.Email); err != nil {
-		return &fiber.Map{
-			"error": "Internal Server Error",
-		}, err
+		return nil, err
 	}
 
 	responseData := s.user.GenerateUserResponse(newData)
 
-	return &fiber.Map{
-		"message": "Account created successfully",
-		"data":    responseData,
-	}, nil
+	return &responseData, nil
 }
 
-func (s *AccountService) CreateBusinessAccount(data *Dto.AddAccountDto, ctx *fiber.Ctx) (*Dto.UserAccountResponse, error) {
+func (s *AccountService) CreateBusinessAccount(data *Dto.AddAccountDto, ctx *gin.Context) (*Dto.UserAccountResponse, error) {
 	// get the User from the context
-	userID := ctx.Locals("User").(string)
+	userID, ok := ctx.Get("User")
+	if !ok {
+		return nil, errors.New("User not found")
+	}
 	logger.Info(context.Background(), fmt.Sprintf("User: %v", userID))
 
 	// get the User's Account
 	account := new(models.Account)
 	user := new(models.User)
 
-	userData, err := user.GetUserById(userID, database.DB)
+	userData, err := user.GetUserById(userID.(string), database.DB)
 	if err != nil {
 		sentry.CaptureException(err)
 		return nil, err
@@ -197,10 +182,13 @@ func (s *AccountService) SwitchUserAccount(accountId, userId string) (*models.Us
 	return userData, nil
 }
 
-func (s *AccountService) GetAccount(ctx *fiber.Ctx) (*Dto.UserAccountResponse, error) {
+func (s *AccountService) GetAccount(ctx *gin.Context) (*Dto.UserAccountResponse, error) {
 	// get the User from the context
-	userID := ctx.Locals("User").(string)
-	accountId := ctx.Params("accountId")
+	userID, ok := ctx.Get("User")
+	if !ok {
+		return nil, errors.New("User not found")
+	}
+	accountId := ctx.Param("accountId")
 	logger.Info(context.Background(), fmt.Sprintf("User: %v", userID))
 	logger.Info(context.Background(), fmt.Sprintf("accountId: %v", accountId))
 	logger.Info(context.Background(), fmt.Sprintf("User: %v", userID))
@@ -208,7 +196,7 @@ func (s *AccountService) GetAccount(ctx *fiber.Ctx) (*Dto.UserAccountResponse, e
 	// get the User's Account
 	userModel := new(models.User)
 
-	userData, err := userModel.GetUserById(userID, database.DB)
+	userData, err := userModel.GetUserById(userID.(string), database.DB)
 	if err != nil {
 		sentry.CaptureException(err)
 		return nil, err
@@ -231,15 +219,18 @@ func (s *AccountService) GetAccount(ctx *fiber.Ctx) (*Dto.UserAccountResponse, e
 	return nil, errors.New("no Account found")
 }
 
-func (s *AccountService) GetAccounts(ctx *fiber.Ctx) (*[]models.Account, error) {
+func (s *AccountService) GetAccounts(ctx *gin.Context) (*[]models.Account, error) {
 	// get the User from the context
-	userID := ctx.Locals("User").(string)
+	userID, ok := ctx.Get("User")
+	if !ok {
+		return nil, errors.New("User not found")
+	}
 	logger.Info(context.Background(), fmt.Sprintf("User: %v", userID))
 
 	// get the User's Account
 	userModel := new(models.User)
 
-	userData, err := userModel.GetUserById(userID, database.DB)
+	userData, err := userModel.GetUserById(userID.(string), database.DB)
 	if err != nil {
 		sentry.CaptureException(err)
 		return nil, err
@@ -248,14 +239,17 @@ func (s *AccountService) GetAccounts(ctx *fiber.Ctx) (*[]models.Account, error) 
 	return &userData.Accounts, nil
 }
 
-func (s *AccountService) MakeAccountDefault(accountId string, ctx *fiber.Ctx) (*Dto.UserAccountResponse, error) {
+func (s *AccountService) MakeAccountDefault(accountId string, ctx *gin.Context) (*Dto.UserAccountResponse, error) {
 	// get the User from the context
-	userID := ctx.Locals("User").(string)
+	userID, ok := ctx.Get("User")
+	if !ok {
+		return nil, errors.New("User not found")
+	}
 	logger.Info(context.Background(), fmt.Sprintf("User: %v", userID))
 
 	// get the User's Account
 	var user models.User
-	userData := s.db.Preload("Accounts").Where("id = ?", userID).First(&user)
+	userData := s.db.Preload("Accounts").Where("id = ?", userID.(string)).First(&user)
 	if userData.Error != nil {
 		sentry.CaptureException(userData.Error)
 		return nil, userData.Error
