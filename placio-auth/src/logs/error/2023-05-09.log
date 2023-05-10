@@ -43,3 +43,12 @@ MongoAPIError: database names cannot contain the character '/'
     at /app/node_modules/mongoose/lib/connection.js:815:7
     at /app/node_modules/mongodb/src/utils.ts:461:15
     at processTicksAndRejections (node:internal/process/task_queues:96:5)
+2023-05-09 16:19:57 error: uncaughtException: database names cannot contain the character '/'
+MongoAPIError: database names cannot contain the character '/'
+    at validateDatabaseName (/app/node_modules/mongodb/src/db.ts:803:13)
+    at new Db (/app/node_modules/mongodb/src/db.ts:155:5)
+    at MongoClient.db (/app/node_modules/mongodb/src/mongo_client.ts:594:16)
+    at _setClient (/app/node_modules/mongoose/lib/connection.js:860:58)
+    at /app/node_modules/mongoose/lib/connection.js:815:7
+    at /app/node_modules/mongodb/src/utils.ts:461:15
+    at processTicksAndRejections (node:internal/process/task_queues:96:5)

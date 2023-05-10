@@ -22,3 +22,4 @@ archive
 test.db
 
 node_modules
+logs
