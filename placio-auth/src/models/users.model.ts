@@ -22,6 +22,7 @@ const UserSchema: Schema = new Schema<User>({
   default_account: { type: String, required: false },
   facebook_id: { type: String },
   twitter_id: { type: String },
+  apple_id: { type: String },
   ip: { type: String },
   user_agent: { type: String },
   twitter: {
@@ -42,13 +43,21 @@ const UserSchema: Schema = new Schema<User>({
     email: { type: String },
     dateCreated: { type: Date },
   },
+  facebook: {
+    accessToken: { type: String },
+    refreshToken: { type: String },
+    userId: { type: String },
+    email: { type: String },
+  },
+  apple: {
+    accessToken: { type: String },
+    refreshToken: { type: String },
+    userId: { type: String },
+    email: { type: String },
+  },
   has_password: { type: Boolean },
   onboarded: { type: Boolean },
   permission: { type: String },
-  generalSettings: {
-    type: Schema.Types.ObjectId,
-    ref: 'generalSettings',
-  },
 });
 
 export const UserModel = model<User & Document>('User', UserSchema);
