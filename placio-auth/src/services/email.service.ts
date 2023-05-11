@@ -5,7 +5,7 @@ import path from 'path';
 import handlebars from 'handlebars';
 import emailContent from '../emails/content.json';
 
-const templatePath = path.join(__dirname, './email/template.html');
+const templatePath = path.join(__dirname, '../emails/template.html');
 const emailTemplate = fs.readFileSync(templatePath, 'utf8');
 const compiledTemplate = handlebars.compile(emailTemplate);
 
