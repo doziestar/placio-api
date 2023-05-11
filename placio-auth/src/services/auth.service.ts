@@ -6,6 +6,7 @@ import { HttpException } from '@exceptions/httpException';
 import { DataStoredInToken, TokenData } from '@interfaces/auth.interface';
 import { User } from '@interfaces/users.interface';
 import { UserModel } from '@models/users.model';
+import { v4 as uuidv4 } from 'uuid';
 
 const createToken = (user: User): TokenData => {
   const dataStoredInToken: DataStoredInToken = { _id: user._id };
@@ -25,6 +26,7 @@ export class AuthService {
     if (findUser) throw new HttpException(409, `This email ${userData.email} already exists`);
 
     const hashedPassword = await hash(userData.password, 10);
+    userData.id = uuidv4();
     const createUserData: User = await UserModel.create({ ...userData, password: hashedPassword });
 
     return createUserData;
