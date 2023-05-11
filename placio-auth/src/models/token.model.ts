@@ -69,27 +69,3 @@ export async function deleteToken(id?: string, provider?: string, user?: string)
     ...(id && { id: id }),
   });
 }
-
-export async function generateTemporaryToken() {
-  const token = crypto.encrypt(uuidv4());
-  const newToken = new Token({
-    id: uuidv4(),
-    provider: 'temporary',
-    jwt: token,
-    access: token,
-    refresh: token,
-    user_id: {
-      ip: '',
-      user_agent: '',
-    },
-  });
-
-  await newToken.save();
-
-  return token;
-}
-
-export async function verifyTemporaryToken(token: string) {
-  const data = await Token.find({ provider: 'temporary', jwt: token });
-  return data.length ? true : false;
-}
