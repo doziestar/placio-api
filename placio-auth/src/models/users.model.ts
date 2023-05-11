@@ -2,9 +2,9 @@ import { model, Schema, Document } from 'mongoose';
 import { SocialProvider, UpdateUserData, User } from '@interfaces/users.interface';
 import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcrypt';
-import Cryptr from 'cryptr';
+// import Cryptr from 'cryptr';
 
-const crypto = new Cryptr(process.env.CRYPTO_SECRET);
+// const crypto = new Cryptr(process.env.CRYPTO_SECRET);
 
 const UserSchema: Schema = new Schema<User>({
   id: { type: String, required: true, unique: true },
@@ -53,9 +53,9 @@ const UserSchema: Schema = new Schema<User>({
 
 export const UserModel = model<User & Document>('User', UserSchema);
 
-export async function decryptFingerprint(fingerprint: string): Promise<string> {
-  return crypto.decrypt(fingerprint);
-}
+// export async function decryptFingerprint(fingerprint: string): Promise<string> {
+//   return crypto.decrypt(fingerprint);
+// }
 
 export async function create(user: Partial<User>): Promise<Partial<User>> {
   const data: Partial<User> = {

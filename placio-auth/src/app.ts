@@ -69,7 +69,9 @@ export class App {
   private initializeRoutes(routes: Routes[]) {
     logger.info('=================================');
     logger.info('======= Initializing Routes =====');
+
     routes.forEach(route => {
+      logger.info(`======= Routes: ${route.path} =====`);
       this.app.use('/api/v1', route.router);
     });
   }

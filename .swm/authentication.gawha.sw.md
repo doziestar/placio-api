@@ -6,8 +6,11 @@ app_version: 1.8.3
 ---
 
 Entry Point for placio authentication
+
 <!-- NOTE-swimm-snippet: the lines below link your snippet to Swimm -->
+
 ### 📄 placio-auth/src/app.ts
+
 ```typescript
 1      import 'reflect-metadata';
 2      import compression from 'compression';
@@ -25,26 +28,26 @@ Entry Point for placio authentication
 14     import { Routes } from '@interfaces/routes.interface';
 15     import { ErrorMiddleware } from '@middlewares/error.middleware';
 16     import { logger, stream } from '@utils/logger';
-17     
+17
 18     // mongodb+srv://dozie:<password>@cluster0.jmf27wp.mongodb.net/?retryWrites=true&w=majority
-19     
+19
 20     export class App {
 21       public app: express.Application;
 22       public env: string;
 23       public port: string | number;
-24     
+24
 25       constructor(routes: Routes[]) {
 26         this.app = express();
 27         this.env = NODE_ENV || 'development';
 28         this.port = PORT || 3004;
-29     
+29
 30         this.connectToDatabase();
 31         this.initializeMiddlewares();
 32         this.initializeRoutes(routes);
 33         this.initializeSwagger();
 34         this.initializeErrorHandling();
 35       }
-36     
+36
 37       public listen() {
 38         this.app.listen(this.port, () => {
 39           logger.info(`=================================`);
@@ -53,19 +56,19 @@ Entry Point for placio authentication
 42           logger.info(`=================================`);
 43         });
 44       }
-45     
+45
 46       public getServer() {
 47         return this.app;
 48       }
-49     
+49
 50       private async connectToDatabase() {
 51         if (this.env !== 'production') {
 52           set('debug', true);
 53         }
-54     
+54
 55         await connect(dbConnection.url);
 56       }
-57     
+57
 58       private initializeMiddlewares() {
 59         this.app.use(morgan(LOG_FORMAT, { stream }));
 60         this.app.use(cors({ origin: ORIGIN, credentials: CREDENTIALS }));
@@ -76,7 +79,7 @@ Entry Point for placio authentication
 65         this.app.use(express.urlencoded({ extended: true }));
 66         this.app.use(cookieParser());
 67       }
-68     
+68
 69       private initializeRoutes(routes: Routes[]) {
 70         logger.info('=================================');
 71         logger.info('======= Initializing Routes =====');
@@ -84,7 +87,7 @@ Entry Point for placio authentication
 73           this.app.use('/api/v1', route.router);
 74         });
 75       }
-76     
+76
 77       private initializeSwagger() {
 78         const options = {
 79           swaggerDefinition: {
@@ -96,11 +99,11 @@ Entry Point for placio authentication
 85           },
 86           apis: ['swagger.yaml'],
 87         };
-88     
+88
 89         const specs = swaggerJSDoc(options);
 90         this.app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 91       }
-92     
+92
 93       private initializeErrorHandling() {
 94         this.app.use(ErrorMiddleware);
 95       }
@@ -110,19 +113,39 @@ Entry Point for placio authentication
 <br/>
 
 The Code helps to run the server
+
 <!-- NOTE-swimm-snippet: the lines below link your snippet to Swimm -->
+
 ### 📄 placio-auth/src/server.ts
+
 ```typescript
 1      import { App } from '@/app';
 2      import { AuthRoute } from '@routes/auth.route';
 3      import { UserRoute } from '@routes/users.route';
 4      import { ValidateEnv } from '@utils/validateEnv';
-5      
+5
 6      ValidateEnv();
-7      
+7
 8      const app = new App([new UserRoute(), new AuthRoute()]);
-9      
+9
 10     app.listen();
+```
+
+<br/>
+
+Configurations and envs for docs
+
+<!-- NOTE-swimm-snippet: the lines below link your snippet to Swimm -->
+
+### 📄 placio-auth/src/config/index.ts
+
+```typescript
+1      import { config } from 'dotenv';
+2      config({ path: `.env.${process.env.NODE_ENV || 'development'}.local` });
+3
+4      export const CREDENTIALS = process.env.CREDENTIALS === 'true';
+5      export const { NODE_ENV, PORT, SECRET_KEY, LOG_FORMAT, LOG_DIR, ORIGIN } = process.env;
+6      export const { DB_HOST, DB_PORT, DB_DATABASE, DB_USERNAME, DB_PASSWORD } = process.env;
 ```
 
 <br/>
