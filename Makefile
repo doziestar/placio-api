@@ -30,7 +30,7 @@ dev: ## [HTTP] Run server in dev mode
 	docker-compose up --build
 
 scale-dev: ## [HTTP] Scale server
-	docker-compose up --build --scale app=3
+	docker-compose up --build --scale app=2 --scale server=2
 
 scale-prod: ## [HTTP] Scale server
 	docker-compose -f docker-compose.stage.yml up --build --scale placio-backend=3
