@@ -1,3 +1,5 @@
+import { HttpException } from '@/exceptions/httpException';
+
 export const convertToMonthName = function (month) {
   const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -23,14 +25,14 @@ export const validate = function (form, fields) {
     fields.forEach((f, i) => {
       if (!form.hasOwnProperty(f) || !form[f]) {
         // field is required
-        throw { message: f + ' field is required' };
+        new HttpException(404, `Missing required field: ${f}`);
       }
     });
   }
 };
 
 export const assert = function (data, err, input) {
-  if (!data) throw { message: err, ...(input && { inputError: input }) };
+  if (!data) throw new HttpException(404, err);
 
   return true;
 };

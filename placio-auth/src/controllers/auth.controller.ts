@@ -5,7 +5,7 @@ import { User } from '@interfaces/users.interface';
 import { RequestWithUser } from '@interfaces/auth.interface';
 import Container from 'typedi';
 import { TokenType } from '@/interfaces/token.interface';
-import { getUser, getUserAccount, updateUser } from '@/models/users.model';
+import { getUser, getUserAccount, updateUser, verifyPassword } from '@/models/users.model';
 import { assert, validate, validateNativeURL } from '@/models/utility.model';
 import { createLogin, verifyLogin } from '@/models/login.model';
 import passport from 'passport';
@@ -14,6 +14,15 @@ import { HttpException } from '@/exceptions/httpException';
 import { saveToken, verifyToken } from '@/models/token.model';
 import Auth from '@/models/auth.model';
 import { getAccount, getSubscription } from '@/models/account.model';
+
+interface Data {
+  email?: string;
+  password?: string;
+  token?: string;
+  provider?: string;
+  provider_id?: string;
+  magic_view_url?: string;
+}
 
 class AuthController {
   public authService = Container.get(AuthService);
@@ -38,6 +47,86 @@ class AuthController {
     } catch (error) {
       throw new HttpException(error.statusCode || 500, error.message);
     }
+  };
+
+  public signin = async (req: Request, res: Response, next: NextFunction) => {
+    const data: Data = req.body;
+    let useEmail = false;
+
+    if (data.email) {
+      useEmail = true;
+      data.provider = 'app';
+      validate(data, ['email', 'password']);
+    } else {
+      // validate(data, ['token']);
+      // const decode = Auth.verifyToken(data.token);
+      // data.provider = decode.provider;
+      // data.provider_id = decode.provider_id;
+      // data.email = decode.email;
+    }
+
+    const userData = useEmail ? await getUser(null, data.email) : await getUser(null, null, null, { provider: data.provider, id: data.provider_id });
+    console.log('userData', userData);
+
+    assert(userData, 'Please enter the correct login details', 'email');
+
+    if (useEmail) {
+      const verified = await verifyPassword(userData.id, userData.default_account, data.password);
+      assert(verified, 'Please enter the correct login details', 'password');
+    }
+
+    const accountData = await getAccount(userData.default_account);
+    assert(accountData?.active, 'Your account has been deactivated. Please contact support.', 403);
+
+    const log = await createLogin(userData.id, req);
+    const risk = await verifyLogin(userData.id, log);
+
+    if (useEmail) {
+      if (risk.level === 3 || userData.disabled) {
+        await updateUser(userData.id, userData.default_account, { disabled: true });
+        const token = Auth.token({ id: userData.id }, null, 300);
+
+        await sendMail({
+          to: userData.email,
+          template: 'blocked_signin',
+          content: {
+            token: token.accessToken.token,
+            // domain: validateNativeURL(data.magic_view_url) || `${domain}/magic`,
+            domain: 'http://localhost:3000/magic',
+          },
+        });
+
+        const msg =
+          risk.level === 3
+            ? 'Your sign in attempt has been blocked due to suspicious activity. '
+            : 'Your account has been disabled due to suspicious activity. ';
+
+        return res.status(403).send({
+          message: msg + 'Please check your email for further instructions.',
+        });
+      }
+
+      if (risk.level > 0) {
+        await sendMail({
+          to: userData.email,
+          template: 'new_signin',
+          content: {
+            ip: risk.flag.ip,
+            time: risk.time,
+            device: risk.flag.device,
+            browser: risk.flag.browser,
+          },
+        });
+      }
+    }
+
+    if (userData['2fa_enabled']) {
+      const jwt = Auth.token({ email: userData.email, provider: data.provider }, null, 300);
+      return res.status(200).send({ '2fa_required': true, token: jwt });
+    }
+
+    // done
+    return this.authenticate(req, res, userData, data);
   };
 
   async social(req, res, next) {
@@ -215,9 +304,13 @@ class AuthController {
    */
 
   async authenticate(req, res, userData, data) {
+    console.log('authenticate', userData);
     const accountData = await getAccount(userData.account_id);
+    console.log('accountData', accountData);
     const subscription = await getSubscription(userData.account_id);
+    console.log('subscription', subscription);
     const userAccounts = await getUserAccount(userData.id);
+    console.log('userAccounts', userAccounts);
 
     // create & store the token
     const jwt = Auth.token({

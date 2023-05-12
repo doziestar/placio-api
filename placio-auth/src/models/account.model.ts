@@ -5,10 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { subscription } from '@/models/subscription.model';
 
 export const AccountReferenceSchema = new mongoose.Schema({
-  id: {
-    type: Schema.Types.ObjectId,
-    ref: 'Account',
-  },
+  id: String,
   permission: String,
   onboarded: Boolean,
 });

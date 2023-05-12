@@ -6,27 +6,32 @@ import { logger, log } from 'handlebars';
 import { createAccount, getAccount } from '@/models/account.model';
 import { sendMail } from '@/models/mail.model';
 import { AuthController } from './auth.controller';
+import { Http } from 'winston/lib/winston/transports';
+import { HttpException } from '@/exceptions/httpException';
+import { http } from 'winston';
+import httpStatus from 'http-status';
+import { CreateUserDto } from '@/dtos/users.dto';
 
 const auth = new AuthController();
 
 class AccountController {
   async create(req: Request, res: Response): Promise<void> {
-    const data = req.body;
+    const data: CreateUserDto = req.body;
     validate(data, ['email', 'name', 'password']);
 
+    console.log(chalk.cyan('Creating account for: ') + data.confirm_password, data.email, data.name, data.password);
+
     // confirm_password field is a dummy field to prevent bot signups
-    if (data.hasOwnProperty('confirm_password') && data.confirm_password) throw { message: 'Registration denied' };
+    // if (data.hasOwnProperty('confirm_password') && data.confirm_password) throw new HttpException(400, 'Invalid request');
+
+    console.log(chalk.cyan('GETTING account for: ') + data.email);
 
     // check if user has already registered an account
     let userData = await getUser(null, data.email);
 
     if (userData) {
       // user already owns an account
-      if (userData.permission === 'owner')
-        throw {
-          inputError: 'email',
-          message: 'You have already registered an account',
-        };
+      if (userData.permission === 'owner') throw new HttpException(400, 'You already own an account');
 
       // flag for authController to notify onboarding ui
       // that the user's existing account was used
@@ -38,7 +43,8 @@ class AccountController {
     }
 
     console.log(chalk.cyan('Creating account for: ') + data.email);
-    const accountData = await createAccount(data.plan);
+    // const accountData = await createAccount(data.plan);
+    const accountData = await createAccount('free');
     req.body.account_id = accountData.id; // pass to auth controller to select new account
 
     // create the user and assign to account

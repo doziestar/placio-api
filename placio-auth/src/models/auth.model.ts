@@ -4,7 +4,8 @@ import { assert, decode } from './utility.model';
 import { LogController } from './log.model';
 import { IKey, KeyController } from './key.model';
 import config from './config.model';
-import { TokenResponsePayload } from '@/interfaces/auth.interface';
+import { TokenData, TokenResponsePayload } from '@/interfaces/auth.interface';
+import { CRYPTO_SECRET, TOKEN_SECRET } from '@config';
 
 const log = new LogController();
 const key = new KeyController();
@@ -21,7 +22,7 @@ interface VerifyPayload {
 }
 
 class Auth {
-  token(data: object, secret: string = process.env.TOKEN_SECRET || '', duration = settings.duration): TokenResponsePayload {
+  token(data: object, secret: string = CRYPTO_SECRET || 'iamasecrte', duration = settings.duration): TokenResponsePayload {
     const accessToken = jwt.sign(data, secret, { expiresIn: duration });
     const refreshToken = jwt.sign(data, secret, { expiresIn: duration * 2 });
 
@@ -37,8 +38,9 @@ class Auth {
     };
   }
 
-  verifyToken(token: string, secret: string = process.env.TOKEN_SECRET || ''): string | object {
-    return jwt.verify(token, secret);
+  verifyToken(token: string, secret: string = process.env.TOKEN_SECRET || ''): TokenData {
+    const data = jwt.verify(token, secret) as TokenData;
+    return data;
   }
 
   async verifyMiddleware(permission: string, scope: string) {

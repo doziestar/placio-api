@@ -4,6 +4,8 @@ import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcrypt';
 import Cryptr from 'cryptr';
 import { AccountReferenceSchema } from './account.model';
+import { Http } from 'winston/lib/winston/transports';
+import { HttpException } from '@/exceptions/httpException';
 
 const crypto = new Cryptr(process.env.CRYPTO_SECRET);
 
@@ -70,7 +72,7 @@ const UserSchema: Schema = new Schema<User>({
   permission: { type: String },
 });
 
-export const UserModel = model<User & Document>('UserModel', UserSchema);
+export const UserModel = model<User & Document>('User', UserSchema);
 
 // export async function decryptFingerprint(fingerprint: string): Promise<string> {
 //   return crypto.decrypt(fingerprint);
@@ -115,6 +117,7 @@ export async function createUser(user: Partial<User>, account: string) {
 }
 
 export async function getUser(id?: string, email?: string, account?: string, social?: SocialProvider, permission?: string) {
+  console.log('getUser', id, email, account, social, permission);
   let data;
   const cond = {
     ...(account && { 'account.id': account }),
@@ -178,18 +181,20 @@ export async function getUserAccount(id: string) {
 
 export async function addAccount(id: string, account: string, permission: string) {
   const data = await UserModel.findOne({ id: id });
-
+  console.log('addAccount', id, account, permission, data);
   if (data) {
     data.account.push({
       id: account,
       permission: permission,
       onboarded: false,
     });
+    data.default_account = account;
     data.markModified('account');
+    console.log('addAccount', data);
     return await data.save();
   }
 
-  throw { message: `No UserModel with that ID` };
+  throw new HttpException(404, `No UserModel with that ID`);
 }
 
 // export async function deleteAccount(id: string, account: string) {
