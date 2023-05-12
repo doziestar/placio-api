@@ -4,16 +4,19 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	"placio-app/Dto"
 	"placio-app/database"
 	"placio-app/models"
 	"placio-pkg/logger"
 	"strings"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt"
 )
 
 type JWTClaims struct {
@@ -251,4 +254,77 @@ func Verify(permission string) gin.HandlerFunc {
 
 		}
 	}
+}
+
+
+func AuthorizeUser(permission string) gin.HandlerFunc {
+    return func(c *gin.Context) {
+        authorizationHeader := c.GetHeader("Authorization")
+
+        if authorizationHeader == "" {
+            if permission == "public" {
+                c.Next()
+            } else {
+                c.JSON(http.StatusUnauthorized, gin.H{
+                    "message": "No authorization header provided",
+                })
+                c.Abort()
+            }
+            return
+        }
+
+        headerParts := strings.Split(authorizationHeader, " ")
+
+        if len(headerParts) != 2 || headerParts[0] != "Bearer" {
+            c.JSON(http.StatusUnauthorized, gin.H{
+                "message": "Unrecognized authorization header type",
+            })
+            c.Abort()
+            return
+        }
+
+        token := headerParts[1]
+        
+		loginData := Status(token, c)
+
+        c.Set("user", loginData.User.ID)
+        c.Set("email", loginData.User.Email)
+        c.Next()
+    }
+}
+
+
+func Status(token string, c *gin.Context) Dto.LoginData{
+	url := fmt.Sprintf("http://localhost:3004/api/v1/auth/authorize?token=%s&type=%s", token, "Bearer")
+	log.Println("url", url)
+
+	resp, err := http.Get(url)
+	if err != nil {
+		log.Println("err", err.Error()	)
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"message": "Invalid token",
+		})
+		c.Abort()
+		return Dto.LoginData{}
+	}
+	
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"message": "Invalid response body",
+		})
+		c.Abort()
+		return Dto.LoginData{}
+	}
+
+	loginData, err := Dto.UnmarshalLoginData(body)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"message": "Invalid token",
+		})
+		c.Abort()
+		return Dto.LoginData{}
+	}
+
+	return loginData
 }

@@ -77,3 +77,24 @@ func (s *SigninRequest) ToJson() map[string]interface{} {
 	}
 	return mySigninRequestMap
 }
+
+func UnmarshalLoginData(data []byte) (LoginData, error) {
+	var r LoginData
+	err := json.Unmarshal(data, &r)
+	return r, err
+}
+
+func (r *LoginData) Marshal() ([]byte, error) {
+	return json.Marshal(r)
+}
+
+type LoginData struct {
+	User UserData `json:"user"`
+}
+
+type UserData struct {
+	ID       string `json:"id"`
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Username string `json:"username"`
+}

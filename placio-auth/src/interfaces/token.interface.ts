@@ -9,4 +9,6 @@ interface IToken extends Document {
   user_id: string;
 }
 
-export { IToken };
+type TokenType = 'Basic' | 'Bearer' | 'Refresh';
+
+export { IToken, TokenType };

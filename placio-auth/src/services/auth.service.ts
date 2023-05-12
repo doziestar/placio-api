@@ -1,5 +1,5 @@
 import { hash, compare } from 'bcrypt';
-import { sign } from 'jsonwebtoken';
+import { sign, verify } from 'jsonwebtoken';
 import { Service } from 'typedi';
 import { SECRET_KEY } from '@config';
 import { HttpException } from '@exceptions/httpException';
@@ -11,13 +11,14 @@ import _ from 'lodash';
 import passport from '@services/social.service';
 import { sendEmailVerification, sendPasswordReset, sendWelcomeEmail } from '@services/email.service';
 import { verifyPhoneNumber } from './sms.service';
-import { saveToken } from '@/models/token.model';
+import { deleteToken, saveToken, verifyToken } from '@/models/token.model';
 import { createLogin } from '@/models/login.model';
 import { Request } from 'express';
+import { TokenType } from '@/interfaces/token.interface';
 
 const createToken = async (user: User): Promise<TokenResponsePayload> => {
   const dataStoredInToken: DataStoredInToken = { id: user.id };
-  const expiresIn: number = 60 * 60;
+  const expiresIn: number = 60 * 60 * 24 * 7;
 
   const accessToken = sign(dataStoredInToken, SECRET_KEY, { expiresIn });
   const refreshToken = sign(dataStoredInToken, SECRET_KEY, { expiresIn: 60 * 60 * 24 * 30 });
@@ -108,11 +109,41 @@ export class AuthService {
     };
   }
 
+  public async logout(userId: string): Promise<void> {
+    await deleteToken(null, 'app', userId);
+  }
+
+  public async logoutAll(userId: string): Promise<void> {
+    await UserModel.updateOne({ _id: userId }, { $set: { token: null } });
+  }
+
   public async updateAccount(userId: string, updates: Partial<User>): Promise<User> {
     const updatedUser = await UserModel.findOneAndUpdate({ _id: userId }, updates, { new: true });
     if (!updatedUser) throw new HttpException(404, 'User not found');
 
     return _.pick(updatedUser, ['_id', 'name', 'email']);
+  }
+
+  public async authorizeUser(token: string, type: TokenType): Promise<Partial<User>> {
+    console.log(token);
+    // decode token
+    const decodedToken = await verify(token, SECRET_KEY);
+
+    const exist = await verifyToken('app', decodedToken['id'] as string);
+    if (!exist) throw new HttpException(401, 'Invalid token');
+
+    const userdata = await UserModel.findOne({ id: decodedToken['id'] as string });
+    if (!userdata) throw new HttpException(401, 'Invalid token');
+
+    // if (type === 'email') {
+    //   if (user.email_verified) throw new HttpException(401, 'Email already verified');
+    //   await this.verifyEmail(user._id, user.email);
+    // } else if (type === 'phone') {
+    //   if (user.phone_verified) throw new HttpException(401, 'Phone already verified');
+    //   await this.verifyPhone(user._id, user.phone_number);
+    // }
+
+    return _.pick(userdata, ['id', 'name', 'email', 'username', 'email_verified', 'phone_verified']);
   }
 
   public async resetPassword(userId: string, newPassword: string): Promise<void> {
