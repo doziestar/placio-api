@@ -11,6 +11,8 @@ interface User extends Document {
   last_active?: Date;
   disabled?: boolean;
   support_enabled?: boolean;
+  email_verified?: boolean;
+  phone_verified?: boolean;
   '2fa_enabled'?: boolean;
   '2fa_secret'?: string;
   '2fa_backup_code'?: string;
@@ -53,10 +55,6 @@ interface User extends Document {
   has_password?: boolean;
   onboarded?: boolean;
   permission?: string;
-  generalSettings?: {
-    type: Schema.Types.ObjectId;
-    ref: 'generalSettings';
-  };
 }
 
 interface SocialProvider {

@@ -6,7 +6,7 @@ import { DataStoredInToken, RequestWithUser } from '@interfaces/auth.interface';
 import { UserModel } from '@models/users.model';
 
 const getAuthorization = (req: Request) => {
-  const coockie = req.cookies['Authorization'];
+  const coockie = req.headers['Authorization'];
   if (coockie) return coockie;
 
   const header = req.header('Authorization');
@@ -20,8 +20,9 @@ export const AuthMiddleware = async (req: RequestWithUser, res: Response, next: 
     const Authorization = getAuthorization(req);
 
     if (Authorization) {
-      const { _id } = (await verify(Authorization, SECRET_KEY)) as DataStoredInToken;
-      const findUser = await UserModel.findById(_id);
+      const data = await verify(Authorization as string, SECRET_KEY);
+      console.log(data);
+      const findUser = await UserModel.findOne({ id: data['id'] });
 
       if (findUser) {
         req.user = findUser;

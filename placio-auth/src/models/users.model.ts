@@ -16,6 +16,8 @@ const UserSchema: Schema = new Schema<User>({
   date_created: Date,
   last_active: Date,
   disabled: { type: Boolean },
+  email_verified: { type: Boolean },
+  phone_verified: { type: Boolean },
   support_enabled: { type: Boolean, required: false },
   '2fa_enabled': { type: Boolean, required: false },
   '2fa_secret': { type: String, required: false },
