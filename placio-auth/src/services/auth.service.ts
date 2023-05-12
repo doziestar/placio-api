@@ -18,7 +18,7 @@ import { TokenType } from '@/interfaces/token.interface';
 
 const createToken = async (user: User): Promise<TokenResponsePayload> => {
   const dataStoredInToken: DataStoredInToken = { id: user.id };
-  const expiresIn: number = 60 * 60;
+  const expiresIn: number = 60 * 60 * 24 * 7;
 
   const accessToken = sign(dataStoredInToken, SECRET_KEY, { expiresIn });
   const refreshToken = sign(dataStoredInToken, SECRET_KEY, { expiresIn: 60 * 60 * 24 * 30 });

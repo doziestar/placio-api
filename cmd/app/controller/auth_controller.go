@@ -3,7 +3,6 @@ package controller
 import (
 	"context"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	Dto "placio-app/Dto"
 	"placio-app/database"
@@ -12,7 +11,10 @@ import (
 	"placio-app/service"
 	"placio-app/utility"
 	"placio-pkg/logger"
+	"strings"
 	"time"
+
+	"github.com/gin-gonic/gin"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -28,6 +30,18 @@ func NewAuthController(authService service.IAuth, utility utility.IUtility) *Aut
 
 func (controller *AuthController) RegisterRoutes(app *gin.RouterGroup) {
 	authGroup := app.Group("/auth")
+
+	authGroup.GET("/auth-status", utility.Use(func(ctx *gin.Context) error {
+		authorizationHeader := ctx.GetHeader("Authorization")
+		headerParts := strings.Split(authorizationHeader, " ")
+		loginData := middleware.Status(headerParts[1], ctx)
+		ctx.JSON(200,gin.H{"user":loginData})
+		// if loginData != nil {
+		// 	ctx.Status(200)
+		// }
+		ctx.Abort()
+		return nil
+	}))
 
 	authGroup.POST("/sign-in", utility.Use(controller.signIn))
 	//authGroup.POST("/auth/sign-up", utility.Use(a.SignUp))

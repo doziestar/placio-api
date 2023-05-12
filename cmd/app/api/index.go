@@ -2,20 +2,23 @@ package api
 
 import (
 	"fmt"
+	_ "placio-api/docs/app"
+	"placio-app/controller"
+	"placio-app/middleware"
+	"placio-app/models"
+	"placio-app/service"
+	"placio-app/utility"
+
 	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"gorm.io/gorm"
-	_ "placio-api/docs/app"
-	"placio-app/controller"
-	"placio-app/models"
-	"placio-app/service"
-	"placio-app/utility"
 )
 
 func InitializeRoutes(app *gin.Engine, db *gorm.DB) {
 	fmt.Println("Initializing routes...")
 	app.GET("/docs/*files", ginSwagger.WrapHandler(swaggerfiles.Handler))
+	app.Use(middleware.AuthorizeUser("user"))
 	routerGroupV1 := app.Group("/api/v1")
 
 	// instances
