@@ -4,6 +4,15 @@ import mongoose, { Schema } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
 import { subscription } from '@/models/subscription.model';
 
+export const AccountReferenceSchema = new mongoose.Schema({
+  id: {
+    type: Schema.Types.ObjectId,
+    ref: 'Account',
+  },
+  permission: String,
+  onboarded: Boolean,
+});
+
 const AccountSchema: Schema = new Schema<IAccount>({
   id: { type: String, required: true, unique: true },
   plan: { type: String },
@@ -49,7 +58,7 @@ export async function getAccount(id: string): Promise<Partial<IAccount> | null> 
   return accountData;
 }
 
-export async function sub(id: string): Promise<{ status?: string; data?: any }> {
+export async function getSubscription(id: string): Promise<{ status?: string; data?: any }> {
   let subs, status;
 
   const accountData = await Account.findOne({ id });

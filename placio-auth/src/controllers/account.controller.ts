@@ -1,10 +1,13 @@
-import { account, addAccount, createUser, getUser, savePassword } from '@/models/users.model';
+import { addAccount, createUser, getUser, savePassword } from '@/models/users.model';
 import { Request, Response } from 'express';
 import chalk from 'chalk';
 import { validate } from '@models/utility.model';
 import { logger, log } from 'handlebars';
 import { createAccount, getAccount } from '@/models/account.model';
 import { sendMail } from '@/models/mail.model';
+import { AuthController } from './auth.controller';
+
+const auth = new AuthController();
 
 class AccountController {
   async create(req: Request, res: Response): Promise<void> {
@@ -52,7 +55,7 @@ class AccountController {
     });
 
     // authenticate the user
-    return await signup(req, res);
+    return await auth.signUp(req, res);
   }
 
   async getAccount(req, res) {

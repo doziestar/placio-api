@@ -3,6 +3,7 @@ import { SocialProvider, UpdateUserData, User } from '@interfaces/users.interfac
 import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcrypt';
 import Cryptr from 'cryptr';
+import { AccountReferenceSchema } from './account.model';
 
 const crypto = new Cryptr(process.env.CRYPTO_SECRET);
 
@@ -31,12 +32,7 @@ const UserSchema: Schema = new Schema<User>({
       type: String,
     },
   ],
-  account: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'Account',
-    },
-  ],
+  account: [AccountReferenceSchema],
   ip: { type: String },
   user_agent: { type: String },
   twitter: {
@@ -156,7 +152,7 @@ export async function getUser(id?: string, email?: string, account?: string, soc
   return id || email || social ? data[0] : data;
 }
 
-export async function account(id: string) {
+export async function getUserAccount(id: string) {
   const data = await UserModel.aggregate([
     { $match: { id: id } },
     { $project: { id: 1, account: 1, email: 1 } },
@@ -260,7 +256,7 @@ export async function verify2faBackupCode(id: string, email: string, account: st
   return data?.['2fa_backup_code'] ? await bcrypt.compare(code, data['2fa_backup_code']) : false;
 }
 
-export async function update(id: string, account: string, data: Partial<User>) {
+export async function updateUser(id: string, account: string, data: Partial<User>) {
   if (data.onboarded || data.permission) {
     UserModel.findOne({ id: id, 'account.id': account }, (err, doc) => {
       if (err) throw err;

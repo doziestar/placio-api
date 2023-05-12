@@ -1,4 +1,4 @@
-import { Document } from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 
 interface IAccount extends Document {
   id: string;
@@ -12,4 +12,9 @@ interface IAccount extends Document {
   date_created: Date;
 }
 
-export { IAccount };
+interface AccountReference {
+  id: string; // or just string if you're not using mongoose's ObjectId
+  permission: string;
+  onboarded: boolean;
+}
+export { IAccount, AccountReference };

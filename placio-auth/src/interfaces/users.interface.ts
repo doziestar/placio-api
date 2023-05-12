@@ -1,4 +1,5 @@
 import { Document, Schema } from 'mongoose';
+import { AccountReference } from './account.interface';
 
 interface User extends Document {
   id: string;
@@ -21,7 +22,7 @@ interface User extends Document {
   twitter_id?: string;
   apple_id?: string;
   ip?: string;
-  account?: string[];
+  account?: AccountReference[];
   user_agent?: string;
   twitter?: {
     accessToken?: string;
