@@ -10,6 +10,7 @@ const UserSchema: Schema = new Schema<User>({
   id: { type: String, required: true, unique: true },
   fingerprint: { type: String },
   name: { type: String, required: false },
+  username: { type: String, required: false },
   email: { type: String, required: false },
   password: { type: String },
   date_created: Date,

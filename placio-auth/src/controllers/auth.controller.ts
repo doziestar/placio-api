@@ -10,7 +10,7 @@ class AuthController {
   public signUp = async (req: Request, res: Response, next: NextFunction) => {
     try {
       // const userData: User = plainToClass(CreateUserDto, req.body);
-      const { tokenData, user } = await this.authService.signup(req.body);
+      const { tokenData, user } = await this.authService.signup(req.body, null, req);
 
       res.status(201).json({ tokenData, user });
     } catch (error) {
@@ -20,8 +20,7 @@ class AuthController {
 
   public logIn = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      // const userData: User = plainToClass(CreateUserDto, req.body);
-      const { tokenData, user } = await this.authService.login(req.body);
+      const { tokenData, user } = await this.authService.login(req.body, null, req);
 
       res.status(200).json({ tokenData, user });
     } catch (error) {

@@ -79,7 +79,12 @@ export class UpdateUserDto {
 // LoginUserDto
 export class LoginUserDto {
   @IsEmail()
+  @IsOptional()
   public email: string;
+
+  @IsString()
+  @IsOptional()
+  public username: string;
 
   @IsString()
   @IsNotEmpty()

@@ -4,6 +4,7 @@ interface User extends Document {
   id: string;
   fingerprint?: string;
   name?: string;
+  username?: string;
   email?: string;
   password?: string;
   date_created?: Date;
