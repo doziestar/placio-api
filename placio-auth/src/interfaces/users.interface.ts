@@ -4,6 +4,7 @@ interface User extends Document {
   id: string;
   fingerprint?: string;
   name?: string;
+  username?: string;
   email?: string;
   password?: string;
   date_created?: Date;
@@ -16,6 +17,7 @@ interface User extends Document {
   default_account?: string;
   facebook_id?: string;
   twitter_id?: string;
+  apple_id?: string;
   ip?: string;
   user_agent?: string;
   twitter?: {
@@ -35,6 +37,18 @@ interface User extends Document {
     userId?: string;
     email?: string;
     dateCreated?: Date;
+  };
+  facebook?: {
+    accessToken?: string;
+    refreshToken?: string;
+    userId?: string;
+    email?: string;
+  };
+  apple?: {
+    accessToken?: string;
+    refreshToken?: string;
+    userId?: string;
+    email?: string;
   };
   has_password?: boolean;
   onboarded?: boolean;

@@ -1,5 +1,5 @@
 Arguments: 
-  /usr/local/bin/node /usr/local/bin/yarn upgrade
+  /usr/local/bin/node /usr/local/bin/yarn add cryptr
 
 PATH: 
   /opt/homebrew/opt/coreutils/libexec/gnubin:/Users/doziestar/go/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Library/Frameworks/Python.framework/Versions/3.11/bin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/go/bin:/usr/local/share/dotnet:~/.dotnet/tools:/Library/Apple/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/opt/homebrew/opt/coreutils/libexec/gnubin:/Users/doziestar/go/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/Library/Frameworks/Python.framework/Versions/3.11/bin:/Users/doziestar/.cargo/bin:/Users/doziestar/.fig/bin:/Users/doziestar/.local/bin:/Users/doziestar/dev/flutter/bin:/Users/doziestar/.local/share/fig/plugins/git-flow:/Users/doziestar/dev/flutter/bin:/Users/doziestar/.local/share/fig/plugins/git-flow

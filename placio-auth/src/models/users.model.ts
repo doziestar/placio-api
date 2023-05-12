@@ -2,14 +2,15 @@ import { model, Schema, Document } from 'mongoose';
 import { SocialProvider, UpdateUserData, User } from '@interfaces/users.interface';
 import { v4 as uuidv4 } from 'uuid';
 import bcrypt from 'bcrypt';
-import Cryptr from 'cryptr';
+// import Cryptr from 'cryptr';
 
-const crypto = new Cryptr(process.env.CRYPTO_SECRET);
+// const crypto = new Cryptr(process.env.CRYPTO_SECRET);
 
 const UserSchema: Schema = new Schema<User>({
   id: { type: String, required: true, unique: true },
   fingerprint: { type: String },
   name: { type: String, required: false },
+  username: { type: String, required: false },
   email: { type: String, required: false },
   password: { type: String },
   date_created: Date,
@@ -22,6 +23,7 @@ const UserSchema: Schema = new Schema<User>({
   default_account: { type: String, required: false },
   facebook_id: { type: String },
   twitter_id: { type: String },
+  apple_id: { type: String },
   ip: { type: String },
   user_agent: { type: String },
   twitter: {
@@ -42,20 +44,28 @@ const UserSchema: Schema = new Schema<User>({
     email: { type: String },
     dateCreated: { type: Date },
   },
+  facebook: {
+    accessToken: { type: String },
+    refreshToken: { type: String },
+    userId: { type: String },
+    email: { type: String },
+  },
+  apple: {
+    accessToken: { type: String },
+    refreshToken: { type: String },
+    userId: { type: String },
+    email: { type: String },
+  },
   has_password: { type: Boolean },
   onboarded: { type: Boolean },
   permission: { type: String },
-  generalSettings: {
-    type: Schema.Types.ObjectId,
-    ref: 'generalSettings',
-  },
 });
 
 export const UserModel = model<User & Document>('User', UserSchema);
 
-export async function decryptFingerprint(fingerprint: string): Promise<string> {
-  return crypto.decrypt(fingerprint);
-}
+// export async function decryptFingerprint(fingerprint: string): Promise<string> {
+//   return crypto.decrypt(fingerprint);
+// }
 
 export async function create(user: Partial<User>): Promise<Partial<User>> {
   const data: Partial<User> = {

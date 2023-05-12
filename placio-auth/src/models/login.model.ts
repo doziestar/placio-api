@@ -14,7 +14,7 @@ const LoginSchema = new Schema<ILogin>({
 const Login = mongoose.model<ILogin>('Login', LoginSchema, 'login');
 export const schema = Login;
 
-export async function create(user: string, req: any): Promise<ILogin> {
+export async function createLogin(user: string, req: any): Promise<ILogin> {
   const ip =
     (req.headers['x-forwarded-for'] || '').split(',').pop().trim() ||
     req.connection?.remoteAddress ||
@@ -38,7 +38,7 @@ export async function create(user: string, req: any): Promise<ILogin> {
   return await newLogin.save();
 }
 
-export async function verify(user: string, current: ILogin) {
+export async function verifyLogin(user: string, current: ILogin) {
   let riskLevel = 0;
 
   const flag = {

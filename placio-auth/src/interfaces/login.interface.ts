@@ -9,4 +9,14 @@ interface ILogin extends Document {
   device: string;
 }
 
-export { ILogin };
+interface Risk {
+  level: number;
+  flag: {
+    ip: string;
+    device: string;
+    browser: string;
+  };
+  time: string;
+}
+
+export { ILogin, Risk };
