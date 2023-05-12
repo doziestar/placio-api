@@ -21,6 +21,7 @@ interface User extends Document {
   twitter_id?: string;
   apple_id?: string;
   ip?: string;
+  account?: string[];
   user_agent?: string;
   twitter?: {
     accessToken?: string;
@@ -55,6 +56,7 @@ interface User extends Document {
   has_password?: boolean;
   onboarded?: boolean;
   permission?: string;
+  push_token?: string[];
 }
 
 interface SocialProvider {

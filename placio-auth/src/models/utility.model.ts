@@ -1,4 +1,4 @@
-exports.convertToMonthName = function (month) {
+export const convertToMonthName = function (month) {
   const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
   return monthNames[month - 1];
@@ -9,7 +9,7 @@ exports.convertToMonthName = function (month) {
 //   return planObj;
 // };
 
-exports.validate = function (form, fields) {
+export const validate = function (form, fields) {
   // sanitise the input
   Object.keys(form).forEach(f => {
     // sanitise
@@ -29,23 +29,23 @@ exports.validate = function (form, fields) {
   }
 };
 
-exports.assert = function (data, err, input) {
+export const assert = function (data, err, input) {
   if (!data) throw { message: err, ...(input && { inputError: input }) };
 
   return true;
 };
 
-exports.base64 = {};
+export const base64 = {};
 
-exports.base64.encode = function (data) {
+export const encode = function (data) {
   return Buffer.from(data).toString('base64');
 };
 
-exports.base64.decode = function (data) {
+export const decode = function (data) {
   return Buffer.from(data, 'base64').toString('utf-8');
 };
 
-exports.dedupeArray = function (arr) {
+export const dedupeArray = function (arr) {
   return arr.filter(function (elem, index, self) {
     return index === self.indexOf(elem);
   });
@@ -59,10 +59,10 @@ exports.currencySymbol = {
   cad: '$',
 };
 
-exports.mask = function (s) {
+export const mask = function (s) {
   return `${s.slice(0, 3)}...${s.slice(s.length - 3, s.length)}`;
 };
 
-exports.validateNativeURL = function (url, scheme) {
+export const validateNativeURL = function (url, scheme) {
   return url && (url.includes('exp://') || url.includes(`${scheme}://`)) ? url : false;
 };

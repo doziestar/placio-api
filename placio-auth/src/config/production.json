@@ -1,0 +1,65 @@
+{
+ "domain": "https://hubhub.app",
+ "stripe": {
+  "plans": [
+   {
+    "id": "free",
+    "name": "Free",
+    "price": 0,
+    "interval": "month",
+    "currency": {
+     "name": "usd",
+     "symbol": "$"
+    },
+    "features": [
+     {
+      "name": "Awesome feature",
+      "checked": true
+     },
+     {
+      "name": "Another amazing feature",
+      "checked": true
+     },
+     {
+      "name": "The best feature ever",
+      "checked": true
+     }
+    ]
+   },
+   {
+    "id": "price_1ICNVsEcNvshgcNej1OHBkXg",
+    "name": "Plan 1",
+    "price": 9.99,
+    "interval": "month",
+    "currency": {
+     "name": "usd",
+     "symbol": "$"
+    },
+    "features": [
+     {
+      "name": "Awesome feature",
+      "checked": true
+     },
+     {
+      "name": "Another amazing feature",
+      "checked": true
+     },
+     {
+      "name": "The best feature ever",
+      "checked": true
+     }
+    ]
+   }
+  ]
+ },
+ "facebook": {
+  "scope": [
+   "email"
+  ],
+  "callback_url": "https://hubhub.app/auth/facebook/callback"
+ },
+ "twitter": {
+  "scope": [],
+  "callback_url": "https://hubhub.app/auth/twitter/callback"
+ }
+}
