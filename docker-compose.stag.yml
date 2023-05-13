@@ -119,7 +119,7 @@ services:
       - traefik.enable=true
       - traefik.docker.network=default
       - "traefik.http.routers.backend-secure.entrypoints=websecure"
-      - "traefik.http.routers.backend-secure.rule=Host(`app.placio.io`)"
+      - "traefik.http.routers.backend-secure.rule=Host(`app.palnight.com`)"
       - "traefik.http.routers.backend-secure.service=backend"
       - traefik.http.services.backend.loadbalancer.server.port=7070
       # add path prefix strip
@@ -149,7 +149,7 @@ services:
       - traefik.enable=true
       - traefik.docker.network=default
       - "traefik.http.routers.server-secure.entrypoints=websecure"
-      - "traefik.http.routers.server-secure.rule=Host(`account.placio.io`)"
+      - "traefik.http.routers.server-secure.rule=Host(`account.palnight.com`)"
       - "traefik.http.routers.server-secure.service=server"
       - traefik.http.services.server.loadbalancer.server.port=3004
 
