@@ -35,7 +35,7 @@ func (controller *AuthController) RegisterRoutes(app *gin.RouterGroup) {
 		authorizationHeader := ctx.GetHeader("Authorization")
 		headerParts := strings.Split(authorizationHeader, " ")
 		loginData := middleware.Status(headerParts[1], ctx)
-		ctx.JSON(200,gin.H{"user":loginData})
+		ctx.JSON(200, gin.H{"user": loginData})
 		// if loginData != nil {
 		// 	ctx.Status(200)
 		// }
