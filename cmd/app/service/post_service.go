@@ -2,8 +2,9 @@ package service
 
 import (
 	"errors"
-	"gorm.io/gorm"
 	"placio-app/models"
+
+	"gorm.io/gorm"
 )
 
 type PostService interface {
@@ -17,11 +18,11 @@ type PostService interface {
 type PostServiceImpl struct {
 	db           *gorm.DB
 	store        *models.Post
-	accountStore *models.Account
+	// accountStore *models.Account
 }
 
 func NewPostService(db *gorm.DB) PostService {
-	return &PostServiceImpl{db: db, store: &models.Post{}, accountStore: &models.Account{}}
+	return &PostServiceImpl{db: db, store: &models.Post{}}
 }
 
 func (ps *PostServiceImpl) CreatePost(post *models.Post) (*models.Post, error) {

@@ -2,10 +2,7 @@ package utility
 
 import (
 	"errors"
-	"gorm.io/gorm"
 	"log"
-	"placio-app/database"
-	"placio-app/models"
 	"regexp"
 	"strings"
 )
@@ -26,13 +23,13 @@ func Validate(email, name, password, username string) error {
 	}
 
 	log.Println("Checking if username or email exists")
-	exists, err := checkIfUserNameOrEmailExists(username, email)
-	if err != nil {
-		return err
-	}
-	if exists {
-		return errors.New("username or email already exists")
-	}
+	// exists, err := checkIfUserNameOrEmailExists(username, email)
+	// if err != nil {
+	// 	return err
+	// }
+	// if exists {
+	// 	return errors.New("username or email already exists")
+	// }
 	return nil
 }
 
@@ -73,14 +70,14 @@ func isValidUsername(username string) bool {
 	return re.MatchString(username)
 }
 
-func checkIfUserNameOrEmailExists(username, email string) (bool, error) {
-	var count int64
-	if err := database.DB.Model(&models.User{}).Where("username = ? OR email = ?", username, email).Count(&count).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
-			return true, nil
-		} else {
-			return false, err
-		}
-	}
-	return count > 0, nil
-}
+// func checkIfUserNameOrEmailExists(username, email string) (bool, error) {
+// 	var count int64
+// 	if err := database.DB.Model(&models.User{}).Where("username = ? OR email = ?", username, email).Count(&count).Error; err != nil {
+// 		if err == gorm.ErrRecordNotFound {
+// 			return true, nil
+// 		} else {
+// 			return false, err
+// 		}
+// 	}
+// 	return count > 0, nil
+// }
