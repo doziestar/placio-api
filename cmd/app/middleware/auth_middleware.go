@@ -256,58 +256,56 @@ func Verify(permission string) gin.HandlerFunc {
 	}
 }
 
-
 func AuthorizeUser(permission string) gin.HandlerFunc {
-    return func(c *gin.Context) {
-        authorizationHeader := c.GetHeader("Authorization")
+	return func(c *gin.Context) {
+		authorizationHeader := c.GetHeader("Authorization")
 
-        if authorizationHeader == "" {
-            if permission == "public" {
-                c.Next()
-            } else {
-                c.JSON(http.StatusUnauthorized, gin.H{
-                    "message": "No authorization header provided",
-                })
-                c.Abort()
-            }
-            return
-        }
+		if authorizationHeader == "" {
+			if permission == "public" {
+				c.Next()
+			} else {
+				c.JSON(http.StatusUnauthorized, gin.H{
+					"message": "No authorization header provided",
+				})
+				c.Abort()
+			}
+			return
+		}
 
-        headerParts := strings.Split(authorizationHeader, " ")
+		headerParts := strings.Split(authorizationHeader, " ")
 
-        if len(headerParts) != 2 || headerParts[0] != "Bearer" {
-            c.JSON(http.StatusUnauthorized, gin.H{
-                "message": "Unrecognized authorization header type",
-            })
-            c.Abort()
-            return
-        }
+		if len(headerParts) != 2 || headerParts[0] != "Bearer" {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"message": "Unrecognized authorization header type",
+			})
+			c.Abort()
+			return
+		}
 
-        token := headerParts[1]
-        
+		token := headerParts[1]
+
 		loginData := Status(token, c)
 
-        c.Set("user", loginData.User.ID)
-        c.Set("email", loginData.User.Email)
-        c.Next()
-    }
+		c.Set("user", loginData.User.ID)
+		c.Set("email", loginData.User.Email)
+		c.Next()
+	}
 }
 
-
-func Status(token string, c *gin.Context) Dto.LoginData{
+func Status(token string, c *gin.Context) Dto.LoginData {
 	url := fmt.Sprintf("http://localhost:3004/api/v1/auth/authorize?token=%s&type=%s", token, "Bearer")
 	log.Println("url", url)
 
 	resp, err := http.Get(url)
 	if err != nil {
-		log.Println("err", err.Error()	)
+		log.Println("err", err.Error())
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"message": "Invalid token",
 		})
 		c.Abort()
 		return Dto.LoginData{}
 	}
-	
+
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{
@@ -328,3 +326,4 @@ func Status(token string, c *gin.Context) Dto.LoginData{
 
 	return loginData
 }
+

@@ -2,17 +2,14 @@ package api
 
 import (
 	"fmt"
-	_ "placio-api/docs/app"
-	"placio-app/controller"
-	"placio-app/middleware"
-	"placio-app/models"
-	"placio-app/service"
-	"placio-app/utility"
-
 	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"gorm.io/gorm"
+	_ "placio-api/docs/app"
+	"placio-app/controller"
+	"placio-app/middleware"
+	"placio-app/service"
 )
 
 func InitializeRoutes(app *gin.Engine, db *gorm.DB) {
@@ -21,32 +18,32 @@ func InitializeRoutes(app *gin.Engine, db *gorm.DB) {
 	app.Use(middleware.AuthorizeUser("user"))
 	routerGroupV1 := app.Group("/api/v1")
 
-	// instances
-	var user models.User
-	var account models.Account
+	//// instances
+	//var user models.User
+	//var account models.Account
 
 	// utility
-	newUtils := utility.NewUtility()
+	//newUtils := utility.NewUtility()
 
-	// auth
-	authService := service.NewAuthService(db, &models.User{})
-	authController := controller.NewAuthController(authService, newUtils)
-	authController.RegisterRoutes(routerGroupV1)
-
-	// user
-	userService := service.NewUserService(db, &user, &account)
-	userController := controller.NewUserController(userService)
-	userController.RegisterRoutes(routerGroupV1)
+	//// auth
+	//authService := service.NewAuthService(db, &models.User{})
+	//authController := controller.NewAuthController(authService, newUtils)
+	//authController.RegisterRoutes(routerGroupV1)
+	//
+	//// user
+	//userService := service.NewUserService(db, &user, &account)
+	//userController := controller.NewUserController(userService)
+	//userController.RegisterRoutes(routerGroupV1)
 
 	// settings
-	store := service.NewSettingsService(db)
-	settingsController := controller.NewSettingsController(store)
-	settingsController.RegisterRoutes(routerGroupV1, nil)
-
-	// account
-	accountService := service.NewAccountService(db, account, user)
-	accountController := controller.NewAccountController(accountService, newUtils)
-	accountController.RegisterRoutes(routerGroupV1)
+	//store := service.NewSettingsService(db)
+	//settingsController := controller.NewSettingsController(store)
+	//settingsController.RegisterRoutes(routerGroupV1, nil)
+	//
+	//// account
+	//accountService := service.NewAccountService(db, account, user)
+	//accountController := controller.NewAccountController(accountService, newUtils)
+	//accountController.RegisterRoutes(routerGroupV1)
 
 	// posts
 	postService := service.NewPostService(db)
