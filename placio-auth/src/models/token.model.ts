@@ -57,6 +57,7 @@ export async function getToken(id?: string, provider?: string, user?: string, sk
 }
 
 export async function verifyToken(provider: string, user: string) {
+  console.log('verifyToken', provider, user);
   const data = await Token.find({ user_id: user, provider: provider });
   return data.length ? true : false;
 }

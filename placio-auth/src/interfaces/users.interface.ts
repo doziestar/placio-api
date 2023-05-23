@@ -58,6 +58,10 @@ interface User extends Document {
   onboarded?: boolean;
   permission?: string;
   push_token?: string[];
+  generalSettings?: Schema.Types.ObjectId;
+  notificationsSettings?: Schema.Types.ObjectId;
+  accountSettings?: Schema.Types.ObjectId;
+  contentSettings?: Schema.Types.ObjectId;
 }
 
 interface SocialProvider {

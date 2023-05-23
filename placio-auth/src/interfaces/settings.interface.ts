@@ -1,4 +1,4 @@
-import { Document } from 'mongoose';
+import { Document, Schema } from 'mongoose';
 
 interface IGeneralSettings extends Document {
   createdAt: Date;
@@ -6,7 +6,7 @@ interface IGeneralSettings extends Document {
   id: string;
   language: string;
   theme: string;
-  userID: string;
+  userID: Schema.Types.ObjectId;
   privacy: string;
   notifications: INotificationsSettings['_id'];
   content: IContentSettings['_id'];
@@ -14,7 +14,7 @@ interface IGeneralSettings extends Document {
 
 interface INotificationsSettings extends Document {
   id: string;
-  userID: string;
+  userID: Schema.Types.ObjectId;
   emailNotifications: boolean;
   pushNotifications: boolean;
   directMessageNotifications: boolean;
@@ -26,7 +26,7 @@ interface INotificationsSettings extends Document {
 
 interface IAccountSettings extends Document {
   id: string;
-  accountID: string;
+  accountID: Schema.Types.ObjectId;
   twoFactorAuthentication: boolean;
   blockedUsers: string[];
   mutedUsers: string[];
@@ -39,7 +39,7 @@ interface IContentSettings extends Document {
   defaultPostPrivacy: string;
   autoplayVideos: boolean;
   displaySensitiveMedia: boolean;
-  userID: string;
+  userID: Schema.Types.ObjectId;
 }
 
 export { IGeneralSettings, INotificationsSettings, IAccountSettings, IContentSettings };

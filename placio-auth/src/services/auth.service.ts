@@ -15,6 +15,7 @@ import { deleteToken, saveToken, verifyToken } from '@/models/token.model';
 import { createLogin } from '@/models/login.model';
 import { Request } from 'express';
 import { TokenType } from '@/interfaces/token.interface';
+import { ContentSettings, GeneralSettings, NotificationsSettings } from '@/models/settings.model';
 
 const createToken = async (user: User): Promise<TokenResponsePayload> => {
   const dataStoredInToken: DataStoredInToken = { id: user.id };
@@ -54,6 +55,21 @@ export class AuthService {
         $or: [{ username: userData.username }, { email: userData.email }],
       });
       if (findUser) throw new HttpException(409, `This email ${userData.email} already exists`);
+
+      // Create settings documents for the new user
+      const generalSettings = await GeneralSettings.create({
+        userID: userData.id,
+        language: 'en',
+        theme: 'light',
+        privacy: 'public',
+      });
+      const notificationsSettings = await NotificationsSettings.create({ userID: userData.id });
+      const contentSettings = await ContentSettings.create({ userID: userData.id });
+
+      // Add the settings documents' IDs to the user data
+      userData.generalSettings = generalSettings._id;
+      userData.notificationsSettings = notificationsSettings._id;
+      userData.contentSettings = contentSettings._id;
     } else {
       findUser = await UserModel.findOne({
         $or: [{ username: userData.username }, { email: userData.email }],
@@ -72,13 +88,12 @@ export class AuthService {
     }
 
     const tokenData = await createToken(findUser);
-
     const login = await createLogin(findUser.id, req);
     console.log(login);
 
     return {
       tokenData,
-      user: _.pick(findUser, ['_id', 'name', 'username', 'email']),
+      user: _.pick(findUser, ['_id', 'name', 'username', 'email', 'generalSettings', 'notificationsSettings', 'contentSettings']),
     };
   }
 
@@ -127,23 +142,30 @@ export class AuthService {
   public async authorizeUser(token: string, type: TokenType): Promise<Partial<User>> {
     console.log(token);
     // decode token
-    const decodedToken = await verify(token, SECRET_KEY);
+    try {
+      console.log('about to decode token', SECRET_KEY);
 
-    const exist = await verifyToken('app', decodedToken['id'] as string);
-    if (!exist) throw new HttpException(401, 'Invalid token');
+      const decodedToken = verify(token, SECRET_KEY);
+      console.log('decodedToken', decodedToken);
+      const exist = await verifyToken('app', decodedToken['id'] as string);
+      if (!exist) throw new HttpException(401, 'Invalid token');
 
-    const userdata = await UserModel.findOne({ id: decodedToken['id'] as string });
-    if (!userdata) throw new HttpException(401, 'Invalid token');
+      const userdata = await UserModel.findOne({ id: decodedToken['id'] as string });
+      if (!userdata) throw new HttpException(401, 'Invalid token');
 
-    // if (type === 'email') {
-    //   if (user.email_verified) throw new HttpException(401, 'Email already verified');
-    //   await this.verifyEmail(user._id, user.email);
-    // } else if (type === 'phone') {
-    //   if (user.phone_verified) throw new HttpException(401, 'Phone already verified');
-    //   await this.verifyPhone(user._id, user.phone_number);
-    // }
+      // if (type === 'email') {
+      //   if (user.email_verified) throw new HttpException(401, 'Email already verified');
+      //   await this.verifyEmail(user._id, user.email);
+      // } else if (type === 'phone') {
+      //   if (user.phone_verified) throw new HttpException(401, 'Phone already verified');
+      //   await this.verifyPhone(user._id, user.phone_number);
+      // }
 
-    return _.pick(userdata, ['id', 'name', 'email', 'username', 'email_verified', 'phone_verified']);
+      return _.pick(userdata, ['id', 'name', 'email', 'username', 'email_verified', 'phone_verified']);
+    } catch (err) {
+      console.log(err);
+      throw new HttpException(401, 'Invalid token');
+    }
   }
 
   public async resetPassword(userId: string, newPassword: string): Promise<void> {

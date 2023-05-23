@@ -7,7 +7,7 @@ const GeneralSettingsSchema = new Schema<IGeneralSettings>({
   id: String,
   language: String,
   theme: String,
-  userID: { type: String, unique: true },
+  userID: { type: Schema.Types.ObjectId, ref: 'User' },
   privacy: { type: String, default: 'public' },
   notifications: { type: Schema.Types.ObjectId, ref: 'NotificationsSettings' },
   content: { type: Schema.Types.ObjectId, ref: 'ContentSettings' },

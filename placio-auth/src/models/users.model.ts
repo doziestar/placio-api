@@ -1,3 +1,4 @@
+import { GeneralSettings, NotificationsSettings, ContentSettings } from '@/models/settings.model';
 import { model, Schema, Document } from 'mongoose';
 import { SocialProvider, UpdateUserData, User } from '@interfaces/users.interface';
 import { v4 as uuidv4 } from 'uuid';
@@ -66,6 +67,18 @@ const UserSchema: Schema = new Schema<User>({
     refreshToken: { type: String },
     UserModelId: { type: String },
     email: { type: String },
+  },
+  generalSettings: {
+    type: Schema.Types.ObjectId,
+    ref: 'GeneralSettings',
+  },
+  notificationsSettings: {
+    type: Schema.Types.ObjectId,
+    ref: 'NotificationsSettings',
+  },
+  contentSettings: {
+    type: Schema.Types.ObjectId,
+    ref: 'ContentSettings',
   },
   has_password: { type: Boolean },
   onboarded: { type: Boolean },

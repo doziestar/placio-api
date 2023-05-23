@@ -1,13 +1,13 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	_ "placio-app/Dto"
-	"placio-app/middleware"
 	"placio-app/models"
 	"placio-app/service"
 	"placio-app/utility"
+
+	"github.com/gin-gonic/gin"
 )
 
 type PostController struct {
@@ -22,10 +22,10 @@ func (pc *PostController) RegisterRoutes(router *gin.RouterGroup) {
 	postRouter := router.Group("/posts")
 	{
 		//postRouter.Get("/", middleware.Verify("user"), pc.getAllPosts)
-		postRouter.GET("/:id", middleware.Verify("user"), utility.Use(pc.getPost))
-		postRouter.POST("/", middleware.Verify("user"), utility.Use(pc.createPost))
-		postRouter.PUT("/:id", middleware.Verify("user"), utility.Use(pc.updatePost))
-		postRouter.DELETE("/:id", middleware.Verify("user"), utility.Use(pc.deletePost))
+		postRouter.GET("/:id", utility.Use(pc.getPost))
+		postRouter.POST("/",  utility.Use(pc.createPost))
+		postRouter.PUT("/:id", utility.Use(pc.updatePost))
+		postRouter.DELETE("/:id", utility.Use(pc.deletePost))
 
 	}
 }
