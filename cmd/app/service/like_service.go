@@ -2,8 +2,9 @@ package service
 
 import (
 	"errors"
-	"gorm.io/gorm"
 	"placio-app/models"
+
+	"gorm.io/gorm"
 )
 
 type LikeService interface {
@@ -67,8 +68,8 @@ func (ls *likeServiceImpl) DeleteLikeByPostID(postID string) error {
 
 func (ls *likeServiceImpl) LikePost(postID string, accountID string) error {
 	like := &models.Like{
-		PostID:    postID,
-		AccountID: accountID,
+		PostID: postID,
+		UserId: accountID,
 	}
 	if err := ls.db.Create(&like).Error; err != nil {
 		return err
