@@ -12,15 +12,6 @@ POSTGRES_DB=placio
 PGADMIN_DEFAULT_EMAIL=chidosiky2015@gmail.com
 PGADMIN_DEFAULT_PASSWORD=918273645dozie
 PGADMIN_LISTEN_PORT=5050
-# The URL of our Auth0 Tenant Domain.
-# If you're using a Custom Domain, be sure to set this to that value instead.
-AUTH0_DOMAIN='{yourDomain}'
-
-# Our Auth0 application's Client ID.
-AUTH0_CLIENT_ID='{yourClientId}'
-
-# Our Auth0 application's Client Secret.
-AUTH0_CLIENT_SECRET='{yourClientSecret}'
-
-# The Callback URL of our application.
-AUTH0_CALLBACK_URL='http://localhost:3000/callback'
+AUTH0_DOMAIN=https://dev-qlb0lv3d.us.auth0.com
+AUTH0_ISSUER_URL=https://dev-qlb0lv3d.us.auth0.com
+AUTH0_AUDIENCE=https://api.palnight.com

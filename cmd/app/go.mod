@@ -3,12 +3,14 @@ module placio-app
 go 1.20
 
 require (
+	github.com/auth0/go-jwt-middleware v1.0.1
 	github.com/auth0/go-jwt-middleware/v2 v2.1.0
 	github.com/aviddiviner/gin-limit v0.0.0-20170918012823-43b5f79762c1
 	github.com/axiaoxin-com/logging v1.2.16
 	github.com/chenjiandongx/ginprom v0.0.0-20210617023641-6c809602c38a
 	github.com/coreos/go-oidc/v3 v3.6.0
 	github.com/danielkov/gin-helmet v0.0.0-20171108135313-1387e224435e
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fatihkahveci/gin-inspector v0.0.0-20190208215146-ffbe3a21bb6b
 	github.com/getsentry/sentry-go v0.19.0
 	github.com/gin-contrib/cors v1.4.0
@@ -19,6 +21,7 @@ require (
 	github.com/gofiber/fiber/v2 v2.43.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.3.0
+	github.com/gwatts/gin-adapter v1.0.0
 	github.com/prometheus/client_golang v1.15.0
 	github.com/stretchr/testify v1.8.1
 	github.com/swaggo/files v1.0.1
@@ -34,15 +37,12 @@ require (
 	gorm.io/gorm v1.24.7-0.20230306060331-85eaf9eeda11
 )
 
-require github.com/form3tech-oss/jwt-go v3.2.2+incompatible // indirect
-
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/PuerkitoBio/purell v1.1.1 // indirect
 	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
 	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/antlabs/strsim v0.0.2 // indirect
-	github.com/auth0/go-jwt-middleware v1.0.1
 	github.com/axiaoxin-com/goutils v1.0.35 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bytedance/sonic v1.8.0 // indirect
@@ -51,8 +51,8 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dchest/uniuri v0.0.0-20160212164326-8902c56451e9 // indirect
 	github.com/deckarep/golang-set v1.8.0 // indirect
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
+	github.com/form3tech-oss/jwt-go v3.2.2+incompatible // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-jose/go-jose/v3 v3.0.0 // indirect

@@ -17,6 +17,7 @@ type PostService interface {
 	CreateComment(postID string, comment *models.Comment) (*models.Comment, error)
 	UpdateComment(comment *models.Comment) (*models.Comment, error)
 	DeleteComment(commentID string) error
+	GetComment(commentID string) (*models.Comment, error)
 	GetComments(postID string, page, pageSize int, sortBy string, filters map[string]interface{}) ([]*models.Comment, error)
 
 	LikePost(postID string, userID string) error
@@ -194,6 +195,21 @@ func (ps *PostServiceImpl) GetComments(postID string, page, pageSize int, sortBy
 	}
 
 	return comments, nil
+}
+
+func (ps *PostServiceImpl) GetComment(commentID string) (*models.Comment, error) {
+	if commentID == "" {
+		return nil, errors.New("commentID cannot be empty")
+	}
+
+	var comment models.Comment
+	if err := ps.db.First(&comment, "id = ?", commentID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return &comment, nil
 }
 
 func (ps *PostServiceImpl) UnlikePost(postID string, userID string) error {

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"log"
 	"net/http"
 	_ "placio-app/Dto"
 	"placio-app/models"
@@ -21,16 +22,16 @@ func NewPostController(postService service.PostService) *PostController {
 func (pc *PostController) RegisterRoutes(router *gin.RouterGroup) {
 	postRouter := router.Group("/posts")
 	{
-		postRouter.GET("/:id", utility.EnsureValidToken(), utility.Use(pc.getPost))
-		postRouter.POST("/", utility.EnsureValidToken(), utility.Use(pc.createPost))
-		postRouter.PUT("/:id", utility.EnsureValidToken(), utility.Use(pc.updatePost))
-		postRouter.DELETE("/:id", utility.EnsureValidToken(), utility.Use(pc.deletePost))
-		postRouter.GET("/:id/comments", utility.EnsureValidToken(), utility.Use(pc.getComments))
-		postRouter.POST("/:id/comments", utility.EnsureValidToken(), utility.Use(pc.createComment))
-		postRouter.PUT("/comments/:id", utility.EnsureValidToken(), utility.Use(pc.updateComment))
-		postRouter.DELETE("/comments/:id", utility.EnsureValidToken(), utility.Use(pc.deleteComment))
-		postRouter.POST("/:id/like", utility.EnsureValidToken(), utility.Use(pc.likePost))
-		postRouter.POST("/:id/unlike", utility.EnsureValidToken(), utility.Use(pc.unlikePost))
+		postRouter.GET("/:id", utility.Use(pc.getPost))
+		postRouter.POST("/", utility.Use(pc.createPost))
+		postRouter.PUT("/:id", utility.Use(pc.updatePost))
+		postRouter.DELETE("/:id", utility.Use(pc.deletePost))
+		postRouter.GET("/:id/comments", utility.Use(pc.getComments))
+		postRouter.POST("/:id/comments", utility.Use(pc.createComment))
+		postRouter.PUT("/comments/:id", utility.Use(pc.updateComment))
+		postRouter.DELETE("/comments/:id", utility.Use(pc.deleteComment))
+		postRouter.POST("/:id/like", utility.Use(pc.likePost))
+		postRouter.POST("/:id/unlike", utility.Use(pc.unlikePost))
 	}
 }
 
@@ -48,7 +49,17 @@ func (pc *PostController) RegisterRoutes(router *gin.RouterGroup) {
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/posts/ [post]
 func (pc *PostController) createPost(ctx *gin.Context) error {
-	userID := utility.GetUserIDFromContext(ctx)
+	//userID, ok := utility.GetUserIDFromContext(ctx)
+	//if !ok {
+	//	ctx.JSON(http.StatusUnauthorized, gin.H{
+	//		"error": "Unauthorized",
+	//	})
+	//	return nil
+	//}
+	log.Println("createPost")
+	userID := ctx.MustGet("user").(string)
+
+	log.Println(userID)
 
 	data := new(models.Post)
 	if err := ctx.BindJSON(data); err != nil {
@@ -60,7 +71,7 @@ func (pc *PostController) createPost(ctx *gin.Context) error {
 
 	post := &models.Post{
 		Content: data.Content,
-		UserID:  userID,
+		UserId:  userID,
 	}
 
 	newPost, err := pc.postService.CreatePost(post)
@@ -124,7 +135,14 @@ func (pc *PostController) getPost(ctx *gin.Context) error {
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/posts/{id} [put]
 func (pc *PostController) updatePost(ctx *gin.Context) error {
-	userID := utility.GetUserIDFromContext(ctx)
+	//userID, ok := utility.GetUserIDFromContext(ctx)
+	//if !ok {
+	//	ctx.JSON(http.StatusUnauthorized, gin.H{
+	//		"error": "Unauthorized",
+	//	})
+	//	return nil
+	//}
+	userID := ctx.MustGet("userId").(string)
 	postID := ctx.Param("id")
 
 	data := new(models.Post)
@@ -150,7 +168,7 @@ func (pc *PostController) updatePost(ctx *gin.Context) error {
 		return nil
 	}
 
-	if post.UserID != userID {
+	if post.UserId != userID {
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"error": "Unauthorized",
 		})
@@ -185,7 +203,14 @@ func (pc *PostController) updatePost(ctx *gin.Context) error {
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/posts/{id} [delete]
 func (pc *PostController) deletePost(ctx *gin.Context) error {
-	userID := utility.GetUserIDFromContext(ctx)
+	//userID, ok := utility.GetUserIDFromContext(ctx)
+	//if !ok {
+	//	ctx.JSON(http.StatusUnauthorized, gin.H{
+	//		"error": "Unauthorized",
+	//	})
+	//	return nil
+	//}
+	userID := ctx.MustGet("userId").(string)
 	postID := ctx.Param("id")
 
 	post, err := pc.postService.GetPost(postID)
@@ -203,7 +228,7 @@ func (pc *PostController) deletePost(ctx *gin.Context) error {
 		return nil
 	}
 
-	if post.UserID != userID {
+	if post.UserId != userID {
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"error": "Unauthorized",
 		})
@@ -236,7 +261,7 @@ func (pc *PostController) deletePost(ctx *gin.Context) error {
 func (pc *PostController) getComments(ctx *gin.Context) error {
 	postID := ctx.Param("id")
 
-	comments, err := pc.postService.GetComments(postID)
+	comments, err := pc.postService.GetComments(postID, 0, 0, "created_at", map[string]interface{}{})
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Internal Server Error",
@@ -264,7 +289,14 @@ func (pc *PostController) getComments(ctx *gin.Context) error {
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/posts/{id}/comments [post]
 func (pc *PostController) createComment(ctx *gin.Context) error {
-	userID := utility.GetUserIDFromContext(ctx)
+	//userID, ok := utility.GetUserIDFromContext(ctx)
+	//if !ok {
+	//	ctx.JSON(http.StatusUnauthorized, gin.H{
+	//		"error": "Unauthorized",
+	//	})
+	//	return nil
+	//}
+	userID := ctx.MustGet("userId").(string)
 	postID := ctx.Param("id")
 
 	data := new(models.Comment)
@@ -309,7 +341,14 @@ func (pc *PostController) createComment(ctx *gin.Context) error {
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/posts/comments/{id} [put]
 func (pc *PostController) updateComment(ctx *gin.Context) error {
-	userID := utility.GetUserIDFromContext(ctx)
+	//userID, ok := utility.GetUserIDFromContext(ctx)
+	//if !ok {
+	//	ctx.JSON(http.StatusUnauthorized, gin.H{
+	//		"error": "Unauthorized",
+	//	})
+	//	return nil
+	//}
+	userID := ctx.MustGet("userId").(string)
 	commentID := ctx.Param("id")
 
 	data := new(models.Comment)
@@ -370,7 +409,14 @@ func (pc *PostController) updateComment(ctx *gin.Context) error {
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/posts/comments/{id} [delete]
 func (pc *PostController) deleteComment(ctx *gin.Context) error {
-	userID := utility.GetUserIDFromContext(ctx)
+	//userID, ok := utility.GetUserIDFromContext(ctx)
+	//if !ok {
+	//	ctx.JSON(http.StatusUnauthorized, gin.H{
+	//		"error": "Unauthorized",
+	//	})
+	//	return nil
+	//}
+	userID := ctx.MustGet("userId").(string)
 	commentID := ctx.Param("id")
 
 	comment, err := pc.postService.GetComment(commentID)
@@ -421,7 +467,14 @@ func (pc *PostController) deleteComment(ctx *gin.Context) error {
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/posts/{id}/like [post]
 func (pc *PostController) likePost(ctx *gin.Context) error {
-	userID := utility.GetUserIDFromContext(ctx)
+	//userID, ok := utility.GetUserIDFromContext(ctx)
+	//if !ok {
+	//	ctx.JSON(http.StatusUnauthorized, gin.H{
+	//		"error": "Unauthorized",
+	//	})
+	//	return nil
+	//}
+	userID := ctx.MustGet("userId").(string)
 	postID := ctx.Param("id")
 
 	err := pc.postService.LikePost(postID, userID)
@@ -450,7 +503,14 @@ func (pc *PostController) likePost(ctx *gin.Context) error {
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/posts/{id}/unlike [post]
 func (pc *PostController) unlikePost(ctx *gin.Context) error {
-	userID := utility.GetUserIDFromContext(ctx)
+	//userID, ok := utility.GetUserIDFromContext(ctx)
+	//if !ok {
+	//	ctx.JSON(http.StatusUnauthorized, gin.H{
+	//		"error": "Unauthorized",
+	//	})
+	//	return nil
+	//}
+	userID := ctx.MustGet("userId").(string)
 	postID := ctx.Param("id")
 
 	err := pc.postService.UnlikePost(postID, userID)
