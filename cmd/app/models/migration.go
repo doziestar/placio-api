@@ -18,7 +18,6 @@ func Migrate(Db *gorm.DB) error {
 		&Conversation{},
 		&Group{},
 		&Message{},
-		&Profile{},
 		&Login{},
 		&Post{},
 		&Comment{},
@@ -28,7 +27,15 @@ func Migrate(Db *gorm.DB) error {
 		&Ticket{},
 		&TicketOption{},
 		&Attendee{},
-		&Rating{})
+		&Rating{},
+		&User{},
+		&BusinessAccount{},
+		&UserBusinessRelationship{},
+		&AccountSettings{},
+		&GeneralSettings{},
+		&NotificationsSettings{},
+		&ContentSettings{},
+	)
 	// err := db.Migrator().DropTable(modelList...)
 	// if err != nil {
 	// 	return err
