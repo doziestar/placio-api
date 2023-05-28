@@ -2,8 +2,9 @@ package service
 
 import (
 	"errors"
-	"gorm.io/gorm"
 	"placio-app/models"
+
+	"gorm.io/gorm"
 )
 
 type CommentService interface {
@@ -17,11 +18,11 @@ type CommentService interface {
 type CommentServiceImpl struct {
 	db           *gorm.DB
 	store        *models.Comment
-	accountStore *models.Account
+	// accountStore *models.Account
 }
 
 func NewCommentService(db *gorm.DB) CommentService {
-	return &CommentServiceImpl{db: db, store: &models.Comment{}, accountStore: &models.Account{}}
+	return &CommentServiceImpl{db: db, store: &models.Comment{},}
 }
 
 func (cs *CommentServiceImpl) CreateComment(comment *models.Comment) (*models.Comment, error) {

@@ -11,3 +11,6 @@ POSTGRES_DB=placio
 PGADMIN_DEFAULT_EMAIL=chidosiky2015@gmail.com
 PGADMIN_DEFAULT_PASSWORD=918273645dozie
 PGADMIN_LISTEN_PORT=5050
+AUTH0_DOMAIN=dev-qlb0lv3d.us.auth0.com
+AUTH0_ISSUER_URL=dev-qlb0lv3d.us.auth0.com
+AUTH0_AUDIENCE=https://api.palnight.com

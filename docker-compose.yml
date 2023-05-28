@@ -45,14 +45,3 @@ services:
     env_file:
       - ./.envs/.local
 
-  server:
-    # container_name: server
-    build:
-      context: ./placio-auth
-      dockerfile: Dockerfile.dev
-    ports:
-      - "3004:3004"
-    volumes:
-      - ./placio-auth:/app
-      - /app/node_modules
-    restart: "unless-stopped"

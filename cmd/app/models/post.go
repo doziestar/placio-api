@@ -3,8 +3,9 @@ package models
 import "time"
 
 type Post struct {
-	ID        string    `gorm:"primaryKey,unique"`
-	AccountID string    `gorm:"index;foreignKey:ID"`
+	ID string `gorm:"primaryKey,unique"`
+	// AccountID string    `gorm:"index;foreignKey:ID"`
+	UserId    string    `gorm:"index"`
 	Content   string    `gorm:"type:text"`
 	Medias    []Media   `gorm:"foreignKey:PostID"`
 	Comments  []Comment `gorm:"foreignKey:PostID"`

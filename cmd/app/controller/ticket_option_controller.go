@@ -2,14 +2,14 @@ package controller
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 	"net/http"
 	_ "placio-app/Dto"
-	"placio-app/middleware"
 	"placio-app/models"
 	"placio-app/service"
 	"placio-app/utility"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type TicketOptionController struct {
@@ -22,7 +22,7 @@ func NewTicketOptionController(ticketOptionService service.TicketOptionService) 
 
 func (toc *TicketOptionController) RegisterRoutes(router *gin.RouterGroup) {
 	ticketOptionRouter := router.Group("/ticketOptions")
-	ticketOptionRouter.Use(middleware.Verify("user"))
+	// ticketOptionRouter.Use(middleware.Verify("user"))
 	ticketOptionRouter.POST("/", utility.Use(toc.createTicketOption))
 	ticketOptionRouter.GET("/:id", utility.Use(toc.getTicketOption))
 	ticketOptionRouter.PUT("/:id", utility.Use(toc.updateTicketOption))

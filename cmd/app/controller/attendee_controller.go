@@ -2,13 +2,14 @@ package controller
 
 import (
 	"errors"
-	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 	"net/http"
 	_ "placio-app/Dto"
 	"placio-app/models"
 	"placio-app/service"
 	"placio-app/utility"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type AttendeeController struct {
@@ -22,7 +23,7 @@ func NewAttendeeController(attendeeService service.AttendeeService) *AttendeeCon
 func (ac *AttendeeController) RegisterRoutes(router *gin.RouterGroup) {
 	attendeeRouter := router.Group("/attendees")
 	{
-		attendeeRouter.POST("/", utility.Use(ac.addAttendee))
+		attendeeRouter.POST("/",  utility.Use(ac.addAttendee))
 		attendeeRouter.GET("/:id", utility.Use(ac.getAttendee))
 		attendeeRouter.PUT("/:id", utility.Use(ac.updateAttendee))
 		attendeeRouter.DELETE("/:id", utility.Use(ac.removeAttendee))

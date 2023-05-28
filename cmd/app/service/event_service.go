@@ -1,9 +1,10 @@
 package service
 
 import (
-	"gorm.io/gorm"
 	"placio-app/Dto"
 	"placio-app/models"
+
+	"gorm.io/gorm"
 )
 
 type IEventService interface {
@@ -14,18 +15,18 @@ type IEventService interface {
 	GetEventByDate(date string) (*[]models.Event, error)
 	DeleteEvent(eventId string) error
 	UpdateEvent(eventId string, data *Dto.EventDto) (*models.Event, error)
-	GetEventParticipants(eventId string) (*[]models.User, error)
+	GetEventParticipants(eventId string) (error)
 	GetEventsByAccount(accountID string) ([]models.Event, error)
 }
 
 type EventService struct {
 	db      *gorm.DB
 	event   *models.Event
-	account *models.Account
+	// account *models.Account
 }
 
-func NewEventService(db *gorm.DB, event *models.Event, account *models.Account) *EventService {
-	return &EventService{db: db, event: event, account: account}
+func NewEventService(db *gorm.DB, event *models.Event) *EventService {
+	return &EventService{db: db, event: event}
 }
 
 func (s *EventService) CreateEvent(data *Dto.EventDto) (*models.Event, error) {
@@ -56,8 +57,8 @@ func (s *EventService) UpdateEvent(eventId string, data *Dto.EventDto) (*models.
 	return nil, nil
 }
 
-func (s *EventService) GetEventParticipants(eventId string) (*[]models.User, error) {
-	return nil, nil
+func (s *EventService) GetEventParticipants(eventId string) ( error) {
+	return nil
 }
 
 func (s *EventService) GetEventsByAccount(accountID string) ([]models.Event, error) {

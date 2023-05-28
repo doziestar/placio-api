@@ -3,21 +3,14 @@ package start
 import (
 	"context"
 	"fmt"
-	"github.com/aviddiviner/gin-limit"
 	"github.com/axiaoxin-com/logging"
-	"github.com/chenjiandongx/ginprom"
-	"github.com/danielkov/gin-helmet"
-	"github.com/fatihkahveci/gin-inspector"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
+	//"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/utrack/gin-csrf"
-	"github.com/zsais/go-gin-prometheus"
-	"html/template"
-	"net/http"
-	"strings"
 	"time"
 	// "gorm.io/gorm/logger"
 	// "gorm.io/gorm/logger"
@@ -93,43 +86,41 @@ func Middleware(app *gin.Engine) {
 
 	app.Delims("{{", "}}")
 
-	app.SetFuncMap(template.FuncMap{
-		"formatDate": formatDate,
-	})
+	//app.SetFuncMap(template.FuncMap{
+	//	"formatDate": formatDate,
+	//})
+	//
+	//app.LoadHTMLFiles("inspector.html")
+	//
+	//app.Use(inspector.InspectorStats())
+	//app.GET("/_inspector", func(c *gin.Context) {
+	//	c.HTML(http.StatusOK, "inspector.html", map[string]interface{}{
+	//		"title":      "Gin Inspector",
+	//		"pagination": inspector.GetPaginator(),
+	//	})
+	//
+	//})
 
-	app.LoadHTMLFiles("inspector.html")
+	//app.Use(limit.MaxAllowed(20))
+	//app.Use(helmet.Default())
 
-	app.Use(inspector.InspectorStats())
-	app.GET("/_inspector", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "inspector.html", map[string]interface{}{
-			"title":      "Gin Inspector",
-			"pagination": inspector.GetPaginator(),
-		})
+	//p := ginprometheus.NewPrometheus("gin")
+	//
+	//p.ReqCntURLLabelMappingFn = func(c *gin.Context) string {
+	//	url := c.Request.URL.Path
+	//	for _, p := range c.Params {
+	//		if p.Key == "name" {
+	//			url = strings.Replace(url, p.Value, ":name", 1)
+	//			break
+	//		}
+	//	}
+	//	return url
+	//}
 
-	})
-
-	app.Use(limit.MaxAllowed(20))
-	app.Use(helmet.Default())
-
-	p := ginprometheus.NewPrometheus("gin")
-
-	p.ReqCntURLLabelMappingFn = func(c *gin.Context) string {
-		url := c.Request.URL.Path
-		for _, p := range c.Params {
-			if p.Key == "name" {
-				url = strings.Replace(url, p.Value, ":name", 1)
-				break
-			}
-		}
-		return url
-	}
-
-	app.Use(ginprom.PromMiddleware(nil))
-
-	// register the `/metrics` route.
-	app.GET("/metrics-new", ginprom.PromHandler(promhttp.Handler()))
-
-	p.Use(app)
+	//app.Use(ginprom.PromMiddleware(nil))
+	//
+	//// register the `/metrics` route.
+	//app.GET("/metrics-new", ginprom.PromHandler(promhttp.Handler()))
 
 	app.GET("/ready", func(c *gin.Context) {
 		c.JSON(200, gin.H{
@@ -142,5 +133,7 @@ func Middleware(app *gin.Engine) {
 			"message": "health",
 		})
 	})
+
+	//p.Use(app)
 
 }

@@ -3,11 +3,14 @@ module placio-app
 go 1.20
 
 require (
-	github.com/arsmn/fiber-swagger/v2 v2.31.1
+	github.com/auth0/go-jwt-middleware v1.0.1
+	github.com/auth0/go-jwt-middleware/v2 v2.1.0
 	github.com/aviddiviner/gin-limit v0.0.0-20170918012823-43b5f79762c1
 	github.com/axiaoxin-com/logging v1.2.16
 	github.com/chenjiandongx/ginprom v0.0.0-20210617023641-6c809602c38a
+	github.com/coreos/go-oidc/v3 v3.6.0
 	github.com/danielkov/gin-helmet v0.0.0-20171108135313-1387e224435e
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fatihkahveci/gin-inspector v0.0.0-20190208215146-ffbe3a21bb6b
 	github.com/getsentry/sentry-go v0.19.0
 	github.com/gin-contrib/cors v1.4.0
@@ -18,15 +21,17 @@ require (
 	github.com/gofiber/fiber/v2 v2.43.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.3.0
-	github.com/mitchellh/mapstructure v1.5.0
+	github.com/gwatts/gin-adapter v1.0.0
 	github.com/prometheus/client_golang v1.15.0
 	github.com/stretchr/testify v1.8.1
+	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.6.0
 	github.com/utrack/gin-csrf v0.0.0-20190424104817-40fb8d2c8fca
 	github.com/valyala/fasthttp v1.45.0
 	github.com/vardius/trace v1.0.1
 	github.com/zsais/go-gin-prometheus v0.1.0
 	golang.org/x/crypto v0.7.0
+	golang.org/x/oauth2 v0.6.0
 	gorm.io/driver/postgres v1.5.0
 	gorm.io/driver/sqlite v1.4.4
 	gorm.io/gorm v1.24.7-0.20230306060331-85eaf9eeda11
@@ -47,8 +52,10 @@ require (
 	github.com/dchest/uniuri v0.0.0-20160212164326-8902c56451e9 // indirect
 	github.com/deckarep/golang-set v1.8.0 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
+	github.com/form3tech-oss/jwt-go v3.2.2+incompatible // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
+	github.com/go-jose/go-jose/v3 v3.0.0 // indirect
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect
 	github.com/go-openapi/jsonreference v0.19.6 // indirect
 	github.com/go-openapi/spec v0.20.4 // indirect
@@ -80,6 +87,7 @@ require (
 	github.com/mattn/go-runewidth v0.0.14 // indirect
 	github.com/mattn/go-sqlite3 v2.0.3+incompatible // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
+	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/natefinch/lumberjack v2.0.0+incompatible // indirect
@@ -105,7 +113,6 @@ require (
 	github.com/spf13/viper v1.11.0 // indirect
 	github.com/stretchr/objx v0.5.0 // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
-	github.com/swaggo/files v1.0.1 // indirect
 	github.com/swaggo/swag v1.8.12 // indirect
 	github.com/tinylib/msgp v1.1.8 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
@@ -120,8 +127,10 @@ require (
 	golang.org/x/sys v0.6.0 // indirect
 	golang.org/x/text v0.8.0 // indirect
 	golang.org/x/tools v0.7.0 // indirect
+	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
+	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

@@ -7,11 +7,9 @@ import (
 func Migrate(Db *gorm.DB) error {
 	// drop all tables
 	// d.Migrator().DropTable(models...)
-	db = Db.Debug()
+	// db := Db.Debug()
 	var modelList []interface{}
 	modelList = append(modelList,
-		&User{},
-		&Account{},
 		&Event{},
 		&Ticket{},
 		&Booking{},
@@ -21,13 +19,7 @@ func Migrate(Db *gorm.DB) error {
 		&Group{},
 		&Message{},
 		&Profile{},
-		&Token{},
-		&GeneralSettings{},
 		&Login{},
-		&NotificationsSettings{},
-		&AccountSettings{},
-		&ContentSettings{},
-		&ConnectedAccount{},
 		&Post{},
 		&Comment{},
 		&Like{},
