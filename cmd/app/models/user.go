@@ -18,6 +18,7 @@ type BusinessAccount struct {
 	Relationships []UserBusinessRelationship `gorm:"foreignKey:BusinessAccountID"`
 	AccountSettings AccountSettings `gorm:"foreignKey:BusinessAccountID"`
 	Posts []Post `gorm:"foreignKey:BusinessAccountID"`
+	Active bool `gorm:"default:false"`
 }
 
 type UserBusinessRelationship struct {
@@ -27,4 +28,12 @@ type UserBusinessRelationship struct {
 	BusinessAccountID uint
 	BusinessAccount   BusinessAccount
 	Role              string
+}
+
+type Invitation struct {
+	gorm.Model
+	Email string
+	Role string
+	BusinessAccountID uint
+	BusinessAccount BusinessAccount
 }

@@ -30,6 +30,7 @@ Here's a high-level view of the workflow:
 <br/>
 
 <!--MERMAID {width:100}-->
+
 ```mermaid
 graph LR
 A[User] -- owns --> B[User-Business Relationship]
@@ -42,114 +43,59 @@ F[App] -- "Switch account request (with Business Account ID)" --> E
 E -- sets current Business Account --> G[JWT Token]
 G -- returns updated token --> F
 ```
+
 <!--MCONTENT {content: "graph LR<br/>\nA\\[User\\] -- owns \\-\\-\\> B\\[User-Business Relationship\\]<br/>\nB -- belongs to \\-\\-\\> C\\[Business Account\\]<br/>\nD\\[Auth0\\] -- authenticates \\-\\-\\> A<br/>\nE\\[App\\] -- requests user \\-\\-\\> D<br/>\nD -- returns authenticated user \\-\\-\\> E<br/>\nE -- fetches business accounts \\-\\-\\> B<br/>\nF\\[App\\] -- \"Switch account request (with Business Account ID)\" \\-\\-\\> E<br/>\nE -- sets current Business Account \\-\\-\\> G\\[JWT Token\\]<br/>\nG -- returns updated token \\-\\-\\> F"} --->
 
 <br/>
 
 <br/>
 
-## Getting the sources
-
-Clone the repository locally:
-
-```
-git clone https://github.com/my_company/company_repo.git
-```
-
-## Build
-
-*   Within the repository directory, run `yarn install` to install the project's dependencies.
-
-*   Then, build the project by running `yarn build`.
-
-Here's what `yarn build` doing behind the scenes:
+## Models
 
 <br/>
 
+`User` and `BusinessAccount` are many-to-many related through the `UserBusinessAccount` table. Each user can have multiple business accounts and each business account can have multiple users.
 
+<!-- NOTE-swimm-snippet: the lines below link your snippet to Swimm -->
+
+### 📄 cmd/app/models/user.go
+
+```go
+6
+7      type User struct {
+8      	gorm.Model
+9      	Auth0ID       string
+10     	Relationships []UserBusinessRelationship `gorm:"foreignKey:UserID"`
+11     	Settings GeneralSettings `gorm:"foreignKey:UserID"`
+12     	Posts []Post `gorm:"foreignKey:UserID"`
+13     }
+14
+15     type BusinessAccount struct {
+16     	gorm.Model
+17     	Name          string
+18     	Relationships []UserBusinessRelationship `gorm:"foreignKey:BusinessAccountID"`
+19     	AccountSettings AccountSettings `gorm:"foreignKey:BusinessAccountID"`
+20     	Posts []Post `gorm:"foreignKey:BusinessAccountID"`
+21     }
+22
+23     type UserBusinessRelationship struct {
+24     	gorm.Model
+25     	UserID            uint
+26     	User              User
+27     	BusinessAccountID uint
+28     	BusinessAccount   BusinessAccount
+29     	Role              string
+30     }
+31
+```
 
 <br/>
 
-### Troubleshooting
-
-```
-Error! Cannot execute command (...) "need executable 'ar' to convert dir to deb"(...)
-```
-
-*   For electron builder to run, the package `binutils` needs to be installed. Although it should be included when installing electron on the machine/VM - it sometimes fails
-
-*   To avoid build issues, please run `sudo apt-get install binutils` to install this dependency before trying to build the app
-
-## Windows additional steps
-
-## Run the Tests
-
-To run all the tests, run:
-
-```
-$ yarn test
-```
-
-To run subsets of the tests - you can use `yarn test:<name>`. For example:
-
-```
-$ yarn test:server
-$ yarn test:utils
-```
-
-## Run
-
-### macOS and Linux
-
-```
-./scripts/run.sh
-```
-
-### Windows
-
-```
- .\scripts\run.bat
-```
-
-### Web
-
-```
-yarn web
-```
-
-## Scripts worth mentioning ⚡️✨
-
-Serve your code with a development web server
-
-```
-$ yarn dev
-```
-
-Pack for Production. This will generate installers.
-
-```
-$ yarn pack
-```
-
-See package.json for full list of supported yarn scripts:
+## Services
 
 <br/>
 
-
-
-<br/>
-
-## Debugging
-
-*   Open DevTools by pressing Command+Option+I (Mac) or Control+Shift+I (Windows, Linux). This shortcut opens the Console panel.
-
-*   Click the Sources tab and pick a file from the files navigator.
-
-*   A common method for debugging a problem is to insert a lot of console.log() statements into the code, in order to inspect values as the script executes, but breakpoints can get it done faster.
-
-## Congrats
-
-You now have your dev environment ready 🎉
+## Contoller
 
 <br/>
 
