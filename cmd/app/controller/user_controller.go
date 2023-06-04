@@ -2,6 +2,7 @@ package controller
 
 import (
 	"errors"
+	"log"
 	"net/http"
 	"placio-app/models"
 	"placio-app/service"
@@ -22,13 +23,13 @@ func NewUserController(userService service.UserService) *UserController {
 func (uc *UserController) RegisterRoutes(router *gin.RouterGroup) {
 	userRouter := router.Group("/users")
 	{
-		userRouter.GET("/:id", utility.Use(uc.GetUser))
+		userRouter.GET("/", utility.Use(uc.GetUser))
 		userRouter.POST("/business-account", utility.Use(uc.CreateBusinessAccount))
 		userRouter.GET("/:id/business-accounts", utility.Use(uc.GetUserBusinessAccounts))
 		userRouter.POST("/:userID/business-account/:businessAccountID/association", utility.Use(uc.AssociateUserWithBusinessAccount))
 		userRouter.DELETE("/:userID/business-account/:businessAccountID/association", utility.Use(uc.RemoveUserFromBusinessAccount))
 		userRouter.GET("/business-account/:businessAccountID/users", utility.Use(uc.GetUsersForBusinessAccount))
-		userRouter.GET("/:userID/business-accounts", utility.Use(uc.GetBusinessAccountsForUser))
+		// userRouter.GET("/:userID/business-accounts", utility.Use(uc.GetBusinessAccountsForUser))
 		userRouter.POST("/:userID/business-account/:businessAccountID/role/:action", utility.Use(uc.CanPerformAction))
 	}
 }
@@ -47,7 +48,8 @@ func (uc *UserController) RegisterRoutes(router *gin.RouterGroup) {
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/users/{id} [get]
 func (uc *UserController) GetUser(ctx *gin.Context) error {
-	auth0ID := ctx.Param("id")
+	auth0ID := ctx.MustGet("user").(string)
+	log.Println("GetUser", ctx.Request.URL.Path, ctx.Request.Method, auth0ID)
 	if auth0ID == "" {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": "User Auth0 ID required",
@@ -89,7 +91,6 @@ func (uc *UserController) GetUser(ctx *gin.Context) error {
 // @Router /api/v1/users/business-account [post]
 func (uc *UserController) CreateBusinessAccount(ctx *gin.Context) error {
 	userID := ctx.MustGet("user").(string)
-	role := ctx.MustGet("role").(string)
 
 	var businessAccount models.BusinessAccount
 	if err := ctx.ShouldBindJSON(&businessAccount); err != nil {
@@ -98,6 +99,8 @@ func (uc *UserController) CreateBusinessAccount(ctx *gin.Context) error {
 		})
 		return err
 	}
+
+	role := "admin" // Define role or get it from somewhere
 
 	newBusinessAccount, err := uc.userService.CreateBusinessAccount(userID, businessAccount.Name, role)
 	if err != nil {
@@ -110,6 +113,7 @@ func (uc *UserController) CreateBusinessAccount(ctx *gin.Context) error {
 	ctx.JSON(http.StatusCreated, newBusinessAccount)
 	return nil
 }
+
 
 // GetUserBusinessAccounts retrieves all the business accounts associated with a specific user.
 // @Summary Get all business accounts for a user

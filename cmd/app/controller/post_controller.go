@@ -71,7 +71,7 @@ func (pc *PostController) createPost(ctx *gin.Context) error {
 
 	post := &models.Post{
 		Content: data.Content,
-		UserId:  userID,
+		UserID:  userID,
 	}
 
 	newPost, err := pc.postService.CreatePost(post)
@@ -168,7 +168,7 @@ func (pc *PostController) updatePost(ctx *gin.Context) error {
 		return nil
 	}
 
-	if post.UserId != userID {
+	if post.UserID != userID {
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"error": "Unauthorized",
 		})
@@ -228,7 +228,7 @@ func (pc *PostController) deletePost(ctx *gin.Context) error {
 		return nil
 	}
 
-	if post.UserId != userID {
+	if post.UserID != userID {
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"error": "Unauthorized",
 		})

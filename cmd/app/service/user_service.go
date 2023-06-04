@@ -9,17 +9,26 @@ import (
 
 type UserService interface {
 	GetUser(authOID string) (*models.User, error)
-	CreateBusinessAccount(name string, userID string, role string) (*models.BusinessAccount, error)
+	CreateBusinessAccount(userID, name, role string) (*models.BusinessAccount, error)
 	GetUserBusinessAccounts(userID string) ([]models.BusinessAccount, error)
 	CanPerformAction(userID, businessAccountID string, action string) (bool, error)
 	RemoveUserFromBusinessAccount(userID, businessAccountID uint) error
-	GetUsersForBusinessAccount(businessAccountID uint) ([]models.User, error)
-	GetBusinessAccountsForUser(userID uint) ([]models.BusinessAccount, error)
-	AssociateUserWithBusinessAccount(userID, businessAccountID uint, role string) error
+	GetUsersForBusinessAccount(businessAccountID string) ([]models.User, error)
+	GetBusinessAccountsForUser(userID string) ([]models.BusinessAccount, error)
+	AssociateUserWithBusinessAccount(userID, businessAccountID, role string) error
+	AcceptInvitation(invitationID uint) error
+	InviteUserToBusinessAccount(email string, businessAccountID uint, role string) (*models.Invitation, error)
+	RejectInvitation(invitationID uint) error
+	TransferBusinessAccountOwnership(currentOwnerID uint, newOwnerID uint, businessAccountID uint) error
+	GetUserInvitations(userID uint) ([]*models.Invitation, error)
 }
 
 type UserServiceImpl struct {
 	db *gorm.DB
+}
+
+func NewUserService(db *gorm.DB) *UserServiceImpl {
+	return &UserServiceImpl{db: db}
 }
 
 func (s *UserServiceImpl) GetUser(auth0ID string) (*models.User, error) {
@@ -66,7 +75,7 @@ func (s *UserServiceImpl) GetUserBusinessAccounts(userID string) ([]models.Busin
 	return businessAccounts, nil
 }
 
-func (s *UserServiceImpl) CanPerformAction(userID uint, businessAccountID uint, action string) (bool, error) {
+func (s *UserServiceImpl) CanPerformAction(userID, businessAccountID string, action string) (bool, error) {
 	var relationship models.UserBusinessRelationship
 	if err := s.db.Where("user_id = ? AND business_account_id = ?", userID, businessAccountID).First(&relationship).Error; err != nil {
 		return false, err
@@ -82,86 +91,86 @@ func (s *UserServiceImpl) CanPerformAction(userID uint, businessAccountID uint, 
 }
 
 // CreateBusinessAccount creates a new Business Account and associates it with a user.
-func (s *UserServiceImpl) CreateBusinessAccount(userID uint, name string) (*models.BusinessAccount, error) {
-    businessAccount := &models.BusinessAccount{Name: name}
-    relationship := &models.UserBusinessRelationship{UserID: userID, BusinessAccount: *businessAccount, Role: "owner"}
+func (s *UserServiceImpl) CreateBusinessAccount(userID, name, role string) (*models.BusinessAccount, error) {
+	businessAccount := &models.BusinessAccount{Name: name}
+	relationship := &models.UserBusinessRelationship{UserID: userID, BusinessAccount: *businessAccount, Role: "owner"}
 
-    tx := s.db.Begin()
+	tx := s.db.Begin()
 
-    if err := tx.Create(businessAccount).Error; err != nil {
-        tx.Rollback()
-        return nil, err
-    }
+	if err := tx.Create(businessAccount).Error; err != nil {
+		tx.Rollback()
+		return nil, err
+	}
 
-    if err := tx.Create(relationship).Error; err != nil {
-        tx.Rollback()
-        return nil, err
-    }
+	if err := tx.Create(relationship).Error; err != nil {
+		tx.Rollback()
+		return nil, err
+	}
 
-    tx.Commit()
-    return businessAccount, nil
+	tx.Commit()
+	return businessAccount, nil
 }
 
 // AssociateUserWithBusinessAccount associates a user with a Business Account.
-func (s *UserServiceImpl) AssociateUserWithBusinessAccount(userID, businessAccountID uint, role string) error {
-    relationship := &models.UserBusinessRelationship{UserID: userID, BusinessAccountID: businessAccountID, Role: role}
-    return s.db.Create(relationship).Error
+func (s *UserServiceImpl) AssociateUserWithBusinessAccount(userID, businessAccountID, role string) error {
+	relationship := &models.UserBusinessRelationship{UserID: userID, BusinessAccountID: businessAccountID, Role: role}
+	return s.db.Create(relationship).Error
 }
 
 // GetBusinessAccountsForUser returns all Business Accounts associated with a user.
-func (s *UserServiceImpl) GetBusinessAccountsForUser(userID uint) ([]models.BusinessAccount, error) {
-    var relationships []models.UserBusinessRelationship
-    if err := s.db.Preload("BusinessAccount").Where("user_id = ?", userID).Find(&relationships).Error; err != nil {
-        return nil, err
-    }
+func (s *UserServiceImpl) GetBusinessAccountsForUser(userID string) ([]models.BusinessAccount, error) {
+	var relationships []models.UserBusinessRelationship
+	if err := s.db.Preload("BusinessAccount").Where("user_id = ?", userID).Find(&relationships).Error; err != nil {
+		return nil, err
+	}
 
-    businessAccounts := make([]models.BusinessAccount, len(relationships))
-    for i, relationship := range relationships {
-        businessAccounts[i] = relationship.BusinessAccount
-    }
-    return businessAccounts, nil
+	businessAccounts := make([]models.BusinessAccount, len(relationships))
+	for i, relationship := range relationships {
+		businessAccounts[i] = relationship.BusinessAccount
+	}
+	return businessAccounts, nil
 }
 
 // GetUsersForBusinessAccount returns all Users associated with a Business Account.
-func (s *UserServiceImpl) GetUsersForBusinessAccount(businessAccountID uint) ([]models.User, error) {
-    var relationships []models.UserBusinessRelationship
-    if err := s.db.Preload("User").Where("business_account_id = ?", businessAccountID).Find(&relationships).Error; err != nil {
-        return nil, err
-    }
+func (s *UserServiceImpl) GetUsersForBusinessAccount(businessAccountID string) ([]models.User, error) {
+	var relationships []models.UserBusinessRelationship
+	if err := s.db.Preload("User").Where("business_account_id = ?", businessAccountID).Find(&relationships).Error; err != nil {
+		return nil, err
+	}
 
-    users := make([]models.User, len(relationships))
-    for i, relationship := range relationships {
-        users[i] = relationship.User
-    }
-    return users, nil
+	users := make([]models.User, len(relationships))
+	for i, relationship := range relationships {
+		users[i] = relationship.User
+	}
+	return users, nil
 }
 
 // RemoveUserFromBusinessAccount removes a User's association with a Business Account.
 func (s *UserServiceImpl) RemoveUserFromBusinessAccount(userID, businessAccountID uint) error {
-    return s.db.Where("user_id = ? AND business_account_id = ?", userID, businessAccountID).Delete(&models.UserBusinessRelationship{}).Error
+	return s.db.Where("user_id = ? AND business_account_id = ?", userID, businessAccountID).Delete(&models.UserBusinessRelationship{}).Error
 }
 
 func (s *UserServiceImpl) GetUserInvitations(userID uint) ([]*models.Invitation, error) {
-    // Implementation goes here
+	// Implementation goes here
 	return nil, nil
 }
 
 func (s *UserServiceImpl) TransferBusinessAccountOwnership(currentOwnerID uint, newOwnerID uint, businessAccountID uint) error {
-    // Implementation goes here
+	// Implementation goes here
 	return nil
 }
 
 func (s *UserServiceImpl) RejectInvitation(invitationID uint) error {
-    // Implementation goes here
+	// Implementation goes here
 	return nil
 }
 
 func (s *UserServiceImpl) AcceptInvitation(invitationID uint) error {
-    // Implementation goes here
+	// Implementation goes here
 	return nil
 }
 
 func (s *UserServiceImpl) InviteUserToBusinessAccount(email string, businessAccountID uint, role string) (*models.Invitation, error) {
-    // Implementation goes here
+	// Implementation goes here
 	return nil, nil
 }

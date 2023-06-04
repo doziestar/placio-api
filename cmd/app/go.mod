@@ -3,15 +3,9 @@ module placio-app
 go 1.20
 
 require (
-	github.com/auth0/go-jwt-middleware v1.0.1
 	github.com/auth0/go-jwt-middleware/v2 v2.1.0
-	github.com/aviddiviner/gin-limit v0.0.0-20170918012823-43b5f79762c1
 	github.com/axiaoxin-com/logging v1.2.16
-	github.com/chenjiandongx/ginprom v0.0.0-20210617023641-6c809602c38a
 	github.com/coreos/go-oidc/v3 v3.6.0
-	github.com/danielkov/gin-helmet v0.0.0-20171108135313-1387e224435e
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
-	github.com/fatihkahveci/gin-inspector v0.0.0-20190208215146-ffbe3a21bb6b
 	github.com/getsentry/sentry-go v0.19.0
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-contrib/sessions v0.0.5
@@ -22,14 +16,12 @@ require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.3.0
 	github.com/gwatts/gin-adapter v1.0.0
-	github.com/prometheus/client_golang v1.15.0
 	github.com/stretchr/testify v1.8.1
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.6.0
 	github.com/utrack/gin-csrf v0.0.0-20190424104817-40fb8d2c8fca
 	github.com/valyala/fasthttp v1.45.0
 	github.com/vardius/trace v1.0.1
-	github.com/zsais/go-gin-prometheus v0.1.0
 	golang.org/x/crypto v0.7.0
 	golang.org/x/oauth2 v0.6.0
 	gorm.io/driver/postgres v1.5.0
@@ -52,7 +44,6 @@ require (
 	github.com/dchest/uniuri v0.0.0-20160212164326-8902c56451e9 // indirect
 	github.com/deckarep/golang-set v1.8.0 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
-	github.com/form3tech-oss/jwt-go v3.2.2+incompatible // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-jose/go-jose/v3 v3.0.0 // indirect
@@ -97,6 +88,7 @@ require (
 	github.com/philhofer/fwd v1.1.2 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/prometheus/client_golang v1.15.0 // indirect
 	github.com/prometheus/client_model v0.3.0 // indirect
 	github.com/prometheus/common v0.42.0 // indirect
 	github.com/prometheus/procfs v0.9.0 // indirect
@@ -104,7 +96,6 @@ require (
 	github.com/rs/xid v1.4.0 // indirect
 	github.com/savsgio/dictpool v0.0.0-20221023140959-7bf2e61cea94 // indirect
 	github.com/savsgio/gotils v0.0.0-20230208104028-c358bd845dee // indirect
-	github.com/sirupsen/logrus v1.9.0 // indirect
 	github.com/speps/go-hashids v2.0.0+incompatible // indirect
 	github.com/spf13/afero v1.8.2 // indirect
 	github.com/spf13/cast v1.4.1 // indirect

@@ -4,8 +4,9 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"errors"
-	"gorm.io/gorm"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type GeneralSettings struct {
@@ -46,6 +47,7 @@ type AccountSettings struct {
 	TwoFactorAuthentication bool
 	BlockedUsers            []string `gorm:"type:json"`
 	MutedUsers              []string `gorm:"type:json"`
+	BusinessAccountID       string
 }
 
 type ConnectedAccount struct {
