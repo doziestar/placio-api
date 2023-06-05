@@ -2,11 +2,16 @@ package Dto
 
 import (
 	"encoding/json"
+
 	"github.com/gofiber/fiber/v2"
 )
 
 // ErrorDTO represents the structure of an error response.
 type ErrorDTO struct {
+	Status  int    `json:"status"`
+	Message string `json:"message"`
+}
+type PermissionDTO struct {
 	Status  int    `json:"status"`
 	Message string `json:"message"`
 }

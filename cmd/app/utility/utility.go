@@ -2,9 +2,10 @@ package utility
 
 import (
 	"fmt"
+	"strings"
+
 	sentry "github.com/getsentry/sentry-go"
 	"github.com/gin-gonic/gin"
-	"strings"
 )
 
 type IUtility interface {
@@ -55,7 +56,6 @@ func ValidateEmail(email string) error {
 	}
 	return nil
 }
-
 func ValidatePassword(password string) error {
 	// check password length
 	if len(password) < 8 {

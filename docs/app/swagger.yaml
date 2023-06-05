@@ -1,12 +1,5 @@
-basePath: /qpi/v1
+basePath: /api/v1
 definitions:
-  fiber.Error:
-    properties:
-      code:
-        type: integer
-      message:
-        type: string
-    type: object
   fiber.Map:
     additionalProperties: true
     type: object
@@ -17,67 +10,6 @@ definitions:
       valid:
         description: Valid is true if Time is not NULL
         type: boolean
-    type: object
-  placio-app_Dto.Account:
-    properties:
-      AccountID:
-        type: string
-      AccountSetting:
-        $ref: '#/definitions/placio-app_Dto.AccountSetting'
-      AccountType:
-        type: string
-      Active:
-        type: boolean
-      Disabled:
-        type: boolean
-      ID:
-        type: string
-      Interests:
-        items:
-          type: string
-        type: array
-      Onboarded:
-        type: boolean
-      Permission:
-        type: string
-      Plan:
-        type: string
-      Status:
-        type: string
-      UserID:
-        type: string
-    type: object
-  placio-app_Dto.AccountSetting:
-    properties:
-      accountID:
-        type: string
-      blockedUsers:
-        items:
-          type: string
-        type: array
-      id:
-        type: string
-      mutedUsers:
-        items:
-          type: string
-        type: array
-      twoFactorAuthentication:
-        type: boolean
-    type: object
-  placio-app_Dto.AddAccountDto:
-    properties:
-      account_name:
-        type: string
-      account_type:
-        type: string
-    required:
-    - account_name
-    - account_type
-    type: object
-  placio-app_Dto.AuthStatusResponse:
-    properties:
-      auth_status:
-        type: string
     type: object
   placio-app_Dto.ErrorDTO:
     properties:
@@ -95,110 +27,16 @@ definitions:
       time:
         type: string
     required:
-    - date
-    - name
-    - time
+      - date
+      - name
+      - time
     type: object
-  placio-app_Dto.GeneralSettings:
+  placio-app_Dto.PermissionDTO:
     properties:
-      ID:
+      message:
         type: string
-      Language:
-        type: string
-      Theme:
-        type: string
-    type: object
-  placio-app_Dto.Invoice:
-    properties:
-      invoice_date:
-        type: string
-      invoice_due:
-        type: string
-      invoice_note:
-        type: string
-      invoice_number:
-        type: string
-      invoice_paid:
-        type: string
-      invoice_status:
-        type: string
-      invoice_total:
-        type: string
-      invoiceItems:
-        items:
-          $ref: '#/definitions/placio-app_Dto.InvoiceItem'
-        type: array
-    type: object
-  placio-app_Dto.InvoiceItem:
-    properties:
-      invoice_item_description:
-        type: string
-      invoice_item_name:
-        type: string
-      invoice_item_price:
-        type: string
-      invoice_item_quantity:
-        type: string
-      invoice_item_total:
-        type: string
-    type: object
-  placio-app_Dto.SignUpDto:
-    properties:
-      account_type:
-        type: string
-      confirm_password:
-        minLength: 8
-        type: string
-      email:
-        type: string
-      name:
-        type: string
-      password:
-        minLength: 8
-        type: string
-      phone:
-        type: string
-      username:
-        type: string
-    required:
-    - account_type
-    - confirm_password
-    - email
-    - name
-    - password
-    - phone
-    - username
-    type: object
-  placio-app_Dto.SigninRequest:
-    properties:
-      email:
-        type: string
-      magic_view_url:
-        description: ProviderID   string `json:"provider_id,omitempty"`
-        type: string
-      password:
-        type: string
-      provider:
-        type: string
-      token:
-        type: string
-    type: object
-  placio-app_Dto.Subscription:
-    properties:
-      subscription_currency:
-        type: string
-      subscription_description:
-        type: string
-      subscription_id:
-        type: string
-      subscription_interval:
-        type: string
-      subscription_interval_count:
-        type: string
-      subscription_name:
-        type: string
-      subscription_price:
-        type: string
+      status:
+        type: integer
     type: object
   placio-app_Dto.SuccessDTO:
     properties:
@@ -206,143 +44,6 @@ definitions:
         type: string
       status:
         type: integer
-    type: object
-  placio-app_Dto.TokenResponse:
-    properties:
-      Access:
-        type: string
-      ExpiresIn:
-        $ref: '#/definitions/time.Duration'
-      Refresh:
-        type: string
-      RefreshExpiresIn:
-        $ref: '#/definitions/time.Duration'
-      TokenID:
-        type: string
-      UserId:
-        type: string
-    type: object
-  placio-app_Dto.User:
-    properties:
-      Account:
-        items:
-          $ref: '#/definitions/placio-app_Dto.Account'
-        type: array
-      CurrentActiveAccount:
-        $ref: '#/definitions/placio-app_Dto.Account'
-      Disabled:
-        type: boolean
-      Email:
-        type: string
-      GeneralSettings:
-        $ref: '#/definitions/placio-app_Dto.GeneralSettings'
-      HasPassword:
-        type: boolean
-      ID:
-        type: string
-      Name:
-        type: string
-      Onboarded:
-        type: boolean
-      Permission:
-        type: string
-    type: object
-  placio-app_Dto.UserAccountResponse:
-    properties:
-      account:
-        $ref: '#/definitions/placio-app_Dto.Account'
-      disabled:
-        type: boolean
-      email:
-        type: string
-      name:
-        type: string
-      support_enabled:
-        type: boolean
-      user_id:
-        type: string
-    type: object
-  placio-app_Dto.UserResponse:
-    properties:
-      token:
-        $ref: '#/definitions/placio-app_Dto.UserToken'
-      user:
-        $ref: '#/definitions/placio-app_Dto.User'
-    type: object
-  placio-app_Dto.UserToken:
-    properties:
-      Access:
-        type: string
-      AccessExpiresIn:
-        type: integer
-      Refresh:
-        type: string
-      RefreshExpiresIn:
-        type: integer
-      UserID:
-        type: string
-    type: object
-  placio-app_models.Account:
-    properties:
-      accountSetting:
-        $ref: '#/definitions/placio-app_models.AccountSettings'
-      accountType:
-        type: string
-      active:
-        type: boolean
-      createdAt:
-        type: string
-      default:
-        type: boolean
-      disabled:
-        type: boolean
-      events:
-        items:
-          $ref: '#/definitions/placio-app_models.Event'
-        type: array
-      followers:
-        items:
-          $ref: '#/definitions/placio-app_models.Follow'
-        type: array
-      following:
-        items:
-          $ref: '#/definitions/placio-app_models.Follow'
-        type: array
-      id:
-        description: gorm.Model
-        type: string
-      lastActive:
-        type: string
-      name:
-        type: string
-      onboarded:
-        description: AccountID   string
-        type: boolean
-      payStackCustomerID:
-        type: string
-      payStackSubscriptionID:
-        type: string
-      payStackSubscriptionStatus:
-        type: string
-      permission:
-        type: string
-      plan:
-        type: string
-      selected:
-        type: boolean
-      status:
-        type: string
-      stripeCustomerID:
-        type: string
-      stripeSubscriptionID:
-        type: string
-      stripeSubscriptionStatus:
-        type: string
-      updatedAt:
-        type: string
-      userID:
-        description: Interests                  []string `gorm:"type:text[]"`
-        type: string
     type: object
   placio-app_models.AccountSettings:
     properties:
@@ -352,6 +53,8 @@ definitions:
         items:
           type: string
         type: array
+      businessAccountID:
+        type: string
       id:
         type: string
       mutedUsers:
@@ -378,27 +81,34 @@ definitions:
       userID:
         type: string
     type: object
-  placio-app_models.Booking:
+  placio-app_models.BusinessAccount:
     properties:
+      accountSettings:
+        $ref: "#/definitions/placio-app_models.AccountSettings"
+      active:
+        type: boolean
       createdAt:
         type: string
-      deletedAt:
-        $ref: '#/definitions/gorm.DeletedAt'
-      eventID:
-        type: string
+      deleteAt:
+        $ref: "#/definitions/gorm.DeletedAt"
       id:
+        description: gorm.Model
         type: string
-      ticketID:
+      name:
         type: string
+      posts:
+        items:
+          $ref: "#/definitions/placio-app_models.Post"
+        type: array
+      relationships:
+        items:
+          $ref: "#/definitions/placio-app_models.UserBusinessRelationship"
+        type: array
       updatedAt:
-        type: string
-      userID:
         type: string
     type: object
   placio-app_models.Comment:
     properties:
-      accountID:
-        type: string
       content:
         type: string
       createdAt:
@@ -408,6 +118,8 @@ definitions:
       postID:
         type: string
       updatedAt:
+        type: string
+      userID:
         type: string
     type: object
   placio-app_models.ContentSettings:
@@ -426,31 +138,6 @@ definitions:
         type: string
       userID:
         type: string
-    type: object
-  placio-app_models.Conversation:
-    properties:
-      createdAt:
-        type: string
-      deletedAt:
-        $ref: '#/definitions/gorm.DeletedAt'
-      id:
-        type: integer
-      lastMessageTimestamp:
-        type: string
-      updatedAt:
-        type: string
-    type: object
-  placio-app_models.Error:
-    properties:
-      code:
-        type: integer
-      message:
-        type: string
-    type: object
-  placio-app_models.ErrorResponse:
-    properties:
-      error:
-        $ref: '#/definitions/placio-app_models.Error'
     type: object
   placio-app_models.Event:
     properties:
@@ -514,42 +201,10 @@ definitions:
       website:
         type: string
     type: object
-  placio-app_models.FacebookAccount:
-    properties:
-      accessToken:
-        type: string
-      codeVerifier:
-        type: string
-      dateCreated:
-        type: string
-      expiresIn:
-        type: string
-      name:
-        type: string
-      refreshToken:
-        type: string
-      state:
-        type: string
-      userID:
-        type: string
-      userName:
-        type: string
-    type: object
-  placio-app_models.Follow:
-    properties:
-      createdAt:
-        type: string
-      followerID:
-        type: string
-      followingID:
-        type: string
-      id:
-        type: string
-    type: object
   placio-app_models.GeneralSettings:
     properties:
       content:
-        $ref: '#/definitions/placio-app_models.ContentSettings'
+        $ref: "#/definitions/placio-app_models.ContentSettings"
       createdAt:
         type: string
       deletedAt:
@@ -559,7 +214,7 @@ definitions:
       language:
         type: string
       notifications:
-        $ref: '#/definitions/placio-app_models.NotificationsSettings'
+        $ref: "#/definitions/placio-app_models.NotificationsSettings"
       privacy:
         type: string
       theme:
@@ -569,38 +224,8 @@ definitions:
       userID:
         type: string
     type: object
-  placio-app_models.GoogleAccount:
-    properties:
-      accessToken:
-        type: string
-      dateCreated:
-        type: string
-      email:
-        type: string
-      refreshToken:
-        type: string
-      userID:
-        type: string
-    type: object
-  placio-app_models.Group:
-    properties:
-      createdAt:
-        type: string
-      deletedAt:
-        $ref: '#/definitions/gorm.DeletedAt'
-      description:
-        type: string
-      id:
-        type: integer
-      name:
-        type: string
-      updatedAt:
-        type: string
-    type: object
   placio-app_models.Like:
     properties:
-      accountID:
-        type: string
       createdAt:
         type: string
       id:
@@ -608,6 +233,8 @@ definitions:
       postID:
         type: string
       updatedAt:
+        type: string
+      userId:
         type: string
     type: object
   placio-app_models.Media:
@@ -624,50 +251,6 @@ definitions:
       updatedAt:
         type: string
       url:
-        type: string
-    type: object
-  placio-app_models.Message:
-    properties:
-      conversationID:
-        type: string
-      createdAt:
-        type: string
-      deletedAt:
-        $ref: '#/definitions/gorm.DeletedAt'
-      delivered:
-        type: boolean
-      groupID:
-        type: string
-      id:
-        type: integer
-      messageText:
-        type: string
-      messageType:
-        type: string
-      read:
-        type: boolean
-      recipientID:
-        type: string
-      senderID:
-        type: string
-      timestamp:
-        type: string
-      updatedAt:
-        type: string
-    type: object
-  placio-app_models.Notification:
-    properties:
-      businessID:
-        type: string
-      createdAt:
-        type: string
-      id:
-        type: string
-      message:
-        type: string
-      updatedAt:
-        type: string
-      userID:
         type: string
     type: object
   placio-app_models.NotificationsSettings:
@@ -691,28 +274,13 @@ definitions:
       userID:
         type: string
     type: object
-  placio-app_models.Payment:
-    properties:
-      amount:
-        type: integer
-      bookingID:
-        type: string
-      createdAt:
-        type: string
-      id:
-        type: string
-      updatedAt:
-        type: string
-      userID:
-        type: string
-    type: object
   placio-app_models.Post:
     properties:
-      accountID:
+      businessAccountID:
         type: string
       comments:
         items:
-          $ref: '#/definitions/placio-app_models.Comment'
+          $ref: "#/definitions/placio-app_models.Comment"
         type: array
       content:
         type: string
@@ -722,13 +290,16 @@ definitions:
         type: string
       likes:
         items:
-          $ref: '#/definitions/placio-app_models.Like'
+          $ref: "#/definitions/placio-app_models.Like"
         type: array
       medias:
         items:
-          $ref: '#/definitions/placio-app_models.Media'
+          $ref: "#/definitions/placio-app_models.Media"
         type: array
       updatedAt:
+        type: string
+      userID:
+        description: AccountID string    `gorm:"index;foreignKey:ID"`
         type: string
     type: object
   placio-app_models.Rating:
@@ -752,11 +323,7 @@ definitions:
     properties:
       attendees:
         items:
-          $ref: '#/definitions/placio-app_models.Attendee'
-        type: array
-      comments:
-        items:
-          $ref: '#/definitions/placio-app_models.Comment'
+          $ref: "#/definitions/placio-app_models.Attendee"
         type: array
       createdAt:
         type: string
@@ -769,12 +336,13 @@ definitions:
       price:
         type: integer
       ratings:
+        description: Comments      []Comment      `gorm:"foreignKey:EventID"`
         items:
-          $ref: '#/definitions/placio-app_models.Rating'
+          $ref: "#/definitions/placio-app_models.Rating"
         type: array
       ticketOptions:
         items:
-          $ref: '#/definitions/placio-app_models.TicketOption'
+          $ref: "#/definitions/placio-app_models.TicketOption"
         type: array
       updatedAt:
         type: string
@@ -796,133 +364,53 @@ definitions:
       updatedAt:
         type: string
     type: object
-  placio-app_models.TwitterAccount:
-    properties:
-      accessToken:
-        type: string
-      codeVerifier:
-        type: string
-      dateCreated:
-        type: string
-      expiresIn:
-        type: string
-      name:
-        type: string
-      refreshToken:
-        type: string
-      state:
-        type: string
-      userID:
-        type: string
-      userName:
-        type: string
-    type: object
   placio-app_models.User:
     properties:
-      accounts:
+      active:
+        type: boolean
+      auth0ID:
+        type: string
+      createdAt:
+        type: string
+      deleteAt:
+        $ref: "#/definitions/gorm.DeletedAt"
+      posts:
         items:
-          $ref: '#/definitions/placio-app_models.Account'
+          $ref: "#/definitions/placio-app_models.Post"
         type: array
-      activeAccountID:
-        type: string
-      createdAt:
-        type: string
-      dateCreated:
-        type: string
-      deletedAt:
-        type: string
-      disabled:
-        type: boolean
-      email:
-        type: string
-      facebook:
-        $ref: '#/definitions/placio-app_models.FacebookAccount'
-      facebookID:
-        type: string
-      fingerprint:
-        type: string
-      generalSettings:
-        $ref: '#/definitions/placio-app_models.GeneralSettings'
-      google:
-        $ref: '#/definitions/placio-app_models.GoogleAccount'
-      hasPassword:
-        type: boolean
-      id:
-        type: string
-      ip:
-        type: string
-      lastActive:
-        type: string
-      name:
-        type: string
-      onboarded:
-        type: boolean
-      password:
-        type: string
-      permission:
-        type: string
-      supportEnabled:
-        type: boolean
-      twitter:
-        $ref: '#/definitions/placio-app_models.TwitterAccount'
-      twitterID:
-        type: string
-      twoFABackupCode:
-        type: string
-      twoFASecret:
-        type: string
-      twoFactorAuthEnabled:
-        type: boolean
+      relationships:
+        items:
+          $ref: "#/definitions/placio-app_models.UserBusinessRelationship"
+        type: array
+      settings:
+        $ref: "#/definitions/placio-app_models.GeneralSettings"
       updatedAt:
         type: string
-      userAgent:
-        type: string
-      username:
+      userID:
+        description: gorm.Model
         type: string
     type: object
-  placio-app_models.VoiceNote:
+  placio-app_models.UserBusinessRelationship:
     properties:
+      businessAccount:
+        $ref: "#/definitions/placio-app_models.BusinessAccount"
+      businessAccountID:
+        type: string
       createdAt:
         type: string
-      deletedAt:
-        $ref: '#/definitions/gorm.DeletedAt'
-      delivered:
-        type: boolean
+      deleteAt:
+        $ref: "#/definitions/gorm.DeletedAt"
       id:
-        type: integer
-      read:
-        type: boolean
-      recipientID:
         type: string
-      senderID:
-        type: string
-      timestamp:
+      role:
         type: string
       updatedAt:
         type: string
-      voiceNoteFile:
+      user:
+        $ref: "#/definitions/placio-app_models.User"
+      userID:
         type: string
     type: object
-  time.Duration:
-    enum:
-    - -9223372036854775808
-    - 9223372036854775807
-    - 1
-    - 1000
-    - 1000000
-    - 1000000000
-    - 60000000000
-    - 3600000000000
-    type: integer
-    x-enum-varnames:
-    - minDuration
-    - maxDuration
-    - Nanosecond
-    - Microsecond
-    - Millisecond
-    - Second
-    - Minute
-    - Hour
 host: https://api.palnight.com
 info:
   contact:
@@ -937,1198 +425,350 @@ info:
   title: Placio Application Api
   version: "0.01"
 paths:
-  /accounts/{accountId}:
-    get:
-      consumes:
-      - application/json
-      description: Get account
-      parameters:
-      - description: Account ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Account
-          schema:
-            $ref: '#/definitions/placio-app_models.Account'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Get account
-      tags:
-      - Account
-  /accounts/{accountId}/make-default:
-    put:
-      consumes:
-      - application/json
-      description: Make account default
-      parameters:
-      - description: Account ID
-        in: path
-        name: accountId
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/placio-app_Dto.UserAccountResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Make account default
-      tags:
-      - Account
-  /accounts/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: Delete account
-      parameters:
-      - description: Account ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/fiber.Map'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Delete account
-      tags:
-      - Account
-  /accounts/{id}/plan:
-    put:
-      consumes:
-      - application/json
-      description: Update account plan
-      parameters:
-      - description: Account ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Plan ID
-        in: body
-        name: plan
-        required: true
-        schema:
-          type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Success
-          schema:
-            additionalProperties: true
-            type: object
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Update account plan
-      tags:
-      - Account
-  /accounts/add-account:
-    post:
-      consumes:
-      - application/json
-      description: Add account
-      parameters:
-      - description: Account
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/placio-app_Dto.AddAccountDto'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/placio-app_models.Account'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Add account
-      tags:
-      - Account
-  /accounts/get-user-accounts:
-    get:
-      consumes:
-      - application/json
-      description: Get account
-      parameters:
-      - description: Account ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Account
-          schema:
-            $ref: '#/definitions/placio-app_models.Account'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Get account
-      tags:
-      - Account
-  /accounts/get-user-active-account:
-    get:
-      consumes:
-      - application/json
-      description: Get account
-      parameters:
-      - description: Account ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Account
-          schema:
-            $ref: '#/definitions/placio-app_models.Account'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "401":
-          description: Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Get account
-      tags:
-      - Account
-  /accounts/invoice/{id}:
-    get:
-      consumes:
-      - application/json
-      description: Get invoice
-      parameters:
-      - description: Invoice ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/fiber.Map'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Get invoice
-      tags:
-      - Account
-    put:
-      consumes:
-      - application/json
-      description: Update invoice
-      parameters:
-      - description: Invoice ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Invoice
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/placio-app_Dto.Invoice'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/fiber.Map'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Update invoice
-      tags:
-      - Account
-  /accounts/plan:
-    post:
-      consumes:
-      - application/json
-      description: subscribe to a plan
-      parameters:
-      - description: plan
-        in: body
-        name: plan
-        required: true
-        schema:
-          type: string
-      - description: token
-        in: body
-        name: token
-        required: true
-        schema:
-          type: string
-      - description: stripe.customer.id
-        in: body
-        name: stripe.customer.id
-        required: true
-        schema:
-          type: string
-      - description: stripe.subscription.id
-        in: body
-        name: stripe.subscription.id
-        required: true
-        schema:
-          type: string
-      - description: stripe.subscription.price
-        in: body
-        name: stripe.subscription.price
-        required: true
-        schema:
-          type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: account
-          schema:
-            $ref: '#/definitions/placio-app_models.Account'
-        "400":
-          description: 'inputError": "plan", "message": "Plan is required'
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "500":
-          description: 'error": "Internal Server Error'
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: subscribe to a plan
-      tags:
-      - Account
-  /accounts/plans:
-    get:
-      consumes:
-      - application/json
-      description: Get plans
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/fiber.Map'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Get plans
-      tags:
-      - Account
-  /accounts/subscription/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: Cancel subscription
-      parameters:
-      - description: Subscription ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/fiber.Map'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Cancel subscription
-      tags:
-      - Account
-    get:
-      consumes:
-      - application/json
-      description: Get subscription
-      parameters:
-      - description: Subscription ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/fiber.Map'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Get subscription
-      tags:
-      - Account
-    put:
-      consumes:
-      - application/json
-      description: Upgrade plan
-      parameters:
-      - description: Subscription ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Subscription
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/placio-app_Dto.Subscription'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/fiber.Map'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Upgrade plan
-      tags:
-      - Account
-  /api/v1/accounts/{accountId}/switch-account:
-    post:
-      consumes:
-      - application/json
-      description: Switch to a different account
-      parameters:
-      - description: Account ID
-        in: path
-        name: accountId
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully switched account
-          schema:
-            $ref: '#/definitions/placio-app_Dto.UserResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Switch to a different account
-      tags:
-      - Account
-  /api/v1/accounts/{id}/follow:
-    post:
-      consumes:
-      - application/json
-      description: Follow another account by ID
-      parameters:
-      - description: Follower Account ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Following Account ID
-        in: formData
-        name: following_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully followed account
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Follow an account
-      tags:
-      - Followers
-  /api/v1/accounts/{id}/followers:
-    get:
-      consumes:
-      - application/json
-      description: Get the list of accounts following the specified account
-      parameters:
-      - description: Account ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully retrieved followers
-          schema:
-            items:
-              $ref: '#/definitions/placio-app_models.Account'
-            type: array
-        "500":
-          description: Internal Server Error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Get followers
-      tags:
-      - Followers
-  /api/v1/accounts/{id}/following:
-    get:
-      consumes:
-      - application/json
-      description: Get the list of accounts the specified account is following
-      parameters:
-      - description: Account ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully retrieved following accounts
-          schema:
-            items:
-              $ref: '#/definitions/placio-app_models.Account'
-            type: array
-        "500":
-          description: Internal Server Error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Get following
-      tags:
-      - Followers
-  /api/v1/accounts/{id}/unfollow:
-    post:
-      consumes:
-      - application/json
-      description: Unfollow another account by ID
-      parameters:
-      - description: Follower Account ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Following Account ID
-        in: formData
-        name: following_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully unfollowed account
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Unfollow an account
-      tags:
-      - Followers
-  /api/v1/accounts/create-account:
-    post:
-      consumes:
-      - application/json
-      description: Create a new account and assign the user to it
-      parameters:
-      - description: Sign Up Data
-        in: body
-        name: SignUpDto
-        required: true
-        schema:
-          $ref: '#/definitions/placio-app_Dto.SignUpDto'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully created account
-          schema:
-            $ref: '#/definitions/placio-app_Dto.UserResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Create a new account
-      tags:
-      - Account
   /api/v1/attendees/:
     post:
       consumes:
-      - application/json
+        - application/json
       description: Add an attendee to the specified event
       parameters:
-      - description: Attendee Data
-        in: body
-        name: AddAttendeeDto
-        required: true
-        schema:
-          $ref: '#/definitions/placio-app_models.Attendee'
+        - description: Attendee Data
+          in: body
+          name: AddAttendeeDto
+          required: true
+          schema:
+            $ref: "#/definitions/placio-app_models.Attendee"
       produces:
-      - application/json
+        - application/json
       responses:
         "201":
           description: Successfully added attendee
           schema:
-            $ref: '#/definitions/placio-app_models.Attendee'
+            $ref: "#/definitions/placio-app_models.Attendee"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
       summary: Add attendee to an event
       tags:
-      - Attendee
+        - Attendee
   /api/v1/attendees/{id}:
     delete:
       consumes:
-      - application/json
+        - application/json
       description: Remove an attendee from the specified event by their ID
       parameters:
-      - description: Attendee ID
-        in: path
-        name: id
-        required: true
-        type: string
+        - description: Attendee ID
+          in: path
+          name: id
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "204":
           description: Successfully removed attendee
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "404":
           description: Attendee Not Found
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
       summary: Remove attendee from an event
       tags:
-      - Attendee
+        - Attendee
     get:
       consumes:
-      - application/json
+        - application/json
       description: Get attendee details by their ID
       parameters:
-      - description: Attendee ID
-        in: path
-        name: id
-        required: true
-        type: string
+        - description: Attendee ID
+          in: path
+          name: id
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: Successfully retrieved attendee
           schema:
-            $ref: '#/definitions/placio-app_models.Attendee'
+            $ref: "#/definitions/placio-app_models.Attendee"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "404":
           description: Attendee Not Found
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
       summary: Get attendee by ID
       tags:
-      - Attendee
+        - Attendee
     put:
       consumes:
-      - application/json
+        - application/json
       description: Update an attendee's details by their ID
       parameters:
-      - description: Attendee ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Attendee Data
-        in: body
-        name: UpdateAttendeeDto
-        required: true
-        schema:
-          $ref: '#/definitions/placio-app_models.Attendee'
+        - description: Attendee ID
+          in: path
+          name: id
+          required: true
+          type: string
+        - description: Attendee Data
+          in: body
+          name: UpdateAttendeeDto
+          required: true
+          schema:
+            $ref: "#/definitions/placio-app_models.Attendee"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: Successfully updated attendee
           schema:
-            $ref: '#/definitions/placio-app_models.Attendee'
+            $ref: "#/definitions/placio-app_models.Attendee"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "404":
           description: Attendee Not Found
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
       summary: Update attendee details
       tags:
-      - Attendee
-  /api/v1/auth/refresh:
-    get:
-      consumes:
-      - '*/*'
-      description: Refresh token
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/placio-app_Dto.TokenResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Refresh token
-      tags:
-      - Auth
-  /api/v1/auth/sign-in:
-    post:
-      consumes:
-      - application/json
-      description: Authenticate a user and return an access token
-      parameters:
-      - description: Sign In Data
-        in: body
-        name: SigninRequest
-        required: true
-        schema:
-          $ref: '#/definitions/placio-app_Dto.SigninRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully signed in
-          schema:
-            $ref: '#/definitions/placio-app_Dto.UserResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/fiber.Error'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/fiber.Error'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/fiber.Error'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/fiber.Error'
-      summary: Authenticate a user
-      tags:
-      - Auth
-  /api/v1/auth/verify:
-    get:
-      consumes:
-      - '*/*'
-      description: Verify phone
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties: true
-            type: object
-        "400":
-          description: Bad request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "404":
-          description: Not found
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Verify phone
-      tags:
-      - Auth
+        - Attendee
   /api/v1/comments/:
     post:
       consumes:
-      - application/json
+        - application/json
       description: Create a new comment for the specified post
       parameters:
-      - description: Comment Data
-        in: body
-        name: CreateCommentDto
-        required: true
-        schema:
-          $ref: '#/definitions/placio-app_models.Comment'
+        - description: Comment Data
+          in: body
+          name: CreateCommentDto
+          required: true
+          schema:
+            $ref: "#/definitions/placio-app_models.Comment"
       produces:
-      - application/json
+        - application/json
       responses:
         "201":
           description: Successfully created comment
           schema:
-            $ref: '#/definitions/placio-app_models.Comment'
+            $ref: "#/definitions/placio-app_models.Comment"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
       summary: Create a new comment
       tags:
-      - Comment
+        - Comment
   /api/v1/comments/{commentID}:
     delete:
       description: Delete a comment by its ID
       parameters:
-      - description: Comment ID
-        in: path
-        name: commentID
-        required: true
-        type: string
+        - description: Comment ID
+          in: path
+          name: commentID
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "204":
           description: Successfully deleted comment
         "404":
           description: Comment Not Found
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
       summary: Delete a comment
       tags:
-      - Comment
+        - Comment
     get:
       description: Retrieve a comment by its ID
       parameters:
-      - description: Comment ID
-        in: path
-        name: commentID
-        required: true
-        type: string
+        - description: Comment ID
+          in: path
+          name: commentID
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: Successfully retrieved comment
           schema:
-            $ref: '#/definitions/placio-app_models.Comment'
+            $ref: "#/definitions/placio-app_models.Comment"
         "404":
           description: Comment Not Found
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
       summary: Get a comment
       tags:
-      - Comment
+        - Comment
     put:
       consumes:
-      - application/json
+        - application/json
       description: Update a comment by its ID
       parameters:
-      - description: Comment ID
-        in: path
-        name: commentID
-        required: true
-        type: string
-      - description: Comment Data
-        in: body
-        name: UpdateCommentDto
-        required: true
-        schema:
-          $ref: '#/definitions/placio-app_models.Comment'
+        - description: Comment ID
+          in: path
+          name: commentID
+          required: true
+          type: string
+        - description: Comment Data
+          in: body
+          name: UpdateCommentDto
+          required: true
+          schema:
+            $ref: "#/definitions/placio-app_models.Comment"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: Successfully updated comment
           schema:
-            $ref: '#/definitions/placio-app_models.Comment'
+            $ref: "#/definitions/placio-app_models.Comment"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "404":
           description: Comment Not Found
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
       summary: Update a comment
       tags:
-      - Comment
+        - Comment
   /api/v1/comments/post/{postID}:
     get:
       description: Retrieve all comments for the specified post
       parameters:
-      - description: Post ID
-        in: path
-        name: postID
-        required: true
-        type: string
+        - description: Post ID
+          in: path
+          name: postID
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: Successfully retrieved comments
           schema:
             items:
-              $ref: '#/definitions/placio-app_models.Comment'
+              $ref: "#/definitions/placio-app_models.Comment"
             type: array
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
       summary: List all comments for a post
       tags:
-      - Comment
+        - Comment
   /api/v1/events/{eventId}/attendees:
     get:
       consumes:
-      - application/json
+        - application/json
       description: Get all attendees for a specific event by event ID
       parameters:
-      - description: Event ID
-        in: path
-        name: eventId
-        required: true
-        type: string
+        - description: Event ID
+          in: path
+          name: eventId
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: Successfully retrieved attendees
           schema:
             items:
-              $ref: '#/definitions/placio-app_models.Attendee'
+              $ref: "#/definitions/placio-app_models.Attendee"
             type: array
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
       summary: Get attendees by event
       tags:
-      - Attendee
+        - Attendee
   /api/v1/events/{eventId}/ticket-options:
     get:
       consumes:
-      - application/json
-      description: Get all ticket options for an event by its ID
+        - application/json
+      description: GET all ticket options for an event by its ID
       parameters:
-      - description: Event ID
-        in: path
-        name: eventId
-        required: true
-        type: string
+        - description: Event ID
+          in: path
+          name: eventId
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: Successfully retrieved ticket options for event
           schema:
             items:
-              $ref: '#/definitions/placio-app_models.TicketOption'
+              $ref: "#/definitions/placio-app_models.TicketOption"
             type: array
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Get ticket options by event ID
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+      summary: GET ticket options by event ID
       tags:
-      - TicketOption
+        - TicketOption
   /api/v1/health:
     get:
       consumes:
-      - '*/*'
+        - "*/*"
       description: get the status of server.
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
@@ -2137,1999 +777,1532 @@ paths:
             type: object
       summary: Show the status of server.
       tags:
-      - root
+        - root
   /api/v1/likes/{postID}:
     delete:
       consumes:
-      - application/json
+        - application/json
       description: Remove a like from a post
       parameters:
-      - description: Post ID
-        in: path
-        name: postID
-        required: true
-        type: string
+        - description: Post ID
+          in: path
+          name: postID
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: Successfully unliked post
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: "#/definitions/fiber.Map"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
       summary: Unlike a post
       tags:
-      - Likes
+        - Likes
     post:
       consumes:
-      - application/json
+        - application/json
       description: Add a like to a post
       parameters:
-      - description: Post ID
-        in: path
-        name: postID
-        required: true
-        type: string
+        - description: Post ID
+          in: path
+          name: postID
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "201":
           description: Successfully liked post
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: "#/definitions/fiber.Map"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
       summary: Like a post
       tags:
-      - Likes
+        - Likes
   /api/v1/likes/{postID}/count:
     get:
       description: Retrieve the number of likes for a post
       parameters:
-      - description: Post ID
-        in: path
-        name: postID
-        required: true
-        type: string
+        - description: Post ID
+          in: path
+          name: postID
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: Successfully retrieved like count
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: "#/definitions/fiber.Map"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Get like count for a post
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+      summary: GET like count for a post
       tags:
-      - Likes
+        - Likes
   /api/v1/media/:
     post:
       consumes:
-      - multipart/form-data
+        - multipart/form-data
       description: Upload a media file (image, gif, or video) for a post
       parameters:
-      - description: Media file
-        in: formData
-        name: file
-        required: true
-        type: file
-      - description: Post ID
-        in: formData
-        name: postID
-        required: true
-        type: string
+        - description: Media file
+          in: formData
+          name: file
+          required: true
+          type: file
+        - description: Post ID
+          in: formData
+          name: postID
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "201":
           description: Successfully uploaded media
           schema:
-            $ref: '#/definitions/placio-app_models.Media'
+            $ref: "#/definitions/placio-app_models.Media"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
       summary: Upload media
       tags:
-      - Media
+        - Media
   /api/v1/media/{mediaID}:
     delete:
       description: Delete media by its ID
       parameters:
-      - description: Media ID
-        in: path
-        name: mediaID
-        required: true
-        type: string
+        - description: Media ID
+          in: path
+          name: mediaID
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "204":
           description: Successfully deleted media
         "404":
           description: Media Not Found
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
       summary: Delete media
       tags:
-      - Media
+        - Media
     get:
       description: Retrieve media by its ID
       parameters:
-      - description: Media ID
-        in: path
-        name: mediaID
-        required: true
-        type: string
+        - description: Media ID
+          in: path
+          name: mediaID
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: Successfully retrieved media
           schema:
-            $ref: '#/definitions/placio-app_models.Media'
+            $ref: "#/definitions/placio-app_models.Media"
         "404":
           description: Media Not Found
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
       summary: Get media
       tags:
-      - Media
+        - Media
   /api/v1/media/post/{postID}:
     get:
       description: Retrieve all media for the specified post
       parameters:
-      - description: Post ID
-        in: path
-        name: postID
-        required: true
-        type: string
+        - description: Post ID
+          in: path
+          name: postID
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: Successfully retrieved media
           schema:
             items:
-              $ref: '#/definitions/placio-app_models.Media'
+              $ref: "#/definitions/placio-app_models.Media"
             type: array
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
       summary: List all media for a post
       tags:
-      - Media
+        - Media
   /api/v1/posts/:
-    get:
-      description: Retrieve all posts
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Successfully retrieved posts
-          schema:
-            items:
-              $ref: '#/definitions/placio-app_models.Post'
-            type: array
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: List all posts
-      tags:
-      - Post
     post:
       consumes:
-      - application/json
+        - application/json
       description: Create a new post for the authenticated user
       parameters:
-      - description: Post Data
-        in: body
-        name: CreatePostDto
-        required: true
-        schema:
-          $ref: '#/definitions/placio-app_models.Post'
+        - description: Post Data
+          in: body
+          name: CreatePostDto
+          required: true
+          schema:
+            $ref: "#/definitions/placio-app_models.Post"
       produces:
-      - application/json
+        - application/json
       responses:
         "201":
           description: Successfully created post
           schema:
-            $ref: '#/definitions/placio-app_models.Post'
+            $ref: "#/definitions/placio-app_models.Post"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+      security:
+        - Bearer: []
       summary: Create a new post
       tags:
-      - Post
-  /api/v1/posts/{postID}:
+        - Post
+  /api/v1/posts/{id}:
     delete:
-      description: Delete a post by its ID
+      consumes:
+        - application/json
+      description: Delete a post by ID
       parameters:
-      - description: Post ID
-        in: path
-        name: postID
-        required: true
-        type: string
+        - description: Post ID
+          in: path
+          name: id
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "204":
           description: Successfully deleted post
-        "404":
-          description: Post Not Found
+        "401":
+          description: Unauthorized
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+      security:
+        - Bearer: []
       summary: Delete a post
       tags:
-      - Post
+        - Post
     get:
-      description: Retrieve a post by its ID
+      consumes:
+        - application/json
+      description: Get a post by ID
       parameters:
-      - description: Post ID
-        in: path
-        name: postID
-        required: true
-        type: string
+        - description: Post ID
+          in: path
+          name: id
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: Successfully retrieved post
           schema:
-            $ref: '#/definitions/placio-app_models.Post'
+            $ref: "#/definitions/placio-app_models.Post"
         "404":
-          description: Post Not Found
+          description: Not Found
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
       summary: Get a post
       tags:
-      - Post
+        - Post
     put:
       consumes:
-      - application/json
-      description: Update a post by its ID
+        - application/json
+      description: Update a post by ID
       parameters:
-      - description: Post ID
-        in: path
-        name: postID
-        required: true
-        type: string
-      - description: Post Data
-        in: body
-        name: UpdatePostDto
-        required: true
-        schema:
-          $ref: '#/definitions/placio-app_models.Post'
+        - description: Post ID
+          in: path
+          name: id
+          required: true
+          type: string
+        - description: Post Data
+          in: body
+          name: UpdatePostDto
+          required: true
+          schema:
+            $ref: "#/definitions/placio-app_models.Post"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: Successfully updated post
           schema:
-            $ref: '#/definitions/placio-app_models.Post'
+            $ref: "#/definitions/placio-app_models.Post"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "404":
-          description: Post Not Found
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+        "401":
+          description: Unauthorized
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+      security:
+        - Bearer: []
       summary: Update a post
       tags:
-      - Post
+        - Post
+  /api/v1/posts/{id}/comments:
+    get:
+      consumes:
+        - application/json
+      description: Get comments for a post by ID
+      parameters:
+        - description: Post ID
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: Successfully retrieved comments
+          schema:
+            items:
+              $ref: "#/definitions/placio-app_models.Comment"
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+      summary: Get comments for a post
+      tags:
+        - Post
+    post:
+      consumes:
+        - application/json
+      description: Create a new comment for a post by ID
+      parameters:
+        - description: Post ID
+          in: path
+          name: id
+          required: true
+          type: string
+        - description: Comment Data
+          in: body
+          name: CreateCommentDto
+          required: true
+          schema:
+            $ref: "#/definitions/placio-app_models.Comment"
+      produces:
+        - application/json
+      responses:
+        "201":
+          description: Successfully created comment
+          schema:
+            $ref: "#/definitions/placio-app_models.Comment"
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+      security:
+        - Bearer: []
+      summary: Create a new comment
+      tags:
+        - Post
+  /api/v1/posts/{id}/like:
+    post:
+      consumes:
+        - application/json
+      description: Like a post by ID
+      parameters:
+        - description: Post ID
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: Successfully liked post
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+      security:
+        - Bearer: []
+      summary: Like a post
+      tags:
+        - Post
+  /api/v1/posts/{id}/unlike:
+    post:
+      consumes:
+        - application/json
+      description: Unlike a post by ID
+      parameters:
+        - description: Post ID
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: Successfully unliked post
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+      security:
+        - Bearer: []
+      summary: Unlike a post
+      tags:
+        - Post
+  /api/v1/posts/comments/{id}:
+    delete:
+      consumes:
+        - application/json
+      description: Delete a comment by ID
+      parameters:
+        - description: Comment ID
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "204":
+          description: Successfully deleted comment
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+      security:
+        - Bearer: []
+      summary: Delete a comment
+      tags:
+        - Post
+    put:
+      consumes:
+        - application/json
+      description: Update a comment by ID
+      parameters:
+        - description: Comment ID
+          in: path
+          name: id
+          required: true
+          type: string
+        - description: Comment Data
+          in: body
+          name: UpdateCommentDto
+          required: true
+          schema:
+            $ref: "#/definitions/placio-app_models.Comment"
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: Successfully updated comment
+          schema:
+            $ref: "#/definitions/placio-app_models.Comment"
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+        "404":
+          description: Not Found
+          schema:
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+      security:
+        - Bearer: []
+      summary: Update a comment
+      tags:
+        - Post
   /api/v1/ratings/:
     post:
       consumes:
-      - application/json
+        - application/json
       description: Create a new rating for the specified event
       parameters:
-      - description: Rating Data
-        in: body
-        name: CreateRatingDto
-        required: true
-        schema:
-          $ref: '#/definitions/placio-app_models.Rating'
+        - description: Rating Data
+          in: body
+          name: CreateRatingDto
+          required: true
+          schema:
+            $ref: "#/definitions/placio-app_models.Rating"
       produces:
-      - application/json
+        - application/json
       responses:
         "201":
           description: Successfully created rating
           schema:
-            $ref: '#/definitions/placio-app_models.Rating'
+            $ref: "#/definitions/placio-app_models.Rating"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
       summary: Create a new rating
       tags:
-      - Rating
+        - Rating
   /api/v1/ratings/{id}:
     delete:
       consumes:
-      - application/json
+        - application/json
       description: Delete a rating by its ID
       parameters:
-      - description: Rating ID
-        in: path
-        name: id
-        required: true
-        type: string
+        - description: Rating ID
+          in: path
+          name: id
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "204":
           description: Successfully deleted rating
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "404":
           description: Rating Not Found
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
       summary: Delete rating by ID
       tags:
-      - Rating
+        - Rating
     get:
       consumes:
-      - application/json
+        - application/json
       description: Retrieve a rating by its ID
       parameters:
-      - description: Rating ID
-        in: path
-        name: id
-        required: true
-        type: string
+        - description: Rating ID
+          in: path
+          name: id
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: Successfully retrieved rating
           schema:
-            $ref: '#/definitions/placio-app_models.Rating'
+            $ref: "#/definitions/placio-app_models.Rating"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "404":
           description: Rating Not Found
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Get rating by ID
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+      summary: GET rating by ID
       tags:
-      - Rating
+        - Rating
     put:
       consumes:
-      - application/json
+        - application/json
       description: Update a rating by its ID
       parameters:
-      - description: Rating ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Rating Data
-        in: body
-        name: UpdateRatingDto
-        required: true
-        schema:
-          $ref: '#/definitions/placio-app_models.Rating'
+        - description: Rating ID
+          in: path
+          name: id
+          required: true
+          type: string
+        - description: Rating Data
+          in: body
+          name: UpdateRatingDto
+          required: true
+          schema:
+            $ref: "#/definitions/placio-app_models.Rating"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: Successfully updated rating
           schema:
-            $ref: '#/definitions/placio-app_models.Rating'
+            $ref: "#/definitions/placio-app_models.Rating"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "404":
           description: Rating Not Found
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
       summary: Update rating by ID
       tags:
-      - Rating
+        - Rating
   /api/v1/ratings/event/{eventID}:
     get:
       consumes:
-      - application/json
+        - application/json
       description: Retrieve all ratings for a given event
       parameters:
-      - description: Event ID
-        in: path
-        name: eventID
-        required: true
-        type: string
+        - description: Event ID
+          in: path
+          name: eventID
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: Successfully retrieved ratings
           schema:
             items:
-              $ref: '#/definitions/placio-app_models.Rating'
+              $ref: "#/definitions/placio-app_models.Rating"
             type: array
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Get all ratings for an event
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+      summary: GET all ratings for an event
       tags:
-      - Rating
+        - Rating
   /api/v1/ticket-options/:
     post:
       consumes:
-      - application/json
+        - application/json
       description: Create a new ticket option for the specified event
       parameters:
-      - description: Ticket Option Data
-        in: body
-        name: CreateTicketOptionDto
-        required: true
-        schema:
-          $ref: '#/definitions/placio-app_models.TicketOption'
+        - description: Ticket Option Data
+          in: body
+          name: CreateTicketOptionDto
+          required: true
+          schema:
+            $ref: "#/definitions/placio-app_models.TicketOption"
       produces:
-      - application/json
+        - application/json
       responses:
         "201":
           description: Successfully created ticket option
           schema:
-            $ref: '#/definitions/placio-app_models.TicketOption'
+            $ref: "#/definitions/placio-app_models.TicketOption"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
       summary: Create a new ticket option
       tags:
-      - TicketOption
+        - TicketOption
   /api/v1/ticket-options/{id}:
     delete:
       consumes:
-      - application/json
+        - application/json
       description: Delete a ticket option by its ID
       parameters:
-      - description: Ticket Option ID
-        in: path
-        name: id
-        required: true
-        type: string
+        - description: Ticket Option ID
+          in: path
+          name: id
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "204":
           description: Successfully deleted ticket option
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "404":
           description: Ticket Option Not Found
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
       summary: Delete ticket option by ID
       tags:
-      - TicketOption
+        - TicketOption
     get:
       consumes:
-      - application/json
-      description: Get a ticket option by its ID
+        - application/json
+      description: GET a ticket option by its ID
       parameters:
-      - description: Ticket Option ID
-        in: path
-        name: id
-        required: true
-        type: string
+        - description: Ticket Option ID
+          in: path
+          name: id
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: Successfully retrieved ticket option
           schema:
-            $ref: '#/definitions/placio-app_models.TicketOption'
+            $ref: "#/definitions/placio-app_models.TicketOption"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "404":
           description: Ticket Option Not Found
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Get ticket option by ID
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+      summary: GET ticket option by ID
       tags:
-      - TicketOption
+        - TicketOption
     put:
       consumes:
-      - application/json
+        - application/json
       description: Update a ticket option by its ID
       parameters:
-      - description: Ticket Option ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Ticket Option Data
-        in: body
-        name: UpdateTicketOptionDto
-        required: true
-        schema:
-          $ref: '#/definitions/placio-app_models.TicketOption'
+        - description: Ticket Option ID
+          in: path
+          name: id
+          required: true
+          type: string
+        - description: Ticket Option Data
+          in: body
+          name: UpdateTicketOptionDto
+          required: true
+          schema:
+            $ref: "#/definitions/placio-app_models.TicketOption"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: Successfully updated ticket option
           schema:
-            $ref: '#/definitions/placio-app_models.TicketOption'
+            $ref: "#/definitions/placio-app_models.TicketOption"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "404":
           description: Ticket Option Not Found
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
       summary: Update ticket option by ID
       tags:
-      - TicketOption
+        - TicketOption
   /api/v1/tickets/:
     post:
       consumes:
-      - application/json
+        - application/json
       description: Create a new ticket for the specified event
       parameters:
-      - description: Ticket Data
-        in: body
-        name: CreateTicketDto
-        required: true
-        schema:
-          $ref: '#/definitions/placio-app_models.Ticket'
+        - description: Ticket Data
+          in: body
+          name: CreateTicketDto
+          required: true
+          schema:
+            $ref: "#/definitions/placio-app_models.Ticket"
       produces:
-      - application/json
+        - application/json
       responses:
         "201":
           description: Successfully created ticket
           schema:
-            $ref: '#/definitions/placio-app_models.Ticket'
+            $ref: "#/definitions/placio-app_models.Ticket"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
       summary: Create a new ticket
       tags:
-      - Ticket
+        - Ticket
   /api/v1/tickets/{id}:
     delete:
       consumes:
-      - application/json
+        - application/json
       description: Delete a ticket by its ID
       parameters:
-      - description: Ticket ID
-        in: path
-        name: id
-        required: true
-        type: string
+        - description: Ticket ID
+          in: path
+          name: id
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "204":
           description: Successfully deleted ticket
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "404":
           description: Ticket Not Found
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
       summary: Delete ticket by ID
       tags:
-      - Ticket
+        - Ticket
     get:
       consumes:
-      - application/json
-      description: Get a ticket by its ID
+        - application/json
+      description: GET a ticket by its ID
       parameters:
-      - description: Ticket ID
-        in: path
-        name: id
-        required: true
-        type: string
+        - description: Ticket ID
+          in: path
+          name: id
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: Successfully retrieved ticket
           schema:
-            $ref: '#/definitions/placio-app_models.Ticket'
+            $ref: "#/definitions/placio-app_models.Ticket"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "404":
           description: Ticket Not Found
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Get ticket by ID
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+      summary: GET ticket by ID
       tags:
-      - Ticket
+        - Ticket
   /api/v1/tickets/event/{eventId}:
     get:
       consumes:
-      - application/json
-      description: Get all tickets for a specific event
+        - application/json
+      description: GET all tickets for a specific event
       parameters:
-      - description: Event ID
-        in: path
-        name: eventId
-        required: true
-        type: string
+        - description: Event ID
+          in: path
+          name: eventId
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: Successfully retrieved tickets
           schema:
             items:
-              $ref: '#/definitions/placio-app_models.Ticket'
+              $ref: "#/definitions/placio-app_models.Ticket"
             type: array
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Get tickets by event ID
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+      summary: GET tickets by event ID
       tags:
-      - Ticket
-  /api/v1/users:
+        - Ticket
+  /api/v1/users/{id}:
     get:
       consumes:
-      - '*/*'
-      description: Retrieve a list of users
+        - application/json
+      description: Get a user's details by their Auth0 ID
+      parameters:
+        - description: User Auth0 ID
+          in: path
+          name: id
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
-          description: OK
+          description: Successfully retrieved user
+          schema:
+            $ref: "#/definitions/placio-app_models.User"
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+      security:
+        - Bearer: []
+      summary: Get a user's details
+      tags:
+        - User
+  /api/v1/users/{id}/business-accounts:
+    get:
+      consumes:
+        - application/json
+      description: Get all business accounts associated with a specific user
+      parameters:
+        - description: User ID
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: Successfully retrieved business accounts
           schema:
             items:
-              $ref: '#/definitions/placio-app_models.User'
+              $ref: "#/definitions/placio-app_models.BusinessAccount"
             type: array
         "400":
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
-      summary: Retrieve a list of users
-      tags:
-      - User
-    post:
-      consumes:
-      - '*/*'
-      description: Create a new user
-      parameters:
-      - description: User
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/placio-app_models.User'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+        "401":
+          description: Unauthorized
           schema:
-            $ref: '#/definitions/placio-app_models.User'
-        "400":
-          description: Bad Request
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+        "500":
+          description: Internal Server Error
           schema:
-            additionalProperties: true
-            type: object
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
       security:
-      - ApiKeyAuth: []
-      summary: Create a new user
+        - Bearer: []
+      summary: Get all business accounts for a user
       tags:
-      - User
-  /api/v1/users/{id}:
+        - User
+  /api/v1/users/{userID}/business-account/{businessAccountID}/association:
     delete:
       consumes:
-      - '*/*'
-      description: Delete a user by ID
+        - application/json
+      description: Remove a user's association with a specific business account
       parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
-        type: integer
+        - description: User ID
+          in: path
+          name: userID
+          required: true
+          type: integer
+        - description: Business Account ID
+          in: path
+          name: businessAccountID
+          required: true
+          type: integer
       produces:
-      - application/json
+        - application/json
       responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties: true
-            type: object
+        "204":
+          description: Successfully removed user's association with business account
         "400":
           description: Bad Request
           schema:
-            additionalProperties: true
-            type: object
-      summary: Delete a user by ID
-      tags:
-      - User
-    get:
-      consumes:
-      - '*/*'
-      description: Retrieve a user by ID
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/placio-app_models.User'
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Retrieve a user by ID
-      tags:
-      - User
-    put:
-      consumes:
-      - '*/*'
-      description: Update an existing user by ID
-      parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: User
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/placio-app_models.User'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/placio-app_models.User'
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Update an existing user by ID
-      tags:
-      - User
-  /api/v1/users/{id}/bookings:
-    get:
-      consumes:
-      - '*/*'
-      description: Retrieve a list of bookings for a specific user by ID
-      parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/placio-app_models.Booking'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Retrieve a list of bookings for a specific user by ID
-      tags:
-      - User
-  /api/v1/users/{id}/conversations:
-    get:
-      consumes:
-      - '*/*'
-      description: Retrieve a list of conversations a specific user is a participant
-        in by ID
-      parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/placio-app_models.Conversation'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Retrieve a list of conversations a specific user is a participant in
-        by ID
-      tags:
-      - User
-  /api/v1/users/{id}/groups:
-    get:
-      consumes:
-      - '*/*'
-      description: Retrieve a list of groups a specific user is a member of by ID
-      parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/placio-app_models.Group'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Retrieve a list of groups a specific user is a member of by ID
-      tags:
-      - User
-  /api/v1/users/{id}/messages_received:
-    get:
-      consumes:
-      - '*/*'
-      description: Retrieve a list of messages received by a specific user by ID
-      parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/placio-app_models.Message'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Retrieve a list of messages received by a specific user by ID
-      tags:
-      - User
-  /api/v1/users/{id}/messages_sent:
-    get:
-      consumes:
-      - '*/*'
-      description: Retrieve a list of messages sent by a specific user by ID
-      parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/placio-app_models.Message'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Retrieve a list of messages sent by a specific user by ID
-      tags:
-      - User
-  /api/v1/users/{id}/notifications:
-    get:
-      consumes:
-      - '*/*'
-      description: Retrieve a list of notifications for a specific user by ID
-      parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/placio-app_models.Notification'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Retrieve a list of notifications for a specific user by ID
-      tags:
-      - User
-  /api/v1/users/{id}/payments:
-    get:
-      consumes:
-      - '*/*'
-      description: Retrieve a list of payments for a specific user by ID
-      parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/placio-app_models.Payment'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Retrieve a list of payments for a specific user by ID
-      tags:
-      - User
-  /api/v1/users/{id}/voice_notes:
-    get:
-      consumes:
-      - '*/*'
-      description: Retrieve a list of voice notes a specific user is a participant
-        in by ID
-      parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/placio-app_models.VoiceNote'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Retrieve a list of voice notes a specific user is a participant in
-        by ID
-      tags:
-      - User
-  /api/v1/users/{id}/voice_notes_received:
-    get:
-      consumes:
-      - '*/*'
-      description: Retrieve a list of voice notes received by a specific user by ID
-      parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/placio-app_models.VoiceNote'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Retrieve a list of voice notes received by a specific user by ID
-      tags:
-      - User
-  /api/v1/users/{id}/voice_notes_sent:
-    get:
-      consumes:
-      - '*/*'
-      description: Retrieve a list of voice notes sent by a specific user by ID
-      parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/placio-app_models.VoiceNote'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Retrieve a list of voice notes sent by a specific user by ID
-      tags:
-      - User
-  /api/v1/users/check_user:
-    get:
-      consumes:
-      - '*/*'
-      description: Check if user exists
-      parameters:
-      - description: Username
-        in: query
-        name: username
-        type: string
-      - description: Email
-        in: query
-        name: email
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/fiber.Map'
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Check if user exists
-      tags:
-      - User
-  /api/v1/users/me:
-    get:
-      consumes:
-      - '*/*'
-      description: Retrieve the current user
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/placio-app_models.User'
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Retrieve the current user
-      tags:
-      - User
-  /api/v1/voice_notes/{id}:
-    get:
-      consumes:
-      - '*/*'
-      description: Retrieve a specific voice note by ID
-      parameters:
-      - description: Voice Note ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/placio-app_models.VoiceNote'
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties: true
-            type: object
-      summary: Retrieve a specific voice note by ID
-      tags:
-      - User
-  /auth/change:
-    get:
-      consumes:
-      - '*/*'
-      description: Change password
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties: true
-            type: object
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Change password
-      tags:
-      - Auth
-  /auth/impersonate/{account}/{user}:
-    post:
-      consumes:
-      - application/json
-      description: Lets an admin impersonate another user
-      parameters:
-      - description: Account ID
-        in: path
-        name: account
-        required: true
-        type: string
-      - description: User ID
-        in: path
-        name: user
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: User
-          schema:
-            $ref: '#/definitions/placio-app_Dto.UserResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Impersonate user
-      tags:
-      - Auth
-  /auth/magic:
-    post:
-      consumes:
-      - application/json
-      description: Gets a magic link
-      parameters:
-      - description: Email
-        in: body
-        name: email
-        required: true
-        schema:
-          type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Magic link
-          schema:
-            $ref: '#/definitions/fiber.Map'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "409":
-          description: Conflict
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Get magic link
-      tags:
-      - Auth
-  /auth/magic/verify:
-    post:
-      consumes:
-      - application/json
-      description: Verifies a magic link
-      parameters:
-      - description: Magic link token
-        in: body
-        name: token
-        required: true
-        schema:
-          type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: User
-          schema:
-            $ref: '#/definitions/placio-app_Dto.UserResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Verify magic link
-      tags:
-      - Auth
-  /auth/otp:
-    get:
-      consumes:
-      - application/json
-      description: Gets an OTP
-      parameters:
-      - description: JWT token
-        in: header
-        name: token
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OTP
-          schema:
-            $ref: '#/definitions/fiber.Map'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/fiber.Map'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/fiber.Map'
-      summary: Get OTP
-      tags:
-      - Auth
-  /auth/password/reset/request:
-    post:
-      consumes:
-      - application/json
-      description: Requests a password reset
-      parameters:
-      - description: Email
-        in: body
-        name: email
-        required: true
-        schema:
-          type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Password reset
-          schema:
-            $ref: '#/definitions/fiber.Map'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Request password reset
-      tags:
-      - Auth
-  /auth/reset:
-    get:
-      consumes:
-      - '*/*'
-      description: Reset password
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties: true
-            type: object
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Reset password
-      tags:
-      - Auth
-  /auth/sign-out:
-    post:
-      consumes:
-      - '*/*'
-      description: Log out from the server
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties: true
-            type: object
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
       security:
-      - ApiKeyAuth: []
-      summary: Log out
+        - Bearer: []
+      summary: Remove a user's association with a business account
       tags:
-      - Auth
-  /auth/status:
-    get:
-      consumes:
-      - application/json
-      description: Returns the auth status of the user
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Auth status
-          schema:
-            $ref: '#/definitions/placio-app_Dto.AuthStatusResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/fiber.Map'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/fiber.Map'
-      summary: Get auth status
-      tags:
-      - Auth
-  /auth/switch-account/{account}:
+        - User
     post:
       consumes:
-      - application/json
-      description: Lets a user switch account
+        - application/json
+      description: Associate a user with a specific business account
       parameters:
-      - description: Account ID
-        in: path
-        name: account
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: User
+        - description: User ID
+          in: path
+          name: userID
+          required: true
+          type: integer
+        - description: Business Account ID
+          in: path
+          name: businessAccountID
+          required: true
+          type: integer
+        - description: Role
+          in: body
+          name: role
+          required: true
           schema:
-            $ref: '#/definitions/placio-app_Dto.UserResponse'
+            type: string
+      produces:
+        - application/json
+      responses:
+        "204":
+          description: Successfully associated user with business account
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "403":
-          description: Forbidden
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Switch account
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+      security:
+        - Bearer: []
+      summary: Associate a user with a business account
       tags:
-      - Auth
+        - User
+  /api/v1/users/{userID}/business-account/{businessAccountID}/can-perform-action:
+    post:
+      consumes:
+        - application/json
+      description:
+        Check if a user can perform a certain action based on their role
+        in the business account
+      parameters:
+        - description: User ID
+          in: path
+          name: userID
+          required: true
+          type: integer
+        - description: Business Account ID
+          in: path
+          name: businessAccountID
+          required: true
+          type: integer
+        - description: Action
+          in: body
+          name: action
+          required: true
+          schema:
+            type: string
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: Successfully checked permission
+          schema:
+            $ref: "#/definitions/placio-app_Dto.PermissionDTO"
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+      security:
+        - Bearer: []
+      summary: Check if a user can perform an action
+      tags:
+        - User
+  /api/v1/users/{userID}/business-accounts:
+    get:
+      consumes:
+        - application/json
+      description: Get all business accounts a user is associated with
+      parameters:
+        - description: User ID
+          in: path
+          name: userID
+          required: true
+          type: integer
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: Successfully retrieved business accounts
+          schema:
+            items:
+              $ref: "#/definitions/placio-app_models.BusinessAccount"
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+      security:
+        - Bearer: []
+      summary: Get all business accounts a user is associated with
+      tags:
+        - User
+  /api/v1/users/business-account:
+    post:
+      consumes:
+        - application/json
+      description: Create a new business account for the authenticated user
+      parameters:
+        - description: Business Account Name
+          in: body
+          name: name
+          required: true
+          schema:
+            type: string
+      produces:
+        - application/json
+      responses:
+        "201":
+          description: Successfully created business account
+          schema:
+            $ref: "#/definitions/placio-app_models.BusinessAccount"
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+      security:
+        - Bearer: []
+      summary: Create a new business account
+      tags:
+        - User
+  /api/v1/users/business-account/{businessAccountID}/users:
+    get:
+      consumes:
+        - application/json
+      description: Get all users associated with a specific business account
+      parameters:
+        - description: Business Account ID
+          in: path
+          name: businessAccountID
+          required: true
+          type: integer
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: Successfully retrieved users
+          schema:
+            items:
+              $ref: "#/definitions/placio-app_models.User"
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
+      security:
+        - Bearer: []
+      summary: Get all users for a business account
+      tags:
+        - User
   /event/{eventId}:
     get:
       consumes:
-      - application/json
+        - application/json
       description: Get Event By ID
       parameters:
-      - description: Event ID
-        in: path
-        name: eventId
-        required: true
-        type: string
+        - description: Event ID
+          in: path
+          name: eventId
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/placio-app_models.Event'
+            $ref: "#/definitions/placio-app_models.Event"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
       summary: Get Event By ID
       tags:
-      - Event
+        - Event
   /event/create:
     post:
       consumes:
-      - application/json
+        - application/json
       description: Create Event
       parameters:
-      - description: Event Data
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/placio-app_Dto.EventDto'
+        - description: Event Data
+          in: body
+          name: data
+          required: true
+          schema:
+            $ref: "#/definitions/placio-app_Dto.EventDto"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/placio-app_models.Event'
+            $ref: "#/definitions/placio-app_models.Event"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
       summary: Create Event
       tags:
-      - Event
+        - Event
   /event/delete/{eventId}:
     delete:
       consumes:
-      - application/json
+        - application/json
       description: Delete Event
       parameters:
-      - description: Event ID
-        in: path
-        name: eventId
-        required: true
-        type: string
+        - description: Event ID
+          in: path
+          name: eventId
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/placio-app_Dto.SuccessDTO'
+            $ref: "#/definitions/placio-app_Dto.SuccessDTO"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
       summary: Delete Event
       tags:
-      - Event
+        - Event
   /event/get/category/{categoryId}:
     get:
       consumes:
-      - application/json
+        - application/json
       description: Get Event By Category
       parameters:
-      - description: Category ID
-        in: path
-        name: categoryId
-        required: true
-        type: string
+        - description: Category ID
+          in: path
+          name: categoryId
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
             items:
-              $ref: '#/definitions/placio-app_models.Event'
+              $ref: "#/definitions/placio-app_models.Event"
             type: array
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
       summary: Get Event By Category
       tags:
-      - Event
+        - Event
   /event/get/date/{date}:
     get:
       consumes:
-      - application/json
+        - application/json
       description: Get Event By Date
       parameters:
-      - description: Event Date
-        in: path
-        name: date
-        required: true
-        type: string
+        - description: Event Date
+          in: path
+          name: date
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
             items:
-              $ref: '#/definitions/placio-app_models.Event'
+              $ref: "#/definitions/placio-app_models.Event"
             type: array
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
       summary: Get Event By Date
       tags:
-      - Event
+        - Event
   /event/get/location/{locationId}:
     get:
       consumes:
-      - application/json
+        - application/json
       description: Get Event By Location
       parameters:
-      - description: Location Address
-        in: path
-        name: address
-        required: true
-        type: string
+        - description: Location Address
+          in: path
+          name: address
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
             items:
-              $ref: '#/definitions/placio-app_models.Event'
+              $ref: "#/definitions/placio-app_models.Event"
             type: array
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
       summary: Get Event By Location
       tags:
-      - Event
+        - Event
   /event/participants/{eventId}:
     get:
       consumes:
-      - application/json
+        - application/json
       description: Get Event Participants
       parameters:
-      - description: Event ID
-        in: path
-        name: eventId
-        required: true
-        type: string
+        - description: Event ID
+          in: path
+          name: eventId
+          required: true
+          type: string
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
             items:
-              $ref: '#/definitions/placio-app_models.User'
+              $ref: "#/definitions/placio-app_models.User"
             type: array
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
       summary: Get Event Participants
       tags:
-      - Event
+        - Event
   /event/update/{eventId}:
     put:
       consumes:
-      - application/json
+        - application/json
       description: Update Event
       parameters:
-      - description: Event ID
-        in: path
-        name: eventId
-        required: true
-        type: string
-      - description: Event Data
-        in: body
-        name: data
-        required: true
-        schema:
-          $ref: '#/definitions/placio-app_Dto.EventDto'
+        - description: Event ID
+          in: path
+          name: eventId
+          required: true
+          type: string
+        - description: Event Data
+          in: body
+          name: data
+          required: true
+          schema:
+            $ref: "#/definitions/placio-app_Dto.EventDto"
       produces:
-      - application/json
+        - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/placio-app_models.Event'
+            $ref: "#/definitions/placio-app_models.Event"
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: "#/definitions/placio-app_Dto.ErrorDTO"
       summary: Update Event
       tags:
-      - Event
-  /settings/account:
-    put:
-      consumes:
-      - application/json
-      description: Update account settings
-      parameters:
-      - description: Account settings
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/placio-app_models.AccountSettings'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/placio-app_models.AccountSettings'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_models.ErrorResponse'
-      summary: Update account settings
-      tags:
-      - Settings
-  /settings/content:
-    get:
-      consumes:
-      - application/json
-      description: Get content settings
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/placio-app_models.ContentSettings'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_models.ErrorResponse'
-      security:
-      - BearerAuth: []
-      summary: Get content settings
-      tags:
-      - Settings
-    put:
-      consumes:
-      - application/json
-      description: Update content settings
-      parameters:
-      - description: Content settings
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/placio-app_models.ContentSettings'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/placio-app_models.ContentSettings'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_models.ErrorResponse'
-      summary: Update content settings
-      tags:
-      - Settings
-  /settings/general:
-    get:
-      consumes:
-      - application/json
-      description: Get general settings
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/placio-app_models.GeneralSettings'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_models.ErrorResponse'
-      summary: Get general settings
-      tags:
-      - Settings
-    put:
-      consumes:
-      - application/json
-      description: Update general settings
-      parameters:
-      - description: General settings
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/placio-app_models.GeneralSettings'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/placio-app_models.GeneralSettings'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_models.ErrorResponse'
-      summary: Update general settings
-      tags:
-      - Settings
-  /settings/notifications:
-    get:
-      consumes:
-      - application/json
-      description: Get notifications settings
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/placio-app_models.NotificationsSettings'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_models.ErrorResponse'
-      summary: Get notifications settings
-      tags:
-      - Settings
-    put:
-      consumes:
-      - application/json
-      description: Update notifications settings
-      parameters:
-      - description: Notifications settings
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/placio-app_models.NotificationsSettings'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/placio-app_models.NotificationsSettings'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_models.ErrorResponse'
-      summary: Update notifications settings
-      tags:
-      - Settings
+        - Event
 schemes:
-- http
+  - http
+  - https
 swagger: "2.0"

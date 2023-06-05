@@ -4,6 +4,7 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	_ "placio-app/Dto"
 	"placio-app/models"
 	"placio-app/service"
 	"placio-app/utility"
@@ -90,7 +91,7 @@ func (uc *UserController) GetUser(ctx *gin.Context) error {
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/users/business-account [post]
 func (uc *UserController) CreateBusinessAccount(ctx *gin.Context) error {
-	userID := ctx.MustGet("user").(string)
+	auth0ID := ctx.MustGet("user").(string)
 
 	var businessAccount models.BusinessAccount
 	if err := ctx.ShouldBindJSON(&businessAccount); err != nil {
@@ -101,8 +102,11 @@ func (uc *UserController) CreateBusinessAccount(ctx *gin.Context) error {
 	}
 
 	role := "admin" // Define role or get it from somewhere
+	user, err := uc.userService.GetUser(auth0ID)
 
-	newBusinessAccount, err := uc.userService.CreateBusinessAccount(userID, businessAccount.Name, role)
+	log.Println("CreateBusinessAccount", ctx.Request.URL.Path, ctx.Request.Method, auth0ID, user.UserID, businessAccount.Name, role)
+
+	newBusinessAccount, err := uc.userService.CreateBusinessAccount(user.UserID, businessAccount.Name, role)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Could not create business account",

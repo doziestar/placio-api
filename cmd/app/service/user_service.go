@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"log"
 	"placio-app/models"
 
 	"gorm.io/gorm"
@@ -32,11 +33,12 @@ func NewUserService(db *gorm.DB) *UserServiceImpl {
 }
 
 func (s *UserServiceImpl) GetUser(auth0ID string) (*models.User, error) {
+	log.Println("GetUser", auth0ID)
 	var user models.User
 	if err := s.db.Where("auth0_id = ?", auth0ID).First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			// The user does not exist in our database, so let's create one
-			newUser := models.User{Auth0ID: auth0ID}
+			newUser := models.User{Auth0ID: auth0ID,UserID: models.GenerateID()}
 			if err := s.db.Create(&newUser).Error; err != nil {
 				return nil, err
 			}
@@ -92,8 +94,8 @@ func (s *UserServiceImpl) CanPerformAction(userID, businessAccountID string, act
 
 // CreateBusinessAccount creates a new Business Account and associates it with a user.
 func (s *UserServiceImpl) CreateBusinessAccount(userID, name, role string) (*models.BusinessAccount, error) {
-	businessAccount := &models.BusinessAccount{Name: name}
-	relationship := &models.UserBusinessRelationship{UserID: userID, BusinessAccount: *businessAccount, Role: "owner"}
+	businessAccount := &models.BusinessAccount{Name: name, ID: models.GenerateID()}
+	relationship := &models.UserBusinessRelationship{UserID: userID, BusinessAccount: *businessAccount, Role: "owner", BusinessAccountID: businessAccount.ID, ID: models.GenerateID()}
 
 	tx := s.db.Begin()
 

@@ -13,10 +13,11 @@ import (
 
 type PostController struct {
 	postService service.PostService
+	userService service.UserService
 }
 
-func NewPostController(postService service.PostService) *PostController {
-	return &PostController{postService: postService}
+func NewPostController(postService service.PostService, userService service.UserService) *PostController {
+	return &PostController{postService: postService, userService: userService}
 }
 
 func (pc *PostController) RegisterRoutes(router *gin.RouterGroup) {
@@ -56,10 +57,21 @@ func (pc *PostController) createPost(ctx *gin.Context) error {
 	//	})
 	//	return nil
 	//}
-	log.Println("createPost")
-	userID := ctx.MustGet("user").(string)
 
-	log.Println(userID)
+
+	log.Println("createPost")
+	authOID := ctx.MustGet("user").(string)
+	log.Println(authOID)
+	user, err := pc.userService.GetUser(authOID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Internal Server Error",
+		})
+		return err
+	}
+	businessAccountId := ctx.Query("businessAccountId")
+
+	log.Println(user)
 
 	data := new(models.Post)
 	if err := ctx.BindJSON(data); err != nil {
@@ -69,9 +81,21 @@ func (pc *PostController) createPost(ctx *gin.Context) error {
 		return err
 	}
 
-	post := &models.Post{
-		Content: data.Content,
-		UserID:  userID,
+	var post *models.Post
+	
+	if businessAccountId != "" {
+		post = &models.Post{
+			Content: data.Content,
+			BusinessAccountID: businessAccountId,
+			UserID:  user.UserID,
+			ID: models.GenerateID(),
+		}
+	} else {
+		post = &models.Post{
+			Content: data.Content,
+			UserID:  user.UserID,
+			ID: models.GenerateID(),
+		}
 	}
 
 	newPost, err := pc.postService.CreatePost(post)
@@ -142,7 +166,7 @@ func (pc *PostController) updatePost(ctx *gin.Context) error {
 	//	})
 	//	return nil
 	//}
-	userID := ctx.MustGet("userId").(string)
+	auth0ID := ctx.MustGet("user").(string)
 	postID := ctx.Param("id")
 
 	data := new(models.Post)
@@ -168,7 +192,9 @@ func (pc *PostController) updatePost(ctx *gin.Context) error {
 		return nil
 	}
 
-	if post.UserID != userID {
+	user, err := pc.userService.GetUser(auth0ID)
+
+	if post.UserID != user.UserID {
 		ctx.JSON(http.StatusUnauthorized, gin.H{
 			"error": "Unauthorized",
 		})
