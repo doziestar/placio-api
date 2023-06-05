@@ -20,16 +20,6 @@ services:
       - ./traefik/acme.json:/acme.json
       - ./traefik/configurations:/configurations
     command:
-      # Enable Docker in Traefik, so that it reads labels from Docker services
-      # - --providers.docker
-      # Add a constraint to only use services with the label for this stack
-      # from the env var TRAEFIK_TAG
-      # - --providers.docker.constraints=Label(`traefik.constraint-label-stack`, `${TRAEFIK_TAG?Variable not set}`)
-      # Do not expose all Docker services, only the ones explicitly exposed
-      # - --providers.docker.exposedbydefault=false
-      # Disable Docker Swarm mode for local development
-      # - --providers.docker.swarmmode
-      # Enable the access log, with HTTP requests
       - --accesslog
       # Enable the Traefik log, for configurations and errors
       - --log
@@ -53,42 +43,6 @@ services:
       - ./.envs/.stag
     networks:
       - default
-
-  # zookeeper:
-  #   image: 'bitnami/zookeeper:latest'
-  #   networks:
-  #     - traefik-public
-  # kafka:
-  #   image: 'bitnami/kafka:latest'
-  #   networks:
-  #     - traefik-public
-
-  #  placio-pgadmin:
-  #    image: dpage/pgadmin4
-  #    ports:
-  #      - "5050:5050"
-  #    networks:
-  #      - default
-  #    depends_on:
-  #      - placio-db
-  #    env_file:
-  #      - ./.envs/.stag
-  #    labels:
-  #      - traefik.enable=true
-  #      - traefik.docker.network=default
-  #      - 'traefik.http.routers.pgadmin-secure.entrypoints=websecure'
-  #      - 'traefik.http.routers.pgadmin-secure.rule=Host(`pgadmin.palnight.com`)'
-  #      - 'traefik.http.routers.pgadmin-secure.service=pgadmin'
-  #      - traefik.http.services.pgadmin.loadbalancer.server.port=5050
-
-  placio-redis:
-    container_name: placio-redis
-    image: redis:latest
-    restart: always
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
 
   placio-backend:
     ports:
@@ -124,35 +78,6 @@ services:
       - traefik.http.services.backend.loadbalancer.server.port=7070
       # add path prefix strip
 
-  #  server:
-  #    build:
-  #      context: ./placio-auth
-  #      dockerfile: Dockerfile.prod
-  #    volumes:
-  #      - ./placio-auth:/app
-  #      - /app/node_modules
-  #    restart: "unless-stopped"
-  #    networks:
-  #      - default
-  #
-  #    labels:
-  # - traefik.http.routers.backend-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
-  # - traefik.http.services.backend.loadbalancer.server.port=80
-  # - traefik.enable=true
-  # # - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
-  # - traefik.http.routers.backend-http.rule=Host(`api.palnight.com`)
-  # - traefik.http.routers.backend-http.entrypoints=http
-  # # - traefik.http.routers.backend-http.middlewares=${STACK_NAME?Variable not set}-https-redirect
-  # - traefik.http.routers.backend-https.rule=Host(`api.palnight.com`)
-  # - traefik.http.routers.backend-https.entrypoints=https
-  # - traefik.http.routers.backend-https.tls=true
-  #      - traefik.enable=true
-  #      - traefik.docker.network=default
-  #      - "traefik.http.routers.server-secure.entrypoints=websecure"
-  #      - "traefik.http.routers.server-secure.rule=Host(`account.palnight.com`)"
-  #      - "traefik.http.routers.server-secure.service=server"
-  #      - traefik.http.services.server.loadbalancer.server.port=3004
-
   docs:
     container_name: placio-docs
     build:
@@ -166,16 +91,6 @@ services:
       - ./docs:/app/docs
 
     labels:
-      # - traefik.http.routers.backend-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
-      # - traefik.http.services.backend.loadbalancer.server.port=80
-      # - traefik.enable=true
-      # # - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
-      # - traefik.http.routers.backend-http.rule=Host(`api.palnight.com`)
-      # - traefik.http.routers.backend-http.entrypoints=http
-      # # - traefik.http.routers.backend-http.middlewares=${STACK_NAME?Variable not set}-https-redirect
-      # - traefik.http.routers.backend-https.rule=Host(`api.palnight.com`)
-      # - traefik.http.routers.backend-https.entrypoints=https
-      # - traefik.http.routers.backend-https.tls=true
       - traefik.enable=true
       - traefik.docker.network=default
       - "traefik.http.routers.docs-secure.entrypoints=websecure"
