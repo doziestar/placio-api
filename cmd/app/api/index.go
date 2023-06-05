@@ -2,6 +2,13 @@ package api
 
 import (
 	"fmt"
+	"net/http"
+	"net/url"
+	_ "placio-api/docs/app"
+	"placio-app/controller"
+	"placio-app/service"
+	"time"
+
 	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
 	"github.com/auth0/go-jwt-middleware/v2/jwks"
 	"github.com/auth0/go-jwt-middleware/v2/validator"
@@ -10,15 +17,9 @@ import (
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"gorm.io/gorm"
-	"net/http"
-	"net/url"
-	_ "placio-api/docs/app"
-	"placio-app/controller"
-	"placio-app/service"
-	"time"
 )
 
-func JWTMiddleware() gin.HandlerFunc {
+func JWTMiddleware(db *gorm.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		validatedClaims, ok := c.Request.Context().Value(jwtmiddleware.ContextKey{}).(*validator.ValidatedClaims)
 		if !ok || validatedClaims == nil {
@@ -59,7 +60,7 @@ func InitializeRoutes(app *gin.Engine, db *gorm.DB) {
 
 	jwtMiddleware := jwtmiddleware.New(jwtValidator.ValidateToken)
 	app.Use(adapter.Wrap(jwtMiddleware.CheckJWT))
-	app.Use(JWTMiddleware())
+	app.Use(JWTMiddleware(db))
 
 	routerGroupV1 := app.Group("/api/v1")
 
@@ -89,9 +90,14 @@ func InitializeRoutes(app *gin.Engine, db *gorm.DB) {
 	//accountController := controller.NewAccountController(accountService, newUtils)
 	//accountController.RegisterRoutes(routerGroupV1)
 
+	// user
+	userService := service.NewUserService(db)
+	userController := controller.NewUserController(userService)
+	userController.RegisterRoutes(routerGroupV1)
+
 	// posts
 	postService := service.NewPostService(db)
-	postController := controller.NewPostController(postService)
+	postController := controller.NewPostController(postService, userService)
 	postController.RegisterRoutes(routerGroupV1)
 
 	// comments
@@ -128,5 +134,7 @@ func InitializeRoutes(app *gin.Engine, db *gorm.DB) {
 	ticketOptionService := service.NewTicketOptionService(db)
 	ticketOptionController := controller.NewTicketOptionController(ticketOptionService)
 	ticketOptionController.RegisterRoutes(routerGroupV1)
+
+	
 
 }

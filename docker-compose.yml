@@ -6,17 +6,17 @@ volumes:
   redis_data:
 
 services:
-  docs:
-    container_name: placio-docs
-    build:
-      context: .
-      dockerfile: ./docs/Dockerfile
-    restart: always
-    ports:
-      - "6060:6060"
-    volumes:
-      # - ./:/app
-      - ./docs:/app/docs
+  # docs:
+  #   container_name: placio-docs
+  #   build:
+  #     context: .
+  #     dockerfile: ./docs/Dockerfile
+  #   restart: always
+  #   ports:
+  #     - "6060:6060"
+  #   volumes:
+  #     # - ./:/app
+  #     - ./docs:/app/docs
 
   #  kafka-ui:
   #    container_name: placio-kafka-ui
@@ -27,9 +27,22 @@ services:
   #    depends_on:
   #      - kafka
 
+  db:
+    image: postgres:14
+    container_name: postgres-db
+    restart: always
+    environment:
+      POSTGRES_USER: dozie
+      POSTGRES_PASSWORD: 918273645dozie
+      POSTGRES_DB: placio
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
   app:
     #    container_name: placio-app
-    platform: linux/x86_64
+    # platform: linux/x86_64
     build:
       context: .
       dockerfile: ./cmd/app/Dockerfile
@@ -44,4 +57,3 @@ services:
       - ./config:/app/config
     env_file:
       - ./.envs/.local
-
