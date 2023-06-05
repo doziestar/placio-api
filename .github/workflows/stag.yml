@@ -12,8 +12,8 @@ jobs:
     env:
       TAG: stag
     steps:
-      - name: Update coverage report
-        uses: ncruces/go-coverage-report@main
+      # - name: Update coverage report
+      #   uses: ncruces/go-coverage-report@main
       - name: remove old stack
         run: echo ${{ secrets.VPS_PASSWORD }} |
           sudo -S rm -rf /home/dozie/placio-api/_work/nightout-server/placio-api/backend
@@ -32,4 +32,3 @@ jobs:
         run: echo "Starting containers" |
           echo ${{ secrets.VPS_PASSWORD }} |
           sudo -S docker-compose -f docker-compose.stag.yml up --build -d
-
