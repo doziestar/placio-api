@@ -2,21 +2,17 @@ package api
 
 import (
 	"fmt"
-	"net/http"
-	"net/url"
-	_ "placio-api/docs/app"
-	"placio-app/controller"
-	"placio-app/service"
-	"time"
-
 	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
-	"github.com/auth0/go-jwt-middleware/v2/jwks"
 	"github.com/auth0/go-jwt-middleware/v2/validator"
 	"github.com/gin-gonic/gin"
-	adapter "github.com/gwatts/gin-adapter"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"gorm.io/gorm"
+	"net/http"
+	_ "placio-api/docs/app"
+	"placio-app/controller"
+	"placio-app/middleware"
+	"placio-app/service"
 )
 
 func JWTMiddleware(db *gorm.DB) gin.HandlerFunc {
@@ -45,22 +41,7 @@ func InitializeRoutes(app *gin.Engine, db *gorm.DB) {
 	fmt.Println("Initializing routes...")
 	app.GET("/docs/*files", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
-	//issuerURL, _ := url.Parse(os.Getenv("AUTH0_ISSUER_URL"))
-	issuerURL, _ := url.Parse("https://dev-qlb0lv3d.us.auth0.com/")
-	//audience := os.Getenv("AUTH0_AUDIENCE")
-
-	provider := jwks.NewCachingProvider(issuerURL, time.Duration(5*time.Minute))
-
-	jwtValidator, _ := validator.New(provider.KeyFunc,
-		validator.RS256,
-		//issuerURL.String(),
-		"https://dev-qlb0lv3d.us.auth0.com/",
-		[]string{"https://api.palnight.com"},
-	)
-
-	jwtMiddleware := jwtmiddleware.New(jwtValidator.ValidateToken)
-	app.Use(adapter.Wrap(jwtMiddleware.CheckJWT))
-	app.Use(JWTMiddleware(db))
+	app.Use(middleware.EnsureValidToken())
 
 	routerGroupV1 := app.Group("/api/v1")
 
@@ -134,7 +115,5 @@ func InitializeRoutes(app *gin.Engine, db *gorm.DB) {
 	ticketOptionService := service.NewTicketOptionService(db)
 	ticketOptionController := controller.NewTicketOptionController(ticketOptionService)
 	ticketOptionController.RegisterRoutes(routerGroupV1)
-
-	
 
 }

@@ -2,116 +2,18 @@ package middleware
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
 	"os"
-	"placio-app/Dto"
 	"strings"
 	"time"
 
-	"github.com/auth0/go-jwt-middleware/v2"
 	"github.com/auth0/go-jwt-middleware/v2/jwks"
 	"github.com/auth0/go-jwt-middleware/v2/validator"
+	"github.com/gin-gonic/gin"
 )
-
-type JWTClaims struct {
-	AccountID  uint   `json:"accountId"`
-	UserID     uint   `json:"userId"`
-	Permission string `json:"permission"`
-	Provider   string `json:"provider"`
-	jwt.StandardClaims
-}
-
-func VerifyToken(tokenString string, secret string) (*JWTClaims, error) {
-	token, err := jwt.ParseWithClaims(tokenString, &JWTClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(secret), nil
-	})
-	if err != nil {
-		return nil, err
-	}
-	if claims, ok := token.Claims.(*JWTClaims); ok && token.Valid {
-		return claims, nil
-	} else {
-		return nil, errors.New("invalid token")
-	}
-}
-
-func AuthorizeUser(permission string) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		authorizationHeader := c.GetHeader("Authorization")
-
-		if authorizationHeader == "" {
-			if permission == "public" {
-				c.Next()
-			} else {
-				c.JSON(http.StatusUnauthorized, gin.H{
-					"message": "No authorization header provided",
-				})
-				c.Abort()
-			}
-			return
-		}
-
-		headerParts := strings.Split(authorizationHeader, " ")
-
-		if len(headerParts) != 2 || headerParts[0] != "Bearer" {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"message": "Unrecognized authorization header type",
-			})
-			c.Abort()
-			return
-		}
-
-		token := headerParts[1]
-
-		loginData := Status(token, c)
-
-		c.Set("user", loginData.User.ID)
-		c.Set("email", loginData.User.Email)
-		c.Next()
-	}
-}
-
-func Status(token string, c *gin.Context) Dto.LoginData {
-	url := fmt.Sprintf("http://localhost:3004/api/v1/auth/authorize?token=%s&type=%s", token, "Bearer")
-	log.Println("url", url)
-
-	resp, err := http.Get(url)
-	if err != nil {
-		log.Println("err", err.Error())
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"message": "Invalid token",
-		})
-		c.Abort()
-		return Dto.LoginData{}
-	}
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"message": "Invalid response body",
-		})
-		c.Abort()
-		return Dto.LoginData{}
-	}
-
-	loginData, err := Dto.UnmarshalLoginData(body)
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"message": "Invalid token",
-		})
-		c.Abort()
-		return Dto.LoginData{}
-	}
-
-	return loginData
-}
 
 // CustomClaims contains custom data we want from the token.
 type CustomClaims struct {
@@ -125,8 +27,10 @@ func (c CustomClaims) Validate(ctx context.Context) error {
 }
 
 // EnsureValidToken is a middleware that will check the validity of our JWT.
-func EnsureValidToken() func(next http.Handler) http.Handler {
-	issuerURL, err := url.Parse("https://" + os.Getenv("AUTH0_DOMAIN") + "/")
+func EnsureValidToken() gin.HandlerFunc {
+	issuerURL, err := url.Parse(os.Getenv("AUTH0_DOMAIN") + "/")
+	log.Println("Issuer URL: ", issuerURL)
+	log.Println("Audience: ", os.Getenv("AUTH0_AUDIENCE"))
 	if err != nil {
 		log.Fatalf("Failed to parse the issuer url: %v", err)
 	}
@@ -137,7 +41,7 @@ func EnsureValidToken() func(next http.Handler) http.Handler {
 		provider.KeyFunc,
 		validator.RS256,
 		issuerURL.String(),
-		[]string{os.Getenv("AUTH0_AUDIENCE")},
+		[]string{os.Getenv("AUTH0_AUDIENCE"), "KpDGogGXqWeuGQfZ4Wu30neiHS79hGiU"},
 		validator.WithCustomClaims(
 			func() validator.CustomClaims {
 				return &CustomClaims{}
@@ -149,20 +53,39 @@ func EnsureValidToken() func(next http.Handler) http.Handler {
 		log.Fatalf("Failed to set up the jwt validator")
 	}
 
-	errorHandler := func(w http.ResponseWriter, r *http.Request, err error) {
-		log.Printf("Encountered error while validating JWT: %v", err)
+	return func(c *gin.Context) {
+		tokenString := c.GetHeader("Authorization")
 
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusUnauthorized)
-		w.Write([]byte(`{"message":"Failed to validate JWT."}`))
-	}
+		if tokenString == "" {
+			c.JSON(http.StatusUnauthorized, gin.H{"message": "Authorization header is missing"})
+			c.Abort()
+			return
+		}
 
-	middleware := jwtmiddleware.New(
-		jwtValidator.ValidateToken,
-		jwtmiddleware.WithErrorHandler(errorHandler),
-	)
+		log.Printf("Token: %v", tokenString)
+		// remove the Bearer prefix
+		tokenString = tokenString[7:]
+		log.Println("Token after removing Bearer prefix: ", tokenString)
+		tokenInterface, err := jwtValidator.ValidateToken(context.Background(), tokenString)
+		if err != nil {
+			log.Printf("Encountered error while validating JWT: %v", err)
+			c.JSON(http.StatusUnauthorized, gin.H{"message": "Failed to validate JWT."})
+			c.Abort()
+			return
+		}
 
-	return func(next http.Handler) http.Handler {
-		return middleware.CheckJWT(next)
+		if validatedClaims, ok := tokenInterface.(*validator.ValidatedClaims); ok {
+			// Now you can access the fields of validatedClaims
+			fmt.Println(validatedClaims.RegisteredClaims.Issuer)
+			fmt.Println(validatedClaims.RegisteredClaims.Subject)
+
+			split := strings.Split(validatedClaims.RegisteredClaims.Subject, "|")
+			// split[0] will have the provider and split[1] will have the ID
+			id := split[1]
+			c.Set("user", id)
+			c.Next()
+		} else {
+			// handle error, the assertion failed
+		}
 	}
 }
