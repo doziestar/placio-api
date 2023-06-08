@@ -35,7 +35,7 @@ func NewUserService(db *gorm.DB) *UserServiceImpl {
 func (s *UserServiceImpl) GetUser(auth0ID string) (*models.User, error) {
 	log.Println("GetUser", auth0ID)
 	var user models.User
-	if err := s.db.Where("auth0_id = ?", auth0ID).First(&user).Error; err != nil {
+	if err := s.db.Preload("Relationships").Where("auth0_id = ?", auth0ID).First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			// The user does not exist in our database, so let's create one
 			newUser := models.User{Auth0ID: auth0ID,UserID: models.GenerateID()}
@@ -110,7 +110,14 @@ func (s *UserServiceImpl) CreateBusinessAccount(userID, name, role string) (*mod
 	}
 
 	tx.Commit()
-	return businessAccount, nil
+
+	// Now we need to fetch the created business account with its relationships
+	var createdBusinessAccount models.BusinessAccount
+	if err := s.db.Preload("Relationships").Where("id = ?", businessAccount.ID).First(&createdBusinessAccount).Error; err != nil {
+		return nil, err
+	}
+
+	return &createdBusinessAccount, nil
 }
 
 // AssociateUserWithBusinessAccount associates a user with a Business Account.
