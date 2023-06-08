@@ -1,6 +1,9 @@
 package models
 
 import (
+	"context"
+	"placio-pkg/logger"
+
 	"gorm.io/gorm"
 )
 
@@ -36,15 +39,15 @@ func Migrate(Db *gorm.DB) error {
 		&NotificationsSettings{},
 		&ContentSettings{},
 	)
-	// err := Db.Migrator().DropTable(modelList...)
-	// if err != nil {
-	// 	return err
-	// }
-	// // // Migrate User model first
-	// if err := Db.AutoMigrate(modelList...); err != nil {
-	// 	logger.Error(context.Background(), err.Error())
-	// 	return err
-	// }
+	err := Db.Migrator().DropTable(modelList...)
+	if err != nil {
+		return err
+	}
+	// // Migrate User model first
+	if err := Db.AutoMigrate(modelList...); err != nil {
+		logger.Error(context.Background(), err.Error())
+		return err
+	}
 
 	// Migrate other models
 	//for _, model := range modelList[1:] {
