@@ -2202,6 +2202,83 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Update a user's details by their Auth0 ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Update a user's details",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User Auth0 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "User data to update",
+                        "name": "userData",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.Auth0UserData"
+                        }
+                    },
+                    {
+                        "description": "App metadata to update",
+                        "name": "appData",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.AppMetadata"
+                        }
+                    },
+                    {
+                        "description": "User metadata to update",
+                        "name": "userMetaData",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.Metadata"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully updated user",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
             }
         },
         "/api/v1/users/{id}/business-accounts": {
@@ -2990,6 +3067,32 @@ const docTemplate = `{
                 }
             }
         },
+        "placio-app_models.AppMetadata": {
+            "type": "object",
+            "properties": {
+                "CommentNotifications": {
+                    "type": "boolean"
+                },
+                "DirectMessageNotifications": {
+                    "type": "boolean"
+                },
+                "EmailNotifications": {
+                    "type": "boolean"
+                },
+                "FollowNotifications": {
+                    "type": "boolean"
+                },
+                "LikeNotifications": {
+                    "type": "boolean"
+                },
+                "MentionNotifications": {
+                    "type": "boolean"
+                },
+                "PushNotifications": {
+                    "type": "boolean"
+                }
+            }
+        },
         "placio-app_models.Attendee": {
             "type": "object",
             "properties": {
@@ -3013,6 +3116,65 @@ const docTemplate = `{
                 },
                 "userID": {
                     "type": "string"
+                }
+            }
+        },
+        "placio-app_models.Auth0UserData": {
+            "type": "object",
+            "properties": {
+                "app_metadata": {
+                    "$ref": "#/definitions/placio-app_models.AppMetadata"
+                },
+                "blocked": {
+                    "type": "boolean"
+                },
+                "client_id": {
+                    "type": "string"
+                },
+                "connection": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "email_verified": {
+                    "type": "boolean"
+                },
+                "family_name": {
+                    "type": "string"
+                },
+                "given_name": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "phone_number": {
+                    "type": "string"
+                },
+                "phone_verified": {
+                    "type": "boolean"
+                },
+                "picture": {
+                    "type": "string"
+                },
+                "user_metadata": {
+                    "$ref": "#/definitions/placio-app_models.Metadata"
+                },
+                "username": {
+                    "type": "string"
+                },
+                "verify_email": {
+                    "type": "boolean"
+                },
+                "verify_phone_number": {
+                    "type": "boolean"
                 }
             }
         },
@@ -3078,28 +3240,22 @@ const docTemplate = `{
                 }
             }
         },
-        "placio-app_models.ContentSettings": {
+        "placio-app_models.Content": {
             "type": "object",
             "properties": {
-                "autoplayVideos": {
+                "AutoplayVideos": {
                     "type": "boolean"
                 },
-                "defaultPostPrivacy": {
+                "DefaultPostPrivacy": {
                     "type": "string"
                 },
-                "displaySensitiveMedia": {
+                "DisplaySensitiveMedia": {
                     "type": "boolean"
                 },
-                "explicitContentFilter": {
+                "ExplicitContentFilter": {
                     "type": "string"
                 },
-                "id": {
-                    "type": "string"
-                },
-                "mediaVisibility": {
-                    "type": "string"
-                },
-                "userID": {
+                "MediaVisibility": {
                     "type": "string"
                 }
             }
@@ -3197,41 +3353,6 @@ const docTemplate = `{
                 }
             }
         },
-        "placio-app_models.GeneralSettings": {
-            "type": "object",
-            "properties": {
-                "content": {
-                    "$ref": "#/definitions/placio-app_models.ContentSettings"
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "deletedAt": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "language": {
-                    "type": "string"
-                },
-                "notifications": {
-                    "$ref": "#/definitions/placio-app_models.NotificationsSettings"
-                },
-                "privacy": {
-                    "type": "string"
-                },
-                "theme": {
-                    "type": "string"
-                },
-                "updatedAt": {
-                    "type": "string"
-                },
-                "userID": {
-                    "type": "string"
-                }
-            }
-        },
         "placio-app_models.Like": {
             "type": "object",
             "properties": {
@@ -3276,34 +3397,26 @@ const docTemplate = `{
                 }
             }
         },
-        "placio-app_models.NotificationsSettings": {
+        "placio-app_models.Metadata": {
             "type": "object",
             "properties": {
-                "commentNotifications": {
-                    "type": "boolean"
+                "Content": {
+                    "$ref": "#/definitions/placio-app_models.Content"
                 },
-                "directMessageNotifications": {
-                    "type": "boolean"
-                },
-                "emailNotifications": {
-                    "type": "boolean"
-                },
-                "followNotifications": {
-                    "type": "boolean"
-                },
-                "id": {
+                "CreatedAt": {
                     "type": "string"
                 },
-                "likeNotifications": {
-                    "type": "boolean"
+                "DeletedAt": {},
+                "Language": {
+                    "type": "string"
                 },
-                "mentionNotifications": {
-                    "type": "boolean"
+                "Privacy": {
+                    "type": "string"
                 },
-                "pushNotifications": {
-                    "type": "boolean"
+                "Theme": {
+                    "type": "string"
                 },
-                "userID": {
+                "UpdatedAt": {
                     "type": "string"
                 }
             }
@@ -3460,6 +3573,7 @@ const docTemplate = `{
                     "$ref": "#/definitions/gorm.DeletedAt"
                 },
                 "posts": {
+                    "description": "Settings      GeneralSettings            ` + "`" + `gorm:\"foreignKey:UserID\"` + "`" + `",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/placio-app_models.Post"
@@ -3470,9 +3584,6 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/placio-app_models.UserBusinessRelationship"
                     }
-                },
-                "settings": {
-                    "$ref": "#/definitions/placio-app_models.GeneralSettings"
                 },
                 "updatedAt": {
                     "type": "string"

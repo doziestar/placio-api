@@ -97,6 +97,8 @@ func EnsureValidToken() gin.HandlerFunc {
 			// split[0] will have the provider and split[1] will have the ID
 			id := split[1]
 			c.Set("user", id)
+			c.Set("auth0_id", validatedClaims.RegisteredClaims.Subject)
+			c.Set("token", tokenString)
 			c.Next()
 		} else {
 			// handle error, the assertion failed
