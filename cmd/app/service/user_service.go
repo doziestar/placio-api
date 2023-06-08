@@ -1,9 +1,15 @@
 package service
 
 import (
+	"bytes"
+	"encoding/json"
 	"errors"
+	"fmt"
+	"io/ioutil"
 	"log"
+	"net/http"
 	"placio-app/models"
+	"placio-app/utility"
 
 	"gorm.io/gorm"
 )
@@ -22,6 +28,8 @@ type UserService interface {
 	RejectInvitation(invitationID uint) error
 	TransferBusinessAccountOwnership(currentOwnerID uint, newOwnerID uint, businessAccountID uint) error
 	GetUserInvitations(userID uint) ([]*models.Invitation, error)
+	UpdateAuth0UserData(userID string, IdToken string, userData *models.Auth0UserData, appData *models.AppMetadata, userMetaData *models.Metadata) error
+	GetAuth0UserData(userID string, IdToken string) (models.Auth0UserData, error)
 }
 
 type UserServiceImpl struct {
@@ -35,10 +43,10 @@ func NewUserService(db *gorm.DB) *UserServiceImpl {
 func (s *UserServiceImpl) GetUser(auth0ID string) (*models.User, error) {
 	log.Println("GetUser", auth0ID)
 	var user models.User
-	if err := s.db.Where("auth0_id = ?", auth0ID).First(&user).Error; err != nil {
+	if err := s.db.Preload("Relationships").Where("auth0_id = ?", auth0ID).First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			// The user does not exist in our database, so let's create one
-			newUser := models.User{Auth0ID: auth0ID,UserID: models.GenerateID()}
+			newUser := models.User{Auth0ID: auth0ID, UserID: models.GenerateID()}
 			if err := s.db.Create(&newUser).Error; err != nil {
 				return nil, err
 			}
@@ -110,7 +118,14 @@ func (s *UserServiceImpl) CreateBusinessAccount(userID, name, role string) (*mod
 	}
 
 	tx.Commit()
-	return businessAccount, nil
+
+	// Now we need to fetch the created business account with its relationships
+	var createdBusinessAccount models.BusinessAccount
+	if err := s.db.Preload("Relationships").Where("id = ?", businessAccount.ID).First(&createdBusinessAccount).Error; err != nil {
+		return nil, err
+	}
+
+	return &createdBusinessAccount, nil
 }
 
 // AssociateUserWithBusinessAccount associates a user with a Business Account.
@@ -145,6 +160,112 @@ func (s *UserServiceImpl) GetUsersForBusinessAccount(businessAccountID string) (
 		users[i] = relationship.User
 	}
 	return users, nil
+}
+
+// UpdateAuth0UserData updates the user_metadata, app_metadata, and other fields in Auth0.
+func (s *UserServiceImpl) UpdateAuth0UserData(userID string, IdToken string, userData *models.Auth0UserData, appData *models.AppMetadata, userMetaData *models.Metadata) error {
+	// Create an HTTP client
+	client := &http.Client{}
+
+	// Get the current user data
+	currUserData, err := s.GetAuth0UserData(userID, IdToken)
+	if err != nil {
+		return err
+	}
+
+	// Convert the current data and the new data into maps
+	currUserDataMap, err := utility.StructToMap(&currUserData)
+	if err != nil {
+		return err
+	}
+	newUserDataMap, err := utility.StructToMap(userData)
+	if err != nil {
+		return err
+	}
+	appDataMap, err := utility.StructToMap(appData)
+	if err != nil {
+		return err
+	}
+	userMetaDataMap, err := utility.StructToMap(userMetaData)
+	if err != nil {
+		return err
+	}
+
+	// Merge the new data with the current data
+	mergedUserData := utility.MergeMaps(currUserDataMap, newUserDataMap)
+
+	// Overwrite the metadata fields with the new data
+	mergedUserData["user_metadata"] = userMetaDataMap
+	mergedUserData["app_metadata"] = appDataMap
+
+	// Create the JSON payload
+	jsonPayload, err := json.Marshal(mergedUserData)
+	if err != nil {
+		return err
+	}
+
+	// Create the request
+	req, err := http.NewRequest("PATCH", fmt.Sprintf("https://auth.placio.io/api/v2/users/%s", userID), bytes.NewBuffer(jsonPayload))
+	if err != nil {
+		return err
+	}
+
+	// Set the headers
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", IdToken))
+
+	// Send the request
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	// Check the response status code
+	if resp.StatusCode != http.StatusOK {
+		body, _ := ioutil.ReadAll(resp.Body)
+		return fmt.Errorf("unexpected status code: %d, body: %s", resp.StatusCode, string(body))
+	}
+
+	return nil
+}
+
+// GetAuth0UserData retrieves the current user data from Auth0.
+func (s *UserServiceImpl) GetAuth0UserData(userID string, IdToken string) (models.Auth0UserData, error) {
+	// Create an HTTP client
+	client := &http.Client{}
+
+	// Create the request
+	req, err := http.NewRequest("GET", fmt.Sprintf("https://auth.placio.io/api/v2/users/%s", userID), nil)
+	if err != nil {
+		return models.Auth0UserData{}, err
+	}
+
+	// Set the headers
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", IdToken))
+
+	// Send the request
+	resp, err := client.Do(req)
+	if err != nil {
+		return models.Auth0UserData{}, err
+	}
+	defer resp.Body.Close()
+
+	// Check the response status code
+	if resp.StatusCode != http.StatusOK {
+		body, _ := ioutil.ReadAll(resp.Body)
+		return models.Auth0UserData{}, fmt.Errorf("unexpected status code: %d, body: %s", resp.StatusCode, string(body))
+	}
+
+	// Parse the response body
+	var userData models.Auth0UserData
+	err = json.NewDecoder(resp.Body).Decode(&userData)
+	if err != nil {
+		return models.Auth0UserData{}, err
+	}
+
+	return userData, nil
 }
 
 // RemoveUserFromBusinessAccount removes a User's association with a Business Account.

@@ -15,9 +15,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// CustomClaims contains custom data we want from the token.
 type CustomClaims struct {
-	Scope string `json:"scope"`
+	GivenName     string `json:"given_name"`
+	FamilyName    string `json:"family_name"`
+	Nickname      string `json:"nickname"`
+	Name          string `json:"name"`
+	Picture       string `json:"picture"`
+	Locale        string `json:"locale"`
+	UpdatedAt     string `json:"updated_at"`
+	Email         string `json:"email"`
+	EmailVerified bool   `json:"email_verified"`
+	Scope         string `json:"scope"`
 }
 
 // Validate does nothing for this example, but we need
@@ -29,8 +37,6 @@ func (c CustomClaims) Validate(ctx context.Context) error {
 // EnsureValidToken is a middleware that will check the validity of our JWT.
 func EnsureValidToken() gin.HandlerFunc {
 	issuerURL, err := url.Parse(os.Getenv("AUTH0_DOMAIN") + "/")
-	log.Println("Issuer URL: ", issuerURL)
-	log.Println("Audience: ", os.Getenv("AUTH0_AUDIENCE"))
 	if err != nil {
 		log.Fatalf("Failed to parse the issuer url: %v", err)
 	}
@@ -62,10 +68,8 @@ func EnsureValidToken() gin.HandlerFunc {
 			return
 		}
 
-		log.Printf("Token: %v", tokenString)
 		// remove the Bearer prefix
 		tokenString = tokenString[7:]
-		log.Println("Token after removing Bearer prefix: ", tokenString)
 		tokenInterface, err := jwtValidator.ValidateToken(context.Background(), tokenString)
 		if err != nil {
 			log.Printf("Encountered error while validating JWT: %v", err)
@@ -78,11 +82,23 @@ func EnsureValidToken() gin.HandlerFunc {
 			// Now you can access the fields of validatedClaims
 			fmt.Println(validatedClaims.RegisteredClaims.Issuer)
 			fmt.Println(validatedClaims.RegisteredClaims.Subject)
+			fmt.Println(validatedClaims.RegisteredClaims.Audience)
+
+			fmt.Println(validatedClaims.CustomClaims.(*CustomClaims).GivenName)
+			fmt.Println(validatedClaims.CustomClaims.(*CustomClaims).FamilyName)
+			fmt.Println(validatedClaims.CustomClaims.(*CustomClaims).Nickname)
+			fmt.Println(validatedClaims.CustomClaims.(*CustomClaims).Name)
+			fmt.Println(validatedClaims.CustomClaims.(*CustomClaims).Picture)
+			fmt.Println(validatedClaims.CustomClaims.(*CustomClaims).Locale)
+			fmt.Println(validatedClaims.CustomClaims.(*CustomClaims).UpdatedAt)
+			fmt.Println(validatedClaims.CustomClaims.(*CustomClaims).Email)
 
 			split := strings.Split(validatedClaims.RegisteredClaims.Subject, "|")
 			// split[0] will have the provider and split[1] will have the ID
 			id := split[1]
 			c.Set("user", id)
+			c.Set("auth0_id", validatedClaims.RegisteredClaims.Subject)
+			c.Set("token", tokenString)
 			c.Next()
 		} else {
 			// handle error, the assertion failed

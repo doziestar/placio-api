@@ -25,6 +25,7 @@ func (uc *UserController) RegisterRoutes(router *gin.RouterGroup) {
 	userRouter := router.Group("/users")
 	{
 		userRouter.GET("/", utility.Use(uc.GetUser))
+		userRouter.PATCH("/:id", utility.Use(uc.UpdateAuth0UserData))
 		userRouter.POST("/business-account", utility.Use(uc.CreateBusinessAccount))
 		userRouter.GET("/:id/business-accounts", utility.Use(uc.GetUserBusinessAccounts))
 		userRouter.POST("/:userID/business-account/:businessAccountID/association", utility.Use(uc.AssociateUserWithBusinessAccount))
@@ -76,6 +77,58 @@ func (uc *UserController) GetUser(ctx *gin.Context) error {
 	return nil
 }
 
+// UpdateAuth0UserData updates a user's details in Auth0.
+// @Summary Update a user's details
+// @Description Update a user's details by their Auth0 ID
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param id path string true "User Auth0 ID"
+// @Param userData body models.Auth0UserData false "User data to update"
+// @Param appData body models.AppMetadata false "App metadata to update"
+// @Param userMetaData body models.Metadata false "User metadata to update"
+// @Security Bearer
+// @Success 200 {object} models.User "Successfully updated user"
+// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
+// @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
+// @Router /api/v1/users/{id} [patch]
+func (uc *UserController) UpdateAuth0UserData(ctx *gin.Context) error {
+	auth0ID := ctx.MustGet("user").(string)
+	log.Println("UpdateAuth0UserData", ctx.Request.URL.Path, ctx.Request.Method, auth0ID)
+	if auth0ID == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": "User Auth0 ID required",
+		})
+		return nil
+	}
+
+	var userData *models.Auth0UserData
+	var appData *models.AppMetadata
+	var userMetaData *models.Metadata
+	if err := ctx.ShouldBindJSON(&userData); err != nil {
+		userData = nil
+	}
+	if err := ctx.ShouldBindJSON(&appData); err != nil {
+		appData = nil
+	}
+	if err := ctx.ShouldBindJSON(&userMetaData); err != nil {
+		userMetaData = nil
+	}
+
+	err := uc.userService.UpdateAuth0UserData(auth0ID, ctx.Request.Header.Get("Authorization"), userData, appData, userMetaData)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Internal Server Error",
+		})
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "User data updated successfully",
+	})
+	return nil
+}
 
 // CreateBusinessAccount creates a new business account and associates it with the user.
 // @Summary Create a new business account
@@ -117,7 +170,6 @@ func (uc *UserController) CreateBusinessAccount(ctx *gin.Context) error {
 	ctx.JSON(http.StatusCreated, newBusinessAccount)
 	return nil
 }
-
 
 // GetUserBusinessAccounts retrieves all the business accounts associated with a specific user.
 // @Summary Get all business accounts for a user

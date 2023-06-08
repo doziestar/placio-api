@@ -1,6 +1,7 @@
 package utility
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -126,4 +127,30 @@ func Use(fn func(*gin.Context) error) gin.HandlerFunc {
 			c.Next()
 		}
 	}
+}
+
+// structToMap converts a struct to a map, omitting fields that are nil.
+func StructToMap(v interface{}) (map[string]interface{}, error) {
+	var m map[string]interface{}
+	data, err := json.Marshal(v)
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(data, &m)
+	if err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
+// mergeMaps merges two map[string]interface{} objects.
+func MergeMaps(map1, map2 map[string]interface{}) map[string]interface{} {
+	merged := make(map[string]interface{})
+	for k, v := range map1 {
+		merged[k] = v
+	}
+	for k, v := range map2 {
+		merged[k] = v
+	}
+	return merged
 }
