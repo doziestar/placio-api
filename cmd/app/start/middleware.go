@@ -27,7 +27,7 @@ func Middleware(app *gin.Engine) {
 	//app.Use(gin.Logger())
 	//app.Use(gin.Recovery())
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*"},
+		AllowOrigins:     []string{"*","https://placio.io/, https://placio.io", "https://www.placio.io/, https://www.placio.io", "http://localhost:3000", "http://localhost:3000/"},
 		AllowMethods:     []string{"PUT", "PATCH", "POST", "GET", "DELETE"},
 		// AllowHeaders:     []string{"Origin"},
 		AllowHeaders:     []string{"Accept", "Accept-Language", "Content-Language", "Content-Type", "DPR", "origin"},
@@ -39,6 +39,7 @@ func Middleware(app *gin.Engine) {
 		// AllowAllOrigins: true,
 		// AllowOriginFunc: true,
 		MaxAge: 12 * time.Hour,
+
 	}))
 
 	store := cookie.NewStore([]byte("secret"))
