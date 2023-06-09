@@ -41,6 +41,18 @@ func InitializeRoutes(app *gin.Engine, db *gorm.DB) {
 	fmt.Println("Initializing routes...")
 	app.GET("/docs/*files", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
+	app.GET("/ready", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "ready",
+		})
+	})
+
+	app.GET("/health", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "health",
+		})
+	})
+
 	app.Use(middleware.EnsureValidToken())
 
 	routerGroupV1 := app.Group("/api/v1")

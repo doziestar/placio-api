@@ -27,10 +27,10 @@ func Middleware(app *gin.Engine) {
 	//app.Use(gin.Logger())
 	//app.Use(gin.Recovery())
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*","https://placio.io/, https://placio.io", "https://www.placio.io/, https://www.placio.io", "http://localhost:3000", "http://localhost:3000/"},
-		AllowMethods:     []string{"PUT", "PATCH", "POST", "GET", "DELETE"},
+		AllowOrigins: []string{"*", "https://placio.io/, https://placio.io", "https://www.placio.io/, https://www.placio.io", "http://localhost:3000", "http://localhost:3000/"},
+		AllowMethods: []string{"PUT", "PATCH", "POST", "GET", "DELETE"},
 		// AllowHeaders:     []string{"Origin"},
-		AllowHeaders:     []string{"Accept", "Accept-Language", "Content-Language", "Content-Type", "DPR", "origin"},
+		AllowHeaders: []string{"Accept", "Accept-Language", "Content-Language", "Content-Type", "DPR", "origin"},
 		// ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 		// AllowOriginFunc: func(origin string) bool {
@@ -39,7 +39,6 @@ func Middleware(app *gin.Engine) {
 		// AllowAllOrigins: true,
 		// AllowOriginFunc: true,
 		MaxAge: 12 * time.Hour,
-
 	}))
 
 	store := cookie.NewStore([]byte("secret"))
@@ -128,18 +127,6 @@ func Middleware(app *gin.Engine) {
 	//
 	//// register the `/metrics` route.
 	//app.GET("/metrics-new", ginprom.PromHandler(promhttp.Handler()))
-
-	app.GET("/ready", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "ready",
-		})
-	})
-
-	app.GET("/health", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "health",
-		})
-	})
 
 	//p.Use(app)
 

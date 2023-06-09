@@ -14,7 +14,6 @@ import (
 )
 
 func Initialize(PORT string, app *gin.Engine) {
-	Middleware(app)
 
 	err := sentry.Init(sentry.ClientOptions{
 		Dsn: "",
