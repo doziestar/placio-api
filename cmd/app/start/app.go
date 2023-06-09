@@ -2,21 +2,24 @@ package start
 
 import (
 	"context"
-	"github.com/getsentry/sentry-go"
 	"github.com/gin-gonic/gin"
-	"golang.org/x/net/http2"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/getsentry/sentry-go"
 )
 
 func Initialize(PORT string, app *gin.Engine) {
 
 	err := sentry.Init(sentry.ClientOptions{
-		Dsn:              "",
+		Dsn: "",
+		// Set TracesSampleRate to 1.0 to capture 100%
+		// of transactions for performance monitoring.
+		// We recommend adjusting this value in production,
 		TracesSampleRate: 1.0,
 		ServerName:       "placio-api",
 		Release:          "1.0.0",
@@ -31,16 +34,19 @@ func Initialize(PORT string, app *gin.Engine) {
 		Handler: app,
 	}
 
-	// Enable HTTP/2
-	http2.ConfigureServer(srv, &http2.Server{})
-
 	go func() {
-		if err := srv.ListenAndServeTLS("server.crt", "server.key"); err != nil && err != http.ErrServerClosed {
+		// service connections
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("listen: %s\n", err)
 		}
 	}()
 
+	// Wait for interrupt signal to gracefully shutdown the server with
+	// a timeout of 5 seconds.
 	quit := make(chan os.Signal)
+	// kill (no param) default send syscanll.SIGTERM
+	// kill -2 is syscall.SIGINT
+	// kill -9 is syscall. SIGKILL but can"t be catch, so don't need add it
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 	log.Println("Shutdown Server ...")
@@ -50,10 +56,12 @@ func Initialize(PORT string, app *gin.Engine) {
 	if err := srv.Shutdown(ctx); err != nil {
 		log.Fatal("Server Shutdown:", err)
 	}
+	// catching ctx.Done(). timeout of 5 seconds.
 	select {
 	case <-ctx.Done():
 		log.Println("timeout of 5 seconds.")
 	}
 	log.Println("Server exiting")
+	// Flush buffered events before the program terminates.
 	defer sentry.Flush(2 * time.Second)
 }
