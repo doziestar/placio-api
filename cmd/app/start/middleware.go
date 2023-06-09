@@ -30,14 +30,18 @@ func Middleware(app *gin.Engine) {
 		AllowHeaders:     []string{"Accept", "Accept-Language", "Content-Language", "Content-Type", "DPR", "origin", "Access-Control-Allow-Headers", "authorization", "X-Requested-With", "X-CSRF-Token", "X-Auth-Token", "X-Forwarded-For", "X-Real-IP", "X-Forwarded-Proto", "X-Forwarded-Host", "X-Forwarded-Port", "X-Forwarded-Server", "X-Forwarded-By", "X-Request-ID", "X-Correlation-ID", "X-Session-ID", "X-Session-Expires"},
 		ExposeHeaders:    []string{"Content-Length", "Access-Control-Allow-Origin", "Access-Control-Allow-Headers", "Content-Type", "X-Auth-Token", "X-CSRF-Token", "X-Request-ID", "X-Correlation-ID", "X-Session-ID", "X-Session-Expires"},
 		AllowCredentials: true,
-		// AllowOriginFunc: func(origin string) bool {
-		// 	return origin == "https://placio.io"
-		// },
+		AllowOriginFunc: func(origin string) bool {
+			return origin == "https://placio.io"
+		},
 		MaxAge:     12 * time.Hour,
 		AllowFiles: true,
 		// AllowAllOrigins: true,
 		// AllowWildcard: true,
 	}))
+
+	app.Use(func(c *gin.Context) {
+		c.Header("Vary", "Origin")
+	})
 
 	store := cookie.NewStore([]byte("secret"))
 	app.Use(sessions.Sessions("mysession", store))
