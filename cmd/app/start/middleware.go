@@ -24,20 +24,16 @@ func formatDate(t time.Time) string {
 }
 
 func Middleware(app *gin.Engine) {
-	//app.Use(gin.Logger())
-	//app.Use(gin.Recovery())
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: []string{"*", "https://placio.io/, https://placio.io", "https://www.placio.io/, https://www.placio.io", "http://localhost:3000", "http://localhost:3000/"},
-		AllowMethods: []string{"PUT", "PATCH", "POST", "GET", "DELETE"},
-		// AllowHeaders:     []string{"Origin"},
-		AllowHeaders: []string{"Accept", "Accept-Language", "Content-Language", "Content-Type", "DPR", "origin"},
-		// ExposeHeaders:    []string{"Content-Length"},
+		AllowOrigins:     []string{"*", "https://placio.io/, https://placio.io", "https://www.placio.io/, https://www.placio.io", "http://localhost:3000", "http://localhost:3000/"},
+		AllowMethods:     []string{"PUT", "PATCH", "POST", "GET", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Accept", "Accept-Language", "Content-Language", "Content-Type", "DPR", "origin", "Access-Control-Allow-Headers"},
+		ExposeHeaders:    []string{"Content-Length", "Access-Control-Allow-Origin", "Access-Control-Allow-Headers", "Content-Type"},
 		AllowCredentials: true,
 		// AllowOriginFunc: func(origin string) bool {
 		// 	return origin == "https://placio.io"
 		// },
 		// AllowAllOrigins: true,
-		// AllowOriginFunc: true,
 		MaxAge: 12 * time.Hour,
 	}))
 
