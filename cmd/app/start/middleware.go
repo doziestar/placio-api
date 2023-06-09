@@ -3,15 +3,18 @@ package start
 import (
 	"context"
 	"fmt"
+
 	"github.com/axiaoxin-com/logging"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
+
 	//"github.com/prometheus/client_golang/prometheus/promhttp"
-	"github.com/utrack/gin-csrf"
 	"time"
+
+	csrf "github.com/utrack/gin-csrf"
 	// "gorm.io/gorm/logger"
 	// "gorm.io/gorm/logger"
 )
@@ -32,7 +35,7 @@ func Middleware(app *gin.Engine) {
 		// AllowOriginFunc: func(origin string) bool {
 		// 	return origin == "https://placio.io"
 		// },
-		AllowAllOrigins: true,
+		// AllowAllOrigins: true,
 		// AllowOriginFunc: true,
 		MaxAge: 12 * time.Hour,
 	}))
