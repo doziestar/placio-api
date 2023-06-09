@@ -25,7 +25,7 @@ func formatDate(t time.Time) string {
 
 func Middleware(app *gin.Engine) {
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"https://placio.io", "https://www.placio.io", "http://localhost:3000"},
+		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"PUT", "PATCH", "POST", "GET", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Accept", "Accept-Language", "Content-Language", "Content-Type", "DPR", "origin", "Access-Control-Allow-Headers", "authorization", "X-Requested-With", "X-CSRF-Token", "X-Auth-Token", "X-Forwarded-For", "X-Real-IP", "X-Forwarded-Proto", "X-Forwarded-Host", "X-Forwarded-Port", "X-Forwarded-Server", "X-Forwarded-By", "X-Request-ID", "X-Correlation-ID", "X-Session-ID", "X-Session-Expires"},
 		ExposeHeaders:    []string{"Content-Length", "Access-Control-Allow-Origin", "Access-Control-Allow-Headers", "Content-Type", "X-Auth-Token", "X-CSRF-Token", "X-Request-ID", "X-Correlation-ID", "X-Session-ID", "X-Session-Expires"},
