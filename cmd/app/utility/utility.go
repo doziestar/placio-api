@@ -154,3 +154,12 @@ func MergeMaps(map1, map2 map[string]interface{}) map[string]interface{} {
 	}
 	return merged
 }
+
+// ProcessResponse processes the response from a service.
+func ProcessResponse(data interface{}, status string, message string) gin.H {
+	return gin.H{
+		"data":    data,
+		"status":  status,
+		"message": message,
+	}
+}

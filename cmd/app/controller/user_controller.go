@@ -25,14 +25,14 @@ func (uc *UserController) RegisterRoutes(router *gin.RouterGroup) {
 	userRouter := router.Group("/users")
 	{
 		userRouter.GET("/", utility.Use(uc.GetUser))
-		userRouter.PATCH("/:id", utility.Use(uc.UpdateAuth0UserData))
-		userRouter.POST("/business-account", utility.Use(uc.CreateBusinessAccount))
-		userRouter.GET("/:id/business-accounts", utility.Use(uc.GetUserBusinessAccounts))
-		userRouter.POST("/:userID/business-account/:businessAccountID/association", utility.Use(uc.AssociateUserWithBusinessAccount))
-		userRouter.DELETE("/:userID/business-account/:businessAccountID/association", utility.Use(uc.RemoveUserFromBusinessAccount))
-		userRouter.GET("/business-account/:businessAccountID/users", utility.Use(uc.GetUsersForBusinessAccount))
+		userRouter.PATCH("/:id", utility.Use(uc.updateAuth0UserData))
+		userRouter.POST("/business-account", utility.Use(uc.createBusinessAccount))
+		userRouter.GET("/:id/business-accounts", utility.Use(uc.getUserBusinessAccounts))
+		userRouter.POST("/:userID/business-account/:businessAccountID/association", utility.Use(uc.associateUserWithBusinessAccount))
+		userRouter.DELETE("/:userID/business-account/:businessAccountID/association", utility.Use(uc.removeUserFromBusinessAccount))
+		userRouter.GET("/business-account/:businessAccountID/users", utility.Use(uc.getUsersForBusinessAccount))
 		// userRouter.GET("/:userID/business-accounts", utility.Use(uc.GetBusinessAccountsForUser))
-		userRouter.POST("/:userID/business-account/:businessAccountID/role/:action", utility.Use(uc.CanPerformAction))
+		userRouter.POST("/:userID/business-account/:businessAccountID/role/:action", utility.Use(uc.canPerformAction))
 	}
 }
 
@@ -77,7 +77,7 @@ func (uc *UserController) GetUser(ctx *gin.Context) error {
 	return nil
 }
 
-// UpdateAuth0UserData updates a user's details in Auth0.
+// updateAuth0UserData updates a user's details in Auth0.
 // @Summary Update a user's details
 // @Description Update a user's details by their Auth0 ID
 // @Tags User
@@ -93,7 +93,7 @@ func (uc *UserController) GetUser(ctx *gin.Context) error {
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/users/{id} [patch]
-func (uc *UserController) UpdateAuth0UserData(ctx *gin.Context) error {
+func (uc *UserController) updateAuth0UserData(ctx *gin.Context) error {
 	auth0ID := ctx.MustGet("user").(string)
 	log.Println("UpdateAuth0UserData", ctx.Request.URL.Path, ctx.Request.Method, auth0ID)
 	if auth0ID == "" {
@@ -116,7 +116,8 @@ func (uc *UserController) UpdateAuth0UserData(ctx *gin.Context) error {
 		userMetaData = nil
 	}
 
-	err := uc.userService.UpdateAuth0UserData(auth0ID, ctx.Request.Header.Get("Authorization"), userData, appData, userMetaData)
+	//user, err := uc.userService.UpdateAuth0UserData(auth0ID, ctx.Request.Header.Get("Authorization"), userData, appData, userMetaData)
+	user, err := uc.userService.UpdateAuth0UserData(auth0ID, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InliX2tBaHRaOWQ3VEt6VHc2cEJVayJ9.eyJpc3MiOiJodHRwczovL2Rldi1xbGIwbHYzZC51cy5hdXRoMC5jb20vIiwic3ViIjoiZnVqdWJFSlBCdGxnMzhGdE51dUM0MTNQaktsN3VwbnhAY2xpZW50cyIsImF1ZCI6Imh0dHBzOi8vYXBpLnBhbG5pZ2h0LmNvbSIsImlhdCI6MTY4NjI3NjQ0OSwiZXhwIjoxNjg4ODY4NDQ5LCJhenAiOiJmdWp1YkVKUEJ0bGczOEZ0TnV1QzQxM1BqS2w3dXBueCIsInNjb3BlIjoicmVhZDpldmVudHMgcmVhZDpwbGFjZXMgd3JpdGU6ZXZlbnRzIHdyaXRlIHBsYWNlcyBkZWxldGU6ZXZlbnRzIGRlbGV0ZTpwbGFjZXMgYXBpIiwiZ3R5IjoiY2xpZW50LWNyZWRlbnRpYWxzIiwicGVybWlzc2lvbnMiOlsicmVhZDpldmVudHMiLCJyZWFkOnBsYWNlcyIsIndyaXRlOmV2ZW50cyIsIndyaXRlIHBsYWNlcyIsImRlbGV0ZTpldmVudHMiLCJkZWxldGU6cGxhY2VzIiwiYXBpIl19.mvNEB7rxWC09gBBNdMd5sZ-XuLCbOrTM3AQfQCBMnAlkPC_KqYbQ3psMEqInMNksd2DAvPz_RLb_UmZoX4F-tQ-5sHxnswwTIW6UYyP64PDjo-X4VWRqhRa9n0zKPVCHHVlO3iOnEZ7prG0ctVfze5ZziyH3SQ5t-AKa87b4R2JFWJwqUwpDsEqsnmXrtM-2hv33As3_aN_hVmWS8wKJuEw1gOrr_l6tdGD_BqwtxFwgql2vYKivIXrOZfO5WpYlt8ROHi8lcnoG2FAN7zMzDfGgXfh7l4dv4XsUjQmjGR0bkvXn0YGSFN-e31aPc-53RbvkK5rYfFd0k5UmcZA0KA", userData, appData, userMetaData)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Internal Server Error",
@@ -124,13 +125,11 @@ func (uc *UserController) UpdateAuth0UserData(ctx *gin.Context) error {
 		return err
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "User data updated successfully",
-	})
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(user, "success", "Successfully updated user"))
 	return nil
 }
 
-// CreateBusinessAccount creates a new business account and associates it with the user.
+// createBusinessAccount creates a new business account and associates it with the user.
 // @Summary Create a new business account
 // @Description Create a new business account for the authenticated user
 // @Tags User
@@ -143,7 +142,7 @@ func (uc *UserController) UpdateAuth0UserData(ctx *gin.Context) error {
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/users/business-account [post]
-func (uc *UserController) CreateBusinessAccount(ctx *gin.Context) error {
+func (uc *UserController) createBusinessAccount(ctx *gin.Context) error {
 	auth0ID := ctx.MustGet("user").(string)
 
 	var businessAccount models.BusinessAccount
@@ -171,7 +170,7 @@ func (uc *UserController) CreateBusinessAccount(ctx *gin.Context) error {
 	return nil
 }
 
-// GetUserBusinessAccounts retrieves all the business accounts associated with a specific user.
+// getUserBusinessAccounts retrieves all the business accounts associated with a specific user.
 // @Summary Get all business accounts for a user
 // @Description Get all business accounts associated with a specific user
 // @Tags User
@@ -184,7 +183,7 @@ func (uc *UserController) CreateBusinessAccount(ctx *gin.Context) error {
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/users/{id}/business-accounts [get]
-func (uc *UserController) GetUserBusinessAccounts(ctx *gin.Context) error {
+func (uc *UserController) getUserBusinessAccounts(ctx *gin.Context) error {
 	userID := ctx.Param("id")
 	if userID == "" {
 		ctx.JSON(http.StatusBadRequest, gin.H{
@@ -205,7 +204,7 @@ func (uc *UserController) GetUserBusinessAccounts(ctx *gin.Context) error {
 	return nil
 }
 
-// AssociateUserWithBusinessAccount associates a user with a specific business account.
+// associateUserWithBusinessAccount associates a user with a specific business account.
 // @Summary Associate a user with a business account
 // @Description Associate a user with a specific business account
 // @Tags User
@@ -220,12 +219,12 @@ func (uc *UserController) GetUserBusinessAccounts(ctx *gin.Context) error {
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/users/{userID}/business-account/{businessAccountID}/association [post]
-func (uc *UserController) AssociateUserWithBusinessAccount(ctx *gin.Context) error {
+func (uc *UserController) associateUserWithBusinessAccount(ctx *gin.Context) error {
 	// TODO: Implement this method
 	return nil
 }
 
-// RemoveUserFromBusinessAccount removes a user's association with a specific business account.
+// removeUserFromBusinessAccount removes a user's association with a specific business account.
 // @Summary Remove a user's association with a business account
 // @Description Remove a user's association with a specific business account
 // @Tags User
@@ -239,12 +238,12 @@ func (uc *UserController) AssociateUserWithBusinessAccount(ctx *gin.Context) err
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/users/{userID}/business-account/{businessAccountID}/association [delete]
-func (uc *UserController) RemoveUserFromBusinessAccount(ctx *gin.Context) error {
+func (uc *UserController) removeUserFromBusinessAccount(ctx *gin.Context) error {
 	// TODO: Implement this method
 	return nil
 }
 
-// GetUsersForBusinessAccount retrieves all the users associated with a specific business account.
+// getUsersForBusinessAccount retrieves all the users associated with a specific business account.
 // @Summary Get all users for a business account
 // @Description Get all users associated with a specific business account
 // @Tags User
@@ -257,12 +256,12 @@ func (uc *UserController) RemoveUserFromBusinessAccount(ctx *gin.Context) error 
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/users/business-account/{businessAccountID}/users [get]
-func (uc *UserController) GetUsersForBusinessAccount(ctx *gin.Context) error {
+func (uc *UserController) getUsersForBusinessAccount(ctx *gin.Context) error {
 	// TODO: Implement this method
 	return nil
 }
 
-// GetBusinessAccountsForUser retrieves all the business accounts a user is associated with.
+// getBusinessAccountsForUser retrieves all the business accounts a user is associated with.
 // @Summary Get all business accounts a user is associated with
 // @Description Get all business accounts a user is associated with
 // @Tags User
@@ -275,12 +274,12 @@ func (uc *UserController) GetUsersForBusinessAccount(ctx *gin.Context) error {
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/users/{userID}/business-accounts [get]
-func (uc *UserController) GetBusinessAccountsForUser(ctx *gin.Context) error {
+func (uc *UserController) getBusinessAccountsForUser(ctx *gin.Context) error {
 	// TODO: Implement this method
 	return nil
 }
 
-// CanPerformAction checks if a user can perform a certain action based on their role.
+// canPerformAction checks if a user can perform a certain action based on their role.
 // @Summary Check if a user can perform an action
 // @Description Check if a user can perform a certain action based on their role in the business account
 // @Tags User
@@ -295,7 +294,7 @@ func (uc *UserController) GetBusinessAccountsForUser(ctx *gin.Context) error {
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/users/{userID}/business-account/{businessAccountID}/can-perform-action [post]
-func (uc *UserController) CanPerformAction(ctx *gin.Context) error {
+func (uc *UserController) canPerformAction(ctx *gin.Context) error {
 	// TODO: Implement this method
 	return nil
 }
