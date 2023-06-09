@@ -29,9 +29,11 @@ func Middleware(app *gin.Engine) {
 		AllowHeaders:     []string{"Origin"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
-		AllowOriginFunc: func(origin string) bool {
-			return origin == "https://placio.io"
-		},
+		// AllowOriginFunc: func(origin string) bool {
+		// 	return origin == "https://placio.io"
+		// },
+		AllowAllOrigins: true,
+		// AllowOriginFunc: true,
 		MaxAge: 12 * time.Hour,
 	}))
 
