@@ -28,9 +28,10 @@ func Middleware(app *gin.Engine) {
 	//app.Use(gin.Recovery())
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
-		AllowMethods:     []string{"PUT", "PATCH", "POST", "GET", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin"},
-		ExposeHeaders:    []string{"Content-Length"},
+		AllowMethods:     []string{"PUT", "PATCH", "POST", "GET", "DELETE"},
+		// AllowHeaders:     []string{"Origin"},
+		AllowHeaders:     []string{"Accept", "Accept-Language", "Content-Language", "Content-Type", "DPR", "origin"},
+		// ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 		// AllowOriginFunc: func(origin string) bool {
 		// 	return origin == "https://placio.io"
