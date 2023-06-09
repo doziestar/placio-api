@@ -5,6 +5,9 @@ entryPoints:
   web:
     address: :80
     http:
+      http2: true
+      middlewares:
+        - corsHeaders@file
       redirections:
         entryPoint:
           to: websecure
