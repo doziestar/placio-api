@@ -1,6 +1,12 @@
 # Dynamic configuration
 http:
   middlewares:
+    corsHeaders:
+      headers:
+        accessControlAllowMethods: [ "GET","OPTIONS","PUT","POST","DELETE","PATCH" ]
+        accessControlAllowOrigin: "origin-list-or-null"
+        accessControlAllowCredentials: true
+        accessControlAllowHeaders: [ "Authorization" ]
     secureHeaders:
       headers:
         sslRedirect: true
