@@ -23,6 +23,25 @@ func formatDate(t time.Time) string {
 	return t.Format(time.RFC822)
 }
 
+func PrintHeaders() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// Print request headers
+		fmt.Println("Request Headers:")
+		for k, v := range c.Request.Header {
+			fmt.Println(k, ":", v)
+		}
+
+		// Process request
+		c.Next()
+
+		// Print response headers
+		fmt.Println("Response Headers:")
+		for k, v := range c.Writer.Header() {
+			fmt.Println(k, ":", v)
+		}
+	}
+}
+
 func Middleware(app *gin.Engine) {
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
@@ -42,6 +61,8 @@ func Middleware(app *gin.Engine) {
 	app.Use(func(c *gin.Context) {
 		c.Header("Vary", "Origin")
 	})
+
+	app.Use(PrintHeaders())
 
 	store := cookie.NewStore([]byte("secret"))
 	app.Use(sessions.Sessions("mysession", store))
