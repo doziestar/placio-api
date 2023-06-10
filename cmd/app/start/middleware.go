@@ -49,9 +49,9 @@ func Middleware(app *gin.Engine) {
 		AllowHeaders:     []string{"*"},
 		ExposeHeaders:    []string{"*"},
 		AllowCredentials: true,
-		AllowOriginFunc: func(origin string) bool {
-			return origin == "*"
-		},
+		// AllowOriginFunc: func(origin string) bool {
+		// 	return origin == "*"
+		// },
 		MaxAge:     12 * time.Hour,
 		AllowFiles: true,
 		// AllowAllOrigins: true,
@@ -62,7 +62,7 @@ func Middleware(app *gin.Engine) {
 		c.Header("Vary", "Origin")
 	})
 
-	app.Use(PrintHeaders())
+	//app.Use(PrintHeaders())
 
 	store := cookie.NewStore([]byte("secret"))
 	app.Use(sessions.Sessions("mysession", store))

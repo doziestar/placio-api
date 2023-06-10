@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
 	"github.com/auth0/go-jwt-middleware/v2/validator"
 	"github.com/gin-gonic/gin"
@@ -38,7 +37,7 @@ func JWTMiddleware(db *gorm.DB) gin.HandlerFunc {
 }
 
 func InitializeRoutes(app *gin.Engine, db *gorm.DB) {
-	fmt.Println("Initializing routes...")
+	//fmt.Println("Initializing routes...")
 	app.GET("/docs/*files", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	app.GET("/ready", func(c *gin.Context) {
