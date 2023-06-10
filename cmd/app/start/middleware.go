@@ -13,8 +13,6 @@ import (
 
 	//"github.com/prometheus/client_golang/prometheus/promhttp"
 	"time"
-
-	csrf "github.com/utrack/gin-csrf"
 	// "gorm.io/gorm/logger"
 	// "gorm.io/gorm/logger"
 )
@@ -66,13 +64,13 @@ func Middleware(app *gin.Engine) {
 
 	store := cookie.NewStore([]byte("secret"))
 	app.Use(sessions.Sessions("mysession", store))
-	app.Use(csrf.Middleware(csrf.Options{
-		Secret: "secret123",
-		ErrorFunc: func(c *gin.Context) {
-			c.String(400, "CSRF token mismatch")
-			c.Abort()
-		},
-	}))
+	//app.Use(csrf.Middleware(csrf.Options{
+	//	Secret: "secret123",
+	//	ErrorFunc: func(c *gin.Context) {
+	//		c.String(400, "CSRF token mismatch")
+	//		c.Abort()
+	//	},
+	//}))
 
 	gin.SetMode(gin.DebugMode)
 	// you can custom the config or use logging.GinLogger() by default config

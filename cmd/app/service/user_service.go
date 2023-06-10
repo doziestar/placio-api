@@ -2,6 +2,7 @@ package service
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -10,8 +11,15 @@ import (
 	"net/http"
 	"placio-app/models"
 	"placio-app/utility"
+	"placio-pkg/hash"
+	"strings"
 
 	"gorm.io/gorm"
+)
+
+const (
+	auth0TokenCacheKey      = "auth0_mgmt_token"
+	auth0TokenEncryptionKey = "eyJhbGciOiJSUzIC"
 )
 
 type UserService interface {
@@ -28,16 +36,32 @@ type UserService interface {
 	RejectInvitation(invitationID uint) error
 	TransferBusinessAccountOwnership(currentOwnerID uint, newOwnerID uint, businessAccountID uint) error
 	GetUserInvitations(userID uint) ([]*models.Invitation, error)
-	UpdateAuth0UserData(userID string, IdToken string, userData *models.Auth0UserData, appData *models.AppMetadata, userMetaData *models.Metadata) (*models.Auth0UserData, error)
-	GetAuth0UserData(userID string, IdToken string) (models.Auth0UserData, error)
+	UpdateAuth0UserData(userID string, userData *models.Auth0UserData, appData *models.AppMetadata, userMetaData *models.Metadata) (*models.Auth0UserData, error)
+	GetAuth0UserData(userID string) (models.Auth0UserData, error)
+	// GetAuth0ManagementToken GetAuth0UserMetaData(userID string, IdToken string) (models.Metadata, error)
+	//GetAuth0AppMetaData(userID string, IdToken string) (models.AppMetadata, error)
+	//GetAuth0UserRoles(userID string, IdToken string) ([]string, error)
+	//GetAuth0UserPermissions(userID string, IdToken string) ([]string, error)
+	//GetAuth0UserGroups(userID string, IdToken string) ([]string, error)
+	//GetAuth0UserRolesPermissions(userID string, IdToken string) ([]string, error)
+	//AuthorizeUser(userID string, IdToken string, roles []string, permissions []string, groups []string) error
+	//DeAuthorizeUser(userID string, IdToken string, roles []string, permissions []string, groups []string) error
+	GetAuth0ManagementToken(ctx context.Context) (string, error)
 }
 
 type UserServiceImpl struct {
-	db *gorm.DB
+	db    *gorm.DB
+	cache *utility.RedisClient
 }
 
-func NewUserService(db *gorm.DB) *UserServiceImpl {
-	return &UserServiceImpl{db: db}
+type Auth0TokenResponse struct {
+	AccessToken string `json:"access_token"`
+	TokenType   string `json:"token_type"`
+	ExpiresIn   int    `json:"expires_in"`
+}
+
+func NewUserService(db *gorm.DB, cache *utility.RedisClient) *UserServiceImpl {
+	return &UserServiceImpl{db: db, cache: cache}
 }
 
 func (s *UserServiceImpl) GetUser(auth0ID string) (*models.User, error) {
@@ -163,13 +187,13 @@ func (s *UserServiceImpl) GetUsersForBusinessAccount(businessAccountID string) (
 }
 
 // UpdateAuth0UserData updates the user_metadata, app_metadata, and other fields in Auth0.
-func (s *UserServiceImpl) UpdateAuth0UserData(userID string, IdToken string, userData *models.Auth0UserData, appData *models.AppMetadata, userMetaData *models.Metadata) (*models.Auth0UserData, error) {
-	log.Println("Updating Auth0 user data", userID, IdToken, userData, appData, userMetaData)
+func (s *UserServiceImpl) UpdateAuth0UserData(userID string, userData *models.Auth0UserData, appData *models.AppMetadata, userMetaData *models.Metadata) (*models.Auth0UserData, error) {
+	//log.Println("Updating Auth0 user data", userID, IdToken, userData, appData, userMetaData)
 	// Create an HTTP client
 	client := &http.Client{}
 
 	// Get the current user data
-	currUserData, err := s.GetAuth0UserData(userID, IdToken)
+	currUserData, err := s.GetAuth0UserData(userID)
 	if err != nil {
 		log.Println("Error getting current user data", err)
 		return nil, err
@@ -207,19 +231,29 @@ func (s *UserServiceImpl) UpdateAuth0UserData(userID string, IdToken string, use
 		return nil, err
 	}
 
+	log.Println("JSON payload", string(jsonPayload))
+
 	// Create the request
 	req, err := http.NewRequest("PATCH", fmt.Sprintf("https://auth.placio.io/api/v2/users/%s", userID), bytes.NewBuffer(jsonPayload))
 	if err != nil {
+		log.Println("Error creating request", err)
+		return nil, err
+	}
+
+	managementToken, err := s.GetAuth0ManagementToken(context.Background())
+	if err != nil {
+		log.Println("Error getting management token", err)
 		return nil, err
 	}
 
 	// Set the headers
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", IdToken))
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", managementToken))
 
 	// Send the request
 	resp, err := client.Do(req)
 	if err != nil {
+		log.Println("Error sending request", err)
 		return nil, err
 	}
 	defer resp.Body.Close()
@@ -234,7 +268,7 @@ func (s *UserServiceImpl) UpdateAuth0UserData(userID string, IdToken string, use
 	}
 
 	// Return the updated user data
-	updatedUserData, err := s.GetAuth0UserData(userID, IdToken)
+	updatedUserData, err := s.GetAuth0UserData(userID)
 	if err != nil {
 		return nil, err
 	}
@@ -243,7 +277,7 @@ func (s *UserServiceImpl) UpdateAuth0UserData(userID string, IdToken string, use
 }
 
 // GetAuth0UserData retrieves the current user data from Auth0.
-func (s *UserServiceImpl) GetAuth0UserData(userID string, IdToken string) (models.Auth0UserData, error) {
+func (s *UserServiceImpl) GetAuth0UserData(userID string) (models.Auth0UserData, error) {
 	// Create an HTTP client
 	client := &http.Client{}
 
@@ -253,9 +287,14 @@ func (s *UserServiceImpl) GetAuth0UserData(userID string, IdToken string) (model
 		return models.Auth0UserData{}, err
 	}
 
+	//Get the token
+	managementToken, err := s.GetAuth0ManagementToken(context.Background())
+	if err != nil {
+		return models.Auth0UserData{}, err
+	}
 	// Set the headers
 	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", IdToken))
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", managementToken))
 
 	// Send the request
 	resp, err := client.Do(req)
@@ -278,6 +317,92 @@ func (s *UserServiceImpl) GetAuth0UserData(userID string, IdToken string) (model
 	}
 
 	return userData, nil
+}
+
+func (s *UserServiceImpl) GetAuth0ManagementToken(ctx context.Context) (string, error) {
+
+	// Check if token is in cache
+	encryptedTokenBytes, err := s.cache.GetCache(ctx, auth0TokenCacheKey)
+	if err != nil {
+		log.Println("Error retrieving token from cache:", err)
+	} else {
+		// If token is in cache, decrypt and return
+		encryptedToken := string(encryptedTokenBytes)
+		token, err := hash.DecryptString(encryptedToken, auth0TokenEncryptionKey)
+		if err != nil {
+			log.Println("Error decrypting token:", err)
+		} else {
+			return token, nil
+		}
+	}
+
+	log.Println("Token not in cache, retrieving new token")
+
+	// If token is not in cache or there was an error, retrieve a new one
+	token, err := s.retrieveAuth0Token(ctx) // Replace with actual function to retrieve token
+	if err != nil {
+		return "", err
+	}
+
+	// Encrypt and cache the new token
+	encryptedToken, err := hash.EncryptString(token, auth0TokenEncryptionKey)
+	if err != nil {
+		return "", err
+	}
+
+	err = s.cache.SetCache(ctx, auth0TokenCacheKey, encryptedToken)
+	if err != nil {
+		return "", err
+	}
+
+	return token, nil
+}
+
+func (s *UserServiceImpl) retrieveAuth0Token(ctx context.Context) (string, error) {
+
+	//"client_id": os.Getenv("AUTH0_CLIENT_ID"),
+	//"client_id": "KpDGogGXqWeuGQfZ4Wu30neiHS79hGiU",
+	//"client_secret": "0xb-zoY86wrGHIR4GMwQx40s2jMOAg3YGYcxfebwAJP_exLaiNcRwn76tRGaSXf_",
+	////"client_secret": os.Getenv("AUTH0_CLIENT_SECRET"),
+	////"audience": os.Getenv("AUTH0_AUDIENCE"),
+	//"audience": "KpDGogGXqWeuGQfZ4Wu30neiHS79hGiU",
+	payload := strings.NewReader(`{
+		"client_id":"fujubEJPBtlg38FtNuuC413PjKl7upnx",
+		"client_secret":"Md4qKJylIY3KtD3H2lsxdRigQPW2NEyU62BpFM4kHnSGiJdZSkDQECxJ070fwVsX",
+		"audience":"https://api.palnight.com",
+		"grant_type": "client_credentials"
+	}`)
+
+	log.Println("payload", payload)
+	req, _ := http.NewRequest("POST", "https://auth.placio.io/oauth/token", payload)
+	req.Header.Add("content-type", "application/json")
+
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Println("Error retrieving token from Auth0:", err)
+		return "", err
+	}
+
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		return "", errors.New("auth0 request not successful")
+	}
+
+	body, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		log.Println("Error reading response body:", err)
+		return "", err
+	}
+
+	var tokenResponse Auth0TokenResponse
+	err = json.Unmarshal(body, &tokenResponse)
+	if err != nil {
+		log.Println("Error unmarshalling response body:", err)
+		return "", err
+	}
+
+	return tokenResponse.AccessToken, nil
 }
 
 // RemoveUserFromBusinessAccount removes a User's association with a Business Account.

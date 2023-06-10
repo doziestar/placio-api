@@ -12,6 +12,7 @@ import (
 	"placio-app/controller"
 	"placio-app/middleware"
 	"placio-app/service"
+	"placio-app/utility"
 )
 
 func JWTMiddleware(db *gorm.DB) gin.HandlerFunc {
@@ -52,6 +53,10 @@ func InitializeRoutes(app *gin.Engine, db *gorm.DB) {
 		})
 	})
 
+	//redisClient := utility.NewRedisClient(os.Getenv("REDIS_URL"), 0, utility.CacheDuration)
+	redisClient := utility.NewRedisClient("redis://default:a3677c1a7b84402eb34efd55ad3cf059@golden-colt-33790.upstash.io:33790", 0, utility.CacheDuration)
+	_ = redisClient.ConnectRedis()
+
 	app.Use(middleware.EnsureValidToken())
 
 	routerGroupV1 := app.Group("/api/v1")
@@ -83,7 +88,7 @@ func InitializeRoutes(app *gin.Engine, db *gorm.DB) {
 	//accountController.RegisterRoutes(routerGroupV1)
 
 	// user
-	userService := service.NewUserService(db)
+	userService := service.NewUserService(db, redisClient)
 	userController := controller.NewUserController(userService)
 	userController.RegisterRoutes(routerGroupV1)
 
