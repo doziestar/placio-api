@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"placio-app/ent/businessaccount"
 	"strings"
+	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -13,10 +14,74 @@ import (
 
 // BusinessAccount is the model entity for the BusinessAccount schema.
 type BusinessAccount struct {
-	config
+	config `json:"-"`
 	// ID of the ent.
-	ID           int `json:"id,omitempty"`
+	ID int `json:"id,omitempty"`
+	// ID holds the value of the "ID" field.
+	ID string `json:"ID,omitempty"`
+	// Name holds the value of the "Name" field.
+	Name string `json:"Name,omitempty"`
+	// Active holds the value of the "Active" field.
+	Active bool `json:"Active,omitempty"`
+	// CreatedAt holds the value of the "CreatedAt" field.
+	CreatedAt time.Time `json:"CreatedAt,omitempty"`
+	// UpdatedAt holds the value of the "UpdatedAt" field.
+	UpdatedAt time.Time `json:"UpdatedAt,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the BusinessAccountQuery when eager-loading is set.
+	Edges        BusinessAccountEdges `json:"edges"`
 	selectValues sql.SelectValues
+}
+
+// BusinessAccountEdges holds the relations/edges for other nodes in the graph.
+type BusinessAccountEdges struct {
+	// Posts holds the value of the posts edge.
+	Posts []*Post `json:"posts,omitempty"`
+	// Relationships holds the value of the relationships edge.
+	Relationships []*UserBusinessRelationship `json:"relationships,omitempty"`
+	// AccountSettings holds the value of the account_settings edge.
+	AccountSettings []*AccountSettings `json:"account_settings,omitempty"`
+	// Invitations holds the value of the invitations edge.
+	Invitations []*Invitation `json:"invitations,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [4]bool
+}
+
+// PostsOrErr returns the Posts value or an error if the edge
+// was not loaded in eager-loading.
+func (e BusinessAccountEdges) PostsOrErr() ([]*Post, error) {
+	if e.loadedTypes[0] {
+		return e.Posts, nil
+	}
+	return nil, &NotLoadedError{edge: "posts"}
+}
+
+// RelationshipsOrErr returns the Relationships value or an error if the edge
+// was not loaded in eager-loading.
+func (e BusinessAccountEdges) RelationshipsOrErr() ([]*UserBusinessRelationship, error) {
+	if e.loadedTypes[1] {
+		return e.Relationships, nil
+	}
+	return nil, &NotLoadedError{edge: "relationships"}
+}
+
+// AccountSettingsOrErr returns the AccountSettings value or an error if the edge
+// was not loaded in eager-loading.
+func (e BusinessAccountEdges) AccountSettingsOrErr() ([]*AccountSettings, error) {
+	if e.loadedTypes[2] {
+		return e.AccountSettings, nil
+	}
+	return nil, &NotLoadedError{edge: "account_settings"}
+}
+
+// InvitationsOrErr returns the Invitations value or an error if the edge
+// was not loaded in eager-loading.
+func (e BusinessAccountEdges) InvitationsOrErr() ([]*Invitation, error) {
+	if e.loadedTypes[3] {
+		return e.Invitations, nil
+	}
+	return nil, &NotLoadedError{edge: "invitations"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -24,8 +89,14 @@ func (*BusinessAccount) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case businessaccount.FieldActive:
+			values[i] = new(sql.NullBool)
 		case businessaccount.FieldID:
 			values[i] = new(sql.NullInt64)
+		case businessaccount.FieldID, businessaccount.FieldName:
+			values[i] = new(sql.NullString)
+		case businessaccount.FieldCreatedAt, businessaccount.FieldUpdatedAt:
+			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -47,6 +118,36 @@ func (ba *BusinessAccount) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			ba.ID = int(value.Int64)
+		case businessaccount.FieldID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field ID", values[i])
+			} else if value.Valid {
+				ba.ID = value.String
+			}
+		case businessaccount.FieldName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field Name", values[i])
+			} else if value.Valid {
+				ba.Name = value.String
+			}
+		case businessaccount.FieldActive:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field Active", values[i])
+			} else if value.Valid {
+				ba.Active = value.Bool
+			}
+		case businessaccount.FieldCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field CreatedAt", values[i])
+			} else if value.Valid {
+				ba.CreatedAt = value.Time
+			}
+		case businessaccount.FieldUpdatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field UpdatedAt", values[i])
+			} else if value.Valid {
+				ba.UpdatedAt = value.Time
+			}
 		default:
 			ba.selectValues.Set(columns[i], values[i])
 		}
@@ -58,6 +159,26 @@ func (ba *BusinessAccount) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (ba *BusinessAccount) Value(name string) (ent.Value, error) {
 	return ba.selectValues.Get(name)
+}
+
+// QueryPosts queries the "posts" edge of the BusinessAccount entity.
+func (ba *BusinessAccount) QueryPosts() *PostQuery {
+	return NewBusinessAccountClient(ba.config).QueryPosts(ba)
+}
+
+// QueryRelationships queries the "relationships" edge of the BusinessAccount entity.
+func (ba *BusinessAccount) QueryRelationships() *UserBusinessRelationshipQuery {
+	return NewBusinessAccountClient(ba.config).QueryRelationships(ba)
+}
+
+// QueryAccountSettings queries the "account_settings" edge of the BusinessAccount entity.
+func (ba *BusinessAccount) QueryAccountSettings() *AccountSettingsQuery {
+	return NewBusinessAccountClient(ba.config).QueryAccountSettings(ba)
+}
+
+// QueryInvitations queries the "invitations" edge of the BusinessAccount entity.
+func (ba *BusinessAccount) QueryInvitations() *InvitationQuery {
+	return NewBusinessAccountClient(ba.config).QueryInvitations(ba)
 }
 
 // Update returns a builder for updating this BusinessAccount.
@@ -82,7 +203,21 @@ func (ba *BusinessAccount) Unwrap() *BusinessAccount {
 func (ba *BusinessAccount) String() string {
 	var builder strings.Builder
 	builder.WriteString("BusinessAccount(")
-	builder.WriteString(fmt.Sprintf("id=%v", ba.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", ba.ID))
+	builder.WriteString("ID=")
+	builder.WriteString(ba.ID)
+	builder.WriteString(", ")
+	builder.WriteString("Name=")
+	builder.WriteString(ba.Name)
+	builder.WriteString(", ")
+	builder.WriteString("Active=")
+	builder.WriteString(fmt.Sprintf("%v", ba.Active))
+	builder.WriteString(", ")
+	builder.WriteString("CreatedAt=")
+	builder.WriteString(ba.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("UpdatedAt=")
+	builder.WriteString(ba.UpdatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

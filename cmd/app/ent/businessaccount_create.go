@@ -4,8 +4,14 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"placio-app/ent/accountsettings"
 	"placio-app/ent/businessaccount"
+	"placio-app/ent/invitation"
+	"placio-app/ent/post"
+	"placio-app/ent/userbusinessrelationship"
+	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -18,6 +24,104 @@ type BusinessAccountCreate struct {
 	hooks    []Hook
 }
 
+// SetID sets the "ID" field.
+func (bac *BusinessAccountCreate) SetID(s string) *BusinessAccountCreate {
+	bac.mutation.SetID(s)
+	return bac
+}
+
+// SetName sets the "Name" field.
+func (bac *BusinessAccountCreate) SetName(s string) *BusinessAccountCreate {
+	bac.mutation.SetName(s)
+	return bac
+}
+
+// SetActive sets the "Active" field.
+func (bac *BusinessAccountCreate) SetActive(b bool) *BusinessAccountCreate {
+	bac.mutation.SetActive(b)
+	return bac
+}
+
+// SetNillableActive sets the "Active" field if the given value is not nil.
+func (bac *BusinessAccountCreate) SetNillableActive(b *bool) *BusinessAccountCreate {
+	if b != nil {
+		bac.SetActive(*b)
+	}
+	return bac
+}
+
+// SetCreatedAt sets the "CreatedAt" field.
+func (bac *BusinessAccountCreate) SetCreatedAt(t time.Time) *BusinessAccountCreate {
+	bac.mutation.SetCreatedAt(t)
+	return bac
+}
+
+// SetUpdatedAt sets the "UpdatedAt" field.
+func (bac *BusinessAccountCreate) SetUpdatedAt(t time.Time) *BusinessAccountCreate {
+	bac.mutation.SetUpdatedAt(t)
+	return bac
+}
+
+// AddPostIDs adds the "posts" edge to the Post entity by IDs.
+func (bac *BusinessAccountCreate) AddPostIDs(ids ...int) *BusinessAccountCreate {
+	bac.mutation.AddPostIDs(ids...)
+	return bac
+}
+
+// AddPosts adds the "posts" edges to the Post entity.
+func (bac *BusinessAccountCreate) AddPosts(p ...*Post) *BusinessAccountCreate {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return bac.AddPostIDs(ids...)
+}
+
+// AddRelationshipIDs adds the "relationships" edge to the UserBusinessRelationship entity by IDs.
+func (bac *BusinessAccountCreate) AddRelationshipIDs(ids ...int) *BusinessAccountCreate {
+	bac.mutation.AddRelationshipIDs(ids...)
+	return bac
+}
+
+// AddRelationships adds the "relationships" edges to the UserBusinessRelationship entity.
+func (bac *BusinessAccountCreate) AddRelationships(u ...*UserBusinessRelationship) *BusinessAccountCreate {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return bac.AddRelationshipIDs(ids...)
+}
+
+// AddAccountSettingIDs adds the "account_settings" edge to the AccountSettings entity by IDs.
+func (bac *BusinessAccountCreate) AddAccountSettingIDs(ids ...int) *BusinessAccountCreate {
+	bac.mutation.AddAccountSettingIDs(ids...)
+	return bac
+}
+
+// AddAccountSettings adds the "account_settings" edges to the AccountSettings entity.
+func (bac *BusinessAccountCreate) AddAccountSettings(a ...*AccountSettings) *BusinessAccountCreate {
+	ids := make([]int, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return bac.AddAccountSettingIDs(ids...)
+}
+
+// AddInvitationIDs adds the "invitations" edge to the Invitation entity by IDs.
+func (bac *BusinessAccountCreate) AddInvitationIDs(ids ...int) *BusinessAccountCreate {
+	bac.mutation.AddInvitationIDs(ids...)
+	return bac
+}
+
+// AddInvitations adds the "invitations" edges to the Invitation entity.
+func (bac *BusinessAccountCreate) AddInvitations(i ...*Invitation) *BusinessAccountCreate {
+	ids := make([]int, len(i))
+	for j := range i {
+		ids[j] = i[j].ID
+	}
+	return bac.AddInvitationIDs(ids...)
+}
+
 // Mutation returns the BusinessAccountMutation object of the builder.
 func (bac *BusinessAccountCreate) Mutation() *BusinessAccountMutation {
 	return bac.mutation
@@ -25,6 +129,7 @@ func (bac *BusinessAccountCreate) Mutation() *BusinessAccountMutation {
 
 // Save creates the BusinessAccount in the database.
 func (bac *BusinessAccountCreate) Save(ctx context.Context) (*BusinessAccount, error) {
+	bac.defaults()
 	return withHooks(ctx, bac.sqlSave, bac.mutation, bac.hooks)
 }
 
@@ -50,8 +155,31 @@ func (bac *BusinessAccountCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (bac *BusinessAccountCreate) defaults() {
+	if _, ok := bac.mutation.Active(); !ok {
+		v := businessaccount.DefaultActive
+		bac.mutation.SetActive(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (bac *BusinessAccountCreate) check() error {
+	if _, ok := bac.mutation.ID(); !ok {
+		return &ValidationError{Name: "ID", err: errors.New(`ent: missing required field "BusinessAccount.ID"`)}
+	}
+	if _, ok := bac.mutation.Name(); !ok {
+		return &ValidationError{Name: "Name", err: errors.New(`ent: missing required field "BusinessAccount.Name"`)}
+	}
+	if _, ok := bac.mutation.Active(); !ok {
+		return &ValidationError{Name: "Active", err: errors.New(`ent: missing required field "BusinessAccount.Active"`)}
+	}
+	if _, ok := bac.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "CreatedAt", err: errors.New(`ent: missing required field "BusinessAccount.CreatedAt"`)}
+	}
+	if _, ok := bac.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "UpdatedAt", err: errors.New(`ent: missing required field "BusinessAccount.UpdatedAt"`)}
+	}
 	return nil
 }
 
@@ -78,6 +206,90 @@ func (bac *BusinessAccountCreate) createSpec() (*BusinessAccount, *sqlgraph.Crea
 		_node = &BusinessAccount{config: bac.config}
 		_spec = sqlgraph.NewCreateSpec(businessaccount.Table, sqlgraph.NewFieldSpec(businessaccount.FieldID, field.TypeInt))
 	)
+	if value, ok := bac.mutation.ID(); ok {
+		_spec.SetField(businessaccount.FieldID, field.TypeString, value)
+		_node.ID = value
+	}
+	if value, ok := bac.mutation.Name(); ok {
+		_spec.SetField(businessaccount.FieldName, field.TypeString, value)
+		_node.Name = value
+	}
+	if value, ok := bac.mutation.Active(); ok {
+		_spec.SetField(businessaccount.FieldActive, field.TypeBool, value)
+		_node.Active = value
+	}
+	if value, ok := bac.mutation.CreatedAt(); ok {
+		_spec.SetField(businessaccount.FieldCreatedAt, field.TypeTime, value)
+		_node.CreatedAt = value
+	}
+	if value, ok := bac.mutation.UpdatedAt(); ok {
+		_spec.SetField(businessaccount.FieldUpdatedAt, field.TypeTime, value)
+		_node.UpdatedAt = value
+	}
+	if nodes := bac.mutation.PostsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   businessaccount.PostsTable,
+			Columns: []string{businessaccount.PostsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := bac.mutation.RelationshipsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   businessaccount.RelationshipsTable,
+			Columns: []string{businessaccount.RelationshipsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userbusinessrelationship.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := bac.mutation.AccountSettingsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   businessaccount.AccountSettingsTable,
+			Columns: []string{businessaccount.AccountSettingsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(accountsettings.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := bac.mutation.InvitationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   businessaccount.InvitationsTable,
+			Columns: businessaccount.InvitationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(invitation.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	return _node, _spec
 }
 
@@ -95,6 +307,7 @@ func (bacb *BusinessAccountCreateBulk) Save(ctx context.Context) ([]*BusinessAcc
 	for i := range bacb.builders {
 		func(i int, root context.Context) {
 			builder := bacb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*BusinessAccountMutation)
 				if !ok {

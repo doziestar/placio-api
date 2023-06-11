@@ -6,8 +6,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"placio-app/ent/accountsettings"
 	"placio-app/ent/businessaccount"
+	"placio-app/ent/invitation"
+	"placio-app/ent/post"
 	"placio-app/ent/predicate"
+	"placio-app/ent/userbusinessrelationship"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -27,9 +32,191 @@ func (bau *BusinessAccountUpdate) Where(ps ...predicate.BusinessAccount) *Busine
 	return bau
 }
 
+// SetID sets the "ID" field.
+func (bau *BusinessAccountUpdate) SetID(s string) *BusinessAccountUpdate {
+	bau.mutation.SetID(s)
+	return bau
+}
+
+// SetName sets the "Name" field.
+func (bau *BusinessAccountUpdate) SetName(s string) *BusinessAccountUpdate {
+	bau.mutation.SetName(s)
+	return bau
+}
+
+// SetActive sets the "Active" field.
+func (bau *BusinessAccountUpdate) SetActive(b bool) *BusinessAccountUpdate {
+	bau.mutation.SetActive(b)
+	return bau
+}
+
+// SetNillableActive sets the "Active" field if the given value is not nil.
+func (bau *BusinessAccountUpdate) SetNillableActive(b *bool) *BusinessAccountUpdate {
+	if b != nil {
+		bau.SetActive(*b)
+	}
+	return bau
+}
+
+// SetCreatedAt sets the "CreatedAt" field.
+func (bau *BusinessAccountUpdate) SetCreatedAt(t time.Time) *BusinessAccountUpdate {
+	bau.mutation.SetCreatedAt(t)
+	return bau
+}
+
+// SetUpdatedAt sets the "UpdatedAt" field.
+func (bau *BusinessAccountUpdate) SetUpdatedAt(t time.Time) *BusinessAccountUpdate {
+	bau.mutation.SetUpdatedAt(t)
+	return bau
+}
+
+// AddPostIDs adds the "posts" edge to the Post entity by IDs.
+func (bau *BusinessAccountUpdate) AddPostIDs(ids ...int) *BusinessAccountUpdate {
+	bau.mutation.AddPostIDs(ids...)
+	return bau
+}
+
+// AddPosts adds the "posts" edges to the Post entity.
+func (bau *BusinessAccountUpdate) AddPosts(p ...*Post) *BusinessAccountUpdate {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return bau.AddPostIDs(ids...)
+}
+
+// AddRelationshipIDs adds the "relationships" edge to the UserBusinessRelationship entity by IDs.
+func (bau *BusinessAccountUpdate) AddRelationshipIDs(ids ...int) *BusinessAccountUpdate {
+	bau.mutation.AddRelationshipIDs(ids...)
+	return bau
+}
+
+// AddRelationships adds the "relationships" edges to the UserBusinessRelationship entity.
+func (bau *BusinessAccountUpdate) AddRelationships(u ...*UserBusinessRelationship) *BusinessAccountUpdate {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return bau.AddRelationshipIDs(ids...)
+}
+
+// AddAccountSettingIDs adds the "account_settings" edge to the AccountSettings entity by IDs.
+func (bau *BusinessAccountUpdate) AddAccountSettingIDs(ids ...int) *BusinessAccountUpdate {
+	bau.mutation.AddAccountSettingIDs(ids...)
+	return bau
+}
+
+// AddAccountSettings adds the "account_settings" edges to the AccountSettings entity.
+func (bau *BusinessAccountUpdate) AddAccountSettings(a ...*AccountSettings) *BusinessAccountUpdate {
+	ids := make([]int, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return bau.AddAccountSettingIDs(ids...)
+}
+
+// AddInvitationIDs adds the "invitations" edge to the Invitation entity by IDs.
+func (bau *BusinessAccountUpdate) AddInvitationIDs(ids ...int) *BusinessAccountUpdate {
+	bau.mutation.AddInvitationIDs(ids...)
+	return bau
+}
+
+// AddInvitations adds the "invitations" edges to the Invitation entity.
+func (bau *BusinessAccountUpdate) AddInvitations(i ...*Invitation) *BusinessAccountUpdate {
+	ids := make([]int, len(i))
+	for j := range i {
+		ids[j] = i[j].ID
+	}
+	return bau.AddInvitationIDs(ids...)
+}
+
 // Mutation returns the BusinessAccountMutation object of the builder.
 func (bau *BusinessAccountUpdate) Mutation() *BusinessAccountMutation {
 	return bau.mutation
+}
+
+// ClearPosts clears all "posts" edges to the Post entity.
+func (bau *BusinessAccountUpdate) ClearPosts() *BusinessAccountUpdate {
+	bau.mutation.ClearPosts()
+	return bau
+}
+
+// RemovePostIDs removes the "posts" edge to Post entities by IDs.
+func (bau *BusinessAccountUpdate) RemovePostIDs(ids ...int) *BusinessAccountUpdate {
+	bau.mutation.RemovePostIDs(ids...)
+	return bau
+}
+
+// RemovePosts removes "posts" edges to Post entities.
+func (bau *BusinessAccountUpdate) RemovePosts(p ...*Post) *BusinessAccountUpdate {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return bau.RemovePostIDs(ids...)
+}
+
+// ClearRelationships clears all "relationships" edges to the UserBusinessRelationship entity.
+func (bau *BusinessAccountUpdate) ClearRelationships() *BusinessAccountUpdate {
+	bau.mutation.ClearRelationships()
+	return bau
+}
+
+// RemoveRelationshipIDs removes the "relationships" edge to UserBusinessRelationship entities by IDs.
+func (bau *BusinessAccountUpdate) RemoveRelationshipIDs(ids ...int) *BusinessAccountUpdate {
+	bau.mutation.RemoveRelationshipIDs(ids...)
+	return bau
+}
+
+// RemoveRelationships removes "relationships" edges to UserBusinessRelationship entities.
+func (bau *BusinessAccountUpdate) RemoveRelationships(u ...*UserBusinessRelationship) *BusinessAccountUpdate {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return bau.RemoveRelationshipIDs(ids...)
+}
+
+// ClearAccountSettings clears all "account_settings" edges to the AccountSettings entity.
+func (bau *BusinessAccountUpdate) ClearAccountSettings() *BusinessAccountUpdate {
+	bau.mutation.ClearAccountSettings()
+	return bau
+}
+
+// RemoveAccountSettingIDs removes the "account_settings" edge to AccountSettings entities by IDs.
+func (bau *BusinessAccountUpdate) RemoveAccountSettingIDs(ids ...int) *BusinessAccountUpdate {
+	bau.mutation.RemoveAccountSettingIDs(ids...)
+	return bau
+}
+
+// RemoveAccountSettings removes "account_settings" edges to AccountSettings entities.
+func (bau *BusinessAccountUpdate) RemoveAccountSettings(a ...*AccountSettings) *BusinessAccountUpdate {
+	ids := make([]int, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return bau.RemoveAccountSettingIDs(ids...)
+}
+
+// ClearInvitations clears all "invitations" edges to the Invitation entity.
+func (bau *BusinessAccountUpdate) ClearInvitations() *BusinessAccountUpdate {
+	bau.mutation.ClearInvitations()
+	return bau
+}
+
+// RemoveInvitationIDs removes the "invitations" edge to Invitation entities by IDs.
+func (bau *BusinessAccountUpdate) RemoveInvitationIDs(ids ...int) *BusinessAccountUpdate {
+	bau.mutation.RemoveInvitationIDs(ids...)
+	return bau
+}
+
+// RemoveInvitations removes "invitations" edges to Invitation entities.
+func (bau *BusinessAccountUpdate) RemoveInvitations(i ...*Invitation) *BusinessAccountUpdate {
+	ids := make([]int, len(i))
+	for j := range i {
+		ids[j] = i[j].ID
+	}
+	return bau.RemoveInvitationIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -68,6 +255,201 @@ func (bau *BusinessAccountUpdate) sqlSave(ctx context.Context) (n int, err error
 			}
 		}
 	}
+	if value, ok := bau.mutation.ID(); ok {
+		_spec.SetField(businessaccount.FieldID, field.TypeString, value)
+	}
+	if value, ok := bau.mutation.Name(); ok {
+		_spec.SetField(businessaccount.FieldName, field.TypeString, value)
+	}
+	if value, ok := bau.mutation.Active(); ok {
+		_spec.SetField(businessaccount.FieldActive, field.TypeBool, value)
+	}
+	if value, ok := bau.mutation.CreatedAt(); ok {
+		_spec.SetField(businessaccount.FieldCreatedAt, field.TypeTime, value)
+	}
+	if value, ok := bau.mutation.UpdatedAt(); ok {
+		_spec.SetField(businessaccount.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if bau.mutation.PostsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   businessaccount.PostsTable,
+			Columns: []string{businessaccount.PostsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bau.mutation.RemovedPostsIDs(); len(nodes) > 0 && !bau.mutation.PostsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   businessaccount.PostsTable,
+			Columns: []string{businessaccount.PostsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bau.mutation.PostsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   businessaccount.PostsTable,
+			Columns: []string{businessaccount.PostsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if bau.mutation.RelationshipsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   businessaccount.RelationshipsTable,
+			Columns: []string{businessaccount.RelationshipsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userbusinessrelationship.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bau.mutation.RemovedRelationshipsIDs(); len(nodes) > 0 && !bau.mutation.RelationshipsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   businessaccount.RelationshipsTable,
+			Columns: []string{businessaccount.RelationshipsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userbusinessrelationship.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bau.mutation.RelationshipsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   businessaccount.RelationshipsTable,
+			Columns: []string{businessaccount.RelationshipsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userbusinessrelationship.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if bau.mutation.AccountSettingsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   businessaccount.AccountSettingsTable,
+			Columns: []string{businessaccount.AccountSettingsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(accountsettings.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bau.mutation.RemovedAccountSettingsIDs(); len(nodes) > 0 && !bau.mutation.AccountSettingsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   businessaccount.AccountSettingsTable,
+			Columns: []string{businessaccount.AccountSettingsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(accountsettings.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bau.mutation.AccountSettingsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   businessaccount.AccountSettingsTable,
+			Columns: []string{businessaccount.AccountSettingsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(accountsettings.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if bau.mutation.InvitationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   businessaccount.InvitationsTable,
+			Columns: businessaccount.InvitationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(invitation.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bau.mutation.RemovedInvitationsIDs(); len(nodes) > 0 && !bau.mutation.InvitationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   businessaccount.InvitationsTable,
+			Columns: businessaccount.InvitationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(invitation.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bau.mutation.InvitationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   businessaccount.InvitationsTable,
+			Columns: businessaccount.InvitationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(invitation.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, bau.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{businessaccount.Label}
@@ -88,9 +470,191 @@ type BusinessAccountUpdateOne struct {
 	mutation *BusinessAccountMutation
 }
 
+// SetID sets the "ID" field.
+func (bauo *BusinessAccountUpdateOne) SetID(s string) *BusinessAccountUpdateOne {
+	bauo.mutation.SetID(s)
+	return bauo
+}
+
+// SetName sets the "Name" field.
+func (bauo *BusinessAccountUpdateOne) SetName(s string) *BusinessAccountUpdateOne {
+	bauo.mutation.SetName(s)
+	return bauo
+}
+
+// SetActive sets the "Active" field.
+func (bauo *BusinessAccountUpdateOne) SetActive(b bool) *BusinessAccountUpdateOne {
+	bauo.mutation.SetActive(b)
+	return bauo
+}
+
+// SetNillableActive sets the "Active" field if the given value is not nil.
+func (bauo *BusinessAccountUpdateOne) SetNillableActive(b *bool) *BusinessAccountUpdateOne {
+	if b != nil {
+		bauo.SetActive(*b)
+	}
+	return bauo
+}
+
+// SetCreatedAt sets the "CreatedAt" field.
+func (bauo *BusinessAccountUpdateOne) SetCreatedAt(t time.Time) *BusinessAccountUpdateOne {
+	bauo.mutation.SetCreatedAt(t)
+	return bauo
+}
+
+// SetUpdatedAt sets the "UpdatedAt" field.
+func (bauo *BusinessAccountUpdateOne) SetUpdatedAt(t time.Time) *BusinessAccountUpdateOne {
+	bauo.mutation.SetUpdatedAt(t)
+	return bauo
+}
+
+// AddPostIDs adds the "posts" edge to the Post entity by IDs.
+func (bauo *BusinessAccountUpdateOne) AddPostIDs(ids ...int) *BusinessAccountUpdateOne {
+	bauo.mutation.AddPostIDs(ids...)
+	return bauo
+}
+
+// AddPosts adds the "posts" edges to the Post entity.
+func (bauo *BusinessAccountUpdateOne) AddPosts(p ...*Post) *BusinessAccountUpdateOne {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return bauo.AddPostIDs(ids...)
+}
+
+// AddRelationshipIDs adds the "relationships" edge to the UserBusinessRelationship entity by IDs.
+func (bauo *BusinessAccountUpdateOne) AddRelationshipIDs(ids ...int) *BusinessAccountUpdateOne {
+	bauo.mutation.AddRelationshipIDs(ids...)
+	return bauo
+}
+
+// AddRelationships adds the "relationships" edges to the UserBusinessRelationship entity.
+func (bauo *BusinessAccountUpdateOne) AddRelationships(u ...*UserBusinessRelationship) *BusinessAccountUpdateOne {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return bauo.AddRelationshipIDs(ids...)
+}
+
+// AddAccountSettingIDs adds the "account_settings" edge to the AccountSettings entity by IDs.
+func (bauo *BusinessAccountUpdateOne) AddAccountSettingIDs(ids ...int) *BusinessAccountUpdateOne {
+	bauo.mutation.AddAccountSettingIDs(ids...)
+	return bauo
+}
+
+// AddAccountSettings adds the "account_settings" edges to the AccountSettings entity.
+func (bauo *BusinessAccountUpdateOne) AddAccountSettings(a ...*AccountSettings) *BusinessAccountUpdateOne {
+	ids := make([]int, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return bauo.AddAccountSettingIDs(ids...)
+}
+
+// AddInvitationIDs adds the "invitations" edge to the Invitation entity by IDs.
+func (bauo *BusinessAccountUpdateOne) AddInvitationIDs(ids ...int) *BusinessAccountUpdateOne {
+	bauo.mutation.AddInvitationIDs(ids...)
+	return bauo
+}
+
+// AddInvitations adds the "invitations" edges to the Invitation entity.
+func (bauo *BusinessAccountUpdateOne) AddInvitations(i ...*Invitation) *BusinessAccountUpdateOne {
+	ids := make([]int, len(i))
+	for j := range i {
+		ids[j] = i[j].ID
+	}
+	return bauo.AddInvitationIDs(ids...)
+}
+
 // Mutation returns the BusinessAccountMutation object of the builder.
 func (bauo *BusinessAccountUpdateOne) Mutation() *BusinessAccountMutation {
 	return bauo.mutation
+}
+
+// ClearPosts clears all "posts" edges to the Post entity.
+func (bauo *BusinessAccountUpdateOne) ClearPosts() *BusinessAccountUpdateOne {
+	bauo.mutation.ClearPosts()
+	return bauo
+}
+
+// RemovePostIDs removes the "posts" edge to Post entities by IDs.
+func (bauo *BusinessAccountUpdateOne) RemovePostIDs(ids ...int) *BusinessAccountUpdateOne {
+	bauo.mutation.RemovePostIDs(ids...)
+	return bauo
+}
+
+// RemovePosts removes "posts" edges to Post entities.
+func (bauo *BusinessAccountUpdateOne) RemovePosts(p ...*Post) *BusinessAccountUpdateOne {
+	ids := make([]int, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return bauo.RemovePostIDs(ids...)
+}
+
+// ClearRelationships clears all "relationships" edges to the UserBusinessRelationship entity.
+func (bauo *BusinessAccountUpdateOne) ClearRelationships() *BusinessAccountUpdateOne {
+	bauo.mutation.ClearRelationships()
+	return bauo
+}
+
+// RemoveRelationshipIDs removes the "relationships" edge to UserBusinessRelationship entities by IDs.
+func (bauo *BusinessAccountUpdateOne) RemoveRelationshipIDs(ids ...int) *BusinessAccountUpdateOne {
+	bauo.mutation.RemoveRelationshipIDs(ids...)
+	return bauo
+}
+
+// RemoveRelationships removes "relationships" edges to UserBusinessRelationship entities.
+func (bauo *BusinessAccountUpdateOne) RemoveRelationships(u ...*UserBusinessRelationship) *BusinessAccountUpdateOne {
+	ids := make([]int, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return bauo.RemoveRelationshipIDs(ids...)
+}
+
+// ClearAccountSettings clears all "account_settings" edges to the AccountSettings entity.
+func (bauo *BusinessAccountUpdateOne) ClearAccountSettings() *BusinessAccountUpdateOne {
+	bauo.mutation.ClearAccountSettings()
+	return bauo
+}
+
+// RemoveAccountSettingIDs removes the "account_settings" edge to AccountSettings entities by IDs.
+func (bauo *BusinessAccountUpdateOne) RemoveAccountSettingIDs(ids ...int) *BusinessAccountUpdateOne {
+	bauo.mutation.RemoveAccountSettingIDs(ids...)
+	return bauo
+}
+
+// RemoveAccountSettings removes "account_settings" edges to AccountSettings entities.
+func (bauo *BusinessAccountUpdateOne) RemoveAccountSettings(a ...*AccountSettings) *BusinessAccountUpdateOne {
+	ids := make([]int, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return bauo.RemoveAccountSettingIDs(ids...)
+}
+
+// ClearInvitations clears all "invitations" edges to the Invitation entity.
+func (bauo *BusinessAccountUpdateOne) ClearInvitations() *BusinessAccountUpdateOne {
+	bauo.mutation.ClearInvitations()
+	return bauo
+}
+
+// RemoveInvitationIDs removes the "invitations" edge to Invitation entities by IDs.
+func (bauo *BusinessAccountUpdateOne) RemoveInvitationIDs(ids ...int) *BusinessAccountUpdateOne {
+	bauo.mutation.RemoveInvitationIDs(ids...)
+	return bauo
+}
+
+// RemoveInvitations removes "invitations" edges to Invitation entities.
+func (bauo *BusinessAccountUpdateOne) RemoveInvitations(i ...*Invitation) *BusinessAccountUpdateOne {
+	ids := make([]int, len(i))
+	for j := range i {
+		ids[j] = i[j].ID
+	}
+	return bauo.RemoveInvitationIDs(ids...)
 }
 
 // Where appends a list predicates to the BusinessAccountUpdate builder.
@@ -158,6 +722,201 @@ func (bauo *BusinessAccountUpdateOne) sqlSave(ctx context.Context) (_node *Busin
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := bauo.mutation.ID(); ok {
+		_spec.SetField(businessaccount.FieldID, field.TypeString, value)
+	}
+	if value, ok := bauo.mutation.Name(); ok {
+		_spec.SetField(businessaccount.FieldName, field.TypeString, value)
+	}
+	if value, ok := bauo.mutation.Active(); ok {
+		_spec.SetField(businessaccount.FieldActive, field.TypeBool, value)
+	}
+	if value, ok := bauo.mutation.CreatedAt(); ok {
+		_spec.SetField(businessaccount.FieldCreatedAt, field.TypeTime, value)
+	}
+	if value, ok := bauo.mutation.UpdatedAt(); ok {
+		_spec.SetField(businessaccount.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if bauo.mutation.PostsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   businessaccount.PostsTable,
+			Columns: []string{businessaccount.PostsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bauo.mutation.RemovedPostsIDs(); len(nodes) > 0 && !bauo.mutation.PostsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   businessaccount.PostsTable,
+			Columns: []string{businessaccount.PostsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bauo.mutation.PostsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   businessaccount.PostsTable,
+			Columns: []string{businessaccount.PostsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if bauo.mutation.RelationshipsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   businessaccount.RelationshipsTable,
+			Columns: []string{businessaccount.RelationshipsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userbusinessrelationship.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bauo.mutation.RemovedRelationshipsIDs(); len(nodes) > 0 && !bauo.mutation.RelationshipsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   businessaccount.RelationshipsTable,
+			Columns: []string{businessaccount.RelationshipsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userbusinessrelationship.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bauo.mutation.RelationshipsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   businessaccount.RelationshipsTable,
+			Columns: []string{businessaccount.RelationshipsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userbusinessrelationship.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if bauo.mutation.AccountSettingsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   businessaccount.AccountSettingsTable,
+			Columns: []string{businessaccount.AccountSettingsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(accountsettings.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bauo.mutation.RemovedAccountSettingsIDs(); len(nodes) > 0 && !bauo.mutation.AccountSettingsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   businessaccount.AccountSettingsTable,
+			Columns: []string{businessaccount.AccountSettingsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(accountsettings.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bauo.mutation.AccountSettingsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   businessaccount.AccountSettingsTable,
+			Columns: []string{businessaccount.AccountSettingsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(accountsettings.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if bauo.mutation.InvitationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   businessaccount.InvitationsTable,
+			Columns: businessaccount.InvitationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(invitation.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bauo.mutation.RemovedInvitationsIDs(); len(nodes) > 0 && !bauo.mutation.InvitationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   businessaccount.InvitationsTable,
+			Columns: businessaccount.InvitationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(invitation.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bauo.mutation.InvitationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   businessaccount.InvitationsTable,
+			Columns: businessaccount.InvitationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(invitation.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &BusinessAccount{config: bauo.config}
 	_spec.Assign = _node.assignValues

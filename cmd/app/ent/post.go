@@ -15,8 +15,10 @@ import (
 type Post struct {
 	config
 	// ID of the ent.
-	ID           int `json:"id,omitempty"`
-	selectValues sql.SelectValues
+	ID                     int `json:"id,omitempty"`
+	business_account_posts *int
+	user_posts             *int
+	selectValues           sql.SelectValues
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -25,6 +27,10 @@ func (*Post) scanValues(columns []string) ([]any, error) {
 	for i := range columns {
 		switch columns[i] {
 		case post.FieldID:
+			values[i] = new(sql.NullInt64)
+		case post.ForeignKeys[0]: // business_account_posts
+			values[i] = new(sql.NullInt64)
+		case post.ForeignKeys[1]: // user_posts
 			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -47,6 +53,20 @@ func (po *Post) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			po.ID = int(value.Int64)
+		case post.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field business_account_posts", value)
+			} else if value.Valid {
+				po.business_account_posts = new(int)
+				*po.business_account_posts = int(value.Int64)
+			}
+		case post.ForeignKeys[1]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field user_posts", value)
+			} else if value.Valid {
+				po.user_posts = new(int)
+				*po.user_posts = int(value.Int64)
+			}
 		default:
 			po.selectValues.Set(columns[i], values[i])
 		}

@@ -4,10 +4,15 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"fmt"
 	"math"
+	"placio-app/ent/accountsettings"
 	"placio-app/ent/businessaccount"
+	"placio-app/ent/invitation"
+	"placio-app/ent/post"
 	"placio-app/ent/predicate"
+	"placio-app/ent/userbusinessrelationship"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -17,10 +22,14 @@ import (
 // BusinessAccountQuery is the builder for querying BusinessAccount entities.
 type BusinessAccountQuery struct {
 	config
-	ctx        *QueryContext
-	order      []businessaccount.OrderOption
-	inters     []Interceptor
-	predicates []predicate.BusinessAccount
+	ctx                 *QueryContext
+	order               []businessaccount.OrderOption
+	inters              []Interceptor
+	predicates          []predicate.BusinessAccount
+	withPosts           *PostQuery
+	withRelationships   *UserBusinessRelationshipQuery
+	withAccountSettings *AccountSettingsQuery
+	withInvitations     *InvitationQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -55,6 +64,94 @@ func (baq *BusinessAccountQuery) Unique(unique bool) *BusinessAccountQuery {
 func (baq *BusinessAccountQuery) Order(o ...businessaccount.OrderOption) *BusinessAccountQuery {
 	baq.order = append(baq.order, o...)
 	return baq
+}
+
+// QueryPosts chains the current query on the "posts" edge.
+func (baq *BusinessAccountQuery) QueryPosts() *PostQuery {
+	query := (&PostClient{config: baq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := baq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := baq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(businessaccount.Table, businessaccount.FieldID, selector),
+			sqlgraph.To(post.Table, post.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, businessaccount.PostsTable, businessaccount.PostsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(baq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryRelationships chains the current query on the "relationships" edge.
+func (baq *BusinessAccountQuery) QueryRelationships() *UserBusinessRelationshipQuery {
+	query := (&UserBusinessRelationshipClient{config: baq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := baq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := baq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(businessaccount.Table, businessaccount.FieldID, selector),
+			sqlgraph.To(userbusinessrelationship.Table, userbusinessrelationship.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, businessaccount.RelationshipsTable, businessaccount.RelationshipsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(baq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryAccountSettings chains the current query on the "account_settings" edge.
+func (baq *BusinessAccountQuery) QueryAccountSettings() *AccountSettingsQuery {
+	query := (&AccountSettingsClient{config: baq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := baq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := baq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(businessaccount.Table, businessaccount.FieldID, selector),
+			sqlgraph.To(accountsettings.Table, accountsettings.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, businessaccount.AccountSettingsTable, businessaccount.AccountSettingsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(baq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryInvitations chains the current query on the "invitations" edge.
+func (baq *BusinessAccountQuery) QueryInvitations() *InvitationQuery {
+	query := (&InvitationClient{config: baq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := baq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := baq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(businessaccount.Table, businessaccount.FieldID, selector),
+			sqlgraph.To(invitation.Table, invitation.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, businessaccount.InvitationsTable, businessaccount.InvitationsPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(baq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first BusinessAccount entity from the query.
@@ -244,19 +341,79 @@ func (baq *BusinessAccountQuery) Clone() *BusinessAccountQuery {
 		return nil
 	}
 	return &BusinessAccountQuery{
-		config:     baq.config,
-		ctx:        baq.ctx.Clone(),
-		order:      append([]businessaccount.OrderOption{}, baq.order...),
-		inters:     append([]Interceptor{}, baq.inters...),
-		predicates: append([]predicate.BusinessAccount{}, baq.predicates...),
+		config:              baq.config,
+		ctx:                 baq.ctx.Clone(),
+		order:               append([]businessaccount.OrderOption{}, baq.order...),
+		inters:              append([]Interceptor{}, baq.inters...),
+		predicates:          append([]predicate.BusinessAccount{}, baq.predicates...),
+		withPosts:           baq.withPosts.Clone(),
+		withRelationships:   baq.withRelationships.Clone(),
+		withAccountSettings: baq.withAccountSettings.Clone(),
+		withInvitations:     baq.withInvitations.Clone(),
 		// clone intermediate query.
 		sql:  baq.sql.Clone(),
 		path: baq.path,
 	}
 }
 
+// WithPosts tells the query-builder to eager-load the nodes that are connected to
+// the "posts" edge. The optional arguments are used to configure the query builder of the edge.
+func (baq *BusinessAccountQuery) WithPosts(opts ...func(*PostQuery)) *BusinessAccountQuery {
+	query := (&PostClient{config: baq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	baq.withPosts = query
+	return baq
+}
+
+// WithRelationships tells the query-builder to eager-load the nodes that are connected to
+// the "relationships" edge. The optional arguments are used to configure the query builder of the edge.
+func (baq *BusinessAccountQuery) WithRelationships(opts ...func(*UserBusinessRelationshipQuery)) *BusinessAccountQuery {
+	query := (&UserBusinessRelationshipClient{config: baq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	baq.withRelationships = query
+	return baq
+}
+
+// WithAccountSettings tells the query-builder to eager-load the nodes that are connected to
+// the "account_settings" edge. The optional arguments are used to configure the query builder of the edge.
+func (baq *BusinessAccountQuery) WithAccountSettings(opts ...func(*AccountSettingsQuery)) *BusinessAccountQuery {
+	query := (&AccountSettingsClient{config: baq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	baq.withAccountSettings = query
+	return baq
+}
+
+// WithInvitations tells the query-builder to eager-load the nodes that are connected to
+// the "invitations" edge. The optional arguments are used to configure the query builder of the edge.
+func (baq *BusinessAccountQuery) WithInvitations(opts ...func(*InvitationQuery)) *BusinessAccountQuery {
+	query := (&InvitationClient{config: baq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	baq.withInvitations = query
+	return baq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
+//
+// Example:
+//
+//	var v []struct {
+//		ID string `json:"ID,omitempty"`
+//		Count int `json:"count,omitempty"`
+//	}
+//
+//	client.BusinessAccount.Query().
+//		GroupBy(businessaccount.FieldID).
+//		Aggregate(ent.Count()).
+//		Scan(ctx, &v)
 func (baq *BusinessAccountQuery) GroupBy(field string, fields ...string) *BusinessAccountGroupBy {
 	baq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &BusinessAccountGroupBy{build: baq}
@@ -268,6 +425,16 @@ func (baq *BusinessAccountQuery) GroupBy(field string, fields ...string) *Busine
 
 // Select allows the selection one or more fields/columns for the given query,
 // instead of selecting all fields in the entity.
+//
+// Example:
+//
+//	var v []struct {
+//		ID string `json:"ID,omitempty"`
+//	}
+//
+//	client.BusinessAccount.Query().
+//		Select(businessaccount.FieldID).
+//		Scan(ctx, &v)
 func (baq *BusinessAccountQuery) Select(fields ...string) *BusinessAccountSelect {
 	baq.ctx.Fields = append(baq.ctx.Fields, fields...)
 	sbuild := &BusinessAccountSelect{BusinessAccountQuery: baq}
@@ -309,8 +476,14 @@ func (baq *BusinessAccountQuery) prepareQuery(ctx context.Context) error {
 
 func (baq *BusinessAccountQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*BusinessAccount, error) {
 	var (
-		nodes = []*BusinessAccount{}
-		_spec = baq.querySpec()
+		nodes       = []*BusinessAccount{}
+		_spec       = baq.querySpec()
+		loadedTypes = [4]bool{
+			baq.withPosts != nil,
+			baq.withRelationships != nil,
+			baq.withAccountSettings != nil,
+			baq.withInvitations != nil,
+		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*BusinessAccount).scanValues(nil, columns)
@@ -318,6 +491,7 @@ func (baq *BusinessAccountQuery) sqlAll(ctx context.Context, hooks ...queryHook)
 	_spec.Assign = func(columns []string, values []any) error {
 		node := &BusinessAccount{config: baq.config}
 		nodes = append(nodes, node)
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	for i := range hooks {
@@ -329,7 +503,194 @@ func (baq *BusinessAccountQuery) sqlAll(ctx context.Context, hooks ...queryHook)
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := baq.withPosts; query != nil {
+		if err := baq.loadPosts(ctx, query, nodes,
+			func(n *BusinessAccount) { n.Edges.Posts = []*Post{} },
+			func(n *BusinessAccount, e *Post) { n.Edges.Posts = append(n.Edges.Posts, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := baq.withRelationships; query != nil {
+		if err := baq.loadRelationships(ctx, query, nodes,
+			func(n *BusinessAccount) { n.Edges.Relationships = []*UserBusinessRelationship{} },
+			func(n *BusinessAccount, e *UserBusinessRelationship) {
+				n.Edges.Relationships = append(n.Edges.Relationships, e)
+			}); err != nil {
+			return nil, err
+		}
+	}
+	if query := baq.withAccountSettings; query != nil {
+		if err := baq.loadAccountSettings(ctx, query, nodes,
+			func(n *BusinessAccount) { n.Edges.AccountSettings = []*AccountSettings{} },
+			func(n *BusinessAccount, e *AccountSettings) {
+				n.Edges.AccountSettings = append(n.Edges.AccountSettings, e)
+			}); err != nil {
+			return nil, err
+		}
+	}
+	if query := baq.withInvitations; query != nil {
+		if err := baq.loadInvitations(ctx, query, nodes,
+			func(n *BusinessAccount) { n.Edges.Invitations = []*Invitation{} },
+			func(n *BusinessAccount, e *Invitation) { n.Edges.Invitations = append(n.Edges.Invitations, e) }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
+}
+
+func (baq *BusinessAccountQuery) loadPosts(ctx context.Context, query *PostQuery, nodes []*BusinessAccount, init func(*BusinessAccount), assign func(*BusinessAccount, *Post)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*BusinessAccount)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Post(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(businessaccount.PostsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.business_account_posts
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "business_account_posts" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "business_account_posts" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (baq *BusinessAccountQuery) loadRelationships(ctx context.Context, query *UserBusinessRelationshipQuery, nodes []*BusinessAccount, init func(*BusinessAccount), assign func(*BusinessAccount, *UserBusinessRelationship)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*BusinessAccount)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.UserBusinessRelationship(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(businessaccount.RelationshipsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.business_account_relationships
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "business_account_relationships" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "business_account_relationships" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (baq *BusinessAccountQuery) loadAccountSettings(ctx context.Context, query *AccountSettingsQuery, nodes []*BusinessAccount, init func(*BusinessAccount), assign func(*BusinessAccount, *AccountSettings)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*BusinessAccount)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.AccountSettings(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(businessaccount.AccountSettingsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.business_account_account_settings
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "business_account_account_settings" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "business_account_account_settings" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (baq *BusinessAccountQuery) loadInvitations(ctx context.Context, query *InvitationQuery, nodes []*BusinessAccount, init func(*BusinessAccount), assign func(*BusinessAccount, *Invitation)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[int]*BusinessAccount)
+	nids := make(map[int]map[*BusinessAccount]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(businessaccount.InvitationsTable)
+		s.Join(joinT).On(s.C(invitation.FieldID), joinT.C(businessaccount.InvitationsPrimaryKey[0]))
+		s.Where(sql.InValues(joinT.C(businessaccount.InvitationsPrimaryKey[1]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(businessaccount.InvitationsPrimaryKey[1]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(sql.NullInt64)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := int(values[0].(*sql.NullInt64).Int64)
+				inValue := int(values[1].(*sql.NullInt64).Int64)
+				if nids[inValue] == nil {
+					nids[inValue] = map[*BusinessAccount]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*Invitation](ctx, query, qr, query.inters)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "invitations" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
+		}
+	}
+	return nil
 }
 
 func (baq *BusinessAccountQuery) sqlCount(ctx context.Context) (int, error) {

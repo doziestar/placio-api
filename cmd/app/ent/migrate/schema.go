@@ -8,15 +8,65 @@ import (
 )
 
 var (
+	// AccountSettingsColumns holds the columns for the "account_settings" table.
+	AccountSettingsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "id", Type: field.TypeString, Unique: true},
+		{Name: "account_id", Type: field.TypeString, Unique: true},
+		{Name: "two_factor_authentication", Type: field.TypeBool},
+		{Name: "blocked_users", Type: field.TypeJSON},
+		{Name: "muted_users", Type: field.TypeJSON},
+		{Name: "business_account_id", Type: field.TypeString},
+		{Name: "business_account_account_settings", Type: field.TypeInt},
+	}
+	// AccountSettingsTable holds the schema information for the "account_settings" table.
+	AccountSettingsTable = &schema.Table{
+		Name:       "account_settings",
+		Columns:    AccountSettingsColumns,
+		PrimaryKey: []*schema.Column{AccountSettingsColumns[0], AccountSettingsColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "account_settings_business_accounts_account_settings",
+				Columns:    []*schema.Column{AccountSettingsColumns[7]},
+				RefColumns: []*schema.Column{BusinessAccountsColumns[0], BusinessAccountsColumns[1]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
+	// BookingsColumns holds the columns for the "bookings" table.
+	BookingsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+	}
+	// BookingsTable holds the schema information for the "bookings" table.
+	BookingsTable = &schema.Table{
+		Name:       "bookings",
+		Columns:    BookingsColumns,
+		PrimaryKey: []*schema.Column{BookingsColumns[0]},
+	}
 	// BusinessAccountsColumns holds the columns for the "business_accounts" table.
 	BusinessAccountsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "id", Type: field.TypeString, Unique: true},
+		{Name: "name", Type: field.TypeString},
+		{Name: "active", Type: field.TypeBool, Default: false},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
 	}
 	// BusinessAccountsTable holds the schema information for the "business_accounts" table.
 	BusinessAccountsTable = &schema.Table{
 		Name:       "business_accounts",
 		Columns:    BusinessAccountsColumns,
-		PrimaryKey: []*schema.Column{BusinessAccountsColumns[0]},
+		PrimaryKey: []*schema.Column{BusinessAccountsColumns[0], BusinessAccountsColumns[1]},
+	}
+	// ChatsColumns holds the columns for the "chats" table.
+	ChatsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+	}
+	// ChatsTable holds the schema information for the "chats" table.
+	ChatsTable = &schema.Table{
+		Name:       "chats",
+		Columns:    ChatsColumns,
+		PrimaryKey: []*schema.Column{ChatsColumns[0]},
 	}
 	// CommentsColumns holds the columns for the "comments" table.
 	CommentsColumns = []*schema.Column{
@@ -28,21 +78,115 @@ var (
 		Columns:    CommentsColumns,
 		PrimaryKey: []*schema.Column{CommentsColumns[0]},
 	}
+	// EventsColumns holds the columns for the "events" table.
+	EventsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+	}
+	// EventsTable holds the schema information for the "events" table.
+	EventsTable = &schema.Table{
+		Name:       "events",
+		Columns:    EventsColumns,
+		PrimaryKey: []*schema.Column{EventsColumns[0]},
+	}
+	// InvitationsColumns holds the columns for the "invitations" table.
+	InvitationsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "email", Type: field.TypeString},
+		{Name: "role", Type: field.TypeString},
+		{Name: "business_account_id", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+	}
+	// InvitationsTable holds the schema information for the "invitations" table.
+	InvitationsTable = &schema.Table{
+		Name:       "invitations",
+		Columns:    InvitationsColumns,
+		PrimaryKey: []*schema.Column{InvitationsColumns[0]},
+	}
+	// MediaColumns holds the columns for the "media" table.
+	MediaColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+	}
+	// MediaTable holds the schema information for the "media" table.
+	MediaTable = &schema.Table{
+		Name:       "media",
+		Columns:    MediaColumns,
+		PrimaryKey: []*schema.Column{MediaColumns[0]},
+	}
+	// OrdersColumns holds the columns for the "orders" table.
+	OrdersColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+	}
+	// OrdersTable holds the schema information for the "orders" table.
+	OrdersTable = &schema.Table{
+		Name:       "orders",
+		Columns:    OrdersColumns,
+		PrimaryKey: []*schema.Column{OrdersColumns[0]},
+	}
+	// PaymentsColumns holds the columns for the "payments" table.
+	PaymentsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+	}
+	// PaymentsTable holds the schema information for the "payments" table.
+	PaymentsTable = &schema.Table{
+		Name:       "payments",
+		Columns:    PaymentsColumns,
+		PrimaryKey: []*schema.Column{PaymentsColumns[0]},
+	}
 	// PostsColumns holds the columns for the "posts" table.
 	PostsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "business_account_posts", Type: field.TypeInt, Nullable: true},
+		{Name: "user_posts", Type: field.TypeInt, Nullable: true},
 	}
 	// PostsTable holds the schema information for the "posts" table.
 	PostsTable = &schema.Table{
 		Name:       "posts",
 		Columns:    PostsColumns,
 		PrimaryKey: []*schema.Column{PostsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "posts_business_accounts_posts",
+				Columns:    []*schema.Column{PostsColumns[1]},
+				RefColumns: []*schema.Column{BusinessAccountsColumns[0], BusinessAccountsColumns[1]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "posts_users_posts",
+				Columns:    []*schema.Column{PostsColumns[2]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
+	// RatingsColumns holds the columns for the "ratings" table.
+	RatingsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+	}
+	// RatingsTable holds the schema information for the "ratings" table.
+	RatingsTable = &schema.Table{
+		Name:       "ratings",
+		Columns:    RatingsColumns,
+		PrimaryKey: []*schema.Column{RatingsColumns[0]},
+	}
+	// TicketsColumns holds the columns for the "tickets" table.
+	TicketsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+	}
+	// TicketsTable holds the schema information for the "tickets" table.
+	TicketsTable = &schema.Table{
+		Name:       "tickets",
+		Columns:    TicketsColumns,
+		PrimaryKey: []*schema.Column{TicketsColumns[0]},
 	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "age", Type: field.TypeInt, Unique: true},
-		{Name: "name", Type: field.TypeString, Default: "unknown"},
+		{Name: "user_id", Type: field.TypeString, Unique: true},
+		{Name: "auth0id", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "auth0data", Type: field.TypeJSON},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{
@@ -50,14 +194,90 @@ var (
 		Columns:    UsersColumns,
 		PrimaryKey: []*schema.Column{UsersColumns[0]},
 	}
+	// UserBusinessRelationshipsColumns holds the columns for the "user_business_relationships" table.
+	UserBusinessRelationshipsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "id", Type: field.TypeString, Unique: true},
+		{Name: "user_id", Type: field.TypeString},
+		{Name: "business_account_id", Type: field.TypeString},
+		{Name: "role", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "business_account_relationships", Type: field.TypeInt},
+		{Name: "user_relationships", Type: field.TypeInt},
+	}
+	// UserBusinessRelationshipsTable holds the schema information for the "user_business_relationships" table.
+	UserBusinessRelationshipsTable = &schema.Table{
+		Name:       "user_business_relationships",
+		Columns:    UserBusinessRelationshipsColumns,
+		PrimaryKey: []*schema.Column{UserBusinessRelationshipsColumns[0], UserBusinessRelationshipsColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "user_business_relationships_business_accounts_relationships",
+				Columns:    []*schema.Column{UserBusinessRelationshipsColumns[7]},
+				RefColumns: []*schema.Column{BusinessAccountsColumns[0], BusinessAccountsColumns[1]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "user_business_relationships_users_relationships",
+				Columns:    []*schema.Column{UserBusinessRelationshipsColumns[8]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
+	// InvitationBusinessAccountColumns holds the columns for the "invitation_business_account" table.
+	InvitationBusinessAccountColumns = []*schema.Column{
+		{Name: "invitation_id", Type: field.TypeInt},
+		{Name: "business_account_id", Type: field.TypeInt},
+	}
+	// InvitationBusinessAccountTable holds the schema information for the "invitation_business_account" table.
+	InvitationBusinessAccountTable = &schema.Table{
+		Name:       "invitation_business_account",
+		Columns:    InvitationBusinessAccountColumns,
+		PrimaryKey: []*schema.Column{InvitationBusinessAccountColumns[0], InvitationBusinessAccountColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "invitation_business_account_invitation_id",
+				Columns:    []*schema.Column{InvitationBusinessAccountColumns[0]},
+				RefColumns: []*schema.Column{InvitationsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "invitation_business_account_business_account_id",
+				Columns:    []*schema.Column{InvitationBusinessAccountColumns[1]},
+				RefColumns: []*schema.Column{BusinessAccountsColumns[0], BusinessAccountsColumns[1]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		AccountSettingsTable,
+		BookingsTable,
 		BusinessAccountsTable,
+		ChatsTable,
 		CommentsTable,
+		EventsTable,
+		InvitationsTable,
+		MediaTable,
+		OrdersTable,
+		PaymentsTable,
 		PostsTable,
+		RatingsTable,
+		TicketsTable,
 		UsersTable,
+		UserBusinessRelationshipsTable,
+		InvitationBusinessAccountTable,
 	}
 )
 
 func init() {
+	AccountSettingsTable.ForeignKeys[0].RefTable = BusinessAccountsTable
+	PostsTable.ForeignKeys[0].RefTable = BusinessAccountsTable
+	PostsTable.ForeignKeys[1].RefTable = UsersTable
+	UserBusinessRelationshipsTable.ForeignKeys[0].RefTable = BusinessAccountsTable
+	UserBusinessRelationshipsTable.ForeignKeys[1].RefTable = UsersTable
+	InvitationBusinessAccountTable.ForeignKeys[0].RefTable = InvitationsTable
+	InvitationBusinessAccountTable.ForeignKeys[1].RefTable = BusinessAccountsTable
 }

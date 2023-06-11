@@ -3,12 +3,15 @@
 package ent
 
 import (
+	"encoding/json"
 	"fmt"
 	"placio-app/ent/user"
 	"strings"
+	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/auth0/go-auth0/management"
 )
 
 // User is the model entity for the User schema.
@@ -16,11 +19,49 @@ type User struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
-	// Age holds the value of the "age" field.
-	Age int `json:"age,omitempty"`
-	// Name holds the value of the "name" field.
-	Name         string `json:"name,omitempty"`
+	// UserID holds the value of the "UserID" field.
+	UserID string `json:"UserID,omitempty"`
+	// Auth0ID holds the value of the "Auth0ID" field.
+	Auth0ID string `json:"Auth0ID,omitempty"`
+	// CreatedAt holds the value of the "CreatedAt" field.
+	CreatedAt time.Time `json:"CreatedAt,omitempty"`
+	// UpdatedAt holds the value of the "UpdatedAt" field.
+	UpdatedAt time.Time `json:"UpdatedAt,omitempty"`
+	// Auth0Data holds the value of the "Auth0Data" field.
+	Auth0Data *management.User `json:"Auth0Data,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the UserQuery when eager-loading is set.
+	Edges        UserEdges `json:"edges"`
 	selectValues sql.SelectValues
+}
+
+// UserEdges holds the relations/edges for other nodes in the graph.
+type UserEdges struct {
+	// Posts holds the value of the posts edge.
+	Posts []*Post `json:"posts,omitempty"`
+	// Relationships holds the value of the relationships edge.
+	Relationships []*UserBusinessRelationship `json:"relationships,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [2]bool
+}
+
+// PostsOrErr returns the Posts value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) PostsOrErr() ([]*Post, error) {
+	if e.loadedTypes[0] {
+		return e.Posts, nil
+	}
+	return nil, &NotLoadedError{edge: "posts"}
+}
+
+// RelationshipsOrErr returns the Relationships value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) RelationshipsOrErr() ([]*UserBusinessRelationship, error) {
+	if e.loadedTypes[1] {
+		return e.Relationships, nil
+	}
+	return nil, &NotLoadedError{edge: "relationships"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -28,10 +69,14 @@ func (*User) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case user.FieldID, user.FieldAge:
+		case user.FieldAuth0Data:
+			values[i] = new([]byte)
+		case user.FieldID:
 			values[i] = new(sql.NullInt64)
-		case user.FieldName:
+		case user.FieldUserID, user.FieldAuth0ID:
 			values[i] = new(sql.NullString)
+		case user.FieldCreatedAt, user.FieldUpdatedAt:
+			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -53,17 +98,37 @@ func (u *User) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			u.ID = int(value.Int64)
-		case user.FieldAge:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field age", values[i])
-			} else if value.Valid {
-				u.Age = int(value.Int64)
-			}
-		case user.FieldName:
+		case user.FieldUserID:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field name", values[i])
+				return fmt.Errorf("unexpected type %T for field UserID", values[i])
 			} else if value.Valid {
-				u.Name = value.String
+				u.UserID = value.String
+			}
+		case user.FieldAuth0ID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field Auth0ID", values[i])
+			} else if value.Valid {
+				u.Auth0ID = value.String
+			}
+		case user.FieldCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field CreatedAt", values[i])
+			} else if value.Valid {
+				u.CreatedAt = value.Time
+			}
+		case user.FieldUpdatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field UpdatedAt", values[i])
+			} else if value.Valid {
+				u.UpdatedAt = value.Time
+			}
+		case user.FieldAuth0Data:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field Auth0Data", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &u.Auth0Data); err != nil {
+					return fmt.Errorf("unmarshal field Auth0Data: %w", err)
+				}
 			}
 		default:
 			u.selectValues.Set(columns[i], values[i])
@@ -76,6 +141,16 @@ func (u *User) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (u *User) Value(name string) (ent.Value, error) {
 	return u.selectValues.Get(name)
+}
+
+// QueryPosts queries the "posts" edge of the User entity.
+func (u *User) QueryPosts() *PostQuery {
+	return NewUserClient(u.config).QueryPosts(u)
+}
+
+// QueryRelationships queries the "relationships" edge of the User entity.
+func (u *User) QueryRelationships() *UserBusinessRelationshipQuery {
+	return NewUserClient(u.config).QueryRelationships(u)
 }
 
 // Update returns a builder for updating this User.
@@ -101,11 +176,20 @@ func (u *User) String() string {
 	var builder strings.Builder
 	builder.WriteString("User(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", u.ID))
-	builder.WriteString("age=")
-	builder.WriteString(fmt.Sprintf("%v", u.Age))
+	builder.WriteString("UserID=")
+	builder.WriteString(u.UserID)
 	builder.WriteString(", ")
-	builder.WriteString("name=")
-	builder.WriteString(u.Name)
+	builder.WriteString("Auth0ID=")
+	builder.WriteString(u.Auth0ID)
+	builder.WriteString(", ")
+	builder.WriteString("CreatedAt=")
+	builder.WriteString(u.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("UpdatedAt=")
+	builder.WriteString(u.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("Auth0Data=")
+	builder.WriteString(fmt.Sprintf("%v", u.Auth0Data))
 	builder.WriteByte(')')
 	return builder.String()
 }

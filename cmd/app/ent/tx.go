@@ -12,14 +12,36 @@ import (
 // Tx is a transactional client that is created by calling Client.Tx().
 type Tx struct {
 	config
+	// AccountSettings is the client for interacting with the AccountSettings builders.
+	AccountSettings *AccountSettingsClient
+	// Booking is the client for interacting with the Booking builders.
+	Booking *BookingClient
 	// BusinessAccount is the client for interacting with the BusinessAccount builders.
 	BusinessAccount *BusinessAccountClient
+	// Chat is the client for interacting with the Chat builders.
+	Chat *ChatClient
 	// Comment is the client for interacting with the Comment builders.
 	Comment *CommentClient
+	// Event is the client for interacting with the Event builders.
+	Event *EventClient
+	// Invitation is the client for interacting with the Invitation builders.
+	Invitation *InvitationClient
+	// Media is the client for interacting with the Media builders.
+	Media *MediaClient
+	// Order is the client for interacting with the Order builders.
+	Order *OrderClient
+	// Payment is the client for interacting with the Payment builders.
+	Payment *PaymentClient
 	// Post is the client for interacting with the Post builders.
 	Post *PostClient
+	// Rating is the client for interacting with the Rating builders.
+	Rating *RatingClient
+	// Ticket is the client for interacting with the Ticket builders.
+	Ticket *TicketClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
+	// UserBusinessRelationship is the client for interacting with the UserBusinessRelationship builders.
+	UserBusinessRelationship *UserBusinessRelationshipClient
 
 	// lazily loaded.
 	client     *Client
@@ -151,10 +173,21 @@ func (tx *Tx) Client() *Client {
 }
 
 func (tx *Tx) init() {
+	tx.AccountSettings = NewAccountSettingsClient(tx.config)
+	tx.Booking = NewBookingClient(tx.config)
 	tx.BusinessAccount = NewBusinessAccountClient(tx.config)
+	tx.Chat = NewChatClient(tx.config)
 	tx.Comment = NewCommentClient(tx.config)
+	tx.Event = NewEventClient(tx.config)
+	tx.Invitation = NewInvitationClient(tx.config)
+	tx.Media = NewMediaClient(tx.config)
+	tx.Order = NewOrderClient(tx.config)
+	tx.Payment = NewPaymentClient(tx.config)
 	tx.Post = NewPostClient(tx.config)
+	tx.Rating = NewRatingClient(tx.config)
+	tx.Ticket = NewTicketClient(tx.config)
 	tx.User = NewUserClient(tx.config)
+	tx.UserBusinessRelationship = NewUserBusinessRelationshipClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.
@@ -164,7 +197,7 @@ func (tx *Tx) init() {
 // of them in order to commit or rollback the transaction.
 //
 // If a closed transaction is embedded in one of the generated entities, and the entity
-// applies a query, for example: BusinessAccount.QueryXXX(), the query will be executed
+// applies a query, for example: AccountSettings.QueryXXX(), the query will be executed
 // through the driver which created this transaction.
 //
 // Note that txDriver is not goroutine safe.
