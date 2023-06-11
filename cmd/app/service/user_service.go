@@ -14,6 +14,7 @@ import (
 	"placio-app/models"
 	"placio-app/utility"
 	"placio-pkg/hash"
+	"reflect"
 	"strings"
 
 	"gorm.io/gorm"
@@ -192,19 +193,32 @@ func (s *UserServiceImpl) GetUsersForBusinessAccount(businessAccountID string) (
 }
 
 func (s *UserServiceImpl) UpdateAuth0UserInformation(userID string, userData *models.Auth0UserData) (*management.User, error) {
-	mergedData, err := s.prepareUserData(userID, userData)
+	//mergedData, err := s.prepareUserData(userID, userData)
+	mergedData, err := utility.StructToMap(&userData)
 	if err != nil {
 		return nil, err
 	}
+
+	// Iterate over the map and delete keys with zero values
+	for key, value := range mergedData {
+		v := reflect.ValueOf(value)
+		if (v.Kind() == reflect.Ptr || v.Kind() == reflect.Interface) && v.IsNil() {
+			delete(mergedData, key)
+		} else if v.Kind() != reflect.Ptr && v.IsZero() {
+			delete(mergedData, key)
+		}
+	}
+
 	return s.updateAuth0Data(userID, mergedData, "user information")
 }
 
 func (s *UserServiceImpl) UpdateAuth0UserMetadata(userID string, userMetaData *models.Metadata) (*management.User, error) {
-	mergedData, err := s.prepareUserData(userID, userMetaData)
+	newUserData, err := utility.StructToMap(&userMetaData)
+	//mergedData, err := s.prepareUserData(userID, userMetaData)
 	if err != nil {
 		return nil, err
 	}
-	return s.updateAuth0Data(userID, mergedData, "user_metadata")
+	return s.updateAuth0Data(userID, newUserData, "user_metadata")
 }
 
 func (s *UserServiceImpl) UpdateAuth0AppMetadata(userID string, appData *models.AppMetadata) (*management.User, error) {

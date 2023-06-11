@@ -25,7 +25,7 @@ func (uc *UserController) RegisterRoutes(router *gin.RouterGroup) {
 	userRouter := router.Group("/users")
 	{
 		userRouter.GET("/", utility.Use(uc.GetUser))
-		userRouter.PATCH("/:id", utility.Use(uc.updateAuth0UserInformation))
+		userRouter.PATCH("/:id/userinfo", utility.Use(uc.updateAuth0UserInformation))
 		userRouter.PATCH("/:id/metadata", utility.Use(uc.updateAuth0UserMetadata))
 		userRouter.PATCH("/:id/appdata", utility.Use(uc.updateAuth0AppMetadata))
 		userRouter.POST("/business-account", utility.Use(uc.createBusinessAccount))
@@ -60,6 +60,18 @@ func (uc *UserController) updateAuth0UserInformation(ctx *gin.Context) error {
 		return nil
 	}
 
+	//userToUpdateID := ctx.Param("id")
+
+	// split the auth0ID by |
+	provider := utility.SplitString(auth0ID, "|")[0]
+	log.Println("provider: ", provider)
+	if provider != "auth0" {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"error": "User is not authorized to update user information",
+		})
+		return errors.New("user is not authorized to update user information")
+	}
+
 	var userData *models.Auth0UserData
 	if err := ctx.ShouldBindJSON(&userData); err != nil {
 		userData = nil
@@ -91,6 +103,7 @@ func (uc *UserController) updateAuth0UserInformation(ctx *gin.Context) error {
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/users/{id}/metadata [patch]
 func (uc *UserController) updateAuth0UserMetadata(ctx *gin.Context) error {
+	log.Println("updateAuth0UserMetadata")
 	auth0ID := ctx.MustGet("auth0_id").(string)
 	if auth0ID == "" {
 		ctx.JSON(http.StatusBadRequest, gin.H{
