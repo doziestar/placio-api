@@ -6,26 +6,6 @@ volumes:
   redis_data:
 
 services:
-  # docs:
-  #   container_name: placio-docs
-  #   build:
-  #     context: .
-  #     dockerfile: ./docs/Dockerfile
-  #   restart: always
-  #   ports:
-  #     - "6060:6060"
-  #   volumes:
-  #     # - ./:/app
-  #     - ./docs:/app/docs
-
-  #  kafka-ui:
-  #    container_name: placio-kafka-ui
-  #    image: provectuslabs/kafka-ui:latest
-  #    restart: always
-  #    ports:
-  #      - "8083:8083"
-  #    depends_on:
-  #      - kafka
 
   db:
     image: postgres:14

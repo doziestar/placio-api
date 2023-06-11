@@ -11,12 +11,11 @@ type User struct {
 	UserID        string `gorm:"primaryKey"`
 	Auth0ID       string
 	Relationships []UserBusinessRelationship `gorm:"foreignKey:UserID"`
-	// Settings      GeneralSettings            `gorm:"foreignKey:UserID"`
-	Posts     []Post         `gorm:"foreignKey:UserID"`
-	Active    bool           `gorm:"default:false"`
-	CreatedAt time.Time      `gorm:"autoCreateTime"`
-	UpdatedAt time.Time      `gorm:"autoUpdateTime"`
-	DeleteAt  gorm.DeletedAt `gorm:"index"`
+	Posts         []Post                     `gorm:"foreignKey:UserID"`
+	CreatedAt     time.Time                  `gorm:"autoCreateTime"`
+	UpdatedAt     time.Time                  `gorm:"autoUpdateTime"`
+	DeleteAt      gorm.DeletedAt             `gorm:"index"`
+	//management.User
 }
 
 type BusinessAccount struct {

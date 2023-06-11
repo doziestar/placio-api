@@ -129,7 +129,7 @@ func Use(fn func(*gin.Context) error) gin.HandlerFunc {
 	}
 }
 
-// structToMap converts a struct to a map, omitting fields that are nil.
+// StructToMap structToMap converts a struct to a map, omitting fields that are nil.
 func StructToMap(v interface{}) (map[string]interface{}, error) {
 	var m map[string]interface{}
 	data, err := json.Marshal(v)
@@ -143,7 +143,7 @@ func StructToMap(v interface{}) (map[string]interface{}, error) {
 	return m, nil
 }
 
-// mergeMaps merges two map[string]interface{} objects.
+// MergeMaps mergeMaps merges two map[string]interface{} objects.
 func MergeMaps(map1, map2 map[string]interface{}) map[string]interface{} {
 	merged := make(map[string]interface{})
 	for k, v := range map1 {

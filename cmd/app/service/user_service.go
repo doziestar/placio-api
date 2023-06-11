@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -190,6 +191,7 @@ func (s *UserServiceImpl) GetUsersForBusinessAccount(businessAccountID string) (
 func (s *UserServiceImpl) UpdateAuth0UserData(userID string, userData *models.Auth0UserData, appData *models.AppMetadata, userMetaData *models.Metadata) (*models.Auth0UserData, error) {
 	//log.Println("Updating Auth0 user data", userID, IdToken, userData, appData, userMetaData)
 	// Create an HTTP client
+
 	client := &http.Client{}
 
 	// Get the current user data
@@ -328,7 +330,10 @@ func (s *UserServiceImpl) GetAuth0ManagementToken(ctx context.Context) (string, 
 	} else {
 		// If token is in cache, decrypt and return
 		encryptedToken := string(encryptedTokenBytes)
+		encryptedToken = strings.Trim(encryptedToken, "\"") // Remove quotes from the string
+		//log.Println("Retrieved encrypted token from cache:", encryptedToken) // Added log line
 		token, err := hash.DecryptString(encryptedToken, auth0TokenEncryptionKey)
+		//log.Println("Decrypted token:", token) // Added log line
 		if err != nil {
 			log.Println("Error decrypting token:", err)
 		} else {
@@ -350,6 +355,7 @@ func (s *UserServiceImpl) GetAuth0ManagementToken(ctx context.Context) (string, 
 		return "", err
 	}
 
+	log.Println("Caching encrypted token:", encryptedToken) // Added log line
 	err = s.cache.SetCache(ctx, auth0TokenCacheKey, encryptedToken)
 	if err != nil {
 		return "", err
@@ -367,14 +373,14 @@ func (s *UserServiceImpl) retrieveAuth0Token(ctx context.Context) (string, error
 	////"audience": os.Getenv("AUTH0_AUDIENCE"),
 	//"audience": "KpDGogGXqWeuGQfZ4Wu30neiHS79hGiU",
 	payload := strings.NewReader(`{
-		"client_id":"fujubEJPBtlg38FtNuuC413PjKl7upnx",
-		"client_secret":"Md4qKJylIY3KtD3H2lsxdRigQPW2NEyU62BpFM4kHnSGiJdZSkDQECxJ070fwVsX",
-		"audience":"https://api.palnight.com",
+		"client_id": "wORDxmfRFTkBvoSVU06Af4HFQAo25gUI",
+		"client_secret": "_tbGyuaBZ7j5zp659MU5AYqkZessCVeNs2bv8Yl1Hp6XUj_hUdQAW9a5zw8hIA3F",
+		"audience": "https://dev-qlb0lv3d.us.auth0.com/api/v2/",
 		"grant_type": "client_credentials"
 	}`)
 
 	log.Println("payload", payload)
-	req, _ := http.NewRequest("POST", "https://auth.placio.io/oauth/token", payload)
+	req, _ := http.NewRequest("POST", "https://dev-qlb0lv3d.us.auth0.com/oauth/token", payload)
 	req.Header.Add("content-type", "application/json")
 
 	res, err := http.DefaultClient.Do(req)
@@ -389,7 +395,7 @@ func (s *UserServiceImpl) retrieveAuth0Token(ctx context.Context) (string, error
 		return "", errors.New("auth0 request not successful")
 	}
 
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		log.Println("Error reading response body:", err)
 		return "", err
