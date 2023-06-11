@@ -25,7 +25,9 @@ func (uc *UserController) RegisterRoutes(router *gin.RouterGroup) {
 	userRouter := router.Group("/users")
 	{
 		userRouter.GET("/", utility.Use(uc.GetUser))
-		userRouter.PATCH("/:id", utility.Use(uc.updateAuth0UserData))
+		userRouter.PATCH("/:id", utility.Use(uc.updateAuth0UserInformation))
+		userRouter.PATCH("/:id/metadata", utility.Use(uc.updateAuth0UserMetadata))
+		userRouter.PATCH("/:id/appdata", utility.Use(uc.updateAuth0AppMetadata))
 		userRouter.POST("/business-account", utility.Use(uc.createBusinessAccount))
 		userRouter.GET("/:id/business-accounts", utility.Use(uc.getUserBusinessAccounts))
 		userRouter.POST("/:userID/business-account/:businessAccountID/association", utility.Use(uc.associateUserWithBusinessAccount))
@@ -34,6 +36,123 @@ func (uc *UserController) RegisterRoutes(router *gin.RouterGroup) {
 		// userRouter.GET("/:userID/business-accounts", utility.Use(uc.GetBusinessAccountsForUser))
 		userRouter.POST("/:userID/business-account/:businessAccountID/role/:action", utility.Use(uc.canPerformAction))
 	}
+}
+
+// @Summary Update a user's information
+// @Description Update a user's information by their Auth0 ID
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param id path string true "User Auth0 ID"
+// @Param userData body models.Auth0UserData true "User data to update"
+// @Security Bearer
+// @Success 200 {object} models.User "Successfully updated user information"
+// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
+// @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
+// @Router /api/v1/users/{id}/userinfo [patch]
+func (uc *UserController) updateAuth0UserInformation(ctx *gin.Context) error {
+	auth0ID := ctx.MustGet("auth0_id").(string)
+	if auth0ID == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": "User Auth0 ID required",
+		})
+		return nil
+	}
+
+	var userData *models.Auth0UserData
+	if err := ctx.ShouldBindJSON(&userData); err != nil {
+		userData = nil
+	}
+
+	user, err := uc.userService.UpdateAuth0UserInformation(auth0ID, userData)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Internal Server Error",
+		})
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(user, "success", "Successfully updated user"))
+	return nil
+}
+
+// @Summary Update a user's metadata
+// @Description Update a user's metadata by their Auth0 ID
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param id path string true "User Auth0 ID"
+// @Param userMetaData body models.Metadata true "User metadata to update"
+// @Security Bearer
+// @Success 200 {object} models.User "Successfully updated user metadata"
+// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
+// @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
+// @Router /api/v1/users/{id}/metadata [patch]
+func (uc *UserController) updateAuth0UserMetadata(ctx *gin.Context) error {
+	auth0ID := ctx.MustGet("auth0_id").(string)
+	if auth0ID == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": "User Auth0 ID required",
+		})
+		return nil
+	}
+
+	var userMetaData *models.Metadata
+	if err := ctx.ShouldBindJSON(&userMetaData); err != nil {
+		userMetaData = nil
+	}
+
+	user, err := uc.userService.UpdateAuth0UserMetadata(auth0ID, userMetaData)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Internal Server Error",
+		})
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(user, "success", "Successfully updated user metadata"))
+	return nil
+}
+
+// @Summary Update a user's app metadata
+// @Description Update a user's app metadata by their Auth0 ID
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param id path string true "User Auth0 ID"
+// @Param appData body models.AppMetadata true "App metadata to update"
+// @Security Bearer
+// @Success 200 {object} models.User "Successfully updated app metadata"
+// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
+// @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
+// @Router /api/v1/users/{id}/appdata [patch]
+func (uc *UserController) updateAuth0AppMetadata(ctx *gin.Context) error {
+	auth0ID := ctx.MustGet("auth0_id").(string)
+	if auth0ID == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": "User Auth0 ID required",
+		})
+		return nil
+	}
+
+	var appData *models.AppMetadata
+	if err := ctx.ShouldBindJSON(&appData); err != nil {
+		appData = nil
+	}
+
+	user, err := uc.userService.UpdateAuth0AppMetadata(auth0ID, appData)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Internal Server Error",
+		})
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(user, "success", "Successfully updated app metadata"))
+	return nil
 }
 
 // GetUser gets a user's details.
@@ -74,58 +193,6 @@ func (uc *UserController) GetUser(ctx *gin.Context) error {
 	}
 
 	ctx.JSON(http.StatusOK, user)
-	return nil
-}
-
-// updateAuth0UserData updates a user's details in Auth0.
-// @Summary Update a user's details
-// @Description Update a user's details by their Auth0 ID
-// @Tags User
-// @Accept json
-// @Produce json
-// @Param id path string true "User Auth0 ID"
-// @Param userData body models.Auth0UserData false "User data to update"
-// @Param appData body models.AppMetadata false "App metadata to update"
-// @Param userMetaData body models.Metadata false "User metadata to update"
-// @Security Bearer
-// @Success 200 {object} models.User "Successfully updated user"
-// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
-// @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
-// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
-// @Router /api/v1/users/{id} [patch]
-func (uc *UserController) updateAuth0UserData(ctx *gin.Context) error {
-	auth0ID := ctx.MustGet("user").(string)
-	//log.Println("UpdateAuth0UserData", ctx.Request.URL.Path, ctx.Request.Method, auth0ID)
-	if auth0ID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": "User Auth0 ID required",
-		})
-		return nil
-	}
-
-	var userData *models.Auth0UserData
-	var appData *models.AppMetadata
-	var userMetaData *models.Metadata
-	if err := ctx.ShouldBindJSON(&userData); err != nil {
-		userData = nil
-	}
-	if err := ctx.ShouldBindJSON(&appData); err != nil {
-		appData = nil
-	}
-	if err := ctx.ShouldBindJSON(&userMetaData); err != nil {
-		userMetaData = nil
-	}
-
-	//user, err := uc.userService.UpdateAuth0UserData(auth0ID, ctx.Request.Header.Get("Authorization"), userData, appData, userMetaData)
-	user, err := uc.userService.UpdateAuth0UserData(auth0ID, userData, appData, userMetaData)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Internal Server Error",
-		})
-		return err
-	}
-
-	ctx.JSON(http.StatusOK, utility.ProcessResponse(user, "success", "Successfully updated user"))
 	return nil
 }
 
