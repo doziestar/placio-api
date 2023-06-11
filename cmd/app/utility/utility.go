@@ -3,6 +3,7 @@ package utility
 import (
 	"encoding/json"
 	"fmt"
+	"placio-app/models"
 	"strings"
 
 	sentry "github.com/getsentry/sentry-go"
@@ -164,7 +165,70 @@ func ProcessResponse(data interface{}, status string, message string) gin.H {
 	}
 }
 
-// SplitString
+// SplitString splits a string into a slice of strings.
 func SplitString(s string, sep string) []string {
 	return strings.Split(s, sep)
+}
+
+// RemoveSensitiveInfo removes sensitive information from a user object.
+func RemoveSensitiveInfo(user *models.User) *models.User {
+	if user.Auth0Data == nil {
+		return user
+	}
+
+	// Create a deep copy of the user
+	newUser := *user
+	newAuth0Data := *user.Auth0Data
+
+	// Remove sensitive info from the top level of Auth0Data
+	newAuth0Data.Email = nil
+	newAuth0Data.LastIP = nil
+	newAuth0Data.LoginsCount = nil
+
+	for i := range newAuth0Data.Identities {
+		newAuth0Data.Identities[i].AccessToken = nil
+	}
+
+	// Assign the new Auth0Data to the new user
+	newUser.Auth0Data = &newAuth0Data
+
+	return &newUser
+
+	//auth0DataVal := reflect.ValueOf(user.Auth0Data).Elem()
+	//
+	//sensitiveFields := []string{"Email", "LastIP", "LoginsCount"}
+	//for _, field := range sensitiveFields {
+	//	fieldVal := auth0DataVal.FieldByName(field)
+	//	if fieldVal.IsValid() && fieldVal.CanSet() {
+	//		switch fieldVal.Kind() {
+	//		case reflect.String:
+	//			fieldVal.SetString("")
+	//		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+	//			fieldVal.SetInt(0)
+	//			// Add other cases as necessary for other field types
+	//		}
+	//	}
+	//}
+	//
+	//// We also need to handle the nested "identities" slice
+	//identitiesVal := auth0DataVal.FieldByName("Identities")
+	//if identitiesVal.IsValid() && identitiesVal.CanSet() {
+	//	for i := 0; i < identitiesVal.Len(); i++ {
+	//		identityVal := identitiesVal.Index(i)
+	//		if identityVal.Kind() == reflect.Ptr {
+	//			identityVal = identityVal.Elem() // Dereference the pointer
+	//		}
+	//		fieldVal := identityVal.FieldByName("AccessToken")
+	//		if fieldVal.IsValid() && fieldVal.CanSet() {
+	//			if fieldVal.Kind() == reflect.Ptr {
+	//				fieldVal = fieldVal.Elem() // Dereference the pointer
+	//			}
+	//			if fieldVal.Kind() == reflect.String {
+	//				fieldVal.SetString("")
+	//			}
+	//		}
+	//	}
+	//}
+
+	//return
 }
