@@ -3,6 +3,7 @@ module placio-app
 go 1.20
 
 require (
+	github.com/auth0/go-auth0 v0.17.2
 	github.com/auth0/go-jwt-middleware/v2 v2.1.0
 	github.com/axiaoxin-com/logging v1.2.16
 	github.com/coreos/go-oidc/v3 v3.6.0
@@ -13,20 +14,33 @@ require (
 	github.com/go-oauth2/oauth2/v4 v4.5.2
 	github.com/go-testfixtures/testfixtures/v3 v3.8.1
 	github.com/gofiber/fiber/v2 v2.43.0
-	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/google/uuid v1.3.0
-	github.com/gwatts/gin-adapter v1.0.0
-	github.com/stretchr/testify v1.8.1
+	github.com/stretchr/testify v1.8.3
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.6.0
-	github.com/utrack/gin-csrf v0.0.0-20190424104817-40fb8d2c8fca
 	github.com/valyala/fasthttp v1.45.0
 	github.com/vardius/trace v1.0.1
 	golang.org/x/crypto v0.7.0
-	golang.org/x/oauth2 v0.6.0
+	golang.org/x/oauth2 v0.8.0
 	gorm.io/driver/postgres v1.5.0
 	gorm.io/driver/sqlite v1.4.4
 	gorm.io/gorm v1.24.7-0.20230306060331-85eaf9eeda11
+)
+
+require (
+	ariga.io/atlas v0.10.2-0.20230427182402-87a07dfb83bf // indirect
+	entgo.io/ent v0.12.3
+	github.com/PuerkitoBio/rehttp v1.1.0 // indirect
+	github.com/agext/levenshtein v1.2.1 // indirect
+	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
+	github.com/creasty/defaults v1.5.1 // indirect
+	github.com/go-openapi/inflect v0.19.0 // indirect
+	github.com/google/go-cmp v0.5.9 // indirect
+	github.com/gorilla/schema v1.2.0 // indirect
+	github.com/hashicorp/hcl/v2 v2.13.0 // indirect
+	github.com/mitchellh/go-wordwrap v0.0.0-20150314170334-ad45545899c7 // indirect
+	github.com/zclconf/go-cty v1.8.0 // indirect
+	golang.org/x/mod v0.10.0 // indirect
 )
 
 require (
@@ -42,7 +56,6 @@ require (
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
 	github.com/cloudinary/cloudinary-go/v2 v2.2.0
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/dchest/uniuri v0.0.0-20160212164326-8902c56451e9 // indirect
 	github.com/deckarep/golang-set v1.8.0 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
@@ -55,7 +68,7 @@ require (
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.11.2 // indirect
-	github.com/go-redis/redis/v8 v8.11.5 // indirect
+	github.com/go-redis/redis/v8 v8.11.5
 	github.com/goccy/go-json v0.10.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/gorilla/context v1.1.1 // indirect
@@ -115,10 +128,10 @@ require (
 	go.uber.org/multierr v1.8.0 // indirect
 	go.uber.org/zap v1.21.0 // indirect
 	golang.org/x/arch v0.0.0-20210923205945-b76863e36670 // indirect
-	golang.org/x/net v0.8.0 // indirect
-	golang.org/x/sys v0.6.0 // indirect
-	golang.org/x/text v0.8.0 // indirect
-	golang.org/x/tools v0.7.0 // indirect
+	golang.org/x/net v0.10.0 // indirect
+	golang.org/x/sys v0.8.0 // indirect
+	golang.org/x/text v0.9.0 // indirect
+	golang.org/x/tools v0.8.1-0.20230428195545-5283a0178901 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect

@@ -1,23 +1,26 @@
 package controller
 
 import (
-	"log"
+	"errors"
 	"net/http"
 	_ "placio-app/Dto"
 	"placio-app/models"
 	"placio-app/service"
 	"placio-app/utility"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 type PostController struct {
-	postService service.PostService
-	userService service.UserService
+	postService            service.PostService
+	userService            service.UserService
+	businessAccountService service.BusinessAccountService
+	mediaService           service.MediaService
 }
 
-func NewPostController(postService service.PostService, userService service.UserService) *PostController {
-	return &PostController{postService: postService, userService: userService}
+func NewPostController(postService service.PostService, userService service.UserService, businessAccountService service.BusinessAccountService, mediaService service.MediaService) *PostController {
+	return &PostController{postService: postService, userService: userService, businessAccountService: businessAccountService, mediaService: mediaService}
 }
 
 func (pc *PostController) RegisterRoutes(router *gin.RouterGroup) {
@@ -49,61 +52,73 @@ func (pc *PostController) RegisterRoutes(router *gin.RouterGroup) {
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/posts/ [post]
+// createPost creates a new post.
 func (pc *PostController) createPost(ctx *gin.Context) error {
-	//userID, ok := utility.GetUserIDFromContext(ctx)
-	//if !ok {
-	//	ctx.JSON(http.StatusUnauthorized, gin.H{
-	//		"error": "Unauthorized",
-	//	})
-	//	return nil
-	//}
-
-
-	log.Println("createPost")
+	// Extract the user from the context
 	authOID := ctx.MustGet("user").(string)
-	log.Println(authOID)
 	user, err := pc.userService.GetUser(authOID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Internal Server Error",
-		})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 		return err
 	}
+
+	// Extract the BusinessAccountID from the query parameters, if it exists
 	businessAccountId := ctx.Query("businessAccountId")
 
-	log.Println(user)
-
+	// Bind the incoming JSON to a new Post instance
 	data := new(models.Post)
 	if err := ctx.BindJSON(data); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": "Bad Request",
-		})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Bad Request"})
 		return err
 	}
 
-	var post *models.Post
-	
+	// Validate the content of the post
+	if data.Content == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Content cannot be empty"})
+		return errors.New("content cannot be empty")
+	}
+
+	// If a BusinessAccountID was provided, verify that it exists
 	if businessAccountId != "" {
-		post = &models.Post{
-			Content: data.Content,
-			BusinessAccountID: businessAccountId,
-			UserID:  user.UserID,
-			ID: models.GenerateID(),
-		}
-	} else {
-		post = &models.Post{
-			Content: data.Content,
-			UserID:  user.UserID,
-			ID: models.GenerateID(),
+		if _, err := pc.businessAccountService.GetBusinessAccount(businessAccountId); err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Business Account ID"})
+			return err
 		}
 	}
 
+	// Create a new Post instance
+	post := &models.Post{
+		Content:   data.Content,
+		UserID:    user.UserID,
+		ID:        models.GenerateID(),
+		CreatedAt: time.Now(),
+	}
+
+	// If a BusinessAccountID was provided, associate the post with the business account
+	if businessAccountId != "" {
+		post.BusinessAccountID = businessAccountId
+	}
+
+	// Create the post
 	newPost, err := pc.postService.CreatePost(post)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Internal Server Error",
-		})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 		return err
+	}
+
+	// Handle media files, if any were provided
+	// (This is a placeholder - you'll need to replace it with your actual media handling code)
+	for _, media := range data.Medias {
+		// Upload the media file to Cloudinary (or another service)
+		uploadedMediaURL := "..." // replace with actual URL from Cloudinary
+		media.URL = uploadedMediaURL
+		// Associate the media with the post
+		media.PostID = newPost.ID
+		// Save the media in the database
+		if _, err := pc.mediaService.CreateMedia(&media); err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+			return err
+		}
 	}
 
 	ctx.JSON(http.StatusCreated, newPost)

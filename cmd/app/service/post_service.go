@@ -36,26 +36,25 @@ func NewPostService(db *gorm.DB) PostService {
 }
 
 func (ps *PostServiceImpl) CreatePost(post *models.Post) (*models.Post, error) {
-    if post == nil {
-        return nil, errors.New("post cannot be nil")
-    }
-    
-    // Check if BusinessAccountID is set.
-    if post.BusinessAccountID != "" {
-        // If it is, insert normally.
-        if err := ps.db.Create(&post).Error; err != nil {
-            return nil, err
-        }
-    } else {
-        // If it isn't, insert without BusinessAccountID.
-        if err := ps.db.Table("posts").Omit("business_account_id").Create(&post).Error; err != nil {
-            return nil, err
-        }
-    }
-    
-    return post, nil
-}
+	if post == nil {
+		return nil, errors.New("post cannot be nil")
+	}
 
+	// Check if BusinessAccountID is set.
+	if post.BusinessAccountID != "" {
+		// If it is, insert normally.
+		if err := ps.db.Create(&post).Error; err != nil {
+			return nil, err
+		}
+	} else {
+		// If it isn't, insert without BusinessAccountID.
+		if err := ps.db.Table("posts").Omit("business_account_id").Create(&post).Error; err != nil {
+			return nil, err
+		}
+	}
+
+	return post, nil
+}
 
 func (ps *PostServiceImpl) GetPost(postID string) (*models.Post, error) {
 	if postID == "" {
