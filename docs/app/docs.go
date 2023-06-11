@@ -2202,14 +2202,16 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
+            }
+        },
+        "/api/v1/users/{id}/appdata": {
             "patch": {
                 "security": [
                     {
                         "Bearer": []
                     }
                 ],
-                "description": "Update a user's details by their Auth0 ID",
+                "description": "Update a user's app metadata by their Auth0 ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -2219,7 +2221,7 @@ const docTemplate = `{
                 "tags": [
                     "User"
                 ],
-                "summary": "Update a user's details",
+                "summary": "Update a user's app metadata",
                 "parameters": [
                     {
                         "type": "string",
@@ -2229,33 +2231,18 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "User data to update",
-                        "name": "userData",
-                        "in": "body",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_models.Auth0UserData"
-                        }
-                    },
-                    {
                         "description": "App metadata to update",
                         "name": "appData",
                         "in": "body",
+                        "required": true,
                         "schema": {
                             "$ref": "#/definitions/placio-app_models.AppMetadata"
-                        }
-                    },
-                    {
-                        "description": "User metadata to update",
-                        "name": "userMetaData",
-                        "in": "body",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_models.Metadata"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successfully updated user",
+                        "description": "Successfully updated app metadata",
                         "schema": {
                             "$ref": "#/definitions/placio-app_models.User"
                         }
@@ -2316,6 +2303,134 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/placio-app_models.BusinessAccount"
                             }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/{id}/metadata": {
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Update a user's metadata by their Auth0 ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Update a user's metadata",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User Auth0 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "User metadata to update",
+                        "name": "userMetaData",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.Metadata"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully updated user metadata",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/{id}/userinfo": {
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Update a user's information by their Auth0 ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Update a user's information",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User Auth0 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "User data to update",
+                        "name": "userData",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.Auth0UserData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully updated user information",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.User"
                         }
                     },
                     "400": {
@@ -3560,9 +3675,6 @@ const docTemplate = `{
         "placio-app_models.User": {
             "type": "object",
             "properties": {
-                "active": {
-                    "type": "boolean"
-                },
                 "auth0ID": {
                     "type": "string"
                 },
@@ -3573,7 +3685,6 @@ const docTemplate = `{
                     "$ref": "#/definitions/gorm.DeletedAt"
                 },
                 "posts": {
-                    "description": "Settings      GeneralSettings            ` + "`" + `gorm:\"foreignKey:UserID\"` + "`" + `",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/placio-app_models.Post"

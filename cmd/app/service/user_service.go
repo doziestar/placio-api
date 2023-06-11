@@ -37,8 +37,10 @@ type UserService interface {
 	RejectInvitation(invitationID uint) error
 	TransferBusinessAccountOwnership(currentOwnerID uint, newOwnerID uint, businessAccountID uint) error
 	GetUserInvitations(userID uint) ([]*models.Invitation, error)
-	UpdateAuth0UserData(userID string, userData *models.Auth0UserData, appData *models.AppMetadata, userMetaData *models.Metadata) (*models.Auth0UserData, error)
+	//UpdateAuth0UserData(userID string, userData *models.Auth0UserData, appData *models.AppMetadata, userMetaData *models.Metadata) (*models.Auth0UserData, error)
 	GetAuth0UserData(userID string) (models.Auth0UserData, error)
+	UpdateAuth0UserMetadata(userID string, userMetaData *models.Metadata) (*models.Auth0UserData, error)
+	UpdateAuth0UserInformation(userID string, userData *models.Auth0UserData) (*models.Auth0UserData, error)
 	// GetAuth0ManagementToken GetAuth0UserMetaData(userID string, IdToken string) (models.Metadata, error)
 	//GetAuth0AppMetaData(userID string, IdToken string) (models.AppMetadata, error)
 	//GetAuth0UserRoles(userID string, IdToken string) ([]string, error)
@@ -48,6 +50,7 @@ type UserService interface {
 	//AuthorizeUser(userID string, IdToken string, roles []string, permissions []string, groups []string) error
 	//DeAuthorizeUser(userID string, IdToken string, roles []string, permissions []string, groups []string) error
 	GetAuth0ManagementToken(ctx context.Context) (string, error)
+	UpdateAuth0AppMetadata(userID string, appData *models.AppMetadata) (*models.Auth0UserData, error)
 }
 
 type UserServiceImpl struct {
@@ -187,55 +190,58 @@ func (s *UserServiceImpl) GetUsersForBusinessAccount(businessAccountID string) (
 	return users, nil
 }
 
-// UpdateAuth0UserData updates the user_metadata, app_metadata, and other fields in Auth0.
-func (s *UserServiceImpl) UpdateAuth0UserData(userID string, userData *models.Auth0UserData, appData *models.AppMetadata, userMetaData *models.Metadata) (*models.Auth0UserData, error) {
-	//log.Println("Updating Auth0 user data", userID, IdToken, userData, appData, userMetaData)
-	// Create an HTTP client
+func (s *UserServiceImpl) UpdateAuth0UserInformation(userID string, userData *models.Auth0UserData) (*models.Auth0UserData, error) {
+	mergedData, err := s.prepareUserData(userID, userData)
+	if err != nil {
+		return nil, err
+	}
+	return s.updateAuth0Data(userID, mergedData, "user information")
+}
 
-	client := &http.Client{}
+func (s *UserServiceImpl) UpdateAuth0UserMetadata(userID string, userMetaData *models.Metadata) (*models.Auth0UserData, error) {
+	mergedData, err := s.prepareUserData(userID, userMetaData)
+	if err != nil {
+		return nil, err
+	}
+	return s.updateAuth0Data(userID, mergedData, "user_metadata")
+}
 
-	// Get the current user data
+func (s *UserServiceImpl) UpdateAuth0AppMetadata(userID string, appData *models.AppMetadata) (*models.Auth0UserData, error) {
+	mergedData, err := s.prepareUserData(userID, appData)
+	if err != nil {
+		return nil, err
+	}
+	return s.updateAuth0Data(userID, mergedData, "app_metadata")
+}
+
+func (s *UserServiceImpl) prepareUserData(userID string, data interface{}) (map[string]interface{}, error) {
 	currUserData, err := s.GetAuth0UserData(userID)
 	if err != nil {
 		log.Println("Error getting current user data", err)
 		return nil, err
 	}
-	log.Println("Current user data", currUserData)
 
-	// Convert the current data and the new data into maps
 	currUserDataMap, err := utility.StructToMap(&currUserData)
 	if err != nil {
 		return nil, err
 	}
-	newUserDataMap, err := utility.StructToMap(userData)
-	if err != nil {
-		return nil, err
-	}
-	appDataMap, err := utility.StructToMap(appData)
-	if err != nil {
-		return nil, err
-	}
-	userMetaDataMap, err := utility.StructToMap(userMetaData)
+	newDataMap, err := utility.StructToMap(data)
 	if err != nil {
 		return nil, err
 	}
 
-	// Merge the new data with the current data
-	mergedUserData := utility.MergeMaps(currUserDataMap, newUserDataMap)
+	return utility.MergeMaps(currUserDataMap, newDataMap), nil
+}
 
-	// Overwrite the metadata fields with the new data
-	mergedUserData["user_metadata"] = userMetaDataMap
-	mergedUserData["app_metadata"] = appDataMap
+func (s *UserServiceImpl) updateAuth0Data(userID string, mergedUserData map[string]interface{}, dataType string) (*models.Auth0UserData, error) {
+	client := &http.Client{}
 
-	// Create the JSON payload
 	jsonPayload, err := json.Marshal(mergedUserData)
 	if err != nil {
 		return nil, err
 	}
-
 	log.Println("JSON payload", string(jsonPayload))
 
-	// Create the request
 	req, err := http.NewRequest("PATCH", fmt.Sprintf("https://auth.placio.io/api/v2/users/%s", userID), bytes.NewBuffer(jsonPayload))
 	if err != nil {
 		log.Println("Error creating request", err)
@@ -248,11 +254,9 @@ func (s *UserServiceImpl) UpdateAuth0UserData(userID string, userData *models.Au
 		return nil, err
 	}
 
-	// Set the headers
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", managementToken))
 
-	// Send the request
 	resp, err := client.Do(req)
 	if err != nil {
 		log.Println("Error sending request", err)
@@ -260,7 +264,6 @@ func (s *UserServiceImpl) UpdateAuth0UserData(userID string, userData *models.Au
 	}
 	defer resp.Body.Close()
 
-	// Check the response status code
 	if resp.StatusCode != http.StatusOK {
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
@@ -269,9 +272,11 @@ func (s *UserServiceImpl) UpdateAuth0UserData(userID string, userData *models.Au
 		return nil, fmt.Errorf("unexpected status code: %d, body: %s", resp.StatusCode, string(body))
 	}
 
-	// Return the updated user data
+	log.Println("Successfully updated", dataType, "for user", userID)
+
 	updatedUserData, err := s.GetAuth0UserData(userID)
 	if err != nil {
+		log.Println("Error getting updated user data", err)
 		return nil, err
 	}
 
@@ -280,18 +285,21 @@ func (s *UserServiceImpl) UpdateAuth0UserData(userID string, userData *models.Au
 
 // GetAuth0UserData retrieves the current user data from Auth0.
 func (s *UserServiceImpl) GetAuth0UserData(userID string) (models.Auth0UserData, error) {
+	log.Println("Getting Auth0 user data", userID)
 	// Create an HTTP client
 	client := &http.Client{}
 
 	// Create the request
 	req, err := http.NewRequest("GET", fmt.Sprintf("https://auth.placio.io/api/v2/users/%s", userID), nil)
 	if err != nil {
+		log.Println("Error creating request", err)
 		return models.Auth0UserData{}, err
 	}
 
 	//Get the token
 	managementToken, err := s.GetAuth0ManagementToken(context.Background())
 	if err != nil {
+		log.Println("Error getting management token", err)
 		return models.Auth0UserData{}, err
 	}
 	// Set the headers
@@ -301,6 +309,7 @@ func (s *UserServiceImpl) GetAuth0UserData(userID string) (models.Auth0UserData,
 	// Send the request
 	resp, err := client.Do(req)
 	if err != nil {
+		log.Println("Error sending request", err)
 		return models.Auth0UserData{}, err
 	}
 	defer resp.Body.Close()
@@ -366,12 +375,6 @@ func (s *UserServiceImpl) GetAuth0ManagementToken(ctx context.Context) (string, 
 
 func (s *UserServiceImpl) retrieveAuth0Token(ctx context.Context) (string, error) {
 
-	//"client_id": os.Getenv("AUTH0_CLIENT_ID"),
-	//"client_id": "KpDGogGXqWeuGQfZ4Wu30neiHS79hGiU",
-	//"client_secret": "0xb-zoY86wrGHIR4GMwQx40s2jMOAg3YGYcxfebwAJP_exLaiNcRwn76tRGaSXf_",
-	////"client_secret": os.Getenv("AUTH0_CLIENT_SECRET"),
-	////"audience": os.Getenv("AUTH0_AUDIENCE"),
-	//"audience": "KpDGogGXqWeuGQfZ4Wu30neiHS79hGiU",
 	payload := strings.NewReader(`{
 		"client_id": "wORDxmfRFTkBvoSVU06Af4HFQAo25gUI",
 		"client_secret": "_tbGyuaBZ7j5zp659MU5AYqkZessCVeNs2bv8Yl1Hp6XUj_hUdQAW9a5zw8hIA3F",

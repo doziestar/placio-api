@@ -390,8 +390,6 @@ definitions:
     type: object
   placio-app_models.User:
     properties:
-      active:
-        type: boolean
       auth0ID:
         type: string
       createdAt:
@@ -399,7 +397,6 @@ definitions:
       deleteAt:
         $ref: '#/definitions/gorm.DeletedAt'
       posts:
-        description: Settings      GeneralSettings            `gorm:"foreignKey:UserID"`
         items:
           $ref: '#/definitions/placio-app_models.Post'
         type: array
@@ -1802,36 +1799,28 @@ paths:
       summary: Get a user's details
       tags:
       - User
+  /api/v1/users/{id}/appdata:
     patch:
       consumes:
       - application/json
-      description: Update a user's details by their Auth0 ID
+      description: Update a user's app metadata by their Auth0 ID
       parameters:
       - description: User Auth0 ID
         in: path
         name: id
         required: true
         type: string
-      - description: User data to update
-        in: body
-        name: userData
-        schema:
-          $ref: '#/definitions/placio-app_models.Auth0UserData'
       - description: App metadata to update
         in: body
         name: appData
+        required: true
         schema:
           $ref: '#/definitions/placio-app_models.AppMetadata'
-      - description: User metadata to update
-        in: body
-        name: userMetaData
-        schema:
-          $ref: '#/definitions/placio-app_models.Metadata'
       produces:
       - application/json
       responses:
         "200":
-          description: Successfully updated user
+          description: Successfully updated app metadata
           schema:
             $ref: '#/definitions/placio-app_models.User'
         "400":
@@ -1848,7 +1837,7 @@ paths:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
       security:
       - Bearer: []
-      summary: Update a user's details
+      summary: Update a user's app metadata
       tags:
       - User
   /api/v1/users/{id}/business-accounts:
@@ -1886,6 +1875,88 @@ paths:
       security:
       - Bearer: []
       summary: Get all business accounts for a user
+      tags:
+      - User
+  /api/v1/users/{id}/metadata:
+    patch:
+      consumes:
+      - application/json
+      description: Update a user's metadata by their Auth0 ID
+      parameters:
+      - description: User Auth0 ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: User metadata to update
+        in: body
+        name: userMetaData
+        required: true
+        schema:
+          $ref: '#/definitions/placio-app_models.Metadata'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully updated user metadata
+          schema:
+            $ref: '#/definitions/placio-app_models.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      security:
+      - Bearer: []
+      summary: Update a user's metadata
+      tags:
+      - User
+  /api/v1/users/{id}/userinfo:
+    patch:
+      consumes:
+      - application/json
+      description: Update a user's information by their Auth0 ID
+      parameters:
+      - description: User Auth0 ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: User data to update
+        in: body
+        name: userData
+        required: true
+        schema:
+          $ref: '#/definitions/placio-app_models.Auth0UserData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully updated user information
+          schema:
+            $ref: '#/definitions/placio-app_models.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      security:
+      - Bearer: []
+      summary: Update a user's information
       tags:
       - User
   /api/v1/users/{userID}/business-account/{businessAccountID}/association:
