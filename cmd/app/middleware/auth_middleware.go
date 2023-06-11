@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"net/http"
 	"net/url"
@@ -80,18 +79,18 @@ func EnsureValidToken() gin.HandlerFunc {
 
 		if validatedClaims, ok := tokenInterface.(*validator.ValidatedClaims); ok {
 			// Now you can access the fields of validatedClaims
-			fmt.Println(validatedClaims.RegisteredClaims.Issuer)
-			fmt.Println(validatedClaims.RegisteredClaims.Subject)
-			fmt.Println(validatedClaims.RegisteredClaims.Audience)
-
-			fmt.Println(validatedClaims.CustomClaims.(*CustomClaims).GivenName)
-			fmt.Println(validatedClaims.CustomClaims.(*CustomClaims).FamilyName)
-			fmt.Println(validatedClaims.CustomClaims.(*CustomClaims).Nickname)
-			fmt.Println(validatedClaims.CustomClaims.(*CustomClaims).Name)
-			fmt.Println(validatedClaims.CustomClaims.(*CustomClaims).Picture)
-			fmt.Println(validatedClaims.CustomClaims.(*CustomClaims).Locale)
-			fmt.Println(validatedClaims.CustomClaims.(*CustomClaims).UpdatedAt)
-			fmt.Println(validatedClaims.CustomClaims.(*CustomClaims).Email)
+			//fmt.Println(validatedClaims.RegisteredClaims.Issuer)
+			//fmt.Println(validatedClaims.RegisteredClaims.Subject)
+			//fmt.Println(validatedClaims.RegisteredClaims.Audience)
+			//
+			//fmt.Println(validatedClaims.CustomClaims.(*CustomClaims).GivenName)
+			//fmt.Println(validatedClaims.CustomClaims.(*CustomClaims).FamilyName)
+			//fmt.Println(validatedClaims.CustomClaims.(*CustomClaims).Nickname)
+			//fmt.Println(validatedClaims.CustomClaims.(*CustomClaims).Name)
+			//fmt.Println(validatedClaims.CustomClaims.(*CustomClaims).Picture)
+			//fmt.Println(validatedClaims.CustomClaims.(*CustomClaims).Locale)
+			//fmt.Println(validatedClaims.CustomClaims.(*CustomClaims).UpdatedAt)
+			//fmt.Println(validatedClaims.CustomClaims.(*CustomClaims).Email)
 
 			split := strings.Split(validatedClaims.RegisteredClaims.Subject, "|")
 			// split[0] will have the provider and split[1] will have the ID

@@ -95,7 +95,7 @@ func (uc *UserController) GetUser(ctx *gin.Context) error {
 // @Router /api/v1/users/{id} [patch]
 func (uc *UserController) updateAuth0UserData(ctx *gin.Context) error {
 	auth0ID := ctx.MustGet("user").(string)
-	log.Println("UpdateAuth0UserData", ctx.Request.URL.Path, ctx.Request.Method, auth0ID)
+	//log.Println("UpdateAuth0UserData", ctx.Request.URL.Path, ctx.Request.Method, auth0ID)
 	if auth0ID == "" {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": "User Auth0 ID required",
@@ -117,7 +117,7 @@ func (uc *UserController) updateAuth0UserData(ctx *gin.Context) error {
 	}
 
 	//user, err := uc.userService.UpdateAuth0UserData(auth0ID, ctx.Request.Header.Get("Authorization"), userData, appData, userMetaData)
-	user, err := uc.userService.UpdateAuth0UserData(auth0ID, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InliX2tBaHRaOWQ3VEt6VHc2cEJVayJ9.eyJpc3MiOiJodHRwczovL2Rldi1xbGIwbHYzZC51cy5hdXRoMC5jb20vIiwic3ViIjoiZnVqdWJFSlBCdGxnMzhGdE51dUM0MTNQaktsN3VwbnhAY2xpZW50cyIsImF1ZCI6Imh0dHBzOi8vYXBpLnBhbG5pZ2h0LmNvbSIsImlhdCI6MTY4NjI3NjQ0OSwiZXhwIjoxNjg4ODY4NDQ5LCJhenAiOiJmdWp1YkVKUEJ0bGczOEZ0TnV1QzQxM1BqS2w3dXBueCIsInNjb3BlIjoicmVhZDpldmVudHMgcmVhZDpwbGFjZXMgd3JpdGU6ZXZlbnRzIHdyaXRlIHBsYWNlcyBkZWxldGU6ZXZlbnRzIGRlbGV0ZTpwbGFjZXMgYXBpIiwiZ3R5IjoiY2xpZW50LWNyZWRlbnRpYWxzIiwicGVybWlzc2lvbnMiOlsicmVhZDpldmVudHMiLCJyZWFkOnBsYWNlcyIsIndyaXRlOmV2ZW50cyIsIndyaXRlIHBsYWNlcyIsImRlbGV0ZTpldmVudHMiLCJkZWxldGU6cGxhY2VzIiwiYXBpIl19.mvNEB7rxWC09gBBNdMd5sZ-XuLCbOrTM3AQfQCBMnAlkPC_KqYbQ3psMEqInMNksd2DAvPz_RLb_UmZoX4F-tQ-5sHxnswwTIW6UYyP64PDjo-X4VWRqhRa9n0zKPVCHHVlO3iOnEZ7prG0ctVfze5ZziyH3SQ5t-AKa87b4R2JFWJwqUwpDsEqsnmXrtM-2hv33As3_aN_hVmWS8wKJuEw1gOrr_l6tdGD_BqwtxFwgql2vYKivIXrOZfO5WpYlt8ROHi8lcnoG2FAN7zMzDfGgXfh7l4dv4XsUjQmjGR0bkvXn0YGSFN-e31aPc-53RbvkK5rYfFd0k5UmcZA0KA", userData, appData, userMetaData)
+	user, err := uc.userService.UpdateAuth0UserData(auth0ID, userData, appData, userMetaData)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Internal Server Error",

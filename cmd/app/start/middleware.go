@@ -13,8 +13,6 @@ import (
 
 	//"github.com/prometheus/client_golang/prometheus/promhttp"
 	"time"
-
-	csrf "github.com/utrack/gin-csrf"
 	// "gorm.io/gorm/logger"
 	// "gorm.io/gorm/logger"
 )
@@ -23,33 +21,56 @@ func formatDate(t time.Time) string {
 	return t.Format(time.RFC822)
 }
 
+func PrintHeaders() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// Print request headers
+		fmt.Println("Request Headers:")
+		for k, v := range c.Request.Header {
+			fmt.Println(k, ":", v)
+		}
+
+		// Process request
+		c.Next()
+
+		// Print response headers
+		fmt.Println("Response Headers:")
+		for k, v := range c.Writer.Header() {
+			fmt.Println(k, ":", v)
+		}
+	}
+}
+
 func Middleware(app *gin.Engine) {
-	//app.Use(gin.Logger())
-	//app.Use(gin.Recovery())
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"*"},
-		AllowMethods:     []string{"PUT", "PATCH", "POST", "GET", "DELETE"},
-		// AllowHeaders:     []string{"Origin"},
-		AllowHeaders:     []string{"Accept", "Accept-Language", "Content-Language", "Content-Type", "DPR", "origin"},
-		// ExposeHeaders:    []string{"Content-Length"},
+		AllowMethods:     []string{"*"},
+		AllowHeaders:     []string{"*"},
+		ExposeHeaders:    []string{"*"},
 		AllowCredentials: true,
 		// AllowOriginFunc: func(origin string) bool {
-		// 	return origin == "https://placio.io"
+		// 	return origin == "*"
 		// },
+		MaxAge:     12 * time.Hour,
+		AllowFiles: true,
 		// AllowAllOrigins: true,
-		// AllowOriginFunc: true,
-		MaxAge: 12 * time.Hour,
+		// AllowWildcard: true,
 	}))
+
+	app.Use(func(c *gin.Context) {
+		c.Header("Vary", "Origin")
+	})
+
+	//app.Use(PrintHeaders())
 
 	store := cookie.NewStore([]byte("secret"))
 	app.Use(sessions.Sessions("mysession", store))
-	app.Use(csrf.Middleware(csrf.Options{
-		Secret: "secret123",
-		ErrorFunc: func(c *gin.Context) {
-			c.String(400, "CSRF token mismatch")
-			c.Abort()
-		},
-	}))
+	//app.Use(csrf.Middleware(csrf.Options{
+	//	Secret: "secret123",
+	//	ErrorFunc: func(c *gin.Context) {
+	//		c.String(400, "CSRF token mismatch")
+	//		c.Abort()
+	//	},
+	//}))
 
 	gin.SetMode(gin.DebugMode)
 	// you can custom the config or use logging.GinLogger() by default config
@@ -127,18 +148,6 @@ func Middleware(app *gin.Engine) {
 	//
 	//// register the `/metrics` route.
 	//app.GET("/metrics-new", ginprom.PromHandler(promhttp.Handler()))
-
-	app.GET("/ready", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "ready",
-		})
-	})
-
-	app.GET("/health", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "health",
-		})
-	})
 
 	//p.Use(app)
 

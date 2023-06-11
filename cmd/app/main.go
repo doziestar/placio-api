@@ -31,6 +31,8 @@ func main() {
 	// initialize fiber app
 	app := gin.Default()
 
+	start.Middleware(app)
+
 	// initialize database
 	//env, _ := config.LoadConfig("./config")
 	databaseInstance, err := database.Connect(os.Getenv("DATABASE_URL"))

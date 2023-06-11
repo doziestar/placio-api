@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
 	"github.com/auth0/go-jwt-middleware/v2/validator"
 	"github.com/gin-gonic/gin"
@@ -13,6 +12,7 @@ import (
 	"placio-app/controller"
 	"placio-app/middleware"
 	"placio-app/service"
+	"placio-app/utility"
 )
 
 func JWTMiddleware(db *gorm.DB) gin.HandlerFunc {
@@ -38,8 +38,24 @@ func JWTMiddleware(db *gorm.DB) gin.HandlerFunc {
 }
 
 func InitializeRoutes(app *gin.Engine, db *gorm.DB) {
-	fmt.Println("Initializing routes...")
+	//fmt.Println("Initializing routes...")
 	app.GET("/docs/*files", ginSwagger.WrapHandler(swaggerfiles.Handler))
+
+	app.GET("/ready", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "ready",
+		})
+	})
+
+	app.GET("/health", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "health",
+		})
+	})
+
+	//redisClient := utility.NewRedisClient(os.Getenv("REDIS_URL"), 0, utility.CacheDuration)
+	redisClient := utility.NewRedisClient("redis://default:a3677c1a7b84402eb34efd55ad3cf059@golden-colt-33790.upstash.io:33790", 0, utility.CacheDuration)
+	_ = redisClient.ConnectRedis()
 
 	app.Use(middleware.EnsureValidToken())
 
@@ -72,7 +88,7 @@ func InitializeRoutes(app *gin.Engine, db *gorm.DB) {
 	//accountController.RegisterRoutes(routerGroupV1)
 
 	// user
-	userService := service.NewUserService(db)
+	userService := service.NewUserService(db, redisClient)
 	userController := controller.NewUserController(userService)
 	userController.RegisterRoutes(routerGroupV1)
 

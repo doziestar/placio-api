@@ -16,9 +16,9 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./traefik/traefik.yml:/traefik.yml
-      - ./traefik/acme.json:/acme.json
-      - ./traefik/configurations:/configurations
+      - /opt/traefik/traefik.yml:/traefik.yml
+      - /opt/traefik/acme.json:/acme.json
+      - /opt/traefik/configurations:/configurations
     command:
       - --accesslog
       # Enable the Traefik log, for configurations and errors
@@ -58,25 +58,18 @@ services:
       dockerfile: ./cmd/app/Dockerfile
     networks:
       - default
-    # command: bash -c "while true; do sleep 1; done"  # Infinite loop to keep container live doing nothing
     labels:
-      # - traefik.http.routers.backend-http.rule=PathPrefix(`/api`) || PathPrefix(`/docs`) || PathPrefix(`/redoc`)
-      # - traefik.http.services.backend.loadbalancer.server.port=80
-      # - traefik.enable=true
-      # # - traefik.constraint-label-stack=${TRAEFIK_TAG?Variable not set}
-      # - traefik.http.routers.backend-http.rule=Host(`api.palnight.com`)
-      # - traefik.http.routers.backend-http.entrypoints=http
-      # # - traefik.http.routers.backend-http.middlewares=${STACK_NAME?Variable not set}-https-redirect
-      # - traefik.http.routers.backend-https.rule=Host(`api.palnight.com`)
-      # - traefik.http.routers.backend-https.entrypoints=https
-      # - traefik.http.routers.backend-https.tls=true
       - traefik.enable=true
       - traefik.docker.network=default
       - "traefik.http.routers.backend-secure.entrypoints=websecure"
       - "traefik.http.routers.backend-secure.rule=Host(`api.palnight.com`)"
       - "traefik.http.routers.backend-secure.service=backend"
+      # - "traefik.http.middlewares.cors.headers.accesscontrolallowmethods=*"
+      # - "traefik.http.middlewares.cors.headers.accesscontrolalloworiginlist=*"
+      # - "traefik.http.middlewares.cors.headers.accesscontrolmaxage=100"
+      # - "traefik.http.middlewares.cors.headers.addvaryheader=true"
+      # - "traefik.http.routers.backend-secure.middlewares=cors"
       - traefik.http.services.backend.loadbalancer.server.port=7070
-      # add path prefix strip
 
   docs:
     container_name: placio-docs
