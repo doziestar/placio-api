@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/auth0/go-auth0/management"
 	"io"
 	"io/ioutil"
 	"log"
@@ -38,9 +39,9 @@ type UserService interface {
 	TransferBusinessAccountOwnership(currentOwnerID uint, newOwnerID uint, businessAccountID uint) error
 	GetUserInvitations(userID uint) ([]*models.Invitation, error)
 	//UpdateAuth0UserData(userID string, userData *models.Auth0UserData, appData *models.AppMetadata, userMetaData *models.Metadata) (*models.Auth0UserData, error)
-	GetAuth0UserData(userID string) (models.Auth0UserData, error)
-	UpdateAuth0UserMetadata(userID string, userMetaData *models.Metadata) (*models.Auth0UserData, error)
-	UpdateAuth0UserInformation(userID string, userData *models.Auth0UserData) (*models.Auth0UserData, error)
+	GetAuth0UserData(userID string) (*management.User, error)
+	UpdateAuth0UserMetadata(userID string, userMetaData *models.Metadata) (*management.User, error)
+	UpdateAuth0UserInformation(userID string, userData *models.Auth0UserData) (*management.User, error)
 	// GetAuth0ManagementToken GetAuth0UserMetaData(userID string, IdToken string) (models.Metadata, error)
 	//GetAuth0AppMetaData(userID string, IdToken string) (models.AppMetadata, error)
 	//GetAuth0UserRoles(userID string, IdToken string) ([]string, error)
@@ -50,7 +51,7 @@ type UserService interface {
 	//AuthorizeUser(userID string, IdToken string, roles []string, permissions []string, groups []string) error
 	//DeAuthorizeUser(userID string, IdToken string, roles []string, permissions []string, groups []string) error
 	GetAuth0ManagementToken(ctx context.Context) (string, error)
-	UpdateAuth0AppMetadata(userID string, appData *models.AppMetadata) (*models.Auth0UserData, error)
+	UpdateAuth0AppMetadata(userID string, appData *models.AppMetadata) (*management.User, error)
 }
 
 type UserServiceImpl struct {
@@ -190,7 +191,7 @@ func (s *UserServiceImpl) GetUsersForBusinessAccount(businessAccountID string) (
 	return users, nil
 }
 
-func (s *UserServiceImpl) UpdateAuth0UserInformation(userID string, userData *models.Auth0UserData) (*models.Auth0UserData, error) {
+func (s *UserServiceImpl) UpdateAuth0UserInformation(userID string, userData *models.Auth0UserData) (*management.User, error) {
 	mergedData, err := s.prepareUserData(userID, userData)
 	if err != nil {
 		return nil, err
@@ -198,7 +199,7 @@ func (s *UserServiceImpl) UpdateAuth0UserInformation(userID string, userData *mo
 	return s.updateAuth0Data(userID, mergedData, "user information")
 }
 
-func (s *UserServiceImpl) UpdateAuth0UserMetadata(userID string, userMetaData *models.Metadata) (*models.Auth0UserData, error) {
+func (s *UserServiceImpl) UpdateAuth0UserMetadata(userID string, userMetaData *models.Metadata) (*management.User, error) {
 	mergedData, err := s.prepareUserData(userID, userMetaData)
 	if err != nil {
 		return nil, err
@@ -206,12 +207,14 @@ func (s *UserServiceImpl) UpdateAuth0UserMetadata(userID string, userMetaData *m
 	return s.updateAuth0Data(userID, mergedData, "user_metadata")
 }
 
-func (s *UserServiceImpl) UpdateAuth0AppMetadata(userID string, appData *models.AppMetadata) (*models.Auth0UserData, error) {
-	mergedData, err := s.prepareUserData(userID, appData)
+func (s *UserServiceImpl) UpdateAuth0AppMetadata(userID string, appData *models.AppMetadata) (*management.User, error) {
+	log.Println("Updating app metadata")
+	newAppData, err := utility.StructToMap(&appData)
+	//mergedData, err := s.prepareUserData(userID, appData)
 	if err != nil {
 		return nil, err
 	}
-	return s.updateAuth0Data(userID, mergedData, "app_metadata")
+	return s.updateAuth0Data(userID, newAppData, "app_metadata")
 }
 
 func (s *UserServiceImpl) prepareUserData(userID string, data interface{}) (map[string]interface{}, error) {
@@ -233,8 +236,15 @@ func (s *UserServiceImpl) prepareUserData(userID string, data interface{}) (map[
 	return utility.MergeMaps(currUserDataMap, newDataMap), nil
 }
 
-func (s *UserServiceImpl) updateAuth0Data(userID string, mergedUserData map[string]interface{}, dataType string) (*models.Auth0UserData, error) {
+func (s *UserServiceImpl) updateAuth0Data(userID string, mergedUserData map[string]interface{}, dataType string) (*management.User, error) {
+	log.Println("Updating auth0 data", dataType)
 	client := &http.Client{}
+
+	if dataType != "user information" {
+		mergedUserData = map[string]interface{}{
+			dataType: mergedUserData,
+		}
+	}
 
 	jsonPayload, err := json.Marshal(mergedUserData)
 	if err != nil {
@@ -264,6 +274,9 @@ func (s *UserServiceImpl) updateAuth0Data(userID string, mergedUserData map[stri
 	}
 	defer resp.Body.Close()
 
+	log.Println("Response status code", resp.StatusCode)
+	log.Println("Response status", resp.Status)
+
 	if resp.StatusCode != http.StatusOK {
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
@@ -273,18 +286,17 @@ func (s *UserServiceImpl) updateAuth0Data(userID string, mergedUserData map[stri
 	}
 
 	log.Println("Successfully updated", dataType, "for user", userID)
-
-	updatedUserData, err := s.GetAuth0UserData(userID)
-	if err != nil {
-		log.Println("Error getting updated user data", err)
+	// unmarshal the response body into management.User
+	var user management.User
+	if err := json.NewDecoder(resp.Body).Decode(&user); err != nil {
 		return nil, err
 	}
 
-	return &updatedUserData, nil
+	return &user, nil
 }
 
 // GetAuth0UserData retrieves the current user data from Auth0.
-func (s *UserServiceImpl) GetAuth0UserData(userID string) (models.Auth0UserData, error) {
+func (s *UserServiceImpl) GetAuth0UserData(userID string) (*management.User, error) {
 	log.Println("Getting Auth0 user data", userID)
 	// Create an HTTP client
 	client := &http.Client{}
@@ -293,14 +305,14 @@ func (s *UserServiceImpl) GetAuth0UserData(userID string) (models.Auth0UserData,
 	req, err := http.NewRequest("GET", fmt.Sprintf("https://auth.placio.io/api/v2/users/%s", userID), nil)
 	if err != nil {
 		log.Println("Error creating request", err)
-		return models.Auth0UserData{}, err
+		return &management.User{}, err
 	}
 
 	//Get the token
 	managementToken, err := s.GetAuth0ManagementToken(context.Background())
 	if err != nil {
 		log.Println("Error getting management token", err)
-		return models.Auth0UserData{}, err
+		return &management.User{}, err
 	}
 	// Set the headers
 	req.Header.Set("Content-Type", "application/json")
@@ -310,24 +322,24 @@ func (s *UserServiceImpl) GetAuth0UserData(userID string) (models.Auth0UserData,
 	resp, err := client.Do(req)
 	if err != nil {
 		log.Println("Error sending request", err)
-		return models.Auth0UserData{}, err
+		return &management.User{}, err
 	}
 	defer resp.Body.Close()
 
 	// Check the response status code
 	if resp.StatusCode != http.StatusOK {
 		body, _ := ioutil.ReadAll(resp.Body)
-		return models.Auth0UserData{}, fmt.Errorf("unexpected status code: %d, body: %s", resp.StatusCode, string(body))
+		return &management.User{}, fmt.Errorf("unexpected status code: %d, body: %s", resp.StatusCode, string(body))
 	}
 
 	// Parse the response body
-	var userData models.Auth0UserData
+	var userData management.User
 	err = json.NewDecoder(resp.Body).Decode(&userData)
 	if err != nil {
-		return models.Auth0UserData{}, err
+		return &management.User{}, err
 	}
 
-	return userData, nil
+	return &userData, nil
 }
 
 func (s *UserServiceImpl) GetAuth0ManagementToken(ctx context.Context) (string, error) {
