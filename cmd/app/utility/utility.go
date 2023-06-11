@@ -163,3 +163,8 @@ func ProcessResponse(data interface{}, status string, message string) gin.H {
 		"message": message,
 	}
 }
+
+// SplitString
+func SplitString(s string, sep string) []string {
+	return strings.Split(s, sep)
+}
