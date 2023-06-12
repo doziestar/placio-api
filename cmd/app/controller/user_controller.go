@@ -180,7 +180,7 @@ func (uc *UserController) updateAuth0AppMetadata(ctx *gin.Context) error {
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
-// @Router /api/v1/users/{id} [get]
+// @Router /api/v1/users/ [get]
 func (uc *UserController) GetUser(ctx *gin.Context) error {
 	auth0ID := ctx.MustGet("auth0_id").(string)
 	log.Println("GetUser", ctx.Request.URL.Path, ctx.Request.Method, auth0ID)

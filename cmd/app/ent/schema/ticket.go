@@ -32,7 +32,7 @@ func (Ticket) Edges() []ent.Edge {
 			Field("EventID").
 			Unique(),
 		edge.To("ticket_options", TicketOption.Type),
-		edge.To("attendees", Attendee.Type),
+		//edge.To("attendees", Attendee.Type),
 		edge.To("ratings", Rating.Type),
 	}
 }
@@ -45,7 +45,7 @@ type TicketOption struct {
 // Fields of the TicketOption.
 func (TicketOption) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("ID").Unique(),
+		field.String("TicketOptionID").Unique(),
 		field.String("EventID"),
 		field.String("Name"),
 		field.Float("Price"),

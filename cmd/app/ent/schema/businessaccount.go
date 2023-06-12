@@ -29,5 +29,6 @@ func (BusinessAccount) Edges() []ent.Edge {
 		edge.To("relationships", UserBusinessRelationship.Type),
 		edge.To("account_settings", AccountSettings.Type),
 		edge.From("invitations", Invitation.Type).Ref("business_account"),
+		edge.To("userBusinessRelationships", UserBusinessRelationship.Type),
 	}
 }

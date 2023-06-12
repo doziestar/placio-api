@@ -14,9 +14,9 @@ type Post struct {
 // Fields of the Post.
 func (Post) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("PostID").Unique(),
-		field.String("UserID"),
-		field.String("BusinessAccountID"),
+		//field.String("PostID").Unique(),
+		field.Int("UserID"),
+		field.Int("BusinessAccountID"),
 		field.String("Content").MaxLen(2147483647), // equivalent to TEXT in SQL
 		field.Time("CreatedAt"),
 		field.Time("UpdatedAt"),

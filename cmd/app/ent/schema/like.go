@@ -15,22 +15,21 @@ type Like struct {
 func (Like) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("LikeID").Unique(),
-		field.String("UserId"),
-		field.String("PostID"),
+		field.Int("UserID"),
+		field.Int("PostID"),
 		field.Time("CreatedAt"),
 		field.Time("UpdatedAt"),
 	}
 }
 
 // Edges of the Like.
+// Edges of the Like.
 func (Like) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("user", User.Type).
-			Ref("likes").
-			Field("UserId").
+		edge.To("user", User.Type).
+			Field("UserID").
 			Unique(),
-		edge.From("post", Post.Type).
-			Ref("likes").
+		edge.To("post", Post.Type).
 			Field("PostID").
 			Unique(),
 	}

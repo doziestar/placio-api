@@ -15,8 +15,8 @@ type Media struct {
 // Fields of the Media.
 func (Media) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("ID").Unique(),
-		field.String("PostID").
+		//field.String("ID").Unique(),
+		field.Int("PostID").
 			StructTag(`json:"post_id,omitempty"`),
 		field.String("URL").
 			StructTag(`json:"url,omitempty"`),

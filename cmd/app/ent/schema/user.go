@@ -15,8 +15,7 @@ type User struct {
 // Fields of the User.
 func (User) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("UserID").Unique(),
-		field.String("Auth0ID"),
+		field.String("Auth0ID").Unique(),
 		field.Time("CreatedAt"),
 		field.Time("UpdatedAt"),
 		field.JSON("Auth0Data", &management.User{}),
@@ -27,6 +26,7 @@ func (User) Fields() []ent.Field {
 func (User) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("posts", Post.Type),
-		edge.To("relationships", UserBusinessRelationship.Type),
+		edge.To("userBusinessRelationships", UserBusinessRelationship.Type),
+		edge.To("likes", Like.Type).Field("UserID"),
 	}
 }

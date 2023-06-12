@@ -14,9 +14,6 @@ type UserBusinessRelationship struct {
 // Fields of the UserBusinessRelationship.
 func (UserBusinessRelationship) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("UserBusinessRelationshipID").Unique(),
-		field.String("UserID"),
-		field.String("BusinessAccountID"),
 		field.String("Role"),
 		field.Time("CreatedAt"),
 		field.Time("UpdatedAt"),
@@ -27,11 +24,11 @@ func (UserBusinessRelationship) Fields() []ent.Field {
 func (UserBusinessRelationship) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("user", User.Type).
-			Ref("relationships").
+			Ref("userBusinessRelationships").
 			Unique().
 			Required(),
-		edge.From("business_account", BusinessAccount.Type).
-			Ref("relationships").
+		edge.From("businessAccount", BusinessAccount.Type).
+			Ref("userBusinessRelationships").
 			Unique().
 			Required(),
 	}
