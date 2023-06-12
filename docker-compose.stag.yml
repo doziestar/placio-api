@@ -39,7 +39,7 @@ services:
   placio-db:
     image: postgres:14
     volumes:
-      - db_data2:/var/lib/postgresql/pg-data/pgdata
+      - db_data:/var/lib/postgresql/pg-data/pgdata
     env_file:
       - ./.envs/.stag
     networks:
