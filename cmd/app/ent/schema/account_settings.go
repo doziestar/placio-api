@@ -6,28 +6,27 @@ import (
 	"entgo.io/ent/schema/field"
 )
 
-// AccountSettings holds the schema definition for the AccountSettings entity.
-type AccountSettings struct {
+// BusinessAccountSettings holds the schema definition for the BusinessAccountSettings entity.
+type BusinessAccountSettings struct {
 	ent.Schema
 }
 
-// Fields of the AccountSettings.
-func (AccountSettings) Fields() []ent.Field {
+// Fields of the BusinessAccountSettings.
+func (BusinessAccountSettings) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("AccountSettingID").Unique(),
-		field.String("AccountID").Unique(),
+		field.String("BusinessAccountSettingsID").Unique(),
+		field.String("BusinessAccountID").Unique(),
 		field.Bool("TwoFactorAuthentication"),
 		field.JSON("BlockedUsers", []string{}),
 		field.JSON("MutedUsers", []string{}),
-		field.String("BusinessAccountID"),
 	}
 }
 
-// Edges of the AccountSettings.
-func (AccountSettings) Edges() []ent.Edge {
+// Edges of the BusinessAccountSettings.
+func (BusinessAccountSettings) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("business_account", BusinessAccount.Type).
-			Ref("account_settings").
+		edge.From("business_account", Business.Type).
+			Ref("business_account_settings").
 			Unique().
 			Required(),
 	}

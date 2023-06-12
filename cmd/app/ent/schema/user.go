@@ -1,10 +1,10 @@
 package schema
 
+import "C"
 import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
-	"github.com/auth0/go-auth0/management"
 )
 
 // User holds the schema definition for the User entity.
@@ -15,18 +15,16 @@ type User struct {
 // Fields of the User.
 func (User) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("Auth0ID").Unique(),
-		field.Time("CreatedAt"),
-		field.Time("UpdatedAt"),
-		field.JSON("Auth0Data", &management.User{}),
+		field.String("auth0_id").Unique(),
 	}
 }
 
 // Edges of the User.
 func (User) Edges() []ent.Edge {
 	return []ent.Edge{
+		edge.To("userBusinesses", UserBusiness.Type),
+		edge.To("comments", Comment.Type),
+		edge.To("likes", Like.Type),
 		edge.To("posts", Post.Type),
-		edge.To("userBusinessRelationships", UserBusinessRelationship.Type),
-		edge.To("likes", Like.Type).Field("UserID"),
 	}
 }

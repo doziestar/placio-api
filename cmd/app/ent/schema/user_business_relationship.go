@@ -6,30 +6,26 @@ import (
 	"entgo.io/ent/schema/field"
 )
 
-// UserBusinessRelationship holds the schema definition for the UserBusinessRelationship entity.
-type UserBusinessRelationship struct {
+// UserBusiness holds the schema definition for the UserBusiness entity.
+type UserBusiness struct {
 	ent.Schema
 }
 
-// Fields of the UserBusinessRelationship.
-func (UserBusinessRelationship) Fields() []ent.Field {
+// Fields of the UserBusiness.
+func (UserBusiness) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("Role"),
-		field.Time("CreatedAt"),
-		field.Time("UpdatedAt"),
+		field.String("role"),
 	}
 }
 
-// Edges of the UserBusinessRelationship.
-func (UserBusinessRelationship) Edges() []ent.Edge {
+// Edges of the UserBusiness.
+func (UserBusiness) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("user", User.Type).
-			Ref("userBusinessRelationships").
-			Unique().
-			Required(),
-		edge.From("businessAccount", BusinessAccount.Type).
-			Ref("userBusinessRelationships").
-			Unique().
-			Required(),
+			Ref("userBusinesses").
+			Unique(),
+		edge.From("business", Business.Type).
+			Ref("userBusinesses").
+			Unique(),
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"time"
 )
 
 // Like holds the schema definition for the Like entity.
@@ -14,23 +15,17 @@ type Like struct {
 // Fields of the Like.
 func (Like) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("LikeID").Unique(),
-		field.Int("UserID"),
-		field.Int("PostID"),
-		field.Time("CreatedAt"),
-		field.Time("UpdatedAt"),
+		field.Time("CreatedAt").Default(time.Now),
+		field.Time("UpdatedAt").UpdateDefault(time.Now),
 	}
 }
 
 // Edges of the Like.
-// Edges of the Like.
 func (Like) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("user", User.Type).
-			Field("UserID").
+		edge.From("user", User.Type).
+			Ref("likes").
 			Unique(),
-		edge.To("post", Post.Type).
-			Field("PostID").
-			Unique(),
+		edge.To("post", Post.Type).Unique(),
 	}
 }
