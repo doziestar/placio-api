@@ -34,7 +34,7 @@ func main() {
 
 	//initialize database
 	//env, _ := config.LoadConfig("./config")
-	databaseInstance, err := database.Connect(os.Getenv("DATABASE_URL"))
+	databaseInstance, err := database.Connect(os.Getenv("POSTGRES_URL"))
 	if err != nil {
 		return
 	}

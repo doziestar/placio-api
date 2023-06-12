@@ -3,6 +3,7 @@ volumes:
   db_data:
   pgadmin_data:
   redis_data:
+  db_data2:
 services:
   placio-proxy:
     image: traefik:latest
@@ -38,7 +39,7 @@ services:
   placio-db:
     image: postgres:14
     volumes:
-      - db_data:/var/lib/postgresql/pg-data/pgdata
+      - db_data2:/var/lib/postgresql/pg-data/pgdata
     env_file:
       - ./.envs/.stag
     networks:
