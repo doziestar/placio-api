@@ -4,6 +4,7 @@ import (
 	"context"
 	"placio-pkg/logger"
 
+	_ "github.com/lib/pq"
 	"gorm.io/gorm"
 )
 

@@ -2,6 +2,8 @@ package database
 
 import (
 	"context"
+	"log"
+	"placio-app/ent"
 	"placio-pkg/logger"
 
 	"gorm.io/driver/postgres"
@@ -43,6 +45,25 @@ func Connect(dsn string) (*Database, error) {
 	}
 
 	return db, nil
+}
+
+// EntClient Migrate database
+func EntClient(ctx context.Context) *ent.Client {
+	//client, err := ent.Open("postgres", "host=<host> port=<port> user=<user> dbname=<database> password=<pass>")
+	client, err := ent.Open("postgres", "host=postgres-db port=5432 user=dozie dbname=placio password=918273645dozie")
+
+	if err != nil {
+		log.Fatalf("failed opening connection to postgres: %v", err)
+	}
+	logger.Info(ctx, "======================================")
+	logger.Info(ctx, "== Connected to database successfully ==")
+	logger.Info(ctx, "======================================")
+	//defer client.Close()
+	// Run the auto migration tool.
+	if err := client.Schema.Create(context.Background()); err != nil {
+		log.Fatalf("failed creating schema resources: %v", err)
+	}
+	return client
 }
 
 // GetDB returns database connection

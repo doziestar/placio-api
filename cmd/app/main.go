@@ -1,13 +1,12 @@
 package main
 
 import (
-	"os"
-	"placio-app/api"
-	"placio-app/database"
-	"placio-app/models"
-	"placio-app/start"
-
+	"context"
 	"github.com/gin-gonic/gin"
+	"log"
+	"os"
+	"placio-app/database"
+	"placio-app/start"
 )
 
 // @title Placio Application Api
@@ -35,18 +34,21 @@ func main() {
 
 	// initialize database
 	//env, _ := config.LoadConfig("./config")
-	databaseInstance, err := database.Connect(os.Getenv("DATABASE_URL"))
-	if err != nil {
-		return
-	}
-	db := databaseInstance.GetDB()
-	err = models.Migrate(db)
-	if err != nil {
-		return
-	}
+	//databaseInstance, err := database.Connect(os.Getenv("DATABASE_URL"))
+	//if err != nil {
+	//	return
+	//}
+	//db := databaseInstance.GetDB()
+	//err = models.Migrate(db)
+	//if err != nil {
+	//	return
+	//}
+
+	client := database.EntClient(context.Background())
+	log.Printf("client: %v", client)
 
 	// initialize routes
-	api.InitializeRoutes(app, db)
+	//api.InitializeRoutes(app, db)
 	// set port
 	start.Initialize(port, app)
 
