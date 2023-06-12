@@ -3,6 +3,7 @@ volumes:
   db_data:
   pgadmin_data:
   redis_data:
+  db_data2:
 services:
   placio-proxy:
     image: traefik:latest

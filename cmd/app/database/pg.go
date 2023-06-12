@@ -2,6 +2,8 @@ package database
 
 import (
 	"context"
+	_ "github.com/lib/pq"
+	"os"
 	"placio-pkg/logger"
 
 	"gorm.io/driver/postgres"
@@ -44,6 +46,76 @@ func Connect(dsn string) (*Database, error) {
 
 	return db, nil
 }
+
+// EntClient migrates the database and returns the ent client
+//func EntClient(ctx context.Context) *ent.Client {
+//	var (
+//		client *ent.Client
+//		err    error
+//	)
+//
+//	// Load environment variables from .env file if exists
+//	_ = godotenv.Load()
+//
+//	host := getEnv("DB_HOST", "postgres-db")
+//	port := getEnv("DB_PORT", "5432")
+//	user := getEnv("DB_USER", "dozie")
+//	dbName := getEnv("DB_NAME", "placio")
+//	password := getEnv("DB_PASSWORD", "918273645dozie")
+//
+//	maxRetries := 5
+//	for i := 1; i <= maxRetries; i++ {
+//		client, err = ent.Open("postgres", fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=disable", host, port, user, dbName, password))
+//		if err != nil {
+//			log.Println("Error connecting to database: ", err)
+//			if i < maxRetries {
+//				waitTime := time.Duration(i) * time.Second
+//				log.Printf("Retrying database connection in %v", waitTime)
+//				time.Sleep(waitTime)
+//				continue
+//			}
+//			log.Fatal("Failed to connect to database after %v retries", maxRetries)
+//		}
+//		break
+//	}
+//
+//	log.Println("======================================")
+//	log.Println("== Connected to database successfully ==")
+//	log.Println("======================================")
+//
+//	// Run the auto migration tool.
+//	if err := client.Schema.Create(context.Background()); err != nil {
+//		log.Fatalf("failed creating schema resources: %v", err)
+//	}
+//	return client
+//}
+
+// getEnv gets an environment variable or returns a default value
+func getEnv(key string, defaultVal string) string {
+	if value, exists := os.LookupEnv(key); exists {
+		return value
+	}
+	return defaultVal
+}
+
+//// EntClient Migrate database
+//func EntClient(ctx context.Context) *ent.Client {
+//	//client, err := ent.Open("postgres", "host=<host> port=<port> user=<user> dbname=<database> password=<pass>")
+//	client, err := ent.Open("postgres", "host=postgres-db port=5432 user=dozie dbname=placio password=918273645dozie")
+//
+//	if err != nil {
+//		log.Fatalf("failed opening connection to postgres: %v", err)
+//	}
+//	logger.Info(ctx, "======================================")
+//	logger.Info(ctx, "== Connected to database successfully ==")
+//	logger.Info(ctx, "======================================")
+//	//defer client.Close()
+//	// Run the auto migration tool.
+//	if err := client.Schema.Create(context.Background()); err != nil {
+//		log.Fatalf("failed creating schema resources: %v", err)
+//	}
+//	return client
+//}
 
 // GetDB returns database connection
 

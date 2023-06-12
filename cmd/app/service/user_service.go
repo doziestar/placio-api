@@ -10,12 +10,14 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"net"
 	"net/http"
 	"placio-app/models"
 	"placio-app/utility"
 	"placio-pkg/hash"
 	"reflect"
 	"strings"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -80,11 +82,55 @@ func (s *UserServiceImpl) GetUser(auth0ID string) (*models.User, error) {
 			if err := s.db.Create(&newUser).Error; err != nil {
 				return nil, err
 			}
-			return &newUser, nil
+
+			// Add retry logic and handle specific error types when getting Auth0 user data
+			log.Println("GetUser", auth0ID, "attempting to get Auth0 user data")
+			var auth0Data *management.User
+			retryCount := 0
+			maxRetryCount := 3
+			retryDelay := 1 * time.Second
+			for {
+				auth0DataAttempt, err := s.GetAuth0UserData(auth0ID)
+				if err != nil {
+
+					if specificErr, ok := err.(net.Error); ok {
+						if specificErr.Temporary() {
+							// handle temporary error
+						} else if specificErr.Timeout() {
+							// handle timeout
+						}
+						// handle specific error
+						log.Println("Specific error occurred when getting Auth0 user data", specificErr)
+						return nil, specificErr
+					} else if retryCount < maxRetryCount {
+						// wait for a while before retrying
+						time.Sleep(retryDelay)
+						retryCount++
+						continue
+					} else {
+						// max retries exceeded, return the error
+						log.Println("Error getting Auth0 user data", err)
+						return nil, err
+					}
+				}
+				auth0Data = auth0DataAttempt
+				break
+			}
+			newUser.Auth0Data = auth0Data
+
+			userData := utility.RemoveSensitiveInfo(&newUser)
+			return userData, nil
 		}
 		return nil, err
 	}
+
+	//user = s.mergeAuth0DataIntoUser(user, auth0Data)
 	return &user, nil
+}
+
+func (s *UserServiceImpl) mergeAuth0DataIntoUser(user models.User, auth0Data *management.User) models.User {
+	user.Auth0Data = auth0Data
+	return user
 }
 
 // GetUserBusinessAccounts retrieves all the business accounts
@@ -132,6 +178,17 @@ func (s *UserServiceImpl) CanPerformAction(userID, businessAccountID string, act
 
 // CreateBusinessAccount creates a new Business Account and associates it with a user.
 func (s *UserServiceImpl) CreateBusinessAccount(userID, name, role string) (*models.BusinessAccount, error) {
+	// Validate inputs
+	if userID == "" {
+		return nil, errors.New("user ID cannot be empty")
+	}
+	if name == "" {
+		return nil, errors.New("business account name cannot be empty")
+	}
+	if role != "owner" && role != "admin" && role != "member" {
+		return nil, errors.New("invalid role")
+	}
+
 	businessAccount := &models.BusinessAccount{Name: name, ID: models.GenerateID()}
 	relationship := &models.UserBusinessRelationship{UserID: userID, BusinessAccount: *businessAccount, Role: "owner", BusinessAccountID: businessAccount.ID, ID: models.GenerateID()}
 
@@ -139,12 +196,12 @@ func (s *UserServiceImpl) CreateBusinessAccount(userID, name, role string) (*mod
 
 	if err := tx.Create(businessAccount).Error; err != nil {
 		tx.Rollback()
-		return nil, err
+		return nil, fmt.Errorf("error creating business account: %w", err)
 	}
 
 	if err := tx.Create(relationship).Error; err != nil {
 		tx.Rollback()
-		return nil, err
+		return nil, fmt.Errorf("error creating user-business relationship: %w", err)
 	}
 
 	tx.Commit()
@@ -152,7 +209,7 @@ func (s *UserServiceImpl) CreateBusinessAccount(userID, name, role string) (*mod
 	// Now we need to fetch the created business account with its relationships
 	var createdBusinessAccount models.BusinessAccount
 	if err := s.db.Preload("Relationships").Where("id = ?", businessAccount.ID).First(&createdBusinessAccount).Error; err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error fetching created business account: %w", err)
 	}
 
 	return &createdBusinessAccount, nil
@@ -214,7 +271,8 @@ func (s *UserServiceImpl) UpdateAuth0UserInformation(userID string, userData *mo
 
 func (s *UserServiceImpl) UpdateAuth0UserMetadata(userID string, userMetaData *models.Metadata) (*management.User, error) {
 	newUserData, err := utility.StructToMap(&userMetaData)
-	//mergedData, err := s.prepareUserData(userID, userMetaData)
+	// TODO: Merge the new data with the existing data need to figure out how to do this
+	//mergedData, err := s.prepareUserData(userID, userMetaData, "user_metadata")
 	if err != nil {
 		return nil, err
 	}
@@ -224,14 +282,15 @@ func (s *UserServiceImpl) UpdateAuth0UserMetadata(userID string, userMetaData *m
 func (s *UserServiceImpl) UpdateAuth0AppMetadata(userID string, appData *models.AppMetadata) (*management.User, error) {
 	log.Println("Updating app metadata")
 	newAppData, err := utility.StructToMap(&appData)
-	//mergedData, err := s.prepareUserData(userID, appData)
+	// TODO: This is not working
+	//mergedData, err := s.prepareUserData(userID, appData, "app_metadata")
 	if err != nil {
 		return nil, err
 	}
 	return s.updateAuth0Data(userID, newAppData, "app_metadata")
 }
 
-func (s *UserServiceImpl) prepareUserData(userID string, data interface{}) (map[string]interface{}, error) {
+func (s *UserServiceImpl) prepareUserData(userID string, data interface{}, dataType string) (map[string]interface{}, error) {
 	currUserData, err := s.GetAuth0UserData(userID)
 	if err != nil {
 		log.Println("Error getting current user data", err)
@@ -242,12 +301,31 @@ func (s *UserServiceImpl) prepareUserData(userID string, data interface{}) (map[
 	if err != nil {
 		return nil, err
 	}
+
 	newDataMap, err := utility.StructToMap(data)
 	if err != nil {
 		return nil, err
 	}
 
-	return utility.MergeMaps(currUserDataMap, newDataMap), nil
+	if dataType != "user information" {
+		// Get the current data for this type
+		currTypeData, ok := currUserDataMap[dataType].(map[string]interface{})
+		if !ok {
+			// If it doesn't exist or is not a map, initialize it
+			currTypeData = make(map[string]interface{})
+		}
+
+		// Merge the new data into the current data for this type
+		newTypeData := utility.MergeMaps(currTypeData, newDataMap)
+
+		// Put the merged data back into the current user data
+		currUserDataMap[dataType] = newTypeData
+	} else {
+		// For "user information", merge the new data into the whole current user data
+		currUserDataMap = utility.MergeMaps(currUserDataMap, newDataMap)
+	}
+
+	return currUserDataMap, nil
 }
 
 func (s *UserServiceImpl) updateAuth0Data(userID string, mergedUserData map[string]interface{}, dataType string) (*management.User, error) {

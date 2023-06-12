@@ -61,51 +61,31 @@ func InitializeRoutes(app *gin.Engine, db *gorm.DB) {
 
 	routerGroupV1 := app.Group("/api/v1")
 
-	//// instances
-	//var user models.User
-	//var account models.Account
-
 	// utility
 	//newUtils := utility.NewUtility()
-	//// auth
-	//authService := service.NewAuthService(db, &models.User{})
-	//authController := controller.NewAuthController(authService, newUtils)
-	//authController.RegisterRoutes(routerGroupV1)
-	//
-	//// user
-	//userService := service.NewUserService(db, &user, &account)
-	//userController := controller.NewUserController(userService)
-	//userController.RegisterRoutes(routerGroupV1)
-
-	// settings
-	//store := service.NewSettingsService(db)
-	//settingsController := controller.NewSettingsController(store)
-	//settingsController.RegisterRoutes(routerGroupV1, nil)
-	//
-	//// account
-	//accountService := service.NewAccountService(db, account, user)
-	//accountController := controller.NewAccountController(accountService, newUtils)
-	//accountController.RegisterRoutes(routerGroupV1)
 
 	// user
 	userService := service.NewUserService(db, redisClient)
 	userController := controller.NewUserController(userService)
 	userController.RegisterRoutes(routerGroupV1)
 
+	// business
+	businessService := service.NewBusinessAccountService(db)
+
+	// media
+	mediaService := service.NewMediaService(db)
+	mediaController := controller.NewMediaController(mediaService)
+	mediaController.RegisterRoutes(routerGroupV1)
+
 	// posts
 	postService := service.NewPostService(db)
-	postController := controller.NewPostController(postService, userService)
+	postController := controller.NewPostController(postService, userService, businessService, mediaService)
 	postController.RegisterRoutes(routerGroupV1)
 
 	// comments
 	commentService := service.NewCommentService(db)
 	commentController := controller.NewCommentController(commentService)
 	commentController.RegisterRoutes(routerGroupV1)
-
-	// media
-	mediaService := service.NewMediaService(db)
-	mediaController := controller.NewMediaController(mediaService)
-	mediaController.RegisterRoutes(routerGroupV1)
 
 	// likes
 	likeService := service.NewLikeService(db)

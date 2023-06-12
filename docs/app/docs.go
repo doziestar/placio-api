@@ -2034,6 +2034,61 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/users/": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get a user's details by their Auth0 ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get a user's details",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User Auth0 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved user",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_models.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/users/business-account": {
             "post": {
                 "security": [
@@ -2126,61 +2181,6 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/placio-app_models.User"
                             }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/users/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get a user's details by their Auth0 ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "User"
-                ],
-                "summary": "Get a user's details",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "User Auth0 ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully retrieved user",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_models.User"
                         }
                     },
                     "400": {
@@ -3101,6 +3101,162 @@ const docTemplate = `{
                 }
             }
         },
+        "management.User": {
+            "type": "object",
+            "properties": {
+                "app_metadata": {
+                    "description": "AppMetadata holds data that the user has read-only access to.\nFor example roles, permissions, vip, etc.\nNOTE: Roles added to AppMetadata are not integrated with Auth0 Role-Based Access Control (RBAC).\nFor RBAC, see the functions User.Roles, User.AssignRoles, and User.RemoveRoles.",
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "blocked": {
+                    "description": "True if the user is blocked from the application, false if the user is enabled.",
+                    "type": "boolean"
+                },
+                "client_id": {
+                    "description": "Auth0 client ID. Only valid when updating email address.",
+                    "type": "string"
+                },
+                "connection": {
+                    "description": "The connection the user belongs to.",
+                    "type": "string"
+                },
+                "created_at": {
+                    "description": "The time the user was created.",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "The user-defined UTF-8 string describing their account.",
+                    "type": "string"
+                },
+                "email": {
+                    "description": "The users' email.",
+                    "type": "string"
+                },
+                "family_name": {
+                    "description": "The users' family name.",
+                    "type": "string"
+                },
+                "given_name": {
+                    "description": "The users' given name.",
+                    "type": "string"
+                },
+                "identities": {
+                    "description": "Identities is a list of user identities for when accounts are linked.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/management.UserIdentity"
+                    }
+                },
+                "last_ip": {
+                    "description": "Last IP address from which this user logged in. Read only, cannot be modified.",
+                    "type": "string"
+                },
+                "last_login": {
+                    "description": "The last time the user has logged in.",
+                    "type": "string"
+                },
+                "last_password_reset": {
+                    "description": "The last time the user had their password reset.\nOnly available for Database connection users.",
+                    "type": "string"
+                },
+                "location": {
+                    "description": "The user-defined location for this account’s profile.",
+                    "type": "string"
+                },
+                "logins_count": {
+                    "description": "Total number of logins this user has performed. Read only, cannot be modified.",
+                    "type": "integer"
+                },
+                "multifactor": {
+                    "description": "List of multi-factor authentication providers with which this user has enrolled.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "name": {
+                    "description": "The users' name.",
+                    "type": "string"
+                },
+                "nickname": {
+                    "description": "The users' nickname.",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "The users' password (mandatory for non SMS connections)",
+                    "type": "string"
+                },
+                "phone_number": {
+                    "description": "The users' phone number (following the E.164 recommendation).\nOnly valid for users to be added to SMS connections.",
+                    "type": "string"
+                },
+                "phone_verified": {
+                    "description": "True if the user's phone number is verified, false otherwise. When the\nuser is added to an SMS connection, they will not receive a verification\nSMS if this is true.",
+                    "type": "boolean"
+                },
+                "picture": {
+                    "description": "The user's picture url.",
+                    "type": "string"
+                },
+                "screen_name": {
+                    "description": "The screen name, handle, or alias that this user identifies themselves with.",
+                    "type": "string"
+                },
+                "updated_at": {
+                    "description": "The last time the user was updated.",
+                    "type": "string"
+                },
+                "url": {
+                    "description": "A URL provided by the user in association with their profile.",
+                    "type": "string"
+                },
+                "user_id": {
+                    "description": "The users' identifier.",
+                    "type": "string"
+                },
+                "user_metadata": {
+                    "description": "UserMetadata holds data that the user has read/write access to.\nFor example color_preference, blog_url, etc.",
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "username": {
+                    "description": "The users' username. Only valid if the connection requires a username.",
+                    "type": "string"
+                },
+                "verify_email": {
+                    "description": "If true, the user will receive a verification email after creation, even\nif created with email_verified set to true. If false, the user will not\nreceive a verification email, even if created with email_verified set to\nfalse. If unspecified, defaults to the behavior determined by the value\nof email_verified.",
+                    "type": "boolean"
+                }
+            }
+        },
+        "management.UserIdentity": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                },
+                "access_token_secret": {
+                    "type": "string"
+                },
+                "connection": {
+                    "type": "string"
+                },
+                "isSocial": {
+                    "type": "boolean"
+                },
+                "profileData": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "provider": {
+                    "type": "string"
+                },
+                "refresh_token": {
+                    "type": "string"
+                }
+            }
+        },
         "placio-app_Dto.ErrorDTO": {
             "type": "object",
             "properties": {
@@ -3675,6 +3831,9 @@ const docTemplate = `{
         "placio-app_models.User": {
             "type": "object",
             "properties": {
+                "auth0Data": {
+                    "$ref": "#/definitions/management.User"
+                },
                 "auth0ID": {
                     "type": "string"
                 },

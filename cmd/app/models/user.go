@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/auth0/go-auth0/management"
 	"time"
 
 	"gorm.io/gorm"
@@ -15,7 +16,7 @@ type User struct {
 	CreatedAt     time.Time                  `gorm:"autoCreateTime"`
 	UpdatedAt     time.Time                  `gorm:"autoUpdateTime"`
 	DeleteAt      gorm.DeletedAt             `gorm:"index"`
-	//management.User
+	Auth0Data     *management.User           `gorm:"-"`
 }
 
 type BusinessAccount struct {

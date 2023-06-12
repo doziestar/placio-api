@@ -1,13 +1,12 @@
 package main
 
 import (
+	"github.com/gin-gonic/gin"
 	"os"
 	"placio-app/api"
 	"placio-app/database"
 	"placio-app/models"
 	"placio-app/start"
-
-	"github.com/gin-gonic/gin"
 )
 
 // @title Placio Application Api
@@ -33,7 +32,7 @@ func main() {
 
 	start.Middleware(app)
 
-	// initialize database
+	//initialize database
 	//env, _ := config.LoadConfig("./config")
 	databaseInstance, err := database.Connect(os.Getenv("DATABASE_URL"))
 	if err != nil {
@@ -44,6 +43,9 @@ func main() {
 	if err != nil {
 		return
 	}
+
+	//client := database.EntClient(context.Background())
+	//log.Printf("client: %v", client)
 
 	// initialize routes
 	api.InitializeRoutes(app, db)
