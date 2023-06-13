@@ -71,17 +71,17 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 	userController.RegisterRoutes(routerGroupV1)
 
 	// business
-	//businessService := service.NewBusinessAccountService(db)
+	businessService := service.NewBusinessAccountService(client)
 
 	// media
-	//mediaService := service.NewMediaService(db)
+	mediaService := service.NewMediaService(client)
 	//mediaController := controller.NewMediaController(mediaService)
 	//mediaController.RegisterRoutes(routerGroupV1)
 
 	// posts
-	//postService := service.NewPostService(db)
-	//postController := controller.NewPostController(postService, userService, businessService, mediaService)
-	//postController.RegisterRoutes(routerGroupV1)
+	postService := service.NewPostService(client, redisClient)
+	postController := controller.NewPostController(postService, userService, businessService, mediaService)
+	postController.RegisterRoutes(routerGroupV1)
 
 	// comments
 	//commentService := service.NewCommentService(db)

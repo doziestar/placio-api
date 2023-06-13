@@ -163,6 +163,13 @@ definitions:
       - name
       - time
     type: object
+  placio-app_Dto.MediaDto:
+    properties:
+      type:
+        type: string
+      url:
+        type: string
+    type: object
   placio-app_Dto.PermissionDTO:
     properties:
       message:
@@ -170,12 +177,320 @@ definitions:
       status:
         type: integer
     type: object
+  placio-app_Dto.PostDto:
+    properties:
+      business_id:
+        description: It can be empty if it does not exist
+        type: string
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      medias:
+        items:
+          $ref: '#/definitions/placio-app_Dto.MediaDto'
+        type: array
+      user_id:
+        type: string
+    type: object
+  placio-app_Dto.PostResponseDto:
+    properties:
+      business:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.Business'
+        description: It can be empty if it does not exist
+      content:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      medias:
+        items:
+          $ref: '#/definitions/placio-app_Dto.MediaDto'
+        type: array
+      user:
+        $ref: '#/definitions/placio-app_ent.User'
+    type: object
   placio-app_Dto.SuccessDTO:
     properties:
       message:
         type: string
       status:
         type: integer
+    type: object
+  placio-app_ent.AccountSettings:
+    properties:
+      BlockedUsers:
+        description: BlockedUsers holds the value of the "BlockedUsers" field.
+        items:
+          type: string
+        type: array
+      MutedUsers:
+        description: MutedUsers holds the value of the "MutedUsers" field.
+        items:
+          type: string
+        type: array
+      TwoFactorAuthentication:
+        description: TwoFactorAuthentication holds the value of the "TwoFactorAuthentication" field.
+        type: boolean
+      edges:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.AccountSettingsEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the AccountSettingsQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: string
+    type: object
+  placio-app_ent.AccountSettingsEdges:
+    properties:
+      business_account:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.Business'
+        description: BusinessAccount holds the value of the business_account edge.
+    type: object
+  placio-app_ent.Business:
+    properties:
+      edges:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.BusinessEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the BusinessQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: string
+      name:
+        description: Name holds the value of the "name" field.
+        type: string
+    type: object
+  placio-app_ent.BusinessEdges:
+    properties:
+      business_account_settings:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.AccountSettings'
+        description: BusinessAccountSettings holds the value of the business_account_settings edge.
+      posts:
+        description: Posts holds the value of the posts edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Post'
+        type: array
+      userBusinesses:
+        description: UserBusinesses holds the value of the userBusinesses edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.UserBusiness'
+        type: array
+    type: object
+  placio-app_ent.Comment:
+    properties:
+      Content:
+        description: Content holds the value of the "Content" field.
+        type: string
+      CreatedAt:
+        description: CreatedAt holds the value of the "CreatedAt" field.
+        type: string
+      UpdatedAt:
+        description: UpdatedAt holds the value of the "UpdatedAt" field.
+        type: string
+      edges:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.CommentEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the CommentQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: string
+    type: object
+  placio-app_ent.CommentEdges:
+    properties:
+      post:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.Post'
+        description: Post holds the value of the post edge.
+      user:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.User'
+        description: User holds the value of the user edge.
+    type: object
+  placio-app_ent.Like:
+    properties:
+      CreatedAt:
+        description: CreatedAt holds the value of the "CreatedAt" field.
+        type: string
+      UpdatedAt:
+        description: UpdatedAt holds the value of the "UpdatedAt" field.
+        type: string
+      edges:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.LikeEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the LikeQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: string
+    type: object
+  placio-app_ent.LikeEdges:
+    properties:
+      post:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.Post'
+        description: Post holds the value of the post edge.
+      user:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.User'
+        description: User holds the value of the user edge.
+    type: object
+  placio-app_ent.Media:
+    properties:
+      CreatedAt:
+        description: CreatedAt holds the value of the "CreatedAt" field.
+        type: string
+      MediaType:
+        description: image, gif, or video
+        type: string
+      URL:
+        description: URL holds the value of the "URL" field.
+        type: string
+      UpdatedAt:
+        description: UpdatedAt holds the value of the "UpdatedAt" field.
+        type: string
+      edges:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.MediaEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the MediaQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: string
+    type: object
+  placio-app_ent.MediaEdges:
+    properties:
+      post:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.Post'
+        description: Post holds the value of the post edge.
+    type: object
+  placio-app_ent.Post:
+    properties:
+      Content:
+        description: Content holds the value of the "Content" field.
+        type: string
+      CreatedAt:
+        description: CreatedAt holds the value of the "CreatedAt" field.
+        type: string
+      UpdatedAt:
+        description: UpdatedAt holds the value of the "UpdatedAt" field.
+        type: string
+      edges:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.PostEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the PostQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: string
+    type: object
+  placio-app_ent.PostEdges:
+    properties:
+      business_account:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.Business'
+        description: BusinessAccount holds the value of the business_account edge.
+      comments:
+        description: Comments holds the value of the comments edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Comment'
+        type: array
+      likes:
+        description: Likes holds the value of the likes edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Like'
+        type: array
+      medias:
+        description: Medias holds the value of the medias edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Media'
+        type: array
+      user:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.User'
+        description: User holds the value of the user edge.
+    type: object
+  placio-app_ent.User:
+    properties:
+      auth0_data:
+        allOf:
+          - $ref: '#/definitions/management.User'
+        description: Auth0Data holds the value of the "auth0_data" field.
+      auth0_id:
+        description: Auth0ID holds the value of the "auth0_id" field.
+        type: string
+      edges:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.UserEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the UserQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: string
+    type: object
+  placio-app_ent.UserBusiness:
+    properties:
+      edges:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.UserBusinessEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the UserBusinessQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: string
+      role:
+        description: Role holds the value of the "role" field.
+        type: string
+    type: object
+  placio-app_ent.UserBusinessEdges:
+    properties:
+      business:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.Business'
+        description: Business holds the value of the business edge.
+      user:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.User'
+        description: User holds the value of the user edge.
+    type: object
+  placio-app_ent.UserEdges:
+    properties:
+      comments:
+        description: Comments holds the value of the comments edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Comment'
+        type: array
+      likes:
+        description: Likes holds the value of the likes edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Like'
+        type: array
+      posts:
+        description: Posts holds the value of the posts edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Post'
+        type: array
+      userBusinesses:
+        description: UserBusinesses holds the value of the userBusinesses edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.UserBusiness'
+        type: array
     type: object
   placio-app_models.AccountSettings:
     properties:
@@ -1012,116 +1327,6 @@ paths:
       summary: GET like count for a post
       tags:
         - Likes
-  /api/v1/media/:
-    post:
-      consumes:
-        - multipart/form-data
-      description: Upload a media file (image, gif, or video) for a post
-      parameters:
-        - description: Media file
-          in: formData
-          name: file
-          required: true
-          type: file
-        - description: Post ID
-          in: formData
-          name: postID
-          required: true
-          type: string
-      produces:
-        - application/json
-      responses:
-        '201':
-          description: Successfully uploaded media
-          schema:
-            $ref: '#/definitions/placio-app_models.Media'
-        '400':
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        '500':
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Upload media
-      tags:
-        - Media
-  /api/v1/media/{mediaID}:
-    delete:
-      description: Delete media by its ID
-      parameters:
-        - description: Media ID
-          in: path
-          name: mediaID
-          required: true
-          type: string
-      produces:
-        - application/json
-      responses:
-        '204':
-          description: Successfully deleted media
-        '404':
-          description: Media Not Found
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        '500':
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Delete media
-      tags:
-        - Media
-    get:
-      description: Retrieve media by its ID
-      parameters:
-        - description: Media ID
-          in: path
-          name: mediaID
-          required: true
-          type: string
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: Successfully retrieved media
-          schema:
-            $ref: '#/definitions/placio-app_models.Media'
-        '404':
-          description: Media Not Found
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        '500':
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Get media
-      tags:
-        - Media
-  /api/v1/media/post/{postID}:
-    get:
-      description: Retrieve all media for the specified post
-      parameters:
-        - description: Post ID
-          in: path
-          name: postID
-          required: true
-          type: string
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: Successfully retrieved media
-          schema:
-            items:
-              $ref: '#/definitions/placio-app_models.Media'
-            type: array
-        '500':
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: List all media for a post
-      tags:
-        - Media
   /api/v1/posts/:
     post:
       consumes:
@@ -1133,14 +1338,14 @@ paths:
           name: CreatePostDto
           required: true
           schema:
-            $ref: '#/definitions/placio-app_models.Post'
+            $ref: '#/definitions/placio-app_Dto.PostDto'
       produces:
         - application/json
       responses:
         '201':
           description: Successfully created post
           schema:
-            $ref: '#/definitions/placio-app_models.Post'
+            $ref: '#/definitions/placio-app_Dto.PostResponseDto'
         '400':
           description: Bad Request
           schema:
@@ -1156,329 +1361,6 @@ paths:
       security:
         - Bearer: []
       summary: Create a new post
-      tags:
-        - Post
-  /api/v1/posts/{id}:
-    delete:
-      consumes:
-        - application/json
-      description: Delete a post by ID
-      parameters:
-        - description: Post ID
-          in: path
-          name: id
-          required: true
-          type: string
-      produces:
-        - application/json
-      responses:
-        '204':
-          description: Successfully deleted post
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        '404':
-          description: Not Found
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        '500':
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
-      summary: Delete a post
-      tags:
-        - Post
-    get:
-      consumes:
-        - application/json
-      description: Get a post by ID
-      parameters:
-        - description: Post ID
-          in: path
-          name: id
-          required: true
-          type: string
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: Successfully retrieved post
-          schema:
-            $ref: '#/definitions/placio-app_models.Post'
-        '404':
-          description: Not Found
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        '500':
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Get a post
-      tags:
-        - Post
-    put:
-      consumes:
-        - application/json
-      description: Update a post by ID
-      parameters:
-        - description: Post ID
-          in: path
-          name: id
-          required: true
-          type: string
-        - description: Post Data
-          in: body
-          name: UpdatePostDto
-          required: true
-          schema:
-            $ref: '#/definitions/placio-app_models.Post'
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: Successfully updated post
-          schema:
-            $ref: '#/definitions/placio-app_models.Post'
-        '400':
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        '404':
-          description: Not Found
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        '500':
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
-      summary: Update a post
-      tags:
-        - Post
-  /api/v1/posts/{id}/comments:
-    get:
-      consumes:
-        - application/json
-      description: Get comments for a post by ID
-      parameters:
-        - description: Post ID
-          in: path
-          name: id
-          required: true
-          type: string
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: Successfully retrieved comments
-          schema:
-            items:
-              $ref: '#/definitions/placio-app_models.Comment'
-            type: array
-        '404':
-          description: Not Found
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        '500':
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Get comments for a post
-      tags:
-        - Post
-    post:
-      consumes:
-        - application/json
-      description: Create a new comment for a post by ID
-      parameters:
-        - description: Post ID
-          in: path
-          name: id
-          required: true
-          type: string
-        - description: Comment Data
-          in: body
-          name: CreateCommentDto
-          required: true
-          schema:
-            $ref: '#/definitions/placio-app_models.Comment'
-      produces:
-        - application/json
-      responses:
-        '201':
-          description: Successfully created comment
-          schema:
-            $ref: '#/definitions/placio-app_models.Comment'
-        '400':
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        '404':
-          description: Not Found
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        '500':
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
-      summary: Create a new comment
-      tags:
-        - Post
-  /api/v1/posts/{id}/like:
-    post:
-      consumes:
-        - application/json
-      description: Like a post by ID
-      parameters:
-        - description: Post ID
-          in: path
-          name: id
-          required: true
-          type: string
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: Successfully liked post
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        '404':
-          description: Not Found
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        '500':
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
-      summary: Like a post
-      tags:
-        - Post
-  /api/v1/posts/{id}/unlike:
-    post:
-      consumes:
-        - application/json
-      description: Unlike a post by ID
-      parameters:
-        - description: Post ID
-          in: path
-          name: id
-          required: true
-          type: string
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: Successfully unliked post
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        '404':
-          description: Not Found
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        '500':
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
-      summary: Unlike a post
-      tags:
-        - Post
-  /api/v1/posts/comments/{id}:
-    delete:
-      consumes:
-        - application/json
-      description: Delete a comment by ID
-      parameters:
-        - description: Comment ID
-          in: path
-          name: id
-          required: true
-          type: string
-      produces:
-        - application/json
-      responses:
-        '204':
-          description: Successfully deleted comment
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        '404':
-          description: Not Found
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        '500':
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
-      summary: Delete a comment
-      tags:
-        - Post
-    put:
-      consumes:
-        - application/json
-      description: Update a comment by ID
-      parameters:
-        - description: Comment ID
-          in: path
-          name: id
-          required: true
-          type: string
-        - description: Comment Data
-          in: body
-          name: UpdateCommentDto
-          required: true
-          schema:
-            $ref: '#/definitions/placio-app_models.Comment'
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: Successfully updated comment
-          schema:
-            $ref: '#/definitions/placio-app_models.Comment'
-        '400':
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        '404':
-          description: Not Found
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        '500':
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
-      summary: Update a comment
       tags:
         - Post
   /api/v1/ratings/:

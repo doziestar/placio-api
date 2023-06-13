@@ -679,172 +679,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/media/": {
-            "post": {
-                "description": "Upload a media file (image, gif, or video) for a post",
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Media"
-                ],
-                "summary": "Upload media",
-                "parameters": [
-                    {
-                        "type": "file",
-                        "description": "Media file",
-                        "name": "file",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Post ID",
-                        "name": "postID",
-                        "in": "formData",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Successfully uploaded media",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_models.Media"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/media/post/{postID}": {
-            "get": {
-                "description": "Retrieve all media for the specified post",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Media"
-                ],
-                "summary": "List all media for a post",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Post ID",
-                        "name": "postID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully retrieved media",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/placio-app_models.Media"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/media/{mediaID}": {
-            "get": {
-                "description": "Retrieve media by its ID",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Media"
-                ],
-                "summary": "Get media",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Media ID",
-                        "name": "mediaID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully retrieved media",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_models.Media"
-                        }
-                    },
-                    "404": {
-                        "description": "Media Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Delete media by its ID",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Media"
-                ],
-                "summary": "Delete media",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Media ID",
-                        "name": "mediaID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Successfully deleted media"
-                    },
-                    "404": {
-                        "description": "Media Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/posts/": {
             "post": {
                 "security": [
@@ -870,7 +704,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/placio-app_models.Post"
+                            "$ref": "#/definitions/placio-app_Dto.PostDto"
                         }
                     }
                 ],
@@ -878,7 +712,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Successfully created post",
                         "schema": {
-                            "$ref": "#/definitions/placio-app_models.Post"
+                            "$ref": "#/definitions/placio-app_Dto.PostResponseDto"
                         }
                     },
                     "400": {
@@ -889,507 +723,6 @@ const docTemplate = `{
                     },
                     "401": {
                         "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/posts/comments/{id}": {
-            "put": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Update a comment by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Post"
-                ],
-                "summary": "Update a comment",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Comment ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Comment Data",
-                        "name": "UpdateCommentDto",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_models.Comment"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully updated comment",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_models.Comment"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Delete a comment by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Post"
-                ],
-                "summary": "Delete a comment",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Comment ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Successfully deleted comment"
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/posts/{id}": {
-            "get": {
-                "description": "Get a post by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Post"
-                ],
-                "summary": "Get a post",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Post ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully retrieved post",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_models.Post"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Update a post by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Post"
-                ],
-                "summary": "Update a post",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Post ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Post Data",
-                        "name": "UpdatePostDto",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_models.Post"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully updated post",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_models.Post"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Delete a post by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Post"
-                ],
-                "summary": "Delete a post",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Post ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Successfully deleted post"
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/posts/{id}/comments": {
-            "get": {
-                "description": "Get comments for a post by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Post"
-                ],
-                "summary": "Get comments for a post",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Post ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully retrieved comments",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/placio-app_models.Comment"
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Create a new comment for a post by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Post"
-                ],
-                "summary": "Create a new comment",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Post ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Comment Data",
-                        "name": "CreateCommentDto",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_models.Comment"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Successfully created comment",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_models.Comment"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/posts/{id}/like": {
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Like a post by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Post"
-                ],
-                "summary": "Like a post",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Post ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully liked post"
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/posts/{id}/unlike": {
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Unlike a post by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Post"
-                ],
-                "summary": "Unlike a post",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Post ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully unliked post"
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
                         "schema": {
                             "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
                         }
@@ -3287,6 +2620,17 @@ const docTemplate = `{
                 }
             }
         },
+        "placio-app_Dto.MediaDto": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
         "placio-app_Dto.PermissionDTO": {
             "type": "object",
             "properties": {
@@ -3298,6 +2642,64 @@ const docTemplate = `{
                 }
             }
         },
+        "placio-app_Dto.PostDto": {
+            "type": "object",
+            "properties": {
+                "business_id": {
+                    "description": "It can be empty if it does not exist",
+                    "type": "string"
+                },
+                "content": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "medias": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_Dto.MediaDto"
+                    }
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_Dto.PostResponseDto": {
+            "type": "object",
+            "properties": {
+                "business": {
+                    "description": "It can be empty if it does not exist",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.Business"
+                        }
+                    ]
+                },
+                "content": {
+                    "type": "string"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "medias": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_Dto.MediaDto"
+                    }
+                },
+                "user": {
+                    "$ref": "#/definitions/placio-app_ent.User"
+                }
+            }
+        },
         "placio-app_Dto.SuccessDTO": {
             "type": "object",
             "properties": {
@@ -3306,6 +2708,419 @@ const docTemplate = `{
                 },
                 "status": {
                     "type": "integer"
+                }
+            }
+        },
+        "placio-app_ent.AccountSettings": {
+            "type": "object",
+            "properties": {
+                "BlockedUsers": {
+                    "description": "BlockedUsers holds the value of the \"BlockedUsers\" field.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "MutedUsers": {
+                    "description": "MutedUsers holds the value of the \"MutedUsers\" field.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "TwoFactorAuthentication": {
+                    "description": "TwoFactorAuthentication holds the value of the \"TwoFactorAuthentication\" field.",
+                    "type": "boolean"
+                },
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the AccountSettingsQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.AccountSettingsEdges"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_ent.AccountSettingsEdges": {
+            "type": "object",
+            "properties": {
+                "business_account": {
+                    "description": "BusinessAccount holds the value of the business_account edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.Business"
+                        }
+                    ]
+                }
+            }
+        },
+        "placio-app_ent.Business": {
+            "type": "object",
+            "properties": {
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the BusinessQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.BusinessEdges"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Name holds the value of the \"name\" field.",
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_ent.BusinessEdges": {
+            "type": "object",
+            "properties": {
+                "business_account_settings": {
+                    "description": "BusinessAccountSettings holds the value of the business_account_settings edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.AccountSettings"
+                        }
+                    ]
+                },
+                "posts": {
+                    "description": "Posts holds the value of the posts edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Post"
+                    }
+                },
+                "userBusinesses": {
+                    "description": "UserBusinesses holds the value of the userBusinesses edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.UserBusiness"
+                    }
+                }
+            }
+        },
+        "placio-app_ent.Comment": {
+            "type": "object",
+            "properties": {
+                "Content": {
+                    "description": "Content holds the value of the \"Content\" field.",
+                    "type": "string"
+                },
+                "CreatedAt": {
+                    "description": "CreatedAt holds the value of the \"CreatedAt\" field.",
+                    "type": "string"
+                },
+                "UpdatedAt": {
+                    "description": "UpdatedAt holds the value of the \"UpdatedAt\" field.",
+                    "type": "string"
+                },
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the CommentQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.CommentEdges"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_ent.CommentEdges": {
+            "type": "object",
+            "properties": {
+                "post": {
+                    "description": "Post holds the value of the post edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.Post"
+                        }
+                    ]
+                },
+                "user": {
+                    "description": "User holds the value of the user edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.User"
+                        }
+                    ]
+                }
+            }
+        },
+        "placio-app_ent.Like": {
+            "type": "object",
+            "properties": {
+                "CreatedAt": {
+                    "description": "CreatedAt holds the value of the \"CreatedAt\" field.",
+                    "type": "string"
+                },
+                "UpdatedAt": {
+                    "description": "UpdatedAt holds the value of the \"UpdatedAt\" field.",
+                    "type": "string"
+                },
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the LikeQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.LikeEdges"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_ent.LikeEdges": {
+            "type": "object",
+            "properties": {
+                "post": {
+                    "description": "Post holds the value of the post edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.Post"
+                        }
+                    ]
+                },
+                "user": {
+                    "description": "User holds the value of the user edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.User"
+                        }
+                    ]
+                }
+            }
+        },
+        "placio-app_ent.Media": {
+            "type": "object",
+            "properties": {
+                "CreatedAt": {
+                    "description": "CreatedAt holds the value of the \"CreatedAt\" field.",
+                    "type": "string"
+                },
+                "MediaType": {
+                    "description": "image, gif, or video",
+                    "type": "string"
+                },
+                "URL": {
+                    "description": "URL holds the value of the \"URL\" field.",
+                    "type": "string"
+                },
+                "UpdatedAt": {
+                    "description": "UpdatedAt holds the value of the \"UpdatedAt\" field.",
+                    "type": "string"
+                },
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the MediaQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.MediaEdges"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_ent.MediaEdges": {
+            "type": "object",
+            "properties": {
+                "post": {
+                    "description": "Post holds the value of the post edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.Post"
+                        }
+                    ]
+                }
+            }
+        },
+        "placio-app_ent.Post": {
+            "type": "object",
+            "properties": {
+                "Content": {
+                    "description": "Content holds the value of the \"Content\" field.",
+                    "type": "string"
+                },
+                "CreatedAt": {
+                    "description": "CreatedAt holds the value of the \"CreatedAt\" field.",
+                    "type": "string"
+                },
+                "UpdatedAt": {
+                    "description": "UpdatedAt holds the value of the \"UpdatedAt\" field.",
+                    "type": "string"
+                },
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the PostQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.PostEdges"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_ent.PostEdges": {
+            "type": "object",
+            "properties": {
+                "business_account": {
+                    "description": "BusinessAccount holds the value of the business_account edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.Business"
+                        }
+                    ]
+                },
+                "comments": {
+                    "description": "Comments holds the value of the comments edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Comment"
+                    }
+                },
+                "likes": {
+                    "description": "Likes holds the value of the likes edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Like"
+                    }
+                },
+                "medias": {
+                    "description": "Medias holds the value of the medias edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Media"
+                    }
+                },
+                "user": {
+                    "description": "User holds the value of the user edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.User"
+                        }
+                    ]
+                }
+            }
+        },
+        "placio-app_ent.User": {
+            "type": "object",
+            "properties": {
+                "auth0_data": {
+                    "description": "Auth0Data holds the value of the \"auth0_data\" field.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/management.User"
+                        }
+                    ]
+                },
+                "auth0_id": {
+                    "description": "Auth0ID holds the value of the \"auth0_id\" field.",
+                    "type": "string"
+                },
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the UserQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.UserEdges"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_ent.UserBusiness": {
+            "type": "object",
+            "properties": {
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the UserBusinessQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.UserBusinessEdges"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                },
+                "role": {
+                    "description": "Role holds the value of the \"role\" field.",
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_ent.UserBusinessEdges": {
+            "type": "object",
+            "properties": {
+                "business": {
+                    "description": "Business holds the value of the business edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.Business"
+                        }
+                    ]
+                },
+                "user": {
+                    "description": "User holds the value of the user edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.User"
+                        }
+                    ]
+                }
+            }
+        },
+        "placio-app_ent.UserEdges": {
+            "type": "object",
+            "properties": {
+                "comments": {
+                    "description": "Comments holds the value of the comments edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Comment"
+                    }
+                },
+                "likes": {
+                    "description": "Likes holds the value of the likes edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Like"
+                    }
+                },
+                "posts": {
+                    "description": "Posts holds the value of the posts edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Post"
+                    }
+                },
+                "userBusinesses": {
+                    "description": "UserBusinesses holds the value of the userBusinesses edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.UserBusiness"
+                    }
                 }
             }
         },

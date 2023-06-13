@@ -4,13 +4,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"placio-app/ent"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
+	"placio-app/utility"
+	"time"
 )
 
 type PostService interface {
-	CreatePost(ctx context.Context, newPost *ent.Post) (*ent.Post, error)
+	CreatePost(ctx context.Context, newPost *ent.Post, userID string, businessID *string) (*ent.Post, error)
 	GetPost(ctx context.Context, postID string) (*ent.Post, error)
 	UpdatePost(ctx context.Context, updatedPost *ent.Post) (*ent.Post, error)
 	DeletePost(ctx context.Context, postID string) error
@@ -33,36 +36,55 @@ type PostServiceImpl struct {
 	comment  *ent.Comment
 	like     *ent.Like
 	business *ent.Business
+	cache    *utility.RedisClient
 }
 
-func NewPostService(client *ent.Client) PostService {
-	return &PostServiceImpl{client: client, user: &ent.User{}, post: &ent.Post{}, comment: &ent.Comment{}, like: &ent.Like{}, business: &ent.Business{}}
+func NewPostService(client *ent.Client, cache *utility.RedisClient) PostService {
+	return &PostServiceImpl{client: client, cache: cache, user: &ent.User{}, post: &ent.Post{}, comment: &ent.Comment{}, like: &ent.Like{}, business: &ent.Business{}}
 }
 
-func (ps *PostServiceImpl) CreatePost(ctx context.Context, newPost *ent.Post) (*ent.Post, error) {
+func (ps *PostServiceImpl) CreatePost(ctx context.Context, newPost *ent.Post, userID string, businessID *string) (*ent.Post, error) {
 	if newPost == nil {
 		return nil, errors.New("post cannot be nil")
 	}
 
-	post, err := ps.client.Post.
+	// Create builder
+	postBuilder := ps.client.Post.
 		Create().
-		SetContent(newPost.Content).
-		SetUser(newPost.Edges.User).
-		Save(ctx)
+		SetID(newPost.ID).
+		SetContent(newPost.Content).SetUpdatedAt(time.Now())
 
+	// Associate with user
+	postBuilder = postBuilder.SetUserID(userID)
+	// Associate with business, if business ID is provided
+	if businessID != nil {
+		postBuilder = postBuilder.SetBusinessAccountID(*businessID)
+	}
+
+	fmt.Println("saving post postBuilder", postBuilder)
+	// Save post
+	post, err := postBuilder.Save(ctx)
+	log.Printf("post: %v", post)
+	log.Printf("err: %v", err)
 	if err != nil {
+		fmt.Errorf("failed creating post: %w", err)
 		return nil, fmt.Errorf("failed creating post: %w", err)
 	}
+	fmt.Println("saved post", post)
 
 	return post, nil
 }
 
 func (ps *PostServiceImpl) GetPost(ctx context.Context, postID string) (*ent.Post, error) {
+	fmt.Println("getting post", postID)
+
 	post, err := ps.client.Post.
 		Query().
 		Where(post.ID(postID)).
 		WithComments().
 		WithLikes().
+		WithUser().
+		WithBusinessAccount().
 		Only(ctx)
 
 	if err != nil {
