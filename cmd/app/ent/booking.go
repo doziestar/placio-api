@@ -15,7 +15,7 @@ import (
 type Booking struct {
 	config
 	// ID of the ent.
-	ID           int `json:"id,omitempty"`
+	ID           string `json:"id,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -25,7 +25,7 @@ func (*Booking) scanValues(columns []string) ([]any, error) {
 	for i := range columns {
 		switch columns[i] {
 		case booking.FieldID:
-			values[i] = new(sql.NullInt64)
+			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -42,11 +42,11 @@ func (b *Booking) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case booking.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field id", values[i])
+			} else if value.Valid {
+				b.ID = value.String
 			}
-			b.ID = int(value.Int64)
 		default:
 			b.selectValues.Set(columns[i], values[i])
 		}

@@ -14,6 +14,10 @@ type Business struct {
 // Fields of the Business.
 func (Business) Fields() []ent.Field {
 	return []ent.Field{
+		field.String("id").
+			MaxLen(36).
+			Unique().
+			Immutable(),
 		field.String("name"),
 	}
 }
@@ -22,7 +26,7 @@ func (Business) Fields() []ent.Field {
 func (Business) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("userBusinesses", UserBusiness.Type),
-		edge.To("business_account_settings", BusinessAccountSettings.Type).
+		edge.To("business_account_settings", AccountSettings.Type).
 			Unique(),
 		edge.To("posts", Post.Type),
 	}

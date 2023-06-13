@@ -18,7 +18,7 @@ import (
 type Comment struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"id,omitempty"`
+	ID string `json:"id,omitempty"`
 	// Content holds the value of the "Content" field.
 	Content string `json:"Content,omitempty"`
 	// CreatedAt holds the value of the "CreatedAt" field.
@@ -28,9 +28,9 @@ type Comment struct {
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CommentQuery when eager-loading is set.
 	Edges         CommentEdges `json:"edges"`
-	comment_post  *int
-	post_comments *int
-	user_comments *int
+	comment_post  *string
+	post_comments *string
+	user_comments *string
 	selectValues  sql.SelectValues
 }
 
@@ -76,18 +76,16 @@ func (*Comment) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case comment.FieldID:
-			values[i] = new(sql.NullInt64)
-		case comment.FieldContent:
+		case comment.FieldID, comment.FieldContent:
 			values[i] = new(sql.NullString)
 		case comment.FieldCreatedAt, comment.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		case comment.ForeignKeys[0]: // comment_post
-			values[i] = new(sql.NullInt64)
+			values[i] = new(sql.NullString)
 		case comment.ForeignKeys[1]: // post_comments
-			values[i] = new(sql.NullInt64)
+			values[i] = new(sql.NullString)
 		case comment.ForeignKeys[2]: // user_comments
-			values[i] = new(sql.NullInt64)
+			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -104,11 +102,11 @@ func (c *Comment) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case comment.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field id", values[i])
+			} else if value.Valid {
+				c.ID = value.String
 			}
-			c.ID = int(value.Int64)
 		case comment.FieldContent:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field Content", values[i])
@@ -128,25 +126,25 @@ func (c *Comment) assignValues(columns []string, values []any) error {
 				c.UpdatedAt = value.Time
 			}
 		case comment.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field comment_post", value)
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field comment_post", values[i])
 			} else if value.Valid {
-				c.comment_post = new(int)
-				*c.comment_post = int(value.Int64)
+				c.comment_post = new(string)
+				*c.comment_post = value.String
 			}
 		case comment.ForeignKeys[1]:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field post_comments", value)
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field post_comments", values[i])
 			} else if value.Valid {
-				c.post_comments = new(int)
-				*c.post_comments = int(value.Int64)
+				c.post_comments = new(string)
+				*c.post_comments = value.String
 			}
 		case comment.ForeignKeys[2]:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field user_comments", value)
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field user_comments", values[i])
 			} else if value.Valid {
-				c.user_comments = new(int)
-				*c.user_comments = int(value.Int64)
+				c.user_comments = new(string)
+				*c.user_comments = value.String
 			}
 		default:
 			c.selectValues.Set(columns[i], values[i])

@@ -17,7 +17,7 @@ import (
 type Media struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"id,omitempty"`
+	ID string `json:"id,omitempty"`
 	// URL holds the value of the "URL" field.
 	URL string `json:"URL,omitempty"`
 	// image, gif, or video
@@ -29,7 +29,7 @@ type Media struct {
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the MediaQuery when eager-loading is set.
 	Edges        MediaEdges `json:"edges"`
-	post_medias  *int
+	post_medias  *string
 	selectValues sql.SelectValues
 }
 
@@ -60,14 +60,12 @@ func (*Media) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case media.FieldID:
-			values[i] = new(sql.NullInt64)
-		case media.FieldURL, media.FieldMediaType:
+		case media.FieldID, media.FieldURL, media.FieldMediaType:
 			values[i] = new(sql.NullString)
 		case media.FieldCreatedAt, media.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		case media.ForeignKeys[0]: // post_medias
-			values[i] = new(sql.NullInt64)
+			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -84,11 +82,11 @@ func (m *Media) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case media.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field id", values[i])
+			} else if value.Valid {
+				m.ID = value.String
 			}
-			m.ID = int(value.Int64)
 		case media.FieldURL:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field URL", values[i])
@@ -114,11 +112,11 @@ func (m *Media) assignValues(columns []string, values []any) error {
 				m.UpdatedAt = value.Time
 			}
 		case media.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field post_medias", value)
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field post_medias", values[i])
 			} else if value.Valid {
-				m.post_medias = new(int)
-				*m.post_medias = int(value.Int64)
+				m.post_medias = new(string)
+				*m.post_medias = value.String
 			}
 		default:
 			m.selectValues.Set(columns[i], values[i])

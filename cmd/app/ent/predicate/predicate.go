@@ -6,14 +6,14 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// AccountSettings is the predicate function for accountsettings builders.
+type AccountSettings func(*sql.Selector)
+
 // Booking is the predicate function for booking builders.
 type Booking func(*sql.Selector)
 
 // Business is the predicate function for business builders.
 type Business func(*sql.Selector)
-
-// BusinessAccountSettings is the predicate function for businessaccountsettings builders.
-type BusinessAccountSettings func(*sql.Selector)
 
 // Chat is the predicate function for chat builders.
 type Chat func(*sql.Selector)

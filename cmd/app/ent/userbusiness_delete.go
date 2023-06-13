@@ -40,7 +40,7 @@ func (ubd *UserBusinessDelete) ExecX(ctx context.Context) int {
 }
 
 func (ubd *UserBusinessDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(userbusiness.Table, sqlgraph.NewFieldSpec(userbusiness.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewDeleteSpec(userbusiness.Table, sqlgraph.NewFieldSpec(userbusiness.FieldID, field.TypeString))
 	if ps := ubd.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

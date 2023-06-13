@@ -3,11 +3,15 @@
 package ent
 
 import (
+	"placio-app/ent/accountsettings"
+	"placio-app/ent/business"
 	"placio-app/ent/comment"
 	"placio-app/ent/like"
 	"placio-app/ent/media"
 	"placio-app/ent/post"
 	"placio-app/ent/schema"
+	"placio-app/ent/user"
+	"placio-app/ent/userbusiness"
 	"time"
 )
 
@@ -15,54 +19,94 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	accountsettingsFields := schema.AccountSettings{}.Fields()
+	_ = accountsettingsFields
+	// accountsettingsDescID is the schema descriptor for id field.
+	accountsettingsDescID := accountsettingsFields[0].Descriptor()
+	// accountsettings.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	accountsettings.IDValidator = accountsettingsDescID.Validators[0].(func(string) error)
+	businessFields := schema.Business{}.Fields()
+	_ = businessFields
+	// businessDescID is the schema descriptor for id field.
+	businessDescID := businessFields[0].Descriptor()
+	// business.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	business.IDValidator = businessDescID.Validators[0].(func(string) error)
 	commentFields := schema.Comment{}.Fields()
 	_ = commentFields
 	// commentDescContent is the schema descriptor for Content field.
-	commentDescContent := commentFields[0].Descriptor()
+	commentDescContent := commentFields[1].Descriptor()
 	// comment.ContentValidator is a validator for the "Content" field. It is called by the builders before save.
 	comment.ContentValidator = commentDescContent.Validators[0].(func(string) error)
 	// commentDescCreatedAt is the schema descriptor for CreatedAt field.
-	commentDescCreatedAt := commentFields[1].Descriptor()
+	commentDescCreatedAt := commentFields[2].Descriptor()
 	// comment.DefaultCreatedAt holds the default value on creation for the CreatedAt field.
 	comment.DefaultCreatedAt = commentDescCreatedAt.Default.(func() time.Time)
 	// commentDescUpdatedAt is the schema descriptor for UpdatedAt field.
-	commentDescUpdatedAt := commentFields[2].Descriptor()
+	commentDescUpdatedAt := commentFields[3].Descriptor()
 	// comment.UpdateDefaultUpdatedAt holds the default value on update for the UpdatedAt field.
 	comment.UpdateDefaultUpdatedAt = commentDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// commentDescID is the schema descriptor for id field.
+	commentDescID := commentFields[0].Descriptor()
+	// comment.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	comment.IDValidator = commentDescID.Validators[0].(func(string) error)
 	likeFields := schema.Like{}.Fields()
 	_ = likeFields
 	// likeDescCreatedAt is the schema descriptor for CreatedAt field.
-	likeDescCreatedAt := likeFields[0].Descriptor()
+	likeDescCreatedAt := likeFields[1].Descriptor()
 	// like.DefaultCreatedAt holds the default value on creation for the CreatedAt field.
 	like.DefaultCreatedAt = likeDescCreatedAt.Default.(func() time.Time)
 	// likeDescUpdatedAt is the schema descriptor for UpdatedAt field.
-	likeDescUpdatedAt := likeFields[1].Descriptor()
+	likeDescUpdatedAt := likeFields[2].Descriptor()
 	// like.UpdateDefaultUpdatedAt holds the default value on update for the UpdatedAt field.
 	like.UpdateDefaultUpdatedAt = likeDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// likeDescID is the schema descriptor for id field.
+	likeDescID := likeFields[0].Descriptor()
+	// like.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	like.IDValidator = likeDescID.Validators[0].(func(string) error)
 	mediaFields := schema.Media{}.Fields()
 	_ = mediaFields
 	// mediaDescCreatedAt is the schema descriptor for CreatedAt field.
-	mediaDescCreatedAt := mediaFields[2].Descriptor()
+	mediaDescCreatedAt := mediaFields[3].Descriptor()
 	// media.DefaultCreatedAt holds the default value on creation for the CreatedAt field.
 	media.DefaultCreatedAt = mediaDescCreatedAt.Default.(func() time.Time)
 	// mediaDescUpdatedAt is the schema descriptor for UpdatedAt field.
-	mediaDescUpdatedAt := mediaFields[3].Descriptor()
+	mediaDescUpdatedAt := mediaFields[4].Descriptor()
 	// media.DefaultUpdatedAt holds the default value on creation for the UpdatedAt field.
 	media.DefaultUpdatedAt = mediaDescUpdatedAt.Default.(func() time.Time)
 	// media.UpdateDefaultUpdatedAt holds the default value on update for the UpdatedAt field.
 	media.UpdateDefaultUpdatedAt = mediaDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// mediaDescID is the schema descriptor for id field.
+	mediaDescID := mediaFields[0].Descriptor()
+	// media.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	media.IDValidator = mediaDescID.Validators[0].(func(string) error)
 	postFields := schema.Post{}.Fields()
 	_ = postFields
 	// postDescContent is the schema descriptor for Content field.
-	postDescContent := postFields[0].Descriptor()
+	postDescContent := postFields[1].Descriptor()
 	// post.ContentValidator is a validator for the "Content" field. It is called by the builders before save.
 	post.ContentValidator = postDescContent.Validators[0].(func(string) error)
 	// postDescCreatedAt is the schema descriptor for CreatedAt field.
-	postDescCreatedAt := postFields[1].Descriptor()
+	postDescCreatedAt := postFields[2].Descriptor()
 	// post.DefaultCreatedAt holds the default value on creation for the CreatedAt field.
 	post.DefaultCreatedAt = postDescCreatedAt.Default.(func() time.Time)
 	// postDescUpdatedAt is the schema descriptor for UpdatedAt field.
-	postDescUpdatedAt := postFields[2].Descriptor()
+	postDescUpdatedAt := postFields[3].Descriptor()
 	// post.UpdateDefaultUpdatedAt holds the default value on update for the UpdatedAt field.
 	post.UpdateDefaultUpdatedAt = postDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// postDescID is the schema descriptor for id field.
+	postDescID := postFields[0].Descriptor()
+	// post.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	post.IDValidator = postDescID.Validators[0].(func(string) error)
+	userFields := schema.User{}.Fields()
+	_ = userFields
+	// userDescID is the schema descriptor for id field.
+	userDescID := userFields[0].Descriptor()
+	// user.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	user.IDValidator = userDescID.Validators[0].(func(string) error)
+	userbusinessFields := schema.UserBusiness{}.Fields()
+	_ = userbusinessFields
+	// userbusinessDescID is the schema descriptor for id field.
+	userbusinessDescID := userbusinessFields[0].Descriptor()
+	// userbusiness.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	userbusiness.IDValidator = userbusinessDescID.Validators[0].(func(string) error)
 }

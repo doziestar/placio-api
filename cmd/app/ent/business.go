@@ -4,8 +4,8 @@ package ent
 
 import (
 	"fmt"
+	"placio-app/ent/accountsettings"
 	"placio-app/ent/business"
-	"placio-app/ent/businessaccountsettings"
 	"strings"
 
 	"entgo.io/ent"
@@ -16,7 +16,7 @@ import (
 type Business struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"id,omitempty"`
+	ID string `json:"id,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -30,7 +30,7 @@ type BusinessEdges struct {
 	// UserBusinesses holds the value of the userBusinesses edge.
 	UserBusinesses []*UserBusiness `json:"userBusinesses,omitempty"`
 	// BusinessAccountSettings holds the value of the business_account_settings edge.
-	BusinessAccountSettings *BusinessAccountSettings `json:"business_account_settings,omitempty"`
+	BusinessAccountSettings *AccountSettings `json:"business_account_settings,omitempty"`
 	// Posts holds the value of the posts edge.
 	Posts []*Post `json:"posts,omitempty"`
 	// loadedTypes holds the information for reporting if a
@@ -49,11 +49,11 @@ func (e BusinessEdges) UserBusinessesOrErr() ([]*UserBusiness, error) {
 
 // BusinessAccountSettingsOrErr returns the BusinessAccountSettings value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e BusinessEdges) BusinessAccountSettingsOrErr() (*BusinessAccountSettings, error) {
+func (e BusinessEdges) BusinessAccountSettingsOrErr() (*AccountSettings, error) {
 	if e.loadedTypes[1] {
 		if e.BusinessAccountSettings == nil {
 			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: businessaccountsettings.Label}
+			return nil, &NotFoundError{label: accountsettings.Label}
 		}
 		return e.BusinessAccountSettings, nil
 	}
@@ -74,9 +74,7 @@ func (*Business) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case business.FieldID:
-			values[i] = new(sql.NullInt64)
-		case business.FieldName:
+		case business.FieldID, business.FieldName:
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -94,11 +92,11 @@ func (b *Business) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case business.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field id", values[i])
+			} else if value.Valid {
+				b.ID = value.String
 			}
-			b.ID = int(value.Int64)
 		case business.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
@@ -124,7 +122,7 @@ func (b *Business) QueryUserBusinesses() *UserBusinessQuery {
 }
 
 // QueryBusinessAccountSettings queries the "business_account_settings" edge of the Business entity.
-func (b *Business) QueryBusinessAccountSettings() *BusinessAccountSettingsQuery {
+func (b *Business) QueryBusinessAccountSettings() *AccountSettingsQuery {
 	return NewBusinessClient(b.config).QueryBusinessAccountSettings(b)
 }
 

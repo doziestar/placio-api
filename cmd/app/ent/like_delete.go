@@ -40,7 +40,7 @@ func (ld *LikeDelete) ExecX(ctx context.Context) int {
 }
 
 func (ld *LikeDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(like.Table, sqlgraph.NewFieldSpec(like.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewDeleteSpec(like.Table, sqlgraph.NewFieldSpec(like.FieldID, field.TypeString))
 	if ps := ld.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

@@ -203,8 +203,8 @@ func (pq *PostQuery) FirstX(ctx context.Context) *Post {
 
 // FirstID returns the first Post ID from the query.
 // Returns a *NotFoundError when no Post ID was found.
-func (pq *PostQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (pq *PostQuery) FirstID(ctx context.Context) (id string, err error) {
+	var ids []string
 	if ids, err = pq.Limit(1).IDs(setContextOp(ctx, pq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -216,7 +216,7 @@ func (pq *PostQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (pq *PostQuery) FirstIDX(ctx context.Context) int {
+func (pq *PostQuery) FirstIDX(ctx context.Context) string {
 	id, err := pq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -254,8 +254,8 @@ func (pq *PostQuery) OnlyX(ctx context.Context) *Post {
 // OnlyID is like Only, but returns the only Post ID in the query.
 // Returns a *NotSingularError when more than one Post ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (pq *PostQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (pq *PostQuery) OnlyID(ctx context.Context) (id string, err error) {
+	var ids []string
 	if ids, err = pq.Limit(2).IDs(setContextOp(ctx, pq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -271,7 +271,7 @@ func (pq *PostQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (pq *PostQuery) OnlyIDX(ctx context.Context) int {
+func (pq *PostQuery) OnlyIDX(ctx context.Context) string {
 	id, err := pq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -299,7 +299,7 @@ func (pq *PostQuery) AllX(ctx context.Context) []*Post {
 }
 
 // IDs executes the query and returns a list of Post IDs.
-func (pq *PostQuery) IDs(ctx context.Context) (ids []int, err error) {
+func (pq *PostQuery) IDs(ctx context.Context) (ids []string, err error) {
 	if pq.ctx.Unique == nil && pq.path != nil {
 		pq.Unique(true)
 	}
@@ -311,7 +311,7 @@ func (pq *PostQuery) IDs(ctx context.Context) (ids []int, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (pq *PostQuery) IDsX(ctx context.Context) []int {
+func (pq *PostQuery) IDsX(ctx context.Context) []string {
 	ids, err := pq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -585,8 +585,8 @@ func (pq *PostQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Post, e
 }
 
 func (pq *PostQuery) loadUser(ctx context.Context, query *UserQuery, nodes []*Post, init func(*Post), assign func(*Post, *User)) error {
-	ids := make([]int, 0, len(nodes))
-	nodeids := make(map[int][]*Post)
+	ids := make([]string, 0, len(nodes))
+	nodeids := make(map[string][]*Post)
 	for i := range nodes {
 		if nodes[i].user_posts == nil {
 			continue
@@ -617,8 +617,8 @@ func (pq *PostQuery) loadUser(ctx context.Context, query *UserQuery, nodes []*Po
 	return nil
 }
 func (pq *PostQuery) loadBusinessAccount(ctx context.Context, query *BusinessQuery, nodes []*Post, init func(*Post), assign func(*Post, *Business)) error {
-	ids := make([]int, 0, len(nodes))
-	nodeids := make(map[int][]*Post)
+	ids := make([]string, 0, len(nodes))
+	nodeids := make(map[string][]*Post)
 	for i := range nodes {
 		if nodes[i].business_posts == nil {
 			continue
@@ -650,7 +650,7 @@ func (pq *PostQuery) loadBusinessAccount(ctx context.Context, query *BusinessQue
 }
 func (pq *PostQuery) loadMedias(ctx context.Context, query *MediaQuery, nodes []*Post, init func(*Post), assign func(*Post, *Media)) error {
 	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[int]*Post)
+	nodeids := make(map[string]*Post)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
@@ -681,7 +681,7 @@ func (pq *PostQuery) loadMedias(ctx context.Context, query *MediaQuery, nodes []
 }
 func (pq *PostQuery) loadComments(ctx context.Context, query *CommentQuery, nodes []*Post, init func(*Post), assign func(*Post, *Comment)) error {
 	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[int]*Post)
+	nodeids := make(map[string]*Post)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
@@ -712,7 +712,7 @@ func (pq *PostQuery) loadComments(ctx context.Context, query *CommentQuery, node
 }
 func (pq *PostQuery) loadLikes(ctx context.Context, query *LikeQuery, nodes []*Post, init func(*Post), assign func(*Post, *Like)) error {
 	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[int]*Post)
+	nodeids := make(map[string]*Post)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
@@ -752,7 +752,7 @@ func (pq *PostQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (pq *PostQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(post.Table, post.Columns, sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewQuerySpec(post.Table, post.Columns, sqlgraph.NewFieldSpec(post.FieldID, field.TypeString))
 	_spec.From = pq.sql
 	if unique := pq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

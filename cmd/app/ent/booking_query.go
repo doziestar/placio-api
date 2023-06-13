@@ -81,8 +81,8 @@ func (bq *BookingQuery) FirstX(ctx context.Context) *Booking {
 
 // FirstID returns the first Booking ID from the query.
 // Returns a *NotFoundError when no Booking ID was found.
-func (bq *BookingQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (bq *BookingQuery) FirstID(ctx context.Context) (id string, err error) {
+	var ids []string
 	if ids, err = bq.Limit(1).IDs(setContextOp(ctx, bq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -94,7 +94,7 @@ func (bq *BookingQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (bq *BookingQuery) FirstIDX(ctx context.Context) int {
+func (bq *BookingQuery) FirstIDX(ctx context.Context) string {
 	id, err := bq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -132,8 +132,8 @@ func (bq *BookingQuery) OnlyX(ctx context.Context) *Booking {
 // OnlyID is like Only, but returns the only Booking ID in the query.
 // Returns a *NotSingularError when more than one Booking ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (bq *BookingQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (bq *BookingQuery) OnlyID(ctx context.Context) (id string, err error) {
+	var ids []string
 	if ids, err = bq.Limit(2).IDs(setContextOp(ctx, bq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -149,7 +149,7 @@ func (bq *BookingQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (bq *BookingQuery) OnlyIDX(ctx context.Context) int {
+func (bq *BookingQuery) OnlyIDX(ctx context.Context) string {
 	id, err := bq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -177,7 +177,7 @@ func (bq *BookingQuery) AllX(ctx context.Context) []*Booking {
 }
 
 // IDs executes the query and returns a list of Booking IDs.
-func (bq *BookingQuery) IDs(ctx context.Context) (ids []int, err error) {
+func (bq *BookingQuery) IDs(ctx context.Context) (ids []string, err error) {
 	if bq.ctx.Unique == nil && bq.path != nil {
 		bq.Unique(true)
 	}
@@ -189,7 +189,7 @@ func (bq *BookingQuery) IDs(ctx context.Context) (ids []int, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (bq *BookingQuery) IDsX(ctx context.Context) []int {
+func (bq *BookingQuery) IDsX(ctx context.Context) []string {
 	ids, err := bq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -342,7 +342,7 @@ func (bq *BookingQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (bq *BookingQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(booking.Table, booking.Columns, sqlgraph.NewFieldSpec(booking.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewQuerySpec(booking.Table, booking.Columns, sqlgraph.NewFieldSpec(booking.FieldID, field.TypeString))
 	_spec.From = bq.sql
 	if unique := bq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

@@ -10,48 +10,58 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id int) predicate.Business {
+func ID(id string) predicate.Business {
 	return predicate.Business(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id int) predicate.Business {
+func IDEQ(id string) predicate.Business {
 	return predicate.Business(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id int) predicate.Business {
+func IDNEQ(id string) predicate.Business {
 	return predicate.Business(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...int) predicate.Business {
+func IDIn(ids ...string) predicate.Business {
 	return predicate.Business(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...int) predicate.Business {
+func IDNotIn(ids ...string) predicate.Business {
 	return predicate.Business(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id int) predicate.Business {
+func IDGT(id string) predicate.Business {
 	return predicate.Business(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id int) predicate.Business {
+func IDGTE(id string) predicate.Business {
 	return predicate.Business(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id int) predicate.Business {
+func IDLT(id string) predicate.Business {
 	return predicate.Business(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id int) predicate.Business {
+func IDLTE(id string) predicate.Business {
 	return predicate.Business(sql.FieldLTE(FieldID, id))
+}
+
+// IDEqualFold applies the EqualFold predicate on the ID field.
+func IDEqualFold(id string) predicate.Business {
+	return predicate.Business(sql.FieldEqualFold(FieldID, id))
+}
+
+// IDContainsFold applies the ContainsFold predicate on the ID field.
+func IDContainsFold(id string) predicate.Business {
+	return predicate.Business(sql.FieldContainsFold(FieldID, id))
 }
 
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
@@ -159,7 +169,7 @@ func HasBusinessAccountSettings() predicate.Business {
 }
 
 // HasBusinessAccountSettingsWith applies the HasEdge predicate on the "business_account_settings" edge with a given conditions (other predicates).
-func HasBusinessAccountSettingsWith(preds ...predicate.BusinessAccountSettings) predicate.Business {
+func HasBusinessAccountSettingsWith(preds ...predicate.AccountSettings) predicate.Business {
 	return predicate.Business(func(s *sql.Selector) {
 		step := newBusinessAccountSettingsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {

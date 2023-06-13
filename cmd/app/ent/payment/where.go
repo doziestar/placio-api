@@ -9,48 +9,58 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id int) predicate.Payment {
+func ID(id string) predicate.Payment {
 	return predicate.Payment(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id int) predicate.Payment {
+func IDEQ(id string) predicate.Payment {
 	return predicate.Payment(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id int) predicate.Payment {
+func IDNEQ(id string) predicate.Payment {
 	return predicate.Payment(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...int) predicate.Payment {
+func IDIn(ids ...string) predicate.Payment {
 	return predicate.Payment(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...int) predicate.Payment {
+func IDNotIn(ids ...string) predicate.Payment {
 	return predicate.Payment(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id int) predicate.Payment {
+func IDGT(id string) predicate.Payment {
 	return predicate.Payment(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id int) predicate.Payment {
+func IDGTE(id string) predicate.Payment {
 	return predicate.Payment(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id int) predicate.Payment {
+func IDLT(id string) predicate.Payment {
 	return predicate.Payment(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id int) predicate.Payment {
+func IDLTE(id string) predicate.Payment {
 	return predicate.Payment(sql.FieldLTE(FieldID, id))
+}
+
+// IDEqualFold applies the EqualFold predicate on the ID field.
+func IDEqualFold(id string) predicate.Payment {
+	return predicate.Payment(sql.FieldEqualFold(FieldID, id))
+}
+
+// IDContainsFold applies the ContainsFold predicate on the ID field.
+func IDContainsFold(id string) predicate.Payment {
+	return predicate.Payment(sql.FieldContainsFold(FieldID, id))
 }
 
 // And groups predicates with the AND operator between them.

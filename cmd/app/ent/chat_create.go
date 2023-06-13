@@ -66,8 +66,13 @@ func (cc *ChatCreate) sqlSave(ctx context.Context) (*Chat, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(string); ok {
+			_node.ID = id
+		} else {
+			return nil, fmt.Errorf("unexpected Chat.ID type: %T", _spec.ID.Value)
+		}
+	}
 	cc.mutation.id = &_node.ID
 	cc.mutation.done = true
 	return _node, nil
@@ -76,7 +81,7 @@ func (cc *ChatCreate) sqlSave(ctx context.Context) (*Chat, error) {
 func (cc *ChatCreate) createSpec() (*Chat, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Chat{config: cc.config}
-		_spec = sqlgraph.NewCreateSpec(chat.Table, sqlgraph.NewFieldSpec(chat.FieldID, field.TypeInt))
+		_spec = sqlgraph.NewCreateSpec(chat.Table, sqlgraph.NewFieldSpec(chat.FieldID, field.TypeString))
 	)
 	return _node, _spec
 }
@@ -121,10 +126,6 @@ func (ccb *ChatCreateBulk) Save(ctx context.Context) ([]*Chat, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				mutation.done = true
 				return nodes[i], nil
 			})

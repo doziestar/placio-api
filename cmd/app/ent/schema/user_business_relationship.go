@@ -14,6 +14,10 @@ type UserBusiness struct {
 // Fields of the UserBusiness.
 func (UserBusiness) Fields() []ent.Field {
 	return []ent.Field{
+		field.String("id").
+			MaxLen(36).
+			Unique().
+			Immutable(),
 		field.String("role"),
 	}
 }

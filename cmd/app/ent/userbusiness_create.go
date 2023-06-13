@@ -27,14 +27,20 @@ func (ubc *UserBusinessCreate) SetRole(s string) *UserBusinessCreate {
 	return ubc
 }
 
+// SetID sets the "id" field.
+func (ubc *UserBusinessCreate) SetID(s string) *UserBusinessCreate {
+	ubc.mutation.SetID(s)
+	return ubc
+}
+
 // SetUserID sets the "user" edge to the User entity by ID.
-func (ubc *UserBusinessCreate) SetUserID(id int) *UserBusinessCreate {
+func (ubc *UserBusinessCreate) SetUserID(id string) *UserBusinessCreate {
 	ubc.mutation.SetUserID(id)
 	return ubc
 }
 
 // SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
-func (ubc *UserBusinessCreate) SetNillableUserID(id *int) *UserBusinessCreate {
+func (ubc *UserBusinessCreate) SetNillableUserID(id *string) *UserBusinessCreate {
 	if id != nil {
 		ubc = ubc.SetUserID(*id)
 	}
@@ -47,13 +53,13 @@ func (ubc *UserBusinessCreate) SetUser(u *User) *UserBusinessCreate {
 }
 
 // SetBusinessID sets the "business" edge to the Business entity by ID.
-func (ubc *UserBusinessCreate) SetBusinessID(id int) *UserBusinessCreate {
+func (ubc *UserBusinessCreate) SetBusinessID(id string) *UserBusinessCreate {
 	ubc.mutation.SetBusinessID(id)
 	return ubc
 }
 
 // SetNillableBusinessID sets the "business" edge to the Business entity by ID if the given value is not nil.
-func (ubc *UserBusinessCreate) SetNillableBusinessID(id *int) *UserBusinessCreate {
+func (ubc *UserBusinessCreate) SetNillableBusinessID(id *string) *UserBusinessCreate {
 	if id != nil {
 		ubc = ubc.SetBusinessID(*id)
 	}
@@ -102,6 +108,11 @@ func (ubc *UserBusinessCreate) check() error {
 	if _, ok := ubc.mutation.Role(); !ok {
 		return &ValidationError{Name: "role", err: errors.New(`ent: missing required field "UserBusiness.role"`)}
 	}
+	if v, ok := ubc.mutation.ID(); ok {
+		if err := userbusiness.IDValidator(v); err != nil {
+			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "UserBusiness.id": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -116,8 +127,13 @@ func (ubc *UserBusinessCreate) sqlSave(ctx context.Context) (*UserBusiness, erro
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(string); ok {
+			_node.ID = id
+		} else {
+			return nil, fmt.Errorf("unexpected UserBusiness.ID type: %T", _spec.ID.Value)
+		}
+	}
 	ubc.mutation.id = &_node.ID
 	ubc.mutation.done = true
 	return _node, nil
@@ -126,8 +142,12 @@ func (ubc *UserBusinessCreate) sqlSave(ctx context.Context) (*UserBusiness, erro
 func (ubc *UserBusinessCreate) createSpec() (*UserBusiness, *sqlgraph.CreateSpec) {
 	var (
 		_node = &UserBusiness{config: ubc.config}
-		_spec = sqlgraph.NewCreateSpec(userbusiness.Table, sqlgraph.NewFieldSpec(userbusiness.FieldID, field.TypeInt))
+		_spec = sqlgraph.NewCreateSpec(userbusiness.Table, sqlgraph.NewFieldSpec(userbusiness.FieldID, field.TypeString))
 	)
+	if id, ok := ubc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
 	if value, ok := ubc.mutation.Role(); ok {
 		_spec.SetField(userbusiness.FieldRole, field.TypeString, value)
 		_node.Role = value
@@ -140,7 +160,7 @@ func (ubc *UserBusinessCreate) createSpec() (*UserBusiness, *sqlgraph.CreateSpec
 			Columns: []string{userbusiness.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -157,7 +177,7 @@ func (ubc *UserBusinessCreate) createSpec() (*UserBusiness, *sqlgraph.CreateSpec
 			Columns: []string{userbusiness.BusinessColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(business.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(business.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -209,10 +229,6 @@ func (ubcb *UserBusinessCreateBulk) Save(ctx context.Context) ([]*UserBusiness, 
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				mutation.done = true
 				return nodes[i], nil
 			})

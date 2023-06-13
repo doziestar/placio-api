@@ -61,14 +61,20 @@ func (mc *MediaCreate) SetNillableUpdatedAt(t *time.Time) *MediaCreate {
 	return mc
 }
 
+// SetID sets the "id" field.
+func (mc *MediaCreate) SetID(s string) *MediaCreate {
+	mc.mutation.SetID(s)
+	return mc
+}
+
 // SetPostID sets the "post" edge to the Post entity by ID.
-func (mc *MediaCreate) SetPostID(id int) *MediaCreate {
+func (mc *MediaCreate) SetPostID(id string) *MediaCreate {
 	mc.mutation.SetPostID(id)
 	return mc
 }
 
 // SetNillablePostID sets the "post" edge to the Post entity by ID if the given value is not nil.
-func (mc *MediaCreate) SetNillablePostID(id *int) *MediaCreate {
+func (mc *MediaCreate) SetNillablePostID(id *string) *MediaCreate {
 	if id != nil {
 		mc = mc.SetPostID(*id)
 	}
@@ -139,6 +145,11 @@ func (mc *MediaCreate) check() error {
 	if _, ok := mc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "UpdatedAt", err: errors.New(`ent: missing required field "Media.UpdatedAt"`)}
 	}
+	if v, ok := mc.mutation.ID(); ok {
+		if err := media.IDValidator(v); err != nil {
+			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "Media.id": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -153,8 +164,13 @@ func (mc *MediaCreate) sqlSave(ctx context.Context) (*Media, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(string); ok {
+			_node.ID = id
+		} else {
+			return nil, fmt.Errorf("unexpected Media.ID type: %T", _spec.ID.Value)
+		}
+	}
 	mc.mutation.id = &_node.ID
 	mc.mutation.done = true
 	return _node, nil
@@ -163,8 +179,12 @@ func (mc *MediaCreate) sqlSave(ctx context.Context) (*Media, error) {
 func (mc *MediaCreate) createSpec() (*Media, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Media{config: mc.config}
-		_spec = sqlgraph.NewCreateSpec(media.Table, sqlgraph.NewFieldSpec(media.FieldID, field.TypeInt))
+		_spec = sqlgraph.NewCreateSpec(media.Table, sqlgraph.NewFieldSpec(media.FieldID, field.TypeString))
 	)
+	if id, ok := mc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
 	if value, ok := mc.mutation.URL(); ok {
 		_spec.SetField(media.FieldURL, field.TypeString, value)
 		_node.URL = value
@@ -189,7 +209,7 @@ func (mc *MediaCreate) createSpec() (*Media, *sqlgraph.CreateSpec) {
 			Columns: []string{media.PostColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -242,10 +262,6 @@ func (mcb *MediaCreateBulk) Save(ctx context.Context) ([]*Media, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				mutation.done = true
 				return nodes[i], nil
 			})

@@ -14,6 +14,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auth0/go-auth0/management"
 )
 
 // UserCreate is the builder for creating a User entity.
@@ -29,15 +30,27 @@ func (uc *UserCreate) SetAuth0ID(s string) *UserCreate {
 	return uc
 }
 
+// SetAuth0Data sets the "auth0_data" field.
+func (uc *UserCreate) SetAuth0Data(m *management.User) *UserCreate {
+	uc.mutation.SetAuth0Data(m)
+	return uc
+}
+
+// SetID sets the "id" field.
+func (uc *UserCreate) SetID(s string) *UserCreate {
+	uc.mutation.SetID(s)
+	return uc
+}
+
 // AddUserBusinessIDs adds the "userBusinesses" edge to the UserBusiness entity by IDs.
-func (uc *UserCreate) AddUserBusinessIDs(ids ...int) *UserCreate {
+func (uc *UserCreate) AddUserBusinessIDs(ids ...string) *UserCreate {
 	uc.mutation.AddUserBusinessIDs(ids...)
 	return uc
 }
 
 // AddUserBusinesses adds the "userBusinesses" edges to the UserBusiness entity.
 func (uc *UserCreate) AddUserBusinesses(u ...*UserBusiness) *UserCreate {
-	ids := make([]int, len(u))
+	ids := make([]string, len(u))
 	for i := range u {
 		ids[i] = u[i].ID
 	}
@@ -45,14 +58,14 @@ func (uc *UserCreate) AddUserBusinesses(u ...*UserBusiness) *UserCreate {
 }
 
 // AddCommentIDs adds the "comments" edge to the Comment entity by IDs.
-func (uc *UserCreate) AddCommentIDs(ids ...int) *UserCreate {
+func (uc *UserCreate) AddCommentIDs(ids ...string) *UserCreate {
 	uc.mutation.AddCommentIDs(ids...)
 	return uc
 }
 
 // AddComments adds the "comments" edges to the Comment entity.
 func (uc *UserCreate) AddComments(c ...*Comment) *UserCreate {
-	ids := make([]int, len(c))
+	ids := make([]string, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -60,14 +73,14 @@ func (uc *UserCreate) AddComments(c ...*Comment) *UserCreate {
 }
 
 // AddLikeIDs adds the "likes" edge to the Like entity by IDs.
-func (uc *UserCreate) AddLikeIDs(ids ...int) *UserCreate {
+func (uc *UserCreate) AddLikeIDs(ids ...string) *UserCreate {
 	uc.mutation.AddLikeIDs(ids...)
 	return uc
 }
 
 // AddLikes adds the "likes" edges to the Like entity.
 func (uc *UserCreate) AddLikes(l ...*Like) *UserCreate {
-	ids := make([]int, len(l))
+	ids := make([]string, len(l))
 	for i := range l {
 		ids[i] = l[i].ID
 	}
@@ -75,14 +88,14 @@ func (uc *UserCreate) AddLikes(l ...*Like) *UserCreate {
 }
 
 // AddPostIDs adds the "posts" edge to the Post entity by IDs.
-func (uc *UserCreate) AddPostIDs(ids ...int) *UserCreate {
+func (uc *UserCreate) AddPostIDs(ids ...string) *UserCreate {
 	uc.mutation.AddPostIDs(ids...)
 	return uc
 }
 
 // AddPosts adds the "posts" edges to the Post entity.
 func (uc *UserCreate) AddPosts(p ...*Post) *UserCreate {
-	ids := make([]int, len(p))
+	ids := make([]string, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -126,6 +139,11 @@ func (uc *UserCreate) check() error {
 	if _, ok := uc.mutation.Auth0ID(); !ok {
 		return &ValidationError{Name: "auth0_id", err: errors.New(`ent: missing required field "User.auth0_id"`)}
 	}
+	if v, ok := uc.mutation.ID(); ok {
+		if err := user.IDValidator(v); err != nil {
+			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "User.id": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -140,8 +158,13 @@ func (uc *UserCreate) sqlSave(ctx context.Context) (*User, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(string); ok {
+			_node.ID = id
+		} else {
+			return nil, fmt.Errorf("unexpected User.ID type: %T", _spec.ID.Value)
+		}
+	}
 	uc.mutation.id = &_node.ID
 	uc.mutation.done = true
 	return _node, nil
@@ -150,11 +173,19 @@ func (uc *UserCreate) sqlSave(ctx context.Context) (*User, error) {
 func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	var (
 		_node = &User{config: uc.config}
-		_spec = sqlgraph.NewCreateSpec(user.Table, sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt))
+		_spec = sqlgraph.NewCreateSpec(user.Table, sqlgraph.NewFieldSpec(user.FieldID, field.TypeString))
 	)
+	if id, ok := uc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
 	if value, ok := uc.mutation.Auth0ID(); ok {
 		_spec.SetField(user.FieldAuth0ID, field.TypeString, value)
 		_node.Auth0ID = value
+	}
+	if value, ok := uc.mutation.Auth0Data(); ok {
+		_spec.SetField(user.FieldAuth0Data, field.TypeJSON, value)
+		_node.Auth0Data = value
 	}
 	if nodes := uc.mutation.UserBusinessesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -164,7 +195,7 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Columns: []string{user.UserBusinessesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(userbusiness.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(userbusiness.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -180,7 +211,7 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Columns: []string{user.CommentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(comment.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(comment.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -196,7 +227,7 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Columns: []string{user.LikesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(like.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(like.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -212,7 +243,7 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Columns: []string{user.PostsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -263,10 +294,6 @@ func (ucb *UserCreateBulk) Save(ctx context.Context) ([]*User, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				mutation.done = true
 				return nodes[i], nil
 			})

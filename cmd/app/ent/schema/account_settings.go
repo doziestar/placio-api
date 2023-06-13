@@ -7,15 +7,17 @@ import (
 )
 
 // BusinessAccountSettings holds the schema definition for the BusinessAccountSettings entity.
-type BusinessAccountSettings struct {
+type AccountSettings struct {
 	ent.Schema
 }
 
 // Fields of the BusinessAccountSettings.
-func (BusinessAccountSettings) Fields() []ent.Field {
+func (AccountSettings) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("BusinessAccountSettingsID").Unique(),
-		field.String("BusinessAccountID").Unique(),
+		field.String("id").
+			MaxLen(36).
+			Unique().
+			Immutable(),
 		field.Bool("TwoFactorAuthentication"),
 		field.JSON("BlockedUsers", []string{}),
 		field.JSON("MutedUsers", []string{}),
@@ -23,7 +25,7 @@ func (BusinessAccountSettings) Fields() []ent.Field {
 }
 
 // Edges of the BusinessAccountSettings.
-func (BusinessAccountSettings) Edges() []ent.Edge {
+func (AccountSettings) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("business_account", Business.Type).
 			Ref("business_account_settings").

@@ -66,8 +66,13 @@ func (rc *RatingCreate) sqlSave(ctx context.Context) (*Rating, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(string); ok {
+			_node.ID = id
+		} else {
+			return nil, fmt.Errorf("unexpected Rating.ID type: %T", _spec.ID.Value)
+		}
+	}
 	rc.mutation.id = &_node.ID
 	rc.mutation.done = true
 	return _node, nil
@@ -76,7 +81,7 @@ func (rc *RatingCreate) sqlSave(ctx context.Context) (*Rating, error) {
 func (rc *RatingCreate) createSpec() (*Rating, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Rating{config: rc.config}
-		_spec = sqlgraph.NewCreateSpec(rating.Table, sqlgraph.NewFieldSpec(rating.FieldID, field.TypeInt))
+		_spec = sqlgraph.NewCreateSpec(rating.Table, sqlgraph.NewFieldSpec(rating.FieldID, field.TypeString))
 	)
 	return _node, _spec
 }
@@ -121,10 +126,6 @@ func (rcb *RatingCreateBulk) Save(ctx context.Context) ([]*Rating, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				mutation.done = true
 				return nodes[i], nil
 			})

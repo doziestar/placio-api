@@ -38,12 +38,16 @@ services:
 
   placio-db:
     image: postgres:14
+    container_name: postgres-db
     volumes:
       - db_data:/var/lib/postgresql/pg-data/pgdata
     env_file:
       - ./.envs/.stag
     networks:
       - default
+#    restart: always
+    ports:
+      - "5432:5432"
 
   placio-backend:
     ports:

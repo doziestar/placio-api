@@ -10,6 +10,7 @@ import (
 	"net/http"
 	_ "placio-api/docs/app"
 	"placio-app/controller"
+	"placio-app/ent"
 	"placio-app/middleware"
 	"placio-app/service"
 	"placio-app/utility"
@@ -37,7 +38,7 @@ func JWTMiddleware(db *gorm.DB) gin.HandlerFunc {
 	}
 }
 
-func InitializeRoutes(app *gin.Engine, db *gorm.DB) {
+func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 	//fmt.Println("Initializing routes...")
 	app.GET("/docs/*files", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
@@ -65,51 +66,51 @@ func InitializeRoutes(app *gin.Engine, db *gorm.DB) {
 	//newUtils := utility.NewUtility()
 
 	// user
-	userService := service.NewUserService(db, redisClient)
+	userService := service.NewUserService(client, redisClient)
 	userController := controller.NewUserController(userService)
 	userController.RegisterRoutes(routerGroupV1)
 
 	// business
-	businessService := service.NewBusinessAccountService(db)
+	businessService := service.NewBusinessAccountService(client)
 
 	// media
-	mediaService := service.NewMediaService(db)
-	mediaController := controller.NewMediaController(mediaService)
-	mediaController.RegisterRoutes(routerGroupV1)
+	mediaService := service.NewMediaService(client)
+	//mediaController := controller.NewMediaController(mediaService)
+	//mediaController.RegisterRoutes(routerGroupV1)
 
 	// posts
-	postService := service.NewPostService(db)
+	postService := service.NewPostService(client, redisClient)
 	postController := controller.NewPostController(postService, userService, businessService, mediaService)
 	postController.RegisterRoutes(routerGroupV1)
 
 	// comments
-	commentService := service.NewCommentService(db)
-	commentController := controller.NewCommentController(commentService)
-	commentController.RegisterRoutes(routerGroupV1)
-
-	// likes
-	likeService := service.NewLikeService(db)
-	likeController := controller.NewLikeController(likeService)
-	likeController.RegisterRoutes(routerGroupV1)
-
-	// ratings
-	ratingService := service.NewRatingService(db)
-	ratingController := controller.NewRatingController(ratingService)
-	ratingController.RegisterRoutes(routerGroupV1)
-
-	// tickets
-	ticketService := service.NewTicketService(db)
-	ticketController := controller.NewTicketController(ticketService)
-	ticketController.RegisterRoutes(routerGroupV1)
-
-	// attendee
-	attendeeService := service.NewAttendeeService(db)
-	attendeeController := controller.NewAttendeeController(attendeeService)
-	attendeeController.RegisterRoutes(routerGroupV1)
-
-	// ticketOption
-	ticketOptionService := service.NewTicketOptionService(db)
-	ticketOptionController := controller.NewTicketOptionController(ticketOptionService)
-	ticketOptionController.RegisterRoutes(routerGroupV1)
+	//commentService := service.NewCommentService(db)
+	//commentController := controller.NewCommentController(commentService)
+	//commentController.RegisterRoutes(routerGroupV1)
+	//
+	//// likes
+	//likeService := service.NewLikeService(db)
+	//likeController := controller.NewLikeController(likeService)
+	//likeController.RegisterRoutes(routerGroupV1)
+	//
+	//// ratings
+	//ratingService := service.NewRatingService(db)
+	//ratingController := controller.NewRatingController(ratingService)
+	//ratingController.RegisterRoutes(routerGroupV1)
+	//
+	//// tickets
+	//ticketService := service.NewTicketService(db)
+	//ticketController := controller.NewTicketController(ticketService)
+	//ticketController.RegisterRoutes(routerGroupV1)
+	//
+	//// attendee
+	//attendeeService := service.NewAttendeeService(db)
+	//attendeeController := controller.NewAttendeeController(attendeeService)
+	//attendeeController.RegisterRoutes(routerGroupV1)
+	//
+	//// ticketOption
+	//ticketOptionService := service.NewTicketOptionService(db)
+	//ticketOptionController := controller.NewTicketOptionController(ticketOptionService)
+	//ticketOptionController.RegisterRoutes(routerGroupV1)
 
 }

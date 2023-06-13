@@ -51,13 +51,13 @@ func (lu *LikeUpdate) SetUpdatedAt(t time.Time) *LikeUpdate {
 }
 
 // SetUserID sets the "user" edge to the User entity by ID.
-func (lu *LikeUpdate) SetUserID(id int) *LikeUpdate {
+func (lu *LikeUpdate) SetUserID(id string) *LikeUpdate {
 	lu.mutation.SetUserID(id)
 	return lu
 }
 
 // SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
-func (lu *LikeUpdate) SetNillableUserID(id *int) *LikeUpdate {
+func (lu *LikeUpdate) SetNillableUserID(id *string) *LikeUpdate {
 	if id != nil {
 		lu = lu.SetUserID(*id)
 	}
@@ -70,13 +70,13 @@ func (lu *LikeUpdate) SetUser(u *User) *LikeUpdate {
 }
 
 // SetPostID sets the "post" edge to the Post entity by ID.
-func (lu *LikeUpdate) SetPostID(id int) *LikeUpdate {
+func (lu *LikeUpdate) SetPostID(id string) *LikeUpdate {
 	lu.mutation.SetPostID(id)
 	return lu
 }
 
 // SetNillablePostID sets the "post" edge to the Post entity by ID if the given value is not nil.
-func (lu *LikeUpdate) SetNillablePostID(id *int) *LikeUpdate {
+func (lu *LikeUpdate) SetNillablePostID(id *string) *LikeUpdate {
 	if id != nil {
 		lu = lu.SetPostID(*id)
 	}
@@ -142,7 +142,7 @@ func (lu *LikeUpdate) defaults() {
 }
 
 func (lu *LikeUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	_spec := sqlgraph.NewUpdateSpec(like.Table, like.Columns, sqlgraph.NewFieldSpec(like.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(like.Table, like.Columns, sqlgraph.NewFieldSpec(like.FieldID, field.TypeString))
 	if ps := lu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -164,7 +164,7 @@ func (lu *LikeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{like.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -177,7 +177,7 @@ func (lu *LikeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{like.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -193,7 +193,7 @@ func (lu *LikeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{like.PostColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -206,7 +206,7 @@ func (lu *LikeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{like.PostColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -255,13 +255,13 @@ func (luo *LikeUpdateOne) SetUpdatedAt(t time.Time) *LikeUpdateOne {
 }
 
 // SetUserID sets the "user" edge to the User entity by ID.
-func (luo *LikeUpdateOne) SetUserID(id int) *LikeUpdateOne {
+func (luo *LikeUpdateOne) SetUserID(id string) *LikeUpdateOne {
 	luo.mutation.SetUserID(id)
 	return luo
 }
 
 // SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
-func (luo *LikeUpdateOne) SetNillableUserID(id *int) *LikeUpdateOne {
+func (luo *LikeUpdateOne) SetNillableUserID(id *string) *LikeUpdateOne {
 	if id != nil {
 		luo = luo.SetUserID(*id)
 	}
@@ -274,13 +274,13 @@ func (luo *LikeUpdateOne) SetUser(u *User) *LikeUpdateOne {
 }
 
 // SetPostID sets the "post" edge to the Post entity by ID.
-func (luo *LikeUpdateOne) SetPostID(id int) *LikeUpdateOne {
+func (luo *LikeUpdateOne) SetPostID(id string) *LikeUpdateOne {
 	luo.mutation.SetPostID(id)
 	return luo
 }
 
 // SetNillablePostID sets the "post" edge to the Post entity by ID if the given value is not nil.
-func (luo *LikeUpdateOne) SetNillablePostID(id *int) *LikeUpdateOne {
+func (luo *LikeUpdateOne) SetNillablePostID(id *string) *LikeUpdateOne {
 	if id != nil {
 		luo = luo.SetPostID(*id)
 	}
@@ -359,7 +359,7 @@ func (luo *LikeUpdateOne) defaults() {
 }
 
 func (luo *LikeUpdateOne) sqlSave(ctx context.Context) (_node *Like, err error) {
-	_spec := sqlgraph.NewUpdateSpec(like.Table, like.Columns, sqlgraph.NewFieldSpec(like.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(like.Table, like.Columns, sqlgraph.NewFieldSpec(like.FieldID, field.TypeString))
 	id, ok := luo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Like.id" for update`)}
@@ -398,7 +398,7 @@ func (luo *LikeUpdateOne) sqlSave(ctx context.Context) (_node *Like, err error) 
 			Columns: []string{like.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -411,7 +411,7 @@ func (luo *LikeUpdateOne) sqlSave(ctx context.Context) (_node *Like, err error) 
 			Columns: []string{like.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -427,7 +427,7 @@ func (luo *LikeUpdateOne) sqlSave(ctx context.Context) (_node *Like, err error) 
 			Columns: []string{like.PostColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -440,7 +440,7 @@ func (luo *LikeUpdateOne) sqlSave(ctx context.Context) (_node *Like, err error) 
 			Columns: []string{like.PostColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
