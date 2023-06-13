@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	_ "placio-app/Dto"
+	"placio-app/ent"
 	"placio-app/models"
 	"placio-app/service"
 	"placio-app/utility"
@@ -191,7 +192,7 @@ func (uc *UserController) GetUser(ctx *gin.Context) error {
 		return nil
 	}
 
-	user, err := uc.userService.GetUser(auth0ID)
+	user, err := uc.userService.GetUser(ctx, auth0ID)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			ctx.JSON(http.StatusNotFound, gin.H{
@@ -234,19 +235,28 @@ func (uc *UserController) createBusinessAccount(ctx *gin.Context) error {
 	}
 
 	role := "admin" // Define role or get it from somewhere
-	user, err := uc.userService.GetUser(auth0ID)
-
-	log.Println("CreateBusinessAccount", ctx.Request.URL.Path, ctx.Request.Method, auth0ID, user.UserID, businessAccount.Name, role)
-
-	newBusinessAccount, err := uc.userService.CreateBusinessAccount(user.UserID, businessAccount.Name, role)
+	user, err := uc.userService.GetUser(ctx, auth0ID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Could not create business account",
-		})
+		if ent.IsNotFound(err) {
+			ctx.JSON(http.StatusNotFound, gin.H{
+				"error": "User not found",
+			})
+			return nil
+		}
 		return err
 	}
 
-	ctx.JSON(http.StatusCreated, newBusinessAccount)
+	log.Println("CreateBusinessAccount", ctx.Request.URL.Path, ctx.Request.Method, auth0ID, user.ID, businessAccount.Name, role)
+
+	//newBusinessAccount, err := uc.userService.CreateBusinessAccount(user.UserID, businessAccount.Name, role)
+	//if err != nil {
+	//	ctx.JSON(http.StatusInternalServerError, gin.H{
+	//		"error": "Could not create business account",
+	//	})
+	//	return err
+	//}
+	//
+	//ctx.JSON(http.StatusCreated, newBusinessAccount)
 	return nil
 }
 
@@ -272,15 +282,15 @@ func (uc *UserController) getUserBusinessAccounts(ctx *gin.Context) error {
 		return nil
 	}
 
-	businessAccounts, err := uc.userService.GetUserBusinessAccounts(userID)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Could not retrieve business accounts",
-		})
-		return err
-	}
-
-	ctx.JSON(http.StatusOK, businessAccounts)
+	//businessAccounts, err := uc.userService.GetUserBusinessAccounts(userID)
+	//if err != nil {
+	//	ctx.JSON(http.StatusInternalServerError, gin.H{
+	//		"error": "Could not retrieve business accounts",
+	//	})
+	//	return err
+	//}
+	//
+	//ctx.JSON(http.StatusOK, businessAccounts)
 	return nil
 }
 

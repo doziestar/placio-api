@@ -6,9 +6,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"placio-app/ent/accountsettings"
 	"placio-app/ent/booking"
 	"placio-app/ent/business"
-	"placio-app/ent/businessaccountsettings"
 	"placio-app/ent/chat"
 	"placio-app/ent/comment"
 	"placio-app/ent/like"
@@ -85,19 +85,19 @@ var (
 func checkColumn(table, column string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			booking.Table:                 booking.ValidColumn,
-			business.Table:                business.ValidColumn,
-			businessaccountsettings.Table: businessaccountsettings.ValidColumn,
-			chat.Table:                    chat.ValidColumn,
-			comment.Table:                 comment.ValidColumn,
-			like.Table:                    like.ValidColumn,
-			media.Table:                   media.ValidColumn,
-			order.Table:                   order.ValidColumn,
-			payment.Table:                 payment.ValidColumn,
-			post.Table:                    post.ValidColumn,
-			rating.Table:                  rating.ValidColumn,
-			user.Table:                    user.ValidColumn,
-			userbusiness.Table:            userbusiness.ValidColumn,
+			accountsettings.Table: accountsettings.ValidColumn,
+			booking.Table:         booking.ValidColumn,
+			business.Table:        business.ValidColumn,
+			chat.Table:            chat.ValidColumn,
+			comment.Table:         comment.ValidColumn,
+			like.Table:            like.ValidColumn,
+			media.Table:           media.ValidColumn,
+			order.Table:           order.ValidColumn,
+			payment.Table:         payment.ValidColumn,
+			post.Table:            post.ValidColumn,
+			rating.Table:          rating.ValidColumn,
+			user.Table:            user.ValidColumn,
+			userbusiness.Table:    userbusiness.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)

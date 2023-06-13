@@ -48,13 +48,13 @@ func (mu *MediaUpdate) SetUpdatedAt(t time.Time) *MediaUpdate {
 }
 
 // SetPostID sets the "post" edge to the Post entity by ID.
-func (mu *MediaUpdate) SetPostID(id int) *MediaUpdate {
+func (mu *MediaUpdate) SetPostID(id string) *MediaUpdate {
 	mu.mutation.SetPostID(id)
 	return mu
 }
 
 // SetNillablePostID sets the "post" edge to the Post entity by ID if the given value is not nil.
-func (mu *MediaUpdate) SetNillablePostID(id *int) *MediaUpdate {
+func (mu *MediaUpdate) SetNillablePostID(id *string) *MediaUpdate {
 	if id != nil {
 		mu = mu.SetPostID(*id)
 	}
@@ -114,7 +114,7 @@ func (mu *MediaUpdate) defaults() {
 }
 
 func (mu *MediaUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	_spec := sqlgraph.NewUpdateSpec(media.Table, media.Columns, sqlgraph.NewFieldSpec(media.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(media.Table, media.Columns, sqlgraph.NewFieldSpec(media.FieldID, field.TypeString))
 	if ps := mu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -139,7 +139,7 @@ func (mu *MediaUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{media.PostColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -152,7 +152,7 @@ func (mu *MediaUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{media.PostColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -199,13 +199,13 @@ func (muo *MediaUpdateOne) SetUpdatedAt(t time.Time) *MediaUpdateOne {
 }
 
 // SetPostID sets the "post" edge to the Post entity by ID.
-func (muo *MediaUpdateOne) SetPostID(id int) *MediaUpdateOne {
+func (muo *MediaUpdateOne) SetPostID(id string) *MediaUpdateOne {
 	muo.mutation.SetPostID(id)
 	return muo
 }
 
 // SetNillablePostID sets the "post" edge to the Post entity by ID if the given value is not nil.
-func (muo *MediaUpdateOne) SetNillablePostID(id *int) *MediaUpdateOne {
+func (muo *MediaUpdateOne) SetNillablePostID(id *string) *MediaUpdateOne {
 	if id != nil {
 		muo = muo.SetPostID(*id)
 	}
@@ -278,7 +278,7 @@ func (muo *MediaUpdateOne) defaults() {
 }
 
 func (muo *MediaUpdateOne) sqlSave(ctx context.Context) (_node *Media, err error) {
-	_spec := sqlgraph.NewUpdateSpec(media.Table, media.Columns, sqlgraph.NewFieldSpec(media.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(media.Table, media.Columns, sqlgraph.NewFieldSpec(media.FieldID, field.TypeString))
 	id, ok := muo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Media.id" for update`)}
@@ -320,7 +320,7 @@ func (muo *MediaUpdateOne) sqlSave(ctx context.Context) (_node *Media, err error
 			Columns: []string{media.PostColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -333,7 +333,7 @@ func (muo *MediaUpdateOne) sqlSave(ctx context.Context) (_node *Media, err error
 			Columns: []string{media.PostColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

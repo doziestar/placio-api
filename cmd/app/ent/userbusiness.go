@@ -17,14 +17,14 @@ import (
 type UserBusiness struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"id,omitempty"`
+	ID string `json:"id,omitempty"`
 	// Role holds the value of the "role" field.
 	Role string `json:"role,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserBusinessQuery when eager-loading is set.
 	Edges                    UserBusinessEdges `json:"edges"`
-	business_user_businesses *int
-	user_user_businesses     *int
+	business_user_businesses *string
+	user_user_businesses     *string
 	selectValues             sql.SelectValues
 }
 
@@ -70,9 +70,7 @@ func (*UserBusiness) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case userbusiness.FieldID:
-			values[i] = new(sql.NullInt64)
-		case userbusiness.FieldRole:
+		case userbusiness.FieldID, userbusiness.FieldRole:
 			values[i] = new(sql.NullString)
 		case userbusiness.ForeignKeys[0]: // business_user_businesses
 			values[i] = new(sql.NullInt64)
@@ -94,11 +92,11 @@ func (ub *UserBusiness) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case userbusiness.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field id", values[i])
+			} else if value.Valid {
+				ub.ID = value.String
 			}
-			ub.ID = int(value.Int64)
 		case userbusiness.FieldRole:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field role", values[i])
@@ -109,15 +107,15 @@ func (ub *UserBusiness) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for edge-field business_user_businesses", value)
 			} else if value.Valid {
-				ub.business_user_businesses = new(int)
-				*ub.business_user_businesses = int(value.Int64)
+				ub.business_user_businesses = new(string)
+				*ub.business_user_businesses = string(value.Int64)
 			}
 		case userbusiness.ForeignKeys[1]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for edge-field user_user_businesses", value)
 			} else if value.Valid {
-				ub.user_user_businesses = new(int)
-				*ub.user_user_businesses = int(value.Int64)
+				ub.user_user_businesses = new(string)
+				*ub.user_user_businesses = string(value.Int64)
 			}
 		default:
 			ub.selectValues.Set(columns[i], values[i])

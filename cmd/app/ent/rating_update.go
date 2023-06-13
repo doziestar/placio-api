@@ -60,7 +60,7 @@ func (ru *RatingUpdate) ExecX(ctx context.Context) {
 }
 
 func (ru *RatingUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	_spec := sqlgraph.NewUpdateSpec(rating.Table, rating.Columns, sqlgraph.NewFieldSpec(rating.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(rating.Table, rating.Columns, sqlgraph.NewFieldSpec(rating.FieldID, field.TypeString))
 	if ps := ru.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -134,7 +134,7 @@ func (ruo *RatingUpdateOne) ExecX(ctx context.Context) {
 }
 
 func (ruo *RatingUpdateOne) sqlSave(ctx context.Context) (_node *Rating, err error) {
-	_spec := sqlgraph.NewUpdateSpec(rating.Table, rating.Columns, sqlgraph.NewFieldSpec(rating.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(rating.Table, rating.Columns, sqlgraph.NewFieldSpec(rating.FieldID, field.TypeString))
 	id, ok := ruo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Rating.id" for update`)}

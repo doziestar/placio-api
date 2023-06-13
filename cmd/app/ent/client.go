@@ -10,9 +10,9 @@ import (
 
 	"placio-app/ent/migrate"
 
+	"placio-app/ent/accountsettings"
 	"placio-app/ent/booking"
 	"placio-app/ent/business"
-	"placio-app/ent/businessaccountsettings"
 	"placio-app/ent/chat"
 	"placio-app/ent/comment"
 	"placio-app/ent/like"
@@ -35,12 +35,12 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// AccountSettings is the client for interacting with the AccountSettings builders.
+	AccountSettings *AccountSettingsClient
 	// Booking is the client for interacting with the Booking builders.
 	Booking *BookingClient
 	// Business is the client for interacting with the Business builders.
 	Business *BusinessClient
-	// BusinessAccountSettings is the client for interacting with the BusinessAccountSettings builders.
-	BusinessAccountSettings *BusinessAccountSettingsClient
 	// Chat is the client for interacting with the Chat builders.
 	Chat *ChatClient
 	// Comment is the client for interacting with the Comment builders.
@@ -74,9 +74,9 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.AccountSettings = NewAccountSettingsClient(c.config)
 	c.Booking = NewBookingClient(c.config)
 	c.Business = NewBusinessClient(c.config)
-	c.BusinessAccountSettings = NewBusinessAccountSettingsClient(c.config)
 	c.Chat = NewChatClient(c.config)
 	c.Comment = NewCommentClient(c.config)
 	c.Like = NewLikeClient(c.config)
@@ -167,21 +167,21 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:                     ctx,
-		config:                  cfg,
-		Booking:                 NewBookingClient(cfg),
-		Business:                NewBusinessClient(cfg),
-		BusinessAccountSettings: NewBusinessAccountSettingsClient(cfg),
-		Chat:                    NewChatClient(cfg),
-		Comment:                 NewCommentClient(cfg),
-		Like:                    NewLikeClient(cfg),
-		Media:                   NewMediaClient(cfg),
-		Order:                   NewOrderClient(cfg),
-		Payment:                 NewPaymentClient(cfg),
-		Post:                    NewPostClient(cfg),
-		Rating:                  NewRatingClient(cfg),
-		User:                    NewUserClient(cfg),
-		UserBusiness:            NewUserBusinessClient(cfg),
+		ctx:             ctx,
+		config:          cfg,
+		AccountSettings: NewAccountSettingsClient(cfg),
+		Booking:         NewBookingClient(cfg),
+		Business:        NewBusinessClient(cfg),
+		Chat:            NewChatClient(cfg),
+		Comment:         NewCommentClient(cfg),
+		Like:            NewLikeClient(cfg),
+		Media:           NewMediaClient(cfg),
+		Order:           NewOrderClient(cfg),
+		Payment:         NewPaymentClient(cfg),
+		Post:            NewPostClient(cfg),
+		Rating:          NewRatingClient(cfg),
+		User:            NewUserClient(cfg),
+		UserBusiness:    NewUserBusinessClient(cfg),
 	}, nil
 }
 
@@ -199,28 +199,28 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:                     ctx,
-		config:                  cfg,
-		Booking:                 NewBookingClient(cfg),
-		Business:                NewBusinessClient(cfg),
-		BusinessAccountSettings: NewBusinessAccountSettingsClient(cfg),
-		Chat:                    NewChatClient(cfg),
-		Comment:                 NewCommentClient(cfg),
-		Like:                    NewLikeClient(cfg),
-		Media:                   NewMediaClient(cfg),
-		Order:                   NewOrderClient(cfg),
-		Payment:                 NewPaymentClient(cfg),
-		Post:                    NewPostClient(cfg),
-		Rating:                  NewRatingClient(cfg),
-		User:                    NewUserClient(cfg),
-		UserBusiness:            NewUserBusinessClient(cfg),
+		ctx:             ctx,
+		config:          cfg,
+		AccountSettings: NewAccountSettingsClient(cfg),
+		Booking:         NewBookingClient(cfg),
+		Business:        NewBusinessClient(cfg),
+		Chat:            NewChatClient(cfg),
+		Comment:         NewCommentClient(cfg),
+		Like:            NewLikeClient(cfg),
+		Media:           NewMediaClient(cfg),
+		Order:           NewOrderClient(cfg),
+		Payment:         NewPaymentClient(cfg),
+		Post:            NewPostClient(cfg),
+		Rating:          NewRatingClient(cfg),
+		User:            NewUserClient(cfg),
+		UserBusiness:    NewUserBusinessClient(cfg),
 	}, nil
 }
 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Booking.
+//		AccountSettings.
 //		Query().
 //		Count(ctx)
 func (c *Client) Debug() *Client {
@@ -243,8 +243,8 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
-		c.Booking, c.Business, c.BusinessAccountSettings, c.Chat, c.Comment, c.Like,
-		c.Media, c.Order, c.Payment, c.Post, c.Rating, c.User, c.UserBusiness,
+		c.AccountSettings, c.Booking, c.Business, c.Chat, c.Comment, c.Like, c.Media,
+		c.Order, c.Payment, c.Post, c.Rating, c.User, c.UserBusiness,
 	} {
 		n.Use(hooks...)
 	}
@@ -254,8 +254,8 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
-		c.Booking, c.Business, c.BusinessAccountSettings, c.Chat, c.Comment, c.Like,
-		c.Media, c.Order, c.Payment, c.Post, c.Rating, c.User, c.UserBusiness,
+		c.AccountSettings, c.Booking, c.Business, c.Chat, c.Comment, c.Like, c.Media,
+		c.Order, c.Payment, c.Post, c.Rating, c.User, c.UserBusiness,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -264,12 +264,12 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 // Mutate implements the ent.Mutator interface.
 func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
+	case *AccountSettingsMutation:
+		return c.AccountSettings.mutate(ctx, m)
 	case *BookingMutation:
 		return c.Booking.mutate(ctx, m)
 	case *BusinessMutation:
 		return c.Business.mutate(ctx, m)
-	case *BusinessAccountSettingsMutation:
-		return c.BusinessAccountSettings.mutate(ctx, m)
 	case *ChatMutation:
 		return c.Chat.mutate(ctx, m)
 	case *CommentMutation:
@@ -292,6 +292,140 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.UserBusiness.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
+	}
+}
+
+// AccountSettingsClient is a client for the AccountSettings schema.
+type AccountSettingsClient struct {
+	config
+}
+
+// NewAccountSettingsClient returns a client for the AccountSettings from the given config.
+func NewAccountSettingsClient(c config) *AccountSettingsClient {
+	return &AccountSettingsClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `accountsettings.Hooks(f(g(h())))`.
+func (c *AccountSettingsClient) Use(hooks ...Hook) {
+	c.hooks.AccountSettings = append(c.hooks.AccountSettings, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `accountsettings.Intercept(f(g(h())))`.
+func (c *AccountSettingsClient) Intercept(interceptors ...Interceptor) {
+	c.inters.AccountSettings = append(c.inters.AccountSettings, interceptors...)
+}
+
+// Create returns a builder for creating a AccountSettings entity.
+func (c *AccountSettingsClient) Create() *AccountSettingsCreate {
+	mutation := newAccountSettingsMutation(c.config, OpCreate)
+	return &AccountSettingsCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of AccountSettings entities.
+func (c *AccountSettingsClient) CreateBulk(builders ...*AccountSettingsCreate) *AccountSettingsCreateBulk {
+	return &AccountSettingsCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for AccountSettings.
+func (c *AccountSettingsClient) Update() *AccountSettingsUpdate {
+	mutation := newAccountSettingsMutation(c.config, OpUpdate)
+	return &AccountSettingsUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AccountSettingsClient) UpdateOne(as *AccountSettings) *AccountSettingsUpdateOne {
+	mutation := newAccountSettingsMutation(c.config, OpUpdateOne, withAccountSettings(as))
+	return &AccountSettingsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AccountSettingsClient) UpdateOneID(id string) *AccountSettingsUpdateOne {
+	mutation := newAccountSettingsMutation(c.config, OpUpdateOne, withAccountSettingsID(id))
+	return &AccountSettingsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for AccountSettings.
+func (c *AccountSettingsClient) Delete() *AccountSettingsDelete {
+	mutation := newAccountSettingsMutation(c.config, OpDelete)
+	return &AccountSettingsDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *AccountSettingsClient) DeleteOne(as *AccountSettings) *AccountSettingsDeleteOne {
+	return c.DeleteOneID(as.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *AccountSettingsClient) DeleteOneID(id string) *AccountSettingsDeleteOne {
+	builder := c.Delete().Where(accountsettings.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AccountSettingsDeleteOne{builder}
+}
+
+// Query returns a query builder for AccountSettings.
+func (c *AccountSettingsClient) Query() *AccountSettingsQuery {
+	return &AccountSettingsQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeAccountSettings},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a AccountSettings entity by its id.
+func (c *AccountSettingsClient) Get(ctx context.Context, id string) (*AccountSettings, error) {
+	return c.Query().Where(accountsettings.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AccountSettingsClient) GetX(ctx context.Context, id string) *AccountSettings {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryBusinessAccount queries the business_account edge of a AccountSettings.
+func (c *AccountSettingsClient) QueryBusinessAccount(as *AccountSettings) *BusinessQuery {
+	query := (&BusinessClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := as.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(accountsettings.Table, accountsettings.FieldID, id),
+			sqlgraph.To(business.Table, business.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, accountsettings.BusinessAccountTable, accountsettings.BusinessAccountColumn),
+		)
+		fromV = sqlgraph.Neighbors(as.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *AccountSettingsClient) Hooks() []Hook {
+	return c.hooks.AccountSettings
+}
+
+// Interceptors returns the client interceptors.
+func (c *AccountSettingsClient) Interceptors() []Interceptor {
+	return c.inters.AccountSettings
+}
+
+func (c *AccountSettingsClient) mutate(ctx context.Context, m *AccountSettingsMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&AccountSettingsCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&AccountSettingsUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&AccountSettingsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&AccountSettingsDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown AccountSettings mutation op: %q", m.Op())
 	}
 }
 
@@ -341,7 +475,7 @@ func (c *BookingClient) UpdateOne(b *Booking) *BookingUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *BookingClient) UpdateOneID(id int) *BookingUpdateOne {
+func (c *BookingClient) UpdateOneID(id string) *BookingUpdateOne {
 	mutation := newBookingMutation(c.config, OpUpdateOne, withBookingID(id))
 	return &BookingUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -358,7 +492,7 @@ func (c *BookingClient) DeleteOne(b *Booking) *BookingDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *BookingClient) DeleteOneID(id int) *BookingDeleteOne {
+func (c *BookingClient) DeleteOneID(id string) *BookingDeleteOne {
 	builder := c.Delete().Where(booking.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -375,12 +509,12 @@ func (c *BookingClient) Query() *BookingQuery {
 }
 
 // Get returns a Booking entity by its id.
-func (c *BookingClient) Get(ctx context.Context, id int) (*Booking, error) {
+func (c *BookingClient) Get(ctx context.Context, id string) (*Booking, error) {
 	return c.Query().Where(booking.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *BookingClient) GetX(ctx context.Context, id int) *Booking {
+func (c *BookingClient) GetX(ctx context.Context, id string) *Booking {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -459,7 +593,7 @@ func (c *BusinessClient) UpdateOne(b *Business) *BusinessUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *BusinessClient) UpdateOneID(id int) *BusinessUpdateOne {
+func (c *BusinessClient) UpdateOneID(id string) *BusinessUpdateOne {
 	mutation := newBusinessMutation(c.config, OpUpdateOne, withBusinessID(id))
 	return &BusinessUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -476,7 +610,7 @@ func (c *BusinessClient) DeleteOne(b *Business) *BusinessDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *BusinessClient) DeleteOneID(id int) *BusinessDeleteOne {
+func (c *BusinessClient) DeleteOneID(id string) *BusinessDeleteOne {
 	builder := c.Delete().Where(business.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -493,12 +627,12 @@ func (c *BusinessClient) Query() *BusinessQuery {
 }
 
 // Get returns a Business entity by its id.
-func (c *BusinessClient) Get(ctx context.Context, id int) (*Business, error) {
+func (c *BusinessClient) Get(ctx context.Context, id string) (*Business, error) {
 	return c.Query().Where(business.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *BusinessClient) GetX(ctx context.Context, id int) *Business {
+func (c *BusinessClient) GetX(ctx context.Context, id string) *Business {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -523,13 +657,13 @@ func (c *BusinessClient) QueryUserBusinesses(b *Business) *UserBusinessQuery {
 }
 
 // QueryBusinessAccountSettings queries the business_account_settings edge of a Business.
-func (c *BusinessClient) QueryBusinessAccountSettings(b *Business) *BusinessAccountSettingsQuery {
-	query := (&BusinessAccountSettingsClient{config: c.config}).Query()
+func (c *BusinessClient) QueryBusinessAccountSettings(b *Business) *AccountSettingsQuery {
+	query := (&AccountSettingsClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := b.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(business.Table, business.FieldID, id),
-			sqlgraph.To(businessaccountsettings.Table, businessaccountsettings.FieldID),
+			sqlgraph.To(accountsettings.Table, accountsettings.FieldID),
 			sqlgraph.Edge(sqlgraph.O2O, false, business.BusinessAccountSettingsTable, business.BusinessAccountSettingsColumn),
 		)
 		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
@@ -579,140 +713,6 @@ func (c *BusinessClient) mutate(ctx context.Context, m *BusinessMutation) (Value
 	}
 }
 
-// BusinessAccountSettingsClient is a client for the BusinessAccountSettings schema.
-type BusinessAccountSettingsClient struct {
-	config
-}
-
-// NewBusinessAccountSettingsClient returns a client for the BusinessAccountSettings from the given config.
-func NewBusinessAccountSettingsClient(c config) *BusinessAccountSettingsClient {
-	return &BusinessAccountSettingsClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `businessaccountsettings.Hooks(f(g(h())))`.
-func (c *BusinessAccountSettingsClient) Use(hooks ...Hook) {
-	c.hooks.BusinessAccountSettings = append(c.hooks.BusinessAccountSettings, hooks...)
-}
-
-// Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `businessaccountsettings.Intercept(f(g(h())))`.
-func (c *BusinessAccountSettingsClient) Intercept(interceptors ...Interceptor) {
-	c.inters.BusinessAccountSettings = append(c.inters.BusinessAccountSettings, interceptors...)
-}
-
-// Create returns a builder for creating a BusinessAccountSettings entity.
-func (c *BusinessAccountSettingsClient) Create() *BusinessAccountSettingsCreate {
-	mutation := newBusinessAccountSettingsMutation(c.config, OpCreate)
-	return &BusinessAccountSettingsCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of BusinessAccountSettings entities.
-func (c *BusinessAccountSettingsClient) CreateBulk(builders ...*BusinessAccountSettingsCreate) *BusinessAccountSettingsCreateBulk {
-	return &BusinessAccountSettingsCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for BusinessAccountSettings.
-func (c *BusinessAccountSettingsClient) Update() *BusinessAccountSettingsUpdate {
-	mutation := newBusinessAccountSettingsMutation(c.config, OpUpdate)
-	return &BusinessAccountSettingsUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *BusinessAccountSettingsClient) UpdateOne(bas *BusinessAccountSettings) *BusinessAccountSettingsUpdateOne {
-	mutation := newBusinessAccountSettingsMutation(c.config, OpUpdateOne, withBusinessAccountSettings(bas))
-	return &BusinessAccountSettingsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *BusinessAccountSettingsClient) UpdateOneID(id int) *BusinessAccountSettingsUpdateOne {
-	mutation := newBusinessAccountSettingsMutation(c.config, OpUpdateOne, withBusinessAccountSettingsID(id))
-	return &BusinessAccountSettingsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for BusinessAccountSettings.
-func (c *BusinessAccountSettingsClient) Delete() *BusinessAccountSettingsDelete {
-	mutation := newBusinessAccountSettingsMutation(c.config, OpDelete)
-	return &BusinessAccountSettingsDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *BusinessAccountSettingsClient) DeleteOne(bas *BusinessAccountSettings) *BusinessAccountSettingsDeleteOne {
-	return c.DeleteOneID(bas.ID)
-}
-
-// DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *BusinessAccountSettingsClient) DeleteOneID(id int) *BusinessAccountSettingsDeleteOne {
-	builder := c.Delete().Where(businessaccountsettings.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &BusinessAccountSettingsDeleteOne{builder}
-}
-
-// Query returns a query builder for BusinessAccountSettings.
-func (c *BusinessAccountSettingsClient) Query() *BusinessAccountSettingsQuery {
-	return &BusinessAccountSettingsQuery{
-		config: c.config,
-		ctx:    &QueryContext{Type: TypeBusinessAccountSettings},
-		inters: c.Interceptors(),
-	}
-}
-
-// Get returns a BusinessAccountSettings entity by its id.
-func (c *BusinessAccountSettingsClient) Get(ctx context.Context, id int) (*BusinessAccountSettings, error) {
-	return c.Query().Where(businessaccountsettings.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *BusinessAccountSettingsClient) GetX(ctx context.Context, id int) *BusinessAccountSettings {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// QueryBusinessAccount queries the business_account edge of a BusinessAccountSettings.
-func (c *BusinessAccountSettingsClient) QueryBusinessAccount(bas *BusinessAccountSettings) *BusinessQuery {
-	query := (&BusinessClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := bas.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(businessaccountsettings.Table, businessaccountsettings.FieldID, id),
-			sqlgraph.To(business.Table, business.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, businessaccountsettings.BusinessAccountTable, businessaccountsettings.BusinessAccountColumn),
-		)
-		fromV = sqlgraph.Neighbors(bas.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// Hooks returns the client hooks.
-func (c *BusinessAccountSettingsClient) Hooks() []Hook {
-	return c.hooks.BusinessAccountSettings
-}
-
-// Interceptors returns the client interceptors.
-func (c *BusinessAccountSettingsClient) Interceptors() []Interceptor {
-	return c.inters.BusinessAccountSettings
-}
-
-func (c *BusinessAccountSettingsClient) mutate(ctx context.Context, m *BusinessAccountSettingsMutation) (Value, error) {
-	switch m.Op() {
-	case OpCreate:
-		return (&BusinessAccountSettingsCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdate:
-		return (&BusinessAccountSettingsUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdateOne:
-		return (&BusinessAccountSettingsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpDelete, OpDeleteOne:
-		return (&BusinessAccountSettingsDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
-	default:
-		return nil, fmt.Errorf("ent: unknown BusinessAccountSettings mutation op: %q", m.Op())
-	}
-}
-
 // ChatClient is a client for the Chat schema.
 type ChatClient struct {
 	config
@@ -759,7 +759,7 @@ func (c *ChatClient) UpdateOne(ch *Chat) *ChatUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *ChatClient) UpdateOneID(id int) *ChatUpdateOne {
+func (c *ChatClient) UpdateOneID(id string) *ChatUpdateOne {
 	mutation := newChatMutation(c.config, OpUpdateOne, withChatID(id))
 	return &ChatUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -776,7 +776,7 @@ func (c *ChatClient) DeleteOne(ch *Chat) *ChatDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *ChatClient) DeleteOneID(id int) *ChatDeleteOne {
+func (c *ChatClient) DeleteOneID(id string) *ChatDeleteOne {
 	builder := c.Delete().Where(chat.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -793,12 +793,12 @@ func (c *ChatClient) Query() *ChatQuery {
 }
 
 // Get returns a Chat entity by its id.
-func (c *ChatClient) Get(ctx context.Context, id int) (*Chat, error) {
+func (c *ChatClient) Get(ctx context.Context, id string) (*Chat, error) {
 	return c.Query().Where(chat.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *ChatClient) GetX(ctx context.Context, id int) *Chat {
+func (c *ChatClient) GetX(ctx context.Context, id string) *Chat {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -877,7 +877,7 @@ func (c *CommentClient) UpdateOne(co *Comment) *CommentUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *CommentClient) UpdateOneID(id int) *CommentUpdateOne {
+func (c *CommentClient) UpdateOneID(id string) *CommentUpdateOne {
 	mutation := newCommentMutation(c.config, OpUpdateOne, withCommentID(id))
 	return &CommentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -894,7 +894,7 @@ func (c *CommentClient) DeleteOne(co *Comment) *CommentDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *CommentClient) DeleteOneID(id int) *CommentDeleteOne {
+func (c *CommentClient) DeleteOneID(id string) *CommentDeleteOne {
 	builder := c.Delete().Where(comment.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -911,12 +911,12 @@ func (c *CommentClient) Query() *CommentQuery {
 }
 
 // Get returns a Comment entity by its id.
-func (c *CommentClient) Get(ctx context.Context, id int) (*Comment, error) {
+func (c *CommentClient) Get(ctx context.Context, id string) (*Comment, error) {
 	return c.Query().Where(comment.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *CommentClient) GetX(ctx context.Context, id int) *Comment {
+func (c *CommentClient) GetX(ctx context.Context, id string) *Comment {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -1027,7 +1027,7 @@ func (c *LikeClient) UpdateOne(l *Like) *LikeUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *LikeClient) UpdateOneID(id int) *LikeUpdateOne {
+func (c *LikeClient) UpdateOneID(id string) *LikeUpdateOne {
 	mutation := newLikeMutation(c.config, OpUpdateOne, withLikeID(id))
 	return &LikeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -1044,7 +1044,7 @@ func (c *LikeClient) DeleteOne(l *Like) *LikeDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *LikeClient) DeleteOneID(id int) *LikeDeleteOne {
+func (c *LikeClient) DeleteOneID(id string) *LikeDeleteOne {
 	builder := c.Delete().Where(like.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -1061,12 +1061,12 @@ func (c *LikeClient) Query() *LikeQuery {
 }
 
 // Get returns a Like entity by its id.
-func (c *LikeClient) Get(ctx context.Context, id int) (*Like, error) {
+func (c *LikeClient) Get(ctx context.Context, id string) (*Like, error) {
 	return c.Query().Where(like.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *LikeClient) GetX(ctx context.Context, id int) *Like {
+func (c *LikeClient) GetX(ctx context.Context, id string) *Like {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -1177,7 +1177,7 @@ func (c *MediaClient) UpdateOne(m *Media) *MediaUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *MediaClient) UpdateOneID(id int) *MediaUpdateOne {
+func (c *MediaClient) UpdateOneID(id string) *MediaUpdateOne {
 	mutation := newMediaMutation(c.config, OpUpdateOne, withMediaID(id))
 	return &MediaUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -1194,7 +1194,7 @@ func (c *MediaClient) DeleteOne(m *Media) *MediaDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *MediaClient) DeleteOneID(id int) *MediaDeleteOne {
+func (c *MediaClient) DeleteOneID(id string) *MediaDeleteOne {
 	builder := c.Delete().Where(media.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -1211,12 +1211,12 @@ func (c *MediaClient) Query() *MediaQuery {
 }
 
 // Get returns a Media entity by its id.
-func (c *MediaClient) Get(ctx context.Context, id int) (*Media, error) {
+func (c *MediaClient) Get(ctx context.Context, id string) (*Media, error) {
 	return c.Query().Where(media.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *MediaClient) GetX(ctx context.Context, id int) *Media {
+func (c *MediaClient) GetX(ctx context.Context, id string) *Media {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -1311,7 +1311,7 @@ func (c *OrderClient) UpdateOne(o *Order) *OrderUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *OrderClient) UpdateOneID(id int) *OrderUpdateOne {
+func (c *OrderClient) UpdateOneID(id string) *OrderUpdateOne {
 	mutation := newOrderMutation(c.config, OpUpdateOne, withOrderID(id))
 	return &OrderUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -1328,7 +1328,7 @@ func (c *OrderClient) DeleteOne(o *Order) *OrderDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *OrderClient) DeleteOneID(id int) *OrderDeleteOne {
+func (c *OrderClient) DeleteOneID(id string) *OrderDeleteOne {
 	builder := c.Delete().Where(order.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -1345,12 +1345,12 @@ func (c *OrderClient) Query() *OrderQuery {
 }
 
 // Get returns a Order entity by its id.
-func (c *OrderClient) Get(ctx context.Context, id int) (*Order, error) {
+func (c *OrderClient) Get(ctx context.Context, id string) (*Order, error) {
 	return c.Query().Where(order.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *OrderClient) GetX(ctx context.Context, id int) *Order {
+func (c *OrderClient) GetX(ctx context.Context, id string) *Order {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -1429,7 +1429,7 @@ func (c *PaymentClient) UpdateOne(pa *Payment) *PaymentUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *PaymentClient) UpdateOneID(id int) *PaymentUpdateOne {
+func (c *PaymentClient) UpdateOneID(id string) *PaymentUpdateOne {
 	mutation := newPaymentMutation(c.config, OpUpdateOne, withPaymentID(id))
 	return &PaymentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -1446,7 +1446,7 @@ func (c *PaymentClient) DeleteOne(pa *Payment) *PaymentDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *PaymentClient) DeleteOneID(id int) *PaymentDeleteOne {
+func (c *PaymentClient) DeleteOneID(id string) *PaymentDeleteOne {
 	builder := c.Delete().Where(payment.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -1463,12 +1463,12 @@ func (c *PaymentClient) Query() *PaymentQuery {
 }
 
 // Get returns a Payment entity by its id.
-func (c *PaymentClient) Get(ctx context.Context, id int) (*Payment, error) {
+func (c *PaymentClient) Get(ctx context.Context, id string) (*Payment, error) {
 	return c.Query().Where(payment.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *PaymentClient) GetX(ctx context.Context, id int) *Payment {
+func (c *PaymentClient) GetX(ctx context.Context, id string) *Payment {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -1547,7 +1547,7 @@ func (c *PostClient) UpdateOne(po *Post) *PostUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *PostClient) UpdateOneID(id int) *PostUpdateOne {
+func (c *PostClient) UpdateOneID(id string) *PostUpdateOne {
 	mutation := newPostMutation(c.config, OpUpdateOne, withPostID(id))
 	return &PostUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -1564,7 +1564,7 @@ func (c *PostClient) DeleteOne(po *Post) *PostDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *PostClient) DeleteOneID(id int) *PostDeleteOne {
+func (c *PostClient) DeleteOneID(id string) *PostDeleteOne {
 	builder := c.Delete().Where(post.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -1581,12 +1581,12 @@ func (c *PostClient) Query() *PostQuery {
 }
 
 // Get returns a Post entity by its id.
-func (c *PostClient) Get(ctx context.Context, id int) (*Post, error) {
+func (c *PostClient) Get(ctx context.Context, id string) (*Post, error) {
 	return c.Query().Where(post.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *PostClient) GetX(ctx context.Context, id int) *Post {
+func (c *PostClient) GetX(ctx context.Context, id string) *Post {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -1745,7 +1745,7 @@ func (c *RatingClient) UpdateOne(r *Rating) *RatingUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *RatingClient) UpdateOneID(id int) *RatingUpdateOne {
+func (c *RatingClient) UpdateOneID(id string) *RatingUpdateOne {
 	mutation := newRatingMutation(c.config, OpUpdateOne, withRatingID(id))
 	return &RatingUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -1762,7 +1762,7 @@ func (c *RatingClient) DeleteOne(r *Rating) *RatingDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *RatingClient) DeleteOneID(id int) *RatingDeleteOne {
+func (c *RatingClient) DeleteOneID(id string) *RatingDeleteOne {
 	builder := c.Delete().Where(rating.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -1779,12 +1779,12 @@ func (c *RatingClient) Query() *RatingQuery {
 }
 
 // Get returns a Rating entity by its id.
-func (c *RatingClient) Get(ctx context.Context, id int) (*Rating, error) {
+func (c *RatingClient) Get(ctx context.Context, id string) (*Rating, error) {
 	return c.Query().Where(rating.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *RatingClient) GetX(ctx context.Context, id int) *Rating {
+func (c *RatingClient) GetX(ctx context.Context, id string) *Rating {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -1863,7 +1863,7 @@ func (c *UserClient) UpdateOne(u *User) *UserUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *UserClient) UpdateOneID(id int) *UserUpdateOne {
+func (c *UserClient) UpdateOneID(id string) *UserUpdateOne {
 	mutation := newUserMutation(c.config, OpUpdateOne, withUserID(id))
 	return &UserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -1880,7 +1880,7 @@ func (c *UserClient) DeleteOne(u *User) *UserDeleteOne {
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *UserClient) DeleteOneID(id int) *UserDeleteOne {
+func (c *UserClient) DeleteOneID(id string) *UserDeleteOne {
 	builder := c.Delete().Where(user.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -1897,12 +1897,12 @@ func (c *UserClient) Query() *UserQuery {
 }
 
 // Get returns a User entity by its id.
-func (c *UserClient) Get(ctx context.Context, id int) (*User, error) {
+func (c *UserClient) Get(ctx context.Context, id string) (*User, error) {
 	return c.Query().Where(user.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *UserClient) GetX(ctx context.Context, id int) *User {
+func (c *UserClient) GetX(ctx context.Context, id string) *User {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -2045,7 +2045,7 @@ func (c *UserBusinessClient) UpdateOne(ub *UserBusiness) *UserBusinessUpdateOne 
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *UserBusinessClient) UpdateOneID(id int) *UserBusinessUpdateOne {
+func (c *UserBusinessClient) UpdateOneID(id string) *UserBusinessUpdateOne {
 	mutation := newUserBusinessMutation(c.config, OpUpdateOne, withUserBusinessID(id))
 	return &UserBusinessUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -2062,7 +2062,7 @@ func (c *UserBusinessClient) DeleteOne(ub *UserBusiness) *UserBusinessDeleteOne 
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *UserBusinessClient) DeleteOneID(id int) *UserBusinessDeleteOne {
+func (c *UserBusinessClient) DeleteOneID(id string) *UserBusinessDeleteOne {
 	builder := c.Delete().Where(userbusiness.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -2079,12 +2079,12 @@ func (c *UserBusinessClient) Query() *UserBusinessQuery {
 }
 
 // Get returns a UserBusiness entity by its id.
-func (c *UserBusinessClient) Get(ctx context.Context, id int) (*UserBusiness, error) {
+func (c *UserBusinessClient) Get(ctx context.Context, id string) (*UserBusiness, error) {
 	return c.Query().Where(userbusiness.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *UserBusinessClient) GetX(ctx context.Context, id int) *UserBusiness {
+func (c *UserBusinessClient) GetX(ctx context.Context, id string) *UserBusiness {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -2152,11 +2152,11 @@ func (c *UserBusinessClient) mutate(ctx context.Context, m *UserBusinessMutation
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Booking, Business, BusinessAccountSettings, Chat, Comment, Like, Media, Order,
-		Payment, Post, Rating, User, UserBusiness []ent.Hook
+		AccountSettings, Booking, Business, Chat, Comment, Like, Media, Order, Payment,
+		Post, Rating, User, UserBusiness []ent.Hook
 	}
 	inters struct {
-		Booking, Business, BusinessAccountSettings, Chat, Comment, Like, Media, Order,
-		Payment, Post, Rating, User, UserBusiness []ent.Interceptor
+		AccountSettings, Booking, Business, Chat, Comment, Like, Media, Order, Payment,
+		Post, Rating, User, UserBusiness []ent.Interceptor
 	}
 )

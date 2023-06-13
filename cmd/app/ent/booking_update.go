@@ -60,7 +60,7 @@ func (bu *BookingUpdate) ExecX(ctx context.Context) {
 }
 
 func (bu *BookingUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	_spec := sqlgraph.NewUpdateSpec(booking.Table, booking.Columns, sqlgraph.NewFieldSpec(booking.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(booking.Table, booking.Columns, sqlgraph.NewFieldSpec(booking.FieldID, field.TypeString))
 	if ps := bu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -134,7 +134,7 @@ func (buo *BookingUpdateOne) ExecX(ctx context.Context) {
 }
 
 func (buo *BookingUpdateOne) sqlSave(ctx context.Context) (_node *Booking, err error) {
-	_spec := sqlgraph.NewUpdateSpec(booking.Table, booking.Columns, sqlgraph.NewFieldSpec(booking.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(booking.Table, booking.Columns, sqlgraph.NewFieldSpec(booking.FieldID, field.TypeString))
 	id, ok := buo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Booking.id" for update`)}

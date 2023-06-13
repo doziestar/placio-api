@@ -57,13 +57,13 @@ func (cu *CommentUpdate) SetUpdatedAt(t time.Time) *CommentUpdate {
 }
 
 // SetUserID sets the "user" edge to the User entity by ID.
-func (cu *CommentUpdate) SetUserID(id int) *CommentUpdate {
+func (cu *CommentUpdate) SetUserID(id string) *CommentUpdate {
 	cu.mutation.SetUserID(id)
 	return cu
 }
 
 // SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
-func (cu *CommentUpdate) SetNillableUserID(id *int) *CommentUpdate {
+func (cu *CommentUpdate) SetNillableUserID(id *string) *CommentUpdate {
 	if id != nil {
 		cu = cu.SetUserID(*id)
 	}
@@ -76,13 +76,13 @@ func (cu *CommentUpdate) SetUser(u *User) *CommentUpdate {
 }
 
 // SetPostID sets the "post" edge to the Post entity by ID.
-func (cu *CommentUpdate) SetPostID(id int) *CommentUpdate {
+func (cu *CommentUpdate) SetPostID(id string) *CommentUpdate {
 	cu.mutation.SetPostID(id)
 	return cu
 }
 
 // SetNillablePostID sets the "post" edge to the Post entity by ID if the given value is not nil.
-func (cu *CommentUpdate) SetNillablePostID(id *int) *CommentUpdate {
+func (cu *CommentUpdate) SetNillablePostID(id *string) *CommentUpdate {
 	if id != nil {
 		cu = cu.SetPostID(*id)
 	}
@@ -161,7 +161,7 @@ func (cu *CommentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if err := cu.check(); err != nil {
 		return n, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(comment.Table, comment.Columns, sqlgraph.NewFieldSpec(comment.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(comment.Table, comment.Columns, sqlgraph.NewFieldSpec(comment.FieldID, field.TypeString))
 	if ps := cu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -186,7 +186,7 @@ func (cu *CommentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{comment.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -199,7 +199,7 @@ func (cu *CommentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{comment.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -215,7 +215,7 @@ func (cu *CommentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{comment.PostColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -228,7 +228,7 @@ func (cu *CommentUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{comment.PostColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -283,13 +283,13 @@ func (cuo *CommentUpdateOne) SetUpdatedAt(t time.Time) *CommentUpdateOne {
 }
 
 // SetUserID sets the "user" edge to the User entity by ID.
-func (cuo *CommentUpdateOne) SetUserID(id int) *CommentUpdateOne {
+func (cuo *CommentUpdateOne) SetUserID(id string) *CommentUpdateOne {
 	cuo.mutation.SetUserID(id)
 	return cuo
 }
 
 // SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
-func (cuo *CommentUpdateOne) SetNillableUserID(id *int) *CommentUpdateOne {
+func (cuo *CommentUpdateOne) SetNillableUserID(id *string) *CommentUpdateOne {
 	if id != nil {
 		cuo = cuo.SetUserID(*id)
 	}
@@ -302,13 +302,13 @@ func (cuo *CommentUpdateOne) SetUser(u *User) *CommentUpdateOne {
 }
 
 // SetPostID sets the "post" edge to the Post entity by ID.
-func (cuo *CommentUpdateOne) SetPostID(id int) *CommentUpdateOne {
+func (cuo *CommentUpdateOne) SetPostID(id string) *CommentUpdateOne {
 	cuo.mutation.SetPostID(id)
 	return cuo
 }
 
 // SetNillablePostID sets the "post" edge to the Post entity by ID if the given value is not nil.
-func (cuo *CommentUpdateOne) SetNillablePostID(id *int) *CommentUpdateOne {
+func (cuo *CommentUpdateOne) SetNillablePostID(id *string) *CommentUpdateOne {
 	if id != nil {
 		cuo = cuo.SetPostID(*id)
 	}
@@ -400,7 +400,7 @@ func (cuo *CommentUpdateOne) sqlSave(ctx context.Context) (_node *Comment, err e
 	if err := cuo.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(comment.Table, comment.Columns, sqlgraph.NewFieldSpec(comment.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(comment.Table, comment.Columns, sqlgraph.NewFieldSpec(comment.FieldID, field.TypeString))
 	id, ok := cuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Comment.id" for update`)}
@@ -442,7 +442,7 @@ func (cuo *CommentUpdateOne) sqlSave(ctx context.Context) (_node *Comment, err e
 			Columns: []string{comment.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -455,7 +455,7 @@ func (cuo *CommentUpdateOne) sqlSave(ctx context.Context) (_node *Comment, err e
 			Columns: []string{comment.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -471,7 +471,7 @@ func (cuo *CommentUpdateOne) sqlSave(ctx context.Context) (_node *Comment, err e
 			Columns: []string{comment.PostColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -484,7 +484,7 @@ func (cuo *CommentUpdateOne) sqlSave(ctx context.Context) (_node *Comment, err e
 			Columns: []string{comment.PostColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

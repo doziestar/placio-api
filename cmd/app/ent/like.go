@@ -18,7 +18,7 @@ import (
 type Like struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"id,omitempty"`
+	ID string `json:"id,omitempty"`
 	// CreatedAt holds the value of the "CreatedAt" field.
 	CreatedAt time.Time `json:"CreatedAt,omitempty"`
 	// UpdatedAt holds the value of the "UpdatedAt" field.
@@ -26,9 +26,9 @@ type Like struct {
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the LikeQuery when eager-loading is set.
 	Edges        LikeEdges `json:"edges"`
-	like_post    *int
-	post_likes   *int
-	user_likes   *int
+	like_post    *string
+	post_likes   *string
+	user_likes   *string
 	selectValues sql.SelectValues
 }
 
@@ -75,7 +75,7 @@ func (*Like) scanValues(columns []string) ([]any, error) {
 	for i := range columns {
 		switch columns[i] {
 		case like.FieldID:
-			values[i] = new(sql.NullInt64)
+			values[i] = new(sql.NullString)
 		case like.FieldCreatedAt, like.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		case like.ForeignKeys[0]: // like_post
@@ -100,11 +100,11 @@ func (l *Like) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case like.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field id", values[i])
+			} else if value.Valid {
+				l.ID = value.String
 			}
-			l.ID = int(value.Int64)
 		case like.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field CreatedAt", values[i])
@@ -121,22 +121,22 @@ func (l *Like) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for edge-field like_post", value)
 			} else if value.Valid {
-				l.like_post = new(int)
-				*l.like_post = int(value.Int64)
+				l.like_post = new(string)
+				*l.like_post = string(value.Int64)
 			}
 		case like.ForeignKeys[1]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for edge-field post_likes", value)
 			} else if value.Valid {
-				l.post_likes = new(int)
-				*l.post_likes = int(value.Int64)
+				l.post_likes = new(string)
+				*l.post_likes = string(value.Int64)
 			}
 		case like.ForeignKeys[2]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for edge-field user_likes", value)
 			} else if value.Valid {
-				l.user_likes = new(int)
-				*l.user_likes = int(value.Int64)
+				l.user_likes = new(string)
+				*l.user_likes = string(value.Int64)
 			}
 		default:
 			l.selectValues.Set(columns[i], values[i])

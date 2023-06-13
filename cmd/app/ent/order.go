@@ -15,7 +15,7 @@ import (
 type Order struct {
 	config
 	// ID of the ent.
-	ID           int `json:"id,omitempty"`
+	ID           string `json:"id,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -25,7 +25,7 @@ func (*Order) scanValues(columns []string) ([]any, error) {
 	for i := range columns {
 		switch columns[i] {
 		case order.FieldID:
-			values[i] = new(sql.NullInt64)
+			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -42,11 +42,11 @@ func (o *Order) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case order.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field id", values[i])
+			} else if value.Valid {
+				o.ID = value.String
 			}
-			o.ID = int(value.Int64)
 		default:
 			o.selectValues.Set(columns[i], values[i])
 		}

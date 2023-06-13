@@ -18,7 +18,7 @@ import (
 type Post struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"id,omitempty"`
+	ID string `json:"id,omitempty"`
 	// Content holds the value of the "Content" field.
 	Content string `json:"Content,omitempty"`
 	// CreatedAt holds the value of the "CreatedAt" field.
@@ -28,8 +28,8 @@ type Post struct {
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PostQuery when eager-loading is set.
 	Edges          PostEdges `json:"edges"`
-	business_posts *int
-	user_posts     *int
+	business_posts *string
+	user_posts     *string
 	selectValues   sql.SelectValues
 }
 
@@ -108,9 +108,7 @@ func (*Post) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case post.FieldID:
-			values[i] = new(sql.NullInt64)
-		case post.FieldContent:
+		case post.FieldID, post.FieldContent:
 			values[i] = new(sql.NullString)
 		case post.FieldCreatedAt, post.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -134,11 +132,11 @@ func (po *Post) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case post.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field id", values[i])
+			} else if value.Valid {
+				po.ID = value.String
 			}
-			po.ID = int(value.Int64)
 		case post.FieldContent:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field Content", values[i])
@@ -161,15 +159,15 @@ func (po *Post) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for edge-field business_posts", value)
 			} else if value.Valid {
-				po.business_posts = new(int)
-				*po.business_posts = int(value.Int64)
+				po.business_posts = new(string)
+				*po.business_posts = string(value.Int64)
 			}
 		case post.ForeignKeys[1]:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for edge-field user_posts", value)
 			} else if value.Valid {
-				po.user_posts = new(int)
-				*po.user_posts = int(value.Int64)
+				po.user_posts = new(string)
+				*po.user_posts = string(value.Int64)
 			}
 		default:
 			po.selectValues.Set(columns[i], values[i])

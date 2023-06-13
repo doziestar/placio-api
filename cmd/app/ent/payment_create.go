@@ -66,8 +66,13 @@ func (pc *PaymentCreate) sqlSave(ctx context.Context) (*Payment, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(string); ok {
+			_node.ID = id
+		} else {
+			return nil, fmt.Errorf("unexpected Payment.ID type: %T", _spec.ID.Value)
+		}
+	}
 	pc.mutation.id = &_node.ID
 	pc.mutation.done = true
 	return _node, nil
@@ -76,7 +81,7 @@ func (pc *PaymentCreate) sqlSave(ctx context.Context) (*Payment, error) {
 func (pc *PaymentCreate) createSpec() (*Payment, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Payment{config: pc.config}
-		_spec = sqlgraph.NewCreateSpec(payment.Table, sqlgraph.NewFieldSpec(payment.FieldID, field.TypeInt))
+		_spec = sqlgraph.NewCreateSpec(payment.Table, sqlgraph.NewFieldSpec(payment.FieldID, field.TypeString))
 	)
 	return _node, _spec
 }
@@ -121,10 +126,6 @@ func (pcb *PaymentCreateBulk) Save(ctx context.Context) ([]*Payment, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				mutation.done = true
 				return nodes[i], nil
 			})

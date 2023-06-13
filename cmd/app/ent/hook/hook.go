@@ -8,6 +8,18 @@ import (
 	"placio-app/ent"
 )
 
+// The AccountSettingsFunc type is an adapter to allow the use of ordinary
+// function as AccountSettings mutator.
+type AccountSettingsFunc func(context.Context, *ent.AccountSettingsMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AccountSettingsFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AccountSettingsMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AccountSettingsMutation", m)
+}
+
 // The BookingFunc type is an adapter to allow the use of ordinary
 // function as Booking mutator.
 type BookingFunc func(context.Context, *ent.BookingMutation) (ent.Value, error)
@@ -30,18 +42,6 @@ func (f BusinessFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, er
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.BusinessMutation", m)
-}
-
-// The BusinessAccountSettingsFunc type is an adapter to allow the use of ordinary
-// function as BusinessAccountSettings mutator.
-type BusinessAccountSettingsFunc func(context.Context, *ent.BusinessAccountSettingsMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f BusinessAccountSettingsFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.BusinessAccountSettingsMutation); ok {
-		return f(ctx, mv)
-	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.BusinessAccountSettingsMutation", m)
 }
 
 // The ChatFunc type is an adapter to allow the use of ordinary

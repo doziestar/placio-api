@@ -6,8 +6,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"placio-app/ent/accountsettings"
 	"placio-app/ent/business"
-	"placio-app/ent/businessaccountsettings"
 	"placio-app/ent/post"
 	"placio-app/ent/userbusiness"
 
@@ -29,48 +29,48 @@ func (bc *BusinessCreate) SetName(s string) *BusinessCreate {
 }
 
 // AddUserBusinessIDs adds the "userBusinesses" edge to the UserBusiness entity by IDs.
-func (bc *BusinessCreate) AddUserBusinessIDs(ids ...int) *BusinessCreate {
+func (bc *BusinessCreate) AddUserBusinessIDs(ids ...string) *BusinessCreate {
 	bc.mutation.AddUserBusinessIDs(ids...)
 	return bc
 }
 
 // AddUserBusinesses adds the "userBusinesses" edges to the UserBusiness entity.
 func (bc *BusinessCreate) AddUserBusinesses(u ...*UserBusiness) *BusinessCreate {
-	ids := make([]int, len(u))
+	ids := make([]string, len(u))
 	for i := range u {
 		ids[i] = u[i].ID
 	}
 	return bc.AddUserBusinessIDs(ids...)
 }
 
-// SetBusinessAccountSettingsID sets the "business_account_settings" edge to the BusinessAccountSettings entity by ID.
-func (bc *BusinessCreate) SetBusinessAccountSettingsID(id int) *BusinessCreate {
+// SetBusinessAccountSettingsID sets the "business_account_settings" edge to the AccountSettings entity by ID.
+func (bc *BusinessCreate) SetBusinessAccountSettingsID(id string) *BusinessCreate {
 	bc.mutation.SetBusinessAccountSettingsID(id)
 	return bc
 }
 
-// SetNillableBusinessAccountSettingsID sets the "business_account_settings" edge to the BusinessAccountSettings entity by ID if the given value is not nil.
-func (bc *BusinessCreate) SetNillableBusinessAccountSettingsID(id *int) *BusinessCreate {
+// SetNillableBusinessAccountSettingsID sets the "business_account_settings" edge to the AccountSettings entity by ID if the given value is not nil.
+func (bc *BusinessCreate) SetNillableBusinessAccountSettingsID(id *string) *BusinessCreate {
 	if id != nil {
 		bc = bc.SetBusinessAccountSettingsID(*id)
 	}
 	return bc
 }
 
-// SetBusinessAccountSettings sets the "business_account_settings" edge to the BusinessAccountSettings entity.
-func (bc *BusinessCreate) SetBusinessAccountSettings(b *BusinessAccountSettings) *BusinessCreate {
-	return bc.SetBusinessAccountSettingsID(b.ID)
+// SetBusinessAccountSettings sets the "business_account_settings" edge to the AccountSettings entity.
+func (bc *BusinessCreate) SetBusinessAccountSettings(a *AccountSettings) *BusinessCreate {
+	return bc.SetBusinessAccountSettingsID(a.ID)
 }
 
 // AddPostIDs adds the "posts" edge to the Post entity by IDs.
-func (bc *BusinessCreate) AddPostIDs(ids ...int) *BusinessCreate {
+func (bc *BusinessCreate) AddPostIDs(ids ...string) *BusinessCreate {
 	bc.mutation.AddPostIDs(ids...)
 	return bc
 }
 
 // AddPosts adds the "posts" edges to the Post entity.
 func (bc *BusinessCreate) AddPosts(p ...*Post) *BusinessCreate {
-	ids := make([]int, len(p))
+	ids := make([]string, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -128,8 +128,13 @@ func (bc *BusinessCreate) sqlSave(ctx context.Context) (*Business, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(string); ok {
+			_node.ID = id
+		} else {
+			return nil, fmt.Errorf("unexpected Business.ID type: %T", _spec.ID.Value)
+		}
+	}
 	bc.mutation.id = &_node.ID
 	bc.mutation.done = true
 	return _node, nil
@@ -138,7 +143,7 @@ func (bc *BusinessCreate) sqlSave(ctx context.Context) (*Business, error) {
 func (bc *BusinessCreate) createSpec() (*Business, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Business{config: bc.config}
-		_spec = sqlgraph.NewCreateSpec(business.Table, sqlgraph.NewFieldSpec(business.FieldID, field.TypeInt))
+		_spec = sqlgraph.NewCreateSpec(business.Table, sqlgraph.NewFieldSpec(business.FieldID, field.TypeString))
 	)
 	if value, ok := bc.mutation.Name(); ok {
 		_spec.SetField(business.FieldName, field.TypeString, value)
@@ -152,7 +157,7 @@ func (bc *BusinessCreate) createSpec() (*Business, *sqlgraph.CreateSpec) {
 			Columns: []string{business.UserBusinessesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(userbusiness.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(userbusiness.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -168,7 +173,7 @@ func (bc *BusinessCreate) createSpec() (*Business, *sqlgraph.CreateSpec) {
 			Columns: []string{business.BusinessAccountSettingsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(businessaccountsettings.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(accountsettings.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -184,7 +189,7 @@ func (bc *BusinessCreate) createSpec() (*Business, *sqlgraph.CreateSpec) {
 			Columns: []string{business.PostsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -235,10 +240,6 @@ func (bcb *BusinessCreateBulk) Save(ctx context.Context) ([]*Business, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				mutation.done = true
 				return nodes[i], nil
 			})

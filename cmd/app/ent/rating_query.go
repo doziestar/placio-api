@@ -81,8 +81,8 @@ func (rq *RatingQuery) FirstX(ctx context.Context) *Rating {
 
 // FirstID returns the first Rating ID from the query.
 // Returns a *NotFoundError when no Rating ID was found.
-func (rq *RatingQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (rq *RatingQuery) FirstID(ctx context.Context) (id string, err error) {
+	var ids []string
 	if ids, err = rq.Limit(1).IDs(setContextOp(ctx, rq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -94,7 +94,7 @@ func (rq *RatingQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (rq *RatingQuery) FirstIDX(ctx context.Context) int {
+func (rq *RatingQuery) FirstIDX(ctx context.Context) string {
 	id, err := rq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -132,8 +132,8 @@ func (rq *RatingQuery) OnlyX(ctx context.Context) *Rating {
 // OnlyID is like Only, but returns the only Rating ID in the query.
 // Returns a *NotSingularError when more than one Rating ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (rq *RatingQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (rq *RatingQuery) OnlyID(ctx context.Context) (id string, err error) {
+	var ids []string
 	if ids, err = rq.Limit(2).IDs(setContextOp(ctx, rq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -149,7 +149,7 @@ func (rq *RatingQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (rq *RatingQuery) OnlyIDX(ctx context.Context) int {
+func (rq *RatingQuery) OnlyIDX(ctx context.Context) string {
 	id, err := rq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -177,7 +177,7 @@ func (rq *RatingQuery) AllX(ctx context.Context) []*Rating {
 }
 
 // IDs executes the query and returns a list of Rating IDs.
-func (rq *RatingQuery) IDs(ctx context.Context) (ids []int, err error) {
+func (rq *RatingQuery) IDs(ctx context.Context) (ids []string, err error) {
 	if rq.ctx.Unique == nil && rq.path != nil {
 		rq.Unique(true)
 	}
@@ -189,7 +189,7 @@ func (rq *RatingQuery) IDs(ctx context.Context) (ids []int, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (rq *RatingQuery) IDsX(ctx context.Context) []int {
+func (rq *RatingQuery) IDsX(ctx context.Context) []string {
 	ids, err := rq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -342,7 +342,7 @@ func (rq *RatingQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (rq *RatingQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(rating.Table, rating.Columns, sqlgraph.NewFieldSpec(rating.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewQuerySpec(rating.Table, rating.Columns, sqlgraph.NewFieldSpec(rating.FieldID, field.TypeString))
 	_spec.From = rq.sql
 	if unique := rq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

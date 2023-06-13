@@ -14,6 +14,8 @@ const (
 	FieldID = "id"
 	// FieldAuth0ID holds the string denoting the auth0_id field in the database.
 	FieldAuth0ID = "auth0_id"
+	// FieldAuth0Data holds the string denoting the auth0_data field in the database.
+	FieldAuth0Data = "auth0_data"
 	// EdgeUserBusinesses holds the string denoting the userbusinesses edge name in mutations.
 	EdgeUserBusinesses = "userBusinesses"
 	// EdgeComments holds the string denoting the comments edge name in mutations.
@@ -58,6 +60,7 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldAuth0ID,
+	FieldAuth0Data,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).

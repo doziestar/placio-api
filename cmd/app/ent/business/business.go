@@ -30,10 +30,10 @@ const (
 	// UserBusinessesColumn is the table column denoting the userBusinesses relation/edge.
 	UserBusinessesColumn = "business_user_businesses"
 	// BusinessAccountSettingsTable is the table that holds the business_account_settings relation/edge.
-	BusinessAccountSettingsTable = "business_account_settings"
-	// BusinessAccountSettingsInverseTable is the table name for the BusinessAccountSettings entity.
-	// It exists in this package in order to avoid circular dependency with the "businessaccountsettings" package.
-	BusinessAccountSettingsInverseTable = "business_account_settings"
+	BusinessAccountSettingsTable = "account_settings"
+	// BusinessAccountSettingsInverseTable is the table name for the AccountSettings entity.
+	// It exists in this package in order to avoid circular dependency with the "accountsettings" package.
+	BusinessAccountSettingsInverseTable = "account_settings"
 	// BusinessAccountSettingsColumn is the table column denoting the business_account_settings relation/edge.
 	BusinessAccountSettingsColumn = "business_business_account_settings"
 	// PostsTable is the table that holds the posts relation/edge.

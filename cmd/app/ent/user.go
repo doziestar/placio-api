@@ -3,21 +3,25 @@
 package ent
 
 import (
+	"encoding/json"
 	"fmt"
 	"placio-app/ent/user"
 	"strings"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/auth0/go-auth0/management"
 )
 
 // User is the model entity for the User schema.
 type User struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"id,omitempty"`
+	ID string `json:"id,omitempty"`
 	// Auth0ID holds the value of the "auth0_id" field.
 	Auth0ID string `json:"auth0_id,omitempty"`
+	// Auth0Data holds the value of the "auth0_data" field.
+	Auth0Data *management.User `json:"auth0_data,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserQuery when eager-loading is set.
 	Edges        UserEdges `json:"edges"`
@@ -80,9 +84,9 @@ func (*User) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case user.FieldID:
-			values[i] = new(sql.NullInt64)
-		case user.FieldAuth0ID:
+		case user.FieldAuth0Data:
+			values[i] = new([]byte)
+		case user.FieldID, user.FieldAuth0ID:
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -100,16 +104,24 @@ func (u *User) assignValues(columns []string, values []any) error {
 	for i := range columns {
 		switch columns[i] {
 		case user.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field id", values[i])
+			} else if value.Valid {
+				u.ID = value.String
 			}
-			u.ID = int(value.Int64)
 		case user.FieldAuth0ID:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field auth0_id", values[i])
 			} else if value.Valid {
 				u.Auth0ID = value.String
+			}
+		case user.FieldAuth0Data:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field auth0_data", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &u.Auth0Data); err != nil {
+					return fmt.Errorf("unmarshal field auth0_data: %w", err)
+				}
 			}
 		default:
 			u.selectValues.Set(columns[i], values[i])
@@ -169,6 +181,9 @@ func (u *User) String() string {
 	builder.WriteString(fmt.Sprintf("id=%v, ", u.ID))
 	builder.WriteString("auth0_id=")
 	builder.WriteString(u.Auth0ID)
+	builder.WriteString(", ")
+	builder.WriteString("auth0_data=")
+	builder.WriteString(fmt.Sprintf("%v", u.Auth0Data))
 	builder.WriteByte(')')
 	return builder.String()
 }

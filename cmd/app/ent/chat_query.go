@@ -81,8 +81,8 @@ func (cq *ChatQuery) FirstX(ctx context.Context) *Chat {
 
 // FirstID returns the first Chat ID from the query.
 // Returns a *NotFoundError when no Chat ID was found.
-func (cq *ChatQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (cq *ChatQuery) FirstID(ctx context.Context) (id string, err error) {
+	var ids []string
 	if ids, err = cq.Limit(1).IDs(setContextOp(ctx, cq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -94,7 +94,7 @@ func (cq *ChatQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (cq *ChatQuery) FirstIDX(ctx context.Context) int {
+func (cq *ChatQuery) FirstIDX(ctx context.Context) string {
 	id, err := cq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -132,8 +132,8 @@ func (cq *ChatQuery) OnlyX(ctx context.Context) *Chat {
 // OnlyID is like Only, but returns the only Chat ID in the query.
 // Returns a *NotSingularError when more than one Chat ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (cq *ChatQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (cq *ChatQuery) OnlyID(ctx context.Context) (id string, err error) {
+	var ids []string
 	if ids, err = cq.Limit(2).IDs(setContextOp(ctx, cq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -149,7 +149,7 @@ func (cq *ChatQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (cq *ChatQuery) OnlyIDX(ctx context.Context) int {
+func (cq *ChatQuery) OnlyIDX(ctx context.Context) string {
 	id, err := cq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -177,7 +177,7 @@ func (cq *ChatQuery) AllX(ctx context.Context) []*Chat {
 }
 
 // IDs executes the query and returns a list of Chat IDs.
-func (cq *ChatQuery) IDs(ctx context.Context) (ids []int, err error) {
+func (cq *ChatQuery) IDs(ctx context.Context) (ids []string, err error) {
 	if cq.ctx.Unique == nil && cq.path != nil {
 		cq.Unique(true)
 	}
@@ -189,7 +189,7 @@ func (cq *ChatQuery) IDs(ctx context.Context) (ids []int, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (cq *ChatQuery) IDsX(ctx context.Context) []int {
+func (cq *ChatQuery) IDsX(ctx context.Context) []string {
 	ids, err := cq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -342,7 +342,7 @@ func (cq *ChatQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (cq *ChatQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(chat.Table, chat.Columns, sqlgraph.NewFieldSpec(chat.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewQuerySpec(chat.Table, chat.Columns, sqlgraph.NewFieldSpec(chat.FieldID, field.TypeString))
 	_spec.From = cq.sql
 	if unique := cq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

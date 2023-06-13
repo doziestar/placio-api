@@ -60,13 +60,13 @@ func (pu *PostUpdate) SetUpdatedAt(t time.Time) *PostUpdate {
 }
 
 // SetUserID sets the "user" edge to the User entity by ID.
-func (pu *PostUpdate) SetUserID(id int) *PostUpdate {
+func (pu *PostUpdate) SetUserID(id string) *PostUpdate {
 	pu.mutation.SetUserID(id)
 	return pu
 }
 
 // SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
-func (pu *PostUpdate) SetNillableUserID(id *int) *PostUpdate {
+func (pu *PostUpdate) SetNillableUserID(id *string) *PostUpdate {
 	if id != nil {
 		pu = pu.SetUserID(*id)
 	}
@@ -79,13 +79,13 @@ func (pu *PostUpdate) SetUser(u *User) *PostUpdate {
 }
 
 // SetBusinessAccountID sets the "business_account" edge to the Business entity by ID.
-func (pu *PostUpdate) SetBusinessAccountID(id int) *PostUpdate {
+func (pu *PostUpdate) SetBusinessAccountID(id string) *PostUpdate {
 	pu.mutation.SetBusinessAccountID(id)
 	return pu
 }
 
 // SetNillableBusinessAccountID sets the "business_account" edge to the Business entity by ID if the given value is not nil.
-func (pu *PostUpdate) SetNillableBusinessAccountID(id *int) *PostUpdate {
+func (pu *PostUpdate) SetNillableBusinessAccountID(id *string) *PostUpdate {
 	if id != nil {
 		pu = pu.SetBusinessAccountID(*id)
 	}
@@ -98,14 +98,14 @@ func (pu *PostUpdate) SetBusinessAccount(b *Business) *PostUpdate {
 }
 
 // AddMediaIDs adds the "medias" edge to the Media entity by IDs.
-func (pu *PostUpdate) AddMediaIDs(ids ...int) *PostUpdate {
+func (pu *PostUpdate) AddMediaIDs(ids ...string) *PostUpdate {
 	pu.mutation.AddMediaIDs(ids...)
 	return pu
 }
 
 // AddMedias adds the "medias" edges to the Media entity.
 func (pu *PostUpdate) AddMedias(m ...*Media) *PostUpdate {
-	ids := make([]int, len(m))
+	ids := make([]string, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}
@@ -113,14 +113,14 @@ func (pu *PostUpdate) AddMedias(m ...*Media) *PostUpdate {
 }
 
 // AddCommentIDs adds the "comments" edge to the Comment entity by IDs.
-func (pu *PostUpdate) AddCommentIDs(ids ...int) *PostUpdate {
+func (pu *PostUpdate) AddCommentIDs(ids ...string) *PostUpdate {
 	pu.mutation.AddCommentIDs(ids...)
 	return pu
 }
 
 // AddComments adds the "comments" edges to the Comment entity.
 func (pu *PostUpdate) AddComments(c ...*Comment) *PostUpdate {
-	ids := make([]int, len(c))
+	ids := make([]string, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -128,14 +128,14 @@ func (pu *PostUpdate) AddComments(c ...*Comment) *PostUpdate {
 }
 
 // AddLikeIDs adds the "likes" edge to the Like entity by IDs.
-func (pu *PostUpdate) AddLikeIDs(ids ...int) *PostUpdate {
+func (pu *PostUpdate) AddLikeIDs(ids ...string) *PostUpdate {
 	pu.mutation.AddLikeIDs(ids...)
 	return pu
 }
 
 // AddLikes adds the "likes" edges to the Like entity.
 func (pu *PostUpdate) AddLikes(l ...*Like) *PostUpdate {
-	ids := make([]int, len(l))
+	ids := make([]string, len(l))
 	for i := range l {
 		ids[i] = l[i].ID
 	}
@@ -166,14 +166,14 @@ func (pu *PostUpdate) ClearMedias() *PostUpdate {
 }
 
 // RemoveMediaIDs removes the "medias" edge to Media entities by IDs.
-func (pu *PostUpdate) RemoveMediaIDs(ids ...int) *PostUpdate {
+func (pu *PostUpdate) RemoveMediaIDs(ids ...string) *PostUpdate {
 	pu.mutation.RemoveMediaIDs(ids...)
 	return pu
 }
 
 // RemoveMedias removes "medias" edges to Media entities.
 func (pu *PostUpdate) RemoveMedias(m ...*Media) *PostUpdate {
-	ids := make([]int, len(m))
+	ids := make([]string, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}
@@ -187,14 +187,14 @@ func (pu *PostUpdate) ClearComments() *PostUpdate {
 }
 
 // RemoveCommentIDs removes the "comments" edge to Comment entities by IDs.
-func (pu *PostUpdate) RemoveCommentIDs(ids ...int) *PostUpdate {
+func (pu *PostUpdate) RemoveCommentIDs(ids ...string) *PostUpdate {
 	pu.mutation.RemoveCommentIDs(ids...)
 	return pu
 }
 
 // RemoveComments removes "comments" edges to Comment entities.
 func (pu *PostUpdate) RemoveComments(c ...*Comment) *PostUpdate {
-	ids := make([]int, len(c))
+	ids := make([]string, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -208,14 +208,14 @@ func (pu *PostUpdate) ClearLikes() *PostUpdate {
 }
 
 // RemoveLikeIDs removes the "likes" edge to Like entities by IDs.
-func (pu *PostUpdate) RemoveLikeIDs(ids ...int) *PostUpdate {
+func (pu *PostUpdate) RemoveLikeIDs(ids ...string) *PostUpdate {
 	pu.mutation.RemoveLikeIDs(ids...)
 	return pu
 }
 
 // RemoveLikes removes "likes" edges to Like entities.
 func (pu *PostUpdate) RemoveLikes(l ...*Like) *PostUpdate {
-	ids := make([]int, len(l))
+	ids := make([]string, len(l))
 	for i := range l {
 		ids[i] = l[i].ID
 	}
@@ -272,7 +272,7 @@ func (pu *PostUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if err := pu.check(); err != nil {
 		return n, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(post.Table, post.Columns, sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(post.Table, post.Columns, sqlgraph.NewFieldSpec(post.FieldID, field.TypeString))
 	if ps := pu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -297,7 +297,7 @@ func (pu *PostUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{post.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -310,7 +310,7 @@ func (pu *PostUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{post.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -326,7 +326,7 @@ func (pu *PostUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{post.BusinessAccountColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(business.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(business.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -339,7 +339,7 @@ func (pu *PostUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{post.BusinessAccountColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(business.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(business.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -355,7 +355,7 @@ func (pu *PostUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{post.MediasColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -368,7 +368,7 @@ func (pu *PostUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{post.MediasColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -384,7 +384,7 @@ func (pu *PostUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{post.MediasColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -400,7 +400,7 @@ func (pu *PostUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{post.CommentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(comment.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(comment.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -413,7 +413,7 @@ func (pu *PostUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{post.CommentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(comment.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(comment.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -429,7 +429,7 @@ func (pu *PostUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{post.CommentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(comment.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(comment.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -445,7 +445,7 @@ func (pu *PostUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{post.LikesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(like.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(like.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -458,7 +458,7 @@ func (pu *PostUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{post.LikesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(like.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(like.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -474,7 +474,7 @@ func (pu *PostUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{post.LikesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(like.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(like.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -529,13 +529,13 @@ func (puo *PostUpdateOne) SetUpdatedAt(t time.Time) *PostUpdateOne {
 }
 
 // SetUserID sets the "user" edge to the User entity by ID.
-func (puo *PostUpdateOne) SetUserID(id int) *PostUpdateOne {
+func (puo *PostUpdateOne) SetUserID(id string) *PostUpdateOne {
 	puo.mutation.SetUserID(id)
 	return puo
 }
 
 // SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
-func (puo *PostUpdateOne) SetNillableUserID(id *int) *PostUpdateOne {
+func (puo *PostUpdateOne) SetNillableUserID(id *string) *PostUpdateOne {
 	if id != nil {
 		puo = puo.SetUserID(*id)
 	}
@@ -548,13 +548,13 @@ func (puo *PostUpdateOne) SetUser(u *User) *PostUpdateOne {
 }
 
 // SetBusinessAccountID sets the "business_account" edge to the Business entity by ID.
-func (puo *PostUpdateOne) SetBusinessAccountID(id int) *PostUpdateOne {
+func (puo *PostUpdateOne) SetBusinessAccountID(id string) *PostUpdateOne {
 	puo.mutation.SetBusinessAccountID(id)
 	return puo
 }
 
 // SetNillableBusinessAccountID sets the "business_account" edge to the Business entity by ID if the given value is not nil.
-func (puo *PostUpdateOne) SetNillableBusinessAccountID(id *int) *PostUpdateOne {
+func (puo *PostUpdateOne) SetNillableBusinessAccountID(id *string) *PostUpdateOne {
 	if id != nil {
 		puo = puo.SetBusinessAccountID(*id)
 	}
@@ -567,14 +567,14 @@ func (puo *PostUpdateOne) SetBusinessAccount(b *Business) *PostUpdateOne {
 }
 
 // AddMediaIDs adds the "medias" edge to the Media entity by IDs.
-func (puo *PostUpdateOne) AddMediaIDs(ids ...int) *PostUpdateOne {
+func (puo *PostUpdateOne) AddMediaIDs(ids ...string) *PostUpdateOne {
 	puo.mutation.AddMediaIDs(ids...)
 	return puo
 }
 
 // AddMedias adds the "medias" edges to the Media entity.
 func (puo *PostUpdateOne) AddMedias(m ...*Media) *PostUpdateOne {
-	ids := make([]int, len(m))
+	ids := make([]string, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}
@@ -582,14 +582,14 @@ func (puo *PostUpdateOne) AddMedias(m ...*Media) *PostUpdateOne {
 }
 
 // AddCommentIDs adds the "comments" edge to the Comment entity by IDs.
-func (puo *PostUpdateOne) AddCommentIDs(ids ...int) *PostUpdateOne {
+func (puo *PostUpdateOne) AddCommentIDs(ids ...string) *PostUpdateOne {
 	puo.mutation.AddCommentIDs(ids...)
 	return puo
 }
 
 // AddComments adds the "comments" edges to the Comment entity.
 func (puo *PostUpdateOne) AddComments(c ...*Comment) *PostUpdateOne {
-	ids := make([]int, len(c))
+	ids := make([]string, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -597,14 +597,14 @@ func (puo *PostUpdateOne) AddComments(c ...*Comment) *PostUpdateOne {
 }
 
 // AddLikeIDs adds the "likes" edge to the Like entity by IDs.
-func (puo *PostUpdateOne) AddLikeIDs(ids ...int) *PostUpdateOne {
+func (puo *PostUpdateOne) AddLikeIDs(ids ...string) *PostUpdateOne {
 	puo.mutation.AddLikeIDs(ids...)
 	return puo
 }
 
 // AddLikes adds the "likes" edges to the Like entity.
 func (puo *PostUpdateOne) AddLikes(l ...*Like) *PostUpdateOne {
-	ids := make([]int, len(l))
+	ids := make([]string, len(l))
 	for i := range l {
 		ids[i] = l[i].ID
 	}
@@ -635,14 +635,14 @@ func (puo *PostUpdateOne) ClearMedias() *PostUpdateOne {
 }
 
 // RemoveMediaIDs removes the "medias" edge to Media entities by IDs.
-func (puo *PostUpdateOne) RemoveMediaIDs(ids ...int) *PostUpdateOne {
+func (puo *PostUpdateOne) RemoveMediaIDs(ids ...string) *PostUpdateOne {
 	puo.mutation.RemoveMediaIDs(ids...)
 	return puo
 }
 
 // RemoveMedias removes "medias" edges to Media entities.
 func (puo *PostUpdateOne) RemoveMedias(m ...*Media) *PostUpdateOne {
-	ids := make([]int, len(m))
+	ids := make([]string, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}
@@ -656,14 +656,14 @@ func (puo *PostUpdateOne) ClearComments() *PostUpdateOne {
 }
 
 // RemoveCommentIDs removes the "comments" edge to Comment entities by IDs.
-func (puo *PostUpdateOne) RemoveCommentIDs(ids ...int) *PostUpdateOne {
+func (puo *PostUpdateOne) RemoveCommentIDs(ids ...string) *PostUpdateOne {
 	puo.mutation.RemoveCommentIDs(ids...)
 	return puo
 }
 
 // RemoveComments removes "comments" edges to Comment entities.
 func (puo *PostUpdateOne) RemoveComments(c ...*Comment) *PostUpdateOne {
-	ids := make([]int, len(c))
+	ids := make([]string, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -677,14 +677,14 @@ func (puo *PostUpdateOne) ClearLikes() *PostUpdateOne {
 }
 
 // RemoveLikeIDs removes the "likes" edge to Like entities by IDs.
-func (puo *PostUpdateOne) RemoveLikeIDs(ids ...int) *PostUpdateOne {
+func (puo *PostUpdateOne) RemoveLikeIDs(ids ...string) *PostUpdateOne {
 	puo.mutation.RemoveLikeIDs(ids...)
 	return puo
 }
 
 // RemoveLikes removes "likes" edges to Like entities.
 func (puo *PostUpdateOne) RemoveLikes(l ...*Like) *PostUpdateOne {
-	ids := make([]int, len(l))
+	ids := make([]string, len(l))
 	for i := range l {
 		ids[i] = l[i].ID
 	}
@@ -754,7 +754,7 @@ func (puo *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) 
 	if err := puo.check(); err != nil {
 		return _node, err
 	}
-	_spec := sqlgraph.NewUpdateSpec(post.Table, post.Columns, sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(post.Table, post.Columns, sqlgraph.NewFieldSpec(post.FieldID, field.TypeString))
 	id, ok := puo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Post.id" for update`)}
@@ -796,7 +796,7 @@ func (puo *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) 
 			Columns: []string{post.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -809,7 +809,7 @@ func (puo *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) 
 			Columns: []string{post.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -825,7 +825,7 @@ func (puo *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) 
 			Columns: []string{post.BusinessAccountColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(business.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(business.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -838,7 +838,7 @@ func (puo *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) 
 			Columns: []string{post.BusinessAccountColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(business.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(business.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -854,7 +854,7 @@ func (puo *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) 
 			Columns: []string{post.MediasColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -867,7 +867,7 @@ func (puo *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) 
 			Columns: []string{post.MediasColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -883,7 +883,7 @@ func (puo *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) 
 			Columns: []string{post.MediasColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -899,7 +899,7 @@ func (puo *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) 
 			Columns: []string{post.CommentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(comment.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(comment.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -912,7 +912,7 @@ func (puo *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) 
 			Columns: []string{post.CommentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(comment.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(comment.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -928,7 +928,7 @@ func (puo *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) 
 			Columns: []string{post.CommentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(comment.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(comment.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -944,7 +944,7 @@ func (puo *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) 
 			Columns: []string{post.LikesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(like.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(like.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -957,7 +957,7 @@ func (puo *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) 
 			Columns: []string{post.LikesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(like.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(like.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -973,7 +973,7 @@ func (puo *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) 
 			Columns: []string{post.LikesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(like.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(like.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

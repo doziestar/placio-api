@@ -7,8 +7,8 @@ import (
 	"database/sql/driver"
 	"fmt"
 	"math"
+	"placio-app/ent/accountsettings"
 	"placio-app/ent/business"
-	"placio-app/ent/businessaccountsettings"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
 	"placio-app/ent/userbusiness"
@@ -26,7 +26,7 @@ type BusinessQuery struct {
 	inters                      []Interceptor
 	predicates                  []predicate.Business
 	withUserBusinesses          *UserBusinessQuery
-	withBusinessAccountSettings *BusinessAccountSettingsQuery
+	withBusinessAccountSettings *AccountSettingsQuery
 	withPosts                   *PostQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -87,8 +87,8 @@ func (bq *BusinessQuery) QueryUserBusinesses() *UserBusinessQuery {
 }
 
 // QueryBusinessAccountSettings chains the current query on the "business_account_settings" edge.
-func (bq *BusinessQuery) QueryBusinessAccountSettings() *BusinessAccountSettingsQuery {
-	query := (&BusinessAccountSettingsClient{config: bq.config}).Query()
+func (bq *BusinessQuery) QueryBusinessAccountSettings() *AccountSettingsQuery {
+	query := (&AccountSettingsClient{config: bq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := bq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -99,7 +99,7 @@ func (bq *BusinessQuery) QueryBusinessAccountSettings() *BusinessAccountSettings
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(business.Table, business.FieldID, selector),
-			sqlgraph.To(businessaccountsettings.Table, businessaccountsettings.FieldID),
+			sqlgraph.To(accountsettings.Table, accountsettings.FieldID),
 			sqlgraph.Edge(sqlgraph.O2O, false, business.BusinessAccountSettingsTable, business.BusinessAccountSettingsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(bq.driver.Dialect(), step)
@@ -154,8 +154,8 @@ func (bq *BusinessQuery) FirstX(ctx context.Context) *Business {
 
 // FirstID returns the first Business ID from the query.
 // Returns a *NotFoundError when no Business ID was found.
-func (bq *BusinessQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (bq *BusinessQuery) FirstID(ctx context.Context) (id string, err error) {
+	var ids []string
 	if ids, err = bq.Limit(1).IDs(setContextOp(ctx, bq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -167,7 +167,7 @@ func (bq *BusinessQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (bq *BusinessQuery) FirstIDX(ctx context.Context) int {
+func (bq *BusinessQuery) FirstIDX(ctx context.Context) string {
 	id, err := bq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -205,8 +205,8 @@ func (bq *BusinessQuery) OnlyX(ctx context.Context) *Business {
 // OnlyID is like Only, but returns the only Business ID in the query.
 // Returns a *NotSingularError when more than one Business ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (bq *BusinessQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (bq *BusinessQuery) OnlyID(ctx context.Context) (id string, err error) {
+	var ids []string
 	if ids, err = bq.Limit(2).IDs(setContextOp(ctx, bq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -222,7 +222,7 @@ func (bq *BusinessQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (bq *BusinessQuery) OnlyIDX(ctx context.Context) int {
+func (bq *BusinessQuery) OnlyIDX(ctx context.Context) string {
 	id, err := bq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -250,7 +250,7 @@ func (bq *BusinessQuery) AllX(ctx context.Context) []*Business {
 }
 
 // IDs executes the query and returns a list of Business IDs.
-func (bq *BusinessQuery) IDs(ctx context.Context) (ids []int, err error) {
+func (bq *BusinessQuery) IDs(ctx context.Context) (ids []string, err error) {
 	if bq.ctx.Unique == nil && bq.path != nil {
 		bq.Unique(true)
 	}
@@ -262,7 +262,7 @@ func (bq *BusinessQuery) IDs(ctx context.Context) (ids []int, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (bq *BusinessQuery) IDsX(ctx context.Context) []int {
+func (bq *BusinessQuery) IDsX(ctx context.Context) []string {
 	ids, err := bq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -344,8 +344,8 @@ func (bq *BusinessQuery) WithUserBusinesses(opts ...func(*UserBusinessQuery)) *B
 
 // WithBusinessAccountSettings tells the query-builder to eager-load the nodes that are connected to
 // the "business_account_settings" edge. The optional arguments are used to configure the query builder of the edge.
-func (bq *BusinessQuery) WithBusinessAccountSettings(opts ...func(*BusinessAccountSettingsQuery)) *BusinessQuery {
-	query := (&BusinessAccountSettingsClient{config: bq.config}).Query()
+func (bq *BusinessQuery) WithBusinessAccountSettings(opts ...func(*AccountSettingsQuery)) *BusinessQuery {
+	query := (&AccountSettingsClient{config: bq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -475,7 +475,7 @@ func (bq *BusinessQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Bus
 	}
 	if query := bq.withBusinessAccountSettings; query != nil {
 		if err := bq.loadBusinessAccountSettings(ctx, query, nodes, nil,
-			func(n *Business, e *BusinessAccountSettings) { n.Edges.BusinessAccountSettings = e }); err != nil {
+			func(n *Business, e *AccountSettings) { n.Edges.BusinessAccountSettings = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -491,7 +491,7 @@ func (bq *BusinessQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Bus
 
 func (bq *BusinessQuery) loadUserBusinesses(ctx context.Context, query *UserBusinessQuery, nodes []*Business, init func(*Business), assign func(*Business, *UserBusiness)) error {
 	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[int]*Business)
+	nodeids := make(map[string]*Business)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
@@ -520,15 +520,15 @@ func (bq *BusinessQuery) loadUserBusinesses(ctx context.Context, query *UserBusi
 	}
 	return nil
 }
-func (bq *BusinessQuery) loadBusinessAccountSettings(ctx context.Context, query *BusinessAccountSettingsQuery, nodes []*Business, init func(*Business), assign func(*Business, *BusinessAccountSettings)) error {
+func (bq *BusinessQuery) loadBusinessAccountSettings(ctx context.Context, query *AccountSettingsQuery, nodes []*Business, init func(*Business), assign func(*Business, *AccountSettings)) error {
 	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[int]*Business)
+	nodeids := make(map[string]*Business)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
 	}
 	query.withFKs = true
-	query.Where(predicate.BusinessAccountSettings(func(s *sql.Selector) {
+	query.Where(predicate.AccountSettings(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(business.BusinessAccountSettingsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
@@ -550,7 +550,7 @@ func (bq *BusinessQuery) loadBusinessAccountSettings(ctx context.Context, query 
 }
 func (bq *BusinessQuery) loadPosts(ctx context.Context, query *PostQuery, nodes []*Business, init func(*Business), assign func(*Business, *Post)) error {
 	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[int]*Business)
+	nodeids := make(map[string]*Business)
 	for i := range nodes {
 		fks = append(fks, nodes[i].ID)
 		nodeids[nodes[i].ID] = nodes[i]
@@ -590,7 +590,7 @@ func (bq *BusinessQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (bq *BusinessQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(business.Table, business.Columns, sqlgraph.NewFieldSpec(business.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewQuerySpec(business.Table, business.Columns, sqlgraph.NewFieldSpec(business.FieldID, field.TypeString))
 	_spec.From = bq.sql
 	if unique := bq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

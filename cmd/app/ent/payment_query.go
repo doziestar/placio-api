@@ -81,8 +81,8 @@ func (pq *PaymentQuery) FirstX(ctx context.Context) *Payment {
 
 // FirstID returns the first Payment ID from the query.
 // Returns a *NotFoundError when no Payment ID was found.
-func (pq *PaymentQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (pq *PaymentQuery) FirstID(ctx context.Context) (id string, err error) {
+	var ids []string
 	if ids, err = pq.Limit(1).IDs(setContextOp(ctx, pq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -94,7 +94,7 @@ func (pq *PaymentQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (pq *PaymentQuery) FirstIDX(ctx context.Context) int {
+func (pq *PaymentQuery) FirstIDX(ctx context.Context) string {
 	id, err := pq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -132,8 +132,8 @@ func (pq *PaymentQuery) OnlyX(ctx context.Context) *Payment {
 // OnlyID is like Only, but returns the only Payment ID in the query.
 // Returns a *NotSingularError when more than one Payment ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (pq *PaymentQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (pq *PaymentQuery) OnlyID(ctx context.Context) (id string, err error) {
+	var ids []string
 	if ids, err = pq.Limit(2).IDs(setContextOp(ctx, pq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -149,7 +149,7 @@ func (pq *PaymentQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (pq *PaymentQuery) OnlyIDX(ctx context.Context) int {
+func (pq *PaymentQuery) OnlyIDX(ctx context.Context) string {
 	id, err := pq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -177,7 +177,7 @@ func (pq *PaymentQuery) AllX(ctx context.Context) []*Payment {
 }
 
 // IDs executes the query and returns a list of Payment IDs.
-func (pq *PaymentQuery) IDs(ctx context.Context) (ids []int, err error) {
+func (pq *PaymentQuery) IDs(ctx context.Context) (ids []string, err error) {
 	if pq.ctx.Unique == nil && pq.path != nil {
 		pq.Unique(true)
 	}
@@ -189,7 +189,7 @@ func (pq *PaymentQuery) IDs(ctx context.Context) (ids []int, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (pq *PaymentQuery) IDsX(ctx context.Context) []int {
+func (pq *PaymentQuery) IDsX(ctx context.Context) []string {
 	ids, err := pq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -342,7 +342,7 @@ func (pq *PaymentQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (pq *PaymentQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(payment.Table, payment.Columns, sqlgraph.NewFieldSpec(payment.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewQuerySpec(payment.Table, payment.Columns, sqlgraph.NewFieldSpec(payment.FieldID, field.TypeString))
 	_spec.From = pq.sql
 	if unique := pq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

@@ -36,13 +36,13 @@ func (ubu *UserBusinessUpdate) SetRole(s string) *UserBusinessUpdate {
 }
 
 // SetUserID sets the "user" edge to the User entity by ID.
-func (ubu *UserBusinessUpdate) SetUserID(id int) *UserBusinessUpdate {
+func (ubu *UserBusinessUpdate) SetUserID(id string) *UserBusinessUpdate {
 	ubu.mutation.SetUserID(id)
 	return ubu
 }
 
 // SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
-func (ubu *UserBusinessUpdate) SetNillableUserID(id *int) *UserBusinessUpdate {
+func (ubu *UserBusinessUpdate) SetNillableUserID(id *string) *UserBusinessUpdate {
 	if id != nil {
 		ubu = ubu.SetUserID(*id)
 	}
@@ -55,13 +55,13 @@ func (ubu *UserBusinessUpdate) SetUser(u *User) *UserBusinessUpdate {
 }
 
 // SetBusinessID sets the "business" edge to the Business entity by ID.
-func (ubu *UserBusinessUpdate) SetBusinessID(id int) *UserBusinessUpdate {
+func (ubu *UserBusinessUpdate) SetBusinessID(id string) *UserBusinessUpdate {
 	ubu.mutation.SetBusinessID(id)
 	return ubu
 }
 
 // SetNillableBusinessID sets the "business" edge to the Business entity by ID if the given value is not nil.
-func (ubu *UserBusinessUpdate) SetNillableBusinessID(id *int) *UserBusinessUpdate {
+func (ubu *UserBusinessUpdate) SetNillableBusinessID(id *string) *UserBusinessUpdate {
 	if id != nil {
 		ubu = ubu.SetBusinessID(*id)
 	}
@@ -118,7 +118,7 @@ func (ubu *UserBusinessUpdate) ExecX(ctx context.Context) {
 }
 
 func (ubu *UserBusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	_spec := sqlgraph.NewUpdateSpec(userbusiness.Table, userbusiness.Columns, sqlgraph.NewFieldSpec(userbusiness.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(userbusiness.Table, userbusiness.Columns, sqlgraph.NewFieldSpec(userbusiness.FieldID, field.TypeString))
 	if ps := ubu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -137,7 +137,7 @@ func (ubu *UserBusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{userbusiness.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -150,7 +150,7 @@ func (ubu *UserBusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{userbusiness.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -166,7 +166,7 @@ func (ubu *UserBusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{userbusiness.BusinessColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(business.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(business.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -179,7 +179,7 @@ func (ubu *UserBusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{userbusiness.BusinessColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(business.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(business.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -214,13 +214,13 @@ func (ubuo *UserBusinessUpdateOne) SetRole(s string) *UserBusinessUpdateOne {
 }
 
 // SetUserID sets the "user" edge to the User entity by ID.
-func (ubuo *UserBusinessUpdateOne) SetUserID(id int) *UserBusinessUpdateOne {
+func (ubuo *UserBusinessUpdateOne) SetUserID(id string) *UserBusinessUpdateOne {
 	ubuo.mutation.SetUserID(id)
 	return ubuo
 }
 
 // SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
-func (ubuo *UserBusinessUpdateOne) SetNillableUserID(id *int) *UserBusinessUpdateOne {
+func (ubuo *UserBusinessUpdateOne) SetNillableUserID(id *string) *UserBusinessUpdateOne {
 	if id != nil {
 		ubuo = ubuo.SetUserID(*id)
 	}
@@ -233,13 +233,13 @@ func (ubuo *UserBusinessUpdateOne) SetUser(u *User) *UserBusinessUpdateOne {
 }
 
 // SetBusinessID sets the "business" edge to the Business entity by ID.
-func (ubuo *UserBusinessUpdateOne) SetBusinessID(id int) *UserBusinessUpdateOne {
+func (ubuo *UserBusinessUpdateOne) SetBusinessID(id string) *UserBusinessUpdateOne {
 	ubuo.mutation.SetBusinessID(id)
 	return ubuo
 }
 
 // SetNillableBusinessID sets the "business" edge to the Business entity by ID if the given value is not nil.
-func (ubuo *UserBusinessUpdateOne) SetNillableBusinessID(id *int) *UserBusinessUpdateOne {
+func (ubuo *UserBusinessUpdateOne) SetNillableBusinessID(id *string) *UserBusinessUpdateOne {
 	if id != nil {
 		ubuo = ubuo.SetBusinessID(*id)
 	}
@@ -309,7 +309,7 @@ func (ubuo *UserBusinessUpdateOne) ExecX(ctx context.Context) {
 }
 
 func (ubuo *UserBusinessUpdateOne) sqlSave(ctx context.Context) (_node *UserBusiness, err error) {
-	_spec := sqlgraph.NewUpdateSpec(userbusiness.Table, userbusiness.Columns, sqlgraph.NewFieldSpec(userbusiness.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(userbusiness.Table, userbusiness.Columns, sqlgraph.NewFieldSpec(userbusiness.FieldID, field.TypeString))
 	id, ok := ubuo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "UserBusiness.id" for update`)}
@@ -345,7 +345,7 @@ func (ubuo *UserBusinessUpdateOne) sqlSave(ctx context.Context) (_node *UserBusi
 			Columns: []string{userbusiness.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -358,7 +358,7 @@ func (ubuo *UserBusinessUpdateOne) sqlSave(ctx context.Context) (_node *UserBusi
 			Columns: []string{userbusiness.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -374,7 +374,7 @@ func (ubuo *UserBusinessUpdateOne) sqlSave(ctx context.Context) (_node *UserBusi
 			Columns: []string{userbusiness.BusinessColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(business.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(business.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -387,7 +387,7 @@ func (ubuo *UserBusinessUpdateOne) sqlSave(ctx context.Context) (_node *UserBusi
 			Columns: []string{userbusiness.BusinessColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(business.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(business.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

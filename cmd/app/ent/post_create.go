@@ -52,13 +52,13 @@ func (pc *PostCreate) SetUpdatedAt(t time.Time) *PostCreate {
 }
 
 // SetUserID sets the "user" edge to the User entity by ID.
-func (pc *PostCreate) SetUserID(id int) *PostCreate {
+func (pc *PostCreate) SetUserID(id string) *PostCreate {
 	pc.mutation.SetUserID(id)
 	return pc
 }
 
 // SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
-func (pc *PostCreate) SetNillableUserID(id *int) *PostCreate {
+func (pc *PostCreate) SetNillableUserID(id *string) *PostCreate {
 	if id != nil {
 		pc = pc.SetUserID(*id)
 	}
@@ -71,13 +71,13 @@ func (pc *PostCreate) SetUser(u *User) *PostCreate {
 }
 
 // SetBusinessAccountID sets the "business_account" edge to the Business entity by ID.
-func (pc *PostCreate) SetBusinessAccountID(id int) *PostCreate {
+func (pc *PostCreate) SetBusinessAccountID(id string) *PostCreate {
 	pc.mutation.SetBusinessAccountID(id)
 	return pc
 }
 
 // SetNillableBusinessAccountID sets the "business_account" edge to the Business entity by ID if the given value is not nil.
-func (pc *PostCreate) SetNillableBusinessAccountID(id *int) *PostCreate {
+func (pc *PostCreate) SetNillableBusinessAccountID(id *string) *PostCreate {
 	if id != nil {
 		pc = pc.SetBusinessAccountID(*id)
 	}
@@ -90,14 +90,14 @@ func (pc *PostCreate) SetBusinessAccount(b *Business) *PostCreate {
 }
 
 // AddMediaIDs adds the "medias" edge to the Media entity by IDs.
-func (pc *PostCreate) AddMediaIDs(ids ...int) *PostCreate {
+func (pc *PostCreate) AddMediaIDs(ids ...string) *PostCreate {
 	pc.mutation.AddMediaIDs(ids...)
 	return pc
 }
 
 // AddMedias adds the "medias" edges to the Media entity.
 func (pc *PostCreate) AddMedias(m ...*Media) *PostCreate {
-	ids := make([]int, len(m))
+	ids := make([]string, len(m))
 	for i := range m {
 		ids[i] = m[i].ID
 	}
@@ -105,14 +105,14 @@ func (pc *PostCreate) AddMedias(m ...*Media) *PostCreate {
 }
 
 // AddCommentIDs adds the "comments" edge to the Comment entity by IDs.
-func (pc *PostCreate) AddCommentIDs(ids ...int) *PostCreate {
+func (pc *PostCreate) AddCommentIDs(ids ...string) *PostCreate {
 	pc.mutation.AddCommentIDs(ids...)
 	return pc
 }
 
 // AddComments adds the "comments" edges to the Comment entity.
 func (pc *PostCreate) AddComments(c ...*Comment) *PostCreate {
-	ids := make([]int, len(c))
+	ids := make([]string, len(c))
 	for i := range c {
 		ids[i] = c[i].ID
 	}
@@ -120,14 +120,14 @@ func (pc *PostCreate) AddComments(c ...*Comment) *PostCreate {
 }
 
 // AddLikeIDs adds the "likes" edge to the Like entity by IDs.
-func (pc *PostCreate) AddLikeIDs(ids ...int) *PostCreate {
+func (pc *PostCreate) AddLikeIDs(ids ...string) *PostCreate {
 	pc.mutation.AddLikeIDs(ids...)
 	return pc
 }
 
 // AddLikes adds the "likes" edges to the Like entity.
 func (pc *PostCreate) AddLikes(l ...*Like) *PostCreate {
-	ids := make([]int, len(l))
+	ids := make([]string, len(l))
 	for i := range l {
 		ids[i] = l[i].ID
 	}
@@ -205,8 +205,13 @@ func (pc *PostCreate) sqlSave(ctx context.Context) (*Post, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(string); ok {
+			_node.ID = id
+		} else {
+			return nil, fmt.Errorf("unexpected Post.ID type: %T", _spec.ID.Value)
+		}
+	}
 	pc.mutation.id = &_node.ID
 	pc.mutation.done = true
 	return _node, nil
@@ -215,7 +220,7 @@ func (pc *PostCreate) sqlSave(ctx context.Context) (*Post, error) {
 func (pc *PostCreate) createSpec() (*Post, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Post{config: pc.config}
-		_spec = sqlgraph.NewCreateSpec(post.Table, sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt))
+		_spec = sqlgraph.NewCreateSpec(post.Table, sqlgraph.NewFieldSpec(post.FieldID, field.TypeString))
 	)
 	if value, ok := pc.mutation.Content(); ok {
 		_spec.SetField(post.FieldContent, field.TypeString, value)
@@ -237,7 +242,7 @@ func (pc *PostCreate) createSpec() (*Post, *sqlgraph.CreateSpec) {
 			Columns: []string{post.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -254,7 +259,7 @@ func (pc *PostCreate) createSpec() (*Post, *sqlgraph.CreateSpec) {
 			Columns: []string{post.BusinessAccountColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(business.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(business.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -271,7 +276,7 @@ func (pc *PostCreate) createSpec() (*Post, *sqlgraph.CreateSpec) {
 			Columns: []string{post.MediasColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -287,7 +292,7 @@ func (pc *PostCreate) createSpec() (*Post, *sqlgraph.CreateSpec) {
 			Columns: []string{post.CommentsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(comment.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(comment.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -303,7 +308,7 @@ func (pc *PostCreate) createSpec() (*Post, *sqlgraph.CreateSpec) {
 			Columns: []string{post.LikesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(like.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(like.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -355,10 +360,6 @@ func (pcb *PostCreateBulk) Save(ctx context.Context) ([]*Post, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				mutation.done = true
 				return nodes[i], nil
 			})

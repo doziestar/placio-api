@@ -6,8 +6,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"placio-app/ent/accountsettings"
 	"placio-app/ent/business"
-	"placio-app/ent/businessaccountsettings"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
 	"placio-app/ent/userbusiness"
@@ -37,48 +37,48 @@ func (bu *BusinessUpdate) SetName(s string) *BusinessUpdate {
 }
 
 // AddUserBusinessIDs adds the "userBusinesses" edge to the UserBusiness entity by IDs.
-func (bu *BusinessUpdate) AddUserBusinessIDs(ids ...int) *BusinessUpdate {
+func (bu *BusinessUpdate) AddUserBusinessIDs(ids ...string) *BusinessUpdate {
 	bu.mutation.AddUserBusinessIDs(ids...)
 	return bu
 }
 
 // AddUserBusinesses adds the "userBusinesses" edges to the UserBusiness entity.
 func (bu *BusinessUpdate) AddUserBusinesses(u ...*UserBusiness) *BusinessUpdate {
-	ids := make([]int, len(u))
+	ids := make([]string, len(u))
 	for i := range u {
 		ids[i] = u[i].ID
 	}
 	return bu.AddUserBusinessIDs(ids...)
 }
 
-// SetBusinessAccountSettingsID sets the "business_account_settings" edge to the BusinessAccountSettings entity by ID.
-func (bu *BusinessUpdate) SetBusinessAccountSettingsID(id int) *BusinessUpdate {
+// SetBusinessAccountSettingsID sets the "business_account_settings" edge to the AccountSettings entity by ID.
+func (bu *BusinessUpdate) SetBusinessAccountSettingsID(id string) *BusinessUpdate {
 	bu.mutation.SetBusinessAccountSettingsID(id)
 	return bu
 }
 
-// SetNillableBusinessAccountSettingsID sets the "business_account_settings" edge to the BusinessAccountSettings entity by ID if the given value is not nil.
-func (bu *BusinessUpdate) SetNillableBusinessAccountSettingsID(id *int) *BusinessUpdate {
+// SetNillableBusinessAccountSettingsID sets the "business_account_settings" edge to the AccountSettings entity by ID if the given value is not nil.
+func (bu *BusinessUpdate) SetNillableBusinessAccountSettingsID(id *string) *BusinessUpdate {
 	if id != nil {
 		bu = bu.SetBusinessAccountSettingsID(*id)
 	}
 	return bu
 }
 
-// SetBusinessAccountSettings sets the "business_account_settings" edge to the BusinessAccountSettings entity.
-func (bu *BusinessUpdate) SetBusinessAccountSettings(b *BusinessAccountSettings) *BusinessUpdate {
-	return bu.SetBusinessAccountSettingsID(b.ID)
+// SetBusinessAccountSettings sets the "business_account_settings" edge to the AccountSettings entity.
+func (bu *BusinessUpdate) SetBusinessAccountSettings(a *AccountSettings) *BusinessUpdate {
+	return bu.SetBusinessAccountSettingsID(a.ID)
 }
 
 // AddPostIDs adds the "posts" edge to the Post entity by IDs.
-func (bu *BusinessUpdate) AddPostIDs(ids ...int) *BusinessUpdate {
+func (bu *BusinessUpdate) AddPostIDs(ids ...string) *BusinessUpdate {
 	bu.mutation.AddPostIDs(ids...)
 	return bu
 }
 
 // AddPosts adds the "posts" edges to the Post entity.
 func (bu *BusinessUpdate) AddPosts(p ...*Post) *BusinessUpdate {
-	ids := make([]int, len(p))
+	ids := make([]string, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -97,21 +97,21 @@ func (bu *BusinessUpdate) ClearUserBusinesses() *BusinessUpdate {
 }
 
 // RemoveUserBusinessIDs removes the "userBusinesses" edge to UserBusiness entities by IDs.
-func (bu *BusinessUpdate) RemoveUserBusinessIDs(ids ...int) *BusinessUpdate {
+func (bu *BusinessUpdate) RemoveUserBusinessIDs(ids ...string) *BusinessUpdate {
 	bu.mutation.RemoveUserBusinessIDs(ids...)
 	return bu
 }
 
 // RemoveUserBusinesses removes "userBusinesses" edges to UserBusiness entities.
 func (bu *BusinessUpdate) RemoveUserBusinesses(u ...*UserBusiness) *BusinessUpdate {
-	ids := make([]int, len(u))
+	ids := make([]string, len(u))
 	for i := range u {
 		ids[i] = u[i].ID
 	}
 	return bu.RemoveUserBusinessIDs(ids...)
 }
 
-// ClearBusinessAccountSettings clears the "business_account_settings" edge to the BusinessAccountSettings entity.
+// ClearBusinessAccountSettings clears the "business_account_settings" edge to the AccountSettings entity.
 func (bu *BusinessUpdate) ClearBusinessAccountSettings() *BusinessUpdate {
 	bu.mutation.ClearBusinessAccountSettings()
 	return bu
@@ -124,14 +124,14 @@ func (bu *BusinessUpdate) ClearPosts() *BusinessUpdate {
 }
 
 // RemovePostIDs removes the "posts" edge to Post entities by IDs.
-func (bu *BusinessUpdate) RemovePostIDs(ids ...int) *BusinessUpdate {
+func (bu *BusinessUpdate) RemovePostIDs(ids ...string) *BusinessUpdate {
 	bu.mutation.RemovePostIDs(ids...)
 	return bu
 }
 
 // RemovePosts removes "posts" edges to Post entities.
 func (bu *BusinessUpdate) RemovePosts(p ...*Post) *BusinessUpdate {
-	ids := make([]int, len(p))
+	ids := make([]string, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -166,7 +166,7 @@ func (bu *BusinessUpdate) ExecX(ctx context.Context) {
 }
 
 func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	_spec := sqlgraph.NewUpdateSpec(business.Table, business.Columns, sqlgraph.NewFieldSpec(business.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(business.Table, business.Columns, sqlgraph.NewFieldSpec(business.FieldID, field.TypeString))
 	if ps := bu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
@@ -185,7 +185,7 @@ func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{business.UserBusinessesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(userbusiness.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(userbusiness.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -198,7 +198,7 @@ func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{business.UserBusinessesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(userbusiness.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(userbusiness.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -214,7 +214,7 @@ func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{business.UserBusinessesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(userbusiness.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(userbusiness.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -230,7 +230,7 @@ func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{business.BusinessAccountSettingsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(businessaccountsettings.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(accountsettings.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -243,7 +243,7 @@ func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{business.BusinessAccountSettingsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(businessaccountsettings.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(accountsettings.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -259,7 +259,7 @@ func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{business.PostsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -272,7 +272,7 @@ func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{business.PostsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -288,7 +288,7 @@ func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: []string{business.PostsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -323,48 +323,48 @@ func (buo *BusinessUpdateOne) SetName(s string) *BusinessUpdateOne {
 }
 
 // AddUserBusinessIDs adds the "userBusinesses" edge to the UserBusiness entity by IDs.
-func (buo *BusinessUpdateOne) AddUserBusinessIDs(ids ...int) *BusinessUpdateOne {
+func (buo *BusinessUpdateOne) AddUserBusinessIDs(ids ...string) *BusinessUpdateOne {
 	buo.mutation.AddUserBusinessIDs(ids...)
 	return buo
 }
 
 // AddUserBusinesses adds the "userBusinesses" edges to the UserBusiness entity.
 func (buo *BusinessUpdateOne) AddUserBusinesses(u ...*UserBusiness) *BusinessUpdateOne {
-	ids := make([]int, len(u))
+	ids := make([]string, len(u))
 	for i := range u {
 		ids[i] = u[i].ID
 	}
 	return buo.AddUserBusinessIDs(ids...)
 }
 
-// SetBusinessAccountSettingsID sets the "business_account_settings" edge to the BusinessAccountSettings entity by ID.
-func (buo *BusinessUpdateOne) SetBusinessAccountSettingsID(id int) *BusinessUpdateOne {
+// SetBusinessAccountSettingsID sets the "business_account_settings" edge to the AccountSettings entity by ID.
+func (buo *BusinessUpdateOne) SetBusinessAccountSettingsID(id string) *BusinessUpdateOne {
 	buo.mutation.SetBusinessAccountSettingsID(id)
 	return buo
 }
 
-// SetNillableBusinessAccountSettingsID sets the "business_account_settings" edge to the BusinessAccountSettings entity by ID if the given value is not nil.
-func (buo *BusinessUpdateOne) SetNillableBusinessAccountSettingsID(id *int) *BusinessUpdateOne {
+// SetNillableBusinessAccountSettingsID sets the "business_account_settings" edge to the AccountSettings entity by ID if the given value is not nil.
+func (buo *BusinessUpdateOne) SetNillableBusinessAccountSettingsID(id *string) *BusinessUpdateOne {
 	if id != nil {
 		buo = buo.SetBusinessAccountSettingsID(*id)
 	}
 	return buo
 }
 
-// SetBusinessAccountSettings sets the "business_account_settings" edge to the BusinessAccountSettings entity.
-func (buo *BusinessUpdateOne) SetBusinessAccountSettings(b *BusinessAccountSettings) *BusinessUpdateOne {
-	return buo.SetBusinessAccountSettingsID(b.ID)
+// SetBusinessAccountSettings sets the "business_account_settings" edge to the AccountSettings entity.
+func (buo *BusinessUpdateOne) SetBusinessAccountSettings(a *AccountSettings) *BusinessUpdateOne {
+	return buo.SetBusinessAccountSettingsID(a.ID)
 }
 
 // AddPostIDs adds the "posts" edge to the Post entity by IDs.
-func (buo *BusinessUpdateOne) AddPostIDs(ids ...int) *BusinessUpdateOne {
+func (buo *BusinessUpdateOne) AddPostIDs(ids ...string) *BusinessUpdateOne {
 	buo.mutation.AddPostIDs(ids...)
 	return buo
 }
 
 // AddPosts adds the "posts" edges to the Post entity.
 func (buo *BusinessUpdateOne) AddPosts(p ...*Post) *BusinessUpdateOne {
-	ids := make([]int, len(p))
+	ids := make([]string, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -383,21 +383,21 @@ func (buo *BusinessUpdateOne) ClearUserBusinesses() *BusinessUpdateOne {
 }
 
 // RemoveUserBusinessIDs removes the "userBusinesses" edge to UserBusiness entities by IDs.
-func (buo *BusinessUpdateOne) RemoveUserBusinessIDs(ids ...int) *BusinessUpdateOne {
+func (buo *BusinessUpdateOne) RemoveUserBusinessIDs(ids ...string) *BusinessUpdateOne {
 	buo.mutation.RemoveUserBusinessIDs(ids...)
 	return buo
 }
 
 // RemoveUserBusinesses removes "userBusinesses" edges to UserBusiness entities.
 func (buo *BusinessUpdateOne) RemoveUserBusinesses(u ...*UserBusiness) *BusinessUpdateOne {
-	ids := make([]int, len(u))
+	ids := make([]string, len(u))
 	for i := range u {
 		ids[i] = u[i].ID
 	}
 	return buo.RemoveUserBusinessIDs(ids...)
 }
 
-// ClearBusinessAccountSettings clears the "business_account_settings" edge to the BusinessAccountSettings entity.
+// ClearBusinessAccountSettings clears the "business_account_settings" edge to the AccountSettings entity.
 func (buo *BusinessUpdateOne) ClearBusinessAccountSettings() *BusinessUpdateOne {
 	buo.mutation.ClearBusinessAccountSettings()
 	return buo
@@ -410,14 +410,14 @@ func (buo *BusinessUpdateOne) ClearPosts() *BusinessUpdateOne {
 }
 
 // RemovePostIDs removes the "posts" edge to Post entities by IDs.
-func (buo *BusinessUpdateOne) RemovePostIDs(ids ...int) *BusinessUpdateOne {
+func (buo *BusinessUpdateOne) RemovePostIDs(ids ...string) *BusinessUpdateOne {
 	buo.mutation.RemovePostIDs(ids...)
 	return buo
 }
 
 // RemovePosts removes "posts" edges to Post entities.
 func (buo *BusinessUpdateOne) RemovePosts(p ...*Post) *BusinessUpdateOne {
-	ids := make([]int, len(p))
+	ids := make([]string, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
@@ -465,7 +465,7 @@ func (buo *BusinessUpdateOne) ExecX(ctx context.Context) {
 }
 
 func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err error) {
-	_spec := sqlgraph.NewUpdateSpec(business.Table, business.Columns, sqlgraph.NewFieldSpec(business.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewUpdateSpec(business.Table, business.Columns, sqlgraph.NewFieldSpec(business.FieldID, field.TypeString))
 	id, ok := buo.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Business.id" for update`)}
@@ -501,7 +501,7 @@ func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err
 			Columns: []string{business.UserBusinessesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(userbusiness.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(userbusiness.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -514,7 +514,7 @@ func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err
 			Columns: []string{business.UserBusinessesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(userbusiness.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(userbusiness.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -530,7 +530,7 @@ func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err
 			Columns: []string{business.UserBusinessesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(userbusiness.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(userbusiness.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -546,7 +546,7 @@ func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err
 			Columns: []string{business.BusinessAccountSettingsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(businessaccountsettings.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(accountsettings.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -559,7 +559,7 @@ func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err
 			Columns: []string{business.BusinessAccountSettingsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(businessaccountsettings.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(accountsettings.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -575,7 +575,7 @@ func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err
 			Columns: []string{business.PostsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -588,7 +588,7 @@ func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err
 			Columns: []string{business.PostsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -604,7 +604,7 @@ func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err
 			Columns: []string{business.PostsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

@@ -130,8 +130,8 @@ func (ubq *UserBusinessQuery) FirstX(ctx context.Context) *UserBusiness {
 
 // FirstID returns the first UserBusiness ID from the query.
 // Returns a *NotFoundError when no UserBusiness ID was found.
-func (ubq *UserBusinessQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (ubq *UserBusinessQuery) FirstID(ctx context.Context) (id string, err error) {
+	var ids []string
 	if ids, err = ubq.Limit(1).IDs(setContextOp(ctx, ubq.ctx, "FirstID")); err != nil {
 		return
 	}
@@ -143,7 +143,7 @@ func (ubq *UserBusinessQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (ubq *UserBusinessQuery) FirstIDX(ctx context.Context) int {
+func (ubq *UserBusinessQuery) FirstIDX(ctx context.Context) string {
 	id, err := ubq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -181,8 +181,8 @@ func (ubq *UserBusinessQuery) OnlyX(ctx context.Context) *UserBusiness {
 // OnlyID is like Only, but returns the only UserBusiness ID in the query.
 // Returns a *NotSingularError when more than one UserBusiness ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (ubq *UserBusinessQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (ubq *UserBusinessQuery) OnlyID(ctx context.Context) (id string, err error) {
+	var ids []string
 	if ids, err = ubq.Limit(2).IDs(setContextOp(ctx, ubq.ctx, "OnlyID")); err != nil {
 		return
 	}
@@ -198,7 +198,7 @@ func (ubq *UserBusinessQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (ubq *UserBusinessQuery) OnlyIDX(ctx context.Context) int {
+func (ubq *UserBusinessQuery) OnlyIDX(ctx context.Context) string {
 	id, err := ubq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -226,7 +226,7 @@ func (ubq *UserBusinessQuery) AllX(ctx context.Context) []*UserBusiness {
 }
 
 // IDs executes the query and returns a list of UserBusiness IDs.
-func (ubq *UserBusinessQuery) IDs(ctx context.Context) (ids []int, err error) {
+func (ubq *UserBusinessQuery) IDs(ctx context.Context) (ids []string, err error) {
 	if ubq.ctx.Unique == nil && ubq.path != nil {
 		ubq.Unique(true)
 	}
@@ -238,7 +238,7 @@ func (ubq *UserBusinessQuery) IDs(ctx context.Context) (ids []int, err error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (ubq *UserBusinessQuery) IDsX(ctx context.Context) []int {
+func (ubq *UserBusinessQuery) IDsX(ctx context.Context) []string {
 	ids, err := ubq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -452,8 +452,8 @@ func (ubq *UserBusinessQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([
 }
 
 func (ubq *UserBusinessQuery) loadUser(ctx context.Context, query *UserQuery, nodes []*UserBusiness, init func(*UserBusiness), assign func(*UserBusiness, *User)) error {
-	ids := make([]int, 0, len(nodes))
-	nodeids := make(map[int][]*UserBusiness)
+	ids := make([]string, 0, len(nodes))
+	nodeids := make(map[string][]*UserBusiness)
 	for i := range nodes {
 		if nodes[i].user_user_businesses == nil {
 			continue
@@ -484,8 +484,8 @@ func (ubq *UserBusinessQuery) loadUser(ctx context.Context, query *UserQuery, no
 	return nil
 }
 func (ubq *UserBusinessQuery) loadBusiness(ctx context.Context, query *BusinessQuery, nodes []*UserBusiness, init func(*UserBusiness), assign func(*UserBusiness, *Business)) error {
-	ids := make([]int, 0, len(nodes))
-	nodeids := make(map[int][]*UserBusiness)
+	ids := make([]string, 0, len(nodes))
+	nodeids := make(map[string][]*UserBusiness)
 	for i := range nodes {
 		if nodes[i].business_user_businesses == nil {
 			continue
@@ -526,7 +526,7 @@ func (ubq *UserBusinessQuery) sqlCount(ctx context.Context) (int, error) {
 }
 
 func (ubq *UserBusinessQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(userbusiness.Table, userbusiness.Columns, sqlgraph.NewFieldSpec(userbusiness.FieldID, field.TypeInt))
+	_spec := sqlgraph.NewQuerySpec(userbusiness.Table, userbusiness.Columns, sqlgraph.NewFieldSpec(userbusiness.FieldID, field.TypeString))
 	_spec.From = ubq.sql
 	if unique := ubq.ctx.Unique; unique != nil {
 		_spec.Unique = *unique

@@ -6,8 +6,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"placio-app/ent/accountsettings"
 	"placio-app/ent/business"
-	"placio-app/ent/businessaccountsettings"
 	"placio-app/ent/comment"
 	"placio-app/ent/like"
 	"placio-app/ent/media"
@@ -20,6 +20,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/auth0/go-auth0/management"
 )
 
 const (
@@ -31,27 +32,560 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeBooking                 = "Booking"
-	TypeBusiness                = "Business"
-	TypeBusinessAccountSettings = "BusinessAccountSettings"
-	TypeChat                    = "Chat"
-	TypeComment                 = "Comment"
-	TypeLike                    = "Like"
-	TypeMedia                   = "Media"
-	TypeOrder                   = "Order"
-	TypePayment                 = "Payment"
-	TypePost                    = "Post"
-	TypeRating                  = "Rating"
-	TypeUser                    = "User"
-	TypeUserBusiness            = "UserBusiness"
+	TypeAccountSettings = "AccountSettings"
+	TypeBooking         = "Booking"
+	TypeBusiness        = "Business"
+	TypeChat            = "Chat"
+	TypeComment         = "Comment"
+	TypeLike            = "Like"
+	TypeMedia           = "Media"
+	TypeOrder           = "Order"
+	TypePayment         = "Payment"
+	TypePost            = "Post"
+	TypeRating          = "Rating"
+	TypeUser            = "User"
+	TypeUserBusiness    = "UserBusiness"
 )
+
+// AccountSettingsMutation represents an operation that mutates the AccountSettings nodes in the graph.
+type AccountSettingsMutation struct {
+	config
+	op                       Op
+	typ                      string
+	id                       *string
+	_TwoFactorAuthentication *bool
+	_BlockedUsers            *[]string
+	append_BlockedUsers      []string
+	_MutedUsers              *[]string
+	append_MutedUsers        []string
+	clearedFields            map[string]struct{}
+	business_account         *string
+	clearedbusiness_account  bool
+	done                     bool
+	oldValue                 func(context.Context) (*AccountSettings, error)
+	predicates               []predicate.AccountSettings
+}
+
+var _ ent.Mutation = (*AccountSettingsMutation)(nil)
+
+// accountsettingsOption allows management of the mutation configuration using functional options.
+type accountsettingsOption func(*AccountSettingsMutation)
+
+// newAccountSettingsMutation creates new mutation for the AccountSettings entity.
+func newAccountSettingsMutation(c config, op Op, opts ...accountsettingsOption) *AccountSettingsMutation {
+	m := &AccountSettingsMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeAccountSettings,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withAccountSettingsID sets the ID field of the mutation.
+func withAccountSettingsID(id string) accountsettingsOption {
+	return func(m *AccountSettingsMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *AccountSettings
+		)
+		m.oldValue = func(ctx context.Context) (*AccountSettings, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().AccountSettings.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withAccountSettings sets the old AccountSettings of the mutation.
+func withAccountSettings(node *AccountSettings) accountsettingsOption {
+	return func(m *AccountSettingsMutation) {
+		m.oldValue = func(context.Context) (*AccountSettings, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m AccountSettingsMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m AccountSettingsMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *AccountSettingsMutation) ID() (id string, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *AccountSettingsMutation) IDs(ctx context.Context) ([]string, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []string{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().AccountSettings.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetTwoFactorAuthentication sets the "TwoFactorAuthentication" field.
+func (m *AccountSettingsMutation) SetTwoFactorAuthentication(b bool) {
+	m._TwoFactorAuthentication = &b
+}
+
+// TwoFactorAuthentication returns the value of the "TwoFactorAuthentication" field in the mutation.
+func (m *AccountSettingsMutation) TwoFactorAuthentication() (r bool, exists bool) {
+	v := m._TwoFactorAuthentication
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTwoFactorAuthentication returns the old "TwoFactorAuthentication" field's value of the AccountSettings entity.
+// If the AccountSettings object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountSettingsMutation) OldTwoFactorAuthentication(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTwoFactorAuthentication is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTwoFactorAuthentication requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTwoFactorAuthentication: %w", err)
+	}
+	return oldValue.TwoFactorAuthentication, nil
+}
+
+// ResetTwoFactorAuthentication resets all changes to the "TwoFactorAuthentication" field.
+func (m *AccountSettingsMutation) ResetTwoFactorAuthentication() {
+	m._TwoFactorAuthentication = nil
+}
+
+// SetBlockedUsers sets the "BlockedUsers" field.
+func (m *AccountSettingsMutation) SetBlockedUsers(s []string) {
+	m._BlockedUsers = &s
+	m.append_BlockedUsers = nil
+}
+
+// BlockedUsers returns the value of the "BlockedUsers" field in the mutation.
+func (m *AccountSettingsMutation) BlockedUsers() (r []string, exists bool) {
+	v := m._BlockedUsers
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBlockedUsers returns the old "BlockedUsers" field's value of the AccountSettings entity.
+// If the AccountSettings object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountSettingsMutation) OldBlockedUsers(ctx context.Context) (v []string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBlockedUsers is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBlockedUsers requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBlockedUsers: %w", err)
+	}
+	return oldValue.BlockedUsers, nil
+}
+
+// AppendBlockedUsers adds s to the "BlockedUsers" field.
+func (m *AccountSettingsMutation) AppendBlockedUsers(s []string) {
+	m.append_BlockedUsers = append(m.append_BlockedUsers, s...)
+}
+
+// AppendedBlockedUsers returns the list of values that were appended to the "BlockedUsers" field in this mutation.
+func (m *AccountSettingsMutation) AppendedBlockedUsers() ([]string, bool) {
+	if len(m.append_BlockedUsers) == 0 {
+		return nil, false
+	}
+	return m.append_BlockedUsers, true
+}
+
+// ResetBlockedUsers resets all changes to the "BlockedUsers" field.
+func (m *AccountSettingsMutation) ResetBlockedUsers() {
+	m._BlockedUsers = nil
+	m.append_BlockedUsers = nil
+}
+
+// SetMutedUsers sets the "MutedUsers" field.
+func (m *AccountSettingsMutation) SetMutedUsers(s []string) {
+	m._MutedUsers = &s
+	m.append_MutedUsers = nil
+}
+
+// MutedUsers returns the value of the "MutedUsers" field in the mutation.
+func (m *AccountSettingsMutation) MutedUsers() (r []string, exists bool) {
+	v := m._MutedUsers
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMutedUsers returns the old "MutedUsers" field's value of the AccountSettings entity.
+// If the AccountSettings object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountSettingsMutation) OldMutedUsers(ctx context.Context) (v []string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMutedUsers is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMutedUsers requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMutedUsers: %w", err)
+	}
+	return oldValue.MutedUsers, nil
+}
+
+// AppendMutedUsers adds s to the "MutedUsers" field.
+func (m *AccountSettingsMutation) AppendMutedUsers(s []string) {
+	m.append_MutedUsers = append(m.append_MutedUsers, s...)
+}
+
+// AppendedMutedUsers returns the list of values that were appended to the "MutedUsers" field in this mutation.
+func (m *AccountSettingsMutation) AppendedMutedUsers() ([]string, bool) {
+	if len(m.append_MutedUsers) == 0 {
+		return nil, false
+	}
+	return m.append_MutedUsers, true
+}
+
+// ResetMutedUsers resets all changes to the "MutedUsers" field.
+func (m *AccountSettingsMutation) ResetMutedUsers() {
+	m._MutedUsers = nil
+	m.append_MutedUsers = nil
+}
+
+// SetBusinessAccountID sets the "business_account" edge to the Business entity by id.
+func (m *AccountSettingsMutation) SetBusinessAccountID(id string) {
+	m.business_account = &id
+}
+
+// ClearBusinessAccount clears the "business_account" edge to the Business entity.
+func (m *AccountSettingsMutation) ClearBusinessAccount() {
+	m.clearedbusiness_account = true
+}
+
+// BusinessAccountCleared reports if the "business_account" edge to the Business entity was cleared.
+func (m *AccountSettingsMutation) BusinessAccountCleared() bool {
+	return m.clearedbusiness_account
+}
+
+// BusinessAccountID returns the "business_account" edge ID in the mutation.
+func (m *AccountSettingsMutation) BusinessAccountID() (id string, exists bool) {
+	if m.business_account != nil {
+		return *m.business_account, true
+	}
+	return
+}
+
+// BusinessAccountIDs returns the "business_account" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// BusinessAccountID instead. It exists only for internal usage by the builders.
+func (m *AccountSettingsMutation) BusinessAccountIDs() (ids []string) {
+	if id := m.business_account; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetBusinessAccount resets all changes to the "business_account" edge.
+func (m *AccountSettingsMutation) ResetBusinessAccount() {
+	m.business_account = nil
+	m.clearedbusiness_account = false
+}
+
+// Where appends a list predicates to the AccountSettingsMutation builder.
+func (m *AccountSettingsMutation) Where(ps ...predicate.AccountSettings) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the AccountSettingsMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *AccountSettingsMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.AccountSettings, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *AccountSettingsMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *AccountSettingsMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (AccountSettings).
+func (m *AccountSettingsMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *AccountSettingsMutation) Fields() []string {
+	fields := make([]string, 0, 3)
+	if m._TwoFactorAuthentication != nil {
+		fields = append(fields, accountsettings.FieldTwoFactorAuthentication)
+	}
+	if m._BlockedUsers != nil {
+		fields = append(fields, accountsettings.FieldBlockedUsers)
+	}
+	if m._MutedUsers != nil {
+		fields = append(fields, accountsettings.FieldMutedUsers)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *AccountSettingsMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case accountsettings.FieldTwoFactorAuthentication:
+		return m.TwoFactorAuthentication()
+	case accountsettings.FieldBlockedUsers:
+		return m.BlockedUsers()
+	case accountsettings.FieldMutedUsers:
+		return m.MutedUsers()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *AccountSettingsMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case accountsettings.FieldTwoFactorAuthentication:
+		return m.OldTwoFactorAuthentication(ctx)
+	case accountsettings.FieldBlockedUsers:
+		return m.OldBlockedUsers(ctx)
+	case accountsettings.FieldMutedUsers:
+		return m.OldMutedUsers(ctx)
+	}
+	return nil, fmt.Errorf("unknown AccountSettings field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *AccountSettingsMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case accountsettings.FieldTwoFactorAuthentication:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTwoFactorAuthentication(v)
+		return nil
+	case accountsettings.FieldBlockedUsers:
+		v, ok := value.([]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBlockedUsers(v)
+		return nil
+	case accountsettings.FieldMutedUsers:
+		v, ok := value.([]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMutedUsers(v)
+		return nil
+	}
+	return fmt.Errorf("unknown AccountSettings field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *AccountSettingsMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *AccountSettingsMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *AccountSettingsMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown AccountSettings numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *AccountSettingsMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *AccountSettingsMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *AccountSettingsMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown AccountSettings nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *AccountSettingsMutation) ResetField(name string) error {
+	switch name {
+	case accountsettings.FieldTwoFactorAuthentication:
+		m.ResetTwoFactorAuthentication()
+		return nil
+	case accountsettings.FieldBlockedUsers:
+		m.ResetBlockedUsers()
+		return nil
+	case accountsettings.FieldMutedUsers:
+		m.ResetMutedUsers()
+		return nil
+	}
+	return fmt.Errorf("unknown AccountSettings field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *AccountSettingsMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.business_account != nil {
+		edges = append(edges, accountsettings.EdgeBusinessAccount)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *AccountSettingsMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case accountsettings.EdgeBusinessAccount:
+		if id := m.business_account; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *AccountSettingsMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *AccountSettingsMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *AccountSettingsMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedbusiness_account {
+		edges = append(edges, accountsettings.EdgeBusinessAccount)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *AccountSettingsMutation) EdgeCleared(name string) bool {
+	switch name {
+	case accountsettings.EdgeBusinessAccount:
+		return m.clearedbusiness_account
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *AccountSettingsMutation) ClearEdge(name string) error {
+	switch name {
+	case accountsettings.EdgeBusinessAccount:
+		m.ClearBusinessAccount()
+		return nil
+	}
+	return fmt.Errorf("unknown AccountSettings unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *AccountSettingsMutation) ResetEdge(name string) error {
+	switch name {
+	case accountsettings.EdgeBusinessAccount:
+		m.ResetBusinessAccount()
+		return nil
+	}
+	return fmt.Errorf("unknown AccountSettings edge %s", name)
+}
 
 // BookingMutation represents an operation that mutates the Booking nodes in the graph.
 type BookingMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *int
+	id            *string
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*Booking, error)
@@ -78,7 +612,7 @@ func newBookingMutation(c config, op Op, opts ...bookingOption) *BookingMutation
 }
 
 // withBookingID sets the ID field of the mutation.
-func withBookingID(id int) bookingOption {
+func withBookingID(id string) bookingOption {
 	return func(m *BookingMutation) {
 		var (
 			err   error
@@ -130,7 +664,7 @@ func (m BookingMutation) Tx() (*Tx, error) {
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *BookingMutation) ID() (id int, exists bool) {
+func (m *BookingMutation) ID() (id string, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -141,12 +675,12 @@ func (m *BookingMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *BookingMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *BookingMutation) IDs(ctx context.Context) ([]string, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []string{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -315,16 +849,16 @@ type BusinessMutation struct {
 	config
 	op                               Op
 	typ                              string
-	id                               *int
+	id                               *string
 	name                             *string
 	clearedFields                    map[string]struct{}
-	userBusinesses                   map[int]struct{}
-	removeduserBusinesses            map[int]struct{}
+	userBusinesses                   map[string]struct{}
+	removeduserBusinesses            map[string]struct{}
 	cleareduserBusinesses            bool
-	business_account_settings        *int
+	business_account_settings        *string
 	clearedbusiness_account_settings bool
-	posts                            map[int]struct{}
-	removedposts                     map[int]struct{}
+	posts                            map[string]struct{}
+	removedposts                     map[string]struct{}
 	clearedposts                     bool
 	done                             bool
 	oldValue                         func(context.Context) (*Business, error)
@@ -351,7 +885,7 @@ func newBusinessMutation(c config, op Op, opts ...businessOption) *BusinessMutat
 }
 
 // withBusinessID sets the ID field of the mutation.
-func withBusinessID(id int) businessOption {
+func withBusinessID(id string) businessOption {
 	return func(m *BusinessMutation) {
 		var (
 			err   error
@@ -403,7 +937,7 @@ func (m BusinessMutation) Tx() (*Tx, error) {
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *BusinessMutation) ID() (id int, exists bool) {
+func (m *BusinessMutation) ID() (id string, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -414,12 +948,12 @@ func (m *BusinessMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *BusinessMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *BusinessMutation) IDs(ctx context.Context) ([]string, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []string{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -466,9 +1000,9 @@ func (m *BusinessMutation) ResetName() {
 }
 
 // AddUserBusinessIDs adds the "userBusinesses" edge to the UserBusiness entity by ids.
-func (m *BusinessMutation) AddUserBusinessIDs(ids ...int) {
+func (m *BusinessMutation) AddUserBusinessIDs(ids ...string) {
 	if m.userBusinesses == nil {
-		m.userBusinesses = make(map[int]struct{})
+		m.userBusinesses = make(map[string]struct{})
 	}
 	for i := range ids {
 		m.userBusinesses[ids[i]] = struct{}{}
@@ -486,9 +1020,9 @@ func (m *BusinessMutation) UserBusinessesCleared() bool {
 }
 
 // RemoveUserBusinessIDs removes the "userBusinesses" edge to the UserBusiness entity by IDs.
-func (m *BusinessMutation) RemoveUserBusinessIDs(ids ...int) {
+func (m *BusinessMutation) RemoveUserBusinessIDs(ids ...string) {
 	if m.removeduserBusinesses == nil {
-		m.removeduserBusinesses = make(map[int]struct{})
+		m.removeduserBusinesses = make(map[string]struct{})
 	}
 	for i := range ids {
 		delete(m.userBusinesses, ids[i])
@@ -497,7 +1031,7 @@ func (m *BusinessMutation) RemoveUserBusinessIDs(ids ...int) {
 }
 
 // RemovedUserBusinesses returns the removed IDs of the "userBusinesses" edge to the UserBusiness entity.
-func (m *BusinessMutation) RemovedUserBusinessesIDs() (ids []int) {
+func (m *BusinessMutation) RemovedUserBusinessesIDs() (ids []string) {
 	for id := range m.removeduserBusinesses {
 		ids = append(ids, id)
 	}
@@ -505,7 +1039,7 @@ func (m *BusinessMutation) RemovedUserBusinessesIDs() (ids []int) {
 }
 
 // UserBusinessesIDs returns the "userBusinesses" edge IDs in the mutation.
-func (m *BusinessMutation) UserBusinessesIDs() (ids []int) {
+func (m *BusinessMutation) UserBusinessesIDs() (ids []string) {
 	for id := range m.userBusinesses {
 		ids = append(ids, id)
 	}
@@ -519,23 +1053,23 @@ func (m *BusinessMutation) ResetUserBusinesses() {
 	m.removeduserBusinesses = nil
 }
 
-// SetBusinessAccountSettingsID sets the "business_account_settings" edge to the BusinessAccountSettings entity by id.
-func (m *BusinessMutation) SetBusinessAccountSettingsID(id int) {
+// SetBusinessAccountSettingsID sets the "business_account_settings" edge to the AccountSettings entity by id.
+func (m *BusinessMutation) SetBusinessAccountSettingsID(id string) {
 	m.business_account_settings = &id
 }
 
-// ClearBusinessAccountSettings clears the "business_account_settings" edge to the BusinessAccountSettings entity.
+// ClearBusinessAccountSettings clears the "business_account_settings" edge to the AccountSettings entity.
 func (m *BusinessMutation) ClearBusinessAccountSettings() {
 	m.clearedbusiness_account_settings = true
 }
 
-// BusinessAccountSettingsCleared reports if the "business_account_settings" edge to the BusinessAccountSettings entity was cleared.
+// BusinessAccountSettingsCleared reports if the "business_account_settings" edge to the AccountSettings entity was cleared.
 func (m *BusinessMutation) BusinessAccountSettingsCleared() bool {
 	return m.clearedbusiness_account_settings
 }
 
 // BusinessAccountSettingsID returns the "business_account_settings" edge ID in the mutation.
-func (m *BusinessMutation) BusinessAccountSettingsID() (id int, exists bool) {
+func (m *BusinessMutation) BusinessAccountSettingsID() (id string, exists bool) {
 	if m.business_account_settings != nil {
 		return *m.business_account_settings, true
 	}
@@ -545,7 +1079,7 @@ func (m *BusinessMutation) BusinessAccountSettingsID() (id int, exists bool) {
 // BusinessAccountSettingsIDs returns the "business_account_settings" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // BusinessAccountSettingsID instead. It exists only for internal usage by the builders.
-func (m *BusinessMutation) BusinessAccountSettingsIDs() (ids []int) {
+func (m *BusinessMutation) BusinessAccountSettingsIDs() (ids []string) {
 	if id := m.business_account_settings; id != nil {
 		ids = append(ids, *id)
 	}
@@ -559,9 +1093,9 @@ func (m *BusinessMutation) ResetBusinessAccountSettings() {
 }
 
 // AddPostIDs adds the "posts" edge to the Post entity by ids.
-func (m *BusinessMutation) AddPostIDs(ids ...int) {
+func (m *BusinessMutation) AddPostIDs(ids ...string) {
 	if m.posts == nil {
-		m.posts = make(map[int]struct{})
+		m.posts = make(map[string]struct{})
 	}
 	for i := range ids {
 		m.posts[ids[i]] = struct{}{}
@@ -579,9 +1113,9 @@ func (m *BusinessMutation) PostsCleared() bool {
 }
 
 // RemovePostIDs removes the "posts" edge to the Post entity by IDs.
-func (m *BusinessMutation) RemovePostIDs(ids ...int) {
+func (m *BusinessMutation) RemovePostIDs(ids ...string) {
 	if m.removedposts == nil {
-		m.removedposts = make(map[int]struct{})
+		m.removedposts = make(map[string]struct{})
 	}
 	for i := range ids {
 		delete(m.posts, ids[i])
@@ -590,7 +1124,7 @@ func (m *BusinessMutation) RemovePostIDs(ids ...int) {
 }
 
 // RemovedPosts returns the removed IDs of the "posts" edge to the Post entity.
-func (m *BusinessMutation) RemovedPostsIDs() (ids []int) {
+func (m *BusinessMutation) RemovedPostsIDs() (ids []string) {
 	for id := range m.removedposts {
 		ids = append(ids, id)
 	}
@@ -598,7 +1132,7 @@ func (m *BusinessMutation) RemovedPostsIDs() (ids []int) {
 }
 
 // PostsIDs returns the "posts" edge IDs in the mutation.
-func (m *BusinessMutation) PostsIDs() (ids []int) {
+func (m *BusinessMutation) PostsIDs() (ids []string) {
 	for id := range m.posts {
 		ids = append(ids, id)
 	}
@@ -871,653 +1405,12 @@ func (m *BusinessMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Business edge %s", name)
 }
 
-// BusinessAccountSettingsMutation represents an operation that mutates the BusinessAccountSettings nodes in the graph.
-type BusinessAccountSettingsMutation struct {
-	config
-	op                         Op
-	typ                        string
-	id                         *int
-	_BusinessAccountSettingsID *string
-	_BusinessAccountID         *string
-	_TwoFactorAuthentication   *bool
-	_BlockedUsers              *[]string
-	append_BlockedUsers        []string
-	_MutedUsers                *[]string
-	append_MutedUsers          []string
-	clearedFields              map[string]struct{}
-	business_account           *int
-	clearedbusiness_account    bool
-	done                       bool
-	oldValue                   func(context.Context) (*BusinessAccountSettings, error)
-	predicates                 []predicate.BusinessAccountSettings
-}
-
-var _ ent.Mutation = (*BusinessAccountSettingsMutation)(nil)
-
-// businessaccountsettingsOption allows management of the mutation configuration using functional options.
-type businessaccountsettingsOption func(*BusinessAccountSettingsMutation)
-
-// newBusinessAccountSettingsMutation creates new mutation for the BusinessAccountSettings entity.
-func newBusinessAccountSettingsMutation(c config, op Op, opts ...businessaccountsettingsOption) *BusinessAccountSettingsMutation {
-	m := &BusinessAccountSettingsMutation{
-		config:        c,
-		op:            op,
-		typ:           TypeBusinessAccountSettings,
-		clearedFields: make(map[string]struct{}),
-	}
-	for _, opt := range opts {
-		opt(m)
-	}
-	return m
-}
-
-// withBusinessAccountSettingsID sets the ID field of the mutation.
-func withBusinessAccountSettingsID(id int) businessaccountsettingsOption {
-	return func(m *BusinessAccountSettingsMutation) {
-		var (
-			err   error
-			once  sync.Once
-			value *BusinessAccountSettings
-		)
-		m.oldValue = func(ctx context.Context) (*BusinessAccountSettings, error) {
-			once.Do(func() {
-				if m.done {
-					err = errors.New("querying old values post mutation is not allowed")
-				} else {
-					value, err = m.Client().BusinessAccountSettings.Get(ctx, id)
-				}
-			})
-			return value, err
-		}
-		m.id = &id
-	}
-}
-
-// withBusinessAccountSettings sets the old BusinessAccountSettings of the mutation.
-func withBusinessAccountSettings(node *BusinessAccountSettings) businessaccountsettingsOption {
-	return func(m *BusinessAccountSettingsMutation) {
-		m.oldValue = func(context.Context) (*BusinessAccountSettings, error) {
-			return node, nil
-		}
-		m.id = &node.ID
-	}
-}
-
-// Client returns a new `ent.Client` from the mutation. If the mutation was
-// executed in a transaction (ent.Tx), a transactional client is returned.
-func (m BusinessAccountSettingsMutation) Client() *Client {
-	client := &Client{config: m.config}
-	client.init()
-	return client
-}
-
-// Tx returns an `ent.Tx` for mutations that were executed in transactions;
-// it returns an error otherwise.
-func (m BusinessAccountSettingsMutation) Tx() (*Tx, error) {
-	if _, ok := m.driver.(*txDriver); !ok {
-		return nil, errors.New("ent: mutation is not running in a transaction")
-	}
-	tx := &Tx{config: m.config}
-	tx.init()
-	return tx, nil
-}
-
-// ID returns the ID value in the mutation. Note that the ID is only available
-// if it was provided to the builder or after it was returned from the database.
-func (m *BusinessAccountSettingsMutation) ID() (id int, exists bool) {
-	if m.id == nil {
-		return
-	}
-	return *m.id, true
-}
-
-// IDs queries the database and returns the entity ids that match the mutation's predicate.
-// That means, if the mutation is applied within a transaction with an isolation level such
-// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
-// or updated by the mutation.
-func (m *BusinessAccountSettingsMutation) IDs(ctx context.Context) ([]int, error) {
-	switch {
-	case m.op.Is(OpUpdateOne | OpDeleteOne):
-		id, exists := m.ID()
-		if exists {
-			return []int{id}, nil
-		}
-		fallthrough
-	case m.op.Is(OpUpdate | OpDelete):
-		return m.Client().BusinessAccountSettings.Query().Where(m.predicates...).IDs(ctx)
-	default:
-		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
-	}
-}
-
-// SetBusinessAccountSettingsID sets the "BusinessAccountSettingsID" field.
-func (m *BusinessAccountSettingsMutation) SetBusinessAccountSettingsID(s string) {
-	m._BusinessAccountSettingsID = &s
-}
-
-// BusinessAccountSettingsID returns the value of the "BusinessAccountSettingsID" field in the mutation.
-func (m *BusinessAccountSettingsMutation) BusinessAccountSettingsID() (r string, exists bool) {
-	v := m._BusinessAccountSettingsID
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldBusinessAccountSettingsID returns the old "BusinessAccountSettingsID" field's value of the BusinessAccountSettings entity.
-// If the BusinessAccountSettings object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *BusinessAccountSettingsMutation) OldBusinessAccountSettingsID(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldBusinessAccountSettingsID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldBusinessAccountSettingsID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldBusinessAccountSettingsID: %w", err)
-	}
-	return oldValue.BusinessAccountSettingsID, nil
-}
-
-// ResetBusinessAccountSettingsID resets all changes to the "BusinessAccountSettingsID" field.
-func (m *BusinessAccountSettingsMutation) ResetBusinessAccountSettingsID() {
-	m._BusinessAccountSettingsID = nil
-}
-
-// SetBusinessAccountID sets the "BusinessAccountID" field.
-func (m *BusinessAccountSettingsMutation) SetBusinessAccountID(s string) {
-	m._BusinessAccountID = &s
-}
-
-// BusinessAccountID returns the value of the "BusinessAccountID" field in the mutation.
-func (m *BusinessAccountSettingsMutation) BusinessAccountID() (r string, exists bool) {
-	v := m._BusinessAccountID
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldBusinessAccountID returns the old "BusinessAccountID" field's value of the BusinessAccountSettings entity.
-// If the BusinessAccountSettings object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *BusinessAccountSettingsMutation) OldBusinessAccountID(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldBusinessAccountID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldBusinessAccountID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldBusinessAccountID: %w", err)
-	}
-	return oldValue.BusinessAccountID, nil
-}
-
-// ResetBusinessAccountID resets all changes to the "BusinessAccountID" field.
-func (m *BusinessAccountSettingsMutation) ResetBusinessAccountID() {
-	m._BusinessAccountID = nil
-}
-
-// SetTwoFactorAuthentication sets the "TwoFactorAuthentication" field.
-func (m *BusinessAccountSettingsMutation) SetTwoFactorAuthentication(b bool) {
-	m._TwoFactorAuthentication = &b
-}
-
-// TwoFactorAuthentication returns the value of the "TwoFactorAuthentication" field in the mutation.
-func (m *BusinessAccountSettingsMutation) TwoFactorAuthentication() (r bool, exists bool) {
-	v := m._TwoFactorAuthentication
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldTwoFactorAuthentication returns the old "TwoFactorAuthentication" field's value of the BusinessAccountSettings entity.
-// If the BusinessAccountSettings object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *BusinessAccountSettingsMutation) OldTwoFactorAuthentication(ctx context.Context) (v bool, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldTwoFactorAuthentication is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldTwoFactorAuthentication requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldTwoFactorAuthentication: %w", err)
-	}
-	return oldValue.TwoFactorAuthentication, nil
-}
-
-// ResetTwoFactorAuthentication resets all changes to the "TwoFactorAuthentication" field.
-func (m *BusinessAccountSettingsMutation) ResetTwoFactorAuthentication() {
-	m._TwoFactorAuthentication = nil
-}
-
-// SetBlockedUsers sets the "BlockedUsers" field.
-func (m *BusinessAccountSettingsMutation) SetBlockedUsers(s []string) {
-	m._BlockedUsers = &s
-	m.append_BlockedUsers = nil
-}
-
-// BlockedUsers returns the value of the "BlockedUsers" field in the mutation.
-func (m *BusinessAccountSettingsMutation) BlockedUsers() (r []string, exists bool) {
-	v := m._BlockedUsers
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldBlockedUsers returns the old "BlockedUsers" field's value of the BusinessAccountSettings entity.
-// If the BusinessAccountSettings object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *BusinessAccountSettingsMutation) OldBlockedUsers(ctx context.Context) (v []string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldBlockedUsers is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldBlockedUsers requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldBlockedUsers: %w", err)
-	}
-	return oldValue.BlockedUsers, nil
-}
-
-// AppendBlockedUsers adds s to the "BlockedUsers" field.
-func (m *BusinessAccountSettingsMutation) AppendBlockedUsers(s []string) {
-	m.append_BlockedUsers = append(m.append_BlockedUsers, s...)
-}
-
-// AppendedBlockedUsers returns the list of values that were appended to the "BlockedUsers" field in this mutation.
-func (m *BusinessAccountSettingsMutation) AppendedBlockedUsers() ([]string, bool) {
-	if len(m.append_BlockedUsers) == 0 {
-		return nil, false
-	}
-	return m.append_BlockedUsers, true
-}
-
-// ResetBlockedUsers resets all changes to the "BlockedUsers" field.
-func (m *BusinessAccountSettingsMutation) ResetBlockedUsers() {
-	m._BlockedUsers = nil
-	m.append_BlockedUsers = nil
-}
-
-// SetMutedUsers sets the "MutedUsers" field.
-func (m *BusinessAccountSettingsMutation) SetMutedUsers(s []string) {
-	m._MutedUsers = &s
-	m.append_MutedUsers = nil
-}
-
-// MutedUsers returns the value of the "MutedUsers" field in the mutation.
-func (m *BusinessAccountSettingsMutation) MutedUsers() (r []string, exists bool) {
-	v := m._MutedUsers
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldMutedUsers returns the old "MutedUsers" field's value of the BusinessAccountSettings entity.
-// If the BusinessAccountSettings object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *BusinessAccountSettingsMutation) OldMutedUsers(ctx context.Context) (v []string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldMutedUsers is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldMutedUsers requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldMutedUsers: %w", err)
-	}
-	return oldValue.MutedUsers, nil
-}
-
-// AppendMutedUsers adds s to the "MutedUsers" field.
-func (m *BusinessAccountSettingsMutation) AppendMutedUsers(s []string) {
-	m.append_MutedUsers = append(m.append_MutedUsers, s...)
-}
-
-// AppendedMutedUsers returns the list of values that were appended to the "MutedUsers" field in this mutation.
-func (m *BusinessAccountSettingsMutation) AppendedMutedUsers() ([]string, bool) {
-	if len(m.append_MutedUsers) == 0 {
-		return nil, false
-	}
-	return m.append_MutedUsers, true
-}
-
-// ResetMutedUsers resets all changes to the "MutedUsers" field.
-func (m *BusinessAccountSettingsMutation) ResetMutedUsers() {
-	m._MutedUsers = nil
-	m.append_MutedUsers = nil
-}
-
-// SetBusinessAccountID sets the "business_account" edge to the Business entity by id.
-func (m *BusinessAccountSettingsMutation) SetBusinessAccountID(id int) {
-	m.business_account = &id
-}
-
-// ClearBusinessAccount clears the "business_account" edge to the Business entity.
-func (m *BusinessAccountSettingsMutation) ClearBusinessAccount() {
-	m.clearedbusiness_account = true
-}
-
-// BusinessAccountCleared reports if the "business_account" edge to the Business entity was cleared.
-func (m *BusinessAccountSettingsMutation) BusinessAccountCleared() bool {
-	return m.clearedbusiness_account
-}
-
-// BusinessAccountID returns the "business_account" edge ID in the mutation.
-func (m *BusinessAccountSettingsMutation) BusinessAccountID() (id int, exists bool) {
-	if m.business_account != nil {
-		return *m.business_account, true
-	}
-	return
-}
-
-// BusinessAccountIDs returns the "business_account" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// BusinessAccountID instead. It exists only for internal usage by the builders.
-func (m *BusinessAccountSettingsMutation) BusinessAccountIDs() (ids []int) {
-	if id := m.business_account; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetBusinessAccount resets all changes to the "business_account" edge.
-func (m *BusinessAccountSettingsMutation) ResetBusinessAccount() {
-	m.business_account = nil
-	m.clearedbusiness_account = false
-}
-
-// Where appends a list predicates to the BusinessAccountSettingsMutation builder.
-func (m *BusinessAccountSettingsMutation) Where(ps ...predicate.BusinessAccountSettings) {
-	m.predicates = append(m.predicates, ps...)
-}
-
-// WhereP appends storage-level predicates to the BusinessAccountSettingsMutation builder. Using this method,
-// users can use type-assertion to append predicates that do not depend on any generated package.
-func (m *BusinessAccountSettingsMutation) WhereP(ps ...func(*sql.Selector)) {
-	p := make([]predicate.BusinessAccountSettings, len(ps))
-	for i := range ps {
-		p[i] = ps[i]
-	}
-	m.Where(p...)
-}
-
-// Op returns the operation name.
-func (m *BusinessAccountSettingsMutation) Op() Op {
-	return m.op
-}
-
-// SetOp allows setting the mutation operation.
-func (m *BusinessAccountSettingsMutation) SetOp(op Op) {
-	m.op = op
-}
-
-// Type returns the node type of this mutation (BusinessAccountSettings).
-func (m *BusinessAccountSettingsMutation) Type() string {
-	return m.typ
-}
-
-// Fields returns all fields that were changed during this mutation. Note that in
-// order to get all numeric fields that were incremented/decremented, call
-// AddedFields().
-func (m *BusinessAccountSettingsMutation) Fields() []string {
-	fields := make([]string, 0, 5)
-	if m._BusinessAccountSettingsID != nil {
-		fields = append(fields, businessaccountsettings.FieldBusinessAccountSettingsID)
-	}
-	if m._BusinessAccountID != nil {
-		fields = append(fields, businessaccountsettings.FieldBusinessAccountID)
-	}
-	if m._TwoFactorAuthentication != nil {
-		fields = append(fields, businessaccountsettings.FieldTwoFactorAuthentication)
-	}
-	if m._BlockedUsers != nil {
-		fields = append(fields, businessaccountsettings.FieldBlockedUsers)
-	}
-	if m._MutedUsers != nil {
-		fields = append(fields, businessaccountsettings.FieldMutedUsers)
-	}
-	return fields
-}
-
-// Field returns the value of a field with the given name. The second boolean
-// return value indicates that this field was not set, or was not defined in the
-// schema.
-func (m *BusinessAccountSettingsMutation) Field(name string) (ent.Value, bool) {
-	switch name {
-	case businessaccountsettings.FieldBusinessAccountSettingsID:
-		return m.BusinessAccountSettingsID()
-	case businessaccountsettings.FieldBusinessAccountID:
-		return m.BusinessAccountID()
-	case businessaccountsettings.FieldTwoFactorAuthentication:
-		return m.TwoFactorAuthentication()
-	case businessaccountsettings.FieldBlockedUsers:
-		return m.BlockedUsers()
-	case businessaccountsettings.FieldMutedUsers:
-		return m.MutedUsers()
-	}
-	return nil, false
-}
-
-// OldField returns the old value of the field from the database. An error is
-// returned if the mutation operation is not UpdateOne, or the query to the
-// database failed.
-func (m *BusinessAccountSettingsMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
-	switch name {
-	case businessaccountsettings.FieldBusinessAccountSettingsID:
-		return m.OldBusinessAccountSettingsID(ctx)
-	case businessaccountsettings.FieldBusinessAccountID:
-		return m.OldBusinessAccountID(ctx)
-	case businessaccountsettings.FieldTwoFactorAuthentication:
-		return m.OldTwoFactorAuthentication(ctx)
-	case businessaccountsettings.FieldBlockedUsers:
-		return m.OldBlockedUsers(ctx)
-	case businessaccountsettings.FieldMutedUsers:
-		return m.OldMutedUsers(ctx)
-	}
-	return nil, fmt.Errorf("unknown BusinessAccountSettings field %s", name)
-}
-
-// SetField sets the value of a field with the given name. It returns an error if
-// the field is not defined in the schema, or if the type mismatched the field
-// type.
-func (m *BusinessAccountSettingsMutation) SetField(name string, value ent.Value) error {
-	switch name {
-	case businessaccountsettings.FieldBusinessAccountSettingsID:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetBusinessAccountSettingsID(v)
-		return nil
-	case businessaccountsettings.FieldBusinessAccountID:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetBusinessAccountID(v)
-		return nil
-	case businessaccountsettings.FieldTwoFactorAuthentication:
-		v, ok := value.(bool)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetTwoFactorAuthentication(v)
-		return nil
-	case businessaccountsettings.FieldBlockedUsers:
-		v, ok := value.([]string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetBlockedUsers(v)
-		return nil
-	case businessaccountsettings.FieldMutedUsers:
-		v, ok := value.([]string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetMutedUsers(v)
-		return nil
-	}
-	return fmt.Errorf("unknown BusinessAccountSettings field %s", name)
-}
-
-// AddedFields returns all numeric fields that were incremented/decremented during
-// this mutation.
-func (m *BusinessAccountSettingsMutation) AddedFields() []string {
-	return nil
-}
-
-// AddedField returns the numeric value that was incremented/decremented on a field
-// with the given name. The second boolean return value indicates that this field
-// was not set, or was not defined in the schema.
-func (m *BusinessAccountSettingsMutation) AddedField(name string) (ent.Value, bool) {
-	return nil, false
-}
-
-// AddField adds the value to the field with the given name. It returns an error if
-// the field is not defined in the schema, or if the type mismatched the field
-// type.
-func (m *BusinessAccountSettingsMutation) AddField(name string, value ent.Value) error {
-	switch name {
-	}
-	return fmt.Errorf("unknown BusinessAccountSettings numeric field %s", name)
-}
-
-// ClearedFields returns all nullable fields that were cleared during this
-// mutation.
-func (m *BusinessAccountSettingsMutation) ClearedFields() []string {
-	return nil
-}
-
-// FieldCleared returns a boolean indicating if a field with the given name was
-// cleared in this mutation.
-func (m *BusinessAccountSettingsMutation) FieldCleared(name string) bool {
-	_, ok := m.clearedFields[name]
-	return ok
-}
-
-// ClearField clears the value of the field with the given name. It returns an
-// error if the field is not defined in the schema.
-func (m *BusinessAccountSettingsMutation) ClearField(name string) error {
-	return fmt.Errorf("unknown BusinessAccountSettings nullable field %s", name)
-}
-
-// ResetField resets all changes in the mutation for the field with the given name.
-// It returns an error if the field is not defined in the schema.
-func (m *BusinessAccountSettingsMutation) ResetField(name string) error {
-	switch name {
-	case businessaccountsettings.FieldBusinessAccountSettingsID:
-		m.ResetBusinessAccountSettingsID()
-		return nil
-	case businessaccountsettings.FieldBusinessAccountID:
-		m.ResetBusinessAccountID()
-		return nil
-	case businessaccountsettings.FieldTwoFactorAuthentication:
-		m.ResetTwoFactorAuthentication()
-		return nil
-	case businessaccountsettings.FieldBlockedUsers:
-		m.ResetBlockedUsers()
-		return nil
-	case businessaccountsettings.FieldMutedUsers:
-		m.ResetMutedUsers()
-		return nil
-	}
-	return fmt.Errorf("unknown BusinessAccountSettings field %s", name)
-}
-
-// AddedEdges returns all edge names that were set/added in this mutation.
-func (m *BusinessAccountSettingsMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
-	if m.business_account != nil {
-		edges = append(edges, businessaccountsettings.EdgeBusinessAccount)
-	}
-	return edges
-}
-
-// AddedIDs returns all IDs (to other nodes) that were added for the given edge
-// name in this mutation.
-func (m *BusinessAccountSettingsMutation) AddedIDs(name string) []ent.Value {
-	switch name {
-	case businessaccountsettings.EdgeBusinessAccount:
-		if id := m.business_account; id != nil {
-			return []ent.Value{*id}
-		}
-	}
-	return nil
-}
-
-// RemovedEdges returns all edge names that were removed in this mutation.
-func (m *BusinessAccountSettingsMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
-	return edges
-}
-
-// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
-// the given name in this mutation.
-func (m *BusinessAccountSettingsMutation) RemovedIDs(name string) []ent.Value {
-	return nil
-}
-
-// ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *BusinessAccountSettingsMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
-	if m.clearedbusiness_account {
-		edges = append(edges, businessaccountsettings.EdgeBusinessAccount)
-	}
-	return edges
-}
-
-// EdgeCleared returns a boolean which indicates if the edge with the given name
-// was cleared in this mutation.
-func (m *BusinessAccountSettingsMutation) EdgeCleared(name string) bool {
-	switch name {
-	case businessaccountsettings.EdgeBusinessAccount:
-		return m.clearedbusiness_account
-	}
-	return false
-}
-
-// ClearEdge clears the value of the edge with the given name. It returns an error
-// if that edge is not defined in the schema.
-func (m *BusinessAccountSettingsMutation) ClearEdge(name string) error {
-	switch name {
-	case businessaccountsettings.EdgeBusinessAccount:
-		m.ClearBusinessAccount()
-		return nil
-	}
-	return fmt.Errorf("unknown BusinessAccountSettings unique edge %s", name)
-}
-
-// ResetEdge resets all changes to the edge with the given name in this mutation.
-// It returns an error if the edge is not defined in the schema.
-func (m *BusinessAccountSettingsMutation) ResetEdge(name string) error {
-	switch name {
-	case businessaccountsettings.EdgeBusinessAccount:
-		m.ResetBusinessAccount()
-		return nil
-	}
-	return fmt.Errorf("unknown BusinessAccountSettings edge %s", name)
-}
-
 // ChatMutation represents an operation that mutates the Chat nodes in the graph.
 type ChatMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *int
+	id            *string
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*Chat, error)
@@ -1544,7 +1437,7 @@ func newChatMutation(c config, op Op, opts ...chatOption) *ChatMutation {
 }
 
 // withChatID sets the ID field of the mutation.
-func withChatID(id int) chatOption {
+func withChatID(id string) chatOption {
 	return func(m *ChatMutation) {
 		var (
 			err   error
@@ -1596,7 +1489,7 @@ func (m ChatMutation) Tx() (*Tx, error) {
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *ChatMutation) ID() (id int, exists bool) {
+func (m *ChatMutation) ID() (id string, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -1607,12 +1500,12 @@ func (m *ChatMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *ChatMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *ChatMutation) IDs(ctx context.Context) ([]string, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []string{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -1781,14 +1674,14 @@ type CommentMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *int
+	id            *string
 	_Content      *string
 	_CreatedAt    *time.Time
 	_UpdatedAt    *time.Time
 	clearedFields map[string]struct{}
-	user          *int
+	user          *string
 	cleareduser   bool
-	post          *int
+	post          *string
 	clearedpost   bool
 	done          bool
 	oldValue      func(context.Context) (*Comment, error)
@@ -1815,7 +1708,7 @@ func newCommentMutation(c config, op Op, opts ...commentOption) *CommentMutation
 }
 
 // withCommentID sets the ID field of the mutation.
-func withCommentID(id int) commentOption {
+func withCommentID(id string) commentOption {
 	return func(m *CommentMutation) {
 		var (
 			err   error
@@ -1867,7 +1760,7 @@ func (m CommentMutation) Tx() (*Tx, error) {
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *CommentMutation) ID() (id int, exists bool) {
+func (m *CommentMutation) ID() (id string, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -1878,12 +1771,12 @@ func (m *CommentMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *CommentMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *CommentMutation) IDs(ctx context.Context) ([]string, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []string{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -2002,7 +1895,7 @@ func (m *CommentMutation) ResetUpdatedAt() {
 }
 
 // SetUserID sets the "user" edge to the User entity by id.
-func (m *CommentMutation) SetUserID(id int) {
+func (m *CommentMutation) SetUserID(id string) {
 	m.user = &id
 }
 
@@ -2017,7 +1910,7 @@ func (m *CommentMutation) UserCleared() bool {
 }
 
 // UserID returns the "user" edge ID in the mutation.
-func (m *CommentMutation) UserID() (id int, exists bool) {
+func (m *CommentMutation) UserID() (id string, exists bool) {
 	if m.user != nil {
 		return *m.user, true
 	}
@@ -2027,7 +1920,7 @@ func (m *CommentMutation) UserID() (id int, exists bool) {
 // UserIDs returns the "user" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // UserID instead. It exists only for internal usage by the builders.
-func (m *CommentMutation) UserIDs() (ids []int) {
+func (m *CommentMutation) UserIDs() (ids []string) {
 	if id := m.user; id != nil {
 		ids = append(ids, *id)
 	}
@@ -2041,7 +1934,7 @@ func (m *CommentMutation) ResetUser() {
 }
 
 // SetPostID sets the "post" edge to the Post entity by id.
-func (m *CommentMutation) SetPostID(id int) {
+func (m *CommentMutation) SetPostID(id string) {
 	m.post = &id
 }
 
@@ -2056,7 +1949,7 @@ func (m *CommentMutation) PostCleared() bool {
 }
 
 // PostID returns the "post" edge ID in the mutation.
-func (m *CommentMutation) PostID() (id int, exists bool) {
+func (m *CommentMutation) PostID() (id string, exists bool) {
 	if m.post != nil {
 		return *m.post, true
 	}
@@ -2066,7 +1959,7 @@ func (m *CommentMutation) PostID() (id int, exists bool) {
 // PostIDs returns the "post" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // PostID instead. It exists only for internal usage by the builders.
-func (m *CommentMutation) PostIDs() (ids []int) {
+func (m *CommentMutation) PostIDs() (ids []string) {
 	if id := m.post; id != nil {
 		ids = append(ids, *id)
 	}
@@ -2341,13 +2234,13 @@ type LikeMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *int
+	id            *string
 	_CreatedAt    *time.Time
 	_UpdatedAt    *time.Time
 	clearedFields map[string]struct{}
-	user          *int
+	user          *string
 	cleareduser   bool
-	post          *int
+	post          *string
 	clearedpost   bool
 	done          bool
 	oldValue      func(context.Context) (*Like, error)
@@ -2374,7 +2267,7 @@ func newLikeMutation(c config, op Op, opts ...likeOption) *LikeMutation {
 }
 
 // withLikeID sets the ID field of the mutation.
-func withLikeID(id int) likeOption {
+func withLikeID(id string) likeOption {
 	return func(m *LikeMutation) {
 		var (
 			err   error
@@ -2426,7 +2319,7 @@ func (m LikeMutation) Tx() (*Tx, error) {
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *LikeMutation) ID() (id int, exists bool) {
+func (m *LikeMutation) ID() (id string, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -2437,12 +2330,12 @@ func (m *LikeMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *LikeMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *LikeMutation) IDs(ctx context.Context) ([]string, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []string{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -2525,7 +2418,7 @@ func (m *LikeMutation) ResetUpdatedAt() {
 }
 
 // SetUserID sets the "user" edge to the User entity by id.
-func (m *LikeMutation) SetUserID(id int) {
+func (m *LikeMutation) SetUserID(id string) {
 	m.user = &id
 }
 
@@ -2540,7 +2433,7 @@ func (m *LikeMutation) UserCleared() bool {
 }
 
 // UserID returns the "user" edge ID in the mutation.
-func (m *LikeMutation) UserID() (id int, exists bool) {
+func (m *LikeMutation) UserID() (id string, exists bool) {
 	if m.user != nil {
 		return *m.user, true
 	}
@@ -2550,7 +2443,7 @@ func (m *LikeMutation) UserID() (id int, exists bool) {
 // UserIDs returns the "user" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // UserID instead. It exists only for internal usage by the builders.
-func (m *LikeMutation) UserIDs() (ids []int) {
+func (m *LikeMutation) UserIDs() (ids []string) {
 	if id := m.user; id != nil {
 		ids = append(ids, *id)
 	}
@@ -2564,7 +2457,7 @@ func (m *LikeMutation) ResetUser() {
 }
 
 // SetPostID sets the "post" edge to the Post entity by id.
-func (m *LikeMutation) SetPostID(id int) {
+func (m *LikeMutation) SetPostID(id string) {
 	m.post = &id
 }
 
@@ -2579,7 +2472,7 @@ func (m *LikeMutation) PostCleared() bool {
 }
 
 // PostID returns the "post" edge ID in the mutation.
-func (m *LikeMutation) PostID() (id int, exists bool) {
+func (m *LikeMutation) PostID() (id string, exists bool) {
 	if m.post != nil {
 		return *m.post, true
 	}
@@ -2589,7 +2482,7 @@ func (m *LikeMutation) PostID() (id int, exists bool) {
 // PostIDs returns the "post" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // PostID instead. It exists only for internal usage by the builders.
-func (m *LikeMutation) PostIDs() (ids []int) {
+func (m *LikeMutation) PostIDs() (ids []string) {
 	if id := m.post; id != nil {
 		ids = append(ids, *id)
 	}
@@ -2847,13 +2740,13 @@ type MediaMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *int
+	id            *string
 	_URL          *string
 	_MediaType    *string
 	_CreatedAt    *time.Time
 	_UpdatedAt    *time.Time
 	clearedFields map[string]struct{}
-	post          *int
+	post          *string
 	clearedpost   bool
 	done          bool
 	oldValue      func(context.Context) (*Media, error)
@@ -2880,7 +2773,7 @@ func newMediaMutation(c config, op Op, opts ...mediaOption) *MediaMutation {
 }
 
 // withMediaID sets the ID field of the mutation.
-func withMediaID(id int) mediaOption {
+func withMediaID(id string) mediaOption {
 	return func(m *MediaMutation) {
 		var (
 			err   error
@@ -2932,7 +2825,7 @@ func (m MediaMutation) Tx() (*Tx, error) {
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *MediaMutation) ID() (id int, exists bool) {
+func (m *MediaMutation) ID() (id string, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -2943,12 +2836,12 @@ func (m *MediaMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *MediaMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *MediaMutation) IDs(ctx context.Context) ([]string, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []string{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -3103,7 +2996,7 @@ func (m *MediaMutation) ResetUpdatedAt() {
 }
 
 // SetPostID sets the "post" edge to the Post entity by id.
-func (m *MediaMutation) SetPostID(id int) {
+func (m *MediaMutation) SetPostID(id string) {
 	m.post = &id
 }
 
@@ -3118,7 +3011,7 @@ func (m *MediaMutation) PostCleared() bool {
 }
 
 // PostID returns the "post" edge ID in the mutation.
-func (m *MediaMutation) PostID() (id int, exists bool) {
+func (m *MediaMutation) PostID() (id string, exists bool) {
 	if m.post != nil {
 		return *m.post, true
 	}
@@ -3128,7 +3021,7 @@ func (m *MediaMutation) PostID() (id int, exists bool) {
 // PostIDs returns the "post" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // PostID instead. It exists only for internal usage by the builders.
-func (m *MediaMutation) PostIDs() (ids []int) {
+func (m *MediaMutation) PostIDs() (ids []string) {
 	if id := m.post; id != nil {
 		ids = append(ids, *id)
 	}
@@ -3402,7 +3295,7 @@ type OrderMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *int
+	id            *string
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*Order, error)
@@ -3429,7 +3322,7 @@ func newOrderMutation(c config, op Op, opts ...orderOption) *OrderMutation {
 }
 
 // withOrderID sets the ID field of the mutation.
-func withOrderID(id int) orderOption {
+func withOrderID(id string) orderOption {
 	return func(m *OrderMutation) {
 		var (
 			err   error
@@ -3481,7 +3374,7 @@ func (m OrderMutation) Tx() (*Tx, error) {
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *OrderMutation) ID() (id int, exists bool) {
+func (m *OrderMutation) ID() (id string, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -3492,12 +3385,12 @@ func (m *OrderMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *OrderMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *OrderMutation) IDs(ctx context.Context) ([]string, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []string{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -3666,7 +3559,7 @@ type PaymentMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *int
+	id            *string
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*Payment, error)
@@ -3693,7 +3586,7 @@ func newPaymentMutation(c config, op Op, opts ...paymentOption) *PaymentMutation
 }
 
 // withPaymentID sets the ID field of the mutation.
-func withPaymentID(id int) paymentOption {
+func withPaymentID(id string) paymentOption {
 	return func(m *PaymentMutation) {
 		var (
 			err   error
@@ -3745,7 +3638,7 @@ func (m PaymentMutation) Tx() (*Tx, error) {
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *PaymentMutation) ID() (id int, exists bool) {
+func (m *PaymentMutation) ID() (id string, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -3756,12 +3649,12 @@ func (m *PaymentMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *PaymentMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *PaymentMutation) IDs(ctx context.Context) ([]string, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []string{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -3930,23 +3823,23 @@ type PostMutation struct {
 	config
 	op                      Op
 	typ                     string
-	id                      *int
+	id                      *string
 	_Content                *string
 	_CreatedAt              *time.Time
 	_UpdatedAt              *time.Time
 	clearedFields           map[string]struct{}
-	user                    *int
+	user                    *string
 	cleareduser             bool
-	business_account        *int
+	business_account        *string
 	clearedbusiness_account bool
-	medias                  map[int]struct{}
-	removedmedias           map[int]struct{}
+	medias                  map[string]struct{}
+	removedmedias           map[string]struct{}
 	clearedmedias           bool
-	comments                map[int]struct{}
-	removedcomments         map[int]struct{}
+	comments                map[string]struct{}
+	removedcomments         map[string]struct{}
 	clearedcomments         bool
-	likes                   map[int]struct{}
-	removedlikes            map[int]struct{}
+	likes                   map[string]struct{}
+	removedlikes            map[string]struct{}
 	clearedlikes            bool
 	done                    bool
 	oldValue                func(context.Context) (*Post, error)
@@ -3973,7 +3866,7 @@ func newPostMutation(c config, op Op, opts ...postOption) *PostMutation {
 }
 
 // withPostID sets the ID field of the mutation.
-func withPostID(id int) postOption {
+func withPostID(id string) postOption {
 	return func(m *PostMutation) {
 		var (
 			err   error
@@ -4025,7 +3918,7 @@ func (m PostMutation) Tx() (*Tx, error) {
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *PostMutation) ID() (id int, exists bool) {
+func (m *PostMutation) ID() (id string, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -4036,12 +3929,12 @@ func (m *PostMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *PostMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *PostMutation) IDs(ctx context.Context) ([]string, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []string{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -4160,7 +4053,7 @@ func (m *PostMutation) ResetUpdatedAt() {
 }
 
 // SetUserID sets the "user" edge to the User entity by id.
-func (m *PostMutation) SetUserID(id int) {
+func (m *PostMutation) SetUserID(id string) {
 	m.user = &id
 }
 
@@ -4175,7 +4068,7 @@ func (m *PostMutation) UserCleared() bool {
 }
 
 // UserID returns the "user" edge ID in the mutation.
-func (m *PostMutation) UserID() (id int, exists bool) {
+func (m *PostMutation) UserID() (id string, exists bool) {
 	if m.user != nil {
 		return *m.user, true
 	}
@@ -4185,7 +4078,7 @@ func (m *PostMutation) UserID() (id int, exists bool) {
 // UserIDs returns the "user" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // UserID instead. It exists only for internal usage by the builders.
-func (m *PostMutation) UserIDs() (ids []int) {
+func (m *PostMutation) UserIDs() (ids []string) {
 	if id := m.user; id != nil {
 		ids = append(ids, *id)
 	}
@@ -4199,7 +4092,7 @@ func (m *PostMutation) ResetUser() {
 }
 
 // SetBusinessAccountID sets the "business_account" edge to the Business entity by id.
-func (m *PostMutation) SetBusinessAccountID(id int) {
+func (m *PostMutation) SetBusinessAccountID(id string) {
 	m.business_account = &id
 }
 
@@ -4214,7 +4107,7 @@ func (m *PostMutation) BusinessAccountCleared() bool {
 }
 
 // BusinessAccountID returns the "business_account" edge ID in the mutation.
-func (m *PostMutation) BusinessAccountID() (id int, exists bool) {
+func (m *PostMutation) BusinessAccountID() (id string, exists bool) {
 	if m.business_account != nil {
 		return *m.business_account, true
 	}
@@ -4224,7 +4117,7 @@ func (m *PostMutation) BusinessAccountID() (id int, exists bool) {
 // BusinessAccountIDs returns the "business_account" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // BusinessAccountID instead. It exists only for internal usage by the builders.
-func (m *PostMutation) BusinessAccountIDs() (ids []int) {
+func (m *PostMutation) BusinessAccountIDs() (ids []string) {
 	if id := m.business_account; id != nil {
 		ids = append(ids, *id)
 	}
@@ -4238,9 +4131,9 @@ func (m *PostMutation) ResetBusinessAccount() {
 }
 
 // AddMediaIDs adds the "medias" edge to the Media entity by ids.
-func (m *PostMutation) AddMediaIDs(ids ...int) {
+func (m *PostMutation) AddMediaIDs(ids ...string) {
 	if m.medias == nil {
-		m.medias = make(map[int]struct{})
+		m.medias = make(map[string]struct{})
 	}
 	for i := range ids {
 		m.medias[ids[i]] = struct{}{}
@@ -4258,9 +4151,9 @@ func (m *PostMutation) MediasCleared() bool {
 }
 
 // RemoveMediaIDs removes the "medias" edge to the Media entity by IDs.
-func (m *PostMutation) RemoveMediaIDs(ids ...int) {
+func (m *PostMutation) RemoveMediaIDs(ids ...string) {
 	if m.removedmedias == nil {
-		m.removedmedias = make(map[int]struct{})
+		m.removedmedias = make(map[string]struct{})
 	}
 	for i := range ids {
 		delete(m.medias, ids[i])
@@ -4269,7 +4162,7 @@ func (m *PostMutation) RemoveMediaIDs(ids ...int) {
 }
 
 // RemovedMedias returns the removed IDs of the "medias" edge to the Media entity.
-func (m *PostMutation) RemovedMediasIDs() (ids []int) {
+func (m *PostMutation) RemovedMediasIDs() (ids []string) {
 	for id := range m.removedmedias {
 		ids = append(ids, id)
 	}
@@ -4277,7 +4170,7 @@ func (m *PostMutation) RemovedMediasIDs() (ids []int) {
 }
 
 // MediasIDs returns the "medias" edge IDs in the mutation.
-func (m *PostMutation) MediasIDs() (ids []int) {
+func (m *PostMutation) MediasIDs() (ids []string) {
 	for id := range m.medias {
 		ids = append(ids, id)
 	}
@@ -4292,9 +4185,9 @@ func (m *PostMutation) ResetMedias() {
 }
 
 // AddCommentIDs adds the "comments" edge to the Comment entity by ids.
-func (m *PostMutation) AddCommentIDs(ids ...int) {
+func (m *PostMutation) AddCommentIDs(ids ...string) {
 	if m.comments == nil {
-		m.comments = make(map[int]struct{})
+		m.comments = make(map[string]struct{})
 	}
 	for i := range ids {
 		m.comments[ids[i]] = struct{}{}
@@ -4312,9 +4205,9 @@ func (m *PostMutation) CommentsCleared() bool {
 }
 
 // RemoveCommentIDs removes the "comments" edge to the Comment entity by IDs.
-func (m *PostMutation) RemoveCommentIDs(ids ...int) {
+func (m *PostMutation) RemoveCommentIDs(ids ...string) {
 	if m.removedcomments == nil {
-		m.removedcomments = make(map[int]struct{})
+		m.removedcomments = make(map[string]struct{})
 	}
 	for i := range ids {
 		delete(m.comments, ids[i])
@@ -4323,7 +4216,7 @@ func (m *PostMutation) RemoveCommentIDs(ids ...int) {
 }
 
 // RemovedComments returns the removed IDs of the "comments" edge to the Comment entity.
-func (m *PostMutation) RemovedCommentsIDs() (ids []int) {
+func (m *PostMutation) RemovedCommentsIDs() (ids []string) {
 	for id := range m.removedcomments {
 		ids = append(ids, id)
 	}
@@ -4331,7 +4224,7 @@ func (m *PostMutation) RemovedCommentsIDs() (ids []int) {
 }
 
 // CommentsIDs returns the "comments" edge IDs in the mutation.
-func (m *PostMutation) CommentsIDs() (ids []int) {
+func (m *PostMutation) CommentsIDs() (ids []string) {
 	for id := range m.comments {
 		ids = append(ids, id)
 	}
@@ -4346,9 +4239,9 @@ func (m *PostMutation) ResetComments() {
 }
 
 // AddLikeIDs adds the "likes" edge to the Like entity by ids.
-func (m *PostMutation) AddLikeIDs(ids ...int) {
+func (m *PostMutation) AddLikeIDs(ids ...string) {
 	if m.likes == nil {
-		m.likes = make(map[int]struct{})
+		m.likes = make(map[string]struct{})
 	}
 	for i := range ids {
 		m.likes[ids[i]] = struct{}{}
@@ -4366,9 +4259,9 @@ func (m *PostMutation) LikesCleared() bool {
 }
 
 // RemoveLikeIDs removes the "likes" edge to the Like entity by IDs.
-func (m *PostMutation) RemoveLikeIDs(ids ...int) {
+func (m *PostMutation) RemoveLikeIDs(ids ...string) {
 	if m.removedlikes == nil {
-		m.removedlikes = make(map[int]struct{})
+		m.removedlikes = make(map[string]struct{})
 	}
 	for i := range ids {
 		delete(m.likes, ids[i])
@@ -4377,7 +4270,7 @@ func (m *PostMutation) RemoveLikeIDs(ids ...int) {
 }
 
 // RemovedLikes returns the removed IDs of the "likes" edge to the Like entity.
-func (m *PostMutation) RemovedLikesIDs() (ids []int) {
+func (m *PostMutation) RemovedLikesIDs() (ids []string) {
 	for id := range m.removedlikes {
 		ids = append(ids, id)
 	}
@@ -4385,7 +4278,7 @@ func (m *PostMutation) RemovedLikesIDs() (ids []int) {
 }
 
 // LikesIDs returns the "likes" edge IDs in the mutation.
-func (m *PostMutation) LikesIDs() (ids []int) {
+func (m *PostMutation) LikesIDs() (ids []string) {
 	for id := range m.likes {
 		ids = append(ids, id)
 	}
@@ -4741,7 +4634,7 @@ type RatingMutation struct {
 	config
 	op            Op
 	typ           string
-	id            *int
+	id            *string
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*Rating, error)
@@ -4768,7 +4661,7 @@ func newRatingMutation(c config, op Op, opts ...ratingOption) *RatingMutation {
 }
 
 // withRatingID sets the ID field of the mutation.
-func withRatingID(id int) ratingOption {
+func withRatingID(id string) ratingOption {
 	return func(m *RatingMutation) {
 		var (
 			err   error
@@ -4820,7 +4713,7 @@ func (m RatingMutation) Tx() (*Tx, error) {
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *RatingMutation) ID() (id int, exists bool) {
+func (m *RatingMutation) ID() (id string, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -4831,12 +4724,12 @@ func (m *RatingMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *RatingMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *RatingMutation) IDs(ctx context.Context) ([]string, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []string{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -5005,20 +4898,21 @@ type UserMutation struct {
 	config
 	op                    Op
 	typ                   string
-	id                    *int
+	id                    *string
 	auth0_id              *string
+	auth0_data            **management.User
 	clearedFields         map[string]struct{}
-	userBusinesses        map[int]struct{}
-	removeduserBusinesses map[int]struct{}
+	userBusinesses        map[string]struct{}
+	removeduserBusinesses map[string]struct{}
 	cleareduserBusinesses bool
-	comments              map[int]struct{}
-	removedcomments       map[int]struct{}
+	comments              map[string]struct{}
+	removedcomments       map[string]struct{}
 	clearedcomments       bool
-	likes                 map[int]struct{}
-	removedlikes          map[int]struct{}
+	likes                 map[string]struct{}
+	removedlikes          map[string]struct{}
 	clearedlikes          bool
-	posts                 map[int]struct{}
-	removedposts          map[int]struct{}
+	posts                 map[string]struct{}
+	removedposts          map[string]struct{}
 	clearedposts          bool
 	done                  bool
 	oldValue              func(context.Context) (*User, error)
@@ -5045,7 +4939,7 @@ func newUserMutation(c config, op Op, opts ...userOption) *UserMutation {
 }
 
 // withUserID sets the ID field of the mutation.
-func withUserID(id int) userOption {
+func withUserID(id string) userOption {
 	return func(m *UserMutation) {
 		var (
 			err   error
@@ -5097,7 +4991,7 @@ func (m UserMutation) Tx() (*Tx, error) {
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *UserMutation) ID() (id int, exists bool) {
+func (m *UserMutation) ID() (id string, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -5108,12 +5002,12 @@ func (m *UserMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *UserMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *UserMutation) IDs(ctx context.Context) ([]string, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []string{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -5159,10 +5053,46 @@ func (m *UserMutation) ResetAuth0ID() {
 	m.auth0_id = nil
 }
 
+// SetAuth0Data sets the "auth0_data" field.
+func (m *UserMutation) SetAuth0Data(value *management.User) {
+	m.auth0_data = &value
+}
+
+// Auth0Data returns the value of the "auth0_data" field in the mutation.
+func (m *UserMutation) Auth0Data() (r *management.User, exists bool) {
+	v := m.auth0_data
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAuth0Data returns the old "auth0_data" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldAuth0Data(ctx context.Context) (v *management.User, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAuth0Data is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAuth0Data requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAuth0Data: %w", err)
+	}
+	return oldValue.Auth0Data, nil
+}
+
+// ResetAuth0Data resets all changes to the "auth0_data" field.
+func (m *UserMutation) ResetAuth0Data() {
+	m.auth0_data = nil
+}
+
 // AddUserBusinessIDs adds the "userBusinesses" edge to the UserBusiness entity by ids.
-func (m *UserMutation) AddUserBusinessIDs(ids ...int) {
+func (m *UserMutation) AddUserBusinessIDs(ids ...string) {
 	if m.userBusinesses == nil {
-		m.userBusinesses = make(map[int]struct{})
+		m.userBusinesses = make(map[string]struct{})
 	}
 	for i := range ids {
 		m.userBusinesses[ids[i]] = struct{}{}
@@ -5180,9 +5110,9 @@ func (m *UserMutation) UserBusinessesCleared() bool {
 }
 
 // RemoveUserBusinessIDs removes the "userBusinesses" edge to the UserBusiness entity by IDs.
-func (m *UserMutation) RemoveUserBusinessIDs(ids ...int) {
+func (m *UserMutation) RemoveUserBusinessIDs(ids ...string) {
 	if m.removeduserBusinesses == nil {
-		m.removeduserBusinesses = make(map[int]struct{})
+		m.removeduserBusinesses = make(map[string]struct{})
 	}
 	for i := range ids {
 		delete(m.userBusinesses, ids[i])
@@ -5191,7 +5121,7 @@ func (m *UserMutation) RemoveUserBusinessIDs(ids ...int) {
 }
 
 // RemovedUserBusinesses returns the removed IDs of the "userBusinesses" edge to the UserBusiness entity.
-func (m *UserMutation) RemovedUserBusinessesIDs() (ids []int) {
+func (m *UserMutation) RemovedUserBusinessesIDs() (ids []string) {
 	for id := range m.removeduserBusinesses {
 		ids = append(ids, id)
 	}
@@ -5199,7 +5129,7 @@ func (m *UserMutation) RemovedUserBusinessesIDs() (ids []int) {
 }
 
 // UserBusinessesIDs returns the "userBusinesses" edge IDs in the mutation.
-func (m *UserMutation) UserBusinessesIDs() (ids []int) {
+func (m *UserMutation) UserBusinessesIDs() (ids []string) {
 	for id := range m.userBusinesses {
 		ids = append(ids, id)
 	}
@@ -5214,9 +5144,9 @@ func (m *UserMutation) ResetUserBusinesses() {
 }
 
 // AddCommentIDs adds the "comments" edge to the Comment entity by ids.
-func (m *UserMutation) AddCommentIDs(ids ...int) {
+func (m *UserMutation) AddCommentIDs(ids ...string) {
 	if m.comments == nil {
-		m.comments = make(map[int]struct{})
+		m.comments = make(map[string]struct{})
 	}
 	for i := range ids {
 		m.comments[ids[i]] = struct{}{}
@@ -5234,9 +5164,9 @@ func (m *UserMutation) CommentsCleared() bool {
 }
 
 // RemoveCommentIDs removes the "comments" edge to the Comment entity by IDs.
-func (m *UserMutation) RemoveCommentIDs(ids ...int) {
+func (m *UserMutation) RemoveCommentIDs(ids ...string) {
 	if m.removedcomments == nil {
-		m.removedcomments = make(map[int]struct{})
+		m.removedcomments = make(map[string]struct{})
 	}
 	for i := range ids {
 		delete(m.comments, ids[i])
@@ -5245,7 +5175,7 @@ func (m *UserMutation) RemoveCommentIDs(ids ...int) {
 }
 
 // RemovedComments returns the removed IDs of the "comments" edge to the Comment entity.
-func (m *UserMutation) RemovedCommentsIDs() (ids []int) {
+func (m *UserMutation) RemovedCommentsIDs() (ids []string) {
 	for id := range m.removedcomments {
 		ids = append(ids, id)
 	}
@@ -5253,7 +5183,7 @@ func (m *UserMutation) RemovedCommentsIDs() (ids []int) {
 }
 
 // CommentsIDs returns the "comments" edge IDs in the mutation.
-func (m *UserMutation) CommentsIDs() (ids []int) {
+func (m *UserMutation) CommentsIDs() (ids []string) {
 	for id := range m.comments {
 		ids = append(ids, id)
 	}
@@ -5268,9 +5198,9 @@ func (m *UserMutation) ResetComments() {
 }
 
 // AddLikeIDs adds the "likes" edge to the Like entity by ids.
-func (m *UserMutation) AddLikeIDs(ids ...int) {
+func (m *UserMutation) AddLikeIDs(ids ...string) {
 	if m.likes == nil {
-		m.likes = make(map[int]struct{})
+		m.likes = make(map[string]struct{})
 	}
 	for i := range ids {
 		m.likes[ids[i]] = struct{}{}
@@ -5288,9 +5218,9 @@ func (m *UserMutation) LikesCleared() bool {
 }
 
 // RemoveLikeIDs removes the "likes" edge to the Like entity by IDs.
-func (m *UserMutation) RemoveLikeIDs(ids ...int) {
+func (m *UserMutation) RemoveLikeIDs(ids ...string) {
 	if m.removedlikes == nil {
-		m.removedlikes = make(map[int]struct{})
+		m.removedlikes = make(map[string]struct{})
 	}
 	for i := range ids {
 		delete(m.likes, ids[i])
@@ -5299,7 +5229,7 @@ func (m *UserMutation) RemoveLikeIDs(ids ...int) {
 }
 
 // RemovedLikes returns the removed IDs of the "likes" edge to the Like entity.
-func (m *UserMutation) RemovedLikesIDs() (ids []int) {
+func (m *UserMutation) RemovedLikesIDs() (ids []string) {
 	for id := range m.removedlikes {
 		ids = append(ids, id)
 	}
@@ -5307,7 +5237,7 @@ func (m *UserMutation) RemovedLikesIDs() (ids []int) {
 }
 
 // LikesIDs returns the "likes" edge IDs in the mutation.
-func (m *UserMutation) LikesIDs() (ids []int) {
+func (m *UserMutation) LikesIDs() (ids []string) {
 	for id := range m.likes {
 		ids = append(ids, id)
 	}
@@ -5322,9 +5252,9 @@ func (m *UserMutation) ResetLikes() {
 }
 
 // AddPostIDs adds the "posts" edge to the Post entity by ids.
-func (m *UserMutation) AddPostIDs(ids ...int) {
+func (m *UserMutation) AddPostIDs(ids ...string) {
 	if m.posts == nil {
-		m.posts = make(map[int]struct{})
+		m.posts = make(map[string]struct{})
 	}
 	for i := range ids {
 		m.posts[ids[i]] = struct{}{}
@@ -5342,9 +5272,9 @@ func (m *UserMutation) PostsCleared() bool {
 }
 
 // RemovePostIDs removes the "posts" edge to the Post entity by IDs.
-func (m *UserMutation) RemovePostIDs(ids ...int) {
+func (m *UserMutation) RemovePostIDs(ids ...string) {
 	if m.removedposts == nil {
-		m.removedposts = make(map[int]struct{})
+		m.removedposts = make(map[string]struct{})
 	}
 	for i := range ids {
 		delete(m.posts, ids[i])
@@ -5353,7 +5283,7 @@ func (m *UserMutation) RemovePostIDs(ids ...int) {
 }
 
 // RemovedPosts returns the removed IDs of the "posts" edge to the Post entity.
-func (m *UserMutation) RemovedPostsIDs() (ids []int) {
+func (m *UserMutation) RemovedPostsIDs() (ids []string) {
 	for id := range m.removedposts {
 		ids = append(ids, id)
 	}
@@ -5361,7 +5291,7 @@ func (m *UserMutation) RemovedPostsIDs() (ids []int) {
 }
 
 // PostsIDs returns the "posts" edge IDs in the mutation.
-func (m *UserMutation) PostsIDs() (ids []int) {
+func (m *UserMutation) PostsIDs() (ids []string) {
 	for id := range m.posts {
 		ids = append(ids, id)
 	}
@@ -5409,9 +5339,12 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 1)
+	fields := make([]string, 0, 2)
 	if m.auth0_id != nil {
 		fields = append(fields, user.FieldAuth0ID)
+	}
+	if m.auth0_data != nil {
+		fields = append(fields, user.FieldAuth0Data)
 	}
 	return fields
 }
@@ -5423,6 +5356,8 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case user.FieldAuth0ID:
 		return m.Auth0ID()
+	case user.FieldAuth0Data:
+		return m.Auth0Data()
 	}
 	return nil, false
 }
@@ -5434,6 +5369,8 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 	switch name {
 	case user.FieldAuth0ID:
 		return m.OldAuth0ID(ctx)
+	case user.FieldAuth0Data:
+		return m.OldAuth0Data(ctx)
 	}
 	return nil, fmt.Errorf("unknown User field %s", name)
 }
@@ -5449,6 +5386,13 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetAuth0ID(v)
+		return nil
+	case user.FieldAuth0Data:
+		v, ok := value.(*management.User)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAuth0Data(v)
 		return nil
 	}
 	return fmt.Errorf("unknown User field %s", name)
@@ -5501,6 +5445,9 @@ func (m *UserMutation) ResetField(name string) error {
 	switch name {
 	case user.FieldAuth0ID:
 		m.ResetAuth0ID()
+		return nil
+	case user.FieldAuth0Data:
+		m.ResetAuth0Data()
 		return nil
 	}
 	return fmt.Errorf("unknown User field %s", name)
@@ -5673,12 +5620,12 @@ type UserBusinessMutation struct {
 	config
 	op              Op
 	typ             string
-	id              *int
+	id              *string
 	role            *string
 	clearedFields   map[string]struct{}
-	user            *int
+	user            *string
 	cleareduser     bool
-	business        *int
+	business        *string
 	clearedbusiness bool
 	done            bool
 	oldValue        func(context.Context) (*UserBusiness, error)
@@ -5705,7 +5652,7 @@ func newUserBusinessMutation(c config, op Op, opts ...userbusinessOption) *UserB
 }
 
 // withUserBusinessID sets the ID field of the mutation.
-func withUserBusinessID(id int) userbusinessOption {
+func withUserBusinessID(id string) userbusinessOption {
 	return func(m *UserBusinessMutation) {
 		var (
 			err   error
@@ -5757,7 +5704,7 @@ func (m UserBusinessMutation) Tx() (*Tx, error) {
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *UserBusinessMutation) ID() (id int, exists bool) {
+func (m *UserBusinessMutation) ID() (id string, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -5768,12 +5715,12 @@ func (m *UserBusinessMutation) ID() (id int, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *UserBusinessMutation) IDs(ctx context.Context) ([]int, error) {
+func (m *UserBusinessMutation) IDs(ctx context.Context) ([]string, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
 		if exists {
-			return []int{id}, nil
+			return []string{id}, nil
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
@@ -5820,7 +5767,7 @@ func (m *UserBusinessMutation) ResetRole() {
 }
 
 // SetUserID sets the "user" edge to the User entity by id.
-func (m *UserBusinessMutation) SetUserID(id int) {
+func (m *UserBusinessMutation) SetUserID(id string) {
 	m.user = &id
 }
 
@@ -5835,7 +5782,7 @@ func (m *UserBusinessMutation) UserCleared() bool {
 }
 
 // UserID returns the "user" edge ID in the mutation.
-func (m *UserBusinessMutation) UserID() (id int, exists bool) {
+func (m *UserBusinessMutation) UserID() (id string, exists bool) {
 	if m.user != nil {
 		return *m.user, true
 	}
@@ -5845,7 +5792,7 @@ func (m *UserBusinessMutation) UserID() (id int, exists bool) {
 // UserIDs returns the "user" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // UserID instead. It exists only for internal usage by the builders.
-func (m *UserBusinessMutation) UserIDs() (ids []int) {
+func (m *UserBusinessMutation) UserIDs() (ids []string) {
 	if id := m.user; id != nil {
 		ids = append(ids, *id)
 	}
@@ -5859,7 +5806,7 @@ func (m *UserBusinessMutation) ResetUser() {
 }
 
 // SetBusinessID sets the "business" edge to the Business entity by id.
-func (m *UserBusinessMutation) SetBusinessID(id int) {
+func (m *UserBusinessMutation) SetBusinessID(id string) {
 	m.business = &id
 }
 
@@ -5874,7 +5821,7 @@ func (m *UserBusinessMutation) BusinessCleared() bool {
 }
 
 // BusinessID returns the "business" edge ID in the mutation.
-func (m *UserBusinessMutation) BusinessID() (id int, exists bool) {
+func (m *UserBusinessMutation) BusinessID() (id string, exists bool) {
 	if m.business != nil {
 		return *m.business, true
 	}
@@ -5884,7 +5831,7 @@ func (m *UserBusinessMutation) BusinessID() (id int, exists bool) {
 // BusinessIDs returns the "business" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // BusinessID instead. It exists only for internal usage by the builders.
-func (m *UserBusinessMutation) BusinessIDs() (ids []int) {
+func (m *UserBusinessMutation) BusinessIDs() (ids []string) {
 	if id := m.business; id != nil {
 		ids = append(ids, *id)
 	}

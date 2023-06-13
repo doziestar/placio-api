@@ -49,13 +49,13 @@ func (cc *CommentCreate) SetUpdatedAt(t time.Time) *CommentCreate {
 }
 
 // SetUserID sets the "user" edge to the User entity by ID.
-func (cc *CommentCreate) SetUserID(id int) *CommentCreate {
+func (cc *CommentCreate) SetUserID(id string) *CommentCreate {
 	cc.mutation.SetUserID(id)
 	return cc
 }
 
 // SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
-func (cc *CommentCreate) SetNillableUserID(id *int) *CommentCreate {
+func (cc *CommentCreate) SetNillableUserID(id *string) *CommentCreate {
 	if id != nil {
 		cc = cc.SetUserID(*id)
 	}
@@ -68,13 +68,13 @@ func (cc *CommentCreate) SetUser(u *User) *CommentCreate {
 }
 
 // SetPostID sets the "post" edge to the Post entity by ID.
-func (cc *CommentCreate) SetPostID(id int) *CommentCreate {
+func (cc *CommentCreate) SetPostID(id string) *CommentCreate {
 	cc.mutation.SetPostID(id)
 	return cc
 }
 
 // SetNillablePostID sets the "post" edge to the Post entity by ID if the given value is not nil.
-func (cc *CommentCreate) SetNillablePostID(id *int) *CommentCreate {
+func (cc *CommentCreate) SetNillablePostID(id *string) *CommentCreate {
 	if id != nil {
 		cc = cc.SetPostID(*id)
 	}
@@ -157,8 +157,13 @@ func (cc *CommentCreate) sqlSave(ctx context.Context) (*Comment, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(string); ok {
+			_node.ID = id
+		} else {
+			return nil, fmt.Errorf("unexpected Comment.ID type: %T", _spec.ID.Value)
+		}
+	}
 	cc.mutation.id = &_node.ID
 	cc.mutation.done = true
 	return _node, nil
@@ -167,7 +172,7 @@ func (cc *CommentCreate) sqlSave(ctx context.Context) (*Comment, error) {
 func (cc *CommentCreate) createSpec() (*Comment, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Comment{config: cc.config}
-		_spec = sqlgraph.NewCreateSpec(comment.Table, sqlgraph.NewFieldSpec(comment.FieldID, field.TypeInt))
+		_spec = sqlgraph.NewCreateSpec(comment.Table, sqlgraph.NewFieldSpec(comment.FieldID, field.TypeString))
 	)
 	if value, ok := cc.mutation.Content(); ok {
 		_spec.SetField(comment.FieldContent, field.TypeString, value)
@@ -189,7 +194,7 @@ func (cc *CommentCreate) createSpec() (*Comment, *sqlgraph.CreateSpec) {
 			Columns: []string{comment.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -206,7 +211,7 @@ func (cc *CommentCreate) createSpec() (*Comment, *sqlgraph.CreateSpec) {
 			Columns: []string{comment.PostColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -259,10 +264,6 @@ func (ccb *CommentCreateBulk) Save(ctx context.Context) ([]*Comment, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				mutation.done = true
 				return nodes[i], nil
 			})

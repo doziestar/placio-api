@@ -12,14 +12,14 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"placio-app/ent"
+	"placio-app/ent/user"
 	"placio-app/models"
 	"placio-app/utility"
 	"placio-pkg/hash"
 	"reflect"
 	"strings"
 	"time"
-
-	"gorm.io/gorm"
 )
 
 const (
@@ -28,19 +28,17 @@ const (
 )
 
 type UserService interface {
-	GetUser(authOID string) (*models.User, error)
-	CreateBusinessAccount(userID, name, role string) (*models.BusinessAccount, error)
-	GetUserBusinessAccounts(userID string) ([]models.BusinessAccount, error)
-	CanPerformAction(userID, businessAccountID string, action string) (bool, error)
-	RemoveUserFromBusinessAccount(userID, businessAccountID uint) error
-	GetUsersForBusinessAccount(businessAccountID string) ([]models.User, error)
-	GetBusinessAccountsForUser(userID string) ([]models.BusinessAccount, error)
-	AssociateUserWithBusinessAccount(userID, businessAccountID, role string) error
-	AcceptInvitation(invitationID uint) error
-	InviteUserToBusinessAccount(email string, businessAccountID uint, role string) (*models.Invitation, error)
-	RejectInvitation(invitationID uint) error
-	TransferBusinessAccountOwnership(currentOwnerID uint, newOwnerID uint, businessAccountID uint) error
-	GetUserInvitations(userID uint) ([]*models.Invitation, error)
+	GetUser(ctx context.Context, authOID string) (*ent.User, error)
+	// GetAuth0UserData CanPerformAction(userID, businessAccountID string, action string) (bool, error)
+	// GetAuth0UserData RemoveUserFromBusinessAccount(userID, businessAccountID uint) error
+	//GetUsersForBusinessAccount(businessAccountID string) ([]models.User, error)
+	//GetBusinessAccountsForUser(userID string) ([]models.BusinessAccount, error)
+	//AssociateUserWithBusinessAccount(userID, businessAccountID, role string) error
+	//AcceptInvitation(invitationID uint) error
+	//InviteUserToBusinessAccount(email string, businessAccountID uint, role string) (*models.Invitation, error)
+	//RejectInvitation(invitationID uint) error
+	//TransferBusinessAccountOwnership(currentOwnerID uint, newOwnerID uint, businessAccountID uint) error
+	//GetUserInvitations(userID uint) ([]*models.Invitation, error)
 	//UpdateAuth0UserData(userID string, userData *models.Auth0UserData, appData *models.AppMetadata, userMetaData *models.Metadata) (*models.Auth0UserData, error)
 	GetAuth0UserData(userID string) (*management.User, error)
 	UpdateAuth0UserMetadata(userID string, userMetaData *models.Metadata) (*management.User, error)
@@ -58,195 +56,102 @@ type UserService interface {
 }
 
 type UserServiceImpl struct {
-	db    *gorm.DB
-	cache *utility.RedisClient
+	client *ent.Client
+	cache  *utility.RedisClient
 }
 
-type Auth0TokenResponse struct {
+type auth0TokenResponse struct {
 	AccessToken string `json:"access_token"`
 	TokenType   string `json:"token_type"`
 	ExpiresIn   int    `json:"expires_in"`
 }
 
-func NewUserService(db *gorm.DB, cache *utility.RedisClient) *UserServiceImpl {
-	return &UserServiceImpl{db: db, cache: cache}
+func NewUserService(client *ent.Client, cache *utility.RedisClient) *UserServiceImpl {
+	return &UserServiceImpl{client: client, cache: cache}
 }
 
-func (s *UserServiceImpl) GetUser(auth0ID string) (*models.User, error) {
+func (s *UserServiceImpl) GetUser(ctx context.Context, auth0ID string) (*ent.User, error) {
 	log.Println("GetUser", auth0ID)
-	var user models.User
-	if err := s.db.Preload("Relationships").Where("auth0_id = ?", auth0ID).First(&user).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			// The user does not exist in our database, so let's create one
-			newUser := models.User{Auth0ID: auth0ID, UserID: models.GenerateID()}
-			if err := s.db.Create(&newUser).Error; err != nil {
-				return nil, err
-			}
 
-			// Add retry logic and handle specific error types when getting Auth0 user data
-			log.Println("GetUser", auth0ID, "attempting to get Auth0 user data")
-			var auth0Data *management.User
-			retryCount := 0
-			maxRetryCount := 3
-			retryDelay := 1 * time.Second
-			for {
-				auth0DataAttempt, err := s.GetAuth0UserData(auth0ID)
-				if err != nil {
+	u, err := s.client.User.
+		Query().
+		Where(user.Auth0IDEQ(auth0ID)).
+		First(ctx)
 
-					if specificErr, ok := err.(net.Error); ok {
-						if specificErr.Temporary() {
-							// handle temporary error
-						} else if specificErr.Timeout() {
-							// handle timeout
-						}
-						// handle specific error
-						log.Println("Specific error occurred when getting Auth0 user data", specificErr)
-						return nil, specificErr
-					} else if retryCount < maxRetryCount {
-						// wait for a while before retrying
-						time.Sleep(retryDelay)
-						retryCount++
-						continue
-					} else {
-						// max retries exceeded, return the error
-						log.Println("Error getting Auth0 user data", err)
-						return nil, err
-					}
-				}
-				auth0Data = auth0DataAttempt
-				break
-			}
-			newUser.Auth0Data = auth0Data
-
-			userData := utility.RemoveSensitiveInfo(&newUser)
-			return userData, nil
+	if err != nil {
+		if !ent.IsNotFound(err) {
+			return nil, err
 		}
+
+		newUser, err := s.client.User.
+			Create().
+			SetAuth0ID(auth0ID).
+			Save(ctx)
+
+		if err != nil {
+			return nil, err
+		}
+
+		auth0Data, err := s.getAuth0UserDataWithRetry(auth0ID, 3, 1*time.Second)
+		if err != nil {
+			return nil, err
+		}
+
+		newUser.Auth0Data = auth0Data
+		return newUser, nil
+	}
+
+	auth0Data, err := s.getAuth0UserDataWithRetry(auth0ID, 3, 1*time.Second)
+	if err != nil {
 		return nil, err
 	}
 
-	//user = s.mergeAuth0DataIntoUser(user, auth0Data)
-	return &user, nil
+	u.Auth0Data = auth0Data
+
+	return u, nil
+}
+
+func (s *UserServiceImpl) getAuth0UserDataWithRetry(auth0ID string, maxRetries int, retryDelay time.Duration) (*management.User, error) {
+	// Replace "YourServiceType" with the actual type of your service
+
+	log.Println("GetUser", auth0ID, "attempting to get Auth0 user data")
+	var auth0Data *management.User
+	retryCount := 0
+
+	for {
+		auth0DataAttempt, err := s.GetAuth0UserData(auth0ID)
+		if err != nil {
+			if specificErr, ok := err.(net.Error); ok {
+				if specificErr.Temporary() {
+					// handle temporary error
+				} else if specificErr.Timeout() {
+					// handle timeout
+				}
+				// handle specific error
+				log.Println("Specific error occurred when getting Auth0 user data", specificErr)
+				return nil, specificErr
+			} else if retryCount < maxRetries {
+				// wait for a while before retrying
+				time.Sleep(retryDelay)
+				retryCount++
+				continue
+			} else {
+				// max retries exceeded, return the error
+				log.Println("Error getting Auth0 user data", err)
+				return nil, err
+			}
+		}
+
+		auth0Data = auth0DataAttempt
+		break
+	}
+
+	return auth0Data, nil
 }
 
 func (s *UserServiceImpl) mergeAuth0DataIntoUser(user models.User, auth0Data *management.User) models.User {
 	user.Auth0Data = auth0Data
 	return user
-}
-
-// GetUserBusinessAccounts retrieves all the business accounts
-// associated with a specific user from the database.
-func (s *UserServiceImpl) GetUserBusinessAccounts(userID string) ([]models.BusinessAccount, error) {
-	// Define a slice to hold the UserBusinessRelationship instances.
-	var relationships []models.UserBusinessRelationship
-
-	// Use the GORM Preload method to automatically load the BusinessAccount
-	// instances associated with each UserBusinessRelationship when fetching
-	// the UserBusinessRelationship instances from the database.
-	if err := s.db.Preload("BusinessAccount").Where("user_id = ?", userID).Find(&relationships).Error; err != nil {
-		// If an error occurs during database query, return it.
-		return nil, err
-	}
-
-	// Define a slice to hold the BusinessAccount instances.
-	businessAccounts := make([]models.BusinessAccount, len(relationships))
-
-	// Iterate over the UserBusinessRelationship instances.
-	for i, relationship := range relationships {
-		// Extract the BusinessAccount from each UserBusinessRelationship
-		// and place it in the BusinessAccount slice.
-		businessAccounts[i] = relationship.BusinessAccount
-	}
-
-	// Return the BusinessAccount slice.
-	return businessAccounts, nil
-}
-
-func (s *UserServiceImpl) CanPerformAction(userID, businessAccountID string, action string) (bool, error) {
-	var relationship models.UserBusinessRelationship
-	if err := s.db.Where("user_id = ? AND business_account_id = ?", userID, businessAccountID).First(&relationship).Error; err != nil {
-		return false, err
-	}
-
-	// Check if the user's role within the business account allows the action
-	// This will depend on how you define the capabilities of each role
-	if relationship.Role == "admin" && action == "delete_account" {
-		return true, nil
-	}
-
-	return false, nil
-}
-
-// CreateBusinessAccount creates a new Business Account and associates it with a user.
-func (s *UserServiceImpl) CreateBusinessAccount(userID, name, role string) (*models.BusinessAccount, error) {
-	// Validate inputs
-	if userID == "" {
-		return nil, errors.New("user ID cannot be empty")
-	}
-	if name == "" {
-		return nil, errors.New("business account name cannot be empty")
-	}
-	if role != "owner" && role != "admin" && role != "member" {
-		return nil, errors.New("invalid role")
-	}
-
-	businessAccount := &models.BusinessAccount{Name: name, ID: models.GenerateID()}
-	relationship := &models.UserBusinessRelationship{UserID: userID, BusinessAccount: *businessAccount, Role: "owner", BusinessAccountID: businessAccount.ID, ID: models.GenerateID()}
-
-	tx := s.db.Begin()
-
-	if err := tx.Create(businessAccount).Error; err != nil {
-		tx.Rollback()
-		return nil, fmt.Errorf("error creating business account: %w", err)
-	}
-
-	if err := tx.Create(relationship).Error; err != nil {
-		tx.Rollback()
-		return nil, fmt.Errorf("error creating user-business relationship: %w", err)
-	}
-
-	tx.Commit()
-
-	// Now we need to fetch the created business account with its relationships
-	var createdBusinessAccount models.BusinessAccount
-	if err := s.db.Preload("Relationships").Where("id = ?", businessAccount.ID).First(&createdBusinessAccount).Error; err != nil {
-		return nil, fmt.Errorf("error fetching created business account: %w", err)
-	}
-
-	return &createdBusinessAccount, nil
-}
-
-// AssociateUserWithBusinessAccount associates a user with a Business Account.
-func (s *UserServiceImpl) AssociateUserWithBusinessAccount(userID, businessAccountID, role string) error {
-	relationship := &models.UserBusinessRelationship{UserID: userID, BusinessAccountID: businessAccountID, Role: role}
-	return s.db.Create(relationship).Error
-}
-
-// GetBusinessAccountsForUser returns all Business Accounts associated with a user.
-func (s *UserServiceImpl) GetBusinessAccountsForUser(userID string) ([]models.BusinessAccount, error) {
-	var relationships []models.UserBusinessRelationship
-	if err := s.db.Preload("BusinessAccount").Where("user_id = ?", userID).Find(&relationships).Error; err != nil {
-		return nil, err
-	}
-
-	businessAccounts := make([]models.BusinessAccount, len(relationships))
-	for i, relationship := range relationships {
-		businessAccounts[i] = relationship.BusinessAccount
-	}
-	return businessAccounts, nil
-}
-
-// GetUsersForBusinessAccount returns all Users associated with a Business Account.
-func (s *UserServiceImpl) GetUsersForBusinessAccount(businessAccountID string) ([]models.User, error) {
-	var relationships []models.UserBusinessRelationship
-	if err := s.db.Preload("User").Where("business_account_id = ?", businessAccountID).Find(&relationships).Error; err != nil {
-		return nil, err
-	}
-
-	users := make([]models.User, len(relationships))
-	for i, relationship := range relationships {
-		users[i] = relationship.User
-	}
-	return users, nil
 }
 
 func (s *UserServiceImpl) UpdateAuth0UserInformation(userID string, userData *models.Auth0UserData) (*management.User, error) {
@@ -508,7 +413,7 @@ func (s *UserServiceImpl) retrieveAuth0Token(ctx context.Context) (string, error
 		return "", err
 	}
 
-	var tokenResponse Auth0TokenResponse
+	var tokenResponse auth0TokenResponse
 	err = json.Unmarshal(body, &tokenResponse)
 	if err != nil {
 		log.Println("Error unmarshalling response body:", err)
@@ -518,32 +423,17 @@ func (s *UserServiceImpl) retrieveAuth0Token(ctx context.Context) (string, error
 	return tokenResponse.AccessToken, nil
 }
 
-// RemoveUserFromBusinessAccount removes a User's association with a Business Account.
-func (s *UserServiceImpl) RemoveUserFromBusinessAccount(userID, businessAccountID uint) error {
-	return s.db.Where("user_id = ? AND business_account_id = ?", userID, businessAccountID).Delete(&models.UserBusinessRelationship{}).Error
-}
-
-func (s *UserServiceImpl) GetUserInvitations(userID uint) ([]*models.Invitation, error) {
-	// Implementation goes here
-	return nil, nil
-}
-
-func (s *UserServiceImpl) TransferBusinessAccountOwnership(currentOwnerID uint, newOwnerID uint, businessAccountID uint) error {
-	// Implementation goes here
-	return nil
-}
-
-func (s *UserServiceImpl) RejectInvitation(invitationID uint) error {
-	// Implementation goes here
-	return nil
-}
-
-func (s *UserServiceImpl) AcceptInvitation(invitationID uint) error {
-	// Implementation goes here
-	return nil
-}
-
-func (s *UserServiceImpl) InviteUserToBusinessAccount(email string, businessAccountID uint, role string) (*models.Invitation, error) {
-	// Implementation goes here
-	return nil, nil
-}
+//func (s *UserServiceImpl) RejectInvitation(invitationID uint) error {
+//	// Implementation goes here
+//	return nil
+//}
+//
+//func (s *UserServiceImpl) AcceptInvitation(invitationID uint) error {
+//	// Implementation goes here
+//	return nil
+//}
+//
+//func (s *UserServiceImpl) InviteUserToBusinessAccount(email string, businessAccountID uint, role string) (*models.Invitation, error) {
+//	// Implementation goes here
+//	return nil, nil
+//}

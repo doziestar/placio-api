@@ -43,13 +43,13 @@ func (lc *LikeCreate) SetUpdatedAt(t time.Time) *LikeCreate {
 }
 
 // SetUserID sets the "user" edge to the User entity by ID.
-func (lc *LikeCreate) SetUserID(id int) *LikeCreate {
+func (lc *LikeCreate) SetUserID(id string) *LikeCreate {
 	lc.mutation.SetUserID(id)
 	return lc
 }
 
 // SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
-func (lc *LikeCreate) SetNillableUserID(id *int) *LikeCreate {
+func (lc *LikeCreate) SetNillableUserID(id *string) *LikeCreate {
 	if id != nil {
 		lc = lc.SetUserID(*id)
 	}
@@ -62,13 +62,13 @@ func (lc *LikeCreate) SetUser(u *User) *LikeCreate {
 }
 
 // SetPostID sets the "post" edge to the Post entity by ID.
-func (lc *LikeCreate) SetPostID(id int) *LikeCreate {
+func (lc *LikeCreate) SetPostID(id string) *LikeCreate {
 	lc.mutation.SetPostID(id)
 	return lc
 }
 
 // SetNillablePostID sets the "post" edge to the Post entity by ID if the given value is not nil.
-func (lc *LikeCreate) SetNillablePostID(id *int) *LikeCreate {
+func (lc *LikeCreate) SetNillablePostID(id *string) *LikeCreate {
 	if id != nil {
 		lc = lc.SetPostID(*id)
 	}
@@ -143,8 +143,13 @@ func (lc *LikeCreate) sqlSave(ctx context.Context) (*Like, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		if id, ok := _spec.ID.Value.(string); ok {
+			_node.ID = id
+		} else {
+			return nil, fmt.Errorf("unexpected Like.ID type: %T", _spec.ID.Value)
+		}
+	}
 	lc.mutation.id = &_node.ID
 	lc.mutation.done = true
 	return _node, nil
@@ -153,7 +158,7 @@ func (lc *LikeCreate) sqlSave(ctx context.Context) (*Like, error) {
 func (lc *LikeCreate) createSpec() (*Like, *sqlgraph.CreateSpec) {
 	var (
 		_node = &Like{config: lc.config}
-		_spec = sqlgraph.NewCreateSpec(like.Table, sqlgraph.NewFieldSpec(like.FieldID, field.TypeInt))
+		_spec = sqlgraph.NewCreateSpec(like.Table, sqlgraph.NewFieldSpec(like.FieldID, field.TypeString))
 	)
 	if value, ok := lc.mutation.CreatedAt(); ok {
 		_spec.SetField(like.FieldCreatedAt, field.TypeTime, value)
@@ -171,7 +176,7 @@ func (lc *LikeCreate) createSpec() (*Like, *sqlgraph.CreateSpec) {
 			Columns: []string{like.UserColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -188,7 +193,7 @@ func (lc *LikeCreate) createSpec() (*Like, *sqlgraph.CreateSpec) {
 			Columns: []string{like.PostColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -241,10 +246,6 @@ func (lcb *LikeCreateBulk) Save(ctx context.Context) ([]*Like, error) {
 					return nil, err
 				}
 				mutation.id = &nodes[i].ID
-				if specs[i].ID.Value != nil {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				mutation.done = true
 				return nodes[i], nil
 			})

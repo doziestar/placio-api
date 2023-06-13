@@ -2,9 +2,14 @@ package database
 
 import (
 	"context"
+	"fmt"
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
+	"log"
 	"os"
+	"placio-app/ent"
 	"placio-pkg/logger"
+	"time"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -48,47 +53,47 @@ func Connect(dsn string) (*Database, error) {
 }
 
 // EntClient migrates the database and returns the ent client
-//func EntClient(ctx context.Context) *ent.Client {
-//	var (
-//		client *ent.Client
-//		err    error
-//	)
-//
-//	// Load environment variables from .env file if exists
-//	_ = godotenv.Load()
-//
-//	host := getEnv("DB_HOST", "postgres-db")
-//	port := getEnv("DB_PORT", "5432")
-//	user := getEnv("DB_USER", "dozie")
-//	dbName := getEnv("DB_NAME", "placio")
-//	password := getEnv("DB_PASSWORD", "918273645dozie")
-//
-//	maxRetries := 5
-//	for i := 1; i <= maxRetries; i++ {
-//		client, err = ent.Open("postgres", fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=disable", host, port, user, dbName, password))
-//		if err != nil {
-//			log.Println("Error connecting to database: ", err)
-//			if i < maxRetries {
-//				waitTime := time.Duration(i) * time.Second
-//				log.Printf("Retrying database connection in %v", waitTime)
-//				time.Sleep(waitTime)
-//				continue
-//			}
-//			log.Fatal("Failed to connect to database after %v retries", maxRetries)
-//		}
-//		break
-//	}
-//
-//	log.Println("======================================")
-//	log.Println("== Connected to database successfully ==")
-//	log.Println("======================================")
-//
-//	// Run the auto migration tool.
-//	if err := client.Schema.Create(context.Background()); err != nil {
-//		log.Fatalf("failed creating schema resources: %v", err)
-//	}
-//	return client
-//}
+func EntClient(ctx context.Context) *ent.Client {
+	var (
+		client *ent.Client
+		err    error
+	)
+
+	// Load environment variables from .env file if exists
+	_ = godotenv.Load()
+
+	host := getEnv("DB_HOST", "postgres-db")
+	port := getEnv("DB_PORT", "5432")
+	user := getEnv("DB_USER", "dozie")
+	dbName := getEnv("DB_NAME", "placio")
+	password := getEnv("DB_PASSWORD", "918273645dozie")
+
+	maxRetries := 5
+	for i := 1; i <= maxRetries; i++ {
+		client, err = ent.Open("postgres", fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=disable", host, port, user, dbName, password))
+		if err != nil {
+			log.Println("Error connecting to database: ", err)
+			if i < maxRetries {
+				waitTime := time.Duration(i) * time.Second
+				log.Printf("Retrying database connection in %v", waitTime)
+				time.Sleep(waitTime)
+				continue
+			}
+			log.Fatal("Failed to connect to database after %v retries", maxRetries)
+		}
+		break
+	}
+
+	log.Println("======================================")
+	log.Println("== Connected to database successfully ==")
+	log.Println("======================================")
+
+	// Run the auto migration tool.
+	if err := client.Schema.Create(context.Background()); err != nil {
+		log.Fatalf("failed creating schema resources: %v", err)
+	}
+	return client
+}
 
 // getEnv gets an environment variable or returns a default value
 func getEnv(key string, defaultVal string) string {

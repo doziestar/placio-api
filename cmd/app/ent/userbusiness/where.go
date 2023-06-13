@@ -10,48 +10,58 @@ import (
 )
 
 // ID filters vertices based on their ID field.
-func ID(id int) predicate.UserBusiness {
+func ID(id string) predicate.UserBusiness {
 	return predicate.UserBusiness(sql.FieldEQ(FieldID, id))
 }
 
 // IDEQ applies the EQ predicate on the ID field.
-func IDEQ(id int) predicate.UserBusiness {
+func IDEQ(id string) predicate.UserBusiness {
 	return predicate.UserBusiness(sql.FieldEQ(FieldID, id))
 }
 
 // IDNEQ applies the NEQ predicate on the ID field.
-func IDNEQ(id int) predicate.UserBusiness {
+func IDNEQ(id string) predicate.UserBusiness {
 	return predicate.UserBusiness(sql.FieldNEQ(FieldID, id))
 }
 
 // IDIn applies the In predicate on the ID field.
-func IDIn(ids ...int) predicate.UserBusiness {
+func IDIn(ids ...string) predicate.UserBusiness {
 	return predicate.UserBusiness(sql.FieldIn(FieldID, ids...))
 }
 
 // IDNotIn applies the NotIn predicate on the ID field.
-func IDNotIn(ids ...int) predicate.UserBusiness {
+func IDNotIn(ids ...string) predicate.UserBusiness {
 	return predicate.UserBusiness(sql.FieldNotIn(FieldID, ids...))
 }
 
 // IDGT applies the GT predicate on the ID field.
-func IDGT(id int) predicate.UserBusiness {
+func IDGT(id string) predicate.UserBusiness {
 	return predicate.UserBusiness(sql.FieldGT(FieldID, id))
 }
 
 // IDGTE applies the GTE predicate on the ID field.
-func IDGTE(id int) predicate.UserBusiness {
+func IDGTE(id string) predicate.UserBusiness {
 	return predicate.UserBusiness(sql.FieldGTE(FieldID, id))
 }
 
 // IDLT applies the LT predicate on the ID field.
-func IDLT(id int) predicate.UserBusiness {
+func IDLT(id string) predicate.UserBusiness {
 	return predicate.UserBusiness(sql.FieldLT(FieldID, id))
 }
 
 // IDLTE applies the LTE predicate on the ID field.
-func IDLTE(id int) predicate.UserBusiness {
+func IDLTE(id string) predicate.UserBusiness {
 	return predicate.UserBusiness(sql.FieldLTE(FieldID, id))
+}
+
+// IDEqualFold applies the EqualFold predicate on the ID field.
+func IDEqualFold(id string) predicate.UserBusiness {
+	return predicate.UserBusiness(sql.FieldEqualFold(FieldID, id))
+}
+
+// IDContainsFold applies the ContainsFold predicate on the ID field.
+func IDContainsFold(id string) predicate.UserBusiness {
+	return predicate.UserBusiness(sql.FieldContainsFold(FieldID, id))
 }
 
 // Role applies equality check predicate on the "role" field. It's identical to RoleEQ.

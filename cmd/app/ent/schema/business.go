@@ -22,7 +22,7 @@ func (Business) Fields() []ent.Field {
 func (Business) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("userBusinesses", UserBusiness.Type),
-		edge.To("business_account_settings", BusinessAccountSettings.Type).
+		edge.To("business_account_settings", AccountSettings.Type).
 			Unique(),
 		edge.To("posts", Post.Type),
 	}
