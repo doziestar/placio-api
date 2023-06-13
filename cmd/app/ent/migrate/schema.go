@@ -10,11 +10,11 @@ import (
 var (
 	// AccountSettingsColumns holds the columns for the "account_settings" table.
 	AccountSettingsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString},
+		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
 		{Name: "two_factor_authentication", Type: field.TypeBool},
 		{Name: "blocked_users", Type: field.TypeJSON},
 		{Name: "muted_users", Type: field.TypeJSON},
-		{Name: "business_business_account_settings", Type: field.TypeString, Unique: true},
+		{Name: "business_business_account_settings", Type: field.TypeString, Unique: true, Size: 36},
 	}
 	// AccountSettingsTable holds the schema information for the "account_settings" table.
 	AccountSettingsTable = &schema.Table{
@@ -42,7 +42,7 @@ var (
 	}
 	// BusinessesColumns holds the columns for the "businesses" table.
 	BusinessesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString},
+		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
 		{Name: "name", Type: field.TypeString},
 	}
 	// BusinessesTable holds the schema information for the "businesses" table.
@@ -63,13 +63,13 @@ var (
 	}
 	// CommentsColumns holds the columns for the "comments" table.
 	CommentsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString},
+		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
 		{Name: "content", Type: field.TypeString, Size: 2147483647},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "comment_post", Type: field.TypeString, Nullable: true},
-		{Name: "post_comments", Type: field.TypeString, Nullable: true},
-		{Name: "user_comments", Type: field.TypeString, Nullable: true},
+		{Name: "comment_post", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "post_comments", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "user_comments", Type: field.TypeString, Nullable: true, Size: 36},
 	}
 	// CommentsTable holds the schema information for the "comments" table.
 	CommentsTable = &schema.Table{
@@ -99,12 +99,12 @@ var (
 	}
 	// LikesColumns holds the columns for the "likes" table.
 	LikesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString},
+		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "like_post", Type: field.TypeString, Nullable: true},
-		{Name: "post_likes", Type: field.TypeString, Nullable: true},
-		{Name: "user_likes", Type: field.TypeString, Nullable: true},
+		{Name: "like_post", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "post_likes", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "user_likes", Type: field.TypeString, Nullable: true, Size: 36},
 	}
 	// LikesTable holds the schema information for the "likes" table.
 	LikesTable = &schema.Table{
@@ -134,12 +134,12 @@ var (
 	}
 	// MediaColumns holds the columns for the "media" table.
 	MediaColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString},
+		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
 		{Name: "url", Type: field.TypeString},
 		{Name: "media_type", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "post_medias", Type: field.TypeString, Nullable: true},
+		{Name: "post_medias", Type: field.TypeString, Nullable: true, Size: 36},
 	}
 	// MediaTable holds the schema information for the "media" table.
 	MediaTable = &schema.Table{
@@ -177,12 +177,12 @@ var (
 	}
 	// PostsColumns holds the columns for the "posts" table.
 	PostsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString},
+		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
 		{Name: "content", Type: field.TypeString, Size: 2147483647},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "business_posts", Type: field.TypeString, Nullable: true},
-		{Name: "user_posts", Type: field.TypeString, Nullable: true},
+		{Name: "business_posts", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "user_posts", Type: field.TypeString, Nullable: true, Size: 36},
 	}
 	// PostsTable holds the schema information for the "posts" table.
 	PostsTable = &schema.Table{
@@ -216,9 +216,9 @@ var (
 	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString},
+		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
 		{Name: "auth0_id", Type: field.TypeString, Unique: true},
-		{Name: "auth0_data", Type: field.TypeJSON},
+		{Name: "auth0_data", Type: field.TypeJSON, Nullable: true},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{
@@ -228,10 +228,10 @@ var (
 	}
 	// UserBusinessesColumns holds the columns for the "user_businesses" table.
 	UserBusinessesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString},
+		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
 		{Name: "role", Type: field.TypeString},
-		{Name: "business_user_businesses", Type: field.TypeString, Nullable: true},
-		{Name: "user_user_businesses", Type: field.TypeString, Nullable: true},
+		{Name: "business_user_businesses", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "user_user_businesses", Type: field.TypeString, Nullable: true, Size: 36},
 	}
 	// UserBusinessesTable holds the schema information for the "user_businesses" table.
 	UserBusinessesTable = &schema.Table{

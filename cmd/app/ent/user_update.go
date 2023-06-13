@@ -44,6 +44,12 @@ func (uu *UserUpdate) SetAuth0Data(m *management.User) *UserUpdate {
 	return uu
 }
 
+// ClearAuth0Data clears the value of the "auth0_data" field.
+func (uu *UserUpdate) ClearAuth0Data() *UserUpdate {
+	uu.mutation.ClearAuth0Data()
+	return uu
+}
+
 // AddUserBusinessIDs adds the "userBusinesses" edge to the UserBusiness entity by IDs.
 func (uu *UserUpdate) AddUserBusinessIDs(ids ...string) *UserUpdate {
 	uu.mutation.AddUserBusinessIDs(ids...)
@@ -234,6 +240,9 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := uu.mutation.Auth0Data(); ok {
 		_spec.SetField(user.FieldAuth0Data, field.TypeJSON, value)
+	}
+	if uu.mutation.Auth0DataCleared() {
+		_spec.ClearField(user.FieldAuth0Data, field.TypeJSON)
 	}
 	if uu.mutation.UserBusinessesCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -444,6 +453,12 @@ func (uuo *UserUpdateOne) SetAuth0ID(s string) *UserUpdateOne {
 // SetAuth0Data sets the "auth0_data" field.
 func (uuo *UserUpdateOne) SetAuth0Data(m *management.User) *UserUpdateOne {
 	uuo.mutation.SetAuth0Data(m)
+	return uuo
+}
+
+// ClearAuth0Data clears the value of the "auth0_data" field.
+func (uuo *UserUpdateOne) ClearAuth0Data() *UserUpdateOne {
+	uuo.mutation.ClearAuth0Data()
 	return uuo
 }
 
@@ -667,6 +682,9 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if value, ok := uuo.mutation.Auth0Data(); ok {
 		_spec.SetField(user.FieldAuth0Data, field.TypeJSON, value)
+	}
+	if uuo.mutation.Auth0DataCleared() {
+		_spec.ClearField(user.FieldAuth0Data, field.TypeJSON)
 	}
 	if uuo.mutation.UserBusinessesCleared() {
 		edge := &sqlgraph.EdgeSpec{

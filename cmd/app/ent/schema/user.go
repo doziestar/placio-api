@@ -15,8 +15,12 @@ type User struct {
 // Fields of the User.
 func (User) Fields() []ent.Field {
 	return []ent.Field{
+		field.String("id").
+			MaxLen(36).
+			Unique().
+			Immutable(),
 		field.String("auth0_id").Unique(),
-		field.JSON("auth0_data", &management.User{}),
+		field.JSON("auth0_data", &management.User{}).Optional(),
 	}
 }
 

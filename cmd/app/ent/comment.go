@@ -81,11 +81,11 @@ func (*Comment) scanValues(columns []string) ([]any, error) {
 		case comment.FieldCreatedAt, comment.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		case comment.ForeignKeys[0]: // comment_post
-			values[i] = new(sql.NullInt64)
+			values[i] = new(sql.NullString)
 		case comment.ForeignKeys[1]: // post_comments
-			values[i] = new(sql.NullInt64)
+			values[i] = new(sql.NullString)
 		case comment.ForeignKeys[2]: // user_comments
-			values[i] = new(sql.NullInt64)
+			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -126,25 +126,25 @@ func (c *Comment) assignValues(columns []string, values []any) error {
 				c.UpdatedAt = value.Time
 			}
 		case comment.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field comment_post", value)
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field comment_post", values[i])
 			} else if value.Valid {
 				c.comment_post = new(string)
-				*c.comment_post = string(value.Int64)
+				*c.comment_post = value.String
 			}
 		case comment.ForeignKeys[1]:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field post_comments", value)
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field post_comments", values[i])
 			} else if value.Valid {
 				c.post_comments = new(string)
-				*c.post_comments = string(value.Int64)
+				*c.post_comments = value.String
 			}
 		case comment.ForeignKeys[2]:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field user_comments", value)
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field user_comments", values[i])
 			} else if value.Valid {
 				c.user_comments = new(string)
-				*c.user_comments = string(value.Int64)
+				*c.user_comments = value.String
 			}
 		default:
 			c.selectValues.Set(columns[i], values[i])

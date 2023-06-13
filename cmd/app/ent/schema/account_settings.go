@@ -14,6 +14,10 @@ type AccountSettings struct {
 // Fields of the BusinessAccountSettings.
 func (AccountSettings) Fields() []ent.Field {
 	return []ent.Field{
+		field.String("id").
+			MaxLen(36).
+			Unique().
+			Immutable(),
 		field.Bool("TwoFactorAuthentication"),
 		field.JSON("BlockedUsers", []string{}),
 		field.JSON("MutedUsers", []string{}),

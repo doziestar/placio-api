@@ -29,17 +29,6 @@ const (
 
 type UserService interface {
 	GetUser(ctx context.Context, authOID string) (*ent.User, error)
-	// GetAuth0UserData CanPerformAction(userID, businessAccountID string, action string) (bool, error)
-	// GetAuth0UserData RemoveUserFromBusinessAccount(userID, businessAccountID uint) error
-	//GetUsersForBusinessAccount(businessAccountID string) ([]models.User, error)
-	//GetBusinessAccountsForUser(userID string) ([]models.BusinessAccount, error)
-	//AssociateUserWithBusinessAccount(userID, businessAccountID, role string) error
-	//AcceptInvitation(invitationID uint) error
-	//InviteUserToBusinessAccount(email string, businessAccountID uint, role string) (*models.Invitation, error)
-	//RejectInvitation(invitationID uint) error
-	//TransferBusinessAccountOwnership(currentOwnerID uint, newOwnerID uint, businessAccountID uint) error
-	//GetUserInvitations(userID uint) ([]*models.Invitation, error)
-	//UpdateAuth0UserData(userID string, userData *models.Auth0UserData, appData *models.AppMetadata, userMetaData *models.Metadata) (*models.Auth0UserData, error)
 	GetAuth0UserData(userID string) (*management.User, error)
 	UpdateAuth0UserMetadata(userID string, userMetaData *models.Metadata) (*management.User, error)
 	UpdateAuth0UserInformation(userID string, userData *models.Auth0UserData) (*management.User, error)
@@ -71,7 +60,6 @@ func NewUserService(client *ent.Client, cache *utility.RedisClient) *UserService
 }
 
 func (s *UserServiceImpl) GetUser(ctx context.Context, auth0ID string) (*ent.User, error) {
-	log.Println("GetUser", auth0ID)
 
 	u, err := s.client.User.
 		Query().
@@ -85,10 +73,12 @@ func (s *UserServiceImpl) GetUser(ctx context.Context, auth0ID string) (*ent.Use
 
 		newUser, err := s.client.User.
 			Create().
+			SetID(utility.GenerateID()).
 			SetAuth0ID(auth0ID).
 			Save(ctx)
 
 		if err != nil {
+			log.Println("GetUser", auth0ID, "error creating new user", err)
 			return nil, err
 		}
 

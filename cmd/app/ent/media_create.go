@@ -61,6 +61,12 @@ func (mc *MediaCreate) SetNillableUpdatedAt(t *time.Time) *MediaCreate {
 	return mc
 }
 
+// SetID sets the "id" field.
+func (mc *MediaCreate) SetID(s string) *MediaCreate {
+	mc.mutation.SetID(s)
+	return mc
+}
+
 // SetPostID sets the "post" edge to the Post entity by ID.
 func (mc *MediaCreate) SetPostID(id string) *MediaCreate {
 	mc.mutation.SetPostID(id)
@@ -139,6 +145,11 @@ func (mc *MediaCreate) check() error {
 	if _, ok := mc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "UpdatedAt", err: errors.New(`ent: missing required field "Media.UpdatedAt"`)}
 	}
+	if v, ok := mc.mutation.ID(); ok {
+		if err := media.IDValidator(v); err != nil {
+			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "Media.id": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -170,6 +181,10 @@ func (mc *MediaCreate) createSpec() (*Media, *sqlgraph.CreateSpec) {
 		_node = &Media{config: mc.config}
 		_spec = sqlgraph.NewCreateSpec(media.Table, sqlgraph.NewFieldSpec(media.FieldID, field.TypeString))
 	)
+	if id, ok := mc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
 	if value, ok := mc.mutation.URL(); ok {
 		_spec.SetField(media.FieldURL, field.TypeString, value)
 		_node.URL = value

@@ -15,6 +15,10 @@ type Like struct {
 // Fields of the Like.
 func (Like) Fields() []ent.Field {
 	return []ent.Field{
+		field.String("id").
+			MaxLen(36).
+			Unique().
+			Immutable(),
 		field.Time("CreatedAt").Default(time.Now),
 		field.Time("UpdatedAt").UpdateDefault(time.Now),
 	}

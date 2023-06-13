@@ -27,6 +27,12 @@ func (ubc *UserBusinessCreate) SetRole(s string) *UserBusinessCreate {
 	return ubc
 }
 
+// SetID sets the "id" field.
+func (ubc *UserBusinessCreate) SetID(s string) *UserBusinessCreate {
+	ubc.mutation.SetID(s)
+	return ubc
+}
+
 // SetUserID sets the "user" edge to the User entity by ID.
 func (ubc *UserBusinessCreate) SetUserID(id string) *UserBusinessCreate {
 	ubc.mutation.SetUserID(id)
@@ -102,6 +108,11 @@ func (ubc *UserBusinessCreate) check() error {
 	if _, ok := ubc.mutation.Role(); !ok {
 		return &ValidationError{Name: "role", err: errors.New(`ent: missing required field "UserBusiness.role"`)}
 	}
+	if v, ok := ubc.mutation.ID(); ok {
+		if err := userbusiness.IDValidator(v); err != nil {
+			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "UserBusiness.id": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -133,6 +144,10 @@ func (ubc *UserBusinessCreate) createSpec() (*UserBusiness, *sqlgraph.CreateSpec
 		_node = &UserBusiness{config: ubc.config}
 		_spec = sqlgraph.NewCreateSpec(userbusiness.Table, sqlgraph.NewFieldSpec(userbusiness.FieldID, field.TypeString))
 	)
+	if id, ok := ubc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
 	if value, ok := ubc.mutation.Role(); ok {
 		_spec.SetField(userbusiness.FieldRole, field.TypeString, value)
 		_node.Role = value

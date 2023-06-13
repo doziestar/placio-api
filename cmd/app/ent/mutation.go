@@ -136,6 +136,12 @@ func (m AccountSettingsMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of AccountSettings entities.
+func (m *AccountSettingsMutation) SetID(id string) {
+	m.id = &id
+}
+
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
 func (m *AccountSettingsMutation) ID() (id string, exists bool) {
@@ -933,6 +939,12 @@ func (m BusinessMutation) Tx() (*Tx, error) {
 	tx := &Tx{config: m.config}
 	tx.init()
 	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Business entities.
+func (m *BusinessMutation) SetID(id string) {
+	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
@@ -1758,6 +1770,12 @@ func (m CommentMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Comment entities.
+func (m *CommentMutation) SetID(id string) {
+	m.id = &id
+}
+
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
 func (m *CommentMutation) ID() (id string, exists bool) {
@@ -2317,6 +2335,12 @@ func (m LikeMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Like entities.
+func (m *LikeMutation) SetID(id string) {
+	m.id = &id
+}
+
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
 func (m *LikeMutation) ID() (id string, exists bool) {
@@ -2821,6 +2845,12 @@ func (m MediaMutation) Tx() (*Tx, error) {
 	tx := &Tx{config: m.config}
 	tx.init()
 	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Media entities.
+func (m *MediaMutation) SetID(id string) {
+	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
@@ -3916,6 +3946,12 @@ func (m PostMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Post entities.
+func (m *PostMutation) SetID(id string) {
+	m.id = &id
+}
+
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
 func (m *PostMutation) ID() (id string, exists bool) {
@@ -4989,6 +5025,12 @@ func (m UserMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of User entities.
+func (m *UserMutation) SetID(id string) {
+	m.id = &id
+}
+
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
 func (m *UserMutation) ID() (id string, exists bool) {
@@ -5084,9 +5126,22 @@ func (m *UserMutation) OldAuth0Data(ctx context.Context) (v *management.User, er
 	return oldValue.Auth0Data, nil
 }
 
+// ClearAuth0Data clears the value of the "auth0_data" field.
+func (m *UserMutation) ClearAuth0Data() {
+	m.auth0_data = nil
+	m.clearedFields[user.FieldAuth0Data] = struct{}{}
+}
+
+// Auth0DataCleared returns if the "auth0_data" field was cleared in this mutation.
+func (m *UserMutation) Auth0DataCleared() bool {
+	_, ok := m.clearedFields[user.FieldAuth0Data]
+	return ok
+}
+
 // ResetAuth0Data resets all changes to the "auth0_data" field.
 func (m *UserMutation) ResetAuth0Data() {
 	m.auth0_data = nil
+	delete(m.clearedFields, user.FieldAuth0Data)
 }
 
 // AddUserBusinessIDs adds the "userBusinesses" edge to the UserBusiness entity by ids.
@@ -5423,7 +5478,11 @@ func (m *UserMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *UserMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(user.FieldAuth0Data) {
+		fields = append(fields, user.FieldAuth0Data)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -5436,6 +5495,11 @@ func (m *UserMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *UserMutation) ClearField(name string) error {
+	switch name {
+	case user.FieldAuth0Data:
+		m.ClearAuth0Data()
+		return nil
+	}
 	return fmt.Errorf("unknown User nullable field %s", name)
 }
 
@@ -5700,6 +5764,12 @@ func (m UserBusinessMutation) Tx() (*Tx, error) {
 	tx := &Tx{config: m.config}
 	tx.init()
 	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of UserBusiness entities.
+func (m *UserBusinessMutation) SetID(id string) {
+	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available

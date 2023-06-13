@@ -73,9 +73,9 @@ func (*UserBusiness) scanValues(columns []string) ([]any, error) {
 		case userbusiness.FieldID, userbusiness.FieldRole:
 			values[i] = new(sql.NullString)
 		case userbusiness.ForeignKeys[0]: // business_user_businesses
-			values[i] = new(sql.NullInt64)
+			values[i] = new(sql.NullString)
 		case userbusiness.ForeignKeys[1]: // user_user_businesses
-			values[i] = new(sql.NullInt64)
+			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -104,18 +104,18 @@ func (ub *UserBusiness) assignValues(columns []string, values []any) error {
 				ub.Role = value.String
 			}
 		case userbusiness.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field business_user_businesses", value)
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field business_user_businesses", values[i])
 			} else if value.Valid {
 				ub.business_user_businesses = new(string)
-				*ub.business_user_businesses = string(value.Int64)
+				*ub.business_user_businesses = value.String
 			}
 		case userbusiness.ForeignKeys[1]:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field user_user_businesses", value)
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field user_user_businesses", values[i])
 			} else if value.Valid {
 				ub.user_user_businesses = new(string)
-				*ub.user_user_businesses = string(value.Int64)
+				*ub.user_user_businesses = value.String
 			}
 		default:
 			ub.selectValues.Set(columns[i], values[i])

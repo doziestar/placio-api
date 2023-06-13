@@ -134,6 +134,16 @@ func Auth0IDContainsFold(v string) predicate.User {
 	return predicate.User(sql.FieldContainsFold(FieldAuth0ID, v))
 }
 
+// Auth0DataIsNil applies the IsNil predicate on the "auth0_data" field.
+func Auth0DataIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldAuth0Data))
+}
+
+// Auth0DataNotNil applies the NotNil predicate on the "auth0_data" field.
+func Auth0DataNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldAuth0Data))
+}
+
 // HasUserBusinesses applies the HasEdge predicate on the "userBusinesses" edge.
 func HasUserBusinesses() predicate.User {
 	return predicate.User(func(s *sql.Selector) {

@@ -42,6 +42,12 @@ func (lc *LikeCreate) SetUpdatedAt(t time.Time) *LikeCreate {
 	return lc
 }
 
+// SetID sets the "id" field.
+func (lc *LikeCreate) SetID(s string) *LikeCreate {
+	lc.mutation.SetID(s)
+	return lc
+}
+
 // SetUserID sets the "user" edge to the User entity by ID.
 func (lc *LikeCreate) SetUserID(id string) *LikeCreate {
 	lc.mutation.SetUserID(id)
@@ -129,6 +135,11 @@ func (lc *LikeCreate) check() error {
 	if _, ok := lc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "UpdatedAt", err: errors.New(`ent: missing required field "Like.UpdatedAt"`)}
 	}
+	if v, ok := lc.mutation.ID(); ok {
+		if err := like.IDValidator(v); err != nil {
+			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "Like.id": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -160,6 +171,10 @@ func (lc *LikeCreate) createSpec() (*Like, *sqlgraph.CreateSpec) {
 		_node = &Like{config: lc.config}
 		_spec = sqlgraph.NewCreateSpec(like.Table, sqlgraph.NewFieldSpec(like.FieldID, field.TypeString))
 	)
+	if id, ok := lc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
 	if value, ok := lc.mutation.CreatedAt(); ok {
 		_spec.SetField(like.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value

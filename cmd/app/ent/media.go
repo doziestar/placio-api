@@ -65,7 +65,7 @@ func (*Media) scanValues(columns []string) ([]any, error) {
 		case media.FieldCreatedAt, media.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		case media.ForeignKeys[0]: // post_medias
-			values[i] = new(sql.NullInt64)
+			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -112,11 +112,11 @@ func (m *Media) assignValues(columns []string, values []any) error {
 				m.UpdatedAt = value.Time
 			}
 		case media.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field post_medias", value)
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field post_medias", values[i])
 			} else if value.Valid {
 				m.post_medias = new(string)
-				*m.post_medias = string(value.Int64)
+				*m.post_medias = value.String
 			}
 		default:
 			m.selectValues.Set(columns[i], values[i])

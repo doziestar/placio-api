@@ -79,11 +79,11 @@ func (*Like) scanValues(columns []string) ([]any, error) {
 		case like.FieldCreatedAt, like.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		case like.ForeignKeys[0]: // like_post
-			values[i] = new(sql.NullInt64)
+			values[i] = new(sql.NullString)
 		case like.ForeignKeys[1]: // post_likes
-			values[i] = new(sql.NullInt64)
+			values[i] = new(sql.NullString)
 		case like.ForeignKeys[2]: // user_likes
-			values[i] = new(sql.NullInt64)
+			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -118,25 +118,25 @@ func (l *Like) assignValues(columns []string, values []any) error {
 				l.UpdatedAt = value.Time
 			}
 		case like.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field like_post", value)
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field like_post", values[i])
 			} else if value.Valid {
 				l.like_post = new(string)
-				*l.like_post = string(value.Int64)
+				*l.like_post = value.String
 			}
 		case like.ForeignKeys[1]:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field post_likes", value)
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field post_likes", values[i])
 			} else if value.Valid {
 				l.post_likes = new(string)
-				*l.post_likes = string(value.Int64)
+				*l.post_likes = value.String
 			}
 		case like.ForeignKeys[2]:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field user_likes", value)
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field user_likes", values[i])
 			} else if value.Valid {
 				l.user_likes = new(string)
-				*l.user_likes = string(value.Int64)
+				*l.user_likes = value.String
 			}
 		default:
 			l.selectValues.Set(columns[i], values[i])

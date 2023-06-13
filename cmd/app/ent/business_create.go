@@ -28,6 +28,12 @@ func (bc *BusinessCreate) SetName(s string) *BusinessCreate {
 	return bc
 }
 
+// SetID sets the "id" field.
+func (bc *BusinessCreate) SetID(s string) *BusinessCreate {
+	bc.mutation.SetID(s)
+	return bc
+}
+
 // AddUserBusinessIDs adds the "userBusinesses" edge to the UserBusiness entity by IDs.
 func (bc *BusinessCreate) AddUserBusinessIDs(ids ...string) *BusinessCreate {
 	bc.mutation.AddUserBusinessIDs(ids...)
@@ -114,6 +120,11 @@ func (bc *BusinessCreate) check() error {
 	if _, ok := bc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Business.name"`)}
 	}
+	if v, ok := bc.mutation.ID(); ok {
+		if err := business.IDValidator(v); err != nil {
+			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "Business.id": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -145,6 +156,10 @@ func (bc *BusinessCreate) createSpec() (*Business, *sqlgraph.CreateSpec) {
 		_node = &Business{config: bc.config}
 		_spec = sqlgraph.NewCreateSpec(business.Table, sqlgraph.NewFieldSpec(business.FieldID, field.TypeString))
 	)
+	if id, ok := bc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
 	if value, ok := bc.mutation.Name(); ok {
 		_spec.SetField(business.FieldName, field.TypeString, value)
 		_node.Name = value

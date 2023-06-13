@@ -79,7 +79,7 @@ func EntClient(ctx context.Context) *ent.Client {
 				time.Sleep(waitTime)
 				continue
 			}
-			log.Fatal("Failed to connect to database after %v retries", maxRetries)
+			log.Fatalf("Failed to connect to database after %v retries", maxRetries)
 		}
 		break
 	}

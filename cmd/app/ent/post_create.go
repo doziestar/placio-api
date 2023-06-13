@@ -51,6 +51,12 @@ func (pc *PostCreate) SetUpdatedAt(t time.Time) *PostCreate {
 	return pc
 }
 
+// SetID sets the "id" field.
+func (pc *PostCreate) SetID(s string) *PostCreate {
+	pc.mutation.SetID(s)
+	return pc
+}
+
 // SetUserID sets the "user" edge to the User entity by ID.
 func (pc *PostCreate) SetUserID(id string) *PostCreate {
 	pc.mutation.SetUserID(id)
@@ -191,6 +197,11 @@ func (pc *PostCreate) check() error {
 	if _, ok := pc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "UpdatedAt", err: errors.New(`ent: missing required field "Post.UpdatedAt"`)}
 	}
+	if v, ok := pc.mutation.ID(); ok {
+		if err := post.IDValidator(v); err != nil {
+			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "Post.id": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -222,6 +233,10 @@ func (pc *PostCreate) createSpec() (*Post, *sqlgraph.CreateSpec) {
 		_node = &Post{config: pc.config}
 		_spec = sqlgraph.NewCreateSpec(post.Table, sqlgraph.NewFieldSpec(post.FieldID, field.TypeString))
 	)
+	if id, ok := pc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
 	if value, ok := pc.mutation.Content(); ok {
 		_spec.SetField(post.FieldContent, field.TypeString, value)
 		_node.Content = value

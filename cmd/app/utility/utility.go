@@ -3,6 +3,7 @@ package utility
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/google/uuid"
 	"placio-app/models"
 	"strings"
 
@@ -231,4 +232,12 @@ func RemoveSensitiveInfo(user *models.User) *models.User {
 	//}
 
 	//return
+}
+
+func GenerateID() string {
+	uid, err := uuid.NewRandom()
+	if err != nil {
+		return ""
+	}
+	return uid.String()
 }

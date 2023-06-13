@@ -48,6 +48,12 @@ func (cc *CommentCreate) SetUpdatedAt(t time.Time) *CommentCreate {
 	return cc
 }
 
+// SetID sets the "id" field.
+func (cc *CommentCreate) SetID(s string) *CommentCreate {
+	cc.mutation.SetID(s)
+	return cc
+}
+
 // SetUserID sets the "user" edge to the User entity by ID.
 func (cc *CommentCreate) SetUserID(id string) *CommentCreate {
 	cc.mutation.SetUserID(id)
@@ -143,6 +149,11 @@ func (cc *CommentCreate) check() error {
 	if _, ok := cc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "UpdatedAt", err: errors.New(`ent: missing required field "Comment.UpdatedAt"`)}
 	}
+	if v, ok := cc.mutation.ID(); ok {
+		if err := comment.IDValidator(v); err != nil {
+			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "Comment.id": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -174,6 +185,10 @@ func (cc *CommentCreate) createSpec() (*Comment, *sqlgraph.CreateSpec) {
 		_node = &Comment{config: cc.config}
 		_spec = sqlgraph.NewCreateSpec(comment.Table, sqlgraph.NewFieldSpec(comment.FieldID, field.TypeString))
 	)
+	if id, ok := cc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
 	if value, ok := cc.mutation.Content(); ok {
 		_spec.SetField(comment.FieldContent, field.TypeString, value)
 		_node.Content = value

@@ -15,6 +15,10 @@ type Comment struct {
 // Fields of the Comment.
 func (Comment) Fields() []ent.Field {
 	return []ent.Field{
+		field.String("id").
+			MaxLen(36).
+			Unique().
+			Immutable(),
 		field.String("Content").MaxLen(2147483647),
 		field.Time("CreatedAt").Default(time.Now),
 		field.Time("UpdatedAt").UpdateDefault(time.Now),

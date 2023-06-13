@@ -113,9 +113,9 @@ func (*Post) scanValues(columns []string) ([]any, error) {
 		case post.FieldCreatedAt, post.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		case post.ForeignKeys[0]: // business_posts
-			values[i] = new(sql.NullInt64)
+			values[i] = new(sql.NullString)
 		case post.ForeignKeys[1]: // user_posts
-			values[i] = new(sql.NullInt64)
+			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -156,18 +156,18 @@ func (po *Post) assignValues(columns []string, values []any) error {
 				po.UpdatedAt = value.Time
 			}
 		case post.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field business_posts", value)
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field business_posts", values[i])
 			} else if value.Valid {
 				po.business_posts = new(string)
-				*po.business_posts = string(value.Int64)
+				*po.business_posts = value.String
 			}
 		case post.ForeignKeys[1]:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field user_posts", value)
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field user_posts", values[i])
 			} else if value.Valid {
 				po.user_posts = new(string)
-				*po.user_posts = string(value.Int64)
+				*po.user_posts = value.String
 			}
 		default:
 			po.selectValues.Set(columns[i], values[i])

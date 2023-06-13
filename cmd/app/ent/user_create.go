@@ -36,6 +36,12 @@ func (uc *UserCreate) SetAuth0Data(m *management.User) *UserCreate {
 	return uc
 }
 
+// SetID sets the "id" field.
+func (uc *UserCreate) SetID(s string) *UserCreate {
+	uc.mutation.SetID(s)
+	return uc
+}
+
 // AddUserBusinessIDs adds the "userBusinesses" edge to the UserBusiness entity by IDs.
 func (uc *UserCreate) AddUserBusinessIDs(ids ...string) *UserCreate {
 	uc.mutation.AddUserBusinessIDs(ids...)
@@ -133,8 +139,10 @@ func (uc *UserCreate) check() error {
 	if _, ok := uc.mutation.Auth0ID(); !ok {
 		return &ValidationError{Name: "auth0_id", err: errors.New(`ent: missing required field "User.auth0_id"`)}
 	}
-	if _, ok := uc.mutation.Auth0Data(); !ok {
-		return &ValidationError{Name: "auth0_data", err: errors.New(`ent: missing required field "User.auth0_data"`)}
+	if v, ok := uc.mutation.ID(); ok {
+		if err := user.IDValidator(v); err != nil {
+			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "User.id": %w`, err)}
+		}
 	}
 	return nil
 }
@@ -167,6 +175,10 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_node = &User{config: uc.config}
 		_spec = sqlgraph.NewCreateSpec(user.Table, sqlgraph.NewFieldSpec(user.FieldID, field.TypeString))
 	)
+	if id, ok := uc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
 	if value, ok := uc.mutation.Auth0ID(); ok {
 		_spec.SetField(user.FieldAuth0ID, field.TypeString, value)
 		_node.Auth0ID = value
