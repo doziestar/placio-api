@@ -1130,6 +1130,8 @@ paths:
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
       summary: List all business accounts
+      tags:
+      - Business
     post:
       consumes:
       - application/json
@@ -1161,6 +1163,8 @@ paths:
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
       summary: Create a business account
+      tags:
+      - Business
   /{businessAccountID}:
     delete:
       operationId: delete-business-account
@@ -1190,6 +1194,8 @@ paths:
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
       summary: Delete a business account
+      tags:
+      - Business
     get:
       operationId: get-business-account
       parameters:
@@ -1218,6 +1224,8 @@ paths:
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
       summary: Get a business account
+      tags:
+      - Business
     put:
       consumes:
       - application/json
@@ -1254,6 +1262,8 @@ paths:
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
       summary: Update a business account
+      tags:
+      - Business
   /{businessAccountID}/user/{currentOwnerID}/{newOwnerID}:
     put:
       operationId: transfer-business-account-ownership
@@ -1293,6 +1303,8 @@ paths:
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
       summary: Transfer business account ownership
+      tags:
+      - Business
   /{businessAccountID}/user/{userID}:
     delete:
       operationId: remove-user-business-account
@@ -1327,6 +1339,8 @@ paths:
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
       summary: Remove user from business account
+      tags:
+      - Business
     post:
       operationId: associate-user-business-account
       parameters:
@@ -1360,6 +1374,8 @@ paths:
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
       summary: Associate user with business account
+      tags:
+      - Business
   /{businessAccountID}/users:
     get:
       operationId: get-users-business-account
@@ -1389,6 +1405,8 @@ paths:
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
       summary: Get users for a business account
+      tags:
+      - Business
   /{businessID}/followed-contents:
     get:
       operationId: get-followed-contents
@@ -1418,6 +1436,8 @@ paths:
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
       summary: Get contents followed by a business
+      tags:
+      - Business
   /{businessID}/unfollow/user/{userID}:
     delete:
       operationId: unfollow-user
@@ -1452,6 +1472,8 @@ paths:
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
       summary: Unfollow a user by a business
+      tags:
+      - Business
   /{followerID}/unfollow/business/{followedID}:
     delete:
       operationId: unfollow-business
@@ -1486,6 +1508,8 @@ paths:
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
       summary: Unfollow a business by another business
+      tags:
+      - Business
   /api/v1/attendees/:
     post:
       consumes:
@@ -3194,6 +3218,9 @@ paths:
       - User
   /business/{businessID}/follow/user/{userID}:
     post:
+      consumes:
+      - application/json
+      description: Retrieve all comments for a given post
       operationId: follow-user
       parameters:
       - description: Business ID
@@ -3226,6 +3253,8 @@ paths:
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
       summary: Follow a user by a business
+      tags:
+      - Business
   /business/{followerID}/follow/business/{followedID}:
     post:
       operationId: follow-business
@@ -3260,6 +3289,8 @@ paths:
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
       summary: Follow a business by another business
+      tags:
+      - Business
   /event/{eventId}:
     get:
       consumes:
@@ -3536,6 +3567,8 @@ paths:
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
       summary: Get user business accounts
+      tags:
+      - Business
 schemes:
 - http
 - https

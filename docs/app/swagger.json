@@ -27,6 +27,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Business"
+                ],
                 "summary": "List all business accounts",
                 "operationId": "list-business-accounts",
                 "responses": {
@@ -62,6 +65,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Business"
                 ],
                 "summary": "Create a business account",
                 "operationId": "create-business-account",
@@ -2731,8 +2737,15 @@
         },
         "/business/{businessID}/follow/user/{userID}": {
             "post": {
+                "description": "Retrieve all comments for a given post",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Business"
                 ],
                 "summary": "Follow a user by a business",
                 "operationId": "follow-user",
@@ -2784,6 +2797,9 @@
             "post": {
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Business"
                 ],
                 "summary": "Follow a business by another business",
                 "operationId": "follow-business",
@@ -3211,6 +3227,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Business"
+                ],
                 "summary": "Get user business accounts",
                 "operationId": "get-user-business-accounts",
                 "parameters": [
@@ -3254,6 +3273,9 @@
             "get": {
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Business"
                 ],
                 "summary": "Get a business account",
                 "operationId": "get-business-account",
@@ -3299,6 +3321,9 @@
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Business"
                 ],
                 "summary": "Update a business account",
                 "operationId": "update-business-account",
@@ -3351,6 +3376,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Business"
+                ],
                 "summary": "Delete a business account",
                 "operationId": "delete-business-account",
                 "parameters": [
@@ -3394,6 +3422,9 @@
             "put": {
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Business"
                 ],
                 "summary": "Transfer business account ownership",
                 "operationId": "transfer-business-account-ownership",
@@ -3453,6 +3484,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Business"
+                ],
                 "summary": "Associate user with business account",
                 "operationId": "associate-user-business-account",
                 "parameters": [
@@ -3501,6 +3535,9 @@
             "delete": {
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Business"
                 ],
                 "summary": "Remove user from business account",
                 "operationId": "remove-user-business-account",
@@ -3553,6 +3590,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Business"
+                ],
                 "summary": "Get users for a business account",
                 "operationId": "get-users-business-account",
                 "parameters": [
@@ -3597,6 +3637,9 @@
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Business"
+                ],
                 "summary": "Get contents followed by a business",
                 "operationId": "get-followed-contents",
                 "parameters": [
@@ -3640,6 +3683,9 @@
             "delete": {
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Business"
                 ],
                 "summary": "Unfollow a user by a business",
                 "operationId": "unfollow-user",
@@ -3691,6 +3737,9 @@
             "delete": {
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Business"
                 ],
                 "summary": "Unfollow a business by another business",
                 "operationId": "unfollow-business",

@@ -29,6 +29,9 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Business"
+                ],
                 "summary": "List all business accounts",
                 "operationId": "list-business-accounts",
                 "responses": {
@@ -64,6 +67,9 @@ const docTemplate = `{
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Business"
                 ],
                 "summary": "Create a business account",
                 "operationId": "create-business-account",
@@ -2733,8 +2739,15 @@ const docTemplate = `{
         },
         "/business/{businessID}/follow/user/{userID}": {
             "post": {
+                "description": "Retrieve all comments for a given post",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Business"
                 ],
                 "summary": "Follow a user by a business",
                 "operationId": "follow-user",
@@ -2786,6 +2799,9 @@ const docTemplate = `{
             "post": {
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Business"
                 ],
                 "summary": "Follow a business by another business",
                 "operationId": "follow-business",
@@ -3213,6 +3229,9 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Business"
+                ],
                 "summary": "Get user business accounts",
                 "operationId": "get-user-business-accounts",
                 "parameters": [
@@ -3256,6 +3275,9 @@ const docTemplate = `{
             "get": {
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Business"
                 ],
                 "summary": "Get a business account",
                 "operationId": "get-business-account",
@@ -3301,6 +3323,9 @@ const docTemplate = `{
                 ],
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Business"
                 ],
                 "summary": "Update a business account",
                 "operationId": "update-business-account",
@@ -3353,6 +3378,9 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Business"
+                ],
                 "summary": "Delete a business account",
                 "operationId": "delete-business-account",
                 "parameters": [
@@ -3396,6 +3424,9 @@ const docTemplate = `{
             "put": {
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Business"
                 ],
                 "summary": "Transfer business account ownership",
                 "operationId": "transfer-business-account-ownership",
@@ -3455,6 +3486,9 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Business"
+                ],
                 "summary": "Associate user with business account",
                 "operationId": "associate-user-business-account",
                 "parameters": [
@@ -3503,6 +3537,9 @@ const docTemplate = `{
             "delete": {
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Business"
                 ],
                 "summary": "Remove user from business account",
                 "operationId": "remove-user-business-account",
@@ -3555,6 +3592,9 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Business"
+                ],
                 "summary": "Get users for a business account",
                 "operationId": "get-users-business-account",
                 "parameters": [
@@ -3599,6 +3639,9 @@ const docTemplate = `{
                 "produces": [
                     "application/json"
                 ],
+                "tags": [
+                    "Business"
+                ],
                 "summary": "Get contents followed by a business",
                 "operationId": "get-followed-contents",
                 "parameters": [
@@ -3642,6 +3685,9 @@ const docTemplate = `{
             "delete": {
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Business"
                 ],
                 "summary": "Unfollow a user by a business",
                 "operationId": "unfollow-user",
@@ -3693,6 +3739,9 @@ const docTemplate = `{
             "delete": {
                 "produces": [
                     "application/json"
+                ],
+                "tags": [
+                    "Business"
                 ],
                 "summary": "Unfollow a business by another business",
                 "operationId": "unfollow-business",
