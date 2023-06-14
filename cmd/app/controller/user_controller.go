@@ -26,6 +26,7 @@ func (uc *UserController) RegisterRoutes(router *gin.RouterGroup) {
 	userRouter := router.Group("/users")
 	{
 		userRouter.GET("/", utility.Use(uc.GetUser))
+		userRouter.GET("/posts", utility.Use(uc.GetPostsByUser))
 		userRouter.PATCH("/:id/userinfo", utility.Use(uc.updateAuth0UserInformation))
 		userRouter.PATCH("/:id/metadata", utility.Use(uc.updateAuth0UserMetadata))
 		userRouter.PATCH("/:id/appdata", utility.Use(uc.updateAuth0AppMetadata))
@@ -257,6 +258,63 @@ func (uc *UserController) createBusinessAccount(ctx *gin.Context) error {
 	//}
 	//
 	//ctx.JSON(http.StatusCreated, newBusinessAccount)
+	return nil
+}
+
+// GetPostsByUser retrieves all posts by the user.
+// @Summary Retrieve posts by user
+// @Description Get posts by the authenticated user
+// @Tags User
+// @Accept json
+// @Produce json
+// @Security Bearer
+// @Success 200 {array} Dto.PostResponseDto "Successfully retrieved posts"
+// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
+// @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
+// @Router /api/v1/users/{userID}/posts [get]
+func (uc *UserController) GetPostsByUser(ctx *gin.Context) error {
+	log.Println("GetPostsByUser", ctx.Request.URL.Path, ctx.Request.Method)
+	// Get the user ID from the URL path parameters
+	userID := ctx.MustGet("user").(string)
+	log.Println("GetPostsByUser and userId", ctx.Request.URL.Path, ctx.Request.Method, userID)
+
+	// Call the service method to get the posts
+	posts, err := uc.userService.GetPostsByUser(ctx, userID)
+	log.Println("GetPostsByUser and userId", ctx.Request.URL.Path, ctx.Request.Method, userID, posts)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			// If no posts were found, return a 404 Not Found status
+			ctx.JSON(http.StatusNotFound, gin.H{"error": "No posts found"})
+			return err
+		}
+		// For other types of errors, return a 500 Internal Server Error status
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+		return err
+	}
+	//
+	//// If posts were found, convert them to the DTO format
+	//postsDto := make([]Dto.PostResponseDto, len(posts))
+	//for i, post := range posts {
+	//	postsDto[i] = Dto.PostResponseDto{
+	//		ID:      post.ID,
+	//		Content: post.Content,
+	//		User:    post.Edges.User,
+	//		//Business:  post.Edges.Business,
+	//		CreatedAt: post.CreatedAt,
+	//		Medias:    make([]Dto.MediaDto, len(post.Edges.Medias)),
+	//	}
+	//
+	//	for j, media := range post.Edges.Medias {
+	//		postsDto[i].Medias[j] = Dto.MediaDto{
+	//			Type: media.MediaType,
+	//			URL:  media.URL,
+	//		}
+	//	}
+	//}
+
+	// Return the posts in the response
+	ctx.JSON(http.StatusOK, posts)
 	return nil
 }
 

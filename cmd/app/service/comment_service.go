@@ -12,7 +12,6 @@ import (
 
 type CommentService interface {
 	CreateComment(ctx context.Context, userID string, postID string, content string) (*ent.Comment, error)
-	// GetComments GetComment(ctx context.Context, commentID string) (*ent.Comment, error)
 	UpdateComment(ctx context.Context, userID string, commentID string, newContent string) (*ent.Comment, error)
 	DeleteComment(ctx context.Context, userID string, commentID string) error
 }

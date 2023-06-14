@@ -58,7 +58,7 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 	redisClient := utility.NewRedisClient("redis://default:a3677c1a7b84402eb34efd55ad3cf059@golden-colt-33790.upstash.io:33790", 0, utility.CacheDuration)
 	_ = redisClient.ConnectRedis()
 
-	app.Use(middleware.EnsureValidToken())
+	app.Use(middleware.EnsureValidToken(client))
 
 	routerGroupV1 := app.Group("/api/v1")
 
@@ -84,9 +84,9 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 	postController.RegisterRoutes(routerGroupV1)
 
 	// comments
-	//commentService := service.NewCommentService(db)
-	//commentController := controller.NewCommentController(commentService)
-	//commentController.RegisterRoutes(routerGroupV1)
+	commentService := service.NewCommentService(client)
+	commentController := controller.NewCommentController(commentService)
+	commentController.RegisterRoutes(routerGroupV1)
 	//
 	//// likes
 	//likeService := service.NewLikeService(db)

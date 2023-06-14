@@ -4936,7 +4936,14 @@ type UserMutation struct {
 	typ                   string
 	id                    *string
 	auth0_id              *string
+	name                  *string
+	given_name            *string
+	family_name           *string
+	nickname              *string
+	picture               *string
 	auth0_data            **management.User
+	app_settings          *map[string]interface{}
+	user_settings         *map[string]interface{}
 	clearedFields         map[string]struct{}
 	userBusinesses        map[string]struct{}
 	removeduserBusinesses map[string]struct{}
@@ -5095,6 +5102,251 @@ func (m *UserMutation) ResetAuth0ID() {
 	m.auth0_id = nil
 }
 
+// SetName sets the "name" field.
+func (m *UserMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *UserMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ClearName clears the value of the "name" field.
+func (m *UserMutation) ClearName() {
+	m.name = nil
+	m.clearedFields[user.FieldName] = struct{}{}
+}
+
+// NameCleared returns if the "name" field was cleared in this mutation.
+func (m *UserMutation) NameCleared() bool {
+	_, ok := m.clearedFields[user.FieldName]
+	return ok
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *UserMutation) ResetName() {
+	m.name = nil
+	delete(m.clearedFields, user.FieldName)
+}
+
+// SetGivenName sets the "given_name" field.
+func (m *UserMutation) SetGivenName(s string) {
+	m.given_name = &s
+}
+
+// GivenName returns the value of the "given_name" field in the mutation.
+func (m *UserMutation) GivenName() (r string, exists bool) {
+	v := m.given_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldGivenName returns the old "given_name" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldGivenName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldGivenName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldGivenName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldGivenName: %w", err)
+	}
+	return oldValue.GivenName, nil
+}
+
+// ClearGivenName clears the value of the "given_name" field.
+func (m *UserMutation) ClearGivenName() {
+	m.given_name = nil
+	m.clearedFields[user.FieldGivenName] = struct{}{}
+}
+
+// GivenNameCleared returns if the "given_name" field was cleared in this mutation.
+func (m *UserMutation) GivenNameCleared() bool {
+	_, ok := m.clearedFields[user.FieldGivenName]
+	return ok
+}
+
+// ResetGivenName resets all changes to the "given_name" field.
+func (m *UserMutation) ResetGivenName() {
+	m.given_name = nil
+	delete(m.clearedFields, user.FieldGivenName)
+}
+
+// SetFamilyName sets the "family_name" field.
+func (m *UserMutation) SetFamilyName(s string) {
+	m.family_name = &s
+}
+
+// FamilyName returns the value of the "family_name" field in the mutation.
+func (m *UserMutation) FamilyName() (r string, exists bool) {
+	v := m.family_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFamilyName returns the old "family_name" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldFamilyName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFamilyName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFamilyName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFamilyName: %w", err)
+	}
+	return oldValue.FamilyName, nil
+}
+
+// ClearFamilyName clears the value of the "family_name" field.
+func (m *UserMutation) ClearFamilyName() {
+	m.family_name = nil
+	m.clearedFields[user.FieldFamilyName] = struct{}{}
+}
+
+// FamilyNameCleared returns if the "family_name" field was cleared in this mutation.
+func (m *UserMutation) FamilyNameCleared() bool {
+	_, ok := m.clearedFields[user.FieldFamilyName]
+	return ok
+}
+
+// ResetFamilyName resets all changes to the "family_name" field.
+func (m *UserMutation) ResetFamilyName() {
+	m.family_name = nil
+	delete(m.clearedFields, user.FieldFamilyName)
+}
+
+// SetNickname sets the "nickname" field.
+func (m *UserMutation) SetNickname(s string) {
+	m.nickname = &s
+}
+
+// Nickname returns the value of the "nickname" field in the mutation.
+func (m *UserMutation) Nickname() (r string, exists bool) {
+	v := m.nickname
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNickname returns the old "nickname" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldNickname(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNickname is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNickname requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNickname: %w", err)
+	}
+	return oldValue.Nickname, nil
+}
+
+// ClearNickname clears the value of the "nickname" field.
+func (m *UserMutation) ClearNickname() {
+	m.nickname = nil
+	m.clearedFields[user.FieldNickname] = struct{}{}
+}
+
+// NicknameCleared returns if the "nickname" field was cleared in this mutation.
+func (m *UserMutation) NicknameCleared() bool {
+	_, ok := m.clearedFields[user.FieldNickname]
+	return ok
+}
+
+// ResetNickname resets all changes to the "nickname" field.
+func (m *UserMutation) ResetNickname() {
+	m.nickname = nil
+	delete(m.clearedFields, user.FieldNickname)
+}
+
+// SetPicture sets the "picture" field.
+func (m *UserMutation) SetPicture(s string) {
+	m.picture = &s
+}
+
+// Picture returns the value of the "picture" field in the mutation.
+func (m *UserMutation) Picture() (r string, exists bool) {
+	v := m.picture
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPicture returns the old "picture" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldPicture(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPicture is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPicture requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPicture: %w", err)
+	}
+	return oldValue.Picture, nil
+}
+
+// ClearPicture clears the value of the "picture" field.
+func (m *UserMutation) ClearPicture() {
+	m.picture = nil
+	m.clearedFields[user.FieldPicture] = struct{}{}
+}
+
+// PictureCleared returns if the "picture" field was cleared in this mutation.
+func (m *UserMutation) PictureCleared() bool {
+	_, ok := m.clearedFields[user.FieldPicture]
+	return ok
+}
+
+// ResetPicture resets all changes to the "picture" field.
+func (m *UserMutation) ResetPicture() {
+	m.picture = nil
+	delete(m.clearedFields, user.FieldPicture)
+}
+
 // SetAuth0Data sets the "auth0_data" field.
 func (m *UserMutation) SetAuth0Data(value *management.User) {
 	m.auth0_data = &value
@@ -5142,6 +5394,104 @@ func (m *UserMutation) Auth0DataCleared() bool {
 func (m *UserMutation) ResetAuth0Data() {
 	m.auth0_data = nil
 	delete(m.clearedFields, user.FieldAuth0Data)
+}
+
+// SetAppSettings sets the "app_settings" field.
+func (m *UserMutation) SetAppSettings(value map[string]interface{}) {
+	m.app_settings = &value
+}
+
+// AppSettings returns the value of the "app_settings" field in the mutation.
+func (m *UserMutation) AppSettings() (r map[string]interface{}, exists bool) {
+	v := m.app_settings
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAppSettings returns the old "app_settings" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldAppSettings(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAppSettings is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAppSettings requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAppSettings: %w", err)
+	}
+	return oldValue.AppSettings, nil
+}
+
+// ClearAppSettings clears the value of the "app_settings" field.
+func (m *UserMutation) ClearAppSettings() {
+	m.app_settings = nil
+	m.clearedFields[user.FieldAppSettings] = struct{}{}
+}
+
+// AppSettingsCleared returns if the "app_settings" field was cleared in this mutation.
+func (m *UserMutation) AppSettingsCleared() bool {
+	_, ok := m.clearedFields[user.FieldAppSettings]
+	return ok
+}
+
+// ResetAppSettings resets all changes to the "app_settings" field.
+func (m *UserMutation) ResetAppSettings() {
+	m.app_settings = nil
+	delete(m.clearedFields, user.FieldAppSettings)
+}
+
+// SetUserSettings sets the "user_settings" field.
+func (m *UserMutation) SetUserSettings(value map[string]interface{}) {
+	m.user_settings = &value
+}
+
+// UserSettings returns the value of the "user_settings" field in the mutation.
+func (m *UserMutation) UserSettings() (r map[string]interface{}, exists bool) {
+	v := m.user_settings
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserSettings returns the old "user_settings" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldUserSettings(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUserSettings is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUserSettings requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserSettings: %w", err)
+	}
+	return oldValue.UserSettings, nil
+}
+
+// ClearUserSettings clears the value of the "user_settings" field.
+func (m *UserMutation) ClearUserSettings() {
+	m.user_settings = nil
+	m.clearedFields[user.FieldUserSettings] = struct{}{}
+}
+
+// UserSettingsCleared returns if the "user_settings" field was cleared in this mutation.
+func (m *UserMutation) UserSettingsCleared() bool {
+	_, ok := m.clearedFields[user.FieldUserSettings]
+	return ok
+}
+
+// ResetUserSettings resets all changes to the "user_settings" field.
+func (m *UserMutation) ResetUserSettings() {
+	m.user_settings = nil
+	delete(m.clearedFields, user.FieldUserSettings)
 }
 
 // AddUserBusinessIDs adds the "userBusinesses" edge to the UserBusiness entity by ids.
@@ -5394,12 +5744,33 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 2)
+	fields := make([]string, 0, 9)
 	if m.auth0_id != nil {
 		fields = append(fields, user.FieldAuth0ID)
 	}
+	if m.name != nil {
+		fields = append(fields, user.FieldName)
+	}
+	if m.given_name != nil {
+		fields = append(fields, user.FieldGivenName)
+	}
+	if m.family_name != nil {
+		fields = append(fields, user.FieldFamilyName)
+	}
+	if m.nickname != nil {
+		fields = append(fields, user.FieldNickname)
+	}
+	if m.picture != nil {
+		fields = append(fields, user.FieldPicture)
+	}
 	if m.auth0_data != nil {
 		fields = append(fields, user.FieldAuth0Data)
+	}
+	if m.app_settings != nil {
+		fields = append(fields, user.FieldAppSettings)
+	}
+	if m.user_settings != nil {
+		fields = append(fields, user.FieldUserSettings)
 	}
 	return fields
 }
@@ -5411,8 +5782,22 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case user.FieldAuth0ID:
 		return m.Auth0ID()
+	case user.FieldName:
+		return m.Name()
+	case user.FieldGivenName:
+		return m.GivenName()
+	case user.FieldFamilyName:
+		return m.FamilyName()
+	case user.FieldNickname:
+		return m.Nickname()
+	case user.FieldPicture:
+		return m.Picture()
 	case user.FieldAuth0Data:
 		return m.Auth0Data()
+	case user.FieldAppSettings:
+		return m.AppSettings()
+	case user.FieldUserSettings:
+		return m.UserSettings()
 	}
 	return nil, false
 }
@@ -5424,8 +5809,22 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 	switch name {
 	case user.FieldAuth0ID:
 		return m.OldAuth0ID(ctx)
+	case user.FieldName:
+		return m.OldName(ctx)
+	case user.FieldGivenName:
+		return m.OldGivenName(ctx)
+	case user.FieldFamilyName:
+		return m.OldFamilyName(ctx)
+	case user.FieldNickname:
+		return m.OldNickname(ctx)
+	case user.FieldPicture:
+		return m.OldPicture(ctx)
 	case user.FieldAuth0Data:
 		return m.OldAuth0Data(ctx)
+	case user.FieldAppSettings:
+		return m.OldAppSettings(ctx)
+	case user.FieldUserSettings:
+		return m.OldUserSettings(ctx)
 	}
 	return nil, fmt.Errorf("unknown User field %s", name)
 }
@@ -5442,12 +5841,61 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetAuth0ID(v)
 		return nil
+	case user.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	case user.FieldGivenName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetGivenName(v)
+		return nil
+	case user.FieldFamilyName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFamilyName(v)
+		return nil
+	case user.FieldNickname:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNickname(v)
+		return nil
+	case user.FieldPicture:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPicture(v)
+		return nil
 	case user.FieldAuth0Data:
 		v, ok := value.(*management.User)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetAuth0Data(v)
+		return nil
+	case user.FieldAppSettings:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAppSettings(v)
+		return nil
+	case user.FieldUserSettings:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserSettings(v)
 		return nil
 	}
 	return fmt.Errorf("unknown User field %s", name)
@@ -5479,8 +5927,29 @@ func (m *UserMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *UserMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(user.FieldName) {
+		fields = append(fields, user.FieldName)
+	}
+	if m.FieldCleared(user.FieldGivenName) {
+		fields = append(fields, user.FieldGivenName)
+	}
+	if m.FieldCleared(user.FieldFamilyName) {
+		fields = append(fields, user.FieldFamilyName)
+	}
+	if m.FieldCleared(user.FieldNickname) {
+		fields = append(fields, user.FieldNickname)
+	}
+	if m.FieldCleared(user.FieldPicture) {
+		fields = append(fields, user.FieldPicture)
+	}
 	if m.FieldCleared(user.FieldAuth0Data) {
 		fields = append(fields, user.FieldAuth0Data)
+	}
+	if m.FieldCleared(user.FieldAppSettings) {
+		fields = append(fields, user.FieldAppSettings)
+	}
+	if m.FieldCleared(user.FieldUserSettings) {
+		fields = append(fields, user.FieldUserSettings)
 	}
 	return fields
 }
@@ -5496,8 +5965,29 @@ func (m *UserMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *UserMutation) ClearField(name string) error {
 	switch name {
+	case user.FieldName:
+		m.ClearName()
+		return nil
+	case user.FieldGivenName:
+		m.ClearGivenName()
+		return nil
+	case user.FieldFamilyName:
+		m.ClearFamilyName()
+		return nil
+	case user.FieldNickname:
+		m.ClearNickname()
+		return nil
+	case user.FieldPicture:
+		m.ClearPicture()
+		return nil
 	case user.FieldAuth0Data:
 		m.ClearAuth0Data()
+		return nil
+	case user.FieldAppSettings:
+		m.ClearAppSettings()
+		return nil
+	case user.FieldUserSettings:
+		m.ClearUserSettings()
 		return nil
 	}
 	return fmt.Errorf("unknown User nullable field %s", name)
@@ -5510,8 +6000,29 @@ func (m *UserMutation) ResetField(name string) error {
 	case user.FieldAuth0ID:
 		m.ResetAuth0ID()
 		return nil
+	case user.FieldName:
+		m.ResetName()
+		return nil
+	case user.FieldGivenName:
+		m.ResetGivenName()
+		return nil
+	case user.FieldFamilyName:
+		m.ResetFamilyName()
+		return nil
+	case user.FieldNickname:
+		m.ResetNickname()
+		return nil
+	case user.FieldPicture:
+		m.ResetPicture()
+		return nil
 	case user.FieldAuth0Data:
 		m.ResetAuth0Data()
+		return nil
+	case user.FieldAppSettings:
+		m.ResetAppSettings()
+		return nil
+	case user.FieldUserSettings:
+		m.ResetUserSettings()
 		return nil
 	}
 	return fmt.Errorf("unknown User field %s", name)

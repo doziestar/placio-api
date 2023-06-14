@@ -29,9 +29,12 @@ const (
 
 type UserService interface {
 	GetUser(ctx context.Context, authOID string) (*ent.User, error)
+	GetUserWithoutAuth0Data(ctx context.Context, auth0ID string) (*ent.User, error)
 	GetAuth0UserData(userID string) (*management.User, error)
 	UpdateAuth0UserMetadata(userID string, userMetaData *models.Metadata) (*management.User, error)
 	UpdateAuth0UserInformation(userID string, userData *models.Auth0UserData) (*management.User, error)
+	GetUserByUserId(ctx context.Context, userId string) (*ent.User, error)
+	UpdateUser(ctx context.Context, userID string, userData map[string]interface{}) (*ent.User, error)
 	// GetAuth0ManagementToken GetAuth0UserMetaData(userID string, IdToken string) (models.Metadata, error)
 	//GetAuth0AppMetaData(userID string, IdToken string) (models.AppMetadata, error)
 	//GetAuth0UserRoles(userID string, IdToken string) ([]string, error)
@@ -42,6 +45,7 @@ type UserService interface {
 	//DeAuthorizeUser(userID string, IdToken string, roles []string, permissions []string, groups []string) error
 	GetAuth0ManagementToken(ctx context.Context) (string, error)
 	UpdateAuth0AppMetadata(userID string, appData *models.AppMetadata) (*management.User, error)
+	GetPostsByUser(ctx context.Context, userID string) ([]*ent.Post, error)
 }
 
 type UserServiceImpl struct {
@@ -71,6 +75,56 @@ func (s *UserServiceImpl) GetUser(ctx context.Context, auth0ID string) (*ent.Use
 			return nil, err
 		}
 
+		auth0Data, err := s.getAuth0UserDataWithRetry(auth0ID, 3, 1*time.Second)
+		if err != nil {
+			return nil, err
+		}
+
+		// userId should be the same as auth0ID but without the auth0| prefix
+		userId := strings.Split(auth0ID, "|")[1]
+		newUser, err := s.client.User.
+			Create().
+			SetID(utility.GenerateID()).
+			SetAuth0ID(userId).
+			SetName(*auth0Data.GivenName).
+			SetPicture(*auth0Data.Picture).
+			SetFamilyName(*auth0Data.FamilyName).
+			SetNickname(*auth0Data.Nickname).
+			Save(ctx)
+
+		if err != nil {
+			log.Println("GetUser", auth0ID, "error creating new user", err)
+			return nil, err
+		}
+
+		newUser.AppSettings = *auth0Data.AppMetadata
+		newUser.UserSettings = *auth0Data.UserMetadata
+		return newUser, nil
+	}
+
+	auth0Data, err := s.getAuth0UserDataWithRetry(auth0ID, 3, 1*time.Second)
+	if err != nil {
+		return nil, err
+	}
+
+	u.AppSettings = *auth0Data.AppMetadata
+	u.UserSettings = *auth0Data.UserMetadata
+
+	return u, nil
+}
+
+func (s *UserServiceImpl) GetUserWithoutAuth0Data(ctx context.Context, auth0ID string) (*ent.User, error) {
+
+	u, err := s.client.User.
+		Query().
+		Where(user.Auth0IDEQ(auth0ID)).
+		First(ctx)
+
+	if err != nil {
+		if !ent.IsNotFound(err) {
+			return nil, err
+		}
+
 		newUser, err := s.client.User.
 			Create().
 			SetID(utility.GenerateID()).
@@ -81,22 +135,25 @@ func (s *UserServiceImpl) GetUser(ctx context.Context, auth0ID string) (*ent.Use
 			log.Println("GetUser", auth0ID, "error creating new user", err)
 			return nil, err
 		}
-
-		auth0Data, err := s.getAuth0UserDataWithRetry(auth0ID, 3, 1*time.Second)
-		if err != nil {
-			return nil, err
-		}
-
-		newUser.Auth0Data = auth0Data
 		return newUser, nil
 	}
 
-	auth0Data, err := s.getAuth0UserDataWithRetry(auth0ID, 3, 1*time.Second)
+	return u, nil
+}
+
+func (s *UserServiceImpl) GetUserByUserId(ctx context.Context, userId string) (*ent.User, error) {
+
+	u, err := s.client.User.
+		Query().
+		Where(user.IDEQ(userId)).
+		First(ctx)
+
 	if err != nil {
+		if !ent.IsNotFound(err) {
+			return nil, err
+		}
 		return nil, err
 	}
-
-	u.Auth0Data = auth0Data
 
 	return u, nil
 }
@@ -282,6 +339,66 @@ func (s *UserServiceImpl) updateAuth0Data(userID string, mergedUserData map[stri
 	return &user, nil
 }
 
+func (us *UserServiceImpl) UpdateUser(ctx context.Context, userID string, userData map[string]interface{}) (*ent.User, error) {
+	// Check if user exists
+	user, err := us.client.User.Get(ctx, userID)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, fmt.Errorf("user does not exist")
+		}
+		return nil, fmt.Errorf("failed checking user existence: %w", err)
+	}
+
+	// Get a updater for the user
+	upd := us.client.User.UpdateOne(user)
+
+	// Update fields
+	if v, ok := userData["name"]; ok {
+		upd.SetName(v.(string))
+	}
+	if v, ok := userData["family_name"]; ok {
+		upd.SetFamilyName(v.(string))
+	}
+	if v, ok := userData["nickname"]; ok {
+		upd.SetNickname(v.(string))
+	}
+	if v, ok := userData["picture"]; ok {
+		upd.SetPicture(v.(string))
+	}
+
+	// Update app settings
+	if v, ok := userData["app_settings"]; ok {
+		// Merge existing and new settings
+		newSettings := v.(map[string]interface{})
+		for k, value := range user.AppSettings {
+			if _, exists := newSettings[k]; !exists {
+				newSettings[k] = value
+			}
+		}
+		upd.SetAppSettings(newSettings)
+	}
+
+	// Update user settings
+	if v, ok := userData["user_settings"]; ok {
+		// Merge existing and new settings
+		newSettings := v.(map[string]interface{})
+		for k, value := range user.UserSettings {
+			if _, exists := newSettings[k]; !exists {
+				newSettings[k] = value
+			}
+		}
+		upd.SetUserSettings(newSettings)
+	}
+
+	// Save the updates
+	user, err = upd.Save(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed updating user: %w", err)
+	}
+
+	return user, nil
+}
+
 // GetAuth0UserData retrieves the current user data from Auth0.
 func (s *UserServiceImpl) GetAuth0UserData(userID string) (*management.User, error) {
 	log.Println("Getting Auth0 user data", userID)
@@ -411,6 +528,35 @@ func (s *UserServiceImpl) retrieveAuth0Token(ctx context.Context) (string, error
 	}
 
 	return tokenResponse.AccessToken, nil
+}
+
+func (us *UserServiceImpl) GetPostsByUser(ctx context.Context, userID string) ([]*ent.Post, error) {
+	// Check if user exists
+	user, err := us.client.User.Get(ctx, userID)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, fmt.Errorf("user does not exist")
+		}
+		return nil, fmt.Errorf("failed checking user existence: %w", err)
+	}
+
+	// Query posts by the user
+	posts, err := user.QueryPosts().
+		WithUser().
+		WithBusinessAccount().
+		WithMedias().
+		WithComments(func(query *ent.CommentQuery) {
+			query.WithUser()
+
+		}).
+		All(ctx)
+	if err != nil {
+		// Handle possible database errors
+		return nil, fmt.Errorf("failed querying posts: %w", err)
+	}
+
+	// Return fetched posts
+	return posts, nil
 }
 
 //func (s *UserServiceImpl) RejectInvitation(invitationID uint) error {

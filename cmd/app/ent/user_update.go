@@ -38,6 +38,106 @@ func (uu *UserUpdate) SetAuth0ID(s string) *UserUpdate {
 	return uu
 }
 
+// SetName sets the "name" field.
+func (uu *UserUpdate) SetName(s string) *UserUpdate {
+	uu.mutation.SetName(s)
+	return uu
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableName(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetName(*s)
+	}
+	return uu
+}
+
+// ClearName clears the value of the "name" field.
+func (uu *UserUpdate) ClearName() *UserUpdate {
+	uu.mutation.ClearName()
+	return uu
+}
+
+// SetGivenName sets the "given_name" field.
+func (uu *UserUpdate) SetGivenName(s string) *UserUpdate {
+	uu.mutation.SetGivenName(s)
+	return uu
+}
+
+// SetNillableGivenName sets the "given_name" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableGivenName(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetGivenName(*s)
+	}
+	return uu
+}
+
+// ClearGivenName clears the value of the "given_name" field.
+func (uu *UserUpdate) ClearGivenName() *UserUpdate {
+	uu.mutation.ClearGivenName()
+	return uu
+}
+
+// SetFamilyName sets the "family_name" field.
+func (uu *UserUpdate) SetFamilyName(s string) *UserUpdate {
+	uu.mutation.SetFamilyName(s)
+	return uu
+}
+
+// SetNillableFamilyName sets the "family_name" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableFamilyName(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetFamilyName(*s)
+	}
+	return uu
+}
+
+// ClearFamilyName clears the value of the "family_name" field.
+func (uu *UserUpdate) ClearFamilyName() *UserUpdate {
+	uu.mutation.ClearFamilyName()
+	return uu
+}
+
+// SetNickname sets the "nickname" field.
+func (uu *UserUpdate) SetNickname(s string) *UserUpdate {
+	uu.mutation.SetNickname(s)
+	return uu
+}
+
+// SetNillableNickname sets the "nickname" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableNickname(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetNickname(*s)
+	}
+	return uu
+}
+
+// ClearNickname clears the value of the "nickname" field.
+func (uu *UserUpdate) ClearNickname() *UserUpdate {
+	uu.mutation.ClearNickname()
+	return uu
+}
+
+// SetPicture sets the "picture" field.
+func (uu *UserUpdate) SetPicture(s string) *UserUpdate {
+	uu.mutation.SetPicture(s)
+	return uu
+}
+
+// SetNillablePicture sets the "picture" field if the given value is not nil.
+func (uu *UserUpdate) SetNillablePicture(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetPicture(*s)
+	}
+	return uu
+}
+
+// ClearPicture clears the value of the "picture" field.
+func (uu *UserUpdate) ClearPicture() *UserUpdate {
+	uu.mutation.ClearPicture()
+	return uu
+}
+
 // SetAuth0Data sets the "auth0_data" field.
 func (uu *UserUpdate) SetAuth0Data(m *management.User) *UserUpdate {
 	uu.mutation.SetAuth0Data(m)
@@ -47,6 +147,30 @@ func (uu *UserUpdate) SetAuth0Data(m *management.User) *UserUpdate {
 // ClearAuth0Data clears the value of the "auth0_data" field.
 func (uu *UserUpdate) ClearAuth0Data() *UserUpdate {
 	uu.mutation.ClearAuth0Data()
+	return uu
+}
+
+// SetAppSettings sets the "app_settings" field.
+func (uu *UserUpdate) SetAppSettings(m map[string]interface{}) *UserUpdate {
+	uu.mutation.SetAppSettings(m)
+	return uu
+}
+
+// ClearAppSettings clears the value of the "app_settings" field.
+func (uu *UserUpdate) ClearAppSettings() *UserUpdate {
+	uu.mutation.ClearAppSettings()
+	return uu
+}
+
+// SetUserSettings sets the "user_settings" field.
+func (uu *UserUpdate) SetUserSettings(m map[string]interface{}) *UserUpdate {
+	uu.mutation.SetUserSettings(m)
+	return uu
+}
+
+// ClearUserSettings clears the value of the "user_settings" field.
+func (uu *UserUpdate) ClearUserSettings() *UserUpdate {
+	uu.mutation.ClearUserSettings()
 	return uu
 }
 
@@ -238,11 +362,53 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := uu.mutation.Auth0ID(); ok {
 		_spec.SetField(user.FieldAuth0ID, field.TypeString, value)
 	}
+	if value, ok := uu.mutation.Name(); ok {
+		_spec.SetField(user.FieldName, field.TypeString, value)
+	}
+	if uu.mutation.NameCleared() {
+		_spec.ClearField(user.FieldName, field.TypeString)
+	}
+	if value, ok := uu.mutation.GivenName(); ok {
+		_spec.SetField(user.FieldGivenName, field.TypeString, value)
+	}
+	if uu.mutation.GivenNameCleared() {
+		_spec.ClearField(user.FieldGivenName, field.TypeString)
+	}
+	if value, ok := uu.mutation.FamilyName(); ok {
+		_spec.SetField(user.FieldFamilyName, field.TypeString, value)
+	}
+	if uu.mutation.FamilyNameCleared() {
+		_spec.ClearField(user.FieldFamilyName, field.TypeString)
+	}
+	if value, ok := uu.mutation.Nickname(); ok {
+		_spec.SetField(user.FieldNickname, field.TypeString, value)
+	}
+	if uu.mutation.NicknameCleared() {
+		_spec.ClearField(user.FieldNickname, field.TypeString)
+	}
+	if value, ok := uu.mutation.Picture(); ok {
+		_spec.SetField(user.FieldPicture, field.TypeString, value)
+	}
+	if uu.mutation.PictureCleared() {
+		_spec.ClearField(user.FieldPicture, field.TypeString)
+	}
 	if value, ok := uu.mutation.Auth0Data(); ok {
 		_spec.SetField(user.FieldAuth0Data, field.TypeJSON, value)
 	}
 	if uu.mutation.Auth0DataCleared() {
 		_spec.ClearField(user.FieldAuth0Data, field.TypeJSON)
+	}
+	if value, ok := uu.mutation.AppSettings(); ok {
+		_spec.SetField(user.FieldAppSettings, field.TypeJSON, value)
+	}
+	if uu.mutation.AppSettingsCleared() {
+		_spec.ClearField(user.FieldAppSettings, field.TypeJSON)
+	}
+	if value, ok := uu.mutation.UserSettings(); ok {
+		_spec.SetField(user.FieldUserSettings, field.TypeJSON, value)
+	}
+	if uu.mutation.UserSettingsCleared() {
+		_spec.ClearField(user.FieldUserSettings, field.TypeJSON)
 	}
 	if uu.mutation.UserBusinessesCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -450,6 +616,106 @@ func (uuo *UserUpdateOne) SetAuth0ID(s string) *UserUpdateOne {
 	return uuo
 }
 
+// SetName sets the "name" field.
+func (uuo *UserUpdateOne) SetName(s string) *UserUpdateOne {
+	uuo.mutation.SetName(s)
+	return uuo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableName(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetName(*s)
+	}
+	return uuo
+}
+
+// ClearName clears the value of the "name" field.
+func (uuo *UserUpdateOne) ClearName() *UserUpdateOne {
+	uuo.mutation.ClearName()
+	return uuo
+}
+
+// SetGivenName sets the "given_name" field.
+func (uuo *UserUpdateOne) SetGivenName(s string) *UserUpdateOne {
+	uuo.mutation.SetGivenName(s)
+	return uuo
+}
+
+// SetNillableGivenName sets the "given_name" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableGivenName(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetGivenName(*s)
+	}
+	return uuo
+}
+
+// ClearGivenName clears the value of the "given_name" field.
+func (uuo *UserUpdateOne) ClearGivenName() *UserUpdateOne {
+	uuo.mutation.ClearGivenName()
+	return uuo
+}
+
+// SetFamilyName sets the "family_name" field.
+func (uuo *UserUpdateOne) SetFamilyName(s string) *UserUpdateOne {
+	uuo.mutation.SetFamilyName(s)
+	return uuo
+}
+
+// SetNillableFamilyName sets the "family_name" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableFamilyName(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetFamilyName(*s)
+	}
+	return uuo
+}
+
+// ClearFamilyName clears the value of the "family_name" field.
+func (uuo *UserUpdateOne) ClearFamilyName() *UserUpdateOne {
+	uuo.mutation.ClearFamilyName()
+	return uuo
+}
+
+// SetNickname sets the "nickname" field.
+func (uuo *UserUpdateOne) SetNickname(s string) *UserUpdateOne {
+	uuo.mutation.SetNickname(s)
+	return uuo
+}
+
+// SetNillableNickname sets the "nickname" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableNickname(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetNickname(*s)
+	}
+	return uuo
+}
+
+// ClearNickname clears the value of the "nickname" field.
+func (uuo *UserUpdateOne) ClearNickname() *UserUpdateOne {
+	uuo.mutation.ClearNickname()
+	return uuo
+}
+
+// SetPicture sets the "picture" field.
+func (uuo *UserUpdateOne) SetPicture(s string) *UserUpdateOne {
+	uuo.mutation.SetPicture(s)
+	return uuo
+}
+
+// SetNillablePicture sets the "picture" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillablePicture(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetPicture(*s)
+	}
+	return uuo
+}
+
+// ClearPicture clears the value of the "picture" field.
+func (uuo *UserUpdateOne) ClearPicture() *UserUpdateOne {
+	uuo.mutation.ClearPicture()
+	return uuo
+}
+
 // SetAuth0Data sets the "auth0_data" field.
 func (uuo *UserUpdateOne) SetAuth0Data(m *management.User) *UserUpdateOne {
 	uuo.mutation.SetAuth0Data(m)
@@ -459,6 +725,30 @@ func (uuo *UserUpdateOne) SetAuth0Data(m *management.User) *UserUpdateOne {
 // ClearAuth0Data clears the value of the "auth0_data" field.
 func (uuo *UserUpdateOne) ClearAuth0Data() *UserUpdateOne {
 	uuo.mutation.ClearAuth0Data()
+	return uuo
+}
+
+// SetAppSettings sets the "app_settings" field.
+func (uuo *UserUpdateOne) SetAppSettings(m map[string]interface{}) *UserUpdateOne {
+	uuo.mutation.SetAppSettings(m)
+	return uuo
+}
+
+// ClearAppSettings clears the value of the "app_settings" field.
+func (uuo *UserUpdateOne) ClearAppSettings() *UserUpdateOne {
+	uuo.mutation.ClearAppSettings()
+	return uuo
+}
+
+// SetUserSettings sets the "user_settings" field.
+func (uuo *UserUpdateOne) SetUserSettings(m map[string]interface{}) *UserUpdateOne {
+	uuo.mutation.SetUserSettings(m)
+	return uuo
+}
+
+// ClearUserSettings clears the value of the "user_settings" field.
+func (uuo *UserUpdateOne) ClearUserSettings() *UserUpdateOne {
+	uuo.mutation.ClearUserSettings()
 	return uuo
 }
 
@@ -680,11 +970,53 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	if value, ok := uuo.mutation.Auth0ID(); ok {
 		_spec.SetField(user.FieldAuth0ID, field.TypeString, value)
 	}
+	if value, ok := uuo.mutation.Name(); ok {
+		_spec.SetField(user.FieldName, field.TypeString, value)
+	}
+	if uuo.mutation.NameCleared() {
+		_spec.ClearField(user.FieldName, field.TypeString)
+	}
+	if value, ok := uuo.mutation.GivenName(); ok {
+		_spec.SetField(user.FieldGivenName, field.TypeString, value)
+	}
+	if uuo.mutation.GivenNameCleared() {
+		_spec.ClearField(user.FieldGivenName, field.TypeString)
+	}
+	if value, ok := uuo.mutation.FamilyName(); ok {
+		_spec.SetField(user.FieldFamilyName, field.TypeString, value)
+	}
+	if uuo.mutation.FamilyNameCleared() {
+		_spec.ClearField(user.FieldFamilyName, field.TypeString)
+	}
+	if value, ok := uuo.mutation.Nickname(); ok {
+		_spec.SetField(user.FieldNickname, field.TypeString, value)
+	}
+	if uuo.mutation.NicknameCleared() {
+		_spec.ClearField(user.FieldNickname, field.TypeString)
+	}
+	if value, ok := uuo.mutation.Picture(); ok {
+		_spec.SetField(user.FieldPicture, field.TypeString, value)
+	}
+	if uuo.mutation.PictureCleared() {
+		_spec.ClearField(user.FieldPicture, field.TypeString)
+	}
 	if value, ok := uuo.mutation.Auth0Data(); ok {
 		_spec.SetField(user.FieldAuth0Data, field.TypeJSON, value)
 	}
 	if uuo.mutation.Auth0DataCleared() {
 		_spec.ClearField(user.FieldAuth0Data, field.TypeJSON)
+	}
+	if value, ok := uuo.mutation.AppSettings(); ok {
+		_spec.SetField(user.FieldAppSettings, field.TypeJSON, value)
+	}
+	if uuo.mutation.AppSettingsCleared() {
+		_spec.ClearField(user.FieldAppSettings, field.TypeJSON)
+	}
+	if value, ok := uuo.mutation.UserSettings(); ok {
+		_spec.SetField(user.FieldUserSettings, field.TypeJSON, value)
+	}
+	if uuo.mutation.UserSettingsCleared() {
+		_spec.ClearField(user.FieldUserSettings, field.TypeJSON)
 	}
 	if uuo.mutation.UserBusinessesCleared() {
 		edge := &sqlgraph.EdgeSpec{

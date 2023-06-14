@@ -14,8 +14,22 @@ const (
 	FieldID = "id"
 	// FieldAuth0ID holds the string denoting the auth0_id field in the database.
 	FieldAuth0ID = "auth0_id"
+	// FieldName holds the string denoting the name field in the database.
+	FieldName = "name"
+	// FieldGivenName holds the string denoting the given_name field in the database.
+	FieldGivenName = "given_name"
+	// FieldFamilyName holds the string denoting the family_name field in the database.
+	FieldFamilyName = "family_name"
+	// FieldNickname holds the string denoting the nickname field in the database.
+	FieldNickname = "nickname"
+	// FieldPicture holds the string denoting the picture field in the database.
+	FieldPicture = "picture"
 	// FieldAuth0Data holds the string denoting the auth0_data field in the database.
 	FieldAuth0Data = "auth0_data"
+	// FieldAppSettings holds the string denoting the app_settings field in the database.
+	FieldAppSettings = "app_settings"
+	// FieldUserSettings holds the string denoting the user_settings field in the database.
+	FieldUserSettings = "user_settings"
 	// EdgeUserBusinesses holds the string denoting the userbusinesses edge name in mutations.
 	EdgeUserBusinesses = "userBusinesses"
 	// EdgeComments holds the string denoting the comments edge name in mutations.
@@ -60,7 +74,14 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldAuth0ID,
+	FieldName,
+	FieldGivenName,
+	FieldFamilyName,
+	FieldNickname,
+	FieldPicture,
 	FieldAuth0Data,
+	FieldAppSettings,
+	FieldUserSettings,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -89,6 +110,31 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 // ByAuth0ID orders the results by the auth0_id field.
 func ByAuth0ID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldAuth0ID, opts...).ToFunc()
+}
+
+// ByName orders the results by the name field.
+func ByName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldName, opts...).ToFunc()
+}
+
+// ByGivenName orders the results by the given_name field.
+func ByGivenName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldGivenName, opts...).ToFunc()
+}
+
+// ByFamilyName orders the results by the family_name field.
+func ByFamilyName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFamilyName, opts...).ToFunc()
+}
+
+// ByNickname orders the results by the nickname field.
+func ByNickname(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldNickname, opts...).ToFunc()
+}
+
+// ByPicture orders the results by the picture field.
+func ByPicture(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPicture, opts...).ToFunc()
 }
 
 // ByUserBusinessesCount orders the results by userBusinesses count.
