@@ -29,5 +29,9 @@ func (Business) Edges() []ent.Edge {
 		edge.To("business_account_settings", AccountSettings.Type).
 			Unique(),
 		edge.To("posts", Post.Type),
+		edge.To("followedUsers", BusinessFollowUser.Type),
+		edge.To("followerUsers", UserFollowBusiness.Type),
+		edge.To("followedBusinesses", BusinessFollowBusiness.Type),
+		edge.To("followerBusinesses", BusinessFollowBusiness.Type),
 	}
 }

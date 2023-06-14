@@ -26,17 +26,181 @@ func (uc *UserController) RegisterRoutes(router *gin.RouterGroup) {
 	userRouter := router.Group("/users")
 	{
 		userRouter.GET("/", utility.Use(uc.GetUser))
+		userRouter.PATCH("/", utility.Use(uc.UpdateUser))
+		userRouter.GET("/posts", utility.Use(uc.GetPostsByUser))
 		userRouter.PATCH("/:id/userinfo", utility.Use(uc.updateAuth0UserInformation))
 		userRouter.PATCH("/:id/metadata", utility.Use(uc.updateAuth0UserMetadata))
 		userRouter.PATCH("/:id/appdata", utility.Use(uc.updateAuth0AppMetadata))
 		userRouter.POST("/business-account", utility.Use(uc.createBusinessAccount))
 		userRouter.GET("/:id/business-accounts", utility.Use(uc.getUserBusinessAccounts))
-		userRouter.POST("/:userID/business-account/:businessAccountID/association", utility.Use(uc.associateUserWithBusinessAccount))
-		userRouter.DELETE("/:userID/business-account/:businessAccountID/association", utility.Use(uc.removeUserFromBusinessAccount))
+		userRouter.POST("/business-account/:businessAccountID/user/:userID/association", utility.Use(uc.associateUserWithBusinessAccount))
+		userRouter.DELETE("/business-account/:businessAccountID/user/:userID/association", utility.Use(uc.removeUserFromBusinessAccount))
 		userRouter.GET("/business-account/:businessAccountID/users", utility.Use(uc.getUsersForBusinessAccount))
 		// userRouter.GET("/:userID/business-accounts", utility.Use(uc.GetBusinessAccountsForUser))
-		userRouter.POST("/:userID/business-account/:businessAccountID/role/:action", utility.Use(uc.canPerformAction))
+		userRouter.POST("/business-account/:businessAccountID/user/:userID/role/:action", utility.Use(uc.canPerformAction))
+		userRouter.POST("/follow/user/:followerID/:followedID", utility.Use(uc.followUser))
+		userRouter.POST("/follow/business/:followerID/:businessID", utility.Use(uc.followBusiness))
+		userRouter.DELETE("/unfollow/user/:followerID/:followedID", utility.Use(uc.unfollowUser))
+		userRouter.DELETE("/unfollow/business/:followerID/:businessID", utility.Use(uc.unfollowBusiness))
+		userRouter.GET("/followed-contents/:userID", utility.Use(uc.getFollowedContents))
 	}
+}
+
+// @Summary Follow a user
+// @Description Follow a user by their ID
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param followerID path string true "ID of the follower"
+// @Param followedID path string true "ID of the user to follow"
+// @Security Bearer
+// @Success 200 {object} Dto.Response "Successfully followed user"
+// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
+// @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
+// @Router /api/v1/users/{followerID}/follow/user/{followedID} [post]
+func (uc *UserController) followUser(ctx *gin.Context) error {
+	followerID := ctx.Param("followerID")
+	followedID := ctx.Param("followedID")
+
+	err := uc.userService.FollowUser(ctx, followerID, followedID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Internal Server Error",
+		})
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"status":  "success",
+		"message": "Successfully followed user",
+	})
+	return nil
+}
+
+// @Summary Follow a business
+// @Description Follow a business by its ID
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param followerID path string true "ID of the follower"
+// @Param businessID path string true "ID of the business to follow"
+// @Security Bearer
+// @Success 200 {object} Dto.Response "Successfully followed business"
+// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
+// @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
+// @Router /api/v1/users/{followerID}/follow/business/{businessID} [post]
+func (uc *UserController) followBusiness(ctx *gin.Context) error {
+	followerID := ctx.Param("followerID")
+	businessID := ctx.Param("businessID")
+
+	err := uc.userService.FollowBusiness(ctx, followerID, businessID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Internal Server Error",
+		})
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"status":  "success",
+		"message": "Successfully followed business",
+	})
+	return nil
+}
+
+// @Summary Unfollow a user
+// @Description Unfollow a user by their ID
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param followerID path string true "ID of the follower"
+// @Param followedID path string true "ID of the user to unfollow"
+// @Security Bearer
+// @Success 200 {object} Dto.Response "Successfully unfollowed user"
+// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
+// @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
+// @Router /api/v1/users/{followerID}/unfollow/user/{followedID} [delete]
+func (uc *UserController) unfollowUser(ctx *gin.Context) error {
+	followerID := ctx.Param("followerID")
+	followedID := ctx.Param("followedID")
+
+	err := uc.userService.UnfollowUser(ctx, followerID, followedID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Internal Server Error",
+		})
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"status":  "success",
+		"message": "Successfully unfollowed user",
+	})
+	return nil
+}
+
+// @Summary Unfollow a business
+// @Description Unfollow a business by its ID
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param followerID path string true "ID of the follower"
+// @Param businessID path string true "ID of the business to unfollow"
+// @Security Bearer
+// @Success 200 {object} string "Successfully unfollowed business"
+// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
+// @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
+// @Router /api/v1/users/{followerID}/unfollow/business/{businessID} [delete]
+func (uc *UserController) unfollowBusiness(ctx *gin.Context) error {
+	followerID := ctx.Param("followerID")
+	businessID := ctx.Param("businessID")
+
+	err := uc.userService.UnfollowBusiness(ctx, followerID, businessID)
+
+	err = uc.userService.UnfollowBusiness(ctx, followerID, businessID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Internal Server Error",
+		})
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"status":  "success",
+		"message": "Successfully unfollowed business",
+	})
+	return nil
+}
+
+// @Summary Get followed contents
+// @Description Get posts of users and businesses followed by the user
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param userID path string true "ID of the user"
+// @Security Bearer
+// @Success 200 {array} ent.Post "Successfully retrieved posts"
+// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
+// @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
+// @Router /api/v1/users/{userID}/followed-contents [get]
+func (uc *UserController) getFollowedContents(ctx *gin.Context) error {
+	userID := ctx.Param("userID")
+
+	posts, err := uc.userService.GetFollowedContents(ctx, userID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Internal Server Error",
+		})
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, posts)
+	return nil
 }
 
 // @Summary Update a user's information
@@ -47,7 +211,7 @@ func (uc *UserController) RegisterRoutes(router *gin.RouterGroup) {
 // @Param id path string true "User Auth0 ID"
 // @Param userData body models.Auth0UserData true "User data to update"
 // @Security Bearer
-// @Success 200 {object} models.User "Successfully updated user information"
+// @Success 200 {object} ent.User "Successfully updated user information"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
@@ -138,7 +302,7 @@ func (uc *UserController) updateAuth0UserMetadata(ctx *gin.Context) error {
 // @Param id path string true "User Auth0 ID"
 // @Param appData body models.AppMetadata true "App metadata to update"
 // @Security Bearer
-// @Success 200 {object} models.User "Successfully updated app metadata"
+// @Success 200 {object} ent.User "Successfully updated app metadata"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
@@ -177,7 +341,7 @@ func (uc *UserController) updateAuth0AppMetadata(ctx *gin.Context) error {
 // @Produce json
 // @Param id path string true "User Auth0 ID"
 // @Security Bearer
-// @Success 200 {object} models.User "Successfully retrieved user"
+// @Success 200 {object} ent.User "Successfully retrieved user"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
@@ -210,6 +374,55 @@ func (uc *UserController) GetUser(ctx *gin.Context) error {
 	return nil
 }
 
+// UpdateUser updates a user's details.
+// @Summary Update a user's details
+// @Description Get a user's details by their Auth0 ID
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param id path string true "User Auth0 ID"
+// @Security Bearer
+// @Success 200 {object} ent.User "Successfully retrieved user"
+// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
+// @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
+// @Router /api/v1/users/ [patch]
+func (uc *UserController) UpdateUser(ctx *gin.Context) error {
+	auth0ID := ctx.MustGet("user").(string)
+	log.Println("UpdateUser", ctx.Request.URL.Path, ctx.Request.Method, auth0ID)
+	if auth0ID == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": "User Auth0 ID required",
+		})
+		return nil
+	}
+
+	var user map[string]interface{}
+	if err := ctx.ShouldBindJSON(&user); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid request body",
+		})
+		return nil
+	}
+
+	userData, err := uc.userService.UpdateUser(ctx, auth0ID, user)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			ctx.JSON(http.StatusNotFound, gin.H{
+				"error": "User not found",
+			})
+			return nil
+		}
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Internal Server Error",
+		})
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, userData)
+	return nil
+}
+
 // createBusinessAccount creates a new business account and associates it with the user.
 // @Summary Create a new business account
 // @Description Create a new business account for the authenticated user
@@ -218,7 +431,7 @@ func (uc *UserController) GetUser(ctx *gin.Context) error {
 // @Produce json
 // @Param name body string true "Business Account Name"
 // @Security Bearer
-// @Success 201 {object} models.BusinessAccount "Successfully created business account"
+// @Success 201 {object} ent.Business "Successfully created business account"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
@@ -260,6 +473,63 @@ func (uc *UserController) createBusinessAccount(ctx *gin.Context) error {
 	return nil
 }
 
+// GetPostsByUser retrieves all posts by the user.
+// @Summary Retrieve posts by user
+// @Description Get posts by the authenticated user
+// @Tags User
+// @Accept json
+// @Produce json
+// @Security Bearer
+// @Success 200 {array} Dto.PostResponseDto "Successfully retrieved posts"
+// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
+// @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
+// @Router /api/v1/users/{userID}/posts [get]
+func (uc *UserController) GetPostsByUser(ctx *gin.Context) error {
+	log.Println("GetPostsByUser", ctx.Request.URL.Path, ctx.Request.Method)
+	// Get the user ID from the URL path parameters
+	userID := ctx.MustGet("user").(string)
+	log.Println("GetPostsByUser and userId", ctx.Request.URL.Path, ctx.Request.Method, userID)
+
+	// Call the service method to get the posts
+	posts, err := uc.userService.GetPostsByUser(ctx, userID)
+	log.Println("GetPostsByUser and userId", ctx.Request.URL.Path, ctx.Request.Method, userID, posts)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			// If no posts were found, return a 404 Not Found status
+			ctx.JSON(http.StatusNotFound, gin.H{"error": "No posts found"})
+			return err
+		}
+		// For other types of errors, return a 500 Internal Server Error status
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+		return err
+	}
+	//
+	//// If posts were found, convert them to the DTO format
+	//postsDto := make([]Dto.PostResponseDto, len(posts))
+	//for i, post := range posts {
+	//	postsDto[i] = Dto.PostResponseDto{
+	//		ID:      post.ID,
+	//		Content: post.Content,
+	//		User:    post.Edges.User,
+	//		//Business:  post.Edges.Business,
+	//		CreatedAt: post.CreatedAt,
+	//		Medias:    make([]Dto.MediaDto, len(post.Edges.Medias)),
+	//	}
+	//
+	//	for j, media := range post.Edges.Medias {
+	//		postsDto[i].Medias[j] = Dto.MediaDto{
+	//			Type: media.MediaType,
+	//			URL:  media.URL,
+	//		}
+	//	}
+	//}
+
+	// Return the posts in the response
+	ctx.JSON(http.StatusOK, posts)
+	return nil
+}
+
 // getUserBusinessAccounts retrieves all the business accounts associated with a specific user.
 // @Summary Get all business accounts for a user
 // @Description Get all business accounts associated with a specific user
@@ -268,7 +538,7 @@ func (uc *UserController) createBusinessAccount(ctx *gin.Context) error {
 // @Produce json
 // @Param id path string true "User ID"
 // @Security Bearer
-// @Success 200 {array} models.BusinessAccount "Successfully retrieved business accounts"
+// @Success 200 {array} ent.Business "Successfully retrieved business accounts"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
@@ -341,7 +611,7 @@ func (uc *UserController) removeUserFromBusinessAccount(ctx *gin.Context) error 
 // @Produce json
 // @Param businessAccountID path uint true "Business Account ID"
 // @Security Bearer
-// @Success 200 {array} models.User "Successfully retrieved users"
+// @Success 200 {array} ent.User "Successfully retrieved users"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
@@ -359,7 +629,7 @@ func (uc *UserController) getUsersForBusinessAccount(ctx *gin.Context) error {
 // @Produce json
 // @Param userID path uint true "User ID"
 // @Security Bearer
-// @Success 200 {array} models.BusinessAccount "Successfully retrieved business accounts"
+// @Success 200 {array} ent.Business "Successfully retrieved business accounts"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"

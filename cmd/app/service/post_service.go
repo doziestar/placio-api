@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"placio-app/ent"
+	"placio-app/ent/comment"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
 	"placio-app/utility"
@@ -19,10 +20,8 @@ type PostService interface {
 	DeletePost(ctx context.Context, postID string) error
 	ListPosts(ctx context.Context, page, pageSize int, sortBy []string, filters ...predicate.Post) ([]*ent.Post, error)
 
-	CreateComment(ctx context.Context, postID string, newComment *ent.Comment) (*ent.Comment, error)
-	UpdateComment(ctx context.Context, updatedComment *ent.Comment) (*ent.Comment, error)
-	DeleteComment(ctx context.Context, commentID string) error
-	GetComments(ctx context.Context, postID string, page, pageSize int, sortBy []string, filters ...predicate.Comment) ([]*ent.Comment, error)
+	GetCommentsByPost(ctx context.Context, postID string) ([]*ent.Comment, error)
+	GetComments(ctx context.Context, postID string) ([]*ent.Comment, error)
 
 	//LikePost(postID string, userID string) error
 	//UnlikePost(postID string, userID string) error
@@ -85,6 +84,7 @@ func (ps *PostServiceImpl) GetPost(ctx context.Context, postID string) (*ent.Pos
 		WithLikes().
 		WithUser().
 		WithBusinessAccount().
+		WithMedias().
 		Only(ctx)
 
 	if err != nil {
@@ -123,50 +123,6 @@ func (ps *PostServiceImpl) DeletePost(ctx context.Context, postID string) error 
 	return nil
 }
 
-func (ps *PostServiceImpl) CreateComment(ctx context.Context, postID string, newComment *ent.Comment) (*ent.Comment, error) {
-	comment, err := ps.client.Comment.
-		Create().
-		SetContent(newComment.Content).
-		SetUser(newComment.Edges.User).
-		SetPostID(postID).
-		Save(ctx)
-
-	if err != nil {
-		return nil, fmt.Errorf("failed creating comment: %w", err)
-	}
-
-	return comment, nil
-}
-
-func (ps *PostServiceImpl) UpdateComment(ctx context.Context, updatedComment *ent.Comment) (*ent.Comment, error) {
-	if updatedComment == nil {
-		return nil, errors.New("comment cannot be nil")
-	}
-
-	comment, err := ps.client.Comment.
-		UpdateOneID(updatedComment.ID).
-		SetContent(updatedComment.Content).
-		Save(ctx)
-
-	if err != nil {
-		return nil, fmt.Errorf("failed updating comment: %w", err)
-	}
-
-	return comment, nil
-}
-
-func (ps *PostServiceImpl) DeleteComment(ctx context.Context, commentID string) error {
-	err := ps.client.Comment.
-		DeleteOneID(commentID).
-		Exec(ctx)
-
-	if err != nil {
-		return fmt.Errorf("failed deleting comment: %w", err)
-	}
-
-	return nil
-}
-
 func (ps *PostServiceImpl) ListPosts(ctx context.Context, page, pageSize int, sortBy []string, filters ...predicate.Post) ([]*ent.Post, error) {
 	offset := (page - 1) * pageSize
 
@@ -185,17 +141,44 @@ func (ps *PostServiceImpl) ListPosts(ctx context.Context, page, pageSize int, so
 	return posts, nil
 }
 
-func (ps *PostServiceImpl) GetComments(ctx context.Context, postID string, page, pageSize int, sortBy []string, filters ...predicate.Comment) ([]*ent.Comment, error) {
-	offset := (page - 1) * pageSize
+func (ps *PostServiceImpl) GetComments(ctx context.Context, postID string) ([]*ent.Comment, error) {
+	pExists, err := ps.client.Post.Query().Where(post.ID(postID)).Exist(ctx)
+	if err != nil || !pExists {
+		return nil, fmt.Errorf("post does not exist: %w", err)
+	}
 
 	comments, err := ps.client.Post.
 		Query().
-		Where(post.IDEQ(postID)).
+		Where(post.ID(postID)).
 		QueryComments().
-		Where(filters...).
-		Order(ent.Asc(sortBy...)).
-		Offset(offset).
-		Limit(pageSize).
+		WithUser().
+		All(ctx)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed getting comments: %w", err)
+	}
+
+	return comments, nil
+}
+
+func (ps *PostServiceImpl) GetCommentsByPost(ctx context.Context, postID string) ([]*ent.Comment, error) {
+	// Check if post exists
+	pExists, err := ps.client.Post.Query().Where(post.ID(postID)).Exist(ctx)
+	if err != nil || !pExists {
+		return nil, fmt.Errorf("post does not exist: %w", err)
+	}
+
+	// Query comments related to the post
+	comments, err := ps.client.Comment.
+		Query().
+		Where(comment.HasPostWith(post.ID(postID))).
+		WithUser().
+		WithPost(func(pq *ent.PostQuery) {
+			pq.WithComments().
+				WithUser().
+				WithMedias().
+				WithLikes()
+		}).
 		All(ctx)
 
 	if err != nil {

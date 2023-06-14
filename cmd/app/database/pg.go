@@ -68,6 +68,8 @@ func EntClient(ctx context.Context) *ent.Client {
 	dbName := getEnv("DB_NAME", "placio")
 	password := getEnv("DB_PASSWORD", "918273645dozie")
 
+	log.Println("Connecting to database", host, port, user, dbName, password)
+
 	maxRetries := 5
 	for i := 1; i <= maxRetries; i++ {
 		client, err = ent.Open("postgres", fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=disable", host, port, user, dbName, password))

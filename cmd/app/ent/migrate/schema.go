@@ -51,6 +51,58 @@ var (
 		Columns:    BusinessesColumns,
 		PrimaryKey: []*schema.Column{BusinessesColumns[0]},
 	}
+	// BusinessFollowBusinessesColumns holds the columns for the "business_follow_businesses" table.
+	BusinessFollowBusinessesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "business_followed_businesses", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "business_follower_businesses", Type: field.TypeString, Nullable: true, Size: 36},
+	}
+	// BusinessFollowBusinessesTable holds the schema information for the "business_follow_businesses" table.
+	BusinessFollowBusinessesTable = &schema.Table{
+		Name:       "business_follow_businesses",
+		Columns:    BusinessFollowBusinessesColumns,
+		PrimaryKey: []*schema.Column{BusinessFollowBusinessesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "business_follow_businesses_businesses_followedBusinesses",
+				Columns:    []*schema.Column{BusinessFollowBusinessesColumns[1]},
+				RefColumns: []*schema.Column{BusinessesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "business_follow_businesses_businesses_followerBusinesses",
+				Columns:    []*schema.Column{BusinessFollowBusinessesColumns[2]},
+				RefColumns: []*schema.Column{BusinessesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
+	// BusinessFollowUsersColumns holds the columns for the "business_follow_users" table.
+	BusinessFollowUsersColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "business_followed_users", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "user_follower_businesses", Type: field.TypeString, Nullable: true, Size: 36},
+	}
+	// BusinessFollowUsersTable holds the schema information for the "business_follow_users" table.
+	BusinessFollowUsersTable = &schema.Table{
+		Name:       "business_follow_users",
+		Columns:    BusinessFollowUsersColumns,
+		PrimaryKey: []*schema.Column{BusinessFollowUsersColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "business_follow_users_businesses_followedUsers",
+				Columns:    []*schema.Column{BusinessFollowUsersColumns[1]},
+				RefColumns: []*schema.Column{BusinessesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "business_follow_users_users_followerBusinesses",
+				Columns:    []*schema.Column{BusinessFollowUsersColumns[2]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// ChatsColumns holds the columns for the "chats" table.
 	ChatsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -218,7 +270,14 @@ var (
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
 		{Name: "auth0_id", Type: field.TypeString, Unique: true},
+		{Name: "name", Type: field.TypeString, Nullable: true},
+		{Name: "given_name", Type: field.TypeString, Nullable: true},
+		{Name: "family_name", Type: field.TypeString, Nullable: true},
+		{Name: "nickname", Type: field.TypeString, Nullable: true},
+		{Name: "picture", Type: field.TypeString, Nullable: true},
 		{Name: "auth0_data", Type: field.TypeJSON, Nullable: true},
+		{Name: "app_settings", Type: field.TypeJSON, Nullable: true},
+		{Name: "user_settings", Type: field.TypeJSON, Nullable: true},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{
@@ -253,11 +312,65 @@ var (
 			},
 		},
 	}
+	// UserFollowBusinessesColumns holds the columns for the "user_follow_businesses" table.
+	UserFollowBusinessesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "business_follower_users", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "user_followed_businesses", Type: field.TypeString, Nullable: true, Size: 36},
+	}
+	// UserFollowBusinessesTable holds the schema information for the "user_follow_businesses" table.
+	UserFollowBusinessesTable = &schema.Table{
+		Name:       "user_follow_businesses",
+		Columns:    UserFollowBusinessesColumns,
+		PrimaryKey: []*schema.Column{UserFollowBusinessesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "user_follow_businesses_businesses_followerUsers",
+				Columns:    []*schema.Column{UserFollowBusinessesColumns[1]},
+				RefColumns: []*schema.Column{BusinessesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "user_follow_businesses_users_followedBusinesses",
+				Columns:    []*schema.Column{UserFollowBusinessesColumns[2]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
+	// UserFollowUsersColumns holds the columns for the "user_follow_users" table.
+	UserFollowUsersColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "user_followed_users", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "user_follower_users", Type: field.TypeString, Nullable: true, Size: 36},
+	}
+	// UserFollowUsersTable holds the schema information for the "user_follow_users" table.
+	UserFollowUsersTable = &schema.Table{
+		Name:       "user_follow_users",
+		Columns:    UserFollowUsersColumns,
+		PrimaryKey: []*schema.Column{UserFollowUsersColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "user_follow_users_users_followedUsers",
+				Columns:    []*schema.Column{UserFollowUsersColumns[1]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "user_follow_users_users_followerUsers",
+				Columns:    []*schema.Column{UserFollowUsersColumns[2]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		AccountSettingsTable,
 		BookingsTable,
 		BusinessesTable,
+		BusinessFollowBusinessesTable,
+		BusinessFollowUsersTable,
 		ChatsTable,
 		CommentsTable,
 		LikesTable,
@@ -268,11 +381,17 @@ var (
 		RatingsTable,
 		UsersTable,
 		UserBusinessesTable,
+		UserFollowBusinessesTable,
+		UserFollowUsersTable,
 	}
 )
 
 func init() {
 	AccountSettingsTable.ForeignKeys[0].RefTable = BusinessesTable
+	BusinessFollowBusinessesTable.ForeignKeys[0].RefTable = BusinessesTable
+	BusinessFollowBusinessesTable.ForeignKeys[1].RefTable = BusinessesTable
+	BusinessFollowUsersTable.ForeignKeys[0].RefTable = BusinessesTable
+	BusinessFollowUsersTable.ForeignKeys[1].RefTable = UsersTable
 	CommentsTable.ForeignKeys[0].RefTable = PostsTable
 	CommentsTable.ForeignKeys[1].RefTable = PostsTable
 	CommentsTable.ForeignKeys[2].RefTable = UsersTable
@@ -284,4 +403,8 @@ func init() {
 	PostsTable.ForeignKeys[1].RefTable = UsersTable
 	UserBusinessesTable.ForeignKeys[0].RefTable = BusinessesTable
 	UserBusinessesTable.ForeignKeys[1].RefTable = UsersTable
+	UserFollowBusinessesTable.ForeignKeys[0].RefTable = BusinessesTable
+	UserFollowBusinessesTable.ForeignKeys[1].RefTable = UsersTable
+	UserFollowUsersTable.ForeignKeys[0].RefTable = UsersTable
+	UserFollowUsersTable.ForeignKeys[1].RefTable = UsersTable
 }

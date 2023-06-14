@@ -6,12 +6,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"placio-app/ent/businessfollowuser"
 	"placio-app/ent/comment"
 	"placio-app/ent/like"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
 	"placio-app/ent/user"
 	"placio-app/ent/userbusiness"
+	"placio-app/ent/userfollowbusiness"
+	"placio-app/ent/userfollowuser"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -38,6 +41,106 @@ func (uu *UserUpdate) SetAuth0ID(s string) *UserUpdate {
 	return uu
 }
 
+// SetName sets the "name" field.
+func (uu *UserUpdate) SetName(s string) *UserUpdate {
+	uu.mutation.SetName(s)
+	return uu
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableName(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetName(*s)
+	}
+	return uu
+}
+
+// ClearName clears the value of the "name" field.
+func (uu *UserUpdate) ClearName() *UserUpdate {
+	uu.mutation.ClearName()
+	return uu
+}
+
+// SetGivenName sets the "given_name" field.
+func (uu *UserUpdate) SetGivenName(s string) *UserUpdate {
+	uu.mutation.SetGivenName(s)
+	return uu
+}
+
+// SetNillableGivenName sets the "given_name" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableGivenName(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetGivenName(*s)
+	}
+	return uu
+}
+
+// ClearGivenName clears the value of the "given_name" field.
+func (uu *UserUpdate) ClearGivenName() *UserUpdate {
+	uu.mutation.ClearGivenName()
+	return uu
+}
+
+// SetFamilyName sets the "family_name" field.
+func (uu *UserUpdate) SetFamilyName(s string) *UserUpdate {
+	uu.mutation.SetFamilyName(s)
+	return uu
+}
+
+// SetNillableFamilyName sets the "family_name" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableFamilyName(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetFamilyName(*s)
+	}
+	return uu
+}
+
+// ClearFamilyName clears the value of the "family_name" field.
+func (uu *UserUpdate) ClearFamilyName() *UserUpdate {
+	uu.mutation.ClearFamilyName()
+	return uu
+}
+
+// SetNickname sets the "nickname" field.
+func (uu *UserUpdate) SetNickname(s string) *UserUpdate {
+	uu.mutation.SetNickname(s)
+	return uu
+}
+
+// SetNillableNickname sets the "nickname" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableNickname(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetNickname(*s)
+	}
+	return uu
+}
+
+// ClearNickname clears the value of the "nickname" field.
+func (uu *UserUpdate) ClearNickname() *UserUpdate {
+	uu.mutation.ClearNickname()
+	return uu
+}
+
+// SetPicture sets the "picture" field.
+func (uu *UserUpdate) SetPicture(s string) *UserUpdate {
+	uu.mutation.SetPicture(s)
+	return uu
+}
+
+// SetNillablePicture sets the "picture" field if the given value is not nil.
+func (uu *UserUpdate) SetNillablePicture(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetPicture(*s)
+	}
+	return uu
+}
+
+// ClearPicture clears the value of the "picture" field.
+func (uu *UserUpdate) ClearPicture() *UserUpdate {
+	uu.mutation.ClearPicture()
+	return uu
+}
+
 // SetAuth0Data sets the "auth0_data" field.
 func (uu *UserUpdate) SetAuth0Data(m *management.User) *UserUpdate {
 	uu.mutation.SetAuth0Data(m)
@@ -47,6 +150,30 @@ func (uu *UserUpdate) SetAuth0Data(m *management.User) *UserUpdate {
 // ClearAuth0Data clears the value of the "auth0_data" field.
 func (uu *UserUpdate) ClearAuth0Data() *UserUpdate {
 	uu.mutation.ClearAuth0Data()
+	return uu
+}
+
+// SetAppSettings sets the "app_settings" field.
+func (uu *UserUpdate) SetAppSettings(m map[string]interface{}) *UserUpdate {
+	uu.mutation.SetAppSettings(m)
+	return uu
+}
+
+// ClearAppSettings clears the value of the "app_settings" field.
+func (uu *UserUpdate) ClearAppSettings() *UserUpdate {
+	uu.mutation.ClearAppSettings()
+	return uu
+}
+
+// SetUserSettings sets the "user_settings" field.
+func (uu *UserUpdate) SetUserSettings(m map[string]interface{}) *UserUpdate {
+	uu.mutation.SetUserSettings(m)
+	return uu
+}
+
+// ClearUserSettings clears the value of the "user_settings" field.
+func (uu *UserUpdate) ClearUserSettings() *UserUpdate {
+	uu.mutation.ClearUserSettings()
 	return uu
 }
 
@@ -108,6 +235,66 @@ func (uu *UserUpdate) AddPosts(p ...*Post) *UserUpdate {
 		ids[i] = p[i].ID
 	}
 	return uu.AddPostIDs(ids...)
+}
+
+// AddFollowedUserIDs adds the "followedUsers" edge to the UserFollowUser entity by IDs.
+func (uu *UserUpdate) AddFollowedUserIDs(ids ...string) *UserUpdate {
+	uu.mutation.AddFollowedUserIDs(ids...)
+	return uu
+}
+
+// AddFollowedUsers adds the "followedUsers" edges to the UserFollowUser entity.
+func (uu *UserUpdate) AddFollowedUsers(u ...*UserFollowUser) *UserUpdate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uu.AddFollowedUserIDs(ids...)
+}
+
+// AddFollowerUserIDs adds the "followerUsers" edge to the UserFollowUser entity by IDs.
+func (uu *UserUpdate) AddFollowerUserIDs(ids ...string) *UserUpdate {
+	uu.mutation.AddFollowerUserIDs(ids...)
+	return uu
+}
+
+// AddFollowerUsers adds the "followerUsers" edges to the UserFollowUser entity.
+func (uu *UserUpdate) AddFollowerUsers(u ...*UserFollowUser) *UserUpdate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uu.AddFollowerUserIDs(ids...)
+}
+
+// AddFollowedBusinessIDs adds the "followedBusinesses" edge to the UserFollowBusiness entity by IDs.
+func (uu *UserUpdate) AddFollowedBusinessIDs(ids ...string) *UserUpdate {
+	uu.mutation.AddFollowedBusinessIDs(ids...)
+	return uu
+}
+
+// AddFollowedBusinesses adds the "followedBusinesses" edges to the UserFollowBusiness entity.
+func (uu *UserUpdate) AddFollowedBusinesses(u ...*UserFollowBusiness) *UserUpdate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uu.AddFollowedBusinessIDs(ids...)
+}
+
+// AddFollowerBusinessIDs adds the "followerBusinesses" edge to the BusinessFollowUser entity by IDs.
+func (uu *UserUpdate) AddFollowerBusinessIDs(ids ...string) *UserUpdate {
+	uu.mutation.AddFollowerBusinessIDs(ids...)
+	return uu
+}
+
+// AddFollowerBusinesses adds the "followerBusinesses" edges to the BusinessFollowUser entity.
+func (uu *UserUpdate) AddFollowerBusinesses(b ...*BusinessFollowUser) *UserUpdate {
+	ids := make([]string, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return uu.AddFollowerBusinessIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -199,6 +386,90 @@ func (uu *UserUpdate) RemovePosts(p ...*Post) *UserUpdate {
 	return uu.RemovePostIDs(ids...)
 }
 
+// ClearFollowedUsers clears all "followedUsers" edges to the UserFollowUser entity.
+func (uu *UserUpdate) ClearFollowedUsers() *UserUpdate {
+	uu.mutation.ClearFollowedUsers()
+	return uu
+}
+
+// RemoveFollowedUserIDs removes the "followedUsers" edge to UserFollowUser entities by IDs.
+func (uu *UserUpdate) RemoveFollowedUserIDs(ids ...string) *UserUpdate {
+	uu.mutation.RemoveFollowedUserIDs(ids...)
+	return uu
+}
+
+// RemoveFollowedUsers removes "followedUsers" edges to UserFollowUser entities.
+func (uu *UserUpdate) RemoveFollowedUsers(u ...*UserFollowUser) *UserUpdate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uu.RemoveFollowedUserIDs(ids...)
+}
+
+// ClearFollowerUsers clears all "followerUsers" edges to the UserFollowUser entity.
+func (uu *UserUpdate) ClearFollowerUsers() *UserUpdate {
+	uu.mutation.ClearFollowerUsers()
+	return uu
+}
+
+// RemoveFollowerUserIDs removes the "followerUsers" edge to UserFollowUser entities by IDs.
+func (uu *UserUpdate) RemoveFollowerUserIDs(ids ...string) *UserUpdate {
+	uu.mutation.RemoveFollowerUserIDs(ids...)
+	return uu
+}
+
+// RemoveFollowerUsers removes "followerUsers" edges to UserFollowUser entities.
+func (uu *UserUpdate) RemoveFollowerUsers(u ...*UserFollowUser) *UserUpdate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uu.RemoveFollowerUserIDs(ids...)
+}
+
+// ClearFollowedBusinesses clears all "followedBusinesses" edges to the UserFollowBusiness entity.
+func (uu *UserUpdate) ClearFollowedBusinesses() *UserUpdate {
+	uu.mutation.ClearFollowedBusinesses()
+	return uu
+}
+
+// RemoveFollowedBusinessIDs removes the "followedBusinesses" edge to UserFollowBusiness entities by IDs.
+func (uu *UserUpdate) RemoveFollowedBusinessIDs(ids ...string) *UserUpdate {
+	uu.mutation.RemoveFollowedBusinessIDs(ids...)
+	return uu
+}
+
+// RemoveFollowedBusinesses removes "followedBusinesses" edges to UserFollowBusiness entities.
+func (uu *UserUpdate) RemoveFollowedBusinesses(u ...*UserFollowBusiness) *UserUpdate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uu.RemoveFollowedBusinessIDs(ids...)
+}
+
+// ClearFollowerBusinesses clears all "followerBusinesses" edges to the BusinessFollowUser entity.
+func (uu *UserUpdate) ClearFollowerBusinesses() *UserUpdate {
+	uu.mutation.ClearFollowerBusinesses()
+	return uu
+}
+
+// RemoveFollowerBusinessIDs removes the "followerBusinesses" edge to BusinessFollowUser entities by IDs.
+func (uu *UserUpdate) RemoveFollowerBusinessIDs(ids ...string) *UserUpdate {
+	uu.mutation.RemoveFollowerBusinessIDs(ids...)
+	return uu
+}
+
+// RemoveFollowerBusinesses removes "followerBusinesses" edges to BusinessFollowUser entities.
+func (uu *UserUpdate) RemoveFollowerBusinesses(b ...*BusinessFollowUser) *UserUpdate {
+	ids := make([]string, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return uu.RemoveFollowerBusinessIDs(ids...)
+}
+
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (uu *UserUpdate) Save(ctx context.Context) (int, error) {
 	return withHooks(ctx, uu.sqlSave, uu.mutation, uu.hooks)
@@ -238,11 +509,53 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := uu.mutation.Auth0ID(); ok {
 		_spec.SetField(user.FieldAuth0ID, field.TypeString, value)
 	}
+	if value, ok := uu.mutation.Name(); ok {
+		_spec.SetField(user.FieldName, field.TypeString, value)
+	}
+	if uu.mutation.NameCleared() {
+		_spec.ClearField(user.FieldName, field.TypeString)
+	}
+	if value, ok := uu.mutation.GivenName(); ok {
+		_spec.SetField(user.FieldGivenName, field.TypeString, value)
+	}
+	if uu.mutation.GivenNameCleared() {
+		_spec.ClearField(user.FieldGivenName, field.TypeString)
+	}
+	if value, ok := uu.mutation.FamilyName(); ok {
+		_spec.SetField(user.FieldFamilyName, field.TypeString, value)
+	}
+	if uu.mutation.FamilyNameCleared() {
+		_spec.ClearField(user.FieldFamilyName, field.TypeString)
+	}
+	if value, ok := uu.mutation.Nickname(); ok {
+		_spec.SetField(user.FieldNickname, field.TypeString, value)
+	}
+	if uu.mutation.NicknameCleared() {
+		_spec.ClearField(user.FieldNickname, field.TypeString)
+	}
+	if value, ok := uu.mutation.Picture(); ok {
+		_spec.SetField(user.FieldPicture, field.TypeString, value)
+	}
+	if uu.mutation.PictureCleared() {
+		_spec.ClearField(user.FieldPicture, field.TypeString)
+	}
 	if value, ok := uu.mutation.Auth0Data(); ok {
 		_spec.SetField(user.FieldAuth0Data, field.TypeJSON, value)
 	}
 	if uu.mutation.Auth0DataCleared() {
 		_spec.ClearField(user.FieldAuth0Data, field.TypeJSON)
+	}
+	if value, ok := uu.mutation.AppSettings(); ok {
+		_spec.SetField(user.FieldAppSettings, field.TypeJSON, value)
+	}
+	if uu.mutation.AppSettingsCleared() {
+		_spec.ClearField(user.FieldAppSettings, field.TypeJSON)
+	}
+	if value, ok := uu.mutation.UserSettings(); ok {
+		_spec.SetField(user.FieldUserSettings, field.TypeJSON, value)
+	}
+	if uu.mutation.UserSettingsCleared() {
+		_spec.ClearField(user.FieldUserSettings, field.TypeJSON)
 	}
 	if uu.mutation.UserBusinessesCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -424,6 +737,186 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if uu.mutation.FollowedUsersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FollowedUsersTable,
+			Columns: []string{user.FollowedUsersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userfollowuser.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedFollowedUsersIDs(); len(nodes) > 0 && !uu.mutation.FollowedUsersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FollowedUsersTable,
+			Columns: []string{user.FollowedUsersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userfollowuser.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.FollowedUsersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FollowedUsersTable,
+			Columns: []string{user.FollowedUsersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userfollowuser.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uu.mutation.FollowerUsersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FollowerUsersTable,
+			Columns: []string{user.FollowerUsersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userfollowuser.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedFollowerUsersIDs(); len(nodes) > 0 && !uu.mutation.FollowerUsersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FollowerUsersTable,
+			Columns: []string{user.FollowerUsersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userfollowuser.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.FollowerUsersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FollowerUsersTable,
+			Columns: []string{user.FollowerUsersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userfollowuser.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uu.mutation.FollowedBusinessesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FollowedBusinessesTable,
+			Columns: []string{user.FollowedBusinessesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userfollowbusiness.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedFollowedBusinessesIDs(); len(nodes) > 0 && !uu.mutation.FollowedBusinessesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FollowedBusinessesTable,
+			Columns: []string{user.FollowedBusinessesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userfollowbusiness.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.FollowedBusinessesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FollowedBusinessesTable,
+			Columns: []string{user.FollowedBusinessesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userfollowbusiness.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uu.mutation.FollowerBusinessesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FollowerBusinessesTable,
+			Columns: []string{user.FollowerBusinessesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(businessfollowuser.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedFollowerBusinessesIDs(); len(nodes) > 0 && !uu.mutation.FollowerBusinessesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FollowerBusinessesTable,
+			Columns: []string{user.FollowerBusinessesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(businessfollowuser.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.FollowerBusinessesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FollowerBusinessesTable,
+			Columns: []string{user.FollowerBusinessesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(businessfollowuser.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -450,6 +943,106 @@ func (uuo *UserUpdateOne) SetAuth0ID(s string) *UserUpdateOne {
 	return uuo
 }
 
+// SetName sets the "name" field.
+func (uuo *UserUpdateOne) SetName(s string) *UserUpdateOne {
+	uuo.mutation.SetName(s)
+	return uuo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableName(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetName(*s)
+	}
+	return uuo
+}
+
+// ClearName clears the value of the "name" field.
+func (uuo *UserUpdateOne) ClearName() *UserUpdateOne {
+	uuo.mutation.ClearName()
+	return uuo
+}
+
+// SetGivenName sets the "given_name" field.
+func (uuo *UserUpdateOne) SetGivenName(s string) *UserUpdateOne {
+	uuo.mutation.SetGivenName(s)
+	return uuo
+}
+
+// SetNillableGivenName sets the "given_name" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableGivenName(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetGivenName(*s)
+	}
+	return uuo
+}
+
+// ClearGivenName clears the value of the "given_name" field.
+func (uuo *UserUpdateOne) ClearGivenName() *UserUpdateOne {
+	uuo.mutation.ClearGivenName()
+	return uuo
+}
+
+// SetFamilyName sets the "family_name" field.
+func (uuo *UserUpdateOne) SetFamilyName(s string) *UserUpdateOne {
+	uuo.mutation.SetFamilyName(s)
+	return uuo
+}
+
+// SetNillableFamilyName sets the "family_name" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableFamilyName(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetFamilyName(*s)
+	}
+	return uuo
+}
+
+// ClearFamilyName clears the value of the "family_name" field.
+func (uuo *UserUpdateOne) ClearFamilyName() *UserUpdateOne {
+	uuo.mutation.ClearFamilyName()
+	return uuo
+}
+
+// SetNickname sets the "nickname" field.
+func (uuo *UserUpdateOne) SetNickname(s string) *UserUpdateOne {
+	uuo.mutation.SetNickname(s)
+	return uuo
+}
+
+// SetNillableNickname sets the "nickname" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableNickname(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetNickname(*s)
+	}
+	return uuo
+}
+
+// ClearNickname clears the value of the "nickname" field.
+func (uuo *UserUpdateOne) ClearNickname() *UserUpdateOne {
+	uuo.mutation.ClearNickname()
+	return uuo
+}
+
+// SetPicture sets the "picture" field.
+func (uuo *UserUpdateOne) SetPicture(s string) *UserUpdateOne {
+	uuo.mutation.SetPicture(s)
+	return uuo
+}
+
+// SetNillablePicture sets the "picture" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillablePicture(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetPicture(*s)
+	}
+	return uuo
+}
+
+// ClearPicture clears the value of the "picture" field.
+func (uuo *UserUpdateOne) ClearPicture() *UserUpdateOne {
+	uuo.mutation.ClearPicture()
+	return uuo
+}
+
 // SetAuth0Data sets the "auth0_data" field.
 func (uuo *UserUpdateOne) SetAuth0Data(m *management.User) *UserUpdateOne {
 	uuo.mutation.SetAuth0Data(m)
@@ -459,6 +1052,30 @@ func (uuo *UserUpdateOne) SetAuth0Data(m *management.User) *UserUpdateOne {
 // ClearAuth0Data clears the value of the "auth0_data" field.
 func (uuo *UserUpdateOne) ClearAuth0Data() *UserUpdateOne {
 	uuo.mutation.ClearAuth0Data()
+	return uuo
+}
+
+// SetAppSettings sets the "app_settings" field.
+func (uuo *UserUpdateOne) SetAppSettings(m map[string]interface{}) *UserUpdateOne {
+	uuo.mutation.SetAppSettings(m)
+	return uuo
+}
+
+// ClearAppSettings clears the value of the "app_settings" field.
+func (uuo *UserUpdateOne) ClearAppSettings() *UserUpdateOne {
+	uuo.mutation.ClearAppSettings()
+	return uuo
+}
+
+// SetUserSettings sets the "user_settings" field.
+func (uuo *UserUpdateOne) SetUserSettings(m map[string]interface{}) *UserUpdateOne {
+	uuo.mutation.SetUserSettings(m)
+	return uuo
+}
+
+// ClearUserSettings clears the value of the "user_settings" field.
+func (uuo *UserUpdateOne) ClearUserSettings() *UserUpdateOne {
+	uuo.mutation.ClearUserSettings()
 	return uuo
 }
 
@@ -520,6 +1137,66 @@ func (uuo *UserUpdateOne) AddPosts(p ...*Post) *UserUpdateOne {
 		ids[i] = p[i].ID
 	}
 	return uuo.AddPostIDs(ids...)
+}
+
+// AddFollowedUserIDs adds the "followedUsers" edge to the UserFollowUser entity by IDs.
+func (uuo *UserUpdateOne) AddFollowedUserIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.AddFollowedUserIDs(ids...)
+	return uuo
+}
+
+// AddFollowedUsers adds the "followedUsers" edges to the UserFollowUser entity.
+func (uuo *UserUpdateOne) AddFollowedUsers(u ...*UserFollowUser) *UserUpdateOne {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uuo.AddFollowedUserIDs(ids...)
+}
+
+// AddFollowerUserIDs adds the "followerUsers" edge to the UserFollowUser entity by IDs.
+func (uuo *UserUpdateOne) AddFollowerUserIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.AddFollowerUserIDs(ids...)
+	return uuo
+}
+
+// AddFollowerUsers adds the "followerUsers" edges to the UserFollowUser entity.
+func (uuo *UserUpdateOne) AddFollowerUsers(u ...*UserFollowUser) *UserUpdateOne {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uuo.AddFollowerUserIDs(ids...)
+}
+
+// AddFollowedBusinessIDs adds the "followedBusinesses" edge to the UserFollowBusiness entity by IDs.
+func (uuo *UserUpdateOne) AddFollowedBusinessIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.AddFollowedBusinessIDs(ids...)
+	return uuo
+}
+
+// AddFollowedBusinesses adds the "followedBusinesses" edges to the UserFollowBusiness entity.
+func (uuo *UserUpdateOne) AddFollowedBusinesses(u ...*UserFollowBusiness) *UserUpdateOne {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uuo.AddFollowedBusinessIDs(ids...)
+}
+
+// AddFollowerBusinessIDs adds the "followerBusinesses" edge to the BusinessFollowUser entity by IDs.
+func (uuo *UserUpdateOne) AddFollowerBusinessIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.AddFollowerBusinessIDs(ids...)
+	return uuo
+}
+
+// AddFollowerBusinesses adds the "followerBusinesses" edges to the BusinessFollowUser entity.
+func (uuo *UserUpdateOne) AddFollowerBusinesses(b ...*BusinessFollowUser) *UserUpdateOne {
+	ids := make([]string, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return uuo.AddFollowerBusinessIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -611,6 +1288,90 @@ func (uuo *UserUpdateOne) RemovePosts(p ...*Post) *UserUpdateOne {
 	return uuo.RemovePostIDs(ids...)
 }
 
+// ClearFollowedUsers clears all "followedUsers" edges to the UserFollowUser entity.
+func (uuo *UserUpdateOne) ClearFollowedUsers() *UserUpdateOne {
+	uuo.mutation.ClearFollowedUsers()
+	return uuo
+}
+
+// RemoveFollowedUserIDs removes the "followedUsers" edge to UserFollowUser entities by IDs.
+func (uuo *UserUpdateOne) RemoveFollowedUserIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.RemoveFollowedUserIDs(ids...)
+	return uuo
+}
+
+// RemoveFollowedUsers removes "followedUsers" edges to UserFollowUser entities.
+func (uuo *UserUpdateOne) RemoveFollowedUsers(u ...*UserFollowUser) *UserUpdateOne {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uuo.RemoveFollowedUserIDs(ids...)
+}
+
+// ClearFollowerUsers clears all "followerUsers" edges to the UserFollowUser entity.
+func (uuo *UserUpdateOne) ClearFollowerUsers() *UserUpdateOne {
+	uuo.mutation.ClearFollowerUsers()
+	return uuo
+}
+
+// RemoveFollowerUserIDs removes the "followerUsers" edge to UserFollowUser entities by IDs.
+func (uuo *UserUpdateOne) RemoveFollowerUserIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.RemoveFollowerUserIDs(ids...)
+	return uuo
+}
+
+// RemoveFollowerUsers removes "followerUsers" edges to UserFollowUser entities.
+func (uuo *UserUpdateOne) RemoveFollowerUsers(u ...*UserFollowUser) *UserUpdateOne {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uuo.RemoveFollowerUserIDs(ids...)
+}
+
+// ClearFollowedBusinesses clears all "followedBusinesses" edges to the UserFollowBusiness entity.
+func (uuo *UserUpdateOne) ClearFollowedBusinesses() *UserUpdateOne {
+	uuo.mutation.ClearFollowedBusinesses()
+	return uuo
+}
+
+// RemoveFollowedBusinessIDs removes the "followedBusinesses" edge to UserFollowBusiness entities by IDs.
+func (uuo *UserUpdateOne) RemoveFollowedBusinessIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.RemoveFollowedBusinessIDs(ids...)
+	return uuo
+}
+
+// RemoveFollowedBusinesses removes "followedBusinesses" edges to UserFollowBusiness entities.
+func (uuo *UserUpdateOne) RemoveFollowedBusinesses(u ...*UserFollowBusiness) *UserUpdateOne {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uuo.RemoveFollowedBusinessIDs(ids...)
+}
+
+// ClearFollowerBusinesses clears all "followerBusinesses" edges to the BusinessFollowUser entity.
+func (uuo *UserUpdateOne) ClearFollowerBusinesses() *UserUpdateOne {
+	uuo.mutation.ClearFollowerBusinesses()
+	return uuo
+}
+
+// RemoveFollowerBusinessIDs removes the "followerBusinesses" edge to BusinessFollowUser entities by IDs.
+func (uuo *UserUpdateOne) RemoveFollowerBusinessIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.RemoveFollowerBusinessIDs(ids...)
+	return uuo
+}
+
+// RemoveFollowerBusinesses removes "followerBusinesses" edges to BusinessFollowUser entities.
+func (uuo *UserUpdateOne) RemoveFollowerBusinesses(b ...*BusinessFollowUser) *UserUpdateOne {
+	ids := make([]string, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return uuo.RemoveFollowerBusinessIDs(ids...)
+}
+
 // Where appends a list predicates to the UserUpdate builder.
 func (uuo *UserUpdateOne) Where(ps ...predicate.User) *UserUpdateOne {
 	uuo.mutation.Where(ps...)
@@ -680,11 +1441,53 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	if value, ok := uuo.mutation.Auth0ID(); ok {
 		_spec.SetField(user.FieldAuth0ID, field.TypeString, value)
 	}
+	if value, ok := uuo.mutation.Name(); ok {
+		_spec.SetField(user.FieldName, field.TypeString, value)
+	}
+	if uuo.mutation.NameCleared() {
+		_spec.ClearField(user.FieldName, field.TypeString)
+	}
+	if value, ok := uuo.mutation.GivenName(); ok {
+		_spec.SetField(user.FieldGivenName, field.TypeString, value)
+	}
+	if uuo.mutation.GivenNameCleared() {
+		_spec.ClearField(user.FieldGivenName, field.TypeString)
+	}
+	if value, ok := uuo.mutation.FamilyName(); ok {
+		_spec.SetField(user.FieldFamilyName, field.TypeString, value)
+	}
+	if uuo.mutation.FamilyNameCleared() {
+		_spec.ClearField(user.FieldFamilyName, field.TypeString)
+	}
+	if value, ok := uuo.mutation.Nickname(); ok {
+		_spec.SetField(user.FieldNickname, field.TypeString, value)
+	}
+	if uuo.mutation.NicknameCleared() {
+		_spec.ClearField(user.FieldNickname, field.TypeString)
+	}
+	if value, ok := uuo.mutation.Picture(); ok {
+		_spec.SetField(user.FieldPicture, field.TypeString, value)
+	}
+	if uuo.mutation.PictureCleared() {
+		_spec.ClearField(user.FieldPicture, field.TypeString)
+	}
 	if value, ok := uuo.mutation.Auth0Data(); ok {
 		_spec.SetField(user.FieldAuth0Data, field.TypeJSON, value)
 	}
 	if uuo.mutation.Auth0DataCleared() {
 		_spec.ClearField(user.FieldAuth0Data, field.TypeJSON)
+	}
+	if value, ok := uuo.mutation.AppSettings(); ok {
+		_spec.SetField(user.FieldAppSettings, field.TypeJSON, value)
+	}
+	if uuo.mutation.AppSettingsCleared() {
+		_spec.ClearField(user.FieldAppSettings, field.TypeJSON)
+	}
+	if value, ok := uuo.mutation.UserSettings(); ok {
+		_spec.SetField(user.FieldUserSettings, field.TypeJSON, value)
+	}
+	if uuo.mutation.UserSettingsCleared() {
+		_spec.ClearField(user.FieldUserSettings, field.TypeJSON)
 	}
 	if uuo.mutation.UserBusinessesCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -859,6 +1662,186 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.FollowedUsersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FollowedUsersTable,
+			Columns: []string{user.FollowedUsersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userfollowuser.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedFollowedUsersIDs(); len(nodes) > 0 && !uuo.mutation.FollowedUsersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FollowedUsersTable,
+			Columns: []string{user.FollowedUsersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userfollowuser.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.FollowedUsersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FollowedUsersTable,
+			Columns: []string{user.FollowedUsersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userfollowuser.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.FollowerUsersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FollowerUsersTable,
+			Columns: []string{user.FollowerUsersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userfollowuser.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedFollowerUsersIDs(); len(nodes) > 0 && !uuo.mutation.FollowerUsersCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FollowerUsersTable,
+			Columns: []string{user.FollowerUsersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userfollowuser.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.FollowerUsersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FollowerUsersTable,
+			Columns: []string{user.FollowerUsersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userfollowuser.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.FollowedBusinessesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FollowedBusinessesTable,
+			Columns: []string{user.FollowedBusinessesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userfollowbusiness.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedFollowedBusinessesIDs(); len(nodes) > 0 && !uuo.mutation.FollowedBusinessesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FollowedBusinessesTable,
+			Columns: []string{user.FollowedBusinessesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userfollowbusiness.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.FollowedBusinessesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FollowedBusinessesTable,
+			Columns: []string{user.FollowedBusinessesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userfollowbusiness.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.FollowerBusinessesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FollowerBusinessesTable,
+			Columns: []string{user.FollowerBusinessesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(businessfollowuser.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedFollowerBusinessesIDs(); len(nodes) > 0 && !uuo.mutation.FollowerBusinessesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FollowerBusinessesTable,
+			Columns: []string{user.FollowerBusinessesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(businessfollowuser.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.FollowerBusinessesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FollowerBusinessesTable,
+			Columns: []string{user.FollowerBusinessesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(businessfollowuser.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

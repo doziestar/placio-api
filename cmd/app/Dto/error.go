@@ -11,6 +11,16 @@ type ErrorDTO struct {
 	Status  int    `json:"status"`
 	Message string `json:"message"`
 }
+
+type Error struct {
+	Status  int    `json:"status"`
+	Message string `json:"message"`
+}
+
+type ErrorDto struct {
+	Status  int    `json:"status"`
+	Message string `json:"message"`
+}
 type PermissionDTO struct {
 	Status  int    `json:"status"`
 	Message string `json:"message"`

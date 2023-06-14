@@ -6,7 +6,8 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"strings"
+	"placio-app/ent"
+	"placio-app/ent/user"
 	"time"
 
 	"github.com/auth0/go-jwt-middleware/v2/jwks"
@@ -34,7 +35,7 @@ func (c CustomClaims) Validate(ctx context.Context) error {
 }
 
 // EnsureValidToken is a middleware that will check the validity of our JWT.
-func EnsureValidToken() gin.HandlerFunc {
+func EnsureValidToken(client *ent.Client) gin.HandlerFunc {
 	issuerURL, err := url.Parse(os.Getenv("AUTH0_DOMAIN") + "/")
 	if err != nil {
 		log.Fatalf("Failed to parse the issuer url: %v", err)
@@ -92,12 +93,19 @@ func EnsureValidToken() gin.HandlerFunc {
 			//fmt.Println(validatedClaims.CustomClaims.(*CustomClaims).UpdatedAt)
 			//fmt.Println(validatedClaims.CustomClaims.(*CustomClaims).Email)
 
-			split := strings.Split(validatedClaims.RegisteredClaims.Subject, "|")
-			// split[0] will have the provider and split[1] will have the ID
-			id := split[1]
-			c.Set("user", id)
+			//split := strings.Split(validatedClaims.RegisteredClaims.Subject, "|")
+			//// split[0] will have the provider and split[1] will have the ID
+			//id := split[1]
+			// make a request to the user service to get the user details
+			user, err := client.User.Query().Where(user.Auth0IDEQ(validatedClaims.RegisteredClaims.Subject)).Only(context.Background())
+			if err != nil {
+				c.JSON(http.StatusUnauthorized, gin.H{"message": "User not found"})
+				c.Abort()
+				return
+			}
+			c.Set("user", user.ID)
 			c.Set("auth0_id", validatedClaims.RegisteredClaims.Subject)
-			c.Set("token", tokenString)
+			//c.Set("token", tokenString)
 			c.Next()
 		} else {
 			// handle error, the assertion failed

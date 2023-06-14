@@ -15,6 +15,12 @@ type Booking func(*sql.Selector)
 // Business is the predicate function for business builders.
 type Business func(*sql.Selector)
 
+// BusinessFollowBusiness is the predicate function for businessfollowbusiness builders.
+type BusinessFollowBusiness func(*sql.Selector)
+
+// BusinessFollowUser is the predicate function for businessfollowuser builders.
+type BusinessFollowUser func(*sql.Selector)
+
 // Chat is the predicate function for chat builders.
 type Chat func(*sql.Selector)
 
@@ -44,3 +50,9 @@ type User func(*sql.Selector)
 
 // UserBusiness is the predicate function for userbusiness builders.
 type UserBusiness func(*sql.Selector)
+
+// UserFollowBusiness is the predicate function for userfollowbusiness builders.
+type UserFollowBusiness func(*sql.Selector)
+
+// UserFollowUser is the predicate function for userfollowuser builders.
+type UserFollowUser func(*sql.Selector)

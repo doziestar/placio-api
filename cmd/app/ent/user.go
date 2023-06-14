@@ -20,8 +20,22 @@ type User struct {
 	ID string `json:"id,omitempty"`
 	// Auth0ID holds the value of the "auth0_id" field.
 	Auth0ID string `json:"auth0_id,omitempty"`
+	// Name holds the value of the "name" field.
+	Name string `json:"name,omitempty"`
+	// GivenName holds the value of the "given_name" field.
+	GivenName string `json:"given_name,omitempty"`
+	// FamilyName holds the value of the "family_name" field.
+	FamilyName string `json:"family_name,omitempty"`
+	// Nickname holds the value of the "nickname" field.
+	Nickname string `json:"nickname,omitempty"`
+	// Picture holds the value of the "picture" field.
+	Picture string `json:"picture,omitempty"`
 	// Auth0Data holds the value of the "auth0_data" field.
 	Auth0Data *management.User `json:"auth0_data,omitempty"`
+	// AppSettings holds the value of the "app_settings" field.
+	AppSettings map[string]interface{} `json:"app_settings,omitempty"`
+	// UserSettings holds the value of the "user_settings" field.
+	UserSettings map[string]interface{} `json:"user_settings,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserQuery when eager-loading is set.
 	Edges        UserEdges `json:"edges"`
@@ -38,9 +52,17 @@ type UserEdges struct {
 	Likes []*Like `json:"likes,omitempty"`
 	// Posts holds the value of the posts edge.
 	Posts []*Post `json:"posts,omitempty"`
+	// FollowedUsers holds the value of the followedUsers edge.
+	FollowedUsers []*UserFollowUser `json:"followedUsers,omitempty"`
+	// FollowerUsers holds the value of the followerUsers edge.
+	FollowerUsers []*UserFollowUser `json:"followerUsers,omitempty"`
+	// FollowedBusinesses holds the value of the followedBusinesses edge.
+	FollowedBusinesses []*UserFollowBusiness `json:"followedBusinesses,omitempty"`
+	// FollowerBusinesses holds the value of the followerBusinesses edge.
+	FollowerBusinesses []*BusinessFollowUser `json:"followerBusinesses,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [8]bool
 }
 
 // UserBusinessesOrErr returns the UserBusinesses value or an error if the edge
@@ -79,14 +101,50 @@ func (e UserEdges) PostsOrErr() ([]*Post, error) {
 	return nil, &NotLoadedError{edge: "posts"}
 }
 
+// FollowedUsersOrErr returns the FollowedUsers value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) FollowedUsersOrErr() ([]*UserFollowUser, error) {
+	if e.loadedTypes[4] {
+		return e.FollowedUsers, nil
+	}
+	return nil, &NotLoadedError{edge: "followedUsers"}
+}
+
+// FollowerUsersOrErr returns the FollowerUsers value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) FollowerUsersOrErr() ([]*UserFollowUser, error) {
+	if e.loadedTypes[5] {
+		return e.FollowerUsers, nil
+	}
+	return nil, &NotLoadedError{edge: "followerUsers"}
+}
+
+// FollowedBusinessesOrErr returns the FollowedBusinesses value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) FollowedBusinessesOrErr() ([]*UserFollowBusiness, error) {
+	if e.loadedTypes[6] {
+		return e.FollowedBusinesses, nil
+	}
+	return nil, &NotLoadedError{edge: "followedBusinesses"}
+}
+
+// FollowerBusinessesOrErr returns the FollowerBusinesses value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) FollowerBusinessesOrErr() ([]*BusinessFollowUser, error) {
+	if e.loadedTypes[7] {
+		return e.FollowerBusinesses, nil
+	}
+	return nil, &NotLoadedError{edge: "followerBusinesses"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*User) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case user.FieldAuth0Data:
+		case user.FieldAuth0Data, user.FieldAppSettings, user.FieldUserSettings:
 			values[i] = new([]byte)
-		case user.FieldID, user.FieldAuth0ID:
+		case user.FieldID, user.FieldAuth0ID, user.FieldName, user.FieldGivenName, user.FieldFamilyName, user.FieldNickname, user.FieldPicture:
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -115,12 +173,58 @@ func (u *User) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				u.Auth0ID = value.String
 			}
+		case user.FieldName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field name", values[i])
+			} else if value.Valid {
+				u.Name = value.String
+			}
+		case user.FieldGivenName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field given_name", values[i])
+			} else if value.Valid {
+				u.GivenName = value.String
+			}
+		case user.FieldFamilyName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field family_name", values[i])
+			} else if value.Valid {
+				u.FamilyName = value.String
+			}
+		case user.FieldNickname:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field nickname", values[i])
+			} else if value.Valid {
+				u.Nickname = value.String
+			}
+		case user.FieldPicture:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field picture", values[i])
+			} else if value.Valid {
+				u.Picture = value.String
+			}
 		case user.FieldAuth0Data:
 			if value, ok := values[i].(*[]byte); !ok {
 				return fmt.Errorf("unexpected type %T for field auth0_data", values[i])
 			} else if value != nil && len(*value) > 0 {
 				if err := json.Unmarshal(*value, &u.Auth0Data); err != nil {
 					return fmt.Errorf("unmarshal field auth0_data: %w", err)
+				}
+			}
+		case user.FieldAppSettings:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field app_settings", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &u.AppSettings); err != nil {
+					return fmt.Errorf("unmarshal field app_settings: %w", err)
+				}
+			}
+		case user.FieldUserSettings:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field user_settings", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &u.UserSettings); err != nil {
+					return fmt.Errorf("unmarshal field user_settings: %w", err)
 				}
 			}
 		default:
@@ -156,6 +260,26 @@ func (u *User) QueryPosts() *PostQuery {
 	return NewUserClient(u.config).QueryPosts(u)
 }
 
+// QueryFollowedUsers queries the "followedUsers" edge of the User entity.
+func (u *User) QueryFollowedUsers() *UserFollowUserQuery {
+	return NewUserClient(u.config).QueryFollowedUsers(u)
+}
+
+// QueryFollowerUsers queries the "followerUsers" edge of the User entity.
+func (u *User) QueryFollowerUsers() *UserFollowUserQuery {
+	return NewUserClient(u.config).QueryFollowerUsers(u)
+}
+
+// QueryFollowedBusinesses queries the "followedBusinesses" edge of the User entity.
+func (u *User) QueryFollowedBusinesses() *UserFollowBusinessQuery {
+	return NewUserClient(u.config).QueryFollowedBusinesses(u)
+}
+
+// QueryFollowerBusinesses queries the "followerBusinesses" edge of the User entity.
+func (u *User) QueryFollowerBusinesses() *BusinessFollowUserQuery {
+	return NewUserClient(u.config).QueryFollowerBusinesses(u)
+}
+
 // Update returns a builder for updating this User.
 // Note that you need to call User.Unwrap() before calling this method if this User
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -182,8 +306,29 @@ func (u *User) String() string {
 	builder.WriteString("auth0_id=")
 	builder.WriteString(u.Auth0ID)
 	builder.WriteString(", ")
+	builder.WriteString("name=")
+	builder.WriteString(u.Name)
+	builder.WriteString(", ")
+	builder.WriteString("given_name=")
+	builder.WriteString(u.GivenName)
+	builder.WriteString(", ")
+	builder.WriteString("family_name=")
+	builder.WriteString(u.FamilyName)
+	builder.WriteString(", ")
+	builder.WriteString("nickname=")
+	builder.WriteString(u.Nickname)
+	builder.WriteString(", ")
+	builder.WriteString("picture=")
+	builder.WriteString(u.Picture)
+	builder.WriteString(", ")
 	builder.WriteString("auth0_data=")
 	builder.WriteString(fmt.Sprintf("%v", u.Auth0Data))
+	builder.WriteString(", ")
+	builder.WriteString("app_settings=")
+	builder.WriteString(fmt.Sprintf("%v", u.AppSettings))
+	builder.WriteString(", ")
+	builder.WriteString("user_settings=")
+	builder.WriteString(fmt.Sprintf("%v", u.UserSettings))
 	builder.WriteByte(')')
 	return builder.String()
 }

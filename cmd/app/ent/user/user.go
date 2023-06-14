@@ -14,8 +14,22 @@ const (
 	FieldID = "id"
 	// FieldAuth0ID holds the string denoting the auth0_id field in the database.
 	FieldAuth0ID = "auth0_id"
+	// FieldName holds the string denoting the name field in the database.
+	FieldName = "name"
+	// FieldGivenName holds the string denoting the given_name field in the database.
+	FieldGivenName = "given_name"
+	// FieldFamilyName holds the string denoting the family_name field in the database.
+	FieldFamilyName = "family_name"
+	// FieldNickname holds the string denoting the nickname field in the database.
+	FieldNickname = "nickname"
+	// FieldPicture holds the string denoting the picture field in the database.
+	FieldPicture = "picture"
 	// FieldAuth0Data holds the string denoting the auth0_data field in the database.
 	FieldAuth0Data = "auth0_data"
+	// FieldAppSettings holds the string denoting the app_settings field in the database.
+	FieldAppSettings = "app_settings"
+	// FieldUserSettings holds the string denoting the user_settings field in the database.
+	FieldUserSettings = "user_settings"
 	// EdgeUserBusinesses holds the string denoting the userbusinesses edge name in mutations.
 	EdgeUserBusinesses = "userBusinesses"
 	// EdgeComments holds the string denoting the comments edge name in mutations.
@@ -24,6 +38,14 @@ const (
 	EdgeLikes = "likes"
 	// EdgePosts holds the string denoting the posts edge name in mutations.
 	EdgePosts = "posts"
+	// EdgeFollowedUsers holds the string denoting the followedusers edge name in mutations.
+	EdgeFollowedUsers = "followedUsers"
+	// EdgeFollowerUsers holds the string denoting the followerusers edge name in mutations.
+	EdgeFollowerUsers = "followerUsers"
+	// EdgeFollowedBusinesses holds the string denoting the followedbusinesses edge name in mutations.
+	EdgeFollowedBusinesses = "followedBusinesses"
+	// EdgeFollowerBusinesses holds the string denoting the followerbusinesses edge name in mutations.
+	EdgeFollowerBusinesses = "followerBusinesses"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// UserBusinessesTable is the table that holds the userBusinesses relation/edge.
@@ -54,13 +76,48 @@ const (
 	PostsInverseTable = "posts"
 	// PostsColumn is the table column denoting the posts relation/edge.
 	PostsColumn = "user_posts"
+	// FollowedUsersTable is the table that holds the followedUsers relation/edge.
+	FollowedUsersTable = "user_follow_users"
+	// FollowedUsersInverseTable is the table name for the UserFollowUser entity.
+	// It exists in this package in order to avoid circular dependency with the "userfollowuser" package.
+	FollowedUsersInverseTable = "user_follow_users"
+	// FollowedUsersColumn is the table column denoting the followedUsers relation/edge.
+	FollowedUsersColumn = "user_followed_users"
+	// FollowerUsersTable is the table that holds the followerUsers relation/edge.
+	FollowerUsersTable = "user_follow_users"
+	// FollowerUsersInverseTable is the table name for the UserFollowUser entity.
+	// It exists in this package in order to avoid circular dependency with the "userfollowuser" package.
+	FollowerUsersInverseTable = "user_follow_users"
+	// FollowerUsersColumn is the table column denoting the followerUsers relation/edge.
+	FollowerUsersColumn = "user_follower_users"
+	// FollowedBusinessesTable is the table that holds the followedBusinesses relation/edge.
+	FollowedBusinessesTable = "user_follow_businesses"
+	// FollowedBusinessesInverseTable is the table name for the UserFollowBusiness entity.
+	// It exists in this package in order to avoid circular dependency with the "userfollowbusiness" package.
+	FollowedBusinessesInverseTable = "user_follow_businesses"
+	// FollowedBusinessesColumn is the table column denoting the followedBusinesses relation/edge.
+	FollowedBusinessesColumn = "user_followed_businesses"
+	// FollowerBusinessesTable is the table that holds the followerBusinesses relation/edge.
+	FollowerBusinessesTable = "business_follow_users"
+	// FollowerBusinessesInverseTable is the table name for the BusinessFollowUser entity.
+	// It exists in this package in order to avoid circular dependency with the "businessfollowuser" package.
+	FollowerBusinessesInverseTable = "business_follow_users"
+	// FollowerBusinessesColumn is the table column denoting the followerBusinesses relation/edge.
+	FollowerBusinessesColumn = "user_follower_businesses"
 )
 
 // Columns holds all SQL columns for user fields.
 var Columns = []string{
 	FieldID,
 	FieldAuth0ID,
+	FieldName,
+	FieldGivenName,
+	FieldFamilyName,
+	FieldNickname,
+	FieldPicture,
 	FieldAuth0Data,
+	FieldAppSettings,
+	FieldUserSettings,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -89,6 +146,31 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 // ByAuth0ID orders the results by the auth0_id field.
 func ByAuth0ID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldAuth0ID, opts...).ToFunc()
+}
+
+// ByName orders the results by the name field.
+func ByName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldName, opts...).ToFunc()
+}
+
+// ByGivenName orders the results by the given_name field.
+func ByGivenName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldGivenName, opts...).ToFunc()
+}
+
+// ByFamilyName orders the results by the family_name field.
+func ByFamilyName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFamilyName, opts...).ToFunc()
+}
+
+// ByNickname orders the results by the nickname field.
+func ByNickname(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldNickname, opts...).ToFunc()
+}
+
+// ByPicture orders the results by the picture field.
+func ByPicture(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPicture, opts...).ToFunc()
 }
 
 // ByUserBusinessesCount orders the results by userBusinesses count.
@@ -146,6 +228,62 @@ func ByPosts(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newPostsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByFollowedUsersCount orders the results by followedUsers count.
+func ByFollowedUsersCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newFollowedUsersStep(), opts...)
+	}
+}
+
+// ByFollowedUsers orders the results by followedUsers terms.
+func ByFollowedUsers(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newFollowedUsersStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByFollowerUsersCount orders the results by followerUsers count.
+func ByFollowerUsersCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newFollowerUsersStep(), opts...)
+	}
+}
+
+// ByFollowerUsers orders the results by followerUsers terms.
+func ByFollowerUsers(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newFollowerUsersStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByFollowedBusinessesCount orders the results by followedBusinesses count.
+func ByFollowedBusinessesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newFollowedBusinessesStep(), opts...)
+	}
+}
+
+// ByFollowedBusinesses orders the results by followedBusinesses terms.
+func ByFollowedBusinesses(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newFollowedBusinessesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByFollowerBusinessesCount orders the results by followerBusinesses count.
+func ByFollowerBusinessesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newFollowerBusinessesStep(), opts...)
+	}
+}
+
+// ByFollowerBusinesses orders the results by followerBusinesses terms.
+func ByFollowerBusinesses(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newFollowerBusinessesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newUserBusinessesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -172,5 +310,33 @@ func newPostsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(PostsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, PostsTable, PostsColumn),
+	)
+}
+func newFollowedUsersStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(FollowedUsersInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, FollowedUsersTable, FollowedUsersColumn),
+	)
+}
+func newFollowerUsersStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(FollowerUsersInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, FollowerUsersTable, FollowerUsersColumn),
+	)
+}
+func newFollowedBusinessesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(FollowedBusinessesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, FollowedBusinessesTable, FollowedBusinessesColumn),
+	)
+}
+func newFollowerBusinessesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(FollowerBusinessesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, FollowerBusinessesTable, FollowerBusinessesColumn),
 	)
 }

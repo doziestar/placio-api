@@ -166,6 +166,13 @@ func ProcessResponse(data interface{}, status string, message string) gin.H {
 	}
 }
 
+// ProcessError processes an error response from a service.
+func ProcessError(err error) gin.H {
+	return gin.H{
+		"error": err.Error(),
+	}
+}
+
 // SplitString splits a string into a slice of strings.
 func SplitString(s string, sep string) []string {
 	return strings.Split(s, sep)
