@@ -42,6 +42,9 @@ func (bc *BusinessAccountController) RegisterRoutes(router *gin.RouterGroup) {
 // @Summary Follow a user by a business
 // @ID follow-user
 // @Produce json
+// @Description Retrieve all comments for a given post
+// @Tags Business
+// @Accept json
 // @Param businessID path string true "Business ID"
 // @Param userID path string true "User ID"
 // @Success 200 {object} Dto.Response
@@ -63,6 +66,7 @@ func (bc *BusinessAccountController) followUser(c *gin.Context) {
 
 // @Summary Follow a business by another business
 // @ID follow-business
+// @Tags Business
 // @Produce json
 // @Param followerID path string true "Follower Business ID"
 // @Param followedID path string true "Followed Business ID"
@@ -85,6 +89,7 @@ func (bc *BusinessAccountController) followBusiness(c *gin.Context) {
 
 // @Summary Unfollow a user by a business
 // @ID unfollow-user
+// @Tags Business
 // @Produce json
 // @Param businessID path string true "Business ID"
 // @Param userID path string true "User ID"
@@ -106,6 +111,7 @@ func (bc *BusinessAccountController) unfollowUser(c *gin.Context) {
 
 // @Summary Unfollow a business by another business
 // @ID unfollow-business
+// @Tags Business
 // @Produce json
 // @Param followerID path string true "Follower Business ID"
 // @Param followedID path string true "Followed Business ID"
@@ -127,6 +133,7 @@ func (bc *BusinessAccountController) unfollowBusiness(c *gin.Context) {
 
 // @Summary Get contents followed by a business
 // @ID get-followed-contents
+// @Tags Business
 // @Produce json
 // @Param businessID path string true "Business ID"
 // @Success 200 {object} Dto.Response
@@ -146,6 +153,7 @@ func (bc *BusinessAccountController) getFollowedContents(c *gin.Context) {
 
 // @Summary Create a business account
 // @ID create-business-account
+// @Tags Business
 // @Accept  json
 // @Produce  json
 // @Param ent.Business body ent.Business true "Business Account Data"
@@ -170,6 +178,7 @@ func (bc *BusinessAccountController) createBusinessAccount(c *gin.Context) {
 
 // @Summary Get a business account
 // @ID get-business-account
+// @Tags Business
 // @Produce json
 // @Param businessAccountID path string true "Business Account ID"
 // @Success 200 {object} Dto.Response
@@ -189,6 +198,7 @@ func (bc *BusinessAccountController) getBusinessAccount(c *gin.Context) {
 
 // @Summary Update a business account
 // @ID update-business-account
+// @Tags Business
 // @Accept  json
 // @Produce  json
 // @Param businessAccountID path string true "Business Account ID"
@@ -216,6 +226,7 @@ func (bc *BusinessAccountController) updateBusinessAccount(c *gin.Context) {
 
 // @Summary Delete a business account
 // @ID delete-business-account
+// @Tags Business
 // @Produce json
 // @Param businessAccountID path string true "Business Account ID"
 // @Success 200 {object} Dto.Response
@@ -235,6 +246,7 @@ func (bc *BusinessAccountController) deleteBusinessAccount(c *gin.Context) {
 
 // @Summary Get user business accounts
 // @ID get-user-business-accounts
+// @Tags Business
 // @Produce json
 // @Param userID path string true "User ID"
 // @Success 200 {object} Dto.Response
@@ -249,6 +261,7 @@ func (bc *BusinessAccountController) getUserBusinessAccounts(c *gin.Context) {
 // @Summary Associate user with business account
 // @ID associate-user-business-account
 // @Produce json
+// @Tags Business
 // @Param businessAccountID path string true "Business Account ID"
 // @Param userID path string true "User ID"
 // @Success 200 {object} Dto.Response
@@ -263,6 +276,7 @@ func (bc *BusinessAccountController) associateUserWithBusinessAccount(c *gin.Con
 // @Summary Remove user from business account
 // @ID remove-user-business-account
 // @Produce json
+// @Tags Business
 // @Param businessAccountID path string true "Business Account ID"
 // @Param userID path string true "User ID"
 // @Success 200 {object} Dto.Response
@@ -277,6 +291,7 @@ func (bc *BusinessAccountController) removeUserFromBusinessAccount(c *gin.Contex
 // @Summary Transfer business account ownership
 // @ID transfer-business-account-ownership
 // @Produce json
+// @Tags Business
 // @Param businessAccountID path string true "Business Account ID"
 // @Param currentOwnerID path string true "Current Owner ID"
 // @Param newOwnerID path string true "New Owner ID"
@@ -292,6 +307,7 @@ func (bc *BusinessAccountController) transferBusinessAccountOwnership(c *gin.Con
 // @Summary Get business accounts for a user
 // @ID get-business-accounts-for-user
 // @Produce json
+// @Tags Business
 // @Param businessAccountID path string true "Business Account ID"
 // @Success 200 {object} Dto.Response
 // @Failure 400 {object} Dto.Error
@@ -305,6 +321,7 @@ func (bc *BusinessAccountController) getBusinessAccountsForUser(c *gin.Context) 
 // @Summary Get users for a business account
 // @ID get-users-business-account
 // @Produce json
+// @Tags Business
 // @Param businessAccountID path string true "Business Account ID"
 // @Success 200 {object} Dto.Response
 // @Failure 400 {object} Dto.Error
@@ -318,6 +335,7 @@ func (bc *BusinessAccountController) getUsersForBusinessAccount(c *gin.Context) 
 // @Summary List all business accounts
 // @ID list-business-accounts
 // @Produce json
+// @Tags Business
 // @Success 200 {object} Dto.Response
 // @Failure 400 {object} Dto.Error
 // @Failure 401 {object} Dto.Error
