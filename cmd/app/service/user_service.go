@@ -97,8 +97,9 @@ func (s *UserServiceImpl) GetUser(ctx context.Context, auth0ID string) (*ent.Use
 			return nil, err
 		}
 
-		newUser.AppSettings = *auth0Data.AppMetadata
-		newUser.UserSettings = *auth0Data.UserMetadata
+		//newUser.AppSettings = *auth0Data.AppMetadata
+		//newUser.UserSettings = *auth0Data.UserMetadata
+		newUser.Auth0Data = auth0Data
 		return newUser, nil
 	}
 
@@ -107,8 +108,9 @@ func (s *UserServiceImpl) GetUser(ctx context.Context, auth0ID string) (*ent.Use
 		return nil, err
 	}
 
-	u.AppSettings = *auth0Data.AppMetadata
-	u.UserSettings = *auth0Data.UserMetadata
+	//u.AppSettings = *auth0Data.AppMetadata
+	//u.UserSettings = *auth0Data.UserMetadata
+	u.Auth0Data = auth0Data
 
 	return u, nil
 }
