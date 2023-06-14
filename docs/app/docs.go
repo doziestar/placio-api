@@ -24,6 +24,88 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "List all business accounts",
+                "operationId": "list-business-accounts",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDto"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Create a business account",
+                "operationId": "create-business-account",
+                "parameters": [
+                    {
+                        "description": "Business Account Data",
+                        "name": "ent.Business",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.Business"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDto"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/attendees/": {
             "post": {
                 "description": "Add an attendee to the specified event",
@@ -224,7 +306,12 @@ const docTemplate = `{
         },
         "/api/v1/comments/": {
             "post": {
-                "description": "Create a new comment for the specified post",
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Create a new comment for a post by the authenticated user",
                 "consumes": [
                     "application/json"
                 ],
@@ -234,7 +321,7 @@ const docTemplate = `{
                 "tags": [
                     "Comment"
                 ],
-                "summary": "Create a new comment",
+                "summary": "Create a new comment for a post",
                 "parameters": [
                     {
                         "description": "Comment Data",
@@ -242,7 +329,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/placio-app_models.Comment"
+                            "$ref": "#/definitions/placio-app_Dto.CommentDto"
                         }
                     }
                 ],
@@ -250,7 +337,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Successfully created comment",
                         "schema": {
-                            "$ref": "#/definitions/placio-app_models.Comment"
+                            "$ref": "#/definitions/placio-app_Dto.CommentResponseDto"
                         }
                     },
                     "400": {
@@ -259,42 +346,10 @@ const docTemplate = `{
                             "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
                         }
                     },
-                    "500": {
-                        "description": "Internal Server Error",
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/comments/post/{postID}": {
-            "get": {
-                "description": "Retrieve all comments for the specified post",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Comment"
-                ],
-                "summary": "List all comments for a post",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Post ID",
-                        "name": "postID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully retrieved comments",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/placio-app_models.Comment"
-                            }
                         }
                     },
                     "500": {
@@ -306,48 +361,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/comments/{commentID}": {
-            "get": {
-                "description": "Retrieve a comment by its ID",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Comment"
-                ],
-                "summary": "Get a comment",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Comment ID",
-                        "name": "commentID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully retrieved comment",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_models.Comment"
-                        }
-                    },
-                    "404": {
-                        "description": "Comment Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    }
-                }
-            },
+        "/api/v1/comments/{id}": {
             "put": {
-                "description": "Update a comment by its ID",
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Update an existing comment by the authenticated user",
                 "consumes": [
                     "application/json"
                 ],
@@ -362,7 +383,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Comment ID",
-                        "name": "commentID",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     },
@@ -372,7 +393,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/placio-app_models.Comment"
+                            "$ref": "#/definitions/placio-app_Dto.CommentDto"
                         }
                     }
                 ],
@@ -380,11 +401,17 @@ const docTemplate = `{
                     "200": {
                         "description": "Successfully updated comment",
                         "schema": {
-                            "$ref": "#/definitions/placio-app_models.Comment"
+                            "$ref": "#/definitions/placio-app_Dto.CommentResponseDto"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
                         }
@@ -404,7 +431,15 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "description": "Delete a comment by its ID",
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Delete an existing comment by the authenticated user",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -416,7 +451,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Comment ID",
-                        "name": "commentID",
+                        "name": "id",
                         "in": "path",
                         "required": true
                     }
@@ -424,6 +459,18 @@ const docTemplate = `{
                 "responses": {
                     "204": {
                         "description": "Successfully deleted comment"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
                     },
                     "404": {
                         "description": "Comment Not Found",
@@ -723,6 +770,241 @@ const docTemplate = `{
                     },
                     "401": {
                         "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/posts/{id}": {
+            "get": {
+                "description": "Get a post by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Post"
+                ],
+                "summary": "Get a post",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Post ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved post",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.Post"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Update an existing post",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Post"
+                ],
+                "summary": "Update a post",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Post ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Post Data",
+                        "name": "UpdatePostDto",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.PostDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully updated post",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.PostResponseDto"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Post Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Delete an existing post",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Post"
+                ],
+                "summary": "Delete a post",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Post ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully deleted post",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Post Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/posts/{id}/comments": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Retrieve all comments for a given post",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Post"
+                ],
+                "summary": "Get comments by post",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Post ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved comments",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/placio-app_ent.Comment"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Post Not Found",
                         "schema": {
                             "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
                         }
@@ -1398,7 +1680,60 @@ const docTemplate = `{
                     "200": {
                         "description": "Successfully retrieved user",
                         "schema": {
-                            "$ref": "#/definitions/placio-app_models.User"
+                            "$ref": "#/definitions/placio-app_ent.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get a user's details by their Auth0 ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Update a user's details",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User Auth0 ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved user",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.User"
                         }
                     },
                     "400": {
@@ -1455,7 +1790,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Successfully created business account",
                         "schema": {
-                            "$ref": "#/definitions/placio-app_models.BusinessAccount"
+                            "$ref": "#/definitions/placio-app_ent.Business"
                         }
                     },
                     "400": {
@@ -1512,8 +1847,256 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/placio-app_models.User"
+                                "$ref": "#/definitions/placio-app_ent.User"
                             }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/{followerID}/follow/business/{businessID}": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Follow a business by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Follow a business",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the follower",
+                        "name": "followerID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of the business to follow",
+                        "name": "businessID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully followed business",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/{followerID}/follow/user/{followedID}": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Follow a user by their ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Follow a user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the follower",
+                        "name": "followerID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of the user to follow",
+                        "name": "followedID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully followed user",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/{followerID}/unfollow/business/{businessID}": {
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Unfollow a business by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Unfollow a business",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the follower",
+                        "name": "followerID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of the business to unfollow",
+                        "name": "businessID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully unfollowed business",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/{followerID}/unfollow/user/{followedID}": {
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Unfollow a user by their ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Unfollow a user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the follower",
+                        "name": "followerID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of the user to unfollow",
+                        "name": "followedID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully unfollowed user",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Response"
                         }
                     },
                     "400": {
@@ -1577,7 +2160,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Successfully updated app metadata",
                         "schema": {
-                            "$ref": "#/definitions/placio-app_models.User"
+                            "$ref": "#/definitions/placio-app_ent.User"
                         }
                     },
                     "400": {
@@ -1634,7 +2217,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/placio-app_models.BusinessAccount"
+                                "$ref": "#/definitions/placio-app_ent.Business"
                             }
                         }
                     },
@@ -1763,7 +2346,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Successfully updated user information",
                         "schema": {
-                            "$ref": "#/definitions/placio-app_models.User"
+                            "$ref": "#/definitions/placio-app_ent.User"
                         }
                     },
                     "400": {
@@ -2016,7 +2599,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/placio-app_models.BusinessAccount"
+                                "$ref": "#/definitions/placio-app_ent.Business"
                             }
                         }
                     },
@@ -2036,6 +2619,215 @@ const docTemplate = `{
                         "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/{userID}/followed-contents": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get posts of users and businesses followed by the user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get followed contents",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the user",
+                        "name": "userID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved posts",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/placio-app_ent.Post"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/{userID}/posts": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get posts by the authenticated user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Retrieve posts by user",
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved posts",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/placio-app_Dto.PostResponseDto"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/business/{businessID}/follow/user/{userID}": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Follow a user by a business",
+                "operationId": "follow-user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Business ID",
+                        "name": "businessID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "userID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDto"
+                        }
+                    }
+                }
+            }
+        },
+        "/business/{followerID}/follow/business/{followedID}": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Follow a business by another business",
+                "operationId": "follow-business",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Follower Business ID",
+                        "name": "followerID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Followed Business ID",
+                        "name": "followedID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDto"
                         }
                     }
                 }
@@ -2415,6 +3207,538 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/user/{userID}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get user business accounts",
+                "operationId": "get-user-business-accounts",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "userID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDto"
+                        }
+                    }
+                }
+            }
+        },
+        "/{businessAccountID}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get a business account",
+                "operationId": "get-business-account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Business Account ID",
+                        "name": "businessAccountID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDto"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Update a business account",
+                "operationId": "update-business-account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Business Account ID",
+                        "name": "businessAccountID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Business Account Data",
+                        "name": "ent.Business",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.Business"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDto"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Delete a business account",
+                "operationId": "delete-business-account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Business Account ID",
+                        "name": "businessAccountID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDto"
+                        }
+                    }
+                }
+            }
+        },
+        "/{businessAccountID}/user/{currentOwnerID}/{newOwnerID}": {
+            "put": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Transfer business account ownership",
+                "operationId": "transfer-business-account-ownership",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Business Account ID",
+                        "name": "businessAccountID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Current Owner ID",
+                        "name": "currentOwnerID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "New Owner ID",
+                        "name": "newOwnerID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDto"
+                        }
+                    }
+                }
+            }
+        },
+        "/{businessAccountID}/user/{userID}": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Associate user with business account",
+                "operationId": "associate-user-business-account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Business Account ID",
+                        "name": "businessAccountID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "userID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDto"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Remove user from business account",
+                "operationId": "remove-user-business-account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Business Account ID",
+                        "name": "businessAccountID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "userID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDto"
+                        }
+                    }
+                }
+            }
+        },
+        "/{businessAccountID}/users": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get users for a business account",
+                "operationId": "get-users-business-account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Business Account ID",
+                        "name": "businessAccountID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDto"
+                        }
+                    }
+                }
+            }
+        },
+        "/{businessID}/followed-contents": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Get contents followed by a business",
+                "operationId": "get-followed-contents",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Business ID",
+                        "name": "businessID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDto"
+                        }
+                    }
+                }
+            }
+        },
+        "/{businessID}/unfollow/user/{userID}": {
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Unfollow a user by a business",
+                "operationId": "unfollow-user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Business ID",
+                        "name": "businessID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "userID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDto"
+                        }
+                    }
+                }
+            }
+        },
+        "/{followerID}/unfollow/business/{followedID}": {
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Unfollow a business by another business",
+                "operationId": "unfollow-business",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Follower Business ID",
+                        "name": "followerID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Followed Business ID",
+                        "name": "followedID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDto"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -2590,7 +3914,64 @@ const docTemplate = `{
                 }
             }
         },
+        "placio-app_Dto.CommentDto": {
+            "type": "object",
+            "required": [
+                "content",
+                "postId"
+            ],
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "postId": {
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_Dto.CommentResponseDto": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/placio-app_ent.User"
+                }
+            }
+        },
+        "placio-app_Dto.Error": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
         "placio-app_Dto.ErrorDTO": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "placio-app_Dto.ErrorDto": {
             "type": "object",
             "properties": {
                 "message": {
@@ -2700,6 +4081,18 @@ const docTemplate = `{
                 }
             }
         },
+        "placio-app_Dto.Response": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "message": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
         "placio-app_Dto.SuccessDTO": {
             "type": "object",
             "properties": {
@@ -2791,6 +4184,34 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "followedBusinesses": {
+                    "description": "FollowedBusinesses holds the value of the followedBusinesses edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.BusinessFollowBusiness"
+                    }
+                },
+                "followedUsers": {
+                    "description": "FollowedUsers holds the value of the followedUsers edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.BusinessFollowUser"
+                    }
+                },
+                "followerBusinesses": {
+                    "description": "FollowerBusinesses holds the value of the followerBusinesses edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.BusinessFollowBusiness"
+                    }
+                },
+                "followerUsers": {
+                    "description": "FollowerUsers holds the value of the followerUsers edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.UserFollowBusiness"
+                    }
+                },
                 "posts": {
                     "description": "Posts holds the value of the posts edge.",
                     "type": "array",
@@ -2804,6 +4225,82 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/placio-app_ent.UserBusiness"
                     }
+                }
+            }
+        },
+        "placio-app_ent.BusinessFollowBusiness": {
+            "type": "object",
+            "properties": {
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the BusinessFollowBusinessQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.BusinessFollowBusinessEdges"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_ent.BusinessFollowBusinessEdges": {
+            "type": "object",
+            "properties": {
+                "followed": {
+                    "description": "Followed holds the value of the followed edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.Business"
+                        }
+                    ]
+                },
+                "follower": {
+                    "description": "Follower holds the value of the follower edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.Business"
+                        }
+                    ]
+                }
+            }
+        },
+        "placio-app_ent.BusinessFollowUser": {
+            "type": "object",
+            "properties": {
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the BusinessFollowUserQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.BusinessFollowUserEdges"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_ent.BusinessFollowUserEdges": {
+            "type": "object",
+            "properties": {
+                "business": {
+                    "description": "Business holds the value of the business edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.Business"
+                        }
+                    ]
+                },
+                "user": {
+                    "description": "User holds the value of the user edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.User"
+                        }
+                    ]
                 }
             }
         },
@@ -3023,6 +4520,11 @@ const docTemplate = `{
         "placio-app_ent.User": {
             "type": "object",
             "properties": {
+                "app_settings": {
+                    "description": "AppSettings holds the value of the \"app_settings\" field.",
+                    "type": "object",
+                    "additionalProperties": true
+                },
                 "auth0_data": {
                     "description": "Auth0Data holds the value of the \"auth0_data\" field.",
                     "allOf": [
@@ -3043,9 +4545,34 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "family_name": {
+                    "description": "FamilyName holds the value of the \"family_name\" field.",
+                    "type": "string"
+                },
+                "given_name": {
+                    "description": "GivenName holds the value of the \"given_name\" field.",
+                    "type": "string"
+                },
                 "id": {
                     "description": "ID of the ent.",
                     "type": "string"
+                },
+                "name": {
+                    "description": "Name holds the value of the \"name\" field.",
+                    "type": "string"
+                },
+                "nickname": {
+                    "description": "Nickname holds the value of the \"nickname\" field.",
+                    "type": "string"
+                },
+                "picture": {
+                    "description": "Picture holds the value of the \"picture\" field.",
+                    "type": "string"
+                },
+                "user_settings": {
+                    "description": "UserSettings holds the value of the \"user_settings\" field.",
+                    "type": "object",
+                    "additionalProperties": true
                 }
             }
         },
@@ -3101,6 +4628,34 @@ const docTemplate = `{
                         "$ref": "#/definitions/placio-app_ent.Comment"
                     }
                 },
+                "followedBusinesses": {
+                    "description": "FollowedBusinesses holds the value of the followedBusinesses edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.UserFollowBusiness"
+                    }
+                },
+                "followedUsers": {
+                    "description": "FollowedUsers holds the value of the followedUsers edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.UserFollowUser"
+                    }
+                },
+                "followerBusinesses": {
+                    "description": "FollowerBusinesses holds the value of the followerBusinesses edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.BusinessFollowUser"
+                    }
+                },
+                "followerUsers": {
+                    "description": "FollowerUsers holds the value of the followerUsers edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.UserFollowUser"
+                    }
+                },
                 "likes": {
                     "description": "Likes holds the value of the likes edge.",
                     "type": "array",
@@ -3121,6 +4676,82 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/placio-app_ent.UserBusiness"
                     }
+                }
+            }
+        },
+        "placio-app_ent.UserFollowBusiness": {
+            "type": "object",
+            "properties": {
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the UserFollowBusinessQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.UserFollowBusinessEdges"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_ent.UserFollowBusinessEdges": {
+            "type": "object",
+            "properties": {
+                "business": {
+                    "description": "Business holds the value of the business edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.Business"
+                        }
+                    ]
+                },
+                "user": {
+                    "description": "User holds the value of the user edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.User"
+                        }
+                    ]
+                }
+            }
+        },
+        "placio-app_ent.UserFollowUser": {
+            "type": "object",
+            "properties": {
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the UserFollowUserQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.UserFollowUserEdges"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_ent.UserFollowUserEdges": {
+            "type": "object",
+            "properties": {
+                "followed": {
+                    "description": "Followed holds the value of the followed edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.User"
+                        }
+                    ]
+                },
+                "follower": {
+                    "description": "Follower holds the value of the follower edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.User"
+                        }
+                    ]
                 }
             }
         },

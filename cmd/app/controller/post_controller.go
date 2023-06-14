@@ -6,6 +6,7 @@ import (
 	"placio-app/Dto"
 	_ "placio-app/Dto"
 	"placio-app/ent"
+	_ "placio-app/ent"
 	"placio-app/models"
 	"placio-app/service"
 	"placio-app/utility"
@@ -145,7 +146,7 @@ func (pc *PostController) createPost(ctx *gin.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "Post ID"
-// @Success 200 {object} models.Post "Successfully retrieved post"
+// @Success 200 {object} ent.Post "Successfully retrieved post"
 // @Failure 404 {object} Dto.ErrorDTO "Not Found"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/posts/{id} [get]
@@ -234,7 +235,7 @@ func (pc *PostController) updatePost(ctx *gin.Context) error {
 // @Produce json
 // @Param id path string true "Post ID"
 // @Security Bearer
-// @Success 200 {object} gin.H{"message": "post deleted successfully"}
+// @Success 200 {object} string "Successfully deleted post"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 404 {object} Dto.ErrorDTO "Post Not Found"
@@ -261,7 +262,7 @@ func (pc *PostController) deletePost(ctx *gin.Context) error {
 // @Produce json
 // @Param id path string true "Post ID"
 // @Security Bearer
-// @Success 200 {object} []ent.comment "Successfully retrieved comments"
+// @Success 200 {object} []ent.Comment "Successfully retrieved comments"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 404 {object} Dto.ErrorDTO "Post Not Found"

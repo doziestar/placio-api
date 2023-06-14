@@ -54,7 +54,7 @@ func (uc *UserController) RegisterRoutes(router *gin.RouterGroup) {
 // @Param followerID path string true "ID of the follower"
 // @Param followedID path string true "ID of the user to follow"
 // @Security Bearer
-// @Success 200 {object} models.Response "Successfully followed user"
+// @Success 200 {object} Dto.Response "Successfully followed user"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
@@ -86,7 +86,7 @@ func (uc *UserController) followUser(ctx *gin.Context) error {
 // @Param followerID path string true "ID of the follower"
 // @Param businessID path string true "ID of the business to follow"
 // @Security Bearer
-// @Success 200 {object} models.Response "Successfully followed business"
+// @Success 200 {object} Dto.Response "Successfully followed business"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
@@ -118,7 +118,7 @@ func (uc *UserController) followBusiness(ctx *gin.Context) error {
 // @Param followerID path string true "ID of the follower"
 // @Param followedID path string true "ID of the user to unfollow"
 // @Security Bearer
-// @Success 200 {object} models.Response "Successfully unfollowed user"
+// @Success 200 {object} Dto.Response "Successfully unfollowed user"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
@@ -150,7 +150,7 @@ func (uc *UserController) unfollowUser(ctx *gin.Context) error {
 // @Param followerID path string true "ID of the follower"
 // @Param businessID path string true "ID of the business to unfollow"
 // @Security Bearer
-// @Success 200 {object} models.Response "Successfully unfollowed business"
+// @Success 200 {object} string "Successfully unfollowed business"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
@@ -211,7 +211,7 @@ func (uc *UserController) getFollowedContents(ctx *gin.Context) error {
 // @Param id path string true "User Auth0 ID"
 // @Param userData body models.Auth0UserData true "User data to update"
 // @Security Bearer
-// @Success 200 {object} models.User "Successfully updated user information"
+// @Success 200 {object} ent.User "Successfully updated user information"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
@@ -302,7 +302,7 @@ func (uc *UserController) updateAuth0UserMetadata(ctx *gin.Context) error {
 // @Param id path string true "User Auth0 ID"
 // @Param appData body models.AppMetadata true "App metadata to update"
 // @Security Bearer
-// @Success 200 {object} models.User "Successfully updated app metadata"
+// @Success 200 {object} ent.User "Successfully updated app metadata"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
@@ -341,7 +341,7 @@ func (uc *UserController) updateAuth0AppMetadata(ctx *gin.Context) error {
 // @Produce json
 // @Param id path string true "User Auth0 ID"
 // @Security Bearer
-// @Success 200 {object} models.User "Successfully retrieved user"
+// @Success 200 {object} ent.User "Successfully retrieved user"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
@@ -382,7 +382,7 @@ func (uc *UserController) GetUser(ctx *gin.Context) error {
 // @Produce json
 // @Param id path string true "User Auth0 ID"
 // @Security Bearer
-// @Success 200 {object} models.User "Successfully retrieved user"
+// @Success 200 {object} ent.User "Successfully retrieved user"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
@@ -431,7 +431,7 @@ func (uc *UserController) UpdateUser(ctx *gin.Context) error {
 // @Produce json
 // @Param name body string true "Business Account Name"
 // @Security Bearer
-// @Success 201 {object} models.BusinessAccount "Successfully created business account"
+// @Success 201 {object} ent.Business "Successfully created business account"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
@@ -538,7 +538,7 @@ func (uc *UserController) GetPostsByUser(ctx *gin.Context) error {
 // @Produce json
 // @Param id path string true "User ID"
 // @Security Bearer
-// @Success 200 {array} models.BusinessAccount "Successfully retrieved business accounts"
+// @Success 200 {array} ent.Business "Successfully retrieved business accounts"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
@@ -611,7 +611,7 @@ func (uc *UserController) removeUserFromBusinessAccount(ctx *gin.Context) error 
 // @Produce json
 // @Param businessAccountID path uint true "Business Account ID"
 // @Security Bearer
-// @Success 200 {array} models.User "Successfully retrieved users"
+// @Success 200 {array} ent.User "Successfully retrieved users"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
@@ -629,7 +629,7 @@ func (uc *UserController) getUsersForBusinessAccount(ctx *gin.Context) error {
 // @Produce json
 // @Param userID path uint true "User ID"
 // @Security Bearer
-// @Success 200 {array} models.BusinessAccount "Successfully retrieved business accounts"
+// @Success 200 {array} ent.Business "Successfully retrieved business accounts"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
