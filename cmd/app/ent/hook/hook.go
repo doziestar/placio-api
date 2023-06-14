@@ -44,6 +44,30 @@ func (f BusinessFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, er
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.BusinessMutation", m)
 }
 
+// The BusinessFollowBusinessFunc type is an adapter to allow the use of ordinary
+// function as BusinessFollowBusiness mutator.
+type BusinessFollowBusinessFunc func(context.Context, *ent.BusinessFollowBusinessMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f BusinessFollowBusinessFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.BusinessFollowBusinessMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.BusinessFollowBusinessMutation", m)
+}
+
+// The BusinessFollowUserFunc type is an adapter to allow the use of ordinary
+// function as BusinessFollowUser mutator.
+type BusinessFollowUserFunc func(context.Context, *ent.BusinessFollowUserMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f BusinessFollowUserFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.BusinessFollowUserMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.BusinessFollowUserMutation", m)
+}
+
 // The ChatFunc type is an adapter to allow the use of ordinary
 // function as Chat mutator.
 type ChatFunc func(context.Context, *ent.ChatMutation) (ent.Value, error)
@@ -162,6 +186,30 @@ func (f UserBusinessFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserBusinessMutation", m)
+}
+
+// The UserFollowBusinessFunc type is an adapter to allow the use of ordinary
+// function as UserFollowBusiness mutator.
+type UserFollowBusinessFunc func(context.Context, *ent.UserFollowBusinessMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f UserFollowBusinessFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.UserFollowBusinessMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserFollowBusinessMutation", m)
+}
+
+// The UserFollowUserFunc type is an adapter to allow the use of ordinary
+// function as UserFollowUser mutator.
+type UserFollowUserFunc func(context.Context, *ent.UserFollowUserMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f UserFollowUserFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.UserFollowUserMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserFollowUserMutation", m)
 }
 
 // Condition is a hook condition function.

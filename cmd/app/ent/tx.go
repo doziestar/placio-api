@@ -18,6 +18,10 @@ type Tx struct {
 	Booking *BookingClient
 	// Business is the client for interacting with the Business builders.
 	Business *BusinessClient
+	// BusinessFollowBusiness is the client for interacting with the BusinessFollowBusiness builders.
+	BusinessFollowBusiness *BusinessFollowBusinessClient
+	// BusinessFollowUser is the client for interacting with the BusinessFollowUser builders.
+	BusinessFollowUser *BusinessFollowUserClient
 	// Chat is the client for interacting with the Chat builders.
 	Chat *ChatClient
 	// Comment is the client for interacting with the Comment builders.
@@ -38,6 +42,10 @@ type Tx struct {
 	User *UserClient
 	// UserBusiness is the client for interacting with the UserBusiness builders.
 	UserBusiness *UserBusinessClient
+	// UserFollowBusiness is the client for interacting with the UserFollowBusiness builders.
+	UserFollowBusiness *UserFollowBusinessClient
+	// UserFollowUser is the client for interacting with the UserFollowUser builders.
+	UserFollowUser *UserFollowUserClient
 
 	// lazily loaded.
 	client     *Client
@@ -172,6 +180,8 @@ func (tx *Tx) init() {
 	tx.AccountSettings = NewAccountSettingsClient(tx.config)
 	tx.Booking = NewBookingClient(tx.config)
 	tx.Business = NewBusinessClient(tx.config)
+	tx.BusinessFollowBusiness = NewBusinessFollowBusinessClient(tx.config)
+	tx.BusinessFollowUser = NewBusinessFollowUserClient(tx.config)
 	tx.Chat = NewChatClient(tx.config)
 	tx.Comment = NewCommentClient(tx.config)
 	tx.Like = NewLikeClient(tx.config)
@@ -182,6 +192,8 @@ func (tx *Tx) init() {
 	tx.Rating = NewRatingClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 	tx.UserBusiness = NewUserBusinessClient(tx.config)
+	tx.UserFollowBusiness = NewUserFollowBusinessClient(tx.config)
+	tx.UserFollowUser = NewUserFollowUserClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.

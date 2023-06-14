@@ -203,6 +203,98 @@ func HasPostsWith(preds ...predicate.Post) predicate.Business {
 	})
 }
 
+// HasFollowedUsers applies the HasEdge predicate on the "followedUsers" edge.
+func HasFollowedUsers() predicate.Business {
+	return predicate.Business(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, FollowedUsersTable, FollowedUsersColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasFollowedUsersWith applies the HasEdge predicate on the "followedUsers" edge with a given conditions (other predicates).
+func HasFollowedUsersWith(preds ...predicate.BusinessFollowUser) predicate.Business {
+	return predicate.Business(func(s *sql.Selector) {
+		step := newFollowedUsersStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasFollowerUsers applies the HasEdge predicate on the "followerUsers" edge.
+func HasFollowerUsers() predicate.Business {
+	return predicate.Business(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, FollowerUsersTable, FollowerUsersColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasFollowerUsersWith applies the HasEdge predicate on the "followerUsers" edge with a given conditions (other predicates).
+func HasFollowerUsersWith(preds ...predicate.UserFollowBusiness) predicate.Business {
+	return predicate.Business(func(s *sql.Selector) {
+		step := newFollowerUsersStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasFollowedBusinesses applies the HasEdge predicate on the "followedBusinesses" edge.
+func HasFollowedBusinesses() predicate.Business {
+	return predicate.Business(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, FollowedBusinessesTable, FollowedBusinessesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasFollowedBusinessesWith applies the HasEdge predicate on the "followedBusinesses" edge with a given conditions (other predicates).
+func HasFollowedBusinessesWith(preds ...predicate.BusinessFollowBusiness) predicate.Business {
+	return predicate.Business(func(s *sql.Selector) {
+		step := newFollowedBusinessesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasFollowerBusinesses applies the HasEdge predicate on the "followerBusinesses" edge.
+func HasFollowerBusinesses() predicate.Business {
+	return predicate.Business(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, FollowerBusinessesTable, FollowerBusinessesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasFollowerBusinessesWith applies the HasEdge predicate on the "followerBusinesses" edge with a given conditions (other predicates).
+func HasFollowerBusinessesWith(preds ...predicate.BusinessFollowBusiness) predicate.Business {
+	return predicate.Business(func(s *sql.Selector) {
+		step := newFollowerBusinessesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Business) predicate.Business {
 	return predicate.Business(func(s *sql.Selector) {

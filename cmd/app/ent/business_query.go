@@ -9,9 +9,12 @@ import (
 	"math"
 	"placio-app/ent/accountsettings"
 	"placio-app/ent/business"
+	"placio-app/ent/businessfollowbusiness"
+	"placio-app/ent/businessfollowuser"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
 	"placio-app/ent/userbusiness"
+	"placio-app/ent/userfollowbusiness"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -28,6 +31,10 @@ type BusinessQuery struct {
 	withUserBusinesses          *UserBusinessQuery
 	withBusinessAccountSettings *AccountSettingsQuery
 	withPosts                   *PostQuery
+	withFollowedUsers           *BusinessFollowUserQuery
+	withFollowerUsers           *UserFollowBusinessQuery
+	withFollowedBusinesses      *BusinessFollowBusinessQuery
+	withFollowerBusinesses      *BusinessFollowBusinessQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -123,6 +130,94 @@ func (bq *BusinessQuery) QueryPosts() *PostQuery {
 			sqlgraph.From(business.Table, business.FieldID, selector),
 			sqlgraph.To(post.Table, post.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, business.PostsTable, business.PostsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(bq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryFollowedUsers chains the current query on the "followedUsers" edge.
+func (bq *BusinessQuery) QueryFollowedUsers() *BusinessFollowUserQuery {
+	query := (&BusinessFollowUserClient{config: bq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := bq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := bq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(business.Table, business.FieldID, selector),
+			sqlgraph.To(businessfollowuser.Table, businessfollowuser.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, business.FollowedUsersTable, business.FollowedUsersColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(bq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryFollowerUsers chains the current query on the "followerUsers" edge.
+func (bq *BusinessQuery) QueryFollowerUsers() *UserFollowBusinessQuery {
+	query := (&UserFollowBusinessClient{config: bq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := bq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := bq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(business.Table, business.FieldID, selector),
+			sqlgraph.To(userfollowbusiness.Table, userfollowbusiness.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, business.FollowerUsersTable, business.FollowerUsersColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(bq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryFollowedBusinesses chains the current query on the "followedBusinesses" edge.
+func (bq *BusinessQuery) QueryFollowedBusinesses() *BusinessFollowBusinessQuery {
+	query := (&BusinessFollowBusinessClient{config: bq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := bq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := bq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(business.Table, business.FieldID, selector),
+			sqlgraph.To(businessfollowbusiness.Table, businessfollowbusiness.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, business.FollowedBusinessesTable, business.FollowedBusinessesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(bq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryFollowerBusinesses chains the current query on the "followerBusinesses" edge.
+func (bq *BusinessQuery) QueryFollowerBusinesses() *BusinessFollowBusinessQuery {
+	query := (&BusinessFollowBusinessClient{config: bq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := bq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := bq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(business.Table, business.FieldID, selector),
+			sqlgraph.To(businessfollowbusiness.Table, businessfollowbusiness.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, business.FollowerBusinessesTable, business.FollowerBusinessesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(bq.driver.Dialect(), step)
 		return fromU, nil
@@ -325,6 +420,10 @@ func (bq *BusinessQuery) Clone() *BusinessQuery {
 		withUserBusinesses:          bq.withUserBusinesses.Clone(),
 		withBusinessAccountSettings: bq.withBusinessAccountSettings.Clone(),
 		withPosts:                   bq.withPosts.Clone(),
+		withFollowedUsers:           bq.withFollowedUsers.Clone(),
+		withFollowerUsers:           bq.withFollowerUsers.Clone(),
+		withFollowedBusinesses:      bq.withFollowedBusinesses.Clone(),
+		withFollowerBusinesses:      bq.withFollowerBusinesses.Clone(),
 		// clone intermediate query.
 		sql:  bq.sql.Clone(),
 		path: bq.path,
@@ -361,6 +460,50 @@ func (bq *BusinessQuery) WithPosts(opts ...func(*PostQuery)) *BusinessQuery {
 		opt(query)
 	}
 	bq.withPosts = query
+	return bq
+}
+
+// WithFollowedUsers tells the query-builder to eager-load the nodes that are connected to
+// the "followedUsers" edge. The optional arguments are used to configure the query builder of the edge.
+func (bq *BusinessQuery) WithFollowedUsers(opts ...func(*BusinessFollowUserQuery)) *BusinessQuery {
+	query := (&BusinessFollowUserClient{config: bq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	bq.withFollowedUsers = query
+	return bq
+}
+
+// WithFollowerUsers tells the query-builder to eager-load the nodes that are connected to
+// the "followerUsers" edge. The optional arguments are used to configure the query builder of the edge.
+func (bq *BusinessQuery) WithFollowerUsers(opts ...func(*UserFollowBusinessQuery)) *BusinessQuery {
+	query := (&UserFollowBusinessClient{config: bq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	bq.withFollowerUsers = query
+	return bq
+}
+
+// WithFollowedBusinesses tells the query-builder to eager-load the nodes that are connected to
+// the "followedBusinesses" edge. The optional arguments are used to configure the query builder of the edge.
+func (bq *BusinessQuery) WithFollowedBusinesses(opts ...func(*BusinessFollowBusinessQuery)) *BusinessQuery {
+	query := (&BusinessFollowBusinessClient{config: bq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	bq.withFollowedBusinesses = query
+	return bq
+}
+
+// WithFollowerBusinesses tells the query-builder to eager-load the nodes that are connected to
+// the "followerBusinesses" edge. The optional arguments are used to configure the query builder of the edge.
+func (bq *BusinessQuery) WithFollowerBusinesses(opts ...func(*BusinessFollowBusinessQuery)) *BusinessQuery {
+	query := (&BusinessFollowBusinessClient{config: bq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	bq.withFollowerBusinesses = query
 	return bq
 }
 
@@ -442,10 +585,14 @@ func (bq *BusinessQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Bus
 	var (
 		nodes       = []*Business{}
 		_spec       = bq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [7]bool{
 			bq.withUserBusinesses != nil,
 			bq.withBusinessAccountSettings != nil,
 			bq.withPosts != nil,
+			bq.withFollowedUsers != nil,
+			bq.withFollowerUsers != nil,
+			bq.withFollowedBusinesses != nil,
+			bq.withFollowerBusinesses != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -483,6 +630,38 @@ func (bq *BusinessQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Bus
 		if err := bq.loadPosts(ctx, query, nodes,
 			func(n *Business) { n.Edges.Posts = []*Post{} },
 			func(n *Business, e *Post) { n.Edges.Posts = append(n.Edges.Posts, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := bq.withFollowedUsers; query != nil {
+		if err := bq.loadFollowedUsers(ctx, query, nodes,
+			func(n *Business) { n.Edges.FollowedUsers = []*BusinessFollowUser{} },
+			func(n *Business, e *BusinessFollowUser) { n.Edges.FollowedUsers = append(n.Edges.FollowedUsers, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := bq.withFollowerUsers; query != nil {
+		if err := bq.loadFollowerUsers(ctx, query, nodes,
+			func(n *Business) { n.Edges.FollowerUsers = []*UserFollowBusiness{} },
+			func(n *Business, e *UserFollowBusiness) { n.Edges.FollowerUsers = append(n.Edges.FollowerUsers, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := bq.withFollowedBusinesses; query != nil {
+		if err := bq.loadFollowedBusinesses(ctx, query, nodes,
+			func(n *Business) { n.Edges.FollowedBusinesses = []*BusinessFollowBusiness{} },
+			func(n *Business, e *BusinessFollowBusiness) {
+				n.Edges.FollowedBusinesses = append(n.Edges.FollowedBusinesses, e)
+			}); err != nil {
+			return nil, err
+		}
+	}
+	if query := bq.withFollowerBusinesses; query != nil {
+		if err := bq.loadFollowerBusinesses(ctx, query, nodes,
+			func(n *Business) { n.Edges.FollowerBusinesses = []*BusinessFollowBusiness{} },
+			func(n *Business, e *BusinessFollowBusiness) {
+				n.Edges.FollowerBusinesses = append(n.Edges.FollowerBusinesses, e)
+			}); err != nil {
 			return nil, err
 		}
 	}
@@ -574,6 +753,130 @@ func (bq *BusinessQuery) loadPosts(ctx context.Context, query *PostQuery, nodes 
 		node, ok := nodeids[*fk]
 		if !ok {
 			return fmt.Errorf(`unexpected referenced foreign-key "business_posts" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (bq *BusinessQuery) loadFollowedUsers(ctx context.Context, query *BusinessFollowUserQuery, nodes []*Business, init func(*Business), assign func(*Business, *BusinessFollowUser)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Business)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.BusinessFollowUser(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(business.FollowedUsersColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.business_followed_users
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "business_followed_users" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "business_followed_users" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (bq *BusinessQuery) loadFollowerUsers(ctx context.Context, query *UserFollowBusinessQuery, nodes []*Business, init func(*Business), assign func(*Business, *UserFollowBusiness)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Business)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.UserFollowBusiness(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(business.FollowerUsersColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.business_follower_users
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "business_follower_users" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "business_follower_users" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (bq *BusinessQuery) loadFollowedBusinesses(ctx context.Context, query *BusinessFollowBusinessQuery, nodes []*Business, init func(*Business), assign func(*Business, *BusinessFollowBusiness)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Business)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.BusinessFollowBusiness(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(business.FollowedBusinessesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.business_followed_businesses
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "business_followed_businesses" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "business_followed_businesses" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (bq *BusinessQuery) loadFollowerBusinesses(ctx context.Context, query *BusinessFollowBusinessQuery, nodes []*Business, init func(*Business), assign func(*Business, *BusinessFollowBusiness)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Business)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.BusinessFollowBusiness(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(business.FollowerBusinessesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.business_follower_businesses
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "business_follower_businesses" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "business_follower_businesses" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

@@ -7,12 +7,15 @@ import (
 	"database/sql/driver"
 	"fmt"
 	"math"
+	"placio-app/ent/businessfollowuser"
 	"placio-app/ent/comment"
 	"placio-app/ent/like"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
 	"placio-app/ent/user"
 	"placio-app/ent/userbusiness"
+	"placio-app/ent/userfollowbusiness"
+	"placio-app/ent/userfollowuser"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -22,14 +25,18 @@ import (
 // UserQuery is the builder for querying User entities.
 type UserQuery struct {
 	config
-	ctx                *QueryContext
-	order              []user.OrderOption
-	inters             []Interceptor
-	predicates         []predicate.User
-	withUserBusinesses *UserBusinessQuery
-	withComments       *CommentQuery
-	withLikes          *LikeQuery
-	withPosts          *PostQuery
+	ctx                    *QueryContext
+	order                  []user.OrderOption
+	inters                 []Interceptor
+	predicates             []predicate.User
+	withUserBusinesses     *UserBusinessQuery
+	withComments           *CommentQuery
+	withLikes              *LikeQuery
+	withPosts              *PostQuery
+	withFollowedUsers      *UserFollowUserQuery
+	withFollowerUsers      *UserFollowUserQuery
+	withFollowedBusinesses *UserFollowBusinessQuery
+	withFollowerBusinesses *BusinessFollowUserQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -147,6 +154,94 @@ func (uq *UserQuery) QueryPosts() *PostQuery {
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(post.Table, post.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.PostsTable, user.PostsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryFollowedUsers chains the current query on the "followedUsers" edge.
+func (uq *UserQuery) QueryFollowedUsers() *UserFollowUserQuery {
+	query := (&UserFollowUserClient{config: uq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(userfollowuser.Table, userfollowuser.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.FollowedUsersTable, user.FollowedUsersColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryFollowerUsers chains the current query on the "followerUsers" edge.
+func (uq *UserQuery) QueryFollowerUsers() *UserFollowUserQuery {
+	query := (&UserFollowUserClient{config: uq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(userfollowuser.Table, userfollowuser.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.FollowerUsersTable, user.FollowerUsersColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryFollowedBusinesses chains the current query on the "followedBusinesses" edge.
+func (uq *UserQuery) QueryFollowedBusinesses() *UserFollowBusinessQuery {
+	query := (&UserFollowBusinessClient{config: uq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(userfollowbusiness.Table, userfollowbusiness.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.FollowedBusinessesTable, user.FollowedBusinessesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryFollowerBusinesses chains the current query on the "followerBusinesses" edge.
+func (uq *UserQuery) QueryFollowerBusinesses() *BusinessFollowUserQuery {
+	query := (&BusinessFollowUserClient{config: uq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(businessfollowuser.Table, businessfollowuser.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.FollowerBusinessesTable, user.FollowerBusinessesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
 		return fromU, nil
@@ -341,15 +436,19 @@ func (uq *UserQuery) Clone() *UserQuery {
 		return nil
 	}
 	return &UserQuery{
-		config:             uq.config,
-		ctx:                uq.ctx.Clone(),
-		order:              append([]user.OrderOption{}, uq.order...),
-		inters:             append([]Interceptor{}, uq.inters...),
-		predicates:         append([]predicate.User{}, uq.predicates...),
-		withUserBusinesses: uq.withUserBusinesses.Clone(),
-		withComments:       uq.withComments.Clone(),
-		withLikes:          uq.withLikes.Clone(),
-		withPosts:          uq.withPosts.Clone(),
+		config:                 uq.config,
+		ctx:                    uq.ctx.Clone(),
+		order:                  append([]user.OrderOption{}, uq.order...),
+		inters:                 append([]Interceptor{}, uq.inters...),
+		predicates:             append([]predicate.User{}, uq.predicates...),
+		withUserBusinesses:     uq.withUserBusinesses.Clone(),
+		withComments:           uq.withComments.Clone(),
+		withLikes:              uq.withLikes.Clone(),
+		withPosts:              uq.withPosts.Clone(),
+		withFollowedUsers:      uq.withFollowedUsers.Clone(),
+		withFollowerUsers:      uq.withFollowerUsers.Clone(),
+		withFollowedBusinesses: uq.withFollowedBusinesses.Clone(),
+		withFollowerBusinesses: uq.withFollowerBusinesses.Clone(),
 		// clone intermediate query.
 		sql:  uq.sql.Clone(),
 		path: uq.path,
@@ -397,6 +496,50 @@ func (uq *UserQuery) WithPosts(opts ...func(*PostQuery)) *UserQuery {
 		opt(query)
 	}
 	uq.withPosts = query
+	return uq
+}
+
+// WithFollowedUsers tells the query-builder to eager-load the nodes that are connected to
+// the "followedUsers" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithFollowedUsers(opts ...func(*UserFollowUserQuery)) *UserQuery {
+	query := (&UserFollowUserClient{config: uq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	uq.withFollowedUsers = query
+	return uq
+}
+
+// WithFollowerUsers tells the query-builder to eager-load the nodes that are connected to
+// the "followerUsers" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithFollowerUsers(opts ...func(*UserFollowUserQuery)) *UserQuery {
+	query := (&UserFollowUserClient{config: uq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	uq.withFollowerUsers = query
+	return uq
+}
+
+// WithFollowedBusinesses tells the query-builder to eager-load the nodes that are connected to
+// the "followedBusinesses" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithFollowedBusinesses(opts ...func(*UserFollowBusinessQuery)) *UserQuery {
+	query := (&UserFollowBusinessClient{config: uq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	uq.withFollowedBusinesses = query
+	return uq
+}
+
+// WithFollowerBusinesses tells the query-builder to eager-load the nodes that are connected to
+// the "followerBusinesses" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithFollowerBusinesses(opts ...func(*BusinessFollowUserQuery)) *UserQuery {
+	query := (&BusinessFollowUserClient{config: uq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	uq.withFollowerBusinesses = query
 	return uq
 }
 
@@ -478,11 +621,15 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	var (
 		nodes       = []*User{}
 		_spec       = uq.querySpec()
-		loadedTypes = [4]bool{
+		loadedTypes = [8]bool{
 			uq.withUserBusinesses != nil,
 			uq.withComments != nil,
 			uq.withLikes != nil,
 			uq.withPosts != nil,
+			uq.withFollowedUsers != nil,
+			uq.withFollowerUsers != nil,
+			uq.withFollowedBusinesses != nil,
+			uq.withFollowerBusinesses != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -528,6 +675,38 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 		if err := uq.loadPosts(ctx, query, nodes,
 			func(n *User) { n.Edges.Posts = []*Post{} },
 			func(n *User, e *Post) { n.Edges.Posts = append(n.Edges.Posts, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := uq.withFollowedUsers; query != nil {
+		if err := uq.loadFollowedUsers(ctx, query, nodes,
+			func(n *User) { n.Edges.FollowedUsers = []*UserFollowUser{} },
+			func(n *User, e *UserFollowUser) { n.Edges.FollowedUsers = append(n.Edges.FollowedUsers, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := uq.withFollowerUsers; query != nil {
+		if err := uq.loadFollowerUsers(ctx, query, nodes,
+			func(n *User) { n.Edges.FollowerUsers = []*UserFollowUser{} },
+			func(n *User, e *UserFollowUser) { n.Edges.FollowerUsers = append(n.Edges.FollowerUsers, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := uq.withFollowedBusinesses; query != nil {
+		if err := uq.loadFollowedBusinesses(ctx, query, nodes,
+			func(n *User) { n.Edges.FollowedBusinesses = []*UserFollowBusiness{} },
+			func(n *User, e *UserFollowBusiness) {
+				n.Edges.FollowedBusinesses = append(n.Edges.FollowedBusinesses, e)
+			}); err != nil {
+			return nil, err
+		}
+	}
+	if query := uq.withFollowerBusinesses; query != nil {
+		if err := uq.loadFollowerBusinesses(ctx, query, nodes,
+			func(n *User) { n.Edges.FollowerBusinesses = []*BusinessFollowUser{} },
+			func(n *User, e *BusinessFollowUser) {
+				n.Edges.FollowerBusinesses = append(n.Edges.FollowerBusinesses, e)
+			}); err != nil {
 			return nil, err
 		}
 	}
@@ -653,6 +832,130 @@ func (uq *UserQuery) loadPosts(ctx context.Context, query *PostQuery, nodes []*U
 		node, ok := nodeids[*fk]
 		if !ok {
 			return fmt.Errorf(`unexpected referenced foreign-key "user_posts" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (uq *UserQuery) loadFollowedUsers(ctx context.Context, query *UserFollowUserQuery, nodes []*User, init func(*User), assign func(*User, *UserFollowUser)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.UserFollowUser(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.FollowedUsersColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.user_followed_users
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "user_followed_users" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "user_followed_users" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (uq *UserQuery) loadFollowerUsers(ctx context.Context, query *UserFollowUserQuery, nodes []*User, init func(*User), assign func(*User, *UserFollowUser)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.UserFollowUser(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.FollowerUsersColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.user_follower_users
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "user_follower_users" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "user_follower_users" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (uq *UserQuery) loadFollowedBusinesses(ctx context.Context, query *UserFollowBusinessQuery, nodes []*User, init func(*User), assign func(*User, *UserFollowBusiness)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.UserFollowBusiness(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.FollowedBusinessesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.user_followed_businesses
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "user_followed_businesses" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "user_followed_businesses" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (uq *UserQuery) loadFollowerBusinesses(ctx context.Context, query *BusinessFollowUserQuery, nodes []*User, init func(*User), assign func(*User, *BusinessFollowUser)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.BusinessFollowUser(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.FollowerBusinessesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.user_follower_businesses
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "user_follower_businesses" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "user_follower_businesses" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

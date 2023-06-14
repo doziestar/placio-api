@@ -38,5 +38,9 @@ func (User) Edges() []ent.Edge {
 		edge.To("comments", Comment.Type),
 		edge.To("likes", Like.Type),
 		edge.To("posts", Post.Type),
+		edge.To("followedUsers", UserFollowUser.Type),
+		edge.To("followerUsers", UserFollowUser.Type),
+		edge.To("followedBusinesses", UserFollowBusiness.Type),
+		edge.To("followerBusinesses", BusinessFollowUser.Type),
 	}
 }

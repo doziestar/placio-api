@@ -13,7 +13,10 @@ import (
 	"net"
 	"net/http"
 	"placio-app/ent"
+	"placio-app/ent/business"
 	"placio-app/ent/user"
+	"placio-app/ent/userfollowbusiness"
+	"placio-app/ent/userfollowuser"
 	"placio-app/models"
 	"placio-app/utility"
 	"placio-pkg/hash"
@@ -46,6 +49,11 @@ type UserService interface {
 	GetAuth0ManagementToken(ctx context.Context) (string, error)
 	UpdateAuth0AppMetadata(userID string, appData *models.AppMetadata) (*management.User, error)
 	GetPostsByUser(ctx context.Context, userID string) ([]*ent.Post, error)
+	FollowUser(ctx context.Context, followerID string, followedID string) error
+	FollowBusiness(ctx context.Context, followerID string, businessID string) error
+	UnfollowUser(ctx context.Context, followerID string, followedID string) error
+	UnfollowBusiness(ctx context.Context, followerID string, businessID string) error
+	GetFollowedContents(ctx context.Context, userID string) ([]*ent.Post, error)
 }
 
 type UserServiceImpl struct {
@@ -61,6 +69,79 @@ type auth0TokenResponse struct {
 
 func NewUserService(client *ent.Client, cache *utility.RedisClient) *UserServiceImpl {
 	return &UserServiceImpl{client: client, cache: cache}
+}
+
+func (s *UserServiceImpl) FollowUser(ctx context.Context, followerID string, followedID string) error {
+	_, err := s.client.UserFollowUser.
+		Create().
+		SetFollowerID(followerID).
+		SetFollowedID(followedID).
+		Save(ctx)
+	return err
+}
+
+func (s *UserServiceImpl) FollowBusiness(ctx context.Context, followerID string, businessID string) error {
+	_, err := s.client.UserFollowBusiness.
+		Create().
+		SetUserID(followerID).
+		SetBusinessID(businessID).
+		Save(ctx)
+	return err
+}
+
+func (s *UserServiceImpl) UnfollowUser(ctx context.Context, followerID string, followedID string) error {
+	uf, err := s.client.UserFollowUser.
+		Query().
+		Where(userfollowuser.HasFollowerWith(user.ID(followerID)), userfollowuser.HasFollowedWith(user.ID(followedID))).
+		Only(ctx)
+	if err != nil {
+		return err
+	}
+	return s.client.UserFollowUser.DeleteOne(uf).Exec(ctx)
+}
+
+func (s *UserServiceImpl) UnfollowBusiness(ctx context.Context, followerID string, businessID string) error {
+	ub, err := s.client.UserFollowBusiness.
+		Query().
+		Where(userfollowbusiness.HasUserWith(user.ID(followerID)), userfollowbusiness.HasBusinessWith(business.ID(businessID))).
+		Only(ctx)
+	if err != nil {
+		return err
+	}
+	return s.client.UserFollowBusiness.DeleteOne(ub).Exec(ctx)
+}
+
+func (s *UserServiceImpl) GetFollowedContents(ctx context.Context, userID string) ([]*ent.Post, error) {
+	// First, fetch the followed users.
+	followedUsers, err := s.client.User.
+		Query().
+		Where(user.IDEQ(userID)).
+		QueryFollowedUsers().
+		All(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	// Then, for each followed user, fetch their posts.
+	var allPosts []*ent.Post
+	for _, followedUser := range followedUsers {
+		posts, err := s.client.User.
+			Query().
+			Where(user.IDEQ(followedUser.ID)).
+			QueryPosts().
+			WithMedias().
+			WithUser().
+			WithComments(func(q *ent.CommentQuery) {
+				q.WithUser()
+			}).
+			All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		allPosts = append(allPosts, posts...)
+	}
+
+	return allPosts, nil
 }
 
 func (s *UserServiceImpl) GetUser(ctx context.Context, auth0ID string) (*ent.User, error) {
@@ -397,6 +478,10 @@ func (us *UserServiceImpl) UpdateUser(ctx context.Context, userID string, userDa
 	if err != nil {
 		return nil, fmt.Errorf("failed updating user: %w", err)
 	}
+
+	// Update Auth0 data
+
+	// Get the current user data
 
 	return user, nil
 }

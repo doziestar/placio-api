@@ -7,6 +7,8 @@ import (
 	"placio-app/Dto"
 	"placio-app/ent"
 	"placio-app/ent/business"
+	"placio-app/ent/businessfollowbusiness"
+	"placio-app/ent/businessfollowuser"
 	"placio-app/ent/predicate"
 	"placio-app/ent/user"
 	"placio-app/ent/userbusiness"
@@ -22,6 +24,11 @@ type BusinessAccountService interface {
 	UpdateBusinessAccount(ctx context.Context, businessAccount *ent.Business) (*ent.Business, error)
 	RemoveUserFromBusinessAccount(ctx context.Context, userID, businessAccountID string) error
 	TransferBusinessAccountOwnership(ctx context.Context, currentOwnerID, newOwnerID, businessAccountID string) error
+	FollowUser(ctx context.Context, businessID string, userID string) error
+	FollowBusiness(ctx context.Context, followerID string, followedID string) error
+	UnfollowUser(ctx context.Context, businessID string, userID string) error
+	UnfollowBusiness(ctx context.Context, followerID string, followedID string) error
+	GetFollowedContents(ctx context.Context, businessID string) ([]*ent.Post, error)
 	//CanPerformAction(ctx context.Context, userID, businessAccountID, action string) (bool, error)
 }
 
@@ -32,6 +39,93 @@ type BusinessAccountServiceImpl struct {
 
 func NewBusinessAccountService(client *ent.Client) BusinessAccountService {
 	return &BusinessAccountServiceImpl{client: client, store: &ent.Business{}}
+}
+
+func (s *BusinessAccountServiceImpl) FollowUser(ctx context.Context, businessID string, userID string) error {
+	_, err := s.client.BusinessFollowUser.
+		Create().
+		SetBusinessID(businessID).
+		SetUserID(userID).
+		Save(ctx)
+	return err
+}
+
+func (s *BusinessAccountServiceImpl) FollowBusiness(ctx context.Context, followerID string, followedID string) error {
+	_, err := s.client.BusinessFollowBusiness.
+		Create().
+		SetFollowerID(followerID).
+		SetFollowedID(followedID).
+		Save(ctx)
+	return err
+}
+
+func (s *BusinessAccountServiceImpl) UnfollowUser(ctx context.Context, businessID string, userID string) error {
+	bf, err := s.client.BusinessFollowUser.
+		Query().
+		Where(businessfollowuser.HasBusinessWith(business.ID(businessID)), businessfollowuser.HasUserWith(user.ID(userID))).
+		Only(ctx)
+	if err != nil {
+		return err
+	}
+	return s.client.BusinessFollowUser.DeleteOne(bf).Exec(ctx)
+}
+
+func (s *BusinessAccountServiceImpl) UnfollowBusiness(ctx context.Context, followerID string, followedID string) error {
+	bf, err := s.client.BusinessFollowBusiness.
+		Query().
+		Where(businessfollowbusiness.HasFollowerWith(business.ID(followerID)), businessfollowbusiness.HasFollowedWith(business.ID(followedID))).
+		Only(ctx)
+	if err != nil {
+		return err
+	}
+	return s.client.BusinessFollowBusiness.DeleteOne(bf).Exec(ctx)
+}
+
+func (s *BusinessAccountServiceImpl) GetFollowedContents(ctx context.Context, businessID string) ([]*ent.Post, error) {
+	followedUsers, err := s.client.Business.
+		Query().
+		Where(business.IDEQ(businessID)).
+		QueryFollowedUsers().
+		All(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	followedBusinesses, err := s.client.Business.
+		Query().
+		Where(business.IDEQ(businessID)).
+		QueryFollowedBusinesses().
+		All(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var allPosts []*ent.Post
+	for _, followedUser := range followedUsers {
+		posts, err := s.client.User.
+			Query().
+			Where(user.IDEQ(followedUser.ID)).
+			QueryPosts().
+			All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		allPosts = append(allPosts, posts...)
+	}
+
+	for _, followedBusiness := range followedBusinesses {
+		posts, err := s.client.Business.
+			Query().
+			Where(business.IDEQ(followedBusiness.ID)).
+			QueryPosts().
+			All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		allPosts = append(allPosts, posts...)
+	}
+
+	return allPosts, nil
 }
 
 // CreateBusinessAccount creates a new Business Account and associates it with a user.

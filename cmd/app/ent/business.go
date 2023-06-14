@@ -33,9 +33,17 @@ type BusinessEdges struct {
 	BusinessAccountSettings *AccountSettings `json:"business_account_settings,omitempty"`
 	// Posts holds the value of the posts edge.
 	Posts []*Post `json:"posts,omitempty"`
+	// FollowedUsers holds the value of the followedUsers edge.
+	FollowedUsers []*BusinessFollowUser `json:"followedUsers,omitempty"`
+	// FollowerUsers holds the value of the followerUsers edge.
+	FollowerUsers []*UserFollowBusiness `json:"followerUsers,omitempty"`
+	// FollowedBusinesses holds the value of the followedBusinesses edge.
+	FollowedBusinesses []*BusinessFollowBusiness `json:"followedBusinesses,omitempty"`
+	// FollowerBusinesses holds the value of the followerBusinesses edge.
+	FollowerBusinesses []*BusinessFollowBusiness `json:"followerBusinesses,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [7]bool
 }
 
 // UserBusinessesOrErr returns the UserBusinesses value or an error if the edge
@@ -67,6 +75,42 @@ func (e BusinessEdges) PostsOrErr() ([]*Post, error) {
 		return e.Posts, nil
 	}
 	return nil, &NotLoadedError{edge: "posts"}
+}
+
+// FollowedUsersOrErr returns the FollowedUsers value or an error if the edge
+// was not loaded in eager-loading.
+func (e BusinessEdges) FollowedUsersOrErr() ([]*BusinessFollowUser, error) {
+	if e.loadedTypes[3] {
+		return e.FollowedUsers, nil
+	}
+	return nil, &NotLoadedError{edge: "followedUsers"}
+}
+
+// FollowerUsersOrErr returns the FollowerUsers value or an error if the edge
+// was not loaded in eager-loading.
+func (e BusinessEdges) FollowerUsersOrErr() ([]*UserFollowBusiness, error) {
+	if e.loadedTypes[4] {
+		return e.FollowerUsers, nil
+	}
+	return nil, &NotLoadedError{edge: "followerUsers"}
+}
+
+// FollowedBusinessesOrErr returns the FollowedBusinesses value or an error if the edge
+// was not loaded in eager-loading.
+func (e BusinessEdges) FollowedBusinessesOrErr() ([]*BusinessFollowBusiness, error) {
+	if e.loadedTypes[5] {
+		return e.FollowedBusinesses, nil
+	}
+	return nil, &NotLoadedError{edge: "followedBusinesses"}
+}
+
+// FollowerBusinessesOrErr returns the FollowerBusinesses value or an error if the edge
+// was not loaded in eager-loading.
+func (e BusinessEdges) FollowerBusinessesOrErr() ([]*BusinessFollowBusiness, error) {
+	if e.loadedTypes[6] {
+		return e.FollowerBusinesses, nil
+	}
+	return nil, &NotLoadedError{edge: "followerBusinesses"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -129,6 +173,26 @@ func (b *Business) QueryBusinessAccountSettings() *AccountSettingsQuery {
 // QueryPosts queries the "posts" edge of the Business entity.
 func (b *Business) QueryPosts() *PostQuery {
 	return NewBusinessClient(b.config).QueryPosts(b)
+}
+
+// QueryFollowedUsers queries the "followedUsers" edge of the Business entity.
+func (b *Business) QueryFollowedUsers() *BusinessFollowUserQuery {
+	return NewBusinessClient(b.config).QueryFollowedUsers(b)
+}
+
+// QueryFollowerUsers queries the "followerUsers" edge of the Business entity.
+func (b *Business) QueryFollowerUsers() *UserFollowBusinessQuery {
+	return NewBusinessClient(b.config).QueryFollowerUsers(b)
+}
+
+// QueryFollowedBusinesses queries the "followedBusinesses" edge of the Business entity.
+func (b *Business) QueryFollowedBusinesses() *BusinessFollowBusinessQuery {
+	return NewBusinessClient(b.config).QueryFollowedBusinesses(b)
+}
+
+// QueryFollowerBusinesses queries the "followerBusinesses" edge of the Business entity.
+func (b *Business) QueryFollowerBusinesses() *BusinessFollowBusinessQuery {
+	return NewBusinessClient(b.config).QueryFollowerBusinesses(b)
 }
 
 // Update returns a builder for updating this Business.

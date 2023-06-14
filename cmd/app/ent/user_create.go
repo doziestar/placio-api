@@ -6,11 +6,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"placio-app/ent/businessfollowuser"
 	"placio-app/ent/comment"
 	"placio-app/ent/like"
 	"placio-app/ent/post"
 	"placio-app/ent/user"
 	"placio-app/ent/userbusiness"
+	"placio-app/ent/userfollowbusiness"
+	"placio-app/ent/userfollowuser"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -184,6 +187,66 @@ func (uc *UserCreate) AddPosts(p ...*Post) *UserCreate {
 	return uc.AddPostIDs(ids...)
 }
 
+// AddFollowedUserIDs adds the "followedUsers" edge to the UserFollowUser entity by IDs.
+func (uc *UserCreate) AddFollowedUserIDs(ids ...string) *UserCreate {
+	uc.mutation.AddFollowedUserIDs(ids...)
+	return uc
+}
+
+// AddFollowedUsers adds the "followedUsers" edges to the UserFollowUser entity.
+func (uc *UserCreate) AddFollowedUsers(u ...*UserFollowUser) *UserCreate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uc.AddFollowedUserIDs(ids...)
+}
+
+// AddFollowerUserIDs adds the "followerUsers" edge to the UserFollowUser entity by IDs.
+func (uc *UserCreate) AddFollowerUserIDs(ids ...string) *UserCreate {
+	uc.mutation.AddFollowerUserIDs(ids...)
+	return uc
+}
+
+// AddFollowerUsers adds the "followerUsers" edges to the UserFollowUser entity.
+func (uc *UserCreate) AddFollowerUsers(u ...*UserFollowUser) *UserCreate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uc.AddFollowerUserIDs(ids...)
+}
+
+// AddFollowedBusinessIDs adds the "followedBusinesses" edge to the UserFollowBusiness entity by IDs.
+func (uc *UserCreate) AddFollowedBusinessIDs(ids ...string) *UserCreate {
+	uc.mutation.AddFollowedBusinessIDs(ids...)
+	return uc
+}
+
+// AddFollowedBusinesses adds the "followedBusinesses" edges to the UserFollowBusiness entity.
+func (uc *UserCreate) AddFollowedBusinesses(u ...*UserFollowBusiness) *UserCreate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uc.AddFollowedBusinessIDs(ids...)
+}
+
+// AddFollowerBusinessIDs adds the "followerBusinesses" edge to the BusinessFollowUser entity by IDs.
+func (uc *UserCreate) AddFollowerBusinessIDs(ids ...string) *UserCreate {
+	uc.mutation.AddFollowerBusinessIDs(ids...)
+	return uc
+}
+
+// AddFollowerBusinesses adds the "followerBusinesses" edges to the BusinessFollowUser entity.
+func (uc *UserCreate) AddFollowerBusinesses(b ...*BusinessFollowUser) *UserCreate {
+	ids := make([]string, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return uc.AddFollowerBusinessIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uc *UserCreate) Mutation() *UserMutation {
 	return uc.mutation
@@ -354,6 +417,70 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.FollowedUsersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FollowedUsersTable,
+			Columns: []string{user.FollowedUsersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userfollowuser.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.FollowerUsersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FollowerUsersTable,
+			Columns: []string{user.FollowerUsersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userfollowuser.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.FollowedBusinessesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FollowedBusinessesTable,
+			Columns: []string{user.FollowedBusinessesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userfollowbusiness.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.FollowerBusinessesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FollowerBusinessesTable,
+			Columns: []string{user.FollowerBusinessesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(businessfollowuser.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
