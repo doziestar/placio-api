@@ -87,12 +87,12 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 	commentService := service.NewCommentService(client)
 	commentController := controller.NewCommentController(commentService)
 	commentController.RegisterRoutes(routerGroupV1)
-	//
-	//// likes
-	//likeService := service.NewLikeService(db)
-	//likeController := controller.NewLikeController(likeService)
-	//likeController.RegisterRoutes(routerGroupV1)
-	//
+
+	// likes
+	likeService := service.NewLikeService(client, redisClient)
+	likeController := controller.NewLikeController(likeService)
+	likeController.RegisterRoutes(routerGroupV1)
+
 	//// ratings
 	//ratingService := service.NewRatingService(db)
 	//ratingController := controller.NewRatingController(ratingService)

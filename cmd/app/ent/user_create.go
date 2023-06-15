@@ -47,48 +47,6 @@ func (uc *UserCreate) SetNillableName(s *string) *UserCreate {
 	return uc
 }
 
-// SetGivenName sets the "given_name" field.
-func (uc *UserCreate) SetGivenName(s string) *UserCreate {
-	uc.mutation.SetGivenName(s)
-	return uc
-}
-
-// SetNillableGivenName sets the "given_name" field if the given value is not nil.
-func (uc *UserCreate) SetNillableGivenName(s *string) *UserCreate {
-	if s != nil {
-		uc.SetGivenName(*s)
-	}
-	return uc
-}
-
-// SetFamilyName sets the "family_name" field.
-func (uc *UserCreate) SetFamilyName(s string) *UserCreate {
-	uc.mutation.SetFamilyName(s)
-	return uc
-}
-
-// SetNillableFamilyName sets the "family_name" field if the given value is not nil.
-func (uc *UserCreate) SetNillableFamilyName(s *string) *UserCreate {
-	if s != nil {
-		uc.SetFamilyName(*s)
-	}
-	return uc
-}
-
-// SetNickname sets the "nickname" field.
-func (uc *UserCreate) SetNickname(s string) *UserCreate {
-	uc.mutation.SetNickname(s)
-	return uc
-}
-
-// SetNillableNickname sets the "nickname" field if the given value is not nil.
-func (uc *UserCreate) SetNillableNickname(s *string) *UserCreate {
-	if s != nil {
-		uc.SetNickname(*s)
-	}
-	return uc
-}
-
 // SetPicture sets the "picture" field.
 func (uc *UserCreate) SetPicture(s string) *UserCreate {
 	uc.mutation.SetPicture(s)
@@ -100,6 +58,12 @@ func (uc *UserCreate) SetNillablePicture(s *string) *UserCreate {
 	if s != nil {
 		uc.SetPicture(*s)
 	}
+	return uc
+}
+
+// SetUsername sets the "username" field.
+func (uc *UserCreate) SetUsername(s string) *UserCreate {
+	uc.mutation.SetUsername(s)
 	return uc
 }
 
@@ -284,6 +248,9 @@ func (uc *UserCreate) check() error {
 	if _, ok := uc.mutation.Auth0ID(); !ok {
 		return &ValidationError{Name: "auth0_id", err: errors.New(`ent: missing required field "User.auth0_id"`)}
 	}
+	if _, ok := uc.mutation.Username(); !ok {
+		return &ValidationError{Name: "username", err: errors.New(`ent: missing required field "User.username"`)}
+	}
 	if v, ok := uc.mutation.ID(); ok {
 		if err := user.IDValidator(v); err != nil {
 			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "User.id": %w`, err)}
@@ -332,21 +299,13 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_spec.SetField(user.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
-	if value, ok := uc.mutation.GivenName(); ok {
-		_spec.SetField(user.FieldGivenName, field.TypeString, value)
-		_node.GivenName = value
-	}
-	if value, ok := uc.mutation.FamilyName(); ok {
-		_spec.SetField(user.FieldFamilyName, field.TypeString, value)
-		_node.FamilyName = value
-	}
-	if value, ok := uc.mutation.Nickname(); ok {
-		_spec.SetField(user.FieldNickname, field.TypeString, value)
-		_node.Nickname = value
-	}
 	if value, ok := uc.mutation.Picture(); ok {
 		_spec.SetField(user.FieldPicture, field.TypeString, value)
 		_node.Picture = value
+	}
+	if value, ok := uc.mutation.Username(); ok {
+		_spec.SetField(user.FieldUsername, field.TypeString, value)
+		_node.Username = value
 	}
 	if value, ok := uc.mutation.Auth0Data(); ok {
 		_spec.SetField(user.FieldAuth0Data, field.TypeJSON, value)

@@ -38,6 +38,8 @@ type Tx struct {
 	Post *PostClient
 	// Rating is the client for interacting with the Rating builders.
 	Rating *RatingClient
+	// Reaction is the client for interacting with the Reaction builders.
+	Reaction *ReactionClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 	// UserBusiness is the client for interacting with the UserBusiness builders.
@@ -190,6 +192,7 @@ func (tx *Tx) init() {
 	tx.Payment = NewPaymentClient(tx.config)
 	tx.Post = NewPostClient(tx.config)
 	tx.Rating = NewRatingClient(tx.config)
+	tx.Reaction = NewReactionClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 	tx.UserBusiness = NewUserBusinessClient(tx.config)
 	tx.UserFollowBusiness = NewUserFollowBusinessClient(tx.config)

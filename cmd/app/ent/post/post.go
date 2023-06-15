@@ -3,6 +3,7 @@
 package post
 
 import (
+	"fmt"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -20,6 +21,8 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updatedat field in the database.
 	FieldUpdatedAt = "updated_at"
+	// FieldPrivacy holds the string denoting the privacy field in the database.
+	FieldPrivacy = "privacy"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
 	// EdgeBusinessAccount holds the string denoting the business_account edge name in mutations.
@@ -75,6 +78,7 @@ var Columns = []string{
 	FieldContent,
 	FieldCreatedAt,
 	FieldUpdatedAt,
+	FieldPrivacy,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "posts"
@@ -110,6 +114,33 @@ var (
 	IDValidator func(string) error
 )
 
+// Privacy defines the type for the "Privacy" enum field.
+type Privacy string
+
+// PrivacyPublic is the default value of the Privacy enum.
+const DefaultPrivacy = PrivacyPublic
+
+// Privacy values.
+const (
+	PrivacyPublic        Privacy = "Public"
+	PrivacyFollowersOnly Privacy = "FollowersOnly"
+	PrivacyOnlyMe        Privacy = "OnlyMe"
+)
+
+func (_privacy Privacy) String() string {
+	return string(_privacy)
+}
+
+// PrivacyValidator is a validator for the "Privacy" field enum values. It is called by the builders before save.
+func PrivacyValidator(_privacy Privacy) error {
+	switch _privacy {
+	case PrivacyPublic, PrivacyFollowersOnly, PrivacyOnlyMe:
+		return nil
+	default:
+		return fmt.Errorf("post: invalid enum value for Privacy field: %q", _privacy)
+	}
+}
+
 // OrderOption defines the ordering options for the Post queries.
 type OrderOption func(*sql.Selector)
 
@@ -131,6 +162,11 @@ func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 // ByUpdatedAt orders the results by the UpdatedAt field.
 func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
+}
+
+// ByPrivacy orders the results by the Privacy field.
+func ByPrivacy(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPrivacy, opts...).ToFunc()
 }
 
 // ByUserField orders the results by user field.

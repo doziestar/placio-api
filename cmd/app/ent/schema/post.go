@@ -22,6 +22,7 @@ func (Post) Fields() []ent.Field {
 		field.String("Content").MaxLen(2147483647), // equivalent to TEXT in SQL
 		field.Time("CreatedAt").Default(time.Now),
 		field.Time("UpdatedAt").UpdateDefault(time.Now),
+		field.Enum("Privacy").Values("Public", "FollowersOnly", "OnlyMe").Default("Public"),
 	}
 }
 
