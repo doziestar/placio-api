@@ -8,7 +8,7 @@ import (
 // CommentDto is a Data Transfer Object for comments
 type CommentDto struct {
 	Content string `json:"content" binding:"required"`
-	PostID  string `json:"postId" binding:"required"`
+	//PostID  string `json:"postId" binding:"required"`
 }
 
 // CommentResponseDto is the response structure for comments

@@ -31,6 +31,8 @@ func (Comment) Edges() []ent.Edge {
 		edge.From("user", User.Type).
 			Ref("comments").
 			Unique(),
-		edge.To("post", Post.Type).Unique(),
+		edge.From("post", Post.Type).
+			Ref("comments").
+			Unique(),
 	}
 }

@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 	"github.com/google/uuid"
+	"log"
 	"placio-app/ent"
 	"placio-app/ent/comment"
-	"placio-app/ent/post"
-	"placio-app/ent/user"
+	"time"
 )
 
 type CommentService interface {
@@ -25,25 +25,19 @@ func NewCommentService(client *ent.Client) CommentService {
 }
 
 func (cs *CommentServiceImpl) CreateComment(ctx context.Context, userID string, postID string, content string) (*ent.Comment, error) {
-	// Check if user exists
-	uExists, err := cs.client.User.Query().Where(user.ID(userID)).Exist(ctx)
-	if err != nil || !uExists {
-		return nil, fmt.Errorf("user does not exist: %w", err)
-	}
-
-	// Check if post exists
-	pExists, err := cs.client.Post.Query().Where(post.ID(postID)).Exist(ctx)
-	if err != nil || !pExists {
-		return nil, fmt.Errorf("post does not exist: %w", err)
-	}
+	log.Println("about to create a comment")
 
 	user, err := cs.client.User.Get(ctx, userID)
-	if err != nil {
+	if ent.IsNotFound(err) {
+		return nil, fmt.Errorf("user does not exist: %w", err)
+	} else if err != nil {
 		return nil, fmt.Errorf("failed retrieving user: %w", err)
 	}
 
 	post, err := cs.client.Post.Get(ctx, postID)
-	if err != nil {
+	if ent.IsNotFound(err) {
+		return nil, fmt.Errorf("post does not exist: %w", err)
+	} else if err != nil {
 		return nil, fmt.Errorf("failed retrieving post: %w", err)
 	}
 
@@ -52,10 +46,12 @@ func (cs *CommentServiceImpl) CreateComment(ctx context.Context, userID string, 
 		SetID(uuid.New().String()).
 		SetContent(content).
 		SetUser(user).
+		SetUpdatedAt(time.Now()).
 		SetPost(post).
 		Save(ctx)
 
 	if err != nil {
+		log.Println("Failed to add comment", err)
 		return nil, fmt.Errorf("failed adding comment: %w", err)
 	}
 
