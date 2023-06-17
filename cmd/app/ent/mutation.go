@@ -6377,6 +6377,7 @@ type UserMutation struct {
 	auth0_id                  *string
 	name                      *string
 	picture                   *string
+	cover_image               *string
 	username                  *string
 	auth0_data                **management.User
 	app_settings              *map[string]interface{}
@@ -6647,6 +6648,55 @@ func (m *UserMutation) PictureCleared() bool {
 func (m *UserMutation) ResetPicture() {
 	m.picture = nil
 	delete(m.clearedFields, user.FieldPicture)
+}
+
+// SetCoverImage sets the "cover_image" field.
+func (m *UserMutation) SetCoverImage(s string) {
+	m.cover_image = &s
+}
+
+// CoverImage returns the value of the "cover_image" field in the mutation.
+func (m *UserMutation) CoverImage() (r string, exists bool) {
+	v := m.cover_image
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCoverImage returns the old "cover_image" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldCoverImage(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCoverImage is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCoverImage requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCoverImage: %w", err)
+	}
+	return oldValue.CoverImage, nil
+}
+
+// ClearCoverImage clears the value of the "cover_image" field.
+func (m *UserMutation) ClearCoverImage() {
+	m.cover_image = nil
+	m.clearedFields[user.FieldCoverImage] = struct{}{}
+}
+
+// CoverImageCleared returns if the "cover_image" field was cleared in this mutation.
+func (m *UserMutation) CoverImageCleared() bool {
+	_, ok := m.clearedFields[user.FieldCoverImage]
+	return ok
+}
+
+// ResetCoverImage resets all changes to the "cover_image" field.
+func (m *UserMutation) ResetCoverImage() {
+	m.cover_image = nil
+	delete(m.clearedFields, user.FieldCoverImage)
 }
 
 // SetUsername sets the "username" field.
@@ -7298,7 +7348,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 8)
 	if m.auth0_id != nil {
 		fields = append(fields, user.FieldAuth0ID)
 	}
@@ -7307,6 +7357,9 @@ func (m *UserMutation) Fields() []string {
 	}
 	if m.picture != nil {
 		fields = append(fields, user.FieldPicture)
+	}
+	if m.cover_image != nil {
+		fields = append(fields, user.FieldCoverImage)
 	}
 	if m.username != nil {
 		fields = append(fields, user.FieldUsername)
@@ -7334,6 +7387,8 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case user.FieldPicture:
 		return m.Picture()
+	case user.FieldCoverImage:
+		return m.CoverImage()
 	case user.FieldUsername:
 		return m.Username()
 	case user.FieldAuth0Data:
@@ -7357,6 +7412,8 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldName(ctx)
 	case user.FieldPicture:
 		return m.OldPicture(ctx)
+	case user.FieldCoverImage:
+		return m.OldCoverImage(ctx)
 	case user.FieldUsername:
 		return m.OldUsername(ctx)
 	case user.FieldAuth0Data:
@@ -7394,6 +7451,13 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetPicture(v)
+		return nil
+	case user.FieldCoverImage:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCoverImage(v)
 		return nil
 	case user.FieldUsername:
 		v, ok := value.(string)
@@ -7459,6 +7523,9 @@ func (m *UserMutation) ClearedFields() []string {
 	if m.FieldCleared(user.FieldPicture) {
 		fields = append(fields, user.FieldPicture)
 	}
+	if m.FieldCleared(user.FieldCoverImage) {
+		fields = append(fields, user.FieldCoverImage)
+	}
 	if m.FieldCleared(user.FieldAuth0Data) {
 		fields = append(fields, user.FieldAuth0Data)
 	}
@@ -7488,6 +7555,9 @@ func (m *UserMutation) ClearField(name string) error {
 	case user.FieldPicture:
 		m.ClearPicture()
 		return nil
+	case user.FieldCoverImage:
+		m.ClearCoverImage()
+		return nil
 	case user.FieldAuth0Data:
 		m.ClearAuth0Data()
 		return nil
@@ -7513,6 +7583,9 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldPicture:
 		m.ResetPicture()
+		return nil
+	case user.FieldCoverImage:
+		m.ResetCoverImage()
 		return nil
 	case user.FieldUsername:
 		m.ResetUsername()

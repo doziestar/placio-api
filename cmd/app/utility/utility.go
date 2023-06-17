@@ -1,9 +1,11 @@
 package utility
 
 import (
+	"crypto/rand"
 	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
+	"math/big"
 	"placio-app/models"
 	"strings"
 
@@ -247,4 +249,15 @@ func GenerateID() string {
 		return ""
 	}
 	return uid.String()
+}
+
+func GenerateRandomUsername() string {
+	// Generate a random number
+	randomNumber, err := rand.Int(rand.Reader, big.NewInt(1e14))
+	if err != nil {
+		panic(err) // handle error
+	}
+
+	// Combine the random number with "user" prefix
+	return fmt.Sprintf("user%s", randomNumber.String())
 }

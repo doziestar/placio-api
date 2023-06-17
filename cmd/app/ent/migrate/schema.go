@@ -283,6 +283,7 @@ var (
 		{Name: "auth0_id", Type: field.TypeString, Unique: true},
 		{Name: "name", Type: field.TypeString, Nullable: true},
 		{Name: "picture", Type: field.TypeString, Nullable: true},
+		{Name: "cover_image", Type: field.TypeString, Nullable: true, Default: "https://res.cloudinary.com/placio/image/upload/v1686842319/mjl8stmbn5xmfsm50vbg.jpg"},
 		{Name: "username", Type: field.TypeString, Unique: true},
 		{Name: "auth0_data", Type: field.TypeJSON, Nullable: true},
 		{Name: "app_settings", Type: field.TypeJSON, Nullable: true},

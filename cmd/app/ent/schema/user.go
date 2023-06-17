@@ -22,6 +22,7 @@ func (User) Fields() []ent.Field {
 		field.String("auth0_id").Unique(),
 		field.String("name").Optional(),
 		field.String("picture").Optional(),
+		field.String("cover_image").Optional().Default("https://res.cloudinary.com/placio/image/upload/v1686842319/mjl8stmbn5xmfsm50vbg.jpg"),
 		field.String("username").Unique().Immutable(),
 		field.JSON("auth0_data", &management.User{}).Optional(),
 		field.JSON("app_settings", map[string]interface{}{}).Optional(),

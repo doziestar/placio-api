@@ -61,6 +61,20 @@ func (uc *UserCreate) SetNillablePicture(s *string) *UserCreate {
 	return uc
 }
 
+// SetCoverImage sets the "cover_image" field.
+func (uc *UserCreate) SetCoverImage(s string) *UserCreate {
+	uc.mutation.SetCoverImage(s)
+	return uc
+}
+
+// SetNillableCoverImage sets the "cover_image" field if the given value is not nil.
+func (uc *UserCreate) SetNillableCoverImage(s *string) *UserCreate {
+	if s != nil {
+		uc.SetCoverImage(*s)
+	}
+	return uc
+}
+
 // SetUsername sets the "username" field.
 func (uc *UserCreate) SetUsername(s string) *UserCreate {
 	uc.mutation.SetUsername(s)
@@ -218,6 +232,7 @@ func (uc *UserCreate) Mutation() *UserMutation {
 
 // Save creates the User in the database.
 func (uc *UserCreate) Save(ctx context.Context) (*User, error) {
+	uc.defaults()
 	return withHooks(ctx, uc.sqlSave, uc.mutation, uc.hooks)
 }
 
@@ -240,6 +255,14 @@ func (uc *UserCreate) Exec(ctx context.Context) error {
 func (uc *UserCreate) ExecX(ctx context.Context) {
 	if err := uc.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (uc *UserCreate) defaults() {
+	if _, ok := uc.mutation.CoverImage(); !ok {
+		v := user.DefaultCoverImage
+		uc.mutation.SetCoverImage(v)
 	}
 }
 
@@ -302,6 +325,10 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.Picture(); ok {
 		_spec.SetField(user.FieldPicture, field.TypeString, value)
 		_node.Picture = value
+	}
+	if value, ok := uc.mutation.CoverImage(); ok {
+		_spec.SetField(user.FieldCoverImage, field.TypeString, value)
+		_node.CoverImage = value
 	}
 	if value, ok := uc.mutation.Username(); ok {
 		_spec.SetField(user.FieldUsername, field.TypeString, value)
@@ -464,6 +491,7 @@ func (ucb *UserCreateBulk) Save(ctx context.Context) ([]*User, error) {
 	for i := range ucb.builders {
 		func(i int, root context.Context) {
 			builder := ucb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*UserMutation)
 				if !ok {

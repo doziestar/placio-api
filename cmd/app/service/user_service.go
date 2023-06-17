@@ -168,10 +168,9 @@ func (s *UserServiceImpl) GetUser(ctx context.Context, auth0ID string) (*ent.Use
 			Create().
 			SetID(utility.GenerateID()).
 			SetAuth0ID(userId).
-			SetName(*auth0Data.GivenName).
+			SetName(*auth0Data.Name).
+			SetUsername(utility.GenerateRandomUsername()).
 			SetPicture(*auth0Data.Picture).
-			SetFamilyName(*auth0Data.FamilyName).
-			SetNickname(*auth0Data.Nickname).
 			Save(ctx)
 
 		if err != nil {
@@ -440,11 +439,8 @@ func (us *UserServiceImpl) UpdateUser(ctx context.Context, userID string, userDa
 	if v, ok := userData["name"]; ok {
 		upd.SetName(v.(string))
 	}
-	if v, ok := userData["family_name"]; ok {
-		upd.SetFamilyName(v.(string))
-	}
-	if v, ok := userData["nickname"]; ok {
-		upd.SetNickname(v.(string))
+	if v, ok := userData["cover_image"]; ok {
+		upd.SetCoverImage(v.(string))
 	}
 	if v, ok := userData["picture"]; ok {
 		upd.SetPicture(v.(string))

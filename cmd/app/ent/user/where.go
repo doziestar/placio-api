@@ -79,6 +79,11 @@ func Picture(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldPicture, v))
 }
 
+// CoverImage applies equality check predicate on the "cover_image" field. It's identical to CoverImageEQ.
+func CoverImage(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldCoverImage, v))
+}
+
 // Username applies equality check predicate on the "username" field. It's identical to UsernameEQ.
 func Username(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldUsername, v))
@@ -297,6 +302,81 @@ func PictureEqualFold(v string) predicate.User {
 // PictureContainsFold applies the ContainsFold predicate on the "picture" field.
 func PictureContainsFold(v string) predicate.User {
 	return predicate.User(sql.FieldContainsFold(FieldPicture, v))
+}
+
+// CoverImageEQ applies the EQ predicate on the "cover_image" field.
+func CoverImageEQ(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldCoverImage, v))
+}
+
+// CoverImageNEQ applies the NEQ predicate on the "cover_image" field.
+func CoverImageNEQ(v string) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldCoverImage, v))
+}
+
+// CoverImageIn applies the In predicate on the "cover_image" field.
+func CoverImageIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldIn(FieldCoverImage, vs...))
+}
+
+// CoverImageNotIn applies the NotIn predicate on the "cover_image" field.
+func CoverImageNotIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldCoverImage, vs...))
+}
+
+// CoverImageGT applies the GT predicate on the "cover_image" field.
+func CoverImageGT(v string) predicate.User {
+	return predicate.User(sql.FieldGT(FieldCoverImage, v))
+}
+
+// CoverImageGTE applies the GTE predicate on the "cover_image" field.
+func CoverImageGTE(v string) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldCoverImage, v))
+}
+
+// CoverImageLT applies the LT predicate on the "cover_image" field.
+func CoverImageLT(v string) predicate.User {
+	return predicate.User(sql.FieldLT(FieldCoverImage, v))
+}
+
+// CoverImageLTE applies the LTE predicate on the "cover_image" field.
+func CoverImageLTE(v string) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldCoverImage, v))
+}
+
+// CoverImageContains applies the Contains predicate on the "cover_image" field.
+func CoverImageContains(v string) predicate.User {
+	return predicate.User(sql.FieldContains(FieldCoverImage, v))
+}
+
+// CoverImageHasPrefix applies the HasPrefix predicate on the "cover_image" field.
+func CoverImageHasPrefix(v string) predicate.User {
+	return predicate.User(sql.FieldHasPrefix(FieldCoverImage, v))
+}
+
+// CoverImageHasSuffix applies the HasSuffix predicate on the "cover_image" field.
+func CoverImageHasSuffix(v string) predicate.User {
+	return predicate.User(sql.FieldHasSuffix(FieldCoverImage, v))
+}
+
+// CoverImageIsNil applies the IsNil predicate on the "cover_image" field.
+func CoverImageIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldCoverImage))
+}
+
+// CoverImageNotNil applies the NotNil predicate on the "cover_image" field.
+func CoverImageNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldCoverImage))
+}
+
+// CoverImageEqualFold applies the EqualFold predicate on the "cover_image" field.
+func CoverImageEqualFold(v string) predicate.User {
+	return predicate.User(sql.FieldEqualFold(FieldCoverImage, v))
+}
+
+// CoverImageContainsFold applies the ContainsFold predicate on the "cover_image" field.
+func CoverImageContainsFold(v string) predicate.User {
+	return predicate.User(sql.FieldContainsFold(FieldCoverImage, v))
 }
 
 // UsernameEQ applies the EQ predicate on the "username" field.

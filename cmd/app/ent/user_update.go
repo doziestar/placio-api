@@ -81,6 +81,26 @@ func (uu *UserUpdate) ClearPicture() *UserUpdate {
 	return uu
 }
 
+// SetCoverImage sets the "cover_image" field.
+func (uu *UserUpdate) SetCoverImage(s string) *UserUpdate {
+	uu.mutation.SetCoverImage(s)
+	return uu
+}
+
+// SetNillableCoverImage sets the "cover_image" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableCoverImage(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetCoverImage(*s)
+	}
+	return uu
+}
+
+// ClearCoverImage clears the value of the "cover_image" field.
+func (uu *UserUpdate) ClearCoverImage() *UserUpdate {
+	uu.mutation.ClearCoverImage()
+	return uu
+}
+
 // SetAuth0Data sets the "auth0_data" field.
 func (uu *UserUpdate) SetAuth0Data(m *management.User) *UserUpdate {
 	uu.mutation.SetAuth0Data(m)
@@ -460,6 +480,12 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if uu.mutation.PictureCleared() {
 		_spec.ClearField(user.FieldPicture, field.TypeString)
+	}
+	if value, ok := uu.mutation.CoverImage(); ok {
+		_spec.SetField(user.FieldCoverImage, field.TypeString, value)
+	}
+	if uu.mutation.CoverImageCleared() {
+		_spec.ClearField(user.FieldCoverImage, field.TypeString)
 	}
 	if value, ok := uu.mutation.Auth0Data(); ok {
 		_spec.SetField(user.FieldAuth0Data, field.TypeJSON, value)
@@ -905,6 +931,26 @@ func (uuo *UserUpdateOne) ClearPicture() *UserUpdateOne {
 	return uuo
 }
 
+// SetCoverImage sets the "cover_image" field.
+func (uuo *UserUpdateOne) SetCoverImage(s string) *UserUpdateOne {
+	uuo.mutation.SetCoverImage(s)
+	return uuo
+}
+
+// SetNillableCoverImage sets the "cover_image" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableCoverImage(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetCoverImage(*s)
+	}
+	return uuo
+}
+
+// ClearCoverImage clears the value of the "cover_image" field.
+func (uuo *UserUpdateOne) ClearCoverImage() *UserUpdateOne {
+	uuo.mutation.ClearCoverImage()
+	return uuo
+}
+
 // SetAuth0Data sets the "auth0_data" field.
 func (uuo *UserUpdateOne) SetAuth0Data(m *management.User) *UserUpdateOne {
 	uuo.mutation.SetAuth0Data(m)
@@ -1314,6 +1360,12 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if uuo.mutation.PictureCleared() {
 		_spec.ClearField(user.FieldPicture, field.TypeString)
+	}
+	if value, ok := uuo.mutation.CoverImage(); ok {
+		_spec.SetField(user.FieldCoverImage, field.TypeString, value)
+	}
+	if uuo.mutation.CoverImageCleared() {
+		_spec.ClearField(user.FieldCoverImage, field.TypeString)
 	}
 	if value, ok := uuo.mutation.Auth0Data(); ok {
 		_spec.SetField(user.FieldAuth0Data, field.TypeJSON, value)

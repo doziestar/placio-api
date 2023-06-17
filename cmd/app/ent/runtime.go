@@ -99,6 +99,10 @@ func init() {
 	post.IDValidator = postDescID.Validators[0].(func(string) error)
 	userFields := schema.User{}.Fields()
 	_ = userFields
+	// userDescCoverImage is the schema descriptor for cover_image field.
+	userDescCoverImage := userFields[4].Descriptor()
+	// user.DefaultCoverImage holds the default value on creation for the cover_image field.
+	user.DefaultCoverImage = userDescCoverImage.Default.(string)
 	// userDescID is the schema descriptor for id field.
 	userDescID := userFields[0].Descriptor()
 	// user.IDValidator is a validator for the "id" field. It is called by the builders before save.
