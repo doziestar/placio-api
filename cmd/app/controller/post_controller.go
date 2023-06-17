@@ -196,6 +196,8 @@ func (pc *PostController) updatePost(ctx *gin.Context) error {
 		return err
 	}
 
+	postId := ctx.Param("id")
+
 	// Bind the incoming JSON to a new PostDto instance
 	data := new(Dto.PostDto)
 	if err := ctx.BindJSON(data); err != nil {
@@ -206,6 +208,7 @@ func (pc *PostController) updatePost(ctx *gin.Context) error {
 	// Create a new Post instance
 	post := &ent.Post{
 		Content: data.Content,
+		ID:      postId,
 	}
 
 	// Update the post

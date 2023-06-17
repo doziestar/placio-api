@@ -166,8 +166,8 @@ func (s *UserServiceImpl) GetUser(ctx context.Context, auth0ID string) (*ent.Use
 		userId := strings.Split(auth0ID, "|")[1]
 		newUser, err := s.client.User.
 			Create().
-			SetID(utility.GenerateID()).
-			SetAuth0ID(userId).
+			SetID(userId).
+			SetAuth0ID(auth0ID).
 			SetName(*auth0Data.Name).
 			SetUsername(utility.GenerateRandomUsername()).
 			SetPicture(*auth0Data.Picture).
@@ -629,6 +629,7 @@ func (us *UserServiceImpl) GetPostsByUser(ctx context.Context, userID string) ([
 		WithUser().
 		WithBusinessAccount().
 		WithMedias().
+		WithLikes().
 		WithComments(func(query *ent.CommentQuery) {
 			query.WithUser()
 
