@@ -308,6 +308,179 @@
                 }
             }
         },
+        "/api/v1/bookings/": {
+            "post": {
+                "description": "Create a new booking",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking"
+                ],
+                "summary": "Create a booking",
+                "parameters": [
+                    {
+                        "description": "Booking data",
+                        "name": "booking",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully created booking",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.Booking"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/bookings/{id}": {
+            "get": {
+                "description": "Get a booking by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking"
+                ],
+                "summary": "Get a booking",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the booking",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved booking",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.Booking"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a booking by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking"
+                ],
+                "summary": "Delete a booking",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the booking",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully deleted booking",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Update a booking by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Booking"
+                ],
+                "summary": "Update a booking",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the booking",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Booking data",
+                        "name": "booking",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully updated booking",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.Booking"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/comments/:postId": {
             "post": {
                 "security": [
@@ -819,6 +992,406 @@
                         "description": "Successfully unliked post",
                         "schema": {
                             "$ref": "#/definitions/placio-app_Dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/menus/": {
+            "post": {
+                "description": "Create a new menu",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Menu"
+                ],
+                "summary": "Create a menu",
+                "parameters": [
+                    {
+                        "description": "Menu data",
+                        "name": "menu",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully created menu",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.Menu"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/menus/{id}": {
+            "get": {
+                "description": "Get a menu by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Menu"
+                ],
+                "summary": "Get a menu",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the menu",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved menu",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.Menu"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a menu by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Menu"
+                ],
+                "summary": "Delete a menu",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the menu",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully deleted menu",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Update a menu by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Menu"
+                ],
+                "summary": "Update a menu",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the menu",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Menu data",
+                        "name": "menu",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully updated menu",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.Menu"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/places/": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Create a new place",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Place"
+                ],
+                "summary": "Create a place",
+                "parameters": [
+                    {
+                        "description": "Place to create",
+                        "name": "place",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.Place"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully created place",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.Place"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/places/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get a place by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Place"
+                ],
+                "summary": "Get a place",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the place to get",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved place",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.Place"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Delete a place by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Place"
+                ],
+                "summary": "Delete a place",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the place to delete",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully deleted place",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.Place"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Update a place by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Place"
+                ],
+                "summary": "Update a place",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the place to update",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Place data to update",
+                        "name": "place",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.Place"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully updated place",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.Place"
                         }
                     },
                     "400": {
@@ -1366,6 +1939,406 @@
                     },
                     "404": {
                         "description": "Rating Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/reservations/": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Create a new reservation",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Reservation"
+                ],
+                "summary": "Create a reservation",
+                "parameters": [
+                    {
+                        "description": "Reservation to create",
+                        "name": "reservation",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.Reservation"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully created reservation",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.Reservation"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/reservations/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get a reservation by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Reservation"
+                ],
+                "summary": "Get a reservation",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the reservation to get",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved reservation",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.Reservation"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Delete a reservation by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Reservation"
+                ],
+                "summary": "Delete a reservation",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the reservation to delete",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully deleted reservation",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.Reservation"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Update a reservation by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Reservation"
+                ],
+                "summary": "Update a reservation",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the reservation to update",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Reservation data to update",
+                        "name": "reservation",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.Reservation"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully updated reservation",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.Reservation"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/rooms/": {
+            "post": {
+                "description": "Create a new room",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Room"
+                ],
+                "summary": "Create a room",
+                "parameters": [
+                    {
+                        "description": "Room data",
+                        "name": "room",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully created room",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.Room"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/rooms/{id}": {
+            "get": {
+                "description": "Get a room by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Room"
+                ],
+                "summary": "Get a room",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the room",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved room",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.Room"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a room by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Room"
+                ],
+                "summary": "Delete a room",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the room",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully deleted room",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Update a room by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Room"
+                ],
+                "summary": "Update a room",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the room",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Room data",
+                        "name": "room",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully updated room",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.Room"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
                         }
@@ -3901,6 +4874,10 @@
         }
     },
     "definitions": {
+        "gin.H": {
+            "type": "object",
+            "additionalProperties": {}
+        },
         "gorm.DeletedAt": {
             "type": "object",
             "properties": {
@@ -4303,6 +5280,97 @@
                 }
             }
         },
+        "placio-app_ent.Amenity": {
+            "type": "object",
+            "properties": {
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the AmenityQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.AmenityEdges"
+                        }
+                    ]
+                },
+                "icon": {
+                    "description": "Icon holds the value of the \"icon\" field.",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Name holds the value of the \"name\" field.",
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_ent.AmenityEdges": {
+            "type": "object",
+            "properties": {
+                "places": {
+                    "description": "Places holds the value of the places edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Place"
+                    }
+                }
+            }
+        },
+        "placio-app_ent.Booking": {
+            "type": "object",
+            "properties": {
+                "bookingDate": {
+                    "description": "BookingDate holds the value of the \"bookingDate\" field.",
+                    "type": "string"
+                },
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the BookingQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.BookingEdges"
+                        }
+                    ]
+                },
+                "endDate": {
+                    "description": "EndDate holds the value of the \"endDate\" field.",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                },
+                "startDate": {
+                    "description": "StartDate holds the value of the \"startDate\" field.",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "Status holds the value of the \"status\" field.",
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_ent.BookingEdges": {
+            "type": "object",
+            "properties": {
+                "room": {
+                    "description": "Room holds the value of the room edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.Room"
+                        }
+                    ]
+                },
+                "user": {
+                    "description": "User holds the value of the user edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.User"
+                        }
+                    ]
+                }
+            }
+        },
         "placio-app_ent.Business": {
             "type": "object",
             "properties": {
@@ -4361,6 +5429,13 @@
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/placio-app_ent.UserFollowBusiness"
+                    }
+                },
+                "places": {
+                    "description": "Places holds the value of the places edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Place"
                     }
                 },
                 "posts": {
@@ -4505,6 +5580,54 @@
                 }
             }
         },
+        "placio-app_ent.Event": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "description": "CreatedAt holds the value of the \"createdAt\" field.",
+                    "type": "string"
+                },
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the EventQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.EventEdges"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Name holds the value of the \"name\" field.",
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "description": "UpdatedAt holds the value of the \"updatedAt\" field.",
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_ent.EventEdges": {
+            "type": "object",
+            "properties": {
+                "ticket_options": {
+                    "description": "TicketOptions holds the value of the ticket_options edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.TicketOption"
+                    }
+                },
+                "tickets": {
+                    "description": "Tickets holds the value of the tickets edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Ticket"
+                    }
+                }
+            }
+        },
         "placio-app_ent.Like": {
             "type": "object",
             "properties": {
@@ -4597,6 +5720,151 @@
                 }
             }
         },
+        "placio-app_ent.Menu": {
+            "type": "object",
+            "properties": {
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the MenuQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.MenuEdges"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_ent.MenuEdges": {
+            "type": "object",
+            "properties": {
+                "place": {
+                    "description": "Place holds the value of the place edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.Place"
+                        }
+                    ]
+                }
+            }
+        },
+        "placio-app_ent.Place": {
+            "type": "object",
+            "properties": {
+                "availability": {
+                    "description": "Availability holds the value of the \"availability\" field.",
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "description": {
+                    "description": "Description holds the value of the \"description\" field.",
+                    "type": "string"
+                },
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the PlaceQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.PlaceEdges"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                },
+                "images": {
+                    "description": "Images holds the value of the \"images\" field.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "location": {
+                    "description": "Location holds the value of the \"location\" field.",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Name holds the value of the \"name\" field.",
+                    "type": "string"
+                },
+                "special_offers": {
+                    "description": "SpecialOffers holds the value of the \"special_offers\" field.",
+                    "type": "string"
+                },
+                "sustainability_score": {
+                    "description": "SustainabilityScore holds the value of the \"sustainability_score\" field.",
+                    "type": "number"
+                },
+                "type": {
+                    "description": "Type holds the value of the \"type\" field.",
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_ent.PlaceEdges": {
+            "type": "object",
+            "properties": {
+                "amenities": {
+                    "description": "Amenities holds the value of the amenities edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Amenity"
+                    }
+                },
+                "bookings": {
+                    "description": "Bookings holds the value of the bookings edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Booking"
+                    }
+                },
+                "business": {
+                    "description": "Business holds the value of the business edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.Business"
+                        }
+                    ]
+                },
+                "events": {
+                    "description": "Events holds the value of the events edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Event"
+                    }
+                },
+                "menus": {
+                    "description": "Menus holds the value of the menus edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Menu"
+                    }
+                },
+                "reservations": {
+                    "description": "Reservations holds the value of the reservations edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Reservation"
+                    }
+                },
+                "reviews": {
+                    "description": "Reviews holds the value of the reviews edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Review"
+                    }
+                },
+                "rooms": {
+                    "description": "Rooms holds the value of the rooms edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Room"
+                    }
+                }
+            }
+        },
         "placio-app_ent.Post": {
             "type": "object",
             "properties": {
@@ -4671,6 +5939,261 @@
                     "allOf": [
                         {
                             "$ref": "#/definitions/placio-app_ent.User"
+                        }
+                    ]
+                }
+            }
+        },
+        "placio-app_ent.Reservation": {
+            "type": "object",
+            "properties": {
+                "date": {
+                    "description": "Date holds the value of the \"date\" field.",
+                    "type": "string"
+                },
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the ReservationQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.ReservationEdges"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                },
+                "numberOfPeople": {
+                    "description": "NumberOfPeople holds the value of the \"numberOfPeople\" field.",
+                    "type": "integer"
+                },
+                "status": {
+                    "description": "Status holds the value of the \"status\" field.",
+                    "type": "string"
+                },
+                "time": {
+                    "description": "Time holds the value of the \"time\" field.",
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_ent.ReservationEdges": {
+            "type": "object",
+            "properties": {
+                "place": {
+                    "description": "Place holds the value of the place edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.Place"
+                        }
+                    ]
+                },
+                "user": {
+                    "description": "User holds the value of the user edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.User"
+                        }
+                    ]
+                }
+            }
+        },
+        "placio-app_ent.Review": {
+            "type": "object",
+            "properties": {
+                "comment": {
+                    "description": "Comment holds the value of the \"comment\" field.",
+                    "type": "string"
+                },
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the ReviewQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.ReviewEdges"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                },
+                "images_videos": {
+                    "description": "ImagesVideos holds the value of the \"images_videos\" field.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "rating": {
+                    "description": "Rating holds the value of the \"rating\" field.",
+                    "type": "number"
+                },
+                "timestamp": {
+                    "description": "Timestamp holds the value of the \"timestamp\" field.",
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_ent.ReviewEdges": {
+            "type": "object",
+            "properties": {
+                "place": {
+                    "description": "Place holds the value of the place edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.Place"
+                        }
+                    ]
+                },
+                "user": {
+                    "description": "User holds the value of the user edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.User"
+                        }
+                    ]
+                }
+            }
+        },
+        "placio-app_ent.Room": {
+            "type": "object",
+            "properties": {
+                "availability": {
+                    "description": "Availability holds the value of the \"availability\" field.",
+                    "type": "boolean"
+                },
+                "description": {
+                    "description": "Description holds the value of the \"description\" field.",
+                    "type": "string"
+                },
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the RoomQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.RoomEdges"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                },
+                "image": {
+                    "description": "Image holds the value of the \"image\" field.",
+                    "type": "string"
+                },
+                "number": {
+                    "description": "Number holds the value of the \"number\" field.",
+                    "type": "string"
+                },
+                "price": {
+                    "description": "Price holds the value of the \"price\" field.",
+                    "type": "number"
+                },
+                "type": {
+                    "description": "Type holds the value of the \"type\" field.",
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_ent.RoomEdges": {
+            "type": "object",
+            "properties": {
+                "bookings": {
+                    "description": "Bookings holds the value of the bookings edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Booking"
+                    }
+                },
+                "place": {
+                    "description": "Place holds the value of the place edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.Place"
+                        }
+                    ]
+                }
+            }
+        },
+        "placio-app_ent.Ticket": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "description": "CreatedAt holds the value of the \"createdAt\" field.",
+                    "type": "string"
+                },
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the TicketQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.TicketEdges"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "description": "UpdatedAt holds the value of the \"updatedAt\" field.",
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_ent.TicketEdges": {
+            "type": "object",
+            "properties": {
+                "event": {
+                    "description": "Event holds the value of the event edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.Event"
+                        }
+                    ]
+                },
+                "ticket_options": {
+                    "description": "TicketOptions holds the value of the ticket_options edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.TicketOption"
+                    }
+                }
+            }
+        },
+        "placio-app_ent.TicketOption": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "description": "CreatedAt holds the value of the \"createdAt\" field.",
+                    "type": "string"
+                },
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the TicketOptionQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.TicketOptionEdges"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "description": "UpdatedAt holds the value of the \"updatedAt\" field.",
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_ent.TicketOptionEdges": {
+            "type": "object",
+            "properties": {
+                "event": {
+                    "description": "Event holds the value of the event edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.Event"
                         }
                     ]
                 }
@@ -4776,6 +6299,13 @@
         "placio-app_ent.UserEdges": {
             "type": "object",
             "properties": {
+                "bookings": {
+                    "description": "Bookings holds the value of the bookings edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Booking"
+                    }
+                },
                 "comments": {
                     "description": "Comments holds the value of the comments edge.",
                     "type": "array",
@@ -4823,6 +6353,20 @@
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/placio-app_ent.Post"
+                    }
+                },
+                "reservations": {
+                    "description": "Reservations holds the value of the reservations edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Reservation"
+                    }
+                },
+                "reviews": {
+                    "description": "Reviews holds the value of the reviews edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Review"
                     }
                 },
                 "userBusinesses": {

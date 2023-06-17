@@ -2,6 +2,9 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
+	"net/http"
+	_ "placio-app/Dto"
+	_ "placio-app/ent"
 	"placio-app/service"
 	"placio-app/utility"
 )
@@ -14,71 +17,124 @@ func NewRoomController(roomService service.RoomService) *RoomController {
 	return &RoomController{roomService: roomService}
 }
 
-func (bc *BookingController) RegisterRoutes(router *gin.RouterGroup) {
-	bookingRouter := router.Group("/bookings")
+func (rc *RoomController) RegisterRoutes(router *gin.RouterGroup) {
+	roomRouter := router.Group("/rooms")
 	{
-		bookingRouter.GET("/:id", utility.Use(bc.getBooking))
-		bookingRouter.POST("/", utility.Use(bc.createBooking))
-		bookingRouter.PATCH("/:id", utility.Use(bc.updateBooking))
-		bookingRouter.DELETE("/:id", utility.Use(bc.deleteBooking))
+		roomRouter.GET("/:id", utility.Use(rc.getRoom))
+		roomRouter.POST("/", utility.Use(rc.createRoom))
+		roomRouter.PATCH("/:id", utility.Use(rc.updateRoom))
+		roomRouter.DELETE("/:id", utility.Use(rc.deleteRoom))
 	}
 }
 
-// @Summary Get a booking
-// @Description Get a booking by its ID
-// @Tags Booking
+// @Summary Get a room
+// @Description Get a room by its ID
+// @Tags Room
 // @Accept json
 // @Produce json
-// @Param id path string true "ID of the booking"
-// @Success 200 {object} ent.Booking "Successfully retrieved booking"
+// @Param id path string true "ID of the room"
+// @Success 200 {object} ent.Room "Successfully retrieved room"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
-// @Router /api/v1/bookings/{id} [get]
-func (bc *BookingController) getBooking(ctx *gin.Context) error {
-	// ... implementation omitted for brevity
+// @Router /api/v1/rooms/{id} [get]
+func (rc *RoomController) getRoom(ctx *gin.Context) error {
+	id := ctx.Param("id")
+
+	room, err := rc.roomService.GetRoom(ctx, id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Internal Server Error",
+		})
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, room)
 	return nil
 }
 
-// @Summary Create a booking
-// @Description Create a new booking
-// @Tags Booking
+// @Summary Create a room
+// @Description Create a new room
+// @Tags Room
 // @Accept json
 // @Produce json
-// @Param booking body map[string]interface{} true "Booking data"
-// @Success 200 {object} ent.Booking "Successfully created booking"
+// @Param room body map[string]interface{} true "Room data"
+// @Success 200 {object} ent.Room "Successfully created room"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
-// @Router /api/v1/bookings/ [post]
-func (bc *BookingController) createBooking(ctx *gin.Context) error {
-	// ... implementation omitted for brevity
+// @Router /api/v1/rooms/ [post]
+func (rc *RoomController) createRoom(ctx *gin.Context) error {
+	var roomData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&roomData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return err
+	}
+
+	room, err := rc.roomService.CreateRoom(ctx, roomData)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Internal Server Error",
+		})
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, room)
 	return nil
 }
 
-// @Summary Update a booking
-// @Description Update a booking by its ID
-// @Tags Booking
+// @Summary Update a room
+// @Description Update a room by its ID
+// @Tags Room
 // @Accept json
 // @Produce json
-// @Param id path string true "ID of the booking"
-// @Param booking body map[string]interface{} true "Booking data"
-// @Success 200 {object} ent.Booking "Successfully updated booking"
+// @Param id path string true "ID of the room"
+// @Param room body map[string]interface{} true "Room data"
+// @Success 200 {object} ent.Room "Successfully updated room"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
-// @Router /api/v1/bookings/{id} [patch]
-func (bc *BookingController) updateBooking(ctx *gin.Context) error {
-	// ... implementation omitted for brevity
+// @Router /api/v1/rooms/{id} [patch]
+func (rc *RoomController) updateRoom(ctx *gin.Context) error {
+	id := ctx.Param("id")
+	var roomData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&roomData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return err
+	}
+
+	room, err := rc.roomService.UpdateRoom(ctx, id, roomData)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Internal Server Error",
+		})
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, room)
 	return nil
 }
 
-// @Summary Delete a booking
-// @Description Delete a booking by its ID
-// @Tags Booking
+// @Summary Delete a room
+// @Description Delete a room by its ID
+// @Tags Room
 // @Accept json
 // @Produce json
-// @Param id path string true "ID of the booking"
-// @Success 200 {object} gin.H "Successfully deleted booking"
+// @Param id path string true "ID of the room"
+// @Success 200 {object} gin.H "Successfully deleted room"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
-// @Router /api/v1/bookings/{id} [delete]
-func (bc *BookingController) deleteBooking(ctx *gin.Context) error {
-	// ... implementation omitted for brevity
+// @Router /api/v1/rooms/{id} [delete]
+func (rc *RoomController) deleteRoom(ctx *gin.Context) error {
+	id := ctx.Param("id")
+
+	err := rc.roomService.DeleteRoom(ctx, id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Internal Server Error",
+		})
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"status":  "success",
+		"message": "Successfully deleted room",
+	})
+
 	return nil
 }

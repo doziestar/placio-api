@@ -3,6 +3,8 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	_ "placio-app/Dto"
+	_ "placio-app/ent"
 	"placio-app/service"
 )
 
@@ -31,7 +33,7 @@ func (rc *ReservationController) RegisterRoutes(router *gin.RouterGroup) {
 // @Produce json
 // @Param id path string true "ID of the reservation to get"
 // @Security Bearer
-// @Success 200 {object} Dto.ReservationResponse "Successfully retrieved reservation"
+// @Success 200 {object} ent.Reservation "Successfully retrieved reservation"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
@@ -55,9 +57,9 @@ func (rc *ReservationController) GetReservation(ctx *gin.Context) {
 // @Tags Reservation
 // @Accept json
 // @Produce json
-// @Param reservation body Dto.ReservationRequest true "Reservation to create"
+// @Param reservation body ent.Reservation true "Reservation to create"
 // @Security Bearer
-// @Success 200 {object} Dto.ReservationResponse "Successfully created reservation"
+// @Success 200 {object} ent.Reservation "Successfully created reservation"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
@@ -86,9 +88,9 @@ func (rc *ReservationController) CreateReservation(ctx *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string true "ID of the reservation to update"
-// @Param reservation body Dto.ReservationRequest true "Reservation data to update"
+// @Param reservation body ent.Reservation true "Reservation data to update"
 // @Security Bearer
-// @Success 200 {object} Dto.ReservationResponse "Successfully updated reservation"
+// @Success 200 {object} ent.Reservation "Successfully updated reservation"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
@@ -119,7 +121,7 @@ func (rc *ReservationController) UpdateReservation(ctx *gin.Context) {
 // @Produce json
 // @Param id path string true "ID of the reservation to delete"
 // @Security Bearer
-// @Success 200 {object} Dto.DeleteResponse "Successfully deleted reservation"
+// @Success 200 {object} ent.Reservation "Successfully deleted reservation"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"

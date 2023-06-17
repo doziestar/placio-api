@@ -1,5 +1,8 @@
 basePath: /qpi/v1
 definitions:
+  gin.H:
+    additionalProperties: {}
+    type: object
   gorm.DeletedAt:
     properties:
       time:
@@ -292,6 +295,67 @@ definitions:
           - $ref: '#/definitions/placio-app_ent.Business'
         description: BusinessAccount holds the value of the business_account edge.
     type: object
+  placio-app_ent.Amenity:
+    properties:
+      edges:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.AmenityEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the AmenityQuery when eager-loading is set.
+      icon:
+        description: Icon holds the value of the "icon" field.
+        type: string
+      id:
+        description: ID of the ent.
+        type: string
+      name:
+        description: Name holds the value of the "name" field.
+        type: string
+    type: object
+  placio-app_ent.AmenityEdges:
+    properties:
+      places:
+        description: Places holds the value of the places edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Place'
+        type: array
+    type: object
+  placio-app_ent.Booking:
+    properties:
+      bookingDate:
+        description: BookingDate holds the value of the "bookingDate" field.
+        type: string
+      edges:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.BookingEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the BookingQuery when eager-loading is set.
+      endDate:
+        description: EndDate holds the value of the "endDate" field.
+        type: string
+      id:
+        description: ID of the ent.
+        type: string
+      startDate:
+        description: StartDate holds the value of the "startDate" field.
+        type: string
+      status:
+        description: Status holds the value of the "status" field.
+        type: string
+    type: object
+  placio-app_ent.BookingEdges:
+    properties:
+      room:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.Room'
+        description: Room holds the value of the room edge.
+      user:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.User'
+        description: User holds the value of the user edge.
+    type: object
   placio-app_ent.Business:
     properties:
       edges:
@@ -332,6 +396,11 @@ definitions:
         description: FollowerUsers holds the value of the followerUsers edge.
         items:
           $ref: '#/definitions/placio-app_ent.UserFollowBusiness'
+        type: array
+      places:
+        description: Places holds the value of the places edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Place'
         type: array
       posts:
         description: Posts holds the value of the posts edge.
@@ -422,6 +491,40 @@ definitions:
           - $ref: '#/definitions/placio-app_ent.User'
         description: User holds the value of the user edge.
     type: object
+  placio-app_ent.Event:
+    properties:
+      createdAt:
+        description: CreatedAt holds the value of the "createdAt" field.
+        type: string
+      edges:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.EventEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the EventQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: string
+      name:
+        description: Name holds the value of the "name" field.
+        type: string
+      updatedAt:
+        description: UpdatedAt holds the value of the "updatedAt" field.
+        type: string
+    type: object
+  placio-app_ent.EventEdges:
+    properties:
+      ticket_options:
+        description: TicketOptions holds the value of the ticket_options edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.TicketOption'
+        type: array
+      tickets:
+        description: Tickets holds the value of the tickets edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Ticket'
+        type: array
+    type: object
   placio-app_ent.Like:
     properties:
       CreatedAt:
@@ -482,6 +585,106 @@ definitions:
           - $ref: '#/definitions/placio-app_ent.Post'
         description: Post holds the value of the post edge.
     type: object
+  placio-app_ent.Menu:
+    properties:
+      edges:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.MenuEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the MenuQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: string
+    type: object
+  placio-app_ent.MenuEdges:
+    properties:
+      place:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.Place'
+        description: Place holds the value of the place edge.
+    type: object
+  placio-app_ent.Place:
+    properties:
+      availability:
+        additionalProperties: true
+        description: Availability holds the value of the "availability" field.
+        type: object
+      description:
+        description: Description holds the value of the "description" field.
+        type: string
+      edges:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.PlaceEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the PlaceQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: string
+      images:
+        description: Images holds the value of the "images" field.
+        items:
+          type: string
+        type: array
+      location:
+        description: Location holds the value of the "location" field.
+        type: string
+      name:
+        description: Name holds the value of the "name" field.
+        type: string
+      special_offers:
+        description: SpecialOffers holds the value of the "special_offers" field.
+        type: string
+      sustainability_score:
+        description: SustainabilityScore holds the value of the "sustainability_score" field.
+        type: number
+      type:
+        description: Type holds the value of the "type" field.
+        type: string
+    type: object
+  placio-app_ent.PlaceEdges:
+    properties:
+      amenities:
+        description: Amenities holds the value of the amenities edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Amenity'
+        type: array
+      bookings:
+        description: Bookings holds the value of the bookings edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Booking'
+        type: array
+      business:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.Business'
+        description: Business holds the value of the business edge.
+      events:
+        description: Events holds the value of the events edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Event'
+        type: array
+      menus:
+        description: Menus holds the value of the menus edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Menu'
+        type: array
+      reservations:
+        description: Reservations holds the value of the reservations edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Reservation'
+        type: array
+      reviews:
+        description: Reviews holds the value of the reviews edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Review'
+        type: array
+      rooms:
+        description: Rooms holds the value of the rooms edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Room'
+        type: array
+    type: object
   placio-app_ent.Post:
     properties:
       Content:
@@ -532,6 +735,175 @@ definitions:
         allOf:
           - $ref: '#/definitions/placio-app_ent.User'
         description: User holds the value of the user edge.
+    type: object
+  placio-app_ent.Reservation:
+    properties:
+      date:
+        description: Date holds the value of the "date" field.
+        type: string
+      edges:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.ReservationEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the ReservationQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: string
+      numberOfPeople:
+        description: NumberOfPeople holds the value of the "numberOfPeople" field.
+        type: integer
+      status:
+        description: Status holds the value of the "status" field.
+        type: string
+      time:
+        description: Time holds the value of the "time" field.
+        type: string
+    type: object
+  placio-app_ent.ReservationEdges:
+    properties:
+      place:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.Place'
+        description: Place holds the value of the place edge.
+      user:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.User'
+        description: User holds the value of the user edge.
+    type: object
+  placio-app_ent.Review:
+    properties:
+      comment:
+        description: Comment holds the value of the "comment" field.
+        type: string
+      edges:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.ReviewEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the ReviewQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: string
+      images_videos:
+        description: ImagesVideos holds the value of the "images_videos" field.
+        items:
+          type: string
+        type: array
+      rating:
+        description: Rating holds the value of the "rating" field.
+        type: number
+      timestamp:
+        description: Timestamp holds the value of the "timestamp" field.
+        type: string
+    type: object
+  placio-app_ent.ReviewEdges:
+    properties:
+      place:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.Place'
+        description: Place holds the value of the place edge.
+      user:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.User'
+        description: User holds the value of the user edge.
+    type: object
+  placio-app_ent.Room:
+    properties:
+      availability:
+        description: Availability holds the value of the "availability" field.
+        type: boolean
+      description:
+        description: Description holds the value of the "description" field.
+        type: string
+      edges:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.RoomEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the RoomQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: string
+      image:
+        description: Image holds the value of the "image" field.
+        type: string
+      number:
+        description: Number holds the value of the "number" field.
+        type: string
+      price:
+        description: Price holds the value of the "price" field.
+        type: number
+      type:
+        description: Type holds the value of the "type" field.
+        type: string
+    type: object
+  placio-app_ent.RoomEdges:
+    properties:
+      bookings:
+        description: Bookings holds the value of the bookings edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Booking'
+        type: array
+      place:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.Place'
+        description: Place holds the value of the place edge.
+    type: object
+  placio-app_ent.Ticket:
+    properties:
+      createdAt:
+        description: CreatedAt holds the value of the "createdAt" field.
+        type: string
+      edges:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.TicketEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the TicketQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: string
+      updatedAt:
+        description: UpdatedAt holds the value of the "updatedAt" field.
+        type: string
+    type: object
+  placio-app_ent.TicketEdges:
+    properties:
+      event:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.Event'
+        description: Event holds the value of the event edge.
+      ticket_options:
+        description: TicketOptions holds the value of the ticket_options edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.TicketOption'
+        type: array
+    type: object
+  placio-app_ent.TicketOption:
+    properties:
+      createdAt:
+        description: CreatedAt holds the value of the "createdAt" field.
+        type: string
+      edges:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.TicketOptionEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the TicketOptionQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: string
+      updatedAt:
+        description: UpdatedAt holds the value of the "updatedAt" field.
+        type: string
+    type: object
+  placio-app_ent.TicketOptionEdges:
+    properties:
+      event:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.Event'
+        description: Event holds the value of the event edge.
     type: object
   placio-app_ent.User:
     properties:
@@ -600,6 +972,11 @@ definitions:
     type: object
   placio-app_ent.UserEdges:
     properties:
+      bookings:
+        description: Bookings holds the value of the bookings edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Booking'
+        type: array
       comments:
         description: Comments holds the value of the comments edge.
         items:
@@ -634,6 +1011,16 @@ definitions:
         description: Posts holds the value of the posts edge.
         items:
           $ref: '#/definitions/placio-app_ent.Post'
+        type: array
+      reservations:
+        description: Reservations holds the value of the reservations edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Reservation'
+        type: array
+      reviews:
+        description: Reviews holds the value of the reviews edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Review'
         type: array
       userBusinesses:
         description: UserBusinesses holds the value of the userBusinesses edge.
@@ -1635,6 +2022,121 @@ paths:
       summary: Update attendee details
       tags:
         - Attendee
+  /api/v1/bookings/:
+    post:
+      consumes:
+        - application/json
+      description: Create a new booking
+      parameters:
+        - description: Booking data
+          in: body
+          name: booking
+          required: true
+          schema:
+            additionalProperties: true
+            type: object
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully created booking
+          schema:
+            $ref: '#/definitions/placio-app_ent.Booking'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Create a booking
+      tags:
+        - Booking
+  /api/v1/bookings/{id}:
+    delete:
+      consumes:
+        - application/json
+      description: Delete a booking by its ID
+      parameters:
+        - description: ID of the booking
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully deleted booking
+          schema:
+            $ref: '#/definitions/gin.H'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Delete a booking
+      tags:
+        - Booking
+    get:
+      consumes:
+        - application/json
+      description: Get a booking by its ID
+      parameters:
+        - description: ID of the booking
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully retrieved booking
+          schema:
+            $ref: '#/definitions/placio-app_ent.Booking'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Get a booking
+      tags:
+        - Booking
+    patch:
+      consumes:
+        - application/json
+      description: Update a booking by its ID
+      parameters:
+        - description: ID of the booking
+          in: path
+          name: id
+          required: true
+          type: string
+        - description: Booking data
+          in: body
+          name: booking
+          required: true
+          schema:
+            additionalProperties: true
+            type: object
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully updated booking
+          schema:
+            $ref: '#/definitions/placio-app_ent.Booking'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Update a booking
+      tags:
+        - Booking
   /api/v1/comments/:postId:
     post:
       consumes:
@@ -1979,6 +2481,266 @@ paths:
       summary: Like a post
       tags:
         - Like
+  /api/v1/menus/:
+    post:
+      consumes:
+        - application/json
+      description: Create a new menu
+      parameters:
+        - description: Menu data
+          in: body
+          name: menu
+          required: true
+          schema:
+            additionalProperties: true
+            type: object
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully created menu
+          schema:
+            $ref: '#/definitions/placio-app_ent.Menu'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Create a menu
+      tags:
+        - Menu
+  /api/v1/menus/{id}:
+    delete:
+      consumes:
+        - application/json
+      description: Delete a menu by its ID
+      parameters:
+        - description: ID of the menu
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully deleted menu
+          schema:
+            $ref: '#/definitions/gin.H'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Delete a menu
+      tags:
+        - Menu
+    get:
+      consumes:
+        - application/json
+      description: Get a menu by its ID
+      parameters:
+        - description: ID of the menu
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully retrieved menu
+          schema:
+            $ref: '#/definitions/placio-app_ent.Menu'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Get a menu
+      tags:
+        - Menu
+    patch:
+      consumes:
+        - application/json
+      description: Update a menu by its ID
+      parameters:
+        - description: ID of the menu
+          in: path
+          name: id
+          required: true
+          type: string
+        - description: Menu data
+          in: body
+          name: menu
+          required: true
+          schema:
+            additionalProperties: true
+            type: object
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully updated menu
+          schema:
+            $ref: '#/definitions/placio-app_ent.Menu'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Update a menu
+      tags:
+        - Menu
+  /api/v1/places/:
+    post:
+      consumes:
+        - application/json
+      description: Create a new place
+      parameters:
+        - description: Place to create
+          in: body
+          name: place
+          required: true
+          schema:
+            $ref: '#/definitions/placio-app_ent.Place'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully created place
+          schema:
+            $ref: '#/definitions/placio-app_ent.Place'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      security:
+        - Bearer: []
+      summary: Create a place
+      tags:
+        - Place
+  /api/v1/places/{id}:
+    delete:
+      consumes:
+        - application/json
+      description: Delete a place by ID
+      parameters:
+        - description: ID of the place to delete
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully deleted place
+          schema:
+            $ref: '#/definitions/placio-app_ent.Place'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      security:
+        - Bearer: []
+      summary: Delete a place
+      tags:
+        - Place
+    get:
+      consumes:
+        - application/json
+      description: Get a place by ID
+      parameters:
+        - description: ID of the place to get
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully retrieved place
+          schema:
+            $ref: '#/definitions/placio-app_ent.Place'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      security:
+        - Bearer: []
+      summary: Get a place
+      tags:
+        - Place
+    patch:
+      consumes:
+        - application/json
+      description: Update a place by ID
+      parameters:
+        - description: ID of the place to update
+          in: path
+          name: id
+          required: true
+          type: string
+        - description: Place data to update
+          in: body
+          name: place
+          required: true
+          schema:
+            $ref: '#/definitions/placio-app_ent.Place'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully updated place
+          schema:
+            $ref: '#/definitions/placio-app_ent.Place'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      security:
+        - Bearer: []
+      summary: Update a place
+      tags:
+        - Place
   /api/v1/posts/:
     post:
       consumes:
@@ -2329,6 +3091,266 @@ paths:
       summary: GET all ratings for an event
       tags:
         - Rating
+  /api/v1/reservations/:
+    post:
+      consumes:
+        - application/json
+      description: Create a new reservation
+      parameters:
+        - description: Reservation to create
+          in: body
+          name: reservation
+          required: true
+          schema:
+            $ref: '#/definitions/placio-app_ent.Reservation'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully created reservation
+          schema:
+            $ref: '#/definitions/placio-app_ent.Reservation'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      security:
+        - Bearer: []
+      summary: Create a reservation
+      tags:
+        - Reservation
+  /api/v1/reservations/{id}:
+    delete:
+      consumes:
+        - application/json
+      description: Delete a reservation by ID
+      parameters:
+        - description: ID of the reservation to delete
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully deleted reservation
+          schema:
+            $ref: '#/definitions/placio-app_ent.Reservation'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      security:
+        - Bearer: []
+      summary: Delete a reservation
+      tags:
+        - Reservation
+    get:
+      consumes:
+        - application/json
+      description: Get a reservation by ID
+      parameters:
+        - description: ID of the reservation to get
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully retrieved reservation
+          schema:
+            $ref: '#/definitions/placio-app_ent.Reservation'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      security:
+        - Bearer: []
+      summary: Get a reservation
+      tags:
+        - Reservation
+    patch:
+      consumes:
+        - application/json
+      description: Update a reservation by ID
+      parameters:
+        - description: ID of the reservation to update
+          in: path
+          name: id
+          required: true
+          type: string
+        - description: Reservation data to update
+          in: body
+          name: reservation
+          required: true
+          schema:
+            $ref: '#/definitions/placio-app_ent.Reservation'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully updated reservation
+          schema:
+            $ref: '#/definitions/placio-app_ent.Reservation'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      security:
+        - Bearer: []
+      summary: Update a reservation
+      tags:
+        - Reservation
+  /api/v1/rooms/:
+    post:
+      consumes:
+        - application/json
+      description: Create a new room
+      parameters:
+        - description: Room data
+          in: body
+          name: room
+          required: true
+          schema:
+            additionalProperties: true
+            type: object
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully created room
+          schema:
+            $ref: '#/definitions/placio-app_ent.Room'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Create a room
+      tags:
+        - Room
+  /api/v1/rooms/{id}:
+    delete:
+      consumes:
+        - application/json
+      description: Delete a room by its ID
+      parameters:
+        - description: ID of the room
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully deleted room
+          schema:
+            $ref: '#/definitions/gin.H'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Delete a room
+      tags:
+        - Room
+    get:
+      consumes:
+        - application/json
+      description: Get a room by its ID
+      parameters:
+        - description: ID of the room
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully retrieved room
+          schema:
+            $ref: '#/definitions/placio-app_ent.Room'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Get a room
+      tags:
+        - Room
+    patch:
+      consumes:
+        - application/json
+      description: Update a room by its ID
+      parameters:
+        - description: ID of the room
+          in: path
+          name: id
+          required: true
+          type: string
+        - description: Room data
+          in: body
+          name: room
+          required: true
+          schema:
+            additionalProperties: true
+            type: object
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully updated room
+          schema:
+            $ref: '#/definitions/placio-app_ent.Room'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Update a room
+      tags:
+        - Room
   /api/v1/ticket-options/:
     post:
       consumes:
