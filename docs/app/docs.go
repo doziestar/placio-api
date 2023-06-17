@@ -310,7 +310,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/comments/": {
+        "/api/v1/comments/:postId": {
             "post": {
                 "security": [
                     {
@@ -4074,14 +4074,10 @@ const docTemplate = `{
         "placio-app_Dto.CommentDto": {
             "type": "object",
             "required": [
-                "content",
-                "postId"
+                "content"
             ],
             "properties": {
                 "content": {
-                    "type": "string"
-                },
-                "postId": {
                     "type": "string"
                 }
             }
@@ -4700,6 +4696,10 @@ const docTemplate = `{
                 },
                 "auth0_id": {
                     "description": "Auth0ID holds the value of the \"auth0_id\" field.",
+                    "type": "string"
+                },
+                "cover_image": {
+                    "description": "CoverImage holds the value of the \"cover_image\" field.",
                     "type": "string"
                 },
                 "edges": {

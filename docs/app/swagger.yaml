@@ -151,11 +151,8 @@ definitions:
     properties:
       content:
         type: string
-      postId:
-        type: string
     required:
     - content
-    - postId
     type: object
   placio-app_Dto.CommentResponseDto:
     properties:
@@ -559,6 +556,9 @@ definitions:
         description: Auth0Data holds the value of the "auth0_data" field.
       auth0_id:
         description: Auth0ID holds the value of the "auth0_id" field.
+        type: string
+      cover_image:
+        description: CoverImage holds the value of the "cover_image" field.
         type: string
       edges:
         allOf:
@@ -1648,7 +1648,7 @@ paths:
       summary: Update attendee details
       tags:
       - Attendee
-  /api/v1/comments/:
+  /api/v1/comments/:postId:
     post:
       consumes:
       - application/json
