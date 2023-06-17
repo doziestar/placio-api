@@ -93,6 +93,31 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 	likeController := controller.NewLikeController(likeService)
 	likeController.RegisterRoutes(routerGroupV1)
 
+	// places
+	placeService := service.NewPlaceService(client)
+	placeController := controller.NewPlaceController(placeService)
+	placeController.RegisterRoutes(routerGroupV1)
+
+	// reservations
+	reservationService := service.NewReservationService(client)
+	reservationController := controller.NewReservationController(reservationService)
+	reservationController.RegisterRoutes(routerGroupV1)
+
+	// room
+	roomService := service.NewRoomService(client)
+	roomController := controller.NewRoomController(roomService)
+	roomController.RegisterRoutes(routerGroupV1)
+
+	// menu
+	menuService := service.NewMenuService(client)
+	menuController := controller.NewMenuController(menuService)
+	menuController.RegisterRoutes(routerGroupV1)
+
+	//booking
+	bookingService := service.NewBookingService(client)
+	bookingController := controller.NewBookingController(bookingService)
+	bookingController.RegisterRoutes(routerGroupV1)
+
 	//// ratings
 	//ratingService := service.NewRatingService(db)
 	//ratingController := controller.NewRatingController(ratingService)
