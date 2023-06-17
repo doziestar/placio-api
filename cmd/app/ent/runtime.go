@@ -4,12 +4,22 @@ package ent
 
 import (
 	"placio-app/ent/accountsettings"
+	"placio-app/ent/amenity"
+	"placio-app/ent/booking"
 	"placio-app/ent/business"
 	"placio-app/ent/comment"
+	"placio-app/ent/event"
 	"placio-app/ent/like"
 	"placio-app/ent/media"
+	"placio-app/ent/menu"
+	"placio-app/ent/place"
 	"placio-app/ent/post"
+	"placio-app/ent/reservation"
+	"placio-app/ent/review"
+	"placio-app/ent/room"
 	"placio-app/ent/schema"
+	"placio-app/ent/ticket"
+	"placio-app/ent/ticketoption"
 	"placio-app/ent/user"
 	"placio-app/ent/userbusiness"
 	"time"
@@ -25,6 +35,18 @@ func init() {
 	accountsettingsDescID := accountsettingsFields[0].Descriptor()
 	// accountsettings.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	accountsettings.IDValidator = accountsettingsDescID.Validators[0].(func(string) error)
+	amenityFields := schema.Amenity{}.Fields()
+	_ = amenityFields
+	// amenityDescID is the schema descriptor for id field.
+	amenityDescID := amenityFields[0].Descriptor()
+	// amenity.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	amenity.IDValidator = amenityDescID.Validators[0].(func(string) error)
+	bookingFields := schema.Booking{}.Fields()
+	_ = bookingFields
+	// bookingDescID is the schema descriptor for id field.
+	bookingDescID := bookingFields[0].Descriptor()
+	// booking.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	booking.IDValidator = bookingDescID.Validators[0].(func(string) error)
 	businessFields := schema.Business{}.Fields()
 	_ = businessFields
 	// businessDescID is the schema descriptor for id field.
@@ -49,6 +71,22 @@ func init() {
 	commentDescID := commentFields[0].Descriptor()
 	// comment.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	comment.IDValidator = commentDescID.Validators[0].(func(string) error)
+	eventFields := schema.Event{}.Fields()
+	_ = eventFields
+	// eventDescName is the schema descriptor for name field.
+	eventDescName := eventFields[1].Descriptor()
+	// event.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	event.NameValidator = eventDescName.Validators[0].(func(string) error)
+	// eventDescCreatedAt is the schema descriptor for createdAt field.
+	eventDescCreatedAt := eventFields[2].Descriptor()
+	// event.DefaultCreatedAt holds the default value on creation for the createdAt field.
+	event.DefaultCreatedAt = eventDescCreatedAt.Default.(func() time.Time)
+	// eventDescUpdatedAt is the schema descriptor for updatedAt field.
+	eventDescUpdatedAt := eventFields[3].Descriptor()
+	// event.DefaultUpdatedAt holds the default value on creation for the updatedAt field.
+	event.DefaultUpdatedAt = eventDescUpdatedAt.Default.(func() time.Time)
+	// event.UpdateDefaultUpdatedAt holds the default value on update for the updatedAt field.
+	event.UpdateDefaultUpdatedAt = eventDescUpdatedAt.UpdateDefault.(func() time.Time)
 	likeFields := schema.Like{}.Fields()
 	_ = likeFields
 	// likeDescCreatedAt is the schema descriptor for CreatedAt field.
@@ -79,6 +117,18 @@ func init() {
 	mediaDescID := mediaFields[0].Descriptor()
 	// media.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	media.IDValidator = mediaDescID.Validators[0].(func(string) error)
+	menuFields := schema.Menu{}.Fields()
+	_ = menuFields
+	// menuDescID is the schema descriptor for id field.
+	menuDescID := menuFields[0].Descriptor()
+	// menu.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	menu.IDValidator = menuDescID.Validators[0].(func(string) error)
+	placeFields := schema.Place{}.Fields()
+	_ = placeFields
+	// placeDescID is the schema descriptor for id field.
+	placeDescID := placeFields[0].Descriptor()
+	// place.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	place.IDValidator = placeDescID.Validators[0].(func(string) error)
 	postFields := schema.Post{}.Fields()
 	_ = postFields
 	// postDescContent is the schema descriptor for Content field.
@@ -97,6 +147,48 @@ func init() {
 	postDescID := postFields[0].Descriptor()
 	// post.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	post.IDValidator = postDescID.Validators[0].(func(string) error)
+	reservationFields := schema.Reservation{}.Fields()
+	_ = reservationFields
+	// reservationDescID is the schema descriptor for id field.
+	reservationDescID := reservationFields[0].Descriptor()
+	// reservation.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	reservation.IDValidator = reservationDescID.Validators[0].(func(string) error)
+	reviewFields := schema.Review{}.Fields()
+	_ = reviewFields
+	// reviewDescID is the schema descriptor for id field.
+	reviewDescID := reviewFields[0].Descriptor()
+	// review.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	review.IDValidator = reviewDescID.Validators[0].(func(string) error)
+	roomFields := schema.Room{}.Fields()
+	_ = roomFields
+	// roomDescID is the schema descriptor for id field.
+	roomDescID := roomFields[0].Descriptor()
+	// room.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	room.IDValidator = roomDescID.Validators[0].(func(string) error)
+	ticketFields := schema.Ticket{}.Fields()
+	_ = ticketFields
+	// ticketDescCreatedAt is the schema descriptor for createdAt field.
+	ticketDescCreatedAt := ticketFields[1].Descriptor()
+	// ticket.DefaultCreatedAt holds the default value on creation for the createdAt field.
+	ticket.DefaultCreatedAt = ticketDescCreatedAt.Default.(func() time.Time)
+	// ticketDescUpdatedAt is the schema descriptor for updatedAt field.
+	ticketDescUpdatedAt := ticketFields[2].Descriptor()
+	// ticket.DefaultUpdatedAt holds the default value on creation for the updatedAt field.
+	ticket.DefaultUpdatedAt = ticketDescUpdatedAt.Default.(func() time.Time)
+	// ticket.UpdateDefaultUpdatedAt holds the default value on update for the updatedAt field.
+	ticket.UpdateDefaultUpdatedAt = ticketDescUpdatedAt.UpdateDefault.(func() time.Time)
+	ticketoptionFields := schema.TicketOption{}.Fields()
+	_ = ticketoptionFields
+	// ticketoptionDescCreatedAt is the schema descriptor for createdAt field.
+	ticketoptionDescCreatedAt := ticketoptionFields[1].Descriptor()
+	// ticketoption.DefaultCreatedAt holds the default value on creation for the createdAt field.
+	ticketoption.DefaultCreatedAt = ticketoptionDescCreatedAt.Default.(func() time.Time)
+	// ticketoptionDescUpdatedAt is the schema descriptor for updatedAt field.
+	ticketoptionDescUpdatedAt := ticketoptionFields[2].Descriptor()
+	// ticketoption.DefaultUpdatedAt holds the default value on creation for the updatedAt field.
+	ticketoption.DefaultUpdatedAt = ticketoptionDescUpdatedAt.Default.(func() time.Time)
+	// ticketoption.UpdateDefaultUpdatedAt holds the default value on update for the updatedAt field.
+	ticketoption.UpdateDefaultUpdatedAt = ticketoptionDescUpdatedAt.UpdateDefault.(func() time.Time)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescCoverImage is the schema descriptor for cover_image field.

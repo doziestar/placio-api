@@ -8,6 +8,9 @@ import (
 	"fmt"
 	"placio-app/ent/booking"
 	"placio-app/ent/predicate"
+	"placio-app/ent/room"
+	"placio-app/ent/user"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -27,9 +30,83 @@ func (bu *BookingUpdate) Where(ps ...predicate.Booking) *BookingUpdate {
 	return bu
 }
 
+// SetStartDate sets the "startDate" field.
+func (bu *BookingUpdate) SetStartDate(t time.Time) *BookingUpdate {
+	bu.mutation.SetStartDate(t)
+	return bu
+}
+
+// SetEndDate sets the "endDate" field.
+func (bu *BookingUpdate) SetEndDate(t time.Time) *BookingUpdate {
+	bu.mutation.SetEndDate(t)
+	return bu
+}
+
+// SetStatus sets the "status" field.
+func (bu *BookingUpdate) SetStatus(s string) *BookingUpdate {
+	bu.mutation.SetStatus(s)
+	return bu
+}
+
+// SetBookingDate sets the "bookingDate" field.
+func (bu *BookingUpdate) SetBookingDate(t time.Time) *BookingUpdate {
+	bu.mutation.SetBookingDate(t)
+	return bu
+}
+
+// SetRoomID sets the "room" edge to the Room entity by ID.
+func (bu *BookingUpdate) SetRoomID(id string) *BookingUpdate {
+	bu.mutation.SetRoomID(id)
+	return bu
+}
+
+// SetNillableRoomID sets the "room" edge to the Room entity by ID if the given value is not nil.
+func (bu *BookingUpdate) SetNillableRoomID(id *string) *BookingUpdate {
+	if id != nil {
+		bu = bu.SetRoomID(*id)
+	}
+	return bu
+}
+
+// SetRoom sets the "room" edge to the Room entity.
+func (bu *BookingUpdate) SetRoom(r *Room) *BookingUpdate {
+	return bu.SetRoomID(r.ID)
+}
+
+// SetUserID sets the "user" edge to the User entity by ID.
+func (bu *BookingUpdate) SetUserID(id string) *BookingUpdate {
+	bu.mutation.SetUserID(id)
+	return bu
+}
+
+// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
+func (bu *BookingUpdate) SetNillableUserID(id *string) *BookingUpdate {
+	if id != nil {
+		bu = bu.SetUserID(*id)
+	}
+	return bu
+}
+
+// SetUser sets the "user" edge to the User entity.
+func (bu *BookingUpdate) SetUser(u *User) *BookingUpdate {
+	return bu.SetUserID(u.ID)
+}
+
 // Mutation returns the BookingMutation object of the builder.
 func (bu *BookingUpdate) Mutation() *BookingMutation {
 	return bu.mutation
+}
+
+// ClearRoom clears the "room" edge to the Room entity.
+func (bu *BookingUpdate) ClearRoom() *BookingUpdate {
+	bu.mutation.ClearRoom()
+	return bu
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (bu *BookingUpdate) ClearUser() *BookingUpdate {
+	bu.mutation.ClearUser()
+	return bu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -68,6 +145,76 @@ func (bu *BookingUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
+	if value, ok := bu.mutation.StartDate(); ok {
+		_spec.SetField(booking.FieldStartDate, field.TypeTime, value)
+	}
+	if value, ok := bu.mutation.EndDate(); ok {
+		_spec.SetField(booking.FieldEndDate, field.TypeTime, value)
+	}
+	if value, ok := bu.mutation.Status(); ok {
+		_spec.SetField(booking.FieldStatus, field.TypeString, value)
+	}
+	if value, ok := bu.mutation.BookingDate(); ok {
+		_spec.SetField(booking.FieldBookingDate, field.TypeTime, value)
+	}
+	if bu.mutation.RoomCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   booking.RoomTable,
+			Columns: []string{booking.RoomColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(room.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.RoomIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   booking.RoomTable,
+			Columns: []string{booking.RoomColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(room.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if bu.mutation.UserCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   booking.UserTable,
+			Columns: []string{booking.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.UserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   booking.UserTable,
+			Columns: []string{booking.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, bu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{booking.Label}
@@ -88,9 +235,83 @@ type BookingUpdateOne struct {
 	mutation *BookingMutation
 }
 
+// SetStartDate sets the "startDate" field.
+func (buo *BookingUpdateOne) SetStartDate(t time.Time) *BookingUpdateOne {
+	buo.mutation.SetStartDate(t)
+	return buo
+}
+
+// SetEndDate sets the "endDate" field.
+func (buo *BookingUpdateOne) SetEndDate(t time.Time) *BookingUpdateOne {
+	buo.mutation.SetEndDate(t)
+	return buo
+}
+
+// SetStatus sets the "status" field.
+func (buo *BookingUpdateOne) SetStatus(s string) *BookingUpdateOne {
+	buo.mutation.SetStatus(s)
+	return buo
+}
+
+// SetBookingDate sets the "bookingDate" field.
+func (buo *BookingUpdateOne) SetBookingDate(t time.Time) *BookingUpdateOne {
+	buo.mutation.SetBookingDate(t)
+	return buo
+}
+
+// SetRoomID sets the "room" edge to the Room entity by ID.
+func (buo *BookingUpdateOne) SetRoomID(id string) *BookingUpdateOne {
+	buo.mutation.SetRoomID(id)
+	return buo
+}
+
+// SetNillableRoomID sets the "room" edge to the Room entity by ID if the given value is not nil.
+func (buo *BookingUpdateOne) SetNillableRoomID(id *string) *BookingUpdateOne {
+	if id != nil {
+		buo = buo.SetRoomID(*id)
+	}
+	return buo
+}
+
+// SetRoom sets the "room" edge to the Room entity.
+func (buo *BookingUpdateOne) SetRoom(r *Room) *BookingUpdateOne {
+	return buo.SetRoomID(r.ID)
+}
+
+// SetUserID sets the "user" edge to the User entity by ID.
+func (buo *BookingUpdateOne) SetUserID(id string) *BookingUpdateOne {
+	buo.mutation.SetUserID(id)
+	return buo
+}
+
+// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
+func (buo *BookingUpdateOne) SetNillableUserID(id *string) *BookingUpdateOne {
+	if id != nil {
+		buo = buo.SetUserID(*id)
+	}
+	return buo
+}
+
+// SetUser sets the "user" edge to the User entity.
+func (buo *BookingUpdateOne) SetUser(u *User) *BookingUpdateOne {
+	return buo.SetUserID(u.ID)
+}
+
 // Mutation returns the BookingMutation object of the builder.
 func (buo *BookingUpdateOne) Mutation() *BookingMutation {
 	return buo.mutation
+}
+
+// ClearRoom clears the "room" edge to the Room entity.
+func (buo *BookingUpdateOne) ClearRoom() *BookingUpdateOne {
+	buo.mutation.ClearRoom()
+	return buo
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (buo *BookingUpdateOne) ClearUser() *BookingUpdateOne {
+	buo.mutation.ClearUser()
+	return buo
 }
 
 // Where appends a list predicates to the BookingUpdate builder.
@@ -158,6 +379,76 @@ func (buo *BookingUpdateOne) sqlSave(ctx context.Context) (_node *Booking, err e
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := buo.mutation.StartDate(); ok {
+		_spec.SetField(booking.FieldStartDate, field.TypeTime, value)
+	}
+	if value, ok := buo.mutation.EndDate(); ok {
+		_spec.SetField(booking.FieldEndDate, field.TypeTime, value)
+	}
+	if value, ok := buo.mutation.Status(); ok {
+		_spec.SetField(booking.FieldStatus, field.TypeString, value)
+	}
+	if value, ok := buo.mutation.BookingDate(); ok {
+		_spec.SetField(booking.FieldBookingDate, field.TypeTime, value)
+	}
+	if buo.mutation.RoomCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   booking.RoomTable,
+			Columns: []string{booking.RoomColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(room.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.RoomIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   booking.RoomTable,
+			Columns: []string{booking.RoomColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(room.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if buo.mutation.UserCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   booking.UserTable,
+			Columns: []string{booking.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.UserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   booking.UserTable,
+			Columns: []string{booking.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &Booking{config: buo.config}
 	_spec.Assign = _node.assignValues

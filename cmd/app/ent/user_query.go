@@ -7,11 +7,14 @@ import (
 	"database/sql/driver"
 	"fmt"
 	"math"
+	"placio-app/ent/booking"
 	"placio-app/ent/businessfollowuser"
 	"placio-app/ent/comment"
 	"placio-app/ent/like"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
+	"placio-app/ent/reservation"
+	"placio-app/ent/review"
 	"placio-app/ent/user"
 	"placio-app/ent/userbusiness"
 	"placio-app/ent/userfollowbusiness"
@@ -37,6 +40,9 @@ type UserQuery struct {
 	withFollowerUsers      *UserFollowUserQuery
 	withFollowedBusinesses *UserFollowBusinessQuery
 	withFollowerBusinesses *BusinessFollowUserQuery
+	withReviews            *ReviewQuery
+	withBookings           *BookingQuery
+	withReservations       *ReservationQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -249,6 +255,72 @@ func (uq *UserQuery) QueryFollowerBusinesses() *BusinessFollowUserQuery {
 	return query
 }
 
+// QueryReviews chains the current query on the "reviews" edge.
+func (uq *UserQuery) QueryReviews() *ReviewQuery {
+	query := (&ReviewClient{config: uq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(review.Table, review.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.ReviewsTable, user.ReviewsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryBookings chains the current query on the "bookings" edge.
+func (uq *UserQuery) QueryBookings() *BookingQuery {
+	query := (&BookingClient{config: uq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(booking.Table, booking.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.BookingsTable, user.BookingsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryReservations chains the current query on the "reservations" edge.
+func (uq *UserQuery) QueryReservations() *ReservationQuery {
+	query := (&ReservationClient{config: uq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(reservation.Table, reservation.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.ReservationsTable, user.ReservationsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first User entity from the query.
 // Returns a *NotFoundError when no User was found.
 func (uq *UserQuery) First(ctx context.Context) (*User, error) {
@@ -449,6 +521,9 @@ func (uq *UserQuery) Clone() *UserQuery {
 		withFollowerUsers:      uq.withFollowerUsers.Clone(),
 		withFollowedBusinesses: uq.withFollowedBusinesses.Clone(),
 		withFollowerBusinesses: uq.withFollowerBusinesses.Clone(),
+		withReviews:            uq.withReviews.Clone(),
+		withBookings:           uq.withBookings.Clone(),
+		withReservations:       uq.withReservations.Clone(),
 		// clone intermediate query.
 		sql:  uq.sql.Clone(),
 		path: uq.path,
@@ -543,6 +618,39 @@ func (uq *UserQuery) WithFollowerBusinesses(opts ...func(*BusinessFollowUserQuer
 	return uq
 }
 
+// WithReviews tells the query-builder to eager-load the nodes that are connected to
+// the "reviews" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithReviews(opts ...func(*ReviewQuery)) *UserQuery {
+	query := (&ReviewClient{config: uq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	uq.withReviews = query
+	return uq
+}
+
+// WithBookings tells the query-builder to eager-load the nodes that are connected to
+// the "bookings" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithBookings(opts ...func(*BookingQuery)) *UserQuery {
+	query := (&BookingClient{config: uq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	uq.withBookings = query
+	return uq
+}
+
+// WithReservations tells the query-builder to eager-load the nodes that are connected to
+// the "reservations" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithReservations(opts ...func(*ReservationQuery)) *UserQuery {
+	query := (&ReservationClient{config: uq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	uq.withReservations = query
+	return uq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -621,7 +729,7 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	var (
 		nodes       = []*User{}
 		_spec       = uq.querySpec()
-		loadedTypes = [8]bool{
+		loadedTypes = [11]bool{
 			uq.withUserBusinesses != nil,
 			uq.withComments != nil,
 			uq.withLikes != nil,
@@ -630,6 +738,9 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 			uq.withFollowerUsers != nil,
 			uq.withFollowedBusinesses != nil,
 			uq.withFollowerBusinesses != nil,
+			uq.withReviews != nil,
+			uq.withBookings != nil,
+			uq.withReservations != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -707,6 +818,27 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 			func(n *User, e *BusinessFollowUser) {
 				n.Edges.FollowerBusinesses = append(n.Edges.FollowerBusinesses, e)
 			}); err != nil {
+			return nil, err
+		}
+	}
+	if query := uq.withReviews; query != nil {
+		if err := uq.loadReviews(ctx, query, nodes,
+			func(n *User) { n.Edges.Reviews = []*Review{} },
+			func(n *User, e *Review) { n.Edges.Reviews = append(n.Edges.Reviews, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := uq.withBookings; query != nil {
+		if err := uq.loadBookings(ctx, query, nodes,
+			func(n *User) { n.Edges.Bookings = []*Booking{} },
+			func(n *User, e *Booking) { n.Edges.Bookings = append(n.Edges.Bookings, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := uq.withReservations; query != nil {
+		if err := uq.loadReservations(ctx, query, nodes,
+			func(n *User) { n.Edges.Reservations = []*Reservation{} },
+			func(n *User, e *Reservation) { n.Edges.Reservations = append(n.Edges.Reservations, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -956,6 +1088,99 @@ func (uq *UserQuery) loadFollowerBusinesses(ctx context.Context, query *Business
 		node, ok := nodeids[*fk]
 		if !ok {
 			return fmt.Errorf(`unexpected referenced foreign-key "user_follower_businesses" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (uq *UserQuery) loadReviews(ctx context.Context, query *ReviewQuery, nodes []*User, init func(*User), assign func(*User, *Review)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Review(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.ReviewsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.user_reviews
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "user_reviews" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "user_reviews" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (uq *UserQuery) loadBookings(ctx context.Context, query *BookingQuery, nodes []*User, init func(*User), assign func(*User, *Booking)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Booking(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.BookingsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.user_bookings
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "user_bookings" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "user_bookings" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (uq *UserQuery) loadReservations(ctx context.Context, query *ReservationQuery, nodes []*User, init func(*User), assign func(*User, *Reservation)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Reservation(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.ReservationsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.user_reservations
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "user_reservations" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "user_reservations" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

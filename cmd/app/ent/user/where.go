@@ -658,6 +658,75 @@ func HasFollowerBusinessesWith(preds ...predicate.BusinessFollowUser) predicate.
 	})
 }
 
+// HasReviews applies the HasEdge predicate on the "reviews" edge.
+func HasReviews() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ReviewsTable, ReviewsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasReviewsWith applies the HasEdge predicate on the "reviews" edge with a given conditions (other predicates).
+func HasReviewsWith(preds ...predicate.Review) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newReviewsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasBookings applies the HasEdge predicate on the "bookings" edge.
+func HasBookings() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, BookingsTable, BookingsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasBookingsWith applies the HasEdge predicate on the "bookings" edge with a given conditions (other predicates).
+func HasBookingsWith(preds ...predicate.Booking) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newBookingsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasReservations applies the HasEdge predicate on the "reservations" edge.
+func HasReservations() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ReservationsTable, ReservationsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasReservationsWith applies the HasEdge predicate on the "reservations" edge with a given conditions (other predicates).
+func HasReservationsWith(preds ...predicate.Reservation) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newReservationsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.User) predicate.User {
 	return predicate.User(func(s *sql.Selector) {

@@ -9,6 +9,9 @@ import (
 // AccountSettings is the predicate function for accountsettings builders.
 type AccountSettings func(*sql.Selector)
 
+// Amenity is the predicate function for amenity builders.
+type Amenity func(*sql.Selector)
+
 // Booking is the predicate function for booking builders.
 type Booking func(*sql.Selector)
 
@@ -27,17 +30,26 @@ type Chat func(*sql.Selector)
 // Comment is the predicate function for comment builders.
 type Comment func(*sql.Selector)
 
+// Event is the predicate function for event builders.
+type Event func(*sql.Selector)
+
 // Like is the predicate function for like builders.
 type Like func(*sql.Selector)
 
 // Media is the predicate function for media builders.
 type Media func(*sql.Selector)
 
+// Menu is the predicate function for menu builders.
+type Menu func(*sql.Selector)
+
 // Order is the predicate function for order builders.
 type Order func(*sql.Selector)
 
 // Payment is the predicate function for payment builders.
 type Payment func(*sql.Selector)
+
+// Place is the predicate function for place builders.
+type Place func(*sql.Selector)
 
 // Post is the predicate function for post builders.
 type Post func(*sql.Selector)
@@ -47,6 +59,21 @@ type Rating func(*sql.Selector)
 
 // Reaction is the predicate function for reaction builders.
 type Reaction func(*sql.Selector)
+
+// Reservation is the predicate function for reservation builders.
+type Reservation func(*sql.Selector)
+
+// Review is the predicate function for review builders.
+type Review func(*sql.Selector)
+
+// Room is the predicate function for room builders.
+type Room func(*sql.Selector)
+
+// Ticket is the predicate function for ticket builders.
+type Ticket func(*sql.Selector)
+
+// TicketOption is the predicate function for ticketoption builders.
+type TicketOption func(*sql.Selector)
 
 // User is the predicate function for user builders.
 type User func(*sql.Selector)

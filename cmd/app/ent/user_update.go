@@ -6,11 +6,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"placio-app/ent/booking"
 	"placio-app/ent/businessfollowuser"
 	"placio-app/ent/comment"
 	"placio-app/ent/like"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
+	"placio-app/ent/reservation"
+	"placio-app/ent/review"
 	"placio-app/ent/user"
 	"placio-app/ent/userbusiness"
 	"placio-app/ent/userfollowbusiness"
@@ -257,6 +260,51 @@ func (uu *UserUpdate) AddFollowerBusinesses(b ...*BusinessFollowUser) *UserUpdat
 	return uu.AddFollowerBusinessIDs(ids...)
 }
 
+// AddReviewIDs adds the "reviews" edge to the Review entity by IDs.
+func (uu *UserUpdate) AddReviewIDs(ids ...string) *UserUpdate {
+	uu.mutation.AddReviewIDs(ids...)
+	return uu
+}
+
+// AddReviews adds the "reviews" edges to the Review entity.
+func (uu *UserUpdate) AddReviews(r ...*Review) *UserUpdate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return uu.AddReviewIDs(ids...)
+}
+
+// AddBookingIDs adds the "bookings" edge to the Booking entity by IDs.
+func (uu *UserUpdate) AddBookingIDs(ids ...string) *UserUpdate {
+	uu.mutation.AddBookingIDs(ids...)
+	return uu
+}
+
+// AddBookings adds the "bookings" edges to the Booking entity.
+func (uu *UserUpdate) AddBookings(b ...*Booking) *UserUpdate {
+	ids := make([]string, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return uu.AddBookingIDs(ids...)
+}
+
+// AddReservationIDs adds the "reservations" edge to the Reservation entity by IDs.
+func (uu *UserUpdate) AddReservationIDs(ids ...string) *UserUpdate {
+	uu.mutation.AddReservationIDs(ids...)
+	return uu
+}
+
+// AddReservations adds the "reservations" edges to the Reservation entity.
+func (uu *UserUpdate) AddReservations(r ...*Reservation) *UserUpdate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return uu.AddReservationIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -428,6 +476,69 @@ func (uu *UserUpdate) RemoveFollowerBusinesses(b ...*BusinessFollowUser) *UserUp
 		ids[i] = b[i].ID
 	}
 	return uu.RemoveFollowerBusinessIDs(ids...)
+}
+
+// ClearReviews clears all "reviews" edges to the Review entity.
+func (uu *UserUpdate) ClearReviews() *UserUpdate {
+	uu.mutation.ClearReviews()
+	return uu
+}
+
+// RemoveReviewIDs removes the "reviews" edge to Review entities by IDs.
+func (uu *UserUpdate) RemoveReviewIDs(ids ...string) *UserUpdate {
+	uu.mutation.RemoveReviewIDs(ids...)
+	return uu
+}
+
+// RemoveReviews removes "reviews" edges to Review entities.
+func (uu *UserUpdate) RemoveReviews(r ...*Review) *UserUpdate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return uu.RemoveReviewIDs(ids...)
+}
+
+// ClearBookings clears all "bookings" edges to the Booking entity.
+func (uu *UserUpdate) ClearBookings() *UserUpdate {
+	uu.mutation.ClearBookings()
+	return uu
+}
+
+// RemoveBookingIDs removes the "bookings" edge to Booking entities by IDs.
+func (uu *UserUpdate) RemoveBookingIDs(ids ...string) *UserUpdate {
+	uu.mutation.RemoveBookingIDs(ids...)
+	return uu
+}
+
+// RemoveBookings removes "bookings" edges to Booking entities.
+func (uu *UserUpdate) RemoveBookings(b ...*Booking) *UserUpdate {
+	ids := make([]string, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return uu.RemoveBookingIDs(ids...)
+}
+
+// ClearReservations clears all "reservations" edges to the Reservation entity.
+func (uu *UserUpdate) ClearReservations() *UserUpdate {
+	uu.mutation.ClearReservations()
+	return uu
+}
+
+// RemoveReservationIDs removes the "reservations" edge to Reservation entities by IDs.
+func (uu *UserUpdate) RemoveReservationIDs(ids ...string) *UserUpdate {
+	uu.mutation.RemoveReservationIDs(ids...)
+	return uu
+}
+
+// RemoveReservations removes "reservations" edges to Reservation entities.
+func (uu *UserUpdate) RemoveReservations(r ...*Reservation) *UserUpdate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return uu.RemoveReservationIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -865,6 +976,141 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if uu.mutation.ReviewsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReviewsTable,
+			Columns: []string{user.ReviewsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(review.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedReviewsIDs(); len(nodes) > 0 && !uu.mutation.ReviewsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReviewsTable,
+			Columns: []string{user.ReviewsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(review.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.ReviewsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReviewsTable,
+			Columns: []string{user.ReviewsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(review.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uu.mutation.BookingsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.BookingsTable,
+			Columns: []string{user.BookingsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(booking.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedBookingsIDs(); len(nodes) > 0 && !uu.mutation.BookingsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.BookingsTable,
+			Columns: []string{user.BookingsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(booking.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.BookingsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.BookingsTable,
+			Columns: []string{user.BookingsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(booking.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uu.mutation.ReservationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReservationsTable,
+			Columns: []string{user.ReservationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(reservation.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedReservationsIDs(); len(nodes) > 0 && !uu.mutation.ReservationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReservationsTable,
+			Columns: []string{user.ReservationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(reservation.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.ReservationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReservationsTable,
+			Columns: []string{user.ReservationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(reservation.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -1107,6 +1353,51 @@ func (uuo *UserUpdateOne) AddFollowerBusinesses(b ...*BusinessFollowUser) *UserU
 	return uuo.AddFollowerBusinessIDs(ids...)
 }
 
+// AddReviewIDs adds the "reviews" edge to the Review entity by IDs.
+func (uuo *UserUpdateOne) AddReviewIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.AddReviewIDs(ids...)
+	return uuo
+}
+
+// AddReviews adds the "reviews" edges to the Review entity.
+func (uuo *UserUpdateOne) AddReviews(r ...*Review) *UserUpdateOne {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return uuo.AddReviewIDs(ids...)
+}
+
+// AddBookingIDs adds the "bookings" edge to the Booking entity by IDs.
+func (uuo *UserUpdateOne) AddBookingIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.AddBookingIDs(ids...)
+	return uuo
+}
+
+// AddBookings adds the "bookings" edges to the Booking entity.
+func (uuo *UserUpdateOne) AddBookings(b ...*Booking) *UserUpdateOne {
+	ids := make([]string, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return uuo.AddBookingIDs(ids...)
+}
+
+// AddReservationIDs adds the "reservations" edge to the Reservation entity by IDs.
+func (uuo *UserUpdateOne) AddReservationIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.AddReservationIDs(ids...)
+	return uuo
+}
+
+// AddReservations adds the "reservations" edges to the Reservation entity.
+func (uuo *UserUpdateOne) AddReservations(r ...*Reservation) *UserUpdateOne {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return uuo.AddReservationIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
@@ -1278,6 +1569,69 @@ func (uuo *UserUpdateOne) RemoveFollowerBusinesses(b ...*BusinessFollowUser) *Us
 		ids[i] = b[i].ID
 	}
 	return uuo.RemoveFollowerBusinessIDs(ids...)
+}
+
+// ClearReviews clears all "reviews" edges to the Review entity.
+func (uuo *UserUpdateOne) ClearReviews() *UserUpdateOne {
+	uuo.mutation.ClearReviews()
+	return uuo
+}
+
+// RemoveReviewIDs removes the "reviews" edge to Review entities by IDs.
+func (uuo *UserUpdateOne) RemoveReviewIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.RemoveReviewIDs(ids...)
+	return uuo
+}
+
+// RemoveReviews removes "reviews" edges to Review entities.
+func (uuo *UserUpdateOne) RemoveReviews(r ...*Review) *UserUpdateOne {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return uuo.RemoveReviewIDs(ids...)
+}
+
+// ClearBookings clears all "bookings" edges to the Booking entity.
+func (uuo *UserUpdateOne) ClearBookings() *UserUpdateOne {
+	uuo.mutation.ClearBookings()
+	return uuo
+}
+
+// RemoveBookingIDs removes the "bookings" edge to Booking entities by IDs.
+func (uuo *UserUpdateOne) RemoveBookingIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.RemoveBookingIDs(ids...)
+	return uuo
+}
+
+// RemoveBookings removes "bookings" edges to Booking entities.
+func (uuo *UserUpdateOne) RemoveBookings(b ...*Booking) *UserUpdateOne {
+	ids := make([]string, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return uuo.RemoveBookingIDs(ids...)
+}
+
+// ClearReservations clears all "reservations" edges to the Reservation entity.
+func (uuo *UserUpdateOne) ClearReservations() *UserUpdateOne {
+	uuo.mutation.ClearReservations()
+	return uuo
+}
+
+// RemoveReservationIDs removes the "reservations" edge to Reservation entities by IDs.
+func (uuo *UserUpdateOne) RemoveReservationIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.RemoveReservationIDs(ids...)
+	return uuo
+}
+
+// RemoveReservations removes "reservations" edges to Reservation entities.
+func (uuo *UserUpdateOne) RemoveReservations(r ...*Reservation) *UserUpdateOne {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return uuo.RemoveReservationIDs(ids...)
 }
 
 // Where appends a list predicates to the UserUpdate builder.
@@ -1738,6 +2092,141 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(businessfollowuser.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.ReviewsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReviewsTable,
+			Columns: []string{user.ReviewsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(review.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedReviewsIDs(); len(nodes) > 0 && !uuo.mutation.ReviewsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReviewsTable,
+			Columns: []string{user.ReviewsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(review.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.ReviewsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReviewsTable,
+			Columns: []string{user.ReviewsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(review.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.BookingsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.BookingsTable,
+			Columns: []string{user.BookingsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(booking.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedBookingsIDs(); len(nodes) > 0 && !uuo.mutation.BookingsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.BookingsTable,
+			Columns: []string{user.BookingsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(booking.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.BookingsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.BookingsTable,
+			Columns: []string{user.BookingsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(booking.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.ReservationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReservationsTable,
+			Columns: []string{user.ReservationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(reservation.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedReservationsIDs(); len(nodes) > 0 && !uuo.mutation.ReservationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReservationsTable,
+			Columns: []string{user.ReservationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(reservation.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.ReservationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReservationsTable,
+			Columns: []string{user.ReservationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(reservation.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

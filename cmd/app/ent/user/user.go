@@ -44,6 +44,12 @@ const (
 	EdgeFollowedBusinesses = "followedBusinesses"
 	// EdgeFollowerBusinesses holds the string denoting the followerbusinesses edge name in mutations.
 	EdgeFollowerBusinesses = "followerBusinesses"
+	// EdgeReviews holds the string denoting the reviews edge name in mutations.
+	EdgeReviews = "reviews"
+	// EdgeBookings holds the string denoting the bookings edge name in mutations.
+	EdgeBookings = "bookings"
+	// EdgeReservations holds the string denoting the reservations edge name in mutations.
+	EdgeReservations = "reservations"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// UserBusinessesTable is the table that holds the userBusinesses relation/edge.
@@ -102,6 +108,27 @@ const (
 	FollowerBusinessesInverseTable = "business_follow_users"
 	// FollowerBusinessesColumn is the table column denoting the followerBusinesses relation/edge.
 	FollowerBusinessesColumn = "user_follower_businesses"
+	// ReviewsTable is the table that holds the reviews relation/edge.
+	ReviewsTable = "reviews"
+	// ReviewsInverseTable is the table name for the Review entity.
+	// It exists in this package in order to avoid circular dependency with the "review" package.
+	ReviewsInverseTable = "reviews"
+	// ReviewsColumn is the table column denoting the reviews relation/edge.
+	ReviewsColumn = "user_reviews"
+	// BookingsTable is the table that holds the bookings relation/edge.
+	BookingsTable = "bookings"
+	// BookingsInverseTable is the table name for the Booking entity.
+	// It exists in this package in order to avoid circular dependency with the "booking" package.
+	BookingsInverseTable = "bookings"
+	// BookingsColumn is the table column denoting the bookings relation/edge.
+	BookingsColumn = "user_bookings"
+	// ReservationsTable is the table that holds the reservations relation/edge.
+	ReservationsTable = "reservations"
+	// ReservationsInverseTable is the table name for the Reservation entity.
+	// It exists in this package in order to avoid circular dependency with the "reservation" package.
+	ReservationsInverseTable = "reservations"
+	// ReservationsColumn is the table column denoting the reservations relation/edge.
+	ReservationsColumn = "user_reservations"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -278,6 +305,48 @@ func ByFollowerBusinesses(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOptio
 		sqlgraph.OrderByNeighborTerms(s, newFollowerBusinessesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByReviewsCount orders the results by reviews count.
+func ByReviewsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newReviewsStep(), opts...)
+	}
+}
+
+// ByReviews orders the results by reviews terms.
+func ByReviews(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newReviewsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByBookingsCount orders the results by bookings count.
+func ByBookingsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newBookingsStep(), opts...)
+	}
+}
+
+// ByBookings orders the results by bookings terms.
+func ByBookings(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newBookingsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByReservationsCount orders the results by reservations count.
+func ByReservationsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newReservationsStep(), opts...)
+	}
+}
+
+// ByReservations orders the results by reservations terms.
+func ByReservations(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newReservationsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newUserBusinessesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -332,5 +401,26 @@ func newFollowerBusinessesStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(FollowerBusinessesInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, FollowerBusinessesTable, FollowerBusinessesColumn),
+	)
+}
+func newReviewsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ReviewsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, ReviewsTable, ReviewsColumn),
+	)
+}
+func newBookingsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(BookingsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, BookingsTable, BookingsColumn),
+	)
+}
+func newReservationsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ReservationsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, ReservationsTable, ReservationsColumn),
 	)
 }

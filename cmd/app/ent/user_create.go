@@ -6,10 +6,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"placio-app/ent/booking"
 	"placio-app/ent/businessfollowuser"
 	"placio-app/ent/comment"
 	"placio-app/ent/like"
 	"placio-app/ent/post"
+	"placio-app/ent/reservation"
+	"placio-app/ent/review"
 	"placio-app/ent/user"
 	"placio-app/ent/userbusiness"
 	"placio-app/ent/userfollowbusiness"
@@ -223,6 +226,51 @@ func (uc *UserCreate) AddFollowerBusinesses(b ...*BusinessFollowUser) *UserCreat
 		ids[i] = b[i].ID
 	}
 	return uc.AddFollowerBusinessIDs(ids...)
+}
+
+// AddReviewIDs adds the "reviews" edge to the Review entity by IDs.
+func (uc *UserCreate) AddReviewIDs(ids ...string) *UserCreate {
+	uc.mutation.AddReviewIDs(ids...)
+	return uc
+}
+
+// AddReviews adds the "reviews" edges to the Review entity.
+func (uc *UserCreate) AddReviews(r ...*Review) *UserCreate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return uc.AddReviewIDs(ids...)
+}
+
+// AddBookingIDs adds the "bookings" edge to the Booking entity by IDs.
+func (uc *UserCreate) AddBookingIDs(ids ...string) *UserCreate {
+	uc.mutation.AddBookingIDs(ids...)
+	return uc
+}
+
+// AddBookings adds the "bookings" edges to the Booking entity.
+func (uc *UserCreate) AddBookings(b ...*Booking) *UserCreate {
+	ids := make([]string, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return uc.AddBookingIDs(ids...)
+}
+
+// AddReservationIDs adds the "reservations" edge to the Reservation entity by IDs.
+func (uc *UserCreate) AddReservationIDs(ids ...string) *UserCreate {
+	uc.mutation.AddReservationIDs(ids...)
+	return uc
+}
+
+// AddReservations adds the "reservations" edges to the Reservation entity.
+func (uc *UserCreate) AddReservations(r ...*Reservation) *UserCreate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return uc.AddReservationIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -467,6 +515,54 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(businessfollowuser.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.ReviewsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReviewsTable,
+			Columns: []string{user.ReviewsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(review.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.BookingsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.BookingsTable,
+			Columns: []string{user.BookingsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(booking.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.ReservationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReservationsTable,
+			Columns: []string{user.ReservationsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(reservation.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

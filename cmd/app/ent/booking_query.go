@@ -8,6 +8,8 @@ import (
 	"math"
 	"placio-app/ent/booking"
 	"placio-app/ent/predicate"
+	"placio-app/ent/room"
+	"placio-app/ent/user"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -21,6 +23,9 @@ type BookingQuery struct {
 	order      []booking.OrderOption
 	inters     []Interceptor
 	predicates []predicate.Booking
+	withRoom   *RoomQuery
+	withUser   *UserQuery
+	withFKs    bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -55,6 +60,50 @@ func (bq *BookingQuery) Unique(unique bool) *BookingQuery {
 func (bq *BookingQuery) Order(o ...booking.OrderOption) *BookingQuery {
 	bq.order = append(bq.order, o...)
 	return bq
+}
+
+// QueryRoom chains the current query on the "room" edge.
+func (bq *BookingQuery) QueryRoom() *RoomQuery {
+	query := (&RoomClient{config: bq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := bq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := bq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(booking.Table, booking.FieldID, selector),
+			sqlgraph.To(room.Table, room.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, booking.RoomTable, booking.RoomColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(bq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryUser chains the current query on the "user" edge.
+func (bq *BookingQuery) QueryUser() *UserQuery {
+	query := (&UserClient{config: bq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := bq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := bq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(booking.Table, booking.FieldID, selector),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, booking.UserTable, booking.UserColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(bq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first Booking entity from the query.
@@ -249,14 +298,50 @@ func (bq *BookingQuery) Clone() *BookingQuery {
 		order:      append([]booking.OrderOption{}, bq.order...),
 		inters:     append([]Interceptor{}, bq.inters...),
 		predicates: append([]predicate.Booking{}, bq.predicates...),
+		withRoom:   bq.withRoom.Clone(),
+		withUser:   bq.withUser.Clone(),
 		// clone intermediate query.
 		sql:  bq.sql.Clone(),
 		path: bq.path,
 	}
 }
 
+// WithRoom tells the query-builder to eager-load the nodes that are connected to
+// the "room" edge. The optional arguments are used to configure the query builder of the edge.
+func (bq *BookingQuery) WithRoom(opts ...func(*RoomQuery)) *BookingQuery {
+	query := (&RoomClient{config: bq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	bq.withRoom = query
+	return bq
+}
+
+// WithUser tells the query-builder to eager-load the nodes that are connected to
+// the "user" edge. The optional arguments are used to configure the query builder of the edge.
+func (bq *BookingQuery) WithUser(opts ...func(*UserQuery)) *BookingQuery {
+	query := (&UserClient{config: bq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	bq.withUser = query
+	return bq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
+//
+// Example:
+//
+//	var v []struct {
+//		StartDate time.Time `json:"startDate,omitempty"`
+//		Count int `json:"count,omitempty"`
+//	}
+//
+//	client.Booking.Query().
+//		GroupBy(booking.FieldStartDate).
+//		Aggregate(ent.Count()).
+//		Scan(ctx, &v)
 func (bq *BookingQuery) GroupBy(field string, fields ...string) *BookingGroupBy {
 	bq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &BookingGroupBy{build: bq}
@@ -268,6 +353,16 @@ func (bq *BookingQuery) GroupBy(field string, fields ...string) *BookingGroupBy 
 
 // Select allows the selection one or more fields/columns for the given query,
 // instead of selecting all fields in the entity.
+//
+// Example:
+//
+//	var v []struct {
+//		StartDate time.Time `json:"startDate,omitempty"`
+//	}
+//
+//	client.Booking.Query().
+//		Select(booking.FieldStartDate).
+//		Scan(ctx, &v)
 func (bq *BookingQuery) Select(fields ...string) *BookingSelect {
 	bq.ctx.Fields = append(bq.ctx.Fields, fields...)
 	sbuild := &BookingSelect{BookingQuery: bq}
@@ -309,15 +404,27 @@ func (bq *BookingQuery) prepareQuery(ctx context.Context) error {
 
 func (bq *BookingQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Booking, error) {
 	var (
-		nodes = []*Booking{}
-		_spec = bq.querySpec()
+		nodes       = []*Booking{}
+		withFKs     = bq.withFKs
+		_spec       = bq.querySpec()
+		loadedTypes = [2]bool{
+			bq.withRoom != nil,
+			bq.withUser != nil,
+		}
 	)
+	if bq.withRoom != nil || bq.withUser != nil {
+		withFKs = true
+	}
+	if withFKs {
+		_spec.Node.Columns = append(_spec.Node.Columns, booking.ForeignKeys...)
+	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Booking).scanValues(nil, columns)
 	}
 	_spec.Assign = func(columns []string, values []any) error {
 		node := &Booking{config: bq.config}
 		nodes = append(nodes, node)
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	for i := range hooks {
@@ -329,7 +436,84 @@ func (bq *BookingQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Book
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := bq.withRoom; query != nil {
+		if err := bq.loadRoom(ctx, query, nodes, nil,
+			func(n *Booking, e *Room) { n.Edges.Room = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := bq.withUser; query != nil {
+		if err := bq.loadUser(ctx, query, nodes, nil,
+			func(n *Booking, e *User) { n.Edges.User = e }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
+}
+
+func (bq *BookingQuery) loadRoom(ctx context.Context, query *RoomQuery, nodes []*Booking, init func(*Booking), assign func(*Booking, *Room)) error {
+	ids := make([]string, 0, len(nodes))
+	nodeids := make(map[string][]*Booking)
+	for i := range nodes {
+		if nodes[i].room_bookings == nil {
+			continue
+		}
+		fk := *nodes[i].room_bookings
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(room.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "room_bookings" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (bq *BookingQuery) loadUser(ctx context.Context, query *UserQuery, nodes []*Booking, init func(*Booking), assign func(*Booking, *User)) error {
+	ids := make([]string, 0, len(nodes))
+	nodeids := make(map[string][]*Booking)
+	for i := range nodes {
+		if nodes[i].user_bookings == nil {
+			continue
+		}
+		fk := *nodes[i].user_bookings
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(user.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "user_bookings" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
 }
 
 func (bq *BookingQuery) sqlCount(ctx context.Context) (int, error) {
