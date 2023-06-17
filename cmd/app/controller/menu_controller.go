@@ -3,6 +3,8 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	_ "placio-app/Dto"
+	_ "placio-app/ent"
 	"placio-app/service"
 	"placio-app/utility"
 )

@@ -3,6 +3,8 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	_ "placio-app/Dto"
+	_ "placio-app/ent"
 	"placio-app/service"
 )
 
@@ -31,7 +33,7 @@ func (pc *PlaceController) RegisterRoutes(router *gin.RouterGroup) {
 // @Produce json
 // @Param id path string true "ID of the place to get"
 // @Security Bearer
-// @Success 200 {object} Dto.PlaceResponse "Successfully retrieved place"
+// @Success 200 {object} ent.Place "Successfully retrieved place"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
@@ -55,9 +57,9 @@ func (pc *PlaceController) getPlace(ctx *gin.Context) {
 // @Tags Place
 // @Accept json
 // @Produce json
-// @Param place body Dto.PlaceRequest true "Place to create"
+// @Param place body ent.Place true "Place to create"
 // @Security Bearer
-// @Success 200 {object} Dto.PlaceResponse "Successfully created place"
+// @Success 200 {object} ent.Place "Successfully created place"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
@@ -86,9 +88,9 @@ func (pc *PlaceController) createPlace(ctx *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string true "ID of the place to update"
-// @Param place body Dto.PlaceRequest true "Place data to update"
+// @Param place body ent.Place true "Place data to update"
 // @Security Bearer
-// @Success 200 {object} Dto.PlaceResponse "Successfully updated place"
+// @Success 200 {object} ent.Place "Successfully updated place"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
@@ -119,7 +121,7 @@ func (pc *PlaceController) updatePlace(ctx *gin.Context) {
 // @Produce json
 // @Param id path string true "ID of the place to delete"
 // @Security Bearer
-// @Success 200 {object} Dto.DeleteResponse "Successfully deleted place"
+// @Success 200 {object} ent.Place "Successfully deleted place"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
