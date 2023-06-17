@@ -99,9 +99,11 @@ func EnsureValidToken(client *ent.Client) gin.HandlerFunc {
 			// make a request to the user service to get the user details
 			user, err := client.User.Query().Where(user.Auth0IDEQ(validatedClaims.RegisteredClaims.Subject)).Only(context.Background())
 			if err != nil {
-				c.JSON(http.StatusUnauthorized, gin.H{"message": "User not found"})
-				c.Abort()
-				return
+				if ent.IsNotFound(err) {
+					c.Set("auth0_id", validatedClaims.RegisteredClaims.Subject)
+					c.Next()
+					return
+				}
 			}
 			c.Set("user", user.ID)
 			c.Set("auth0_id", validatedClaims.RegisteredClaims.Subject)

@@ -109,6 +109,7 @@ func (ps *PostServiceImpl) UpdatePost(ctx context.Context, updatedPost *ent.Post
 		Save(ctx)
 
 	if err != nil {
+		log.Println(err)
 		return nil, fmt.Errorf("failed updating post: %w", err)
 	}
 
