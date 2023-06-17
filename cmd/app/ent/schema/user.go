@@ -41,5 +41,8 @@ func (User) Edges() []ent.Edge {
 		edge.To("followerUsers", UserFollowUser.Type),
 		edge.To("followedBusinesses", UserFollowBusiness.Type),
 		edge.To("followerBusinesses", BusinessFollowUser.Type),
+		edge.To("reviews", Review.Type),
+		edge.To("bookings", Booking.Type),
+		edge.To("reservations", Reservation.Type),
 	}
 }
