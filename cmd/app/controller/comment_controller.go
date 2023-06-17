@@ -14,8 +14,8 @@ type CommentController struct {
 	userService    service.UserService
 }
 
-func NewCommentController(commentService service.CommentService) *CommentController {
-	return &CommentController{commentService: commentService}
+func NewCommentController(commentService service.CommentService, userService service.UserService) *CommentController {
+	return &CommentController{commentService: commentService, userService: userService}
 }
 
 func (cc *CommentController) RegisterRoutes(router *gin.RouterGroup) {
@@ -23,7 +23,7 @@ func (cc *CommentController) RegisterRoutes(router *gin.RouterGroup) {
 	{
 		//commentRouter.Get("/", cc.getAllComments)
 		//commentRouter.GET("/:id", utility.Use(cc.getComment))
-		commentRouter.POST("/", utility.Use(cc.createComment))
+		commentRouter.POST("/:postId", utility.Use(cc.createComment))
 		commentRouter.PUT("/:id", utility.Use(cc.updateComment))
 		commentRouter.DELETE("/:id", utility.Use(cc.deleteComment))
 	}
@@ -41,10 +41,11 @@ func (cc *CommentController) RegisterRoutes(router *gin.RouterGroup) {
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
-// @Router /api/v1/comments/ [post]
+// @Router /api/v1/comments/:postId [post]
 func (cc *CommentController) createComment(ctx *gin.Context) error {
 	// Extract the user from the context
 	authOID := ctx.MustGet("auth0_id").(string)
+	postId := ctx.Param("postId")
 	user, err := cc.userService.GetUser(ctx, authOID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
@@ -59,19 +60,11 @@ func (cc *CommentController) createComment(ctx *gin.Context) error {
 	}
 
 	// Create a new Comment instance
-	newComment, err := cc.commentService.CreateComment(ctx, user.ID, data.PostID, data.Content)
+	newComment, err := cc.commentService.CreateComment(ctx, user.ID, postId, data.Content)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 		return err
 	}
-
-	// Create a response struct
-	//response := Dto.CommentResponseDto{
-	//	ID:        newComment.ID,
-	//	Content:   newComment.Content,
-	//	User:      newComment.User,
-	//	CreatedAt: newComment.CreatedAt,
-	//}
 
 	ctx.JSON(http.StatusCreated, utility.ProcessResponse(newComment, "Success", "Successfully created comment"))
 	return nil

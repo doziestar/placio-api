@@ -119,7 +119,6 @@ var (
 		{Name: "content", Type: field.TypeString, Size: 2147483647},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "comment_post", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "post_comments", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "user_comments", Type: field.TypeString, Nullable: true, Size: 36},
 	}
@@ -130,20 +129,14 @@ var (
 		PrimaryKey: []*schema.Column{CommentsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "comments_posts_post",
+				Symbol:     "comments_posts_comments",
 				Columns:    []*schema.Column{CommentsColumns[4]},
 				RefColumns: []*schema.Column{PostsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "comments_posts_comments",
-				Columns:    []*schema.Column{CommentsColumns[5]},
-				RefColumns: []*schema.Column{PostsColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
 				Symbol:     "comments_users_comments",
-				Columns:    []*schema.Column{CommentsColumns[6]},
+				Columns:    []*schema.Column{CommentsColumns[5]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -404,8 +397,7 @@ func init() {
 	BusinessFollowUsersTable.ForeignKeys[0].RefTable = BusinessesTable
 	BusinessFollowUsersTable.ForeignKeys[1].RefTable = UsersTable
 	CommentsTable.ForeignKeys[0].RefTable = PostsTable
-	CommentsTable.ForeignKeys[1].RefTable = PostsTable
-	CommentsTable.ForeignKeys[2].RefTable = UsersTable
+	CommentsTable.ForeignKeys[1].RefTable = UsersTable
 	LikesTable.ForeignKeys[0].RefTable = PostsTable
 	LikesTable.ForeignKeys[1].RefTable = PostsTable
 	LikesTable.ForeignKeys[2].RefTable = UsersTable

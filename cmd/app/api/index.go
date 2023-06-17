@@ -85,7 +85,7 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 
 	// comments
 	commentService := service.NewCommentService(client)
-	commentController := controller.NewCommentController(commentService)
+	commentController := controller.NewCommentController(commentService, userService)
 	commentController.RegisterRoutes(routerGroupV1)
 
 	// likes

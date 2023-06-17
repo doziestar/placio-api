@@ -98,7 +98,7 @@ func (cq *CommentQuery) QueryPost() *PostQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(comment.Table, comment.FieldID, selector),
 			sqlgraph.To(post.Table, post.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, false, comment.PostTable, comment.PostColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, comment.PostTable, comment.PostColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -487,10 +487,10 @@ func (cq *CommentQuery) loadPost(ctx context.Context, query *PostQuery, nodes []
 	ids := make([]string, 0, len(nodes))
 	nodeids := make(map[string][]*Comment)
 	for i := range nodes {
-		if nodes[i].comment_post == nil {
+		if nodes[i].post_comments == nil {
 			continue
 		}
-		fk := *nodes[i].comment_post
+		fk := *nodes[i].post_comments
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -507,7 +507,7 @@ func (cq *CommentQuery) loadPost(ctx context.Context, query *PostQuery, nodes []
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "comment_post" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "post_comments" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
