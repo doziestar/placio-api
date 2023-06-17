@@ -115,6 +115,14 @@ func (pc *PostController) createPost(ctx *gin.Context) error {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 			return err
 		}
+
+		// Add the media to the post
+		err = pc.postService.AddMediaToPost(ctx, newPost, createdMedia)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+			return err
+		}
+
 		medias[i] = createdMedia
 	}
 
