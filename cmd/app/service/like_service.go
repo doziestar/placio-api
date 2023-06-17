@@ -1,93 +1,82 @@
 package service
 
 import (
-	"errors"
-	"placio-app/models"
-
-	"gorm.io/gorm"
+	"context"
+	"github.com/google/uuid"
+	"placio-app/ent"
+	"placio-app/ent/like"
+	"placio-app/ent/post"
+	"placio-app/ent/user"
+	"placio-app/utility"
 )
 
 type LikeService interface {
-	CreateLike(like *models.Like) (*models.Like, error)
-	GetLike(likeID string) (*models.Like, error)
-	DeleteLike(likeID string) error
-	ListLikes(postID string) ([]*models.Like, error)
-	LikePost(postID string, accountID string) error
-	DeleteLikeByPostID(postID string) error
-	UnlikePost(postID string, accountID string) error
-	GetLikeCount(postID string) (int64, error)
+	LikePost(ctx context.Context, userID string, postID string) (*ent.Like, error)
+	UnlikePost(ctx context.Context, likeID string) error
+	GetUserLikes(ctx context.Context, userID string) ([]*ent.Like, error)
+	GetPostLikes(ctx context.Context, postID string) ([]*ent.Like, error)
 }
 
-type likeServiceImpl struct {
-	db *gorm.DB
+type LikeServiceImpl struct {
+	client *ent.Client
+	cache  *utility.RedisClient
 }
 
-func NewLikeService(db *gorm.DB) LikeService {
-	return &likeServiceImpl{db: db}
+func NewLikeService(client *ent.Client, cache *utility.RedisClient) *LikeServiceImpl {
+	return &LikeServiceImpl{client: client, cache: cache}
 }
 
-func (ls *likeServiceImpl) CreateLike(like *models.Like) (*models.Like, error) {
-	if err := ls.db.Create(&like).Error; err != nil {
+func (s *LikeServiceImpl) LikePost(ctx context.Context, userID string, postID string) (*ent.Like, error) {
+	user, err := s.client.User.
+		Query().
+		Where(user.ID(userID)).
+		Only(ctx)
+	if err != nil {
 		return nil, err
 	}
-	return like, nil
-}
 
-func (ls *likeServiceImpl) GetLike(likeID string) (*models.Like, error) {
-	var like models.Like
-	if err := ls.db.First(&like, "id = ?", likeID).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil
-		}
+	post, err := s.client.Post.
+		Query().
+		Where(post.ID(postID)).
+		Only(ctx)
+	if err != nil {
 		return nil, err
 	}
-	return &like, nil
+
+	return s.client.Like.
+		Create().
+		SetID(uuid.New().String()).
+		SetUser(user).
+		SetPost(post).
+		Save(ctx)
 }
 
-func (ls *likeServiceImpl) DeleteLike(likeID string) error {
-	if err := ls.db.Delete(&models.Like{}, "id = ?", likeID).Error; err != nil {
+func (s *LikeServiceImpl) UnlikePost(ctx context.Context, likeID string) error {
+	_, err := s.client.Like.
+		Delete().
+		Where(like.ID(likeID)).
+		Exec(ctx)
+	if err != nil {
 		return err
 	}
+	//if like == nil {
+	//	return nil
+	//}
 	return nil
 }
 
-func (ls *likeServiceImpl) ListLikes(postID string) ([]*models.Like, error) {
-	var likes []*models.Like
-	if err := ls.db.Where("post_id = ?", postID).Find(&likes).Error; err != nil {
-		return nil, err
-	}
-	return likes, nil
+func (s *LikeServiceImpl) GetUserLikes(ctx context.Context, userID string) ([]*ent.Like, error) {
+	return s.client.User.
+		Query().
+		Where(user.ID(userID)).
+		QueryLikes().
+		All(ctx)
 }
 
-func (ls *likeServiceImpl) DeleteLikeByPostID(postID string) error {
-	if err := ls.db.Delete(&models.Like{}, "post_id = ?", postID).Error; err != nil {
-		return err
-	}
-	return nil
-}
-
-func (ls *likeServiceImpl) LikePost(postID string, accountID string) error {
-	like := &models.Like{
-		PostID: postID,
-		UserId: accountID,
-	}
-	if err := ls.db.Create(&like).Error; err != nil {
-		return err
-	}
-	return nil
-}
-
-func (ls *likeServiceImpl) UnlikePost(postID string, accountID string) error {
-	if err := ls.db.Delete(&models.Like{}, "post_id = ? AND account_id = ?", postID, accountID).Error; err != nil {
-		return err
-	}
-	return nil
-}
-
-func (ls *likeServiceImpl) GetLikeCount(postID string) (int64, error) {
-	var count int64
-	if err := ls.db.Model(&models.Like{}).Where("post_id = ?", postID).Count(&count).Error; err != nil {
-		return 0, err
-	}
-	return count, nil
+func (s *LikeServiceImpl) GetPostLikes(ctx context.Context, postID string) ([]*ent.Like, error) {
+	return s.client.Post.
+		Query().
+		Where(post.ID(postID)).
+		QueryLikes().
+		All(ctx)
 }

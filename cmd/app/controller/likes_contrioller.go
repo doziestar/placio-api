@@ -4,108 +4,122 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	_ "placio-app/Dto"
+	_ "placio-app/ent"
 	"placio-app/service"
-	"placio-app/utility"
 )
 
-type LikesController struct {
-	likesService service.LikeService
+type LikeController struct {
+	likeService service.LikeService
 }
 
-func NewLikeController(likeService service.LikeService) *LikesController {
-	return &LikesController{likesService: likeService}
+func NewLikeController(likeService service.LikeService) *LikeController {
+	return &LikeController{likeService: likeService}
 }
 
-func (lc *LikesController) RegisterRoutes(router *gin.RouterGroup) {
+func (lc *LikeController) RegisterRoutes(router *gin.RouterGroup) {
 	likeRouter := router.Group("/likes")
 	{
-		//likeRouter.GET("/", lc.getAllLikes)
-		//likeRouter.GET("/:id", lc.getLike)
-		//likeRouter.Post("/", lc.createLike)
-		//likeRouter.Put("/:id", lc.updateLike)
-		//likeRouter.Delete("/:id", lc.deleteLike)
-		likeRouter.POST("/:postID", utility.Use(lc.likePost))
-		likeRouter.DELETE("/:postID", utility.Use(lc.unlikePost))
-		likeRouter.GET("/:postID/count", utility.Use(lc.getLikeCount))
-
+		likeRouter.POST("/user/:userID/post/:postID", lc.likePost)
+		likeRouter.DELETE("/:likeID", lc.unlikePost)
+		likeRouter.GET("/user/:userID", lc.getUserLikes)
+		likeRouter.GET("/post/:postID", lc.getPostLikes)
 	}
 }
 
 // @Summary Like a post
-// @Description Add a like to a post
-// @Tags Likes
+// @Description Add a like to a post by a user
+// @Tags Like
 // @Accept json
 // @Produce json
-// @Param postID path string true "Post ID"
-// @Success 201 {object} fiber.Map "Successfully liked post"
+// @Param userID path string true "ID of the user"
+// @Param postID path string true "ID of the post"
+// @Security Bearer
+// @Success 200 {object} Dto.Response "Successfully liked post"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
+// @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
-// @Router /api/v1/likes/{postID} [post]
-func (c *LikesController) likePost(ctx *gin.Context) error {
+// @Router /api/v1/likes/user/{userID}/post/{postID} [post]
+func (lc *LikeController) likePost(ctx *gin.Context) {
+	userID := ctx.Param("userID")
 	postID := ctx.Param("postID")
 
-	err := c.likesService.LikePost(postID, "")
+	like, err := lc.likeService.LikePost(ctx, userID, postID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Internal Server Error",
-		})
-		return err
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Successfully liked post",
-	})
-	return nil
+	ctx.JSON(http.StatusOK, like)
 }
 
 // @Summary Unlike a post
 // @Description Remove a like from a post
-// @Tags Likes
+// @Tags Like
 // @Accept json
 // @Produce json
-// @Param postID path string true "Post ID"
-// @Success 200 {object} fiber.Map "Successfully unliked post"
+// @Param likeID path string true "ID of the like"
+// @Security Bearer
+// @Success 200 {object} Dto.Response "Successfully unliked post"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
+// @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
-// @Router /api/v1/likes/{postID} [delete]
-func (c *LikesController) unlikePost(ctx *gin.Context) error {
-	postID := ctx.Param("postID")
+// @Router /api/v1/likes/{likeID} [delete]
+func (lc *LikeController) unlikePost(ctx *gin.Context) {
+	likeID := ctx.Param("likeID")
 
-	err := c.likesService.UnlikePost(postID, "")
+	err := lc.likeService.UnlikePost(ctx, likeID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Internal Server Error",
-		})
-		return err
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Successfully unliked post",
-	})
-	return nil
+	ctx.JSON(http.StatusOK, gin.H{"status": "success", "message": "Successfully unliked post"})
 }
 
-// @Summary GET like count for a post
-// @Description Retrieve the number of likes for a post
-// @Tags Likes
+// @Summary Get user likes
+// @Description Retrieve all likes by a user
+// @Tags Like
+// @Accept json
 // @Produce json
-// @Param postID path string true "Post ID"
-// @Success 200 {object} fiber.Map "Successfully retrieved like count"
+// @Param userID path string true "ID of the user"
+// @Security Bearer
+// @Success 200 {array} ent.Like "List of likes"
+// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
+// @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
-// @Router /api/v1/likes/{postID}/count [get]
-func (c *LikesController) getLikeCount(ctx *gin.Context) error {
-	postID := ctx.Param("postID")
+// @Router /api/v1/likes/user/{userID} [get]
+func (lc *LikeController) getUserLikes(ctx *gin.Context) {
+	userID := ctx.Param("userID")
 
-	count, err := c.likesService.GetLikeCount(postID)
+	likes, err := lc.likeService.GetUserLikes(ctx, userID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Internal Server Error",
-		})
-		return err
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"count": count,
-	})
-	return nil
+	ctx.JSON(http.StatusOK, likes)
+}
+
+// @Summary Get post likes
+// @Description Retrieve all likes for a post
+// @Tags Like
+// @Accept json
+// @Produce json
+// @Param postID path string true "ID of the post"
+// @Security Bearer
+// @Success 200 {array} ent.Like "List of likes"
+// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
+// @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
+// @Router /api/v1/likes/post/{postID} [get]
+func (lc *LikeController) getPostLikes(ctx *gin.Context) {
+	postID := ctx.Param("postID")
+
+	likes, err := lc.likeService.GetPostLikes(ctx, postID)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, likes)
 }

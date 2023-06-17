@@ -45,6 +45,9 @@ type Post func(*sql.Selector)
 // Rating is the predicate function for rating builders.
 type Rating func(*sql.Selector)
 
+// Reaction is the predicate function for reaction builders.
+type Reaction func(*sql.Selector)
+
 // User is the predicate function for user builders.
 type User func(*sql.Selector)
 

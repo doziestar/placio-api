@@ -69,9 +69,13 @@ func (ps *PostServiceImpl) CreatePost(ctx context.Context, newPost *ent.Post, us
 		fmt.Errorf("failed creating post: %w", err)
 		return nil, fmt.Errorf("failed creating post: %w", err)
 	}
+	postToReturn, err := ps.GetPost(ctx, post.ID)
+	if err != nil {
+		return nil, fmt.Errorf("failed getting post: %w", err)
+	}
 	fmt.Println("saved post", post)
 
-	return post, nil
+	return postToReturn, nil
 }
 
 func (ps *PostServiceImpl) GetPost(ctx context.Context, postID string) (*ent.Post, error) {

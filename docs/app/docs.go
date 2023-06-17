@@ -611,9 +611,14 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/likes/{postID}": {
-            "post": {
-                "description": "Add a like to a post",
+        "/api/v1/likes/post/{postID}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Retrieve all likes for a post",
                 "consumes": [
                     "application/json"
                 ],
@@ -621,55 +626,13 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Likes"
+                    "Like"
                 ],
-                "summary": "Like a post",
+                "summary": "Get post likes",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Post ID",
-                        "name": "postID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Successfully liked post",
-                        "schema": {
-                            "$ref": "#/definitions/fiber.Map"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Remove a like from a post",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Likes"
-                ],
-                "summary": "Unlike a post",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Post ID",
+                        "description": "ID of the post",
                         "name": "postID",
                         "in": "path",
                         "required": true
@@ -677,13 +640,22 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successfully unliked post",
+                        "description": "List of likes",
                         "schema": {
-                            "$ref": "#/definitions/fiber.Map"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/placio-app_ent.Like"
+                            }
                         }
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
                             "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
                         }
@@ -697,20 +669,93 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/likes/{postID}/count": {
+        "/api/v1/likes/user/{userID}": {
             "get": {
-                "description": "Retrieve the number of likes for a post",
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Retrieve all likes by a user",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Likes"
+                    "Like"
                 ],
-                "summary": "GET like count for a post",
+                "summary": "Get user likes",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Post ID",
+                        "description": "ID of the user",
+                        "name": "userID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of likes",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/placio-app_ent.Like"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/likes/user/{userID}/post/{postID}": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Add a like to a post by a user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Like"
+                ],
+                "summary": "Like a post",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the user",
+                        "name": "userID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of the post",
                         "name": "postID",
                         "in": "path",
                         "required": true
@@ -718,9 +763,76 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successfully retrieved like count",
+                        "description": "Successfully liked post",
                         "schema": {
-                            "$ref": "#/definitions/fiber.Map"
+                            "$ref": "#/definitions/placio-app_Dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/likes/{likeID}": {
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Remove a like from a post",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Like"
+                ],
+                "summary": "Unlike a post",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the like",
+                        "name": "likeID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully unliked post",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
                         }
                     },
                     "500": {
@@ -3791,10 +3903,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "fiber.Map": {
-            "type": "object",
-            "additionalProperties": true
-        },
         "gorm.DeletedAt": {
             "type": "object",
             "properties": {
@@ -4506,6 +4614,14 @@ const docTemplate = `{
                     "description": "CreatedAt holds the value of the \"CreatedAt\" field.",
                     "type": "string"
                 },
+                "Privacy": {
+                    "description": "Privacy holds the value of the \"Privacy\" field.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent_post.Privacy"
+                        }
+                    ]
+                },
                 "UpdatedAt": {
                     "description": "UpdatedAt holds the value of the \"UpdatedAt\" field.",
                     "type": "string"
@@ -4594,24 +4710,12 @@ const docTemplate = `{
                         }
                     ]
                 },
-                "family_name": {
-                    "description": "FamilyName holds the value of the \"family_name\" field.",
-                    "type": "string"
-                },
-                "given_name": {
-                    "description": "GivenName holds the value of the \"given_name\" field.",
-                    "type": "string"
-                },
                 "id": {
                     "description": "ID of the ent.",
                     "type": "string"
                 },
                 "name": {
                     "description": "Name holds the value of the \"name\" field.",
-                    "type": "string"
-                },
-                "nickname": {
-                    "description": "Nickname holds the value of the \"nickname\" field.",
                     "type": "string"
                 },
                 "picture": {
@@ -4622,6 +4726,10 @@ const docTemplate = `{
                     "description": "UserSettings holds the value of the \"user_settings\" field.",
                     "type": "object",
                     "additionalProperties": true
+                },
+                "username": {
+                    "description": "Username holds the value of the \"username\" field.",
+                    "type": "string"
                 }
             }
         },
@@ -4803,6 +4911,21 @@ const docTemplate = `{
                     ]
                 }
             }
+        },
+        "placio-app_ent_post.Privacy": {
+            "type": "string",
+            "enum": [
+                "Public",
+                "Public",
+                "FollowersOnly",
+                "OnlyMe"
+            ],
+            "x-enum-varnames": [
+                "DefaultPrivacy",
+                "PrivacyPublic",
+                "PrivacyFollowersOnly",
+                "PrivacyOnlyMe"
+            ]
         },
         "placio-app_models.AccountSettings": {
             "type": "object",

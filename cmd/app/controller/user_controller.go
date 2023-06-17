@@ -388,11 +388,11 @@ func (uc *UserController) GetUser(ctx *gin.Context) error {
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/users/ [patch]
 func (uc *UserController) UpdateUser(ctx *gin.Context) error {
-	auth0ID := ctx.MustGet("user").(string)
-	log.Println("UpdateUser", ctx.Request.URL.Path, ctx.Request.Method, auth0ID)
-	if auth0ID == "" {
+	userId := ctx.MustGet("user").(string)
+	log.Println("UpdateUser", ctx.Request.URL.Path, ctx.Request.Method, userId)
+	if userId == "" {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": "User Auth0 ID required",
+			"error": "User ID required",
 		})
 		return nil
 	}
@@ -405,7 +405,7 @@ func (uc *UserController) UpdateUser(ctx *gin.Context) error {
 		return nil
 	}
 
-	userData, err := uc.userService.UpdateUser(ctx, auth0ID, user)
+	userData, err := uc.userService.UpdateUser(ctx, userId, user)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			ctx.JSON(http.StatusNotFound, gin.H{

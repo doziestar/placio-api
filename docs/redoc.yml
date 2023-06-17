@@ -1,8 +1,5 @@
 basePath: /qpi/v1
 definitions:
-  fiber.Map:
-    additionalProperties: true
-    type: object
   gorm.DeletedAt:
     properties:
       time:
@@ -496,6 +493,10 @@ definitions:
       CreatedAt:
         description: CreatedAt holds the value of the "CreatedAt" field.
         type: string
+      Privacy:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent_post.Privacy'
+        description: Privacy holds the value of the "Privacy" field.
       UpdatedAt:
         description: UpdatedAt holds the value of the "UpdatedAt" field.
         type: string
@@ -554,20 +555,11 @@ definitions:
         description: |-
           Edges holds the relations/edges for other nodes in the graph.
           The values are being populated by the UserQuery when eager-loading is set.
-      family_name:
-        description: FamilyName holds the value of the "family_name" field.
-        type: string
-      given_name:
-        description: GivenName holds the value of the "given_name" field.
-        type: string
       id:
         description: ID of the ent.
         type: string
       name:
         description: Name holds the value of the "name" field.
-        type: string
-      nickname:
-        description: Nickname holds the value of the "nickname" field.
         type: string
       picture:
         description: Picture holds the value of the "picture" field.
@@ -576,6 +568,9 @@ definitions:
         additionalProperties: true
         description: UserSettings holds the value of the "user_settings" field.
         type: object
+      username:
+        description: Username holds the value of the "username" field.
+        type: string
     type: object
   placio-app_ent.UserBusiness:
     properties:
@@ -692,6 +687,18 @@ definitions:
           - $ref: '#/definitions/placio-app_ent.User'
         description: Follower holds the value of the follower edge.
     type: object
+  placio-app_ent_post.Privacy:
+    enum:
+      - Public
+      - Public
+      - FollowersOnly
+      - OnlyMe
+    type: string
+    x-enum-varnames:
+      - DefaultPrivacy
+      - PrivacyPublic
+      - PrivacyFollowersOnly
+      - PrivacyOnlyMe
   placio-app_models.AccountSettings:
     properties:
       accountID:
@@ -1823,15 +1830,15 @@ paths:
       summary: Show the status of server.
       tags:
         - root
-  /api/v1/likes/{postID}:
+  /api/v1/likes/{likeID}:
     delete:
       consumes:
         - application/json
       description: Remove a like from a post
       parameters:
-        - description: Post ID
+        - description: ID of the like
           in: path
-          name: postID
+          name: likeID
           required: true
           type: string
       produces:
@@ -1840,51 +1847,31 @@ paths:
         '200':
           description: Successfully unliked post
           schema:
-            $ref: '#/definitions/fiber.Map'
+            $ref: '#/definitions/placio-app_Dto.Response'
         '400':
           description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '401':
+          description: Unauthorized
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         '500':
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      security:
+        - Bearer: []
       summary: Unlike a post
       tags:
-        - Likes
-    post:
+        - Like
+  /api/v1/likes/post/{postID}:
+    get:
       consumes:
         - application/json
-      description: Add a like to a post
+      description: Retrieve all likes for a post
       parameters:
-        - description: Post ID
-          in: path
-          name: postID
-          required: true
-          type: string
-      produces:
-        - application/json
-      responses:
-        '201':
-          description: Successfully liked post
-          schema:
-            $ref: '#/definitions/fiber.Map'
-        '400':
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        '500':
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Like a post
-      tags:
-        - Likes
-  /api/v1/likes/{postID}/count:
-    get:
-      description: Retrieve the number of likes for a post
-      parameters:
-        - description: Post ID
+        - description: ID of the post
           in: path
           name: postID
           required: true
@@ -1893,16 +1880,105 @@ paths:
         - application/json
       responses:
         '200':
-          description: Successfully retrieved like count
+          description: List of likes
           schema:
-            $ref: '#/definitions/fiber.Map'
+            items:
+              $ref: '#/definitions/placio-app_ent.Like'
+            type: array
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
         '500':
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: GET like count for a post
+      security:
+        - Bearer: []
+      summary: Get post likes
       tags:
-        - Likes
+        - Like
+  /api/v1/likes/user/{userID}:
+    get:
+      consumes:
+        - application/json
+      description: Retrieve all likes by a user
+      parameters:
+        - description: ID of the user
+          in: path
+          name: userID
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: List of likes
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_ent.Like'
+            type: array
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      security:
+        - Bearer: []
+      summary: Get user likes
+      tags:
+        - Like
+  /api/v1/likes/user/{userID}/post/{postID}:
+    post:
+      consumes:
+        - application/json
+      description: Add a like to a post by a user
+      parameters:
+        - description: ID of the user
+          in: path
+          name: userID
+          required: true
+          type: string
+        - description: ID of the post
+          in: path
+          name: postID
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully liked post
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Response'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      security:
+        - Bearer: []
+      summary: Like a post
+      tags:
+        - Like
   /api/v1/posts/:
     post:
       consumes:

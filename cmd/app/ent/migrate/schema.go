@@ -233,6 +233,7 @@ var (
 		{Name: "content", Type: field.TypeString, Size: 2147483647},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "privacy", Type: field.TypeEnum, Enums: []string{"Public", "FollowersOnly", "OnlyMe"}, Default: "Public"},
 		{Name: "business_posts", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "user_posts", Type: field.TypeString, Nullable: true, Size: 36},
 	}
@@ -244,13 +245,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "posts_businesses_posts",
-				Columns:    []*schema.Column{PostsColumns[4]},
+				Columns:    []*schema.Column{PostsColumns[5]},
 				RefColumns: []*schema.Column{BusinessesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "posts_users_posts",
-				Columns:    []*schema.Column{PostsColumns[5]},
+				Columns:    []*schema.Column{PostsColumns[6]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -266,15 +267,24 @@ var (
 		Columns:    RatingsColumns,
 		PrimaryKey: []*schema.Column{RatingsColumns[0]},
 	}
+	// ReactionsColumns holds the columns for the "reactions" table.
+	ReactionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+	}
+	// ReactionsTable holds the schema information for the "reactions" table.
+	ReactionsTable = &schema.Table{
+		Name:       "reactions",
+		Columns:    ReactionsColumns,
+		PrimaryKey: []*schema.Column{ReactionsColumns[0]},
+	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
 		{Name: "auth0_id", Type: field.TypeString, Unique: true},
 		{Name: "name", Type: field.TypeString, Nullable: true},
-		{Name: "given_name", Type: field.TypeString, Nullable: true},
-		{Name: "family_name", Type: field.TypeString, Nullable: true},
-		{Name: "nickname", Type: field.TypeString, Nullable: true},
 		{Name: "picture", Type: field.TypeString, Nullable: true},
+		{Name: "cover_image", Type: field.TypeString, Nullable: true, Default: "https://res.cloudinary.com/placio/image/upload/v1686842319/mjl8stmbn5xmfsm50vbg.jpg"},
+		{Name: "username", Type: field.TypeString, Unique: true},
 		{Name: "auth0_data", Type: field.TypeJSON, Nullable: true},
 		{Name: "app_settings", Type: field.TypeJSON, Nullable: true},
 		{Name: "user_settings", Type: field.TypeJSON, Nullable: true},
@@ -379,6 +389,7 @@ var (
 		PaymentsTable,
 		PostsTable,
 		RatingsTable,
+		ReactionsTable,
 		UsersTable,
 		UserBusinessesTable,
 		UserFollowBusinessesTable,

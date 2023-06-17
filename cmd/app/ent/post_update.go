@@ -59,6 +59,20 @@ func (pu *PostUpdate) SetUpdatedAt(t time.Time) *PostUpdate {
 	return pu
 }
 
+// SetPrivacy sets the "Privacy" field.
+func (pu *PostUpdate) SetPrivacy(po post.Privacy) *PostUpdate {
+	pu.mutation.SetPrivacy(po)
+	return pu
+}
+
+// SetNillablePrivacy sets the "Privacy" field if the given value is not nil.
+func (pu *PostUpdate) SetNillablePrivacy(po *post.Privacy) *PostUpdate {
+	if po != nil {
+		pu.SetPrivacy(*po)
+	}
+	return pu
+}
+
 // SetUserID sets the "user" edge to the User entity by ID.
 func (pu *PostUpdate) SetUserID(id string) *PostUpdate {
 	pu.mutation.SetUserID(id)
@@ -265,6 +279,11 @@ func (pu *PostUpdate) check() error {
 			return &ValidationError{Name: "Content", err: fmt.Errorf(`ent: validator failed for field "Post.Content": %w`, err)}
 		}
 	}
+	if v, ok := pu.mutation.Privacy(); ok {
+		if err := post.PrivacyValidator(v); err != nil {
+			return &ValidationError{Name: "Privacy", err: fmt.Errorf(`ent: validator failed for field "Post.Privacy": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -288,6 +307,9 @@ func (pu *PostUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := pu.mutation.UpdatedAt(); ok {
 		_spec.SetField(post.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if value, ok := pu.mutation.Privacy(); ok {
+		_spec.SetField(post.FieldPrivacy, field.TypeEnum, value)
 	}
 	if pu.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -528,6 +550,20 @@ func (puo *PostUpdateOne) SetUpdatedAt(t time.Time) *PostUpdateOne {
 	return puo
 }
 
+// SetPrivacy sets the "Privacy" field.
+func (puo *PostUpdateOne) SetPrivacy(po post.Privacy) *PostUpdateOne {
+	puo.mutation.SetPrivacy(po)
+	return puo
+}
+
+// SetNillablePrivacy sets the "Privacy" field if the given value is not nil.
+func (puo *PostUpdateOne) SetNillablePrivacy(po *post.Privacy) *PostUpdateOne {
+	if po != nil {
+		puo.SetPrivacy(*po)
+	}
+	return puo
+}
+
 // SetUserID sets the "user" edge to the User entity by ID.
 func (puo *PostUpdateOne) SetUserID(id string) *PostUpdateOne {
 	puo.mutation.SetUserID(id)
@@ -747,6 +783,11 @@ func (puo *PostUpdateOne) check() error {
 			return &ValidationError{Name: "Content", err: fmt.Errorf(`ent: validator failed for field "Post.Content": %w`, err)}
 		}
 	}
+	if v, ok := puo.mutation.Privacy(); ok {
+		if err := post.PrivacyValidator(v); err != nil {
+			return &ValidationError{Name: "Privacy", err: fmt.Errorf(`ent: validator failed for field "Post.Privacy": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -787,6 +828,9 @@ func (puo *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) 
 	}
 	if value, ok := puo.mutation.UpdatedAt(); ok {
 		_spec.SetField(post.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if value, ok := puo.mutation.Privacy(); ok {
+		_spec.SetField(post.FieldPrivacy, field.TypeEnum, value)
 	}
 	if puo.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{

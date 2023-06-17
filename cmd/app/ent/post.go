@@ -25,6 +25,8 @@ type Post struct {
 	CreatedAt time.Time `json:"CreatedAt,omitempty"`
 	// UpdatedAt holds the value of the "UpdatedAt" field.
 	UpdatedAt time.Time `json:"UpdatedAt,omitempty"`
+	// Privacy holds the value of the "Privacy" field.
+	Privacy post.Privacy `json:"Privacy,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PostQuery when eager-loading is set.
 	Edges          PostEdges `json:"edges"`
@@ -108,7 +110,7 @@ func (*Post) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case post.FieldID, post.FieldContent:
+		case post.FieldID, post.FieldContent, post.FieldPrivacy:
 			values[i] = new(sql.NullString)
 		case post.FieldCreatedAt, post.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -154,6 +156,12 @@ func (po *Post) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field UpdatedAt", values[i])
 			} else if value.Valid {
 				po.UpdatedAt = value.Time
+			}
+		case post.FieldPrivacy:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field Privacy", values[i])
+			} else if value.Valid {
+				po.Privacy = post.Privacy(value.String)
 			}
 		case post.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -238,6 +246,9 @@ func (po *Post) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("UpdatedAt=")
 	builder.WriteString(po.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("Privacy=")
+	builder.WriteString(fmt.Sprintf("%v", po.Privacy))
 	builder.WriteByte(')')
 	return builder.String()
 }

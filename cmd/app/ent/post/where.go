@@ -225,6 +225,26 @@ func UpdatedAtLTE(v time.Time) predicate.Post {
 	return predicate.Post(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
+// PrivacyEQ applies the EQ predicate on the "Privacy" field.
+func PrivacyEQ(v Privacy) predicate.Post {
+	return predicate.Post(sql.FieldEQ(FieldPrivacy, v))
+}
+
+// PrivacyNEQ applies the NEQ predicate on the "Privacy" field.
+func PrivacyNEQ(v Privacy) predicate.Post {
+	return predicate.Post(sql.FieldNEQ(FieldPrivacy, v))
+}
+
+// PrivacyIn applies the In predicate on the "Privacy" field.
+func PrivacyIn(vs ...Privacy) predicate.Post {
+	return predicate.Post(sql.FieldIn(FieldPrivacy, vs...))
+}
+
+// PrivacyNotIn applies the NotIn predicate on the "Privacy" field.
+func PrivacyNotIn(vs ...Privacy) predicate.Post {
+	return predicate.Post(sql.FieldNotIn(FieldPrivacy, vs...))
+}
+
 // HasUser applies the HasEdge predicate on the "user" edge.
 func HasUser() predicate.Post {
 	return predicate.Post(func(s *sql.Selector) {

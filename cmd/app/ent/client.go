@@ -23,6 +23,7 @@ import (
 	"placio-app/ent/payment"
 	"placio-app/ent/post"
 	"placio-app/ent/rating"
+	"placio-app/ent/reaction"
 	"placio-app/ent/user"
 	"placio-app/ent/userbusiness"
 	"placio-app/ent/userfollowbusiness"
@@ -65,6 +66,8 @@ type Client struct {
 	Post *PostClient
 	// Rating is the client for interacting with the Rating builders.
 	Rating *RatingClient
+	// Reaction is the client for interacting with the Reaction builders.
+	Reaction *ReactionClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 	// UserBusiness is the client for interacting with the UserBusiness builders.
@@ -99,6 +102,7 @@ func (c *Client) init() {
 	c.Payment = NewPaymentClient(c.config)
 	c.Post = NewPostClient(c.config)
 	c.Rating = NewRatingClient(c.config)
+	c.Reaction = NewReactionClient(c.config)
 	c.User = NewUserClient(c.config)
 	c.UserBusiness = NewUserBusinessClient(c.config)
 	c.UserFollowBusiness = NewUserFollowBusinessClient(c.config)
@@ -198,6 +202,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Payment:                NewPaymentClient(cfg),
 		Post:                   NewPostClient(cfg),
 		Rating:                 NewRatingClient(cfg),
+		Reaction:               NewReactionClient(cfg),
 		User:                   NewUserClient(cfg),
 		UserBusiness:           NewUserBusinessClient(cfg),
 		UserFollowBusiness:     NewUserFollowBusinessClient(cfg),
@@ -234,6 +239,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Payment:                NewPaymentClient(cfg),
 		Post:                   NewPostClient(cfg),
 		Rating:                 NewRatingClient(cfg),
+		Reaction:               NewReactionClient(cfg),
 		User:                   NewUserClient(cfg),
 		UserBusiness:           NewUserBusinessClient(cfg),
 		UserFollowBusiness:     NewUserFollowBusinessClient(cfg),
@@ -269,7 +275,7 @@ func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.AccountSettings, c.Booking, c.Business, c.BusinessFollowBusiness,
 		c.BusinessFollowUser, c.Chat, c.Comment, c.Like, c.Media, c.Order, c.Payment,
-		c.Post, c.Rating, c.User, c.UserBusiness, c.UserFollowBusiness,
+		c.Post, c.Rating, c.Reaction, c.User, c.UserBusiness, c.UserFollowBusiness,
 		c.UserFollowUser,
 	} {
 		n.Use(hooks...)
@@ -282,7 +288,7 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.AccountSettings, c.Booking, c.Business, c.BusinessFollowBusiness,
 		c.BusinessFollowUser, c.Chat, c.Comment, c.Like, c.Media, c.Order, c.Payment,
-		c.Post, c.Rating, c.User, c.UserBusiness, c.UserFollowBusiness,
+		c.Post, c.Rating, c.Reaction, c.User, c.UserBusiness, c.UserFollowBusiness,
 		c.UserFollowUser,
 	} {
 		n.Intercept(interceptors...)
@@ -318,6 +324,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Post.mutate(ctx, m)
 	case *RatingMutation:
 		return c.Rating.mutate(ctx, m)
+	case *ReactionMutation:
+		return c.Reaction.mutate(ctx, m)
 	case *UserMutation:
 		return c.User.mutate(ctx, m)
 	case *UserBusinessMutation:
@@ -2217,6 +2225,124 @@ func (c *RatingClient) mutate(ctx context.Context, m *RatingMutation) (Value, er
 	}
 }
 
+// ReactionClient is a client for the Reaction schema.
+type ReactionClient struct {
+	config
+}
+
+// NewReactionClient returns a client for the Reaction from the given config.
+func NewReactionClient(c config) *ReactionClient {
+	return &ReactionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `reaction.Hooks(f(g(h())))`.
+func (c *ReactionClient) Use(hooks ...Hook) {
+	c.hooks.Reaction = append(c.hooks.Reaction, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `reaction.Intercept(f(g(h())))`.
+func (c *ReactionClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Reaction = append(c.inters.Reaction, interceptors...)
+}
+
+// Create returns a builder for creating a Reaction entity.
+func (c *ReactionClient) Create() *ReactionCreate {
+	mutation := newReactionMutation(c.config, OpCreate)
+	return &ReactionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Reaction entities.
+func (c *ReactionClient) CreateBulk(builders ...*ReactionCreate) *ReactionCreateBulk {
+	return &ReactionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Reaction.
+func (c *ReactionClient) Update() *ReactionUpdate {
+	mutation := newReactionMutation(c.config, OpUpdate)
+	return &ReactionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ReactionClient) UpdateOne(r *Reaction) *ReactionUpdateOne {
+	mutation := newReactionMutation(c.config, OpUpdateOne, withReaction(r))
+	return &ReactionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ReactionClient) UpdateOneID(id string) *ReactionUpdateOne {
+	mutation := newReactionMutation(c.config, OpUpdateOne, withReactionID(id))
+	return &ReactionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Reaction.
+func (c *ReactionClient) Delete() *ReactionDelete {
+	mutation := newReactionMutation(c.config, OpDelete)
+	return &ReactionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ReactionClient) DeleteOne(r *Reaction) *ReactionDeleteOne {
+	return c.DeleteOneID(r.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ReactionClient) DeleteOneID(id string) *ReactionDeleteOne {
+	builder := c.Delete().Where(reaction.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ReactionDeleteOne{builder}
+}
+
+// Query returns a query builder for Reaction.
+func (c *ReactionClient) Query() *ReactionQuery {
+	return &ReactionQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeReaction},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Reaction entity by its id.
+func (c *ReactionClient) Get(ctx context.Context, id string) (*Reaction, error) {
+	return c.Query().Where(reaction.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ReactionClient) GetX(ctx context.Context, id string) *Reaction {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ReactionClient) Hooks() []Hook {
+	return c.hooks.Reaction
+}
+
+// Interceptors returns the client interceptors.
+func (c *ReactionClient) Interceptors() []Interceptor {
+	return c.inters.Reaction
+}
+
+func (c *ReactionClient) mutate(ctx context.Context, m *ReactionMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ReactionCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ReactionUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ReactionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ReactionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Reaction mutation op: %q", m.Op())
+	}
+}
+
 // UserClient is a client for the User schema.
 type UserClient struct {
 	config
@@ -2917,12 +3043,12 @@ func (c *UserFollowUserClient) mutate(ctx context.Context, m *UserFollowUserMuta
 type (
 	hooks struct {
 		AccountSettings, Booking, Business, BusinessFollowBusiness, BusinessFollowUser,
-		Chat, Comment, Like, Media, Order, Payment, Post, Rating, User, UserBusiness,
-		UserFollowBusiness, UserFollowUser []ent.Hook
+		Chat, Comment, Like, Media, Order, Payment, Post, Rating, Reaction, User,
+		UserBusiness, UserFollowBusiness, UserFollowUser []ent.Hook
 	}
 	inters struct {
 		AccountSettings, Booking, Business, BusinessFollowBusiness, BusinessFollowUser,
-		Chat, Comment, Like, Media, Order, Payment, Post, Rating, User, UserBusiness,
-		UserFollowBusiness, UserFollowUser []ent.Interceptor
+		Chat, Comment, Like, Media, Order, Payment, Post, Rating, Reaction, User,
+		UserBusiness, UserFollowBusiness, UserFollowUser []ent.Interceptor
 	}
 )

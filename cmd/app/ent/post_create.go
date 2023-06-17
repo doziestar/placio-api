@@ -51,6 +51,20 @@ func (pc *PostCreate) SetUpdatedAt(t time.Time) *PostCreate {
 	return pc
 }
 
+// SetPrivacy sets the "Privacy" field.
+func (pc *PostCreate) SetPrivacy(po post.Privacy) *PostCreate {
+	pc.mutation.SetPrivacy(po)
+	return pc
+}
+
+// SetNillablePrivacy sets the "Privacy" field if the given value is not nil.
+func (pc *PostCreate) SetNillablePrivacy(po *post.Privacy) *PostCreate {
+	if po != nil {
+		pc.SetPrivacy(*po)
+	}
+	return pc
+}
+
 // SetID sets the "id" field.
 func (pc *PostCreate) SetID(s string) *PostCreate {
 	pc.mutation.SetID(s)
@@ -179,6 +193,10 @@ func (pc *PostCreate) defaults() {
 		v := post.DefaultCreatedAt()
 		pc.mutation.SetCreatedAt(v)
 	}
+	if _, ok := pc.mutation.Privacy(); !ok {
+		v := post.DefaultPrivacy
+		pc.mutation.SetPrivacy(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -196,6 +214,14 @@ func (pc *PostCreate) check() error {
 	}
 	if _, ok := pc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "UpdatedAt", err: errors.New(`ent: missing required field "Post.UpdatedAt"`)}
+	}
+	if _, ok := pc.mutation.Privacy(); !ok {
+		return &ValidationError{Name: "Privacy", err: errors.New(`ent: missing required field "Post.Privacy"`)}
+	}
+	if v, ok := pc.mutation.Privacy(); ok {
+		if err := post.PrivacyValidator(v); err != nil {
+			return &ValidationError{Name: "Privacy", err: fmt.Errorf(`ent: validator failed for field "Post.Privacy": %w`, err)}
+		}
 	}
 	if v, ok := pc.mutation.ID(); ok {
 		if err := post.IDValidator(v); err != nil {
@@ -248,6 +274,10 @@ func (pc *PostCreate) createSpec() (*Post, *sqlgraph.CreateSpec) {
 	if value, ok := pc.mutation.UpdatedAt(); ok {
 		_spec.SetField(post.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
+	}
+	if value, ok := pc.mutation.Privacy(); ok {
+		_spec.SetField(post.FieldPrivacy, field.TypeEnum, value)
+		_node.Privacy = value
 	}
 	if nodes := pc.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
