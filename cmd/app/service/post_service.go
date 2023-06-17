@@ -22,6 +22,7 @@ type PostService interface {
 
 	GetCommentsByPost(ctx context.Context, postID string) ([]*ent.Comment, error)
 	GetComments(ctx context.Context, postID string) ([]*ent.Comment, error)
+	AddMediaToPost(ctx context.Context, post *ent.Post, media *ent.Media) error
 
 	//LikePost(postID string, userID string) error
 	//UnlikePost(postID string, userID string) error
@@ -76,6 +77,22 @@ func (ps *PostServiceImpl) CreatePost(ctx context.Context, newPost *ent.Post, us
 	fmt.Println("saved post", post)
 
 	return postToReturn, nil
+}
+
+func (ps *PostServiceImpl) AddMediaToPost(ctx context.Context, post *ent.Post, media *ent.Media) error {
+	// Use the UpdateOneID method to find the post by its ID, then add the media using the AddMedias method, and finally call Save to apply the update.
+	_, err := ps.client.Post.
+		UpdateOneID(post.ID).
+		AddMedias(media).
+		Save(ctx)
+
+	// Check if an error occurred and return it if so.
+	if err != nil {
+		return fmt.Errorf("failed adding media to post: %w", err)
+	}
+
+	// If no error occurred, return nil.
+	return nil
 }
 
 func (ps *PostServiceImpl) GetPost(ctx context.Context, postID string) (*ent.Post, error) {
