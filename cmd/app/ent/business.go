@@ -41,9 +41,11 @@ type BusinessEdges struct {
 	FollowedBusinesses []*BusinessFollowBusiness `json:"followedBusinesses,omitempty"`
 	// FollowerBusinesses holds the value of the followerBusinesses edge.
 	FollowerBusinesses []*BusinessFollowBusiness `json:"followerBusinesses,omitempty"`
+	// Places holds the value of the places edge.
+	Places []*Place `json:"places,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [7]bool
+	loadedTypes [8]bool
 }
 
 // UserBusinessesOrErr returns the UserBusinesses value or an error if the edge
@@ -111,6 +113,15 @@ func (e BusinessEdges) FollowerBusinessesOrErr() ([]*BusinessFollowBusiness, err
 		return e.FollowerBusinesses, nil
 	}
 	return nil, &NotLoadedError{edge: "followerBusinesses"}
+}
+
+// PlacesOrErr returns the Places value or an error if the edge
+// was not loaded in eager-loading.
+func (e BusinessEdges) PlacesOrErr() ([]*Place, error) {
+	if e.loadedTypes[7] {
+		return e.Places, nil
+	}
+	return nil, &NotLoadedError{edge: "places"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -193,6 +204,11 @@ func (b *Business) QueryFollowedBusinesses() *BusinessFollowBusinessQuery {
 // QueryFollowerBusinesses queries the "followerBusinesses" edge of the Business entity.
 func (b *Business) QueryFollowerBusinesses() *BusinessFollowBusinessQuery {
 	return NewBusinessClient(b.config).QueryFollowerBusinesses(b)
+}
+
+// QueryPlaces queries the "places" edge of the Business entity.
+func (b *Business) QueryPlaces() *PlaceQuery {
+	return NewBusinessClient(b.config).QueryPlaces(b)
 }
 
 // Update returns a builder for updating this Business.

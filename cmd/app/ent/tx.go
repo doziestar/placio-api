@@ -14,6 +14,8 @@ type Tx struct {
 	config
 	// AccountSettings is the client for interacting with the AccountSettings builders.
 	AccountSettings *AccountSettingsClient
+	// Amenity is the client for interacting with the Amenity builders.
+	Amenity *AmenityClient
 	// Booking is the client for interacting with the Booking builders.
 	Booking *BookingClient
 	// Business is the client for interacting with the Business builders.
@@ -26,20 +28,36 @@ type Tx struct {
 	Chat *ChatClient
 	// Comment is the client for interacting with the Comment builders.
 	Comment *CommentClient
+	// Event is the client for interacting with the Event builders.
+	Event *EventClient
 	// Like is the client for interacting with the Like builders.
 	Like *LikeClient
 	// Media is the client for interacting with the Media builders.
 	Media *MediaClient
+	// Menu is the client for interacting with the Menu builders.
+	Menu *MenuClient
 	// Order is the client for interacting with the Order builders.
 	Order *OrderClient
 	// Payment is the client for interacting with the Payment builders.
 	Payment *PaymentClient
+	// Place is the client for interacting with the Place builders.
+	Place *PlaceClient
 	// Post is the client for interacting with the Post builders.
 	Post *PostClient
 	// Rating is the client for interacting with the Rating builders.
 	Rating *RatingClient
 	// Reaction is the client for interacting with the Reaction builders.
 	Reaction *ReactionClient
+	// Reservation is the client for interacting with the Reservation builders.
+	Reservation *ReservationClient
+	// Review is the client for interacting with the Review builders.
+	Review *ReviewClient
+	// Room is the client for interacting with the Room builders.
+	Room *RoomClient
+	// Ticket is the client for interacting with the Ticket builders.
+	Ticket *TicketClient
+	// TicketOption is the client for interacting with the TicketOption builders.
+	TicketOption *TicketOptionClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 	// UserBusiness is the client for interacting with the UserBusiness builders.
@@ -180,19 +198,28 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.AccountSettings = NewAccountSettingsClient(tx.config)
+	tx.Amenity = NewAmenityClient(tx.config)
 	tx.Booking = NewBookingClient(tx.config)
 	tx.Business = NewBusinessClient(tx.config)
 	tx.BusinessFollowBusiness = NewBusinessFollowBusinessClient(tx.config)
 	tx.BusinessFollowUser = NewBusinessFollowUserClient(tx.config)
 	tx.Chat = NewChatClient(tx.config)
 	tx.Comment = NewCommentClient(tx.config)
+	tx.Event = NewEventClient(tx.config)
 	tx.Like = NewLikeClient(tx.config)
 	tx.Media = NewMediaClient(tx.config)
+	tx.Menu = NewMenuClient(tx.config)
 	tx.Order = NewOrderClient(tx.config)
 	tx.Payment = NewPaymentClient(tx.config)
+	tx.Place = NewPlaceClient(tx.config)
 	tx.Post = NewPostClient(tx.config)
 	tx.Rating = NewRatingClient(tx.config)
 	tx.Reaction = NewReactionClient(tx.config)
+	tx.Reservation = NewReservationClient(tx.config)
+	tx.Review = NewReviewClient(tx.config)
+	tx.Room = NewRoomClient(tx.config)
+	tx.Ticket = NewTicketClient(tx.config)
+	tx.TicketOption = NewTicketOptionClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 	tx.UserBusiness = NewUserBusinessClient(tx.config)
 	tx.UserFollowBusiness = NewUserFollowBusinessClient(tx.config)

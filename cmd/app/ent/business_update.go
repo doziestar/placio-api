@@ -10,6 +10,7 @@ import (
 	"placio-app/ent/business"
 	"placio-app/ent/businessfollowbusiness"
 	"placio-app/ent/businessfollowuser"
+	"placio-app/ent/place"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
 	"placio-app/ent/userbusiness"
@@ -148,6 +149,21 @@ func (bu *BusinessUpdate) AddFollowerBusinesses(b ...*BusinessFollowBusiness) *B
 	return bu.AddFollowerBusinessIDs(ids...)
 }
 
+// AddPlaceIDs adds the "places" edge to the Place entity by IDs.
+func (bu *BusinessUpdate) AddPlaceIDs(ids ...string) *BusinessUpdate {
+	bu.mutation.AddPlaceIDs(ids...)
+	return bu
+}
+
+// AddPlaces adds the "places" edges to the Place entity.
+func (bu *BusinessUpdate) AddPlaces(p ...*Place) *BusinessUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return bu.AddPlaceIDs(ids...)
+}
+
 // Mutation returns the BusinessMutation object of the builder.
 func (bu *BusinessUpdate) Mutation() *BusinessMutation {
 	return bu.mutation
@@ -283,6 +299,27 @@ func (bu *BusinessUpdate) RemoveFollowerBusinesses(b ...*BusinessFollowBusiness)
 		ids[i] = b[i].ID
 	}
 	return bu.RemoveFollowerBusinessIDs(ids...)
+}
+
+// ClearPlaces clears all "places" edges to the Place entity.
+func (bu *BusinessUpdate) ClearPlaces() *BusinessUpdate {
+	bu.mutation.ClearPlaces()
+	return bu
+}
+
+// RemovePlaceIDs removes the "places" edge to Place entities by IDs.
+func (bu *BusinessUpdate) RemovePlaceIDs(ids ...string) *BusinessUpdate {
+	bu.mutation.RemovePlaceIDs(ids...)
+	return bu
+}
+
+// RemovePlaces removes "places" edges to Place entities.
+func (bu *BusinessUpdate) RemovePlaces(p ...*Place) *BusinessUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return bu.RemovePlaceIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -623,6 +660,51 @@ func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if bu.mutation.PlacesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.PlacesTable,
+			Columns: []string{business.PlacesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.RemovedPlacesIDs(); len(nodes) > 0 && !bu.mutation.PlacesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.PlacesTable,
+			Columns: []string{business.PlacesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.PlacesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.PlacesTable,
+			Columns: []string{business.PlacesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, bu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{business.Label}
@@ -756,6 +838,21 @@ func (buo *BusinessUpdateOne) AddFollowerBusinesses(b ...*BusinessFollowBusiness
 		ids[i] = b[i].ID
 	}
 	return buo.AddFollowerBusinessIDs(ids...)
+}
+
+// AddPlaceIDs adds the "places" edge to the Place entity by IDs.
+func (buo *BusinessUpdateOne) AddPlaceIDs(ids ...string) *BusinessUpdateOne {
+	buo.mutation.AddPlaceIDs(ids...)
+	return buo
+}
+
+// AddPlaces adds the "places" edges to the Place entity.
+func (buo *BusinessUpdateOne) AddPlaces(p ...*Place) *BusinessUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return buo.AddPlaceIDs(ids...)
 }
 
 // Mutation returns the BusinessMutation object of the builder.
@@ -893,6 +990,27 @@ func (buo *BusinessUpdateOne) RemoveFollowerBusinesses(b ...*BusinessFollowBusin
 		ids[i] = b[i].ID
 	}
 	return buo.RemoveFollowerBusinessIDs(ids...)
+}
+
+// ClearPlaces clears all "places" edges to the Place entity.
+func (buo *BusinessUpdateOne) ClearPlaces() *BusinessUpdateOne {
+	buo.mutation.ClearPlaces()
+	return buo
+}
+
+// RemovePlaceIDs removes the "places" edge to Place entities by IDs.
+func (buo *BusinessUpdateOne) RemovePlaceIDs(ids ...string) *BusinessUpdateOne {
+	buo.mutation.RemovePlaceIDs(ids...)
+	return buo
+}
+
+// RemovePlaces removes "places" edges to Place entities.
+func (buo *BusinessUpdateOne) RemovePlaces(p ...*Place) *BusinessUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return buo.RemovePlaceIDs(ids...)
 }
 
 // Where appends a list predicates to the BusinessUpdate builder.
@@ -1256,6 +1374,51 @@ func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(businessfollowbusiness.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if buo.mutation.PlacesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.PlacesTable,
+			Columns: []string{business.PlacesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.RemovedPlacesIDs(); len(nodes) > 0 && !buo.mutation.PlacesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.PlacesTable,
+			Columns: []string{business.PlacesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.PlacesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.PlacesTable,
+			Columns: []string{business.PlacesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

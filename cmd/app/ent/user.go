@@ -58,9 +58,15 @@ type UserEdges struct {
 	FollowedBusinesses []*UserFollowBusiness `json:"followedBusinesses,omitempty"`
 	// FollowerBusinesses holds the value of the followerBusinesses edge.
 	FollowerBusinesses []*BusinessFollowUser `json:"followerBusinesses,omitempty"`
+	// Reviews holds the value of the reviews edge.
+	Reviews []*Review `json:"reviews,omitempty"`
+	// Bookings holds the value of the bookings edge.
+	Bookings []*Booking `json:"bookings,omitempty"`
+	// Reservations holds the value of the reservations edge.
+	Reservations []*Reservation `json:"reservations,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [8]bool
+	loadedTypes [11]bool
 }
 
 // UserBusinessesOrErr returns the UserBusinesses value or an error if the edge
@@ -133,6 +139,33 @@ func (e UserEdges) FollowerBusinessesOrErr() ([]*BusinessFollowUser, error) {
 		return e.FollowerBusinesses, nil
 	}
 	return nil, &NotLoadedError{edge: "followerBusinesses"}
+}
+
+// ReviewsOrErr returns the Reviews value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) ReviewsOrErr() ([]*Review, error) {
+	if e.loadedTypes[8] {
+		return e.Reviews, nil
+	}
+	return nil, &NotLoadedError{edge: "reviews"}
+}
+
+// BookingsOrErr returns the Bookings value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) BookingsOrErr() ([]*Booking, error) {
+	if e.loadedTypes[9] {
+		return e.Bookings, nil
+	}
+	return nil, &NotLoadedError{edge: "bookings"}
+}
+
+// ReservationsOrErr returns the Reservations value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) ReservationsOrErr() ([]*Reservation, error) {
+	if e.loadedTypes[10] {
+		return e.Reservations, nil
+	}
+	return nil, &NotLoadedError{edge: "reservations"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -270,6 +303,21 @@ func (u *User) QueryFollowedBusinesses() *UserFollowBusinessQuery {
 // QueryFollowerBusinesses queries the "followerBusinesses" edge of the User entity.
 func (u *User) QueryFollowerBusinesses() *BusinessFollowUserQuery {
 	return NewUserClient(u.config).QueryFollowerBusinesses(u)
+}
+
+// QueryReviews queries the "reviews" edge of the User entity.
+func (u *User) QueryReviews() *ReviewQuery {
+	return NewUserClient(u.config).QueryReviews(u)
+}
+
+// QueryBookings queries the "bookings" edge of the User entity.
+func (u *User) QueryBookings() *BookingQuery {
+	return NewUserClient(u.config).QueryBookings(u)
+}
+
+// QueryReservations queries the "reservations" edge of the User entity.
+func (u *User) QueryReservations() *ReservationQuery {
+	return NewUserClient(u.config).QueryReservations(u)
 }
 
 // Update returns a builder for updating this User.

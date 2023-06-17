@@ -4,8 +4,12 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"placio-app/ent/booking"
+	"placio-app/ent/room"
+	"placio-app/ent/user"
+	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -16,6 +20,74 @@ type BookingCreate struct {
 	config
 	mutation *BookingMutation
 	hooks    []Hook
+}
+
+// SetStartDate sets the "startDate" field.
+func (bc *BookingCreate) SetStartDate(t time.Time) *BookingCreate {
+	bc.mutation.SetStartDate(t)
+	return bc
+}
+
+// SetEndDate sets the "endDate" field.
+func (bc *BookingCreate) SetEndDate(t time.Time) *BookingCreate {
+	bc.mutation.SetEndDate(t)
+	return bc
+}
+
+// SetStatus sets the "status" field.
+func (bc *BookingCreate) SetStatus(s string) *BookingCreate {
+	bc.mutation.SetStatus(s)
+	return bc
+}
+
+// SetBookingDate sets the "bookingDate" field.
+func (bc *BookingCreate) SetBookingDate(t time.Time) *BookingCreate {
+	bc.mutation.SetBookingDate(t)
+	return bc
+}
+
+// SetID sets the "id" field.
+func (bc *BookingCreate) SetID(s string) *BookingCreate {
+	bc.mutation.SetID(s)
+	return bc
+}
+
+// SetRoomID sets the "room" edge to the Room entity by ID.
+func (bc *BookingCreate) SetRoomID(id string) *BookingCreate {
+	bc.mutation.SetRoomID(id)
+	return bc
+}
+
+// SetNillableRoomID sets the "room" edge to the Room entity by ID if the given value is not nil.
+func (bc *BookingCreate) SetNillableRoomID(id *string) *BookingCreate {
+	if id != nil {
+		bc = bc.SetRoomID(*id)
+	}
+	return bc
+}
+
+// SetRoom sets the "room" edge to the Room entity.
+func (bc *BookingCreate) SetRoom(r *Room) *BookingCreate {
+	return bc.SetRoomID(r.ID)
+}
+
+// SetUserID sets the "user" edge to the User entity by ID.
+func (bc *BookingCreate) SetUserID(id string) *BookingCreate {
+	bc.mutation.SetUserID(id)
+	return bc
+}
+
+// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
+func (bc *BookingCreate) SetNillableUserID(id *string) *BookingCreate {
+	if id != nil {
+		bc = bc.SetUserID(*id)
+	}
+	return bc
+}
+
+// SetUser sets the "user" edge to the User entity.
+func (bc *BookingCreate) SetUser(u *User) *BookingCreate {
+	return bc.SetUserID(u.ID)
 }
 
 // Mutation returns the BookingMutation object of the builder.
@@ -52,6 +124,23 @@ func (bc *BookingCreate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (bc *BookingCreate) check() error {
+	if _, ok := bc.mutation.StartDate(); !ok {
+		return &ValidationError{Name: "startDate", err: errors.New(`ent: missing required field "Booking.startDate"`)}
+	}
+	if _, ok := bc.mutation.EndDate(); !ok {
+		return &ValidationError{Name: "endDate", err: errors.New(`ent: missing required field "Booking.endDate"`)}
+	}
+	if _, ok := bc.mutation.Status(); !ok {
+		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Booking.status"`)}
+	}
+	if _, ok := bc.mutation.BookingDate(); !ok {
+		return &ValidationError{Name: "bookingDate", err: errors.New(`ent: missing required field "Booking.bookingDate"`)}
+	}
+	if v, ok := bc.mutation.ID(); ok {
+		if err := booking.IDValidator(v); err != nil {
+			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "Booking.id": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -83,6 +172,60 @@ func (bc *BookingCreate) createSpec() (*Booking, *sqlgraph.CreateSpec) {
 		_node = &Booking{config: bc.config}
 		_spec = sqlgraph.NewCreateSpec(booking.Table, sqlgraph.NewFieldSpec(booking.FieldID, field.TypeString))
 	)
+	if id, ok := bc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
+	if value, ok := bc.mutation.StartDate(); ok {
+		_spec.SetField(booking.FieldStartDate, field.TypeTime, value)
+		_node.StartDate = value
+	}
+	if value, ok := bc.mutation.EndDate(); ok {
+		_spec.SetField(booking.FieldEndDate, field.TypeTime, value)
+		_node.EndDate = value
+	}
+	if value, ok := bc.mutation.Status(); ok {
+		_spec.SetField(booking.FieldStatus, field.TypeString, value)
+		_node.Status = value
+	}
+	if value, ok := bc.mutation.BookingDate(); ok {
+		_spec.SetField(booking.FieldBookingDate, field.TypeTime, value)
+		_node.BookingDate = value
+	}
+	if nodes := bc.mutation.RoomIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   booking.RoomTable,
+			Columns: []string{booking.RoomColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(room.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.room_bookings = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := bc.mutation.UserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   booking.UserTable,
+			Columns: []string{booking.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.user_bookings = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	return _node, _spec
 }
 

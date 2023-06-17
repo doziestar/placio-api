@@ -7,19 +7,28 @@ import (
 	"errors"
 	"fmt"
 	"placio-app/ent/accountsettings"
+	"placio-app/ent/amenity"
 	"placio-app/ent/booking"
 	"placio-app/ent/business"
 	"placio-app/ent/businessfollowbusiness"
 	"placio-app/ent/businessfollowuser"
 	"placio-app/ent/chat"
 	"placio-app/ent/comment"
+	"placio-app/ent/event"
 	"placio-app/ent/like"
 	"placio-app/ent/media"
+	"placio-app/ent/menu"
 	"placio-app/ent/order"
 	"placio-app/ent/payment"
+	"placio-app/ent/place"
 	"placio-app/ent/post"
 	"placio-app/ent/rating"
 	"placio-app/ent/reaction"
+	"placio-app/ent/reservation"
+	"placio-app/ent/review"
+	"placio-app/ent/room"
+	"placio-app/ent/ticket"
+	"placio-app/ent/ticketoption"
 	"placio-app/ent/user"
 	"placio-app/ent/userbusiness"
 	"placio-app/ent/userfollowbusiness"
@@ -91,19 +100,28 @@ func checkColumn(table, column string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
 			accountsettings.Table:        accountsettings.ValidColumn,
+			amenity.Table:                amenity.ValidColumn,
 			booking.Table:                booking.ValidColumn,
 			business.Table:               business.ValidColumn,
 			businessfollowbusiness.Table: businessfollowbusiness.ValidColumn,
 			businessfollowuser.Table:     businessfollowuser.ValidColumn,
 			chat.Table:                   chat.ValidColumn,
 			comment.Table:                comment.ValidColumn,
+			event.Table:                  event.ValidColumn,
 			like.Table:                   like.ValidColumn,
 			media.Table:                  media.ValidColumn,
+			menu.Table:                   menu.ValidColumn,
 			order.Table:                  order.ValidColumn,
 			payment.Table:                payment.ValidColumn,
+			place.Table:                  place.ValidColumn,
 			post.Table:                   post.ValidColumn,
 			rating.Table:                 rating.ValidColumn,
 			reaction.Table:               reaction.ValidColumn,
+			reservation.Table:            reservation.ValidColumn,
+			review.Table:                 review.ValidColumn,
+			room.Table:                   room.ValidColumn,
+			ticket.Table:                 ticket.ValidColumn,
+			ticketoption.Table:           ticketoption.ValidColumn,
 			user.Table:                   user.ValidColumn,
 			userbusiness.Table:           userbusiness.ValidColumn,
 			userfollowbusiness.Table:     userfollowbusiness.ValidColumn,
