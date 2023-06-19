@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	_ "placio-app/Dto"
+	"placio-app/ent"
 	_ "placio-app/ent"
 	"placio-app/service"
 	"placio-app/utility"
@@ -41,12 +42,13 @@ func (uc *HelpController) RegisterRoutes(router *gin.RouterGroup) {
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/helps [post]
 func (uc *HelpController) createHelp(ctx *gin.Context) error {
-	userID := ctx.GetString("userID")
-	category := ctx.GetString("category")
-	subject := ctx.GetString("subject")
-	body := ctx.GetString("body")
-	media := ctx.GetString("media")
-	help, err := uc.helpService.CreateHelp(ctx, userID, category, subject, body, media)
+	userID := ctx.MustGet("user_d").(string)
+	var helpDto ent.Help
+	if err := ctx.ShouldBindJSON(&helpDto); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return err
+	}
+	help, err := uc.helpService.CreateHelp(ctx, userID, helpDto.Category, helpDto.Subject, helpDto.Body, helpDto.Media)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 		return err
