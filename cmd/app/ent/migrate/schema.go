@@ -203,6 +203,30 @@ var (
 			},
 		},
 	}
+	// HelpsColumns holds the columns for the "helps" table.
+	HelpsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true},
+		{Name: "category", Type: field.TypeString},
+		{Name: "subject", Type: field.TypeString},
+		{Name: "body", Type: field.TypeString, Size: 2147483647},
+		{Name: "media", Type: field.TypeString, Nullable: true},
+		{Name: "status", Type: field.TypeString, Default: "open"},
+		{Name: "user_id", Type: field.TypeString, Size: 36},
+	}
+	// HelpsTable holds the schema information for the "helps" table.
+	HelpsTable = &schema.Table{
+		Name:       "helps",
+		Columns:    HelpsColumns,
+		PrimaryKey: []*schema.Column{HelpsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "helps_users_helps",
+				Columns:    []*schema.Column{HelpsColumns[6]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// LikesColumns holds the columns for the "likes" table.
 	LikesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
@@ -644,6 +668,7 @@ var (
 		ChatsTable,
 		CommentsTable,
 		EventsTable,
+		HelpsTable,
 		LikesTable,
 		MediaTable,
 		MenusTable,
@@ -678,6 +703,7 @@ func init() {
 	CommentsTable.ForeignKeys[0].RefTable = PostsTable
 	CommentsTable.ForeignKeys[1].RefTable = UsersTable
 	EventsTable.ForeignKeys[0].RefTable = PlacesTable
+	HelpsTable.ForeignKeys[0].RefTable = UsersTable
 	LikesTable.ForeignKeys[0].RefTable = PostsTable
 	LikesTable.ForeignKeys[1].RefTable = PostsTable
 	LikesTable.ForeignKeys[2].RefTable = UsersTable

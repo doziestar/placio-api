@@ -782,6 +782,208 @@
                 }
             }
         },
+        "/api/v1/helps": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Create a new help request",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Help"
+                ],
+                "summary": "Create a help request",
+                "parameters": [
+                    {
+                        "description": "ID of the user creating the help request",
+                        "name": "userID",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Category of the help request",
+                        "name": "category",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Subject of the help request",
+                        "name": "subject",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Body of the help request",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "Optional media associated with the help request",
+                        "name": "media",
+                        "in": "body",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully created help request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.Help"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/helps/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Delete an existing help request",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Help"
+                ],
+                "summary": "Delete a help request",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the help request to delete",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully deleted help request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/helps/{id}/resolve": {
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Resolve an existing help request",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Help"
+                ],
+                "summary": "Resolve a help request",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the help request to resolve",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully resolved help request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.Help"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/likes/post/{postID}": {
             "get": {
                 "security": [
@@ -5628,6 +5830,60 @@
                 }
             }
         },
+        "placio-app_ent.Help": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "description": "Body holds the value of the \"body\" field.",
+                    "type": "string"
+                },
+                "category": {
+                    "description": "Category holds the value of the \"category\" field.",
+                    "type": "string"
+                },
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the HelpQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.HelpEdges"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                },
+                "media": {
+                    "description": "Media holds the value of the \"media\" field.",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "Status holds the value of the \"status\" field.",
+                    "type": "string"
+                },
+                "subject": {
+                    "description": "Subject holds the value of the \"subject\" field.",
+                    "type": "string"
+                },
+                "user_id": {
+                    "description": "UserID holds the value of the \"user_id\" field.",
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_ent.HelpEdges": {
+            "type": "object",
+            "properties": {
+                "user": {
+                    "description": "User holds the value of the user edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.User"
+                        }
+                    ]
+                }
+            }
+        },
         "placio-app_ent.Like": {
             "type": "object",
             "properties": {
@@ -6339,6 +6595,13 @@
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/placio-app_ent.UserFollowUser"
+                    }
+                },
+                "helps": {
+                    "description": "Helps holds the value of the helps edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Help"
                     }
                 },
                 "likes": {

@@ -19,6 +19,7 @@ import (
 	"placio-app/ent/chat"
 	"placio-app/ent/comment"
 	"placio-app/ent/event"
+	"placio-app/ent/help"
 	"placio-app/ent/like"
 	"placio-app/ent/media"
 	"placio-app/ent/menu"
@@ -67,6 +68,8 @@ type Client struct {
 	Comment *CommentClient
 	// Event is the client for interacting with the Event builders.
 	Event *EventClient
+	// Help is the client for interacting with the Help builders.
+	Help *HelpClient
 	// Like is the client for interacting with the Like builders.
 	Like *LikeClient
 	// Media is the client for interacting with the Media builders.
@@ -125,6 +128,7 @@ func (c *Client) init() {
 	c.Chat = NewChatClient(c.config)
 	c.Comment = NewCommentClient(c.config)
 	c.Event = NewEventClient(c.config)
+	c.Help = NewHelpClient(c.config)
 	c.Like = NewLikeClient(c.config)
 	c.Media = NewMediaClient(c.config)
 	c.Menu = NewMenuClient(c.config)
@@ -234,6 +238,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Chat:                   NewChatClient(cfg),
 		Comment:                NewCommentClient(cfg),
 		Event:                  NewEventClient(cfg),
+		Help:                   NewHelpClient(cfg),
 		Like:                   NewLikeClient(cfg),
 		Media:                  NewMediaClient(cfg),
 		Menu:                   NewMenuClient(cfg),
@@ -280,6 +285,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Chat:                   NewChatClient(cfg),
 		Comment:                NewCommentClient(cfg),
 		Event:                  NewEventClient(cfg),
+		Help:                   NewHelpClient(cfg),
 		Like:                   NewLikeClient(cfg),
 		Media:                  NewMediaClient(cfg),
 		Menu:                   NewMenuClient(cfg),
@@ -328,10 +334,10 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.AccountSettings, c.Amenity, c.Booking, c.Business, c.BusinessFollowBusiness,
-		c.BusinessFollowUser, c.Chat, c.Comment, c.Event, c.Like, c.Media, c.Menu,
-		c.Order, c.Payment, c.Place, c.Post, c.Rating, c.Reaction, c.Reservation,
-		c.Review, c.Room, c.Ticket, c.TicketOption, c.User, c.UserBusiness,
-		c.UserFollowBusiness, c.UserFollowUser,
+		c.BusinessFollowUser, c.Chat, c.Comment, c.Event, c.Help, c.Like, c.Media,
+		c.Menu, c.Order, c.Payment, c.Place, c.Post, c.Rating, c.Reaction,
+		c.Reservation, c.Review, c.Room, c.Ticket, c.TicketOption, c.User,
+		c.UserBusiness, c.UserFollowBusiness, c.UserFollowUser,
 	} {
 		n.Use(hooks...)
 	}
@@ -342,10 +348,10 @@ func (c *Client) Use(hooks ...Hook) {
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.AccountSettings, c.Amenity, c.Booking, c.Business, c.BusinessFollowBusiness,
-		c.BusinessFollowUser, c.Chat, c.Comment, c.Event, c.Like, c.Media, c.Menu,
-		c.Order, c.Payment, c.Place, c.Post, c.Rating, c.Reaction, c.Reservation,
-		c.Review, c.Room, c.Ticket, c.TicketOption, c.User, c.UserBusiness,
-		c.UserFollowBusiness, c.UserFollowUser,
+		c.BusinessFollowUser, c.Chat, c.Comment, c.Event, c.Help, c.Like, c.Media,
+		c.Menu, c.Order, c.Payment, c.Place, c.Post, c.Rating, c.Reaction,
+		c.Reservation, c.Review, c.Room, c.Ticket, c.TicketOption, c.User,
+		c.UserBusiness, c.UserFollowBusiness, c.UserFollowUser,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -372,6 +378,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Comment.mutate(ctx, m)
 	case *EventMutation:
 		return c.Event.mutate(ctx, m)
+	case *HelpMutation:
+		return c.Help.mutate(ctx, m)
 	case *LikeMutation:
 		return c.Like.mutate(ctx, m)
 	case *MediaMutation:
@@ -1792,6 +1800,140 @@ func (c *EventClient) mutate(ctx context.Context, m *EventMutation) (Value, erro
 		return (&EventDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Event mutation op: %q", m.Op())
+	}
+}
+
+// HelpClient is a client for the Help schema.
+type HelpClient struct {
+	config
+}
+
+// NewHelpClient returns a client for the Help from the given config.
+func NewHelpClient(c config) *HelpClient {
+	return &HelpClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `help.Hooks(f(g(h())))`.
+func (c *HelpClient) Use(hooks ...Hook) {
+	c.hooks.Help = append(c.hooks.Help, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `help.Intercept(f(g(h())))`.
+func (c *HelpClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Help = append(c.inters.Help, interceptors...)
+}
+
+// Create returns a builder for creating a Help entity.
+func (c *HelpClient) Create() *HelpCreate {
+	mutation := newHelpMutation(c.config, OpCreate)
+	return &HelpCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Help entities.
+func (c *HelpClient) CreateBulk(builders ...*HelpCreate) *HelpCreateBulk {
+	return &HelpCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Help.
+func (c *HelpClient) Update() *HelpUpdate {
+	mutation := newHelpMutation(c.config, OpUpdate)
+	return &HelpUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *HelpClient) UpdateOne(h *Help) *HelpUpdateOne {
+	mutation := newHelpMutation(c.config, OpUpdateOne, withHelp(h))
+	return &HelpUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *HelpClient) UpdateOneID(id string) *HelpUpdateOne {
+	mutation := newHelpMutation(c.config, OpUpdateOne, withHelpID(id))
+	return &HelpUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Help.
+func (c *HelpClient) Delete() *HelpDelete {
+	mutation := newHelpMutation(c.config, OpDelete)
+	return &HelpDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *HelpClient) DeleteOne(h *Help) *HelpDeleteOne {
+	return c.DeleteOneID(h.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *HelpClient) DeleteOneID(id string) *HelpDeleteOne {
+	builder := c.Delete().Where(help.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &HelpDeleteOne{builder}
+}
+
+// Query returns a query builder for Help.
+func (c *HelpClient) Query() *HelpQuery {
+	return &HelpQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeHelp},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Help entity by its id.
+func (c *HelpClient) Get(ctx context.Context, id string) (*Help, error) {
+	return c.Query().Where(help.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *HelpClient) GetX(ctx context.Context, id string) *Help {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryUser queries the user edge of a Help.
+func (c *HelpClient) QueryUser(h *Help) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := h.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(help.Table, help.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, help.UserTable, help.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(h.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *HelpClient) Hooks() []Hook {
+	return c.hooks.Help
+}
+
+// Interceptors returns the client interceptors.
+func (c *HelpClient) Interceptors() []Interceptor {
+	return c.inters.Help
+}
+
+func (c *HelpClient) mutate(ctx context.Context, m *HelpMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&HelpCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&HelpUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&HelpUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&HelpDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Help mutation op: %q", m.Op())
 	}
 }
 
@@ -4132,6 +4274,22 @@ func (c *UserClient) QueryReservations(u *User) *ReservationQuery {
 	return query
 }
 
+// QueryHelps queries the helps edge of a User.
+func (c *UserClient) QueryHelps(u *User) *HelpQuery {
+	query := (&HelpClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(help.Table, help.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.HelpsTable, user.HelpsColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *UserClient) Hooks() []Hook {
 	return c.hooks.User
@@ -4611,14 +4769,15 @@ func (c *UserFollowUserClient) mutate(ctx context.Context, m *UserFollowUserMuta
 type (
 	hooks struct {
 		AccountSettings, Amenity, Booking, Business, BusinessFollowBusiness,
-		BusinessFollowUser, Chat, Comment, Event, Like, Media, Menu, Order, Payment,
-		Place, Post, Rating, Reaction, Reservation, Review, Room, Ticket, TicketOption,
-		User, UserBusiness, UserFollowBusiness, UserFollowUser []ent.Hook
+		BusinessFollowUser, Chat, Comment, Event, Help, Like, Media, Menu, Order,
+		Payment, Place, Post, Rating, Reaction, Reservation, Review, Room, Ticket,
+		TicketOption, User, UserBusiness, UserFollowBusiness, UserFollowUser []ent.Hook
 	}
 	inters struct {
 		AccountSettings, Amenity, Booking, Business, BusinessFollowBusiness,
-		BusinessFollowUser, Chat, Comment, Event, Like, Media, Menu, Order, Payment,
-		Place, Post, Rating, Reaction, Reservation, Review, Room, Ticket, TicketOption,
-		User, UserBusiness, UserFollowBusiness, UserFollowUser []ent.Interceptor
+		BusinessFollowUser, Chat, Comment, Event, Help, Like, Media, Menu, Order,
+		Payment, Place, Post, Rating, Reaction, Reservation, Review, Room, Ticket,
+		TicketOption, User, UserBusiness, UserFollowBusiness,
+		UserFollowUser []ent.Interceptor
 	}
 )

@@ -116,6 +116,18 @@ func (f EventFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EventMutation", m)
 }
 
+// The HelpFunc type is an adapter to allow the use of ordinary
+// function as Help mutator.
+type HelpFunc func(context.Context, *ent.HelpMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f HelpFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.HelpMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.HelpMutation", m)
+}
+
 // The LikeFunc type is an adapter to allow the use of ordinary
 // function as Like mutator.
 type LikeFunc func(context.Context, *ent.LikeMutation) (ent.Value, error)

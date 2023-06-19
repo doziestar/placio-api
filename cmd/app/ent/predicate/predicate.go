@@ -33,6 +33,9 @@ type Comment func(*sql.Selector)
 // Event is the predicate function for event builders.
 type Event func(*sql.Selector)
 
+// Help is the predicate function for help builders.
+type Help func(*sql.Selector)
+
 // Like is the predicate function for like builders.
 type Like func(*sql.Selector)
 

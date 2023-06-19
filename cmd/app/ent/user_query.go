@@ -10,6 +10,7 @@ import (
 	"placio-app/ent/booking"
 	"placio-app/ent/businessfollowuser"
 	"placio-app/ent/comment"
+	"placio-app/ent/help"
 	"placio-app/ent/like"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
@@ -43,6 +44,7 @@ type UserQuery struct {
 	withReviews            *ReviewQuery
 	withBookings           *BookingQuery
 	withReservations       *ReservationQuery
+	withHelps              *HelpQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -321,6 +323,28 @@ func (uq *UserQuery) QueryReservations() *ReservationQuery {
 	return query
 }
 
+// QueryHelps chains the current query on the "helps" edge.
+func (uq *UserQuery) QueryHelps() *HelpQuery {
+	query := (&HelpClient{config: uq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(help.Table, help.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.HelpsTable, user.HelpsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first User entity from the query.
 // Returns a *NotFoundError when no User was found.
 func (uq *UserQuery) First(ctx context.Context) (*User, error) {
@@ -524,6 +548,7 @@ func (uq *UserQuery) Clone() *UserQuery {
 		withReviews:            uq.withReviews.Clone(),
 		withBookings:           uq.withBookings.Clone(),
 		withReservations:       uq.withReservations.Clone(),
+		withHelps:              uq.withHelps.Clone(),
 		// clone intermediate query.
 		sql:  uq.sql.Clone(),
 		path: uq.path,
@@ -651,6 +676,17 @@ func (uq *UserQuery) WithReservations(opts ...func(*ReservationQuery)) *UserQuer
 	return uq
 }
 
+// WithHelps tells the query-builder to eager-load the nodes that are connected to
+// the "helps" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithHelps(opts ...func(*HelpQuery)) *UserQuery {
+	query := (&HelpClient{config: uq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	uq.withHelps = query
+	return uq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -729,7 +765,7 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	var (
 		nodes       = []*User{}
 		_spec       = uq.querySpec()
-		loadedTypes = [11]bool{
+		loadedTypes = [12]bool{
 			uq.withUserBusinesses != nil,
 			uq.withComments != nil,
 			uq.withLikes != nil,
@@ -741,6 +777,7 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 			uq.withReviews != nil,
 			uq.withBookings != nil,
 			uq.withReservations != nil,
+			uq.withHelps != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -839,6 +876,13 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 		if err := uq.loadReservations(ctx, query, nodes,
 			func(n *User) { n.Edges.Reservations = []*Reservation{} },
 			func(n *User, e *Reservation) { n.Edges.Reservations = append(n.Edges.Reservations, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := uq.withHelps; query != nil {
+		if err := uq.loadHelps(ctx, query, nodes,
+			func(n *User) { n.Edges.Helps = []*Help{} },
+			func(n *User, e *Help) { n.Edges.Helps = append(n.Edges.Helps, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -1181,6 +1225,36 @@ func (uq *UserQuery) loadReservations(ctx context.Context, query *ReservationQue
 		node, ok := nodeids[*fk]
 		if !ok {
 			return fmt.Errorf(`unexpected referenced foreign-key "user_reservations" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (uq *UserQuery) loadHelps(ctx context.Context, query *HelpQuery, nodes []*User, init func(*User), assign func(*User, *Help)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(help.FieldUserID)
+	}
+	query.Where(predicate.Help(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.HelpsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.UserID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "user_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}
