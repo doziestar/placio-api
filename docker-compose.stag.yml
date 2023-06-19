@@ -83,18 +83,18 @@ services:
       POSTGRES_USER: "dozie"
       POSTGRES_PASSWORD: "918273645dozie"
       POSTGRES_HOST_AUTH_METHOD: "trust"
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "pg_isready",
-          "--username=dozie",
-          "--host=127.0.0.1",
-          "--port=5434"
-        ]
-      interval: 2s
-      timeout: 1m
-      retries: 5
+#    healthcheck:
+#      test:
+#        [
+#          "CMD",
+#          "pg_isready",
+#          "--username=dozie",
+#          "--host=127.0.0.1",
+#          "--port=5434"
+#        ]
+#      interval: 2s
+#      timeout: 1m
+#      retries: 5
 
 
   placio-db:
