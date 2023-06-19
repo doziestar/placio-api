@@ -73,7 +73,7 @@ services:
     image: postgres:14
     container_name: unleash-postgres-db
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - db_data2:/var/lib/postgresql/data
     env_file:
       - ./.envs/.stag
     ports:
@@ -101,7 +101,7 @@ services:
     image: postgres:14
     container_name: placio-postgres-db
     volumes:
-      - db_data2:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql/data
     env_file:
       - ./.envs/.stag
     ports:
