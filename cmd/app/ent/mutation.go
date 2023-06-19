@@ -14481,6 +14481,7 @@ type UserMutation struct {
 	picture                   *string
 	cover_image               *string
 	username                  *string
+	bio                       *string
 	auth0_data                **management.User
 	app_settings              *map[string]interface{}
 	user_settings             *map[string]interface{}
@@ -14850,6 +14851,55 @@ func (m *UserMutation) OldUsername(ctx context.Context) (v string, err error) {
 // ResetUsername resets all changes to the "username" field.
 func (m *UserMutation) ResetUsername() {
 	m.username = nil
+}
+
+// SetBio sets the "bio" field.
+func (m *UserMutation) SetBio(s string) {
+	m.bio = &s
+}
+
+// Bio returns the value of the "bio" field in the mutation.
+func (m *UserMutation) Bio() (r string, exists bool) {
+	v := m.bio
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBio returns the old "bio" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldBio(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBio is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBio requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBio: %w", err)
+	}
+	return oldValue.Bio, nil
+}
+
+// ClearBio clears the value of the "bio" field.
+func (m *UserMutation) ClearBio() {
+	m.bio = nil
+	m.clearedFields[user.FieldBio] = struct{}{}
+}
+
+// BioCleared returns if the "bio" field was cleared in this mutation.
+func (m *UserMutation) BioCleared() bool {
+	_, ok := m.clearedFields[user.FieldBio]
+	return ok
+}
+
+// ResetBio resets all changes to the "bio" field.
+func (m *UserMutation) ResetBio() {
+	m.bio = nil
+	delete(m.clearedFields, user.FieldBio)
 }
 
 // SetAuth0Data sets the "auth0_data" field.
@@ -15735,7 +15785,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 9)
 	if m.auth0_id != nil {
 		fields = append(fields, user.FieldAuth0ID)
 	}
@@ -15750,6 +15800,9 @@ func (m *UserMutation) Fields() []string {
 	}
 	if m.username != nil {
 		fields = append(fields, user.FieldUsername)
+	}
+	if m.bio != nil {
+		fields = append(fields, user.FieldBio)
 	}
 	if m.auth0_data != nil {
 		fields = append(fields, user.FieldAuth0Data)
@@ -15778,6 +15831,8 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.CoverImage()
 	case user.FieldUsername:
 		return m.Username()
+	case user.FieldBio:
+		return m.Bio()
 	case user.FieldAuth0Data:
 		return m.Auth0Data()
 	case user.FieldAppSettings:
@@ -15803,6 +15858,8 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldCoverImage(ctx)
 	case user.FieldUsername:
 		return m.OldUsername(ctx)
+	case user.FieldBio:
+		return m.OldBio(ctx)
 	case user.FieldAuth0Data:
 		return m.OldAuth0Data(ctx)
 	case user.FieldAppSettings:
@@ -15852,6 +15909,13 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUsername(v)
+		return nil
+	case user.FieldBio:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBio(v)
 		return nil
 	case user.FieldAuth0Data:
 		v, ok := value.(*management.User)
@@ -15913,6 +15977,9 @@ func (m *UserMutation) ClearedFields() []string {
 	if m.FieldCleared(user.FieldCoverImage) {
 		fields = append(fields, user.FieldCoverImage)
 	}
+	if m.FieldCleared(user.FieldBio) {
+		fields = append(fields, user.FieldBio)
+	}
 	if m.FieldCleared(user.FieldAuth0Data) {
 		fields = append(fields, user.FieldAuth0Data)
 	}
@@ -15945,6 +16012,9 @@ func (m *UserMutation) ClearField(name string) error {
 	case user.FieldCoverImage:
 		m.ClearCoverImage()
 		return nil
+	case user.FieldBio:
+		m.ClearBio()
+		return nil
 	case user.FieldAuth0Data:
 		m.ClearAuth0Data()
 		return nil
@@ -15976,6 +16046,9 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldUsername:
 		m.ResetUsername()
+		return nil
+	case user.FieldBio:
+		m.ResetBio()
 		return nil
 	case user.FieldAuth0Data:
 		m.ResetAuth0Data()
