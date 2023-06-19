@@ -22,6 +22,8 @@ const (
 	FieldCoverImage = "cover_image"
 	// FieldUsername holds the string denoting the username field in the database.
 	FieldUsername = "username"
+	// FieldBio holds the string denoting the bio field in the database.
+	FieldBio = "bio"
 	// FieldAuth0Data holds the string denoting the auth0_data field in the database.
 	FieldAuth0Data = "auth0_data"
 	// FieldAppSettings holds the string denoting the app_settings field in the database.
@@ -157,6 +159,7 @@ var Columns = []string{
 	FieldPicture,
 	FieldCoverImage,
 	FieldUsername,
+	FieldBio,
 	FieldAuth0Data,
 	FieldAppSettings,
 	FieldUserSettings,
@@ -175,6 +178,8 @@ func ValidColumn(column string) bool {
 var (
 	// DefaultCoverImage holds the default value on creation for the "cover_image" field.
 	DefaultCoverImage string
+	// DefaultBio holds the default value on creation for the "bio" field.
+	DefaultBio string
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(string) error
 )
@@ -210,6 +215,11 @@ func ByCoverImage(opts ...sql.OrderTermOption) OrderOption {
 // ByUsername orders the results by the username field.
 func ByUsername(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUsername, opts...).ToFunc()
+}
+
+// ByBio orders the results by the bio field.
+func ByBio(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBio, opts...).ToFunc()
 }
 
 // ByUserBusinessesCount orders the results by userBusinesses count.

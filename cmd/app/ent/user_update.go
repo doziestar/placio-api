@@ -105,6 +105,32 @@ func (uu *UserUpdate) ClearCoverImage() *UserUpdate {
 	return uu
 }
 
+// SetUsername sets the "username" field.
+func (uu *UserUpdate) SetUsername(s string) *UserUpdate {
+	uu.mutation.SetUsername(s)
+	return uu
+}
+
+// SetBio sets the "bio" field.
+func (uu *UserUpdate) SetBio(s string) *UserUpdate {
+	uu.mutation.SetBio(s)
+	return uu
+}
+
+// SetNillableBio sets the "bio" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableBio(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetBio(*s)
+	}
+	return uu
+}
+
+// ClearBio clears the value of the "bio" field.
+func (uu *UserUpdate) ClearBio() *UserUpdate {
+	uu.mutation.ClearBio()
+	return uu
+}
+
 // SetAuth0Data sets the "auth0_data" field.
 func (uu *UserUpdate) SetAuth0Data(m *management.User) *UserUpdate {
 	uu.mutation.SetAuth0Data(m)
@@ -634,6 +660,15 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if uu.mutation.CoverImageCleared() {
 		_spec.ClearField(user.FieldCoverImage, field.TypeString)
+	}
+	if value, ok := uu.mutation.Username(); ok {
+		_spec.SetField(user.FieldUsername, field.TypeString, value)
+	}
+	if value, ok := uu.mutation.Bio(); ok {
+		_spec.SetField(user.FieldBio, field.TypeString, value)
+	}
+	if uu.mutation.BioCleared() {
+		_spec.ClearField(user.FieldBio, field.TypeString)
 	}
 	if value, ok := uu.mutation.Auth0Data(); ok {
 		_spec.SetField(user.FieldAuth0Data, field.TypeJSON, value)
@@ -1279,6 +1314,32 @@ func (uuo *UserUpdateOne) ClearCoverImage() *UserUpdateOne {
 	return uuo
 }
 
+// SetUsername sets the "username" field.
+func (uuo *UserUpdateOne) SetUsername(s string) *UserUpdateOne {
+	uuo.mutation.SetUsername(s)
+	return uuo
+}
+
+// SetBio sets the "bio" field.
+func (uuo *UserUpdateOne) SetBio(s string) *UserUpdateOne {
+	uuo.mutation.SetBio(s)
+	return uuo
+}
+
+// SetNillableBio sets the "bio" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableBio(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetBio(*s)
+	}
+	return uuo
+}
+
+// ClearBio clears the value of the "bio" field.
+func (uuo *UserUpdateOne) ClearBio() *UserUpdateOne {
+	uuo.mutation.ClearBio()
+	return uuo
+}
+
 // SetAuth0Data sets the "auth0_data" field.
 func (uuo *UserUpdateOne) SetAuth0Data(m *management.User) *UserUpdateOne {
 	uuo.mutation.SetAuth0Data(m)
@@ -1838,6 +1899,15 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if uuo.mutation.CoverImageCleared() {
 		_spec.ClearField(user.FieldCoverImage, field.TypeString)
+	}
+	if value, ok := uuo.mutation.Username(); ok {
+		_spec.SetField(user.FieldUsername, field.TypeString, value)
+	}
+	if value, ok := uuo.mutation.Bio(); ok {
+		_spec.SetField(user.FieldBio, field.TypeString, value)
+	}
+	if uuo.mutation.BioCleared() {
+		_spec.ClearField(user.FieldBio, field.TypeString)
 	}
 	if value, ok := uuo.mutation.Auth0Data(); ok {
 		_spec.SetField(user.FieldAuth0Data, field.TypeJSON, value)

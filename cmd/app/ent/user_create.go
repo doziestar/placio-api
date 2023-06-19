@@ -86,6 +86,20 @@ func (uc *UserCreate) SetUsername(s string) *UserCreate {
 	return uc
 }
 
+// SetBio sets the "bio" field.
+func (uc *UserCreate) SetBio(s string) *UserCreate {
+	uc.mutation.SetBio(s)
+	return uc
+}
+
+// SetNillableBio sets the "bio" field if the given value is not nil.
+func (uc *UserCreate) SetNillableBio(s *string) *UserCreate {
+	if s != nil {
+		uc.SetBio(*s)
+	}
+	return uc
+}
+
 // SetAuth0Data sets the "auth0_data" field.
 func (uc *UserCreate) SetAuth0Data(m *management.User) *UserCreate {
 	uc.mutation.SetAuth0Data(m)
@@ -344,6 +358,10 @@ func (uc *UserCreate) defaults() {
 		v := user.DefaultCoverImage
 		uc.mutation.SetCoverImage(v)
 	}
+	if _, ok := uc.mutation.Bio(); !ok {
+		v := user.DefaultBio
+		uc.mutation.SetBio(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -413,6 +431,10 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.Username(); ok {
 		_spec.SetField(user.FieldUsername, field.TypeString, value)
 		_node.Username = value
+	}
+	if value, ok := uc.mutation.Bio(); ok {
+		_spec.SetField(user.FieldBio, field.TypeString, value)
+		_node.Bio = value
 	}
 	if value, ok := uc.mutation.Auth0Data(); ok {
 		_spec.SetField(user.FieldAuth0Data, field.TypeJSON, value)
