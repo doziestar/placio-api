@@ -28,6 +28,9 @@ jobs:
       - name: Add Permission To acme.json
         run: |
           chmod 600 ./traefik/acme.json
+      - name: Add Permission To init-db.sh
+        run: |
+          chmod +x ./init-db.sh
       - name: Start Docker Container
         run: echo "Starting containers" |
           echo ${{ secrets.VPS_PASSWORD }} |

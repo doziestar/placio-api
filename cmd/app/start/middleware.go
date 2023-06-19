@@ -3,6 +3,7 @@ package start
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/axiaoxin-com/logging"
 
@@ -72,7 +73,7 @@ func Middleware(app *gin.Engine) {
 	//	},
 	//}))
 
-	gin.SetMode(gin.DebugMode)
+	gin.SetMode(os.Getenv("GIN_MODE"))
 	// you can custom the config or use logging.GinLogger() by default config
 	conf := logging.GinLoggerConfig{
 		Formatter: func(c context.Context, m logging.GinLogDetails) string {
