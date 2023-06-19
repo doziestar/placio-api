@@ -77,7 +77,7 @@ services:
     env_file:
       - ./.envs/.stag
     ports:
-      - "5432:5432"
+      - "5434:5432"
     environment:
       POSTGRES_DB: "unleash"
       POSTGRES_USER: "dozie"
@@ -90,7 +90,7 @@ services:
           "pg_isready",
           "--username=dozie",
           "--host=127.0.0.1",
-          "--port=5432"
+          "--port=5434"
         ]
       interval: 2s
       timeout: 1m
