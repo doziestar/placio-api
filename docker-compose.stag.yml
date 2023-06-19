@@ -79,7 +79,7 @@ services:
     ports:
       - "5434:5432"
     environment:
-      POSTGRES_DB: "unleash"
+      POSTGRES_DB: "db"
       POSTGRES_USER: "dozie"
       POSTGRES_PASSWORD: "918273645dozie"
       POSTGRES_HOST_AUTH_METHOD: "trust"
