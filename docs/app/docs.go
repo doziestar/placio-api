@@ -4136,6 +4136,142 @@ const docTemplate = `{
                 }
             }
         },
+        "/categories/": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "categories"
+                ],
+                "summary": "Create a new category",
+                "parameters": [
+                    {
+                        "description": "Category",
+                        "name": "category",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.Category"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.Category"
+                        }
+                    }
+                }
+            }
+        },
+        "/categories/search": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "categories"
+                ],
+                "summary": "Search by category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Category name",
+                        "name": "name",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/placio-app_ent.Category"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/categories/{id}": {
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "categories"
+                ],
+                "summary": "Delete a category",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Category ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.Category"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "categories"
+                ],
+                "summary": "Update an existing category",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Category ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Category",
+                        "name": "category",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.Category"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.Category"
+                        }
+                    }
+                }
+            }
+        },
         "/event/create": {
             "post": {
                 "description": "Create Event",
@@ -5607,6 +5743,13 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "categories": {
+                    "description": "Categories holds the value of the categories edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Category"
+                    }
+                },
                 "followedBusinesses": {
                     "description": "FollowedBusinesses holds the value of the followedBusinesses edge.",
                     "type": "array",
@@ -5731,6 +5874,23 @@ const docTemplate = `{
                             "$ref": "#/definitions/placio-app_ent.User"
                         }
                     ]
+                }
+            }
+        },
+        "placio-app_ent.Category": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                },
+                "image": {
+                    "description": "Image holds the value of the \"image\" field.",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Name holds the value of the \"name\" field.",
+                    "type": "string"
                 }
             }
         },
@@ -5968,6 +6128,13 @@ const docTemplate = `{
         "placio-app_ent.MediaEdges": {
             "type": "object",
             "properties": {
+                "categories": {
+                    "description": "Categories holds the value of the categories edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Category"
+                    }
+                },
                 "post": {
                     "description": "Post holds the value of the post edge.",
                     "allOf": [
@@ -5998,6 +6165,13 @@ const docTemplate = `{
         "placio-app_ent.MenuEdges": {
             "type": "object",
             "properties": {
+                "categories": {
+                    "description": "Categories holds the value of the categories edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Category"
+                    }
+                },
                 "place": {
                     "description": "Place holds the value of the place edge.",
                     "allOf": [
@@ -6086,6 +6260,13 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "categories": {
+                    "description": "Categories holds the value of the categories edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Category"
+                    }
+                },
                 "events": {
                     "description": "Events holds the value of the events edge.",
                     "type": "array",
@@ -6170,6 +6351,13 @@ const docTemplate = `{
                             "$ref": "#/definitions/placio-app_ent.Business"
                         }
                     ]
+                },
+                "categories": {
+                    "description": "Categories holds the value of the categories edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Category"
+                    }
                 },
                 "comments": {
                     "description": "Comments holds the value of the comments edge.",
@@ -6562,6 +6750,13 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/placio-app_ent.Booking"
+                    }
+                },
+                "categories": {
+                    "description": "Categories holds the value of the categories edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Category"
                     }
                 },
                 "comments": {

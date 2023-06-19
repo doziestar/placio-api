@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"placio-app/ent/category"
 	"placio-app/ent/media"
 	"placio-app/ent/post"
 	"time"
@@ -84,6 +85,21 @@ func (mc *MediaCreate) SetNillablePostID(id *string) *MediaCreate {
 // SetPost sets the "post" edge to the Post entity.
 func (mc *MediaCreate) SetPost(p *Post) *MediaCreate {
 	return mc.SetPostID(p.ID)
+}
+
+// AddCategoryIDs adds the "categories" edge to the Category entity by IDs.
+func (mc *MediaCreate) AddCategoryIDs(ids ...string) *MediaCreate {
+	mc.mutation.AddCategoryIDs(ids...)
+	return mc
+}
+
+// AddCategories adds the "categories" edges to the Category entity.
+func (mc *MediaCreate) AddCategories(c ...*Category) *MediaCreate {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return mc.AddCategoryIDs(ids...)
 }
 
 // Mutation returns the MediaMutation object of the builder.
@@ -216,6 +232,22 @@ func (mc *MediaCreate) createSpec() (*Media, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.post_medias = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := mc.mutation.CategoriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   media.CategoriesTable,
+			Columns: []string{media.CategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

@@ -318,6 +318,29 @@ func HasPostWith(preds ...predicate.Post) predicate.Media {
 	})
 }
 
+// HasCategories applies the HasEdge predicate on the "categories" edge.
+func HasCategories() predicate.Media {
+	return predicate.Media(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CategoriesTable, CategoriesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCategoriesWith applies the HasEdge predicate on the "categories" edge with a given conditions (other predicates).
+func HasCategoriesWith(preds ...predicate.Category) predicate.Media {
+	return predicate.Media(func(s *sql.Selector) {
+		step := newCategoriesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Media) predicate.Media {
 	return predicate.Media(func(s *sql.Selector) {

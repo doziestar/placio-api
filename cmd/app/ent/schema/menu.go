@@ -27,6 +27,7 @@ func (Menu) Edges() []ent.Edge {
 		edge.From("place", Place.Type).
 			Ref("menus").
 			Unique(),
+		edge.To("categories", Category.Type),
 		// add any other edges that a Menu would have
 	}
 }

@@ -9,6 +9,7 @@ import (
 	"placio-app/ent/amenity"
 	"placio-app/ent/booking"
 	"placio-app/ent/business"
+	"placio-app/ent/category"
 	"placio-app/ent/event"
 	"placio-app/ent/menu"
 	"placio-app/ent/place"
@@ -227,6 +228,21 @@ func (pc *PlaceCreate) AddBookings(b ...*Booking) *PlaceCreate {
 		ids[i] = b[i].ID
 	}
 	return pc.AddBookingIDs(ids...)
+}
+
+// AddCategoryIDs adds the "categories" edge to the Category entity by IDs.
+func (pc *PlaceCreate) AddCategoryIDs(ids ...string) *PlaceCreate {
+	pc.mutation.AddCategoryIDs(ids...)
+	return pc
+}
+
+// AddCategories adds the "categories" edges to the Category entity.
+func (pc *PlaceCreate) AddCategories(c ...*Category) *PlaceCreate {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return pc.AddCategoryIDs(ids...)
 }
 
 // Mutation returns the PlaceMutation object of the builder.
@@ -466,6 +482,22 @@ func (pc *PlaceCreate) createSpec() (*Place, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(booking.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.CategoriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   place.CategoriesTable,
+			Columns: []string{place.CategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

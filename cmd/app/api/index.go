@@ -118,6 +118,16 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 	bookingController := controller.NewBookingController(bookingService)
 	bookingController.RegisterRoutes(routerGroupV1)
 
+	// feedback
+	helpService := service.NewHelpService(client)
+	helpController := controller.NewHelpController(helpService)
+	helpController.RegisterRoutes(routerGroupV1)
+
+	// category
+	categoryService := service.NewCategoryService(client)
+	categoryController := controller.NewCategoryController(categoryService)
+	categoryController.RegisterRoutes(routerGroupV1)
+
 	//// ratings
 	//ratingService := service.NewRatingService(db)
 	//ratingController := controller.NewRatingController(ratingService)

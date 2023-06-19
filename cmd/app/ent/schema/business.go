@@ -34,5 +34,6 @@ func (Business) Edges() []ent.Edge {
 		edge.To("followedBusinesses", BusinessFollowBusiness.Type),
 		edge.To("followerBusinesses", BusinessFollowBusiness.Type),
 		edge.To("places", Place.Type),
+		edge.To("categories", Category.Type),
 	}
 }

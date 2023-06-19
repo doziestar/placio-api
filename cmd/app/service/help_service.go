@@ -16,6 +16,10 @@ type HelpServiceImpl struct {
 	client *ent.Client
 }
 
+func NewHelpService(client *ent.Client) HelpService {
+	return &HelpServiceImpl{client: client}
+}
+
 func (s *HelpServiceImpl) CreateHelp(ctx context.Context, userID, category, subject, body, media string) (*ent.Help, error) {
 	return s.client.Help.
 		Create().

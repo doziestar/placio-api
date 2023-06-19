@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math"
 	"placio-app/ent/business"
+	"placio-app/ent/category"
 	"placio-app/ent/comment"
 	"placio-app/ent/like"
 	"placio-app/ent/media"
@@ -32,6 +33,7 @@ type PostQuery struct {
 	withMedias          *MediaQuery
 	withComments        *CommentQuery
 	withLikes           *LikeQuery
+	withCategories      *CategoryQuery
 	withFKs             bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -172,6 +174,28 @@ func (pq *PostQuery) QueryLikes() *LikeQuery {
 			sqlgraph.From(post.Table, post.FieldID, selector),
 			sqlgraph.To(like.Table, like.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, post.LikesTable, post.LikesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryCategories chains the current query on the "categories" edge.
+func (pq *PostQuery) QueryCategories() *CategoryQuery {
+	query := (&CategoryClient{config: pq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(post.Table, post.FieldID, selector),
+			sqlgraph.To(category.Table, category.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, post.CategoriesTable, post.CategoriesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
 		return fromU, nil
@@ -376,6 +400,7 @@ func (pq *PostQuery) Clone() *PostQuery {
 		withMedias:          pq.withMedias.Clone(),
 		withComments:        pq.withComments.Clone(),
 		withLikes:           pq.withLikes.Clone(),
+		withCategories:      pq.withCategories.Clone(),
 		// clone intermediate query.
 		sql:  pq.sql.Clone(),
 		path: pq.path,
@@ -434,6 +459,17 @@ func (pq *PostQuery) WithLikes(opts ...func(*LikeQuery)) *PostQuery {
 		opt(query)
 	}
 	pq.withLikes = query
+	return pq
+}
+
+// WithCategories tells the query-builder to eager-load the nodes that are connected to
+// the "categories" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *PostQuery) WithCategories(opts ...func(*CategoryQuery)) *PostQuery {
+	query := (&CategoryClient{config: pq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withCategories = query
 	return pq
 }
 
@@ -516,12 +552,13 @@ func (pq *PostQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Post, e
 		nodes       = []*Post{}
 		withFKs     = pq.withFKs
 		_spec       = pq.querySpec()
-		loadedTypes = [5]bool{
+		loadedTypes = [6]bool{
 			pq.withUser != nil,
 			pq.withBusinessAccount != nil,
 			pq.withMedias != nil,
 			pq.withComments != nil,
 			pq.withLikes != nil,
+			pq.withCategories != nil,
 		}
 	)
 	if pq.withUser != nil || pq.withBusinessAccount != nil {
@@ -578,6 +615,13 @@ func (pq *PostQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Post, e
 		if err := pq.loadLikes(ctx, query, nodes,
 			func(n *Post) { n.Edges.Likes = []*Like{} },
 			func(n *Post, e *Like) { n.Edges.Likes = append(n.Edges.Likes, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := pq.withCategories; query != nil {
+		if err := pq.loadCategories(ctx, query, nodes,
+			func(n *Post) { n.Edges.Categories = []*Category{} },
+			func(n *Post, e *Category) { n.Edges.Categories = append(n.Edges.Categories, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -736,6 +780,37 @@ func (pq *PostQuery) loadLikes(ctx context.Context, query *LikeQuery, nodes []*P
 		node, ok := nodeids[*fk]
 		if !ok {
 			return fmt.Errorf(`unexpected referenced foreign-key "post_likes" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (pq *PostQuery) loadCategories(ctx context.Context, query *CategoryQuery, nodes []*Post, init func(*Post), assign func(*Post, *Category)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Post)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Category(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(post.CategoriesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.post_categories
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "post_categories" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "post_categories" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

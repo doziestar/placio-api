@@ -45,5 +45,6 @@ func (User) Edges() []ent.Edge {
 		edge.To("bookings", Booking.Type),
 		edge.To("reservations", Reservation.Type),
 		edge.To("helps", Help.Type).Immutable(),
+		edge.To("categories", Category.Type),
 	}
 }

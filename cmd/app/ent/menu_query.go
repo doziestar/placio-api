@@ -4,8 +4,10 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"fmt"
 	"math"
+	"placio-app/ent/category"
 	"placio-app/ent/menu"
 	"placio-app/ent/place"
 	"placio-app/ent/predicate"
@@ -18,12 +20,13 @@ import (
 // MenuQuery is the builder for querying Menu entities.
 type MenuQuery struct {
 	config
-	ctx        *QueryContext
-	order      []menu.OrderOption
-	inters     []Interceptor
-	predicates []predicate.Menu
-	withPlace  *PlaceQuery
-	withFKs    bool
+	ctx            *QueryContext
+	order          []menu.OrderOption
+	inters         []Interceptor
+	predicates     []predicate.Menu
+	withPlace      *PlaceQuery
+	withCategories *CategoryQuery
+	withFKs        bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -75,6 +78,28 @@ func (mq *MenuQuery) QueryPlace() *PlaceQuery {
 			sqlgraph.From(menu.Table, menu.FieldID, selector),
 			sqlgraph.To(place.Table, place.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, menu.PlaceTable, menu.PlaceColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryCategories chains the current query on the "categories" edge.
+func (mq *MenuQuery) QueryCategories() *CategoryQuery {
+	query := (&CategoryClient{config: mq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := mq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := mq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(menu.Table, menu.FieldID, selector),
+			sqlgraph.To(category.Table, category.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, menu.CategoriesTable, menu.CategoriesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
 		return fromU, nil
@@ -269,12 +294,13 @@ func (mq *MenuQuery) Clone() *MenuQuery {
 		return nil
 	}
 	return &MenuQuery{
-		config:     mq.config,
-		ctx:        mq.ctx.Clone(),
-		order:      append([]menu.OrderOption{}, mq.order...),
-		inters:     append([]Interceptor{}, mq.inters...),
-		predicates: append([]predicate.Menu{}, mq.predicates...),
-		withPlace:  mq.withPlace.Clone(),
+		config:         mq.config,
+		ctx:            mq.ctx.Clone(),
+		order:          append([]menu.OrderOption{}, mq.order...),
+		inters:         append([]Interceptor{}, mq.inters...),
+		predicates:     append([]predicate.Menu{}, mq.predicates...),
+		withPlace:      mq.withPlace.Clone(),
+		withCategories: mq.withCategories.Clone(),
 		// clone intermediate query.
 		sql:  mq.sql.Clone(),
 		path: mq.path,
@@ -289,6 +315,17 @@ func (mq *MenuQuery) WithPlace(opts ...func(*PlaceQuery)) *MenuQuery {
 		opt(query)
 	}
 	mq.withPlace = query
+	return mq
+}
+
+// WithCategories tells the query-builder to eager-load the nodes that are connected to
+// the "categories" edge. The optional arguments are used to configure the query builder of the edge.
+func (mq *MenuQuery) WithCategories(opts ...func(*CategoryQuery)) *MenuQuery {
+	query := (&CategoryClient{config: mq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	mq.withCategories = query
 	return mq
 }
 
@@ -349,8 +386,9 @@ func (mq *MenuQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Menu, e
 		nodes       = []*Menu{}
 		withFKs     = mq.withFKs
 		_spec       = mq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			mq.withPlace != nil,
+			mq.withCategories != nil,
 		}
 	)
 	if mq.withPlace != nil {
@@ -380,6 +418,13 @@ func (mq *MenuQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Menu, e
 	if query := mq.withPlace; query != nil {
 		if err := mq.loadPlace(ctx, query, nodes, nil,
 			func(n *Menu, e *Place) { n.Edges.Place = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := mq.withCategories; query != nil {
+		if err := mq.loadCategories(ctx, query, nodes,
+			func(n *Menu) { n.Edges.Categories = []*Category{} },
+			func(n *Menu, e *Category) { n.Edges.Categories = append(n.Edges.Categories, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -415,6 +460,37 @@ func (mq *MenuQuery) loadPlace(ctx context.Context, query *PlaceQuery, nodes []*
 		for i := range nodes {
 			assign(nodes[i], n)
 		}
+	}
+	return nil
+}
+func (mq *MenuQuery) loadCategories(ctx context.Context, query *CategoryQuery, nodes []*Menu, init func(*Menu), assign func(*Menu, *Category)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Menu)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Category(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(menu.CategoriesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.menu_categories
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "menu_categories" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "menu_categories" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
 	}
 	return nil
 }

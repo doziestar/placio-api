@@ -5,6 +5,7 @@ package ent
 import (
 	"context"
 	"fmt"
+	"placio-app/ent/category"
 	"placio-app/ent/menu"
 	"placio-app/ent/place"
 
@@ -42,6 +43,21 @@ func (mc *MenuCreate) SetNillablePlaceID(id *string) *MenuCreate {
 // SetPlace sets the "place" edge to the Place entity.
 func (mc *MenuCreate) SetPlace(p *Place) *MenuCreate {
 	return mc.SetPlaceID(p.ID)
+}
+
+// AddCategoryIDs adds the "categories" edge to the Category entity by IDs.
+func (mc *MenuCreate) AddCategoryIDs(ids ...string) *MenuCreate {
+	mc.mutation.AddCategoryIDs(ids...)
+	return mc
+}
+
+// AddCategories adds the "categories" edges to the Category entity.
+func (mc *MenuCreate) AddCategories(c ...*Category) *MenuCreate {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return mc.AddCategoryIDs(ids...)
 }
 
 // Mutation returns the MenuMutation object of the builder.
@@ -133,6 +149,22 @@ func (mc *MenuCreate) createSpec() (*Menu, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.place_menus = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := mc.mutation.CategoriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   menu.CategoriesTable,
+			Columns: []string{menu.CategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

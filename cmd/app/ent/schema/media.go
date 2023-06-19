@@ -32,5 +32,6 @@ func (Media) Edges() []ent.Edge {
 		edge.From("post", Post.Type).
 			Ref("medias").
 			Unique(),
+		edge.To("categories", Category.Type),
 	}
 }

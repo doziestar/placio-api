@@ -24,6 +24,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// EdgePost holds the string denoting the post edge name in mutations.
 	EdgePost = "post"
+	// EdgeCategories holds the string denoting the categories edge name in mutations.
+	EdgeCategories = "categories"
 	// Table holds the table name of the media in the database.
 	Table = "media"
 	// PostTable is the table that holds the post relation/edge.
@@ -33,6 +35,13 @@ const (
 	PostInverseTable = "posts"
 	// PostColumn is the table column denoting the post relation/edge.
 	PostColumn = "post_medias"
+	// CategoriesTable is the table that holds the categories relation/edge.
+	CategoriesTable = "categories"
+	// CategoriesInverseTable is the table name for the Category entity.
+	// It exists in this package in order to avoid circular dependency with the "category" package.
+	CategoriesInverseTable = "categories"
+	// CategoriesColumn is the table column denoting the categories relation/edge.
+	CategoriesColumn = "media_categories"
 )
 
 // Columns holds all SQL columns for media fields.
@@ -110,10 +119,31 @@ func ByPostField(field string, opts ...sql.OrderTermOption) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newPostStep(), sql.OrderByField(field, opts...))
 	}
 }
+
+// ByCategoriesCount orders the results by categories count.
+func ByCategoriesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newCategoriesStep(), opts...)
+	}
+}
+
+// ByCategories orders the results by categories terms.
+func ByCategories(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCategoriesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newPostStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(PostInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, true, PostTable, PostColumn),
+	)
+}
+func newCategoriesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CategoriesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, CategoriesTable, CategoriesColumn),
 	)
 }

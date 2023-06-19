@@ -24,6 +24,9 @@ type BusinessFollowBusiness func(*sql.Selector)
 // BusinessFollowUser is the predicate function for businessfollowuser builders.
 type BusinessFollowUser func(*sql.Selector)
 
+// Category is the predicate function for category builders.
+type Category func(*sql.Selector)
+
 // Chat is the predicate function for chat builders.
 type Chat func(*sql.Selector)
 

@@ -16,6 +16,7 @@ import (
 	"placio-app/ent/business"
 	"placio-app/ent/businessfollowbusiness"
 	"placio-app/ent/businessfollowuser"
+	"placio-app/ent/category"
 	"placio-app/ent/chat"
 	"placio-app/ent/comment"
 	"placio-app/ent/event"
@@ -62,6 +63,8 @@ type Client struct {
 	BusinessFollowBusiness *BusinessFollowBusinessClient
 	// BusinessFollowUser is the client for interacting with the BusinessFollowUser builders.
 	BusinessFollowUser *BusinessFollowUserClient
+	// Category is the client for interacting with the Category builders.
+	Category *CategoryClient
 	// Chat is the client for interacting with the Chat builders.
 	Chat *ChatClient
 	// Comment is the client for interacting with the Comment builders.
@@ -125,6 +128,7 @@ func (c *Client) init() {
 	c.Business = NewBusinessClient(c.config)
 	c.BusinessFollowBusiness = NewBusinessFollowBusinessClient(c.config)
 	c.BusinessFollowUser = NewBusinessFollowUserClient(c.config)
+	c.Category = NewCategoryClient(c.config)
 	c.Chat = NewChatClient(c.config)
 	c.Comment = NewCommentClient(c.config)
 	c.Event = NewEventClient(c.config)
@@ -235,6 +239,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Business:               NewBusinessClient(cfg),
 		BusinessFollowBusiness: NewBusinessFollowBusinessClient(cfg),
 		BusinessFollowUser:     NewBusinessFollowUserClient(cfg),
+		Category:               NewCategoryClient(cfg),
 		Chat:                   NewChatClient(cfg),
 		Comment:                NewCommentClient(cfg),
 		Event:                  NewEventClient(cfg),
@@ -282,6 +287,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Business:               NewBusinessClient(cfg),
 		BusinessFollowBusiness: NewBusinessFollowBusinessClient(cfg),
 		BusinessFollowUser:     NewBusinessFollowUserClient(cfg),
+		Category:               NewCategoryClient(cfg),
 		Chat:                   NewChatClient(cfg),
 		Comment:                NewCommentClient(cfg),
 		Event:                  NewEventClient(cfg),
@@ -334,8 +340,8 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.AccountSettings, c.Amenity, c.Booking, c.Business, c.BusinessFollowBusiness,
-		c.BusinessFollowUser, c.Chat, c.Comment, c.Event, c.Help, c.Like, c.Media,
-		c.Menu, c.Order, c.Payment, c.Place, c.Post, c.Rating, c.Reaction,
+		c.BusinessFollowUser, c.Category, c.Chat, c.Comment, c.Event, c.Help, c.Like,
+		c.Media, c.Menu, c.Order, c.Payment, c.Place, c.Post, c.Rating, c.Reaction,
 		c.Reservation, c.Review, c.Room, c.Ticket, c.TicketOption, c.User,
 		c.UserBusiness, c.UserFollowBusiness, c.UserFollowUser,
 	} {
@@ -348,8 +354,8 @@ func (c *Client) Use(hooks ...Hook) {
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.AccountSettings, c.Amenity, c.Booking, c.Business, c.BusinessFollowBusiness,
-		c.BusinessFollowUser, c.Chat, c.Comment, c.Event, c.Help, c.Like, c.Media,
-		c.Menu, c.Order, c.Payment, c.Place, c.Post, c.Rating, c.Reaction,
+		c.BusinessFollowUser, c.Category, c.Chat, c.Comment, c.Event, c.Help, c.Like,
+		c.Media, c.Menu, c.Order, c.Payment, c.Place, c.Post, c.Rating, c.Reaction,
 		c.Reservation, c.Review, c.Room, c.Ticket, c.TicketOption, c.User,
 		c.UserBusiness, c.UserFollowBusiness, c.UserFollowUser,
 	} {
@@ -372,6 +378,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.BusinessFollowBusiness.mutate(ctx, m)
 	case *BusinessFollowUserMutation:
 		return c.BusinessFollowUser.mutate(ctx, m)
+	case *CategoryMutation:
+		return c.Category.mutate(ctx, m)
 	case *ChatMutation:
 		return c.Chat.mutate(ctx, m)
 	case *CommentMutation:
@@ -1060,6 +1068,22 @@ func (c *BusinessClient) QueryPlaces(b *Business) *PlaceQuery {
 	return query
 }
 
+// QueryCategories queries the categories edge of a Business.
+func (c *BusinessClient) QueryCategories(b *Business) *CategoryQuery {
+	query := (&CategoryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(business.Table, business.FieldID, id),
+			sqlgraph.To(category.Table, category.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, business.CategoriesTable, business.CategoriesColumn),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *BusinessClient) Hooks() []Hook {
 	return c.hooks.Business
@@ -1382,6 +1406,124 @@ func (c *BusinessFollowUserClient) mutate(ctx context.Context, m *BusinessFollow
 		return (&BusinessFollowUserDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown BusinessFollowUser mutation op: %q", m.Op())
+	}
+}
+
+// CategoryClient is a client for the Category schema.
+type CategoryClient struct {
+	config
+}
+
+// NewCategoryClient returns a client for the Category from the given config.
+func NewCategoryClient(c config) *CategoryClient {
+	return &CategoryClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `category.Hooks(f(g(h())))`.
+func (c *CategoryClient) Use(hooks ...Hook) {
+	c.hooks.Category = append(c.hooks.Category, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `category.Intercept(f(g(h())))`.
+func (c *CategoryClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Category = append(c.inters.Category, interceptors...)
+}
+
+// Create returns a builder for creating a Category entity.
+func (c *CategoryClient) Create() *CategoryCreate {
+	mutation := newCategoryMutation(c.config, OpCreate)
+	return &CategoryCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Category entities.
+func (c *CategoryClient) CreateBulk(builders ...*CategoryCreate) *CategoryCreateBulk {
+	return &CategoryCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Category.
+func (c *CategoryClient) Update() *CategoryUpdate {
+	mutation := newCategoryMutation(c.config, OpUpdate)
+	return &CategoryUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CategoryClient) UpdateOne(ca *Category) *CategoryUpdateOne {
+	mutation := newCategoryMutation(c.config, OpUpdateOne, withCategory(ca))
+	return &CategoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CategoryClient) UpdateOneID(id string) *CategoryUpdateOne {
+	mutation := newCategoryMutation(c.config, OpUpdateOne, withCategoryID(id))
+	return &CategoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Category.
+func (c *CategoryClient) Delete() *CategoryDelete {
+	mutation := newCategoryMutation(c.config, OpDelete)
+	return &CategoryDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CategoryClient) DeleteOne(ca *Category) *CategoryDeleteOne {
+	return c.DeleteOneID(ca.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CategoryClient) DeleteOneID(id string) *CategoryDeleteOne {
+	builder := c.Delete().Where(category.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CategoryDeleteOne{builder}
+}
+
+// Query returns a query builder for Category.
+func (c *CategoryClient) Query() *CategoryQuery {
+	return &CategoryQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCategory},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Category entity by its id.
+func (c *CategoryClient) Get(ctx context.Context, id string) (*Category, error) {
+	return c.Query().Where(category.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CategoryClient) GetX(ctx context.Context, id string) *Category {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *CategoryClient) Hooks() []Hook {
+	return c.hooks.Category
+}
+
+// Interceptors returns the client interceptors.
+func (c *CategoryClient) Interceptors() []Interceptor {
+	return c.inters.Category
+}
+
+func (c *CategoryClient) mutate(ctx context.Context, m *CategoryMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CategoryCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CategoryUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CategoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CategoryDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Category mutation op: %q", m.Op())
 	}
 }
 
@@ -2196,6 +2338,22 @@ func (c *MediaClient) QueryPost(m *Media) *PostQuery {
 	return query
 }
 
+// QueryCategories queries the categories edge of a Media.
+func (c *MediaClient) QueryCategories(m *Media) *CategoryQuery {
+	query := (&CategoryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(media.Table, media.FieldID, id),
+			sqlgraph.To(category.Table, category.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, media.CategoriesTable, media.CategoriesColumn),
+		)
+		fromV = sqlgraph.Neighbors(m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *MediaClient) Hooks() []Hook {
 	return c.hooks.Media
@@ -2323,6 +2481,22 @@ func (c *MenuClient) QueryPlace(m *Menu) *PlaceQuery {
 			sqlgraph.From(menu.Table, menu.FieldID, id),
 			sqlgraph.To(place.Table, place.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, menu.PlaceTable, menu.PlaceColumn),
+		)
+		fromV = sqlgraph.Neighbors(m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCategories queries the categories edge of a Menu.
+func (c *MenuClient) QueryCategories(m *Menu) *CategoryQuery {
+	query := (&CategoryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(menu.Table, menu.FieldID, id),
+			sqlgraph.To(category.Table, category.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, menu.CategoriesTable, menu.CategoriesColumn),
 		)
 		fromV = sqlgraph.Neighbors(m.driver.Dialect(), step)
 		return fromV, nil
@@ -2812,6 +2986,22 @@ func (c *PlaceClient) QueryBookings(pl *Place) *BookingQuery {
 	return query
 }
 
+// QueryCategories queries the categories edge of a Place.
+func (c *PlaceClient) QueryCategories(pl *Place) *CategoryQuery {
+	query := (&CategoryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pl.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(place.Table, place.FieldID, id),
+			sqlgraph.To(category.Table, category.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, place.CategoriesTable, place.CategoriesColumn),
+		)
+		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *PlaceClient) Hooks() []Hook {
 	return c.hooks.Place
@@ -3003,6 +3193,22 @@ func (c *PostClient) QueryLikes(po *Post) *LikeQuery {
 			sqlgraph.From(post.Table, post.FieldID, id),
 			sqlgraph.To(like.Table, like.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, post.LikesTable, post.LikesColumn),
+		)
+		fromV = sqlgraph.Neighbors(po.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCategories queries the categories edge of a Post.
+func (c *PostClient) QueryCategories(po *Post) *CategoryQuery {
+	query := (&CategoryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := po.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(post.Table, post.FieldID, id),
+			sqlgraph.To(category.Table, category.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, post.CategoriesTable, post.CategoriesColumn),
 		)
 		fromV = sqlgraph.Neighbors(po.driver.Dialect(), step)
 		return fromV, nil
@@ -4290,6 +4496,22 @@ func (c *UserClient) QueryHelps(u *User) *HelpQuery {
 	return query
 }
 
+// QueryCategories queries the categories edge of a User.
+func (c *UserClient) QueryCategories(u *User) *CategoryQuery {
+	query := (&CategoryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(category.Table, category.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.CategoriesTable, user.CategoriesColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *UserClient) Hooks() []Hook {
 	return c.hooks.User
@@ -4769,15 +4991,16 @@ func (c *UserFollowUserClient) mutate(ctx context.Context, m *UserFollowUserMuta
 type (
 	hooks struct {
 		AccountSettings, Amenity, Booking, Business, BusinessFollowBusiness,
-		BusinessFollowUser, Chat, Comment, Event, Help, Like, Media, Menu, Order,
-		Payment, Place, Post, Rating, Reaction, Reservation, Review, Room, Ticket,
-		TicketOption, User, UserBusiness, UserFollowBusiness, UserFollowUser []ent.Hook
+		BusinessFollowUser, Category, Chat, Comment, Event, Help, Like, Media, Menu,
+		Order, Payment, Place, Post, Rating, Reaction, Reservation, Review, Room,
+		Ticket, TicketOption, User, UserBusiness, UserFollowBusiness,
+		UserFollowUser []ent.Hook
 	}
 	inters struct {
 		AccountSettings, Amenity, Booking, Business, BusinessFollowBusiness,
-		BusinessFollowUser, Chat, Comment, Event, Help, Like, Media, Menu, Order,
-		Payment, Place, Post, Rating, Reaction, Reservation, Review, Room, Ticket,
-		TicketOption, User, UserBusiness, UserFollowBusiness,
+		BusinessFollowUser, Category, Chat, Comment, Event, Help, Like, Media, Menu,
+		Order, Payment, Place, Post, Rating, Reaction, Reservation, Review, Room,
+		Ticket, TicketOption, User, UserBusiness, UserFollowBusiness,
 		UserFollowUser []ent.Interceptor
 	}
 )

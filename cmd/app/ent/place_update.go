@@ -9,6 +9,7 @@ import (
 	"placio-app/ent/amenity"
 	"placio-app/ent/booking"
 	"placio-app/ent/business"
+	"placio-app/ent/category"
 	"placio-app/ent/event"
 	"placio-app/ent/menu"
 	"placio-app/ent/place"
@@ -275,6 +276,21 @@ func (pu *PlaceUpdate) AddBookings(b ...*Booking) *PlaceUpdate {
 	return pu.AddBookingIDs(ids...)
 }
 
+// AddCategoryIDs adds the "categories" edge to the Category entity by IDs.
+func (pu *PlaceUpdate) AddCategoryIDs(ids ...string) *PlaceUpdate {
+	pu.mutation.AddCategoryIDs(ids...)
+	return pu
+}
+
+// AddCategories adds the "categories" edges to the Category entity.
+func (pu *PlaceUpdate) AddCategories(c ...*Category) *PlaceUpdate {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return pu.AddCategoryIDs(ids...)
+}
+
 // Mutation returns the PlaceMutation object of the builder.
 func (pu *PlaceUpdate) Mutation() *PlaceMutation {
 	return pu.mutation
@@ -431,6 +447,27 @@ func (pu *PlaceUpdate) RemoveBookings(b ...*Booking) *PlaceUpdate {
 		ids[i] = b[i].ID
 	}
 	return pu.RemoveBookingIDs(ids...)
+}
+
+// ClearCategories clears all "categories" edges to the Category entity.
+func (pu *PlaceUpdate) ClearCategories() *PlaceUpdate {
+	pu.mutation.ClearCategories()
+	return pu
+}
+
+// RemoveCategoryIDs removes the "categories" edge to Category entities by IDs.
+func (pu *PlaceUpdate) RemoveCategoryIDs(ids ...string) *PlaceUpdate {
+	pu.mutation.RemoveCategoryIDs(ids...)
+	return pu
+}
+
+// RemoveCategories removes "categories" edges to Category entities.
+func (pu *PlaceUpdate) RemoveCategories(c ...*Category) *PlaceUpdate {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return pu.RemoveCategoryIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -860,6 +897,51 @@ func (pu *PlaceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if pu.mutation.CategoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   place.CategoriesTable,
+			Columns: []string{place.CategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.RemovedCategoriesIDs(); len(nodes) > 0 && !pu.mutation.CategoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   place.CategoriesTable,
+			Columns: []string{place.CategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.CategoriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   place.CategoriesTable,
+			Columns: []string{place.CategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, pu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{place.Label}
@@ -1119,6 +1201,21 @@ func (puo *PlaceUpdateOne) AddBookings(b ...*Booking) *PlaceUpdateOne {
 	return puo.AddBookingIDs(ids...)
 }
 
+// AddCategoryIDs adds the "categories" edge to the Category entity by IDs.
+func (puo *PlaceUpdateOne) AddCategoryIDs(ids ...string) *PlaceUpdateOne {
+	puo.mutation.AddCategoryIDs(ids...)
+	return puo
+}
+
+// AddCategories adds the "categories" edges to the Category entity.
+func (puo *PlaceUpdateOne) AddCategories(c ...*Category) *PlaceUpdateOne {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return puo.AddCategoryIDs(ids...)
+}
+
 // Mutation returns the PlaceMutation object of the builder.
 func (puo *PlaceUpdateOne) Mutation() *PlaceMutation {
 	return puo.mutation
@@ -1275,6 +1372,27 @@ func (puo *PlaceUpdateOne) RemoveBookings(b ...*Booking) *PlaceUpdateOne {
 		ids[i] = b[i].ID
 	}
 	return puo.RemoveBookingIDs(ids...)
+}
+
+// ClearCategories clears all "categories" edges to the Category entity.
+func (puo *PlaceUpdateOne) ClearCategories() *PlaceUpdateOne {
+	puo.mutation.ClearCategories()
+	return puo
+}
+
+// RemoveCategoryIDs removes the "categories" edge to Category entities by IDs.
+func (puo *PlaceUpdateOne) RemoveCategoryIDs(ids ...string) *PlaceUpdateOne {
+	puo.mutation.RemoveCategoryIDs(ids...)
+	return puo
+}
+
+// RemoveCategories removes "categories" edges to Category entities.
+func (puo *PlaceUpdateOne) RemoveCategories(c ...*Category) *PlaceUpdateOne {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return puo.RemoveCategoryIDs(ids...)
 }
 
 // Where appends a list predicates to the PlaceUpdate builder.
@@ -1727,6 +1845,51 @@ func (puo *PlaceUpdateOne) sqlSave(ctx context.Context) (_node *Place, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(booking.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if puo.mutation.CategoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   place.CategoriesTable,
+			Columns: []string{place.CategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.RemovedCategoriesIDs(); len(nodes) > 0 && !puo.mutation.CategoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   place.CategoriesTable,
+			Columns: []string{place.CategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.CategoriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   place.CategoriesTable,
+			Columns: []string{place.CategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

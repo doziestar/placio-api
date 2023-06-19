@@ -4,8 +4,10 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"fmt"
 	"math"
+	"placio-app/ent/category"
 	"placio-app/ent/media"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
@@ -18,12 +20,13 @@ import (
 // MediaQuery is the builder for querying Media entities.
 type MediaQuery struct {
 	config
-	ctx        *QueryContext
-	order      []media.OrderOption
-	inters     []Interceptor
-	predicates []predicate.Media
-	withPost   *PostQuery
-	withFKs    bool
+	ctx            *QueryContext
+	order          []media.OrderOption
+	inters         []Interceptor
+	predicates     []predicate.Media
+	withPost       *PostQuery
+	withCategories *CategoryQuery
+	withFKs        bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -75,6 +78,28 @@ func (mq *MediaQuery) QueryPost() *PostQuery {
 			sqlgraph.From(media.Table, media.FieldID, selector),
 			sqlgraph.To(post.Table, post.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, media.PostTable, media.PostColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryCategories chains the current query on the "categories" edge.
+func (mq *MediaQuery) QueryCategories() *CategoryQuery {
+	query := (&CategoryClient{config: mq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := mq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := mq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(media.Table, media.FieldID, selector),
+			sqlgraph.To(category.Table, category.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, media.CategoriesTable, media.CategoriesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
 		return fromU, nil
@@ -269,12 +294,13 @@ func (mq *MediaQuery) Clone() *MediaQuery {
 		return nil
 	}
 	return &MediaQuery{
-		config:     mq.config,
-		ctx:        mq.ctx.Clone(),
-		order:      append([]media.OrderOption{}, mq.order...),
-		inters:     append([]Interceptor{}, mq.inters...),
-		predicates: append([]predicate.Media{}, mq.predicates...),
-		withPost:   mq.withPost.Clone(),
+		config:         mq.config,
+		ctx:            mq.ctx.Clone(),
+		order:          append([]media.OrderOption{}, mq.order...),
+		inters:         append([]Interceptor{}, mq.inters...),
+		predicates:     append([]predicate.Media{}, mq.predicates...),
+		withPost:       mq.withPost.Clone(),
+		withCategories: mq.withCategories.Clone(),
 		// clone intermediate query.
 		sql:  mq.sql.Clone(),
 		path: mq.path,
@@ -289,6 +315,17 @@ func (mq *MediaQuery) WithPost(opts ...func(*PostQuery)) *MediaQuery {
 		opt(query)
 	}
 	mq.withPost = query
+	return mq
+}
+
+// WithCategories tells the query-builder to eager-load the nodes that are connected to
+// the "categories" edge. The optional arguments are used to configure the query builder of the edge.
+func (mq *MediaQuery) WithCategories(opts ...func(*CategoryQuery)) *MediaQuery {
+	query := (&CategoryClient{config: mq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	mq.withCategories = query
 	return mq
 }
 
@@ -371,8 +408,9 @@ func (mq *MediaQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Media,
 		nodes       = []*Media{}
 		withFKs     = mq.withFKs
 		_spec       = mq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			mq.withPost != nil,
+			mq.withCategories != nil,
 		}
 	)
 	if mq.withPost != nil {
@@ -402,6 +440,13 @@ func (mq *MediaQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Media,
 	if query := mq.withPost; query != nil {
 		if err := mq.loadPost(ctx, query, nodes, nil,
 			func(n *Media, e *Post) { n.Edges.Post = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := mq.withCategories; query != nil {
+		if err := mq.loadCategories(ctx, query, nodes,
+			func(n *Media) { n.Edges.Categories = []*Category{} },
+			func(n *Media, e *Category) { n.Edges.Categories = append(n.Edges.Categories, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -437,6 +482,37 @@ func (mq *MediaQuery) loadPost(ctx context.Context, query *PostQuery, nodes []*M
 		for i := range nodes {
 			assign(nodes[i], n)
 		}
+	}
+	return nil
+}
+func (mq *MediaQuery) loadCategories(ctx context.Context, query *CategoryQuery, nodes []*Media, init func(*Media), assign func(*Media, *Category)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Media)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Category(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(media.CategoriesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.media_categories
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "media_categories" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "media_categories" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
 	}
 	return nil
 }

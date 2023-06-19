@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"placio-app/ent/category"
 	"placio-app/ent/menu"
 	"placio-app/ent/place"
 	"placio-app/ent/predicate"
@@ -47,6 +48,21 @@ func (mu *MenuUpdate) SetPlace(p *Place) *MenuUpdate {
 	return mu.SetPlaceID(p.ID)
 }
 
+// AddCategoryIDs adds the "categories" edge to the Category entity by IDs.
+func (mu *MenuUpdate) AddCategoryIDs(ids ...string) *MenuUpdate {
+	mu.mutation.AddCategoryIDs(ids...)
+	return mu
+}
+
+// AddCategories adds the "categories" edges to the Category entity.
+func (mu *MenuUpdate) AddCategories(c ...*Category) *MenuUpdate {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return mu.AddCategoryIDs(ids...)
+}
+
 // Mutation returns the MenuMutation object of the builder.
 func (mu *MenuUpdate) Mutation() *MenuMutation {
 	return mu.mutation
@@ -56,6 +72,27 @@ func (mu *MenuUpdate) Mutation() *MenuMutation {
 func (mu *MenuUpdate) ClearPlace() *MenuUpdate {
 	mu.mutation.ClearPlace()
 	return mu
+}
+
+// ClearCategories clears all "categories" edges to the Category entity.
+func (mu *MenuUpdate) ClearCategories() *MenuUpdate {
+	mu.mutation.ClearCategories()
+	return mu
+}
+
+// RemoveCategoryIDs removes the "categories" edge to Category entities by IDs.
+func (mu *MenuUpdate) RemoveCategoryIDs(ids ...string) *MenuUpdate {
+	mu.mutation.RemoveCategoryIDs(ids...)
+	return mu
+}
+
+// RemoveCategories removes "categories" edges to Category entities.
+func (mu *MenuUpdate) RemoveCategories(c ...*Category) *MenuUpdate {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return mu.RemoveCategoryIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -123,6 +160,51 @@ func (mu *MenuUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if mu.mutation.CategoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   menu.CategoriesTable,
+			Columns: []string{menu.CategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.RemovedCategoriesIDs(); len(nodes) > 0 && !mu.mutation.CategoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   menu.CategoriesTable,
+			Columns: []string{menu.CategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.CategoriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   menu.CategoriesTable,
+			Columns: []string{menu.CategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, mu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{menu.Label}
@@ -162,6 +244,21 @@ func (muo *MenuUpdateOne) SetPlace(p *Place) *MenuUpdateOne {
 	return muo.SetPlaceID(p.ID)
 }
 
+// AddCategoryIDs adds the "categories" edge to the Category entity by IDs.
+func (muo *MenuUpdateOne) AddCategoryIDs(ids ...string) *MenuUpdateOne {
+	muo.mutation.AddCategoryIDs(ids...)
+	return muo
+}
+
+// AddCategories adds the "categories" edges to the Category entity.
+func (muo *MenuUpdateOne) AddCategories(c ...*Category) *MenuUpdateOne {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return muo.AddCategoryIDs(ids...)
+}
+
 // Mutation returns the MenuMutation object of the builder.
 func (muo *MenuUpdateOne) Mutation() *MenuMutation {
 	return muo.mutation
@@ -171,6 +268,27 @@ func (muo *MenuUpdateOne) Mutation() *MenuMutation {
 func (muo *MenuUpdateOne) ClearPlace() *MenuUpdateOne {
 	muo.mutation.ClearPlace()
 	return muo
+}
+
+// ClearCategories clears all "categories" edges to the Category entity.
+func (muo *MenuUpdateOne) ClearCategories() *MenuUpdateOne {
+	muo.mutation.ClearCategories()
+	return muo
+}
+
+// RemoveCategoryIDs removes the "categories" edge to Category entities by IDs.
+func (muo *MenuUpdateOne) RemoveCategoryIDs(ids ...string) *MenuUpdateOne {
+	muo.mutation.RemoveCategoryIDs(ids...)
+	return muo
+}
+
+// RemoveCategories removes "categories" edges to Category entities.
+func (muo *MenuUpdateOne) RemoveCategories(c ...*Category) *MenuUpdateOne {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return muo.RemoveCategoryIDs(ids...)
 }
 
 // Where appends a list predicates to the MenuUpdate builder.
@@ -261,6 +379,51 @@ func (muo *MenuUpdateOne) sqlSave(ctx context.Context) (_node *Menu, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if muo.mutation.CategoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   menu.CategoriesTable,
+			Columns: []string{menu.CategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.RemovedCategoriesIDs(); len(nodes) > 0 && !muo.mutation.CategoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   menu.CategoriesTable,
+			Columns: []string{menu.CategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.CategoriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   menu.CategoriesTable,
+			Columns: []string{menu.CategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

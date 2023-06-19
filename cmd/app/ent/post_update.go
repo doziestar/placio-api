@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"placio-app/ent/business"
+	"placio-app/ent/category"
 	"placio-app/ent/comment"
 	"placio-app/ent/like"
 	"placio-app/ent/media"
@@ -156,6 +157,21 @@ func (pu *PostUpdate) AddLikes(l ...*Like) *PostUpdate {
 	return pu.AddLikeIDs(ids...)
 }
 
+// AddCategoryIDs adds the "categories" edge to the Category entity by IDs.
+func (pu *PostUpdate) AddCategoryIDs(ids ...string) *PostUpdate {
+	pu.mutation.AddCategoryIDs(ids...)
+	return pu
+}
+
+// AddCategories adds the "categories" edges to the Category entity.
+func (pu *PostUpdate) AddCategories(c ...*Category) *PostUpdate {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return pu.AddCategoryIDs(ids...)
+}
+
 // Mutation returns the PostMutation object of the builder.
 func (pu *PostUpdate) Mutation() *PostMutation {
 	return pu.mutation
@@ -234,6 +250,27 @@ func (pu *PostUpdate) RemoveLikes(l ...*Like) *PostUpdate {
 		ids[i] = l[i].ID
 	}
 	return pu.RemoveLikeIDs(ids...)
+}
+
+// ClearCategories clears all "categories" edges to the Category entity.
+func (pu *PostUpdate) ClearCategories() *PostUpdate {
+	pu.mutation.ClearCategories()
+	return pu
+}
+
+// RemoveCategoryIDs removes the "categories" edge to Category entities by IDs.
+func (pu *PostUpdate) RemoveCategoryIDs(ids ...string) *PostUpdate {
+	pu.mutation.RemoveCategoryIDs(ids...)
+	return pu
+}
+
+// RemoveCategories removes "categories" edges to Category entities.
+func (pu *PostUpdate) RemoveCategories(c ...*Category) *PostUpdate {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return pu.RemoveCategoryIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -504,6 +541,51 @@ func (pu *PostUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if pu.mutation.CategoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   post.CategoriesTable,
+			Columns: []string{post.CategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.RemovedCategoriesIDs(); len(nodes) > 0 && !pu.mutation.CategoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   post.CategoriesTable,
+			Columns: []string{post.CategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.CategoriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   post.CategoriesTable,
+			Columns: []string{post.CategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, pu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{post.Label}
@@ -647,6 +729,21 @@ func (puo *PostUpdateOne) AddLikes(l ...*Like) *PostUpdateOne {
 	return puo.AddLikeIDs(ids...)
 }
 
+// AddCategoryIDs adds the "categories" edge to the Category entity by IDs.
+func (puo *PostUpdateOne) AddCategoryIDs(ids ...string) *PostUpdateOne {
+	puo.mutation.AddCategoryIDs(ids...)
+	return puo
+}
+
+// AddCategories adds the "categories" edges to the Category entity.
+func (puo *PostUpdateOne) AddCategories(c ...*Category) *PostUpdateOne {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return puo.AddCategoryIDs(ids...)
+}
+
 // Mutation returns the PostMutation object of the builder.
 func (puo *PostUpdateOne) Mutation() *PostMutation {
 	return puo.mutation
@@ -725,6 +822,27 @@ func (puo *PostUpdateOne) RemoveLikes(l ...*Like) *PostUpdateOne {
 		ids[i] = l[i].ID
 	}
 	return puo.RemoveLikeIDs(ids...)
+}
+
+// ClearCategories clears all "categories" edges to the Category entity.
+func (puo *PostUpdateOne) ClearCategories() *PostUpdateOne {
+	puo.mutation.ClearCategories()
+	return puo
+}
+
+// RemoveCategoryIDs removes the "categories" edge to Category entities by IDs.
+func (puo *PostUpdateOne) RemoveCategoryIDs(ids ...string) *PostUpdateOne {
+	puo.mutation.RemoveCategoryIDs(ids...)
+	return puo
+}
+
+// RemoveCategories removes "categories" edges to Category entities.
+func (puo *PostUpdateOne) RemoveCategories(c ...*Category) *PostUpdateOne {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return puo.RemoveCategoryIDs(ids...)
 }
 
 // Where appends a list predicates to the PostUpdate builder.
@@ -1018,6 +1136,51 @@ func (puo *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(like.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if puo.mutation.CategoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   post.CategoriesTable,
+			Columns: []string{post.CategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.RemovedCategoriesIDs(); len(nodes) > 0 && !puo.mutation.CategoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   post.CategoriesTable,
+			Columns: []string{post.CategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.CategoriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   post.CategoriesTable,
+			Columns: []string{post.CategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

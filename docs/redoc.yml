@@ -377,6 +377,11 @@ definitions:
         allOf:
           - $ref: '#/definitions/placio-app_ent.AccountSettings'
         description: BusinessAccountSettings holds the value of the business_account_settings edge.
+      categories:
+        description: Categories holds the value of the categories edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Category'
+        type: array
       followedBusinesses:
         description: FollowedBusinesses holds the value of the followedBusinesses edge.
         items:
@@ -459,6 +464,18 @@ definitions:
           - $ref: '#/definitions/placio-app_ent.User'
         description: User holds the value of the user edge.
     type: object
+  placio-app_ent.Category:
+    properties:
+      id:
+        description: ID of the ent.
+        type: string
+      image:
+        description: Image holds the value of the "image" field.
+        type: string
+      name:
+        description: Name holds the value of the "name" field.
+        type: string
+    type: object
   placio-app_ent.Comment:
     properties:
       Content:
@@ -525,6 +542,43 @@ definitions:
           $ref: '#/definitions/placio-app_ent.Ticket'
         type: array
     type: object
+  placio-app_ent.Help:
+    properties:
+      body:
+        description: Body holds the value of the "body" field.
+        type: string
+      category:
+        description: Category holds the value of the "category" field.
+        type: string
+      edges:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.HelpEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the HelpQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: string
+      media:
+        description: Media holds the value of the "media" field.
+        type: string
+      status:
+        description: Status holds the value of the "status" field.
+        type: string
+      subject:
+        description: Subject holds the value of the "subject" field.
+        type: string
+      user_id:
+        description: UserID holds the value of the "user_id" field.
+        type: string
+    type: object
+  placio-app_ent.HelpEdges:
+    properties:
+      user:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.User'
+        description: User holds the value of the user edge.
+    type: object
   placio-app_ent.Like:
     properties:
       CreatedAt:
@@ -580,6 +634,11 @@ definitions:
     type: object
   placio-app_ent.MediaEdges:
     properties:
+      categories:
+        description: Categories holds the value of the categories edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Category'
+        type: array
       post:
         allOf:
           - $ref: '#/definitions/placio-app_ent.Post'
@@ -599,6 +658,11 @@ definitions:
     type: object
   placio-app_ent.MenuEdges:
     properties:
+      categories:
+        description: Categories holds the value of the categories edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Category'
+        type: array
       place:
         allOf:
           - $ref: '#/definitions/placio-app_ent.Place'
@@ -659,6 +723,11 @@ definitions:
         allOf:
           - $ref: '#/definitions/placio-app_ent.Business'
         description: Business holds the value of the business edge.
+      categories:
+        description: Categories holds the value of the categories edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Category'
+        type: array
       events:
         description: Events holds the value of the events edge.
         items:
@@ -716,6 +785,11 @@ definitions:
         allOf:
           - $ref: '#/definitions/placio-app_ent.Business'
         description: BusinessAccount holds the value of the business_account edge.
+      categories:
+        description: Categories holds the value of the categories edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Category'
+        type: array
       comments:
         description: Comments holds the value of the comments edge.
         items:
@@ -977,6 +1051,11 @@ definitions:
         items:
           $ref: '#/definitions/placio-app_ent.Booking'
         type: array
+      categories:
+        description: Categories holds the value of the categories edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Category'
+        type: array
       comments:
         description: Comments holds the value of the comments edge.
         items:
@@ -1001,6 +1080,11 @@ definitions:
         description: FollowerUsers holds the value of the followerUsers edge.
         items:
           $ref: '#/definitions/placio-app_ent.UserFollowUser'
+        type: array
+      helps:
+        description: Helps holds the value of the helps edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Help'
         type: array
       likes:
         description: Likes holds the value of the likes edge.
@@ -2332,6 +2416,135 @@ paths:
       summary: Show the status of server.
       tags:
         - root
+  /api/v1/helps:
+    post:
+      consumes:
+        - application/json
+      description: Create a new help request
+      parameters:
+        - description: ID of the user creating the help request
+          in: body
+          name: userID
+          required: true
+          schema:
+            type: string
+        - description: Category of the help request
+          in: body
+          name: category
+          required: true
+          schema:
+            type: string
+        - description: Subject of the help request
+          in: body
+          name: subject
+          required: true
+          schema:
+            type: string
+        - description: Body of the help request
+          in: body
+          name: body
+          required: true
+          schema:
+            type: string
+        - description: Optional media associated with the help request
+          in: body
+          name: media
+          schema:
+            type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully created help request
+          schema:
+            $ref: '#/definitions/placio-app_ent.Help'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      security:
+        - Bearer: []
+      summary: Create a help request
+      tags:
+        - Help
+  /api/v1/helps/{id}:
+    delete:
+      consumes:
+        - application/json
+      description: Delete an existing help request
+      parameters:
+        - description: ID of the help request to delete
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully deleted help request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Response'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      security:
+        - Bearer: []
+      summary: Delete a help request
+      tags:
+        - Help
+  /api/v1/helps/{id}/resolve:
+    patch:
+      consumes:
+        - application/json
+      description: Resolve an existing help request
+      parameters:
+        - description: ID of the help request to resolve
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully resolved help request
+          schema:
+            $ref: '#/definitions/placio-app_ent.Help'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      security:
+        - Bearer: []
+      summary: Resolve a help request
+      tags:
+        - Help
   /api/v1/likes/{likeID}:
     delete:
       consumes:
@@ -4375,6 +4588,94 @@ paths:
       summary: Follow a business by another business
       tags:
         - Business
+  /categories/:
+    post:
+      consumes:
+        - application/json
+      parameters:
+        - description: Category
+          in: body
+          name: category
+          required: true
+          schema:
+            $ref: '#/definitions/placio-app_ent.Category'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_ent.Category'
+      summary: Create a new category
+      tags:
+        - categories
+  /categories/{id}:
+    delete:
+      consumes:
+        - application/json
+      parameters:
+        - description: Category ID
+          in: path
+          name: id
+          required: true
+          type: integer
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_ent.Category'
+      summary: Delete a category
+      tags:
+        - categories
+    patch:
+      consumes:
+        - application/json
+      parameters:
+        - description: Category ID
+          in: path
+          name: id
+          required: true
+          type: integer
+        - description: Category
+          in: body
+          name: category
+          required: true
+          schema:
+            $ref: '#/definitions/placio-app_ent.Category'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_ent.Category'
+      summary: Update an existing category
+      tags:
+        - categories
+  /categories/search:
+    get:
+      consumes:
+        - application/json
+      parameters:
+        - description: Category name
+          in: query
+          name: name
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_ent.Category'
+            type: array
+      summary: Search by category
+      tags:
+        - categories
   /event/{eventId}:
     get:
       consumes:
