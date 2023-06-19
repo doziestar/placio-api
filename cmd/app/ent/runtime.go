@@ -7,6 +7,7 @@ import (
 	"placio-app/ent/amenity"
 	"placio-app/ent/booking"
 	"placio-app/ent/business"
+	"placio-app/ent/category"
 	"placio-app/ent/comment"
 	"placio-app/ent/event"
 	"placio-app/ent/help"
@@ -54,6 +55,12 @@ func init() {
 	businessDescID := businessFields[0].Descriptor()
 	// business.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	business.IDValidator = businessDescID.Validators[0].(func(string) error)
+	categoryFields := schema.Category{}.Fields()
+	_ = categoryFields
+	// categoryDescID is the schema descriptor for id field.
+	categoryDescID := categoryFields[0].Descriptor()
+	// category.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	category.IDValidator = categoryDescID.Validators[0].(func(string) error)
 	commentFields := schema.Comment{}.Fields()
 	_ = commentFields
 	// commentDescContent is the schema descriptor for Content field.

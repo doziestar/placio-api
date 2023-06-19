@@ -14,6 +14,10 @@ type HelpController struct {
 	helpService service.HelpService
 }
 
+func NewHelpController(helpService service.HelpService) *HelpController {
+	return &HelpController{helpService: helpService}
+}
+
 func (uc *HelpController) RegisterRoutes(router *gin.RouterGroup) {
 	// ...
 	helpRouter := router.Group("/helps")

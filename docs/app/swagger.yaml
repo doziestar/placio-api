@@ -386,6 +386,11 @@ definitions:
         - $ref: '#/definitions/placio-app_ent.AccountSettings'
         description: BusinessAccountSettings holds the value of the business_account_settings
           edge.
+      categories:
+        description: Categories holds the value of the categories edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Category'
+        type: array
       followedBusinesses:
         description: FollowedBusinesses holds the value of the followedBusinesses
           edge.
@@ -469,6 +474,18 @@ definitions:
         allOf:
         - $ref: '#/definitions/placio-app_ent.User'
         description: User holds the value of the user edge.
+    type: object
+  placio-app_ent.Category:
+    properties:
+      id:
+        description: ID of the ent.
+        type: string
+      image:
+        description: Image holds the value of the "image" field.
+        type: string
+      name:
+        description: Name holds the value of the "name" field.
+        type: string
     type: object
   placio-app_ent.Comment:
     properties:
@@ -628,6 +645,11 @@ definitions:
     type: object
   placio-app_ent.MediaEdges:
     properties:
+      categories:
+        description: Categories holds the value of the categories edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Category'
+        type: array
       post:
         allOf:
         - $ref: '#/definitions/placio-app_ent.Post'
@@ -647,6 +669,11 @@ definitions:
     type: object
   placio-app_ent.MenuEdges:
     properties:
+      categories:
+        description: Categories holds the value of the categories edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Category'
+        type: array
       place:
         allOf:
         - $ref: '#/definitions/placio-app_ent.Place'
@@ -708,6 +735,11 @@ definitions:
         allOf:
         - $ref: '#/definitions/placio-app_ent.Business'
         description: Business holds the value of the business edge.
+      categories:
+        description: Categories holds the value of the categories edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Category'
+        type: array
       events:
         description: Events holds the value of the events edge.
         items:
@@ -765,6 +797,11 @@ definitions:
         allOf:
         - $ref: '#/definitions/placio-app_ent.Business'
         description: BusinessAccount holds the value of the business_account edge.
+      categories:
+        description: Categories holds the value of the categories edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Category'
+        type: array
       comments:
         description: Comments holds the value of the comments edge.
         items:
@@ -1025,6 +1062,11 @@ definitions:
         description: Bookings holds the value of the bookings edge.
         items:
           $ref: '#/definitions/placio-app_ent.Booking'
+        type: array
+      categories:
+        description: Categories holds the value of the categories edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Category'
         type: array
       comments:
         description: Comments holds the value of the comments edge.
@@ -4561,6 +4603,94 @@ paths:
       summary: Follow a business by another business
       tags:
       - Business
+  /categories/:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Category
+        in: body
+        name: category
+        required: true
+        schema:
+          $ref: '#/definitions/placio-app_ent.Category'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_ent.Category'
+      summary: Create a new category
+      tags:
+      - categories
+  /categories/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_ent.Category'
+      summary: Delete a category
+      tags:
+      - categories
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Category
+        in: body
+        name: category
+        required: true
+        schema:
+          $ref: '#/definitions/placio-app_ent.Category'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_ent.Category'
+      summary: Update an existing category
+      tags:
+      - categories
+  /categories/search:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Category name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_ent.Category'
+            type: array
+      summary: Search by category
+      tags:
+      - categories
   /event/{eventId}:
     get:
       consumes:

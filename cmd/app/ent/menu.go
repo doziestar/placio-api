@@ -28,9 +28,11 @@ type Menu struct {
 type MenuEdges struct {
 	// Place holds the value of the place edge.
 	Place *Place `json:"place,omitempty"`
+	// Categories holds the value of the categories edge.
+	Categories []*Category `json:"categories,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // PlaceOrErr returns the Place value or an error if the edge
@@ -44,6 +46,15 @@ func (e MenuEdges) PlaceOrErr() (*Place, error) {
 		return e.Place, nil
 	}
 	return nil, &NotLoadedError{edge: "place"}
+}
+
+// CategoriesOrErr returns the Categories value or an error if the edge
+// was not loaded in eager-loading.
+func (e MenuEdges) CategoriesOrErr() ([]*Category, error) {
+	if e.loadedTypes[1] {
+		return e.Categories, nil
+	}
+	return nil, &NotLoadedError{edge: "categories"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -99,6 +110,11 @@ func (m *Menu) Value(name string) (ent.Value, error) {
 // QueryPlace queries the "place" edge of the Menu entity.
 func (m *Menu) QueryPlace() *PlaceQuery {
 	return NewMenuClient(m.config).QueryPlace(m)
+}
+
+// QueryCategories queries the "categories" edge of the Menu entity.
+func (m *Menu) QueryCategories() *CategoryQuery {
+	return NewMenuClient(m.config).QueryCategories(m)
 }
 
 // Update returns a builder for updating this Menu.

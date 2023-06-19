@@ -47,9 +47,11 @@ type PostEdges struct {
 	Comments []*Comment `json:"comments,omitempty"`
 	// Likes holds the value of the likes edge.
 	Likes []*Like `json:"likes,omitempty"`
+	// Categories holds the value of the categories edge.
+	Categories []*Category `json:"categories,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
+	loadedTypes [6]bool
 }
 
 // UserOrErr returns the User value or an error if the edge
@@ -103,6 +105,15 @@ func (e PostEdges) LikesOrErr() ([]*Like, error) {
 		return e.Likes, nil
 	}
 	return nil, &NotLoadedError{edge: "likes"}
+}
+
+// CategoriesOrErr returns the Categories value or an error if the edge
+// was not loaded in eager-loading.
+func (e PostEdges) CategoriesOrErr() ([]*Category, error) {
+	if e.loadedTypes[5] {
+		return e.Categories, nil
+	}
+	return nil, &NotLoadedError{edge: "categories"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -213,6 +224,11 @@ func (po *Post) QueryComments() *CommentQuery {
 // QueryLikes queries the "likes" edge of the Post entity.
 func (po *Post) QueryLikes() *LikeQuery {
 	return NewPostClient(po.config).QueryLikes(po)
+}
+
+// QueryCategories queries the "categories" edge of the Post entity.
+func (po *Post) QueryCategories() *CategoryQuery {
+	return NewPostClient(po.config).QueryCategories(po)
 }
 
 // Update returns a builder for updating this Post.

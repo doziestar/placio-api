@@ -10,6 +10,7 @@ import (
 	"placio-app/ent/business"
 	"placio-app/ent/businessfollowbusiness"
 	"placio-app/ent/businessfollowuser"
+	"placio-app/ent/category"
 	"placio-app/ent/place"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
@@ -162,6 +163,21 @@ func (bu *BusinessUpdate) AddPlaces(p ...*Place) *BusinessUpdate {
 		ids[i] = p[i].ID
 	}
 	return bu.AddPlaceIDs(ids...)
+}
+
+// AddCategoryIDs adds the "categories" edge to the Category entity by IDs.
+func (bu *BusinessUpdate) AddCategoryIDs(ids ...string) *BusinessUpdate {
+	bu.mutation.AddCategoryIDs(ids...)
+	return bu
+}
+
+// AddCategories adds the "categories" edges to the Category entity.
+func (bu *BusinessUpdate) AddCategories(c ...*Category) *BusinessUpdate {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return bu.AddCategoryIDs(ids...)
 }
 
 // Mutation returns the BusinessMutation object of the builder.
@@ -320,6 +336,27 @@ func (bu *BusinessUpdate) RemovePlaces(p ...*Place) *BusinessUpdate {
 		ids[i] = p[i].ID
 	}
 	return bu.RemovePlaceIDs(ids...)
+}
+
+// ClearCategories clears all "categories" edges to the Category entity.
+func (bu *BusinessUpdate) ClearCategories() *BusinessUpdate {
+	bu.mutation.ClearCategories()
+	return bu
+}
+
+// RemoveCategoryIDs removes the "categories" edge to Category entities by IDs.
+func (bu *BusinessUpdate) RemoveCategoryIDs(ids ...string) *BusinessUpdate {
+	bu.mutation.RemoveCategoryIDs(ids...)
+	return bu
+}
+
+// RemoveCategories removes "categories" edges to Category entities.
+func (bu *BusinessUpdate) RemoveCategories(c ...*Category) *BusinessUpdate {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return bu.RemoveCategoryIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -705,6 +742,51 @@ func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if bu.mutation.CategoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.CategoriesTable,
+			Columns: []string{business.CategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.RemovedCategoriesIDs(); len(nodes) > 0 && !bu.mutation.CategoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.CategoriesTable,
+			Columns: []string{business.CategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.CategoriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.CategoriesTable,
+			Columns: []string{business.CategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, bu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{business.Label}
@@ -853,6 +935,21 @@ func (buo *BusinessUpdateOne) AddPlaces(p ...*Place) *BusinessUpdateOne {
 		ids[i] = p[i].ID
 	}
 	return buo.AddPlaceIDs(ids...)
+}
+
+// AddCategoryIDs adds the "categories" edge to the Category entity by IDs.
+func (buo *BusinessUpdateOne) AddCategoryIDs(ids ...string) *BusinessUpdateOne {
+	buo.mutation.AddCategoryIDs(ids...)
+	return buo
+}
+
+// AddCategories adds the "categories" edges to the Category entity.
+func (buo *BusinessUpdateOne) AddCategories(c ...*Category) *BusinessUpdateOne {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return buo.AddCategoryIDs(ids...)
 }
 
 // Mutation returns the BusinessMutation object of the builder.
@@ -1011,6 +1108,27 @@ func (buo *BusinessUpdateOne) RemovePlaces(p ...*Place) *BusinessUpdateOne {
 		ids[i] = p[i].ID
 	}
 	return buo.RemovePlaceIDs(ids...)
+}
+
+// ClearCategories clears all "categories" edges to the Category entity.
+func (buo *BusinessUpdateOne) ClearCategories() *BusinessUpdateOne {
+	buo.mutation.ClearCategories()
+	return buo
+}
+
+// RemoveCategoryIDs removes the "categories" edge to Category entities by IDs.
+func (buo *BusinessUpdateOne) RemoveCategoryIDs(ids ...string) *BusinessUpdateOne {
+	buo.mutation.RemoveCategoryIDs(ids...)
+	return buo
+}
+
+// RemoveCategories removes "categories" edges to Category entities.
+func (buo *BusinessUpdateOne) RemoveCategories(c ...*Category) *BusinessUpdateOne {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return buo.RemoveCategoryIDs(ids...)
 }
 
 // Where appends a list predicates to the BusinessUpdate builder.
@@ -1419,6 +1537,51 @@ func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if buo.mutation.CategoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.CategoriesTable,
+			Columns: []string{business.CategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.RemovedCategoriesIDs(); len(nodes) > 0 && !buo.mutation.CategoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.CategoriesTable,
+			Columns: []string{business.CategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.CategoriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.CategoriesTable,
+			Columns: []string{business.CategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

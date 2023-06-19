@@ -42,5 +42,6 @@ func (Place) Edges() []ent.Edge {
 		edge.To("rooms", Room.Type),
 		edge.To("reservations", Reservation.Type),
 		edge.To("bookings", Booking.Type),
+		edge.To("categories", Category.Type),
 	}
 }

@@ -693,6 +693,29 @@ func HasBookingsWith(preds ...predicate.Booking) predicate.Place {
 	})
 }
 
+// HasCategories applies the HasEdge predicate on the "categories" edge.
+func HasCategories() predicate.Place {
+	return predicate.Place(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CategoriesTable, CategoriesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCategoriesWith applies the HasEdge predicate on the "categories" edge with a given conditions (other predicates).
+func HasCategoriesWith(preds ...predicate.Category) predicate.Place {
+	return predicate.Place(func(s *sql.Selector) {
+		step := newCategoriesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Place) predicate.Place {
 	return predicate.Place(func(s *sql.Selector) {

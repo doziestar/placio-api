@@ -37,9 +37,11 @@ type Media struct {
 type MediaEdges struct {
 	// Post holds the value of the post edge.
 	Post *Post `json:"post,omitempty"`
+	// Categories holds the value of the categories edge.
+	Categories []*Category `json:"categories,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // PostOrErr returns the Post value or an error if the edge
@@ -53,6 +55,15 @@ func (e MediaEdges) PostOrErr() (*Post, error) {
 		return e.Post, nil
 	}
 	return nil, &NotLoadedError{edge: "post"}
+}
+
+// CategoriesOrErr returns the Categories value or an error if the edge
+// was not loaded in eager-loading.
+func (e MediaEdges) CategoriesOrErr() ([]*Category, error) {
+	if e.loadedTypes[1] {
+		return e.Categories, nil
+	}
+	return nil, &NotLoadedError{edge: "categories"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -134,6 +145,11 @@ func (m *Media) Value(name string) (ent.Value, error) {
 // QueryPost queries the "post" edge of the Media entity.
 func (m *Media) QueryPost() *PostQuery {
 	return NewMediaClient(m.config).QueryPost(m)
+}
+
+// QueryCategories queries the "categories" edge of the Media entity.
+func (m *Media) QueryCategories() *CategoryQuery {
+	return NewMediaClient(m.config).QueryCategories(m)
 }
 
 // Update returns a builder for updating this Media.

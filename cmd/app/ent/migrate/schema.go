@@ -142,6 +142,62 @@ var (
 			},
 		},
 	}
+	// CategoriesColumns holds the columns for the "categories" table.
+	CategoriesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
+		{Name: "name", Type: field.TypeString, Unique: true},
+		{Name: "image", Type: field.TypeString, Nullable: true},
+		{Name: "business_categories", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "media_categories", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "menu_categories", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "place_categories", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "post_categories", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "user_categories", Type: field.TypeString, Nullable: true, Size: 36},
+	}
+	// CategoriesTable holds the schema information for the "categories" table.
+	CategoriesTable = &schema.Table{
+		Name:       "categories",
+		Columns:    CategoriesColumns,
+		PrimaryKey: []*schema.Column{CategoriesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "categories_businesses_categories",
+				Columns:    []*schema.Column{CategoriesColumns[3]},
+				RefColumns: []*schema.Column{BusinessesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "categories_media_categories",
+				Columns:    []*schema.Column{CategoriesColumns[4]},
+				RefColumns: []*schema.Column{MediaColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "categories_menus_categories",
+				Columns:    []*schema.Column{CategoriesColumns[5]},
+				RefColumns: []*schema.Column{MenusColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "categories_places_categories",
+				Columns:    []*schema.Column{CategoriesColumns[6]},
+				RefColumns: []*schema.Column{PlacesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "categories_posts_categories",
+				Columns:    []*schema.Column{CategoriesColumns[7]},
+				RefColumns: []*schema.Column{PostsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "categories_users_categories",
+				Columns:    []*schema.Column{CategoriesColumns[8]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// ChatsColumns holds the columns for the "chats" table.
 	ChatsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -665,6 +721,7 @@ var (
 		BusinessesTable,
 		BusinessFollowBusinessesTable,
 		BusinessFollowUsersTable,
+		CategoriesTable,
 		ChatsTable,
 		CommentsTable,
 		EventsTable,
@@ -700,6 +757,12 @@ func init() {
 	BusinessFollowBusinessesTable.ForeignKeys[1].RefTable = BusinessesTable
 	BusinessFollowUsersTable.ForeignKeys[0].RefTable = BusinessesTable
 	BusinessFollowUsersTable.ForeignKeys[1].RefTable = UsersTable
+	CategoriesTable.ForeignKeys[0].RefTable = BusinessesTable
+	CategoriesTable.ForeignKeys[1].RefTable = MediaTable
+	CategoriesTable.ForeignKeys[2].RefTable = MenusTable
+	CategoriesTable.ForeignKeys[3].RefTable = PlacesTable
+	CategoriesTable.ForeignKeys[4].RefTable = PostsTable
+	CategoriesTable.ForeignKeys[5].RefTable = UsersTable
 	CommentsTable.ForeignKeys[0].RefTable = PostsTable
 	CommentsTable.ForeignKeys[1].RefTable = UsersTable
 	EventsTable.ForeignKeys[0].RefTable = PlacesTable

@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"placio-app/ent/business"
+	"placio-app/ent/category"
 	"placio-app/ent/comment"
 	"placio-app/ent/like"
 	"placio-app/ent/media"
@@ -152,6 +153,21 @@ func (pc *PostCreate) AddLikes(l ...*Like) *PostCreate {
 		ids[i] = l[i].ID
 	}
 	return pc.AddLikeIDs(ids...)
+}
+
+// AddCategoryIDs adds the "categories" edge to the Category entity by IDs.
+func (pc *PostCreate) AddCategoryIDs(ids ...string) *PostCreate {
+	pc.mutation.AddCategoryIDs(ids...)
+	return pc
+}
+
+// AddCategories adds the "categories" edges to the Category entity.
+func (pc *PostCreate) AddCategories(c ...*Category) *PostCreate {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return pc.AddCategoryIDs(ids...)
 }
 
 // Mutation returns the PostMutation object of the builder.
@@ -354,6 +370,22 @@ func (pc *PostCreate) createSpec() (*Post, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(like.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.CategoriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   post.CategoriesTable,
+			Columns: []string{post.CategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

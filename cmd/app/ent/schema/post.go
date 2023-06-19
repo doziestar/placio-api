@@ -38,5 +38,6 @@ func (Post) Edges() []ent.Edge {
 		edge.To("medias", Media.Type),
 		edge.To("comments", Comment.Type),
 		edge.To("likes", Like.Type),
+		edge.To("categories", Category.Type),
 	}
 }

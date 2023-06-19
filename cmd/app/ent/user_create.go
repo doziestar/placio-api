@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"placio-app/ent/booking"
 	"placio-app/ent/businessfollowuser"
+	"placio-app/ent/category"
 	"placio-app/ent/comment"
 	"placio-app/ent/help"
 	"placio-app/ent/like"
@@ -287,6 +288,21 @@ func (uc *UserCreate) AddHelps(h ...*Help) *UserCreate {
 		ids[i] = h[i].ID
 	}
 	return uc.AddHelpIDs(ids...)
+}
+
+// AddCategoryIDs adds the "categories" edge to the Category entity by IDs.
+func (uc *UserCreate) AddCategoryIDs(ids ...string) *UserCreate {
+	uc.mutation.AddCategoryIDs(ids...)
+	return uc
+}
+
+// AddCategories adds the "categories" edges to the Category entity.
+func (uc *UserCreate) AddCategories(c ...*Category) *UserCreate {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return uc.AddCategoryIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -595,6 +611,22 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(help.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.CategoriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CategoriesTable,
+			Columns: []string{user.CategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

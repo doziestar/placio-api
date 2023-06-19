@@ -66,9 +66,11 @@ type UserEdges struct {
 	Reservations []*Reservation `json:"reservations,omitempty"`
 	// Helps holds the value of the helps edge.
 	Helps []*Help `json:"helps,omitempty"`
+	// Categories holds the value of the categories edge.
+	Categories []*Category `json:"categories,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [12]bool
+	loadedTypes [13]bool
 }
 
 // UserBusinessesOrErr returns the UserBusinesses value or an error if the edge
@@ -177,6 +179,15 @@ func (e UserEdges) HelpsOrErr() ([]*Help, error) {
 		return e.Helps, nil
 	}
 	return nil, &NotLoadedError{edge: "helps"}
+}
+
+// CategoriesOrErr returns the Categories value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) CategoriesOrErr() ([]*Category, error) {
+	if e.loadedTypes[12] {
+		return e.Categories, nil
+	}
+	return nil, &NotLoadedError{edge: "categories"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -334,6 +345,11 @@ func (u *User) QueryReservations() *ReservationQuery {
 // QueryHelps queries the "helps" edge of the User entity.
 func (u *User) QueryHelps() *HelpQuery {
 	return NewUserClient(u.config).QueryHelps(u)
+}
+
+// QueryCategories queries the "categories" edge of the User entity.
+func (u *User) QueryCategories() *CategoryQuery {
+	return NewUserClient(u.config).QueryCategories(u)
 }
 
 // Update returns a builder for updating this User.

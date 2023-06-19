@@ -59,9 +59,11 @@ type PlaceEdges struct {
 	Reservations []*Reservation `json:"reservations,omitempty"`
 	// Bookings holds the value of the bookings edge.
 	Bookings []*Booking `json:"bookings,omitempty"`
+	// Categories holds the value of the categories edge.
+	Categories []*Category `json:"categories,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [8]bool
+	loadedTypes [9]bool
 }
 
 // BusinessOrErr returns the Business value or an error if the edge
@@ -138,6 +140,15 @@ func (e PlaceEdges) BookingsOrErr() ([]*Booking, error) {
 		return e.Bookings, nil
 	}
 	return nil, &NotLoadedError{edge: "bookings"}
+}
+
+// CategoriesOrErr returns the Categories value or an error if the edge
+// was not loaded in eager-loading.
+func (e PlaceEdges) CategoriesOrErr() ([]*Category, error) {
+	if e.loadedTypes[8] {
+		return e.Categories, nil
+	}
+	return nil, &NotLoadedError{edge: "categories"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -284,6 +295,11 @@ func (pl *Place) QueryReservations() *ReservationQuery {
 // QueryBookings queries the "bookings" edge of the Place entity.
 func (pl *Place) QueryBookings() *BookingQuery {
 	return NewPlaceClient(pl.config).QueryBookings(pl)
+}
+
+// QueryCategories queries the "categories" edge of the Place entity.
+func (pl *Place) QueryCategories() *CategoryQuery {
+	return NewPlaceClient(pl.config).QueryCategories(pl)
 }
 
 // Update returns a builder for updating this Place.

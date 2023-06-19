@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"placio-app/ent/category"
 	"placio-app/ent/media"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
@@ -66,6 +67,21 @@ func (mu *MediaUpdate) SetPost(p *Post) *MediaUpdate {
 	return mu.SetPostID(p.ID)
 }
 
+// AddCategoryIDs adds the "categories" edge to the Category entity by IDs.
+func (mu *MediaUpdate) AddCategoryIDs(ids ...string) *MediaUpdate {
+	mu.mutation.AddCategoryIDs(ids...)
+	return mu
+}
+
+// AddCategories adds the "categories" edges to the Category entity.
+func (mu *MediaUpdate) AddCategories(c ...*Category) *MediaUpdate {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return mu.AddCategoryIDs(ids...)
+}
+
 // Mutation returns the MediaMutation object of the builder.
 func (mu *MediaUpdate) Mutation() *MediaMutation {
 	return mu.mutation
@@ -75,6 +91,27 @@ func (mu *MediaUpdate) Mutation() *MediaMutation {
 func (mu *MediaUpdate) ClearPost() *MediaUpdate {
 	mu.mutation.ClearPost()
 	return mu
+}
+
+// ClearCategories clears all "categories" edges to the Category entity.
+func (mu *MediaUpdate) ClearCategories() *MediaUpdate {
+	mu.mutation.ClearCategories()
+	return mu
+}
+
+// RemoveCategoryIDs removes the "categories" edge to Category entities by IDs.
+func (mu *MediaUpdate) RemoveCategoryIDs(ids ...string) *MediaUpdate {
+	mu.mutation.RemoveCategoryIDs(ids...)
+	return mu
+}
+
+// RemoveCategories removes "categories" edges to Category entities.
+func (mu *MediaUpdate) RemoveCategories(c ...*Category) *MediaUpdate {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return mu.RemoveCategoryIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -160,6 +197,51 @@ func (mu *MediaUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if mu.mutation.CategoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   media.CategoriesTable,
+			Columns: []string{media.CategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.RemovedCategoriesIDs(); len(nodes) > 0 && !mu.mutation.CategoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   media.CategoriesTable,
+			Columns: []string{media.CategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.CategoriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   media.CategoriesTable,
+			Columns: []string{media.CategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, mu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{media.Label}
@@ -217,6 +299,21 @@ func (muo *MediaUpdateOne) SetPost(p *Post) *MediaUpdateOne {
 	return muo.SetPostID(p.ID)
 }
 
+// AddCategoryIDs adds the "categories" edge to the Category entity by IDs.
+func (muo *MediaUpdateOne) AddCategoryIDs(ids ...string) *MediaUpdateOne {
+	muo.mutation.AddCategoryIDs(ids...)
+	return muo
+}
+
+// AddCategories adds the "categories" edges to the Category entity.
+func (muo *MediaUpdateOne) AddCategories(c ...*Category) *MediaUpdateOne {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return muo.AddCategoryIDs(ids...)
+}
+
 // Mutation returns the MediaMutation object of the builder.
 func (muo *MediaUpdateOne) Mutation() *MediaMutation {
 	return muo.mutation
@@ -226,6 +323,27 @@ func (muo *MediaUpdateOne) Mutation() *MediaMutation {
 func (muo *MediaUpdateOne) ClearPost() *MediaUpdateOne {
 	muo.mutation.ClearPost()
 	return muo
+}
+
+// ClearCategories clears all "categories" edges to the Category entity.
+func (muo *MediaUpdateOne) ClearCategories() *MediaUpdateOne {
+	muo.mutation.ClearCategories()
+	return muo
+}
+
+// RemoveCategoryIDs removes the "categories" edge to Category entities by IDs.
+func (muo *MediaUpdateOne) RemoveCategoryIDs(ids ...string) *MediaUpdateOne {
+	muo.mutation.RemoveCategoryIDs(ids...)
+	return muo
+}
+
+// RemoveCategories removes "categories" edges to Category entities.
+func (muo *MediaUpdateOne) RemoveCategories(c ...*Category) *MediaUpdateOne {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return muo.RemoveCategoryIDs(ids...)
 }
 
 // Where appends a list predicates to the MediaUpdate builder.
@@ -334,6 +452,51 @@ func (muo *MediaUpdateOne) sqlSave(ctx context.Context) (_node *Media, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if muo.mutation.CategoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   media.CategoriesTable,
+			Columns: []string{media.CategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.RemovedCategoriesIDs(); len(nodes) > 0 && !muo.mutation.CategoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   media.CategoriesTable,
+			Columns: []string{media.CategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.CategoriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   media.CategoriesTable,
+			Columns: []string{media.CategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
