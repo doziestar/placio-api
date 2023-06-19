@@ -60,7 +60,7 @@ services:
       - ./config:/app/config
     build:
       context: .
-      dockerfile: ./cmd/app/Dockerfile
+      dockerfile: ./cmd/app/stag.dockerfile
     networks:
       - default
     labels:
