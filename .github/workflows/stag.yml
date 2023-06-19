@@ -27,7 +27,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Add Permission To acme.json
         run: |
-          chmod 600 ./traefik/acme.json-
+          chmod 600 ./traefik/acme.json
       - name: Add Permission To init-db.sh
         run: |
           chmod +x ./init-db.sh
