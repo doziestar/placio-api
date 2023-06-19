@@ -42,7 +42,7 @@ services:
       - "4242:4242"
     environment:
       # This points Unleash to its backing database (defined in the `db` section below)
-      DATABASE_URL: "postgres://dozie:918273645dozie@postgres-db:5432/postgres"
+      DATABASE_URL: "postgres://dozie:918273645dozie@postgres-db/postgres"
       DATABASE_SSL: "false"
       LOG_LEVEL: "warn"
       # Proxy clients must use one of these keys to connect to the
@@ -52,15 +52,10 @@ services:
       # initialize Unleash with multiple tokens, separate them with a
       # comma (`token1,token2`).
       INIT_CLIENT_API_TOKENS: "default:development.unleash-insecure-api-token"
-    depends_on:
-      db:
-        condition: service_healthy
+    #    depends_on:
+    #      db:
+    #        condition: service_healthy
     command: [ "node", "index.js" ]
-    healthcheck:
-      test: wget --no-verbose --tries=1 --spider http://localhost:4242/health || exit 1
-      interval: 1s
-      timeout: 1m
-      retries: 5
     labels:
       - traefik.enable=true
       - traefik.docker.network=default
