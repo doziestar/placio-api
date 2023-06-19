@@ -36,93 +36,18 @@ services:
       # - 'traefik.http.routers.traefik-secure.middlewares=user-auth@file'
       - "traefik.http.routers.traefik-secure.service=api@internal"
 
-  unleash:
-    image: unleashorg/unleash-server:latest
-    ports:
-      - "4242:4242"
-    environment:
-      # This points Unleash to its backing database (defined in the `db` section below)
-      DATABASE_URL: "postgres://dozie:918273645dozie@unleash-db/postgres"
-      DATABASE_SSL: "false"
-      LOG_LEVEL: "warn"
-      # Proxy clients must use one of these keys to connect to the
-      # Proxy. To add more keys, separate them with a comma (`key1,key2`).
-      INIT_FRONTEND_API_TOKENS: "default:development.unleash-insecure-frontend-api-token"
-      # Initialize Unleash with a default set of client API tokens. To
-      # initialize Unleash with multiple tokens, separate them with a
-      # comma (`token1,token2`).
-      INIT_CLIENT_API_TOKENS: "default:development.unleash-insecure-api-token"
-#    depends_on:
-#      unleash-db:
-#        condition: service_healthy
-    command: [ "node", "index.js" ]
-    healthcheck:
-      test: wget --no-verbose --tries=1 --spider http://localhost:4242/health || exit 1
-      interval: 1s
-      timeout: 1m
-      retries: 5
-#      start_period: 15s
-    labels:
-      - traefik.enable=true
-      - traefik.docker.network=default
-      - "traefik.http.routers.unleash-secure.entrypoints=websecure"
-      - "traefik.http.routers.unleash-secure.rule=Host(`feat.palnight.com`)"
-      - "traefik.http.routers.unleash-secure.service=unleash"
-      - traefik.http.services.unleash.loadbalancer.server.port=4242
-  unleash-db:
+  db:
     image: postgres:14
-    container_name: unleash-postgres-db
+    container_name: postgres-db
     volumes:
-      - db_data2:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql/pg-data/pgdata
     env_file:
       - ./.envs/.stag
+    networks:
+      - default
+#    restart: always
     ports:
-      - "5434:5432"
-    environment:
-      POSTGRES_DB: "db"
-      POSTGRES_USER: "dozie"
-      POSTGRES_PASSWORD: "918273645dozie"
-      POSTGRES_HOST_AUTH_METHOD: "trust"
-#    healthcheck:
-#      test:
-#        [
-#          "CMD",
-#          "pg_isready",
-#          "--username=dozie",
-#          "--host=127.0.0.1",
-#          "--port=5434"
-#        ]
-#      interval: 2s
-#      timeout: 1m
-#      retries: 5
-
-
-  placio-db:
-    image: postgres:14
-    container_name: placio-postgres-db
-    volumes:
-      - db_data:/var/lib/postgresql/data
-    env_file:
-      - ./.envs/.stag
-    ports:
-      - "5433:5432"
-    environment:
-      POSTGRES_DB: "placio"
-      POSTGRES_USER: "dozie"
-      POSTGRES_PASSWORD: "918273645dozie"
-#      POSTGRES_HOST_AUTH_METHOD: "trust"
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "pg_isready",
-          "--username=dozie",
-          "--host=127.0.0.1",
-          "--port=5433"
-        ]
-      interval: 2s
-      timeout: 1m
-      retries: 5
+      - "5432:5432"
 
   placio-backend:
     ports:
