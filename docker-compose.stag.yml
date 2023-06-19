@@ -53,7 +53,7 @@ services:
       # comma (`token1,token2`).
       INIT_CLIENT_API_TOKENS: "default:development.unleash-insecure-api-token"
     depends_on:
-      db:
+      unleash-db:
         condition: service_healthy
     command: [ "node", "index.js" ]
     healthcheck:
