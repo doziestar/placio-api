@@ -18,7 +18,7 @@ RUN go mod download
 COPY ./cmd/app/ ./cmd/app
 
 # Build the application
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o app ./cmd/app/
+RUN CGO_ENABLED=0 GOOS=linux go build -v -a -installsuffix cgo -o app ./cmd/app/
 
 # Stage 2: Create the runtime image
 FROM alpine:3.15
