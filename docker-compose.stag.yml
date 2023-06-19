@@ -42,7 +42,7 @@ services:
       - "4242:4242"
     environment:
       # This points Unleash to its backing database (defined in the `db` section below)
-      DATABASE_URL: "postgres://postgres:unleash@db/postgres"
+      DATABASE_URL: "postgres://dozie:918273645dozie@postgres-db:5432/postgres"
       DATABASE_SSL: "false"
       LOG_LEVEL: "warn"
       # Proxy clients must use one of these keys to connect to the
