@@ -36,6 +36,40 @@ services:
       # - 'traefik.http.routers.traefik-secure.middlewares=user-auth@file'
       - "traefik.http.routers.traefik-secure.service=api@internal"
 
+  unleash:
+    image: unleashorg/unleash-server:latest
+    ports:
+      - "4242:4242"
+    environment:
+      # This points Unleash to its backing database (defined in the `db` section below)
+      DATABASE_URL: "postgres://postgres:unleash@db/postgres"
+      DATABASE_SSL: "false"
+      LOG_LEVEL: "warn"
+      # Proxy clients must use one of these keys to connect to the
+      # Proxy. To add more keys, separate them with a comma (`key1,key2`).
+      INIT_FRONTEND_API_TOKENS: "default:development.unleash-insecure-frontend-api-token"
+      # Initialize Unleash with a default set of client API tokens. To
+      # initialize Unleash with multiple tokens, separate them with a
+      # comma (`token1,token2`).
+      INIT_CLIENT_API_TOKENS: "default:development.unleash-insecure-api-token"
+    depends_on:
+      db:
+        condition: service_healthy
+    command: [ "node", "index.js" ]
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:4242/health || exit 1
+      interval: 1s
+      timeout: 1m
+      retries: 5
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=default
+      - "traefik.http.routers.unleash-secure.entrypoints=websecure"
+      - "traefik.http.routers.unleash-secure.rule=Host(`feat.palnight.com`)"
+      - "traefik.http.routers.unleash-secure.service=unleash"
+      - traefik.http.services.unleash.loadbalancer.server.port=4242
+
+
   db:
     image: postgres:14
     container_name: postgres-db
@@ -48,6 +82,23 @@ services:
 #    restart: always
     ports:
       - "5432:5432"
+    environment:
+      # create a database called `db`
+      POSTGRES_DB: "db"
+      # trust incoming connections blindly (DON'T DO THIS IN PRODUCTION!)
+      POSTGRES_HOST_AUTH_METHOD: "trust"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "pg_isready",
+          "--username=postgres",
+          "--host=127.0.0.1",
+          "--port=5432"
+        ]
+      interval: 2s
+      timeout: 1m
+      retries: 5
 
   placio-backend:
     ports:
