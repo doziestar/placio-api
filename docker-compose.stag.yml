@@ -42,7 +42,7 @@ services:
       - "4242:4242"
     environment:
       # This points Unleash to its backing database (defined in the `db` section below)
-      DATABASE_URL: "postgres://dozie:918273645dozie@db/postgres"
+      DATABASE_URL: "postgres://dozie:918273645dozie@unleash-db/postgres"
       DATABASE_SSL: "false"
       LOG_LEVEL: "warn"
       # Proxy clients must use one of these keys to connect to the
@@ -69,25 +69,47 @@ services:
       - "traefik.http.routers.unleash-secure.rule=Host(`feat.palnight.com`)"
       - "traefik.http.routers.unleash-secure.service=unleash"
       - traefik.http.services.unleash.loadbalancer.server.port=4242
-
-
-  db:
+  unleash-db:
     image: postgres:14
-    container_name: postgres-db
+    container_name: unleash-postgres-db
     volumes:
-      - db_data:/var/lib/postgresql/pg-data/pgdata
-      - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
+      - db_data:/var/lib/postgresql/data
     env_file:
       - ./.envs/.stag
-    networks:
-      - default
-#    restart: always
     ports:
       - "5432:5432"
-#    environment:
-      # create a database called `db`
-#      POSTGRES_DB: "db"
-      # trust incoming connections blindly (DON'T DO THIS IN PRODUCTION!)
+    environment:
+      POSTGRES_DB: "unleash"
+      POSTGRES_USER: "dozie"
+      POSTGRES_PASSWORD: "918273645dozie"
+      POSTGRES_HOST_AUTH_METHOD: "trust"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "pg_isready",
+          "--username=dozie",
+          "--host=127.0.0.1",
+          "--port=5432"
+        ]
+      interval: 2s
+      timeout: 1m
+      retries: 5
+
+
+  placio-db:
+    image: postgres:14
+    container_name: placio-postgres-db
+    volumes:
+      - db_data2:/var/lib/postgresql/data
+    env_file:
+      - ./.envs/.stag
+    ports:
+      - "5433:5433"
+    environment:
+      POSTGRES_DB: "placio"
+      POSTGRES_USER: "dozie"
+      POSTGRES_PASSWORD: "918273645dozie"
 #      POSTGRES_HOST_AUTH_METHOD: "trust"
     healthcheck:
       test:
@@ -95,15 +117,12 @@ services:
           "CMD",
           "pg_isready",
           "--username=dozie",
-          "--password=918273645dozie",
-          "--dbname=db",
           "--host=127.0.0.1",
-          "--port=5432"
+          "--port=5433"
         ]
       interval: 2s
       timeout: 1m
       retries: 5
-#      start_period: 10s
 
   placio-backend:
     ports:
