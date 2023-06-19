@@ -50,6 +50,8 @@ const (
 	EdgeBookings = "bookings"
 	// EdgeReservations holds the string denoting the reservations edge name in mutations.
 	EdgeReservations = "reservations"
+	// EdgeHelps holds the string denoting the helps edge name in mutations.
+	EdgeHelps = "helps"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// UserBusinessesTable is the table that holds the userBusinesses relation/edge.
@@ -129,6 +131,13 @@ const (
 	ReservationsInverseTable = "reservations"
 	// ReservationsColumn is the table column denoting the reservations relation/edge.
 	ReservationsColumn = "user_reservations"
+	// HelpsTable is the table that holds the helps relation/edge.
+	HelpsTable = "helps"
+	// HelpsInverseTable is the table name for the Help entity.
+	// It exists in this package in order to avoid circular dependency with the "help" package.
+	HelpsInverseTable = "helps"
+	// HelpsColumn is the table column denoting the helps relation/edge.
+	HelpsColumn = "user_id"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -347,6 +356,20 @@ func ByReservations(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newReservationsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByHelpsCount orders the results by helps count.
+func ByHelpsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newHelpsStep(), opts...)
+	}
+}
+
+// ByHelps orders the results by helps terms.
+func ByHelps(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newHelpsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newUserBusinessesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -422,5 +445,12 @@ func newReservationsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(ReservationsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, ReservationsTable, ReservationsColumn),
+	)
+}
+func newHelpsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(HelpsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, HelpsTable, HelpsColumn),
 	)
 }

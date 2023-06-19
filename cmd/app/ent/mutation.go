@@ -14,6 +14,7 @@ import (
 	"placio-app/ent/businessfollowuser"
 	"placio-app/ent/comment"
 	"placio-app/ent/event"
+	"placio-app/ent/help"
 	"placio-app/ent/like"
 	"placio-app/ent/media"
 	"placio-app/ent/menu"
@@ -55,6 +56,7 @@ const (
 	TypeChat                   = "Chat"
 	TypeComment                = "Comment"
 	TypeEvent                  = "Event"
+	TypeHelp                   = "Help"
 	TypeLike                   = "Like"
 	TypeMedia                  = "Media"
 	TypeMenu                   = "Menu"
@@ -4919,6 +4921,683 @@ func (m *EventMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown Event edge %s", name)
+}
+
+// HelpMutation represents an operation that mutates the Help nodes in the graph.
+type HelpMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *string
+	category      *string
+	subject       *string
+	body          *string
+	media         *string
+	status        *string
+	clearedFields map[string]struct{}
+	user          *string
+	cleareduser   bool
+	done          bool
+	oldValue      func(context.Context) (*Help, error)
+	predicates    []predicate.Help
+}
+
+var _ ent.Mutation = (*HelpMutation)(nil)
+
+// helpOption allows management of the mutation configuration using functional options.
+type helpOption func(*HelpMutation)
+
+// newHelpMutation creates new mutation for the Help entity.
+func newHelpMutation(c config, op Op, opts ...helpOption) *HelpMutation {
+	m := &HelpMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeHelp,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withHelpID sets the ID field of the mutation.
+func withHelpID(id string) helpOption {
+	return func(m *HelpMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Help
+		)
+		m.oldValue = func(ctx context.Context) (*Help, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Help.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withHelp sets the old Help of the mutation.
+func withHelp(node *Help) helpOption {
+	return func(m *HelpMutation) {
+		m.oldValue = func(context.Context) (*Help, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m HelpMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m HelpMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Help entities.
+func (m *HelpMutation) SetID(id string) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *HelpMutation) ID() (id string, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *HelpMutation) IDs(ctx context.Context) ([]string, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []string{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Help.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCategory sets the "category" field.
+func (m *HelpMutation) SetCategory(s string) {
+	m.category = &s
+}
+
+// Category returns the value of the "category" field in the mutation.
+func (m *HelpMutation) Category() (r string, exists bool) {
+	v := m.category
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCategory returns the old "category" field's value of the Help entity.
+// If the Help object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *HelpMutation) OldCategory(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCategory is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCategory requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCategory: %w", err)
+	}
+	return oldValue.Category, nil
+}
+
+// ResetCategory resets all changes to the "category" field.
+func (m *HelpMutation) ResetCategory() {
+	m.category = nil
+}
+
+// SetSubject sets the "subject" field.
+func (m *HelpMutation) SetSubject(s string) {
+	m.subject = &s
+}
+
+// Subject returns the value of the "subject" field in the mutation.
+func (m *HelpMutation) Subject() (r string, exists bool) {
+	v := m.subject
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSubject returns the old "subject" field's value of the Help entity.
+// If the Help object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *HelpMutation) OldSubject(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSubject is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSubject requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSubject: %w", err)
+	}
+	return oldValue.Subject, nil
+}
+
+// ResetSubject resets all changes to the "subject" field.
+func (m *HelpMutation) ResetSubject() {
+	m.subject = nil
+}
+
+// SetBody sets the "body" field.
+func (m *HelpMutation) SetBody(s string) {
+	m.body = &s
+}
+
+// Body returns the value of the "body" field in the mutation.
+func (m *HelpMutation) Body() (r string, exists bool) {
+	v := m.body
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBody returns the old "body" field's value of the Help entity.
+// If the Help object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *HelpMutation) OldBody(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBody is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBody requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBody: %w", err)
+	}
+	return oldValue.Body, nil
+}
+
+// ResetBody resets all changes to the "body" field.
+func (m *HelpMutation) ResetBody() {
+	m.body = nil
+}
+
+// SetMedia sets the "media" field.
+func (m *HelpMutation) SetMedia(s string) {
+	m.media = &s
+}
+
+// Media returns the value of the "media" field in the mutation.
+func (m *HelpMutation) Media() (r string, exists bool) {
+	v := m.media
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMedia returns the old "media" field's value of the Help entity.
+// If the Help object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *HelpMutation) OldMedia(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMedia is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMedia requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMedia: %w", err)
+	}
+	return oldValue.Media, nil
+}
+
+// ClearMedia clears the value of the "media" field.
+func (m *HelpMutation) ClearMedia() {
+	m.media = nil
+	m.clearedFields[help.FieldMedia] = struct{}{}
+}
+
+// MediaCleared returns if the "media" field was cleared in this mutation.
+func (m *HelpMutation) MediaCleared() bool {
+	_, ok := m.clearedFields[help.FieldMedia]
+	return ok
+}
+
+// ResetMedia resets all changes to the "media" field.
+func (m *HelpMutation) ResetMedia() {
+	m.media = nil
+	delete(m.clearedFields, help.FieldMedia)
+}
+
+// SetStatus sets the "status" field.
+func (m *HelpMutation) SetStatus(s string) {
+	m.status = &s
+}
+
+// Status returns the value of the "status" field in the mutation.
+func (m *HelpMutation) Status() (r string, exists bool) {
+	v := m.status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatus returns the old "status" field's value of the Help entity.
+// If the Help object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *HelpMutation) OldStatus(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
+	}
+	return oldValue.Status, nil
+}
+
+// ResetStatus resets all changes to the "status" field.
+func (m *HelpMutation) ResetStatus() {
+	m.status = nil
+}
+
+// SetUserID sets the "user_id" field.
+func (m *HelpMutation) SetUserID(s string) {
+	m.user = &s
+}
+
+// UserID returns the value of the "user_id" field in the mutation.
+func (m *HelpMutation) UserID() (r string, exists bool) {
+	v := m.user
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserID returns the old "user_id" field's value of the Help entity.
+// If the Help object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *HelpMutation) OldUserID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
+	}
+	return oldValue.UserID, nil
+}
+
+// ResetUserID resets all changes to the "user_id" field.
+func (m *HelpMutation) ResetUserID() {
+	m.user = nil
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (m *HelpMutation) ClearUser() {
+	m.cleareduser = true
+}
+
+// UserCleared reports if the "user" edge to the User entity was cleared.
+func (m *HelpMutation) UserCleared() bool {
+	return m.cleareduser
+}
+
+// UserIDs returns the "user" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// UserID instead. It exists only for internal usage by the builders.
+func (m *HelpMutation) UserIDs() (ids []string) {
+	if id := m.user; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetUser resets all changes to the "user" edge.
+func (m *HelpMutation) ResetUser() {
+	m.user = nil
+	m.cleareduser = false
+}
+
+// Where appends a list predicates to the HelpMutation builder.
+func (m *HelpMutation) Where(ps ...predicate.Help) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the HelpMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *HelpMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Help, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *HelpMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *HelpMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (Help).
+func (m *HelpMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *HelpMutation) Fields() []string {
+	fields := make([]string, 0, 6)
+	if m.category != nil {
+		fields = append(fields, help.FieldCategory)
+	}
+	if m.subject != nil {
+		fields = append(fields, help.FieldSubject)
+	}
+	if m.body != nil {
+		fields = append(fields, help.FieldBody)
+	}
+	if m.media != nil {
+		fields = append(fields, help.FieldMedia)
+	}
+	if m.status != nil {
+		fields = append(fields, help.FieldStatus)
+	}
+	if m.user != nil {
+		fields = append(fields, help.FieldUserID)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *HelpMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case help.FieldCategory:
+		return m.Category()
+	case help.FieldSubject:
+		return m.Subject()
+	case help.FieldBody:
+		return m.Body()
+	case help.FieldMedia:
+		return m.Media()
+	case help.FieldStatus:
+		return m.Status()
+	case help.FieldUserID:
+		return m.UserID()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *HelpMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case help.FieldCategory:
+		return m.OldCategory(ctx)
+	case help.FieldSubject:
+		return m.OldSubject(ctx)
+	case help.FieldBody:
+		return m.OldBody(ctx)
+	case help.FieldMedia:
+		return m.OldMedia(ctx)
+	case help.FieldStatus:
+		return m.OldStatus(ctx)
+	case help.FieldUserID:
+		return m.OldUserID(ctx)
+	}
+	return nil, fmt.Errorf("unknown Help field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *HelpMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case help.FieldCategory:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCategory(v)
+		return nil
+	case help.FieldSubject:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSubject(v)
+		return nil
+	case help.FieldBody:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBody(v)
+		return nil
+	case help.FieldMedia:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMedia(v)
+		return nil
+	case help.FieldStatus:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatus(v)
+		return nil
+	case help.FieldUserID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Help field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *HelpMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *HelpMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *HelpMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Help numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *HelpMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(help.FieldMedia) {
+		fields = append(fields, help.FieldMedia)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *HelpMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *HelpMutation) ClearField(name string) error {
+	switch name {
+	case help.FieldMedia:
+		m.ClearMedia()
+		return nil
+	}
+	return fmt.Errorf("unknown Help nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *HelpMutation) ResetField(name string) error {
+	switch name {
+	case help.FieldCategory:
+		m.ResetCategory()
+		return nil
+	case help.FieldSubject:
+		m.ResetSubject()
+		return nil
+	case help.FieldBody:
+		m.ResetBody()
+		return nil
+	case help.FieldMedia:
+		m.ResetMedia()
+		return nil
+	case help.FieldStatus:
+		m.ResetStatus()
+		return nil
+	case help.FieldUserID:
+		m.ResetUserID()
+		return nil
+	}
+	return fmt.Errorf("unknown Help field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *HelpMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.user != nil {
+		edges = append(edges, help.EdgeUser)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *HelpMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case help.EdgeUser:
+		if id := m.user; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *HelpMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *HelpMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *HelpMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.cleareduser {
+		edges = append(edges, help.EdgeUser)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *HelpMutation) EdgeCleared(name string) bool {
+	switch name {
+	case help.EdgeUser:
+		return m.cleareduser
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *HelpMutation) ClearEdge(name string) error {
+	switch name {
+	case help.EdgeUser:
+		m.ClearUser()
+		return nil
+	}
+	return fmt.Errorf("unknown Help unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *HelpMutation) ResetEdge(name string) error {
+	switch name {
+	case help.EdgeUser:
+		m.ResetUser()
+		return nil
+	}
+	return fmt.Errorf("unknown Help edge %s", name)
 }
 
 // LikeMutation represents an operation that mutates the Like nodes in the graph.
@@ -13010,6 +13689,9 @@ type UserMutation struct {
 	reservations              map[string]struct{}
 	removedreservations       map[string]struct{}
 	clearedreservations       bool
+	helps                     map[string]struct{}
+	removedhelps              map[string]struct{}
+	clearedhelps              bool
 	done                      bool
 	oldValue                  func(context.Context) (*User, error)
 	predicates                []predicate.User
@@ -14079,6 +14761,60 @@ func (m *UserMutation) ResetReservations() {
 	m.removedreservations = nil
 }
 
+// AddHelpIDs adds the "helps" edge to the Help entity by ids.
+func (m *UserMutation) AddHelpIDs(ids ...string) {
+	if m.helps == nil {
+		m.helps = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.helps[ids[i]] = struct{}{}
+	}
+}
+
+// ClearHelps clears the "helps" edge to the Help entity.
+func (m *UserMutation) ClearHelps() {
+	m.clearedhelps = true
+}
+
+// HelpsCleared reports if the "helps" edge to the Help entity was cleared.
+func (m *UserMutation) HelpsCleared() bool {
+	return m.clearedhelps
+}
+
+// RemoveHelpIDs removes the "helps" edge to the Help entity by IDs.
+func (m *UserMutation) RemoveHelpIDs(ids ...string) {
+	if m.removedhelps == nil {
+		m.removedhelps = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.helps, ids[i])
+		m.removedhelps[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedHelps returns the removed IDs of the "helps" edge to the Help entity.
+func (m *UserMutation) RemovedHelpsIDs() (ids []string) {
+	for id := range m.removedhelps {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// HelpsIDs returns the "helps" edge IDs in the mutation.
+func (m *UserMutation) HelpsIDs() (ids []string) {
+	for id := range m.helps {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetHelps resets all changes to the "helps" edge.
+func (m *UserMutation) ResetHelps() {
+	m.helps = nil
+	m.clearedhelps = false
+	m.removedhelps = nil
+}
+
 // Where appends a list predicates to the UserMutation builder.
 func (m *UserMutation) Where(ps ...predicate.User) {
 	m.predicates = append(m.predicates, ps...)
@@ -14370,7 +15106,7 @@ func (m *UserMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserMutation) AddedEdges() []string {
-	edges := make([]string, 0, 11)
+	edges := make([]string, 0, 12)
 	if m.userBusinesses != nil {
 		edges = append(edges, user.EdgeUserBusinesses)
 	}
@@ -14403,6 +15139,9 @@ func (m *UserMutation) AddedEdges() []string {
 	}
 	if m.reservations != nil {
 		edges = append(edges, user.EdgeReservations)
+	}
+	if m.helps != nil {
+		edges = append(edges, user.EdgeHelps)
 	}
 	return edges
 }
@@ -14477,13 +15216,19 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeHelps:
+		ids := make([]ent.Value, 0, len(m.helps))
+		for id := range m.helps {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 11)
+	edges := make([]string, 0, 12)
 	if m.removeduserBusinesses != nil {
 		edges = append(edges, user.EdgeUserBusinesses)
 	}
@@ -14516,6 +15261,9 @@ func (m *UserMutation) RemovedEdges() []string {
 	}
 	if m.removedreservations != nil {
 		edges = append(edges, user.EdgeReservations)
+	}
+	if m.removedhelps != nil {
+		edges = append(edges, user.EdgeHelps)
 	}
 	return edges
 }
@@ -14590,13 +15338,19 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeHelps:
+		ids := make([]ent.Value, 0, len(m.removedhelps))
+		for id := range m.removedhelps {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 11)
+	edges := make([]string, 0, 12)
 	if m.cleareduserBusinesses {
 		edges = append(edges, user.EdgeUserBusinesses)
 	}
@@ -14630,6 +15384,9 @@ func (m *UserMutation) ClearedEdges() []string {
 	if m.clearedreservations {
 		edges = append(edges, user.EdgeReservations)
 	}
+	if m.clearedhelps {
+		edges = append(edges, user.EdgeHelps)
+	}
 	return edges
 }
 
@@ -14659,6 +15416,8 @@ func (m *UserMutation) EdgeCleared(name string) bool {
 		return m.clearedbookings
 	case user.EdgeReservations:
 		return m.clearedreservations
+	case user.EdgeHelps:
+		return m.clearedhelps
 	}
 	return false
 }
@@ -14707,6 +15466,9 @@ func (m *UserMutation) ResetEdge(name string) error {
 		return nil
 	case user.EdgeReservations:
 		m.ResetReservations()
+		return nil
+	case user.EdgeHelps:
+		m.ResetHelps()
 		return nil
 	}
 	return fmt.Errorf("unknown User edge %s", name)

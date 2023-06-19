@@ -30,6 +30,8 @@ type Tx struct {
 	Comment *CommentClient
 	// Event is the client for interacting with the Event builders.
 	Event *EventClient
+	// Help is the client for interacting with the Help builders.
+	Help *HelpClient
 	// Like is the client for interacting with the Like builders.
 	Like *LikeClient
 	// Media is the client for interacting with the Media builders.
@@ -206,6 +208,7 @@ func (tx *Tx) init() {
 	tx.Chat = NewChatClient(tx.config)
 	tx.Comment = NewCommentClient(tx.config)
 	tx.Event = NewEventClient(tx.config)
+	tx.Help = NewHelpClient(tx.config)
 	tx.Like = NewLikeClient(tx.config)
 	tx.Media = NewMediaClient(tx.config)
 	tx.Menu = NewMenuClient(tx.config)

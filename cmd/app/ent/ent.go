@@ -15,6 +15,7 @@ import (
 	"placio-app/ent/chat"
 	"placio-app/ent/comment"
 	"placio-app/ent/event"
+	"placio-app/ent/help"
 	"placio-app/ent/like"
 	"placio-app/ent/media"
 	"placio-app/ent/menu"
@@ -108,6 +109,7 @@ func checkColumn(table, column string) error {
 			chat.Table:                   chat.ValidColumn,
 			comment.Table:                comment.ValidColumn,
 			event.Table:                  event.ValidColumn,
+			help.Table:                   help.ValidColumn,
 			like.Table:                   like.ValidColumn,
 			media.Table:                  media.ValidColumn,
 			menu.Table:                   menu.ValidColumn,

@@ -9,6 +9,7 @@ import (
 	"placio-app/ent/business"
 	"placio-app/ent/comment"
 	"placio-app/ent/event"
+	"placio-app/ent/help"
 	"placio-app/ent/like"
 	"placio-app/ent/media"
 	"placio-app/ent/menu"
@@ -87,6 +88,16 @@ func init() {
 	event.DefaultUpdatedAt = eventDescUpdatedAt.Default.(func() time.Time)
 	// event.UpdateDefaultUpdatedAt holds the default value on update for the updatedAt field.
 	event.UpdateDefaultUpdatedAt = eventDescUpdatedAt.UpdateDefault.(func() time.Time)
+	helpFields := schema.Help{}.Fields()
+	_ = helpFields
+	// helpDescStatus is the schema descriptor for status field.
+	helpDescStatus := helpFields[5].Descriptor()
+	// help.DefaultStatus holds the default value on creation for the status field.
+	help.DefaultStatus = helpDescStatus.Default.(string)
+	// helpDescUserID is the schema descriptor for user_id field.
+	helpDescUserID := helpFields[6].Descriptor()
+	// help.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
+	help.UserIDValidator = helpDescUserID.Validators[0].(func(string) error)
 	likeFields := schema.Like{}.Fields()
 	_ = likeFields
 	// likeDescCreatedAt is the schema descriptor for CreatedAt field.
