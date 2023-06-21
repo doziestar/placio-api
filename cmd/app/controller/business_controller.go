@@ -97,7 +97,7 @@ func (bc *BusinessAccountController) followBusiness(c *gin.Context) {
 // @Failure 400 {object} Dto.Error
 // @Failure 401 {object} Dto.Error
 // @Failure 500 {object} Dto.ErrorDto
-// @Router /{businessID}/unfollow/user/{userID} [delete]
+// @Router /business/{businessID}/unfollow/user/{userID} [delete]
 func (bc *BusinessAccountController) unfollowUser(c *gin.Context) {
 	businessID := c.Param("businessID")
 	userID := c.Param("userID")
@@ -119,7 +119,7 @@ func (bc *BusinessAccountController) unfollowUser(c *gin.Context) {
 // @Failure 400 {object} Dto.Error
 // @Failure 401 {object} Dto.Error
 // @Failure 500 {object} Dto.ErrorDto
-// @Router /{followerID}/unfollow/business/{followedID} [delete]
+// @Router /business/{followerID}/unfollow/business/{followedID} [delete]
 func (bc *BusinessAccountController) unfollowBusiness(c *gin.Context) {
 	followerID := c.Param("followerID")
 	followedID := c.Param("followedID")
@@ -140,7 +140,7 @@ func (bc *BusinessAccountController) unfollowBusiness(c *gin.Context) {
 // @Failure 400 {object} Dto.Error
 // @Failure 401 {object} Dto.Error
 // @Failure 500 {object} Dto.ErrorDto
-// @Router /{businessID}/followed-contents [get]
+// @Router /business/{businessID}/followed-contents [get]
 func (bc *BusinessAccountController) getFollowedContents(c *gin.Context) {
 	businessID := c.Param("businessID")
 	posts, err := bc.service.GetFollowedContents(c, businessID)
@@ -161,7 +161,7 @@ func (bc *BusinessAccountController) getFollowedContents(c *gin.Context) {
 // @Failure 400 {object} Dto.Error
 // @Failure 401 {object} Dto.Error
 // @Failure 500 {object} Dto.ErrorDto
-// @Router / [post]
+// @Router /business/ [post]
 func (bc *BusinessAccountController) createBusinessAccount(c *gin.Context) {
 	var businessData Dto.BusinessDto
 	if err := c.ShouldBindJSON(&businessData); err != nil {
@@ -185,7 +185,7 @@ func (bc *BusinessAccountController) createBusinessAccount(c *gin.Context) {
 // @Failure 400 {object} Dto.Error
 // @Failure 401 {object} Dto.Error
 // @Failure 500 {object} Dto.ErrorDto
-// @Router /{businessAccountID} [get]
+// @Router /business/{businessAccountID} [get]
 func (bc *BusinessAccountController) getBusinessAccount(c *gin.Context) {
 	businessAccountID := c.Param("businessAccountID")
 	business, err := bc.service.GetBusinessAccount(c, businessAccountID)
@@ -207,7 +207,7 @@ func (bc *BusinessAccountController) getBusinessAccount(c *gin.Context) {
 // @Failure 400 {object} Dto.Error
 // @Failure 401 {object} Dto.Error
 // @Failure 500 {object} Dto.ErrorDto
-// @Router /{businessAccountID} [put]
+// @Router /business/{businessAccountID} [put]
 func (bc *BusinessAccountController) updateBusinessAccount(c *gin.Context) {
 	//businessAccountID := c.Param("businessAccountID")
 	//var businessData Dto.BusinessDto
@@ -233,7 +233,7 @@ func (bc *BusinessAccountController) updateBusinessAccount(c *gin.Context) {
 // @Failure 400 {object} Dto.Error
 // @Failure 401 {object} Dto.Error
 // @Failure 500 {object} Dto.ErrorDto
-// @Router /{businessAccountID} [delete]
+// @Router /business/{businessAccountID} [delete]
 func (bc *BusinessAccountController) deleteBusinessAccount(c *gin.Context) {
 	//businessAccountID := c.Param("businessAccountID")
 	//err := bc.service.DeleteBusinessAccount(c, businessAccountID)
@@ -253,7 +253,7 @@ func (bc *BusinessAccountController) deleteBusinessAccount(c *gin.Context) {
 // @Failure 400 {object} Dto.Error
 // @Failure 401 {object} Dto.Error
 // @Failure 500 {object} Dto.ErrorDto
-// @Router /user/{userID} [get]
+// @Router /business/user/{userID} [get]
 func (bc *BusinessAccountController) getUserBusinessAccounts(c *gin.Context) {
 	// Implementation...
 }
@@ -268,7 +268,7 @@ func (bc *BusinessAccountController) getUserBusinessAccounts(c *gin.Context) {
 // @Failure 400 {object} Dto.Error
 // @Failure 401 {object} Dto.Error
 // @Failure 500 {object} Dto.ErrorDto
-// @Router /{businessAccountID}/user/{userID} [post]
+// @Router /business/{businessAccountID}/user/{userID} [post]
 func (bc *BusinessAccountController) associateUserWithBusinessAccount(c *gin.Context) {
 	// Implementation...
 }
@@ -283,7 +283,7 @@ func (bc *BusinessAccountController) associateUserWithBusinessAccount(c *gin.Con
 // @Failure 400 {object} Dto.Error
 // @Failure 401 {object} Dto.Error
 // @Failure 500 {object} Dto.ErrorDto
-// @Router /{businessAccountID}/user/{userID} [delete]
+// @Router /business/{businessAccountID}/user/{userID} [delete]
 func (bc *BusinessAccountController) removeUserFromBusinessAccount(c *gin.Context) {
 	// Implementation...
 }
@@ -299,7 +299,7 @@ func (bc *BusinessAccountController) removeUserFromBusinessAccount(c *gin.Contex
 // @Failure 400 {object} Dto.Error
 // @Failure 401 {object} Dto.Error
 // @Failure 500 {object} Dto.ErrorDto
-// @Router /{businessAccountID}/user/{currentOwnerID}/{newOwnerID} [put]
+// @Router /business/{businessAccountID}/user/{currentOwnerID}/{newOwnerID} [put]
 func (bc *BusinessAccountController) transferBusinessAccountOwnership(c *gin.Context) {
 	// Implementation...
 }
@@ -313,7 +313,7 @@ func (bc *BusinessAccountController) transferBusinessAccountOwnership(c *gin.Con
 // @Failure 400 {object} Dto.Error
 // @Failure 401 {object} Dto.Error
 // @Failure 500 {object} Dto.ErrorDto
-// @Router /{businessAccountID}/users [get]
+// @Router /business/{businessAccountID}/users [get]
 func (bc *BusinessAccountController) getBusinessAccountsForUser(c *gin.Context) {
 	// Implementation...
 }
@@ -327,7 +327,7 @@ func (bc *BusinessAccountController) getBusinessAccountsForUser(c *gin.Context) 
 // @Failure 400 {object} Dto.Error
 // @Failure 401 {object} Dto.Error
 // @Failure 500 {object} Dto.ErrorDto
-// @Router /{businessAccountID}/users [get]
+// @Router /business/{businessAccountID}/users [get]
 func (bc *BusinessAccountController) getUsersForBusinessAccount(c *gin.Context) {
 	// Implementation...
 }
@@ -340,7 +340,7 @@ func (bc *BusinessAccountController) getUsersForBusinessAccount(c *gin.Context) 
 // @Failure 400 {object} Dto.Error
 // @Failure 401 {object} Dto.Error
 // @Failure 500 {object} Dto.ErrorDto
-// @Router / [get]
+// @Router /business/ [get]
 func (bc *BusinessAccountController) listBusinessAccounts(c *gin.Context) {
 	// Implementation...
 }
