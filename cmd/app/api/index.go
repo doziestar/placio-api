@@ -72,8 +72,8 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 
 	// business
 	businessService := service.NewBusinessAccountService(client)
-	businessController := controller.NewBusinessAccountController(businessService)
-	businessController.RegisterRoutes(routerGroupV1)
+	_ = controller.NewBusinessAccountController(businessService)
+	//businessController.RegisterRoutes(routerGroupV1)
 
 	// media
 	mediaService := service.NewMediaService(client)
