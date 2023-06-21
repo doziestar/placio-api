@@ -4519,18 +4519,18 @@ paths:
       summary: Unfollow a user by a business
       tags:
         - Business
-  /business/{followerID}/follow/business/{followedID}:
+  /business/{followerBusinessID}/follow/business/{followedBusinessID}:
     post:
       operationId: follow-business
       parameters:
         - description: Follower Business ID
           in: path
-          name: followerID
+          name: followerBusinessID
           required: true
           type: string
         - description: Followed Business ID
           in: path
-          name: followedID
+          name: followedBusinessID
           required: true
           type: string
       produces:
@@ -4555,18 +4555,18 @@ paths:
       summary: Follow a business by another business
       tags:
         - Business
-  /business/{followerID}/unfollow/business/{followedID}:
+  /business/{followerBusinessID}/unfollow/business/{followedBusinessID}:
     delete:
       operationId: unfollow-business
       parameters:
         - description: Follower Business ID
           in: path
-          name: followerID
+          name: followerBusinessID
           required: true
           type: string
         - description: Followed Business ID
           in: path
-          name: followedID
+          name: followedBusinessID
           required: true
           type: string
       produces:

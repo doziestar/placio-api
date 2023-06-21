@@ -4593,7 +4593,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/business/{followerID}/follow/business/{followedID}": {
+        "/business/{followerBusinessID}/follow/business/{followedBusinessID}": {
             "post": {
                 "produces": [
                     "application/json"
@@ -4607,14 +4607,14 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Follower Business ID",
-                        "name": "followerID",
+                        "name": "followerBusinessID",
                         "in": "path",
                         "required": true
                     },
                     {
                         "type": "string",
                         "description": "Followed Business ID",
-                        "name": "followedID",
+                        "name": "followedBusinessID",
                         "in": "path",
                         "required": true
                     }
@@ -4647,7 +4647,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/business/{followerID}/unfollow/business/{followedID}": {
+        "/business/{followerBusinessID}/unfollow/business/{followedBusinessID}": {
             "delete": {
                 "produces": [
                     "application/json"
@@ -4661,14 +4661,14 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Follower Business ID",
-                        "name": "followerID",
+                        "name": "followerBusinessID",
                         "in": "path",
                         "required": true
                     },
                     {
                         "type": "string",
                         "description": "Followed Business ID",
-                        "name": "followedID",
+                        "name": "followedBusinessID",
                         "in": "path",
                         "required": true
                     }

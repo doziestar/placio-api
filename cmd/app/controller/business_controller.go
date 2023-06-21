@@ -21,9 +21,9 @@ func (bc *BusinessAccountController) RegisterRoutes(router *gin.RouterGroup) {
 	businessRouter := router.Group("/business")
 	{
 		businessRouter.POST("/:businessID/follow/user/:userID", bc.followUser)
-		businessRouter.POST("/:followerID/follow/business/:followedID", bc.followBusiness)
+		businessRouter.POST("/:businessID/follow/business/:followedID", bc.followBusiness)
 		businessRouter.DELETE("/:businessID/unfollow/user/:userID", bc.unfollowUser)
-		businessRouter.DELETE("/:followerID/unfollow/business/:followedID", bc.unfollowBusiness)
+		businessRouter.DELETE("/:businessID/unfollow/business/:followedID", bc.unfollowBusiness)
 		businessRouter.GET("/:businessID/followed-contents", bc.getFollowedContents)
 		businessRouter.POST("/", bc.createBusinessAccount)
 		businessRouter.GET("/:businessAccountID", bc.getBusinessAccount)
@@ -34,7 +34,7 @@ func (bc *BusinessAccountController) RegisterRoutes(router *gin.RouterGroup) {
 		businessRouter.DELETE("/:businessAccountID/user/:userID", bc.removeUserFromBusinessAccount)
 		businessRouter.PUT("/:businessAccountID/user/:currentOwnerID/:newOwnerID", bc.transferBusinessAccountOwnership)
 		businessRouter.GET("/:businessAccountID/users", bc.getBusinessAccountsForUser)
-		businessRouter.GET("/:businessAccountID/users", bc.getUsersForBusinessAccount)
+		businessRouter.GET("/:businessAccountID/associated-users", bc.getUsersForBusinessAccount)
 		businessRouter.GET("/", bc.listBusinessAccounts)
 	}
 }
@@ -68,13 +68,13 @@ func (bc *BusinessAccountController) followUser(c *gin.Context) {
 // @ID follow-business
 // @Tags Business
 // @Produce json
-// @Param followerID path string true "Follower Business ID"
-// @Param followedID path string true "Followed Business ID"
+// @Param followerBusinessID path string true "Follower Business ID"
+// @Param followedBusinessID path string true "Followed Business ID"
 // @Success 200 {object} Dto.Response
 // @Failure 400 {object} Dto.Error
 // @Failure 401 {object} Dto.Error
 // @Failure 500 {object} Dto.ErrorDto
-// @Router /business/{followerID}/follow/business/{followedID} [post]
+// @Router /business/{followerBusinessID}/follow/business/{followedBusinessID} [post]
 func (bc *BusinessAccountController) followBusiness(c *gin.Context) {
 	followerID := c.Param("followerID")
 	followedID := c.Param("followedID")
@@ -113,13 +113,13 @@ func (bc *BusinessAccountController) unfollowUser(c *gin.Context) {
 // @ID unfollow-business
 // @Tags Business
 // @Produce json
-// @Param followerID path string true "Follower Business ID"
-// @Param followedID path string true "Followed Business ID"
+// @Param followerBusinessID path string true "Follower Business ID"
+// @Param followedBusinessID path string true "Followed Business ID"
 // @Success 200 {object} Dto.Response
 // @Failure 400 {object} Dto.Error
 // @Failure 401 {object} Dto.Error
 // @Failure 500 {object} Dto.ErrorDto
-// @Router /business/{followerID}/unfollow/business/{followedID} [delete]
+// @Router /business/{followerBusinessID}/unfollow/business/{followedBusinessID} [delete]
 func (bc *BusinessAccountController) unfollowBusiness(c *gin.Context) {
 	followerID := c.Param("followerID")
 	followedID := c.Param("followedID")
