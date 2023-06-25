@@ -97,19 +97,74 @@ services:
       - traefik.http.services.docs.loadbalancer.server.port=6060
       # add path prefix strip
 
-  newrelic-infra:
-    image: newrelic/infrastructure:latest
-    network_mode: host
-    privileged: true
-    pid: host
-    volumes:
-      - "/:/host:ro"
-      - "/var/run/docker.sock:/var/run/docker.sock"
+#  newrelic-infra:
+#    image: newrelic/infrastructure:latest
+#    network_mode: host
+#    privileged: true
+#    pid: host
+#    volumes:
+#      - "/:/host:ro"
+#      - "/var/run/docker.sock:/var/run/docker.sock"
+#    environment:
+#      - NRIA_LICENSE_KEY=eu01xx48a40b16fb787caed094a43278c919NRAL
+#    cap_add:
+#      - SYS_PTRACE
+#    restart: unless-stopped
+
+  es01:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
+    container_name: es01
     environment:
-      - NRIA_LICENSE_KEY=eu01xx48a40b16fb787caed094a43278c919NRAL
-    cap_add:
-      - SYS_PTRACE
-    restart: unless-stopped
+      - node.name=es01
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=es02,es03
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - data01:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+    #    networks:
+    #      - elastic
+  es02:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
+    container_name: es02
+    environment:
+      - node.name=es02
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=es01,es03
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - data02:/usr/share/elasticsearch/data
+  #    networks:
+  #      - elastic
+  es03:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
+    container_name: es03
+    environment:
+      - node.name=es03
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=es01,es02
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - data03:/usr/share/elasticsearch/data
 
 # volumes:
 #   app-db-data2:

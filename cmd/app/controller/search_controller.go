@@ -14,7 +14,7 @@ func NewSearchController(service service.SearchService) SearchController {
 	return SearchController{searchService: service}
 }
 
-func (ss *SearchController) RegisterRoutes(route *gin.Engine) {
+func (ss *SearchController) RegisterRoutes(route *gin.RouterGroup) {
 	searchRoute := route.Group("/search")
 	{
 		searchRoute.GET("/users", ss.searchUsers)
