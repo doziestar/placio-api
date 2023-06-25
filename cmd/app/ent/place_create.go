@@ -17,6 +17,7 @@ import (
 	"placio-app/ent/reservation"
 	"placio-app/ent/review"
 	"placio-app/ent/room"
+	"placio-app/ent/user"
 	"placio-app/ent/userfollowplace"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -159,6 +160,21 @@ func (pc *PlaceCreate) SetNillableBusinessID(id *string) *PlaceCreate {
 // SetBusiness sets the "business" edge to the Business entity.
 func (pc *PlaceCreate) SetBusiness(b *Business) *PlaceCreate {
 	return pc.SetBusinessID(b.ID)
+}
+
+// AddUserIDs adds the "users" edge to the User entity by IDs.
+func (pc *PlaceCreate) AddUserIDs(ids ...string) *PlaceCreate {
+	pc.mutation.AddUserIDs(ids...)
+	return pc
+}
+
+// AddUsers adds the "users" edges to the User entity.
+func (pc *PlaceCreate) AddUsers(u ...*User) *PlaceCreate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return pc.AddUserIDs(ids...)
 }
 
 // AddReviewIDs adds the "reviews" edge to the Review entity by IDs.
@@ -456,6 +472,22 @@ func (pc *PlaceCreate) createSpec() (*Place, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.business_places = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.UsersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   place.UsersTable,
+			Columns: place.UsersPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := pc.mutation.ReviewsIDs(); len(nodes) > 0 {

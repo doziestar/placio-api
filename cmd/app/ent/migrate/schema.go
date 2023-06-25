@@ -449,7 +449,6 @@ var (
 		{Name: "search_text", Type: field.TypeString, Nullable: true},
 		{Name: "relevance_score", Type: field.TypeFloat64, Nullable: true},
 		{Name: "business_places", Type: field.TypeString, Nullable: true, Size: 36},
-		{Name: "user_places", Type: field.TypeString, Nullable: true, Size: 36},
 	}
 	// PlacesTable holds the schema information for the "places" table.
 	PlacesTable = &schema.Table{
@@ -461,12 +460,6 @@ var (
 				Symbol:     "places_businesses_places",
 				Columns:    []*schema.Column{PlacesColumns[12]},
 				RefColumns: []*schema.Column{BusinessesColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
-				Symbol:     "places_users_places",
-				Columns:    []*schema.Column{PlacesColumns[13]},
-				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -808,6 +801,31 @@ var (
 			},
 		},
 	}
+	// UserPlacesColumns holds the columns for the "user_places" table.
+	UserPlacesColumns = []*schema.Column{
+		{Name: "user_id", Type: field.TypeString, Size: 36},
+		{Name: "place_id", Type: field.TypeString, Size: 36},
+	}
+	// UserPlacesTable holds the schema information for the "user_places" table.
+	UserPlacesTable = &schema.Table{
+		Name:       "user_places",
+		Columns:    UserPlacesColumns,
+		PrimaryKey: []*schema.Column{UserPlacesColumns[0], UserPlacesColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "user_places_user_id",
+				Columns:    []*schema.Column{UserPlacesColumns[0]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "user_places_place_id",
+				Columns:    []*schema.Column{UserPlacesColumns[1]},
+				RefColumns: []*schema.Column{PlacesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		AccountSettingsTable,
@@ -842,6 +860,7 @@ var (
 		UserFollowPlacesTable,
 		UserFollowUsersTable,
 		AmenityPlacesTable,
+		UserPlacesTable,
 	}
 )
 
@@ -875,7 +894,6 @@ func init() {
 	MediaTable.ForeignKeys[0].RefTable = PostsTable
 	MenusTable.ForeignKeys[0].RefTable = PlacesTable
 	PlacesTable.ForeignKeys[0].RefTable = BusinessesTable
-	PlacesTable.ForeignKeys[1].RefTable = UsersTable
 	PostsTable.ForeignKeys[0].RefTable = BusinessesTable
 	PostsTable.ForeignKeys[1].RefTable = UsersTable
 	ReservationsTable.ForeignKeys[0].RefTable = PlacesTable
@@ -896,4 +914,6 @@ func init() {
 	UserFollowUsersTable.ForeignKeys[1].RefTable = UsersTable
 	AmenityPlacesTable.ForeignKeys[0].RefTable = AmenitiesTable
 	AmenityPlacesTable.ForeignKeys[1].RefTable = PlacesTable
+	UserPlacesTable.ForeignKeys[0].RefTable = UsersTable
+	UserPlacesTable.ForeignKeys[1].RefTable = PlacesTable
 }

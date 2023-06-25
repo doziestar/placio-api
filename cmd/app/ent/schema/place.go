@@ -37,6 +37,7 @@ func (Place) Edges() []ent.Edge {
 		edge.From("business", Business.Type).
 			Ref("places").
 			Unique(),
+		edge.From("users", User.Type).Ref("places"),
 		edge.To("reviews", Review.Type),
 		edge.To("events", Event.Type),
 		edge.From("amenities", Amenity.Type).

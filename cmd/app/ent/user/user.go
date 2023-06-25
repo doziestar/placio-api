@@ -172,13 +172,11 @@ const (
 	EventsInverseTable = "events"
 	// EventsColumn is the table column denoting the events relation/edge.
 	EventsColumn = "user_events"
-	// PlacesTable is the table that holds the places relation/edge.
-	PlacesTable = "places"
+	// PlacesTable is the table that holds the places relation/edge. The primary key declared below.
+	PlacesTable = "user_places"
 	// PlacesInverseTable is the table name for the Place entity.
 	// It exists in this package in order to avoid circular dependency with the "place" package.
 	PlacesInverseTable = "places"
-	// PlacesColumn is the table column denoting the places relation/edge.
-	PlacesColumn = "user_places"
 	// CategoryAssignmentsTable is the table that holds the categoryAssignments relation/edge.
 	CategoryAssignmentsTable = "category_assignments"
 	// CategoryAssignmentsInverseTable is the table name for the CategoryAssignment entity.
@@ -212,6 +210,12 @@ var Columns = []string{
 	FieldSearchText,
 	FieldRelevanceScore,
 }
+
+var (
+	// PlacesPrimaryKey and PlacesColumn2 are the table columns denoting the
+	// primary key for the places relation (M2M).
+	PlacesPrimaryKey = []string{"user_id", "place_id"}
+)
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
@@ -629,7 +633,7 @@ func newPlacesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(PlacesInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, PlacesTable, PlacesColumn),
+		sqlgraph.Edge(sqlgraph.M2M, false, PlacesTable, PlacesPrimaryKey...),
 	)
 }
 func newCategoryAssignmentsStep() *sqlgraph.Step {

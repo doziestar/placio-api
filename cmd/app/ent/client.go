@@ -3106,6 +3106,22 @@ func (c *PlaceClient) QueryBusiness(pl *Place) *BusinessQuery {
 	return query
 }
 
+// QueryUsers queries the users edge of a Place.
+func (c *PlaceClient) QueryUsers(pl *Place) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pl.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(place.Table, place.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, place.UsersTable, place.UsersPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryReviews queries the reviews edge of a Place.
 func (c *PlaceClient) QueryReviews(pl *Place) *ReviewQuery {
 	query := (&ReviewClient{config: c.config}).Query()
@@ -4800,7 +4816,7 @@ func (c *UserClient) QueryPlaces(u *User) *PlaceQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(place.Table, place.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.PlacesTable, user.PlacesColumn),
+			sqlgraph.Edge(sqlgraph.M2M, false, user.PlacesTable, user.PlacesPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil

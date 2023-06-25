@@ -36,6 +36,8 @@ const (
 	FieldRelevanceScore = "relevance_score"
 	// EdgeBusiness holds the string denoting the business edge name in mutations.
 	EdgeBusiness = "business"
+	// EdgeUsers holds the string denoting the users edge name in mutations.
+	EdgeUsers = "users"
 	// EdgeReviews holds the string denoting the reviews edge name in mutations.
 	EdgeReviews = "reviews"
 	// EdgeEvents holds the string denoting the events edge name in mutations.
@@ -65,6 +67,11 @@ const (
 	BusinessInverseTable = "businesses"
 	// BusinessColumn is the table column denoting the business relation/edge.
 	BusinessColumn = "business_places"
+	// UsersTable is the table that holds the users relation/edge. The primary key declared below.
+	UsersTable = "user_places"
+	// UsersInverseTable is the table name for the User entity.
+	// It exists in this package in order to avoid circular dependency with the "user" package.
+	UsersInverseTable = "users"
 	// ReviewsTable is the table that holds the reviews relation/edge.
 	ReviewsTable = "reviews"
 	// ReviewsInverseTable is the table name for the Review entity.
@@ -155,10 +162,12 @@ var Columns = []string{
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
 	"business_places",
-	"user_places",
 }
 
 var (
+	// UsersPrimaryKey and UsersColumn2 are the table columns denoting the
+	// primary key for the users relation (M2M).
+	UsersPrimaryKey = []string{"user_id", "place_id"}
 	// AmenitiesPrimaryKey and AmenitiesColumn2 are the table columns denoting the
 	// primary key for the amenities relation (M2M).
 	AmenitiesPrimaryKey = []string{"amenity_id", "place_id"}
@@ -236,6 +245,20 @@ func ByRelevanceScore(opts ...sql.OrderTermOption) OrderOption {
 func ByBusinessField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newBusinessStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByUsersCount orders the results by users count.
+func ByUsersCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newUsersStep(), opts...)
+	}
+}
+
+// ByUsers orders the results by users terms.
+func ByUsers(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newUsersStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 
@@ -383,6 +406,13 @@ func newBusinessStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(BusinessInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, true, BusinessTable, BusinessColumn),
+	)
+}
+func newUsersStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(UsersInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, true, UsersTable, UsersPrimaryKey...),
 	)
 }
 func newReviewsStep() *sqlgraph.Step {
