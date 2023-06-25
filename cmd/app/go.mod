@@ -7,6 +7,7 @@ require (
 	github.com/auth0/go-jwt-middleware/v2 v2.1.0
 	github.com/axiaoxin-com/logging v1.2.16
 	github.com/coreos/go-oidc/v3 v3.6.0
+	github.com/elastic/go-elasticsearch/v8 v8.8.1
 	github.com/getsentry/sentry-go v0.19.0
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-contrib/sessions v0.0.5
@@ -15,6 +16,7 @@ require (
 	github.com/go-testfixtures/testfixtures/v3 v3.8.1
 	github.com/gofiber/fiber/v2 v2.43.0
 	github.com/google/uuid v1.3.0
+	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.6
 	github.com/stretchr/testify v1.8.3
 	github.com/swaggo/files v1.0.1
@@ -32,13 +34,14 @@ require (
 	ariga.io/atlas v0.10.2-0.20230427182402-87a07dfb83bf // indirect
 	github.com/agext/levenshtein v1.2.1 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
-	github.com/confluentinc/confluent-kafka-go/v2 v2.1.1 // indirect
+	github.com/elastic/elastic-transport-go/v8 v8.3.0 // indirect
 	github.com/go-openapi/inflect v0.19.0 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/hashicorp/hcl/v2 v2.13.0 // indirect
-	github.com/joho/godotenv v1.5.1 // indirect
 	github.com/mitchellh/go-wordwrap v0.0.0-20150314170334-ad45545899c7 // indirect
+	github.com/rogpeppe/go-internal v1.9.0 // indirect
 	github.com/zclconf/go-cty v1.8.0 // indirect
+	go.uber.org/goleak v1.1.12 // indirect
 	golang.org/x/mod v0.10.0 // indirect
 )
 

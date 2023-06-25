@@ -17,6 +17,8 @@ func (Event) Fields() []ent.Field {
 		field.String("name").NotEmpty().Unique(),
 		field.Time("createdAt").Default(time.Now),
 		field.Time("updatedAt").Default(time.Now).UpdateDefault(time.Now),
+		field.String("search_text").Optional(),
+		field.Float("relevance_score").Optional(),
 	}
 }
 
