@@ -226,6 +226,8 @@ definitions:
         items:
           $ref: '#/definitions/placio-app_Dto.MediaDto'
         type: array
+      privacy:
+        type: string
       user_id:
         type: string
     type: object

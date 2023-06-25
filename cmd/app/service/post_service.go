@@ -116,8 +116,8 @@ func (ps *PostServiceImpl) GetPost(ctx context.Context, postID string) (*ent.Pos
 }
 
 func (ps *PostServiceImpl) UpdatePost(ctx context.Context, updatedPost *ent.Post) (*ent.Post, error) {
-	if updatedPost == nil {
-		return nil, errors.New("post cannot be nil")
+	if updatedPost == nil || updatedPost.Content == "" {
+		return nil, errors.New("post or content cannot be nil or empty")
 	}
 
 	post, err := ps.client.Post.
@@ -139,6 +139,9 @@ func (ps *PostServiceImpl) DeletePost(ctx context.Context, postID string) error 
 		Exec(ctx)
 
 	if err != nil {
+		if ent.IsNotFound(err) {
+			return fmt.Errorf("post not found: %w", err)
+		}
 		return fmt.Errorf("failed deleting post: %w", err)
 	}
 

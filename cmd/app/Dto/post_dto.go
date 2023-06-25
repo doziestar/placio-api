@@ -12,6 +12,7 @@ type PostDto struct {
 	BusinessID string     `json:"business_id,omitempty"` // It can be empty if it does not exist
 	CreatedAt  time.Time  `json:"created_at"`
 	Medias     []MediaDto `json:"medias"`
+	Privacy    string     `json:"privacy"`
 }
 
 type MediaDto struct {

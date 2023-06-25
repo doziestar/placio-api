@@ -1,12 +1,14 @@
 package controller
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"placio-app/Dto"
 	_ "placio-app/Dto"
 	"placio-app/ent"
 	_ "placio-app/ent"
+	"placio-app/ent/post"
 	"placio-app/models"
 	"placio-app/service"
 	"placio-app/utility"
@@ -88,10 +90,13 @@ func (pc *PostController) createPost(ctx *gin.Context) error {
 		return err
 	}
 
+	privacy := post.Privacy(data.Privacy)
+
 	// Create a new Post instance
 	post := &ent.Post{
 		Content: data.Content,
 		ID:      models.GenerateID(),
+		Privacy: privacy,
 	}
 
 	// Create the post
@@ -206,21 +211,40 @@ func (pc *PostController) updatePost(ctx *gin.Context) error {
 
 	postId := ctx.Param("id")
 
+	// Check if the post exists and belongs to the user
+	postData, err := pc.postService.GetPost(ctx, postId)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			ctx.JSON(http.StatusNotFound, gin.H{"error": "Post Not Found"})
+			return err
+		}
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+		return err
+	}
+
+	if postData.Edges.User.ID != user.ID {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return errors.New("unauthorized")
+	}
+
 	// Bind the incoming JSON to a new PostDto instance
 	data := new(Dto.PostDto)
-	if err := ctx.BindJSON(data); err != nil {
+	if err := ctx.BindJSON(data); err != nil || data.Content == "" {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Bad Request"})
 		return err
 	}
 
+	privacy := post.Privacy(data.Privacy)
+
 	// Create a new Post instance
-	post := &ent.Post{
+	postData = &ent.Post{
 		Content: data.Content,
 		ID:      postId,
+		Privacy: privacy,
 	}
 
 	// Update the post
-	updatedPost, err := pc.postService.UpdatePost(ctx, post)
+	updatedPost, err := pc.postService.UpdatePost(ctx, postData)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 		return err
@@ -257,11 +281,15 @@ func (pc *PostController) deletePost(ctx *gin.Context) error {
 
 	err := pc.postService.DeletePost(ctx, postID)
 	if err != nil {
+		if ent.IsNotFound(err) {
+			ctx.JSON(http.StatusNotFound, gin.H{"error": "Post Not Found"})
+			return nil
+		}
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 		return err
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "post deleted successfully"})
+	ctx.JSON(http.StatusOK, gin.H{"message": "Post deleted successfully"})
 	return nil
 }
 
