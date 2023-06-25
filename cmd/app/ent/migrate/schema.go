@@ -83,6 +83,8 @@ var (
 	BusinessesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
 		{Name: "name", Type: field.TypeString},
+		{Name: "search_text", Type: field.TypeString, Nullable: true},
+		{Name: "relevance_score", Type: field.TypeFloat64, Nullable: true},
 	}
 	// BusinessesTable holds the schema information for the "businesses" table.
 	BusinessesTable = &schema.Table{
@@ -198,6 +200,45 @@ var (
 			},
 		},
 	}
+	// CategoryAssignmentsColumns holds the columns for the "category_assignments" table.
+	CategoryAssignmentsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "entity_type", Type: field.TypeString, Nullable: true},
+		{Name: "entity_id", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "category_id", Type: field.TypeString, Nullable: true, Size: 36},
+	}
+	// CategoryAssignmentsTable holds the schema information for the "category_assignments" table.
+	CategoryAssignmentsTable = &schema.Table{
+		Name:       "category_assignments",
+		Columns:    CategoryAssignmentsColumns,
+		PrimaryKey: []*schema.Column{CategoryAssignmentsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "category_assignments_businesses_categoryAssignments",
+				Columns:    []*schema.Column{CategoryAssignmentsColumns[2]},
+				RefColumns: []*schema.Column{BusinessesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "category_assignments_categories_categoryAssignments",
+				Columns:    []*schema.Column{CategoryAssignmentsColumns[3]},
+				RefColumns: []*schema.Column{CategoriesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "category_assignments_places_categoryAssignments",
+				Columns:    []*schema.Column{CategoryAssignmentsColumns[2]},
+				RefColumns: []*schema.Column{PlacesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "category_assignments_users_categoryAssignments",
+				Columns:    []*schema.Column{CategoryAssignmentsColumns[2]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// ChatsColumns holds the columns for the "chats" table.
 	ChatsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -244,6 +285,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "place_events", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "user_events", Type: field.TypeString, Nullable: true, Size: 36},
 	}
 	// EventsTable holds the schema information for the "events" table.
 	EventsTable = &schema.Table{
@@ -255,6 +297,12 @@ var (
 				Symbol:     "events_places_events",
 				Columns:    []*schema.Column{EventsColumns[4]},
 				RefColumns: []*schema.Column{PlacesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "events_users_events",
+				Columns:    []*schema.Column{EventsColumns[5]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -391,7 +439,11 @@ var (
 		{Name: "availability", Type: field.TypeJSON, Nullable: true},
 		{Name: "special_offers", Type: field.TypeString, Nullable: true},
 		{Name: "sustainability_score", Type: field.TypeFloat64, Nullable: true},
+		{Name: "map_coordinates", Type: field.TypeJSON},
+		{Name: "search_text", Type: field.TypeString, Nullable: true},
+		{Name: "relevance_score", Type: field.TypeFloat64, Nullable: true},
 		{Name: "business_places", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "user_places", Type: field.TypeString, Nullable: true, Size: 36},
 	}
 	// PlacesTable holds the schema information for the "places" table.
 	PlacesTable = &schema.Table{
@@ -401,8 +453,14 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "places_businesses_places",
-				Columns:    []*schema.Column{PlacesColumns[9]},
+				Columns:    []*schema.Column{PlacesColumns[12]},
 				RefColumns: []*schema.Column{BusinessesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "places_users_places",
+				Columns:    []*schema.Column{PlacesColumns[13]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -603,6 +661,8 @@ var (
 		{Name: "auth0_data", Type: field.TypeJSON, Nullable: true},
 		{Name: "app_settings", Type: field.TypeJSON, Nullable: true},
 		{Name: "user_settings", Type: field.TypeJSON, Nullable: true},
+		{Name: "search_text", Type: field.TypeString, Nullable: true},
+		{Name: "relevance_score", Type: field.TypeFloat64, Nullable: true},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{
@@ -723,6 +783,7 @@ var (
 		BusinessFollowBusinessesTable,
 		BusinessFollowUsersTable,
 		CategoriesTable,
+		CategoryAssignmentsTable,
 		ChatsTable,
 		CommentsTable,
 		EventsTable,
@@ -764,9 +825,14 @@ func init() {
 	CategoriesTable.ForeignKeys[3].RefTable = PlacesTable
 	CategoriesTable.ForeignKeys[4].RefTable = PostsTable
 	CategoriesTable.ForeignKeys[5].RefTable = UsersTable
+	CategoryAssignmentsTable.ForeignKeys[0].RefTable = BusinessesTable
+	CategoryAssignmentsTable.ForeignKeys[1].RefTable = CategoriesTable
+	CategoryAssignmentsTable.ForeignKeys[2].RefTable = PlacesTable
+	CategoryAssignmentsTable.ForeignKeys[3].RefTable = UsersTable
 	CommentsTable.ForeignKeys[0].RefTable = PostsTable
 	CommentsTable.ForeignKeys[1].RefTable = UsersTable
 	EventsTable.ForeignKeys[0].RefTable = PlacesTable
+	EventsTable.ForeignKeys[1].RefTable = UsersTable
 	HelpsTable.ForeignKeys[0].RefTable = UsersTable
 	LikesTable.ForeignKeys[0].RefTable = PostsTable
 	LikesTable.ForeignKeys[1].RefTable = PostsTable
@@ -774,6 +840,7 @@ func init() {
 	MediaTable.ForeignKeys[0].RefTable = PostsTable
 	MenusTable.ForeignKeys[0].RefTable = PlacesTable
 	PlacesTable.ForeignKeys[0].RefTable = BusinessesTable
+	PlacesTable.ForeignKeys[1].RefTable = UsersTable
 	PostsTable.ForeignKeys[0].RefTable = BusinessesTable
 	PostsTable.ForeignKeys[1].RefTable = UsersTable
 	ReservationsTable.ForeignKeys[0].RefTable = PlacesTable

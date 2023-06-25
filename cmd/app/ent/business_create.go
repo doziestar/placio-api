@@ -11,6 +11,7 @@ import (
 	"placio-app/ent/businessfollowbusiness"
 	"placio-app/ent/businessfollowuser"
 	"placio-app/ent/category"
+	"placio-app/ent/categoryassignment"
 	"placio-app/ent/place"
 	"placio-app/ent/post"
 	"placio-app/ent/userbusiness"
@@ -30,6 +31,34 @@ type BusinessCreate struct {
 // SetName sets the "name" field.
 func (bc *BusinessCreate) SetName(s string) *BusinessCreate {
 	bc.mutation.SetName(s)
+	return bc
+}
+
+// SetSearchText sets the "search_text" field.
+func (bc *BusinessCreate) SetSearchText(s string) *BusinessCreate {
+	bc.mutation.SetSearchText(s)
+	return bc
+}
+
+// SetNillableSearchText sets the "search_text" field if the given value is not nil.
+func (bc *BusinessCreate) SetNillableSearchText(s *string) *BusinessCreate {
+	if s != nil {
+		bc.SetSearchText(*s)
+	}
+	return bc
+}
+
+// SetRelevanceScore sets the "relevance_score" field.
+func (bc *BusinessCreate) SetRelevanceScore(f float64) *BusinessCreate {
+	bc.mutation.SetRelevanceScore(f)
+	return bc
+}
+
+// SetNillableRelevanceScore sets the "relevance_score" field if the given value is not nil.
+func (bc *BusinessCreate) SetNillableRelevanceScore(f *float64) *BusinessCreate {
+	if f != nil {
+		bc.SetRelevanceScore(*f)
+	}
 	return bc
 }
 
@@ -178,6 +207,21 @@ func (bc *BusinessCreate) AddCategories(c ...*Category) *BusinessCreate {
 	return bc.AddCategoryIDs(ids...)
 }
 
+// AddCategoryAssignmentIDs adds the "categoryAssignments" edge to the CategoryAssignment entity by IDs.
+func (bc *BusinessCreate) AddCategoryAssignmentIDs(ids ...string) *BusinessCreate {
+	bc.mutation.AddCategoryAssignmentIDs(ids...)
+	return bc
+}
+
+// AddCategoryAssignments adds the "categoryAssignments" edges to the CategoryAssignment entity.
+func (bc *BusinessCreate) AddCategoryAssignments(c ...*CategoryAssignment) *BusinessCreate {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return bc.AddCategoryAssignmentIDs(ids...)
+}
+
 // Mutation returns the BusinessMutation object of the builder.
 func (bc *BusinessCreate) Mutation() *BusinessMutation {
 	return bc.mutation
@@ -258,6 +302,14 @@ func (bc *BusinessCreate) createSpec() (*Business, *sqlgraph.CreateSpec) {
 	if value, ok := bc.mutation.Name(); ok {
 		_spec.SetField(business.FieldName, field.TypeString, value)
 		_node.Name = value
+	}
+	if value, ok := bc.mutation.SearchText(); ok {
+		_spec.SetField(business.FieldSearchText, field.TypeString, value)
+		_node.SearchText = value
+	}
+	if value, ok := bc.mutation.RelevanceScore(); ok {
+		_spec.SetField(business.FieldRelevanceScore, field.TypeFloat64, value)
+		_node.RelevanceScore = value
 	}
 	if nodes := bc.mutation.UserBusinessesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -396,6 +448,22 @@ func (bc *BusinessCreate) createSpec() (*Business, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := bc.mutation.CategoryAssignmentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.CategoryAssignmentsTable,
+			Columns: []string{business.CategoryAssignmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(categoryassignment.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"placio-app/ent/category"
+	"placio-app/ent/categoryassignment"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -43,6 +44,21 @@ func (cc *CategoryCreate) SetNillableImage(s *string) *CategoryCreate {
 func (cc *CategoryCreate) SetID(s string) *CategoryCreate {
 	cc.mutation.SetID(s)
 	return cc
+}
+
+// AddCategoryAssignmentIDs adds the "categoryAssignments" edge to the CategoryAssignment entity by IDs.
+func (cc *CategoryCreate) AddCategoryAssignmentIDs(ids ...string) *CategoryCreate {
+	cc.mutation.AddCategoryAssignmentIDs(ids...)
+	return cc
+}
+
+// AddCategoryAssignments adds the "categoryAssignments" edges to the CategoryAssignment entity.
+func (cc *CategoryCreate) AddCategoryAssignments(c ...*CategoryAssignment) *CategoryCreate {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return cc.AddCategoryAssignmentIDs(ids...)
 }
 
 // Mutation returns the CategoryMutation object of the builder.
@@ -129,6 +145,22 @@ func (cc *CategoryCreate) createSpec() (*Category, *sqlgraph.CreateSpec) {
 	if value, ok := cc.mutation.Image(); ok {
 		_spec.SetField(category.FieldImage, field.TypeString, value)
 		_node.Image = value
+	}
+	if nodes := cc.mutation.CategoryAssignmentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   category.CategoryAssignmentsTable,
+			Columns: []string{category.CategoryAssignmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(categoryassignment.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

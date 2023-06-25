@@ -6,6 +6,7 @@ import (
 	"placio-app/ent/predicate"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 // ID filters vertices based on their ID field.
@@ -211,6 +212,29 @@ func ImageEqualFold(v string) predicate.Category {
 // ImageContainsFold applies the ContainsFold predicate on the "image" field.
 func ImageContainsFold(v string) predicate.Category {
 	return predicate.Category(sql.FieldContainsFold(FieldImage, v))
+}
+
+// HasCategoryAssignments applies the HasEdge predicate on the "categoryAssignments" edge.
+func HasCategoryAssignments() predicate.Category {
+	return predicate.Category(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CategoryAssignmentsTable, CategoryAssignmentsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCategoryAssignmentsWith applies the HasEdge predicate on the "categoryAssignments" edge with a given conditions (other predicates).
+func HasCategoryAssignmentsWith(preds ...predicate.CategoryAssignment) predicate.Category {
+	return predicate.Category(func(s *sql.Selector) {
+		step := newCategoryAssignmentsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
 }
 
 // And groups predicates with the AND operator between them.

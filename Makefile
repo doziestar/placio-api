@@ -70,7 +70,7 @@ docs: ## Generate documentation
 generate: ## Run Go generate
 	export GOWORK=off
 	#go run entgo.io/ent/cmd/ent generate --target ./cmd/app/entities --feature privacy --feature sql --idtype string --template ./cmd/app/ent/template ./cmd/app/ent/schema
-	go run entgo.io/ent/cmd/ent generate  --idtype string ./ent/schema
+	go run entgo.io/ent/cmd/ent generate  --idtype string ./cmd/app/ent/schema
 
 docs-preview: ## Generate documentation
 	redocly preview-docs docs/redoc.yml

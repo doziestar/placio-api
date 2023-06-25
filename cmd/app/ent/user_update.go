@@ -9,8 +9,11 @@ import (
 	"placio-app/ent/booking"
 	"placio-app/ent/businessfollowuser"
 	"placio-app/ent/category"
+	"placio-app/ent/categoryassignment"
 	"placio-app/ent/comment"
+	"placio-app/ent/event"
 	"placio-app/ent/like"
+	"placio-app/ent/place"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
 	"placio-app/ent/reservation"
@@ -164,6 +167,53 @@ func (uu *UserUpdate) SetUserSettings(m map[string]interface{}) *UserUpdate {
 // ClearUserSettings clears the value of the "user_settings" field.
 func (uu *UserUpdate) ClearUserSettings() *UserUpdate {
 	uu.mutation.ClearUserSettings()
+	return uu
+}
+
+// SetSearchText sets the "search_text" field.
+func (uu *UserUpdate) SetSearchText(s string) *UserUpdate {
+	uu.mutation.SetSearchText(s)
+	return uu
+}
+
+// SetNillableSearchText sets the "search_text" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableSearchText(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetSearchText(*s)
+	}
+	return uu
+}
+
+// ClearSearchText clears the value of the "search_text" field.
+func (uu *UserUpdate) ClearSearchText() *UserUpdate {
+	uu.mutation.ClearSearchText()
+	return uu
+}
+
+// SetRelevanceScore sets the "relevance_score" field.
+func (uu *UserUpdate) SetRelevanceScore(f float64) *UserUpdate {
+	uu.mutation.ResetRelevanceScore()
+	uu.mutation.SetRelevanceScore(f)
+	return uu
+}
+
+// SetNillableRelevanceScore sets the "relevance_score" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableRelevanceScore(f *float64) *UserUpdate {
+	if f != nil {
+		uu.SetRelevanceScore(*f)
+	}
+	return uu
+}
+
+// AddRelevanceScore adds f to the "relevance_score" field.
+func (uu *UserUpdate) AddRelevanceScore(f float64) *UserUpdate {
+	uu.mutation.AddRelevanceScore(f)
+	return uu
+}
+
+// ClearRelevanceScore clears the value of the "relevance_score" field.
+func (uu *UserUpdate) ClearRelevanceScore() *UserUpdate {
+	uu.mutation.ClearRelevanceScore()
 	return uu
 }
 
@@ -345,6 +395,51 @@ func (uu *UserUpdate) AddCategories(c ...*Category) *UserUpdate {
 		ids[i] = c[i].ID
 	}
 	return uu.AddCategoryIDs(ids...)
+}
+
+// AddEventIDs adds the "events" edge to the Event entity by IDs.
+func (uu *UserUpdate) AddEventIDs(ids ...string) *UserUpdate {
+	uu.mutation.AddEventIDs(ids...)
+	return uu
+}
+
+// AddEvents adds the "events" edges to the Event entity.
+func (uu *UserUpdate) AddEvents(e ...*Event) *UserUpdate {
+	ids := make([]string, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return uu.AddEventIDs(ids...)
+}
+
+// AddPlaceIDs adds the "places" edge to the Place entity by IDs.
+func (uu *UserUpdate) AddPlaceIDs(ids ...string) *UserUpdate {
+	uu.mutation.AddPlaceIDs(ids...)
+	return uu
+}
+
+// AddPlaces adds the "places" edges to the Place entity.
+func (uu *UserUpdate) AddPlaces(p ...*Place) *UserUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uu.AddPlaceIDs(ids...)
+}
+
+// AddCategoryAssignmentIDs adds the "categoryAssignments" edge to the CategoryAssignment entity by IDs.
+func (uu *UserUpdate) AddCategoryAssignmentIDs(ids ...string) *UserUpdate {
+	uu.mutation.AddCategoryAssignmentIDs(ids...)
+	return uu
+}
+
+// AddCategoryAssignments adds the "categoryAssignments" edges to the CategoryAssignment entity.
+func (uu *UserUpdate) AddCategoryAssignments(c ...*CategoryAssignment) *UserUpdate {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return uu.AddCategoryAssignmentIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -604,6 +699,69 @@ func (uu *UserUpdate) RemoveCategories(c ...*Category) *UserUpdate {
 	return uu.RemoveCategoryIDs(ids...)
 }
 
+// ClearEvents clears all "events" edges to the Event entity.
+func (uu *UserUpdate) ClearEvents() *UserUpdate {
+	uu.mutation.ClearEvents()
+	return uu
+}
+
+// RemoveEventIDs removes the "events" edge to Event entities by IDs.
+func (uu *UserUpdate) RemoveEventIDs(ids ...string) *UserUpdate {
+	uu.mutation.RemoveEventIDs(ids...)
+	return uu
+}
+
+// RemoveEvents removes "events" edges to Event entities.
+func (uu *UserUpdate) RemoveEvents(e ...*Event) *UserUpdate {
+	ids := make([]string, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return uu.RemoveEventIDs(ids...)
+}
+
+// ClearPlaces clears all "places" edges to the Place entity.
+func (uu *UserUpdate) ClearPlaces() *UserUpdate {
+	uu.mutation.ClearPlaces()
+	return uu
+}
+
+// RemovePlaceIDs removes the "places" edge to Place entities by IDs.
+func (uu *UserUpdate) RemovePlaceIDs(ids ...string) *UserUpdate {
+	uu.mutation.RemovePlaceIDs(ids...)
+	return uu
+}
+
+// RemovePlaces removes "places" edges to Place entities.
+func (uu *UserUpdate) RemovePlaces(p ...*Place) *UserUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uu.RemovePlaceIDs(ids...)
+}
+
+// ClearCategoryAssignments clears all "categoryAssignments" edges to the CategoryAssignment entity.
+func (uu *UserUpdate) ClearCategoryAssignments() *UserUpdate {
+	uu.mutation.ClearCategoryAssignments()
+	return uu
+}
+
+// RemoveCategoryAssignmentIDs removes the "categoryAssignments" edge to CategoryAssignment entities by IDs.
+func (uu *UserUpdate) RemoveCategoryAssignmentIDs(ids ...string) *UserUpdate {
+	uu.mutation.RemoveCategoryAssignmentIDs(ids...)
+	return uu
+}
+
+// RemoveCategoryAssignments removes "categoryAssignments" edges to CategoryAssignment entities.
+func (uu *UserUpdate) RemoveCategoryAssignments(c ...*CategoryAssignment) *UserUpdate {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return uu.RemoveCategoryAssignmentIDs(ids...)
+}
+
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (uu *UserUpdate) Save(ctx context.Context) (int, error) {
 	return withHooks(ctx, uu.sqlSave, uu.mutation, uu.hooks)
@@ -687,6 +845,21 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if uu.mutation.UserSettingsCleared() {
 		_spec.ClearField(user.FieldUserSettings, field.TypeJSON)
+	}
+	if value, ok := uu.mutation.SearchText(); ok {
+		_spec.SetField(user.FieldSearchText, field.TypeString, value)
+	}
+	if uu.mutation.SearchTextCleared() {
+		_spec.ClearField(user.FieldSearchText, field.TypeString)
+	}
+	if value, ok := uu.mutation.RelevanceScore(); ok {
+		_spec.SetField(user.FieldRelevanceScore, field.TypeFloat64, value)
+	}
+	if value, ok := uu.mutation.AddedRelevanceScore(); ok {
+		_spec.AddField(user.FieldRelevanceScore, field.TypeFloat64, value)
+	}
+	if uu.mutation.RelevanceScoreCleared() {
+		_spec.ClearField(user.FieldRelevanceScore, field.TypeFloat64)
 	}
 	if uu.mutation.UserBusinessesCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1228,6 +1401,141 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if uu.mutation.EventsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.EventsTable,
+			Columns: []string{user.EventsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(event.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedEventsIDs(); len(nodes) > 0 && !uu.mutation.EventsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.EventsTable,
+			Columns: []string{user.EventsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(event.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.EventsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.EventsTable,
+			Columns: []string{user.EventsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(event.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uu.mutation.PlacesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.PlacesTable,
+			Columns: []string{user.PlacesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedPlacesIDs(); len(nodes) > 0 && !uu.mutation.PlacesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.PlacesTable,
+			Columns: []string{user.PlacesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.PlacesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.PlacesTable,
+			Columns: []string{user.PlacesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uu.mutation.CategoryAssignmentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CategoryAssignmentsTable,
+			Columns: []string{user.CategoryAssignmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(categoryassignment.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedCategoryAssignmentsIDs(); len(nodes) > 0 && !uu.mutation.CategoryAssignmentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CategoryAssignmentsTable,
+			Columns: []string{user.CategoryAssignmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(categoryassignment.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.CategoryAssignmentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CategoryAssignmentsTable,
+			Columns: []string{user.CategoryAssignmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(categoryassignment.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -1373,6 +1681,53 @@ func (uuo *UserUpdateOne) SetUserSettings(m map[string]interface{}) *UserUpdateO
 // ClearUserSettings clears the value of the "user_settings" field.
 func (uuo *UserUpdateOne) ClearUserSettings() *UserUpdateOne {
 	uuo.mutation.ClearUserSettings()
+	return uuo
+}
+
+// SetSearchText sets the "search_text" field.
+func (uuo *UserUpdateOne) SetSearchText(s string) *UserUpdateOne {
+	uuo.mutation.SetSearchText(s)
+	return uuo
+}
+
+// SetNillableSearchText sets the "search_text" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableSearchText(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetSearchText(*s)
+	}
+	return uuo
+}
+
+// ClearSearchText clears the value of the "search_text" field.
+func (uuo *UserUpdateOne) ClearSearchText() *UserUpdateOne {
+	uuo.mutation.ClearSearchText()
+	return uuo
+}
+
+// SetRelevanceScore sets the "relevance_score" field.
+func (uuo *UserUpdateOne) SetRelevanceScore(f float64) *UserUpdateOne {
+	uuo.mutation.ResetRelevanceScore()
+	uuo.mutation.SetRelevanceScore(f)
+	return uuo
+}
+
+// SetNillableRelevanceScore sets the "relevance_score" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableRelevanceScore(f *float64) *UserUpdateOne {
+	if f != nil {
+		uuo.SetRelevanceScore(*f)
+	}
+	return uuo
+}
+
+// AddRelevanceScore adds f to the "relevance_score" field.
+func (uuo *UserUpdateOne) AddRelevanceScore(f float64) *UserUpdateOne {
+	uuo.mutation.AddRelevanceScore(f)
+	return uuo
+}
+
+// ClearRelevanceScore clears the value of the "relevance_score" field.
+func (uuo *UserUpdateOne) ClearRelevanceScore() *UserUpdateOne {
+	uuo.mutation.ClearRelevanceScore()
 	return uuo
 }
 
@@ -1554,6 +1909,51 @@ func (uuo *UserUpdateOne) AddCategories(c ...*Category) *UserUpdateOne {
 		ids[i] = c[i].ID
 	}
 	return uuo.AddCategoryIDs(ids...)
+}
+
+// AddEventIDs adds the "events" edge to the Event entity by IDs.
+func (uuo *UserUpdateOne) AddEventIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.AddEventIDs(ids...)
+	return uuo
+}
+
+// AddEvents adds the "events" edges to the Event entity.
+func (uuo *UserUpdateOne) AddEvents(e ...*Event) *UserUpdateOne {
+	ids := make([]string, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return uuo.AddEventIDs(ids...)
+}
+
+// AddPlaceIDs adds the "places" edge to the Place entity by IDs.
+func (uuo *UserUpdateOne) AddPlaceIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.AddPlaceIDs(ids...)
+	return uuo
+}
+
+// AddPlaces adds the "places" edges to the Place entity.
+func (uuo *UserUpdateOne) AddPlaces(p ...*Place) *UserUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uuo.AddPlaceIDs(ids...)
+}
+
+// AddCategoryAssignmentIDs adds the "categoryAssignments" edge to the CategoryAssignment entity by IDs.
+func (uuo *UserUpdateOne) AddCategoryAssignmentIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.AddCategoryAssignmentIDs(ids...)
+	return uuo
+}
+
+// AddCategoryAssignments adds the "categoryAssignments" edges to the CategoryAssignment entity.
+func (uuo *UserUpdateOne) AddCategoryAssignments(c ...*CategoryAssignment) *UserUpdateOne {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return uuo.AddCategoryAssignmentIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -1813,6 +2213,69 @@ func (uuo *UserUpdateOne) RemoveCategories(c ...*Category) *UserUpdateOne {
 	return uuo.RemoveCategoryIDs(ids...)
 }
 
+// ClearEvents clears all "events" edges to the Event entity.
+func (uuo *UserUpdateOne) ClearEvents() *UserUpdateOne {
+	uuo.mutation.ClearEvents()
+	return uuo
+}
+
+// RemoveEventIDs removes the "events" edge to Event entities by IDs.
+func (uuo *UserUpdateOne) RemoveEventIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.RemoveEventIDs(ids...)
+	return uuo
+}
+
+// RemoveEvents removes "events" edges to Event entities.
+func (uuo *UserUpdateOne) RemoveEvents(e ...*Event) *UserUpdateOne {
+	ids := make([]string, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return uuo.RemoveEventIDs(ids...)
+}
+
+// ClearPlaces clears all "places" edges to the Place entity.
+func (uuo *UserUpdateOne) ClearPlaces() *UserUpdateOne {
+	uuo.mutation.ClearPlaces()
+	return uuo
+}
+
+// RemovePlaceIDs removes the "places" edge to Place entities by IDs.
+func (uuo *UserUpdateOne) RemovePlaceIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.RemovePlaceIDs(ids...)
+	return uuo
+}
+
+// RemovePlaces removes "places" edges to Place entities.
+func (uuo *UserUpdateOne) RemovePlaces(p ...*Place) *UserUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uuo.RemovePlaceIDs(ids...)
+}
+
+// ClearCategoryAssignments clears all "categoryAssignments" edges to the CategoryAssignment entity.
+func (uuo *UserUpdateOne) ClearCategoryAssignments() *UserUpdateOne {
+	uuo.mutation.ClearCategoryAssignments()
+	return uuo
+}
+
+// RemoveCategoryAssignmentIDs removes the "categoryAssignments" edge to CategoryAssignment entities by IDs.
+func (uuo *UserUpdateOne) RemoveCategoryAssignmentIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.RemoveCategoryAssignmentIDs(ids...)
+	return uuo
+}
+
+// RemoveCategoryAssignments removes "categoryAssignments" edges to CategoryAssignment entities.
+func (uuo *UserUpdateOne) RemoveCategoryAssignments(c ...*CategoryAssignment) *UserUpdateOne {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return uuo.RemoveCategoryAssignmentIDs(ids...)
+}
+
 // Where appends a list predicates to the UserUpdate builder.
 func (uuo *UserUpdateOne) Where(ps ...predicate.User) *UserUpdateOne {
 	uuo.mutation.Where(ps...)
@@ -1926,6 +2389,21 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if uuo.mutation.UserSettingsCleared() {
 		_spec.ClearField(user.FieldUserSettings, field.TypeJSON)
+	}
+	if value, ok := uuo.mutation.SearchText(); ok {
+		_spec.SetField(user.FieldSearchText, field.TypeString, value)
+	}
+	if uuo.mutation.SearchTextCleared() {
+		_spec.ClearField(user.FieldSearchText, field.TypeString)
+	}
+	if value, ok := uuo.mutation.RelevanceScore(); ok {
+		_spec.SetField(user.FieldRelevanceScore, field.TypeFloat64, value)
+	}
+	if value, ok := uuo.mutation.AddedRelevanceScore(); ok {
+		_spec.AddField(user.FieldRelevanceScore, field.TypeFloat64, value)
+	}
+	if uuo.mutation.RelevanceScoreCleared() {
+		_spec.ClearField(user.FieldRelevanceScore, field.TypeFloat64)
 	}
 	if uuo.mutation.UserBusinessesCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -2460,6 +2938,141 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.EventsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.EventsTable,
+			Columns: []string{user.EventsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(event.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedEventsIDs(); len(nodes) > 0 && !uuo.mutation.EventsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.EventsTable,
+			Columns: []string{user.EventsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(event.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.EventsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.EventsTable,
+			Columns: []string{user.EventsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(event.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.PlacesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.PlacesTable,
+			Columns: []string{user.PlacesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedPlacesIDs(); len(nodes) > 0 && !uuo.mutation.PlacesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.PlacesTable,
+			Columns: []string{user.PlacesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.PlacesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.PlacesTable,
+			Columns: []string{user.PlacesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.CategoryAssignmentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CategoryAssignmentsTable,
+			Columns: []string{user.CategoryAssignmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(categoryassignment.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedCategoryAssignmentsIDs(); len(nodes) > 0 && !uuo.mutation.CategoryAssignmentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CategoryAssignmentsTable,
+			Columns: []string{user.CategoryAssignmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(categoryassignment.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.CategoryAssignmentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CategoryAssignmentsTable,
+			Columns: []string{user.CategoryAssignmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(categoryassignment.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

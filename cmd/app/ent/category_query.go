@@ -4,9 +4,11 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"fmt"
 	"math"
 	"placio-app/ent/category"
+	"placio-app/ent/categoryassignment"
 	"placio-app/ent/predicate"
 
 	"entgo.io/ent/dialect/sql"
@@ -17,11 +19,12 @@ import (
 // CategoryQuery is the builder for querying Category entities.
 type CategoryQuery struct {
 	config
-	ctx        *QueryContext
-	order      []category.OrderOption
-	inters     []Interceptor
-	predicates []predicate.Category
-	withFKs    bool
+	ctx                     *QueryContext
+	order                   []category.OrderOption
+	inters                  []Interceptor
+	predicates              []predicate.Category
+	withCategoryAssignments *CategoryAssignmentQuery
+	withFKs                 bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -56,6 +59,28 @@ func (cq *CategoryQuery) Unique(unique bool) *CategoryQuery {
 func (cq *CategoryQuery) Order(o ...category.OrderOption) *CategoryQuery {
 	cq.order = append(cq.order, o...)
 	return cq
+}
+
+// QueryCategoryAssignments chains the current query on the "categoryAssignments" edge.
+func (cq *CategoryQuery) QueryCategoryAssignments() *CategoryAssignmentQuery {
+	query := (&CategoryAssignmentClient{config: cq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(category.Table, category.FieldID, selector),
+			sqlgraph.To(categoryassignment.Table, categoryassignment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, category.CategoryAssignmentsTable, category.CategoryAssignmentsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first Category entity from the query.
@@ -245,15 +270,27 @@ func (cq *CategoryQuery) Clone() *CategoryQuery {
 		return nil
 	}
 	return &CategoryQuery{
-		config:     cq.config,
-		ctx:        cq.ctx.Clone(),
-		order:      append([]category.OrderOption{}, cq.order...),
-		inters:     append([]Interceptor{}, cq.inters...),
-		predicates: append([]predicate.Category{}, cq.predicates...),
+		config:                  cq.config,
+		ctx:                     cq.ctx.Clone(),
+		order:                   append([]category.OrderOption{}, cq.order...),
+		inters:                  append([]Interceptor{}, cq.inters...),
+		predicates:              append([]predicate.Category{}, cq.predicates...),
+		withCategoryAssignments: cq.withCategoryAssignments.Clone(),
 		// clone intermediate query.
 		sql:  cq.sql.Clone(),
 		path: cq.path,
 	}
+}
+
+// WithCategoryAssignments tells the query-builder to eager-load the nodes that are connected to
+// the "categoryAssignments" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *CategoryQuery) WithCategoryAssignments(opts ...func(*CategoryAssignmentQuery)) *CategoryQuery {
+	query := (&CategoryAssignmentClient{config: cq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withCategoryAssignments = query
+	return cq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -332,9 +369,12 @@ func (cq *CategoryQuery) prepareQuery(ctx context.Context) error {
 
 func (cq *CategoryQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Category, error) {
 	var (
-		nodes   = []*Category{}
-		withFKs = cq.withFKs
-		_spec   = cq.querySpec()
+		nodes       = []*Category{}
+		withFKs     = cq.withFKs
+		_spec       = cq.querySpec()
+		loadedTypes = [1]bool{
+			cq.withCategoryAssignments != nil,
+		}
 	)
 	if withFKs {
 		_spec.Node.Columns = append(_spec.Node.Columns, category.ForeignKeys...)
@@ -345,6 +385,7 @@ func (cq *CategoryQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cat
 	_spec.Assign = func(columns []string, values []any) error {
 		node := &Category{config: cq.config}
 		nodes = append(nodes, node)
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	for i := range hooks {
@@ -356,7 +397,47 @@ func (cq *CategoryQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cat
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := cq.withCategoryAssignments; query != nil {
+		if err := cq.loadCategoryAssignments(ctx, query, nodes,
+			func(n *Category) { n.Edges.CategoryAssignments = []*CategoryAssignment{} },
+			func(n *Category, e *CategoryAssignment) {
+				n.Edges.CategoryAssignments = append(n.Edges.CategoryAssignments, e)
+			}); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
+}
+
+func (cq *CategoryQuery) loadCategoryAssignments(ctx context.Context, query *CategoryAssignmentQuery, nodes []*Category, init func(*Category), assign func(*Category, *CategoryAssignment)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Category)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(categoryassignment.FieldCategoryID)
+	}
+	query.Where(predicate.CategoryAssignment(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(category.CategoryAssignmentsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.CategoryID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "category_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
 }
 
 func (cq *CategoryQuery) sqlCount(ctx context.Context) (int, error) {

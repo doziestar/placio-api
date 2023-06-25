@@ -27,6 +27,9 @@ type BusinessFollowUser func(*sql.Selector)
 // Category is the predicate function for category builders.
 type Category func(*sql.Selector)
 
+// CategoryAssignment is the predicate function for categoryassignment builders.
+type CategoryAssignment func(*sql.Selector)
+
 // Chat is the predicate function for chat builders.
 type Chat func(*sql.Selector)
 

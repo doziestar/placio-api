@@ -4,6 +4,7 @@ package category
 
 import (
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 const (
@@ -15,8 +16,17 @@ const (
 	FieldName = "name"
 	// FieldImage holds the string denoting the image field in the database.
 	FieldImage = "image"
+	// EdgeCategoryAssignments holds the string denoting the categoryassignments edge name in mutations.
+	EdgeCategoryAssignments = "categoryAssignments"
 	// Table holds the table name of the category in the database.
 	Table = "categories"
+	// CategoryAssignmentsTable is the table that holds the categoryAssignments relation/edge.
+	CategoryAssignmentsTable = "category_assignments"
+	// CategoryAssignmentsInverseTable is the table name for the CategoryAssignment entity.
+	// It exists in this package in order to avoid circular dependency with the "categoryassignment" package.
+	CategoryAssignmentsInverseTable = "category_assignments"
+	// CategoryAssignmentsColumn is the table column denoting the categoryAssignments relation/edge.
+	CategoryAssignmentsColumn = "category_id"
 )
 
 // Columns holds all SQL columns for category fields.
@@ -73,4 +83,25 @@ func ByName(opts ...sql.OrderTermOption) OrderOption {
 // ByImage orders the results by the image field.
 func ByImage(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldImage, opts...).ToFunc()
+}
+
+// ByCategoryAssignmentsCount orders the results by categoryAssignments count.
+func ByCategoryAssignmentsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newCategoryAssignmentsStep(), opts...)
+	}
+}
+
+// ByCategoryAssignments orders the results by categoryAssignments terms.
+func ByCategoryAssignments(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCategoryAssignmentsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+func newCategoryAssignmentsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CategoryAssignmentsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, CategoryAssignmentsTable, CategoryAssignmentsColumn),
+	)
 }

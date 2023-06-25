@@ -17,6 +17,7 @@ import (
 	"placio-app/ent/businessfollowbusiness"
 	"placio-app/ent/businessfollowuser"
 	"placio-app/ent/category"
+	"placio-app/ent/categoryassignment"
 	"placio-app/ent/chat"
 	"placio-app/ent/comment"
 	"placio-app/ent/event"
@@ -65,6 +66,8 @@ type Client struct {
 	BusinessFollowUser *BusinessFollowUserClient
 	// Category is the client for interacting with the Category builders.
 	Category *CategoryClient
+	// CategoryAssignment is the client for interacting with the CategoryAssignment builders.
+	CategoryAssignment *CategoryAssignmentClient
 	// Chat is the client for interacting with the Chat builders.
 	Chat *ChatClient
 	// Comment is the client for interacting with the Comment builders.
@@ -129,6 +132,7 @@ func (c *Client) init() {
 	c.BusinessFollowBusiness = NewBusinessFollowBusinessClient(c.config)
 	c.BusinessFollowUser = NewBusinessFollowUserClient(c.config)
 	c.Category = NewCategoryClient(c.config)
+	c.CategoryAssignment = NewCategoryAssignmentClient(c.config)
 	c.Chat = NewChatClient(c.config)
 	c.Comment = NewCommentClient(c.config)
 	c.Event = NewEventClient(c.config)
@@ -240,6 +244,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		BusinessFollowBusiness: NewBusinessFollowBusinessClient(cfg),
 		BusinessFollowUser:     NewBusinessFollowUserClient(cfg),
 		Category:               NewCategoryClient(cfg),
+		CategoryAssignment:     NewCategoryAssignmentClient(cfg),
 		Chat:                   NewChatClient(cfg),
 		Comment:                NewCommentClient(cfg),
 		Event:                  NewEventClient(cfg),
@@ -288,6 +293,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		BusinessFollowBusiness: NewBusinessFollowBusinessClient(cfg),
 		BusinessFollowUser:     NewBusinessFollowUserClient(cfg),
 		Category:               NewCategoryClient(cfg),
+		CategoryAssignment:     NewCategoryAssignmentClient(cfg),
 		Chat:                   NewChatClient(cfg),
 		Comment:                NewCommentClient(cfg),
 		Event:                  NewEventClient(cfg),
@@ -340,10 +346,10 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.AccountSettings, c.Amenity, c.Booking, c.Business, c.BusinessFollowBusiness,
-		c.BusinessFollowUser, c.Category, c.Chat, c.Comment, c.Event, c.Help, c.Like,
-		c.Media, c.Menu, c.Order, c.Payment, c.Place, c.Post, c.Rating, c.Reaction,
-		c.Reservation, c.Review, c.Room, c.Ticket, c.TicketOption, c.User,
-		c.UserBusiness, c.UserFollowBusiness, c.UserFollowUser,
+		c.BusinessFollowUser, c.Category, c.CategoryAssignment, c.Chat, c.Comment,
+		c.Event, c.Help, c.Like, c.Media, c.Menu, c.Order, c.Payment, c.Place, c.Post,
+		c.Rating, c.Reaction, c.Reservation, c.Review, c.Room, c.Ticket,
+		c.TicketOption, c.User, c.UserBusiness, c.UserFollowBusiness, c.UserFollowUser,
 	} {
 		n.Use(hooks...)
 	}
@@ -354,10 +360,10 @@ func (c *Client) Use(hooks ...Hook) {
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.AccountSettings, c.Amenity, c.Booking, c.Business, c.BusinessFollowBusiness,
-		c.BusinessFollowUser, c.Category, c.Chat, c.Comment, c.Event, c.Help, c.Like,
-		c.Media, c.Menu, c.Order, c.Payment, c.Place, c.Post, c.Rating, c.Reaction,
-		c.Reservation, c.Review, c.Room, c.Ticket, c.TicketOption, c.User,
-		c.UserBusiness, c.UserFollowBusiness, c.UserFollowUser,
+		c.BusinessFollowUser, c.Category, c.CategoryAssignment, c.Chat, c.Comment,
+		c.Event, c.Help, c.Like, c.Media, c.Menu, c.Order, c.Payment, c.Place, c.Post,
+		c.Rating, c.Reaction, c.Reservation, c.Review, c.Room, c.Ticket,
+		c.TicketOption, c.User, c.UserBusiness, c.UserFollowBusiness, c.UserFollowUser,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -380,6 +386,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.BusinessFollowUser.mutate(ctx, m)
 	case *CategoryMutation:
 		return c.Category.mutate(ctx, m)
+	case *CategoryAssignmentMutation:
+		return c.CategoryAssignment.mutate(ctx, m)
 	case *ChatMutation:
 		return c.Chat.mutate(ctx, m)
 	case *CommentMutation:
@@ -1084,6 +1092,22 @@ func (c *BusinessClient) QueryCategories(b *Business) *CategoryQuery {
 	return query
 }
 
+// QueryCategoryAssignments queries the categoryAssignments edge of a Business.
+func (c *BusinessClient) QueryCategoryAssignments(b *Business) *CategoryAssignmentQuery {
+	query := (&CategoryAssignmentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(business.Table, business.FieldID, id),
+			sqlgraph.To(categoryassignment.Table, categoryassignment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, business.CategoryAssignmentsTable, business.CategoryAssignmentsColumn),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *BusinessClient) Hooks() []Hook {
 	return c.hooks.Business
@@ -1502,6 +1526,22 @@ func (c *CategoryClient) GetX(ctx context.Context, id string) *Category {
 	return obj
 }
 
+// QueryCategoryAssignments queries the categoryAssignments edge of a Category.
+func (c *CategoryClient) QueryCategoryAssignments(ca *Category) *CategoryAssignmentQuery {
+	query := (&CategoryAssignmentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ca.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(category.Table, category.FieldID, id),
+			sqlgraph.To(categoryassignment.Table, categoryassignment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, category.CategoryAssignmentsTable, category.CategoryAssignmentsColumn),
+		)
+		fromV = sqlgraph.Neighbors(ca.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *CategoryClient) Hooks() []Hook {
 	return c.hooks.Category
@@ -1524,6 +1564,188 @@ func (c *CategoryClient) mutate(ctx context.Context, m *CategoryMutation) (Value
 		return (&CategoryDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Category mutation op: %q", m.Op())
+	}
+}
+
+// CategoryAssignmentClient is a client for the CategoryAssignment schema.
+type CategoryAssignmentClient struct {
+	config
+}
+
+// NewCategoryAssignmentClient returns a client for the CategoryAssignment from the given config.
+func NewCategoryAssignmentClient(c config) *CategoryAssignmentClient {
+	return &CategoryAssignmentClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `categoryassignment.Hooks(f(g(h())))`.
+func (c *CategoryAssignmentClient) Use(hooks ...Hook) {
+	c.hooks.CategoryAssignment = append(c.hooks.CategoryAssignment, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `categoryassignment.Intercept(f(g(h())))`.
+func (c *CategoryAssignmentClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CategoryAssignment = append(c.inters.CategoryAssignment, interceptors...)
+}
+
+// Create returns a builder for creating a CategoryAssignment entity.
+func (c *CategoryAssignmentClient) Create() *CategoryAssignmentCreate {
+	mutation := newCategoryAssignmentMutation(c.config, OpCreate)
+	return &CategoryAssignmentCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CategoryAssignment entities.
+func (c *CategoryAssignmentClient) CreateBulk(builders ...*CategoryAssignmentCreate) *CategoryAssignmentCreateBulk {
+	return &CategoryAssignmentCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CategoryAssignment.
+func (c *CategoryAssignmentClient) Update() *CategoryAssignmentUpdate {
+	mutation := newCategoryAssignmentMutation(c.config, OpUpdate)
+	return &CategoryAssignmentUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CategoryAssignmentClient) UpdateOne(ca *CategoryAssignment) *CategoryAssignmentUpdateOne {
+	mutation := newCategoryAssignmentMutation(c.config, OpUpdateOne, withCategoryAssignment(ca))
+	return &CategoryAssignmentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CategoryAssignmentClient) UpdateOneID(id string) *CategoryAssignmentUpdateOne {
+	mutation := newCategoryAssignmentMutation(c.config, OpUpdateOne, withCategoryAssignmentID(id))
+	return &CategoryAssignmentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CategoryAssignment.
+func (c *CategoryAssignmentClient) Delete() *CategoryAssignmentDelete {
+	mutation := newCategoryAssignmentMutation(c.config, OpDelete)
+	return &CategoryAssignmentDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CategoryAssignmentClient) DeleteOne(ca *CategoryAssignment) *CategoryAssignmentDeleteOne {
+	return c.DeleteOneID(ca.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CategoryAssignmentClient) DeleteOneID(id string) *CategoryAssignmentDeleteOne {
+	builder := c.Delete().Where(categoryassignment.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CategoryAssignmentDeleteOne{builder}
+}
+
+// Query returns a query builder for CategoryAssignment.
+func (c *CategoryAssignmentClient) Query() *CategoryAssignmentQuery {
+	return &CategoryAssignmentQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCategoryAssignment},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a CategoryAssignment entity by its id.
+func (c *CategoryAssignmentClient) Get(ctx context.Context, id string) (*CategoryAssignment, error) {
+	return c.Query().Where(categoryassignment.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CategoryAssignmentClient) GetX(ctx context.Context, id string) *CategoryAssignment {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryUser queries the user edge of a CategoryAssignment.
+func (c *CategoryAssignmentClient) QueryUser(ca *CategoryAssignment) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ca.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(categoryassignment.Table, categoryassignment.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, categoryassignment.UserTable, categoryassignment.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(ca.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryBusiness queries the business edge of a CategoryAssignment.
+func (c *CategoryAssignmentClient) QueryBusiness(ca *CategoryAssignment) *BusinessQuery {
+	query := (&BusinessClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ca.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(categoryassignment.Table, categoryassignment.FieldID, id),
+			sqlgraph.To(business.Table, business.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, categoryassignment.BusinessTable, categoryassignment.BusinessColumn),
+		)
+		fromV = sqlgraph.Neighbors(ca.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPlace queries the place edge of a CategoryAssignment.
+func (c *CategoryAssignmentClient) QueryPlace(ca *CategoryAssignment) *PlaceQuery {
+	query := (&PlaceClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ca.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(categoryassignment.Table, categoryassignment.FieldID, id),
+			sqlgraph.To(place.Table, place.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, categoryassignment.PlaceTable, categoryassignment.PlaceColumn),
+		)
+		fromV = sqlgraph.Neighbors(ca.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCategory queries the category edge of a CategoryAssignment.
+func (c *CategoryAssignmentClient) QueryCategory(ca *CategoryAssignment) *CategoryQuery {
+	query := (&CategoryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ca.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(categoryassignment.Table, categoryassignment.FieldID, id),
+			sqlgraph.To(category.Table, category.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, categoryassignment.CategoryTable, categoryassignment.CategoryColumn),
+		)
+		fromV = sqlgraph.Neighbors(ca.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *CategoryAssignmentClient) Hooks() []Hook {
+	return c.hooks.CategoryAssignment
+}
+
+// Interceptors returns the client interceptors.
+func (c *CategoryAssignmentClient) Interceptors() []Interceptor {
+	return c.inters.CategoryAssignment
+}
+
+func (c *CategoryAssignmentClient) mutate(ctx context.Context, m *CategoryAssignmentMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CategoryAssignmentCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CategoryAssignmentUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CategoryAssignmentUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CategoryAssignmentDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CategoryAssignment mutation op: %q", m.Op())
 	}
 }
 
@@ -2995,6 +3217,22 @@ func (c *PlaceClient) QueryCategories(pl *Place) *CategoryQuery {
 			sqlgraph.From(place.Table, place.FieldID, id),
 			sqlgraph.To(category.Table, category.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, place.CategoriesTable, place.CategoriesColumn),
+		)
+		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCategoryAssignments queries the categoryAssignments edge of a Place.
+func (c *PlaceClient) QueryCategoryAssignments(pl *Place) *CategoryAssignmentQuery {
+	query := (&CategoryAssignmentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pl.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(place.Table, place.FieldID, id),
+			sqlgraph.To(categoryassignment.Table, categoryassignment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, place.CategoryAssignmentsTable, place.CategoryAssignmentsColumn),
 		)
 		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
 		return fromV, nil
@@ -4512,6 +4750,54 @@ func (c *UserClient) QueryCategories(u *User) *CategoryQuery {
 	return query
 }
 
+// QueryEvents queries the events edge of a User.
+func (c *UserClient) QueryEvents(u *User) *EventQuery {
+	query := (&EventClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(event.Table, event.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.EventsTable, user.EventsColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPlaces queries the places edge of a User.
+func (c *UserClient) QueryPlaces(u *User) *PlaceQuery {
+	query := (&PlaceClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(place.Table, place.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.PlacesTable, user.PlacesColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCategoryAssignments queries the categoryAssignments edge of a User.
+func (c *UserClient) QueryCategoryAssignments(u *User) *CategoryAssignmentQuery {
+	query := (&CategoryAssignmentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(categoryassignment.Table, categoryassignment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.CategoryAssignmentsTable, user.CategoryAssignmentsColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *UserClient) Hooks() []Hook {
 	return c.hooks.User
@@ -4991,16 +5277,16 @@ func (c *UserFollowUserClient) mutate(ctx context.Context, m *UserFollowUserMuta
 type (
 	hooks struct {
 		AccountSettings, Amenity, Booking, Business, BusinessFollowBusiness,
-		BusinessFollowUser, Category, Chat, Comment, Event, Help, Like, Media, Menu,
-		Order, Payment, Place, Post, Rating, Reaction, Reservation, Review, Room,
-		Ticket, TicketOption, User, UserBusiness, UserFollowBusiness,
+		BusinessFollowUser, Category, CategoryAssignment, Chat, Comment, Event, Help,
+		Like, Media, Menu, Order, Payment, Place, Post, Rating, Reaction, Reservation,
+		Review, Room, Ticket, TicketOption, User, UserBusiness, UserFollowBusiness,
 		UserFollowUser []ent.Hook
 	}
 	inters struct {
 		AccountSettings, Amenity, Booking, Business, BusinessFollowBusiness,
-		BusinessFollowUser, Category, Chat, Comment, Event, Help, Like, Media, Menu,
-		Order, Payment, Place, Post, Rating, Reaction, Reservation, Review, Room,
-		Ticket, TicketOption, User, UserBusiness, UserFollowBusiness,
+		BusinessFollowUser, Category, CategoryAssignment, Chat, Comment, Event, Help,
+		Like, Media, Menu, Order, Payment, Place, Post, Rating, Reaction, Reservation,
+		Review, Room, Ticket, TicketOption, User, UserBusiness, UserFollowBusiness,
 		UserFollowUser []ent.Interceptor
 	}
 )

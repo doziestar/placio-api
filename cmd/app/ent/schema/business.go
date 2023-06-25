@@ -19,6 +19,8 @@ func (Business) Fields() []ent.Field {
 			Unique().
 			Immutable(),
 		field.String("name"),
+		field.String("search_text").Optional(),
+		field.Float("relevance_score").Optional(),
 	}
 }
 
@@ -35,5 +37,6 @@ func (Business) Edges() []ent.Edge {
 		edge.To("followerBusinesses", BusinessFollowBusiness.Type),
 		edge.To("places", Place.Type),
 		edge.To("categories", Category.Type),
+		edge.To("categoryAssignments", CategoryAssignment.Type),
 	}
 }

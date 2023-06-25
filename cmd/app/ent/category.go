@@ -19,7 +19,10 @@ type Category struct {
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Image holds the value of the "image" field.
-	Image               string `json:"image,omitempty"`
+	Image string `json:"image,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the CategoryQuery when eager-loading is set.
+	Edges               CategoryEdges `json:"edges"`
 	business_categories *string
 	media_categories    *string
 	menu_categories     *string
@@ -27,6 +30,24 @@ type Category struct {
 	post_categories     *string
 	user_categories     *string
 	selectValues        sql.SelectValues
+}
+
+// CategoryEdges holds the relations/edges for other nodes in the graph.
+type CategoryEdges struct {
+	// CategoryAssignments holds the value of the categoryAssignments edge.
+	CategoryAssignments []*CategoryAssignment `json:"categoryAssignments,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// CategoryAssignmentsOrErr returns the CategoryAssignments value or an error if the edge
+// was not loaded in eager-loading.
+func (e CategoryEdges) CategoryAssignmentsOrErr() ([]*CategoryAssignment, error) {
+	if e.loadedTypes[0] {
+		return e.CategoryAssignments, nil
+	}
+	return nil, &NotLoadedError{edge: "categoryAssignments"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -134,6 +155,11 @@ func (c *Category) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (c *Category) Value(name string) (ent.Value, error) {
 	return c.selectValues.Get(name)
+}
+
+// QueryCategoryAssignments queries the "categoryAssignments" edge of the Category entity.
+func (c *Category) QueryCategoryAssignments() *CategoryAssignmentQuery {
+	return NewCategoryClient(c.config).QueryCategoryAssignments(c)
 }
 
 // Update returns a builder for updating this Category.

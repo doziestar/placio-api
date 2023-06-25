@@ -28,6 +28,12 @@ const (
 	FieldSpecialOffers = "special_offers"
 	// FieldSustainabilityScore holds the string denoting the sustainability_score field in the database.
 	FieldSustainabilityScore = "sustainability_score"
+	// FieldMapCoordinates holds the string denoting the map_coordinates field in the database.
+	FieldMapCoordinates = "map_coordinates"
+	// FieldSearchText holds the string denoting the search_text field in the database.
+	FieldSearchText = "search_text"
+	// FieldRelevanceScore holds the string denoting the relevance_score field in the database.
+	FieldRelevanceScore = "relevance_score"
 	// EdgeBusiness holds the string denoting the business edge name in mutations.
 	EdgeBusiness = "business"
 	// EdgeReviews holds the string denoting the reviews edge name in mutations.
@@ -46,6 +52,8 @@ const (
 	EdgeBookings = "bookings"
 	// EdgeCategories holds the string denoting the categories edge name in mutations.
 	EdgeCategories = "categories"
+	// EdgeCategoryAssignments holds the string denoting the categoryassignments edge name in mutations.
+	EdgeCategoryAssignments = "categoryAssignments"
 	// Table holds the table name of the place in the database.
 	Table = "places"
 	// BusinessTable is the table that holds the business relation/edge.
@@ -109,6 +117,13 @@ const (
 	CategoriesInverseTable = "categories"
 	// CategoriesColumn is the table column denoting the categories relation/edge.
 	CategoriesColumn = "place_categories"
+	// CategoryAssignmentsTable is the table that holds the categoryAssignments relation/edge.
+	CategoryAssignmentsTable = "category_assignments"
+	// CategoryAssignmentsInverseTable is the table name for the CategoryAssignment entity.
+	// It exists in this package in order to avoid circular dependency with the "categoryassignment" package.
+	CategoryAssignmentsInverseTable = "category_assignments"
+	// CategoryAssignmentsColumn is the table column denoting the categoryAssignments relation/edge.
+	CategoryAssignmentsColumn = "entity_id"
 )
 
 // Columns holds all SQL columns for place fields.
@@ -122,12 +137,16 @@ var Columns = []string{
 	FieldAvailability,
 	FieldSpecialOffers,
 	FieldSustainabilityScore,
+	FieldMapCoordinates,
+	FieldSearchText,
+	FieldRelevanceScore,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "places"
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
 	"business_places",
+	"user_places",
 }
 
 var (
@@ -192,6 +211,16 @@ func BySpecialOffers(opts ...sql.OrderTermOption) OrderOption {
 // BySustainabilityScore orders the results by the sustainability_score field.
 func BySustainabilityScore(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSustainabilityScore, opts...).ToFunc()
+}
+
+// BySearchText orders the results by the search_text field.
+func BySearchText(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSearchText, opts...).ToFunc()
+}
+
+// ByRelevanceScore orders the results by the relevance_score field.
+func ByRelevanceScore(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRelevanceScore, opts...).ToFunc()
 }
 
 // ByBusinessField orders the results by business field.
@@ -312,6 +341,20 @@ func ByCategories(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newCategoriesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByCategoryAssignmentsCount orders the results by categoryAssignments count.
+func ByCategoryAssignmentsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newCategoryAssignmentsStep(), opts...)
+	}
+}
+
+// ByCategoryAssignments orders the results by categoryAssignments terms.
+func ByCategoryAssignments(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCategoryAssignmentsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newBusinessStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -373,5 +416,12 @@ func newCategoriesStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CategoriesInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, CategoriesTable, CategoriesColumn),
+	)
+}
+func newCategoryAssignmentsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CategoryAssignmentsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, CategoryAssignmentsTable, CategoryAssignmentsColumn),
 	)
 }

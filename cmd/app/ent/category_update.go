@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"placio-app/ent/category"
+	"placio-app/ent/categoryassignment"
 	"placio-app/ent/predicate"
 
 	"entgo.io/ent/dialect/sql"
@@ -53,9 +54,45 @@ func (cu *CategoryUpdate) ClearImage() *CategoryUpdate {
 	return cu
 }
 
+// AddCategoryAssignmentIDs adds the "categoryAssignments" edge to the CategoryAssignment entity by IDs.
+func (cu *CategoryUpdate) AddCategoryAssignmentIDs(ids ...string) *CategoryUpdate {
+	cu.mutation.AddCategoryAssignmentIDs(ids...)
+	return cu
+}
+
+// AddCategoryAssignments adds the "categoryAssignments" edges to the CategoryAssignment entity.
+func (cu *CategoryUpdate) AddCategoryAssignments(c ...*CategoryAssignment) *CategoryUpdate {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return cu.AddCategoryAssignmentIDs(ids...)
+}
+
 // Mutation returns the CategoryMutation object of the builder.
 func (cu *CategoryUpdate) Mutation() *CategoryMutation {
 	return cu.mutation
+}
+
+// ClearCategoryAssignments clears all "categoryAssignments" edges to the CategoryAssignment entity.
+func (cu *CategoryUpdate) ClearCategoryAssignments() *CategoryUpdate {
+	cu.mutation.ClearCategoryAssignments()
+	return cu
+}
+
+// RemoveCategoryAssignmentIDs removes the "categoryAssignments" edge to CategoryAssignment entities by IDs.
+func (cu *CategoryUpdate) RemoveCategoryAssignmentIDs(ids ...string) *CategoryUpdate {
+	cu.mutation.RemoveCategoryAssignmentIDs(ids...)
+	return cu
+}
+
+// RemoveCategoryAssignments removes "categoryAssignments" edges to CategoryAssignment entities.
+func (cu *CategoryUpdate) RemoveCategoryAssignments(c ...*CategoryAssignment) *CategoryUpdate {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return cu.RemoveCategoryAssignmentIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -103,6 +140,51 @@ func (cu *CategoryUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if cu.mutation.ImageCleared() {
 		_spec.ClearField(category.FieldImage, field.TypeString)
 	}
+	if cu.mutation.CategoryAssignmentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   category.CategoryAssignmentsTable,
+			Columns: []string{category.CategoryAssignmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(categoryassignment.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.RemovedCategoryAssignmentsIDs(); len(nodes) > 0 && !cu.mutation.CategoryAssignmentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   category.CategoryAssignmentsTable,
+			Columns: []string{category.CategoryAssignmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(categoryassignment.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.CategoryAssignmentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   category.CategoryAssignmentsTable,
+			Columns: []string{category.CategoryAssignmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(categoryassignment.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, cu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{category.Label}
@@ -149,9 +231,45 @@ func (cuo *CategoryUpdateOne) ClearImage() *CategoryUpdateOne {
 	return cuo
 }
 
+// AddCategoryAssignmentIDs adds the "categoryAssignments" edge to the CategoryAssignment entity by IDs.
+func (cuo *CategoryUpdateOne) AddCategoryAssignmentIDs(ids ...string) *CategoryUpdateOne {
+	cuo.mutation.AddCategoryAssignmentIDs(ids...)
+	return cuo
+}
+
+// AddCategoryAssignments adds the "categoryAssignments" edges to the CategoryAssignment entity.
+func (cuo *CategoryUpdateOne) AddCategoryAssignments(c ...*CategoryAssignment) *CategoryUpdateOne {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return cuo.AddCategoryAssignmentIDs(ids...)
+}
+
 // Mutation returns the CategoryMutation object of the builder.
 func (cuo *CategoryUpdateOne) Mutation() *CategoryMutation {
 	return cuo.mutation
+}
+
+// ClearCategoryAssignments clears all "categoryAssignments" edges to the CategoryAssignment entity.
+func (cuo *CategoryUpdateOne) ClearCategoryAssignments() *CategoryUpdateOne {
+	cuo.mutation.ClearCategoryAssignments()
+	return cuo
+}
+
+// RemoveCategoryAssignmentIDs removes the "categoryAssignments" edge to CategoryAssignment entities by IDs.
+func (cuo *CategoryUpdateOne) RemoveCategoryAssignmentIDs(ids ...string) *CategoryUpdateOne {
+	cuo.mutation.RemoveCategoryAssignmentIDs(ids...)
+	return cuo
+}
+
+// RemoveCategoryAssignments removes "categoryAssignments" edges to CategoryAssignment entities.
+func (cuo *CategoryUpdateOne) RemoveCategoryAssignments(c ...*CategoryAssignment) *CategoryUpdateOne {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return cuo.RemoveCategoryAssignmentIDs(ids...)
 }
 
 // Where appends a list predicates to the CategoryUpdate builder.
@@ -228,6 +346,51 @@ func (cuo *CategoryUpdateOne) sqlSave(ctx context.Context) (_node *Category, err
 	}
 	if cuo.mutation.ImageCleared() {
 		_spec.ClearField(category.FieldImage, field.TypeString)
+	}
+	if cuo.mutation.CategoryAssignmentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   category.CategoryAssignmentsTable,
+			Columns: []string{category.CategoryAssignmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(categoryassignment.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.RemovedCategoryAssignmentsIDs(); len(nodes) > 0 && !cuo.mutation.CategoryAssignmentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   category.CategoryAssignmentsTable,
+			Columns: []string{category.CategoryAssignmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(categoryassignment.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.CategoryAssignmentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   category.CategoryAssignmentsTable,
+			Columns: []string{category.CategoryAssignmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(categoryassignment.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &Category{config: cuo.config}
 	_spec.Assign = _node.assignValues

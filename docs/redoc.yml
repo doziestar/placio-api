@@ -1,4 +1,4 @@
-basePath: /qpi/v1
+basePath: /api/v1
 definitions:
   gin.H:
     additionalProperties: {}
@@ -370,6 +370,12 @@ definitions:
       name:
         description: Name holds the value of the "name" field.
         type: string
+      relevance_score:
+        description: RelevanceScore holds the value of the "relevance_score" field.
+        type: number
+      search_text:
+        description: SearchText holds the value of the "search_text" field.
+        type: string
     type: object
   placio-app_ent.BusinessEdges:
     properties:
@@ -381,6 +387,11 @@ definitions:
         description: Categories holds the value of the categories edge.
         items:
           $ref: '#/definitions/placio-app_ent.Category'
+        type: array
+      categoryAssignments:
+        description: CategoryAssignments holds the value of the categoryAssignments edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.CategoryAssignment'
         type: array
       followedBusinesses:
         description: FollowedBusinesses holds the value of the followedBusinesses edge.
@@ -466,6 +477,12 @@ definitions:
     type: object
   placio-app_ent.Category:
     properties:
+      edges:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.CategoryEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the CategoryQuery when eager-loading is set.
       id:
         description: ID of the ent.
         type: string
@@ -475,6 +492,54 @@ definitions:
       name:
         description: Name holds the value of the "name" field.
         type: string
+    type: object
+  placio-app_ent.CategoryAssignment:
+    properties:
+      category_id:
+        description: This represents the ID of the category
+        type: string
+      edges:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.CategoryAssignmentEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the CategoryAssignmentQuery when eager-loading is set.
+      entity_id:
+        description: This represents the ID of User, Business or Place entity
+        type: string
+      entity_type:
+        description: 'This represents the type of entity: User, Business, or Place'
+        type: string
+      id:
+        description: ID of the ent.
+        type: string
+    type: object
+  placio-app_ent.CategoryAssignmentEdges:
+    properties:
+      business:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.Business'
+        description: Business holds the value of the business edge.
+      category:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.Category'
+        description: Category holds the value of the category edge.
+      place:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.Place'
+        description: Place holds the value of the place edge.
+      user:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.User'
+        description: User holds the value of the user edge.
+    type: object
+  placio-app_ent.CategoryEdges:
+    properties:
+      categoryAssignments:
+        description: CategoryAssignments holds the value of the categoryAssignments edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.CategoryAssignment'
+        type: array
     type: object
   placio-app_ent.Comment:
     properties:
@@ -694,8 +759,18 @@ definitions:
       location:
         description: Location holds the value of the "location" field.
         type: string
+      map_coordinates:
+        additionalProperties: true
+        description: MapCoordinates holds the value of the "map_coordinates" field.
+        type: object
       name:
         description: Name holds the value of the "name" field.
+        type: string
+      relevance_score:
+        description: RelevanceScore holds the value of the "relevance_score" field.
+        type: number
+      search_text:
+        description: SearchText holds the value of the "search_text" field.
         type: string
       special_offers:
         description: SpecialOffers holds the value of the "special_offers" field.
@@ -727,6 +802,11 @@ definitions:
         description: Categories holds the value of the categories edge.
         items:
           $ref: '#/definitions/placio-app_ent.Category'
+        type: array
+      categoryAssignments:
+        description: CategoryAssignments holds the value of the categoryAssignments edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.CategoryAssignment'
         type: array
       events:
         description: Events holds the value of the events edge.
@@ -992,6 +1072,9 @@ definitions:
       auth0_id:
         description: Auth0ID holds the value of the "auth0_id" field.
         type: string
+      bio:
+        description: Bio holds the value of the "bio" field.
+        type: string
       cover_image:
         description: CoverImage holds the value of the "cover_image" field.
         type: string
@@ -1009,6 +1092,12 @@ definitions:
         type: string
       picture:
         description: Picture holds the value of the "picture" field.
+        type: string
+      relevance_score:
+        description: RelevanceScore holds the value of the "relevance_score" field.
+        type: number
+      search_text:
+        description: SearchText holds the value of the "search_text" field.
         type: string
       user_settings:
         additionalProperties: true
@@ -1056,10 +1145,20 @@ definitions:
         items:
           $ref: '#/definitions/placio-app_ent.Category'
         type: array
+      categoryAssignments:
+        description: CategoryAssignments holds the value of the categoryAssignments edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.CategoryAssignment'
+        type: array
       comments:
         description: Comments holds the value of the comments edge.
         items:
           $ref: '#/definitions/placio-app_ent.Comment'
+        type: array
+      events:
+        description: Events holds the value of the events edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Event'
         type: array
       followedBusinesses:
         description: FollowedBusinesses holds the value of the followedBusinesses edge.
@@ -1090,6 +1189,11 @@ definitions:
         description: Likes holds the value of the likes edge.
         items:
           $ref: '#/definitions/placio-app_ent.Like'
+        type: array
+      places:
+        description: Places holds the value of the places edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Place'
         type: array
       posts:
         description: Posts holds the value of the posts edge.
@@ -1562,7 +1666,7 @@ host: https://api.palnight.com
 info:
   contact:
     email: support@placio.io
-    name: Darc Technologies
+    name: Placio Ltd
     url: https://placio.io
   description: This is the documentation for the Placio Application Api
   license:
@@ -1572,409 +1676,6 @@ info:
   title: Placio Application Api
   version: '0.01'
 paths:
-  /:
-    get:
-      operationId: list-business-accounts
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Response'
-        '400':
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Error'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Error'
-        '500':
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDto'
-      summary: List all business accounts
-      tags:
-        - Business
-    post:
-      consumes:
-        - application/json
-      operationId: create-business-account
-      parameters:
-        - description: Business Account Data
-          in: body
-          name: ent.Business
-          required: true
-          schema:
-            $ref: '#/definitions/placio-app_ent.Business'
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Response'
-        '400':
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Error'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Error'
-        '500':
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDto'
-      summary: Create a business account
-      tags:
-        - Business
-  /{businessAccountID}:
-    delete:
-      operationId: delete-business-account
-      parameters:
-        - description: Business Account ID
-          in: path
-          name: businessAccountID
-          required: true
-          type: string
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Response'
-        '400':
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Error'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Error'
-        '500':
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDto'
-      summary: Delete a business account
-      tags:
-        - Business
-    get:
-      operationId: get-business-account
-      parameters:
-        - description: Business Account ID
-          in: path
-          name: businessAccountID
-          required: true
-          type: string
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Response'
-        '400':
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Error'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Error'
-        '500':
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDto'
-      summary: Get a business account
-      tags:
-        - Business
-    put:
-      consumes:
-        - application/json
-      operationId: update-business-account
-      parameters:
-        - description: Business Account ID
-          in: path
-          name: businessAccountID
-          required: true
-          type: string
-        - description: Business Account Data
-          in: body
-          name: ent.Business
-          required: true
-          schema:
-            $ref: '#/definitions/placio-app_ent.Business'
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Response'
-        '400':
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Error'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Error'
-        '500':
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDto'
-      summary: Update a business account
-      tags:
-        - Business
-  /{businessAccountID}/user/{currentOwnerID}/{newOwnerID}:
-    put:
-      operationId: transfer-business-account-ownership
-      parameters:
-        - description: Business Account ID
-          in: path
-          name: businessAccountID
-          required: true
-          type: string
-        - description: Current Owner ID
-          in: path
-          name: currentOwnerID
-          required: true
-          type: string
-        - description: New Owner ID
-          in: path
-          name: newOwnerID
-          required: true
-          type: string
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Response'
-        '400':
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Error'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Error'
-        '500':
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDto'
-      summary: Transfer business account ownership
-      tags:
-        - Business
-  /{businessAccountID}/user/{userID}:
-    delete:
-      operationId: remove-user-business-account
-      parameters:
-        - description: Business Account ID
-          in: path
-          name: businessAccountID
-          required: true
-          type: string
-        - description: User ID
-          in: path
-          name: userID
-          required: true
-          type: string
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Response'
-        '400':
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Error'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Error'
-        '500':
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDto'
-      summary: Remove user from business account
-      tags:
-        - Business
-    post:
-      operationId: associate-user-business-account
-      parameters:
-        - description: Business Account ID
-          in: path
-          name: businessAccountID
-          required: true
-          type: string
-        - description: User ID
-          in: path
-          name: userID
-          required: true
-          type: string
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Response'
-        '400':
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Error'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Error'
-        '500':
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDto'
-      summary: Associate user with business account
-      tags:
-        - Business
-  /{businessAccountID}/users:
-    get:
-      operationId: get-users-business-account
-      parameters:
-        - description: Business Account ID
-          in: path
-          name: businessAccountID
-          required: true
-          type: string
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Response'
-        '400':
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Error'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Error'
-        '500':
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDto'
-      summary: Get users for a business account
-      tags:
-        - Business
-  /{businessID}/followed-contents:
-    get:
-      operationId: get-followed-contents
-      parameters:
-        - description: Business ID
-          in: path
-          name: businessID
-          required: true
-          type: string
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Response'
-        '400':
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Error'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Error'
-        '500':
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDto'
-      summary: Get contents followed by a business
-      tags:
-        - Business
-  /{businessID}/unfollow/user/{userID}:
-    delete:
-      operationId: unfollow-user
-      parameters:
-        - description: Business ID
-          in: path
-          name: businessID
-          required: true
-          type: string
-        - description: User ID
-          in: path
-          name: userID
-          required: true
-          type: string
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Response'
-        '400':
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Error'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Error'
-        '500':
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDto'
-      summary: Unfollow a user by a business
-      tags:
-        - Business
-  /{followerID}/unfollow/business/{followedID}:
-    delete:
-      operationId: unfollow-business
-      parameters:
-        - description: Follower Business ID
-          in: path
-          name: followerID
-          required: true
-          type: string
-        - description: Followed Business ID
-          in: path
-          name: followedID
-          required: true
-          type: string
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Response'
-        '400':
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Error'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Error'
-        '500':
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDto'
-      summary: Unfollow a business by another business
-      tags:
-        - Business
   /api/v1/attendees/:
     post:
       consumes:
@@ -4513,6 +4214,306 @@ paths:
       summary: Get all users for a business account
       tags:
         - User
+  /business/:
+    get:
+      operationId: list-business-accounts
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Response'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDto'
+      summary: List all business accounts
+      tags:
+        - Business
+    post:
+      consumes:
+        - application/json
+      operationId: create-business-account
+      parameters:
+        - description: Business Account Data
+          in: body
+          name: ent.Business
+          required: true
+          schema:
+            $ref: '#/definitions/placio-app_ent.Business'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Response'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDto'
+      summary: Create a business account
+      tags:
+        - Business
+  /business/{businessAccountID}:
+    delete:
+      operationId: delete-business-account
+      parameters:
+        - description: Business Account ID
+          in: path
+          name: businessAccountID
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Response'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDto'
+      summary: Delete a business account
+      tags:
+        - Business
+    get:
+      operationId: get-business-account
+      parameters:
+        - description: Business Account ID
+          in: path
+          name: businessAccountID
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Response'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDto'
+      summary: Get a business account
+      tags:
+        - Business
+    put:
+      consumes:
+        - application/json
+      operationId: update-business-account
+      parameters:
+        - description: Business Account ID
+          in: path
+          name: businessAccountID
+          required: true
+          type: string
+        - description: Business Account Data
+          in: body
+          name: ent.Business
+          required: true
+          schema:
+            $ref: '#/definitions/placio-app_ent.Business'
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Response'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDto'
+      summary: Update a business account
+      tags:
+        - Business
+  /business/{businessAccountID}/user/{currentOwnerID}/{newOwnerID}:
+    put:
+      operationId: transfer-business-account-ownership
+      parameters:
+        - description: Business Account ID
+          in: path
+          name: businessAccountID
+          required: true
+          type: string
+        - description: Current Owner ID
+          in: path
+          name: currentOwnerID
+          required: true
+          type: string
+        - description: New Owner ID
+          in: path
+          name: newOwnerID
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Response'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDto'
+      summary: Transfer business account ownership
+      tags:
+        - Business
+  /business/{businessAccountID}/user/{userID}:
+    delete:
+      operationId: remove-user-business-account
+      parameters:
+        - description: Business Account ID
+          in: path
+          name: businessAccountID
+          required: true
+          type: string
+        - description: User ID
+          in: path
+          name: userID
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Response'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDto'
+      summary: Remove user from business account
+      tags:
+        - Business
+    post:
+      operationId: associate-user-business-account
+      parameters:
+        - description: Business Account ID
+          in: path
+          name: businessAccountID
+          required: true
+          type: string
+        - description: User ID
+          in: path
+          name: userID
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Response'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDto'
+      summary: Associate user with business account
+      tags:
+        - Business
+  /business/{businessAccountID}/users:
+    get:
+      operationId: get-users-business-account
+      parameters:
+        - description: Business Account ID
+          in: path
+          name: businessAccountID
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Response'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDto'
+      summary: Get users for a business account
+      tags:
+        - Business
   /business/{businessID}/follow/user/{userID}:
     post:
       consumes:
@@ -4552,18 +4553,85 @@ paths:
       summary: Follow a user by a business
       tags:
         - Business
-  /business/{followerID}/follow/business/{followedID}:
+  /business/{businessID}/followed-contents:
+    get:
+      operationId: get-followed-contents
+      parameters:
+        - description: Business ID
+          in: path
+          name: businessID
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Response'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDto'
+      summary: Get contents followed by a business
+      tags:
+        - Business
+  /business/{businessID}/unfollow/user/{userID}:
+    delete:
+      operationId: unfollow-user
+      parameters:
+        - description: Business ID
+          in: path
+          name: businessID
+          required: true
+          type: string
+        - description: User ID
+          in: path
+          name: userID
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Response'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDto'
+      summary: Unfollow a user by a business
+      tags:
+        - Business
+  /business/{followerBusinessID}/follow/business/{followedBusinessID}:
     post:
       operationId: follow-business
       parameters:
         - description: Follower Business ID
           in: path
-          name: followerID
+          name: followerBusinessID
           required: true
           type: string
         - description: Followed Business ID
           in: path
-          name: followedID
+          name: followedBusinessID
           required: true
           type: string
       produces:
@@ -4588,6 +4656,73 @@ paths:
       summary: Follow a business by another business
       tags:
         - Business
+  /business/{followerBusinessID}/unfollow/business/{followedBusinessID}:
+    delete:
+      operationId: unfollow-business
+      parameters:
+        - description: Follower Business ID
+          in: path
+          name: followerBusinessID
+          required: true
+          type: string
+        - description: Followed Business ID
+          in: path
+          name: followedBusinessID
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Response'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDto'
+      summary: Unfollow a business by another business
+      tags:
+        - Business
+  /business/user/{userID}:
+    get:
+      operationId: get-user-business-accounts
+      parameters:
+        - description: User ID
+          in: path
+          name: userID
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Response'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDto'
+      summary: Get user business accounts
+      tags:
+        - Business
   /categories/:
     post:
       consumes:
@@ -4607,6 +4742,147 @@ paths:
           schema:
             $ref: '#/definitions/placio-app_ent.Category'
       summary: Create a new category
+      tags:
+        - categories
+  /categories/{categoryID}/businesses:
+    get:
+      consumes:
+        - application/json
+      parameters:
+        - description: Category ID
+          in: path
+          name: categoryID
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_ent.Business'
+            type: array
+      summary: Get businesses by category
+      tags:
+        - categories
+  /categories/{categoryID}/businesses/{businessID}:
+    post:
+      consumes:
+        - application/json
+      parameters:
+        - description: Category ID
+          in: path
+          name: categoryID
+          required: true
+          type: string
+        - description: Business ID
+          in: path
+          name: businessID
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_ent.CategoryAssignment'
+      summary: Assign a business to a category
+      tags:
+        - categories
+  /categories/{categoryID}/places:
+    get:
+      consumes:
+        - application/json
+      parameters:
+        - description: Category ID
+          in: path
+          name: categoryID
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_ent.Place'
+            type: array
+      summary: Get places by category
+      tags:
+        - categories
+  /categories/{categoryID}/places/{placeID}:
+    post:
+      consumes:
+        - application/json
+      parameters:
+        - description: Category ID
+          in: path
+          name: categoryID
+          required: true
+          type: string
+        - description: Place ID
+          in: path
+          name: placeID
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_ent.CategoryAssignment'
+      summary: Assign a place to a category
+      tags:
+        - categories
+  /categories/{categoryID}/users:
+    get:
+      consumes:
+        - application/json
+      parameters:
+        - description: Category ID
+          in: path
+          name: categoryID
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_ent.User'
+            type: array
+      summary: Get users by category
+      tags:
+        - categories
+  /categories/{categoryID}/users/{userID}:
+    post:
+      consumes:
+        - application/json
+      parameters:
+        - description: Category ID
+          in: path
+          name: categoryID
+          required: true
+          type: string
+        - description: User ID
+          in: path
+          name: userID
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_ent.CategoryAssignment'
+      summary: Assign a user to a category
       tags:
         - categories
   /categories/{id}:
@@ -4923,37 +5199,6 @@ paths:
       summary: Update Event
       tags:
         - Event
-  /user/{userID}:
-    get:
-      operationId: get-user-business-accounts
-      parameters:
-        - description: User ID
-          in: path
-          name: userID
-          required: true
-          type: string
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Response'
-        '400':
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Error'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Error'
-        '500':
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDto'
-      summary: Get user business accounts
-      tags:
-        - Business
 schemes:
   - http
   - https

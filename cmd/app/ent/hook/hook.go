@@ -92,6 +92,18 @@ func (f CategoryFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, er
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CategoryMutation", m)
 }
 
+// The CategoryAssignmentFunc type is an adapter to allow the use of ordinary
+// function as CategoryAssignment mutator.
+type CategoryAssignmentFunc func(context.Context, *ent.CategoryAssignmentMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CategoryAssignmentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.CategoryAssignmentMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CategoryAssignmentMutation", m)
+}
+
 // The ChatFunc type is an adapter to allow the use of ordinary
 // function as Chat mutator.
 type ChatFunc func(context.Context, *ent.ChatMutation) (ent.Value, error)

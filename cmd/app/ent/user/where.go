@@ -94,6 +94,16 @@ func Bio(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldBio, v))
 }
 
+// SearchText applies equality check predicate on the "search_text" field. It's identical to SearchTextEQ.
+func SearchText(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldSearchText, v))
+}
+
+// RelevanceScore applies equality check predicate on the "relevance_score" field. It's identical to RelevanceScoreEQ.
+func RelevanceScore(v float64) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldRelevanceScore, v))
+}
+
 // Auth0IDEQ applies the EQ predicate on the "auth0_id" field.
 func Auth0IDEQ(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldAuth0ID, v))
@@ -554,6 +564,131 @@ func UserSettingsNotNil() predicate.User {
 	return predicate.User(sql.FieldNotNull(FieldUserSettings))
 }
 
+// SearchTextEQ applies the EQ predicate on the "search_text" field.
+func SearchTextEQ(v string) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldSearchText, v))
+}
+
+// SearchTextNEQ applies the NEQ predicate on the "search_text" field.
+func SearchTextNEQ(v string) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldSearchText, v))
+}
+
+// SearchTextIn applies the In predicate on the "search_text" field.
+func SearchTextIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldIn(FieldSearchText, vs...))
+}
+
+// SearchTextNotIn applies the NotIn predicate on the "search_text" field.
+func SearchTextNotIn(vs ...string) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldSearchText, vs...))
+}
+
+// SearchTextGT applies the GT predicate on the "search_text" field.
+func SearchTextGT(v string) predicate.User {
+	return predicate.User(sql.FieldGT(FieldSearchText, v))
+}
+
+// SearchTextGTE applies the GTE predicate on the "search_text" field.
+func SearchTextGTE(v string) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldSearchText, v))
+}
+
+// SearchTextLT applies the LT predicate on the "search_text" field.
+func SearchTextLT(v string) predicate.User {
+	return predicate.User(sql.FieldLT(FieldSearchText, v))
+}
+
+// SearchTextLTE applies the LTE predicate on the "search_text" field.
+func SearchTextLTE(v string) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldSearchText, v))
+}
+
+// SearchTextContains applies the Contains predicate on the "search_text" field.
+func SearchTextContains(v string) predicate.User {
+	return predicate.User(sql.FieldContains(FieldSearchText, v))
+}
+
+// SearchTextHasPrefix applies the HasPrefix predicate on the "search_text" field.
+func SearchTextHasPrefix(v string) predicate.User {
+	return predicate.User(sql.FieldHasPrefix(FieldSearchText, v))
+}
+
+// SearchTextHasSuffix applies the HasSuffix predicate on the "search_text" field.
+func SearchTextHasSuffix(v string) predicate.User {
+	return predicate.User(sql.FieldHasSuffix(FieldSearchText, v))
+}
+
+// SearchTextIsNil applies the IsNil predicate on the "search_text" field.
+func SearchTextIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldSearchText))
+}
+
+// SearchTextNotNil applies the NotNil predicate on the "search_text" field.
+func SearchTextNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldSearchText))
+}
+
+// SearchTextEqualFold applies the EqualFold predicate on the "search_text" field.
+func SearchTextEqualFold(v string) predicate.User {
+	return predicate.User(sql.FieldEqualFold(FieldSearchText, v))
+}
+
+// SearchTextContainsFold applies the ContainsFold predicate on the "search_text" field.
+func SearchTextContainsFold(v string) predicate.User {
+	return predicate.User(sql.FieldContainsFold(FieldSearchText, v))
+}
+
+// RelevanceScoreEQ applies the EQ predicate on the "relevance_score" field.
+func RelevanceScoreEQ(v float64) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldRelevanceScore, v))
+}
+
+// RelevanceScoreNEQ applies the NEQ predicate on the "relevance_score" field.
+func RelevanceScoreNEQ(v float64) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldRelevanceScore, v))
+}
+
+// RelevanceScoreIn applies the In predicate on the "relevance_score" field.
+func RelevanceScoreIn(vs ...float64) predicate.User {
+	return predicate.User(sql.FieldIn(FieldRelevanceScore, vs...))
+}
+
+// RelevanceScoreNotIn applies the NotIn predicate on the "relevance_score" field.
+func RelevanceScoreNotIn(vs ...float64) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldRelevanceScore, vs...))
+}
+
+// RelevanceScoreGT applies the GT predicate on the "relevance_score" field.
+func RelevanceScoreGT(v float64) predicate.User {
+	return predicate.User(sql.FieldGT(FieldRelevanceScore, v))
+}
+
+// RelevanceScoreGTE applies the GTE predicate on the "relevance_score" field.
+func RelevanceScoreGTE(v float64) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldRelevanceScore, v))
+}
+
+// RelevanceScoreLT applies the LT predicate on the "relevance_score" field.
+func RelevanceScoreLT(v float64) predicate.User {
+	return predicate.User(sql.FieldLT(FieldRelevanceScore, v))
+}
+
+// RelevanceScoreLTE applies the LTE predicate on the "relevance_score" field.
+func RelevanceScoreLTE(v float64) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldRelevanceScore, v))
+}
+
+// RelevanceScoreIsNil applies the IsNil predicate on the "relevance_score" field.
+func RelevanceScoreIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldRelevanceScore))
+}
+
+// RelevanceScoreNotNil applies the NotNil predicate on the "relevance_score" field.
+func RelevanceScoreNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldRelevanceScore))
+}
+
 // HasUserBusinesses applies the HasEdge predicate on the "userBusinesses" edge.
 func HasUserBusinesses() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
@@ -845,6 +980,75 @@ func HasCategories() predicate.User {
 func HasCategoriesWith(preds ...predicate.Category) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := newCategoriesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasEvents applies the HasEdge predicate on the "events" edge.
+func HasEvents() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, EventsTable, EventsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasEventsWith applies the HasEdge predicate on the "events" edge with a given conditions (other predicates).
+func HasEventsWith(preds ...predicate.Event) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newEventsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasPlaces applies the HasEdge predicate on the "places" edge.
+func HasPlaces() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, PlacesTable, PlacesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasPlacesWith applies the HasEdge predicate on the "places" edge with a given conditions (other predicates).
+func HasPlacesWith(preds ...predicate.Place) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newPlacesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasCategoryAssignments applies the HasEdge predicate on the "categoryAssignments" edge.
+func HasCategoryAssignments() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CategoryAssignmentsTable, CategoryAssignmentsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCategoryAssignmentsWith applies the HasEdge predicate on the "categoryAssignments" edge with a given conditions (other predicates).
+func HasCategoryAssignmentsWith(preds ...predicate.CategoryAssignment) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newCategoryAssignmentsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

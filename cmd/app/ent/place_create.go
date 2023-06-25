@@ -10,6 +10,7 @@ import (
 	"placio-app/ent/booking"
 	"placio-app/ent/business"
 	"placio-app/ent/category"
+	"placio-app/ent/categoryassignment"
 	"placio-app/ent/event"
 	"placio-app/ent/menu"
 	"placio-app/ent/place"
@@ -96,6 +97,40 @@ func (pc *PlaceCreate) SetSustainabilityScore(f float64) *PlaceCreate {
 func (pc *PlaceCreate) SetNillableSustainabilityScore(f *float64) *PlaceCreate {
 	if f != nil {
 		pc.SetSustainabilityScore(*f)
+	}
+	return pc
+}
+
+// SetMapCoordinates sets the "map_coordinates" field.
+func (pc *PlaceCreate) SetMapCoordinates(m map[string]interface{}) *PlaceCreate {
+	pc.mutation.SetMapCoordinates(m)
+	return pc
+}
+
+// SetSearchText sets the "search_text" field.
+func (pc *PlaceCreate) SetSearchText(s string) *PlaceCreate {
+	pc.mutation.SetSearchText(s)
+	return pc
+}
+
+// SetNillableSearchText sets the "search_text" field if the given value is not nil.
+func (pc *PlaceCreate) SetNillableSearchText(s *string) *PlaceCreate {
+	if s != nil {
+		pc.SetSearchText(*s)
+	}
+	return pc
+}
+
+// SetRelevanceScore sets the "relevance_score" field.
+func (pc *PlaceCreate) SetRelevanceScore(f float64) *PlaceCreate {
+	pc.mutation.SetRelevanceScore(f)
+	return pc
+}
+
+// SetNillableRelevanceScore sets the "relevance_score" field if the given value is not nil.
+func (pc *PlaceCreate) SetNillableRelevanceScore(f *float64) *PlaceCreate {
+	if f != nil {
+		pc.SetRelevanceScore(*f)
 	}
 	return pc
 }
@@ -245,6 +280,21 @@ func (pc *PlaceCreate) AddCategories(c ...*Category) *PlaceCreate {
 	return pc.AddCategoryIDs(ids...)
 }
 
+// AddCategoryAssignmentIDs adds the "categoryAssignments" edge to the CategoryAssignment entity by IDs.
+func (pc *PlaceCreate) AddCategoryAssignmentIDs(ids ...string) *PlaceCreate {
+	pc.mutation.AddCategoryAssignmentIDs(ids...)
+	return pc
+}
+
+// AddCategoryAssignments adds the "categoryAssignments" edges to the CategoryAssignment entity.
+func (pc *PlaceCreate) AddCategoryAssignments(c ...*CategoryAssignment) *PlaceCreate {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return pc.AddCategoryAssignmentIDs(ids...)
+}
+
 // Mutation returns the PlaceMutation object of the builder.
 func (pc *PlaceCreate) Mutation() *PlaceMutation {
 	return pc.mutation
@@ -287,6 +337,9 @@ func (pc *PlaceCreate) check() error {
 	}
 	if _, ok := pc.mutation.Location(); !ok {
 		return &ValidationError{Name: "location", err: errors.New(`ent: missing required field "Place.location"`)}
+	}
+	if _, ok := pc.mutation.MapCoordinates(); !ok {
+		return &ValidationError{Name: "map_coordinates", err: errors.New(`ent: missing required field "Place.map_coordinates"`)}
 	}
 	if v, ok := pc.mutation.ID(); ok {
 		if err := place.IDValidator(v); err != nil {
@@ -359,6 +412,18 @@ func (pc *PlaceCreate) createSpec() (*Place, *sqlgraph.CreateSpec) {
 	if value, ok := pc.mutation.SustainabilityScore(); ok {
 		_spec.SetField(place.FieldSustainabilityScore, field.TypeFloat64, value)
 		_node.SustainabilityScore = value
+	}
+	if value, ok := pc.mutation.MapCoordinates(); ok {
+		_spec.SetField(place.FieldMapCoordinates, field.TypeJSON, value)
+		_node.MapCoordinates = value
+	}
+	if value, ok := pc.mutation.SearchText(); ok {
+		_spec.SetField(place.FieldSearchText, field.TypeString, value)
+		_node.SearchText = value
+	}
+	if value, ok := pc.mutation.RelevanceScore(); ok {
+		_spec.SetField(place.FieldRelevanceScore, field.TypeFloat64, value)
+		_node.RelevanceScore = value
 	}
 	if nodes := pc.mutation.BusinessIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -498,6 +563,22 @@ func (pc *PlaceCreate) createSpec() (*Place, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.CategoryAssignmentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   place.CategoryAssignmentsTable,
+			Columns: []string{place.CategoryAssignmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(categoryassignment.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
