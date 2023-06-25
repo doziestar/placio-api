@@ -657,6 +657,8 @@ var (
 		{Name: "picture", Type: field.TypeString, Nullable: true},
 		{Name: "cover_image", Type: field.TypeString, Nullable: true, Default: "https://res.cloudinary.com/placio/image/upload/v1686842319/mjl8stmbn5xmfsm50vbg.jpg"},
 		{Name: "username", Type: field.TypeString, Unique: true},
+		{Name: "website", Type: field.TypeString, Nullable: true},
+		{Name: "location", Type: field.TypeString, Nullable: true},
 		{Name: "bio", Type: field.TypeString, Nullable: true, Size: 2147483647, Default: "Add a bio to your profile"},
 		{Name: "auth0_data", Type: field.TypeJSON, Nullable: true},
 		{Name: "app_settings", Type: field.TypeJSON, Nullable: true},

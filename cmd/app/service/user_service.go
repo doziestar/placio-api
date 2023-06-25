@@ -442,6 +442,18 @@ func (us *UserServiceImpl) UpdateUser(ctx context.Context, userID string, userDa
 	if v, ok := userData["cover_image"]; ok {
 		upd.SetCoverImage(v.(string))
 	}
+	if v, ok := userData["bio"]; ok {
+		upd.SetBio(v.(string))
+	}
+	if v, ok := userData["location"]; ok {
+		upd.SetLocation(v.(string))
+	}
+	if v, ok := userData["website"]; ok {
+		upd.SetWebsite(v.(string))
+	}
+	if v, ok := userData["username"]; ok {
+		upd.SetUsername(v.(string))
+	}
 	if v, ok := userData["picture"]; ok {
 		upd.SetPicture(v.(string))
 	}

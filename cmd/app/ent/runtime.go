@@ -214,7 +214,7 @@ func init() {
 	// user.DefaultCoverImage holds the default value on creation for the cover_image field.
 	user.DefaultCoverImage = userDescCoverImage.Default.(string)
 	// userDescBio is the schema descriptor for bio field.
-	userDescBio := userFields[6].Descriptor()
+	userDescBio := userFields[8].Descriptor()
 	// user.DefaultBio holds the default value on creation for the bio field.
 	user.DefaultBio = userDescBio.Default.(string)
 	// userDescID is the schema descriptor for id field.
