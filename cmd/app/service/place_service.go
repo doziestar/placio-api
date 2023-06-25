@@ -14,10 +14,11 @@ type PlaceService interface {
 
 type PlaceServiceImpl struct {
 	client *ent.Client
+	searchService *SearchService
 }
 
-func NewPlaceService(client *ent.Client) *PlaceServiceImpl {
-	return &PlaceServiceImpl{client: client}
+func NewPlaceService(client *ent.Client,searchService *SearchService) *PlaceServiceImpl {
+	return &PlaceServiceImpl{client: client, searchService: searchService}
 }
 
 func (s *PlaceServiceImpl) GetPlace(ctx context.Context, placeID string) (*ent.Place, error) {

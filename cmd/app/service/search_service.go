@@ -5,9 +5,10 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/elastic/go-elasticsearch/v8"
 	"log"
 	"placio-app/ent"
+
+	"github.com/elastic/go-elasticsearch/v8"
 )
 
 type SearchService interface {
@@ -33,7 +34,8 @@ type SearchServiceImpl struct {
 }
 
 // NewSearchService Initiate a new search service with an Elasticsearch client
-func NewSearchService() (*SearchServiceImpl, error) {
+func NewSearchService() (SearchService, error) {
+	log.Println("=========connecting to elastic search=====")
 	es, err := elasticsearch.NewDefaultClient()
 	if err != nil {
 		log.Fatalf("Error creating the client: %s", err)
@@ -41,6 +43,8 @@ func NewSearchService() (*SearchServiceImpl, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	log.Println("======connection complete======")
 
 	return &SearchServiceImpl{client: es}, nil
 }
