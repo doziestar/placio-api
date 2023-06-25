@@ -265,6 +265,8 @@ definitions:
       status:
         type: integer
     type: object
+  placio-app_Dto.SearchResponse:
+    type: object
   placio-app_Dto.SuccessDTO:
     properties:
       message:
@@ -873,6 +875,11 @@ definitions:
         description: Rooms holds the value of the rooms edge.
         items:
           $ref: '#/definitions/placio-app_ent.Room'
+        type: array
+      users:
+        description: Users holds the value of the users edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.User'
         type: array
     type: object
   placio-app_ent.Post:
@@ -3378,6 +3385,159 @@ paths:
       summary: Update a room
       tags:
       - Room
+  /api/v1/search:
+    get:
+      consumes:
+      - application/json
+      description: Search for Users, Places, Events, and Businesses
+      parameters:
+      - description: Text to search for
+        in: query
+        name: searchText
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully found search results
+          schema:
+            $ref: '#/definitions/placio-app_Dto.SearchResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Full-text search
+      tags:
+      - Search
+  /api/v1/search/businesses:
+    get:
+      consumes:
+      - application/json
+      description: Search for Businesses by a given search text
+      parameters:
+      - description: Text to search for
+        in: query
+        name: searchText
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully found search results
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_ent.Business'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Search for Businesses
+      tags:
+      - Search
+  /api/v1/search/events:
+    get:
+      consumes:
+      - application/json
+      description: Search for Events by a given search text
+      parameters:
+      - description: Text to search for
+        in: query
+        name: searchText
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully found search results
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_ent.Event'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Search for Events
+      tags:
+      - Search
+  /api/v1/search/places:
+    get:
+      consumes:
+      - application/json
+      description: Search for Places by a given search text
+      parameters:
+      - description: Text to search for
+        in: query
+        name: searchText
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully found search results
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_ent.Place'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Search for Places
+      tags:
+      - Search
+  /api/v1/search/users:
+    get:
+      consumes:
+      - application/json
+      description: Search for Users by a given search text
+      parameters:
+      - description: Text to search for
+        in: query
+        name: searchText
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully found search results
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_ent.User'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Search for Users
+      tags:
+      - Search
   /api/v1/ticket-options/:
     post:
       consumes:
