@@ -1,12 +1,6 @@
 package api
 
 import (
-	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
-	"github.com/auth0/go-jwt-middleware/v2/validator"
-	"github.com/gin-gonic/gin"
-	swaggerfiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
-	"gorm.io/gorm"
 	"net/http"
 	_ "placio-api/docs/app"
 	"placio-app/controller"
@@ -14,6 +8,13 @@ import (
 	"placio-app/middleware"
 	"placio-app/service"
 	"placio-app/utility"
+
+	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
+	"github.com/auth0/go-jwt-middleware/v2/validator"
+	"github.com/gin-gonic/gin"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+	"gorm.io/gorm"
 )
 
 func JWTMiddleware(db *gorm.DB) gin.HandlerFunc {
@@ -59,18 +60,22 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		redisClient := utility.NewRedisClient("redis://default:a3677c1a7b84402eb34efd55ad3cf059@golden-colt-33790.upstash.io:33790", 0, utility.CacheDuration)
 		_ = redisClient.ConnectRedis()
 
+		searchService, _ := service.NewSearchService()
+		searchController := controller.NewSearchController(searchService)
+		searchController.RegisterRoutes(routerGroupV1)
+
 		routerGroupV1.Use(middleware.EnsureValidToken(client))
 
 		// utility
 		//newUtils := utility.NewUtility()
 
 		// user
-		userService := service.NewUserService(client, redisClient)
+		userService := service.NewUserService(client, redisClient, &searchService)
 		userController := controller.NewUserController(userService)
 		userController.RegisterRoutes(routerGroupV1)
 
 		// business
-		businessService := service.NewBusinessAccountService(client)
+		businessService := service.NewBusinessAccountService(client, &searchService)
 		_ = controller.NewBusinessAccountController(businessService)
 		//businessController.RegisterRoutes(routerGroupV1)
 
@@ -95,7 +100,7 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		likeController.RegisterRoutes(routerGroupV1)
 
 		// places
-		placeService := service.NewPlaceService(client)
+		placeService := service.NewPlaceService(client, &searchService)
 		placeController := controller.NewPlaceController(placeService)
 		placeController.RegisterRoutes(routerGroupV1)
 
@@ -149,13 +154,6 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		//ticketOptionController := controller.NewTicketOptionController(ticketOptionService)
 		//ticketOptionController.RegisterRoutes(routerGroupV1)
 
-	}
-
-	searchRouterV1 := app.Group("/api/v1")
-	{
-		searchService, _ := service.NewSearchService()
-		searchController := controller.NewSearchController(searchService)
-		searchController.RegisterRoutes(searchRouterV1)
 	}
 
 }

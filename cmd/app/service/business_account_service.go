@@ -35,10 +35,11 @@ type BusinessAccountService interface {
 type BusinessAccountServiceImpl struct {
 	store  *ent.Business
 	client *ent.Client
+	searchService *SearchService
 }
 
-func NewBusinessAccountService(client *ent.Client) BusinessAccountService {
-	return &BusinessAccountServiceImpl{client: client, store: &ent.Business{}}
+func NewBusinessAccountService(client *ent.Client,searchService *SearchService) BusinessAccountService {
+	return &BusinessAccountServiceImpl{client: client, store: &ent.Business{}, searchService: searchService}
 }
 
 func (s *BusinessAccountServiceImpl) FollowUser(ctx context.Context, businessID string, userID string) error {

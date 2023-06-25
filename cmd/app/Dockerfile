@@ -20,6 +20,7 @@ COPY ./cmd/app/go.sum ./cmd/app/
 
 # Download dependencies
 RUN go mod download
+RUN go install github.com/cespare/reflex@latest
 
 # Copy the rest of the application source code
 COPY ./cmd/app/ ./cmd/app
@@ -39,7 +40,6 @@ ENV PORT=7070
 
 # Copy the required files from pkg module
 #COPY pkg /app/pkg
-RUN go install github.com/cespare/reflex@latest
 
 # Expose port 8080
 EXPOSE 7070

@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/auth0/go-auth0/management"
 	"io"
 	"io/ioutil"
 	"log"
@@ -23,6 +22,8 @@ import (
 	"reflect"
 	"strings"
 	"time"
+
+	"github.com/auth0/go-auth0/management"
 )
 
 const (
@@ -59,6 +60,7 @@ type UserService interface {
 type UserServiceImpl struct {
 	client *ent.Client
 	cache  *utility.RedisClient
+	searchService *SearchService
 }
 
 type auth0TokenResponse struct {
@@ -67,8 +69,8 @@ type auth0TokenResponse struct {
 	ExpiresIn   int    `json:"expires_in"`
 }
 
-func NewUserService(client *ent.Client, cache *utility.RedisClient) *UserServiceImpl {
-	return &UserServiceImpl{client: client, cache: cache}
+func NewUserService(client *ent.Client, cache *utility.RedisClient, searchService *SearchService) *UserServiceImpl {
+	return &UserServiceImpl{client: client, cache: cache, searchService: searchService}
 }
 
 func (s *UserServiceImpl) FollowUser(ctx context.Context, followerID string, followedID string) error {
