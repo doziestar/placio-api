@@ -1726,6 +1726,13 @@ type BusinessMutation struct {
 	typ                              string
 	id                               *string
 	name                             *string
+	description                      *string
+	picture                          *string
+	cover_image                      *string
+	website                          *string
+	location                         *string
+	business_settings                *map[string]interface{}
+	url                              *string
 	search_text                      *string
 	relevance_score                  *float64
 	addrelevance_score               *float64
@@ -1902,6 +1909,336 @@ func (m *BusinessMutation) OldName(ctx context.Context) (v string, err error) {
 // ResetName resets all changes to the "name" field.
 func (m *BusinessMutation) ResetName() {
 	m.name = nil
+}
+
+// SetDescription sets the "description" field.
+func (m *BusinessMutation) SetDescription(s string) {
+	m.description = &s
+}
+
+// Description returns the value of the "description" field in the mutation.
+func (m *BusinessMutation) Description() (r string, exists bool) {
+	v := m.description
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDescription returns the old "description" field's value of the Business entity.
+// If the Business object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessMutation) OldDescription(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDescription is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDescription requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDescription: %w", err)
+	}
+	return oldValue.Description, nil
+}
+
+// ClearDescription clears the value of the "description" field.
+func (m *BusinessMutation) ClearDescription() {
+	m.description = nil
+	m.clearedFields[business.FieldDescription] = struct{}{}
+}
+
+// DescriptionCleared returns if the "description" field was cleared in this mutation.
+func (m *BusinessMutation) DescriptionCleared() bool {
+	_, ok := m.clearedFields[business.FieldDescription]
+	return ok
+}
+
+// ResetDescription resets all changes to the "description" field.
+func (m *BusinessMutation) ResetDescription() {
+	m.description = nil
+	delete(m.clearedFields, business.FieldDescription)
+}
+
+// SetPicture sets the "picture" field.
+func (m *BusinessMutation) SetPicture(s string) {
+	m.picture = &s
+}
+
+// Picture returns the value of the "picture" field in the mutation.
+func (m *BusinessMutation) Picture() (r string, exists bool) {
+	v := m.picture
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPicture returns the old "picture" field's value of the Business entity.
+// If the Business object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessMutation) OldPicture(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPicture is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPicture requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPicture: %w", err)
+	}
+	return oldValue.Picture, nil
+}
+
+// ClearPicture clears the value of the "picture" field.
+func (m *BusinessMutation) ClearPicture() {
+	m.picture = nil
+	m.clearedFields[business.FieldPicture] = struct{}{}
+}
+
+// PictureCleared returns if the "picture" field was cleared in this mutation.
+func (m *BusinessMutation) PictureCleared() bool {
+	_, ok := m.clearedFields[business.FieldPicture]
+	return ok
+}
+
+// ResetPicture resets all changes to the "picture" field.
+func (m *BusinessMutation) ResetPicture() {
+	m.picture = nil
+	delete(m.clearedFields, business.FieldPicture)
+}
+
+// SetCoverImage sets the "cover_image" field.
+func (m *BusinessMutation) SetCoverImage(s string) {
+	m.cover_image = &s
+}
+
+// CoverImage returns the value of the "cover_image" field in the mutation.
+func (m *BusinessMutation) CoverImage() (r string, exists bool) {
+	v := m.cover_image
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCoverImage returns the old "cover_image" field's value of the Business entity.
+// If the Business object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessMutation) OldCoverImage(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCoverImage is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCoverImage requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCoverImage: %w", err)
+	}
+	return oldValue.CoverImage, nil
+}
+
+// ClearCoverImage clears the value of the "cover_image" field.
+func (m *BusinessMutation) ClearCoverImage() {
+	m.cover_image = nil
+	m.clearedFields[business.FieldCoverImage] = struct{}{}
+}
+
+// CoverImageCleared returns if the "cover_image" field was cleared in this mutation.
+func (m *BusinessMutation) CoverImageCleared() bool {
+	_, ok := m.clearedFields[business.FieldCoverImage]
+	return ok
+}
+
+// ResetCoverImage resets all changes to the "cover_image" field.
+func (m *BusinessMutation) ResetCoverImage() {
+	m.cover_image = nil
+	delete(m.clearedFields, business.FieldCoverImage)
+}
+
+// SetWebsite sets the "website" field.
+func (m *BusinessMutation) SetWebsite(s string) {
+	m.website = &s
+}
+
+// Website returns the value of the "website" field in the mutation.
+func (m *BusinessMutation) Website() (r string, exists bool) {
+	v := m.website
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldWebsite returns the old "website" field's value of the Business entity.
+// If the Business object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessMutation) OldWebsite(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldWebsite is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldWebsite requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldWebsite: %w", err)
+	}
+	return oldValue.Website, nil
+}
+
+// ClearWebsite clears the value of the "website" field.
+func (m *BusinessMutation) ClearWebsite() {
+	m.website = nil
+	m.clearedFields[business.FieldWebsite] = struct{}{}
+}
+
+// WebsiteCleared returns if the "website" field was cleared in this mutation.
+func (m *BusinessMutation) WebsiteCleared() bool {
+	_, ok := m.clearedFields[business.FieldWebsite]
+	return ok
+}
+
+// ResetWebsite resets all changes to the "website" field.
+func (m *BusinessMutation) ResetWebsite() {
+	m.website = nil
+	delete(m.clearedFields, business.FieldWebsite)
+}
+
+// SetLocation sets the "location" field.
+func (m *BusinessMutation) SetLocation(s string) {
+	m.location = &s
+}
+
+// Location returns the value of the "location" field in the mutation.
+func (m *BusinessMutation) Location() (r string, exists bool) {
+	v := m.location
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLocation returns the old "location" field's value of the Business entity.
+// If the Business object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessMutation) OldLocation(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLocation is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLocation requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLocation: %w", err)
+	}
+	return oldValue.Location, nil
+}
+
+// ClearLocation clears the value of the "location" field.
+func (m *BusinessMutation) ClearLocation() {
+	m.location = nil
+	m.clearedFields[business.FieldLocation] = struct{}{}
+}
+
+// LocationCleared returns if the "location" field was cleared in this mutation.
+func (m *BusinessMutation) LocationCleared() bool {
+	_, ok := m.clearedFields[business.FieldLocation]
+	return ok
+}
+
+// ResetLocation resets all changes to the "location" field.
+func (m *BusinessMutation) ResetLocation() {
+	m.location = nil
+	delete(m.clearedFields, business.FieldLocation)
+}
+
+// SetBusinessSettings sets the "business_settings" field.
+func (m *BusinessMutation) SetBusinessSettings(value map[string]interface{}) {
+	m.business_settings = &value
+}
+
+// BusinessSettings returns the value of the "business_settings" field in the mutation.
+func (m *BusinessMutation) BusinessSettings() (r map[string]interface{}, exists bool) {
+	v := m.business_settings
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBusinessSettings returns the old "business_settings" field's value of the Business entity.
+// If the Business object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessMutation) OldBusinessSettings(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBusinessSettings is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBusinessSettings requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBusinessSettings: %w", err)
+	}
+	return oldValue.BusinessSettings, nil
+}
+
+// ClearBusinessSettings clears the value of the "business_settings" field.
+func (m *BusinessMutation) ClearBusinessSettings() {
+	m.business_settings = nil
+	m.clearedFields[business.FieldBusinessSettings] = struct{}{}
+}
+
+// BusinessSettingsCleared returns if the "business_settings" field was cleared in this mutation.
+func (m *BusinessMutation) BusinessSettingsCleared() bool {
+	_, ok := m.clearedFields[business.FieldBusinessSettings]
+	return ok
+}
+
+// ResetBusinessSettings resets all changes to the "business_settings" field.
+func (m *BusinessMutation) ResetBusinessSettings() {
+	m.business_settings = nil
+	delete(m.clearedFields, business.FieldBusinessSettings)
+}
+
+// SetURL sets the "url" field.
+func (m *BusinessMutation) SetURL(s string) {
+	m.url = &s
+}
+
+// URL returns the value of the "url" field in the mutation.
+func (m *BusinessMutation) URL() (r string, exists bool) {
+	v := m.url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldURL returns the old "url" field's value of the Business entity.
+// If the Business object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessMutation) OldURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldURL: %w", err)
+	}
+	return oldValue.URL, nil
+}
+
+// ResetURL resets all changes to the "url" field.
+func (m *BusinessMutation) ResetURL() {
+	m.url = nil
 }
 
 // SetSearchText sets the "search_text" field.
@@ -2582,9 +2919,30 @@ func (m *BusinessMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *BusinessMutation) Fields() []string {
-	fields := make([]string, 0, 3)
+	fields := make([]string, 0, 10)
 	if m.name != nil {
 		fields = append(fields, business.FieldName)
+	}
+	if m.description != nil {
+		fields = append(fields, business.FieldDescription)
+	}
+	if m.picture != nil {
+		fields = append(fields, business.FieldPicture)
+	}
+	if m.cover_image != nil {
+		fields = append(fields, business.FieldCoverImage)
+	}
+	if m.website != nil {
+		fields = append(fields, business.FieldWebsite)
+	}
+	if m.location != nil {
+		fields = append(fields, business.FieldLocation)
+	}
+	if m.business_settings != nil {
+		fields = append(fields, business.FieldBusinessSettings)
+	}
+	if m.url != nil {
+		fields = append(fields, business.FieldURL)
 	}
 	if m.search_text != nil {
 		fields = append(fields, business.FieldSearchText)
@@ -2602,6 +2960,20 @@ func (m *BusinessMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case business.FieldName:
 		return m.Name()
+	case business.FieldDescription:
+		return m.Description()
+	case business.FieldPicture:
+		return m.Picture()
+	case business.FieldCoverImage:
+		return m.CoverImage()
+	case business.FieldWebsite:
+		return m.Website()
+	case business.FieldLocation:
+		return m.Location()
+	case business.FieldBusinessSettings:
+		return m.BusinessSettings()
+	case business.FieldURL:
+		return m.URL()
 	case business.FieldSearchText:
 		return m.SearchText()
 	case business.FieldRelevanceScore:
@@ -2617,6 +2989,20 @@ func (m *BusinessMutation) OldField(ctx context.Context, name string) (ent.Value
 	switch name {
 	case business.FieldName:
 		return m.OldName(ctx)
+	case business.FieldDescription:
+		return m.OldDescription(ctx)
+	case business.FieldPicture:
+		return m.OldPicture(ctx)
+	case business.FieldCoverImage:
+		return m.OldCoverImage(ctx)
+	case business.FieldWebsite:
+		return m.OldWebsite(ctx)
+	case business.FieldLocation:
+		return m.OldLocation(ctx)
+	case business.FieldBusinessSettings:
+		return m.OldBusinessSettings(ctx)
+	case business.FieldURL:
+		return m.OldURL(ctx)
 	case business.FieldSearchText:
 		return m.OldSearchText(ctx)
 	case business.FieldRelevanceScore:
@@ -2636,6 +3022,55 @@ func (m *BusinessMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetName(v)
+		return nil
+	case business.FieldDescription:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDescription(v)
+		return nil
+	case business.FieldPicture:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPicture(v)
+		return nil
+	case business.FieldCoverImage:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCoverImage(v)
+		return nil
+	case business.FieldWebsite:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetWebsite(v)
+		return nil
+	case business.FieldLocation:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLocation(v)
+		return nil
+	case business.FieldBusinessSettings:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBusinessSettings(v)
+		return nil
+	case business.FieldURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetURL(v)
 		return nil
 	case business.FieldSearchText:
 		v, ok := value.(string)
@@ -2696,6 +3131,24 @@ func (m *BusinessMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *BusinessMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(business.FieldDescription) {
+		fields = append(fields, business.FieldDescription)
+	}
+	if m.FieldCleared(business.FieldPicture) {
+		fields = append(fields, business.FieldPicture)
+	}
+	if m.FieldCleared(business.FieldCoverImage) {
+		fields = append(fields, business.FieldCoverImage)
+	}
+	if m.FieldCleared(business.FieldWebsite) {
+		fields = append(fields, business.FieldWebsite)
+	}
+	if m.FieldCleared(business.FieldLocation) {
+		fields = append(fields, business.FieldLocation)
+	}
+	if m.FieldCleared(business.FieldBusinessSettings) {
+		fields = append(fields, business.FieldBusinessSettings)
+	}
 	if m.FieldCleared(business.FieldSearchText) {
 		fields = append(fields, business.FieldSearchText)
 	}
@@ -2716,6 +3169,24 @@ func (m *BusinessMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *BusinessMutation) ClearField(name string) error {
 	switch name {
+	case business.FieldDescription:
+		m.ClearDescription()
+		return nil
+	case business.FieldPicture:
+		m.ClearPicture()
+		return nil
+	case business.FieldCoverImage:
+		m.ClearCoverImage()
+		return nil
+	case business.FieldWebsite:
+		m.ClearWebsite()
+		return nil
+	case business.FieldLocation:
+		m.ClearLocation()
+		return nil
+	case business.FieldBusinessSettings:
+		m.ClearBusinessSettings()
+		return nil
 	case business.FieldSearchText:
 		m.ClearSearchText()
 		return nil
@@ -2732,6 +3203,27 @@ func (m *BusinessMutation) ResetField(name string) error {
 	switch name {
 	case business.FieldName:
 		m.ResetName()
+		return nil
+	case business.FieldDescription:
+		m.ResetDescription()
+		return nil
+	case business.FieldPicture:
+		m.ResetPicture()
+		return nil
+	case business.FieldCoverImage:
+		m.ResetCoverImage()
+		return nil
+	case business.FieldWebsite:
+		m.ResetWebsite()
+		return nil
+	case business.FieldLocation:
+		m.ResetLocation()
+		return nil
+	case business.FieldBusinessSettings:
+		m.ResetBusinessSettings()
+		return nil
+	case business.FieldURL:
+		m.ResetURL()
 		return nil
 	case business.FieldSearchText:
 		m.ResetSearchText()

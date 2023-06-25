@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"encoding/json"
 	"fmt"
 	"placio-app/ent/accountsettings"
 	"placio-app/ent/business"
@@ -19,6 +20,20 @@ type Business struct {
 	ID string `json:"id,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
+	// Description holds the value of the "description" field.
+	Description string `json:"description,omitempty"`
+	// Picture holds the value of the "picture" field.
+	Picture string `json:"picture,omitempty"`
+	// CoverImage holds the value of the "cover_image" field.
+	CoverImage string `json:"cover_image,omitempty"`
+	// Website holds the value of the "website" field.
+	Website string `json:"website,omitempty"`
+	// Location holds the value of the "location" field.
+	Location string `json:"location,omitempty"`
+	// BusinessSettings holds the value of the "business_settings" field.
+	BusinessSettings map[string]interface{} `json:"business_settings,omitempty"`
+	// URL holds the value of the "url" field.
+	URL string `json:"url,omitempty"`
 	// SearchText holds the value of the "search_text" field.
 	SearchText string `json:"search_text,omitempty"`
 	// RelevanceScore holds the value of the "relevance_score" field.
@@ -155,9 +170,11 @@ func (*Business) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case business.FieldBusinessSettings:
+			values[i] = new([]byte)
 		case business.FieldRelevanceScore:
 			values[i] = new(sql.NullFloat64)
-		case business.FieldID, business.FieldName, business.FieldSearchText:
+		case business.FieldID, business.FieldName, business.FieldDescription, business.FieldPicture, business.FieldCoverImage, business.FieldWebsite, business.FieldLocation, business.FieldURL, business.FieldSearchText:
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -185,6 +202,50 @@ func (b *Business) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
 				b.Name = value.String
+			}
+		case business.FieldDescription:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field description", values[i])
+			} else if value.Valid {
+				b.Description = value.String
+			}
+		case business.FieldPicture:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field picture", values[i])
+			} else if value.Valid {
+				b.Picture = value.String
+			}
+		case business.FieldCoverImage:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field cover_image", values[i])
+			} else if value.Valid {
+				b.CoverImage = value.String
+			}
+		case business.FieldWebsite:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field website", values[i])
+			} else if value.Valid {
+				b.Website = value.String
+			}
+		case business.FieldLocation:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field location", values[i])
+			} else if value.Valid {
+				b.Location = value.String
+			}
+		case business.FieldBusinessSettings:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field business_settings", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &b.BusinessSettings); err != nil {
+					return fmt.Errorf("unmarshal field business_settings: %w", err)
+				}
+			}
+		case business.FieldURL:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field url", values[i])
+			} else if value.Valid {
+				b.URL = value.String
 			}
 		case business.FieldSearchText:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -286,6 +347,27 @@ func (b *Business) String() string {
 	builder.WriteString(fmt.Sprintf("id=%v, ", b.ID))
 	builder.WriteString("name=")
 	builder.WriteString(b.Name)
+	builder.WriteString(", ")
+	builder.WriteString("description=")
+	builder.WriteString(b.Description)
+	builder.WriteString(", ")
+	builder.WriteString("picture=")
+	builder.WriteString(b.Picture)
+	builder.WriteString(", ")
+	builder.WriteString("cover_image=")
+	builder.WriteString(b.CoverImage)
+	builder.WriteString(", ")
+	builder.WriteString("website=")
+	builder.WriteString(b.Website)
+	builder.WriteString(", ")
+	builder.WriteString("location=")
+	builder.WriteString(b.Location)
+	builder.WriteString(", ")
+	builder.WriteString("business_settings=")
+	builder.WriteString(fmt.Sprintf("%v", b.BusinessSettings))
+	builder.WriteString(", ")
+	builder.WriteString("url=")
+	builder.WriteString(b.URL)
 	builder.WriteString(", ")
 	builder.WriteString("search_text=")
 	builder.WriteString(b.SearchText)

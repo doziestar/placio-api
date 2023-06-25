@@ -14,6 +14,20 @@ const (
 	FieldID = "id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
+	// FieldDescription holds the string denoting the description field in the database.
+	FieldDescription = "description"
+	// FieldPicture holds the string denoting the picture field in the database.
+	FieldPicture = "picture"
+	// FieldCoverImage holds the string denoting the cover_image field in the database.
+	FieldCoverImage = "cover_image"
+	// FieldWebsite holds the string denoting the website field in the database.
+	FieldWebsite = "website"
+	// FieldLocation holds the string denoting the location field in the database.
+	FieldLocation = "location"
+	// FieldBusinessSettings holds the string denoting the business_settings field in the database.
+	FieldBusinessSettings = "business_settings"
+	// FieldURL holds the string denoting the url field in the database.
+	FieldURL = "url"
 	// FieldSearchText holds the string denoting the search_text field in the database.
 	FieldSearchText = "search_text"
 	// FieldRelevanceScore holds the string denoting the relevance_score field in the database.
@@ -116,6 +130,13 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldName,
+	FieldDescription,
+	FieldPicture,
+	FieldCoverImage,
+	FieldWebsite,
+	FieldLocation,
+	FieldBusinessSettings,
+	FieldURL,
 	FieldSearchText,
 	FieldRelevanceScore,
 }
@@ -131,6 +152,8 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// DefaultCoverImage holds the default value on creation for the "cover_image" field.
+	DefaultCoverImage string
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(string) error
 )
@@ -146,6 +169,36 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 // ByName orders the results by the name field.
 func ByName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldName, opts...).ToFunc()
+}
+
+// ByDescription orders the results by the description field.
+func ByDescription(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDescription, opts...).ToFunc()
+}
+
+// ByPicture orders the results by the picture field.
+func ByPicture(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPicture, opts...).ToFunc()
+}
+
+// ByCoverImage orders the results by the cover_image field.
+func ByCoverImage(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCoverImage, opts...).ToFunc()
+}
+
+// ByWebsite orders the results by the website field.
+func ByWebsite(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldWebsite, opts...).ToFunc()
+}
+
+// ByLocation orders the results by the location field.
+func ByLocation(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLocation, opts...).ToFunc()
+}
+
+// ByURL orders the results by the url field.
+func ByURL(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldURL, opts...).ToFunc()
 }
 
 // BySearchText orders the results by the search_text field.

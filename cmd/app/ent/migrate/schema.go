@@ -83,6 +83,13 @@ var (
 	BusinessesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
 		{Name: "name", Type: field.TypeString},
+		{Name: "description", Type: field.TypeString, Nullable: true, Size: 2147483647},
+		{Name: "picture", Type: field.TypeString, Nullable: true},
+		{Name: "cover_image", Type: field.TypeString, Nullable: true, Default: "https://res.cloudinary.com/placio/image/upload/v1686842319/mjl8stmbn5xmfsm50vbg.jpg"},
+		{Name: "website", Type: field.TypeString, Nullable: true},
+		{Name: "location", Type: field.TypeString, Nullable: true},
+		{Name: "business_settings", Type: field.TypeJSON, Nullable: true},
+		{Name: "url", Type: field.TypeString, Unique: true},
 		{Name: "search_text", Type: field.TypeString, Nullable: true},
 		{Name: "relevance_score", Type: field.TypeFloat64, Nullable: true},
 	}

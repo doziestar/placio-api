@@ -42,6 +42,118 @@ func (bu *BusinessUpdate) SetName(s string) *BusinessUpdate {
 	return bu
 }
 
+// SetDescription sets the "description" field.
+func (bu *BusinessUpdate) SetDescription(s string) *BusinessUpdate {
+	bu.mutation.SetDescription(s)
+	return bu
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (bu *BusinessUpdate) SetNillableDescription(s *string) *BusinessUpdate {
+	if s != nil {
+		bu.SetDescription(*s)
+	}
+	return bu
+}
+
+// ClearDescription clears the value of the "description" field.
+func (bu *BusinessUpdate) ClearDescription() *BusinessUpdate {
+	bu.mutation.ClearDescription()
+	return bu
+}
+
+// SetPicture sets the "picture" field.
+func (bu *BusinessUpdate) SetPicture(s string) *BusinessUpdate {
+	bu.mutation.SetPicture(s)
+	return bu
+}
+
+// SetNillablePicture sets the "picture" field if the given value is not nil.
+func (bu *BusinessUpdate) SetNillablePicture(s *string) *BusinessUpdate {
+	if s != nil {
+		bu.SetPicture(*s)
+	}
+	return bu
+}
+
+// ClearPicture clears the value of the "picture" field.
+func (bu *BusinessUpdate) ClearPicture() *BusinessUpdate {
+	bu.mutation.ClearPicture()
+	return bu
+}
+
+// SetCoverImage sets the "cover_image" field.
+func (bu *BusinessUpdate) SetCoverImage(s string) *BusinessUpdate {
+	bu.mutation.SetCoverImage(s)
+	return bu
+}
+
+// SetNillableCoverImage sets the "cover_image" field if the given value is not nil.
+func (bu *BusinessUpdate) SetNillableCoverImage(s *string) *BusinessUpdate {
+	if s != nil {
+		bu.SetCoverImage(*s)
+	}
+	return bu
+}
+
+// ClearCoverImage clears the value of the "cover_image" field.
+func (bu *BusinessUpdate) ClearCoverImage() *BusinessUpdate {
+	bu.mutation.ClearCoverImage()
+	return bu
+}
+
+// SetWebsite sets the "website" field.
+func (bu *BusinessUpdate) SetWebsite(s string) *BusinessUpdate {
+	bu.mutation.SetWebsite(s)
+	return bu
+}
+
+// SetNillableWebsite sets the "website" field if the given value is not nil.
+func (bu *BusinessUpdate) SetNillableWebsite(s *string) *BusinessUpdate {
+	if s != nil {
+		bu.SetWebsite(*s)
+	}
+	return bu
+}
+
+// ClearWebsite clears the value of the "website" field.
+func (bu *BusinessUpdate) ClearWebsite() *BusinessUpdate {
+	bu.mutation.ClearWebsite()
+	return bu
+}
+
+// SetLocation sets the "location" field.
+func (bu *BusinessUpdate) SetLocation(s string) *BusinessUpdate {
+	bu.mutation.SetLocation(s)
+	return bu
+}
+
+// SetNillableLocation sets the "location" field if the given value is not nil.
+func (bu *BusinessUpdate) SetNillableLocation(s *string) *BusinessUpdate {
+	if s != nil {
+		bu.SetLocation(*s)
+	}
+	return bu
+}
+
+// ClearLocation clears the value of the "location" field.
+func (bu *BusinessUpdate) ClearLocation() *BusinessUpdate {
+	bu.mutation.ClearLocation()
+	return bu
+}
+
+// SetBusinessSettings sets the "business_settings" field.
+func (bu *BusinessUpdate) SetBusinessSettings(m map[string]interface{}) *BusinessUpdate {
+	bu.mutation.SetBusinessSettings(m)
+	return bu
+}
+
+// ClearBusinessSettings clears the value of the "business_settings" field.
+func (bu *BusinessUpdate) ClearBusinessSettings() *BusinessUpdate {
+	bu.mutation.ClearBusinessSettings()
+	return bu
+}
+
 // SetSearchText sets the "search_text" field.
 func (bu *BusinessUpdate) SetSearchText(s string) *BusinessUpdate {
 	bu.mutation.SetSearchText(s)
@@ -481,6 +593,42 @@ func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := bu.mutation.Name(); ok {
 		_spec.SetField(business.FieldName, field.TypeString, value)
+	}
+	if value, ok := bu.mutation.Description(); ok {
+		_spec.SetField(business.FieldDescription, field.TypeString, value)
+	}
+	if bu.mutation.DescriptionCleared() {
+		_spec.ClearField(business.FieldDescription, field.TypeString)
+	}
+	if value, ok := bu.mutation.Picture(); ok {
+		_spec.SetField(business.FieldPicture, field.TypeString, value)
+	}
+	if bu.mutation.PictureCleared() {
+		_spec.ClearField(business.FieldPicture, field.TypeString)
+	}
+	if value, ok := bu.mutation.CoverImage(); ok {
+		_spec.SetField(business.FieldCoverImage, field.TypeString, value)
+	}
+	if bu.mutation.CoverImageCleared() {
+		_spec.ClearField(business.FieldCoverImage, field.TypeString)
+	}
+	if value, ok := bu.mutation.Website(); ok {
+		_spec.SetField(business.FieldWebsite, field.TypeString, value)
+	}
+	if bu.mutation.WebsiteCleared() {
+		_spec.ClearField(business.FieldWebsite, field.TypeString)
+	}
+	if value, ok := bu.mutation.Location(); ok {
+		_spec.SetField(business.FieldLocation, field.TypeString, value)
+	}
+	if bu.mutation.LocationCleared() {
+		_spec.ClearField(business.FieldLocation, field.TypeString)
+	}
+	if value, ok := bu.mutation.BusinessSettings(); ok {
+		_spec.SetField(business.FieldBusinessSettings, field.TypeJSON, value)
+	}
+	if bu.mutation.BusinessSettingsCleared() {
+		_spec.ClearField(business.FieldBusinessSettings, field.TypeJSON)
 	}
 	if value, ok := bu.mutation.SearchText(); ok {
 		_spec.SetField(business.FieldSearchText, field.TypeString, value)
@@ -957,6 +1105,118 @@ func (buo *BusinessUpdateOne) SetName(s string) *BusinessUpdateOne {
 	return buo
 }
 
+// SetDescription sets the "description" field.
+func (buo *BusinessUpdateOne) SetDescription(s string) *BusinessUpdateOne {
+	buo.mutation.SetDescription(s)
+	return buo
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (buo *BusinessUpdateOne) SetNillableDescription(s *string) *BusinessUpdateOne {
+	if s != nil {
+		buo.SetDescription(*s)
+	}
+	return buo
+}
+
+// ClearDescription clears the value of the "description" field.
+func (buo *BusinessUpdateOne) ClearDescription() *BusinessUpdateOne {
+	buo.mutation.ClearDescription()
+	return buo
+}
+
+// SetPicture sets the "picture" field.
+func (buo *BusinessUpdateOne) SetPicture(s string) *BusinessUpdateOne {
+	buo.mutation.SetPicture(s)
+	return buo
+}
+
+// SetNillablePicture sets the "picture" field if the given value is not nil.
+func (buo *BusinessUpdateOne) SetNillablePicture(s *string) *BusinessUpdateOne {
+	if s != nil {
+		buo.SetPicture(*s)
+	}
+	return buo
+}
+
+// ClearPicture clears the value of the "picture" field.
+func (buo *BusinessUpdateOne) ClearPicture() *BusinessUpdateOne {
+	buo.mutation.ClearPicture()
+	return buo
+}
+
+// SetCoverImage sets the "cover_image" field.
+func (buo *BusinessUpdateOne) SetCoverImage(s string) *BusinessUpdateOne {
+	buo.mutation.SetCoverImage(s)
+	return buo
+}
+
+// SetNillableCoverImage sets the "cover_image" field if the given value is not nil.
+func (buo *BusinessUpdateOne) SetNillableCoverImage(s *string) *BusinessUpdateOne {
+	if s != nil {
+		buo.SetCoverImage(*s)
+	}
+	return buo
+}
+
+// ClearCoverImage clears the value of the "cover_image" field.
+func (buo *BusinessUpdateOne) ClearCoverImage() *BusinessUpdateOne {
+	buo.mutation.ClearCoverImage()
+	return buo
+}
+
+// SetWebsite sets the "website" field.
+func (buo *BusinessUpdateOne) SetWebsite(s string) *BusinessUpdateOne {
+	buo.mutation.SetWebsite(s)
+	return buo
+}
+
+// SetNillableWebsite sets the "website" field if the given value is not nil.
+func (buo *BusinessUpdateOne) SetNillableWebsite(s *string) *BusinessUpdateOne {
+	if s != nil {
+		buo.SetWebsite(*s)
+	}
+	return buo
+}
+
+// ClearWebsite clears the value of the "website" field.
+func (buo *BusinessUpdateOne) ClearWebsite() *BusinessUpdateOne {
+	buo.mutation.ClearWebsite()
+	return buo
+}
+
+// SetLocation sets the "location" field.
+func (buo *BusinessUpdateOne) SetLocation(s string) *BusinessUpdateOne {
+	buo.mutation.SetLocation(s)
+	return buo
+}
+
+// SetNillableLocation sets the "location" field if the given value is not nil.
+func (buo *BusinessUpdateOne) SetNillableLocation(s *string) *BusinessUpdateOne {
+	if s != nil {
+		buo.SetLocation(*s)
+	}
+	return buo
+}
+
+// ClearLocation clears the value of the "location" field.
+func (buo *BusinessUpdateOne) ClearLocation() *BusinessUpdateOne {
+	buo.mutation.ClearLocation()
+	return buo
+}
+
+// SetBusinessSettings sets the "business_settings" field.
+func (buo *BusinessUpdateOne) SetBusinessSettings(m map[string]interface{}) *BusinessUpdateOne {
+	buo.mutation.SetBusinessSettings(m)
+	return buo
+}
+
+// ClearBusinessSettings clears the value of the "business_settings" field.
+func (buo *BusinessUpdateOne) ClearBusinessSettings() *BusinessUpdateOne {
+	buo.mutation.ClearBusinessSettings()
+	return buo
+}
+
 // SetSearchText sets the "search_text" field.
 func (buo *BusinessUpdateOne) SetSearchText(s string) *BusinessUpdateOne {
 	buo.mutation.SetSearchText(s)
@@ -1426,6 +1686,42 @@ func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err
 	}
 	if value, ok := buo.mutation.Name(); ok {
 		_spec.SetField(business.FieldName, field.TypeString, value)
+	}
+	if value, ok := buo.mutation.Description(); ok {
+		_spec.SetField(business.FieldDescription, field.TypeString, value)
+	}
+	if buo.mutation.DescriptionCleared() {
+		_spec.ClearField(business.FieldDescription, field.TypeString)
+	}
+	if value, ok := buo.mutation.Picture(); ok {
+		_spec.SetField(business.FieldPicture, field.TypeString, value)
+	}
+	if buo.mutation.PictureCleared() {
+		_spec.ClearField(business.FieldPicture, field.TypeString)
+	}
+	if value, ok := buo.mutation.CoverImage(); ok {
+		_spec.SetField(business.FieldCoverImage, field.TypeString, value)
+	}
+	if buo.mutation.CoverImageCleared() {
+		_spec.ClearField(business.FieldCoverImage, field.TypeString)
+	}
+	if value, ok := buo.mutation.Website(); ok {
+		_spec.SetField(business.FieldWebsite, field.TypeString, value)
+	}
+	if buo.mutation.WebsiteCleared() {
+		_spec.ClearField(business.FieldWebsite, field.TypeString)
+	}
+	if value, ok := buo.mutation.Location(); ok {
+		_spec.SetField(business.FieldLocation, field.TypeString, value)
+	}
+	if buo.mutation.LocationCleared() {
+		_spec.ClearField(business.FieldLocation, field.TypeString)
+	}
+	if value, ok := buo.mutation.BusinessSettings(); ok {
+		_spec.SetField(business.FieldBusinessSettings, field.TypeJSON, value)
+	}
+	if buo.mutation.BusinessSettingsCleared() {
+		_spec.ClearField(business.FieldBusinessSettings, field.TypeJSON)
 	}
 	if value, ok := buo.mutation.SearchText(); ok {
 		_spec.SetField(business.FieldSearchText, field.TypeString, value)

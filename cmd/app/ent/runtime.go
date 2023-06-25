@@ -51,6 +51,10 @@ func init() {
 	booking.IDValidator = bookingDescID.Validators[0].(func(string) error)
 	businessFields := schema.Business{}.Fields()
 	_ = businessFields
+	// businessDescCoverImage is the schema descriptor for cover_image field.
+	businessDescCoverImage := businessFields[4].Descriptor()
+	// business.DefaultCoverImage holds the default value on creation for the cover_image field.
+	business.DefaultCoverImage = businessDescCoverImage.Default.(string)
 	// businessDescID is the schema descriptor for id field.
 	businessDescID := businessFields[0].Descriptor()
 	// business.IDValidator is a validator for the "id" field. It is called by the builders before save.
