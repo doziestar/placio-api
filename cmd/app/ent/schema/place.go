@@ -25,6 +25,9 @@ func (Place) Fields() []ent.Field {
 		field.JSON("availability", map[string]interface{}{}).Optional(),
 		field.String("special_offers").Optional(),
 		field.Float("sustainability_score").Optional(),
+		field.JSON("map_coordinates", map[string]interface{}{}),
+		field.String("search_text").Optional(),
+		field.Float("relevance_score").Optional(),
 	}
 }
 
@@ -43,5 +46,6 @@ func (Place) Edges() []ent.Edge {
 		edge.To("reservations", Reservation.Type),
 		edge.To("bookings", Booking.Type),
 		edge.To("categories", Category.Type),
+		edge.To("categoryAssignments", CategoryAssignment.Type),
 	}
 }

@@ -13,6 +13,7 @@ import (
 	"placio-app/ent/businessfollowbusiness"
 	"placio-app/ent/businessfollowuser"
 	"placio-app/ent/category"
+	"placio-app/ent/categoryassignment"
 	"placio-app/ent/chat"
 	"placio-app/ent/comment"
 	"placio-app/ent/event"
@@ -108,6 +109,7 @@ func checkColumn(table, column string) error {
 			businessfollowbusiness.Table: businessfollowbusiness.ValidColumn,
 			businessfollowuser.Table:     businessfollowuser.ValidColumn,
 			category.Table:               category.ValidColumn,
+			categoryassignment.Table:     categoryassignment.ValidColumn,
 			chat.Table:                   chat.ValidColumn,
 			comment.Table:                comment.ValidColumn,
 			event.Table:                  event.ValidColumn,

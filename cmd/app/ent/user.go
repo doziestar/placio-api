@@ -36,6 +36,10 @@ type User struct {
 	AppSettings map[string]interface{} `json:"app_settings,omitempty"`
 	// UserSettings holds the value of the "user_settings" field.
 	UserSettings map[string]interface{} `json:"user_settings,omitempty"`
+	// SearchText holds the value of the "search_text" field.
+	SearchText string `json:"search_text,omitempty"`
+	// RelevanceScore holds the value of the "relevance_score" field.
+	RelevanceScore float64 `json:"relevance_score,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserQuery when eager-loading is set.
 	Edges        UserEdges `json:"edges"`
@@ -70,9 +74,15 @@ type UserEdges struct {
 	Helps []*Help `json:"helps,omitempty"`
 	// Categories holds the value of the categories edge.
 	Categories []*Category `json:"categories,omitempty"`
+	// Events holds the value of the events edge.
+	Events []*Event `json:"events,omitempty"`
+	// Places holds the value of the places edge.
+	Places []*Place `json:"places,omitempty"`
+	// CategoryAssignments holds the value of the categoryAssignments edge.
+	CategoryAssignments []*CategoryAssignment `json:"categoryAssignments,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [13]bool
+	loadedTypes [16]bool
 }
 
 // UserBusinessesOrErr returns the UserBusinesses value or an error if the edge
@@ -192,6 +202,33 @@ func (e UserEdges) CategoriesOrErr() ([]*Category, error) {
 	return nil, &NotLoadedError{edge: "categories"}
 }
 
+// EventsOrErr returns the Events value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) EventsOrErr() ([]*Event, error) {
+	if e.loadedTypes[13] {
+		return e.Events, nil
+	}
+	return nil, &NotLoadedError{edge: "events"}
+}
+
+// PlacesOrErr returns the Places value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) PlacesOrErr() ([]*Place, error) {
+	if e.loadedTypes[14] {
+		return e.Places, nil
+	}
+	return nil, &NotLoadedError{edge: "places"}
+}
+
+// CategoryAssignmentsOrErr returns the CategoryAssignments value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) CategoryAssignmentsOrErr() ([]*CategoryAssignment, error) {
+	if e.loadedTypes[15] {
+		return e.CategoryAssignments, nil
+	}
+	return nil, &NotLoadedError{edge: "categoryAssignments"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*User) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -199,7 +236,9 @@ func (*User) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case user.FieldAuth0Data, user.FieldAppSettings, user.FieldUserSettings:
 			values[i] = new([]byte)
-		case user.FieldID, user.FieldAuth0ID, user.FieldName, user.FieldPicture, user.FieldCoverImage, user.FieldUsername, user.FieldBio:
+		case user.FieldRelevanceScore:
+			values[i] = new(sql.NullFloat64)
+		case user.FieldID, user.FieldAuth0ID, user.FieldName, user.FieldPicture, user.FieldCoverImage, user.FieldUsername, user.FieldBio, user.FieldSearchText:
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -282,6 +321,18 @@ func (u *User) assignValues(columns []string, values []any) error {
 					return fmt.Errorf("unmarshal field user_settings: %w", err)
 				}
 			}
+		case user.FieldSearchText:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field search_text", values[i])
+			} else if value.Valid {
+				u.SearchText = value.String
+			}
+		case user.FieldRelevanceScore:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field relevance_score", values[i])
+			} else if value.Valid {
+				u.RelevanceScore = value.Float64
+			}
 		default:
 			u.selectValues.Set(columns[i], values[i])
 		}
@@ -360,6 +411,21 @@ func (u *User) QueryCategories() *CategoryQuery {
 	return NewUserClient(u.config).QueryCategories(u)
 }
 
+// QueryEvents queries the "events" edge of the User entity.
+func (u *User) QueryEvents() *EventQuery {
+	return NewUserClient(u.config).QueryEvents(u)
+}
+
+// QueryPlaces queries the "places" edge of the User entity.
+func (u *User) QueryPlaces() *PlaceQuery {
+	return NewUserClient(u.config).QueryPlaces(u)
+}
+
+// QueryCategoryAssignments queries the "categoryAssignments" edge of the User entity.
+func (u *User) QueryCategoryAssignments() *CategoryAssignmentQuery {
+	return NewUserClient(u.config).QueryCategoryAssignments(u)
+}
+
 // Update returns a builder for updating this User.
 // Note that you need to call User.Unwrap() before calling this method if this User
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -409,6 +475,12 @@ func (u *User) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("user_settings=")
 	builder.WriteString(fmt.Sprintf("%v", u.UserSettings))
+	builder.WriteString(", ")
+	builder.WriteString("search_text=")
+	builder.WriteString(u.SearchText)
+	builder.WriteString(", ")
+	builder.WriteString("relevance_score=")
+	builder.WriteString(fmt.Sprintf("%v", u.RelevanceScore))
 	builder.WriteByte(')')
 	return builder.String()
 }

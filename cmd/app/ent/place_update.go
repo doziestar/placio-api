@@ -10,6 +10,7 @@ import (
 	"placio-app/ent/booking"
 	"placio-app/ent/business"
 	"placio-app/ent/category"
+	"placio-app/ent/categoryassignment"
 	"placio-app/ent/event"
 	"placio-app/ent/menu"
 	"placio-app/ent/place"
@@ -152,6 +153,59 @@ func (pu *PlaceUpdate) ClearSustainabilityScore() *PlaceUpdate {
 	return pu
 }
 
+// SetMapCoordinates sets the "map_coordinates" field.
+func (pu *PlaceUpdate) SetMapCoordinates(m map[string]interface{}) *PlaceUpdate {
+	pu.mutation.SetMapCoordinates(m)
+	return pu
+}
+
+// SetSearchText sets the "search_text" field.
+func (pu *PlaceUpdate) SetSearchText(s string) *PlaceUpdate {
+	pu.mutation.SetSearchText(s)
+	return pu
+}
+
+// SetNillableSearchText sets the "search_text" field if the given value is not nil.
+func (pu *PlaceUpdate) SetNillableSearchText(s *string) *PlaceUpdate {
+	if s != nil {
+		pu.SetSearchText(*s)
+	}
+	return pu
+}
+
+// ClearSearchText clears the value of the "search_text" field.
+func (pu *PlaceUpdate) ClearSearchText() *PlaceUpdate {
+	pu.mutation.ClearSearchText()
+	return pu
+}
+
+// SetRelevanceScore sets the "relevance_score" field.
+func (pu *PlaceUpdate) SetRelevanceScore(f float64) *PlaceUpdate {
+	pu.mutation.ResetRelevanceScore()
+	pu.mutation.SetRelevanceScore(f)
+	return pu
+}
+
+// SetNillableRelevanceScore sets the "relevance_score" field if the given value is not nil.
+func (pu *PlaceUpdate) SetNillableRelevanceScore(f *float64) *PlaceUpdate {
+	if f != nil {
+		pu.SetRelevanceScore(*f)
+	}
+	return pu
+}
+
+// AddRelevanceScore adds f to the "relevance_score" field.
+func (pu *PlaceUpdate) AddRelevanceScore(f float64) *PlaceUpdate {
+	pu.mutation.AddRelevanceScore(f)
+	return pu
+}
+
+// ClearRelevanceScore clears the value of the "relevance_score" field.
+func (pu *PlaceUpdate) ClearRelevanceScore() *PlaceUpdate {
+	pu.mutation.ClearRelevanceScore()
+	return pu
+}
+
 // SetBusinessID sets the "business" edge to the Business entity by ID.
 func (pu *PlaceUpdate) SetBusinessID(id string) *PlaceUpdate {
 	pu.mutation.SetBusinessID(id)
@@ -289,6 +343,21 @@ func (pu *PlaceUpdate) AddCategories(c ...*Category) *PlaceUpdate {
 		ids[i] = c[i].ID
 	}
 	return pu.AddCategoryIDs(ids...)
+}
+
+// AddCategoryAssignmentIDs adds the "categoryAssignments" edge to the CategoryAssignment entity by IDs.
+func (pu *PlaceUpdate) AddCategoryAssignmentIDs(ids ...string) *PlaceUpdate {
+	pu.mutation.AddCategoryAssignmentIDs(ids...)
+	return pu
+}
+
+// AddCategoryAssignments adds the "categoryAssignments" edges to the CategoryAssignment entity.
+func (pu *PlaceUpdate) AddCategoryAssignments(c ...*CategoryAssignment) *PlaceUpdate {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return pu.AddCategoryAssignmentIDs(ids...)
 }
 
 // Mutation returns the PlaceMutation object of the builder.
@@ -470,6 +539,27 @@ func (pu *PlaceUpdate) RemoveCategories(c ...*Category) *PlaceUpdate {
 	return pu.RemoveCategoryIDs(ids...)
 }
 
+// ClearCategoryAssignments clears all "categoryAssignments" edges to the CategoryAssignment entity.
+func (pu *PlaceUpdate) ClearCategoryAssignments() *PlaceUpdate {
+	pu.mutation.ClearCategoryAssignments()
+	return pu
+}
+
+// RemoveCategoryAssignmentIDs removes the "categoryAssignments" edge to CategoryAssignment entities by IDs.
+func (pu *PlaceUpdate) RemoveCategoryAssignmentIDs(ids ...string) *PlaceUpdate {
+	pu.mutation.RemoveCategoryAssignmentIDs(ids...)
+	return pu
+}
+
+// RemoveCategoryAssignments removes "categoryAssignments" edges to CategoryAssignment entities.
+func (pu *PlaceUpdate) RemoveCategoryAssignments(c ...*CategoryAssignment) *PlaceUpdate {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return pu.RemoveCategoryAssignmentIDs(ids...)
+}
+
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (pu *PlaceUpdate) Save(ctx context.Context) (int, error) {
 	return withHooks(ctx, pu.sqlSave, pu.mutation, pu.hooks)
@@ -552,6 +642,24 @@ func (pu *PlaceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if pu.mutation.SustainabilityScoreCleared() {
 		_spec.ClearField(place.FieldSustainabilityScore, field.TypeFloat64)
+	}
+	if value, ok := pu.mutation.MapCoordinates(); ok {
+		_spec.SetField(place.FieldMapCoordinates, field.TypeJSON, value)
+	}
+	if value, ok := pu.mutation.SearchText(); ok {
+		_spec.SetField(place.FieldSearchText, field.TypeString, value)
+	}
+	if pu.mutation.SearchTextCleared() {
+		_spec.ClearField(place.FieldSearchText, field.TypeString)
+	}
+	if value, ok := pu.mutation.RelevanceScore(); ok {
+		_spec.SetField(place.FieldRelevanceScore, field.TypeFloat64, value)
+	}
+	if value, ok := pu.mutation.AddedRelevanceScore(); ok {
+		_spec.AddField(place.FieldRelevanceScore, field.TypeFloat64, value)
+	}
+	if pu.mutation.RelevanceScoreCleared() {
+		_spec.ClearField(place.FieldRelevanceScore, field.TypeFloat64)
 	}
 	if pu.mutation.BusinessCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -942,6 +1050,51 @@ func (pu *PlaceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if pu.mutation.CategoryAssignmentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   place.CategoryAssignmentsTable,
+			Columns: []string{place.CategoryAssignmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(categoryassignment.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.RemovedCategoryAssignmentsIDs(); len(nodes) > 0 && !pu.mutation.CategoryAssignmentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   place.CategoryAssignmentsTable,
+			Columns: []string{place.CategoryAssignmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(categoryassignment.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.CategoryAssignmentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   place.CategoryAssignmentsTable,
+			Columns: []string{place.CategoryAssignmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(categoryassignment.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, pu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{place.Label}
@@ -1074,6 +1227,59 @@ func (puo *PlaceUpdateOne) AddSustainabilityScore(f float64) *PlaceUpdateOne {
 // ClearSustainabilityScore clears the value of the "sustainability_score" field.
 func (puo *PlaceUpdateOne) ClearSustainabilityScore() *PlaceUpdateOne {
 	puo.mutation.ClearSustainabilityScore()
+	return puo
+}
+
+// SetMapCoordinates sets the "map_coordinates" field.
+func (puo *PlaceUpdateOne) SetMapCoordinates(m map[string]interface{}) *PlaceUpdateOne {
+	puo.mutation.SetMapCoordinates(m)
+	return puo
+}
+
+// SetSearchText sets the "search_text" field.
+func (puo *PlaceUpdateOne) SetSearchText(s string) *PlaceUpdateOne {
+	puo.mutation.SetSearchText(s)
+	return puo
+}
+
+// SetNillableSearchText sets the "search_text" field if the given value is not nil.
+func (puo *PlaceUpdateOne) SetNillableSearchText(s *string) *PlaceUpdateOne {
+	if s != nil {
+		puo.SetSearchText(*s)
+	}
+	return puo
+}
+
+// ClearSearchText clears the value of the "search_text" field.
+func (puo *PlaceUpdateOne) ClearSearchText() *PlaceUpdateOne {
+	puo.mutation.ClearSearchText()
+	return puo
+}
+
+// SetRelevanceScore sets the "relevance_score" field.
+func (puo *PlaceUpdateOne) SetRelevanceScore(f float64) *PlaceUpdateOne {
+	puo.mutation.ResetRelevanceScore()
+	puo.mutation.SetRelevanceScore(f)
+	return puo
+}
+
+// SetNillableRelevanceScore sets the "relevance_score" field if the given value is not nil.
+func (puo *PlaceUpdateOne) SetNillableRelevanceScore(f *float64) *PlaceUpdateOne {
+	if f != nil {
+		puo.SetRelevanceScore(*f)
+	}
+	return puo
+}
+
+// AddRelevanceScore adds f to the "relevance_score" field.
+func (puo *PlaceUpdateOne) AddRelevanceScore(f float64) *PlaceUpdateOne {
+	puo.mutation.AddRelevanceScore(f)
+	return puo
+}
+
+// ClearRelevanceScore clears the value of the "relevance_score" field.
+func (puo *PlaceUpdateOne) ClearRelevanceScore() *PlaceUpdateOne {
+	puo.mutation.ClearRelevanceScore()
 	return puo
 }
 
@@ -1214,6 +1420,21 @@ func (puo *PlaceUpdateOne) AddCategories(c ...*Category) *PlaceUpdateOne {
 		ids[i] = c[i].ID
 	}
 	return puo.AddCategoryIDs(ids...)
+}
+
+// AddCategoryAssignmentIDs adds the "categoryAssignments" edge to the CategoryAssignment entity by IDs.
+func (puo *PlaceUpdateOne) AddCategoryAssignmentIDs(ids ...string) *PlaceUpdateOne {
+	puo.mutation.AddCategoryAssignmentIDs(ids...)
+	return puo
+}
+
+// AddCategoryAssignments adds the "categoryAssignments" edges to the CategoryAssignment entity.
+func (puo *PlaceUpdateOne) AddCategoryAssignments(c ...*CategoryAssignment) *PlaceUpdateOne {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return puo.AddCategoryAssignmentIDs(ids...)
 }
 
 // Mutation returns the PlaceMutation object of the builder.
@@ -1395,6 +1616,27 @@ func (puo *PlaceUpdateOne) RemoveCategories(c ...*Category) *PlaceUpdateOne {
 	return puo.RemoveCategoryIDs(ids...)
 }
 
+// ClearCategoryAssignments clears all "categoryAssignments" edges to the CategoryAssignment entity.
+func (puo *PlaceUpdateOne) ClearCategoryAssignments() *PlaceUpdateOne {
+	puo.mutation.ClearCategoryAssignments()
+	return puo
+}
+
+// RemoveCategoryAssignmentIDs removes the "categoryAssignments" edge to CategoryAssignment entities by IDs.
+func (puo *PlaceUpdateOne) RemoveCategoryAssignmentIDs(ids ...string) *PlaceUpdateOne {
+	puo.mutation.RemoveCategoryAssignmentIDs(ids...)
+	return puo
+}
+
+// RemoveCategoryAssignments removes "categoryAssignments" edges to CategoryAssignment entities.
+func (puo *PlaceUpdateOne) RemoveCategoryAssignments(c ...*CategoryAssignment) *PlaceUpdateOne {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return puo.RemoveCategoryAssignmentIDs(ids...)
+}
+
 // Where appends a list predicates to the PlaceUpdate builder.
 func (puo *PlaceUpdateOne) Where(ps ...predicate.Place) *PlaceUpdateOne {
 	puo.mutation.Where(ps...)
@@ -1507,6 +1749,24 @@ func (puo *PlaceUpdateOne) sqlSave(ctx context.Context) (_node *Place, err error
 	}
 	if puo.mutation.SustainabilityScoreCleared() {
 		_spec.ClearField(place.FieldSustainabilityScore, field.TypeFloat64)
+	}
+	if value, ok := puo.mutation.MapCoordinates(); ok {
+		_spec.SetField(place.FieldMapCoordinates, field.TypeJSON, value)
+	}
+	if value, ok := puo.mutation.SearchText(); ok {
+		_spec.SetField(place.FieldSearchText, field.TypeString, value)
+	}
+	if puo.mutation.SearchTextCleared() {
+		_spec.ClearField(place.FieldSearchText, field.TypeString)
+	}
+	if value, ok := puo.mutation.RelevanceScore(); ok {
+		_spec.SetField(place.FieldRelevanceScore, field.TypeFloat64, value)
+	}
+	if value, ok := puo.mutation.AddedRelevanceScore(); ok {
+		_spec.AddField(place.FieldRelevanceScore, field.TypeFloat64, value)
+	}
+	if puo.mutation.RelevanceScoreCleared() {
+		_spec.ClearField(place.FieldRelevanceScore, field.TypeFloat64)
 	}
 	if puo.mutation.BusinessCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1890,6 +2150,51 @@ func (puo *PlaceUpdateOne) sqlSave(ctx context.Context) (_node *Place, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if puo.mutation.CategoryAssignmentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   place.CategoryAssignmentsTable,
+			Columns: []string{place.CategoryAssignmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(categoryassignment.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.RemovedCategoryAssignmentsIDs(); len(nodes) > 0 && !puo.mutation.CategoryAssignmentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   place.CategoryAssignmentsTable,
+			Columns: []string{place.CategoryAssignmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(categoryassignment.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.CategoryAssignmentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   place.CategoryAssignmentsTable,
+			Columns: []string{place.CategoryAssignmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(categoryassignment.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

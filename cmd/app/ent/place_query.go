@@ -11,6 +11,7 @@ import (
 	"placio-app/ent/booking"
 	"placio-app/ent/business"
 	"placio-app/ent/category"
+	"placio-app/ent/categoryassignment"
 	"placio-app/ent/event"
 	"placio-app/ent/menu"
 	"placio-app/ent/place"
@@ -27,20 +28,21 @@ import (
 // PlaceQuery is the builder for querying Place entities.
 type PlaceQuery struct {
 	config
-	ctx              *QueryContext
-	order            []place.OrderOption
-	inters           []Interceptor
-	predicates       []predicate.Place
-	withBusiness     *BusinessQuery
-	withReviews      *ReviewQuery
-	withEvents       *EventQuery
-	withAmenities    *AmenityQuery
-	withMenus        *MenuQuery
-	withRooms        *RoomQuery
-	withReservations *ReservationQuery
-	withBookings     *BookingQuery
-	withCategories   *CategoryQuery
-	withFKs          bool
+	ctx                     *QueryContext
+	order                   []place.OrderOption
+	inters                  []Interceptor
+	predicates              []predicate.Place
+	withBusiness            *BusinessQuery
+	withReviews             *ReviewQuery
+	withEvents              *EventQuery
+	withAmenities           *AmenityQuery
+	withMenus               *MenuQuery
+	withRooms               *RoomQuery
+	withReservations        *ReservationQuery
+	withBookings            *BookingQuery
+	withCategories          *CategoryQuery
+	withCategoryAssignments *CategoryAssignmentQuery
+	withFKs                 bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -275,6 +277,28 @@ func (pq *PlaceQuery) QueryCategories() *CategoryQuery {
 	return query
 }
 
+// QueryCategoryAssignments chains the current query on the "categoryAssignments" edge.
+func (pq *PlaceQuery) QueryCategoryAssignments() *CategoryAssignmentQuery {
+	query := (&CategoryAssignmentClient{config: pq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(place.Table, place.FieldID, selector),
+			sqlgraph.To(categoryassignment.Table, categoryassignment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, place.CategoryAssignmentsTable, place.CategoryAssignmentsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Place entity from the query.
 // Returns a *NotFoundError when no Place was found.
 func (pq *PlaceQuery) First(ctx context.Context) (*Place, error) {
@@ -462,20 +486,21 @@ func (pq *PlaceQuery) Clone() *PlaceQuery {
 		return nil
 	}
 	return &PlaceQuery{
-		config:           pq.config,
-		ctx:              pq.ctx.Clone(),
-		order:            append([]place.OrderOption{}, pq.order...),
-		inters:           append([]Interceptor{}, pq.inters...),
-		predicates:       append([]predicate.Place{}, pq.predicates...),
-		withBusiness:     pq.withBusiness.Clone(),
-		withReviews:      pq.withReviews.Clone(),
-		withEvents:       pq.withEvents.Clone(),
-		withAmenities:    pq.withAmenities.Clone(),
-		withMenus:        pq.withMenus.Clone(),
-		withRooms:        pq.withRooms.Clone(),
-		withReservations: pq.withReservations.Clone(),
-		withBookings:     pq.withBookings.Clone(),
-		withCategories:   pq.withCategories.Clone(),
+		config:                  pq.config,
+		ctx:                     pq.ctx.Clone(),
+		order:                   append([]place.OrderOption{}, pq.order...),
+		inters:                  append([]Interceptor{}, pq.inters...),
+		predicates:              append([]predicate.Place{}, pq.predicates...),
+		withBusiness:            pq.withBusiness.Clone(),
+		withReviews:             pq.withReviews.Clone(),
+		withEvents:              pq.withEvents.Clone(),
+		withAmenities:           pq.withAmenities.Clone(),
+		withMenus:               pq.withMenus.Clone(),
+		withRooms:               pq.withRooms.Clone(),
+		withReservations:        pq.withReservations.Clone(),
+		withBookings:            pq.withBookings.Clone(),
+		withCategories:          pq.withCategories.Clone(),
+		withCategoryAssignments: pq.withCategoryAssignments.Clone(),
 		// clone intermediate query.
 		sql:  pq.sql.Clone(),
 		path: pq.path,
@@ -581,6 +606,17 @@ func (pq *PlaceQuery) WithCategories(opts ...func(*CategoryQuery)) *PlaceQuery {
 	return pq
 }
 
+// WithCategoryAssignments tells the query-builder to eager-load the nodes that are connected to
+// the "categoryAssignments" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *PlaceQuery) WithCategoryAssignments(opts ...func(*CategoryAssignmentQuery)) *PlaceQuery {
+	query := (&CategoryAssignmentClient{config: pq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withCategoryAssignments = query
+	return pq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -660,7 +696,7 @@ func (pq *PlaceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Place,
 		nodes       = []*Place{}
 		withFKs     = pq.withFKs
 		_spec       = pq.querySpec()
-		loadedTypes = [9]bool{
+		loadedTypes = [10]bool{
 			pq.withBusiness != nil,
 			pq.withReviews != nil,
 			pq.withEvents != nil,
@@ -670,6 +706,7 @@ func (pq *PlaceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Place,
 			pq.withReservations != nil,
 			pq.withBookings != nil,
 			pq.withCategories != nil,
+			pq.withCategoryAssignments != nil,
 		}
 	)
 	if pq.withBusiness != nil {
@@ -755,6 +792,15 @@ func (pq *PlaceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Place,
 		if err := pq.loadCategories(ctx, query, nodes,
 			func(n *Place) { n.Edges.Categories = []*Category{} },
 			func(n *Place, e *Category) { n.Edges.Categories = append(n.Edges.Categories, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := pq.withCategoryAssignments; query != nil {
+		if err := pq.loadCategoryAssignments(ctx, query, nodes,
+			func(n *Place) { n.Edges.CategoryAssignments = []*CategoryAssignment{} },
+			func(n *Place, e *CategoryAssignment) {
+				n.Edges.CategoryAssignments = append(n.Edges.CategoryAssignments, e)
+			}); err != nil {
 			return nil, err
 		}
 	}
@@ -1066,6 +1112,36 @@ func (pq *PlaceQuery) loadCategories(ctx context.Context, query *CategoryQuery, 
 		node, ok := nodeids[*fk]
 		if !ok {
 			return fmt.Errorf(`unexpected referenced foreign-key "place_categories" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (pq *PlaceQuery) loadCategoryAssignments(ctx context.Context, query *CategoryAssignmentQuery, nodes []*Place, init func(*Place), assign func(*Place, *CategoryAssignment)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Place)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(categoryassignment.FieldEntityID)
+	}
+	query.Where(predicate.CategoryAssignment(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(place.CategoryAssignmentsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.EntityID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "entity_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}

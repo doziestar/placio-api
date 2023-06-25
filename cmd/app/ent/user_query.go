@@ -10,9 +10,12 @@ import (
 	"placio-app/ent/booking"
 	"placio-app/ent/businessfollowuser"
 	"placio-app/ent/category"
+	"placio-app/ent/categoryassignment"
 	"placio-app/ent/comment"
+	"placio-app/ent/event"
 	"placio-app/ent/help"
 	"placio-app/ent/like"
+	"placio-app/ent/place"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
 	"placio-app/ent/reservation"
@@ -30,23 +33,26 @@ import (
 // UserQuery is the builder for querying User entities.
 type UserQuery struct {
 	config
-	ctx                    *QueryContext
-	order                  []user.OrderOption
-	inters                 []Interceptor
-	predicates             []predicate.User
-	withUserBusinesses     *UserBusinessQuery
-	withComments           *CommentQuery
-	withLikes              *LikeQuery
-	withPosts              *PostQuery
-	withFollowedUsers      *UserFollowUserQuery
-	withFollowerUsers      *UserFollowUserQuery
-	withFollowedBusinesses *UserFollowBusinessQuery
-	withFollowerBusinesses *BusinessFollowUserQuery
-	withReviews            *ReviewQuery
-	withBookings           *BookingQuery
-	withReservations       *ReservationQuery
-	withHelps              *HelpQuery
-	withCategories         *CategoryQuery
+	ctx                     *QueryContext
+	order                   []user.OrderOption
+	inters                  []Interceptor
+	predicates              []predicate.User
+	withUserBusinesses      *UserBusinessQuery
+	withComments            *CommentQuery
+	withLikes               *LikeQuery
+	withPosts               *PostQuery
+	withFollowedUsers       *UserFollowUserQuery
+	withFollowerUsers       *UserFollowUserQuery
+	withFollowedBusinesses  *UserFollowBusinessQuery
+	withFollowerBusinesses  *BusinessFollowUserQuery
+	withReviews             *ReviewQuery
+	withBookings            *BookingQuery
+	withReservations        *ReservationQuery
+	withHelps               *HelpQuery
+	withCategories          *CategoryQuery
+	withEvents              *EventQuery
+	withPlaces              *PlaceQuery
+	withCategoryAssignments *CategoryAssignmentQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -369,6 +375,72 @@ func (uq *UserQuery) QueryCategories() *CategoryQuery {
 	return query
 }
 
+// QueryEvents chains the current query on the "events" edge.
+func (uq *UserQuery) QueryEvents() *EventQuery {
+	query := (&EventClient{config: uq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(event.Table, event.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.EventsTable, user.EventsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryPlaces chains the current query on the "places" edge.
+func (uq *UserQuery) QueryPlaces() *PlaceQuery {
+	query := (&PlaceClient{config: uq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(place.Table, place.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.PlacesTable, user.PlacesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryCategoryAssignments chains the current query on the "categoryAssignments" edge.
+func (uq *UserQuery) QueryCategoryAssignments() *CategoryAssignmentQuery {
+	query := (&CategoryAssignmentClient{config: uq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(categoryassignment.Table, categoryassignment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.CategoryAssignmentsTable, user.CategoryAssignmentsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first User entity from the query.
 // Returns a *NotFoundError when no User was found.
 func (uq *UserQuery) First(ctx context.Context) (*User, error) {
@@ -556,24 +628,27 @@ func (uq *UserQuery) Clone() *UserQuery {
 		return nil
 	}
 	return &UserQuery{
-		config:                 uq.config,
-		ctx:                    uq.ctx.Clone(),
-		order:                  append([]user.OrderOption{}, uq.order...),
-		inters:                 append([]Interceptor{}, uq.inters...),
-		predicates:             append([]predicate.User{}, uq.predicates...),
-		withUserBusinesses:     uq.withUserBusinesses.Clone(),
-		withComments:           uq.withComments.Clone(),
-		withLikes:              uq.withLikes.Clone(),
-		withPosts:              uq.withPosts.Clone(),
-		withFollowedUsers:      uq.withFollowedUsers.Clone(),
-		withFollowerUsers:      uq.withFollowerUsers.Clone(),
-		withFollowedBusinesses: uq.withFollowedBusinesses.Clone(),
-		withFollowerBusinesses: uq.withFollowerBusinesses.Clone(),
-		withReviews:            uq.withReviews.Clone(),
-		withBookings:           uq.withBookings.Clone(),
-		withReservations:       uq.withReservations.Clone(),
-		withHelps:              uq.withHelps.Clone(),
-		withCategories:         uq.withCategories.Clone(),
+		config:                  uq.config,
+		ctx:                     uq.ctx.Clone(),
+		order:                   append([]user.OrderOption{}, uq.order...),
+		inters:                  append([]Interceptor{}, uq.inters...),
+		predicates:              append([]predicate.User{}, uq.predicates...),
+		withUserBusinesses:      uq.withUserBusinesses.Clone(),
+		withComments:            uq.withComments.Clone(),
+		withLikes:               uq.withLikes.Clone(),
+		withPosts:               uq.withPosts.Clone(),
+		withFollowedUsers:       uq.withFollowedUsers.Clone(),
+		withFollowerUsers:       uq.withFollowerUsers.Clone(),
+		withFollowedBusinesses:  uq.withFollowedBusinesses.Clone(),
+		withFollowerBusinesses:  uq.withFollowerBusinesses.Clone(),
+		withReviews:             uq.withReviews.Clone(),
+		withBookings:            uq.withBookings.Clone(),
+		withReservations:        uq.withReservations.Clone(),
+		withHelps:               uq.withHelps.Clone(),
+		withCategories:          uq.withCategories.Clone(),
+		withEvents:              uq.withEvents.Clone(),
+		withPlaces:              uq.withPlaces.Clone(),
+		withCategoryAssignments: uq.withCategoryAssignments.Clone(),
 		// clone intermediate query.
 		sql:  uq.sql.Clone(),
 		path: uq.path,
@@ -723,6 +798,39 @@ func (uq *UserQuery) WithCategories(opts ...func(*CategoryQuery)) *UserQuery {
 	return uq
 }
 
+// WithEvents tells the query-builder to eager-load the nodes that are connected to
+// the "events" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithEvents(opts ...func(*EventQuery)) *UserQuery {
+	query := (&EventClient{config: uq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	uq.withEvents = query
+	return uq
+}
+
+// WithPlaces tells the query-builder to eager-load the nodes that are connected to
+// the "places" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithPlaces(opts ...func(*PlaceQuery)) *UserQuery {
+	query := (&PlaceClient{config: uq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	uq.withPlaces = query
+	return uq
+}
+
+// WithCategoryAssignments tells the query-builder to eager-load the nodes that are connected to
+// the "categoryAssignments" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithCategoryAssignments(opts ...func(*CategoryAssignmentQuery)) *UserQuery {
+	query := (&CategoryAssignmentClient{config: uq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	uq.withCategoryAssignments = query
+	return uq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -801,7 +909,7 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	var (
 		nodes       = []*User{}
 		_spec       = uq.querySpec()
-		loadedTypes = [13]bool{
+		loadedTypes = [16]bool{
 			uq.withUserBusinesses != nil,
 			uq.withComments != nil,
 			uq.withLikes != nil,
@@ -815,6 +923,9 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 			uq.withReservations != nil,
 			uq.withHelps != nil,
 			uq.withCategories != nil,
+			uq.withEvents != nil,
+			uq.withPlaces != nil,
+			uq.withCategoryAssignments != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -927,6 +1038,29 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 		if err := uq.loadCategories(ctx, query, nodes,
 			func(n *User) { n.Edges.Categories = []*Category{} },
 			func(n *User, e *Category) { n.Edges.Categories = append(n.Edges.Categories, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := uq.withEvents; query != nil {
+		if err := uq.loadEvents(ctx, query, nodes,
+			func(n *User) { n.Edges.Events = []*Event{} },
+			func(n *User, e *Event) { n.Edges.Events = append(n.Edges.Events, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := uq.withPlaces; query != nil {
+		if err := uq.loadPlaces(ctx, query, nodes,
+			func(n *User) { n.Edges.Places = []*Place{} },
+			func(n *User, e *Place) { n.Edges.Places = append(n.Edges.Places, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := uq.withCategoryAssignments; query != nil {
+		if err := uq.loadCategoryAssignments(ctx, query, nodes,
+			func(n *User) { n.Edges.CategoryAssignments = []*CategoryAssignment{} },
+			func(n *User, e *CategoryAssignment) {
+				n.Edges.CategoryAssignments = append(n.Edges.CategoryAssignments, e)
+			}); err != nil {
 			return nil, err
 		}
 	}
@@ -1330,6 +1464,98 @@ func (uq *UserQuery) loadCategories(ctx context.Context, query *CategoryQuery, n
 		node, ok := nodeids[*fk]
 		if !ok {
 			return fmt.Errorf(`unexpected referenced foreign-key "user_categories" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (uq *UserQuery) loadEvents(ctx context.Context, query *EventQuery, nodes []*User, init func(*User), assign func(*User, *Event)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.EventsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.user_events
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "user_events" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "user_events" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (uq *UserQuery) loadPlaces(ctx context.Context, query *PlaceQuery, nodes []*User, init func(*User), assign func(*User, *Place)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Place(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.PlacesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.user_places
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "user_places" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "user_places" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (uq *UserQuery) loadCategoryAssignments(ctx context.Context, query *CategoryAssignmentQuery, nodes []*User, init func(*User), assign func(*User, *CategoryAssignment)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(categoryassignment.FieldEntityID)
+	}
+	query.Where(predicate.CategoryAssignment(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.CategoryAssignmentsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.EntityID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "entity_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}

@@ -34,10 +34,17 @@ type Place struct {
 	SpecialOffers string `json:"special_offers,omitempty"`
 	// SustainabilityScore holds the value of the "sustainability_score" field.
 	SustainabilityScore float64 `json:"sustainability_score,omitempty"`
+	// MapCoordinates holds the value of the "map_coordinates" field.
+	MapCoordinates map[string]interface{} `json:"map_coordinates,omitempty"`
+	// SearchText holds the value of the "search_text" field.
+	SearchText string `json:"search_text,omitempty"`
+	// RelevanceScore holds the value of the "relevance_score" field.
+	RelevanceScore float64 `json:"relevance_score,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PlaceQuery when eager-loading is set.
 	Edges           PlaceEdges `json:"edges"`
 	business_places *string
+	user_places     *string
 	selectValues    sql.SelectValues
 }
 
@@ -61,9 +68,11 @@ type PlaceEdges struct {
 	Bookings []*Booking `json:"bookings,omitempty"`
 	// Categories holds the value of the categories edge.
 	Categories []*Category `json:"categories,omitempty"`
+	// CategoryAssignments holds the value of the categoryAssignments edge.
+	CategoryAssignments []*CategoryAssignment `json:"categoryAssignments,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [9]bool
+	loadedTypes [10]bool
 }
 
 // BusinessOrErr returns the Business value or an error if the edge
@@ -151,18 +160,29 @@ func (e PlaceEdges) CategoriesOrErr() ([]*Category, error) {
 	return nil, &NotLoadedError{edge: "categories"}
 }
 
+// CategoryAssignmentsOrErr returns the CategoryAssignments value or an error if the edge
+// was not loaded in eager-loading.
+func (e PlaceEdges) CategoryAssignmentsOrErr() ([]*CategoryAssignment, error) {
+	if e.loadedTypes[9] {
+		return e.CategoryAssignments, nil
+	}
+	return nil, &NotLoadedError{edge: "categoryAssignments"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Place) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case place.FieldImages, place.FieldAvailability:
+		case place.FieldImages, place.FieldAvailability, place.FieldMapCoordinates:
 			values[i] = new([]byte)
-		case place.FieldSustainabilityScore:
+		case place.FieldSustainabilityScore, place.FieldRelevanceScore:
 			values[i] = new(sql.NullFloat64)
-		case place.FieldID, place.FieldName, place.FieldType, place.FieldDescription, place.FieldLocation, place.FieldSpecialOffers:
+		case place.FieldID, place.FieldName, place.FieldType, place.FieldDescription, place.FieldLocation, place.FieldSpecialOffers, place.FieldSearchText:
 			values[i] = new(sql.NullString)
 		case place.ForeignKeys[0]: // business_places
+			values[i] = new(sql.NullString)
+		case place.ForeignKeys[1]: // user_places
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -237,12 +257,39 @@ func (pl *Place) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				pl.SustainabilityScore = value.Float64
 			}
+		case place.FieldMapCoordinates:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field map_coordinates", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &pl.MapCoordinates); err != nil {
+					return fmt.Errorf("unmarshal field map_coordinates: %w", err)
+				}
+			}
+		case place.FieldSearchText:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field search_text", values[i])
+			} else if value.Valid {
+				pl.SearchText = value.String
+			}
+		case place.FieldRelevanceScore:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field relevance_score", values[i])
+			} else if value.Valid {
+				pl.RelevanceScore = value.Float64
+			}
 		case place.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field business_places", values[i])
 			} else if value.Valid {
 				pl.business_places = new(string)
 				*pl.business_places = value.String
+			}
+		case place.ForeignKeys[1]:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field user_places", values[i])
+			} else if value.Valid {
+				pl.user_places = new(string)
+				*pl.user_places = value.String
 			}
 		default:
 			pl.selectValues.Set(columns[i], values[i])
@@ -302,6 +349,11 @@ func (pl *Place) QueryCategories() *CategoryQuery {
 	return NewPlaceClient(pl.config).QueryCategories(pl)
 }
 
+// QueryCategoryAssignments queries the "categoryAssignments" edge of the Place entity.
+func (pl *Place) QueryCategoryAssignments() *CategoryAssignmentQuery {
+	return NewPlaceClient(pl.config).QueryCategoryAssignments(pl)
+}
+
 // Update returns a builder for updating this Place.
 // Note that you need to call Place.Unwrap() before calling this method if this Place
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -348,6 +400,15 @@ func (pl *Place) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("sustainability_score=")
 	builder.WriteString(fmt.Sprintf("%v", pl.SustainabilityScore))
+	builder.WriteString(", ")
+	builder.WriteString("map_coordinates=")
+	builder.WriteString(fmt.Sprintf("%v", pl.MapCoordinates))
+	builder.WriteString(", ")
+	builder.WriteString("search_text=")
+	builder.WriteString(pl.SearchText)
+	builder.WriteString(", ")
+	builder.WriteString("relevance_score=")
+	builder.WriteString(fmt.Sprintf("%v", pl.RelevanceScore))
 	builder.WriteByte(')')
 	return builder.String()
 }

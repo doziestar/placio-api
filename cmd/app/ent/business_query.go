@@ -12,6 +12,7 @@ import (
 	"placio-app/ent/businessfollowbusiness"
 	"placio-app/ent/businessfollowuser"
 	"placio-app/ent/category"
+	"placio-app/ent/categoryassignment"
 	"placio-app/ent/place"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
@@ -39,6 +40,7 @@ type BusinessQuery struct {
 	withFollowerBusinesses      *BusinessFollowBusinessQuery
 	withPlaces                  *PlaceQuery
 	withCategories              *CategoryQuery
+	withCategoryAssignments     *CategoryAssignmentQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -273,6 +275,28 @@ func (bq *BusinessQuery) QueryCategories() *CategoryQuery {
 	return query
 }
 
+// QueryCategoryAssignments chains the current query on the "categoryAssignments" edge.
+func (bq *BusinessQuery) QueryCategoryAssignments() *CategoryAssignmentQuery {
+	query := (&CategoryAssignmentClient{config: bq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := bq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := bq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(business.Table, business.FieldID, selector),
+			sqlgraph.To(categoryassignment.Table, categoryassignment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, business.CategoryAssignmentsTable, business.CategoryAssignmentsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(bq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Business entity from the query.
 // Returns a *NotFoundError when no Business was found.
 func (bq *BusinessQuery) First(ctx context.Context) (*Business, error) {
@@ -474,6 +498,7 @@ func (bq *BusinessQuery) Clone() *BusinessQuery {
 		withFollowerBusinesses:      bq.withFollowerBusinesses.Clone(),
 		withPlaces:                  bq.withPlaces.Clone(),
 		withCategories:              bq.withCategories.Clone(),
+		withCategoryAssignments:     bq.withCategoryAssignments.Clone(),
 		// clone intermediate query.
 		sql:  bq.sql.Clone(),
 		path: bq.path,
@@ -579,6 +604,17 @@ func (bq *BusinessQuery) WithCategories(opts ...func(*CategoryQuery)) *BusinessQ
 	return bq
 }
 
+// WithCategoryAssignments tells the query-builder to eager-load the nodes that are connected to
+// the "categoryAssignments" edge. The optional arguments are used to configure the query builder of the edge.
+func (bq *BusinessQuery) WithCategoryAssignments(opts ...func(*CategoryAssignmentQuery)) *BusinessQuery {
+	query := (&CategoryAssignmentClient{config: bq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	bq.withCategoryAssignments = query
+	return bq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -657,7 +693,7 @@ func (bq *BusinessQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Bus
 	var (
 		nodes       = []*Business{}
 		_spec       = bq.querySpec()
-		loadedTypes = [9]bool{
+		loadedTypes = [10]bool{
 			bq.withUserBusinesses != nil,
 			bq.withBusinessAccountSettings != nil,
 			bq.withPosts != nil,
@@ -667,6 +703,7 @@ func (bq *BusinessQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Bus
 			bq.withFollowerBusinesses != nil,
 			bq.withPlaces != nil,
 			bq.withCategories != nil,
+			bq.withCategoryAssignments != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -750,6 +787,15 @@ func (bq *BusinessQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Bus
 		if err := bq.loadCategories(ctx, query, nodes,
 			func(n *Business) { n.Edges.Categories = []*Category{} },
 			func(n *Business, e *Category) { n.Edges.Categories = append(n.Edges.Categories, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := bq.withCategoryAssignments; query != nil {
+		if err := bq.loadCategoryAssignments(ctx, query, nodes,
+			func(n *Business) { n.Edges.CategoryAssignments = []*CategoryAssignment{} },
+			func(n *Business, e *CategoryAssignment) {
+				n.Edges.CategoryAssignments = append(n.Edges.CategoryAssignments, e)
+			}); err != nil {
 			return nil, err
 		}
 	}
@@ -1027,6 +1073,36 @@ func (bq *BusinessQuery) loadCategories(ctx context.Context, query *CategoryQuer
 		node, ok := nodeids[*fk]
 		if !ok {
 			return fmt.Errorf(`unexpected referenced foreign-key "business_categories" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (bq *BusinessQuery) loadCategoryAssignments(ctx context.Context, query *CategoryAssignmentQuery, nodes []*Business, init func(*Business), assign func(*Business, *CategoryAssignment)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Business)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(categoryassignment.FieldEntityID)
+	}
+	query.Where(predicate.CategoryAssignment(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(business.CategoryAssignmentsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.EntityID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "entity_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}

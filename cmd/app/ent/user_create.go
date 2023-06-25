@@ -9,9 +9,12 @@ import (
 	"placio-app/ent/booking"
 	"placio-app/ent/businessfollowuser"
 	"placio-app/ent/category"
+	"placio-app/ent/categoryassignment"
 	"placio-app/ent/comment"
+	"placio-app/ent/event"
 	"placio-app/ent/help"
 	"placio-app/ent/like"
+	"placio-app/ent/place"
 	"placio-app/ent/post"
 	"placio-app/ent/reservation"
 	"placio-app/ent/review"
@@ -115,6 +118,34 @@ func (uc *UserCreate) SetAppSettings(m map[string]interface{}) *UserCreate {
 // SetUserSettings sets the "user_settings" field.
 func (uc *UserCreate) SetUserSettings(m map[string]interface{}) *UserCreate {
 	uc.mutation.SetUserSettings(m)
+	return uc
+}
+
+// SetSearchText sets the "search_text" field.
+func (uc *UserCreate) SetSearchText(s string) *UserCreate {
+	uc.mutation.SetSearchText(s)
+	return uc
+}
+
+// SetNillableSearchText sets the "search_text" field if the given value is not nil.
+func (uc *UserCreate) SetNillableSearchText(s *string) *UserCreate {
+	if s != nil {
+		uc.SetSearchText(*s)
+	}
+	return uc
+}
+
+// SetRelevanceScore sets the "relevance_score" field.
+func (uc *UserCreate) SetRelevanceScore(f float64) *UserCreate {
+	uc.mutation.SetRelevanceScore(f)
+	return uc
+}
+
+// SetNillableRelevanceScore sets the "relevance_score" field if the given value is not nil.
+func (uc *UserCreate) SetNillableRelevanceScore(f *float64) *UserCreate {
+	if f != nil {
+		uc.SetRelevanceScore(*f)
+	}
 	return uc
 }
 
@@ -319,6 +350,51 @@ func (uc *UserCreate) AddCategories(c ...*Category) *UserCreate {
 	return uc.AddCategoryIDs(ids...)
 }
 
+// AddEventIDs adds the "events" edge to the Event entity by IDs.
+func (uc *UserCreate) AddEventIDs(ids ...string) *UserCreate {
+	uc.mutation.AddEventIDs(ids...)
+	return uc
+}
+
+// AddEvents adds the "events" edges to the Event entity.
+func (uc *UserCreate) AddEvents(e ...*Event) *UserCreate {
+	ids := make([]string, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return uc.AddEventIDs(ids...)
+}
+
+// AddPlaceIDs adds the "places" edge to the Place entity by IDs.
+func (uc *UserCreate) AddPlaceIDs(ids ...string) *UserCreate {
+	uc.mutation.AddPlaceIDs(ids...)
+	return uc
+}
+
+// AddPlaces adds the "places" edges to the Place entity.
+func (uc *UserCreate) AddPlaces(p ...*Place) *UserCreate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uc.AddPlaceIDs(ids...)
+}
+
+// AddCategoryAssignmentIDs adds the "categoryAssignments" edge to the CategoryAssignment entity by IDs.
+func (uc *UserCreate) AddCategoryAssignmentIDs(ids ...string) *UserCreate {
+	uc.mutation.AddCategoryAssignmentIDs(ids...)
+	return uc
+}
+
+// AddCategoryAssignments adds the "categoryAssignments" edges to the CategoryAssignment entity.
+func (uc *UserCreate) AddCategoryAssignments(c ...*CategoryAssignment) *UserCreate {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return uc.AddCategoryAssignmentIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uc *UserCreate) Mutation() *UserMutation {
 	return uc.mutation
@@ -447,6 +523,14 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.UserSettings(); ok {
 		_spec.SetField(user.FieldUserSettings, field.TypeJSON, value)
 		_node.UserSettings = value
+	}
+	if value, ok := uc.mutation.SearchText(); ok {
+		_spec.SetField(user.FieldSearchText, field.TypeString, value)
+		_node.SearchText = value
+	}
+	if value, ok := uc.mutation.RelevanceScore(); ok {
+		_spec.SetField(user.FieldRelevanceScore, field.TypeFloat64, value)
+		_node.RelevanceScore = value
 	}
 	if nodes := uc.mutation.UserBusinessesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -649,6 +733,54 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.EventsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.EventsTable,
+			Columns: []string{user.EventsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(event.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.PlacesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.PlacesTable,
+			Columns: []string{user.PlacesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.CategoryAssignmentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.CategoryAssignmentsTable,
+			Columns: []string{user.CategoryAssignmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(categoryassignment.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

@@ -14,6 +14,10 @@ const (
 	FieldID = "id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
+	// FieldSearchText holds the string denoting the search_text field in the database.
+	FieldSearchText = "search_text"
+	// FieldRelevanceScore holds the string denoting the relevance_score field in the database.
+	FieldRelevanceScore = "relevance_score"
 	// EdgeUserBusinesses holds the string denoting the userbusinesses edge name in mutations.
 	EdgeUserBusinesses = "userBusinesses"
 	// EdgeBusinessAccountSettings holds the string denoting the business_account_settings edge name in mutations.
@@ -32,6 +36,8 @@ const (
 	EdgePlaces = "places"
 	// EdgeCategories holds the string denoting the categories edge name in mutations.
 	EdgeCategories = "categories"
+	// EdgeCategoryAssignments holds the string denoting the categoryassignments edge name in mutations.
+	EdgeCategoryAssignments = "categoryAssignments"
 	// Table holds the table name of the business in the database.
 	Table = "businesses"
 	// UserBusinessesTable is the table that holds the userBusinesses relation/edge.
@@ -97,12 +103,21 @@ const (
 	CategoriesInverseTable = "categories"
 	// CategoriesColumn is the table column denoting the categories relation/edge.
 	CategoriesColumn = "business_categories"
+	// CategoryAssignmentsTable is the table that holds the categoryAssignments relation/edge.
+	CategoryAssignmentsTable = "category_assignments"
+	// CategoryAssignmentsInverseTable is the table name for the CategoryAssignment entity.
+	// It exists in this package in order to avoid circular dependency with the "categoryassignment" package.
+	CategoryAssignmentsInverseTable = "category_assignments"
+	// CategoryAssignmentsColumn is the table column denoting the categoryAssignments relation/edge.
+	CategoryAssignmentsColumn = "entity_id"
 )
 
 // Columns holds all SQL columns for business fields.
 var Columns = []string{
 	FieldID,
 	FieldName,
+	FieldSearchText,
+	FieldRelevanceScore,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -131,6 +146,16 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 // ByName orders the results by the name field.
 func ByName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldName, opts...).ToFunc()
+}
+
+// BySearchText orders the results by the search_text field.
+func BySearchText(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSearchText, opts...).ToFunc()
+}
+
+// ByRelevanceScore orders the results by the relevance_score field.
+func ByRelevanceScore(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRelevanceScore, opts...).ToFunc()
 }
 
 // ByUserBusinessesCount orders the results by userBusinesses count.
@@ -251,6 +276,20 @@ func ByCategories(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newCategoriesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByCategoryAssignmentsCount orders the results by categoryAssignments count.
+func ByCategoryAssignmentsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newCategoryAssignmentsStep(), opts...)
+	}
+}
+
+// ByCategoryAssignments orders the results by categoryAssignments terms.
+func ByCategoryAssignments(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCategoryAssignmentsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newUserBusinessesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -312,5 +351,12 @@ func newCategoriesStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CategoriesInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, CategoriesTable, CategoriesColumn),
+	)
+}
+func newCategoryAssignmentsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CategoryAssignmentsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, CategoryAssignmentsTable, CategoryAssignmentsColumn),
 	)
 }

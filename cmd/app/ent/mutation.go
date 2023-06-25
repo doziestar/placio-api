@@ -13,6 +13,7 @@ import (
 	"placio-app/ent/businessfollowbusiness"
 	"placio-app/ent/businessfollowuser"
 	"placio-app/ent/category"
+	"placio-app/ent/categoryassignment"
 	"placio-app/ent/comment"
 	"placio-app/ent/event"
 	"placio-app/ent/help"
@@ -55,6 +56,7 @@ const (
 	TypeBusinessFollowBusiness = "BusinessFollowBusiness"
 	TypeBusinessFollowUser     = "BusinessFollowUser"
 	TypeCategory               = "Category"
+	TypeCategoryAssignment     = "CategoryAssignment"
 	TypeChat                   = "Chat"
 	TypeComment                = "Comment"
 	TypeEvent                  = "Event"
@@ -1724,6 +1726,9 @@ type BusinessMutation struct {
 	typ                              string
 	id                               *string
 	name                             *string
+	search_text                      *string
+	relevance_score                  *float64
+	addrelevance_score               *float64
 	clearedFields                    map[string]struct{}
 	userBusinesses                   map[string]struct{}
 	removeduserBusinesses            map[string]struct{}
@@ -1751,6 +1756,9 @@ type BusinessMutation struct {
 	categories                       map[string]struct{}
 	removedcategories                map[string]struct{}
 	clearedcategories                bool
+	categoryAssignments              map[string]struct{}
+	removedcategoryAssignments       map[string]struct{}
+	clearedcategoryAssignments       bool
 	done                             bool
 	oldValue                         func(context.Context) (*Business, error)
 	predicates                       []predicate.Business
@@ -1894,6 +1902,125 @@ func (m *BusinessMutation) OldName(ctx context.Context) (v string, err error) {
 // ResetName resets all changes to the "name" field.
 func (m *BusinessMutation) ResetName() {
 	m.name = nil
+}
+
+// SetSearchText sets the "search_text" field.
+func (m *BusinessMutation) SetSearchText(s string) {
+	m.search_text = &s
+}
+
+// SearchText returns the value of the "search_text" field in the mutation.
+func (m *BusinessMutation) SearchText() (r string, exists bool) {
+	v := m.search_text
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSearchText returns the old "search_text" field's value of the Business entity.
+// If the Business object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessMutation) OldSearchText(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSearchText is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSearchText requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSearchText: %w", err)
+	}
+	return oldValue.SearchText, nil
+}
+
+// ClearSearchText clears the value of the "search_text" field.
+func (m *BusinessMutation) ClearSearchText() {
+	m.search_text = nil
+	m.clearedFields[business.FieldSearchText] = struct{}{}
+}
+
+// SearchTextCleared returns if the "search_text" field was cleared in this mutation.
+func (m *BusinessMutation) SearchTextCleared() bool {
+	_, ok := m.clearedFields[business.FieldSearchText]
+	return ok
+}
+
+// ResetSearchText resets all changes to the "search_text" field.
+func (m *BusinessMutation) ResetSearchText() {
+	m.search_text = nil
+	delete(m.clearedFields, business.FieldSearchText)
+}
+
+// SetRelevanceScore sets the "relevance_score" field.
+func (m *BusinessMutation) SetRelevanceScore(f float64) {
+	m.relevance_score = &f
+	m.addrelevance_score = nil
+}
+
+// RelevanceScore returns the value of the "relevance_score" field in the mutation.
+func (m *BusinessMutation) RelevanceScore() (r float64, exists bool) {
+	v := m.relevance_score
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRelevanceScore returns the old "relevance_score" field's value of the Business entity.
+// If the Business object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessMutation) OldRelevanceScore(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRelevanceScore is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRelevanceScore requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRelevanceScore: %w", err)
+	}
+	return oldValue.RelevanceScore, nil
+}
+
+// AddRelevanceScore adds f to the "relevance_score" field.
+func (m *BusinessMutation) AddRelevanceScore(f float64) {
+	if m.addrelevance_score != nil {
+		*m.addrelevance_score += f
+	} else {
+		m.addrelevance_score = &f
+	}
+}
+
+// AddedRelevanceScore returns the value that was added to the "relevance_score" field in this mutation.
+func (m *BusinessMutation) AddedRelevanceScore() (r float64, exists bool) {
+	v := m.addrelevance_score
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearRelevanceScore clears the value of the "relevance_score" field.
+func (m *BusinessMutation) ClearRelevanceScore() {
+	m.relevance_score = nil
+	m.addrelevance_score = nil
+	m.clearedFields[business.FieldRelevanceScore] = struct{}{}
+}
+
+// RelevanceScoreCleared returns if the "relevance_score" field was cleared in this mutation.
+func (m *BusinessMutation) RelevanceScoreCleared() bool {
+	_, ok := m.clearedFields[business.FieldRelevanceScore]
+	return ok
+}
+
+// ResetRelevanceScore resets all changes to the "relevance_score" field.
+func (m *BusinessMutation) ResetRelevanceScore() {
+	m.relevance_score = nil
+	m.addrelevance_score = nil
+	delete(m.clearedFields, business.FieldRelevanceScore)
 }
 
 // AddUserBusinessIDs adds the "userBusinesses" edge to the UserBusiness entity by ids.
@@ -2367,6 +2494,60 @@ func (m *BusinessMutation) ResetCategories() {
 	m.removedcategories = nil
 }
 
+// AddCategoryAssignmentIDs adds the "categoryAssignments" edge to the CategoryAssignment entity by ids.
+func (m *BusinessMutation) AddCategoryAssignmentIDs(ids ...string) {
+	if m.categoryAssignments == nil {
+		m.categoryAssignments = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.categoryAssignments[ids[i]] = struct{}{}
+	}
+}
+
+// ClearCategoryAssignments clears the "categoryAssignments" edge to the CategoryAssignment entity.
+func (m *BusinessMutation) ClearCategoryAssignments() {
+	m.clearedcategoryAssignments = true
+}
+
+// CategoryAssignmentsCleared reports if the "categoryAssignments" edge to the CategoryAssignment entity was cleared.
+func (m *BusinessMutation) CategoryAssignmentsCleared() bool {
+	return m.clearedcategoryAssignments
+}
+
+// RemoveCategoryAssignmentIDs removes the "categoryAssignments" edge to the CategoryAssignment entity by IDs.
+func (m *BusinessMutation) RemoveCategoryAssignmentIDs(ids ...string) {
+	if m.removedcategoryAssignments == nil {
+		m.removedcategoryAssignments = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.categoryAssignments, ids[i])
+		m.removedcategoryAssignments[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedCategoryAssignments returns the removed IDs of the "categoryAssignments" edge to the CategoryAssignment entity.
+func (m *BusinessMutation) RemovedCategoryAssignmentsIDs() (ids []string) {
+	for id := range m.removedcategoryAssignments {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// CategoryAssignmentsIDs returns the "categoryAssignments" edge IDs in the mutation.
+func (m *BusinessMutation) CategoryAssignmentsIDs() (ids []string) {
+	for id := range m.categoryAssignments {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetCategoryAssignments resets all changes to the "categoryAssignments" edge.
+func (m *BusinessMutation) ResetCategoryAssignments() {
+	m.categoryAssignments = nil
+	m.clearedcategoryAssignments = false
+	m.removedcategoryAssignments = nil
+}
+
 // Where appends a list predicates to the BusinessMutation builder.
 func (m *BusinessMutation) Where(ps ...predicate.Business) {
 	m.predicates = append(m.predicates, ps...)
@@ -2401,9 +2582,15 @@ func (m *BusinessMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *BusinessMutation) Fields() []string {
-	fields := make([]string, 0, 1)
+	fields := make([]string, 0, 3)
 	if m.name != nil {
 		fields = append(fields, business.FieldName)
+	}
+	if m.search_text != nil {
+		fields = append(fields, business.FieldSearchText)
+	}
+	if m.relevance_score != nil {
+		fields = append(fields, business.FieldRelevanceScore)
 	}
 	return fields
 }
@@ -2415,6 +2602,10 @@ func (m *BusinessMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case business.FieldName:
 		return m.Name()
+	case business.FieldSearchText:
+		return m.SearchText()
+	case business.FieldRelevanceScore:
+		return m.RelevanceScore()
 	}
 	return nil, false
 }
@@ -2426,6 +2617,10 @@ func (m *BusinessMutation) OldField(ctx context.Context, name string) (ent.Value
 	switch name {
 	case business.FieldName:
 		return m.OldName(ctx)
+	case business.FieldSearchText:
+		return m.OldSearchText(ctx)
+	case business.FieldRelevanceScore:
+		return m.OldRelevanceScore(ctx)
 	}
 	return nil, fmt.Errorf("unknown Business field %s", name)
 }
@@ -2442,6 +2637,20 @@ func (m *BusinessMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetName(v)
 		return nil
+	case business.FieldSearchText:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSearchText(v)
+		return nil
+	case business.FieldRelevanceScore:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRelevanceScore(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Business field %s", name)
 }
@@ -2449,13 +2658,21 @@ func (m *BusinessMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *BusinessMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	if m.addrelevance_score != nil {
+		fields = append(fields, business.FieldRelevanceScore)
+	}
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *BusinessMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case business.FieldRelevanceScore:
+		return m.AddedRelevanceScore()
+	}
 	return nil, false
 }
 
@@ -2464,6 +2681,13 @@ func (m *BusinessMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *BusinessMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case business.FieldRelevanceScore:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddRelevanceScore(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Business numeric field %s", name)
 }
@@ -2471,7 +2695,14 @@ func (m *BusinessMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *BusinessMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(business.FieldSearchText) {
+		fields = append(fields, business.FieldSearchText)
+	}
+	if m.FieldCleared(business.FieldRelevanceScore) {
+		fields = append(fields, business.FieldRelevanceScore)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -2484,6 +2715,14 @@ func (m *BusinessMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *BusinessMutation) ClearField(name string) error {
+	switch name {
+	case business.FieldSearchText:
+		m.ClearSearchText()
+		return nil
+	case business.FieldRelevanceScore:
+		m.ClearRelevanceScore()
+		return nil
+	}
 	return fmt.Errorf("unknown Business nullable field %s", name)
 }
 
@@ -2494,13 +2733,19 @@ func (m *BusinessMutation) ResetField(name string) error {
 	case business.FieldName:
 		m.ResetName()
 		return nil
+	case business.FieldSearchText:
+		m.ResetSearchText()
+		return nil
+	case business.FieldRelevanceScore:
+		m.ResetRelevanceScore()
+		return nil
 	}
 	return fmt.Errorf("unknown Business field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *BusinessMutation) AddedEdges() []string {
-	edges := make([]string, 0, 9)
+	edges := make([]string, 0, 10)
 	if m.userBusinesses != nil {
 		edges = append(edges, business.EdgeUserBusinesses)
 	}
@@ -2527,6 +2772,9 @@ func (m *BusinessMutation) AddedEdges() []string {
 	}
 	if m.categories != nil {
 		edges = append(edges, business.EdgeCategories)
+	}
+	if m.categoryAssignments != nil {
+		edges = append(edges, business.EdgeCategoryAssignments)
 	}
 	return edges
 }
@@ -2587,13 +2835,19 @@ func (m *BusinessMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case business.EdgeCategoryAssignments:
+		ids := make([]ent.Value, 0, len(m.categoryAssignments))
+		for id := range m.categoryAssignments {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *BusinessMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 9)
+	edges := make([]string, 0, 10)
 	if m.removeduserBusinesses != nil {
 		edges = append(edges, business.EdgeUserBusinesses)
 	}
@@ -2617,6 +2871,9 @@ func (m *BusinessMutation) RemovedEdges() []string {
 	}
 	if m.removedcategories != nil {
 		edges = append(edges, business.EdgeCategories)
+	}
+	if m.removedcategoryAssignments != nil {
+		edges = append(edges, business.EdgeCategoryAssignments)
 	}
 	return edges
 }
@@ -2673,13 +2930,19 @@ func (m *BusinessMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case business.EdgeCategoryAssignments:
+		ids := make([]ent.Value, 0, len(m.removedcategoryAssignments))
+		for id := range m.removedcategoryAssignments {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *BusinessMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 9)
+	edges := make([]string, 0, 10)
 	if m.cleareduserBusinesses {
 		edges = append(edges, business.EdgeUserBusinesses)
 	}
@@ -2707,6 +2970,9 @@ func (m *BusinessMutation) ClearedEdges() []string {
 	if m.clearedcategories {
 		edges = append(edges, business.EdgeCategories)
 	}
+	if m.clearedcategoryAssignments {
+		edges = append(edges, business.EdgeCategoryAssignments)
+	}
 	return edges
 }
 
@@ -2732,6 +2998,8 @@ func (m *BusinessMutation) EdgeCleared(name string) bool {
 		return m.clearedplaces
 	case business.EdgeCategories:
 		return m.clearedcategories
+	case business.EdgeCategoryAssignments:
+		return m.clearedcategoryAssignments
 	}
 	return false
 }
@@ -2777,6 +3045,9 @@ func (m *BusinessMutation) ResetEdge(name string) error {
 		return nil
 	case business.EdgeCategories:
 		m.ResetCategories()
+		return nil
+	case business.EdgeCategoryAssignments:
+		m.ResetCategoryAssignments()
 		return nil
 	}
 	return fmt.Errorf("unknown Business edge %s", name)
@@ -3565,15 +3836,18 @@ func (m *BusinessFollowUserMutation) ResetEdge(name string) error {
 // CategoryMutation represents an operation that mutates the Category nodes in the graph.
 type CategoryMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *string
-	name          *string
-	image         *string
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*Category, error)
-	predicates    []predicate.Category
+	op                         Op
+	typ                        string
+	id                         *string
+	name                       *string
+	image                      *string
+	clearedFields              map[string]struct{}
+	categoryAssignments        map[string]struct{}
+	removedcategoryAssignments map[string]struct{}
+	clearedcategoryAssignments bool
+	done                       bool
+	oldValue                   func(context.Context) (*Category, error)
+	predicates                 []predicate.Category
 }
 
 var _ ent.Mutation = (*CategoryMutation)(nil)
@@ -3765,6 +4039,60 @@ func (m *CategoryMutation) ResetImage() {
 	delete(m.clearedFields, category.FieldImage)
 }
 
+// AddCategoryAssignmentIDs adds the "categoryAssignments" edge to the CategoryAssignment entity by ids.
+func (m *CategoryMutation) AddCategoryAssignmentIDs(ids ...string) {
+	if m.categoryAssignments == nil {
+		m.categoryAssignments = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.categoryAssignments[ids[i]] = struct{}{}
+	}
+}
+
+// ClearCategoryAssignments clears the "categoryAssignments" edge to the CategoryAssignment entity.
+func (m *CategoryMutation) ClearCategoryAssignments() {
+	m.clearedcategoryAssignments = true
+}
+
+// CategoryAssignmentsCleared reports if the "categoryAssignments" edge to the CategoryAssignment entity was cleared.
+func (m *CategoryMutation) CategoryAssignmentsCleared() bool {
+	return m.clearedcategoryAssignments
+}
+
+// RemoveCategoryAssignmentIDs removes the "categoryAssignments" edge to the CategoryAssignment entity by IDs.
+func (m *CategoryMutation) RemoveCategoryAssignmentIDs(ids ...string) {
+	if m.removedcategoryAssignments == nil {
+		m.removedcategoryAssignments = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.categoryAssignments, ids[i])
+		m.removedcategoryAssignments[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedCategoryAssignments returns the removed IDs of the "categoryAssignments" edge to the CategoryAssignment entity.
+func (m *CategoryMutation) RemovedCategoryAssignmentsIDs() (ids []string) {
+	for id := range m.removedcategoryAssignments {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// CategoryAssignmentsIDs returns the "categoryAssignments" edge IDs in the mutation.
+func (m *CategoryMutation) CategoryAssignmentsIDs() (ids []string) {
+	for id := range m.categoryAssignments {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetCategoryAssignments resets all changes to the "categoryAssignments" edge.
+func (m *CategoryMutation) ResetCategoryAssignments() {
+	m.categoryAssignments = nil
+	m.clearedcategoryAssignments = false
+	m.removedcategoryAssignments = nil
+}
+
 // Where appends a list predicates to the CategoryMutation builder.
 func (m *CategoryMutation) Where(ps ...predicate.Category) {
 	m.predicates = append(m.predicates, ps...)
@@ -3924,50 +4252,809 @@ func (m *CategoryMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *CategoryMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.categoryAssignments != nil {
+		edges = append(edges, category.EdgeCategoryAssignments)
+	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
 func (m *CategoryMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case category.EdgeCategoryAssignments:
+		ids := make([]ent.Value, 0, len(m.categoryAssignments))
+		for id := range m.categoryAssignments {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *CategoryMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.removedcategoryAssignments != nil {
+		edges = append(edges, category.EdgeCategoryAssignments)
+	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *CategoryMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case category.EdgeCategoryAssignments:
+		ids := make([]ent.Value, 0, len(m.removedcategoryAssignments))
+		for id := range m.removedcategoryAssignments {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *CategoryMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.clearedcategoryAssignments {
+		edges = append(edges, category.EdgeCategoryAssignments)
+	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
 func (m *CategoryMutation) EdgeCleared(name string) bool {
+	switch name {
+	case category.EdgeCategoryAssignments:
+		return m.clearedcategoryAssignments
+	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
 func (m *CategoryMutation) ClearEdge(name string) error {
+	switch name {
+	}
 	return fmt.Errorf("unknown Category unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
 func (m *CategoryMutation) ResetEdge(name string) error {
+	switch name {
+	case category.EdgeCategoryAssignments:
+		m.ResetCategoryAssignments()
+		return nil
+	}
 	return fmt.Errorf("unknown Category edge %s", name)
+}
+
+// CategoryAssignmentMutation represents an operation that mutates the CategoryAssignment nodes in the graph.
+type CategoryAssignmentMutation struct {
+	config
+	op              Op
+	typ             string
+	id              *string
+	entity_type     *string
+	clearedFields   map[string]struct{}
+	user            *string
+	cleareduser     bool
+	business        *string
+	clearedbusiness bool
+	place           *string
+	clearedplace    bool
+	category        *string
+	clearedcategory bool
+	done            bool
+	oldValue        func(context.Context) (*CategoryAssignment, error)
+	predicates      []predicate.CategoryAssignment
+}
+
+var _ ent.Mutation = (*CategoryAssignmentMutation)(nil)
+
+// categoryassignmentOption allows management of the mutation configuration using functional options.
+type categoryassignmentOption func(*CategoryAssignmentMutation)
+
+// newCategoryAssignmentMutation creates new mutation for the CategoryAssignment entity.
+func newCategoryAssignmentMutation(c config, op Op, opts ...categoryassignmentOption) *CategoryAssignmentMutation {
+	m := &CategoryAssignmentMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeCategoryAssignment,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withCategoryAssignmentID sets the ID field of the mutation.
+func withCategoryAssignmentID(id string) categoryassignmentOption {
+	return func(m *CategoryAssignmentMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *CategoryAssignment
+		)
+		m.oldValue = func(ctx context.Context) (*CategoryAssignment, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().CategoryAssignment.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withCategoryAssignment sets the old CategoryAssignment of the mutation.
+func withCategoryAssignment(node *CategoryAssignment) categoryassignmentOption {
+	return func(m *CategoryAssignmentMutation) {
+		m.oldValue = func(context.Context) (*CategoryAssignment, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m CategoryAssignmentMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m CategoryAssignmentMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *CategoryAssignmentMutation) ID() (id string, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *CategoryAssignmentMutation) IDs(ctx context.Context) ([]string, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []string{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().CategoryAssignment.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetEntityID sets the "entity_id" field.
+func (m *CategoryAssignmentMutation) SetEntityID(s string) {
+	m.user = &s
+}
+
+// EntityID returns the value of the "entity_id" field in the mutation.
+func (m *CategoryAssignmentMutation) EntityID() (r string, exists bool) {
+	v := m.user
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEntityID returns the old "entity_id" field's value of the CategoryAssignment entity.
+// If the CategoryAssignment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CategoryAssignmentMutation) OldEntityID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEntityID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEntityID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEntityID: %w", err)
+	}
+	return oldValue.EntityID, nil
+}
+
+// ClearEntityID clears the value of the "entity_id" field.
+func (m *CategoryAssignmentMutation) ClearEntityID() {
+	m.user = nil
+	m.clearedFields[categoryassignment.FieldEntityID] = struct{}{}
+}
+
+// EntityIDCleared returns if the "entity_id" field was cleared in this mutation.
+func (m *CategoryAssignmentMutation) EntityIDCleared() bool {
+	_, ok := m.clearedFields[categoryassignment.FieldEntityID]
+	return ok
+}
+
+// ResetEntityID resets all changes to the "entity_id" field.
+func (m *CategoryAssignmentMutation) ResetEntityID() {
+	m.user = nil
+	delete(m.clearedFields, categoryassignment.FieldEntityID)
+}
+
+// SetEntityType sets the "entity_type" field.
+func (m *CategoryAssignmentMutation) SetEntityType(s string) {
+	m.entity_type = &s
+}
+
+// EntityType returns the value of the "entity_type" field in the mutation.
+func (m *CategoryAssignmentMutation) EntityType() (r string, exists bool) {
+	v := m.entity_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEntityType returns the old "entity_type" field's value of the CategoryAssignment entity.
+// If the CategoryAssignment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CategoryAssignmentMutation) OldEntityType(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEntityType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEntityType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEntityType: %w", err)
+	}
+	return oldValue.EntityType, nil
+}
+
+// ClearEntityType clears the value of the "entity_type" field.
+func (m *CategoryAssignmentMutation) ClearEntityType() {
+	m.entity_type = nil
+	m.clearedFields[categoryassignment.FieldEntityType] = struct{}{}
+}
+
+// EntityTypeCleared returns if the "entity_type" field was cleared in this mutation.
+func (m *CategoryAssignmentMutation) EntityTypeCleared() bool {
+	_, ok := m.clearedFields[categoryassignment.FieldEntityType]
+	return ok
+}
+
+// ResetEntityType resets all changes to the "entity_type" field.
+func (m *CategoryAssignmentMutation) ResetEntityType() {
+	m.entity_type = nil
+	delete(m.clearedFields, categoryassignment.FieldEntityType)
+}
+
+// SetCategoryID sets the "category_id" field.
+func (m *CategoryAssignmentMutation) SetCategoryID(s string) {
+	m.category = &s
+}
+
+// CategoryID returns the value of the "category_id" field in the mutation.
+func (m *CategoryAssignmentMutation) CategoryID() (r string, exists bool) {
+	v := m.category
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCategoryID returns the old "category_id" field's value of the CategoryAssignment entity.
+// If the CategoryAssignment object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CategoryAssignmentMutation) OldCategoryID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCategoryID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCategoryID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCategoryID: %w", err)
+	}
+	return oldValue.CategoryID, nil
+}
+
+// ClearCategoryID clears the value of the "category_id" field.
+func (m *CategoryAssignmentMutation) ClearCategoryID() {
+	m.category = nil
+	m.clearedFields[categoryassignment.FieldCategoryID] = struct{}{}
+}
+
+// CategoryIDCleared returns if the "category_id" field was cleared in this mutation.
+func (m *CategoryAssignmentMutation) CategoryIDCleared() bool {
+	_, ok := m.clearedFields[categoryassignment.FieldCategoryID]
+	return ok
+}
+
+// ResetCategoryID resets all changes to the "category_id" field.
+func (m *CategoryAssignmentMutation) ResetCategoryID() {
+	m.category = nil
+	delete(m.clearedFields, categoryassignment.FieldCategoryID)
+}
+
+// SetUserID sets the "user" edge to the User entity by id.
+func (m *CategoryAssignmentMutation) SetUserID(id string) {
+	m.user = &id
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (m *CategoryAssignmentMutation) ClearUser() {
+	m.cleareduser = true
+}
+
+// UserCleared reports if the "user" edge to the User entity was cleared.
+func (m *CategoryAssignmentMutation) UserCleared() bool {
+	return m.EntityIDCleared() || m.cleareduser
+}
+
+// UserID returns the "user" edge ID in the mutation.
+func (m *CategoryAssignmentMutation) UserID() (id string, exists bool) {
+	if m.user != nil {
+		return *m.user, true
+	}
+	return
+}
+
+// UserIDs returns the "user" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// UserID instead. It exists only for internal usage by the builders.
+func (m *CategoryAssignmentMutation) UserIDs() (ids []string) {
+	if id := m.user; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetUser resets all changes to the "user" edge.
+func (m *CategoryAssignmentMutation) ResetUser() {
+	m.user = nil
+	m.cleareduser = false
+}
+
+// SetBusinessID sets the "business" edge to the Business entity by id.
+func (m *CategoryAssignmentMutation) SetBusinessID(id string) {
+	m.business = &id
+}
+
+// ClearBusiness clears the "business" edge to the Business entity.
+func (m *CategoryAssignmentMutation) ClearBusiness() {
+	m.clearedbusiness = true
+}
+
+// BusinessCleared reports if the "business" edge to the Business entity was cleared.
+func (m *CategoryAssignmentMutation) BusinessCleared() bool {
+	return m.EntityIDCleared() || m.clearedbusiness
+}
+
+// BusinessID returns the "business" edge ID in the mutation.
+func (m *CategoryAssignmentMutation) BusinessID() (id string, exists bool) {
+	if m.business != nil {
+		return *m.business, true
+	}
+	return
+}
+
+// BusinessIDs returns the "business" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// BusinessID instead. It exists only for internal usage by the builders.
+func (m *CategoryAssignmentMutation) BusinessIDs() (ids []string) {
+	if id := m.business; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetBusiness resets all changes to the "business" edge.
+func (m *CategoryAssignmentMutation) ResetBusiness() {
+	m.business = nil
+	m.clearedbusiness = false
+}
+
+// SetPlaceID sets the "place" edge to the Place entity by id.
+func (m *CategoryAssignmentMutation) SetPlaceID(id string) {
+	m.place = &id
+}
+
+// ClearPlace clears the "place" edge to the Place entity.
+func (m *CategoryAssignmentMutation) ClearPlace() {
+	m.clearedplace = true
+}
+
+// PlaceCleared reports if the "place" edge to the Place entity was cleared.
+func (m *CategoryAssignmentMutation) PlaceCleared() bool {
+	return m.EntityIDCleared() || m.clearedplace
+}
+
+// PlaceID returns the "place" edge ID in the mutation.
+func (m *CategoryAssignmentMutation) PlaceID() (id string, exists bool) {
+	if m.place != nil {
+		return *m.place, true
+	}
+	return
+}
+
+// PlaceIDs returns the "place" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// PlaceID instead. It exists only for internal usage by the builders.
+func (m *CategoryAssignmentMutation) PlaceIDs() (ids []string) {
+	if id := m.place; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetPlace resets all changes to the "place" edge.
+func (m *CategoryAssignmentMutation) ResetPlace() {
+	m.place = nil
+	m.clearedplace = false
+}
+
+// ClearCategory clears the "category" edge to the Category entity.
+func (m *CategoryAssignmentMutation) ClearCategory() {
+	m.clearedcategory = true
+}
+
+// CategoryCleared reports if the "category" edge to the Category entity was cleared.
+func (m *CategoryAssignmentMutation) CategoryCleared() bool {
+	return m.CategoryIDCleared() || m.clearedcategory
+}
+
+// CategoryIDs returns the "category" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// CategoryID instead. It exists only for internal usage by the builders.
+func (m *CategoryAssignmentMutation) CategoryIDs() (ids []string) {
+	if id := m.category; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCategory resets all changes to the "category" edge.
+func (m *CategoryAssignmentMutation) ResetCategory() {
+	m.category = nil
+	m.clearedcategory = false
+}
+
+// Where appends a list predicates to the CategoryAssignmentMutation builder.
+func (m *CategoryAssignmentMutation) Where(ps ...predicate.CategoryAssignment) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the CategoryAssignmentMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *CategoryAssignmentMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.CategoryAssignment, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *CategoryAssignmentMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *CategoryAssignmentMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (CategoryAssignment).
+func (m *CategoryAssignmentMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *CategoryAssignmentMutation) Fields() []string {
+	fields := make([]string, 0, 3)
+	if m.user != nil {
+		fields = append(fields, categoryassignment.FieldEntityID)
+	}
+	if m.entity_type != nil {
+		fields = append(fields, categoryassignment.FieldEntityType)
+	}
+	if m.category != nil {
+		fields = append(fields, categoryassignment.FieldCategoryID)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *CategoryAssignmentMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case categoryassignment.FieldEntityID:
+		return m.EntityID()
+	case categoryassignment.FieldEntityType:
+		return m.EntityType()
+	case categoryassignment.FieldCategoryID:
+		return m.CategoryID()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *CategoryAssignmentMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case categoryassignment.FieldEntityID:
+		return m.OldEntityID(ctx)
+	case categoryassignment.FieldEntityType:
+		return m.OldEntityType(ctx)
+	case categoryassignment.FieldCategoryID:
+		return m.OldCategoryID(ctx)
+	}
+	return nil, fmt.Errorf("unknown CategoryAssignment field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CategoryAssignmentMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case categoryassignment.FieldEntityID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEntityID(v)
+		return nil
+	case categoryassignment.FieldEntityType:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEntityType(v)
+		return nil
+	case categoryassignment.FieldCategoryID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCategoryID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CategoryAssignment field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *CategoryAssignmentMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *CategoryAssignmentMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CategoryAssignmentMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown CategoryAssignment numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *CategoryAssignmentMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(categoryassignment.FieldEntityID) {
+		fields = append(fields, categoryassignment.FieldEntityID)
+	}
+	if m.FieldCleared(categoryassignment.FieldEntityType) {
+		fields = append(fields, categoryassignment.FieldEntityType)
+	}
+	if m.FieldCleared(categoryassignment.FieldCategoryID) {
+		fields = append(fields, categoryassignment.FieldCategoryID)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *CategoryAssignmentMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *CategoryAssignmentMutation) ClearField(name string) error {
+	switch name {
+	case categoryassignment.FieldEntityID:
+		m.ClearEntityID()
+		return nil
+	case categoryassignment.FieldEntityType:
+		m.ClearEntityType()
+		return nil
+	case categoryassignment.FieldCategoryID:
+		m.ClearCategoryID()
+		return nil
+	}
+	return fmt.Errorf("unknown CategoryAssignment nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *CategoryAssignmentMutation) ResetField(name string) error {
+	switch name {
+	case categoryassignment.FieldEntityID:
+		m.ResetEntityID()
+		return nil
+	case categoryassignment.FieldEntityType:
+		m.ResetEntityType()
+		return nil
+	case categoryassignment.FieldCategoryID:
+		m.ResetCategoryID()
+		return nil
+	}
+	return fmt.Errorf("unknown CategoryAssignment field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *CategoryAssignmentMutation) AddedEdges() []string {
+	edges := make([]string, 0, 4)
+	if m.user != nil {
+		edges = append(edges, categoryassignment.EdgeUser)
+	}
+	if m.business != nil {
+		edges = append(edges, categoryassignment.EdgeBusiness)
+	}
+	if m.place != nil {
+		edges = append(edges, categoryassignment.EdgePlace)
+	}
+	if m.category != nil {
+		edges = append(edges, categoryassignment.EdgeCategory)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *CategoryAssignmentMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case categoryassignment.EdgeUser:
+		if id := m.user; id != nil {
+			return []ent.Value{*id}
+		}
+	case categoryassignment.EdgeBusiness:
+		if id := m.business; id != nil {
+			return []ent.Value{*id}
+		}
+	case categoryassignment.EdgePlace:
+		if id := m.place; id != nil {
+			return []ent.Value{*id}
+		}
+	case categoryassignment.EdgeCategory:
+		if id := m.category; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *CategoryAssignmentMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 4)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *CategoryAssignmentMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *CategoryAssignmentMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 4)
+	if m.cleareduser {
+		edges = append(edges, categoryassignment.EdgeUser)
+	}
+	if m.clearedbusiness {
+		edges = append(edges, categoryassignment.EdgeBusiness)
+	}
+	if m.clearedplace {
+		edges = append(edges, categoryassignment.EdgePlace)
+	}
+	if m.clearedcategory {
+		edges = append(edges, categoryassignment.EdgeCategory)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *CategoryAssignmentMutation) EdgeCleared(name string) bool {
+	switch name {
+	case categoryassignment.EdgeUser:
+		return m.cleareduser
+	case categoryassignment.EdgeBusiness:
+		return m.clearedbusiness
+	case categoryassignment.EdgePlace:
+		return m.clearedplace
+	case categoryassignment.EdgeCategory:
+		return m.clearedcategory
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *CategoryAssignmentMutation) ClearEdge(name string) error {
+	switch name {
+	case categoryassignment.EdgeUser:
+		m.ClearUser()
+		return nil
+	case categoryassignment.EdgeBusiness:
+		m.ClearBusiness()
+		return nil
+	case categoryassignment.EdgePlace:
+		m.ClearPlace()
+		return nil
+	case categoryassignment.EdgeCategory:
+		m.ClearCategory()
+		return nil
+	}
+	return fmt.Errorf("unknown CategoryAssignment unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *CategoryAssignmentMutation) ResetEdge(name string) error {
+	switch name {
+	case categoryassignment.EdgeUser:
+		m.ResetUser()
+		return nil
+	case categoryassignment.EdgeBusiness:
+		m.ResetBusiness()
+		return nil
+	case categoryassignment.EdgePlace:
+		m.ResetPlace()
+		return nil
+	case categoryassignment.EdgeCategory:
+		m.ResetCategory()
+		return nil
+	}
+	return fmt.Errorf("unknown CategoryAssignment edge %s", name)
 }
 
 // ChatMutation represents an operation that mutates the Chat nodes in the graph.
@@ -8204,49 +9291,56 @@ func (m *PaymentMutation) ResetEdge(name string) error {
 // PlaceMutation represents an operation that mutates the Place nodes in the graph.
 type PlaceMutation struct {
 	config
-	op                      Op
-	typ                     string
-	id                      *string
-	name                    *string
-	_type                   *string
-	description             *string
-	location                *string
-	images                  *[]string
-	appendimages            []string
-	availability            *map[string]interface{}
-	special_offers          *string
-	sustainability_score    *float64
-	addsustainability_score *float64
-	clearedFields           map[string]struct{}
-	business                *string
-	clearedbusiness         bool
-	reviews                 map[string]struct{}
-	removedreviews          map[string]struct{}
-	clearedreviews          bool
-	events                  map[string]struct{}
-	removedevents           map[string]struct{}
-	clearedevents           bool
-	amenities               map[string]struct{}
-	removedamenities        map[string]struct{}
-	clearedamenities        bool
-	menus                   map[string]struct{}
-	removedmenus            map[string]struct{}
-	clearedmenus            bool
-	rooms                   map[string]struct{}
-	removedrooms            map[string]struct{}
-	clearedrooms            bool
-	reservations            map[string]struct{}
-	removedreservations     map[string]struct{}
-	clearedreservations     bool
-	bookings                map[string]struct{}
-	removedbookings         map[string]struct{}
-	clearedbookings         bool
-	categories              map[string]struct{}
-	removedcategories       map[string]struct{}
-	clearedcategories       bool
-	done                    bool
-	oldValue                func(context.Context) (*Place, error)
-	predicates              []predicate.Place
+	op                         Op
+	typ                        string
+	id                         *string
+	name                       *string
+	_type                      *string
+	description                *string
+	location                   *string
+	images                     *[]string
+	appendimages               []string
+	availability               *map[string]interface{}
+	special_offers             *string
+	sustainability_score       *float64
+	addsustainability_score    *float64
+	map_coordinates            *map[string]interface{}
+	search_text                *string
+	relevance_score            *float64
+	addrelevance_score         *float64
+	clearedFields              map[string]struct{}
+	business                   *string
+	clearedbusiness            bool
+	reviews                    map[string]struct{}
+	removedreviews             map[string]struct{}
+	clearedreviews             bool
+	events                     map[string]struct{}
+	removedevents              map[string]struct{}
+	clearedevents              bool
+	amenities                  map[string]struct{}
+	removedamenities           map[string]struct{}
+	clearedamenities           bool
+	menus                      map[string]struct{}
+	removedmenus               map[string]struct{}
+	clearedmenus               bool
+	rooms                      map[string]struct{}
+	removedrooms               map[string]struct{}
+	clearedrooms               bool
+	reservations               map[string]struct{}
+	removedreservations        map[string]struct{}
+	clearedreservations        bool
+	bookings                   map[string]struct{}
+	removedbookings            map[string]struct{}
+	clearedbookings            bool
+	categories                 map[string]struct{}
+	removedcategories          map[string]struct{}
+	clearedcategories          bool
+	categoryAssignments        map[string]struct{}
+	removedcategoryAssignments map[string]struct{}
+	clearedcategoryAssignments bool
+	done                       bool
+	oldValue                   func(context.Context) (*Place, error)
+	predicates                 []predicate.Place
 }
 
 var _ ent.Mutation = (*PlaceMutation)(nil)
@@ -8743,6 +9837,161 @@ func (m *PlaceMutation) ResetSustainabilityScore() {
 	delete(m.clearedFields, place.FieldSustainabilityScore)
 }
 
+// SetMapCoordinates sets the "map_coordinates" field.
+func (m *PlaceMutation) SetMapCoordinates(value map[string]interface{}) {
+	m.map_coordinates = &value
+}
+
+// MapCoordinates returns the value of the "map_coordinates" field in the mutation.
+func (m *PlaceMutation) MapCoordinates() (r map[string]interface{}, exists bool) {
+	v := m.map_coordinates
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMapCoordinates returns the old "map_coordinates" field's value of the Place entity.
+// If the Place object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceMutation) OldMapCoordinates(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMapCoordinates is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMapCoordinates requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMapCoordinates: %w", err)
+	}
+	return oldValue.MapCoordinates, nil
+}
+
+// ResetMapCoordinates resets all changes to the "map_coordinates" field.
+func (m *PlaceMutation) ResetMapCoordinates() {
+	m.map_coordinates = nil
+}
+
+// SetSearchText sets the "search_text" field.
+func (m *PlaceMutation) SetSearchText(s string) {
+	m.search_text = &s
+}
+
+// SearchText returns the value of the "search_text" field in the mutation.
+func (m *PlaceMutation) SearchText() (r string, exists bool) {
+	v := m.search_text
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSearchText returns the old "search_text" field's value of the Place entity.
+// If the Place object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceMutation) OldSearchText(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSearchText is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSearchText requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSearchText: %w", err)
+	}
+	return oldValue.SearchText, nil
+}
+
+// ClearSearchText clears the value of the "search_text" field.
+func (m *PlaceMutation) ClearSearchText() {
+	m.search_text = nil
+	m.clearedFields[place.FieldSearchText] = struct{}{}
+}
+
+// SearchTextCleared returns if the "search_text" field was cleared in this mutation.
+func (m *PlaceMutation) SearchTextCleared() bool {
+	_, ok := m.clearedFields[place.FieldSearchText]
+	return ok
+}
+
+// ResetSearchText resets all changes to the "search_text" field.
+func (m *PlaceMutation) ResetSearchText() {
+	m.search_text = nil
+	delete(m.clearedFields, place.FieldSearchText)
+}
+
+// SetRelevanceScore sets the "relevance_score" field.
+func (m *PlaceMutation) SetRelevanceScore(f float64) {
+	m.relevance_score = &f
+	m.addrelevance_score = nil
+}
+
+// RelevanceScore returns the value of the "relevance_score" field in the mutation.
+func (m *PlaceMutation) RelevanceScore() (r float64, exists bool) {
+	v := m.relevance_score
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRelevanceScore returns the old "relevance_score" field's value of the Place entity.
+// If the Place object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceMutation) OldRelevanceScore(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRelevanceScore is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRelevanceScore requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRelevanceScore: %w", err)
+	}
+	return oldValue.RelevanceScore, nil
+}
+
+// AddRelevanceScore adds f to the "relevance_score" field.
+func (m *PlaceMutation) AddRelevanceScore(f float64) {
+	if m.addrelevance_score != nil {
+		*m.addrelevance_score += f
+	} else {
+		m.addrelevance_score = &f
+	}
+}
+
+// AddedRelevanceScore returns the value that was added to the "relevance_score" field in this mutation.
+func (m *PlaceMutation) AddedRelevanceScore() (r float64, exists bool) {
+	v := m.addrelevance_score
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearRelevanceScore clears the value of the "relevance_score" field.
+func (m *PlaceMutation) ClearRelevanceScore() {
+	m.relevance_score = nil
+	m.addrelevance_score = nil
+	m.clearedFields[place.FieldRelevanceScore] = struct{}{}
+}
+
+// RelevanceScoreCleared returns if the "relevance_score" field was cleared in this mutation.
+func (m *PlaceMutation) RelevanceScoreCleared() bool {
+	_, ok := m.clearedFields[place.FieldRelevanceScore]
+	return ok
+}
+
+// ResetRelevanceScore resets all changes to the "relevance_score" field.
+func (m *PlaceMutation) ResetRelevanceScore() {
+	m.relevance_score = nil
+	m.addrelevance_score = nil
+	delete(m.clearedFields, place.FieldRelevanceScore)
+}
+
 // SetBusinessID sets the "business" edge to the Business entity by id.
 func (m *PlaceMutation) SetBusinessID(id string) {
 	m.business = &id
@@ -9214,6 +10463,60 @@ func (m *PlaceMutation) ResetCategories() {
 	m.removedcategories = nil
 }
 
+// AddCategoryAssignmentIDs adds the "categoryAssignments" edge to the CategoryAssignment entity by ids.
+func (m *PlaceMutation) AddCategoryAssignmentIDs(ids ...string) {
+	if m.categoryAssignments == nil {
+		m.categoryAssignments = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.categoryAssignments[ids[i]] = struct{}{}
+	}
+}
+
+// ClearCategoryAssignments clears the "categoryAssignments" edge to the CategoryAssignment entity.
+func (m *PlaceMutation) ClearCategoryAssignments() {
+	m.clearedcategoryAssignments = true
+}
+
+// CategoryAssignmentsCleared reports if the "categoryAssignments" edge to the CategoryAssignment entity was cleared.
+func (m *PlaceMutation) CategoryAssignmentsCleared() bool {
+	return m.clearedcategoryAssignments
+}
+
+// RemoveCategoryAssignmentIDs removes the "categoryAssignments" edge to the CategoryAssignment entity by IDs.
+func (m *PlaceMutation) RemoveCategoryAssignmentIDs(ids ...string) {
+	if m.removedcategoryAssignments == nil {
+		m.removedcategoryAssignments = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.categoryAssignments, ids[i])
+		m.removedcategoryAssignments[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedCategoryAssignments returns the removed IDs of the "categoryAssignments" edge to the CategoryAssignment entity.
+func (m *PlaceMutation) RemovedCategoryAssignmentsIDs() (ids []string) {
+	for id := range m.removedcategoryAssignments {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// CategoryAssignmentsIDs returns the "categoryAssignments" edge IDs in the mutation.
+func (m *PlaceMutation) CategoryAssignmentsIDs() (ids []string) {
+	for id := range m.categoryAssignments {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetCategoryAssignments resets all changes to the "categoryAssignments" edge.
+func (m *PlaceMutation) ResetCategoryAssignments() {
+	m.categoryAssignments = nil
+	m.clearedcategoryAssignments = false
+	m.removedcategoryAssignments = nil
+}
+
 // Where appends a list predicates to the PlaceMutation builder.
 func (m *PlaceMutation) Where(ps ...predicate.Place) {
 	m.predicates = append(m.predicates, ps...)
@@ -9248,7 +10551,7 @@ func (m *PlaceMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PlaceMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 11)
 	if m.name != nil {
 		fields = append(fields, place.FieldName)
 	}
@@ -9272,6 +10575,15 @@ func (m *PlaceMutation) Fields() []string {
 	}
 	if m.sustainability_score != nil {
 		fields = append(fields, place.FieldSustainabilityScore)
+	}
+	if m.map_coordinates != nil {
+		fields = append(fields, place.FieldMapCoordinates)
+	}
+	if m.search_text != nil {
+		fields = append(fields, place.FieldSearchText)
+	}
+	if m.relevance_score != nil {
+		fields = append(fields, place.FieldRelevanceScore)
 	}
 	return fields
 }
@@ -9297,6 +10609,12 @@ func (m *PlaceMutation) Field(name string) (ent.Value, bool) {
 		return m.SpecialOffers()
 	case place.FieldSustainabilityScore:
 		return m.SustainabilityScore()
+	case place.FieldMapCoordinates:
+		return m.MapCoordinates()
+	case place.FieldSearchText:
+		return m.SearchText()
+	case place.FieldRelevanceScore:
+		return m.RelevanceScore()
 	}
 	return nil, false
 }
@@ -9322,6 +10640,12 @@ func (m *PlaceMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldSpecialOffers(ctx)
 	case place.FieldSustainabilityScore:
 		return m.OldSustainabilityScore(ctx)
+	case place.FieldMapCoordinates:
+		return m.OldMapCoordinates(ctx)
+	case place.FieldSearchText:
+		return m.OldSearchText(ctx)
+	case place.FieldRelevanceScore:
+		return m.OldRelevanceScore(ctx)
 	}
 	return nil, fmt.Errorf("unknown Place field %s", name)
 }
@@ -9387,6 +10711,27 @@ func (m *PlaceMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetSustainabilityScore(v)
 		return nil
+	case place.FieldMapCoordinates:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMapCoordinates(v)
+		return nil
+	case place.FieldSearchText:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSearchText(v)
+		return nil
+	case place.FieldRelevanceScore:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRelevanceScore(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Place field %s", name)
 }
@@ -9398,6 +10743,9 @@ func (m *PlaceMutation) AddedFields() []string {
 	if m.addsustainability_score != nil {
 		fields = append(fields, place.FieldSustainabilityScore)
 	}
+	if m.addrelevance_score != nil {
+		fields = append(fields, place.FieldRelevanceScore)
+	}
 	return fields
 }
 
@@ -9408,6 +10756,8 @@ func (m *PlaceMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
 	case place.FieldSustainabilityScore:
 		return m.AddedSustainabilityScore()
+	case place.FieldRelevanceScore:
+		return m.AddedRelevanceScore()
 	}
 	return nil, false
 }
@@ -9423,6 +10773,13 @@ func (m *PlaceMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddSustainabilityScore(v)
+		return nil
+	case place.FieldRelevanceScore:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddRelevanceScore(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Place numeric field %s", name)
@@ -9446,6 +10803,12 @@ func (m *PlaceMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(place.FieldSustainabilityScore) {
 		fields = append(fields, place.FieldSustainabilityScore)
+	}
+	if m.FieldCleared(place.FieldSearchText) {
+		fields = append(fields, place.FieldSearchText)
+	}
+	if m.FieldCleared(place.FieldRelevanceScore) {
+		fields = append(fields, place.FieldRelevanceScore)
 	}
 	return fields
 }
@@ -9475,6 +10838,12 @@ func (m *PlaceMutation) ClearField(name string) error {
 		return nil
 	case place.FieldSustainabilityScore:
 		m.ClearSustainabilityScore()
+		return nil
+	case place.FieldSearchText:
+		m.ClearSearchText()
+		return nil
+	case place.FieldRelevanceScore:
+		m.ClearRelevanceScore()
 		return nil
 	}
 	return fmt.Errorf("unknown Place nullable field %s", name)
@@ -9508,13 +10877,22 @@ func (m *PlaceMutation) ResetField(name string) error {
 	case place.FieldSustainabilityScore:
 		m.ResetSustainabilityScore()
 		return nil
+	case place.FieldMapCoordinates:
+		m.ResetMapCoordinates()
+		return nil
+	case place.FieldSearchText:
+		m.ResetSearchText()
+		return nil
+	case place.FieldRelevanceScore:
+		m.ResetRelevanceScore()
+		return nil
 	}
 	return fmt.Errorf("unknown Place field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PlaceMutation) AddedEdges() []string {
-	edges := make([]string, 0, 9)
+	edges := make([]string, 0, 10)
 	if m.business != nil {
 		edges = append(edges, place.EdgeBusiness)
 	}
@@ -9541,6 +10919,9 @@ func (m *PlaceMutation) AddedEdges() []string {
 	}
 	if m.categories != nil {
 		edges = append(edges, place.EdgeCategories)
+	}
+	if m.categoryAssignments != nil {
+		edges = append(edges, place.EdgeCategoryAssignments)
 	}
 	return edges
 }
@@ -9601,13 +10982,19 @@ func (m *PlaceMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case place.EdgeCategoryAssignments:
+		ids := make([]ent.Value, 0, len(m.categoryAssignments))
+		for id := range m.categoryAssignments {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PlaceMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 9)
+	edges := make([]string, 0, 10)
 	if m.removedreviews != nil {
 		edges = append(edges, place.EdgeReviews)
 	}
@@ -9631,6 +11018,9 @@ func (m *PlaceMutation) RemovedEdges() []string {
 	}
 	if m.removedcategories != nil {
 		edges = append(edges, place.EdgeCategories)
+	}
+	if m.removedcategoryAssignments != nil {
+		edges = append(edges, place.EdgeCategoryAssignments)
 	}
 	return edges
 }
@@ -9687,13 +11077,19 @@ func (m *PlaceMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case place.EdgeCategoryAssignments:
+		ids := make([]ent.Value, 0, len(m.removedcategoryAssignments))
+		for id := range m.removedcategoryAssignments {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PlaceMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 9)
+	edges := make([]string, 0, 10)
 	if m.clearedbusiness {
 		edges = append(edges, place.EdgeBusiness)
 	}
@@ -9721,6 +11117,9 @@ func (m *PlaceMutation) ClearedEdges() []string {
 	if m.clearedcategories {
 		edges = append(edges, place.EdgeCategories)
 	}
+	if m.clearedcategoryAssignments {
+		edges = append(edges, place.EdgeCategoryAssignments)
+	}
 	return edges
 }
 
@@ -9746,6 +11145,8 @@ func (m *PlaceMutation) EdgeCleared(name string) bool {
 		return m.clearedbookings
 	case place.EdgeCategories:
 		return m.clearedcategories
+	case place.EdgeCategoryAssignments:
+		return m.clearedcategoryAssignments
 	}
 	return false
 }
@@ -9791,6 +11192,9 @@ func (m *PlaceMutation) ResetEdge(name string) error {
 		return nil
 	case place.EdgeCategories:
 		m.ResetCategories()
+		return nil
+	case place.EdgeCategoryAssignments:
+		m.ResetCategoryAssignments()
 		return nil
 	}
 	return fmt.Errorf("unknown Place edge %s", name)
@@ -14473,61 +15877,73 @@ func (m *TicketOptionMutation) ResetEdge(name string) error {
 // UserMutation represents an operation that mutates the User nodes in the graph.
 type UserMutation struct {
 	config
-	op                        Op
-	typ                       string
-	id                        *string
-	auth0_id                  *string
-	name                      *string
-	picture                   *string
-	cover_image               *string
-	username                  *string
-	bio                       *string
-	auth0_data                **management.User
-	app_settings              *map[string]interface{}
-	user_settings             *map[string]interface{}
-	clearedFields             map[string]struct{}
-	userBusinesses            map[string]struct{}
-	removeduserBusinesses     map[string]struct{}
-	cleareduserBusinesses     bool
-	comments                  map[string]struct{}
-	removedcomments           map[string]struct{}
-	clearedcomments           bool
-	likes                     map[string]struct{}
-	removedlikes              map[string]struct{}
-	clearedlikes              bool
-	posts                     map[string]struct{}
-	removedposts              map[string]struct{}
-	clearedposts              bool
-	followedUsers             map[string]struct{}
-	removedfollowedUsers      map[string]struct{}
-	clearedfollowedUsers      bool
-	followerUsers             map[string]struct{}
-	removedfollowerUsers      map[string]struct{}
-	clearedfollowerUsers      bool
-	followedBusinesses        map[string]struct{}
-	removedfollowedBusinesses map[string]struct{}
-	clearedfollowedBusinesses bool
-	followerBusinesses        map[string]struct{}
-	removedfollowerBusinesses map[string]struct{}
-	clearedfollowerBusinesses bool
-	reviews                   map[string]struct{}
-	removedreviews            map[string]struct{}
-	clearedreviews            bool
-	bookings                  map[string]struct{}
-	removedbookings           map[string]struct{}
-	clearedbookings           bool
-	reservations              map[string]struct{}
-	removedreservations       map[string]struct{}
-	clearedreservations       bool
-	helps                     map[string]struct{}
-	removedhelps              map[string]struct{}
-	clearedhelps              bool
-	categories                map[string]struct{}
-	removedcategories         map[string]struct{}
-	clearedcategories         bool
-	done                      bool
-	oldValue                  func(context.Context) (*User, error)
-	predicates                []predicate.User
+	op                         Op
+	typ                        string
+	id                         *string
+	auth0_id                   *string
+	name                       *string
+	picture                    *string
+	cover_image                *string
+	username                   *string
+	bio                        *string
+	auth0_data                 **management.User
+	app_settings               *map[string]interface{}
+	user_settings              *map[string]interface{}
+	search_text                *string
+	relevance_score            *float64
+	addrelevance_score         *float64
+	clearedFields              map[string]struct{}
+	userBusinesses             map[string]struct{}
+	removeduserBusinesses      map[string]struct{}
+	cleareduserBusinesses      bool
+	comments                   map[string]struct{}
+	removedcomments            map[string]struct{}
+	clearedcomments            bool
+	likes                      map[string]struct{}
+	removedlikes               map[string]struct{}
+	clearedlikes               bool
+	posts                      map[string]struct{}
+	removedposts               map[string]struct{}
+	clearedposts               bool
+	followedUsers              map[string]struct{}
+	removedfollowedUsers       map[string]struct{}
+	clearedfollowedUsers       bool
+	followerUsers              map[string]struct{}
+	removedfollowerUsers       map[string]struct{}
+	clearedfollowerUsers       bool
+	followedBusinesses         map[string]struct{}
+	removedfollowedBusinesses  map[string]struct{}
+	clearedfollowedBusinesses  bool
+	followerBusinesses         map[string]struct{}
+	removedfollowerBusinesses  map[string]struct{}
+	clearedfollowerBusinesses  bool
+	reviews                    map[string]struct{}
+	removedreviews             map[string]struct{}
+	clearedreviews             bool
+	bookings                   map[string]struct{}
+	removedbookings            map[string]struct{}
+	clearedbookings            bool
+	reservations               map[string]struct{}
+	removedreservations        map[string]struct{}
+	clearedreservations        bool
+	helps                      map[string]struct{}
+	removedhelps               map[string]struct{}
+	clearedhelps               bool
+	categories                 map[string]struct{}
+	removedcategories          map[string]struct{}
+	clearedcategories          bool
+	events                     map[string]struct{}
+	removedevents              map[string]struct{}
+	clearedevents              bool
+	places                     map[string]struct{}
+	removedplaces              map[string]struct{}
+	clearedplaces              bool
+	categoryAssignments        map[string]struct{}
+	removedcategoryAssignments map[string]struct{}
+	clearedcategoryAssignments bool
+	done                       bool
+	oldValue                   func(context.Context) (*User, error)
+	predicates                 []predicate.User
 }
 
 var _ ent.Mutation = (*UserMutation)(nil)
@@ -15047,6 +16463,125 @@ func (m *UserMutation) UserSettingsCleared() bool {
 func (m *UserMutation) ResetUserSettings() {
 	m.user_settings = nil
 	delete(m.clearedFields, user.FieldUserSettings)
+}
+
+// SetSearchText sets the "search_text" field.
+func (m *UserMutation) SetSearchText(s string) {
+	m.search_text = &s
+}
+
+// SearchText returns the value of the "search_text" field in the mutation.
+func (m *UserMutation) SearchText() (r string, exists bool) {
+	v := m.search_text
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSearchText returns the old "search_text" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldSearchText(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSearchText is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSearchText requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSearchText: %w", err)
+	}
+	return oldValue.SearchText, nil
+}
+
+// ClearSearchText clears the value of the "search_text" field.
+func (m *UserMutation) ClearSearchText() {
+	m.search_text = nil
+	m.clearedFields[user.FieldSearchText] = struct{}{}
+}
+
+// SearchTextCleared returns if the "search_text" field was cleared in this mutation.
+func (m *UserMutation) SearchTextCleared() bool {
+	_, ok := m.clearedFields[user.FieldSearchText]
+	return ok
+}
+
+// ResetSearchText resets all changes to the "search_text" field.
+func (m *UserMutation) ResetSearchText() {
+	m.search_text = nil
+	delete(m.clearedFields, user.FieldSearchText)
+}
+
+// SetRelevanceScore sets the "relevance_score" field.
+func (m *UserMutation) SetRelevanceScore(f float64) {
+	m.relevance_score = &f
+	m.addrelevance_score = nil
+}
+
+// RelevanceScore returns the value of the "relevance_score" field in the mutation.
+func (m *UserMutation) RelevanceScore() (r float64, exists bool) {
+	v := m.relevance_score
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRelevanceScore returns the old "relevance_score" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldRelevanceScore(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRelevanceScore is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRelevanceScore requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRelevanceScore: %w", err)
+	}
+	return oldValue.RelevanceScore, nil
+}
+
+// AddRelevanceScore adds f to the "relevance_score" field.
+func (m *UserMutation) AddRelevanceScore(f float64) {
+	if m.addrelevance_score != nil {
+		*m.addrelevance_score += f
+	} else {
+		m.addrelevance_score = &f
+	}
+}
+
+// AddedRelevanceScore returns the value that was added to the "relevance_score" field in this mutation.
+func (m *UserMutation) AddedRelevanceScore() (r float64, exists bool) {
+	v := m.addrelevance_score
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearRelevanceScore clears the value of the "relevance_score" field.
+func (m *UserMutation) ClearRelevanceScore() {
+	m.relevance_score = nil
+	m.addrelevance_score = nil
+	m.clearedFields[user.FieldRelevanceScore] = struct{}{}
+}
+
+// RelevanceScoreCleared returns if the "relevance_score" field was cleared in this mutation.
+func (m *UserMutation) RelevanceScoreCleared() bool {
+	_, ok := m.clearedFields[user.FieldRelevanceScore]
+	return ok
+}
+
+// ResetRelevanceScore resets all changes to the "relevance_score" field.
+func (m *UserMutation) ResetRelevanceScore() {
+	m.relevance_score = nil
+	m.addrelevance_score = nil
+	delete(m.clearedFields, user.FieldRelevanceScore)
 }
 
 // AddUserBusinessIDs adds the "userBusinesses" edge to the UserBusiness entity by ids.
@@ -15751,6 +17286,168 @@ func (m *UserMutation) ResetCategories() {
 	m.removedcategories = nil
 }
 
+// AddEventIDs adds the "events" edge to the Event entity by ids.
+func (m *UserMutation) AddEventIDs(ids ...string) {
+	if m.events == nil {
+		m.events = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.events[ids[i]] = struct{}{}
+	}
+}
+
+// ClearEvents clears the "events" edge to the Event entity.
+func (m *UserMutation) ClearEvents() {
+	m.clearedevents = true
+}
+
+// EventsCleared reports if the "events" edge to the Event entity was cleared.
+func (m *UserMutation) EventsCleared() bool {
+	return m.clearedevents
+}
+
+// RemoveEventIDs removes the "events" edge to the Event entity by IDs.
+func (m *UserMutation) RemoveEventIDs(ids ...string) {
+	if m.removedevents == nil {
+		m.removedevents = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.events, ids[i])
+		m.removedevents[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedEvents returns the removed IDs of the "events" edge to the Event entity.
+func (m *UserMutation) RemovedEventsIDs() (ids []string) {
+	for id := range m.removedevents {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// EventsIDs returns the "events" edge IDs in the mutation.
+func (m *UserMutation) EventsIDs() (ids []string) {
+	for id := range m.events {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetEvents resets all changes to the "events" edge.
+func (m *UserMutation) ResetEvents() {
+	m.events = nil
+	m.clearedevents = false
+	m.removedevents = nil
+}
+
+// AddPlaceIDs adds the "places" edge to the Place entity by ids.
+func (m *UserMutation) AddPlaceIDs(ids ...string) {
+	if m.places == nil {
+		m.places = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.places[ids[i]] = struct{}{}
+	}
+}
+
+// ClearPlaces clears the "places" edge to the Place entity.
+func (m *UserMutation) ClearPlaces() {
+	m.clearedplaces = true
+}
+
+// PlacesCleared reports if the "places" edge to the Place entity was cleared.
+func (m *UserMutation) PlacesCleared() bool {
+	return m.clearedplaces
+}
+
+// RemovePlaceIDs removes the "places" edge to the Place entity by IDs.
+func (m *UserMutation) RemovePlaceIDs(ids ...string) {
+	if m.removedplaces == nil {
+		m.removedplaces = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.places, ids[i])
+		m.removedplaces[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedPlaces returns the removed IDs of the "places" edge to the Place entity.
+func (m *UserMutation) RemovedPlacesIDs() (ids []string) {
+	for id := range m.removedplaces {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// PlacesIDs returns the "places" edge IDs in the mutation.
+func (m *UserMutation) PlacesIDs() (ids []string) {
+	for id := range m.places {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetPlaces resets all changes to the "places" edge.
+func (m *UserMutation) ResetPlaces() {
+	m.places = nil
+	m.clearedplaces = false
+	m.removedplaces = nil
+}
+
+// AddCategoryAssignmentIDs adds the "categoryAssignments" edge to the CategoryAssignment entity by ids.
+func (m *UserMutation) AddCategoryAssignmentIDs(ids ...string) {
+	if m.categoryAssignments == nil {
+		m.categoryAssignments = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.categoryAssignments[ids[i]] = struct{}{}
+	}
+}
+
+// ClearCategoryAssignments clears the "categoryAssignments" edge to the CategoryAssignment entity.
+func (m *UserMutation) ClearCategoryAssignments() {
+	m.clearedcategoryAssignments = true
+}
+
+// CategoryAssignmentsCleared reports if the "categoryAssignments" edge to the CategoryAssignment entity was cleared.
+func (m *UserMutation) CategoryAssignmentsCleared() bool {
+	return m.clearedcategoryAssignments
+}
+
+// RemoveCategoryAssignmentIDs removes the "categoryAssignments" edge to the CategoryAssignment entity by IDs.
+func (m *UserMutation) RemoveCategoryAssignmentIDs(ids ...string) {
+	if m.removedcategoryAssignments == nil {
+		m.removedcategoryAssignments = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.categoryAssignments, ids[i])
+		m.removedcategoryAssignments[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedCategoryAssignments returns the removed IDs of the "categoryAssignments" edge to the CategoryAssignment entity.
+func (m *UserMutation) RemovedCategoryAssignmentsIDs() (ids []string) {
+	for id := range m.removedcategoryAssignments {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// CategoryAssignmentsIDs returns the "categoryAssignments" edge IDs in the mutation.
+func (m *UserMutation) CategoryAssignmentsIDs() (ids []string) {
+	for id := range m.categoryAssignments {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetCategoryAssignments resets all changes to the "categoryAssignments" edge.
+func (m *UserMutation) ResetCategoryAssignments() {
+	m.categoryAssignments = nil
+	m.clearedcategoryAssignments = false
+	m.removedcategoryAssignments = nil
+}
+
 // Where appends a list predicates to the UserMutation builder.
 func (m *UserMutation) Where(ps ...predicate.User) {
 	m.predicates = append(m.predicates, ps...)
@@ -15785,7 +17482,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 11)
 	if m.auth0_id != nil {
 		fields = append(fields, user.FieldAuth0ID)
 	}
@@ -15813,6 +17510,12 @@ func (m *UserMutation) Fields() []string {
 	if m.user_settings != nil {
 		fields = append(fields, user.FieldUserSettings)
 	}
+	if m.search_text != nil {
+		fields = append(fields, user.FieldSearchText)
+	}
+	if m.relevance_score != nil {
+		fields = append(fields, user.FieldRelevanceScore)
+	}
 	return fields
 }
 
@@ -15839,6 +17542,10 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.AppSettings()
 	case user.FieldUserSettings:
 		return m.UserSettings()
+	case user.FieldSearchText:
+		return m.SearchText()
+	case user.FieldRelevanceScore:
+		return m.RelevanceScore()
 	}
 	return nil, false
 }
@@ -15866,6 +17573,10 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldAppSettings(ctx)
 	case user.FieldUserSettings:
 		return m.OldUserSettings(ctx)
+	case user.FieldSearchText:
+		return m.OldSearchText(ctx)
+	case user.FieldRelevanceScore:
+		return m.OldRelevanceScore(ctx)
 	}
 	return nil, fmt.Errorf("unknown User field %s", name)
 }
@@ -15938,6 +17649,20 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetUserSettings(v)
 		return nil
+	case user.FieldSearchText:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSearchText(v)
+		return nil
+	case user.FieldRelevanceScore:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRelevanceScore(v)
+		return nil
 	}
 	return fmt.Errorf("unknown User field %s", name)
 }
@@ -15945,13 +17670,21 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *UserMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	if m.addrelevance_score != nil {
+		fields = append(fields, user.FieldRelevanceScore)
+	}
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *UserMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case user.FieldRelevanceScore:
+		return m.AddedRelevanceScore()
+	}
 	return nil, false
 }
 
@@ -15960,6 +17693,13 @@ func (m *UserMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *UserMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case user.FieldRelevanceScore:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddRelevanceScore(v)
+		return nil
 	}
 	return fmt.Errorf("unknown User numeric field %s", name)
 }
@@ -15988,6 +17728,12 @@ func (m *UserMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(user.FieldUserSettings) {
 		fields = append(fields, user.FieldUserSettings)
+	}
+	if m.FieldCleared(user.FieldSearchText) {
+		fields = append(fields, user.FieldSearchText)
+	}
+	if m.FieldCleared(user.FieldRelevanceScore) {
+		fields = append(fields, user.FieldRelevanceScore)
 	}
 	return fields
 }
@@ -16024,6 +17770,12 @@ func (m *UserMutation) ClearField(name string) error {
 	case user.FieldUserSettings:
 		m.ClearUserSettings()
 		return nil
+	case user.FieldSearchText:
+		m.ClearSearchText()
+		return nil
+	case user.FieldRelevanceScore:
+		m.ClearRelevanceScore()
+		return nil
 	}
 	return fmt.Errorf("unknown User nullable field %s", name)
 }
@@ -16059,13 +17811,19 @@ func (m *UserMutation) ResetField(name string) error {
 	case user.FieldUserSettings:
 		m.ResetUserSettings()
 		return nil
+	case user.FieldSearchText:
+		m.ResetSearchText()
+		return nil
+	case user.FieldRelevanceScore:
+		m.ResetRelevanceScore()
+		return nil
 	}
 	return fmt.Errorf("unknown User field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserMutation) AddedEdges() []string {
-	edges := make([]string, 0, 13)
+	edges := make([]string, 0, 16)
 	if m.userBusinesses != nil {
 		edges = append(edges, user.EdgeUserBusinesses)
 	}
@@ -16104,6 +17862,15 @@ func (m *UserMutation) AddedEdges() []string {
 	}
 	if m.categories != nil {
 		edges = append(edges, user.EdgeCategories)
+	}
+	if m.events != nil {
+		edges = append(edges, user.EdgeEvents)
+	}
+	if m.places != nil {
+		edges = append(edges, user.EdgePlaces)
+	}
+	if m.categoryAssignments != nil {
+		edges = append(edges, user.EdgeCategoryAssignments)
 	}
 	return edges
 }
@@ -16190,13 +17957,31 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeEvents:
+		ids := make([]ent.Value, 0, len(m.events))
+		for id := range m.events {
+			ids = append(ids, id)
+		}
+		return ids
+	case user.EdgePlaces:
+		ids := make([]ent.Value, 0, len(m.places))
+		for id := range m.places {
+			ids = append(ids, id)
+		}
+		return ids
+	case user.EdgeCategoryAssignments:
+		ids := make([]ent.Value, 0, len(m.categoryAssignments))
+		for id := range m.categoryAssignments {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 13)
+	edges := make([]string, 0, 16)
 	if m.removeduserBusinesses != nil {
 		edges = append(edges, user.EdgeUserBusinesses)
 	}
@@ -16235,6 +18020,15 @@ func (m *UserMutation) RemovedEdges() []string {
 	}
 	if m.removedcategories != nil {
 		edges = append(edges, user.EdgeCategories)
+	}
+	if m.removedevents != nil {
+		edges = append(edges, user.EdgeEvents)
+	}
+	if m.removedplaces != nil {
+		edges = append(edges, user.EdgePlaces)
+	}
+	if m.removedcategoryAssignments != nil {
+		edges = append(edges, user.EdgeCategoryAssignments)
 	}
 	return edges
 }
@@ -16321,13 +18115,31 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeEvents:
+		ids := make([]ent.Value, 0, len(m.removedevents))
+		for id := range m.removedevents {
+			ids = append(ids, id)
+		}
+		return ids
+	case user.EdgePlaces:
+		ids := make([]ent.Value, 0, len(m.removedplaces))
+		for id := range m.removedplaces {
+			ids = append(ids, id)
+		}
+		return ids
+	case user.EdgeCategoryAssignments:
+		ids := make([]ent.Value, 0, len(m.removedcategoryAssignments))
+		for id := range m.removedcategoryAssignments {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 13)
+	edges := make([]string, 0, 16)
 	if m.cleareduserBusinesses {
 		edges = append(edges, user.EdgeUserBusinesses)
 	}
@@ -16367,6 +18179,15 @@ func (m *UserMutation) ClearedEdges() []string {
 	if m.clearedcategories {
 		edges = append(edges, user.EdgeCategories)
 	}
+	if m.clearedevents {
+		edges = append(edges, user.EdgeEvents)
+	}
+	if m.clearedplaces {
+		edges = append(edges, user.EdgePlaces)
+	}
+	if m.clearedcategoryAssignments {
+		edges = append(edges, user.EdgeCategoryAssignments)
+	}
 	return edges
 }
 
@@ -16400,6 +18221,12 @@ func (m *UserMutation) EdgeCleared(name string) bool {
 		return m.clearedhelps
 	case user.EdgeCategories:
 		return m.clearedcategories
+	case user.EdgeEvents:
+		return m.clearedevents
+	case user.EdgePlaces:
+		return m.clearedplaces
+	case user.EdgeCategoryAssignments:
+		return m.clearedcategoryAssignments
 	}
 	return false
 }
@@ -16454,6 +18281,15 @@ func (m *UserMutation) ResetEdge(name string) error {
 		return nil
 	case user.EdgeCategories:
 		m.ResetCategories()
+		return nil
+	case user.EdgeEvents:
+		m.ResetEvents()
+		return nil
+	case user.EdgePlaces:
+		m.ResetPlaces()
+		return nil
+	case user.EdgeCategoryAssignments:
+		m.ResetCategoryAssignments()
 		return nil
 	}
 	return fmt.Errorf("unknown User edge %s", name)

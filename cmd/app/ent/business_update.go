@@ -11,6 +11,7 @@ import (
 	"placio-app/ent/businessfollowbusiness"
 	"placio-app/ent/businessfollowuser"
 	"placio-app/ent/category"
+	"placio-app/ent/categoryassignment"
 	"placio-app/ent/place"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
@@ -38,6 +39,53 @@ func (bu *BusinessUpdate) Where(ps ...predicate.Business) *BusinessUpdate {
 // SetName sets the "name" field.
 func (bu *BusinessUpdate) SetName(s string) *BusinessUpdate {
 	bu.mutation.SetName(s)
+	return bu
+}
+
+// SetSearchText sets the "search_text" field.
+func (bu *BusinessUpdate) SetSearchText(s string) *BusinessUpdate {
+	bu.mutation.SetSearchText(s)
+	return bu
+}
+
+// SetNillableSearchText sets the "search_text" field if the given value is not nil.
+func (bu *BusinessUpdate) SetNillableSearchText(s *string) *BusinessUpdate {
+	if s != nil {
+		bu.SetSearchText(*s)
+	}
+	return bu
+}
+
+// ClearSearchText clears the value of the "search_text" field.
+func (bu *BusinessUpdate) ClearSearchText() *BusinessUpdate {
+	bu.mutation.ClearSearchText()
+	return bu
+}
+
+// SetRelevanceScore sets the "relevance_score" field.
+func (bu *BusinessUpdate) SetRelevanceScore(f float64) *BusinessUpdate {
+	bu.mutation.ResetRelevanceScore()
+	bu.mutation.SetRelevanceScore(f)
+	return bu
+}
+
+// SetNillableRelevanceScore sets the "relevance_score" field if the given value is not nil.
+func (bu *BusinessUpdate) SetNillableRelevanceScore(f *float64) *BusinessUpdate {
+	if f != nil {
+		bu.SetRelevanceScore(*f)
+	}
+	return bu
+}
+
+// AddRelevanceScore adds f to the "relevance_score" field.
+func (bu *BusinessUpdate) AddRelevanceScore(f float64) *BusinessUpdate {
+	bu.mutation.AddRelevanceScore(f)
+	return bu
+}
+
+// ClearRelevanceScore clears the value of the "relevance_score" field.
+func (bu *BusinessUpdate) ClearRelevanceScore() *BusinessUpdate {
+	bu.mutation.ClearRelevanceScore()
 	return bu
 }
 
@@ -178,6 +226,21 @@ func (bu *BusinessUpdate) AddCategories(c ...*Category) *BusinessUpdate {
 		ids[i] = c[i].ID
 	}
 	return bu.AddCategoryIDs(ids...)
+}
+
+// AddCategoryAssignmentIDs adds the "categoryAssignments" edge to the CategoryAssignment entity by IDs.
+func (bu *BusinessUpdate) AddCategoryAssignmentIDs(ids ...string) *BusinessUpdate {
+	bu.mutation.AddCategoryAssignmentIDs(ids...)
+	return bu
+}
+
+// AddCategoryAssignments adds the "categoryAssignments" edges to the CategoryAssignment entity.
+func (bu *BusinessUpdate) AddCategoryAssignments(c ...*CategoryAssignment) *BusinessUpdate {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return bu.AddCategoryAssignmentIDs(ids...)
 }
 
 // Mutation returns the BusinessMutation object of the builder.
@@ -359,6 +422,27 @@ func (bu *BusinessUpdate) RemoveCategories(c ...*Category) *BusinessUpdate {
 	return bu.RemoveCategoryIDs(ids...)
 }
 
+// ClearCategoryAssignments clears all "categoryAssignments" edges to the CategoryAssignment entity.
+func (bu *BusinessUpdate) ClearCategoryAssignments() *BusinessUpdate {
+	bu.mutation.ClearCategoryAssignments()
+	return bu
+}
+
+// RemoveCategoryAssignmentIDs removes the "categoryAssignments" edge to CategoryAssignment entities by IDs.
+func (bu *BusinessUpdate) RemoveCategoryAssignmentIDs(ids ...string) *BusinessUpdate {
+	bu.mutation.RemoveCategoryAssignmentIDs(ids...)
+	return bu
+}
+
+// RemoveCategoryAssignments removes "categoryAssignments" edges to CategoryAssignment entities.
+func (bu *BusinessUpdate) RemoveCategoryAssignments(c ...*CategoryAssignment) *BusinessUpdate {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return bu.RemoveCategoryAssignmentIDs(ids...)
+}
+
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (bu *BusinessUpdate) Save(ctx context.Context) (int, error) {
 	return withHooks(ctx, bu.sqlSave, bu.mutation, bu.hooks)
@@ -397,6 +481,21 @@ func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := bu.mutation.Name(); ok {
 		_spec.SetField(business.FieldName, field.TypeString, value)
+	}
+	if value, ok := bu.mutation.SearchText(); ok {
+		_spec.SetField(business.FieldSearchText, field.TypeString, value)
+	}
+	if bu.mutation.SearchTextCleared() {
+		_spec.ClearField(business.FieldSearchText, field.TypeString)
+	}
+	if value, ok := bu.mutation.RelevanceScore(); ok {
+		_spec.SetField(business.FieldRelevanceScore, field.TypeFloat64, value)
+	}
+	if value, ok := bu.mutation.AddedRelevanceScore(); ok {
+		_spec.AddField(business.FieldRelevanceScore, field.TypeFloat64, value)
+	}
+	if bu.mutation.RelevanceScoreCleared() {
+		_spec.ClearField(business.FieldRelevanceScore, field.TypeFloat64)
 	}
 	if bu.mutation.UserBusinessesCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -787,6 +886,51 @@ func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if bu.mutation.CategoryAssignmentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.CategoryAssignmentsTable,
+			Columns: []string{business.CategoryAssignmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(categoryassignment.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.RemovedCategoryAssignmentsIDs(); len(nodes) > 0 && !bu.mutation.CategoryAssignmentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.CategoryAssignmentsTable,
+			Columns: []string{business.CategoryAssignmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(categoryassignment.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.CategoryAssignmentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.CategoryAssignmentsTable,
+			Columns: []string{business.CategoryAssignmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(categoryassignment.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, bu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{business.Label}
@@ -810,6 +954,53 @@ type BusinessUpdateOne struct {
 // SetName sets the "name" field.
 func (buo *BusinessUpdateOne) SetName(s string) *BusinessUpdateOne {
 	buo.mutation.SetName(s)
+	return buo
+}
+
+// SetSearchText sets the "search_text" field.
+func (buo *BusinessUpdateOne) SetSearchText(s string) *BusinessUpdateOne {
+	buo.mutation.SetSearchText(s)
+	return buo
+}
+
+// SetNillableSearchText sets the "search_text" field if the given value is not nil.
+func (buo *BusinessUpdateOne) SetNillableSearchText(s *string) *BusinessUpdateOne {
+	if s != nil {
+		buo.SetSearchText(*s)
+	}
+	return buo
+}
+
+// ClearSearchText clears the value of the "search_text" field.
+func (buo *BusinessUpdateOne) ClearSearchText() *BusinessUpdateOne {
+	buo.mutation.ClearSearchText()
+	return buo
+}
+
+// SetRelevanceScore sets the "relevance_score" field.
+func (buo *BusinessUpdateOne) SetRelevanceScore(f float64) *BusinessUpdateOne {
+	buo.mutation.ResetRelevanceScore()
+	buo.mutation.SetRelevanceScore(f)
+	return buo
+}
+
+// SetNillableRelevanceScore sets the "relevance_score" field if the given value is not nil.
+func (buo *BusinessUpdateOne) SetNillableRelevanceScore(f *float64) *BusinessUpdateOne {
+	if f != nil {
+		buo.SetRelevanceScore(*f)
+	}
+	return buo
+}
+
+// AddRelevanceScore adds f to the "relevance_score" field.
+func (buo *BusinessUpdateOne) AddRelevanceScore(f float64) *BusinessUpdateOne {
+	buo.mutation.AddRelevanceScore(f)
+	return buo
+}
+
+// ClearRelevanceScore clears the value of the "relevance_score" field.
+func (buo *BusinessUpdateOne) ClearRelevanceScore() *BusinessUpdateOne {
+	buo.mutation.ClearRelevanceScore()
 	return buo
 }
 
@@ -950,6 +1141,21 @@ func (buo *BusinessUpdateOne) AddCategories(c ...*Category) *BusinessUpdateOne {
 		ids[i] = c[i].ID
 	}
 	return buo.AddCategoryIDs(ids...)
+}
+
+// AddCategoryAssignmentIDs adds the "categoryAssignments" edge to the CategoryAssignment entity by IDs.
+func (buo *BusinessUpdateOne) AddCategoryAssignmentIDs(ids ...string) *BusinessUpdateOne {
+	buo.mutation.AddCategoryAssignmentIDs(ids...)
+	return buo
+}
+
+// AddCategoryAssignments adds the "categoryAssignments" edges to the CategoryAssignment entity.
+func (buo *BusinessUpdateOne) AddCategoryAssignments(c ...*CategoryAssignment) *BusinessUpdateOne {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return buo.AddCategoryAssignmentIDs(ids...)
 }
 
 // Mutation returns the BusinessMutation object of the builder.
@@ -1131,6 +1337,27 @@ func (buo *BusinessUpdateOne) RemoveCategories(c ...*Category) *BusinessUpdateOn
 	return buo.RemoveCategoryIDs(ids...)
 }
 
+// ClearCategoryAssignments clears all "categoryAssignments" edges to the CategoryAssignment entity.
+func (buo *BusinessUpdateOne) ClearCategoryAssignments() *BusinessUpdateOne {
+	buo.mutation.ClearCategoryAssignments()
+	return buo
+}
+
+// RemoveCategoryAssignmentIDs removes the "categoryAssignments" edge to CategoryAssignment entities by IDs.
+func (buo *BusinessUpdateOne) RemoveCategoryAssignmentIDs(ids ...string) *BusinessUpdateOne {
+	buo.mutation.RemoveCategoryAssignmentIDs(ids...)
+	return buo
+}
+
+// RemoveCategoryAssignments removes "categoryAssignments" edges to CategoryAssignment entities.
+func (buo *BusinessUpdateOne) RemoveCategoryAssignments(c ...*CategoryAssignment) *BusinessUpdateOne {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return buo.RemoveCategoryAssignmentIDs(ids...)
+}
+
 // Where appends a list predicates to the BusinessUpdate builder.
 func (buo *BusinessUpdateOne) Where(ps ...predicate.Business) *BusinessUpdateOne {
 	buo.mutation.Where(ps...)
@@ -1199,6 +1426,21 @@ func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err
 	}
 	if value, ok := buo.mutation.Name(); ok {
 		_spec.SetField(business.FieldName, field.TypeString, value)
+	}
+	if value, ok := buo.mutation.SearchText(); ok {
+		_spec.SetField(business.FieldSearchText, field.TypeString, value)
+	}
+	if buo.mutation.SearchTextCleared() {
+		_spec.ClearField(business.FieldSearchText, field.TypeString)
+	}
+	if value, ok := buo.mutation.RelevanceScore(); ok {
+		_spec.SetField(business.FieldRelevanceScore, field.TypeFloat64, value)
+	}
+	if value, ok := buo.mutation.AddedRelevanceScore(); ok {
+		_spec.AddField(business.FieldRelevanceScore, field.TypeFloat64, value)
+	}
+	if buo.mutation.RelevanceScoreCleared() {
+		_spec.ClearField(business.FieldRelevanceScore, field.TypeFloat64)
 	}
 	if buo.mutation.UserBusinessesCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1582,6 +1824,51 @@ func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if buo.mutation.CategoryAssignmentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.CategoryAssignmentsTable,
+			Columns: []string{business.CategoryAssignmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(categoryassignment.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.RemovedCategoryAssignmentsIDs(); len(nodes) > 0 && !buo.mutation.CategoryAssignmentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.CategoryAssignmentsTable,
+			Columns: []string{business.CategoryAssignmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(categoryassignment.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.CategoryAssignmentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.CategoryAssignmentsTable,
+			Columns: []string{business.CategoryAssignmentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(categoryassignment.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

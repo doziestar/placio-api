@@ -30,6 +30,10 @@ const (
 	FieldAppSettings = "app_settings"
 	// FieldUserSettings holds the string denoting the user_settings field in the database.
 	FieldUserSettings = "user_settings"
+	// FieldSearchText holds the string denoting the search_text field in the database.
+	FieldSearchText = "search_text"
+	// FieldRelevanceScore holds the string denoting the relevance_score field in the database.
+	FieldRelevanceScore = "relevance_score"
 	// EdgeUserBusinesses holds the string denoting the userbusinesses edge name in mutations.
 	EdgeUserBusinesses = "userBusinesses"
 	// EdgeComments holds the string denoting the comments edge name in mutations.
@@ -56,6 +60,12 @@ const (
 	EdgeHelps = "helps"
 	// EdgeCategories holds the string denoting the categories edge name in mutations.
 	EdgeCategories = "categories"
+	// EdgeEvents holds the string denoting the events edge name in mutations.
+	EdgeEvents = "events"
+	// EdgePlaces holds the string denoting the places edge name in mutations.
+	EdgePlaces = "places"
+	// EdgeCategoryAssignments holds the string denoting the categoryassignments edge name in mutations.
+	EdgeCategoryAssignments = "categoryAssignments"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// UserBusinessesTable is the table that holds the userBusinesses relation/edge.
@@ -149,6 +159,27 @@ const (
 	CategoriesInverseTable = "categories"
 	// CategoriesColumn is the table column denoting the categories relation/edge.
 	CategoriesColumn = "user_categories"
+	// EventsTable is the table that holds the events relation/edge.
+	EventsTable = "events"
+	// EventsInverseTable is the table name for the Event entity.
+	// It exists in this package in order to avoid circular dependency with the "event" package.
+	EventsInverseTable = "events"
+	// EventsColumn is the table column denoting the events relation/edge.
+	EventsColumn = "user_events"
+	// PlacesTable is the table that holds the places relation/edge.
+	PlacesTable = "places"
+	// PlacesInverseTable is the table name for the Place entity.
+	// It exists in this package in order to avoid circular dependency with the "place" package.
+	PlacesInverseTable = "places"
+	// PlacesColumn is the table column denoting the places relation/edge.
+	PlacesColumn = "user_places"
+	// CategoryAssignmentsTable is the table that holds the categoryAssignments relation/edge.
+	CategoryAssignmentsTable = "category_assignments"
+	// CategoryAssignmentsInverseTable is the table name for the CategoryAssignment entity.
+	// It exists in this package in order to avoid circular dependency with the "categoryassignment" package.
+	CategoryAssignmentsInverseTable = "category_assignments"
+	// CategoryAssignmentsColumn is the table column denoting the categoryAssignments relation/edge.
+	CategoryAssignmentsColumn = "entity_id"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -163,6 +194,8 @@ var Columns = []string{
 	FieldAuth0Data,
 	FieldAppSettings,
 	FieldUserSettings,
+	FieldSearchText,
+	FieldRelevanceScore,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -220,6 +253,16 @@ func ByUsername(opts ...sql.OrderTermOption) OrderOption {
 // ByBio orders the results by the bio field.
 func ByBio(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldBio, opts...).ToFunc()
+}
+
+// BySearchText orders the results by the search_text field.
+func BySearchText(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSearchText, opts...).ToFunc()
+}
+
+// ByRelevanceScore orders the results by the relevance_score field.
+func ByRelevanceScore(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRelevanceScore, opts...).ToFunc()
 }
 
 // ByUserBusinessesCount orders the results by userBusinesses count.
@@ -403,6 +446,48 @@ func ByCategories(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newCategoriesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByEventsCount orders the results by events count.
+func ByEventsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newEventsStep(), opts...)
+	}
+}
+
+// ByEvents orders the results by events terms.
+func ByEvents(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newEventsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByPlacesCount orders the results by places count.
+func ByPlacesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newPlacesStep(), opts...)
+	}
+}
+
+// ByPlaces orders the results by places terms.
+func ByPlaces(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newPlacesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByCategoryAssignmentsCount orders the results by categoryAssignments count.
+func ByCategoryAssignmentsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newCategoryAssignmentsStep(), opts...)
+	}
+}
+
+// ByCategoryAssignments orders the results by categoryAssignments terms.
+func ByCategoryAssignments(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCategoryAssignmentsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newUserBusinessesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -492,5 +577,26 @@ func newCategoriesStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CategoriesInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, CategoriesTable, CategoriesColumn),
+	)
+}
+func newEventsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(EventsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, EventsTable, EventsColumn),
+	)
+}
+func newPlacesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(PlacesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, PlacesTable, PlacesColumn),
+	)
+}
+func newCategoryAssignmentsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CategoryAssignmentsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, CategoryAssignmentsTable, CategoryAssignmentsColumn),
 	)
 }

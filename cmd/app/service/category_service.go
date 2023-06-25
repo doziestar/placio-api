@@ -3,13 +3,11 @@ package service
 import (
 	"context"
 	"placio-app/ent"
-	"placio-app/ent/business"
 	"placio-app/ent/category"
+	"placio-app/ent/categoryassignment"
 	"placio-app/ent/media"
 	"placio-app/ent/menu"
-	"placio-app/ent/place"
 	"placio-app/ent/post"
-	"placio-app/ent/user"
 )
 
 type CategoryService interface {
@@ -24,6 +22,10 @@ type CategoryService interface {
 	GetPlacesByCategory(ctx context.Context, name string) ([]*ent.Place, error)
 	GetBusinessesByCategory(ctx context.Context, name string) ([]*ent.Business, error)
 	GetEntitiesByCategory(ctx context.Context, name string) (*CategorySearchResult, error)
+	AssignBusinessToCategory(ctx context.Context, businessID string, categoryID string) (*ent.CategoryAssignment, error)
+	AssignPlaceToCategory(ctx context.Context, placeID string, categoryID string) (*ent.CategoryAssignment, error)
+	AssignUserToCategory(ctx context.Context, userID string, categoryID string) (*ent.CategoryAssignment, error)
+	CreateCategoryAssignment(ctx context.Context, entityID string, entityType string, categoryID string) (*ent.CategoryAssignment, error)
 }
 
 type CategoryServiceImpl struct {
@@ -78,13 +80,6 @@ func (cs *CategoryServiceImpl) SearchByCategory(ctx context.Context, name string
 		All(ctx)
 }
 
-func (cs *CategoryServiceImpl) GetUsersByCategory(ctx context.Context, name string) ([]*ent.User, error) {
-	return cs.client.User.
-		Query().
-		Where(user.HasCategoriesWith(category.Name(name))).
-		All(ctx)
-}
-
 func (cs *CategoryServiceImpl) GetPostsByCategory(ctx context.Context, name string) ([]*ent.Post, error) {
 	return cs.client.Post.
 		Query().
@@ -106,18 +101,25 @@ func (cs *CategoryServiceImpl) GetMenusByCategory(ctx context.Context, name stri
 		All(ctx)
 }
 
-func (cs *CategoryServiceImpl) GetPlacesByCategory(ctx context.Context, name string) ([]*ent.Place, error) {
-	return cs.client.Place.
-		Query().
-		Where(place.HasCategoriesWith(category.Name(name))).
-		All(ctx)
+func (cs *CategoryServiceImpl) CreateCategoryAssignment(ctx context.Context, entityID string, entityType string, categoryID string) (*ent.CategoryAssignment, error) {
+	return cs.client.CategoryAssignment.
+		Create().
+		SetEntityID(entityID).
+		SetEntityType(entityType).
+		SetCategoryID(categoryID).
+		Save(ctx)
 }
 
-func (cs *CategoryServiceImpl) GetBusinessesByCategory(ctx context.Context, name string) ([]*ent.Business, error) {
-	return cs.client.Business.
-		Query().
-		Where(business.HasCategoriesWith(category.Name(name))).
-		All(ctx)
+func (cs *CategoryServiceImpl) AssignBusinessToCategory(ctx context.Context, businessID string, categoryID string) (*ent.CategoryAssignment, error) {
+	return cs.CreateCategoryAssignment(ctx, businessID, "Business", categoryID)
+}
+
+func (cs *CategoryServiceImpl) AssignPlaceToCategory(ctx context.Context, placeID string, categoryID string) (*ent.CategoryAssignment, error) {
+	return cs.CreateCategoryAssignment(ctx, placeID, "Place", categoryID)
+}
+
+func (cs *CategoryServiceImpl) AssignUserToCategory(ctx context.Context, userID string, categoryID string) (*ent.CategoryAssignment, error) {
+	return cs.CreateCategoryAssignment(ctx, userID, "User", categoryID)
 }
 
 func (cs *CategoryServiceImpl) GetEntitiesByCategory(ctx context.Context, name string) (*CategorySearchResult, error) {
@@ -161,4 +163,67 @@ func (cs *CategoryServiceImpl) GetEntitiesByCategory(ctx context.Context, name s
 	}
 
 	return result, nil
+}
+
+func (cs *CategoryServiceImpl) GetBusinessesByCategory(ctx context.Context, categoryID string) ([]*ent.Business, error) {
+	assignments, err := cs.client.CategoryAssignment.
+		Query().
+		Where(categoryassignment.CategoryID(categoryID), categoryassignment.EntityType("Business")).
+		All(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var businesses []*ent.Business
+	for _, assignment := range assignments {
+		business, err := cs.client.Business.Get(ctx, assignment.EntityID)
+		if err != nil {
+			return nil, err // Or you might want to continue and skip this one.
+		}
+		businesses = append(businesses, business)
+	}
+
+	return businesses, nil
+}
+
+func (cs *CategoryServiceImpl) GetPlacesByCategory(ctx context.Context, categoryID string) ([]*ent.Place, error) {
+	assignments, err := cs.client.CategoryAssignment.
+		Query().
+		Where(categoryassignment.CategoryID(categoryID), categoryassignment.EntityType("Place")).
+		All(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var places []*ent.Place
+	for _, assignment := range assignments {
+		place, err := cs.client.Place.Get(ctx, assignment.EntityID)
+		if err != nil {
+			return nil, err // Or you might want to continue and skip this one.
+		}
+		places = append(places, place)
+	}
+
+	return places, nil
+}
+
+func (cs *CategoryServiceImpl) GetUsersByCategory(ctx context.Context, categoryID string) ([]*ent.User, error) {
+	assignments, err := cs.client.CategoryAssignment.
+		Query().
+		Where(categoryassignment.CategoryID(categoryID), categoryassignment.EntityType("User")).
+		All(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var users []*ent.User
+	for _, assignment := range assignments {
+		user, err := cs.client.User.Get(ctx, assignment.EntityID)
+		if err != nil {
+			return nil, err // Or you might want to continue and skip this one.
+		}
+		users = append(users, user)
+	}
+
+	return users, nil
 }

@@ -28,6 +28,8 @@ func (User) Fields() []ent.Field {
 		field.JSON("auth0_data", &management.User{}).Optional(),
 		field.JSON("app_settings", map[string]interface{}{}).Optional(),
 		field.JSON("user_settings", map[string]interface{}{}).Optional(),
+		field.String("search_text").Optional(),
+		field.Float("relevance_score").Optional(),
 	}
 }
 
@@ -47,5 +49,8 @@ func (User) Edges() []ent.Edge {
 		edge.To("reservations", Reservation.Type),
 		edge.To("helps", Help.Type).Immutable(),
 		edge.To("categories", Category.Type),
+		edge.To("events", Event.Type),
+		edge.To("places", Place.Type),
+		edge.To("categoryAssignments", CategoryAssignment.Type),
 	}
 }

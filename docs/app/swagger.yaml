@@ -1,4 +1,4 @@
-basePath: /qpi/v1
+basePath: /api/v1
 definitions:
   gin.H:
     additionalProperties: {}
@@ -378,6 +378,12 @@ definitions:
       name:
         description: Name holds the value of the "name" field.
         type: string
+      relevance_score:
+        description: RelevanceScore holds the value of the "relevance_score" field.
+        type: number
+      search_text:
+        description: SearchText holds the value of the "search_text" field.
+        type: string
     type: object
   placio-app_ent.BusinessEdges:
     properties:
@@ -390,6 +396,12 @@ definitions:
         description: Categories holds the value of the categories edge.
         items:
           $ref: '#/definitions/placio-app_ent.Category'
+        type: array
+      categoryAssignments:
+        description: CategoryAssignments holds the value of the categoryAssignments
+          edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.CategoryAssignment'
         type: array
       followedBusinesses:
         description: FollowedBusinesses holds the value of the followedBusinesses
@@ -477,6 +489,12 @@ definitions:
     type: object
   placio-app_ent.Category:
     properties:
+      edges:
+        allOf:
+        - $ref: '#/definitions/placio-app_ent.CategoryEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the CategoryQuery when eager-loading is set.
       id:
         description: ID of the ent.
         type: string
@@ -486,6 +504,55 @@ definitions:
       name:
         description: Name holds the value of the "name" field.
         type: string
+    type: object
+  placio-app_ent.CategoryAssignment:
+    properties:
+      category_id:
+        description: This represents the ID of the category
+        type: string
+      edges:
+        allOf:
+        - $ref: '#/definitions/placio-app_ent.CategoryAssignmentEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the CategoryAssignmentQuery when eager-loading is set.
+      entity_id:
+        description: This represents the ID of User, Business or Place entity
+        type: string
+      entity_type:
+        description: 'This represents the type of entity: User, Business, or Place'
+        type: string
+      id:
+        description: ID of the ent.
+        type: string
+    type: object
+  placio-app_ent.CategoryAssignmentEdges:
+    properties:
+      business:
+        allOf:
+        - $ref: '#/definitions/placio-app_ent.Business'
+        description: Business holds the value of the business edge.
+      category:
+        allOf:
+        - $ref: '#/definitions/placio-app_ent.Category'
+        description: Category holds the value of the category edge.
+      place:
+        allOf:
+        - $ref: '#/definitions/placio-app_ent.Place'
+        description: Place holds the value of the place edge.
+      user:
+        allOf:
+        - $ref: '#/definitions/placio-app_ent.User'
+        description: User holds the value of the user edge.
+    type: object
+  placio-app_ent.CategoryEdges:
+    properties:
+      categoryAssignments:
+        description: CategoryAssignments holds the value of the categoryAssignments
+          edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.CategoryAssignment'
+        type: array
     type: object
   placio-app_ent.Comment:
     properties:
@@ -705,8 +772,18 @@ definitions:
       location:
         description: Location holds the value of the "location" field.
         type: string
+      map_coordinates:
+        additionalProperties: true
+        description: MapCoordinates holds the value of the "map_coordinates" field.
+        type: object
       name:
         description: Name holds the value of the "name" field.
+        type: string
+      relevance_score:
+        description: RelevanceScore holds the value of the "relevance_score" field.
+        type: number
+      search_text:
+        description: SearchText holds the value of the "search_text" field.
         type: string
       special_offers:
         description: SpecialOffers holds the value of the "special_offers" field.
@@ -739,6 +816,12 @@ definitions:
         description: Categories holds the value of the categories edge.
         items:
           $ref: '#/definitions/placio-app_ent.Category'
+        type: array
+      categoryAssignments:
+        description: CategoryAssignments holds the value of the categoryAssignments
+          edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.CategoryAssignment'
         type: array
       events:
         description: Events holds the value of the events edge.
@@ -1025,6 +1108,12 @@ definitions:
       picture:
         description: Picture holds the value of the "picture" field.
         type: string
+      relevance_score:
+        description: RelevanceScore holds the value of the "relevance_score" field.
+        type: number
+      search_text:
+        description: SearchText holds the value of the "search_text" field.
+        type: string
       user_settings:
         additionalProperties: true
         description: UserSettings holds the value of the "user_settings" field.
@@ -1071,10 +1160,21 @@ definitions:
         items:
           $ref: '#/definitions/placio-app_ent.Category'
         type: array
+      categoryAssignments:
+        description: CategoryAssignments holds the value of the categoryAssignments
+          edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.CategoryAssignment'
+        type: array
       comments:
         description: Comments holds the value of the comments edge.
         items:
           $ref: '#/definitions/placio-app_ent.Comment'
+        type: array
+      events:
+        description: Events holds the value of the events edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Event'
         type: array
       followedBusinesses:
         description: FollowedBusinesses holds the value of the followedBusinesses
@@ -1107,6 +1207,11 @@ definitions:
         description: Likes holds the value of the likes edge.
         items:
           $ref: '#/definitions/placio-app_ent.Like'
+        type: array
+      places:
+        description: Places holds the value of the places edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Place'
         type: array
       posts:
         description: Posts holds the value of the posts edge.
@@ -1579,7 +1684,7 @@ host: https://api.palnight.com
 info:
   contact:
     email: support@placio.io
-    name: Darc Technologies
+    name: Placio Ltd
     url: https://placio.io
   description: This is the documentation for the Placio Application Api
   license:
@@ -4656,6 +4761,147 @@ paths:
           schema:
             $ref: '#/definitions/placio-app_ent.Category'
       summary: Create a new category
+      tags:
+      - categories
+  /categories/{categoryID}/businesses:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Category ID
+        in: path
+        name: categoryID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_ent.Business'
+            type: array
+      summary: Get businesses by category
+      tags:
+      - categories
+  /categories/{categoryID}/businesses/{businessID}:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Category ID
+        in: path
+        name: categoryID
+        required: true
+        type: string
+      - description: Business ID
+        in: path
+        name: businessID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_ent.CategoryAssignment'
+      summary: Assign a business to a category
+      tags:
+      - categories
+  /categories/{categoryID}/places:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Category ID
+        in: path
+        name: categoryID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_ent.Place'
+            type: array
+      summary: Get places by category
+      tags:
+      - categories
+  /categories/{categoryID}/places/{placeID}:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Category ID
+        in: path
+        name: categoryID
+        required: true
+        type: string
+      - description: Place ID
+        in: path
+        name: placeID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_ent.CategoryAssignment'
+      summary: Assign a place to a category
+      tags:
+      - categories
+  /categories/{categoryID}/users:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Category ID
+        in: path
+        name: categoryID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_ent.User'
+            type: array
+      summary: Get users by category
+      tags:
+      - categories
+  /categories/{categoryID}/users/{userID}:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Category ID
+        in: path
+        name: categoryID
+        required: true
+        type: string
+      - description: User ID
+        in: path
+        name: userID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_ent.CategoryAssignment'
+      summary: Assign a user to a category
       tags:
       - categories
   /categories/{id}:

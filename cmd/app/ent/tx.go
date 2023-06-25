@@ -26,6 +26,8 @@ type Tx struct {
 	BusinessFollowUser *BusinessFollowUserClient
 	// Category is the client for interacting with the Category builders.
 	Category *CategoryClient
+	// CategoryAssignment is the client for interacting with the CategoryAssignment builders.
+	CategoryAssignment *CategoryAssignmentClient
 	// Chat is the client for interacting with the Chat builders.
 	Chat *ChatClient
 	// Comment is the client for interacting with the Comment builders.
@@ -208,6 +210,7 @@ func (tx *Tx) init() {
 	tx.BusinessFollowBusiness = NewBusinessFollowBusinessClient(tx.config)
 	tx.BusinessFollowUser = NewBusinessFollowUserClient(tx.config)
 	tx.Category = NewCategoryClient(tx.config)
+	tx.CategoryAssignment = NewCategoryAssignmentClient(tx.config)
 	tx.Chat = NewChatClient(tx.config)
 	tx.Comment = NewCommentClient(tx.config)
 	tx.Event = NewEventClient(tx.config)

@@ -11,7 +11,7 @@ const docTemplate = `{
         "title": "{{.Title}}",
         "termsOfService": "https://placio.io/terms",
         "contact": {
-            "name": "Darc Technologies",
+            "name": "Placio Ltd",
             "url": "https://placio.io",
             "email": "support@placio.io"
         },
@@ -4768,6 +4768,222 @@ const docTemplate = `{
                 }
             }
         },
+        "/categories/{categoryID}/businesses": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "categories"
+                ],
+                "summary": "Get businesses by category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Category ID",
+                        "name": "categoryID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/placio-app_ent.Business"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/categories/{categoryID}/businesses/{businessID}": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "categories"
+                ],
+                "summary": "Assign a business to a category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Category ID",
+                        "name": "categoryID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Business ID",
+                        "name": "businessID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.CategoryAssignment"
+                        }
+                    }
+                }
+            }
+        },
+        "/categories/{categoryID}/places": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "categories"
+                ],
+                "summary": "Get places by category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Category ID",
+                        "name": "categoryID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/placio-app_ent.Place"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/categories/{categoryID}/places/{placeID}": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "categories"
+                ],
+                "summary": "Assign a place to a category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Category ID",
+                        "name": "categoryID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Place ID",
+                        "name": "placeID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.CategoryAssignment"
+                        }
+                    }
+                }
+            }
+        },
+        "/categories/{categoryID}/users": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "categories"
+                ],
+                "summary": "Get users by category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Category ID",
+                        "name": "categoryID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/placio-app_ent.User"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/categories/{categoryID}/users/{userID}": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "categories"
+                ],
+                "summary": "Assign a user to a category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Category ID",
+                        "name": "categoryID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "userID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.CategoryAssignment"
+                        }
+                    }
+                }
+            }
+        },
         "/categories/{id}": {
             "delete": {
                 "consumes": [
@@ -5729,6 +5945,14 @@ const docTemplate = `{
                 "name": {
                     "description": "Name holds the value of the \"name\" field.",
                     "type": "string"
+                },
+                "relevance_score": {
+                    "description": "RelevanceScore holds the value of the \"relevance_score\" field.",
+                    "type": "number"
+                },
+                "search_text": {
+                    "description": "SearchText holds the value of the \"search_text\" field.",
+                    "type": "string"
                 }
             }
         },
@@ -5748,6 +5972,13 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/placio-app_ent.Category"
+                    }
+                },
+                "categoryAssignments": {
+                    "description": "CategoryAssignments holds the value of the categoryAssignments edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.CategoryAssignment"
                     }
                 },
                 "followedBusinesses": {
@@ -5880,6 +6111,14 @@ const docTemplate = `{
         "placio-app_ent.Category": {
             "type": "object",
             "properties": {
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the CategoryQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.CategoryEdges"
+                        }
+                    ]
+                },
                 "id": {
                     "description": "ID of the ent.",
                     "type": "string"
@@ -5891,6 +6130,84 @@ const docTemplate = `{
                 "name": {
                     "description": "Name holds the value of the \"name\" field.",
                     "type": "string"
+                }
+            }
+        },
+        "placio-app_ent.CategoryAssignment": {
+            "type": "object",
+            "properties": {
+                "category_id": {
+                    "description": "This represents the ID of the category",
+                    "type": "string"
+                },
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the CategoryAssignmentQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.CategoryAssignmentEdges"
+                        }
+                    ]
+                },
+                "entity_id": {
+                    "description": "This represents the ID of User, Business or Place entity",
+                    "type": "string"
+                },
+                "entity_type": {
+                    "description": "This represents the type of entity: User, Business, or Place",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_ent.CategoryAssignmentEdges": {
+            "type": "object",
+            "properties": {
+                "business": {
+                    "description": "Business holds the value of the business edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.Business"
+                        }
+                    ]
+                },
+                "category": {
+                    "description": "Category holds the value of the category edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.Category"
+                        }
+                    ]
+                },
+                "place": {
+                    "description": "Place holds the value of the place edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.Place"
+                        }
+                    ]
+                },
+                "user": {
+                    "description": "User holds the value of the user edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.User"
+                        }
+                    ]
+                }
+            }
+        },
+        "placio-app_ent.CategoryEdges": {
+            "type": "object",
+            "properties": {
+                "categoryAssignments": {
+                    "description": "CategoryAssignments holds the value of the categoryAssignments edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.CategoryAssignment"
+                    }
                 }
             }
         },
@@ -6217,8 +6534,21 @@ const docTemplate = `{
                     "description": "Location holds the value of the \"location\" field.",
                     "type": "string"
                 },
+                "map_coordinates": {
+                    "description": "MapCoordinates holds the value of the \"map_coordinates\" field.",
+                    "type": "object",
+                    "additionalProperties": true
+                },
                 "name": {
                     "description": "Name holds the value of the \"name\" field.",
+                    "type": "string"
+                },
+                "relevance_score": {
+                    "description": "RelevanceScore holds the value of the \"relevance_score\" field.",
+                    "type": "number"
+                },
+                "search_text": {
+                    "description": "SearchText holds the value of the \"search_text\" field.",
                     "type": "string"
                 },
                 "special_offers": {
@@ -6265,6 +6595,13 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/placio-app_ent.Category"
+                    }
+                },
+                "categoryAssignments": {
+                    "description": "CategoryAssignments holds the value of the categoryAssignments edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.CategoryAssignment"
                     }
                 },
                 "events": {
@@ -6693,6 +7030,14 @@ const docTemplate = `{
                     "description": "Picture holds the value of the \"picture\" field.",
                     "type": "string"
                 },
+                "relevance_score": {
+                    "description": "RelevanceScore holds the value of the \"relevance_score\" field.",
+                    "type": "number"
+                },
+                "search_text": {
+                    "description": "SearchText holds the value of the \"search_text\" field.",
+                    "type": "string"
+                },
                 "user_settings": {
                     "description": "UserSettings holds the value of the \"user_settings\" field.",
                     "type": "object",
@@ -6763,11 +7108,25 @@ const docTemplate = `{
                         "$ref": "#/definitions/placio-app_ent.Category"
                     }
                 },
+                "categoryAssignments": {
+                    "description": "CategoryAssignments holds the value of the categoryAssignments edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.CategoryAssignment"
+                    }
+                },
                 "comments": {
                     "description": "Comments holds the value of the comments edge.",
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/placio-app_ent.Comment"
+                    }
+                },
+                "events": {
+                    "description": "Events holds the value of the events edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Event"
                     }
                 },
                 "followedBusinesses": {
@@ -6810,6 +7169,13 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/placio-app_ent.Like"
+                    }
+                },
+                "places": {
+                    "description": "Places holds the value of the places edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Place"
                     }
                 },
                 "posts": {
@@ -7527,7 +7893,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "0.01",
 	Host:             "https://api.palnight.com",
-	BasePath:         "/qpi/v1",
+	BasePath:         "/api/v1",
 	Schemes:          []string{"http", "https"},
 	Title:            "Placio Application Api",
 	Description:      "This is the documentation for the Placio Application Api",
