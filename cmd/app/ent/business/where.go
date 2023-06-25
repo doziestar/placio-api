@@ -69,6 +69,36 @@ func Name(v string) predicate.Business {
 	return predicate.Business(sql.FieldEQ(FieldName, v))
 }
 
+// Description applies equality check predicate on the "description" field. It's identical to DescriptionEQ.
+func Description(v string) predicate.Business {
+	return predicate.Business(sql.FieldEQ(FieldDescription, v))
+}
+
+// Picture applies equality check predicate on the "picture" field. It's identical to PictureEQ.
+func Picture(v string) predicate.Business {
+	return predicate.Business(sql.FieldEQ(FieldPicture, v))
+}
+
+// CoverImage applies equality check predicate on the "cover_image" field. It's identical to CoverImageEQ.
+func CoverImage(v string) predicate.Business {
+	return predicate.Business(sql.FieldEQ(FieldCoverImage, v))
+}
+
+// Website applies equality check predicate on the "website" field. It's identical to WebsiteEQ.
+func Website(v string) predicate.Business {
+	return predicate.Business(sql.FieldEQ(FieldWebsite, v))
+}
+
+// Location applies equality check predicate on the "location" field. It's identical to LocationEQ.
+func Location(v string) predicate.Business {
+	return predicate.Business(sql.FieldEQ(FieldLocation, v))
+}
+
+// URL applies equality check predicate on the "url" field. It's identical to URLEQ.
+func URL(v string) predicate.Business {
+	return predicate.Business(sql.FieldEQ(FieldURL, v))
+}
+
 // SearchText applies equality check predicate on the "search_text" field. It's identical to SearchTextEQ.
 func SearchText(v string) predicate.Business {
 	return predicate.Business(sql.FieldEQ(FieldSearchText, v))
@@ -142,6 +172,456 @@ func NameEqualFold(v string) predicate.Business {
 // NameContainsFold applies the ContainsFold predicate on the "name" field.
 func NameContainsFold(v string) predicate.Business {
 	return predicate.Business(sql.FieldContainsFold(FieldName, v))
+}
+
+// DescriptionEQ applies the EQ predicate on the "description" field.
+func DescriptionEQ(v string) predicate.Business {
+	return predicate.Business(sql.FieldEQ(FieldDescription, v))
+}
+
+// DescriptionNEQ applies the NEQ predicate on the "description" field.
+func DescriptionNEQ(v string) predicate.Business {
+	return predicate.Business(sql.FieldNEQ(FieldDescription, v))
+}
+
+// DescriptionIn applies the In predicate on the "description" field.
+func DescriptionIn(vs ...string) predicate.Business {
+	return predicate.Business(sql.FieldIn(FieldDescription, vs...))
+}
+
+// DescriptionNotIn applies the NotIn predicate on the "description" field.
+func DescriptionNotIn(vs ...string) predicate.Business {
+	return predicate.Business(sql.FieldNotIn(FieldDescription, vs...))
+}
+
+// DescriptionGT applies the GT predicate on the "description" field.
+func DescriptionGT(v string) predicate.Business {
+	return predicate.Business(sql.FieldGT(FieldDescription, v))
+}
+
+// DescriptionGTE applies the GTE predicate on the "description" field.
+func DescriptionGTE(v string) predicate.Business {
+	return predicate.Business(sql.FieldGTE(FieldDescription, v))
+}
+
+// DescriptionLT applies the LT predicate on the "description" field.
+func DescriptionLT(v string) predicate.Business {
+	return predicate.Business(sql.FieldLT(FieldDescription, v))
+}
+
+// DescriptionLTE applies the LTE predicate on the "description" field.
+func DescriptionLTE(v string) predicate.Business {
+	return predicate.Business(sql.FieldLTE(FieldDescription, v))
+}
+
+// DescriptionContains applies the Contains predicate on the "description" field.
+func DescriptionContains(v string) predicate.Business {
+	return predicate.Business(sql.FieldContains(FieldDescription, v))
+}
+
+// DescriptionHasPrefix applies the HasPrefix predicate on the "description" field.
+func DescriptionHasPrefix(v string) predicate.Business {
+	return predicate.Business(sql.FieldHasPrefix(FieldDescription, v))
+}
+
+// DescriptionHasSuffix applies the HasSuffix predicate on the "description" field.
+func DescriptionHasSuffix(v string) predicate.Business {
+	return predicate.Business(sql.FieldHasSuffix(FieldDescription, v))
+}
+
+// DescriptionIsNil applies the IsNil predicate on the "description" field.
+func DescriptionIsNil() predicate.Business {
+	return predicate.Business(sql.FieldIsNull(FieldDescription))
+}
+
+// DescriptionNotNil applies the NotNil predicate on the "description" field.
+func DescriptionNotNil() predicate.Business {
+	return predicate.Business(sql.FieldNotNull(FieldDescription))
+}
+
+// DescriptionEqualFold applies the EqualFold predicate on the "description" field.
+func DescriptionEqualFold(v string) predicate.Business {
+	return predicate.Business(sql.FieldEqualFold(FieldDescription, v))
+}
+
+// DescriptionContainsFold applies the ContainsFold predicate on the "description" field.
+func DescriptionContainsFold(v string) predicate.Business {
+	return predicate.Business(sql.FieldContainsFold(FieldDescription, v))
+}
+
+// PictureEQ applies the EQ predicate on the "picture" field.
+func PictureEQ(v string) predicate.Business {
+	return predicate.Business(sql.FieldEQ(FieldPicture, v))
+}
+
+// PictureNEQ applies the NEQ predicate on the "picture" field.
+func PictureNEQ(v string) predicate.Business {
+	return predicate.Business(sql.FieldNEQ(FieldPicture, v))
+}
+
+// PictureIn applies the In predicate on the "picture" field.
+func PictureIn(vs ...string) predicate.Business {
+	return predicate.Business(sql.FieldIn(FieldPicture, vs...))
+}
+
+// PictureNotIn applies the NotIn predicate on the "picture" field.
+func PictureNotIn(vs ...string) predicate.Business {
+	return predicate.Business(sql.FieldNotIn(FieldPicture, vs...))
+}
+
+// PictureGT applies the GT predicate on the "picture" field.
+func PictureGT(v string) predicate.Business {
+	return predicate.Business(sql.FieldGT(FieldPicture, v))
+}
+
+// PictureGTE applies the GTE predicate on the "picture" field.
+func PictureGTE(v string) predicate.Business {
+	return predicate.Business(sql.FieldGTE(FieldPicture, v))
+}
+
+// PictureLT applies the LT predicate on the "picture" field.
+func PictureLT(v string) predicate.Business {
+	return predicate.Business(sql.FieldLT(FieldPicture, v))
+}
+
+// PictureLTE applies the LTE predicate on the "picture" field.
+func PictureLTE(v string) predicate.Business {
+	return predicate.Business(sql.FieldLTE(FieldPicture, v))
+}
+
+// PictureContains applies the Contains predicate on the "picture" field.
+func PictureContains(v string) predicate.Business {
+	return predicate.Business(sql.FieldContains(FieldPicture, v))
+}
+
+// PictureHasPrefix applies the HasPrefix predicate on the "picture" field.
+func PictureHasPrefix(v string) predicate.Business {
+	return predicate.Business(sql.FieldHasPrefix(FieldPicture, v))
+}
+
+// PictureHasSuffix applies the HasSuffix predicate on the "picture" field.
+func PictureHasSuffix(v string) predicate.Business {
+	return predicate.Business(sql.FieldHasSuffix(FieldPicture, v))
+}
+
+// PictureIsNil applies the IsNil predicate on the "picture" field.
+func PictureIsNil() predicate.Business {
+	return predicate.Business(sql.FieldIsNull(FieldPicture))
+}
+
+// PictureNotNil applies the NotNil predicate on the "picture" field.
+func PictureNotNil() predicate.Business {
+	return predicate.Business(sql.FieldNotNull(FieldPicture))
+}
+
+// PictureEqualFold applies the EqualFold predicate on the "picture" field.
+func PictureEqualFold(v string) predicate.Business {
+	return predicate.Business(sql.FieldEqualFold(FieldPicture, v))
+}
+
+// PictureContainsFold applies the ContainsFold predicate on the "picture" field.
+func PictureContainsFold(v string) predicate.Business {
+	return predicate.Business(sql.FieldContainsFold(FieldPicture, v))
+}
+
+// CoverImageEQ applies the EQ predicate on the "cover_image" field.
+func CoverImageEQ(v string) predicate.Business {
+	return predicate.Business(sql.FieldEQ(FieldCoverImage, v))
+}
+
+// CoverImageNEQ applies the NEQ predicate on the "cover_image" field.
+func CoverImageNEQ(v string) predicate.Business {
+	return predicate.Business(sql.FieldNEQ(FieldCoverImage, v))
+}
+
+// CoverImageIn applies the In predicate on the "cover_image" field.
+func CoverImageIn(vs ...string) predicate.Business {
+	return predicate.Business(sql.FieldIn(FieldCoverImage, vs...))
+}
+
+// CoverImageNotIn applies the NotIn predicate on the "cover_image" field.
+func CoverImageNotIn(vs ...string) predicate.Business {
+	return predicate.Business(sql.FieldNotIn(FieldCoverImage, vs...))
+}
+
+// CoverImageGT applies the GT predicate on the "cover_image" field.
+func CoverImageGT(v string) predicate.Business {
+	return predicate.Business(sql.FieldGT(FieldCoverImage, v))
+}
+
+// CoverImageGTE applies the GTE predicate on the "cover_image" field.
+func CoverImageGTE(v string) predicate.Business {
+	return predicate.Business(sql.FieldGTE(FieldCoverImage, v))
+}
+
+// CoverImageLT applies the LT predicate on the "cover_image" field.
+func CoverImageLT(v string) predicate.Business {
+	return predicate.Business(sql.FieldLT(FieldCoverImage, v))
+}
+
+// CoverImageLTE applies the LTE predicate on the "cover_image" field.
+func CoverImageLTE(v string) predicate.Business {
+	return predicate.Business(sql.FieldLTE(FieldCoverImage, v))
+}
+
+// CoverImageContains applies the Contains predicate on the "cover_image" field.
+func CoverImageContains(v string) predicate.Business {
+	return predicate.Business(sql.FieldContains(FieldCoverImage, v))
+}
+
+// CoverImageHasPrefix applies the HasPrefix predicate on the "cover_image" field.
+func CoverImageHasPrefix(v string) predicate.Business {
+	return predicate.Business(sql.FieldHasPrefix(FieldCoverImage, v))
+}
+
+// CoverImageHasSuffix applies the HasSuffix predicate on the "cover_image" field.
+func CoverImageHasSuffix(v string) predicate.Business {
+	return predicate.Business(sql.FieldHasSuffix(FieldCoverImage, v))
+}
+
+// CoverImageIsNil applies the IsNil predicate on the "cover_image" field.
+func CoverImageIsNil() predicate.Business {
+	return predicate.Business(sql.FieldIsNull(FieldCoverImage))
+}
+
+// CoverImageNotNil applies the NotNil predicate on the "cover_image" field.
+func CoverImageNotNil() predicate.Business {
+	return predicate.Business(sql.FieldNotNull(FieldCoverImage))
+}
+
+// CoverImageEqualFold applies the EqualFold predicate on the "cover_image" field.
+func CoverImageEqualFold(v string) predicate.Business {
+	return predicate.Business(sql.FieldEqualFold(FieldCoverImage, v))
+}
+
+// CoverImageContainsFold applies the ContainsFold predicate on the "cover_image" field.
+func CoverImageContainsFold(v string) predicate.Business {
+	return predicate.Business(sql.FieldContainsFold(FieldCoverImage, v))
+}
+
+// WebsiteEQ applies the EQ predicate on the "website" field.
+func WebsiteEQ(v string) predicate.Business {
+	return predicate.Business(sql.FieldEQ(FieldWebsite, v))
+}
+
+// WebsiteNEQ applies the NEQ predicate on the "website" field.
+func WebsiteNEQ(v string) predicate.Business {
+	return predicate.Business(sql.FieldNEQ(FieldWebsite, v))
+}
+
+// WebsiteIn applies the In predicate on the "website" field.
+func WebsiteIn(vs ...string) predicate.Business {
+	return predicate.Business(sql.FieldIn(FieldWebsite, vs...))
+}
+
+// WebsiteNotIn applies the NotIn predicate on the "website" field.
+func WebsiteNotIn(vs ...string) predicate.Business {
+	return predicate.Business(sql.FieldNotIn(FieldWebsite, vs...))
+}
+
+// WebsiteGT applies the GT predicate on the "website" field.
+func WebsiteGT(v string) predicate.Business {
+	return predicate.Business(sql.FieldGT(FieldWebsite, v))
+}
+
+// WebsiteGTE applies the GTE predicate on the "website" field.
+func WebsiteGTE(v string) predicate.Business {
+	return predicate.Business(sql.FieldGTE(FieldWebsite, v))
+}
+
+// WebsiteLT applies the LT predicate on the "website" field.
+func WebsiteLT(v string) predicate.Business {
+	return predicate.Business(sql.FieldLT(FieldWebsite, v))
+}
+
+// WebsiteLTE applies the LTE predicate on the "website" field.
+func WebsiteLTE(v string) predicate.Business {
+	return predicate.Business(sql.FieldLTE(FieldWebsite, v))
+}
+
+// WebsiteContains applies the Contains predicate on the "website" field.
+func WebsiteContains(v string) predicate.Business {
+	return predicate.Business(sql.FieldContains(FieldWebsite, v))
+}
+
+// WebsiteHasPrefix applies the HasPrefix predicate on the "website" field.
+func WebsiteHasPrefix(v string) predicate.Business {
+	return predicate.Business(sql.FieldHasPrefix(FieldWebsite, v))
+}
+
+// WebsiteHasSuffix applies the HasSuffix predicate on the "website" field.
+func WebsiteHasSuffix(v string) predicate.Business {
+	return predicate.Business(sql.FieldHasSuffix(FieldWebsite, v))
+}
+
+// WebsiteIsNil applies the IsNil predicate on the "website" field.
+func WebsiteIsNil() predicate.Business {
+	return predicate.Business(sql.FieldIsNull(FieldWebsite))
+}
+
+// WebsiteNotNil applies the NotNil predicate on the "website" field.
+func WebsiteNotNil() predicate.Business {
+	return predicate.Business(sql.FieldNotNull(FieldWebsite))
+}
+
+// WebsiteEqualFold applies the EqualFold predicate on the "website" field.
+func WebsiteEqualFold(v string) predicate.Business {
+	return predicate.Business(sql.FieldEqualFold(FieldWebsite, v))
+}
+
+// WebsiteContainsFold applies the ContainsFold predicate on the "website" field.
+func WebsiteContainsFold(v string) predicate.Business {
+	return predicate.Business(sql.FieldContainsFold(FieldWebsite, v))
+}
+
+// LocationEQ applies the EQ predicate on the "location" field.
+func LocationEQ(v string) predicate.Business {
+	return predicate.Business(sql.FieldEQ(FieldLocation, v))
+}
+
+// LocationNEQ applies the NEQ predicate on the "location" field.
+func LocationNEQ(v string) predicate.Business {
+	return predicate.Business(sql.FieldNEQ(FieldLocation, v))
+}
+
+// LocationIn applies the In predicate on the "location" field.
+func LocationIn(vs ...string) predicate.Business {
+	return predicate.Business(sql.FieldIn(FieldLocation, vs...))
+}
+
+// LocationNotIn applies the NotIn predicate on the "location" field.
+func LocationNotIn(vs ...string) predicate.Business {
+	return predicate.Business(sql.FieldNotIn(FieldLocation, vs...))
+}
+
+// LocationGT applies the GT predicate on the "location" field.
+func LocationGT(v string) predicate.Business {
+	return predicate.Business(sql.FieldGT(FieldLocation, v))
+}
+
+// LocationGTE applies the GTE predicate on the "location" field.
+func LocationGTE(v string) predicate.Business {
+	return predicate.Business(sql.FieldGTE(FieldLocation, v))
+}
+
+// LocationLT applies the LT predicate on the "location" field.
+func LocationLT(v string) predicate.Business {
+	return predicate.Business(sql.FieldLT(FieldLocation, v))
+}
+
+// LocationLTE applies the LTE predicate on the "location" field.
+func LocationLTE(v string) predicate.Business {
+	return predicate.Business(sql.FieldLTE(FieldLocation, v))
+}
+
+// LocationContains applies the Contains predicate on the "location" field.
+func LocationContains(v string) predicate.Business {
+	return predicate.Business(sql.FieldContains(FieldLocation, v))
+}
+
+// LocationHasPrefix applies the HasPrefix predicate on the "location" field.
+func LocationHasPrefix(v string) predicate.Business {
+	return predicate.Business(sql.FieldHasPrefix(FieldLocation, v))
+}
+
+// LocationHasSuffix applies the HasSuffix predicate on the "location" field.
+func LocationHasSuffix(v string) predicate.Business {
+	return predicate.Business(sql.FieldHasSuffix(FieldLocation, v))
+}
+
+// LocationIsNil applies the IsNil predicate on the "location" field.
+func LocationIsNil() predicate.Business {
+	return predicate.Business(sql.FieldIsNull(FieldLocation))
+}
+
+// LocationNotNil applies the NotNil predicate on the "location" field.
+func LocationNotNil() predicate.Business {
+	return predicate.Business(sql.FieldNotNull(FieldLocation))
+}
+
+// LocationEqualFold applies the EqualFold predicate on the "location" field.
+func LocationEqualFold(v string) predicate.Business {
+	return predicate.Business(sql.FieldEqualFold(FieldLocation, v))
+}
+
+// LocationContainsFold applies the ContainsFold predicate on the "location" field.
+func LocationContainsFold(v string) predicate.Business {
+	return predicate.Business(sql.FieldContainsFold(FieldLocation, v))
+}
+
+// BusinessSettingsIsNil applies the IsNil predicate on the "business_settings" field.
+func BusinessSettingsIsNil() predicate.Business {
+	return predicate.Business(sql.FieldIsNull(FieldBusinessSettings))
+}
+
+// BusinessSettingsNotNil applies the NotNil predicate on the "business_settings" field.
+func BusinessSettingsNotNil() predicate.Business {
+	return predicate.Business(sql.FieldNotNull(FieldBusinessSettings))
+}
+
+// URLEQ applies the EQ predicate on the "url" field.
+func URLEQ(v string) predicate.Business {
+	return predicate.Business(sql.FieldEQ(FieldURL, v))
+}
+
+// URLNEQ applies the NEQ predicate on the "url" field.
+func URLNEQ(v string) predicate.Business {
+	return predicate.Business(sql.FieldNEQ(FieldURL, v))
+}
+
+// URLIn applies the In predicate on the "url" field.
+func URLIn(vs ...string) predicate.Business {
+	return predicate.Business(sql.FieldIn(FieldURL, vs...))
+}
+
+// URLNotIn applies the NotIn predicate on the "url" field.
+func URLNotIn(vs ...string) predicate.Business {
+	return predicate.Business(sql.FieldNotIn(FieldURL, vs...))
+}
+
+// URLGT applies the GT predicate on the "url" field.
+func URLGT(v string) predicate.Business {
+	return predicate.Business(sql.FieldGT(FieldURL, v))
+}
+
+// URLGTE applies the GTE predicate on the "url" field.
+func URLGTE(v string) predicate.Business {
+	return predicate.Business(sql.FieldGTE(FieldURL, v))
+}
+
+// URLLT applies the LT predicate on the "url" field.
+func URLLT(v string) predicate.Business {
+	return predicate.Business(sql.FieldLT(FieldURL, v))
+}
+
+// URLLTE applies the LTE predicate on the "url" field.
+func URLLTE(v string) predicate.Business {
+	return predicate.Business(sql.FieldLTE(FieldURL, v))
+}
+
+// URLContains applies the Contains predicate on the "url" field.
+func URLContains(v string) predicate.Business {
+	return predicate.Business(sql.FieldContains(FieldURL, v))
+}
+
+// URLHasPrefix applies the HasPrefix predicate on the "url" field.
+func URLHasPrefix(v string) predicate.Business {
+	return predicate.Business(sql.FieldHasPrefix(FieldURL, v))
+}
+
+// URLHasSuffix applies the HasSuffix predicate on the "url" field.
+func URLHasSuffix(v string) predicate.Business {
+	return predicate.Business(sql.FieldHasSuffix(FieldURL, v))
+}
+
+// URLEqualFold applies the EqualFold predicate on the "url" field.
+func URLEqualFold(v string) predicate.Business {
+	return predicate.Business(sql.FieldEqualFold(FieldURL, v))
+}
+
+// URLContainsFold applies the ContainsFold predicate on the "url" field.
+func URLContainsFold(v string) predicate.Business {
+	return predicate.Business(sql.FieldContainsFold(FieldURL, v))
 }
 
 // SearchTextEQ applies the EQ predicate on the "search_text" field.

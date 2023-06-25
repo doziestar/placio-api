@@ -19,6 +19,13 @@ func (Business) Fields() []ent.Field {
 			Unique().
 			Immutable(),
 		field.String("name"),
+		field.Text("description").Optional(),
+		field.String("picture").Optional(),
+		field.String("cover_image").Optional().Default("https://res.cloudinary.com/placio/image/upload/v1686842319/mjl8stmbn5xmfsm50vbg.jpg"),
+		field.String("website").Optional(),
+		field.String("location").Optional(),
+		field.JSON("business_settings", map[string]interface{}{}).Optional(),
+		field.String("url").Unique().Immutable(),
 		field.String("search_text").Optional(),
 		field.Float("relevance_score").Optional(),
 	}

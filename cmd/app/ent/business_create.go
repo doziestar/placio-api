@@ -34,6 +34,88 @@ func (bc *BusinessCreate) SetName(s string) *BusinessCreate {
 	return bc
 }
 
+// SetDescription sets the "description" field.
+func (bc *BusinessCreate) SetDescription(s string) *BusinessCreate {
+	bc.mutation.SetDescription(s)
+	return bc
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (bc *BusinessCreate) SetNillableDescription(s *string) *BusinessCreate {
+	if s != nil {
+		bc.SetDescription(*s)
+	}
+	return bc
+}
+
+// SetPicture sets the "picture" field.
+func (bc *BusinessCreate) SetPicture(s string) *BusinessCreate {
+	bc.mutation.SetPicture(s)
+	return bc
+}
+
+// SetNillablePicture sets the "picture" field if the given value is not nil.
+func (bc *BusinessCreate) SetNillablePicture(s *string) *BusinessCreate {
+	if s != nil {
+		bc.SetPicture(*s)
+	}
+	return bc
+}
+
+// SetCoverImage sets the "cover_image" field.
+func (bc *BusinessCreate) SetCoverImage(s string) *BusinessCreate {
+	bc.mutation.SetCoverImage(s)
+	return bc
+}
+
+// SetNillableCoverImage sets the "cover_image" field if the given value is not nil.
+func (bc *BusinessCreate) SetNillableCoverImage(s *string) *BusinessCreate {
+	if s != nil {
+		bc.SetCoverImage(*s)
+	}
+	return bc
+}
+
+// SetWebsite sets the "website" field.
+func (bc *BusinessCreate) SetWebsite(s string) *BusinessCreate {
+	bc.mutation.SetWebsite(s)
+	return bc
+}
+
+// SetNillableWebsite sets the "website" field if the given value is not nil.
+func (bc *BusinessCreate) SetNillableWebsite(s *string) *BusinessCreate {
+	if s != nil {
+		bc.SetWebsite(*s)
+	}
+	return bc
+}
+
+// SetLocation sets the "location" field.
+func (bc *BusinessCreate) SetLocation(s string) *BusinessCreate {
+	bc.mutation.SetLocation(s)
+	return bc
+}
+
+// SetNillableLocation sets the "location" field if the given value is not nil.
+func (bc *BusinessCreate) SetNillableLocation(s *string) *BusinessCreate {
+	if s != nil {
+		bc.SetLocation(*s)
+	}
+	return bc
+}
+
+// SetBusinessSettings sets the "business_settings" field.
+func (bc *BusinessCreate) SetBusinessSettings(m map[string]interface{}) *BusinessCreate {
+	bc.mutation.SetBusinessSettings(m)
+	return bc
+}
+
+// SetURL sets the "url" field.
+func (bc *BusinessCreate) SetURL(s string) *BusinessCreate {
+	bc.mutation.SetURL(s)
+	return bc
+}
+
 // SetSearchText sets the "search_text" field.
 func (bc *BusinessCreate) SetSearchText(s string) *BusinessCreate {
 	bc.mutation.SetSearchText(s)
@@ -229,6 +311,7 @@ func (bc *BusinessCreate) Mutation() *BusinessMutation {
 
 // Save creates the Business in the database.
 func (bc *BusinessCreate) Save(ctx context.Context) (*Business, error) {
+	bc.defaults()
 	return withHooks(ctx, bc.sqlSave, bc.mutation, bc.hooks)
 }
 
@@ -254,10 +337,21 @@ func (bc *BusinessCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (bc *BusinessCreate) defaults() {
+	if _, ok := bc.mutation.CoverImage(); !ok {
+		v := business.DefaultCoverImage
+		bc.mutation.SetCoverImage(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (bc *BusinessCreate) check() error {
 	if _, ok := bc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Business.name"`)}
+	}
+	if _, ok := bc.mutation.URL(); !ok {
+		return &ValidationError{Name: "url", err: errors.New(`ent: missing required field "Business.url"`)}
 	}
 	if v, ok := bc.mutation.ID(); ok {
 		if err := business.IDValidator(v); err != nil {
@@ -302,6 +396,34 @@ func (bc *BusinessCreate) createSpec() (*Business, *sqlgraph.CreateSpec) {
 	if value, ok := bc.mutation.Name(); ok {
 		_spec.SetField(business.FieldName, field.TypeString, value)
 		_node.Name = value
+	}
+	if value, ok := bc.mutation.Description(); ok {
+		_spec.SetField(business.FieldDescription, field.TypeString, value)
+		_node.Description = value
+	}
+	if value, ok := bc.mutation.Picture(); ok {
+		_spec.SetField(business.FieldPicture, field.TypeString, value)
+		_node.Picture = value
+	}
+	if value, ok := bc.mutation.CoverImage(); ok {
+		_spec.SetField(business.FieldCoverImage, field.TypeString, value)
+		_node.CoverImage = value
+	}
+	if value, ok := bc.mutation.Website(); ok {
+		_spec.SetField(business.FieldWebsite, field.TypeString, value)
+		_node.Website = value
+	}
+	if value, ok := bc.mutation.Location(); ok {
+		_spec.SetField(business.FieldLocation, field.TypeString, value)
+		_node.Location = value
+	}
+	if value, ok := bc.mutation.BusinessSettings(); ok {
+		_spec.SetField(business.FieldBusinessSettings, field.TypeJSON, value)
+		_node.BusinessSettings = value
+	}
+	if value, ok := bc.mutation.URL(); ok {
+		_spec.SetField(business.FieldURL, field.TypeString, value)
+		_node.URL = value
 	}
 	if value, ok := bc.mutation.SearchText(); ok {
 		_spec.SetField(business.FieldSearchText, field.TypeString, value)
@@ -488,6 +610,7 @@ func (bcb *BusinessCreateBulk) Save(ctx context.Context) ([]*Business, error) {
 	for i := range bcb.builders {
 		func(i int, root context.Context) {
 			builder := bcb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*BusinessMutation)
 				if !ok {
