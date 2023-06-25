@@ -70,6 +70,8 @@ type Tx struct {
 	UserBusiness *UserBusinessClient
 	// UserFollowBusiness is the client for interacting with the UserFollowBusiness builders.
 	UserFollowBusiness *UserFollowBusinessClient
+	// UserFollowPlace is the client for interacting with the UserFollowPlace builders.
+	UserFollowPlace *UserFollowPlaceClient
 	// UserFollowUser is the client for interacting with the UserFollowUser builders.
 	UserFollowUser *UserFollowUserClient
 
@@ -232,6 +234,7 @@ func (tx *Tx) init() {
 	tx.User = NewUserClient(tx.config)
 	tx.UserBusiness = NewUserBusinessClient(tx.config)
 	tx.UserFollowBusiness = NewUserFollowBusinessClient(tx.config)
+	tx.UserFollowPlace = NewUserFollowPlaceClient(tx.config)
 	tx.UserFollowUser = NewUserFollowUserClient(tx.config)
 }
 

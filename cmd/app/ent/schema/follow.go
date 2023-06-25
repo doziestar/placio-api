@@ -68,3 +68,20 @@ func (BusinessFollowUser) Edges() []ent.Edge {
 			Unique(),
 	}
 }
+
+// UserFollowPlace holds the schema definition for the UserFollowPlace entity.
+type UserFollowPlace struct {
+	ent.Schema
+}
+
+// Edges of the UserFollowPlace.
+func (UserFollowPlace) Edges() []ent.Edge {
+	return []ent.Edge{
+		edge.From("user", User.Type).
+			Ref("followedPlaces").
+			Unique(),
+		edge.From("place", Place.Type).
+			Ref("followerUsers").
+			Unique(),
+	}
+}

@@ -17,6 +17,7 @@ import (
 	"placio-app/ent/reservation"
 	"placio-app/ent/review"
 	"placio-app/ent/room"
+	"placio-app/ent/userfollowplace"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -293,6 +294,21 @@ func (pc *PlaceCreate) AddCategoryAssignments(c ...*CategoryAssignment) *PlaceCr
 		ids[i] = c[i].ID
 	}
 	return pc.AddCategoryAssignmentIDs(ids...)
+}
+
+// AddFollowerUserIDs adds the "followerUsers" edge to the UserFollowPlace entity by IDs.
+func (pc *PlaceCreate) AddFollowerUserIDs(ids ...string) *PlaceCreate {
+	pc.mutation.AddFollowerUserIDs(ids...)
+	return pc
+}
+
+// AddFollowerUsers adds the "followerUsers" edges to the UserFollowPlace entity.
+func (pc *PlaceCreate) AddFollowerUsers(u ...*UserFollowPlace) *PlaceCreate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return pc.AddFollowerUserIDs(ids...)
 }
 
 // Mutation returns the PlaceMutation object of the builder.
@@ -579,6 +595,22 @@ func (pc *PlaceCreate) createSpec() (*Place, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(categoryassignment.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.FollowerUsersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   place.FollowerUsersTable,
+			Columns: []string{place.FollowerUsersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userfollowplace.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

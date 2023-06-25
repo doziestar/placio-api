@@ -110,12 +110,6 @@ func (bc *BusinessCreate) SetBusinessSettings(m map[string]interface{}) *Busines
 	return bc
 }
 
-// SetURL sets the "url" field.
-func (bc *BusinessCreate) SetURL(s string) *BusinessCreate {
-	bc.mutation.SetURL(s)
-	return bc
-}
-
 // SetSearchText sets the "search_text" field.
 func (bc *BusinessCreate) SetSearchText(s string) *BusinessCreate {
 	bc.mutation.SetSearchText(s)
@@ -350,9 +344,6 @@ func (bc *BusinessCreate) check() error {
 	if _, ok := bc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Business.name"`)}
 	}
-	if _, ok := bc.mutation.URL(); !ok {
-		return &ValidationError{Name: "url", err: errors.New(`ent: missing required field "Business.url"`)}
-	}
 	if v, ok := bc.mutation.ID(); ok {
 		if err := business.IDValidator(v); err != nil {
 			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "Business.id": %w`, err)}
@@ -420,10 +411,6 @@ func (bc *BusinessCreate) createSpec() (*Business, *sqlgraph.CreateSpec) {
 	if value, ok := bc.mutation.BusinessSettings(); ok {
 		_spec.SetField(business.FieldBusinessSettings, field.TypeJSON, value)
 		_node.BusinessSettings = value
-	}
-	if value, ok := bc.mutation.URL(); ok {
-		_spec.SetField(business.FieldURL, field.TypeString, value)
-		_node.URL = value
 	}
 	if value, ok := bc.mutation.SearchText(); ok {
 		_spec.SetField(business.FieldSearchText, field.TypeString, value)

@@ -31,6 +31,7 @@ import (
 	"placio-app/ent/user"
 	"placio-app/ent/userbusiness"
 	"placio-app/ent/userfollowbusiness"
+	"placio-app/ent/userfollowplace"
 	"placio-app/ent/userfollowuser"
 	"sync"
 	"time"
@@ -78,6 +79,7 @@ const (
 	TypeUser                   = "User"
 	TypeUserBusiness           = "UserBusiness"
 	TypeUserFollowBusiness     = "UserFollowBusiness"
+	TypeUserFollowPlace        = "UserFollowPlace"
 	TypeUserFollowUser         = "UserFollowUser"
 )
 
@@ -1732,7 +1734,6 @@ type BusinessMutation struct {
 	website                          *string
 	location                         *string
 	business_settings                *map[string]interface{}
-	url                              *string
 	search_text                      *string
 	relevance_score                  *float64
 	addrelevance_score               *float64
@@ -2203,42 +2204,6 @@ func (m *BusinessMutation) BusinessSettingsCleared() bool {
 func (m *BusinessMutation) ResetBusinessSettings() {
 	m.business_settings = nil
 	delete(m.clearedFields, business.FieldBusinessSettings)
-}
-
-// SetURL sets the "url" field.
-func (m *BusinessMutation) SetURL(s string) {
-	m.url = &s
-}
-
-// URL returns the value of the "url" field in the mutation.
-func (m *BusinessMutation) URL() (r string, exists bool) {
-	v := m.url
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldURL returns the old "url" field's value of the Business entity.
-// If the Business object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *BusinessMutation) OldURL(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldURL is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldURL requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldURL: %w", err)
-	}
-	return oldValue.URL, nil
-}
-
-// ResetURL resets all changes to the "url" field.
-func (m *BusinessMutation) ResetURL() {
-	m.url = nil
 }
 
 // SetSearchText sets the "search_text" field.
@@ -2919,7 +2884,7 @@ func (m *BusinessMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *BusinessMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 9)
 	if m.name != nil {
 		fields = append(fields, business.FieldName)
 	}
@@ -2940,9 +2905,6 @@ func (m *BusinessMutation) Fields() []string {
 	}
 	if m.business_settings != nil {
 		fields = append(fields, business.FieldBusinessSettings)
-	}
-	if m.url != nil {
-		fields = append(fields, business.FieldURL)
 	}
 	if m.search_text != nil {
 		fields = append(fields, business.FieldSearchText)
@@ -2972,8 +2934,6 @@ func (m *BusinessMutation) Field(name string) (ent.Value, bool) {
 		return m.Location()
 	case business.FieldBusinessSettings:
 		return m.BusinessSettings()
-	case business.FieldURL:
-		return m.URL()
 	case business.FieldSearchText:
 		return m.SearchText()
 	case business.FieldRelevanceScore:
@@ -3001,8 +2961,6 @@ func (m *BusinessMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldLocation(ctx)
 	case business.FieldBusinessSettings:
 		return m.OldBusinessSettings(ctx)
-	case business.FieldURL:
-		return m.OldURL(ctx)
 	case business.FieldSearchText:
 		return m.OldSearchText(ctx)
 	case business.FieldRelevanceScore:
@@ -3064,13 +3022,6 @@ func (m *BusinessMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetBusinessSettings(v)
-		return nil
-	case business.FieldURL:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetURL(v)
 		return nil
 	case business.FieldSearchText:
 		v, ok := value.(string)
@@ -3221,9 +3172,6 @@ func (m *BusinessMutation) ResetField(name string) error {
 		return nil
 	case business.FieldBusinessSettings:
 		m.ResetBusinessSettings()
-		return nil
-	case business.FieldURL:
-		m.ResetURL()
 		return nil
 	case business.FieldSearchText:
 		m.ResetSearchText()
@@ -9830,6 +9778,9 @@ type PlaceMutation struct {
 	categoryAssignments        map[string]struct{}
 	removedcategoryAssignments map[string]struct{}
 	clearedcategoryAssignments bool
+	followerUsers              map[string]struct{}
+	removedfollowerUsers       map[string]struct{}
+	clearedfollowerUsers       bool
 	done                       bool
 	oldValue                   func(context.Context) (*Place, error)
 	predicates                 []predicate.Place
@@ -11009,6 +10960,60 @@ func (m *PlaceMutation) ResetCategoryAssignments() {
 	m.removedcategoryAssignments = nil
 }
 
+// AddFollowerUserIDs adds the "followerUsers" edge to the UserFollowPlace entity by ids.
+func (m *PlaceMutation) AddFollowerUserIDs(ids ...string) {
+	if m.followerUsers == nil {
+		m.followerUsers = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.followerUsers[ids[i]] = struct{}{}
+	}
+}
+
+// ClearFollowerUsers clears the "followerUsers" edge to the UserFollowPlace entity.
+func (m *PlaceMutation) ClearFollowerUsers() {
+	m.clearedfollowerUsers = true
+}
+
+// FollowerUsersCleared reports if the "followerUsers" edge to the UserFollowPlace entity was cleared.
+func (m *PlaceMutation) FollowerUsersCleared() bool {
+	return m.clearedfollowerUsers
+}
+
+// RemoveFollowerUserIDs removes the "followerUsers" edge to the UserFollowPlace entity by IDs.
+func (m *PlaceMutation) RemoveFollowerUserIDs(ids ...string) {
+	if m.removedfollowerUsers == nil {
+		m.removedfollowerUsers = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.followerUsers, ids[i])
+		m.removedfollowerUsers[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedFollowerUsers returns the removed IDs of the "followerUsers" edge to the UserFollowPlace entity.
+func (m *PlaceMutation) RemovedFollowerUsersIDs() (ids []string) {
+	for id := range m.removedfollowerUsers {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// FollowerUsersIDs returns the "followerUsers" edge IDs in the mutation.
+func (m *PlaceMutation) FollowerUsersIDs() (ids []string) {
+	for id := range m.followerUsers {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetFollowerUsers resets all changes to the "followerUsers" edge.
+func (m *PlaceMutation) ResetFollowerUsers() {
+	m.followerUsers = nil
+	m.clearedfollowerUsers = false
+	m.removedfollowerUsers = nil
+}
+
 // Where appends a list predicates to the PlaceMutation builder.
 func (m *PlaceMutation) Where(ps ...predicate.Place) {
 	m.predicates = append(m.predicates, ps...)
@@ -11384,7 +11389,7 @@ func (m *PlaceMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PlaceMutation) AddedEdges() []string {
-	edges := make([]string, 0, 10)
+	edges := make([]string, 0, 11)
 	if m.business != nil {
 		edges = append(edges, place.EdgeBusiness)
 	}
@@ -11414,6 +11419,9 @@ func (m *PlaceMutation) AddedEdges() []string {
 	}
 	if m.categoryAssignments != nil {
 		edges = append(edges, place.EdgeCategoryAssignments)
+	}
+	if m.followerUsers != nil {
+		edges = append(edges, place.EdgeFollowerUsers)
 	}
 	return edges
 }
@@ -11480,13 +11488,19 @@ func (m *PlaceMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case place.EdgeFollowerUsers:
+		ids := make([]ent.Value, 0, len(m.followerUsers))
+		for id := range m.followerUsers {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PlaceMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 10)
+	edges := make([]string, 0, 11)
 	if m.removedreviews != nil {
 		edges = append(edges, place.EdgeReviews)
 	}
@@ -11513,6 +11527,9 @@ func (m *PlaceMutation) RemovedEdges() []string {
 	}
 	if m.removedcategoryAssignments != nil {
 		edges = append(edges, place.EdgeCategoryAssignments)
+	}
+	if m.removedfollowerUsers != nil {
+		edges = append(edges, place.EdgeFollowerUsers)
 	}
 	return edges
 }
@@ -11575,13 +11592,19 @@ func (m *PlaceMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case place.EdgeFollowerUsers:
+		ids := make([]ent.Value, 0, len(m.removedfollowerUsers))
+		for id := range m.removedfollowerUsers {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PlaceMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 10)
+	edges := make([]string, 0, 11)
 	if m.clearedbusiness {
 		edges = append(edges, place.EdgeBusiness)
 	}
@@ -11612,6 +11635,9 @@ func (m *PlaceMutation) ClearedEdges() []string {
 	if m.clearedcategoryAssignments {
 		edges = append(edges, place.EdgeCategoryAssignments)
 	}
+	if m.clearedfollowerUsers {
+		edges = append(edges, place.EdgeFollowerUsers)
+	}
 	return edges
 }
 
@@ -11639,6 +11665,8 @@ func (m *PlaceMutation) EdgeCleared(name string) bool {
 		return m.clearedcategories
 	case place.EdgeCategoryAssignments:
 		return m.clearedcategoryAssignments
+	case place.EdgeFollowerUsers:
+		return m.clearedfollowerUsers
 	}
 	return false
 }
@@ -11687,6 +11715,9 @@ func (m *PlaceMutation) ResetEdge(name string) error {
 		return nil
 	case place.EdgeCategoryAssignments:
 		m.ResetCategoryAssignments()
+		return nil
+	case place.EdgeFollowerUsers:
+		m.ResetFollowerUsers()
 		return nil
 	}
 	return fmt.Errorf("unknown Place edge %s", name)
@@ -16435,6 +16466,9 @@ type UserMutation struct {
 	categoryAssignments        map[string]struct{}
 	removedcategoryAssignments map[string]struct{}
 	clearedcategoryAssignments bool
+	followedPlaces             map[string]struct{}
+	removedfollowedPlaces      map[string]struct{}
+	clearedfollowedPlaces      bool
 	done                       bool
 	oldValue                   func(context.Context) (*User, error)
 	predicates                 []predicate.User
@@ -18040,6 +18074,60 @@ func (m *UserMutation) ResetCategoryAssignments() {
 	m.removedcategoryAssignments = nil
 }
 
+// AddFollowedPlaceIDs adds the "followedPlaces" edge to the UserFollowPlace entity by ids.
+func (m *UserMutation) AddFollowedPlaceIDs(ids ...string) {
+	if m.followedPlaces == nil {
+		m.followedPlaces = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.followedPlaces[ids[i]] = struct{}{}
+	}
+}
+
+// ClearFollowedPlaces clears the "followedPlaces" edge to the UserFollowPlace entity.
+func (m *UserMutation) ClearFollowedPlaces() {
+	m.clearedfollowedPlaces = true
+}
+
+// FollowedPlacesCleared reports if the "followedPlaces" edge to the UserFollowPlace entity was cleared.
+func (m *UserMutation) FollowedPlacesCleared() bool {
+	return m.clearedfollowedPlaces
+}
+
+// RemoveFollowedPlaceIDs removes the "followedPlaces" edge to the UserFollowPlace entity by IDs.
+func (m *UserMutation) RemoveFollowedPlaceIDs(ids ...string) {
+	if m.removedfollowedPlaces == nil {
+		m.removedfollowedPlaces = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.followedPlaces, ids[i])
+		m.removedfollowedPlaces[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedFollowedPlaces returns the removed IDs of the "followedPlaces" edge to the UserFollowPlace entity.
+func (m *UserMutation) RemovedFollowedPlacesIDs() (ids []string) {
+	for id := range m.removedfollowedPlaces {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// FollowedPlacesIDs returns the "followedPlaces" edge IDs in the mutation.
+func (m *UserMutation) FollowedPlacesIDs() (ids []string) {
+	for id := range m.followedPlaces {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetFollowedPlaces resets all changes to the "followedPlaces" edge.
+func (m *UserMutation) ResetFollowedPlaces() {
+	m.followedPlaces = nil
+	m.clearedfollowedPlaces = false
+	m.removedfollowedPlaces = nil
+}
+
 // Where appends a list predicates to the UserMutation builder.
 func (m *UserMutation) Where(ps ...predicate.User) {
 	m.predicates = append(m.predicates, ps...)
@@ -18461,7 +18549,7 @@ func (m *UserMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserMutation) AddedEdges() []string {
-	edges := make([]string, 0, 16)
+	edges := make([]string, 0, 17)
 	if m.userBusinesses != nil {
 		edges = append(edges, user.EdgeUserBusinesses)
 	}
@@ -18509,6 +18597,9 @@ func (m *UserMutation) AddedEdges() []string {
 	}
 	if m.categoryAssignments != nil {
 		edges = append(edges, user.EdgeCategoryAssignments)
+	}
+	if m.followedPlaces != nil {
+		edges = append(edges, user.EdgeFollowedPlaces)
 	}
 	return edges
 }
@@ -18613,13 +18704,19 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeFollowedPlaces:
+		ids := make([]ent.Value, 0, len(m.followedPlaces))
+		for id := range m.followedPlaces {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 16)
+	edges := make([]string, 0, 17)
 	if m.removeduserBusinesses != nil {
 		edges = append(edges, user.EdgeUserBusinesses)
 	}
@@ -18667,6 +18764,9 @@ func (m *UserMutation) RemovedEdges() []string {
 	}
 	if m.removedcategoryAssignments != nil {
 		edges = append(edges, user.EdgeCategoryAssignments)
+	}
+	if m.removedfollowedPlaces != nil {
+		edges = append(edges, user.EdgeFollowedPlaces)
 	}
 	return edges
 }
@@ -18771,13 +18871,19 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeFollowedPlaces:
+		ids := make([]ent.Value, 0, len(m.removedfollowedPlaces))
+		for id := range m.removedfollowedPlaces {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 16)
+	edges := make([]string, 0, 17)
 	if m.cleareduserBusinesses {
 		edges = append(edges, user.EdgeUserBusinesses)
 	}
@@ -18826,6 +18932,9 @@ func (m *UserMutation) ClearedEdges() []string {
 	if m.clearedcategoryAssignments {
 		edges = append(edges, user.EdgeCategoryAssignments)
 	}
+	if m.clearedfollowedPlaces {
+		edges = append(edges, user.EdgeFollowedPlaces)
+	}
 	return edges
 }
 
@@ -18865,6 +18974,8 @@ func (m *UserMutation) EdgeCleared(name string) bool {
 		return m.clearedplaces
 	case user.EdgeCategoryAssignments:
 		return m.clearedcategoryAssignments
+	case user.EdgeFollowedPlaces:
+		return m.clearedfollowedPlaces
 	}
 	return false
 }
@@ -18928,6 +19039,9 @@ func (m *UserMutation) ResetEdge(name string) error {
 		return nil
 	case user.EdgeCategoryAssignments:
 		m.ResetCategoryAssignments()
+		return nil
+	case user.EdgeFollowedPlaces:
+		m.ResetFollowedPlaces()
 		return nil
 	}
 	return fmt.Errorf("unknown User edge %s", name)
@@ -19779,6 +19893,396 @@ func (m *UserFollowBusinessMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown UserFollowBusiness edge %s", name)
+}
+
+// UserFollowPlaceMutation represents an operation that mutates the UserFollowPlace nodes in the graph.
+type UserFollowPlaceMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *string
+	clearedFields map[string]struct{}
+	user          *string
+	cleareduser   bool
+	place         *string
+	clearedplace  bool
+	done          bool
+	oldValue      func(context.Context) (*UserFollowPlace, error)
+	predicates    []predicate.UserFollowPlace
+}
+
+var _ ent.Mutation = (*UserFollowPlaceMutation)(nil)
+
+// userfollowplaceOption allows management of the mutation configuration using functional options.
+type userfollowplaceOption func(*UserFollowPlaceMutation)
+
+// newUserFollowPlaceMutation creates new mutation for the UserFollowPlace entity.
+func newUserFollowPlaceMutation(c config, op Op, opts ...userfollowplaceOption) *UserFollowPlaceMutation {
+	m := &UserFollowPlaceMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeUserFollowPlace,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withUserFollowPlaceID sets the ID field of the mutation.
+func withUserFollowPlaceID(id string) userfollowplaceOption {
+	return func(m *UserFollowPlaceMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *UserFollowPlace
+		)
+		m.oldValue = func(ctx context.Context) (*UserFollowPlace, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().UserFollowPlace.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withUserFollowPlace sets the old UserFollowPlace of the mutation.
+func withUserFollowPlace(node *UserFollowPlace) userfollowplaceOption {
+	return func(m *UserFollowPlaceMutation) {
+		m.oldValue = func(context.Context) (*UserFollowPlace, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m UserFollowPlaceMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m UserFollowPlaceMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *UserFollowPlaceMutation) ID() (id string, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *UserFollowPlaceMutation) IDs(ctx context.Context) ([]string, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []string{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().UserFollowPlace.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetUserID sets the "user" edge to the User entity by id.
+func (m *UserFollowPlaceMutation) SetUserID(id string) {
+	m.user = &id
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (m *UserFollowPlaceMutation) ClearUser() {
+	m.cleareduser = true
+}
+
+// UserCleared reports if the "user" edge to the User entity was cleared.
+func (m *UserFollowPlaceMutation) UserCleared() bool {
+	return m.cleareduser
+}
+
+// UserID returns the "user" edge ID in the mutation.
+func (m *UserFollowPlaceMutation) UserID() (id string, exists bool) {
+	if m.user != nil {
+		return *m.user, true
+	}
+	return
+}
+
+// UserIDs returns the "user" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// UserID instead. It exists only for internal usage by the builders.
+func (m *UserFollowPlaceMutation) UserIDs() (ids []string) {
+	if id := m.user; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetUser resets all changes to the "user" edge.
+func (m *UserFollowPlaceMutation) ResetUser() {
+	m.user = nil
+	m.cleareduser = false
+}
+
+// SetPlaceID sets the "place" edge to the Place entity by id.
+func (m *UserFollowPlaceMutation) SetPlaceID(id string) {
+	m.place = &id
+}
+
+// ClearPlace clears the "place" edge to the Place entity.
+func (m *UserFollowPlaceMutation) ClearPlace() {
+	m.clearedplace = true
+}
+
+// PlaceCleared reports if the "place" edge to the Place entity was cleared.
+func (m *UserFollowPlaceMutation) PlaceCleared() bool {
+	return m.clearedplace
+}
+
+// PlaceID returns the "place" edge ID in the mutation.
+func (m *UserFollowPlaceMutation) PlaceID() (id string, exists bool) {
+	if m.place != nil {
+		return *m.place, true
+	}
+	return
+}
+
+// PlaceIDs returns the "place" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// PlaceID instead. It exists only for internal usage by the builders.
+func (m *UserFollowPlaceMutation) PlaceIDs() (ids []string) {
+	if id := m.place; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetPlace resets all changes to the "place" edge.
+func (m *UserFollowPlaceMutation) ResetPlace() {
+	m.place = nil
+	m.clearedplace = false
+}
+
+// Where appends a list predicates to the UserFollowPlaceMutation builder.
+func (m *UserFollowPlaceMutation) Where(ps ...predicate.UserFollowPlace) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the UserFollowPlaceMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *UserFollowPlaceMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.UserFollowPlace, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *UserFollowPlaceMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *UserFollowPlaceMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (UserFollowPlace).
+func (m *UserFollowPlaceMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *UserFollowPlaceMutation) Fields() []string {
+	fields := make([]string, 0, 0)
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *UserFollowPlaceMutation) Field(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *UserFollowPlaceMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	return nil, fmt.Errorf("unknown UserFollowPlace field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *UserFollowPlaceMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown UserFollowPlace field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *UserFollowPlaceMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *UserFollowPlaceMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *UserFollowPlaceMutation) AddField(name string, value ent.Value) error {
+	return fmt.Errorf("unknown UserFollowPlace numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *UserFollowPlaceMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *UserFollowPlaceMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *UserFollowPlaceMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown UserFollowPlace nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *UserFollowPlaceMutation) ResetField(name string) error {
+	return fmt.Errorf("unknown UserFollowPlace field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *UserFollowPlaceMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.user != nil {
+		edges = append(edges, userfollowplace.EdgeUser)
+	}
+	if m.place != nil {
+		edges = append(edges, userfollowplace.EdgePlace)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *UserFollowPlaceMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case userfollowplace.EdgeUser:
+		if id := m.user; id != nil {
+			return []ent.Value{*id}
+		}
+	case userfollowplace.EdgePlace:
+		if id := m.place; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *UserFollowPlaceMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *UserFollowPlaceMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *UserFollowPlaceMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.cleareduser {
+		edges = append(edges, userfollowplace.EdgeUser)
+	}
+	if m.clearedplace {
+		edges = append(edges, userfollowplace.EdgePlace)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *UserFollowPlaceMutation) EdgeCleared(name string) bool {
+	switch name {
+	case userfollowplace.EdgeUser:
+		return m.cleareduser
+	case userfollowplace.EdgePlace:
+		return m.clearedplace
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *UserFollowPlaceMutation) ClearEdge(name string) error {
+	switch name {
+	case userfollowplace.EdgeUser:
+		m.ClearUser()
+		return nil
+	case userfollowplace.EdgePlace:
+		m.ClearPlace()
+		return nil
+	}
+	return fmt.Errorf("unknown UserFollowPlace unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *UserFollowPlaceMutation) ResetEdge(name string) error {
+	switch name {
+	case userfollowplace.EdgeUser:
+		m.ResetUser()
+		return nil
+	case userfollowplace.EdgePlace:
+		m.ResetPlace()
+		return nil
+	}
+	return fmt.Errorf("unknown UserFollowPlace edge %s", name)
 }
 
 // UserFollowUserMutation represents an operation that mutates the UserFollowUser nodes in the graph.

@@ -395,6 +395,61 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/business/": {
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Get a business's details by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Business"
+                ],
+                "summary": "Update a business's details",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Business ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved business",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.Business"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/comments/:postId": {
             "post": {
                 "security": [
@@ -4117,63 +4172,6 @@ const docTemplate = `{
                     }
                 }
             },
-            "put": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Business"
-                ],
-                "summary": "Update a business account",
-                "operationId": "update-business-account",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Business Account ID",
-                        "name": "businessAccountID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Business Account Data",
-                        "name": "ent.Business",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_ent.Business"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.Response"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.Error"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDto"
-                        }
-                    }
-                }
-            },
             "delete": {
                 "produces": [
                     "application/json"
@@ -5930,6 +5928,19 @@ const docTemplate = `{
         "placio-app_ent.Business": {
             "type": "object",
             "properties": {
+                "business_settings": {
+                    "description": "BusinessSettings holds the value of the \"business_settings\" field.",
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "cover_image": {
+                    "description": "CoverImage holds the value of the \"cover_image\" field.",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "Description holds the value of the \"description\" field.",
+                    "type": "string"
+                },
                 "edges": {
                     "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the BusinessQuery when eager-loading is set.",
                     "allOf": [
@@ -5942,8 +5953,16 @@ const docTemplate = `{
                     "description": "ID of the ent.",
                     "type": "string"
                 },
+                "location": {
+                    "description": "Location holds the value of the \"location\" field.",
+                    "type": "string"
+                },
                 "name": {
                     "description": "Name holds the value of the \"name\" field.",
+                    "type": "string"
+                },
+                "picture": {
+                    "description": "Picture holds the value of the \"picture\" field.",
                     "type": "string"
                 },
                 "relevance_score": {
@@ -5952,6 +5971,10 @@ const docTemplate = `{
                 },
                 "search_text": {
                     "description": "SearchText holds the value of the \"search_text\" field.",
+                    "type": "string"
+                },
+                "website": {
+                    "description": "Website holds the value of the \"website\" field.",
                     "type": "string"
                 }
             }
@@ -6611,6 +6634,13 @@ const docTemplate = `{
                         "$ref": "#/definitions/placio-app_ent.Event"
                     }
                 },
+                "followerUsers": {
+                    "description": "FollowerUsers holds the value of the followerUsers edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.UserFollowPlace"
+                    }
+                },
                 "menus": {
                     "description": "Menus holds the value of the menus edge.",
                     "type": "array",
@@ -7022,6 +7052,10 @@ const docTemplate = `{
                     "description": "ID of the ent.",
                     "type": "string"
                 },
+                "location": {
+                    "description": "Location holds the value of the \"location\" field.",
+                    "type": "string"
+                },
                 "name": {
                     "description": "Name holds the value of the \"name\" field.",
                     "type": "string"
@@ -7045,6 +7079,10 @@ const docTemplate = `{
                 },
                 "username": {
                     "description": "Username holds the value of the \"username\" field.",
+                    "type": "string"
+                },
+                "website": {
+                    "description": "Website holds the value of the \"website\" field.",
                     "type": "string"
                 }
             }
@@ -7134,6 +7172,13 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/placio-app_ent.UserFollowBusiness"
+                    }
+                },
+                "followedPlaces": {
+                    "description": "FollowedPlaces holds the value of the followedPlaces edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.UserFollowPlace"
                     }
                 },
                 "followedUsers": {
@@ -7233,6 +7278,44 @@ const docTemplate = `{
                     "allOf": [
                         {
                             "$ref": "#/definitions/placio-app_ent.Business"
+                        }
+                    ]
+                },
+                "user": {
+                    "description": "User holds the value of the user edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.User"
+                        }
+                    ]
+                }
+            }
+        },
+        "placio-app_ent.UserFollowPlace": {
+            "type": "object",
+            "properties": {
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the UserFollowPlaceQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.UserFollowPlaceEdges"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_ent.UserFollowPlaceEdges": {
+            "type": "object",
+            "properties": {
+                "place": {
+                    "description": "Place holds the value of the place edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.Place"
                         }
                     ]
                 },

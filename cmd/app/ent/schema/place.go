@@ -47,5 +47,6 @@ func (Place) Edges() []ent.Edge {
 		edge.To("bookings", Booking.Type),
 		edge.To("categories", Category.Type),
 		edge.To("categoryAssignments", CategoryAssignment.Type),
+		edge.To("followerUsers", UserFollowPlace.Type),
 	}
 }

@@ -26,8 +26,6 @@ const (
 	FieldLocation = "location"
 	// FieldBusinessSettings holds the string denoting the business_settings field in the database.
 	FieldBusinessSettings = "business_settings"
-	// FieldURL holds the string denoting the url field in the database.
-	FieldURL = "url"
 	// FieldSearchText holds the string denoting the search_text field in the database.
 	FieldSearchText = "search_text"
 	// FieldRelevanceScore holds the string denoting the relevance_score field in the database.
@@ -136,7 +134,6 @@ var Columns = []string{
 	FieldWebsite,
 	FieldLocation,
 	FieldBusinessSettings,
-	FieldURL,
 	FieldSearchText,
 	FieldRelevanceScore,
 }
@@ -194,11 +191,6 @@ func ByWebsite(opts ...sql.OrderTermOption) OrderOption {
 // ByLocation orders the results by the location field.
 func ByLocation(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldLocation, opts...).ToFunc()
-}
-
-// ByURL orders the results by the url field.
-func ByURL(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldURL, opts...).ToFunc()
 }
 
 // BySearchText orders the results by the search_text field.

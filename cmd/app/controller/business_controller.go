@@ -196,32 +196,51 @@ func (bc *BusinessAccountController) getBusinessAccount(c *gin.Context) {
 	c.JSON(http.StatusOK, business)
 }
 
-// @Summary Update a business account
-// @ID update-business-account
+// updateBusinessAccount updates a business's details.
+// @Summary Update a business's details
+// @Description Get a business's details by ID
 // @Tags Business
-// @Accept  json
-// @Produce  json
-// @Param businessAccountID path string true "Business Account ID"
-// @Param ent.Business body ent.Business true "Business Account Data"
-// @Success 200 {object} Dto.Response
-// @Failure 400 {object} Dto.Error
-// @Failure 401 {object} Dto.Error
-// @Failure 500 {object} Dto.ErrorDto
-// @Router /business/{businessAccountID} [put]
-func (bc *BusinessAccountController) updateBusinessAccount(c *gin.Context) {
-	//businessAccountID := c.Param("businessAccountID")
-	//var businessData Dto.BusinessDto
-	//if err := c.ShouldBindJSON(&businessData); err != nil {
-	//	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-	//	return
-	//}
-	//businessData.ID = businessAccountID
-	//business, err := bc.service.UpdateBusinessAccount(c, &businessData)
-	//if err != nil {
-	//	c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-	//	return
-	//}
-	//c.JSON(http.StatusOK, business)
+// @Accept json
+// @Produce json
+// @Param id path string true "Business ID"
+// @Security Bearer
+// @Success 200 {object} ent.Business "Successfully retrieved business"
+// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
+// @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
+// @Router /api/v1/business/ [patch]
+func (bc *BusinessAccountController) updateBusinessAccount(ctx *gin.Context) {
+	businessId := ctx.Param("id")
+	if businessId == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": "Business ID required",
+		})
+		return
+	}
+
+	var business map[string]interface{}
+	if err := ctx.ShouldBindJSON(&business); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid request body",
+		})
+		return
+	}
+
+	businessData, err := bc.service.UpdateBusinessAccount(ctx, businessId, business)
+	if err != nil {
+		//if errors.Is(err, ent.) {
+		//	ctx.JSON(http.StatusNotFound, gin.H{
+		//		"error": "Business not found",
+		//	})
+		//	return
+		//}
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Internal Server Error",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, businessData)
 }
 
 // @Summary Delete a business account

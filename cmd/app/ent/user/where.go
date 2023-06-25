@@ -1217,6 +1217,29 @@ func HasCategoryAssignmentsWith(preds ...predicate.CategoryAssignment) predicate
 	})
 }
 
+// HasFollowedPlaces applies the HasEdge predicate on the "followedPlaces" edge.
+func HasFollowedPlaces() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, FollowedPlacesTable, FollowedPlacesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasFollowedPlacesWith applies the HasEdge predicate on the "followedPlaces" edge with a given conditions (other predicates).
+func HasFollowedPlacesWith(preds ...predicate.UserFollowPlace) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newFollowedPlacesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.User) predicate.User {
 	return predicate.User(func(s *sql.Selector) {

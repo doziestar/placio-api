@@ -35,6 +35,7 @@ import (
 	"placio-app/ent/user"
 	"placio-app/ent/userbusiness"
 	"placio-app/ent/userfollowbusiness"
+	"placio-app/ent/userfollowplace"
 	"placio-app/ent/userfollowuser"
 	"reflect"
 	"sync"
@@ -131,6 +132,7 @@ func checkColumn(table, column string) error {
 			user.Table:                   user.ValidColumn,
 			userbusiness.Table:           userbusiness.ValidColumn,
 			userfollowbusiness.Table:     userfollowbusiness.ValidColumn,
+			userfollowplace.Table:        userfollowplace.ValidColumn,
 			userfollowuser.Table:         userfollowuser.ValidColumn,
 		})
 	})

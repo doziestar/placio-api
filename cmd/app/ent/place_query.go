@@ -19,6 +19,7 @@ import (
 	"placio-app/ent/reservation"
 	"placio-app/ent/review"
 	"placio-app/ent/room"
+	"placio-app/ent/userfollowplace"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -42,6 +43,7 @@ type PlaceQuery struct {
 	withBookings            *BookingQuery
 	withCategories          *CategoryQuery
 	withCategoryAssignments *CategoryAssignmentQuery
+	withFollowerUsers       *UserFollowPlaceQuery
 	withFKs                 bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -299,6 +301,28 @@ func (pq *PlaceQuery) QueryCategoryAssignments() *CategoryAssignmentQuery {
 	return query
 }
 
+// QueryFollowerUsers chains the current query on the "followerUsers" edge.
+func (pq *PlaceQuery) QueryFollowerUsers() *UserFollowPlaceQuery {
+	query := (&UserFollowPlaceClient{config: pq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(place.Table, place.FieldID, selector),
+			sqlgraph.To(userfollowplace.Table, userfollowplace.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, place.FollowerUsersTable, place.FollowerUsersColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Place entity from the query.
 // Returns a *NotFoundError when no Place was found.
 func (pq *PlaceQuery) First(ctx context.Context) (*Place, error) {
@@ -501,6 +525,7 @@ func (pq *PlaceQuery) Clone() *PlaceQuery {
 		withBookings:            pq.withBookings.Clone(),
 		withCategories:          pq.withCategories.Clone(),
 		withCategoryAssignments: pq.withCategoryAssignments.Clone(),
+		withFollowerUsers:       pq.withFollowerUsers.Clone(),
 		// clone intermediate query.
 		sql:  pq.sql.Clone(),
 		path: pq.path,
@@ -617,6 +642,17 @@ func (pq *PlaceQuery) WithCategoryAssignments(opts ...func(*CategoryAssignmentQu
 	return pq
 }
 
+// WithFollowerUsers tells the query-builder to eager-load the nodes that are connected to
+// the "followerUsers" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *PlaceQuery) WithFollowerUsers(opts ...func(*UserFollowPlaceQuery)) *PlaceQuery {
+	query := (&UserFollowPlaceClient{config: pq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withFollowerUsers = query
+	return pq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -696,7 +732,7 @@ func (pq *PlaceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Place,
 		nodes       = []*Place{}
 		withFKs     = pq.withFKs
 		_spec       = pq.querySpec()
-		loadedTypes = [10]bool{
+		loadedTypes = [11]bool{
 			pq.withBusiness != nil,
 			pq.withReviews != nil,
 			pq.withEvents != nil,
@@ -707,6 +743,7 @@ func (pq *PlaceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Place,
 			pq.withBookings != nil,
 			pq.withCategories != nil,
 			pq.withCategoryAssignments != nil,
+			pq.withFollowerUsers != nil,
 		}
 	)
 	if pq.withBusiness != nil {
@@ -801,6 +838,13 @@ func (pq *PlaceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Place,
 			func(n *Place, e *CategoryAssignment) {
 				n.Edges.CategoryAssignments = append(n.Edges.CategoryAssignments, e)
 			}); err != nil {
+			return nil, err
+		}
+	}
+	if query := pq.withFollowerUsers; query != nil {
+		if err := pq.loadFollowerUsers(ctx, query, nodes,
+			func(n *Place) { n.Edges.FollowerUsers = []*UserFollowPlace{} },
+			func(n *Place, e *UserFollowPlace) { n.Edges.FollowerUsers = append(n.Edges.FollowerUsers, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -1142,6 +1186,37 @@ func (pq *PlaceQuery) loadCategoryAssignments(ctx context.Context, query *Catego
 		node, ok := nodeids[fk]
 		if !ok {
 			return fmt.Errorf(`unexpected referenced foreign-key "entity_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (pq *PlaceQuery) loadFollowerUsers(ctx context.Context, query *UserFollowPlaceQuery, nodes []*Place, init func(*Place), assign func(*Place, *UserFollowPlace)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Place)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.UserFollowPlace(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(place.FollowerUsersColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.place_follower_users
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "place_follower_users" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "place_follower_users" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

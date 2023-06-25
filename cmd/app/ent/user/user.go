@@ -70,6 +70,8 @@ const (
 	EdgePlaces = "places"
 	// EdgeCategoryAssignments holds the string denoting the categoryassignments edge name in mutations.
 	EdgeCategoryAssignments = "categoryAssignments"
+	// EdgeFollowedPlaces holds the string denoting the followedplaces edge name in mutations.
+	EdgeFollowedPlaces = "followedPlaces"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// UserBusinessesTable is the table that holds the userBusinesses relation/edge.
@@ -184,6 +186,13 @@ const (
 	CategoryAssignmentsInverseTable = "category_assignments"
 	// CategoryAssignmentsColumn is the table column denoting the categoryAssignments relation/edge.
 	CategoryAssignmentsColumn = "entity_id"
+	// FollowedPlacesTable is the table that holds the followedPlaces relation/edge.
+	FollowedPlacesTable = "user_follow_places"
+	// FollowedPlacesInverseTable is the table name for the UserFollowPlace entity.
+	// It exists in this package in order to avoid circular dependency with the "userfollowplace" package.
+	FollowedPlacesInverseTable = "user_follow_places"
+	// FollowedPlacesColumn is the table column denoting the followedPlaces relation/edge.
+	FollowedPlacesColumn = "user_followed_places"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -504,6 +513,20 @@ func ByCategoryAssignments(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOpti
 		sqlgraph.OrderByNeighborTerms(s, newCategoryAssignmentsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByFollowedPlacesCount orders the results by followedPlaces count.
+func ByFollowedPlacesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newFollowedPlacesStep(), opts...)
+	}
+}
+
+// ByFollowedPlaces orders the results by followedPlaces terms.
+func ByFollowedPlaces(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newFollowedPlacesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newUserBusinessesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -614,5 +637,12 @@ func newCategoryAssignmentsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CategoryAssignmentsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, CategoryAssignmentsTable, CategoryAssignmentsColumn),
+	)
+}
+func newFollowedPlacesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(FollowedPlacesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, FollowedPlacesTable, FollowedPlacesColumn),
 	)
 }

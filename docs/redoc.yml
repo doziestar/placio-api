@@ -358,6 +358,16 @@ definitions:
     type: object
   placio-app_ent.Business:
     properties:
+      business_settings:
+        additionalProperties: true
+        description: BusinessSettings holds the value of the "business_settings" field.
+        type: object
+      cover_image:
+        description: CoverImage holds the value of the "cover_image" field.
+        type: string
+      description:
+        description: Description holds the value of the "description" field.
+        type: string
       edges:
         allOf:
           - $ref: '#/definitions/placio-app_ent.BusinessEdges'
@@ -367,14 +377,23 @@ definitions:
       id:
         description: ID of the ent.
         type: string
+      location:
+        description: Location holds the value of the "location" field.
+        type: string
       name:
         description: Name holds the value of the "name" field.
+        type: string
+      picture:
+        description: Picture holds the value of the "picture" field.
         type: string
       relevance_score:
         description: RelevanceScore holds the value of the "relevance_score" field.
         type: number
       search_text:
         description: SearchText holds the value of the "search_text" field.
+        type: string
+      website:
+        description: Website holds the value of the "website" field.
         type: string
     type: object
   placio-app_ent.BusinessEdges:
@@ -813,6 +832,11 @@ definitions:
         items:
           $ref: '#/definitions/placio-app_ent.Event'
         type: array
+      followerUsers:
+        description: FollowerUsers holds the value of the followerUsers edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.UserFollowPlace'
+        type: array
       menus:
         description: Menus holds the value of the menus edge.
         items:
@@ -1087,6 +1111,9 @@ definitions:
       id:
         description: ID of the ent.
         type: string
+      location:
+        description: Location holds the value of the "location" field.
+        type: string
       name:
         description: Name holds the value of the "name" field.
         type: string
@@ -1105,6 +1132,9 @@ definitions:
         type: object
       username:
         description: Username holds the value of the "username" field.
+        type: string
+      website:
+        description: Website holds the value of the "website" field.
         type: string
     type: object
   placio-app_ent.UserBusiness:
@@ -1164,6 +1194,11 @@ definitions:
         description: FollowedBusinesses holds the value of the followedBusinesses edge.
         items:
           $ref: '#/definitions/placio-app_ent.UserFollowBusiness'
+        type: array
+      followedPlaces:
+        description: FollowedPlaces holds the value of the followedPlaces edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.UserFollowPlace'
         type: array
       followedUsers:
         description: FollowedUsers holds the value of the followedUsers edge.
@@ -1234,6 +1269,29 @@ definitions:
         allOf:
           - $ref: '#/definitions/placio-app_ent.Business'
         description: Business holds the value of the business edge.
+      user:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.User'
+        description: User holds the value of the user edge.
+    type: object
+  placio-app_ent.UserFollowPlace:
+    properties:
+      edges:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.UserFollowPlaceEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the UserFollowPlaceQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: string
+    type: object
+  placio-app_ent.UserFollowPlaceEdges:
+    properties:
+      place:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.Place'
+        description: Place holds the value of the place edge.
       user:
         allOf:
           - $ref: '#/definitions/placio-app_ent.User'
@@ -1922,6 +1980,41 @@ paths:
       summary: Update a booking
       tags:
         - Booking
+  /api/v1/business/:
+    patch:
+      consumes:
+        - application/json
+      description: Get a business's details by ID
+      parameters:
+        - description: Business ID
+          in: path
+          name: id
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully retrieved business
+          schema:
+            $ref: '#/definitions/placio-app_ent.Business'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      security:
+        - Bearer: []
+      summary: Update a business's details
+      tags:
+        - Business
   /api/v1/comments/:postId:
     post:
       consumes:
@@ -4331,44 +4424,6 @@ paths:
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
       summary: Get a business account
-      tags:
-        - Business
-    put:
-      consumes:
-        - application/json
-      operationId: update-business-account
-      parameters:
-        - description: Business Account ID
-          in: path
-          name: businessAccountID
-          required: true
-          type: string
-        - description: Business Account Data
-          in: body
-          name: ent.Business
-          required: true
-          schema:
-            $ref: '#/definitions/placio-app_ent.Business'
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Response'
-        '400':
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Error'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Error'
-        '500':
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDto'
-      summary: Update a business account
       tags:
         - Business
   /business/{businessAccountID}/user/{currentOwnerID}/{newOwnerID}:
