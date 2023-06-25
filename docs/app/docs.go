@@ -5727,6 +5727,9 @@ const docTemplate = `{
                         "$ref": "#/definitions/placio-app_Dto.MediaDto"
                     }
                 },
+                "privacy": {
+                    "type": "string"
+                },
                 "user_id": {
                     "type": "string"
                 }
