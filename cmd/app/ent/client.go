@@ -39,6 +39,7 @@ import (
 	"placio-app/ent/user"
 	"placio-app/ent/userbusiness"
 	"placio-app/ent/userfollowbusiness"
+	"placio-app/ent/userfollowplace"
 	"placio-app/ent/userfollowuser"
 
 	"entgo.io/ent"
@@ -110,6 +111,8 @@ type Client struct {
 	UserBusiness *UserBusinessClient
 	// UserFollowBusiness is the client for interacting with the UserFollowBusiness builders.
 	UserFollowBusiness *UserFollowBusinessClient
+	// UserFollowPlace is the client for interacting with the UserFollowPlace builders.
+	UserFollowPlace *UserFollowPlaceClient
 	// UserFollowUser is the client for interacting with the UserFollowUser builders.
 	UserFollowUser *UserFollowUserClient
 }
@@ -154,6 +157,7 @@ func (c *Client) init() {
 	c.User = NewUserClient(c.config)
 	c.UserBusiness = NewUserBusinessClient(c.config)
 	c.UserFollowBusiness = NewUserFollowBusinessClient(c.config)
+	c.UserFollowPlace = NewUserFollowPlaceClient(c.config)
 	c.UserFollowUser = NewUserFollowUserClient(c.config)
 }
 
@@ -266,6 +270,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		User:                   NewUserClient(cfg),
 		UserBusiness:           NewUserBusinessClient(cfg),
 		UserFollowBusiness:     NewUserFollowBusinessClient(cfg),
+		UserFollowPlace:        NewUserFollowPlaceClient(cfg),
 		UserFollowUser:         NewUserFollowUserClient(cfg),
 	}, nil
 }
@@ -315,6 +320,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		User:                   NewUserClient(cfg),
 		UserBusiness:           NewUserBusinessClient(cfg),
 		UserFollowBusiness:     NewUserFollowBusinessClient(cfg),
+		UserFollowPlace:        NewUserFollowPlaceClient(cfg),
 		UserFollowUser:         NewUserFollowUserClient(cfg),
 	}, nil
 }
@@ -349,7 +355,8 @@ func (c *Client) Use(hooks ...Hook) {
 		c.BusinessFollowUser, c.Category, c.CategoryAssignment, c.Chat, c.Comment,
 		c.Event, c.Help, c.Like, c.Media, c.Menu, c.Order, c.Payment, c.Place, c.Post,
 		c.Rating, c.Reaction, c.Reservation, c.Review, c.Room, c.Ticket,
-		c.TicketOption, c.User, c.UserBusiness, c.UserFollowBusiness, c.UserFollowUser,
+		c.TicketOption, c.User, c.UserBusiness, c.UserFollowBusiness,
+		c.UserFollowPlace, c.UserFollowUser,
 	} {
 		n.Use(hooks...)
 	}
@@ -363,7 +370,8 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.BusinessFollowUser, c.Category, c.CategoryAssignment, c.Chat, c.Comment,
 		c.Event, c.Help, c.Like, c.Media, c.Menu, c.Order, c.Payment, c.Place, c.Post,
 		c.Rating, c.Reaction, c.Reservation, c.Review, c.Room, c.Ticket,
-		c.TicketOption, c.User, c.UserBusiness, c.UserFollowBusiness, c.UserFollowUser,
+		c.TicketOption, c.User, c.UserBusiness, c.UserFollowBusiness,
+		c.UserFollowPlace, c.UserFollowUser,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -430,6 +438,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.UserBusiness.mutate(ctx, m)
 	case *UserFollowBusinessMutation:
 		return c.UserFollowBusiness.mutate(ctx, m)
+	case *UserFollowPlaceMutation:
+		return c.UserFollowPlace.mutate(ctx, m)
 	case *UserFollowUserMutation:
 		return c.UserFollowUser.mutate(ctx, m)
 	default:
@@ -3240,6 +3250,22 @@ func (c *PlaceClient) QueryCategoryAssignments(pl *Place) *CategoryAssignmentQue
 	return query
 }
 
+// QueryFollowerUsers queries the followerUsers edge of a Place.
+func (c *PlaceClient) QueryFollowerUsers(pl *Place) *UserFollowPlaceQuery {
+	query := (&UserFollowPlaceClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pl.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(place.Table, place.FieldID, id),
+			sqlgraph.To(userfollowplace.Table, userfollowplace.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, place.FollowerUsersTable, place.FollowerUsersColumn),
+		)
+		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *PlaceClient) Hooks() []Hook {
 	return c.hooks.Place
@@ -4798,6 +4824,22 @@ func (c *UserClient) QueryCategoryAssignments(u *User) *CategoryAssignmentQuery 
 	return query
 }
 
+// QueryFollowedPlaces queries the followedPlaces edge of a User.
+func (c *UserClient) QueryFollowedPlaces(u *User) *UserFollowPlaceQuery {
+	query := (&UserFollowPlaceClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(userfollowplace.Table, userfollowplace.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.FollowedPlacesTable, user.FollowedPlacesColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *UserClient) Hooks() []Hook {
 	return c.hooks.User
@@ -5123,6 +5165,156 @@ func (c *UserFollowBusinessClient) mutate(ctx context.Context, m *UserFollowBusi
 	}
 }
 
+// UserFollowPlaceClient is a client for the UserFollowPlace schema.
+type UserFollowPlaceClient struct {
+	config
+}
+
+// NewUserFollowPlaceClient returns a client for the UserFollowPlace from the given config.
+func NewUserFollowPlaceClient(c config) *UserFollowPlaceClient {
+	return &UserFollowPlaceClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `userfollowplace.Hooks(f(g(h())))`.
+func (c *UserFollowPlaceClient) Use(hooks ...Hook) {
+	c.hooks.UserFollowPlace = append(c.hooks.UserFollowPlace, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `userfollowplace.Intercept(f(g(h())))`.
+func (c *UserFollowPlaceClient) Intercept(interceptors ...Interceptor) {
+	c.inters.UserFollowPlace = append(c.inters.UserFollowPlace, interceptors...)
+}
+
+// Create returns a builder for creating a UserFollowPlace entity.
+func (c *UserFollowPlaceClient) Create() *UserFollowPlaceCreate {
+	mutation := newUserFollowPlaceMutation(c.config, OpCreate)
+	return &UserFollowPlaceCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of UserFollowPlace entities.
+func (c *UserFollowPlaceClient) CreateBulk(builders ...*UserFollowPlaceCreate) *UserFollowPlaceCreateBulk {
+	return &UserFollowPlaceCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for UserFollowPlace.
+func (c *UserFollowPlaceClient) Update() *UserFollowPlaceUpdate {
+	mutation := newUserFollowPlaceMutation(c.config, OpUpdate)
+	return &UserFollowPlaceUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *UserFollowPlaceClient) UpdateOne(ufp *UserFollowPlace) *UserFollowPlaceUpdateOne {
+	mutation := newUserFollowPlaceMutation(c.config, OpUpdateOne, withUserFollowPlace(ufp))
+	return &UserFollowPlaceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *UserFollowPlaceClient) UpdateOneID(id string) *UserFollowPlaceUpdateOne {
+	mutation := newUserFollowPlaceMutation(c.config, OpUpdateOne, withUserFollowPlaceID(id))
+	return &UserFollowPlaceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for UserFollowPlace.
+func (c *UserFollowPlaceClient) Delete() *UserFollowPlaceDelete {
+	mutation := newUserFollowPlaceMutation(c.config, OpDelete)
+	return &UserFollowPlaceDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *UserFollowPlaceClient) DeleteOne(ufp *UserFollowPlace) *UserFollowPlaceDeleteOne {
+	return c.DeleteOneID(ufp.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *UserFollowPlaceClient) DeleteOneID(id string) *UserFollowPlaceDeleteOne {
+	builder := c.Delete().Where(userfollowplace.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &UserFollowPlaceDeleteOne{builder}
+}
+
+// Query returns a query builder for UserFollowPlace.
+func (c *UserFollowPlaceClient) Query() *UserFollowPlaceQuery {
+	return &UserFollowPlaceQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeUserFollowPlace},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a UserFollowPlace entity by its id.
+func (c *UserFollowPlaceClient) Get(ctx context.Context, id string) (*UserFollowPlace, error) {
+	return c.Query().Where(userfollowplace.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *UserFollowPlaceClient) GetX(ctx context.Context, id string) *UserFollowPlace {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryUser queries the user edge of a UserFollowPlace.
+func (c *UserFollowPlaceClient) QueryUser(ufp *UserFollowPlace) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ufp.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(userfollowplace.Table, userfollowplace.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, userfollowplace.UserTable, userfollowplace.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(ufp.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPlace queries the place edge of a UserFollowPlace.
+func (c *UserFollowPlaceClient) QueryPlace(ufp *UserFollowPlace) *PlaceQuery {
+	query := (&PlaceClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ufp.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(userfollowplace.Table, userfollowplace.FieldID, id),
+			sqlgraph.To(place.Table, place.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, userfollowplace.PlaceTable, userfollowplace.PlaceColumn),
+		)
+		fromV = sqlgraph.Neighbors(ufp.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *UserFollowPlaceClient) Hooks() []Hook {
+	return c.hooks.UserFollowPlace
+}
+
+// Interceptors returns the client interceptors.
+func (c *UserFollowPlaceClient) Interceptors() []Interceptor {
+	return c.inters.UserFollowPlace
+}
+
+func (c *UserFollowPlaceClient) mutate(ctx context.Context, m *UserFollowPlaceMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&UserFollowPlaceCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&UserFollowPlaceUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&UserFollowPlaceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&UserFollowPlaceDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown UserFollowPlace mutation op: %q", m.Op())
+	}
+}
+
 // UserFollowUserClient is a client for the UserFollowUser schema.
 type UserFollowUserClient struct {
 	config
@@ -5280,13 +5472,13 @@ type (
 		BusinessFollowUser, Category, CategoryAssignment, Chat, Comment, Event, Help,
 		Like, Media, Menu, Order, Payment, Place, Post, Rating, Reaction, Reservation,
 		Review, Room, Ticket, TicketOption, User, UserBusiness, UserFollowBusiness,
-		UserFollowUser []ent.Hook
+		UserFollowPlace, UserFollowUser []ent.Hook
 	}
 	inters struct {
 		AccountSettings, Amenity, Booking, Business, BusinessFollowBusiness,
 		BusinessFollowUser, Category, CategoryAssignment, Chat, Comment, Event, Help,
 		Like, Media, Menu, Order, Payment, Place, Post, Rating, Reaction, Reservation,
 		Review, Room, Ticket, TicketOption, User, UserBusiness, UserFollowBusiness,
-		UserFollowUser []ent.Interceptor
+		UserFollowPlace, UserFollowUser []ent.Interceptor
 	}
 )

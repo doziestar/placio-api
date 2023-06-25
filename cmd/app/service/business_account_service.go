@@ -21,10 +21,10 @@ type BusinessAccountService interface {
 	AssociateUserWithBusinessAccount(ctx context.Context, userID, businessAccountID, role string) error
 	GetBusinessAccountsForUser(ctx context.Context, userID string) ([]*ent.UserBusiness, error)
 	ListBusinessAccounts(ctx context.Context, page, pageSize int, sortBy string, filters ...predicate.Business) ([]*ent.Business, error)
-	UpdateBusinessAccount(ctx context.Context, businessAccount *ent.Business) (*ent.Business, error)
 	RemoveUserFromBusinessAccount(ctx context.Context, userID, businessAccountID string) error
 	TransferBusinessAccountOwnership(ctx context.Context, currentOwnerID, newOwnerID, businessAccountID string) error
 	FollowUser(ctx context.Context, businessID string, userID string) error
+	UpdateBusinessAccount(ctx context.Context, businessID string, businessData map[string]interface{}) (*ent.Business, error)
 	FollowBusiness(ctx context.Context, followerID string, followedID string) error
 	UnfollowUser(ctx context.Context, businessID string, userID string) error
 	UnfollowBusiness(ctx context.Context, followerID string, followedID string) error
@@ -332,17 +332,58 @@ func (s *BusinessAccountServiceImpl) GetUserBusinessAccounts(ctx context.Context
 	return businesses, nil
 }
 
-func (bas *BusinessAccountServiceImpl) UpdateBusinessAccount(ctx context.Context, businessAccount *ent.Business) (*ent.Business, error) {
-	if businessAccount == nil {
-		return nil, errors.New("businessAccount cannot be nil")
-	}
-
-	businessAccount, err := bas.client.Business.UpdateOne(businessAccount).Save(ctx)
+func (bas *BusinessAccountServiceImpl) UpdateBusinessAccount(ctx context.Context, businessID string, businessData map[string]interface{}) (*ent.Business, error) {
+	// Check if business exists
+	business, err := bas.client.Business.Get(ctx, businessID)
 	if err != nil {
-		return nil, err
+		if ent.IsNotFound(err) {
+			return nil, fmt.Errorf("business does not exist")
+		}
+		return nil, fmt.Errorf("failed checking business existence: %w", err)
 	}
 
-	return businessAccount, nil
+	// Get an updater for the business
+	upd := bas.client.Business.UpdateOne(business)
+
+	// Update fields
+	if v, ok := businessData["name"]; ok {
+		upd.SetName(v.(string))
+	}
+	if v, ok := businessData["cover_image"]; ok {
+		upd.SetCoverImage(v.(string))
+	}
+	if v, ok := businessData["description"]; ok {
+		upd.SetDescription(v.(string))
+	}
+	if v, ok := businessData["location"]; ok {
+		upd.SetLocation(v.(string))
+	}
+	if v, ok := businessData["website"]; ok {
+		upd.SetWebsite(v.(string))
+	}
+	if v, ok := businessData["picture"]; ok {
+		upd.SetPicture(v.(string))
+	}
+
+	// Update business settings
+	if v, ok := businessData["business_settings"]; ok {
+		// Merge existing and new settings
+		newSettings := v.(map[string]interface{})
+		for k, value := range business.BusinessSettings {
+			if _, exists := newSettings[k]; !exists {
+				newSettings[k] = value
+			}
+		}
+		upd.SetBusinessSettings(newSettings)
+	}
+
+	// Save the updates
+	business, err = upd.Save(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed updating business: %w", err)
+	}
+
+	return business, nil
 }
 
 func (bas *BusinessAccountServiceImpl) DeleteBusinessAccount(ctx context.Context, businessAccountID string) error {

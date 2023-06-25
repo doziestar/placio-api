@@ -84,9 +84,11 @@ type UserEdges struct {
 	Places []*Place `json:"places,omitempty"`
 	// CategoryAssignments holds the value of the categoryAssignments edge.
 	CategoryAssignments []*CategoryAssignment `json:"categoryAssignments,omitempty"`
+	// FollowedPlaces holds the value of the followedPlaces edge.
+	FollowedPlaces []*UserFollowPlace `json:"followedPlaces,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [16]bool
+	loadedTypes [17]bool
 }
 
 // UserBusinessesOrErr returns the UserBusinesses value or an error if the edge
@@ -231,6 +233,15 @@ func (e UserEdges) CategoryAssignmentsOrErr() ([]*CategoryAssignment, error) {
 		return e.CategoryAssignments, nil
 	}
 	return nil, &NotLoadedError{edge: "categoryAssignments"}
+}
+
+// FollowedPlacesOrErr returns the FollowedPlaces value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) FollowedPlacesOrErr() ([]*UserFollowPlace, error) {
+	if e.loadedTypes[16] {
+		return e.FollowedPlaces, nil
+	}
+	return nil, &NotLoadedError{edge: "followedPlaces"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -440,6 +451,11 @@ func (u *User) QueryPlaces() *PlaceQuery {
 // QueryCategoryAssignments queries the "categoryAssignments" edge of the User entity.
 func (u *User) QueryCategoryAssignments() *CategoryAssignmentQuery {
 	return NewUserClient(u.config).QueryCategoryAssignments(u)
+}
+
+// QueryFollowedPlaces queries the "followedPlaces" edge of the User entity.
+func (u *User) QueryFollowedPlaces() *UserFollowPlaceQuery {
+	return NewUserClient(u.config).QueryFollowedPlaces(u)
 }
 
 // Update returns a builder for updating this User.

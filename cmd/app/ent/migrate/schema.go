@@ -89,7 +89,6 @@ var (
 		{Name: "website", Type: field.TypeString, Nullable: true},
 		{Name: "location", Type: field.TypeString, Nullable: true},
 		{Name: "business_settings", Type: field.TypeJSON, Nullable: true},
-		{Name: "url", Type: field.TypeString, Unique: true},
 		{Name: "search_text", Type: field.TypeString, Nullable: true},
 		{Name: "relevance_score", Type: field.TypeFloat64, Nullable: true},
 	}
@@ -732,6 +731,32 @@ var (
 			},
 		},
 	}
+	// UserFollowPlacesColumns holds the columns for the "user_follow_places" table.
+	UserFollowPlacesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "place_follower_users", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "user_followed_places", Type: field.TypeString, Nullable: true, Size: 36},
+	}
+	// UserFollowPlacesTable holds the schema information for the "user_follow_places" table.
+	UserFollowPlacesTable = &schema.Table{
+		Name:       "user_follow_places",
+		Columns:    UserFollowPlacesColumns,
+		PrimaryKey: []*schema.Column{UserFollowPlacesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "user_follow_places_places_followerUsers",
+				Columns:    []*schema.Column{UserFollowPlacesColumns[1]},
+				RefColumns: []*schema.Column{PlacesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "user_follow_places_users_followedPlaces",
+				Columns:    []*schema.Column{UserFollowPlacesColumns[2]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// UserFollowUsersColumns holds the columns for the "user_follow_users" table.
 	UserFollowUsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -814,6 +839,7 @@ var (
 		UsersTable,
 		UserBusinessesTable,
 		UserFollowBusinessesTable,
+		UserFollowPlacesTable,
 		UserFollowUsersTable,
 		AmenityPlacesTable,
 	}
@@ -864,6 +890,8 @@ func init() {
 	UserBusinessesTable.ForeignKeys[1].RefTable = UsersTable
 	UserFollowBusinessesTable.ForeignKeys[0].RefTable = BusinessesTable
 	UserFollowBusinessesTable.ForeignKeys[1].RefTable = UsersTable
+	UserFollowPlacesTable.ForeignKeys[0].RefTable = PlacesTable
+	UserFollowPlacesTable.ForeignKeys[1].RefTable = UsersTable
 	UserFollowUsersTable.ForeignKeys[0].RefTable = UsersTable
 	UserFollowUsersTable.ForeignKeys[1].RefTable = UsersTable
 	AmenityPlacesTable.ForeignKeys[0].RefTable = AmenitiesTable

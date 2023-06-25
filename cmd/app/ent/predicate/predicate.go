@@ -93,5 +93,8 @@ type UserBusiness func(*sql.Selector)
 // UserFollowBusiness is the predicate function for userfollowbusiness builders.
 type UserFollowBusiness func(*sql.Selector)
 
+// UserFollowPlace is the predicate function for userfollowplace builders.
+type UserFollowPlace func(*sql.Selector)
+
 // UserFollowUser is the predicate function for userfollowuser builders.
 type UserFollowUser func(*sql.Selector)

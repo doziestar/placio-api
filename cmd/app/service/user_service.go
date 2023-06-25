@@ -488,10 +488,6 @@ func (us *UserServiceImpl) UpdateUser(ctx context.Context, userID string, userDa
 		return nil, fmt.Errorf("failed updating user: %w", err)
 	}
 
-	// Update Auth0 data
-
-	// Get the current user data
-
 	return user, nil
 }
 

@@ -54,5 +54,6 @@ func (User) Edges() []ent.Edge {
 		edge.To("events", Event.Type),
 		edge.To("places", Place.Type),
 		edge.To("categoryAssignments", CategoryAssignment.Type),
+		edge.To("followedPlaces", UserFollowPlace.Type),
 	}
 }

@@ -70,9 +70,11 @@ type PlaceEdges struct {
 	Categories []*Category `json:"categories,omitempty"`
 	// CategoryAssignments holds the value of the categoryAssignments edge.
 	CategoryAssignments []*CategoryAssignment `json:"categoryAssignments,omitempty"`
+	// FollowerUsers holds the value of the followerUsers edge.
+	FollowerUsers []*UserFollowPlace `json:"followerUsers,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [10]bool
+	loadedTypes [11]bool
 }
 
 // BusinessOrErr returns the Business value or an error if the edge
@@ -167,6 +169,15 @@ func (e PlaceEdges) CategoryAssignmentsOrErr() ([]*CategoryAssignment, error) {
 		return e.CategoryAssignments, nil
 	}
 	return nil, &NotLoadedError{edge: "categoryAssignments"}
+}
+
+// FollowerUsersOrErr returns the FollowerUsers value or an error if the edge
+// was not loaded in eager-loading.
+func (e PlaceEdges) FollowerUsersOrErr() ([]*UserFollowPlace, error) {
+	if e.loadedTypes[10] {
+		return e.FollowerUsers, nil
+	}
+	return nil, &NotLoadedError{edge: "followerUsers"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -352,6 +363,11 @@ func (pl *Place) QueryCategories() *CategoryQuery {
 // QueryCategoryAssignments queries the "categoryAssignments" edge of the Place entity.
 func (pl *Place) QueryCategoryAssignments() *CategoryAssignmentQuery {
 	return NewPlaceClient(pl.config).QueryCategoryAssignments(pl)
+}
+
+// QueryFollowerUsers queries the "followerUsers" edge of the Place entity.
+func (pl *Place) QueryFollowerUsers() *UserFollowPlaceQuery {
+	return NewPlaceClient(pl.config).QueryFollowerUsers(pl)
 }
 
 // Update returns a builder for updating this Place.
