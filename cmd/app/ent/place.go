@@ -44,7 +44,6 @@ type Place struct {
 	// The values are being populated by the PlaceQuery when eager-loading is set.
 	Edges           PlaceEdges `json:"edges"`
 	business_places *string
-	user_places     *string
 	selectValues    sql.SelectValues
 }
 
@@ -52,6 +51,8 @@ type Place struct {
 type PlaceEdges struct {
 	// Business holds the value of the business edge.
 	Business *Business `json:"business,omitempty"`
+	// Users holds the value of the users edge.
+	Users []*User `json:"users,omitempty"`
 	// Reviews holds the value of the reviews edge.
 	Reviews []*Review `json:"reviews,omitempty"`
 	// Events holds the value of the events edge.
@@ -74,7 +75,7 @@ type PlaceEdges struct {
 	FollowerUsers []*UserFollowPlace `json:"followerUsers,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [11]bool
+	loadedTypes [12]bool
 }
 
 // BusinessOrErr returns the Business value or an error if the edge
@@ -90,10 +91,19 @@ func (e PlaceEdges) BusinessOrErr() (*Business, error) {
 	return nil, &NotLoadedError{edge: "business"}
 }
 
+// UsersOrErr returns the Users value or an error if the edge
+// was not loaded in eager-loading.
+func (e PlaceEdges) UsersOrErr() ([]*User, error) {
+	if e.loadedTypes[1] {
+		return e.Users, nil
+	}
+	return nil, &NotLoadedError{edge: "users"}
+}
+
 // ReviewsOrErr returns the Reviews value or an error if the edge
 // was not loaded in eager-loading.
 func (e PlaceEdges) ReviewsOrErr() ([]*Review, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[2] {
 		return e.Reviews, nil
 	}
 	return nil, &NotLoadedError{edge: "reviews"}
@@ -102,7 +112,7 @@ func (e PlaceEdges) ReviewsOrErr() ([]*Review, error) {
 // EventsOrErr returns the Events value or an error if the edge
 // was not loaded in eager-loading.
 func (e PlaceEdges) EventsOrErr() ([]*Event, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[3] {
 		return e.Events, nil
 	}
 	return nil, &NotLoadedError{edge: "events"}
@@ -111,7 +121,7 @@ func (e PlaceEdges) EventsOrErr() ([]*Event, error) {
 // AmenitiesOrErr returns the Amenities value or an error if the edge
 // was not loaded in eager-loading.
 func (e PlaceEdges) AmenitiesOrErr() ([]*Amenity, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[4] {
 		return e.Amenities, nil
 	}
 	return nil, &NotLoadedError{edge: "amenities"}
@@ -120,7 +130,7 @@ func (e PlaceEdges) AmenitiesOrErr() ([]*Amenity, error) {
 // MenusOrErr returns the Menus value or an error if the edge
 // was not loaded in eager-loading.
 func (e PlaceEdges) MenusOrErr() ([]*Menu, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[5] {
 		return e.Menus, nil
 	}
 	return nil, &NotLoadedError{edge: "menus"}
@@ -129,7 +139,7 @@ func (e PlaceEdges) MenusOrErr() ([]*Menu, error) {
 // RoomsOrErr returns the Rooms value or an error if the edge
 // was not loaded in eager-loading.
 func (e PlaceEdges) RoomsOrErr() ([]*Room, error) {
-	if e.loadedTypes[5] {
+	if e.loadedTypes[6] {
 		return e.Rooms, nil
 	}
 	return nil, &NotLoadedError{edge: "rooms"}
@@ -138,7 +148,7 @@ func (e PlaceEdges) RoomsOrErr() ([]*Room, error) {
 // ReservationsOrErr returns the Reservations value or an error if the edge
 // was not loaded in eager-loading.
 func (e PlaceEdges) ReservationsOrErr() ([]*Reservation, error) {
-	if e.loadedTypes[6] {
+	if e.loadedTypes[7] {
 		return e.Reservations, nil
 	}
 	return nil, &NotLoadedError{edge: "reservations"}
@@ -147,7 +157,7 @@ func (e PlaceEdges) ReservationsOrErr() ([]*Reservation, error) {
 // BookingsOrErr returns the Bookings value or an error if the edge
 // was not loaded in eager-loading.
 func (e PlaceEdges) BookingsOrErr() ([]*Booking, error) {
-	if e.loadedTypes[7] {
+	if e.loadedTypes[8] {
 		return e.Bookings, nil
 	}
 	return nil, &NotLoadedError{edge: "bookings"}
@@ -156,7 +166,7 @@ func (e PlaceEdges) BookingsOrErr() ([]*Booking, error) {
 // CategoriesOrErr returns the Categories value or an error if the edge
 // was not loaded in eager-loading.
 func (e PlaceEdges) CategoriesOrErr() ([]*Category, error) {
-	if e.loadedTypes[8] {
+	if e.loadedTypes[9] {
 		return e.Categories, nil
 	}
 	return nil, &NotLoadedError{edge: "categories"}
@@ -165,7 +175,7 @@ func (e PlaceEdges) CategoriesOrErr() ([]*Category, error) {
 // CategoryAssignmentsOrErr returns the CategoryAssignments value or an error if the edge
 // was not loaded in eager-loading.
 func (e PlaceEdges) CategoryAssignmentsOrErr() ([]*CategoryAssignment, error) {
-	if e.loadedTypes[9] {
+	if e.loadedTypes[10] {
 		return e.CategoryAssignments, nil
 	}
 	return nil, &NotLoadedError{edge: "categoryAssignments"}
@@ -174,7 +184,7 @@ func (e PlaceEdges) CategoryAssignmentsOrErr() ([]*CategoryAssignment, error) {
 // FollowerUsersOrErr returns the FollowerUsers value or an error if the edge
 // was not loaded in eager-loading.
 func (e PlaceEdges) FollowerUsersOrErr() ([]*UserFollowPlace, error) {
-	if e.loadedTypes[10] {
+	if e.loadedTypes[11] {
 		return e.FollowerUsers, nil
 	}
 	return nil, &NotLoadedError{edge: "followerUsers"}
@@ -192,8 +202,6 @@ func (*Place) scanValues(columns []string) ([]any, error) {
 		case place.FieldID, place.FieldName, place.FieldType, place.FieldDescription, place.FieldLocation, place.FieldSpecialOffers, place.FieldSearchText:
 			values[i] = new(sql.NullString)
 		case place.ForeignKeys[0]: // business_places
-			values[i] = new(sql.NullString)
-		case place.ForeignKeys[1]: // user_places
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -295,13 +303,6 @@ func (pl *Place) assignValues(columns []string, values []any) error {
 				pl.business_places = new(string)
 				*pl.business_places = value.String
 			}
-		case place.ForeignKeys[1]:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field user_places", values[i])
-			} else if value.Valid {
-				pl.user_places = new(string)
-				*pl.user_places = value.String
-			}
 		default:
 			pl.selectValues.Set(columns[i], values[i])
 		}
@@ -318,6 +319,11 @@ func (pl *Place) Value(name string) (ent.Value, error) {
 // QueryBusiness queries the "business" edge of the Place entity.
 func (pl *Place) QueryBusiness() *BusinessQuery {
 	return NewPlaceClient(pl.config).QueryBusiness(pl)
+}
+
+// QueryUsers queries the "users" edge of the Place entity.
+func (pl *Place) QueryUsers() *UserQuery {
+	return NewPlaceClient(pl.config).QueryUsers(pl)
 }
 
 // QueryReviews queries the "reviews" edge of the Place entity.

@@ -9751,6 +9751,9 @@ type PlaceMutation struct {
 	clearedFields              map[string]struct{}
 	business                   *string
 	clearedbusiness            bool
+	users                      map[string]struct{}
+	removedusers               map[string]struct{}
+	clearedusers               bool
 	reviews                    map[string]struct{}
 	removedreviews             map[string]struct{}
 	clearedreviews             bool
@@ -10472,6 +10475,60 @@ func (m *PlaceMutation) BusinessIDs() (ids []string) {
 func (m *PlaceMutation) ResetBusiness() {
 	m.business = nil
 	m.clearedbusiness = false
+}
+
+// AddUserIDs adds the "users" edge to the User entity by ids.
+func (m *PlaceMutation) AddUserIDs(ids ...string) {
+	if m.users == nil {
+		m.users = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.users[ids[i]] = struct{}{}
+	}
+}
+
+// ClearUsers clears the "users" edge to the User entity.
+func (m *PlaceMutation) ClearUsers() {
+	m.clearedusers = true
+}
+
+// UsersCleared reports if the "users" edge to the User entity was cleared.
+func (m *PlaceMutation) UsersCleared() bool {
+	return m.clearedusers
+}
+
+// RemoveUserIDs removes the "users" edge to the User entity by IDs.
+func (m *PlaceMutation) RemoveUserIDs(ids ...string) {
+	if m.removedusers == nil {
+		m.removedusers = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.users, ids[i])
+		m.removedusers[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedUsers returns the removed IDs of the "users" edge to the User entity.
+func (m *PlaceMutation) RemovedUsersIDs() (ids []string) {
+	for id := range m.removedusers {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// UsersIDs returns the "users" edge IDs in the mutation.
+func (m *PlaceMutation) UsersIDs() (ids []string) {
+	for id := range m.users {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetUsers resets all changes to the "users" edge.
+func (m *PlaceMutation) ResetUsers() {
+	m.users = nil
+	m.clearedusers = false
+	m.removedusers = nil
 }
 
 // AddReviewIDs adds the "reviews" edge to the Review entity by ids.
@@ -11389,9 +11446,12 @@ func (m *PlaceMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PlaceMutation) AddedEdges() []string {
-	edges := make([]string, 0, 11)
+	edges := make([]string, 0, 12)
 	if m.business != nil {
 		edges = append(edges, place.EdgeBusiness)
+	}
+	if m.users != nil {
+		edges = append(edges, place.EdgeUsers)
 	}
 	if m.reviews != nil {
 		edges = append(edges, place.EdgeReviews)
@@ -11434,6 +11494,12 @@ func (m *PlaceMutation) AddedIDs(name string) []ent.Value {
 		if id := m.business; id != nil {
 			return []ent.Value{*id}
 		}
+	case place.EdgeUsers:
+		ids := make([]ent.Value, 0, len(m.users))
+		for id := range m.users {
+			ids = append(ids, id)
+		}
+		return ids
 	case place.EdgeReviews:
 		ids := make([]ent.Value, 0, len(m.reviews))
 		for id := range m.reviews {
@@ -11500,7 +11566,10 @@ func (m *PlaceMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PlaceMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 11)
+	edges := make([]string, 0, 12)
+	if m.removedusers != nil {
+		edges = append(edges, place.EdgeUsers)
+	}
 	if m.removedreviews != nil {
 		edges = append(edges, place.EdgeReviews)
 	}
@@ -11538,6 +11607,12 @@ func (m *PlaceMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *PlaceMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
+	case place.EdgeUsers:
+		ids := make([]ent.Value, 0, len(m.removedusers))
+		for id := range m.removedusers {
+			ids = append(ids, id)
+		}
+		return ids
 	case place.EdgeReviews:
 		ids := make([]ent.Value, 0, len(m.removedreviews))
 		for id := range m.removedreviews {
@@ -11604,9 +11679,12 @@ func (m *PlaceMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PlaceMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 11)
+	edges := make([]string, 0, 12)
 	if m.clearedbusiness {
 		edges = append(edges, place.EdgeBusiness)
+	}
+	if m.clearedusers {
+		edges = append(edges, place.EdgeUsers)
 	}
 	if m.clearedreviews {
 		edges = append(edges, place.EdgeReviews)
@@ -11647,6 +11725,8 @@ func (m *PlaceMutation) EdgeCleared(name string) bool {
 	switch name {
 	case place.EdgeBusiness:
 		return m.clearedbusiness
+	case place.EdgeUsers:
+		return m.clearedusers
 	case place.EdgeReviews:
 		return m.clearedreviews
 	case place.EdgeEvents:
@@ -11688,6 +11768,9 @@ func (m *PlaceMutation) ResetEdge(name string) error {
 	switch name {
 	case place.EdgeBusiness:
 		m.ResetBusiness()
+		return nil
+	case place.EdgeUsers:
+		m.ResetUsers()
 		return nil
 	case place.EdgeReviews:
 		m.ResetReviews()

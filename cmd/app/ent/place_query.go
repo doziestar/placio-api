@@ -19,6 +19,7 @@ import (
 	"placio-app/ent/reservation"
 	"placio-app/ent/review"
 	"placio-app/ent/room"
+	"placio-app/ent/user"
 	"placio-app/ent/userfollowplace"
 
 	"entgo.io/ent/dialect/sql"
@@ -34,6 +35,7 @@ type PlaceQuery struct {
 	inters                  []Interceptor
 	predicates              []predicate.Place
 	withBusiness            *BusinessQuery
+	withUsers               *UserQuery
 	withReviews             *ReviewQuery
 	withEvents              *EventQuery
 	withAmenities           *AmenityQuery
@@ -96,6 +98,28 @@ func (pq *PlaceQuery) QueryBusiness() *BusinessQuery {
 			sqlgraph.From(place.Table, place.FieldID, selector),
 			sqlgraph.To(business.Table, business.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, place.BusinessTable, place.BusinessColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryUsers chains the current query on the "users" edge.
+func (pq *PlaceQuery) QueryUsers() *UserQuery {
+	query := (&UserClient{config: pq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(place.Table, place.FieldID, selector),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, place.UsersTable, place.UsersPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
 		return fromU, nil
@@ -516,6 +540,7 @@ func (pq *PlaceQuery) Clone() *PlaceQuery {
 		inters:                  append([]Interceptor{}, pq.inters...),
 		predicates:              append([]predicate.Place{}, pq.predicates...),
 		withBusiness:            pq.withBusiness.Clone(),
+		withUsers:               pq.withUsers.Clone(),
 		withReviews:             pq.withReviews.Clone(),
 		withEvents:              pq.withEvents.Clone(),
 		withAmenities:           pq.withAmenities.Clone(),
@@ -540,6 +565,17 @@ func (pq *PlaceQuery) WithBusiness(opts ...func(*BusinessQuery)) *PlaceQuery {
 		opt(query)
 	}
 	pq.withBusiness = query
+	return pq
+}
+
+// WithUsers tells the query-builder to eager-load the nodes that are connected to
+// the "users" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *PlaceQuery) WithUsers(opts ...func(*UserQuery)) *PlaceQuery {
+	query := (&UserClient{config: pq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withUsers = query
 	return pq
 }
 
@@ -732,8 +768,9 @@ func (pq *PlaceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Place,
 		nodes       = []*Place{}
 		withFKs     = pq.withFKs
 		_spec       = pq.querySpec()
-		loadedTypes = [11]bool{
+		loadedTypes = [12]bool{
 			pq.withBusiness != nil,
+			pq.withUsers != nil,
 			pq.withReviews != nil,
 			pq.withEvents != nil,
 			pq.withAmenities != nil,
@@ -773,6 +810,13 @@ func (pq *PlaceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Place,
 	if query := pq.withBusiness; query != nil {
 		if err := pq.loadBusiness(ctx, query, nodes, nil,
 			func(n *Place, e *Business) { n.Edges.Business = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := pq.withUsers; query != nil {
+		if err := pq.loadUsers(ctx, query, nodes,
+			func(n *Place) { n.Edges.Users = []*User{} },
+			func(n *Place, e *User) { n.Edges.Users = append(n.Edges.Users, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -879,6 +923,67 @@ func (pq *PlaceQuery) loadBusiness(ctx context.Context, query *BusinessQuery, no
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (pq *PlaceQuery) loadUsers(ctx context.Context, query *UserQuery, nodes []*Place, init func(*Place), assign func(*Place, *User)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[string]*Place)
+	nids := make(map[string]map[*Place]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(place.UsersTable)
+		s.Join(joinT).On(s.C(user.FieldID), joinT.C(place.UsersPrimaryKey[0]))
+		s.Where(sql.InValues(joinT.C(place.UsersPrimaryKey[1]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(place.UsersPrimaryKey[1]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(sql.NullString)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := values[0].(*sql.NullString).String
+				inValue := values[1].(*sql.NullString).String
+				if nids[inValue] == nil {
+					nids[inValue] = map[*Place]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*User](ctx, query, qr, query.inters)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "users" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
 		}
 	}
 	return nil
