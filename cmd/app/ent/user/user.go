@@ -22,6 +22,10 @@ const (
 	FieldCoverImage = "cover_image"
 	// FieldUsername holds the string denoting the username field in the database.
 	FieldUsername = "username"
+	// FieldWebsite holds the string denoting the website field in the database.
+	FieldWebsite = "website"
+	// FieldLocation holds the string denoting the location field in the database.
+	FieldLocation = "location"
 	// FieldBio holds the string denoting the bio field in the database.
 	FieldBio = "bio"
 	// FieldAuth0Data holds the string denoting the auth0_data field in the database.
@@ -190,6 +194,8 @@ var Columns = []string{
 	FieldPicture,
 	FieldCoverImage,
 	FieldUsername,
+	FieldWebsite,
+	FieldLocation,
 	FieldBio,
 	FieldAuth0Data,
 	FieldAppSettings,
@@ -248,6 +254,16 @@ func ByCoverImage(opts ...sql.OrderTermOption) OrderOption {
 // ByUsername orders the results by the username field.
 func ByUsername(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUsername, opts...).ToFunc()
+}
+
+// ByWebsite orders the results by the website field.
+func ByWebsite(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldWebsite, opts...).ToFunc()
+}
+
+// ByLocation orders the results by the location field.
+func ByLocation(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLocation, opts...).ToFunc()
 }
 
 // ByBio orders the results by the bio field.

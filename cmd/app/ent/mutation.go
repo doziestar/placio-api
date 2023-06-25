@@ -15885,6 +15885,8 @@ type UserMutation struct {
 	picture                    *string
 	cover_image                *string
 	username                   *string
+	website                    *string
+	location                   *string
 	bio                        *string
 	auth0_data                 **management.User
 	app_settings               *map[string]interface{}
@@ -16267,6 +16269,104 @@ func (m *UserMutation) OldUsername(ctx context.Context) (v string, err error) {
 // ResetUsername resets all changes to the "username" field.
 func (m *UserMutation) ResetUsername() {
 	m.username = nil
+}
+
+// SetWebsite sets the "website" field.
+func (m *UserMutation) SetWebsite(s string) {
+	m.website = &s
+}
+
+// Website returns the value of the "website" field in the mutation.
+func (m *UserMutation) Website() (r string, exists bool) {
+	v := m.website
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldWebsite returns the old "website" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldWebsite(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldWebsite is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldWebsite requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldWebsite: %w", err)
+	}
+	return oldValue.Website, nil
+}
+
+// ClearWebsite clears the value of the "website" field.
+func (m *UserMutation) ClearWebsite() {
+	m.website = nil
+	m.clearedFields[user.FieldWebsite] = struct{}{}
+}
+
+// WebsiteCleared returns if the "website" field was cleared in this mutation.
+func (m *UserMutation) WebsiteCleared() bool {
+	_, ok := m.clearedFields[user.FieldWebsite]
+	return ok
+}
+
+// ResetWebsite resets all changes to the "website" field.
+func (m *UserMutation) ResetWebsite() {
+	m.website = nil
+	delete(m.clearedFields, user.FieldWebsite)
+}
+
+// SetLocation sets the "location" field.
+func (m *UserMutation) SetLocation(s string) {
+	m.location = &s
+}
+
+// Location returns the value of the "location" field in the mutation.
+func (m *UserMutation) Location() (r string, exists bool) {
+	v := m.location
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLocation returns the old "location" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldLocation(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLocation is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLocation requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLocation: %w", err)
+	}
+	return oldValue.Location, nil
+}
+
+// ClearLocation clears the value of the "location" field.
+func (m *UserMutation) ClearLocation() {
+	m.location = nil
+	m.clearedFields[user.FieldLocation] = struct{}{}
+}
+
+// LocationCleared returns if the "location" field was cleared in this mutation.
+func (m *UserMutation) LocationCleared() bool {
+	_, ok := m.clearedFields[user.FieldLocation]
+	return ok
+}
+
+// ResetLocation resets all changes to the "location" field.
+func (m *UserMutation) ResetLocation() {
+	m.location = nil
+	delete(m.clearedFields, user.FieldLocation)
 }
 
 // SetBio sets the "bio" field.
@@ -17482,7 +17582,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 13)
 	if m.auth0_id != nil {
 		fields = append(fields, user.FieldAuth0ID)
 	}
@@ -17497,6 +17597,12 @@ func (m *UserMutation) Fields() []string {
 	}
 	if m.username != nil {
 		fields = append(fields, user.FieldUsername)
+	}
+	if m.website != nil {
+		fields = append(fields, user.FieldWebsite)
+	}
+	if m.location != nil {
+		fields = append(fields, user.FieldLocation)
 	}
 	if m.bio != nil {
 		fields = append(fields, user.FieldBio)
@@ -17534,6 +17640,10 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.CoverImage()
 	case user.FieldUsername:
 		return m.Username()
+	case user.FieldWebsite:
+		return m.Website()
+	case user.FieldLocation:
+		return m.Location()
 	case user.FieldBio:
 		return m.Bio()
 	case user.FieldAuth0Data:
@@ -17565,6 +17675,10 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldCoverImage(ctx)
 	case user.FieldUsername:
 		return m.OldUsername(ctx)
+	case user.FieldWebsite:
+		return m.OldWebsite(ctx)
+	case user.FieldLocation:
+		return m.OldLocation(ctx)
 	case user.FieldBio:
 		return m.OldBio(ctx)
 	case user.FieldAuth0Data:
@@ -17620,6 +17734,20 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUsername(v)
+		return nil
+	case user.FieldWebsite:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetWebsite(v)
+		return nil
+	case user.FieldLocation:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLocation(v)
 		return nil
 	case user.FieldBio:
 		v, ok := value.(string)
@@ -17717,6 +17845,12 @@ func (m *UserMutation) ClearedFields() []string {
 	if m.FieldCleared(user.FieldCoverImage) {
 		fields = append(fields, user.FieldCoverImage)
 	}
+	if m.FieldCleared(user.FieldWebsite) {
+		fields = append(fields, user.FieldWebsite)
+	}
+	if m.FieldCleared(user.FieldLocation) {
+		fields = append(fields, user.FieldLocation)
+	}
 	if m.FieldCleared(user.FieldBio) {
 		fields = append(fields, user.FieldBio)
 	}
@@ -17758,6 +17892,12 @@ func (m *UserMutation) ClearField(name string) error {
 	case user.FieldCoverImage:
 		m.ClearCoverImage()
 		return nil
+	case user.FieldWebsite:
+		m.ClearWebsite()
+		return nil
+	case user.FieldLocation:
+		m.ClearLocation()
+		return nil
 	case user.FieldBio:
 		m.ClearBio()
 		return nil
@@ -17798,6 +17938,12 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldUsername:
 		m.ResetUsername()
+		return nil
+	case user.FieldWebsite:
+		m.ResetWebsite()
+		return nil
+	case user.FieldLocation:
+		m.ResetLocation()
 		return nil
 	case user.FieldBio:
 		m.ResetBio()

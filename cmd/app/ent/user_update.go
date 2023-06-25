@@ -114,6 +114,46 @@ func (uu *UserUpdate) SetUsername(s string) *UserUpdate {
 	return uu
 }
 
+// SetWebsite sets the "website" field.
+func (uu *UserUpdate) SetWebsite(s string) *UserUpdate {
+	uu.mutation.SetWebsite(s)
+	return uu
+}
+
+// SetNillableWebsite sets the "website" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableWebsite(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetWebsite(*s)
+	}
+	return uu
+}
+
+// ClearWebsite clears the value of the "website" field.
+func (uu *UserUpdate) ClearWebsite() *UserUpdate {
+	uu.mutation.ClearWebsite()
+	return uu
+}
+
+// SetLocation sets the "location" field.
+func (uu *UserUpdate) SetLocation(s string) *UserUpdate {
+	uu.mutation.SetLocation(s)
+	return uu
+}
+
+// SetNillableLocation sets the "location" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableLocation(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetLocation(*s)
+	}
+	return uu
+}
+
+// ClearLocation clears the value of the "location" field.
+func (uu *UserUpdate) ClearLocation() *UserUpdate {
+	uu.mutation.ClearLocation()
+	return uu
+}
+
 // SetBio sets the "bio" field.
 func (uu *UserUpdate) SetBio(s string) *UserUpdate {
 	uu.mutation.SetBio(s)
@@ -821,6 +861,18 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := uu.mutation.Username(); ok {
 		_spec.SetField(user.FieldUsername, field.TypeString, value)
+	}
+	if value, ok := uu.mutation.Website(); ok {
+		_spec.SetField(user.FieldWebsite, field.TypeString, value)
+	}
+	if uu.mutation.WebsiteCleared() {
+		_spec.ClearField(user.FieldWebsite, field.TypeString)
+	}
+	if value, ok := uu.mutation.Location(); ok {
+		_spec.SetField(user.FieldLocation, field.TypeString, value)
+	}
+	if uu.mutation.LocationCleared() {
+		_spec.ClearField(user.FieldLocation, field.TypeString)
 	}
 	if value, ok := uu.mutation.Bio(); ok {
 		_spec.SetField(user.FieldBio, field.TypeString, value)
@@ -1628,6 +1680,46 @@ func (uuo *UserUpdateOne) SetUsername(s string) *UserUpdateOne {
 	return uuo
 }
 
+// SetWebsite sets the "website" field.
+func (uuo *UserUpdateOne) SetWebsite(s string) *UserUpdateOne {
+	uuo.mutation.SetWebsite(s)
+	return uuo
+}
+
+// SetNillableWebsite sets the "website" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableWebsite(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetWebsite(*s)
+	}
+	return uuo
+}
+
+// ClearWebsite clears the value of the "website" field.
+func (uuo *UserUpdateOne) ClearWebsite() *UserUpdateOne {
+	uuo.mutation.ClearWebsite()
+	return uuo
+}
+
+// SetLocation sets the "location" field.
+func (uuo *UserUpdateOne) SetLocation(s string) *UserUpdateOne {
+	uuo.mutation.SetLocation(s)
+	return uuo
+}
+
+// SetNillableLocation sets the "location" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableLocation(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetLocation(*s)
+	}
+	return uuo
+}
+
+// ClearLocation clears the value of the "location" field.
+func (uuo *UserUpdateOne) ClearLocation() *UserUpdateOne {
+	uuo.mutation.ClearLocation()
+	return uuo
+}
+
 // SetBio sets the "bio" field.
 func (uuo *UserUpdateOne) SetBio(s string) *UserUpdateOne {
 	uuo.mutation.SetBio(s)
@@ -2365,6 +2457,18 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if value, ok := uuo.mutation.Username(); ok {
 		_spec.SetField(user.FieldUsername, field.TypeString, value)
+	}
+	if value, ok := uuo.mutation.Website(); ok {
+		_spec.SetField(user.FieldWebsite, field.TypeString, value)
+	}
+	if uuo.mutation.WebsiteCleared() {
+		_spec.ClearField(user.FieldWebsite, field.TypeString)
+	}
+	if value, ok := uuo.mutation.Location(); ok {
+		_spec.SetField(user.FieldLocation, field.TypeString, value)
+	}
+	if uuo.mutation.LocationCleared() {
+		_spec.ClearField(user.FieldLocation, field.TypeString)
 	}
 	if value, ok := uuo.mutation.Bio(); ok {
 		_spec.SetField(user.FieldBio, field.TypeString, value)

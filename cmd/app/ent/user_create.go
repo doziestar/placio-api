@@ -89,6 +89,34 @@ func (uc *UserCreate) SetUsername(s string) *UserCreate {
 	return uc
 }
 
+// SetWebsite sets the "website" field.
+func (uc *UserCreate) SetWebsite(s string) *UserCreate {
+	uc.mutation.SetWebsite(s)
+	return uc
+}
+
+// SetNillableWebsite sets the "website" field if the given value is not nil.
+func (uc *UserCreate) SetNillableWebsite(s *string) *UserCreate {
+	if s != nil {
+		uc.SetWebsite(*s)
+	}
+	return uc
+}
+
+// SetLocation sets the "location" field.
+func (uc *UserCreate) SetLocation(s string) *UserCreate {
+	uc.mutation.SetLocation(s)
+	return uc
+}
+
+// SetNillableLocation sets the "location" field if the given value is not nil.
+func (uc *UserCreate) SetNillableLocation(s *string) *UserCreate {
+	if s != nil {
+		uc.SetLocation(*s)
+	}
+	return uc
+}
+
 // SetBio sets the "bio" field.
 func (uc *UserCreate) SetBio(s string) *UserCreate {
 	uc.mutation.SetBio(s)
@@ -507,6 +535,14 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.Username(); ok {
 		_spec.SetField(user.FieldUsername, field.TypeString, value)
 		_node.Username = value
+	}
+	if value, ok := uc.mutation.Website(); ok {
+		_spec.SetField(user.FieldWebsite, field.TypeString, value)
+		_node.Website = value
+	}
+	if value, ok := uc.mutation.Location(); ok {
+		_spec.SetField(user.FieldLocation, field.TypeString, value)
+		_node.Location = value
 	}
 	if value, ok := uc.mutation.Bio(); ok {
 		_spec.SetField(user.FieldBio, field.TypeString, value)
