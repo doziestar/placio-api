@@ -62,14 +62,13 @@ func (ss *SearchController) search(ctx *gin.Context) error {
 		return err
 	}
 	ctx.JSON(http.StatusOK, gin.H{
-		"users": users,
+		"users":      users,
 		"businesses": businesses,
-		"events": events,
-		"places":places,
+		"events":     events,
+		"places":     places,
 	})
 	return nil
 }
-
 
 // @Summary Search for Users
 // @Description Search for Users by a given search text
@@ -144,7 +143,7 @@ func (ss *SearchController) searchEvents(ctx *gin.Context) error {
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/search/businesses [get]
-func (ss *SearchController) searchBusinesses(ctx *gin.Context) error{
+func (ss *SearchController) searchBusinesses(ctx *gin.Context) error {
 	searchText := ctx.Query("searchText")
 	businesses, err := ss.searchService.SearchBusinesses(ctx, searchText)
 	if err != nil {
