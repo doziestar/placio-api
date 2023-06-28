@@ -13,7 +13,7 @@ import (
 	"github.com/getsentry/sentry-go"
 )
 
-func Initialize(PORT string, app *gin.Engine) {
+func Initialize(app *gin.Engine) {
 
 	err := sentry.Init(sentry.ClientOptions{
 		Dsn: "",
@@ -30,12 +30,13 @@ func Initialize(PORT string, app *gin.Engine) {
 	}
 
 	srv := &http.Server{
-		Addr:    ":" + PORT,
+		Addr:    ":" + os.Getenv("PORT"),
 		Handler: app,
 	}
 
 	go func() {
 		// service connections
+		log.Println("Listening on port " + os.Getenv("PORT"))
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("listen: %s\n", err)
 		}

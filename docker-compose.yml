@@ -77,7 +77,7 @@ services:
     build:
       context: .
 #      dockerfile: ./cmd/app/Dockerfile
-      dockerfile: ./cmd/app/Dockerfile
+      dockerfile: ./cmd/app/stag.dockerfile
     restart: always
     ports:
       - "7070:7070"

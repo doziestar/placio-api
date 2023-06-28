@@ -20,4 +20,4 @@ AUTH0_CLIENT_SECRET=_tbGyuaBZ7j5zp659MU5AYqkZessCVeNs2bv8Yl1Hp6XUj_hUdQAW9a5zw8h
 AUTH0_GRANT_TYPE=client_credentials
 DEBUG=false
 GIN_MODE=release
-
+PORT=7070

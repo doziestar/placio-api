@@ -16,6 +16,7 @@ RUN go mod download
 # Copy the entire project directory inside the container
 COPY . .
 
+ENV PORT=7070
 # Build the Go app for a smaller binary size
 # -v: print the names of packages as they are compiled.
 # -o: name of the binary.
