@@ -6,6 +6,8 @@ import (
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"log"
+	"math"
+	"math/rand"
 	"os"
 	"placio-app/ent"
 	"placio-pkg/logger"
@@ -76,7 +78,8 @@ func EntClient(ctx context.Context) *ent.Client {
 		if err != nil {
 			log.Println("Error connecting to database: ", err)
 			if i < maxRetries {
-				waitTime := time.Duration(i) * time.Second
+				waitTime := time.Duration(math.Pow(2, float64(i))) * time.Second
+				waitTime += time.Duration(rand.Intn(1000)) * time.Millisecond
 				log.Printf("Retrying database connection in %v", waitTime)
 				time.Sleep(waitTime)
 				continue
