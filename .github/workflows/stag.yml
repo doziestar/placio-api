@@ -12,26 +12,16 @@ jobs:
     env:
       TAG: stag
     steps:
-      # - name: Update coverage report
-      #   uses: ncruces/go-coverage-report@main
-      - name: remove old stack
-        run: echo ${{ secrets.VPS_PASSWORD }} |
-          sudo -S rm -rf /home/dozie/placio-api/_work/nightout-server/placio-api/backend
-      - name: remove old stack
-        run: echo ${{ secrets.VPS_PASSWORD }} |
-          sudo -S rm -rf /home/dozie/placio-api/_work/placio-api/placio-api/portainer
-      - name: remove old stack
-        run: echo ${{ secrets.VPS_PASSWORD }} |
-          sudo -S rm -rf /home/dozie/placio-api/_work/placio-api/placio-api/traefik
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Add Permission To acme.json
+
+      - name: Remove old application stack
         run: |
-          chmod 600 ./traefik/acme.json
-      - name: Add Permission To init-db.sh
+          echo ${{ secrets.VPS_PASSWORD }} | sudo -S rm -rf /home/dozie/placio-api/_work/nightout-server/placio-api/backend
+          echo ${{ secrets.VPS_PASSWORD }} | sudo -S rm -rf /home/dozie/placio-api/_work/placio-api/placio-api/portainer
+          echo ${{ secrets.VPS_PASSWORD }} | sudo -S rm -rf /home/dozie/placio-api/_work/placio-api/placio-api/traefik
+
+      - name: Build and Start Docker Containers
         run: |
-          chmod +x ./init-db.sh
-      - name: Start Docker Container
-        run: echo "Starting containers" |
-          echo ${{ secrets.VPS_PASSWORD }} |
-          sudo -S docker-compose -f docker-compose.stag.yml up --build -d
+          echo "Starting containers"
+          echo ${{ secrets.VPS_PASSWORD }} | sudo -S docker-compose -f docker-compose.stag.yml up --build -d
