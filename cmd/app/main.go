@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"github.com/gin-gonic/gin"
-	"os"
 	"placio-app/api"
 	"placio-app/database"
 	"placio-app/start"
@@ -24,10 +23,6 @@ import (
 // @BasePath /api/v1
 // @schemes http https
 func main() {
-	// get port from env
-	port := os.Getenv("PORT")
-	// if port is not set, set it to 3000
-
 	// initialize fiber app
 	app := gin.Default()
 
@@ -41,6 +36,6 @@ func main() {
 	api.InitializeRoutes(app, client)
 
 	// set port
-	start.Initialize(port, app)
+	start.Initialize(app)
 
 }
