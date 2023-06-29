@@ -70,12 +70,12 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		//newUtils := utility.NewUtility()
 
 		// user
-		userService := service.NewUserService(client, redisClient, &searchService)
+		userService := service.NewUserService(client, redisClient, searchService)
 		userController := controller.NewUserController(userService)
 		userController.RegisterRoutes(routerGroupV1)
 
 		// business
-		businessService := service.NewBusinessAccountService(client, &searchService)
+		businessService := service.NewBusinessAccountService(client, searchService)
 		_ = controller.NewBusinessAccountController(businessService)
 		//businessController.RegisterRoutes(routerGroupV1)
 
@@ -100,7 +100,7 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		likeController.RegisterRoutes(routerGroupV1)
 
 		// places
-		placeService := service.NewPlaceService(client, &searchService)
+		placeService := service.NewPlaceService(client, searchService)
 		placeController := controller.NewPlaceController(placeService)
 		placeController.RegisterRoutes(routerGroupV1)
 

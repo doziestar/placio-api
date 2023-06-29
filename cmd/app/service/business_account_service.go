@@ -33,12 +33,12 @@ type BusinessAccountService interface {
 }
 
 type BusinessAccountServiceImpl struct {
-	store  *ent.Business
-	client *ent.Client
-	searchService *SearchService
+	store         *ent.Business
+	client        *ent.Client
+	searchService SearchService
 }
 
-func NewBusinessAccountService(client *ent.Client,searchService *SearchService) BusinessAccountService {
+func NewBusinessAccountService(client *ent.Client, searchService SearchService) BusinessAccountService {
 	return &BusinessAccountServiceImpl{client: client, store: &ent.Business{}, searchService: searchService}
 }
 
@@ -199,6 +199,11 @@ func (s *BusinessAccountServiceImpl) CreateBusinessAccount(ctx context.Context, 
 		return nil, fmt.Errorf("error fetching created business account: %w", err)
 	}
 
+	// add business account to search index
+	err = s.searchService.CreateOrUpdateBusiness(ctx, businessAccount)
+	if err != nil {
+		return nil, fmt.Errorf("error adding buisness account to search index: %w", err)
+	}
 	return businessAccount, nil
 }
 
@@ -382,6 +387,11 @@ func (bas *BusinessAccountServiceImpl) UpdateBusinessAccount(ctx context.Context
 	business, err = upd.Save(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed updating business: %w", err)
+	}
+
+	// update elasticsearch
+	if err := bas.searchService.CreateOrUpdateBusiness(ctx, business); err != nil {
+		return nil, fmt.Errorf("failed updating business in elasticsearch: %w", err)
 	}
 
 	return business, nil
