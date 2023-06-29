@@ -15,13 +15,14 @@ type IEventService interface {
 	GetEventByDate(date string) (*[]models.Event, error)
 	DeleteEvent(eventId string) error
 	UpdateEvent(eventId string, data *Dto.EventDto) (*models.Event, error)
-	GetEventParticipants(eventId string) (error)
+	GetEventParticipants(eventId string) error
 	GetEventsByAccount(accountID string) ([]models.Event, error)
 }
 
 type EventService struct {
-	db      *gorm.DB
-	event   *models.Event
+	db    *gorm.DB
+	event *models.Event
+
 	// account *models.Account
 }
 
@@ -57,7 +58,7 @@ func (s *EventService) UpdateEvent(eventId string, data *Dto.EventDto) (*models.
 	return nil, nil
 }
 
-func (s *EventService) GetEventParticipants(eventId string) ( error) {
+func (s *EventService) GetEventParticipants(eventId string) error {
 	return nil
 }
 

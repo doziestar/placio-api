@@ -58,9 +58,9 @@ type UserService interface {
 }
 
 type UserServiceImpl struct {
-	client *ent.Client
-	cache  *utility.RedisClient
-	searchService *SearchService
+	client        *ent.Client
+	cache         *utility.RedisClient
+	searchService SearchService
 }
 
 type auth0TokenResponse struct {
@@ -69,7 +69,7 @@ type auth0TokenResponse struct {
 	ExpiresIn   int    `json:"expires_in"`
 }
 
-func NewUserService(client *ent.Client, cache *utility.RedisClient, searchService *SearchService) *UserServiceImpl {
+func NewUserService(client *ent.Client, cache *utility.RedisClient, searchService SearchService) *UserServiceImpl {
 	return &UserServiceImpl{client: client, cache: cache, searchService: searchService}
 }
 
@@ -177,6 +177,13 @@ func (s *UserServiceImpl) GetUser(ctx context.Context, auth0ID string) (*ent.Use
 
 		if err != nil {
 			log.Println("GetUser", auth0ID, "error creating new user", err)
+			return nil, err
+		}
+
+		// add user to search index
+		err = s.searchService.CreateOrUpdateUser(ctx, newUser)
+		if err != nil {
+			log.Println("GetUser", auth0ID, "error adding user to search index", err)
 			return nil, err
 		}
 
@@ -488,6 +495,11 @@ func (us *UserServiceImpl) UpdateUser(ctx context.Context, userID string, userDa
 	user, err = upd.Save(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed updating user: %w", err)
+	}
+
+	// update elasticsearch
+	if err := us.searchService.CreateOrUpdateUser(ctx, user); err != nil {
+		return nil, fmt.Errorf("failed updating user in elasticsearch: %w", err)
 	}
 
 	return user, nil
