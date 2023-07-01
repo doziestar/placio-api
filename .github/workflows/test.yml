@@ -28,8 +28,4 @@ jobs:
         run: sleep 30
 
       - name: Run tests
-        run: |
-          chmod +x wait-for-it.sh
-          chmod +x wait-for-server.sh
-          chmod +x test.sh
-          ./test.sh
+        run: ./test.sh
