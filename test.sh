@@ -24,13 +24,14 @@ bash ./wait-for-it.sh "${host}:${port}"
 
 echo "Server is up - running tests..."
 
-# Run the tests (replace this line with the actual command to run your tests)
-go test -v -coverprofile cover.out ./cmd/app/tests/...
+# Run the tests inside Docker container (replace "app" with your service name)
+docker-compose exec -T app go test -v -coverprofile cover.out ./cmd/app/tests/...
 
 # Generate the coverage report
-go tool cover -html=cover.out -o cover.html
+echo "Generating the coverage report..."
+docker-compose exec -T app go tool cover -html=cover.out -o cover.html
 
-# Stop the server (replace this line with the actual command to stop your server)
+# Stop the server
 echo "Stopping the server..."
 docker-compose down
 
