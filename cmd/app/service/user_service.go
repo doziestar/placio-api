@@ -431,9 +431,9 @@ func (s *UserServiceImpl) updateAuth0Data(userID string, mergedUserData map[stri
 	return &user, nil
 }
 
-func (us *UserServiceImpl) UpdateUser(ctx context.Context, userID string, userData map[string]interface{}) (*ent.User, error) {
+func (s *UserServiceImpl) UpdateUser(ctx context.Context, userID string, userData map[string]interface{}) (*ent.User, error) {
 	// Check if user exists
-	user, err := us.client.User.Get(ctx, userID)
+	user, err := s.client.User.Get(ctx, userID)
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return nil, fmt.Errorf("user does not exist")
@@ -442,7 +442,7 @@ func (us *UserServiceImpl) UpdateUser(ctx context.Context, userID string, userDa
 	}
 
 	// Get a updater for the user
-	upd := us.client.User.UpdateOne(user)
+	upd := s.client.User.UpdateOne(user)
 
 	// Update fields
 	if v, ok := userData["name"]; ok {
@@ -498,7 +498,7 @@ func (us *UserServiceImpl) UpdateUser(ctx context.Context, userID string, userDa
 	}
 
 	// update elasticsearch
-	if err := us.searchService.CreateOrUpdateUser(ctx, user); err != nil {
+	if err := s.searchService.CreateOrUpdateUser(ctx, user); err != nil {
 		return nil, fmt.Errorf("failed updating user in elasticsearch: %w", err)
 	}
 
@@ -636,9 +636,9 @@ func (s *UserServiceImpl) retrieveAuth0Token(ctx context.Context) (string, error
 	return tokenResponse.AccessToken, nil
 }
 
-func (us *UserServiceImpl) GetPostsByUser(ctx context.Context, userID string) ([]*ent.Post, error) {
+func (s *UserServiceImpl) GetPostsByUser(ctx context.Context, userID string) ([]*ent.Post, error) {
 	// Check if user exists
-	user, err := us.client.User.Get(ctx, userID)
+	user, err := s.client.User.Get(ctx, userID)
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return nil, fmt.Errorf("user does not exist")
