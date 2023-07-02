@@ -414,7 +414,7 @@ func (s *UserServiceImpl) updateAuth0Data(userID string, mergedUserData map[stri
 	log.Println("Response status", resp.Status)
 
 	if resp.StatusCode != http.StatusOK {
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		if err != nil {
 			return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 		}
