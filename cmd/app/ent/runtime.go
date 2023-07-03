@@ -147,6 +147,10 @@ func init() {
 	menu.IDValidator = menuDescID.Validators[0].(func(string) error)
 	placeFields := schema.Place{}.Fields()
 	_ = placeFields
+	// placeDescCoverImage is the schema descriptor for cover_image field.
+	placeDescCoverImage := placeFields[8].Descriptor()
+	// place.DefaultCoverImage holds the default value on creation for the cover_image field.
+	place.DefaultCoverImage = placeDescCoverImage.Default.(string)
 	// placeDescID is the schema descriptor for id field.
 	placeDescID := placeFields[0].Descriptor()
 	// place.IDValidator is a validator for the "id" field. It is called by the builders before save.

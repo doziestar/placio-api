@@ -3,6 +3,7 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"placio-app/Dto"
 	_ "placio-app/Dto"
 	_ "placio-app/ent"
 	"placio-app/service"
@@ -57,7 +58,7 @@ func (pc *PlaceController) getPlace(ctx *gin.Context) {
 // @Tags Place
 // @Accept json
 // @Produce json
-// @Param place body ent.Place true "Place to create"
+// @Param place body Dto.CreatePlaceDTO true "Place to create"
 // @Security Bearer
 // @Success 200 {object} ent.Place "Successfully created place"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
@@ -65,7 +66,7 @@ func (pc *PlaceController) getPlace(ctx *gin.Context) {
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/places/ [post]
 func (pc *PlaceController) createPlace(ctx *gin.Context) {
-	var placeData map[string]interface{}
+	var placeData Dto.CreatePlaceDTO
 	if err := ctx.ShouldBindJSON(&placeData); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -88,7 +89,7 @@ func (pc *PlaceController) createPlace(ctx *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string true "ID of the place to update"
-// @Param place body ent.Place true "Place data to update"
+// @Param place body Dto.UpdatePlaceDTO true "Place data to update"
 // @Security Bearer
 // @Success 200 {object} ent.Place "Successfully updated place"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
@@ -97,7 +98,7 @@ func (pc *PlaceController) createPlace(ctx *gin.Context) {
 // @Router /api/v1/places/{id} [patch]
 func (pc *PlaceController) updatePlace(ctx *gin.Context) {
 	id := ctx.Param("id")
-	var placeData map[string]interface{}
+	var placeData Dto.UpdatePlaceDTO
 	if err := ctx.ShouldBindJSON(&placeData); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

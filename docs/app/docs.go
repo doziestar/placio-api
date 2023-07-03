@@ -1384,7 +1384,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/placio-app_ent.Place"
+                            "$ref": "#/definitions/placio-app_Dto.CreatePlaceDTO"
                         }
                     }
                 ],
@@ -1554,7 +1554,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/placio-app_ent.Place"
+                            "$ref": "#/definitions/placio-app_Dto.UpdatePlaceDTO"
                         }
                     }
                 ],
@@ -4823,7 +4823,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/business/{followerBusinessID}/follow/business/{followedBusinessID}": {
+        "/business/{followerBusinessID}/follow/business/{followedID}": {
             "post": {
                 "produces": [
                     "application/json"
@@ -5892,6 +5892,98 @@ const docTemplate = `{
                 }
             }
         },
+        "placio-app_Dto.CreatePlaceDTO": {
+            "type": "object",
+            "properties": {
+                "additional_info": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "availability": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "business_id": {
+                    "type": "string"
+                },
+                "cover_image": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "features": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "location": {
+                    "type": "string"
+                },
+                "map_coordinates": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "name": {
+                    "type": "string"
+                },
+                "opening_hours": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "picture": {
+                    "type": "string"
+                },
+                "place_settings": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "relevance_score": {
+                    "type": "number"
+                },
+                "search_text": {
+                    "type": "string"
+                },
+                "social_media": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "special_offers": {
+                    "type": "string"
+                },
+                "sustainability_score": {
+                    "type": "number"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "type": {
+                    "type": "string"
+                },
+                "website": {
+                    "type": "string"
+                }
+            }
+        },
         "placio-app_Dto.Error": {
             "type": "object",
             "properties": {
@@ -6050,6 +6142,92 @@ const docTemplate = `{
                 },
                 "status": {
                     "type": "integer"
+                }
+            }
+        },
+        "placio-app_Dto.UpdatePlaceDTO": {
+            "type": "object",
+            "properties": {
+                "additional_info": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "availability": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "cover_image": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "features": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "location": {
+                    "type": "string"
+                },
+                "map_coordinates": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "name": {
+                    "type": "string"
+                },
+                "opening_hours": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "picture": {
+                    "type": "string"
+                },
+                "place_settings": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "relevance_score": {
+                    "type": "number"
+                },
+                "search_text": {
+                    "type": "string"
+                },
+                "social_media": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "special_offers": {
+                    "type": "string"
+                },
+                "sustainability_score": {
+                    "type": "number"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "type": {
+                    "type": "string"
+                },
+                "website": {
+                    "type": "string"
                 }
             }
         },
@@ -6808,10 +6986,19 @@ const docTemplate = `{
         "placio-app_ent.Place": {
             "type": "object",
             "properties": {
+                "additional_info": {
+                    "description": "AdditionalInfo holds the value of the \"additional_info\" field.",
+                    "type": "object",
+                    "additionalProperties": true
+                },
                 "availability": {
                     "description": "Availability holds the value of the \"availability\" field.",
                     "type": "object",
                     "additionalProperties": true
+                },
+                "cover_image": {
+                    "description": "CoverImage holds the value of the \"cover_image\" field.",
+                    "type": "string"
                 },
                 "description": {
                     "description": "Description holds the value of the \"description\" field.",
@@ -6824,6 +7011,17 @@ const docTemplate = `{
                             "$ref": "#/definitions/placio-app_ent.PlaceEdges"
                         }
                     ]
+                },
+                "email": {
+                    "description": "Email holds the value of the \"email\" field.",
+                    "type": "string"
+                },
+                "features": {
+                    "description": "Features holds the value of the \"features\" field.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "id": {
                     "description": "ID of the ent.",
@@ -6849,6 +7047,24 @@ const docTemplate = `{
                     "description": "Name holds the value of the \"name\" field.",
                     "type": "string"
                 },
+                "opening_hours": {
+                    "description": "OpeningHours holds the value of the \"opening_hours\" field.",
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "phone": {
+                    "description": "Phone holds the value of the \"phone\" field.",
+                    "type": "string"
+                },
+                "picture": {
+                    "description": "Picture holds the value of the \"picture\" field.",
+                    "type": "string"
+                },
+                "place_settings": {
+                    "description": "PlaceSettings holds the value of the \"place_settings\" field.",
+                    "type": "object",
+                    "additionalProperties": true
+                },
                 "relevance_score": {
                     "description": "RelevanceScore holds the value of the \"relevance_score\" field.",
                     "type": "number"
@@ -6856,6 +7072,11 @@ const docTemplate = `{
                 "search_text": {
                     "description": "SearchText holds the value of the \"search_text\" field.",
                     "type": "string"
+                },
+                "social_media": {
+                    "description": "SocialMedia holds the value of the \"social_media\" field.",
+                    "type": "object",
+                    "additionalProperties": true
                 },
                 "special_offers": {
                     "description": "SpecialOffers holds the value of the \"special_offers\" field.",
@@ -6865,8 +7086,19 @@ const docTemplate = `{
                     "description": "SustainabilityScore holds the value of the \"sustainability_score\" field.",
                     "type": "number"
                 },
+                "tags": {
+                    "description": "Tags holds the value of the \"tags\" field.",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
                 "type": {
                     "description": "Type holds the value of the \"type\" field.",
+                    "type": "string"
+                },
+                "website": {
+                    "description": "Website holds the value of the \"website\" field.",
                     "type": "string"
                 }
             }

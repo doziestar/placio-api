@@ -2,13 +2,14 @@ package service
 
 import (
 	"context"
+	"placio-app/Dto"
 	"placio-app/ent"
 )
 
 type PlaceService interface {
 	GetPlace(ctx context.Context, placeID string) (*ent.Place, error)
-	CreatePlace(ctx context.Context, placeData map[string]interface{}) (*ent.Place, error)
-	UpdatePlace(ctx context.Context, placeID string, placeData map[string]interface{}) (*ent.Place, error)
+	CreatePlace(ctx context.Context, placeData Dto.CreatePlaceDTO) (*ent.Place, error)
+	UpdatePlace(ctx context.Context, placeID string, placeData Dto.UpdatePlaceDTO) (*ent.Place, error)
 	DeletePlace(ctx context.Context, placeID string) error
 }
 
@@ -25,13 +26,25 @@ func (s *PlaceServiceImpl) GetPlace(ctx context.Context, placeID string) (*ent.P
 	return s.client.Place.Get(ctx, placeID)
 }
 
-func (s *PlaceServiceImpl) CreatePlace(ctx context.Context, placeData map[string]interface{}) (*ent.Place, error) {
+func (s *PlaceServiceImpl) CreatePlace(ctx context.Context, placeData Dto.CreatePlaceDTO) (*ent.Place, error) {
 	// Here you would parse placeData and use it to create a new Place.
 	// This is just a basic example, you may need to handle additional fields and validation.
 	place, err := s.client.Place.
 		Create().
-		SetName(placeData["name"].(string)).
-		SetDescription(placeData["description"].(string)).
+		SetName(placeData.Name).
+		SetDescription(*placeData.Description).
+		SetPicture(*placeData.Picture).
+		SetCoverImage(*placeData.CoverImage).
+		SetWebsite(*placeData.Website).
+		SetLocation(placeData.Location).
+		SetEmail(*placeData.Email).
+		SetPhone(*placeData.Phone).
+		SetAvailability(*placeData.Availability).
+		SetImages(*placeData.Images).
+		SetFeatures(*placeData.Features).
+		SetMapCoordinates(placeData.MapCoordinates).
+		SetAdditionalInfo(*placeData.AdditionalInfo).
+		SetType(placeData.Type).
 		Save(ctx)
 	if err != nil {
 		return nil, err
@@ -45,13 +58,21 @@ func (s *PlaceServiceImpl) CreatePlace(ctx context.Context, placeData map[string
 	return place, nil
 }
 
-func (s *PlaceServiceImpl) UpdatePlace(ctx context.Context, placeID string, placeData map[string]interface{}) (*ent.Place, error) {
+func (s *PlaceServiceImpl) UpdatePlace(ctx context.Context, placeID string, placeData Dto.UpdatePlaceDTO) (*ent.Place, error) {
 	// Similar to CreatePlace, you'd parse placeData and use it to update the Place.
 	// This is a basic example, you'll need to handle additional fields and validation.
 	place, err := s.client.Place.
 		UpdateOneID(placeID).
-		SetName(placeData["name"].(string)).
-		SetDescription(placeData["description"].(string)).
+		SetDescription(*placeData.Description).
+		SetPicture(*placeData.Picture).
+		SetCoverImage(*placeData.CoverImage).
+		SetWebsite(*placeData.Website).
+		SetEmail(*placeData.Email).
+		SetPhone(*placeData.Phone).
+		SetAvailability(*placeData.Availability).
+		SetImages(*placeData.Images).
+		SetFeatures(*placeData.Features).
+		SetAdditionalInfo(*placeData.AdditionalInfo).
 		Save(ctx)
 	if err != nil {
 		return nil, err
