@@ -7,7 +7,7 @@ import (
 	"net/url"
 	"os"
 	"placio-app/ent"
-	"placio-app/ent/user"
+	"strings"
 	"time"
 
 	"github.com/auth0/go-jwt-middleware/v2/jwks"
@@ -97,15 +97,8 @@ func EnsureValidToken(client *ent.Client) gin.HandlerFunc {
 			//// split[0] will have the provider and split[1] will have the ID
 			//id := split[1]
 			// make a request to the user service to get the user details
-			user, err := client.User.Query().Where(user.Auth0IDEQ(validatedClaims.RegisteredClaims.Subject)).Only(context.Background())
-			if err != nil {
-				if ent.IsNotFound(err) {
-					c.Set("auth0_id", validatedClaims.RegisteredClaims.Subject)
-					c.Next()
-					return
-				}
-			}
-			c.Set("user", user.ID)
+
+			c.Set("user", strings.Split(validatedClaims.RegisteredClaims.Subject, "|")[1])
 			c.Set("auth0_id", validatedClaims.RegisteredClaims.Subject)
 			//c.Set("token", tokenString)
 			c.Next()
