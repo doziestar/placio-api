@@ -4823,7 +4823,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/business/{followerBusinessID}/follow/business/{followedBusinessID}": {
+        "/business/{followerBusinessID}/follow/business/{followedID}": {
             "post": {
                 "produces": [
                     "application/json"

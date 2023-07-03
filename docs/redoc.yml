@@ -4868,7 +4868,7 @@ paths:
       summary: Unfollow a user by a business
       tags:
         - Business
-  /business/{followerBusinessID}/follow/business/{followedBusinessID}:
+  /business/{followerBusinessID}/follow/business/{followedID}:
     post:
       operationId: follow-business
       parameters:
