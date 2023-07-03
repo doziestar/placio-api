@@ -78,6 +78,190 @@ func (pu *PlaceUpdate) SetLocation(s string) *PlaceUpdate {
 	return pu
 }
 
+// SetEmail sets the "email" field.
+func (pu *PlaceUpdate) SetEmail(s string) *PlaceUpdate {
+	pu.mutation.SetEmail(s)
+	return pu
+}
+
+// SetNillableEmail sets the "email" field if the given value is not nil.
+func (pu *PlaceUpdate) SetNillableEmail(s *string) *PlaceUpdate {
+	if s != nil {
+		pu.SetEmail(*s)
+	}
+	return pu
+}
+
+// ClearEmail clears the value of the "email" field.
+func (pu *PlaceUpdate) ClearEmail() *PlaceUpdate {
+	pu.mutation.ClearEmail()
+	return pu
+}
+
+// SetPhone sets the "phone" field.
+func (pu *PlaceUpdate) SetPhone(s string) *PlaceUpdate {
+	pu.mutation.SetPhone(s)
+	return pu
+}
+
+// SetNillablePhone sets the "phone" field if the given value is not nil.
+func (pu *PlaceUpdate) SetNillablePhone(s *string) *PlaceUpdate {
+	if s != nil {
+		pu.SetPhone(*s)
+	}
+	return pu
+}
+
+// ClearPhone clears the value of the "phone" field.
+func (pu *PlaceUpdate) ClearPhone() *PlaceUpdate {
+	pu.mutation.ClearPhone()
+	return pu
+}
+
+// SetWebsite sets the "website" field.
+func (pu *PlaceUpdate) SetWebsite(s string) *PlaceUpdate {
+	pu.mutation.SetWebsite(s)
+	return pu
+}
+
+// SetNillableWebsite sets the "website" field if the given value is not nil.
+func (pu *PlaceUpdate) SetNillableWebsite(s *string) *PlaceUpdate {
+	if s != nil {
+		pu.SetWebsite(*s)
+	}
+	return pu
+}
+
+// ClearWebsite clears the value of the "website" field.
+func (pu *PlaceUpdate) ClearWebsite() *PlaceUpdate {
+	pu.mutation.ClearWebsite()
+	return pu
+}
+
+// SetCoverImage sets the "cover_image" field.
+func (pu *PlaceUpdate) SetCoverImage(s string) *PlaceUpdate {
+	pu.mutation.SetCoverImage(s)
+	return pu
+}
+
+// SetNillableCoverImage sets the "cover_image" field if the given value is not nil.
+func (pu *PlaceUpdate) SetNillableCoverImage(s *string) *PlaceUpdate {
+	if s != nil {
+		pu.SetCoverImage(*s)
+	}
+	return pu
+}
+
+// ClearCoverImage clears the value of the "cover_image" field.
+func (pu *PlaceUpdate) ClearCoverImage() *PlaceUpdate {
+	pu.mutation.ClearCoverImage()
+	return pu
+}
+
+// SetPicture sets the "picture" field.
+func (pu *PlaceUpdate) SetPicture(s string) *PlaceUpdate {
+	pu.mutation.SetPicture(s)
+	return pu
+}
+
+// SetNillablePicture sets the "picture" field if the given value is not nil.
+func (pu *PlaceUpdate) SetNillablePicture(s *string) *PlaceUpdate {
+	if s != nil {
+		pu.SetPicture(*s)
+	}
+	return pu
+}
+
+// ClearPicture clears the value of the "picture" field.
+func (pu *PlaceUpdate) ClearPicture() *PlaceUpdate {
+	pu.mutation.ClearPicture()
+	return pu
+}
+
+// SetPlaceSettings sets the "place_settings" field.
+func (pu *PlaceUpdate) SetPlaceSettings(m map[string]interface{}) *PlaceUpdate {
+	pu.mutation.SetPlaceSettings(m)
+	return pu
+}
+
+// ClearPlaceSettings clears the value of the "place_settings" field.
+func (pu *PlaceUpdate) ClearPlaceSettings() *PlaceUpdate {
+	pu.mutation.ClearPlaceSettings()
+	return pu
+}
+
+// SetOpeningHours sets the "opening_hours" field.
+func (pu *PlaceUpdate) SetOpeningHours(m map[string]interface{}) *PlaceUpdate {
+	pu.mutation.SetOpeningHours(m)
+	return pu
+}
+
+// ClearOpeningHours clears the value of the "opening_hours" field.
+func (pu *PlaceUpdate) ClearOpeningHours() *PlaceUpdate {
+	pu.mutation.ClearOpeningHours()
+	return pu
+}
+
+// SetSocialMedia sets the "social_media" field.
+func (pu *PlaceUpdate) SetSocialMedia(m map[string]interface{}) *PlaceUpdate {
+	pu.mutation.SetSocialMedia(m)
+	return pu
+}
+
+// ClearSocialMedia clears the value of the "social_media" field.
+func (pu *PlaceUpdate) ClearSocialMedia() *PlaceUpdate {
+	pu.mutation.ClearSocialMedia()
+	return pu
+}
+
+// SetTags sets the "tags" field.
+func (pu *PlaceUpdate) SetTags(s []string) *PlaceUpdate {
+	pu.mutation.SetTags(s)
+	return pu
+}
+
+// AppendTags appends s to the "tags" field.
+func (pu *PlaceUpdate) AppendTags(s []string) *PlaceUpdate {
+	pu.mutation.AppendTags(s)
+	return pu
+}
+
+// ClearTags clears the value of the "tags" field.
+func (pu *PlaceUpdate) ClearTags() *PlaceUpdate {
+	pu.mutation.ClearTags()
+	return pu
+}
+
+// SetFeatures sets the "features" field.
+func (pu *PlaceUpdate) SetFeatures(s []string) *PlaceUpdate {
+	pu.mutation.SetFeatures(s)
+	return pu
+}
+
+// AppendFeatures appends s to the "features" field.
+func (pu *PlaceUpdate) AppendFeatures(s []string) *PlaceUpdate {
+	pu.mutation.AppendFeatures(s)
+	return pu
+}
+
+// ClearFeatures clears the value of the "features" field.
+func (pu *PlaceUpdate) ClearFeatures() *PlaceUpdate {
+	pu.mutation.ClearFeatures()
+	return pu
+}
+
+// SetAdditionalInfo sets the "additional_info" field.
+func (pu *PlaceUpdate) SetAdditionalInfo(m map[string]interface{}) *PlaceUpdate {
+	pu.mutation.SetAdditionalInfo(m)
+	return pu
+}
+
+// ClearAdditionalInfo clears the value of the "additional_info" field.
+func (pu *PlaceUpdate) ClearAdditionalInfo() *PlaceUpdate {
+	pu.mutation.ClearAdditionalInfo()
+	return pu
+}
+
 // SetImages sets the "images" field.
 func (pu *PlaceUpdate) SetImages(s []string) *PlaceUpdate {
 	pu.mutation.SetImages(s)
@@ -684,6 +868,82 @@ func (pu *PlaceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := pu.mutation.Location(); ok {
 		_spec.SetField(place.FieldLocation, field.TypeString, value)
+	}
+	if value, ok := pu.mutation.Email(); ok {
+		_spec.SetField(place.FieldEmail, field.TypeString, value)
+	}
+	if pu.mutation.EmailCleared() {
+		_spec.ClearField(place.FieldEmail, field.TypeString)
+	}
+	if value, ok := pu.mutation.Phone(); ok {
+		_spec.SetField(place.FieldPhone, field.TypeString, value)
+	}
+	if pu.mutation.PhoneCleared() {
+		_spec.ClearField(place.FieldPhone, field.TypeString)
+	}
+	if value, ok := pu.mutation.Website(); ok {
+		_spec.SetField(place.FieldWebsite, field.TypeString, value)
+	}
+	if pu.mutation.WebsiteCleared() {
+		_spec.ClearField(place.FieldWebsite, field.TypeString)
+	}
+	if value, ok := pu.mutation.CoverImage(); ok {
+		_spec.SetField(place.FieldCoverImage, field.TypeString, value)
+	}
+	if pu.mutation.CoverImageCleared() {
+		_spec.ClearField(place.FieldCoverImage, field.TypeString)
+	}
+	if value, ok := pu.mutation.Picture(); ok {
+		_spec.SetField(place.FieldPicture, field.TypeString, value)
+	}
+	if pu.mutation.PictureCleared() {
+		_spec.ClearField(place.FieldPicture, field.TypeString)
+	}
+	if value, ok := pu.mutation.PlaceSettings(); ok {
+		_spec.SetField(place.FieldPlaceSettings, field.TypeJSON, value)
+	}
+	if pu.mutation.PlaceSettingsCleared() {
+		_spec.ClearField(place.FieldPlaceSettings, field.TypeJSON)
+	}
+	if value, ok := pu.mutation.OpeningHours(); ok {
+		_spec.SetField(place.FieldOpeningHours, field.TypeJSON, value)
+	}
+	if pu.mutation.OpeningHoursCleared() {
+		_spec.ClearField(place.FieldOpeningHours, field.TypeJSON)
+	}
+	if value, ok := pu.mutation.SocialMedia(); ok {
+		_spec.SetField(place.FieldSocialMedia, field.TypeJSON, value)
+	}
+	if pu.mutation.SocialMediaCleared() {
+		_spec.ClearField(place.FieldSocialMedia, field.TypeJSON)
+	}
+	if value, ok := pu.mutation.Tags(); ok {
+		_spec.SetField(place.FieldTags, field.TypeJSON, value)
+	}
+	if value, ok := pu.mutation.AppendedTags(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, place.FieldTags, value)
+		})
+	}
+	if pu.mutation.TagsCleared() {
+		_spec.ClearField(place.FieldTags, field.TypeJSON)
+	}
+	if value, ok := pu.mutation.Features(); ok {
+		_spec.SetField(place.FieldFeatures, field.TypeJSON, value)
+	}
+	if value, ok := pu.mutation.AppendedFeatures(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, place.FieldFeatures, value)
+		})
+	}
+	if pu.mutation.FeaturesCleared() {
+		_spec.ClearField(place.FieldFeatures, field.TypeJSON)
+	}
+	if value, ok := pu.mutation.AdditionalInfo(); ok {
+		_spec.SetField(place.FieldAdditionalInfo, field.TypeJSON, value)
+	}
+	if pu.mutation.AdditionalInfoCleared() {
+		_spec.ClearField(place.FieldAdditionalInfo, field.TypeJSON)
 	}
 	if value, ok := pu.mutation.Images(); ok {
 		_spec.SetField(place.FieldImages, field.TypeJSON, value)
@@ -1314,6 +1574,190 @@ func (puo *PlaceUpdateOne) ClearDescription() *PlaceUpdateOne {
 // SetLocation sets the "location" field.
 func (puo *PlaceUpdateOne) SetLocation(s string) *PlaceUpdateOne {
 	puo.mutation.SetLocation(s)
+	return puo
+}
+
+// SetEmail sets the "email" field.
+func (puo *PlaceUpdateOne) SetEmail(s string) *PlaceUpdateOne {
+	puo.mutation.SetEmail(s)
+	return puo
+}
+
+// SetNillableEmail sets the "email" field if the given value is not nil.
+func (puo *PlaceUpdateOne) SetNillableEmail(s *string) *PlaceUpdateOne {
+	if s != nil {
+		puo.SetEmail(*s)
+	}
+	return puo
+}
+
+// ClearEmail clears the value of the "email" field.
+func (puo *PlaceUpdateOne) ClearEmail() *PlaceUpdateOne {
+	puo.mutation.ClearEmail()
+	return puo
+}
+
+// SetPhone sets the "phone" field.
+func (puo *PlaceUpdateOne) SetPhone(s string) *PlaceUpdateOne {
+	puo.mutation.SetPhone(s)
+	return puo
+}
+
+// SetNillablePhone sets the "phone" field if the given value is not nil.
+func (puo *PlaceUpdateOne) SetNillablePhone(s *string) *PlaceUpdateOne {
+	if s != nil {
+		puo.SetPhone(*s)
+	}
+	return puo
+}
+
+// ClearPhone clears the value of the "phone" field.
+func (puo *PlaceUpdateOne) ClearPhone() *PlaceUpdateOne {
+	puo.mutation.ClearPhone()
+	return puo
+}
+
+// SetWebsite sets the "website" field.
+func (puo *PlaceUpdateOne) SetWebsite(s string) *PlaceUpdateOne {
+	puo.mutation.SetWebsite(s)
+	return puo
+}
+
+// SetNillableWebsite sets the "website" field if the given value is not nil.
+func (puo *PlaceUpdateOne) SetNillableWebsite(s *string) *PlaceUpdateOne {
+	if s != nil {
+		puo.SetWebsite(*s)
+	}
+	return puo
+}
+
+// ClearWebsite clears the value of the "website" field.
+func (puo *PlaceUpdateOne) ClearWebsite() *PlaceUpdateOne {
+	puo.mutation.ClearWebsite()
+	return puo
+}
+
+// SetCoverImage sets the "cover_image" field.
+func (puo *PlaceUpdateOne) SetCoverImage(s string) *PlaceUpdateOne {
+	puo.mutation.SetCoverImage(s)
+	return puo
+}
+
+// SetNillableCoverImage sets the "cover_image" field if the given value is not nil.
+func (puo *PlaceUpdateOne) SetNillableCoverImage(s *string) *PlaceUpdateOne {
+	if s != nil {
+		puo.SetCoverImage(*s)
+	}
+	return puo
+}
+
+// ClearCoverImage clears the value of the "cover_image" field.
+func (puo *PlaceUpdateOne) ClearCoverImage() *PlaceUpdateOne {
+	puo.mutation.ClearCoverImage()
+	return puo
+}
+
+// SetPicture sets the "picture" field.
+func (puo *PlaceUpdateOne) SetPicture(s string) *PlaceUpdateOne {
+	puo.mutation.SetPicture(s)
+	return puo
+}
+
+// SetNillablePicture sets the "picture" field if the given value is not nil.
+func (puo *PlaceUpdateOne) SetNillablePicture(s *string) *PlaceUpdateOne {
+	if s != nil {
+		puo.SetPicture(*s)
+	}
+	return puo
+}
+
+// ClearPicture clears the value of the "picture" field.
+func (puo *PlaceUpdateOne) ClearPicture() *PlaceUpdateOne {
+	puo.mutation.ClearPicture()
+	return puo
+}
+
+// SetPlaceSettings sets the "place_settings" field.
+func (puo *PlaceUpdateOne) SetPlaceSettings(m map[string]interface{}) *PlaceUpdateOne {
+	puo.mutation.SetPlaceSettings(m)
+	return puo
+}
+
+// ClearPlaceSettings clears the value of the "place_settings" field.
+func (puo *PlaceUpdateOne) ClearPlaceSettings() *PlaceUpdateOne {
+	puo.mutation.ClearPlaceSettings()
+	return puo
+}
+
+// SetOpeningHours sets the "opening_hours" field.
+func (puo *PlaceUpdateOne) SetOpeningHours(m map[string]interface{}) *PlaceUpdateOne {
+	puo.mutation.SetOpeningHours(m)
+	return puo
+}
+
+// ClearOpeningHours clears the value of the "opening_hours" field.
+func (puo *PlaceUpdateOne) ClearOpeningHours() *PlaceUpdateOne {
+	puo.mutation.ClearOpeningHours()
+	return puo
+}
+
+// SetSocialMedia sets the "social_media" field.
+func (puo *PlaceUpdateOne) SetSocialMedia(m map[string]interface{}) *PlaceUpdateOne {
+	puo.mutation.SetSocialMedia(m)
+	return puo
+}
+
+// ClearSocialMedia clears the value of the "social_media" field.
+func (puo *PlaceUpdateOne) ClearSocialMedia() *PlaceUpdateOne {
+	puo.mutation.ClearSocialMedia()
+	return puo
+}
+
+// SetTags sets the "tags" field.
+func (puo *PlaceUpdateOne) SetTags(s []string) *PlaceUpdateOne {
+	puo.mutation.SetTags(s)
+	return puo
+}
+
+// AppendTags appends s to the "tags" field.
+func (puo *PlaceUpdateOne) AppendTags(s []string) *PlaceUpdateOne {
+	puo.mutation.AppendTags(s)
+	return puo
+}
+
+// ClearTags clears the value of the "tags" field.
+func (puo *PlaceUpdateOne) ClearTags() *PlaceUpdateOne {
+	puo.mutation.ClearTags()
+	return puo
+}
+
+// SetFeatures sets the "features" field.
+func (puo *PlaceUpdateOne) SetFeatures(s []string) *PlaceUpdateOne {
+	puo.mutation.SetFeatures(s)
+	return puo
+}
+
+// AppendFeatures appends s to the "features" field.
+func (puo *PlaceUpdateOne) AppendFeatures(s []string) *PlaceUpdateOne {
+	puo.mutation.AppendFeatures(s)
+	return puo
+}
+
+// ClearFeatures clears the value of the "features" field.
+func (puo *PlaceUpdateOne) ClearFeatures() *PlaceUpdateOne {
+	puo.mutation.ClearFeatures()
+	return puo
+}
+
+// SetAdditionalInfo sets the "additional_info" field.
+func (puo *PlaceUpdateOne) SetAdditionalInfo(m map[string]interface{}) *PlaceUpdateOne {
+	puo.mutation.SetAdditionalInfo(m)
+	return puo
+}
+
+// ClearAdditionalInfo clears the value of the "additional_info" field.
+func (puo *PlaceUpdateOne) ClearAdditionalInfo() *PlaceUpdateOne {
+	puo.mutation.ClearAdditionalInfo()
 	return puo
 }
 
@@ -1953,6 +2397,82 @@ func (puo *PlaceUpdateOne) sqlSave(ctx context.Context) (_node *Place, err error
 	}
 	if value, ok := puo.mutation.Location(); ok {
 		_spec.SetField(place.FieldLocation, field.TypeString, value)
+	}
+	if value, ok := puo.mutation.Email(); ok {
+		_spec.SetField(place.FieldEmail, field.TypeString, value)
+	}
+	if puo.mutation.EmailCleared() {
+		_spec.ClearField(place.FieldEmail, field.TypeString)
+	}
+	if value, ok := puo.mutation.Phone(); ok {
+		_spec.SetField(place.FieldPhone, field.TypeString, value)
+	}
+	if puo.mutation.PhoneCleared() {
+		_spec.ClearField(place.FieldPhone, field.TypeString)
+	}
+	if value, ok := puo.mutation.Website(); ok {
+		_spec.SetField(place.FieldWebsite, field.TypeString, value)
+	}
+	if puo.mutation.WebsiteCleared() {
+		_spec.ClearField(place.FieldWebsite, field.TypeString)
+	}
+	if value, ok := puo.mutation.CoverImage(); ok {
+		_spec.SetField(place.FieldCoverImage, field.TypeString, value)
+	}
+	if puo.mutation.CoverImageCleared() {
+		_spec.ClearField(place.FieldCoverImage, field.TypeString)
+	}
+	if value, ok := puo.mutation.Picture(); ok {
+		_spec.SetField(place.FieldPicture, field.TypeString, value)
+	}
+	if puo.mutation.PictureCleared() {
+		_spec.ClearField(place.FieldPicture, field.TypeString)
+	}
+	if value, ok := puo.mutation.PlaceSettings(); ok {
+		_spec.SetField(place.FieldPlaceSettings, field.TypeJSON, value)
+	}
+	if puo.mutation.PlaceSettingsCleared() {
+		_spec.ClearField(place.FieldPlaceSettings, field.TypeJSON)
+	}
+	if value, ok := puo.mutation.OpeningHours(); ok {
+		_spec.SetField(place.FieldOpeningHours, field.TypeJSON, value)
+	}
+	if puo.mutation.OpeningHoursCleared() {
+		_spec.ClearField(place.FieldOpeningHours, field.TypeJSON)
+	}
+	if value, ok := puo.mutation.SocialMedia(); ok {
+		_spec.SetField(place.FieldSocialMedia, field.TypeJSON, value)
+	}
+	if puo.mutation.SocialMediaCleared() {
+		_spec.ClearField(place.FieldSocialMedia, field.TypeJSON)
+	}
+	if value, ok := puo.mutation.Tags(); ok {
+		_spec.SetField(place.FieldTags, field.TypeJSON, value)
+	}
+	if value, ok := puo.mutation.AppendedTags(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, place.FieldTags, value)
+		})
+	}
+	if puo.mutation.TagsCleared() {
+		_spec.ClearField(place.FieldTags, field.TypeJSON)
+	}
+	if value, ok := puo.mutation.Features(); ok {
+		_spec.SetField(place.FieldFeatures, field.TypeJSON, value)
+	}
+	if value, ok := puo.mutation.AppendedFeatures(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, place.FieldFeatures, value)
+		})
+	}
+	if puo.mutation.FeaturesCleared() {
+		_spec.ClearField(place.FieldFeatures, field.TypeJSON)
+	}
+	if value, ok := puo.mutation.AdditionalInfo(); ok {
+		_spec.SetField(place.FieldAdditionalInfo, field.TypeJSON, value)
+	}
+	if puo.mutation.AdditionalInfoCleared() {
+		_spec.ClearField(place.FieldAdditionalInfo, field.TypeJSON)
 	}
 	if value, ok := puo.mutation.Images(); ok {
 		_spec.SetField(place.FieldImages, field.TypeJSON, value)

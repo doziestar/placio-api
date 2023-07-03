@@ -63,6 +63,112 @@ func (pc *PlaceCreate) SetLocation(s string) *PlaceCreate {
 	return pc
 }
 
+// SetEmail sets the "email" field.
+func (pc *PlaceCreate) SetEmail(s string) *PlaceCreate {
+	pc.mutation.SetEmail(s)
+	return pc
+}
+
+// SetNillableEmail sets the "email" field if the given value is not nil.
+func (pc *PlaceCreate) SetNillableEmail(s *string) *PlaceCreate {
+	if s != nil {
+		pc.SetEmail(*s)
+	}
+	return pc
+}
+
+// SetPhone sets the "phone" field.
+func (pc *PlaceCreate) SetPhone(s string) *PlaceCreate {
+	pc.mutation.SetPhone(s)
+	return pc
+}
+
+// SetNillablePhone sets the "phone" field if the given value is not nil.
+func (pc *PlaceCreate) SetNillablePhone(s *string) *PlaceCreate {
+	if s != nil {
+		pc.SetPhone(*s)
+	}
+	return pc
+}
+
+// SetWebsite sets the "website" field.
+func (pc *PlaceCreate) SetWebsite(s string) *PlaceCreate {
+	pc.mutation.SetWebsite(s)
+	return pc
+}
+
+// SetNillableWebsite sets the "website" field if the given value is not nil.
+func (pc *PlaceCreate) SetNillableWebsite(s *string) *PlaceCreate {
+	if s != nil {
+		pc.SetWebsite(*s)
+	}
+	return pc
+}
+
+// SetCoverImage sets the "cover_image" field.
+func (pc *PlaceCreate) SetCoverImage(s string) *PlaceCreate {
+	pc.mutation.SetCoverImage(s)
+	return pc
+}
+
+// SetNillableCoverImage sets the "cover_image" field if the given value is not nil.
+func (pc *PlaceCreate) SetNillableCoverImage(s *string) *PlaceCreate {
+	if s != nil {
+		pc.SetCoverImage(*s)
+	}
+	return pc
+}
+
+// SetPicture sets the "picture" field.
+func (pc *PlaceCreate) SetPicture(s string) *PlaceCreate {
+	pc.mutation.SetPicture(s)
+	return pc
+}
+
+// SetNillablePicture sets the "picture" field if the given value is not nil.
+func (pc *PlaceCreate) SetNillablePicture(s *string) *PlaceCreate {
+	if s != nil {
+		pc.SetPicture(*s)
+	}
+	return pc
+}
+
+// SetPlaceSettings sets the "place_settings" field.
+func (pc *PlaceCreate) SetPlaceSettings(m map[string]interface{}) *PlaceCreate {
+	pc.mutation.SetPlaceSettings(m)
+	return pc
+}
+
+// SetOpeningHours sets the "opening_hours" field.
+func (pc *PlaceCreate) SetOpeningHours(m map[string]interface{}) *PlaceCreate {
+	pc.mutation.SetOpeningHours(m)
+	return pc
+}
+
+// SetSocialMedia sets the "social_media" field.
+func (pc *PlaceCreate) SetSocialMedia(m map[string]interface{}) *PlaceCreate {
+	pc.mutation.SetSocialMedia(m)
+	return pc
+}
+
+// SetTags sets the "tags" field.
+func (pc *PlaceCreate) SetTags(s []string) *PlaceCreate {
+	pc.mutation.SetTags(s)
+	return pc
+}
+
+// SetFeatures sets the "features" field.
+func (pc *PlaceCreate) SetFeatures(s []string) *PlaceCreate {
+	pc.mutation.SetFeatures(s)
+	return pc
+}
+
+// SetAdditionalInfo sets the "additional_info" field.
+func (pc *PlaceCreate) SetAdditionalInfo(m map[string]interface{}) *PlaceCreate {
+	pc.mutation.SetAdditionalInfo(m)
+	return pc
+}
+
 // SetImages sets the "images" field.
 func (pc *PlaceCreate) SetImages(s []string) *PlaceCreate {
 	pc.mutation.SetImages(s)
@@ -334,6 +440,7 @@ func (pc *PlaceCreate) Mutation() *PlaceMutation {
 
 // Save creates the Place in the database.
 func (pc *PlaceCreate) Save(ctx context.Context) (*Place, error) {
+	pc.defaults()
 	return withHooks(ctx, pc.sqlSave, pc.mutation, pc.hooks)
 }
 
@@ -356,6 +463,14 @@ func (pc *PlaceCreate) Exec(ctx context.Context) error {
 func (pc *PlaceCreate) ExecX(ctx context.Context) {
 	if err := pc.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (pc *PlaceCreate) defaults() {
+	if _, ok := pc.mutation.CoverImage(); !ok {
+		v := place.DefaultCoverImage
+		pc.mutation.SetCoverImage(v)
 	}
 }
 
@@ -428,6 +543,50 @@ func (pc *PlaceCreate) createSpec() (*Place, *sqlgraph.CreateSpec) {
 	if value, ok := pc.mutation.Location(); ok {
 		_spec.SetField(place.FieldLocation, field.TypeString, value)
 		_node.Location = value
+	}
+	if value, ok := pc.mutation.Email(); ok {
+		_spec.SetField(place.FieldEmail, field.TypeString, value)
+		_node.Email = value
+	}
+	if value, ok := pc.mutation.Phone(); ok {
+		_spec.SetField(place.FieldPhone, field.TypeString, value)
+		_node.Phone = value
+	}
+	if value, ok := pc.mutation.Website(); ok {
+		_spec.SetField(place.FieldWebsite, field.TypeString, value)
+		_node.Website = value
+	}
+	if value, ok := pc.mutation.CoverImage(); ok {
+		_spec.SetField(place.FieldCoverImage, field.TypeString, value)
+		_node.CoverImage = value
+	}
+	if value, ok := pc.mutation.Picture(); ok {
+		_spec.SetField(place.FieldPicture, field.TypeString, value)
+		_node.Picture = value
+	}
+	if value, ok := pc.mutation.PlaceSettings(); ok {
+		_spec.SetField(place.FieldPlaceSettings, field.TypeJSON, value)
+		_node.PlaceSettings = value
+	}
+	if value, ok := pc.mutation.OpeningHours(); ok {
+		_spec.SetField(place.FieldOpeningHours, field.TypeJSON, value)
+		_node.OpeningHours = value
+	}
+	if value, ok := pc.mutation.SocialMedia(); ok {
+		_spec.SetField(place.FieldSocialMedia, field.TypeJSON, value)
+		_node.SocialMedia = value
+	}
+	if value, ok := pc.mutation.Tags(); ok {
+		_spec.SetField(place.FieldTags, field.TypeJSON, value)
+		_node.Tags = value
+	}
+	if value, ok := pc.mutation.Features(); ok {
+		_spec.SetField(place.FieldFeatures, field.TypeJSON, value)
+		_node.Features = value
+	}
+	if value, ok := pc.mutation.AdditionalInfo(); ok {
+		_spec.SetField(place.FieldAdditionalInfo, field.TypeJSON, value)
+		_node.AdditionalInfo = value
 	}
 	if value, ok := pc.mutation.Images(); ok {
 		_spec.SetField(place.FieldImages, field.TypeJSON, value)
@@ -667,6 +826,7 @@ func (pcb *PlaceCreateBulk) Save(ctx context.Context) ([]*Place, error) {
 	for i := range pcb.builders {
 		func(i int, root context.Context) {
 			builder := pcb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*PlaceMutation)
 				if !ok {

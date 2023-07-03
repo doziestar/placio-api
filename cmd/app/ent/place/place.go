@@ -20,6 +20,28 @@ const (
 	FieldDescription = "description"
 	// FieldLocation holds the string denoting the location field in the database.
 	FieldLocation = "location"
+	// FieldEmail holds the string denoting the email field in the database.
+	FieldEmail = "email"
+	// FieldPhone holds the string denoting the phone field in the database.
+	FieldPhone = "phone"
+	// FieldWebsite holds the string denoting the website field in the database.
+	FieldWebsite = "website"
+	// FieldCoverImage holds the string denoting the cover_image field in the database.
+	FieldCoverImage = "cover_image"
+	// FieldPicture holds the string denoting the picture field in the database.
+	FieldPicture = "picture"
+	// FieldPlaceSettings holds the string denoting the place_settings field in the database.
+	FieldPlaceSettings = "place_settings"
+	// FieldOpeningHours holds the string denoting the opening_hours field in the database.
+	FieldOpeningHours = "opening_hours"
+	// FieldSocialMedia holds the string denoting the social_media field in the database.
+	FieldSocialMedia = "social_media"
+	// FieldTags holds the string denoting the tags field in the database.
+	FieldTags = "tags"
+	// FieldFeatures holds the string denoting the features field in the database.
+	FieldFeatures = "features"
+	// FieldAdditionalInfo holds the string denoting the additional_info field in the database.
+	FieldAdditionalInfo = "additional_info"
 	// FieldImages holds the string denoting the images field in the database.
 	FieldImages = "images"
 	// FieldAvailability holds the string denoting the availability field in the database.
@@ -149,6 +171,17 @@ var Columns = []string{
 	FieldType,
 	FieldDescription,
 	FieldLocation,
+	FieldEmail,
+	FieldPhone,
+	FieldWebsite,
+	FieldCoverImage,
+	FieldPicture,
+	FieldPlaceSettings,
+	FieldOpeningHours,
+	FieldSocialMedia,
+	FieldTags,
+	FieldFeatures,
+	FieldAdditionalInfo,
 	FieldImages,
 	FieldAvailability,
 	FieldSpecialOffers,
@@ -189,6 +222,8 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// DefaultCoverImage holds the default value on creation for the "cover_image" field.
+	DefaultCoverImage string
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(string) error
 )
@@ -219,6 +254,31 @@ func ByDescription(opts ...sql.OrderTermOption) OrderOption {
 // ByLocation orders the results by the location field.
 func ByLocation(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldLocation, opts...).ToFunc()
+}
+
+// ByEmail orders the results by the email field.
+func ByEmail(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldEmail, opts...).ToFunc()
+}
+
+// ByPhone orders the results by the phone field.
+func ByPhone(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPhone, opts...).ToFunc()
+}
+
+// ByWebsite orders the results by the website field.
+func ByWebsite(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldWebsite, opts...).ToFunc()
+}
+
+// ByCoverImage orders the results by the cover_image field.
+func ByCoverImage(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCoverImage, opts...).ToFunc()
+}
+
+// ByPicture orders the results by the picture field.
+func ByPicture(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPicture, opts...).ToFunc()
 }
 
 // BySpecialOffers orders the results by the special_offers field.

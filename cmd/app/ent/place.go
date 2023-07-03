@@ -26,6 +26,28 @@ type Place struct {
 	Description string `json:"description,omitempty"`
 	// Location holds the value of the "location" field.
 	Location string `json:"location,omitempty"`
+	// Email holds the value of the "email" field.
+	Email string `json:"email,omitempty"`
+	// Phone holds the value of the "phone" field.
+	Phone string `json:"phone,omitempty"`
+	// Website holds the value of the "website" field.
+	Website string `json:"website,omitempty"`
+	// CoverImage holds the value of the "cover_image" field.
+	CoverImage string `json:"cover_image,omitempty"`
+	// Picture holds the value of the "picture" field.
+	Picture string `json:"picture,omitempty"`
+	// PlaceSettings holds the value of the "place_settings" field.
+	PlaceSettings map[string]interface{} `json:"place_settings,omitempty"`
+	// OpeningHours holds the value of the "opening_hours" field.
+	OpeningHours map[string]interface{} `json:"opening_hours,omitempty"`
+	// SocialMedia holds the value of the "social_media" field.
+	SocialMedia map[string]interface{} `json:"social_media,omitempty"`
+	// Tags holds the value of the "tags" field.
+	Tags []string `json:"tags,omitempty"`
+	// Features holds the value of the "features" field.
+	Features []string `json:"features,omitempty"`
+	// AdditionalInfo holds the value of the "additional_info" field.
+	AdditionalInfo map[string]interface{} `json:"additional_info,omitempty"`
 	// Images holds the value of the "images" field.
 	Images []string `json:"images,omitempty"`
 	// Availability holds the value of the "availability" field.
@@ -195,11 +217,11 @@ func (*Place) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case place.FieldImages, place.FieldAvailability, place.FieldMapCoordinates:
+		case place.FieldPlaceSettings, place.FieldOpeningHours, place.FieldSocialMedia, place.FieldTags, place.FieldFeatures, place.FieldAdditionalInfo, place.FieldImages, place.FieldAvailability, place.FieldMapCoordinates:
 			values[i] = new([]byte)
 		case place.FieldSustainabilityScore, place.FieldRelevanceScore:
 			values[i] = new(sql.NullFloat64)
-		case place.FieldID, place.FieldName, place.FieldType, place.FieldDescription, place.FieldLocation, place.FieldSpecialOffers, place.FieldSearchText:
+		case place.FieldID, place.FieldName, place.FieldType, place.FieldDescription, place.FieldLocation, place.FieldEmail, place.FieldPhone, place.FieldWebsite, place.FieldCoverImage, place.FieldPicture, place.FieldSpecialOffers, place.FieldSearchText:
 			values[i] = new(sql.NullString)
 		case place.ForeignKeys[0]: // business_places
 			values[i] = new(sql.NullString)
@@ -247,6 +269,84 @@ func (pl *Place) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field location", values[i])
 			} else if value.Valid {
 				pl.Location = value.String
+			}
+		case place.FieldEmail:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field email", values[i])
+			} else if value.Valid {
+				pl.Email = value.String
+			}
+		case place.FieldPhone:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field phone", values[i])
+			} else if value.Valid {
+				pl.Phone = value.String
+			}
+		case place.FieldWebsite:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field website", values[i])
+			} else if value.Valid {
+				pl.Website = value.String
+			}
+		case place.FieldCoverImage:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field cover_image", values[i])
+			} else if value.Valid {
+				pl.CoverImage = value.String
+			}
+		case place.FieldPicture:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field picture", values[i])
+			} else if value.Valid {
+				pl.Picture = value.String
+			}
+		case place.FieldPlaceSettings:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field place_settings", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &pl.PlaceSettings); err != nil {
+					return fmt.Errorf("unmarshal field place_settings: %w", err)
+				}
+			}
+		case place.FieldOpeningHours:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field opening_hours", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &pl.OpeningHours); err != nil {
+					return fmt.Errorf("unmarshal field opening_hours: %w", err)
+				}
+			}
+		case place.FieldSocialMedia:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field social_media", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &pl.SocialMedia); err != nil {
+					return fmt.Errorf("unmarshal field social_media: %w", err)
+				}
+			}
+		case place.FieldTags:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field tags", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &pl.Tags); err != nil {
+					return fmt.Errorf("unmarshal field tags: %w", err)
+				}
+			}
+		case place.FieldFeatures:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field features", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &pl.Features); err != nil {
+					return fmt.Errorf("unmarshal field features: %w", err)
+				}
+			}
+		case place.FieldAdditionalInfo:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field additional_info", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &pl.AdditionalInfo); err != nil {
+					return fmt.Errorf("unmarshal field additional_info: %w", err)
+				}
 			}
 		case place.FieldImages:
 			if value, ok := values[i].(*[]byte); !ok {
@@ -410,6 +510,39 @@ func (pl *Place) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("location=")
 	builder.WriteString(pl.Location)
+	builder.WriteString(", ")
+	builder.WriteString("email=")
+	builder.WriteString(pl.Email)
+	builder.WriteString(", ")
+	builder.WriteString("phone=")
+	builder.WriteString(pl.Phone)
+	builder.WriteString(", ")
+	builder.WriteString("website=")
+	builder.WriteString(pl.Website)
+	builder.WriteString(", ")
+	builder.WriteString("cover_image=")
+	builder.WriteString(pl.CoverImage)
+	builder.WriteString(", ")
+	builder.WriteString("picture=")
+	builder.WriteString(pl.Picture)
+	builder.WriteString(", ")
+	builder.WriteString("place_settings=")
+	builder.WriteString(fmt.Sprintf("%v", pl.PlaceSettings))
+	builder.WriteString(", ")
+	builder.WriteString("opening_hours=")
+	builder.WriteString(fmt.Sprintf("%v", pl.OpeningHours))
+	builder.WriteString(", ")
+	builder.WriteString("social_media=")
+	builder.WriteString(fmt.Sprintf("%v", pl.SocialMedia))
+	builder.WriteString(", ")
+	builder.WriteString("tags=")
+	builder.WriteString(fmt.Sprintf("%v", pl.Tags))
+	builder.WriteString(", ")
+	builder.WriteString("features=")
+	builder.WriteString(fmt.Sprintf("%v", pl.Features))
+	builder.WriteString(", ")
+	builder.WriteString("additional_info=")
+	builder.WriteString(fmt.Sprintf("%v", pl.AdditionalInfo))
 	builder.WriteString(", ")
 	builder.WriteString("images=")
 	builder.WriteString(fmt.Sprintf("%v", pl.Images))
