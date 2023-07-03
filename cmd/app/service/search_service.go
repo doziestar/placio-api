@@ -1,14 +1,13 @@
 package service
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
+	"github.com/algolia/algoliasearch-client-go/v3/algolia/search"
 	"log"
+	"os"
 	"placio-app/ent"
-
-	"github.com/elastic/go-elasticsearch/v8"
 )
 
 type SearchService interface {
@@ -30,314 +29,131 @@ type SearchService interface {
 }
 
 type SearchServiceImpl struct {
-	client *elasticsearch.Client
+	client *search.Client
 }
 
 // NewSearchService Initiate a new search service with an Elasticsearch client
 func NewSearchService() (SearchService, error) {
-	log.Println("=========connecting to elastic search=====")
-	es, err := elasticsearch.NewDefaultClient()
-	if err != nil {
-		log.Fatalf("Error creating the client: %s", err)
+	log.Println("Creating algolia client")
+	client := search.NewClient(os.Getenv("ALGOLIA_APP_ID"), os.Getenv("ALGOLIA_API_KEY"))
+	if client == nil {
+		return nil, errors.New("error creating algolia client")
 	}
-	if err != nil {
-		return nil, err
-	}
-
-	log.Println("======connection complete======")
-
-	return &SearchServiceImpl{client: es}, nil
+	log.Println("Created algolia client")
+	return &SearchServiceImpl{client: client}, nil
 }
 
 // CreateOrUpdateUser updates an existing user or creates a new one.
 func (s *SearchServiceImpl) CreateOrUpdateUser(ctx context.Context, user *ent.User) error {
-	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(user); err != nil {
-		log.Fatalf("Error encoding query: %s", err)
-	}
-
-	res, err := s.client.Index(
-		"users", // Index name.
-		&buf,    // Data.
-		s.client.Index.WithContext(ctx),
-		s.client.Index.WithDocumentID(user.ID),
-		s.client.Index.WithRefresh("true"),
-	)
-
+	// index name is "users"
+	index := s.client.InitIndex("users")
+	_, err := index.SaveObject(user)
 	if err != nil {
-		log.Fatalf("Error getting response: %s", err)
+		log.Fatalf("Error when saving user: %s", err)
 		return err
 	}
-	defer res.Body.Close()
-
-	if res.IsError() {
-		log.Printf("[%s] Error indexing document ID=%s", res.Status(), user.ID)
-	} else {
-		//log.Printf("[%s] %s; version=%d", res.Status(), res.Result, res.Version)
-	}
-
 	return nil
 }
 
 // DeleteUser deletes a user from the Elasticsearch index.
 func (s *SearchServiceImpl) DeleteUser(ctx context.Context, userID string) error {
-	res, err := s.client.Delete(
-		"users", // Index name.
-		userID,  // Document ID.
-		s.client.Delete.WithContext(ctx),
-		s.client.Delete.WithRefresh("true"),
-	)
-
+	index := s.client.InitIndex("users")
+	_, err := index.DeleteObject(userID)
 	if err != nil {
-		log.Fatalf("Error getting response: %s", err)
+		log.Fatalf("Error when deleting user: %s", err)
 		return err
 	}
-	defer res.Body.Close()
-
-	if res.IsError() {
-		log.Printf("[%s] Error deleting document ID=%s", res.Status(), userID)
-	} else {
-		//	log.Printf("[%s] %s; version=%d", res.Status(), res.Result, res.Version)
-	}
-
 	return nil
 }
 
 // SearchUsers performs a search in the User index.
 func (s *SearchServiceImpl) SearchUsers(ctx context.Context, searchText string) (string, error) {
-	// Build the request body.
-	var buf bytes.Buffer
-	query := map[string]interface{}{
-		"query": map[string]interface{}{
-			"multi_match": map[string]interface{}{
-				"query":  searchText,
-				"fields": []string{"name", "username", "location", "bio", "website"},
-			},
-		},
-	}
-	if err := json.NewEncoder(&buf).Encode(query); err != nil {
-		log.Fatalf("Error encoding query: %s", err)
-	}
-
-	// Perform the search request.
-	res, err := s.client.Search(
-		s.client.Search.WithContext(ctx),
-		s.client.Search.WithIndex("users"),
-		s.client.Search.WithBody(&buf),
-		s.client.Search.WithTrackTotalHits(true),
-		s.client.Search.WithPretty(),
-	)
+	// index name is "users"
+	index := s.client.InitIndex("users")
+	res, err := index.Search(searchText, nil)
 	if err != nil {
-		log.Fatalf("Error getting response: %s", err)
+		log.Println("Error when searching users: %s", err)
 		return "", err
 	}
-	defer res.Body.Close()
 
-	if res.IsError() {
-		var e map[string]interface{}
-		if err := json.NewDecoder(res.Body).Decode(&e); err != nil {
-			log.Fatalf("Error parsing the response body: %s", err)
-		} else {
-			// Print the response status and error information.
-			log.Fatalf("[%s] %s: %s",
-				res.Status(),
-				e["error"].(map[string]interface{})["type"],
-				e["error"].(map[string]interface{})["reason"],
-			)
-		}
-		return "", errors.New("elasticsearch search error")
+	bytes, err := json.Marshal(res)
+	if err != nil {
+		log.Printf("Error when converting search result to JSON: %v", err)
+		return "", err
 	}
 
-	var r map[string]interface{}
-	if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
-		log.Fatalf("Error parsing the response body: %s", err)
-	}
-	// Process the response.
-	out, _ := json.MarshalIndent(r, "", "  ")
-	return string(out), nil
+	return string(bytes), nil
+
 }
 
 // SearchPlaces performs a search in the Place index.
 func (s *SearchServiceImpl) SearchPlaces(ctx context.Context, searchText string) (string, error) {
-	var buf bytes.Buffer
-	query := map[string]interface{}{
-		"query": map[string]interface{}{
-			"multi_match": map[string]interface{}{
-				"query":  searchText,
-				"fields": []string{"name", "type", "description", "location"},
-			},
-		},
-	}
-	if err := json.NewEncoder(&buf).Encode(query); err != nil {
-		log.Fatalf("Error encoding query: %s", err)
-	}
-	res, err := s.client.Search(
-		s.client.Search.WithContext(ctx),
-		s.client.Search.WithIndex("places"),
-		s.client.Search.WithBody(&buf),
-		s.client.Search.WithTrackTotalHits(true),
-		s.client.Search.WithPretty(),
-	)
+	// index name is "places"
+	index := s.client.InitIndex("places")
+	res, err := index.Search(searchText, nil)
 	if err != nil {
-		log.Fatalf("Error getting response: %s", err)
+		log.Println("Error when searching places: %s", err)
 		return "", err
 	}
-	defer res.Body.Close()
 
-	// Other error handling and response processing code as before...
-	if res.IsError() {
-		var e map[string]interface{}
-		if err := json.NewDecoder(res.Body).Decode(&e); err != nil {
-			log.Fatalf("Error parsing the response body: %s", err)
-		} else {
-			// Print the response status and error information.
-			log.Fatalf("[%s] %s: %s",
-				res.Status(),
-				e["error"].(map[string]interface{})["type"],
-				e["error"].(map[string]interface{})["reason"],
-			)
-		}
-		return "", errors.New("elasticsearch search error")
+	bytes, err := json.Marshal(res)
+	if err != nil {
+		log.Printf("Error when converting search result to JSON: %v", err)
+		return "", err
 	}
 
-	var r map[string]interface{}
-	if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
-		log.Fatalf("Error parsing the response body: %s", err)
-	}
-	// Process the response.
-	out, _ := json.MarshalIndent(r, "", "  ")
-	return string(out), nil
+	return string(bytes), nil
 
 }
 
 // SearchEvents performs a search in the Event index.
 func (s *SearchServiceImpl) SearchEvents(ctx context.Context, searchText string) (string, error) {
-	var buf bytes.Buffer
-	query := map[string]interface{}{
-		"query": map[string]interface{}{
-			"multi_match": map[string]interface{}{
-				"query":  searchText,
-				"fields": []string{"name"},
-			},
-		},
-	}
-	if err := json.NewEncoder(&buf).Encode(query); err != nil {
-		log.Fatalf("Error encoding query: %s", err)
-	}
-	res, err := s.client.Search(
-		s.client.Search.WithContext(ctx),
-		s.client.Search.WithIndex("events"),
-		s.client.Search.WithBody(&buf),
-		s.client.Search.WithTrackTotalHits(true),
-		s.client.Search.WithPretty(),
-	)
+	// index name is "events"
+	index := s.client.InitIndex("events")
+	res, err := index.Search(searchText, nil)
 	if err != nil {
-		log.Fatalf("Error getting response: %s", err)
+		log.Println("Error when searching events: %s", err)
 		return "", err
 	}
-	defer res.Body.Close()
 
-	// Other error handling and response processing code as before...
-	if res.IsError() {
-		var e map[string]interface{}
-		if err := json.NewDecoder(res.Body).Decode(&e); err != nil {
-			log.Fatalf("Error parsing the response body: %s", err)
-		} else {
-			// Print the response status and error information.
-			log.Fatalf("[%s] %s: %s",
-				res.Status(),
-				e["error"].(map[string]interface{})["type"],
-				e["error"].(map[string]interface{})["reason"],
-			)
-		}
-		return "", errors.New("elasticsearch search error")
+	bytes, err := json.Marshal(res)
+	if err != nil {
+		log.Printf("Error when converting search result to JSON: %v", err)
+		return "", err
 	}
 
-	var r map[string]interface{}
-	if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
-		log.Fatalf("Error parsing the response body: %s", err)
-	}
-	// Process the response.
-	out, _ := json.MarshalIndent(r, "", "  ")
-	return string(out), nil
+	return string(bytes), nil
 
 }
 
 // SearchBusinesses performs a search in the Business index.
 func (s *SearchServiceImpl) SearchBusinesses(ctx context.Context, searchText string) (string, error) {
-	var buf bytes.Buffer
-	query := map[string]interface{}{
-		"query": map[string]interface{}{
-			"multi_match": map[string]interface{}{
-				"query":  searchText,
-				"fields": []string{"name", "description", "location", "website"},
-			},
-		},
-	}
-	if err := json.NewEncoder(&buf).Encode(query); err != nil {
-		log.Fatalf("Error encoding query: %s", err)
-	}
-	res, err := s.client.Search(
-		s.client.Search.WithContext(ctx),
-		s.client.Search.WithIndex("businesses"),
-		s.client.Search.WithBody(&buf),
-		s.client.Search.WithTrackTotalHits(true),
-		s.client.Search.WithPretty(),
-	)
+	// index name is "businesses"
+	index := s.client.InitIndex("businesses")
+	res, err := index.Search(searchText, nil)
 	if err != nil {
-		log.Fatalf("Error getting response: %s", err)
+		log.Println("Error when searching businesses: %s", err)
 		return "", err
 	}
-	defer res.Body.Close()
 
-	// Other error handling and response processing code as before...
-	if res.IsError() {
-		var e map[string]interface{}
-		if err := json.NewDecoder(res.Body).Decode(&e); err != nil {
-			log.Fatalf("Error parsing the response body: %s", err)
-		} else {
-			// Print the response status and error information.
-			log.Fatalf("[%s] %s: %s",
-				res.Status(),
-				e["error"].(map[string]interface{})["type"],
-				e["error"].(map[string]interface{})["reason"],
-			)
-		}
-		return "", errors.New("elasticsearch search error")
+	bytes, err := json.Marshal(res)
+	if err != nil {
+		log.Println("Error when converting search result to JSON: %v", err)
+		return "", err
 	}
 
-	var r map[string]interface{}
-	if err := json.NewDecoder(res.Body).Decode(&r); err != nil {
-		log.Fatalf("Error parsing the response body: %s", err)
-	}
-	// Process the response.
-	out, _ := json.MarshalIndent(r, "", "  ")
-	return string(out), nil
+	return string(bytes), nil
 
 }
 
 // CreateOrUpdatePlace updates an existing place or creates a new one.
 func (s *SearchServiceImpl) CreateOrUpdatePlace(ctx context.Context, place *ent.Place) error {
-	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(place); err != nil {
-		log.Fatalf("Error encoding query: %s", err)
-	}
-
-	res, err := s.client.Index(
-		"places",
-		&buf,
-		s.client.Index.WithContext(ctx),
-		s.client.Index.WithDocumentID(place.ID),
-		s.client.Index.WithRefresh("true"),
-	)
-
+	// index name is "places"
+	index := s.client.InitIndex("places")
+	_, err := index.SaveObject(place)
 	if err != nil {
-		log.Fatalf("Error getting response: %s", err)
-	}
-	defer res.Body.Close()
-
-	if res.IsError() {
-		log.Printf("[%s] Error indexing document ID=%s", res.Status(), place.ID)
+		log.Fatalf("Error when saving place: %s", err)
+		return err
 	}
 
 	return nil
@@ -345,46 +161,23 @@ func (s *SearchServiceImpl) CreateOrUpdatePlace(ctx context.Context, place *ent.
 
 // DeletePlace deletes a place from the Elasticsearch index.
 func (s *SearchServiceImpl) DeletePlace(ctx context.Context, placeID string) error {
-	res, err := s.client.Delete(
-		"places",
-		placeID,
-		s.client.Delete.WithContext(ctx),
-	)
-
+	index := s.client.InitIndex("places")
+	_, err := index.DeleteObject(placeID)
 	if err != nil {
-		log.Fatalf("Error getting response: %s", err)
+		log.Fatalf("Error when deleting place: %s", err)
+		return err
 	}
-	defer res.Body.Close()
-
-	if res.IsError() {
-		log.Printf("[%s] Error deleting document ID=%s", res.Status(), placeID)
-	}
-
 	return nil
 }
 
 // CreateOrUpdateEvent updates an existing event or creates a new one.
 func (s *SearchServiceImpl) CreateOrUpdateEvent(ctx context.Context, event *ent.Event) error {
-	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(event); err != nil {
-		log.Fatalf("Error encoding query: %s", err)
-	}
-
-	res, err := s.client.Index(
-		"events",
-		&buf,
-		s.client.Index.WithContext(ctx),
-		s.client.Index.WithDocumentID(event.ID),
-		s.client.Index.WithRefresh("true"),
-	)
-
+	// index name is "events"
+	index := s.client.InitIndex("events")
+	_, err := index.SaveObject(event)
 	if err != nil {
-		log.Fatalf("Error getting response: %s", err)
-	}
-	defer res.Body.Close()
-
-	if res.IsError() {
-		log.Printf("[%s] Error indexing document ID=%s", res.Status(), event.ID)
+		log.Fatalf("Error when saving event: %s", err)
+		return err
 	}
 
 	return nil
@@ -392,67 +185,35 @@ func (s *SearchServiceImpl) CreateOrUpdateEvent(ctx context.Context, event *ent.
 
 // DeleteEvent deletes an event from the Elasticsearch index.
 func (s *SearchServiceImpl) DeleteEvent(ctx context.Context, eventID string) error {
-	res, err := s.client.Delete(
-		"events",
-		eventID,
-		s.client.Delete.WithContext(ctx),
-	)
-
+	index := s.client.InitIndex("events")
+	_, err := index.DeleteObject(eventID)
 	if err != nil {
-		log.Fatalf("Error getting response: %s", err)
+		log.Fatalf("Error when deleting event: %s", err)
+		return err
 	}
-	defer res.Body.Close()
-
-	if res.IsError() {
-		log.Printf("[%s] Error deleting document ID=%s", res.Status(), eventID)
-	}
-
 	return nil
 }
 
 // CreateOrUpdateBusiness updates an existing business or creates a new one.
 func (s *SearchServiceImpl) CreateOrUpdateBusiness(ctx context.Context, business *ent.Business) error {
-	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(business); err != nil {
-		log.Fatalf("Error encoding query: %s", err)
-	}
-
-	res, err := s.client.Index(
-		"businesses",
-		&buf,
-		s.client.Index.WithContext(ctx),
-		s.client.Index.WithDocumentID(business.ID),
-		s.client.Index.WithRefresh("true"),
-	)
-
+	// index name is "businesses"
+	index := s.client.InitIndex("businesses")
+	_, err := index.SaveObject(business)
 	if err != nil {
-		log.Fatalf("Error getting response: %s", err)
+		log.Fatalf("Error when saving business: %s", err)
+		return err
 	}
-	defer res.Body.Close()
-
-	if res.IsError() {
-		log.Printf("[%s] Error indexing document ID=%s", res.Status(), business.ID)
-	}
-
 	return nil
 }
 
 // DeleteBusiness deletes a business from the Elasticsearch index.
 func (s *SearchServiceImpl) DeleteBusiness(ctx context.Context, businessID string) error {
-	res, err := s.client.Delete(
-		"businesses",
-		businessID,
-		s.client.Delete.WithContext(ctx),
-	)
-
+	// index name is "businesses"
+	index := s.client.InitIndex("businesses")
+	_, err := index.DeleteObject(businessID)
 	if err != nil {
-		log.Fatalf("Error getting response: %s", err)
+		log.Fatalf("Error when deleting business: %s", err)
+		return err
 	}
-	defer res.Body.Close()
-
-	if res.IsError() {
-		log.Printf("[%s] Error deleting document ID=%s", res.Status(), businessID)
-	}
-
 	return nil
 }

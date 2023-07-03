@@ -3,6 +3,7 @@ module placio-app
 go 1.20
 
 require (
+	github.com/algolia/algoliasearch-client-go/v3 v3.30.0
 	github.com/auth0/go-auth0 v0.17.2
 	github.com/auth0/go-jwt-middleware/v2 v2.1.0
 	github.com/axiaoxin-com/logging v1.2.16
@@ -13,7 +14,6 @@ require (
 	github.com/gin-contrib/sessions v0.0.5
 	github.com/gin-gonic/gin v1.9.0
 	github.com/go-oauth2/oauth2/v4 v4.5.2
-	github.com/go-testfixtures/testfixtures/v3 v3.8.1
 	github.com/gofiber/fiber/v2 v2.43.0
 	github.com/google/uuid v1.3.0
 	github.com/joho/godotenv v1.5.1
@@ -21,12 +21,9 @@ require (
 	github.com/stretchr/testify v1.8.3
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.6.0
-	github.com/valyala/fasthttp v1.45.0
 	github.com/vardius/trace v1.0.1
-	golang.org/x/crypto v0.7.0
 	golang.org/x/oauth2 v0.8.0
 	gorm.io/driver/postgres v1.5.0
-	gorm.io/driver/sqlite v1.4.4
 	gorm.io/gorm v1.24.7-0.20230306060331-85eaf9eeda11
 )
 
@@ -40,8 +37,10 @@ require (
 	github.com/hashicorp/hcl/v2 v2.13.0 // indirect
 	github.com/mitchellh/go-wordwrap v0.0.0-20150314170334-ad45545899c7 // indirect
 	github.com/rogpeppe/go-internal v1.9.0 // indirect
+	github.com/valyala/fasthttp v1.45.0 // indirect
 	github.com/zclconf/go-cty v1.8.0 // indirect
 	go.uber.org/goleak v1.1.12 // indirect
+	golang.org/x/crypto v0.7.0 // indirect
 	golang.org/x/mod v0.10.0 // indirect
 )
 
@@ -99,7 +98,6 @@ require (
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.18 // indirect
 	github.com/mattn/go-runewidth v0.0.14 // indirect
-	github.com/mattn/go-sqlite3 v2.0.3+incompatible // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.4 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
@@ -125,7 +123,6 @@ require (
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/spf13/viper v1.11.0 // indirect
-	github.com/stretchr/objx v0.5.0 // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
 	github.com/swaggo/swag v1.8.12 // indirect
 	github.com/tinylib/msgp v1.1.8 // indirect

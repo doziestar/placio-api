@@ -4,7 +4,6 @@ volumes:
   pgadmin_data:
   redis_data:
   db_data2:
-  data01:
 
 services:
   placio-proxy:
@@ -56,6 +55,7 @@ services:
       - "7070:7070"
     env_file:
       - ./.envs/.stag
+    restart: always
     volumes:
       - ./:/app
       - ./cmd/app:/app/cmd/app
@@ -98,17 +98,6 @@ services:
       - "traefik.http.routers.docs-secure.service=docs"
       - traefik.http.services.docs.loadbalancer.server.port=6060
       # add path prefix strip
-
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
-    container_name: elasticsearch
-    environment:
-      - discovery.type=single-node
-    ports:
-      - "9200:9200"
-      - "9300:9300"
-    volumes:
-      - data01:/usr/share/elasticsearch/data
 
 # volumes:
 #   app-db-data2:
