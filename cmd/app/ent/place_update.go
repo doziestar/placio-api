@@ -52,6 +52,20 @@ func (pu *PlaceUpdate) SetType(s string) *PlaceUpdate {
 	return pu
 }
 
+// SetNillableType sets the "type" field if the given value is not nil.
+func (pu *PlaceUpdate) SetNillableType(s *string) *PlaceUpdate {
+	if s != nil {
+		pu.SetType(*s)
+	}
+	return pu
+}
+
+// ClearType clears the value of the "type" field.
+func (pu *PlaceUpdate) ClearType() *PlaceUpdate {
+	pu.mutation.ClearType()
+	return pu
+}
+
 // SetDescription sets the "description" field.
 func (pu *PlaceUpdate) SetDescription(s string) *PlaceUpdate {
 	pu.mutation.SetDescription(s)
@@ -75,6 +89,20 @@ func (pu *PlaceUpdate) ClearDescription() *PlaceUpdate {
 // SetLocation sets the "location" field.
 func (pu *PlaceUpdate) SetLocation(s string) *PlaceUpdate {
 	pu.mutation.SetLocation(s)
+	return pu
+}
+
+// SetNillableLocation sets the "location" field if the given value is not nil.
+func (pu *PlaceUpdate) SetNillableLocation(s *string) *PlaceUpdate {
+	if s != nil {
+		pu.SetLocation(*s)
+	}
+	return pu
+}
+
+// ClearLocation clears the value of the "location" field.
+func (pu *PlaceUpdate) ClearLocation() *PlaceUpdate {
+	pu.mutation.ClearLocation()
 	return pu
 }
 
@@ -860,6 +888,9 @@ func (pu *PlaceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := pu.mutation.GetType(); ok {
 		_spec.SetField(place.FieldType, field.TypeString, value)
 	}
+	if pu.mutation.TypeCleared() {
+		_spec.ClearField(place.FieldType, field.TypeString)
+	}
 	if value, ok := pu.mutation.Description(); ok {
 		_spec.SetField(place.FieldDescription, field.TypeString, value)
 	}
@@ -868,6 +899,9 @@ func (pu *PlaceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := pu.mutation.Location(); ok {
 		_spec.SetField(place.FieldLocation, field.TypeString, value)
+	}
+	if pu.mutation.LocationCleared() {
+		_spec.ClearField(place.FieldLocation, field.TypeString)
 	}
 	if value, ok := pu.mutation.Email(); ok {
 		_spec.SetField(place.FieldEmail, field.TypeString, value)
@@ -1551,6 +1585,20 @@ func (puo *PlaceUpdateOne) SetType(s string) *PlaceUpdateOne {
 	return puo
 }
 
+// SetNillableType sets the "type" field if the given value is not nil.
+func (puo *PlaceUpdateOne) SetNillableType(s *string) *PlaceUpdateOne {
+	if s != nil {
+		puo.SetType(*s)
+	}
+	return puo
+}
+
+// ClearType clears the value of the "type" field.
+func (puo *PlaceUpdateOne) ClearType() *PlaceUpdateOne {
+	puo.mutation.ClearType()
+	return puo
+}
+
 // SetDescription sets the "description" field.
 func (puo *PlaceUpdateOne) SetDescription(s string) *PlaceUpdateOne {
 	puo.mutation.SetDescription(s)
@@ -1574,6 +1622,20 @@ func (puo *PlaceUpdateOne) ClearDescription() *PlaceUpdateOne {
 // SetLocation sets the "location" field.
 func (puo *PlaceUpdateOne) SetLocation(s string) *PlaceUpdateOne {
 	puo.mutation.SetLocation(s)
+	return puo
+}
+
+// SetNillableLocation sets the "location" field if the given value is not nil.
+func (puo *PlaceUpdateOne) SetNillableLocation(s *string) *PlaceUpdateOne {
+	if s != nil {
+		puo.SetLocation(*s)
+	}
+	return puo
+}
+
+// ClearLocation clears the value of the "location" field.
+func (puo *PlaceUpdateOne) ClearLocation() *PlaceUpdateOne {
+	puo.mutation.ClearLocation()
 	return puo
 }
 
@@ -2389,6 +2451,9 @@ func (puo *PlaceUpdateOne) sqlSave(ctx context.Context) (_node *Place, err error
 	if value, ok := puo.mutation.GetType(); ok {
 		_spec.SetField(place.FieldType, field.TypeString, value)
 	}
+	if puo.mutation.TypeCleared() {
+		_spec.ClearField(place.FieldType, field.TypeString)
+	}
 	if value, ok := puo.mutation.Description(); ok {
 		_spec.SetField(place.FieldDescription, field.TypeString, value)
 	}
@@ -2397,6 +2462,9 @@ func (puo *PlaceUpdateOne) sqlSave(ctx context.Context) (_node *Place, err error
 	}
 	if value, ok := puo.mutation.Location(); ok {
 		_spec.SetField(place.FieldLocation, field.TypeString, value)
+	}
+	if puo.mutation.LocationCleared() {
+		_spec.ClearField(place.FieldLocation, field.TypeString)
 	}
 	if value, ok := puo.mutation.Email(); ok {
 		_spec.SetField(place.FieldEmail, field.TypeString, value)

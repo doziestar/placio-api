@@ -18,9 +18,9 @@ func (Place) Fields() []ent.Field {
 			Unique().
 			Immutable(),
 		field.String("name"),
-		field.String("type"),
+		field.String("type").Optional(),
 		field.String("description").Optional(),
-		field.String("location"),
+		field.String("location").Optional(),
 		field.String("email").Optional(),
 		field.String("phone").Optional(),
 		field.String("website").Optional(),

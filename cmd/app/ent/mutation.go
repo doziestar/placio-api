@@ -10305,9 +10305,22 @@ func (m *PlaceMutation) OldType(ctx context.Context) (v string, err error) {
 	return oldValue.Type, nil
 }
 
+// ClearType clears the value of the "type" field.
+func (m *PlaceMutation) ClearType() {
+	m._type = nil
+	m.clearedFields[place.FieldType] = struct{}{}
+}
+
+// TypeCleared returns if the "type" field was cleared in this mutation.
+func (m *PlaceMutation) TypeCleared() bool {
+	_, ok := m.clearedFields[place.FieldType]
+	return ok
+}
+
 // ResetType resets all changes to the "type" field.
 func (m *PlaceMutation) ResetType() {
 	m._type = nil
+	delete(m.clearedFields, place.FieldType)
 }
 
 // SetDescription sets the "description" field.
@@ -10390,9 +10403,22 @@ func (m *PlaceMutation) OldLocation(ctx context.Context) (v string, err error) {
 	return oldValue.Location, nil
 }
 
+// ClearLocation clears the value of the "location" field.
+func (m *PlaceMutation) ClearLocation() {
+	m.location = nil
+	m.clearedFields[place.FieldLocation] = struct{}{}
+}
+
+// LocationCleared returns if the "location" field was cleared in this mutation.
+func (m *PlaceMutation) LocationCleared() bool {
+	_, ok := m.clearedFields[place.FieldLocation]
+	return ok
+}
+
 // ResetLocation resets all changes to the "location" field.
 func (m *PlaceMutation) ResetLocation() {
 	m.location = nil
+	delete(m.clearedFields, place.FieldLocation)
 }
 
 // SetEmail sets the "email" field.
@@ -12413,8 +12439,14 @@ func (m *PlaceMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *PlaceMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(place.FieldType) {
+		fields = append(fields, place.FieldType)
+	}
 	if m.FieldCleared(place.FieldDescription) {
 		fields = append(fields, place.FieldDescription)
+	}
+	if m.FieldCleared(place.FieldLocation) {
+		fields = append(fields, place.FieldLocation)
 	}
 	if m.FieldCleared(place.FieldEmail) {
 		fields = append(fields, place.FieldEmail)
@@ -12481,8 +12513,14 @@ func (m *PlaceMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *PlaceMutation) ClearField(name string) error {
 	switch name {
+	case place.FieldType:
+		m.ClearType()
+		return nil
 	case place.FieldDescription:
 		m.ClearDescription()
+		return nil
+	case place.FieldLocation:
+		m.ClearLocation()
 		return nil
 	case place.FieldEmail:
 		m.ClearEmail()

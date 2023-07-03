@@ -249,6 +249,16 @@ func TypeHasSuffix(v string) predicate.Place {
 	return predicate.Place(sql.FieldHasSuffix(FieldType, v))
 }
 
+// TypeIsNil applies the IsNil predicate on the "type" field.
+func TypeIsNil() predicate.Place {
+	return predicate.Place(sql.FieldIsNull(FieldType))
+}
+
+// TypeNotNil applies the NotNil predicate on the "type" field.
+func TypeNotNil() predicate.Place {
+	return predicate.Place(sql.FieldNotNull(FieldType))
+}
+
 // TypeEqualFold applies the EqualFold predicate on the "type" field.
 func TypeEqualFold(v string) predicate.Place {
 	return predicate.Place(sql.FieldEqualFold(FieldType, v))
@@ -387,6 +397,16 @@ func LocationHasPrefix(v string) predicate.Place {
 // LocationHasSuffix applies the HasSuffix predicate on the "location" field.
 func LocationHasSuffix(v string) predicate.Place {
 	return predicate.Place(sql.FieldHasSuffix(FieldLocation, v))
+}
+
+// LocationIsNil applies the IsNil predicate on the "location" field.
+func LocationIsNil() predicate.Place {
+	return predicate.Place(sql.FieldIsNull(FieldLocation))
+}
+
+// LocationNotNil applies the NotNil predicate on the "location" field.
+func LocationNotNil() predicate.Place {
+	return predicate.Place(sql.FieldNotNull(FieldLocation))
 }
 
 // LocationEqualFold applies the EqualFold predicate on the "location" field.

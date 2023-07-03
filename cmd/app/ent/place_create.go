@@ -43,6 +43,14 @@ func (pc *PlaceCreate) SetType(s string) *PlaceCreate {
 	return pc
 }
 
+// SetNillableType sets the "type" field if the given value is not nil.
+func (pc *PlaceCreate) SetNillableType(s *string) *PlaceCreate {
+	if s != nil {
+		pc.SetType(*s)
+	}
+	return pc
+}
+
 // SetDescription sets the "description" field.
 func (pc *PlaceCreate) SetDescription(s string) *PlaceCreate {
 	pc.mutation.SetDescription(s)
@@ -60,6 +68,14 @@ func (pc *PlaceCreate) SetNillableDescription(s *string) *PlaceCreate {
 // SetLocation sets the "location" field.
 func (pc *PlaceCreate) SetLocation(s string) *PlaceCreate {
 	pc.mutation.SetLocation(s)
+	return pc
+}
+
+// SetNillableLocation sets the "location" field if the given value is not nil.
+func (pc *PlaceCreate) SetNillableLocation(s *string) *PlaceCreate {
+	if s != nil {
+		pc.SetLocation(*s)
+	}
 	return pc
 }
 
@@ -478,12 +494,6 @@ func (pc *PlaceCreate) defaults() {
 func (pc *PlaceCreate) check() error {
 	if _, ok := pc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Place.name"`)}
-	}
-	if _, ok := pc.mutation.GetType(); !ok {
-		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "Place.type"`)}
-	}
-	if _, ok := pc.mutation.Location(); !ok {
-		return &ValidationError{Name: "location", err: errors.New(`ent: missing required field "Place.location"`)}
 	}
 	if _, ok := pc.mutation.MapCoordinates(); !ok {
 		return &ValidationError{Name: "map_coordinates", err: errors.New(`ent: missing required field "Place.map_coordinates"`)}
