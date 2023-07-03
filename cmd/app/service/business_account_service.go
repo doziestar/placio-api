@@ -172,9 +172,11 @@ func (s *BusinessAccountServiceImpl) CreateBusinessAccount(ctx context.Context, 
 		return nil, fmt.Errorf("error creating business account: %w", err)
 	}
 
+	// add the business account to the search index
+	err = s.searchService.CreateOrUpdateBusiness(ctx, businessAccount)
 	if err != nil {
 		tx.Rollback()
-		return nil, fmt.Errorf("error fetching user: %w", err)
+		return nil, fmt.Errorf("error creating business account: %w", err)
 	}
 
 	// Create user-business relationship
@@ -376,6 +378,12 @@ func (bas *BusinessAccountServiceImpl) UpdateBusinessAccount(ctx context.Context
 	}
 	if v, ok := businessData["picture"]; ok {
 		upd.SetPicture(v.(string))
+	}
+	if v, ok := businessData["phone"]; ok {
+		upd.SetPhone(v.(string))
+	}
+	if v, ok := businessData["email"]; ok {
+		upd.SetEmail(v.(string))
 	}
 
 	// Update business settings
