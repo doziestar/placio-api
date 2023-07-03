@@ -23,6 +23,10 @@ type Event struct {
 	CreatedAt time.Time `json:"createdAt,omitempty"`
 	// UpdatedAt holds the value of the "updatedAt" field.
 	UpdatedAt time.Time `json:"updatedAt,omitempty"`
+	// SearchText holds the value of the "search_text" field.
+	SearchText string `json:"search_text,omitempty"`
+	// RelevanceScore holds the value of the "relevance_score" field.
+	RelevanceScore float64 `json:"relevance_score,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EventQuery when eager-loading is set.
 	Edges        EventEdges `json:"edges"`
@@ -65,7 +69,9 @@ func (*Event) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case event.FieldID, event.FieldName:
+		case event.FieldRelevanceScore:
+			values[i] = new(sql.NullFloat64)
+		case event.FieldID, event.FieldName, event.FieldSearchText:
 			values[i] = new(sql.NullString)
 		case event.FieldCreatedAt, event.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -111,6 +117,18 @@ func (e *Event) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field updatedAt", values[i])
 			} else if value.Valid {
 				e.UpdatedAt = value.Time
+			}
+		case event.FieldSearchText:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field search_text", values[i])
+			} else if value.Valid {
+				e.SearchText = value.String
+			}
+		case event.FieldRelevanceScore:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field relevance_score", values[i])
+			} else if value.Valid {
+				e.RelevanceScore = value.Float64
 			}
 		case event.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -180,6 +198,12 @@ func (e *Event) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("updatedAt=")
 	builder.WriteString(e.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("search_text=")
+	builder.WriteString(e.SearchText)
+	builder.WriteString(", ")
+	builder.WriteString("relevance_score=")
+	builder.WriteString(fmt.Sprintf("%v", e.RelevanceScore))
 	builder.WriteByte(')')
 	return builder.String()
 }

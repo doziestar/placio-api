@@ -132,15 +132,21 @@ func (s *BusinessAccountServiceImpl) GetFollowedContents(ctx context.Context, bu
 // CreateBusinessAccount creates a new Business Account and associates it with a user.
 func (s *BusinessAccountServiceImpl) CreateBusinessAccount(ctx context.Context, businessData *Dto.BusinessDto) (*ent.Business, error) {
 	// Validate inputs
-	if businessData.UserID == "" {
-		return nil, errors.New("user ID cannot be empty")
-	}
+	// grab the user id from the context
+	userID := ctx.Value("user").(string)
+
+	// get the user
+	user, err := s.client.User.
+		Query().
+		Where(user.IDEQ(userID)).
+		Only(ctx)
+
 	if businessData.Name == "" {
 		return nil, errors.New("business account name cannot be empty")
 	}
-	if businessData.Role != "owner" && businessData.Role != "admin" && businessData.Role != "member" {
-		return nil, errors.New("invalid role")
-	}
+	//if businessData.Role != "owner" && businessData.Role != "admin" && businessData.Role != "member" {
+	//	return nil, errors.New("invalid role")
+	//}
 
 	// Create a new transaction
 	tx, err := s.client.Tx(ctx)
@@ -152,18 +158,19 @@ func (s *BusinessAccountServiceImpl) CreateBusinessAccount(ctx context.Context, 
 	businessAccount, err := tx.Business.
 		Create().
 		SetName(businessData.Name).
+		SetDescription(businessData.Description).
+		SetWebsite(businessData.Website).
+		SetEmail(businessData.Email).
+		SetPhone(businessData.Phone).
+		SetLocation(businessData.Location).
+		SetPicture(businessData.Picture).
+		SetCoverImage(businessData.CoverImage).
 		Save(ctx)
 
 	if err != nil {
 		tx.Rollback()
 		return nil, fmt.Errorf("error creating business account: %w", err)
 	}
-
-	// Get the user
-	user, err := tx.User.
-		Query().
-		Where(user.Auth0ID(businessData.UserID)).
-		Only(ctx)
 
 	if err != nil {
 		tx.Rollback()
@@ -175,7 +182,7 @@ func (s *BusinessAccountServiceImpl) CreateBusinessAccount(ctx context.Context, 
 		Create().
 		SetUser(user).
 		SetBusiness(businessAccount).
-		SetRole(businessData.Role).
+		SetRole("admin").
 		Save(ctx)
 
 	if err != nil {

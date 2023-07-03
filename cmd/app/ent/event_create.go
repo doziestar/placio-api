@@ -56,6 +56,34 @@ func (ec *EventCreate) SetNillableUpdatedAt(t *time.Time) *EventCreate {
 	return ec
 }
 
+// SetSearchText sets the "search_text" field.
+func (ec *EventCreate) SetSearchText(s string) *EventCreate {
+	ec.mutation.SetSearchText(s)
+	return ec
+}
+
+// SetNillableSearchText sets the "search_text" field if the given value is not nil.
+func (ec *EventCreate) SetNillableSearchText(s *string) *EventCreate {
+	if s != nil {
+		ec.SetSearchText(*s)
+	}
+	return ec
+}
+
+// SetRelevanceScore sets the "relevance_score" field.
+func (ec *EventCreate) SetRelevanceScore(f float64) *EventCreate {
+	ec.mutation.SetRelevanceScore(f)
+	return ec
+}
+
+// SetNillableRelevanceScore sets the "relevance_score" field if the given value is not nil.
+func (ec *EventCreate) SetNillableRelevanceScore(f *float64) *EventCreate {
+	if f != nil {
+		ec.SetRelevanceScore(*f)
+	}
+	return ec
+}
+
 // SetID sets the "id" field.
 func (ec *EventCreate) SetID(s string) *EventCreate {
 	ec.mutation.SetID(s)
@@ -199,6 +227,14 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 	if value, ok := ec.mutation.UpdatedAt(); ok {
 		_spec.SetField(event.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
+	}
+	if value, ok := ec.mutation.SearchText(); ok {
+		_spec.SetField(event.FieldSearchText, field.TypeString, value)
+		_node.SearchText = value
+	}
+	if value, ok := ec.mutation.RelevanceScore(); ok {
+		_spec.SetField(event.FieldRelevanceScore, field.TypeFloat64, value)
+		_node.RelevanceScore = value
 	}
 	if nodes := ec.mutation.TicketsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

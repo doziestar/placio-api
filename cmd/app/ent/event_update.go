@@ -56,6 +56,53 @@ func (eu *EventUpdate) SetUpdatedAt(t time.Time) *EventUpdate {
 	return eu
 }
 
+// SetSearchText sets the "search_text" field.
+func (eu *EventUpdate) SetSearchText(s string) *EventUpdate {
+	eu.mutation.SetSearchText(s)
+	return eu
+}
+
+// SetNillableSearchText sets the "search_text" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableSearchText(s *string) *EventUpdate {
+	if s != nil {
+		eu.SetSearchText(*s)
+	}
+	return eu
+}
+
+// ClearSearchText clears the value of the "search_text" field.
+func (eu *EventUpdate) ClearSearchText() *EventUpdate {
+	eu.mutation.ClearSearchText()
+	return eu
+}
+
+// SetRelevanceScore sets the "relevance_score" field.
+func (eu *EventUpdate) SetRelevanceScore(f float64) *EventUpdate {
+	eu.mutation.ResetRelevanceScore()
+	eu.mutation.SetRelevanceScore(f)
+	return eu
+}
+
+// SetNillableRelevanceScore sets the "relevance_score" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableRelevanceScore(f *float64) *EventUpdate {
+	if f != nil {
+		eu.SetRelevanceScore(*f)
+	}
+	return eu
+}
+
+// AddRelevanceScore adds f to the "relevance_score" field.
+func (eu *EventUpdate) AddRelevanceScore(f float64) *EventUpdate {
+	eu.mutation.AddRelevanceScore(f)
+	return eu
+}
+
+// ClearRelevanceScore clears the value of the "relevance_score" field.
+func (eu *EventUpdate) ClearRelevanceScore() *EventUpdate {
+	eu.mutation.ClearRelevanceScore()
+	return eu
+}
+
 // AddTicketIDs adds the "tickets" edge to the Ticket entity by IDs.
 func (eu *EventUpdate) AddTicketIDs(ids ...string) *EventUpdate {
 	eu.mutation.AddTicketIDs(ids...)
@@ -200,6 +247,21 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := eu.mutation.UpdatedAt(); ok {
 		_spec.SetField(event.FieldUpdatedAt, field.TypeTime, value)
 	}
+	if value, ok := eu.mutation.SearchText(); ok {
+		_spec.SetField(event.FieldSearchText, field.TypeString, value)
+	}
+	if eu.mutation.SearchTextCleared() {
+		_spec.ClearField(event.FieldSearchText, field.TypeString)
+	}
+	if value, ok := eu.mutation.RelevanceScore(); ok {
+		_spec.SetField(event.FieldRelevanceScore, field.TypeFloat64, value)
+	}
+	if value, ok := eu.mutation.AddedRelevanceScore(); ok {
+		_spec.AddField(event.FieldRelevanceScore, field.TypeFloat64, value)
+	}
+	if eu.mutation.RelevanceScoreCleared() {
+		_spec.ClearField(event.FieldRelevanceScore, field.TypeFloat64)
+	}
 	if eu.mutation.TicketsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -333,6 +395,53 @@ func (euo *EventUpdateOne) SetNillableCreatedAt(t *time.Time) *EventUpdateOne {
 // SetUpdatedAt sets the "updatedAt" field.
 func (euo *EventUpdateOne) SetUpdatedAt(t time.Time) *EventUpdateOne {
 	euo.mutation.SetUpdatedAt(t)
+	return euo
+}
+
+// SetSearchText sets the "search_text" field.
+func (euo *EventUpdateOne) SetSearchText(s string) *EventUpdateOne {
+	euo.mutation.SetSearchText(s)
+	return euo
+}
+
+// SetNillableSearchText sets the "search_text" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableSearchText(s *string) *EventUpdateOne {
+	if s != nil {
+		euo.SetSearchText(*s)
+	}
+	return euo
+}
+
+// ClearSearchText clears the value of the "search_text" field.
+func (euo *EventUpdateOne) ClearSearchText() *EventUpdateOne {
+	euo.mutation.ClearSearchText()
+	return euo
+}
+
+// SetRelevanceScore sets the "relevance_score" field.
+func (euo *EventUpdateOne) SetRelevanceScore(f float64) *EventUpdateOne {
+	euo.mutation.ResetRelevanceScore()
+	euo.mutation.SetRelevanceScore(f)
+	return euo
+}
+
+// SetNillableRelevanceScore sets the "relevance_score" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableRelevanceScore(f *float64) *EventUpdateOne {
+	if f != nil {
+		euo.SetRelevanceScore(*f)
+	}
+	return euo
+}
+
+// AddRelevanceScore adds f to the "relevance_score" field.
+func (euo *EventUpdateOne) AddRelevanceScore(f float64) *EventUpdateOne {
+	euo.mutation.AddRelevanceScore(f)
+	return euo
+}
+
+// ClearRelevanceScore clears the value of the "relevance_score" field.
+func (euo *EventUpdateOne) ClearRelevanceScore() *EventUpdateOne {
+	euo.mutation.ClearRelevanceScore()
 	return euo
 }
 
@@ -509,6 +618,21 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 	}
 	if value, ok := euo.mutation.UpdatedAt(); ok {
 		_spec.SetField(event.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if value, ok := euo.mutation.SearchText(); ok {
+		_spec.SetField(event.FieldSearchText, field.TypeString, value)
+	}
+	if euo.mutation.SearchTextCleared() {
+		_spec.ClearField(event.FieldSearchText, field.TypeString)
+	}
+	if value, ok := euo.mutation.RelevanceScore(); ok {
+		_spec.SetField(event.FieldRelevanceScore, field.TypeFloat64, value)
+	}
+	if value, ok := euo.mutation.AddedRelevanceScore(); ok {
+		_spec.AddField(event.FieldRelevanceScore, field.TypeFloat64, value)
+	}
+	if euo.mutation.RelevanceScoreCleared() {
+		_spec.ClearField(event.FieldRelevanceScore, field.TypeFloat64)
 	}
 	if euo.mutation.TicketsCleared() {
 		edge := &sqlgraph.EdgeSpec{

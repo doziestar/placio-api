@@ -30,6 +30,10 @@ type Business struct {
 	Website string `json:"website,omitempty"`
 	// Location holds the value of the "location" field.
 	Location string `json:"location,omitempty"`
+	// Email holds the value of the "email" field.
+	Email string `json:"email,omitempty"`
+	// Phone holds the value of the "phone" field.
+	Phone string `json:"phone,omitempty"`
 	// BusinessSettings holds the value of the "business_settings" field.
 	BusinessSettings map[string]interface{} `json:"business_settings,omitempty"`
 	// SearchText holds the value of the "search_text" field.
@@ -172,7 +176,7 @@ func (*Business) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case business.FieldRelevanceScore:
 			values[i] = new(sql.NullFloat64)
-		case business.FieldID, business.FieldName, business.FieldDescription, business.FieldPicture, business.FieldCoverImage, business.FieldWebsite, business.FieldLocation, business.FieldSearchText:
+		case business.FieldID, business.FieldName, business.FieldDescription, business.FieldPicture, business.FieldCoverImage, business.FieldWebsite, business.FieldLocation, business.FieldEmail, business.FieldPhone, business.FieldSearchText:
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -230,6 +234,18 @@ func (b *Business) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field location", values[i])
 			} else if value.Valid {
 				b.Location = value.String
+			}
+		case business.FieldEmail:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field email", values[i])
+			} else if value.Valid {
+				b.Email = value.String
+			}
+		case business.FieldPhone:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field phone", values[i])
+			} else if value.Valid {
+				b.Phone = value.String
 			}
 		case business.FieldBusinessSettings:
 			if value, ok := values[i].(*[]byte); !ok {
@@ -354,6 +370,12 @@ func (b *Business) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("location=")
 	builder.WriteString(b.Location)
+	builder.WriteString(", ")
+	builder.WriteString("email=")
+	builder.WriteString(b.Email)
+	builder.WriteString(", ")
+	builder.WriteString("phone=")
+	builder.WriteString(b.Phone)
 	builder.WriteString(", ")
 	builder.WriteString("business_settings=")
 	builder.WriteString(fmt.Sprintf("%v", b.BusinessSettings))

@@ -88,6 +88,8 @@ var (
 		{Name: "cover_image", Type: field.TypeString, Nullable: true, Default: "https://res.cloudinary.com/placio/image/upload/v1686842319/mjl8stmbn5xmfsm50vbg.jpg"},
 		{Name: "website", Type: field.TypeString, Nullable: true},
 		{Name: "location", Type: field.TypeString, Nullable: true},
+		{Name: "email", Type: field.TypeString, Nullable: true},
+		{Name: "phone", Type: field.TypeString, Nullable: true},
 		{Name: "business_settings", Type: field.TypeJSON, Nullable: true},
 		{Name: "search_text", Type: field.TypeString, Nullable: true},
 		{Name: "relevance_score", Type: field.TypeFloat64, Nullable: true},
@@ -290,6 +292,8 @@ var (
 		{Name: "name", Type: field.TypeString, Unique: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "search_text", Type: field.TypeString, Nullable: true},
+		{Name: "relevance_score", Type: field.TypeFloat64, Nullable: true},
 		{Name: "place_events", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "user_events", Type: field.TypeString, Nullable: true, Size: 36},
 	}
@@ -301,13 +305,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "events_places_events",
-				Columns:    []*schema.Column{EventsColumns[4]},
+				Columns:    []*schema.Column{EventsColumns[6]},
 				RefColumns: []*schema.Column{PlacesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "events_users_events",
-				Columns:    []*schema.Column{EventsColumns[5]},
+				Columns:    []*schema.Column{EventsColumns[7]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},

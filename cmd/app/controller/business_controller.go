@@ -156,7 +156,7 @@ func (bc *BusinessAccountController) getFollowedContents(c *gin.Context) {
 // @Tags Business
 // @Accept  json
 // @Produce  json
-// @Param ent.Business body ent.Business true "Business Account Data"
+// @Param Dto.BusinessDto body Dto.BusinessDto true "Business Account Data"
 // @Success 200 {object} Dto.Response
 // @Failure 400 {object} Dto.Error
 // @Failure 401 {object} Dto.Error
