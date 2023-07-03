@@ -20,11 +20,11 @@ func NewBusinessAccountController(service service.BusinessAccountService) *Busin
 func (bc *BusinessAccountController) RegisterRoutes(router *gin.RouterGroup) {
 	businessRouter := router.Group("/business")
 	{
-		businessRouter.POST("/:businessID/follow/user/:userID", bc.followUser)
-		businessRouter.POST("/:businessID/follow/business/:followedID", bc.followBusiness)
-		businessRouter.DELETE("/:businessID/unfollow/user/:userID", bc.unfollowUser)
-		businessRouter.DELETE("/:businessID/unfollow/business/:followedID", bc.unfollowBusiness)
-		businessRouter.GET("/:businessID/followed-contents", bc.getFollowedContents)
+		businessRouter.POST("/:businessAccountID/follow/user/:userID", bc.followUser)
+		businessRouter.POST("/:businessAccountID/follow/business/:followedID", bc.followBusiness)
+		businessRouter.DELETE("/:businessAccountID/unfollow/user/:userID", bc.unfollowUser)
+		businessRouter.DELETE("/:businessAccountID/unfollow/business/:followedID", bc.unfollowBusiness)
+		businessRouter.GET("/:businessAccountID/followed-contents", bc.getFollowedContents)
 		businessRouter.POST("/", bc.createBusinessAccount)
 		businessRouter.GET("/:businessAccountID", bc.getBusinessAccount)
 		businessRouter.PUT("/:businessAccountID", bc.updateBusinessAccount)
@@ -74,7 +74,7 @@ func (bc *BusinessAccountController) followUser(c *gin.Context) {
 // @Failure 400 {object} Dto.Error
 // @Failure 401 {object} Dto.Error
 // @Failure 500 {object} Dto.ErrorDto
-// @Router /business/{followerBusinessID}/follow/business/{followedBusinessID} [post]
+// @Router /business/{followerBusinessID}/follow/business/{followedID} [post]
 func (bc *BusinessAccountController) followBusiness(c *gin.Context) {
 	followerID := c.Param("followerID")
 	followedID := c.Param("followedID")
