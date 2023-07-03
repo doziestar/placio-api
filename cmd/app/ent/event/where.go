@@ -80,6 +80,16 @@ func UpdatedAt(v time.Time) predicate.Event {
 	return predicate.Event(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
+// SearchText applies equality check predicate on the "search_text" field. It's identical to SearchTextEQ.
+func SearchText(v string) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldSearchText, v))
+}
+
+// RelevanceScore applies equality check predicate on the "relevance_score" field. It's identical to RelevanceScoreEQ.
+func RelevanceScore(v float64) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldRelevanceScore, v))
+}
+
 // NameEQ applies the EQ predicate on the "name" field.
 func NameEQ(v string) predicate.Event {
 	return predicate.Event(sql.FieldEQ(FieldName, v))
@@ -223,6 +233,131 @@ func UpdatedAtLT(v time.Time) predicate.Event {
 // UpdatedAtLTE applies the LTE predicate on the "updatedAt" field.
 func UpdatedAtLTE(v time.Time) predicate.Event {
 	return predicate.Event(sql.FieldLTE(FieldUpdatedAt, v))
+}
+
+// SearchTextEQ applies the EQ predicate on the "search_text" field.
+func SearchTextEQ(v string) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldSearchText, v))
+}
+
+// SearchTextNEQ applies the NEQ predicate on the "search_text" field.
+func SearchTextNEQ(v string) predicate.Event {
+	return predicate.Event(sql.FieldNEQ(FieldSearchText, v))
+}
+
+// SearchTextIn applies the In predicate on the "search_text" field.
+func SearchTextIn(vs ...string) predicate.Event {
+	return predicate.Event(sql.FieldIn(FieldSearchText, vs...))
+}
+
+// SearchTextNotIn applies the NotIn predicate on the "search_text" field.
+func SearchTextNotIn(vs ...string) predicate.Event {
+	return predicate.Event(sql.FieldNotIn(FieldSearchText, vs...))
+}
+
+// SearchTextGT applies the GT predicate on the "search_text" field.
+func SearchTextGT(v string) predicate.Event {
+	return predicate.Event(sql.FieldGT(FieldSearchText, v))
+}
+
+// SearchTextGTE applies the GTE predicate on the "search_text" field.
+func SearchTextGTE(v string) predicate.Event {
+	return predicate.Event(sql.FieldGTE(FieldSearchText, v))
+}
+
+// SearchTextLT applies the LT predicate on the "search_text" field.
+func SearchTextLT(v string) predicate.Event {
+	return predicate.Event(sql.FieldLT(FieldSearchText, v))
+}
+
+// SearchTextLTE applies the LTE predicate on the "search_text" field.
+func SearchTextLTE(v string) predicate.Event {
+	return predicate.Event(sql.FieldLTE(FieldSearchText, v))
+}
+
+// SearchTextContains applies the Contains predicate on the "search_text" field.
+func SearchTextContains(v string) predicate.Event {
+	return predicate.Event(sql.FieldContains(FieldSearchText, v))
+}
+
+// SearchTextHasPrefix applies the HasPrefix predicate on the "search_text" field.
+func SearchTextHasPrefix(v string) predicate.Event {
+	return predicate.Event(sql.FieldHasPrefix(FieldSearchText, v))
+}
+
+// SearchTextHasSuffix applies the HasSuffix predicate on the "search_text" field.
+func SearchTextHasSuffix(v string) predicate.Event {
+	return predicate.Event(sql.FieldHasSuffix(FieldSearchText, v))
+}
+
+// SearchTextIsNil applies the IsNil predicate on the "search_text" field.
+func SearchTextIsNil() predicate.Event {
+	return predicate.Event(sql.FieldIsNull(FieldSearchText))
+}
+
+// SearchTextNotNil applies the NotNil predicate on the "search_text" field.
+func SearchTextNotNil() predicate.Event {
+	return predicate.Event(sql.FieldNotNull(FieldSearchText))
+}
+
+// SearchTextEqualFold applies the EqualFold predicate on the "search_text" field.
+func SearchTextEqualFold(v string) predicate.Event {
+	return predicate.Event(sql.FieldEqualFold(FieldSearchText, v))
+}
+
+// SearchTextContainsFold applies the ContainsFold predicate on the "search_text" field.
+func SearchTextContainsFold(v string) predicate.Event {
+	return predicate.Event(sql.FieldContainsFold(FieldSearchText, v))
+}
+
+// RelevanceScoreEQ applies the EQ predicate on the "relevance_score" field.
+func RelevanceScoreEQ(v float64) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldRelevanceScore, v))
+}
+
+// RelevanceScoreNEQ applies the NEQ predicate on the "relevance_score" field.
+func RelevanceScoreNEQ(v float64) predicate.Event {
+	return predicate.Event(sql.FieldNEQ(FieldRelevanceScore, v))
+}
+
+// RelevanceScoreIn applies the In predicate on the "relevance_score" field.
+func RelevanceScoreIn(vs ...float64) predicate.Event {
+	return predicate.Event(sql.FieldIn(FieldRelevanceScore, vs...))
+}
+
+// RelevanceScoreNotIn applies the NotIn predicate on the "relevance_score" field.
+func RelevanceScoreNotIn(vs ...float64) predicate.Event {
+	return predicate.Event(sql.FieldNotIn(FieldRelevanceScore, vs...))
+}
+
+// RelevanceScoreGT applies the GT predicate on the "relevance_score" field.
+func RelevanceScoreGT(v float64) predicate.Event {
+	return predicate.Event(sql.FieldGT(FieldRelevanceScore, v))
+}
+
+// RelevanceScoreGTE applies the GTE predicate on the "relevance_score" field.
+func RelevanceScoreGTE(v float64) predicate.Event {
+	return predicate.Event(sql.FieldGTE(FieldRelevanceScore, v))
+}
+
+// RelevanceScoreLT applies the LT predicate on the "relevance_score" field.
+func RelevanceScoreLT(v float64) predicate.Event {
+	return predicate.Event(sql.FieldLT(FieldRelevanceScore, v))
+}
+
+// RelevanceScoreLTE applies the LTE predicate on the "relevance_score" field.
+func RelevanceScoreLTE(v float64) predicate.Event {
+	return predicate.Event(sql.FieldLTE(FieldRelevanceScore, v))
+}
+
+// RelevanceScoreIsNil applies the IsNil predicate on the "relevance_score" field.
+func RelevanceScoreIsNil() predicate.Event {
+	return predicate.Event(sql.FieldIsNull(FieldRelevanceScore))
+}
+
+// RelevanceScoreNotNil applies the NotNil predicate on the "relevance_score" field.
+func RelevanceScoreNotNil() predicate.Event {
+	return predicate.Event(sql.FieldNotNull(FieldRelevanceScore))
 }
 
 // HasTickets applies the HasEdge predicate on the "tickets" edge.

@@ -1733,6 +1733,8 @@ type BusinessMutation struct {
 	cover_image                      *string
 	website                          *string
 	location                         *string
+	email                            *string
+	phone                            *string
 	business_settings                *map[string]interface{}
 	search_text                      *string
 	relevance_score                  *float64
@@ -2155,6 +2157,104 @@ func (m *BusinessMutation) LocationCleared() bool {
 func (m *BusinessMutation) ResetLocation() {
 	m.location = nil
 	delete(m.clearedFields, business.FieldLocation)
+}
+
+// SetEmail sets the "email" field.
+func (m *BusinessMutation) SetEmail(s string) {
+	m.email = &s
+}
+
+// Email returns the value of the "email" field in the mutation.
+func (m *BusinessMutation) Email() (r string, exists bool) {
+	v := m.email
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEmail returns the old "email" field's value of the Business entity.
+// If the Business object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessMutation) OldEmail(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEmail is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEmail requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEmail: %w", err)
+	}
+	return oldValue.Email, nil
+}
+
+// ClearEmail clears the value of the "email" field.
+func (m *BusinessMutation) ClearEmail() {
+	m.email = nil
+	m.clearedFields[business.FieldEmail] = struct{}{}
+}
+
+// EmailCleared returns if the "email" field was cleared in this mutation.
+func (m *BusinessMutation) EmailCleared() bool {
+	_, ok := m.clearedFields[business.FieldEmail]
+	return ok
+}
+
+// ResetEmail resets all changes to the "email" field.
+func (m *BusinessMutation) ResetEmail() {
+	m.email = nil
+	delete(m.clearedFields, business.FieldEmail)
+}
+
+// SetPhone sets the "phone" field.
+func (m *BusinessMutation) SetPhone(s string) {
+	m.phone = &s
+}
+
+// Phone returns the value of the "phone" field in the mutation.
+func (m *BusinessMutation) Phone() (r string, exists bool) {
+	v := m.phone
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPhone returns the old "phone" field's value of the Business entity.
+// If the Business object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessMutation) OldPhone(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPhone is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPhone requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPhone: %w", err)
+	}
+	return oldValue.Phone, nil
+}
+
+// ClearPhone clears the value of the "phone" field.
+func (m *BusinessMutation) ClearPhone() {
+	m.phone = nil
+	m.clearedFields[business.FieldPhone] = struct{}{}
+}
+
+// PhoneCleared returns if the "phone" field was cleared in this mutation.
+func (m *BusinessMutation) PhoneCleared() bool {
+	_, ok := m.clearedFields[business.FieldPhone]
+	return ok
+}
+
+// ResetPhone resets all changes to the "phone" field.
+func (m *BusinessMutation) ResetPhone() {
+	m.phone = nil
+	delete(m.clearedFields, business.FieldPhone)
 }
 
 // SetBusinessSettings sets the "business_settings" field.
@@ -2884,7 +2984,7 @@ func (m *BusinessMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *BusinessMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 11)
 	if m.name != nil {
 		fields = append(fields, business.FieldName)
 	}
@@ -2902,6 +3002,12 @@ func (m *BusinessMutation) Fields() []string {
 	}
 	if m.location != nil {
 		fields = append(fields, business.FieldLocation)
+	}
+	if m.email != nil {
+		fields = append(fields, business.FieldEmail)
+	}
+	if m.phone != nil {
+		fields = append(fields, business.FieldPhone)
 	}
 	if m.business_settings != nil {
 		fields = append(fields, business.FieldBusinessSettings)
@@ -2932,6 +3038,10 @@ func (m *BusinessMutation) Field(name string) (ent.Value, bool) {
 		return m.Website()
 	case business.FieldLocation:
 		return m.Location()
+	case business.FieldEmail:
+		return m.Email()
+	case business.FieldPhone:
+		return m.Phone()
 	case business.FieldBusinessSettings:
 		return m.BusinessSettings()
 	case business.FieldSearchText:
@@ -2959,6 +3069,10 @@ func (m *BusinessMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldWebsite(ctx)
 	case business.FieldLocation:
 		return m.OldLocation(ctx)
+	case business.FieldEmail:
+		return m.OldEmail(ctx)
+	case business.FieldPhone:
+		return m.OldPhone(ctx)
 	case business.FieldBusinessSettings:
 		return m.OldBusinessSettings(ctx)
 	case business.FieldSearchText:
@@ -3015,6 +3129,20 @@ func (m *BusinessMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetLocation(v)
+		return nil
+	case business.FieldEmail:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEmail(v)
+		return nil
+	case business.FieldPhone:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPhone(v)
 		return nil
 	case business.FieldBusinessSettings:
 		v, ok := value.(map[string]interface{})
@@ -3097,6 +3225,12 @@ func (m *BusinessMutation) ClearedFields() []string {
 	if m.FieldCleared(business.FieldLocation) {
 		fields = append(fields, business.FieldLocation)
 	}
+	if m.FieldCleared(business.FieldEmail) {
+		fields = append(fields, business.FieldEmail)
+	}
+	if m.FieldCleared(business.FieldPhone) {
+		fields = append(fields, business.FieldPhone)
+	}
 	if m.FieldCleared(business.FieldBusinessSettings) {
 		fields = append(fields, business.FieldBusinessSettings)
 	}
@@ -3135,6 +3269,12 @@ func (m *BusinessMutation) ClearField(name string) error {
 	case business.FieldLocation:
 		m.ClearLocation()
 		return nil
+	case business.FieldEmail:
+		m.ClearEmail()
+		return nil
+	case business.FieldPhone:
+		m.ClearPhone()
+		return nil
 	case business.FieldBusinessSettings:
 		m.ClearBusinessSettings()
 		return nil
@@ -3169,6 +3309,12 @@ func (m *BusinessMutation) ResetField(name string) error {
 		return nil
 	case business.FieldLocation:
 		m.ResetLocation()
+		return nil
+	case business.FieldEmail:
+		m.ResetEmail()
+		return nil
+	case business.FieldPhone:
+		m.ResetPhone()
 		return nil
 	case business.FieldBusinessSettings:
 		m.ResetBusinessSettings()
@@ -6336,6 +6482,9 @@ type EventMutation struct {
 	name                  *string
 	createdAt             *time.Time
 	updatedAt             *time.Time
+	search_text           *string
+	relevance_score       *float64
+	addrelevance_score    *float64
 	clearedFields         map[string]struct{}
 	tickets               map[string]struct{}
 	removedtickets        map[string]struct{}
@@ -6560,6 +6709,125 @@ func (m *EventMutation) ResetUpdatedAt() {
 	m.updatedAt = nil
 }
 
+// SetSearchText sets the "search_text" field.
+func (m *EventMutation) SetSearchText(s string) {
+	m.search_text = &s
+}
+
+// SearchText returns the value of the "search_text" field in the mutation.
+func (m *EventMutation) SearchText() (r string, exists bool) {
+	v := m.search_text
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSearchText returns the old "search_text" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldSearchText(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSearchText is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSearchText requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSearchText: %w", err)
+	}
+	return oldValue.SearchText, nil
+}
+
+// ClearSearchText clears the value of the "search_text" field.
+func (m *EventMutation) ClearSearchText() {
+	m.search_text = nil
+	m.clearedFields[event.FieldSearchText] = struct{}{}
+}
+
+// SearchTextCleared returns if the "search_text" field was cleared in this mutation.
+func (m *EventMutation) SearchTextCleared() bool {
+	_, ok := m.clearedFields[event.FieldSearchText]
+	return ok
+}
+
+// ResetSearchText resets all changes to the "search_text" field.
+func (m *EventMutation) ResetSearchText() {
+	m.search_text = nil
+	delete(m.clearedFields, event.FieldSearchText)
+}
+
+// SetRelevanceScore sets the "relevance_score" field.
+func (m *EventMutation) SetRelevanceScore(f float64) {
+	m.relevance_score = &f
+	m.addrelevance_score = nil
+}
+
+// RelevanceScore returns the value of the "relevance_score" field in the mutation.
+func (m *EventMutation) RelevanceScore() (r float64, exists bool) {
+	v := m.relevance_score
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRelevanceScore returns the old "relevance_score" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldRelevanceScore(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRelevanceScore is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRelevanceScore requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRelevanceScore: %w", err)
+	}
+	return oldValue.RelevanceScore, nil
+}
+
+// AddRelevanceScore adds f to the "relevance_score" field.
+func (m *EventMutation) AddRelevanceScore(f float64) {
+	if m.addrelevance_score != nil {
+		*m.addrelevance_score += f
+	} else {
+		m.addrelevance_score = &f
+	}
+}
+
+// AddedRelevanceScore returns the value that was added to the "relevance_score" field in this mutation.
+func (m *EventMutation) AddedRelevanceScore() (r float64, exists bool) {
+	v := m.addrelevance_score
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearRelevanceScore clears the value of the "relevance_score" field.
+func (m *EventMutation) ClearRelevanceScore() {
+	m.relevance_score = nil
+	m.addrelevance_score = nil
+	m.clearedFields[event.FieldRelevanceScore] = struct{}{}
+}
+
+// RelevanceScoreCleared returns if the "relevance_score" field was cleared in this mutation.
+func (m *EventMutation) RelevanceScoreCleared() bool {
+	_, ok := m.clearedFields[event.FieldRelevanceScore]
+	return ok
+}
+
+// ResetRelevanceScore resets all changes to the "relevance_score" field.
+func (m *EventMutation) ResetRelevanceScore() {
+	m.relevance_score = nil
+	m.addrelevance_score = nil
+	delete(m.clearedFields, event.FieldRelevanceScore)
+}
+
 // AddTicketIDs adds the "tickets" edge to the Ticket entity by ids.
 func (m *EventMutation) AddTicketIDs(ids ...string) {
 	if m.tickets == nil {
@@ -6702,7 +6970,7 @@ func (m *EventMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EventMutation) Fields() []string {
-	fields := make([]string, 0, 3)
+	fields := make([]string, 0, 5)
 	if m.name != nil {
 		fields = append(fields, event.FieldName)
 	}
@@ -6711,6 +6979,12 @@ func (m *EventMutation) Fields() []string {
 	}
 	if m.updatedAt != nil {
 		fields = append(fields, event.FieldUpdatedAt)
+	}
+	if m.search_text != nil {
+		fields = append(fields, event.FieldSearchText)
+	}
+	if m.relevance_score != nil {
+		fields = append(fields, event.FieldRelevanceScore)
 	}
 	return fields
 }
@@ -6726,6 +7000,10 @@ func (m *EventMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case event.FieldUpdatedAt:
 		return m.UpdatedAt()
+	case event.FieldSearchText:
+		return m.SearchText()
+	case event.FieldRelevanceScore:
+		return m.RelevanceScore()
 	}
 	return nil, false
 }
@@ -6741,6 +7019,10 @@ func (m *EventMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldCreatedAt(ctx)
 	case event.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
+	case event.FieldSearchText:
+		return m.OldSearchText(ctx)
+	case event.FieldRelevanceScore:
+		return m.OldRelevanceScore(ctx)
 	}
 	return nil, fmt.Errorf("unknown Event field %s", name)
 }
@@ -6771,6 +7053,20 @@ func (m *EventMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetUpdatedAt(v)
 		return nil
+	case event.FieldSearchText:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSearchText(v)
+		return nil
+	case event.FieldRelevanceScore:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRelevanceScore(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Event field %s", name)
 }
@@ -6778,13 +7074,21 @@ func (m *EventMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *EventMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	if m.addrelevance_score != nil {
+		fields = append(fields, event.FieldRelevanceScore)
+	}
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *EventMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case event.FieldRelevanceScore:
+		return m.AddedRelevanceScore()
+	}
 	return nil, false
 }
 
@@ -6793,6 +7097,13 @@ func (m *EventMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *EventMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case event.FieldRelevanceScore:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddRelevanceScore(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Event numeric field %s", name)
 }
@@ -6800,7 +7111,14 @@ func (m *EventMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *EventMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(event.FieldSearchText) {
+		fields = append(fields, event.FieldSearchText)
+	}
+	if m.FieldCleared(event.FieldRelevanceScore) {
+		fields = append(fields, event.FieldRelevanceScore)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -6813,6 +7131,14 @@ func (m *EventMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *EventMutation) ClearField(name string) error {
+	switch name {
+	case event.FieldSearchText:
+		m.ClearSearchText()
+		return nil
+	case event.FieldRelevanceScore:
+		m.ClearRelevanceScore()
+		return nil
+	}
 	return fmt.Errorf("unknown Event nullable field %s", name)
 }
 
@@ -6828,6 +7154,12 @@ func (m *EventMutation) ResetField(name string) error {
 		return nil
 	case event.FieldUpdatedAt:
 		m.ResetUpdatedAt()
+		return nil
+	case event.FieldSearchText:
+		m.ResetSearchText()
+		return nil
+	case event.FieldRelevanceScore:
+		m.ResetRelevanceScore()
 		return nil
 	}
 	return fmt.Errorf("unknown Event field %s", name)

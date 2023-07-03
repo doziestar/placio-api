@@ -104,6 +104,34 @@ func (bc *BusinessCreate) SetNillableLocation(s *string) *BusinessCreate {
 	return bc
 }
 
+// SetEmail sets the "email" field.
+func (bc *BusinessCreate) SetEmail(s string) *BusinessCreate {
+	bc.mutation.SetEmail(s)
+	return bc
+}
+
+// SetNillableEmail sets the "email" field if the given value is not nil.
+func (bc *BusinessCreate) SetNillableEmail(s *string) *BusinessCreate {
+	if s != nil {
+		bc.SetEmail(*s)
+	}
+	return bc
+}
+
+// SetPhone sets the "phone" field.
+func (bc *BusinessCreate) SetPhone(s string) *BusinessCreate {
+	bc.mutation.SetPhone(s)
+	return bc
+}
+
+// SetNillablePhone sets the "phone" field if the given value is not nil.
+func (bc *BusinessCreate) SetNillablePhone(s *string) *BusinessCreate {
+	if s != nil {
+		bc.SetPhone(*s)
+	}
+	return bc
+}
+
 // SetBusinessSettings sets the "business_settings" field.
 func (bc *BusinessCreate) SetBusinessSettings(m map[string]interface{}) *BusinessCreate {
 	bc.mutation.SetBusinessSettings(m)
@@ -407,6 +435,14 @@ func (bc *BusinessCreate) createSpec() (*Business, *sqlgraph.CreateSpec) {
 	if value, ok := bc.mutation.Location(); ok {
 		_spec.SetField(business.FieldLocation, field.TypeString, value)
 		_node.Location = value
+	}
+	if value, ok := bc.mutation.Email(); ok {
+		_spec.SetField(business.FieldEmail, field.TypeString, value)
+		_node.Email = value
+	}
+	if value, ok := bc.mutation.Phone(); ok {
+		_spec.SetField(business.FieldPhone, field.TypeString, value)
+		_node.Phone = value
 	}
 	if value, ok := bc.mutation.BusinessSettings(); ok {
 		_spec.SetField(business.FieldBusinessSettings, field.TypeJSON, value)

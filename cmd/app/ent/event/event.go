@@ -20,6 +20,10 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updatedat field in the database.
 	FieldUpdatedAt = "updated_at"
+	// FieldSearchText holds the string denoting the search_text field in the database.
+	FieldSearchText = "search_text"
+	// FieldRelevanceScore holds the string denoting the relevance_score field in the database.
+	FieldRelevanceScore = "relevance_score"
 	// EdgeTickets holds the string denoting the tickets edge name in mutations.
 	EdgeTickets = "tickets"
 	// EdgeTicketOptions holds the string denoting the ticket_options edge name in mutations.
@@ -48,6 +52,8 @@ var Columns = []string{
 	FieldName,
 	FieldCreatedAt,
 	FieldUpdatedAt,
+	FieldSearchText,
+	FieldRelevanceScore,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "events"
@@ -104,6 +110,16 @@ func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 // ByUpdatedAt orders the results by the updatedAt field.
 func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
+}
+
+// BySearchText orders the results by the search_text field.
+func BySearchText(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSearchText, opts...).ToFunc()
+}
+
+// ByRelevanceScore orders the results by the relevance_score field.
+func ByRelevanceScore(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRelevanceScore, opts...).ToFunc()
 }
 
 // ByTicketsCount orders the results by tickets count.

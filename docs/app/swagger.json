@@ -4273,11 +4273,11 @@
                 "parameters": [
                     {
                         "description": "Business Account Data",
-                        "name": "ent.Business",
+                        "name": "Dto.BusinessDto",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/placio-app_ent.Business"
+                            "$ref": "#/definitions/placio-app_Dto.BusinessDto"
                         }
                     }
                 ],
@@ -5830,6 +5830,35 @@
                 }
             }
         },
+        "placio-app_Dto.BusinessDto": {
+            "type": "object",
+            "properties": {
+                "cover_image": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "location": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "picture": {
+                    "type": "string"
+                },
+                "website": {
+                    "type": "string"
+                }
+            }
+        },
         "placio-app_Dto.CommentDto": {
             "type": "object",
             "required": [
@@ -6185,6 +6214,10 @@
                         }
                     ]
                 },
+                "email": {
+                    "description": "Email holds the value of the \"email\" field.",
+                    "type": "string"
+                },
                 "id": {
                     "description": "ID of the ent.",
                     "type": "string"
@@ -6195,6 +6228,10 @@
                 },
                 "name": {
                     "description": "Name holds the value of the \"name\" field.",
+                    "type": "string"
+                },
+                "phone": {
+                    "description": "Phone holds the value of the \"phone\" field.",
                     "type": "string"
                 },
                 "picture": {
@@ -6541,6 +6578,14 @@
                 },
                 "name": {
                     "description": "Name holds the value of the \"name\" field.",
+                    "type": "string"
+                },
+                "relevance_score": {
+                    "description": "RelevanceScore holds the value of the \"relevance_score\" field.",
+                    "type": "number"
+                },
+                "search_text": {
+                    "description": "SearchText holds the value of the \"search_text\" field.",
                     "type": "string"
                 },
                 "updatedAt": {

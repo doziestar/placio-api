@@ -143,6 +143,25 @@ definitions:
       refresh_token:
         type: string
     type: object
+  placio-app_Dto.BusinessDto:
+    properties:
+      cover_image:
+        type: string
+      description:
+        type: string
+      email:
+        type: string
+      location:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      picture:
+        type: string
+      website:
+        type: string
+    type: object
   placio-app_Dto.CommentDto:
     properties:
       content:
@@ -378,6 +397,9 @@ definitions:
         description: |-
           Edges holds the relations/edges for other nodes in the graph.
           The values are being populated by the BusinessQuery when eager-loading is set.
+      email:
+        description: Email holds the value of the "email" field.
+        type: string
       id:
         description: ID of the ent.
         type: string
@@ -386,6 +408,9 @@ definitions:
         type: string
       name:
         description: Name holds the value of the "name" field.
+        type: string
+      phone:
+        description: Phone holds the value of the "phone" field.
         type: string
       picture:
         description: Picture holds the value of the "picture" field.
@@ -612,6 +637,12 @@ definitions:
         type: string
       name:
         description: Name holds the value of the "name" field.
+        type: string
+      relevance_score:
+        description: RelevanceScore holds the value of the "relevance_score" field.
+        type: number
+      search_text:
+        description: SearchText holds the value of the "search_text" field.
         type: string
       updatedAt:
         description: UpdatedAt holds the value of the "updatedAt" field.
@@ -4501,10 +4532,10 @@ paths:
       parameters:
         - description: Business Account Data
           in: body
-          name: ent.Business
+          name: Dto.BusinessDto
           required: true
           schema:
-            $ref: '#/definitions/placio-app_ent.Business'
+            $ref: '#/definitions/placio-app_Dto.BusinessDto'
       produces:
         - application/json
       responses:

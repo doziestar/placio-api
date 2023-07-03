@@ -142,6 +142,46 @@ func (bu *BusinessUpdate) ClearLocation() *BusinessUpdate {
 	return bu
 }
 
+// SetEmail sets the "email" field.
+func (bu *BusinessUpdate) SetEmail(s string) *BusinessUpdate {
+	bu.mutation.SetEmail(s)
+	return bu
+}
+
+// SetNillableEmail sets the "email" field if the given value is not nil.
+func (bu *BusinessUpdate) SetNillableEmail(s *string) *BusinessUpdate {
+	if s != nil {
+		bu.SetEmail(*s)
+	}
+	return bu
+}
+
+// ClearEmail clears the value of the "email" field.
+func (bu *BusinessUpdate) ClearEmail() *BusinessUpdate {
+	bu.mutation.ClearEmail()
+	return bu
+}
+
+// SetPhone sets the "phone" field.
+func (bu *BusinessUpdate) SetPhone(s string) *BusinessUpdate {
+	bu.mutation.SetPhone(s)
+	return bu
+}
+
+// SetNillablePhone sets the "phone" field if the given value is not nil.
+func (bu *BusinessUpdate) SetNillablePhone(s *string) *BusinessUpdate {
+	if s != nil {
+		bu.SetPhone(*s)
+	}
+	return bu
+}
+
+// ClearPhone clears the value of the "phone" field.
+func (bu *BusinessUpdate) ClearPhone() *BusinessUpdate {
+	bu.mutation.ClearPhone()
+	return bu
+}
+
 // SetBusinessSettings sets the "business_settings" field.
 func (bu *BusinessUpdate) SetBusinessSettings(m map[string]interface{}) *BusinessUpdate {
 	bu.mutation.SetBusinessSettings(m)
@@ -623,6 +663,18 @@ func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if bu.mutation.LocationCleared() {
 		_spec.ClearField(business.FieldLocation, field.TypeString)
+	}
+	if value, ok := bu.mutation.Email(); ok {
+		_spec.SetField(business.FieldEmail, field.TypeString, value)
+	}
+	if bu.mutation.EmailCleared() {
+		_spec.ClearField(business.FieldEmail, field.TypeString)
+	}
+	if value, ok := bu.mutation.Phone(); ok {
+		_spec.SetField(business.FieldPhone, field.TypeString, value)
+	}
+	if bu.mutation.PhoneCleared() {
+		_spec.ClearField(business.FieldPhone, field.TypeString)
 	}
 	if value, ok := bu.mutation.BusinessSettings(); ok {
 		_spec.SetField(business.FieldBusinessSettings, field.TypeJSON, value)
@@ -1205,6 +1257,46 @@ func (buo *BusinessUpdateOne) ClearLocation() *BusinessUpdateOne {
 	return buo
 }
 
+// SetEmail sets the "email" field.
+func (buo *BusinessUpdateOne) SetEmail(s string) *BusinessUpdateOne {
+	buo.mutation.SetEmail(s)
+	return buo
+}
+
+// SetNillableEmail sets the "email" field if the given value is not nil.
+func (buo *BusinessUpdateOne) SetNillableEmail(s *string) *BusinessUpdateOne {
+	if s != nil {
+		buo.SetEmail(*s)
+	}
+	return buo
+}
+
+// ClearEmail clears the value of the "email" field.
+func (buo *BusinessUpdateOne) ClearEmail() *BusinessUpdateOne {
+	buo.mutation.ClearEmail()
+	return buo
+}
+
+// SetPhone sets the "phone" field.
+func (buo *BusinessUpdateOne) SetPhone(s string) *BusinessUpdateOne {
+	buo.mutation.SetPhone(s)
+	return buo
+}
+
+// SetNillablePhone sets the "phone" field if the given value is not nil.
+func (buo *BusinessUpdateOne) SetNillablePhone(s *string) *BusinessUpdateOne {
+	if s != nil {
+		buo.SetPhone(*s)
+	}
+	return buo
+}
+
+// ClearPhone clears the value of the "phone" field.
+func (buo *BusinessUpdateOne) ClearPhone() *BusinessUpdateOne {
+	buo.mutation.ClearPhone()
+	return buo
+}
+
 // SetBusinessSettings sets the "business_settings" field.
 func (buo *BusinessUpdateOne) SetBusinessSettings(m map[string]interface{}) *BusinessUpdateOne {
 	buo.mutation.SetBusinessSettings(m)
@@ -1716,6 +1808,18 @@ func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err
 	}
 	if buo.mutation.LocationCleared() {
 		_spec.ClearField(business.FieldLocation, field.TypeString)
+	}
+	if value, ok := buo.mutation.Email(); ok {
+		_spec.SetField(business.FieldEmail, field.TypeString, value)
+	}
+	if buo.mutation.EmailCleared() {
+		_spec.ClearField(business.FieldEmail, field.TypeString)
+	}
+	if value, ok := buo.mutation.Phone(); ok {
+		_spec.SetField(business.FieldPhone, field.TypeString, value)
+	}
+	if buo.mutation.PhoneCleared() {
+		_spec.ClearField(business.FieldPhone, field.TypeString)
 	}
 	if value, ok := buo.mutation.BusinessSettings(); ok {
 		_spec.SetField(business.FieldBusinessSettings, field.TypeJSON, value)
