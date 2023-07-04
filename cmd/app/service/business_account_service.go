@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/google/uuid"
 	"placio-app/Dto"
 	"placio-app/ent"
 	"placio-app/ent/business"
@@ -157,6 +158,7 @@ func (s *BusinessAccountServiceImpl) CreateBusinessAccount(ctx context.Context, 
 	// Create business account
 	businessAccount, err := tx.Business.
 		Create().
+		SetID(uuid.New().String()).
 		SetName(businessData.Name).
 		SetDescription(businessData.Description).
 		SetWebsite(businessData.Website).
@@ -182,6 +184,7 @@ func (s *BusinessAccountServiceImpl) CreateBusinessAccount(ctx context.Context, 
 	// Create user-business relationship
 	_, err = tx.UserBusiness.
 		Create().
+		SetID(uuid.New().String()).
 		SetUser(user).
 		SetBusiness(businessAccount).
 		SetRole("admin").

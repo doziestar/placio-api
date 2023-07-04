@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"github.com/google/uuid"
 	"placio-app/Dto"
 	"placio-app/ent"
 )
@@ -31,6 +32,7 @@ func (s *PlaceServiceImpl) CreatePlace(ctx context.Context, placeData Dto.Create
 	// This is just a basic example, you may need to handle additional fields and validation.
 	place, err := s.client.Place.
 		Create().
+		SetID(uuid.New().String()).
 		SetName(placeData.Name).
 		SetDescription(*placeData.Description).
 		SetPicture(*placeData.Picture).
