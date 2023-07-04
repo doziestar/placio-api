@@ -27,7 +27,7 @@ func (Business) Fields() []ent.Field {
 		field.String("email").Optional(),
 		field.String("phone").Optional(),
 		field.JSON("business_settings", map[string]interface{}{}).Optional(),
-		//field.String("url").Unique().Immutable(),
+		//field.String("url").Unique().Immutable(), // add busienss website url
 		field.String("search_text").Optional(),
 		field.Float("relevance_score").Optional(),
 	}
