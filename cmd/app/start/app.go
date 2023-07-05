@@ -16,14 +16,26 @@ import (
 func Initialize(app *gin.Engine) {
 
 	err := sentry.Init(sentry.ClientOptions{
-		Dsn: "",
+		Dsn: os.Getenv("SENTRY_DSN"),
 		// Set TracesSampleRate to 1.0 to capture 100%
 		// of transactions for performance monitoring.
 		// We recommend adjusting this value in production,
-		TracesSampleRate: 1.0,
-		ServerName:       "placio-api",
-		Release:          "1.0.0",
-		Environment:      "development",
+		TracesSampleRate:   1.0,
+		EnableTracing:      true,
+		AttachStacktrace:   true,
+		ProfilesSampleRate: 1.0,
+		TracesSampler: sentry.TracesSampler(func(ctx sentry.SamplingContext) float64 {
+			// As an example, this custom sampler does not send some
+			// transactions to Sentry based on their name.
+			hub := sentry.GetHubFromContext(context.Background())
+			if hub == nil {
+				return 0.0
+			}
+			return 1.0
+		}),
+		ServerName:  "placio-api",
+		Release:     "1.0.0",
+		Environment: func() string { return os.Getenv("ENVIRONMENT") }(),
 	})
 	if err != nil {
 		log.Fatalf("sentry.Init: %s", err)
