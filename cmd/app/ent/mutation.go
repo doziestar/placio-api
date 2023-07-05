@@ -1736,6 +1736,7 @@ type BusinessMutation struct {
 	email                            *string
 	phone                            *string
 	business_settings                *map[string]interface{}
+	url                              *string
 	search_text                      *string
 	relevance_score                  *float64
 	addrelevance_score               *float64
@@ -2304,6 +2305,55 @@ func (m *BusinessMutation) BusinessSettingsCleared() bool {
 func (m *BusinessMutation) ResetBusinessSettings() {
 	m.business_settings = nil
 	delete(m.clearedFields, business.FieldBusinessSettings)
+}
+
+// SetURL sets the "url" field.
+func (m *BusinessMutation) SetURL(s string) {
+	m.url = &s
+}
+
+// URL returns the value of the "url" field in the mutation.
+func (m *BusinessMutation) URL() (r string, exists bool) {
+	v := m.url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldURL returns the old "url" field's value of the Business entity.
+// If the Business object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessMutation) OldURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldURL: %w", err)
+	}
+	return oldValue.URL, nil
+}
+
+// ClearURL clears the value of the "url" field.
+func (m *BusinessMutation) ClearURL() {
+	m.url = nil
+	m.clearedFields[business.FieldURL] = struct{}{}
+}
+
+// URLCleared returns if the "url" field was cleared in this mutation.
+func (m *BusinessMutation) URLCleared() bool {
+	_, ok := m.clearedFields[business.FieldURL]
+	return ok
+}
+
+// ResetURL resets all changes to the "url" field.
+func (m *BusinessMutation) ResetURL() {
+	m.url = nil
+	delete(m.clearedFields, business.FieldURL)
 }
 
 // SetSearchText sets the "search_text" field.
@@ -2984,7 +3034,7 @@ func (m *BusinessMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *BusinessMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 12)
 	if m.name != nil {
 		fields = append(fields, business.FieldName)
 	}
@@ -3011,6 +3061,9 @@ func (m *BusinessMutation) Fields() []string {
 	}
 	if m.business_settings != nil {
 		fields = append(fields, business.FieldBusinessSettings)
+	}
+	if m.url != nil {
+		fields = append(fields, business.FieldURL)
 	}
 	if m.search_text != nil {
 		fields = append(fields, business.FieldSearchText)
@@ -3044,6 +3097,8 @@ func (m *BusinessMutation) Field(name string) (ent.Value, bool) {
 		return m.Phone()
 	case business.FieldBusinessSettings:
 		return m.BusinessSettings()
+	case business.FieldURL:
+		return m.URL()
 	case business.FieldSearchText:
 		return m.SearchText()
 	case business.FieldRelevanceScore:
@@ -3075,6 +3130,8 @@ func (m *BusinessMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldPhone(ctx)
 	case business.FieldBusinessSettings:
 		return m.OldBusinessSettings(ctx)
+	case business.FieldURL:
+		return m.OldURL(ctx)
 	case business.FieldSearchText:
 		return m.OldSearchText(ctx)
 	case business.FieldRelevanceScore:
@@ -3150,6 +3207,13 @@ func (m *BusinessMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetBusinessSettings(v)
+		return nil
+	case business.FieldURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetURL(v)
 		return nil
 	case business.FieldSearchText:
 		v, ok := value.(string)
@@ -3234,6 +3298,9 @@ func (m *BusinessMutation) ClearedFields() []string {
 	if m.FieldCleared(business.FieldBusinessSettings) {
 		fields = append(fields, business.FieldBusinessSettings)
 	}
+	if m.FieldCleared(business.FieldURL) {
+		fields = append(fields, business.FieldURL)
+	}
 	if m.FieldCleared(business.FieldSearchText) {
 		fields = append(fields, business.FieldSearchText)
 	}
@@ -3278,6 +3345,9 @@ func (m *BusinessMutation) ClearField(name string) error {
 	case business.FieldBusinessSettings:
 		m.ClearBusinessSettings()
 		return nil
+	case business.FieldURL:
+		m.ClearURL()
+		return nil
 	case business.FieldSearchText:
 		m.ClearSearchText()
 		return nil
@@ -3318,6 +3388,9 @@ func (m *BusinessMutation) ResetField(name string) error {
 		return nil
 	case business.FieldBusinessSettings:
 		m.ResetBusinessSettings()
+		return nil
+	case business.FieldURL:
+		m.ResetURL()
 		return nil
 	case business.FieldSearchText:
 		m.ResetSearchText()

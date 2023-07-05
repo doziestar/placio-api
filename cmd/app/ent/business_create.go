@@ -138,6 +138,20 @@ func (bc *BusinessCreate) SetBusinessSettings(m map[string]interface{}) *Busines
 	return bc
 }
 
+// SetURL sets the "url" field.
+func (bc *BusinessCreate) SetURL(s string) *BusinessCreate {
+	bc.mutation.SetURL(s)
+	return bc
+}
+
+// SetNillableURL sets the "url" field if the given value is not nil.
+func (bc *BusinessCreate) SetNillableURL(s *string) *BusinessCreate {
+	if s != nil {
+		bc.SetURL(*s)
+	}
+	return bc
+}
+
 // SetSearchText sets the "search_text" field.
 func (bc *BusinessCreate) SetSearchText(s string) *BusinessCreate {
 	bc.mutation.SetSearchText(s)
@@ -447,6 +461,10 @@ func (bc *BusinessCreate) createSpec() (*Business, *sqlgraph.CreateSpec) {
 	if value, ok := bc.mutation.BusinessSettings(); ok {
 		_spec.SetField(business.FieldBusinessSettings, field.TypeJSON, value)
 		_node.BusinessSettings = value
+	}
+	if value, ok := bc.mutation.URL(); ok {
+		_spec.SetField(business.FieldURL, field.TypeString, value)
+		_node.URL = value
 	}
 	if value, ok := bc.mutation.SearchText(); ok {
 		_spec.SetField(business.FieldSearchText, field.TypeString, value)

@@ -91,6 +91,7 @@ var (
 		{Name: "email", Type: field.TypeString, Nullable: true},
 		{Name: "phone", Type: field.TypeString, Nullable: true},
 		{Name: "business_settings", Type: field.TypeJSON, Nullable: true},
+		{Name: "url", Type: field.TypeString, Nullable: true},
 		{Name: "search_text", Type: field.TypeString, Nullable: true},
 		{Name: "relevance_score", Type: field.TypeFloat64, Nullable: true},
 	}

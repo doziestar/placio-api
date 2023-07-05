@@ -194,6 +194,26 @@ func (bu *BusinessUpdate) ClearBusinessSettings() *BusinessUpdate {
 	return bu
 }
 
+// SetURL sets the "url" field.
+func (bu *BusinessUpdate) SetURL(s string) *BusinessUpdate {
+	bu.mutation.SetURL(s)
+	return bu
+}
+
+// SetNillableURL sets the "url" field if the given value is not nil.
+func (bu *BusinessUpdate) SetNillableURL(s *string) *BusinessUpdate {
+	if s != nil {
+		bu.SetURL(*s)
+	}
+	return bu
+}
+
+// ClearURL clears the value of the "url" field.
+func (bu *BusinessUpdate) ClearURL() *BusinessUpdate {
+	bu.mutation.ClearURL()
+	return bu
+}
+
 // SetSearchText sets the "search_text" field.
 func (bu *BusinessUpdate) SetSearchText(s string) *BusinessUpdate {
 	bu.mutation.SetSearchText(s)
@@ -681,6 +701,12 @@ func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if bu.mutation.BusinessSettingsCleared() {
 		_spec.ClearField(business.FieldBusinessSettings, field.TypeJSON)
+	}
+	if value, ok := bu.mutation.URL(); ok {
+		_spec.SetField(business.FieldURL, field.TypeString, value)
+	}
+	if bu.mutation.URLCleared() {
+		_spec.ClearField(business.FieldURL, field.TypeString)
 	}
 	if value, ok := bu.mutation.SearchText(); ok {
 		_spec.SetField(business.FieldSearchText, field.TypeString, value)
@@ -1309,6 +1335,26 @@ func (buo *BusinessUpdateOne) ClearBusinessSettings() *BusinessUpdateOne {
 	return buo
 }
 
+// SetURL sets the "url" field.
+func (buo *BusinessUpdateOne) SetURL(s string) *BusinessUpdateOne {
+	buo.mutation.SetURL(s)
+	return buo
+}
+
+// SetNillableURL sets the "url" field if the given value is not nil.
+func (buo *BusinessUpdateOne) SetNillableURL(s *string) *BusinessUpdateOne {
+	if s != nil {
+		buo.SetURL(*s)
+	}
+	return buo
+}
+
+// ClearURL clears the value of the "url" field.
+func (buo *BusinessUpdateOne) ClearURL() *BusinessUpdateOne {
+	buo.mutation.ClearURL()
+	return buo
+}
+
 // SetSearchText sets the "search_text" field.
 func (buo *BusinessUpdateOne) SetSearchText(s string) *BusinessUpdateOne {
 	buo.mutation.SetSearchText(s)
@@ -1826,6 +1872,12 @@ func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err
 	}
 	if buo.mutation.BusinessSettingsCleared() {
 		_spec.ClearField(business.FieldBusinessSettings, field.TypeJSON)
+	}
+	if value, ok := buo.mutation.URL(); ok {
+		_spec.SetField(business.FieldURL, field.TypeString, value)
+	}
+	if buo.mutation.URLCleared() {
+		_spec.ClearField(business.FieldURL, field.TypeString)
 	}
 	if value, ok := buo.mutation.SearchText(); ok {
 		_spec.SetField(business.FieldSearchText, field.TypeString, value)
