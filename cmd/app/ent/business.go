@@ -36,6 +36,8 @@ type Business struct {
 	Phone string `json:"phone,omitempty"`
 	// BusinessSettings holds the value of the "business_settings" field.
 	BusinessSettings map[string]interface{} `json:"business_settings,omitempty"`
+	// URL holds the value of the "url" field.
+	URL string `json:"url,omitempty"`
 	// SearchText holds the value of the "search_text" field.
 	SearchText string `json:"search_text,omitempty"`
 	// RelevanceScore holds the value of the "relevance_score" field.
@@ -176,7 +178,7 @@ func (*Business) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case business.FieldRelevanceScore:
 			values[i] = new(sql.NullFloat64)
-		case business.FieldID, business.FieldName, business.FieldDescription, business.FieldPicture, business.FieldCoverImage, business.FieldWebsite, business.FieldLocation, business.FieldEmail, business.FieldPhone, business.FieldSearchText:
+		case business.FieldID, business.FieldName, business.FieldDescription, business.FieldPicture, business.FieldCoverImage, business.FieldWebsite, business.FieldLocation, business.FieldEmail, business.FieldPhone, business.FieldURL, business.FieldSearchText:
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -254,6 +256,12 @@ func (b *Business) assignValues(columns []string, values []any) error {
 				if err := json.Unmarshal(*value, &b.BusinessSettings); err != nil {
 					return fmt.Errorf("unmarshal field business_settings: %w", err)
 				}
+			}
+		case business.FieldURL:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field url", values[i])
+			} else if value.Valid {
+				b.URL = value.String
 			}
 		case business.FieldSearchText:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -379,6 +387,9 @@ func (b *Business) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("business_settings=")
 	builder.WriteString(fmt.Sprintf("%v", b.BusinessSettings))
+	builder.WriteString(", ")
+	builder.WriteString("url=")
+	builder.WriteString(b.URL)
 	builder.WriteString(", ")
 	builder.WriteString("search_text=")
 	builder.WriteString(b.SearchText)

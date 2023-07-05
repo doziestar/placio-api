@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
+	"log"
 	"placio-app/Dto"
 	"placio-app/ent"
 	"placio-app/ent/business"
@@ -141,6 +142,11 @@ func (s *BusinessAccountServiceImpl) CreateBusinessAccount(ctx context.Context, 
 		Query().
 		Where(user.IDEQ(userID)).
 		Only(ctx)
+
+	if err != nil {
+		log.Println("error getting user", err)
+		return nil, err
+	}
 
 	if businessData.Name == "" {
 		return nil, errors.New("business account name cannot be empty")

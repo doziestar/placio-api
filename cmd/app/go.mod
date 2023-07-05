@@ -9,7 +9,7 @@ require (
 	github.com/axiaoxin-com/logging v1.2.16
 	github.com/coreos/go-oidc/v3 v3.6.0
 	github.com/elastic/go-elasticsearch/v8 v8.8.1
-	github.com/getsentry/sentry-go v0.19.0
+	github.com/getsentry/sentry-go v0.22.0
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-contrib/sessions v0.0.5
 	github.com/gin-gonic/gin v1.9.0
