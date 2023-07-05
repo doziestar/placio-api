@@ -34,6 +34,7 @@ func (s *PlaceServiceImpl) CreatePlace(ctx context.Context, placeData Dto.Create
 		Create().
 		SetID(uuid.New().String()).
 		SetName(placeData.Name).
+		SetID(uuid.New().String()).
 		SetDescription(*placeData.Description).
 		SetPicture(*placeData.Picture).
 		SetCoverImage(*placeData.CoverImage).
