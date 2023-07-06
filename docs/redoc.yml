@@ -543,6 +543,9 @@ definitions:
       search_text:
         description: SearchText holds the value of the "search_text" field.
         type: string
+      url:
+        description: URL holds the value of the "url" field.
+        type: string
       website:
         description: Website holds the value of the "website" field.
         type: string
@@ -5103,7 +5106,7 @@ paths:
       summary: Unfollow a business by another business
       tags:
         - Business
-  /business/user/{userID}:
+  /business/user-business-account:
     get:
       operationId: get-user-business-accounts
       parameters:

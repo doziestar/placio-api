@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"log"
 	"net/http"
 	"placio-app/Dto"
 	_ "placio-app/ent"
@@ -26,10 +27,10 @@ func (bc *BusinessAccountController) RegisterRoutes(router *gin.RouterGroup) {
 		businessRouter.DELETE("/:businessAccountID/unfollow/business/:followedID", bc.unfollowBusiness)
 		businessRouter.GET("/:businessAccountID/followed-contents", bc.getFollowedContents)
 		businessRouter.POST("/", bc.createBusinessAccount)
+		businessRouter.GET("/user-business-account", bc.getUserBusinessAccounts)
 		businessRouter.GET("/:businessAccountID", bc.getBusinessAccount)
 		businessRouter.PUT("/:businessAccountID", bc.updateBusinessAccount)
 		businessRouter.DELETE("/:businessAccountID", bc.deleteBusinessAccount)
-		businessRouter.GET("/user/:userID", bc.getUserBusinessAccounts)
 		businessRouter.POST("/:businessAccountID/user/:userID", bc.associateUserWithBusinessAccount)
 		businessRouter.DELETE("/:businessAccountID/user/:userID", bc.removeUserFromBusinessAccount)
 		businessRouter.PUT("/:businessAccountID/user/:currentOwnerID/:newOwnerID", bc.transferBusinessAccountOwnership)
@@ -272,9 +273,15 @@ func (bc *BusinessAccountController) deleteBusinessAccount(c *gin.Context) {
 // @Failure 400 {object} Dto.Error
 // @Failure 401 {object} Dto.Error
 // @Failure 500 {object} Dto.ErrorDto
-// @Router /business/user/{userID} [get]
+// @Router /business/user-business-account [get]
 func (bc *BusinessAccountController) getUserBusinessAccounts(c *gin.Context) {
-	// Implementation...
+	log.Println("Get user business accounts")
+	businessAccount, err := bc.service.GetUserBusinessAccounts(c)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"businessAccounts": businessAccount})
 }
 
 // @Summary Associate user with business account

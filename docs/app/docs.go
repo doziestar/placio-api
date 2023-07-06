@@ -4311,7 +4311,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/business/user/{userID}": {
+        "/business/user-business-account": {
             "get": {
                 "produces": [
                     "application/json"
@@ -6424,6 +6424,10 @@ const docTemplate = `{
                 },
                 "search_text": {
                     "description": "SearchText holds the value of the \"search_text\" field.",
+                    "type": "string"
+                },
+                "url": {
+                    "description": "URL holds the value of the \"url\" field.",
                     "type": "string"
                 },
                 "website": {
