@@ -45,7 +45,7 @@ func (pc *PlaceController) getPlace(ctx *gin.Context) {
 	place, err := pc.placeService.GetPlace(ctx, id)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Internal Server Error",
+			"error": err.Error(),
 		})
 		return
 	}
@@ -84,7 +84,7 @@ func (pc *PlaceController) createPlace(ctx *gin.Context) {
 	place, err := pc.placeService.CreatePlace(ctx, placeData)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Internal Server Error",
+			"error": err.Error(),
 		})
 		return
 	}
