@@ -206,6 +206,66 @@ func (pu *PlaceUpdate) ClearPicture() *PlaceUpdate {
 	return pu
 }
 
+// SetCountry sets the "country" field.
+func (pu *PlaceUpdate) SetCountry(s string) *PlaceUpdate {
+	pu.mutation.SetCountry(s)
+	return pu
+}
+
+// SetNillableCountry sets the "country" field if the given value is not nil.
+func (pu *PlaceUpdate) SetNillableCountry(s *string) *PlaceUpdate {
+	if s != nil {
+		pu.SetCountry(*s)
+	}
+	return pu
+}
+
+// ClearCountry clears the value of the "country" field.
+func (pu *PlaceUpdate) ClearCountry() *PlaceUpdate {
+	pu.mutation.ClearCountry()
+	return pu
+}
+
+// SetCity sets the "city" field.
+func (pu *PlaceUpdate) SetCity(s string) *PlaceUpdate {
+	pu.mutation.SetCity(s)
+	return pu
+}
+
+// SetNillableCity sets the "city" field if the given value is not nil.
+func (pu *PlaceUpdate) SetNillableCity(s *string) *PlaceUpdate {
+	if s != nil {
+		pu.SetCity(*s)
+	}
+	return pu
+}
+
+// ClearCity clears the value of the "city" field.
+func (pu *PlaceUpdate) ClearCity() *PlaceUpdate {
+	pu.mutation.ClearCity()
+	return pu
+}
+
+// SetState sets the "state" field.
+func (pu *PlaceUpdate) SetState(s string) *PlaceUpdate {
+	pu.mutation.SetState(s)
+	return pu
+}
+
+// SetNillableState sets the "state" field if the given value is not nil.
+func (pu *PlaceUpdate) SetNillableState(s *string) *PlaceUpdate {
+	if s != nil {
+		pu.SetState(*s)
+	}
+	return pu
+}
+
+// ClearState clears the value of the "state" field.
+func (pu *PlaceUpdate) ClearState() *PlaceUpdate {
+	pu.mutation.ClearState()
+	return pu
+}
+
 // SetPlaceSettings sets the "place_settings" field.
 func (pu *PlaceUpdate) SetPlaceSettings(m map[string]interface{}) *PlaceUpdate {
 	pu.mutation.SetPlaceSettings(m)
@@ -239,6 +299,18 @@ func (pu *PlaceUpdate) SetSocialMedia(m map[string]interface{}) *PlaceUpdate {
 // ClearSocialMedia clears the value of the "social_media" field.
 func (pu *PlaceUpdate) ClearSocialMedia() *PlaceUpdate {
 	pu.mutation.ClearSocialMedia()
+	return pu
+}
+
+// SetPaymentOptions sets the "payment_options" field.
+func (pu *PlaceUpdate) SetPaymentOptions(m map[string]interface{}) *PlaceUpdate {
+	pu.mutation.SetPaymentOptions(m)
+	return pu
+}
+
+// ClearPaymentOptions clears the value of the "payment_options" field.
+func (pu *PlaceUpdate) ClearPaymentOptions() *PlaceUpdate {
+	pu.mutation.ClearPaymentOptions()
 	return pu
 }
 
@@ -933,6 +1005,24 @@ func (pu *PlaceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if pu.mutation.PictureCleared() {
 		_spec.ClearField(place.FieldPicture, field.TypeString)
 	}
+	if value, ok := pu.mutation.Country(); ok {
+		_spec.SetField(place.FieldCountry, field.TypeString, value)
+	}
+	if pu.mutation.CountryCleared() {
+		_spec.ClearField(place.FieldCountry, field.TypeString)
+	}
+	if value, ok := pu.mutation.City(); ok {
+		_spec.SetField(place.FieldCity, field.TypeString, value)
+	}
+	if pu.mutation.CityCleared() {
+		_spec.ClearField(place.FieldCity, field.TypeString)
+	}
+	if value, ok := pu.mutation.State(); ok {
+		_spec.SetField(place.FieldState, field.TypeString, value)
+	}
+	if pu.mutation.StateCleared() {
+		_spec.ClearField(place.FieldState, field.TypeString)
+	}
 	if value, ok := pu.mutation.PlaceSettings(); ok {
 		_spec.SetField(place.FieldPlaceSettings, field.TypeJSON, value)
 	}
@@ -950,6 +1040,12 @@ func (pu *PlaceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if pu.mutation.SocialMediaCleared() {
 		_spec.ClearField(place.FieldSocialMedia, field.TypeJSON)
+	}
+	if value, ok := pu.mutation.PaymentOptions(); ok {
+		_spec.SetField(place.FieldPaymentOptions, field.TypeJSON, value)
+	}
+	if pu.mutation.PaymentOptionsCleared() {
+		_spec.ClearField(place.FieldPaymentOptions, field.TypeJSON)
 	}
 	if value, ok := pu.mutation.Tags(); ok {
 		_spec.SetField(place.FieldTags, field.TypeJSON, value)
@@ -1739,6 +1835,66 @@ func (puo *PlaceUpdateOne) ClearPicture() *PlaceUpdateOne {
 	return puo
 }
 
+// SetCountry sets the "country" field.
+func (puo *PlaceUpdateOne) SetCountry(s string) *PlaceUpdateOne {
+	puo.mutation.SetCountry(s)
+	return puo
+}
+
+// SetNillableCountry sets the "country" field if the given value is not nil.
+func (puo *PlaceUpdateOne) SetNillableCountry(s *string) *PlaceUpdateOne {
+	if s != nil {
+		puo.SetCountry(*s)
+	}
+	return puo
+}
+
+// ClearCountry clears the value of the "country" field.
+func (puo *PlaceUpdateOne) ClearCountry() *PlaceUpdateOne {
+	puo.mutation.ClearCountry()
+	return puo
+}
+
+// SetCity sets the "city" field.
+func (puo *PlaceUpdateOne) SetCity(s string) *PlaceUpdateOne {
+	puo.mutation.SetCity(s)
+	return puo
+}
+
+// SetNillableCity sets the "city" field if the given value is not nil.
+func (puo *PlaceUpdateOne) SetNillableCity(s *string) *PlaceUpdateOne {
+	if s != nil {
+		puo.SetCity(*s)
+	}
+	return puo
+}
+
+// ClearCity clears the value of the "city" field.
+func (puo *PlaceUpdateOne) ClearCity() *PlaceUpdateOne {
+	puo.mutation.ClearCity()
+	return puo
+}
+
+// SetState sets the "state" field.
+func (puo *PlaceUpdateOne) SetState(s string) *PlaceUpdateOne {
+	puo.mutation.SetState(s)
+	return puo
+}
+
+// SetNillableState sets the "state" field if the given value is not nil.
+func (puo *PlaceUpdateOne) SetNillableState(s *string) *PlaceUpdateOne {
+	if s != nil {
+		puo.SetState(*s)
+	}
+	return puo
+}
+
+// ClearState clears the value of the "state" field.
+func (puo *PlaceUpdateOne) ClearState() *PlaceUpdateOne {
+	puo.mutation.ClearState()
+	return puo
+}
+
 // SetPlaceSettings sets the "place_settings" field.
 func (puo *PlaceUpdateOne) SetPlaceSettings(m map[string]interface{}) *PlaceUpdateOne {
 	puo.mutation.SetPlaceSettings(m)
@@ -1772,6 +1928,18 @@ func (puo *PlaceUpdateOne) SetSocialMedia(m map[string]interface{}) *PlaceUpdate
 // ClearSocialMedia clears the value of the "social_media" field.
 func (puo *PlaceUpdateOne) ClearSocialMedia() *PlaceUpdateOne {
 	puo.mutation.ClearSocialMedia()
+	return puo
+}
+
+// SetPaymentOptions sets the "payment_options" field.
+func (puo *PlaceUpdateOne) SetPaymentOptions(m map[string]interface{}) *PlaceUpdateOne {
+	puo.mutation.SetPaymentOptions(m)
+	return puo
+}
+
+// ClearPaymentOptions clears the value of the "payment_options" field.
+func (puo *PlaceUpdateOne) ClearPaymentOptions() *PlaceUpdateOne {
+	puo.mutation.ClearPaymentOptions()
 	return puo
 }
 
@@ -2496,6 +2664,24 @@ func (puo *PlaceUpdateOne) sqlSave(ctx context.Context) (_node *Place, err error
 	if puo.mutation.PictureCleared() {
 		_spec.ClearField(place.FieldPicture, field.TypeString)
 	}
+	if value, ok := puo.mutation.Country(); ok {
+		_spec.SetField(place.FieldCountry, field.TypeString, value)
+	}
+	if puo.mutation.CountryCleared() {
+		_spec.ClearField(place.FieldCountry, field.TypeString)
+	}
+	if value, ok := puo.mutation.City(); ok {
+		_spec.SetField(place.FieldCity, field.TypeString, value)
+	}
+	if puo.mutation.CityCleared() {
+		_spec.ClearField(place.FieldCity, field.TypeString)
+	}
+	if value, ok := puo.mutation.State(); ok {
+		_spec.SetField(place.FieldState, field.TypeString, value)
+	}
+	if puo.mutation.StateCleared() {
+		_spec.ClearField(place.FieldState, field.TypeString)
+	}
 	if value, ok := puo.mutation.PlaceSettings(); ok {
 		_spec.SetField(place.FieldPlaceSettings, field.TypeJSON, value)
 	}
@@ -2513,6 +2699,12 @@ func (puo *PlaceUpdateOne) sqlSave(ctx context.Context) (_node *Place, err error
 	}
 	if puo.mutation.SocialMediaCleared() {
 		_spec.ClearField(place.FieldSocialMedia, field.TypeJSON)
+	}
+	if value, ok := puo.mutation.PaymentOptions(); ok {
+		_spec.SetField(place.FieldPaymentOptions, field.TypeJSON, value)
+	}
+	if puo.mutation.PaymentOptionsCleared() {
+		_spec.ClearField(place.FieldPaymentOptions, field.TypeJSON)
 	}
 	if value, ok := puo.mutation.Tags(); ok {
 		_spec.SetField(place.FieldTags, field.TypeJSON, value)

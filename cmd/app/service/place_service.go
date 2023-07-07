@@ -64,6 +64,9 @@ func (s *PlaceServiceImpl) CreatePlace(ctx context.Context, placeData Dto.Create
 		SetCoverImage(placeData.CoverImage).
 		SetWebsite(placeData.Website).
 		SetLocation(placeData.Location).
+		SetCountry(placeData.Country).
+		SetCity(placeData.City).
+		SetState(placeData.State).
 		SetEmail(placeData.Email).
 		SetPhone(placeData.Phone).
 		SetAvailability(placeData.Availability).
@@ -93,16 +96,20 @@ func (s *PlaceServiceImpl) UpdatePlace(ctx context.Context, placeID string, plac
 	// This is a basic example, you'll need to handle additional fields and validation.
 	place, err := s.client.Place.
 		UpdateOneID(placeID).
-		SetDescription(*placeData.Description).
-		SetPicture(*placeData.Picture).
-		SetCoverImage(*placeData.CoverImage).
-		SetWebsite(*placeData.Website).
-		SetEmail(*placeData.Email).
-		SetPhone(*placeData.Phone).
-		SetAvailability(*placeData.Availability).
-		SetImages(*placeData.Images).
-		SetFeatures(*placeData.Features).
-		SetAdditionalInfo(*placeData.AdditionalInfo).
+		SetDescription(placeData.Description).
+		SetPicture(placeData.Picture).
+		SetCoverImage(placeData.CoverImage).
+		SetWebsite(placeData.Website).
+		SetEmail(placeData.Email).
+		SetPhone(placeData.Phone).
+		SetAvailability(placeData.Availability).
+		SetImages(placeData.Images).
+		SetFeatures(placeData.Features).
+		SetAdditionalInfo(placeData.AdditionalInfo).
+		SetLocation(placeData.Location).
+		SetCountry(placeData.Country).
+		SetCity(placeData.City).
+		SetState(placeData.State).
 		Save(ctx)
 	if err != nil {
 		return nil, err

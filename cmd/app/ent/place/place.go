@@ -30,12 +30,20 @@ const (
 	FieldCoverImage = "cover_image"
 	// FieldPicture holds the string denoting the picture field in the database.
 	FieldPicture = "picture"
+	// FieldCountry holds the string denoting the country field in the database.
+	FieldCountry = "country"
+	// FieldCity holds the string denoting the city field in the database.
+	FieldCity = "city"
+	// FieldState holds the string denoting the state field in the database.
+	FieldState = "state"
 	// FieldPlaceSettings holds the string denoting the place_settings field in the database.
 	FieldPlaceSettings = "place_settings"
 	// FieldOpeningHours holds the string denoting the opening_hours field in the database.
 	FieldOpeningHours = "opening_hours"
 	// FieldSocialMedia holds the string denoting the social_media field in the database.
 	FieldSocialMedia = "social_media"
+	// FieldPaymentOptions holds the string denoting the payment_options field in the database.
+	FieldPaymentOptions = "payment_options"
 	// FieldTags holds the string denoting the tags field in the database.
 	FieldTags = "tags"
 	// FieldFeatures holds the string denoting the features field in the database.
@@ -176,9 +184,13 @@ var Columns = []string{
 	FieldWebsite,
 	FieldCoverImage,
 	FieldPicture,
+	FieldCountry,
+	FieldCity,
+	FieldState,
 	FieldPlaceSettings,
 	FieldOpeningHours,
 	FieldSocialMedia,
+	FieldPaymentOptions,
 	FieldTags,
 	FieldFeatures,
 	FieldAdditionalInfo,
@@ -279,6 +291,21 @@ func ByCoverImage(opts ...sql.OrderTermOption) OrderOption {
 // ByPicture orders the results by the picture field.
 func ByPicture(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPicture, opts...).ToFunc()
+}
+
+// ByCountry orders the results by the country field.
+func ByCountry(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCountry, opts...).ToFunc()
+}
+
+// ByCity orders the results by the city field.
+func ByCity(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCity, opts...).ToFunc()
+}
+
+// ByState orders the results by the state field.
+func ByState(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldState, opts...).ToFunc()
 }
 
 // BySpecialOffers orders the results by the special_offers field.

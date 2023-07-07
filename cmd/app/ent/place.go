@@ -36,12 +36,20 @@ type Place struct {
 	CoverImage string `json:"cover_image,omitempty"`
 	// Picture holds the value of the "picture" field.
 	Picture string `json:"picture,omitempty"`
+	// Country holds the value of the "country" field.
+	Country string `json:"country,omitempty"`
+	// City holds the value of the "city" field.
+	City string `json:"city,omitempty"`
+	// State holds the value of the "state" field.
+	State string `json:"state,omitempty"`
 	// PlaceSettings holds the value of the "place_settings" field.
 	PlaceSettings map[string]interface{} `json:"place_settings,omitempty"`
 	// OpeningHours holds the value of the "opening_hours" field.
 	OpeningHours map[string]interface{} `json:"opening_hours,omitempty"`
 	// SocialMedia holds the value of the "social_media" field.
 	SocialMedia map[string]interface{} `json:"social_media,omitempty"`
+	// PaymentOptions holds the value of the "payment_options" field.
+	PaymentOptions map[string]interface{} `json:"payment_options,omitempty"`
 	// Tags holds the value of the "tags" field.
 	Tags []string `json:"tags,omitempty"`
 	// Features holds the value of the "features" field.
@@ -217,11 +225,11 @@ func (*Place) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case place.FieldPlaceSettings, place.FieldOpeningHours, place.FieldSocialMedia, place.FieldTags, place.FieldFeatures, place.FieldAdditionalInfo, place.FieldImages, place.FieldAvailability, place.FieldMapCoordinates:
+		case place.FieldPlaceSettings, place.FieldOpeningHours, place.FieldSocialMedia, place.FieldPaymentOptions, place.FieldTags, place.FieldFeatures, place.FieldAdditionalInfo, place.FieldImages, place.FieldAvailability, place.FieldMapCoordinates:
 			values[i] = new([]byte)
 		case place.FieldSustainabilityScore, place.FieldRelevanceScore:
 			values[i] = new(sql.NullFloat64)
-		case place.FieldID, place.FieldName, place.FieldType, place.FieldDescription, place.FieldLocation, place.FieldEmail, place.FieldPhone, place.FieldWebsite, place.FieldCoverImage, place.FieldPicture, place.FieldSpecialOffers, place.FieldSearchText:
+		case place.FieldID, place.FieldName, place.FieldType, place.FieldDescription, place.FieldLocation, place.FieldEmail, place.FieldPhone, place.FieldWebsite, place.FieldCoverImage, place.FieldPicture, place.FieldCountry, place.FieldCity, place.FieldState, place.FieldSpecialOffers, place.FieldSearchText:
 			values[i] = new(sql.NullString)
 		case place.ForeignKeys[0]: // business_places
 			values[i] = new(sql.NullString)
@@ -300,6 +308,24 @@ func (pl *Place) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				pl.Picture = value.String
 			}
+		case place.FieldCountry:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field country", values[i])
+			} else if value.Valid {
+				pl.Country = value.String
+			}
+		case place.FieldCity:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field city", values[i])
+			} else if value.Valid {
+				pl.City = value.String
+			}
+		case place.FieldState:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field state", values[i])
+			} else if value.Valid {
+				pl.State = value.String
+			}
 		case place.FieldPlaceSettings:
 			if value, ok := values[i].(*[]byte); !ok {
 				return fmt.Errorf("unexpected type %T for field place_settings", values[i])
@@ -322,6 +348,14 @@ func (pl *Place) assignValues(columns []string, values []any) error {
 			} else if value != nil && len(*value) > 0 {
 				if err := json.Unmarshal(*value, &pl.SocialMedia); err != nil {
 					return fmt.Errorf("unmarshal field social_media: %w", err)
+				}
+			}
+		case place.FieldPaymentOptions:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field payment_options", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &pl.PaymentOptions); err != nil {
+					return fmt.Errorf("unmarshal field payment_options: %w", err)
 				}
 			}
 		case place.FieldTags:
@@ -526,6 +560,15 @@ func (pl *Place) String() string {
 	builder.WriteString("picture=")
 	builder.WriteString(pl.Picture)
 	builder.WriteString(", ")
+	builder.WriteString("country=")
+	builder.WriteString(pl.Country)
+	builder.WriteString(", ")
+	builder.WriteString("city=")
+	builder.WriteString(pl.City)
+	builder.WriteString(", ")
+	builder.WriteString("state=")
+	builder.WriteString(pl.State)
+	builder.WriteString(", ")
 	builder.WriteString("place_settings=")
 	builder.WriteString(fmt.Sprintf("%v", pl.PlaceSettings))
 	builder.WriteString(", ")
@@ -534,6 +577,9 @@ func (pl *Place) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("social_media=")
 	builder.WriteString(fmt.Sprintf("%v", pl.SocialMedia))
+	builder.WriteString(", ")
+	builder.WriteString("payment_options=")
+	builder.WriteString(fmt.Sprintf("%v", pl.PaymentOptions))
 	builder.WriteString(", ")
 	builder.WriteString("tags=")
 	builder.WriteString(fmt.Sprintf("%v", pl.Tags))

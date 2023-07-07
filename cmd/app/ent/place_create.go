@@ -149,6 +149,48 @@ func (pc *PlaceCreate) SetNillablePicture(s *string) *PlaceCreate {
 	return pc
 }
 
+// SetCountry sets the "country" field.
+func (pc *PlaceCreate) SetCountry(s string) *PlaceCreate {
+	pc.mutation.SetCountry(s)
+	return pc
+}
+
+// SetNillableCountry sets the "country" field if the given value is not nil.
+func (pc *PlaceCreate) SetNillableCountry(s *string) *PlaceCreate {
+	if s != nil {
+		pc.SetCountry(*s)
+	}
+	return pc
+}
+
+// SetCity sets the "city" field.
+func (pc *PlaceCreate) SetCity(s string) *PlaceCreate {
+	pc.mutation.SetCity(s)
+	return pc
+}
+
+// SetNillableCity sets the "city" field if the given value is not nil.
+func (pc *PlaceCreate) SetNillableCity(s *string) *PlaceCreate {
+	if s != nil {
+		pc.SetCity(*s)
+	}
+	return pc
+}
+
+// SetState sets the "state" field.
+func (pc *PlaceCreate) SetState(s string) *PlaceCreate {
+	pc.mutation.SetState(s)
+	return pc
+}
+
+// SetNillableState sets the "state" field if the given value is not nil.
+func (pc *PlaceCreate) SetNillableState(s *string) *PlaceCreate {
+	if s != nil {
+		pc.SetState(*s)
+	}
+	return pc
+}
+
 // SetPlaceSettings sets the "place_settings" field.
 func (pc *PlaceCreate) SetPlaceSettings(m map[string]interface{}) *PlaceCreate {
 	pc.mutation.SetPlaceSettings(m)
@@ -164,6 +206,12 @@ func (pc *PlaceCreate) SetOpeningHours(m map[string]interface{}) *PlaceCreate {
 // SetSocialMedia sets the "social_media" field.
 func (pc *PlaceCreate) SetSocialMedia(m map[string]interface{}) *PlaceCreate {
 	pc.mutation.SetSocialMedia(m)
+	return pc
+}
+
+// SetPaymentOptions sets the "payment_options" field.
+func (pc *PlaceCreate) SetPaymentOptions(m map[string]interface{}) *PlaceCreate {
+	pc.mutation.SetPaymentOptions(m)
 	return pc
 }
 
@@ -574,6 +622,18 @@ func (pc *PlaceCreate) createSpec() (*Place, *sqlgraph.CreateSpec) {
 		_spec.SetField(place.FieldPicture, field.TypeString, value)
 		_node.Picture = value
 	}
+	if value, ok := pc.mutation.Country(); ok {
+		_spec.SetField(place.FieldCountry, field.TypeString, value)
+		_node.Country = value
+	}
+	if value, ok := pc.mutation.City(); ok {
+		_spec.SetField(place.FieldCity, field.TypeString, value)
+		_node.City = value
+	}
+	if value, ok := pc.mutation.State(); ok {
+		_spec.SetField(place.FieldState, field.TypeString, value)
+		_node.State = value
+	}
 	if value, ok := pc.mutation.PlaceSettings(); ok {
 		_spec.SetField(place.FieldPlaceSettings, field.TypeJSON, value)
 		_node.PlaceSettings = value
@@ -585,6 +645,10 @@ func (pc *PlaceCreate) createSpec() (*Place, *sqlgraph.CreateSpec) {
 	if value, ok := pc.mutation.SocialMedia(); ok {
 		_spec.SetField(place.FieldSocialMedia, field.TypeJSON, value)
 		_node.SocialMedia = value
+	}
+	if value, ok := pc.mutation.PaymentOptions(); ok {
+		_spec.SetField(place.FieldPaymentOptions, field.TypeJSON, value)
+		_node.PaymentOptions = value
 	}
 	if value, ok := pc.mutation.Tags(); ok {
 		_spec.SetField(place.FieldTags, field.TypeJSON, value)

@@ -451,9 +451,13 @@ var (
 		{Name: "website", Type: field.TypeString, Nullable: true},
 		{Name: "cover_image", Type: field.TypeString, Nullable: true, Default: "https://res.cloudinary.com/placio/image/upload/v1686842319/mjl8stmbn5xmfsm50vbg.jpg"},
 		{Name: "picture", Type: field.TypeString, Nullable: true},
+		{Name: "country", Type: field.TypeString, Nullable: true},
+		{Name: "city", Type: field.TypeString, Nullable: true},
+		{Name: "state", Type: field.TypeString, Nullable: true},
 		{Name: "place_settings", Type: field.TypeJSON, Nullable: true},
 		{Name: "opening_hours", Type: field.TypeJSON, Nullable: true},
 		{Name: "social_media", Type: field.TypeJSON, Nullable: true},
+		{Name: "payment_options", Type: field.TypeJSON, Nullable: true},
 		{Name: "tags", Type: field.TypeJSON, Nullable: true},
 		{Name: "features", Type: field.TypeJSON, Nullable: true},
 		{Name: "additional_info", Type: field.TypeJSON, Nullable: true},
@@ -474,7 +478,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "places_businesses_places",
-				Columns:    []*schema.Column{PlacesColumns[23]},
+				Columns:    []*schema.Column{PlacesColumns[27]},
 				RefColumns: []*schema.Column{BusinessesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
