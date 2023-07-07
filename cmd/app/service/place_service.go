@@ -5,6 +5,7 @@ import (
 	"github.com/google/uuid"
 	"placio-app/Dto"
 	"placio-app/ent"
+	"placio-app/ent/place"
 )
 
 type PlaceService interface {
@@ -24,7 +25,18 @@ func NewPlaceService(client *ent.Client, searchService SearchService) *PlaceServ
 }
 
 func (s *PlaceServiceImpl) GetPlace(ctx context.Context, placeID string) (*ent.Place, error) {
-	return s.client.Place.Get(ctx, placeID)
+	placeData, err := s.client.Place.
+		Query().
+		Where(place.ID(placeID)).
+		WithUsers().
+		WithBusiness().
+		WithCategories().
+		First(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return placeData, nil
 }
 
 func (s *PlaceServiceImpl) CreatePlace(ctx context.Context, placeData Dto.CreatePlaceDTO) (*ent.Place, error) {
