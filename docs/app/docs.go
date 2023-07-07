@@ -1386,6 +1386,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/placio-app_Dto.CreatePlaceDTO"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of the business to create the place for",
+                        "name": "business_id",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {

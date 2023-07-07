@@ -2839,6 +2839,11 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/placio-app_Dto.CreatePlaceDTO'
+      - description: ID of the business to create the place for
+        in: query
+        name: business_id
+        required: true
+        type: string
       produces:
       - application/json
       responses:
