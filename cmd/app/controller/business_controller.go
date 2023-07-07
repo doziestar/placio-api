@@ -211,7 +211,7 @@ func (bc *BusinessAccountController) getBusinessAccount(c *gin.Context) {
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/business/ [patch]
 func (bc *BusinessAccountController) updateBusinessAccount(ctx *gin.Context) {
-	businessId := ctx.Param("id")
+	businessId := ctx.Param("businessAccountID")
 	if businessId == "" {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": "Business ID required",
