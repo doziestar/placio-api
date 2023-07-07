@@ -10148,9 +10148,13 @@ type PlaceMutation struct {
 	website                    *string
 	cover_image                *string
 	picture                    *string
+	country                    *string
+	city                       *string
+	state                      *string
 	place_settings             *map[string]interface{}
 	opening_hours              *map[string]interface{}
 	social_media               *map[string]interface{}
+	payment_options            *map[string]interface{}
 	tags                       *[]string
 	appendtags                 []string
 	features                   *[]string
@@ -10739,6 +10743,153 @@ func (m *PlaceMutation) ResetPicture() {
 	delete(m.clearedFields, place.FieldPicture)
 }
 
+// SetCountry sets the "country" field.
+func (m *PlaceMutation) SetCountry(s string) {
+	m.country = &s
+}
+
+// Country returns the value of the "country" field in the mutation.
+func (m *PlaceMutation) Country() (r string, exists bool) {
+	v := m.country
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCountry returns the old "country" field's value of the Place entity.
+// If the Place object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceMutation) OldCountry(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCountry is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCountry requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCountry: %w", err)
+	}
+	return oldValue.Country, nil
+}
+
+// ClearCountry clears the value of the "country" field.
+func (m *PlaceMutation) ClearCountry() {
+	m.country = nil
+	m.clearedFields[place.FieldCountry] = struct{}{}
+}
+
+// CountryCleared returns if the "country" field was cleared in this mutation.
+func (m *PlaceMutation) CountryCleared() bool {
+	_, ok := m.clearedFields[place.FieldCountry]
+	return ok
+}
+
+// ResetCountry resets all changes to the "country" field.
+func (m *PlaceMutation) ResetCountry() {
+	m.country = nil
+	delete(m.clearedFields, place.FieldCountry)
+}
+
+// SetCity sets the "city" field.
+func (m *PlaceMutation) SetCity(s string) {
+	m.city = &s
+}
+
+// City returns the value of the "city" field in the mutation.
+func (m *PlaceMutation) City() (r string, exists bool) {
+	v := m.city
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCity returns the old "city" field's value of the Place entity.
+// If the Place object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceMutation) OldCity(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCity is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCity requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCity: %w", err)
+	}
+	return oldValue.City, nil
+}
+
+// ClearCity clears the value of the "city" field.
+func (m *PlaceMutation) ClearCity() {
+	m.city = nil
+	m.clearedFields[place.FieldCity] = struct{}{}
+}
+
+// CityCleared returns if the "city" field was cleared in this mutation.
+func (m *PlaceMutation) CityCleared() bool {
+	_, ok := m.clearedFields[place.FieldCity]
+	return ok
+}
+
+// ResetCity resets all changes to the "city" field.
+func (m *PlaceMutation) ResetCity() {
+	m.city = nil
+	delete(m.clearedFields, place.FieldCity)
+}
+
+// SetState sets the "state" field.
+func (m *PlaceMutation) SetState(s string) {
+	m.state = &s
+}
+
+// State returns the value of the "state" field in the mutation.
+func (m *PlaceMutation) State() (r string, exists bool) {
+	v := m.state
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldState returns the old "state" field's value of the Place entity.
+// If the Place object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceMutation) OldState(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldState is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldState requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldState: %w", err)
+	}
+	return oldValue.State, nil
+}
+
+// ClearState clears the value of the "state" field.
+func (m *PlaceMutation) ClearState() {
+	m.state = nil
+	m.clearedFields[place.FieldState] = struct{}{}
+}
+
+// StateCleared returns if the "state" field was cleared in this mutation.
+func (m *PlaceMutation) StateCleared() bool {
+	_, ok := m.clearedFields[place.FieldState]
+	return ok
+}
+
+// ResetState resets all changes to the "state" field.
+func (m *PlaceMutation) ResetState() {
+	m.state = nil
+	delete(m.clearedFields, place.FieldState)
+}
+
 // SetPlaceSettings sets the "place_settings" field.
 func (m *PlaceMutation) SetPlaceSettings(value map[string]interface{}) {
 	m.place_settings = &value
@@ -10884,6 +11035,55 @@ func (m *PlaceMutation) SocialMediaCleared() bool {
 func (m *PlaceMutation) ResetSocialMedia() {
 	m.social_media = nil
 	delete(m.clearedFields, place.FieldSocialMedia)
+}
+
+// SetPaymentOptions sets the "payment_options" field.
+func (m *PlaceMutation) SetPaymentOptions(value map[string]interface{}) {
+	m.payment_options = &value
+}
+
+// PaymentOptions returns the value of the "payment_options" field in the mutation.
+func (m *PlaceMutation) PaymentOptions() (r map[string]interface{}, exists bool) {
+	v := m.payment_options
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPaymentOptions returns the old "payment_options" field's value of the Place entity.
+// If the Place object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceMutation) OldPaymentOptions(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPaymentOptions is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPaymentOptions requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPaymentOptions: %w", err)
+	}
+	return oldValue.PaymentOptions, nil
+}
+
+// ClearPaymentOptions clears the value of the "payment_options" field.
+func (m *PlaceMutation) ClearPaymentOptions() {
+	m.payment_options = nil
+	m.clearedFields[place.FieldPaymentOptions] = struct{}{}
+}
+
+// PaymentOptionsCleared returns if the "payment_options" field was cleared in this mutation.
+func (m *PlaceMutation) PaymentOptionsCleared() bool {
+	_, ok := m.clearedFields[place.FieldPaymentOptions]
+	return ok
+}
+
+// ResetPaymentOptions resets all changes to the "payment_options" field.
+func (m *PlaceMutation) ResetPaymentOptions() {
+	m.payment_options = nil
+	delete(m.clearedFields, place.FieldPaymentOptions)
 }
 
 // SetTags sets the "tags" field.
@@ -12120,7 +12320,7 @@ func (m *PlaceMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PlaceMutation) Fields() []string {
-	fields := make([]string, 0, 22)
+	fields := make([]string, 0, 26)
 	if m.name != nil {
 		fields = append(fields, place.FieldName)
 	}
@@ -12148,6 +12348,15 @@ func (m *PlaceMutation) Fields() []string {
 	if m.picture != nil {
 		fields = append(fields, place.FieldPicture)
 	}
+	if m.country != nil {
+		fields = append(fields, place.FieldCountry)
+	}
+	if m.city != nil {
+		fields = append(fields, place.FieldCity)
+	}
+	if m.state != nil {
+		fields = append(fields, place.FieldState)
+	}
 	if m.place_settings != nil {
 		fields = append(fields, place.FieldPlaceSettings)
 	}
@@ -12156,6 +12365,9 @@ func (m *PlaceMutation) Fields() []string {
 	}
 	if m.social_media != nil {
 		fields = append(fields, place.FieldSocialMedia)
+	}
+	if m.payment_options != nil {
+		fields = append(fields, place.FieldPaymentOptions)
 	}
 	if m.tags != nil {
 		fields = append(fields, place.FieldTags)
@@ -12213,12 +12425,20 @@ func (m *PlaceMutation) Field(name string) (ent.Value, bool) {
 		return m.CoverImage()
 	case place.FieldPicture:
 		return m.Picture()
+	case place.FieldCountry:
+		return m.Country()
+	case place.FieldCity:
+		return m.City()
+	case place.FieldState:
+		return m.State()
 	case place.FieldPlaceSettings:
 		return m.PlaceSettings()
 	case place.FieldOpeningHours:
 		return m.OpeningHours()
 	case place.FieldSocialMedia:
 		return m.SocialMedia()
+	case place.FieldPaymentOptions:
+		return m.PaymentOptions()
 	case place.FieldTags:
 		return m.Tags()
 	case place.FieldFeatures:
@@ -12266,12 +12486,20 @@ func (m *PlaceMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldCoverImage(ctx)
 	case place.FieldPicture:
 		return m.OldPicture(ctx)
+	case place.FieldCountry:
+		return m.OldCountry(ctx)
+	case place.FieldCity:
+		return m.OldCity(ctx)
+	case place.FieldState:
+		return m.OldState(ctx)
 	case place.FieldPlaceSettings:
 		return m.OldPlaceSettings(ctx)
 	case place.FieldOpeningHours:
 		return m.OldOpeningHours(ctx)
 	case place.FieldSocialMedia:
 		return m.OldSocialMedia(ctx)
+	case place.FieldPaymentOptions:
+		return m.OldPaymentOptions(ctx)
 	case place.FieldTags:
 		return m.OldTags(ctx)
 	case place.FieldFeatures:
@@ -12364,6 +12592,27 @@ func (m *PlaceMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetPicture(v)
 		return nil
+	case place.FieldCountry:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCountry(v)
+		return nil
+	case place.FieldCity:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCity(v)
+		return nil
+	case place.FieldState:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetState(v)
+		return nil
 	case place.FieldPlaceSettings:
 		v, ok := value.(map[string]interface{})
 		if !ok {
@@ -12384,6 +12633,13 @@ func (m *PlaceMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetSocialMedia(v)
+		return nil
+	case place.FieldPaymentOptions:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPaymentOptions(v)
 		return nil
 	case place.FieldTags:
 		v, ok := value.([]string)
@@ -12536,6 +12792,15 @@ func (m *PlaceMutation) ClearedFields() []string {
 	if m.FieldCleared(place.FieldPicture) {
 		fields = append(fields, place.FieldPicture)
 	}
+	if m.FieldCleared(place.FieldCountry) {
+		fields = append(fields, place.FieldCountry)
+	}
+	if m.FieldCleared(place.FieldCity) {
+		fields = append(fields, place.FieldCity)
+	}
+	if m.FieldCleared(place.FieldState) {
+		fields = append(fields, place.FieldState)
+	}
 	if m.FieldCleared(place.FieldPlaceSettings) {
 		fields = append(fields, place.FieldPlaceSettings)
 	}
@@ -12544,6 +12809,9 @@ func (m *PlaceMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(place.FieldSocialMedia) {
 		fields = append(fields, place.FieldSocialMedia)
+	}
+	if m.FieldCleared(place.FieldPaymentOptions) {
+		fields = append(fields, place.FieldPaymentOptions)
 	}
 	if m.FieldCleared(place.FieldTags) {
 		fields = append(fields, place.FieldTags)
@@ -12610,6 +12878,15 @@ func (m *PlaceMutation) ClearField(name string) error {
 	case place.FieldPicture:
 		m.ClearPicture()
 		return nil
+	case place.FieldCountry:
+		m.ClearCountry()
+		return nil
+	case place.FieldCity:
+		m.ClearCity()
+		return nil
+	case place.FieldState:
+		m.ClearState()
+		return nil
 	case place.FieldPlaceSettings:
 		m.ClearPlaceSettings()
 		return nil
@@ -12618,6 +12895,9 @@ func (m *PlaceMutation) ClearField(name string) error {
 		return nil
 	case place.FieldSocialMedia:
 		m.ClearSocialMedia()
+		return nil
+	case place.FieldPaymentOptions:
+		m.ClearPaymentOptions()
 		return nil
 	case place.FieldTags:
 		m.ClearTags()
@@ -12681,6 +12961,15 @@ func (m *PlaceMutation) ResetField(name string) error {
 	case place.FieldPicture:
 		m.ResetPicture()
 		return nil
+	case place.FieldCountry:
+		m.ResetCountry()
+		return nil
+	case place.FieldCity:
+		m.ResetCity()
+		return nil
+	case place.FieldState:
+		m.ResetState()
+		return nil
 	case place.FieldPlaceSettings:
 		m.ResetPlaceSettings()
 		return nil
@@ -12689,6 +12978,9 @@ func (m *PlaceMutation) ResetField(name string) error {
 		return nil
 	case place.FieldSocialMedia:
 		m.ResetSocialMedia()
+		return nil
+	case place.FieldPaymentOptions:
+		m.ResetPaymentOptions()
 		return nil
 	case place.FieldTags:
 		m.ResetTags()

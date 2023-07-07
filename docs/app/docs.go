@@ -5913,6 +5913,12 @@ const docTemplate = `{
                 "business_id": {
                     "type": "string"
                 },
+                "city": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
                 "cover_image": {
                     "type": "string"
                 },
@@ -5972,6 +5978,9 @@ const docTemplate = `{
                     "additionalProperties": true
                 },
                 "special_offers": {
+                    "type": "string"
+                },
+                "state": {
                     "type": "string"
                 },
                 "sustainability_score": {
@@ -6163,6 +6172,12 @@ const docTemplate = `{
                     "type": "object",
                     "additionalProperties": true
                 },
+                "city": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
                 "cover_image": {
                     "type": "string"
                 },
@@ -6219,6 +6234,9 @@ const docTemplate = `{
                     "additionalProperties": true
                 },
                 "special_offers": {
+                    "type": "string"
+                },
+                "state": {
                     "type": "string"
                 },
                 "sustainability_score": {
@@ -7007,6 +7025,14 @@ const docTemplate = `{
                     "type": "object",
                     "additionalProperties": true
                 },
+                "city": {
+                    "description": "City holds the value of the \"city\" field.",
+                    "type": "string"
+                },
+                "country": {
+                    "description": "Country holds the value of the \"country\" field.",
+                    "type": "string"
+                },
                 "cover_image": {
                     "description": "CoverImage holds the value of the \"cover_image\" field.",
                     "type": "string"
@@ -7063,6 +7089,11 @@ const docTemplate = `{
                     "type": "object",
                     "additionalProperties": true
                 },
+                "payment_options": {
+                    "description": "PaymentOptions holds the value of the \"payment_options\" field.",
+                    "type": "object",
+                    "additionalProperties": true
+                },
                 "phone": {
                     "description": "Phone holds the value of the \"phone\" field.",
                     "type": "string"
@@ -7091,6 +7122,10 @@ const docTemplate = `{
                 },
                 "special_offers": {
                     "description": "SpecialOffers holds the value of the \"special_offers\" field.",
+                    "type": "string"
+                },
+                "state": {
+                    "description": "State holds the value of the \"state\" field.",
                     "type": "string"
                 },
                 "sustainability_score": {

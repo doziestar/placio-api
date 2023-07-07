@@ -109,6 +109,21 @@ func Picture(v string) predicate.Place {
 	return predicate.Place(sql.FieldEQ(FieldPicture, v))
 }
 
+// Country applies equality check predicate on the "country" field. It's identical to CountryEQ.
+func Country(v string) predicate.Place {
+	return predicate.Place(sql.FieldEQ(FieldCountry, v))
+}
+
+// City applies equality check predicate on the "city" field. It's identical to CityEQ.
+func City(v string) predicate.Place {
+	return predicate.Place(sql.FieldEQ(FieldCity, v))
+}
+
+// State applies equality check predicate on the "state" field. It's identical to StateEQ.
+func State(v string) predicate.Place {
+	return predicate.Place(sql.FieldEQ(FieldState, v))
+}
+
 // SpecialOffers applies equality check predicate on the "special_offers" field. It's identical to SpecialOffersEQ.
 func SpecialOffers(v string) predicate.Place {
 	return predicate.Place(sql.FieldEQ(FieldSpecialOffers, v))
@@ -794,6 +809,231 @@ func PictureContainsFold(v string) predicate.Place {
 	return predicate.Place(sql.FieldContainsFold(FieldPicture, v))
 }
 
+// CountryEQ applies the EQ predicate on the "country" field.
+func CountryEQ(v string) predicate.Place {
+	return predicate.Place(sql.FieldEQ(FieldCountry, v))
+}
+
+// CountryNEQ applies the NEQ predicate on the "country" field.
+func CountryNEQ(v string) predicate.Place {
+	return predicate.Place(sql.FieldNEQ(FieldCountry, v))
+}
+
+// CountryIn applies the In predicate on the "country" field.
+func CountryIn(vs ...string) predicate.Place {
+	return predicate.Place(sql.FieldIn(FieldCountry, vs...))
+}
+
+// CountryNotIn applies the NotIn predicate on the "country" field.
+func CountryNotIn(vs ...string) predicate.Place {
+	return predicate.Place(sql.FieldNotIn(FieldCountry, vs...))
+}
+
+// CountryGT applies the GT predicate on the "country" field.
+func CountryGT(v string) predicate.Place {
+	return predicate.Place(sql.FieldGT(FieldCountry, v))
+}
+
+// CountryGTE applies the GTE predicate on the "country" field.
+func CountryGTE(v string) predicate.Place {
+	return predicate.Place(sql.FieldGTE(FieldCountry, v))
+}
+
+// CountryLT applies the LT predicate on the "country" field.
+func CountryLT(v string) predicate.Place {
+	return predicate.Place(sql.FieldLT(FieldCountry, v))
+}
+
+// CountryLTE applies the LTE predicate on the "country" field.
+func CountryLTE(v string) predicate.Place {
+	return predicate.Place(sql.FieldLTE(FieldCountry, v))
+}
+
+// CountryContains applies the Contains predicate on the "country" field.
+func CountryContains(v string) predicate.Place {
+	return predicate.Place(sql.FieldContains(FieldCountry, v))
+}
+
+// CountryHasPrefix applies the HasPrefix predicate on the "country" field.
+func CountryHasPrefix(v string) predicate.Place {
+	return predicate.Place(sql.FieldHasPrefix(FieldCountry, v))
+}
+
+// CountryHasSuffix applies the HasSuffix predicate on the "country" field.
+func CountryHasSuffix(v string) predicate.Place {
+	return predicate.Place(sql.FieldHasSuffix(FieldCountry, v))
+}
+
+// CountryIsNil applies the IsNil predicate on the "country" field.
+func CountryIsNil() predicate.Place {
+	return predicate.Place(sql.FieldIsNull(FieldCountry))
+}
+
+// CountryNotNil applies the NotNil predicate on the "country" field.
+func CountryNotNil() predicate.Place {
+	return predicate.Place(sql.FieldNotNull(FieldCountry))
+}
+
+// CountryEqualFold applies the EqualFold predicate on the "country" field.
+func CountryEqualFold(v string) predicate.Place {
+	return predicate.Place(sql.FieldEqualFold(FieldCountry, v))
+}
+
+// CountryContainsFold applies the ContainsFold predicate on the "country" field.
+func CountryContainsFold(v string) predicate.Place {
+	return predicate.Place(sql.FieldContainsFold(FieldCountry, v))
+}
+
+// CityEQ applies the EQ predicate on the "city" field.
+func CityEQ(v string) predicate.Place {
+	return predicate.Place(sql.FieldEQ(FieldCity, v))
+}
+
+// CityNEQ applies the NEQ predicate on the "city" field.
+func CityNEQ(v string) predicate.Place {
+	return predicate.Place(sql.FieldNEQ(FieldCity, v))
+}
+
+// CityIn applies the In predicate on the "city" field.
+func CityIn(vs ...string) predicate.Place {
+	return predicate.Place(sql.FieldIn(FieldCity, vs...))
+}
+
+// CityNotIn applies the NotIn predicate on the "city" field.
+func CityNotIn(vs ...string) predicate.Place {
+	return predicate.Place(sql.FieldNotIn(FieldCity, vs...))
+}
+
+// CityGT applies the GT predicate on the "city" field.
+func CityGT(v string) predicate.Place {
+	return predicate.Place(sql.FieldGT(FieldCity, v))
+}
+
+// CityGTE applies the GTE predicate on the "city" field.
+func CityGTE(v string) predicate.Place {
+	return predicate.Place(sql.FieldGTE(FieldCity, v))
+}
+
+// CityLT applies the LT predicate on the "city" field.
+func CityLT(v string) predicate.Place {
+	return predicate.Place(sql.FieldLT(FieldCity, v))
+}
+
+// CityLTE applies the LTE predicate on the "city" field.
+func CityLTE(v string) predicate.Place {
+	return predicate.Place(sql.FieldLTE(FieldCity, v))
+}
+
+// CityContains applies the Contains predicate on the "city" field.
+func CityContains(v string) predicate.Place {
+	return predicate.Place(sql.FieldContains(FieldCity, v))
+}
+
+// CityHasPrefix applies the HasPrefix predicate on the "city" field.
+func CityHasPrefix(v string) predicate.Place {
+	return predicate.Place(sql.FieldHasPrefix(FieldCity, v))
+}
+
+// CityHasSuffix applies the HasSuffix predicate on the "city" field.
+func CityHasSuffix(v string) predicate.Place {
+	return predicate.Place(sql.FieldHasSuffix(FieldCity, v))
+}
+
+// CityIsNil applies the IsNil predicate on the "city" field.
+func CityIsNil() predicate.Place {
+	return predicate.Place(sql.FieldIsNull(FieldCity))
+}
+
+// CityNotNil applies the NotNil predicate on the "city" field.
+func CityNotNil() predicate.Place {
+	return predicate.Place(sql.FieldNotNull(FieldCity))
+}
+
+// CityEqualFold applies the EqualFold predicate on the "city" field.
+func CityEqualFold(v string) predicate.Place {
+	return predicate.Place(sql.FieldEqualFold(FieldCity, v))
+}
+
+// CityContainsFold applies the ContainsFold predicate on the "city" field.
+func CityContainsFold(v string) predicate.Place {
+	return predicate.Place(sql.FieldContainsFold(FieldCity, v))
+}
+
+// StateEQ applies the EQ predicate on the "state" field.
+func StateEQ(v string) predicate.Place {
+	return predicate.Place(sql.FieldEQ(FieldState, v))
+}
+
+// StateNEQ applies the NEQ predicate on the "state" field.
+func StateNEQ(v string) predicate.Place {
+	return predicate.Place(sql.FieldNEQ(FieldState, v))
+}
+
+// StateIn applies the In predicate on the "state" field.
+func StateIn(vs ...string) predicate.Place {
+	return predicate.Place(sql.FieldIn(FieldState, vs...))
+}
+
+// StateNotIn applies the NotIn predicate on the "state" field.
+func StateNotIn(vs ...string) predicate.Place {
+	return predicate.Place(sql.FieldNotIn(FieldState, vs...))
+}
+
+// StateGT applies the GT predicate on the "state" field.
+func StateGT(v string) predicate.Place {
+	return predicate.Place(sql.FieldGT(FieldState, v))
+}
+
+// StateGTE applies the GTE predicate on the "state" field.
+func StateGTE(v string) predicate.Place {
+	return predicate.Place(sql.FieldGTE(FieldState, v))
+}
+
+// StateLT applies the LT predicate on the "state" field.
+func StateLT(v string) predicate.Place {
+	return predicate.Place(sql.FieldLT(FieldState, v))
+}
+
+// StateLTE applies the LTE predicate on the "state" field.
+func StateLTE(v string) predicate.Place {
+	return predicate.Place(sql.FieldLTE(FieldState, v))
+}
+
+// StateContains applies the Contains predicate on the "state" field.
+func StateContains(v string) predicate.Place {
+	return predicate.Place(sql.FieldContains(FieldState, v))
+}
+
+// StateHasPrefix applies the HasPrefix predicate on the "state" field.
+func StateHasPrefix(v string) predicate.Place {
+	return predicate.Place(sql.FieldHasPrefix(FieldState, v))
+}
+
+// StateHasSuffix applies the HasSuffix predicate on the "state" field.
+func StateHasSuffix(v string) predicate.Place {
+	return predicate.Place(sql.FieldHasSuffix(FieldState, v))
+}
+
+// StateIsNil applies the IsNil predicate on the "state" field.
+func StateIsNil() predicate.Place {
+	return predicate.Place(sql.FieldIsNull(FieldState))
+}
+
+// StateNotNil applies the NotNil predicate on the "state" field.
+func StateNotNil() predicate.Place {
+	return predicate.Place(sql.FieldNotNull(FieldState))
+}
+
+// StateEqualFold applies the EqualFold predicate on the "state" field.
+func StateEqualFold(v string) predicate.Place {
+	return predicate.Place(sql.FieldEqualFold(FieldState, v))
+}
+
+// StateContainsFold applies the ContainsFold predicate on the "state" field.
+func StateContainsFold(v string) predicate.Place {
+	return predicate.Place(sql.FieldContainsFold(FieldState, v))
+}
+
 // PlaceSettingsIsNil applies the IsNil predicate on the "place_settings" field.
 func PlaceSettingsIsNil() predicate.Place {
 	return predicate.Place(sql.FieldIsNull(FieldPlaceSettings))
@@ -822,6 +1062,16 @@ func SocialMediaIsNil() predicate.Place {
 // SocialMediaNotNil applies the NotNil predicate on the "social_media" field.
 func SocialMediaNotNil() predicate.Place {
 	return predicate.Place(sql.FieldNotNull(FieldSocialMedia))
+}
+
+// PaymentOptionsIsNil applies the IsNil predicate on the "payment_options" field.
+func PaymentOptionsIsNil() predicate.Place {
+	return predicate.Place(sql.FieldIsNull(FieldPaymentOptions))
+}
+
+// PaymentOptionsNotNil applies the NotNil predicate on the "payment_options" field.
+func PaymentOptionsNotNil() predicate.Place {
+	return predicate.Place(sql.FieldNotNull(FieldPaymentOptions))
 }
 
 // TagsIsNil applies the IsNil predicate on the "tags" field.
