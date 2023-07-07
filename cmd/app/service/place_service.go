@@ -28,26 +28,41 @@ func (s *PlaceServiceImpl) GetPlace(ctx context.Context, placeID string) (*ent.P
 }
 
 func (s *PlaceServiceImpl) CreatePlace(ctx context.Context, placeData Dto.CreatePlaceDTO) (*ent.Place, error) {
-	// Here you would parse placeData and use it to create a new Place.
-	// This is just a basic example, you may need to handle additional fields and validation.
+	// get the user from the context
+	user := ctx.Value("user").(string)
+	// get user from database
+	userEnt, err := s.client.User.Get(ctx, user)
+	if err != nil {
+		return nil, err
+	}
+
+	// get business from database
+	business, err := s.client.Business.Get(ctx, placeData.BusinessID)
+	if err != nil {
+		return nil, err
+	}
+
 	place, err := s.client.Place.
 		Create().
 		SetID(uuid.New().String()).
 		SetName(placeData.Name).
 		SetID(uuid.New().String()).
-		SetDescription(*placeData.Description).
-		SetPicture(*placeData.Picture).
-		SetCoverImage(*placeData.CoverImage).
-		SetWebsite(*placeData.Website).
+		SetDescription(placeData.Description).
+		SetPicture(placeData.Picture).
+		SetCoverImage(placeData.CoverImage).
+		SetWebsite(placeData.Website).
 		SetLocation(placeData.Location).
-		SetEmail(*placeData.Email).
-		SetPhone(*placeData.Phone).
-		SetAvailability(*placeData.Availability).
-		SetImages(*placeData.Images).
-		SetFeatures(*placeData.Features).
+		SetEmail(placeData.Email).
+		SetPhone(placeData.Phone).
+		SetAvailability(placeData.Availability).
+		SetImages(placeData.Images).
+		SetFeatures(placeData.Features).
 		SetMapCoordinates(placeData.MapCoordinates).
-		SetAdditionalInfo(*placeData.AdditionalInfo).
+		SetAdditionalInfo(placeData.AdditionalInfo).
 		SetType(placeData.Type).
+		SetBusiness(business).
+		SetBusinessID(business.ID).
+		AddUsers(userEnt).
 		Save(ctx)
 	if err != nil {
 		return nil, err

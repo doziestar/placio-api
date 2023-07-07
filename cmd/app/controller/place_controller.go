@@ -59,6 +59,7 @@ func (pc *PlaceController) getPlace(ctx *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param place body Dto.CreatePlaceDTO true "Place to create"
+// @Param business_id query string true "ID of the business to create the place for"
 // @Security Bearer
 // @Success 200 {object} ent.Place "Successfully created place"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
@@ -69,6 +70,14 @@ func (pc *PlaceController) createPlace(ctx *gin.Context) {
 	var placeData Dto.CreatePlaceDTO
 	if err := ctx.ShouldBindJSON(&placeData); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	placeData.BusinessID = ctx.Query("business_id")
+	if placeData.BusinessID == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": "Business ID is required",
+		})
 		return
 	}
 
