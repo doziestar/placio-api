@@ -29,7 +29,7 @@ func (bc *BusinessAccountController) RegisterRoutes(router *gin.RouterGroup) {
 		businessRouter.POST("/", bc.createBusinessAccount)
 		businessRouter.GET("/user-business-account", bc.getUserBusinessAccounts)
 		businessRouter.GET("/:businessAccountID", bc.getBusinessAccount)
-		businessRouter.PUT("/:businessAccountID", bc.updateBusinessAccount)
+		businessRouter.PATCH("/:businessAccountID", bc.updateBusinessAccount)
 		businessRouter.DELETE("/:businessAccountID", bc.deleteBusinessAccount)
 		businessRouter.POST("/:businessAccountID/user/:userID", bc.associateUserWithBusinessAccount)
 		businessRouter.DELETE("/:businessAccountID/user/:userID", bc.removeUserFromBusinessAccount)
