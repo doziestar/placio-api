@@ -127,6 +127,34 @@ var (
 			},
 		},
 	}
+	// BusinessFollowEventsColumns holds the columns for the "business_follow_events" table.
+	BusinessFollowEventsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "business_business_follow_events", Type: field.TypeString, Size: 36},
+		{Name: "business_follow_event_event", Type: field.TypeString},
+	}
+	// BusinessFollowEventsTable holds the schema information for the "business_follow_events" table.
+	BusinessFollowEventsTable = &schema.Table{
+		Name:       "business_follow_events",
+		Columns:    BusinessFollowEventsColumns,
+		PrimaryKey: []*schema.Column{BusinessFollowEventsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "business_follow_events_businesses_businessFollowEvents",
+				Columns:    []*schema.Column{BusinessFollowEventsColumns[3]},
+				RefColumns: []*schema.Column{BusinessesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "business_follow_events_events_event",
+				Columns:    []*schema.Column{BusinessFollowEventsColumns[4]},
+				RefColumns: []*schema.Column{EventsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// BusinessFollowUsersColumns holds the columns for the "business_follow_users" table.
 	BusinessFollowUsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -159,6 +187,7 @@ var (
 		{Name: "name", Type: field.TypeString, Unique: true},
 		{Name: "image", Type: field.TypeString, Nullable: true},
 		{Name: "business_categories", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "event_event_categories", Type: field.TypeString, Nullable: true},
 		{Name: "media_categories", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "menu_categories", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "place_categories", Type: field.TypeString, Nullable: true, Size: 36},
@@ -178,32 +207,38 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "categories_media_categories",
+				Symbol:     "categories_events_event_categories",
 				Columns:    []*schema.Column{CategoriesColumns[4]},
+				RefColumns: []*schema.Column{EventsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "categories_media_categories",
+				Columns:    []*schema.Column{CategoriesColumns[5]},
 				RefColumns: []*schema.Column{MediaColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "categories_menus_categories",
-				Columns:    []*schema.Column{CategoriesColumns[5]},
+				Columns:    []*schema.Column{CategoriesColumns[6]},
 				RefColumns: []*schema.Column{MenusColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "categories_places_categories",
-				Columns:    []*schema.Column{CategoriesColumns[6]},
+				Columns:    []*schema.Column{CategoriesColumns[7]},
 				RefColumns: []*schema.Column{PlacesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "categories_posts_categories",
-				Columns:    []*schema.Column{CategoriesColumns[7]},
+				Columns:    []*schema.Column{CategoriesColumns[8]},
 				RefColumns: []*schema.Column{PostsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "categories_users_categories",
-				Columns:    []*schema.Column{CategoriesColumns[8]},
+				Columns:    []*schema.Column{CategoriesColumns[9]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -215,6 +250,7 @@ var (
 		{Name: "entity_type", Type: field.TypeString, Nullable: true},
 		{Name: "entity_id", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "category_id", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "event_event_category_assignments", Type: field.TypeString, Nullable: true},
 	}
 	// CategoryAssignmentsTable holds the schema information for the "category_assignments" table.
 	CategoryAssignmentsTable = &schema.Table{
@@ -232,6 +268,12 @@ var (
 				Symbol:     "category_assignments_categories_categoryAssignments",
 				Columns:    []*schema.Column{CategoryAssignmentsColumns[3]},
 				RefColumns: []*schema.Column{CategoriesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "category_assignments_events_event_category_assignments",
+				Columns:    []*schema.Column{CategoryAssignmentsColumns[4]},
+				RefColumns: []*schema.Column{EventsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
@@ -290,13 +332,45 @@ var (
 	// EventsColumns holds the columns for the "events" table.
 	EventsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true},
-		{Name: "name", Type: field.TypeString, Unique: true},
+		{Name: "name", Type: field.TypeString, Nullable: true},
+		{Name: "event_type", Type: field.TypeEnum, Nullable: true, Enums: []string{"event", "place", "business"}},
+		{Name: "status", Type: field.TypeString, Nullable: true},
+		{Name: "location", Type: field.TypeString, Nullable: true},
+		{Name: "url", Type: field.TypeString, Nullable: true},
+		{Name: "title", Type: field.TypeString, Nullable: true},
+		{Name: "time_zone", Type: field.TypeString, Nullable: true},
+		{Name: "start_time", Type: field.TypeTime, Nullable: true},
+		{Name: "end_time", Type: field.TypeTime, Nullable: true},
+		{Name: "start_date", Type: field.TypeString, Nullable: true},
+		{Name: "end_date", Type: field.TypeString, Nullable: true},
+		{Name: "frequency", Type: field.TypeEnum, Nullable: true, Enums: []string{"once", "daily", "weekly", "monthly", "yearly"}},
+		{Name: "frequency_interval", Type: field.TypeString, Nullable: true},
+		{Name: "frequency_day_of_week", Type: field.TypeString, Nullable: true},
+		{Name: "frequency_day_of_month", Type: field.TypeString, Nullable: true},
+		{Name: "frequency_month_of_year", Type: field.TypeString, Nullable: true},
+		{Name: "venue_type", Type: field.TypeEnum, Nullable: true, Enums: []string{"online", "in_person", "hybrid"}},
+		{Name: "venue_name", Type: field.TypeString, Nullable: true},
+		{Name: "venue_address", Type: field.TypeString, Nullable: true},
+		{Name: "venue_city", Type: field.TypeString, Nullable: true},
+		{Name: "venue_state", Type: field.TypeString, Nullable: true},
+		{Name: "venue_country", Type: field.TypeString, Nullable: true},
+		{Name: "venue_zip", Type: field.TypeString, Nullable: true},
+		{Name: "venue_lat", Type: field.TypeString, Nullable: true},
+		{Name: "venue_lon", Type: field.TypeString, Nullable: true},
+		{Name: "venue_url", Type: field.TypeString, Nullable: true},
+		{Name: "venue_phone", Type: field.TypeString, Nullable: true},
+		{Name: "venue_email", Type: field.TypeString, Nullable: true},
+		{Name: "tags", Type: field.TypeString, Nullable: true},
+		{Name: "description", Type: field.TypeString, Nullable: true, Size: 2147483647},
+		{Name: "event_settings", Type: field.TypeJSON, Nullable: true},
+		{Name: "cover_image", Type: field.TypeString, Nullable: true, Default: "https://res.cloudinary.com/placio/image/upload/v1686842319/mjl8stmbn5xmfsm50vbg.jpg"},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "search_text", Type: field.TypeString, Nullable: true},
 		{Name: "relevance_score", Type: field.TypeFloat64, Nullable: true},
+		{Name: "business_events", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "place_events", Type: field.TypeString, Nullable: true, Size: 36},
-		{Name: "user_events", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "user_owned_events", Type: field.TypeString, Unique: true, Nullable: true, Size: 36},
 	}
 	// EventsTable holds the schema information for the "events" table.
 	EventsTable = &schema.Table{
@@ -305,14 +379,20 @@ var (
 		PrimaryKey: []*schema.Column{EventsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
+				Symbol:     "events_businesses_events",
+				Columns:    []*schema.Column{EventsColumns[37]},
+				RefColumns: []*schema.Column{BusinessesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
 				Symbol:     "events_places_events",
-				Columns:    []*schema.Column{EventsColumns[6]},
+				Columns:    []*schema.Column{EventsColumns[38]},
 				RefColumns: []*schema.Column{PlacesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "events_users_events",
-				Columns:    []*schema.Column{EventsColumns[7]},
+				Symbol:     "events_users_ownedEvents",
+				Columns:    []*schema.Column{EventsColumns[39]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -469,6 +549,7 @@ var (
 		{Name: "search_text", Type: field.TypeString, Nullable: true},
 		{Name: "relevance_score", Type: field.TypeFloat64, Nullable: true},
 		{Name: "business_places", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "event_place", Type: field.TypeString, Nullable: true},
 	}
 	// PlacesTable holds the schema information for the "places" table.
 	PlacesTable = &schema.Table{
@@ -480,6 +561,12 @@ var (
 				Symbol:     "places_businesses_places",
 				Columns:    []*schema.Column{PlacesColumns[27]},
 				RefColumns: []*schema.Column{BusinessesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "places_events_place",
+				Columns:    []*schema.Column{PlacesColumns[28]},
+				RefColumns: []*schema.Column{EventsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -744,6 +831,34 @@ var (
 			},
 		},
 	}
+	// UserFollowEventsColumns holds the columns for the "user_follow_events" table.
+	UserFollowEventsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "user_user_follow_events", Type: field.TypeString, Size: 36},
+		{Name: "user_follow_event_event", Type: field.TypeString},
+	}
+	// UserFollowEventsTable holds the schema information for the "user_follow_events" table.
+	UserFollowEventsTable = &schema.Table{
+		Name:       "user_follow_events",
+		Columns:    UserFollowEventsColumns,
+		PrimaryKey: []*schema.Column{UserFollowEventsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "user_follow_events_users_userFollowEvents",
+				Columns:    []*schema.Column{UserFollowEventsColumns[3]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "user_follow_events_events_event",
+				Columns:    []*schema.Column{UserFollowEventsColumns[4]},
+				RefColumns: []*schema.Column{EventsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// UserFollowPlacesColumns holds the columns for the "user_follow_places" table.
 	UserFollowPlacesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -853,6 +968,7 @@ var (
 		BookingsTable,
 		BusinessesTable,
 		BusinessFollowBusinessesTable,
+		BusinessFollowEventsTable,
 		BusinessFollowUsersTable,
 		CategoriesTable,
 		CategoryAssignmentsTable,
@@ -877,6 +993,7 @@ var (
 		UsersTable,
 		UserBusinessesTable,
 		UserFollowBusinessesTable,
+		UserFollowEventsTable,
 		UserFollowPlacesTable,
 		UserFollowUsersTable,
 		AmenityPlacesTable,
@@ -891,22 +1008,27 @@ func init() {
 	BookingsTable.ForeignKeys[2].RefTable = UsersTable
 	BusinessFollowBusinessesTable.ForeignKeys[0].RefTable = BusinessesTable
 	BusinessFollowBusinessesTable.ForeignKeys[1].RefTable = BusinessesTable
+	BusinessFollowEventsTable.ForeignKeys[0].RefTable = BusinessesTable
+	BusinessFollowEventsTable.ForeignKeys[1].RefTable = EventsTable
 	BusinessFollowUsersTable.ForeignKeys[0].RefTable = BusinessesTable
 	BusinessFollowUsersTable.ForeignKeys[1].RefTable = UsersTable
 	CategoriesTable.ForeignKeys[0].RefTable = BusinessesTable
-	CategoriesTable.ForeignKeys[1].RefTable = MediaTable
-	CategoriesTable.ForeignKeys[2].RefTable = MenusTable
-	CategoriesTable.ForeignKeys[3].RefTable = PlacesTable
-	CategoriesTable.ForeignKeys[4].RefTable = PostsTable
-	CategoriesTable.ForeignKeys[5].RefTable = UsersTable
+	CategoriesTable.ForeignKeys[1].RefTable = EventsTable
+	CategoriesTable.ForeignKeys[2].RefTable = MediaTable
+	CategoriesTable.ForeignKeys[3].RefTable = MenusTable
+	CategoriesTable.ForeignKeys[4].RefTable = PlacesTable
+	CategoriesTable.ForeignKeys[5].RefTable = PostsTable
+	CategoriesTable.ForeignKeys[6].RefTable = UsersTable
 	CategoryAssignmentsTable.ForeignKeys[0].RefTable = BusinessesTable
 	CategoryAssignmentsTable.ForeignKeys[1].RefTable = CategoriesTable
-	CategoryAssignmentsTable.ForeignKeys[2].RefTable = PlacesTable
-	CategoryAssignmentsTable.ForeignKeys[3].RefTable = UsersTable
+	CategoryAssignmentsTable.ForeignKeys[2].RefTable = EventsTable
+	CategoryAssignmentsTable.ForeignKeys[3].RefTable = PlacesTable
+	CategoryAssignmentsTable.ForeignKeys[4].RefTable = UsersTable
 	CommentsTable.ForeignKeys[0].RefTable = PostsTable
 	CommentsTable.ForeignKeys[1].RefTable = UsersTable
-	EventsTable.ForeignKeys[0].RefTable = PlacesTable
-	EventsTable.ForeignKeys[1].RefTable = UsersTable
+	EventsTable.ForeignKeys[0].RefTable = BusinessesTable
+	EventsTable.ForeignKeys[1].RefTable = PlacesTable
+	EventsTable.ForeignKeys[2].RefTable = UsersTable
 	HelpsTable.ForeignKeys[0].RefTable = UsersTable
 	LikesTable.ForeignKeys[0].RefTable = PostsTable
 	LikesTable.ForeignKeys[1].RefTable = PostsTable
@@ -914,6 +1036,7 @@ func init() {
 	MediaTable.ForeignKeys[0].RefTable = PostsTable
 	MenusTable.ForeignKeys[0].RefTable = PlacesTable
 	PlacesTable.ForeignKeys[0].RefTable = BusinessesTable
+	PlacesTable.ForeignKeys[1].RefTable = EventsTable
 	PostsTable.ForeignKeys[0].RefTable = BusinessesTable
 	PostsTable.ForeignKeys[1].RefTable = UsersTable
 	ReservationsTable.ForeignKeys[0].RefTable = PlacesTable
@@ -928,6 +1051,8 @@ func init() {
 	UserBusinessesTable.ForeignKeys[1].RefTable = UsersTable
 	UserFollowBusinessesTable.ForeignKeys[0].RefTable = BusinessesTable
 	UserFollowBusinessesTable.ForeignKeys[1].RefTable = UsersTable
+	UserFollowEventsTable.ForeignKeys[0].RefTable = UsersTable
+	UserFollowEventsTable.ForeignKeys[1].RefTable = EventsTable
 	UserFollowPlacesTable.ForeignKeys[0].RefTable = PlacesTable
 	UserFollowPlacesTable.ForeignKeys[1].RefTable = UsersTable
 	UserFollowUsersTable.ForeignKeys[0].RefTable = UsersTable

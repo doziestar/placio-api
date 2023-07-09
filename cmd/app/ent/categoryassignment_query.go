@@ -29,6 +29,7 @@ type CategoryAssignmentQuery struct {
 	withBusiness *BusinessQuery
 	withPlace    *PlaceQuery
 	withCategory *CategoryQuery
+	withFKs      bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -476,6 +477,7 @@ func (caq *CategoryAssignmentQuery) prepareQuery(ctx context.Context) error {
 func (caq *CategoryAssignmentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*CategoryAssignment, error) {
 	var (
 		nodes       = []*CategoryAssignment{}
+		withFKs     = caq.withFKs
 		_spec       = caq.querySpec()
 		loadedTypes = [4]bool{
 			caq.withUser != nil,
@@ -484,6 +486,9 @@ func (caq *CategoryAssignmentQuery) sqlAll(ctx context.Context, hooks ...queryHo
 			caq.withCategory != nil,
 		}
 	)
+	if withFKs {
+		_spec.Node.Columns = append(_spec.Node.Columns, categoryassignment.ForeignKeys...)
+	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*CategoryAssignment).scanValues(nil, columns)
 	}

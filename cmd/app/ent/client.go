@@ -15,6 +15,7 @@ import (
 	"placio-app/ent/booking"
 	"placio-app/ent/business"
 	"placio-app/ent/businessfollowbusiness"
+	"placio-app/ent/businessfollowevent"
 	"placio-app/ent/businessfollowuser"
 	"placio-app/ent/category"
 	"placio-app/ent/categoryassignment"
@@ -39,6 +40,7 @@ import (
 	"placio-app/ent/user"
 	"placio-app/ent/userbusiness"
 	"placio-app/ent/userfollowbusiness"
+	"placio-app/ent/userfollowevent"
 	"placio-app/ent/userfollowplace"
 	"placio-app/ent/userfollowuser"
 
@@ -63,6 +65,8 @@ type Client struct {
 	Business *BusinessClient
 	// BusinessFollowBusiness is the client for interacting with the BusinessFollowBusiness builders.
 	BusinessFollowBusiness *BusinessFollowBusinessClient
+	// BusinessFollowEvent is the client for interacting with the BusinessFollowEvent builders.
+	BusinessFollowEvent *BusinessFollowEventClient
 	// BusinessFollowUser is the client for interacting with the BusinessFollowUser builders.
 	BusinessFollowUser *BusinessFollowUserClient
 	// Category is the client for interacting with the Category builders.
@@ -111,6 +115,8 @@ type Client struct {
 	UserBusiness *UserBusinessClient
 	// UserFollowBusiness is the client for interacting with the UserFollowBusiness builders.
 	UserFollowBusiness *UserFollowBusinessClient
+	// UserFollowEvent is the client for interacting with the UserFollowEvent builders.
+	UserFollowEvent *UserFollowEventClient
 	// UserFollowPlace is the client for interacting with the UserFollowPlace builders.
 	UserFollowPlace *UserFollowPlaceClient
 	// UserFollowUser is the client for interacting with the UserFollowUser builders.
@@ -133,6 +139,7 @@ func (c *Client) init() {
 	c.Booking = NewBookingClient(c.config)
 	c.Business = NewBusinessClient(c.config)
 	c.BusinessFollowBusiness = NewBusinessFollowBusinessClient(c.config)
+	c.BusinessFollowEvent = NewBusinessFollowEventClient(c.config)
 	c.BusinessFollowUser = NewBusinessFollowUserClient(c.config)
 	c.Category = NewCategoryClient(c.config)
 	c.CategoryAssignment = NewCategoryAssignmentClient(c.config)
@@ -157,6 +164,7 @@ func (c *Client) init() {
 	c.User = NewUserClient(c.config)
 	c.UserBusiness = NewUserBusinessClient(c.config)
 	c.UserFollowBusiness = NewUserFollowBusinessClient(c.config)
+	c.UserFollowEvent = NewUserFollowEventClient(c.config)
 	c.UserFollowPlace = NewUserFollowPlaceClient(c.config)
 	c.UserFollowUser = NewUserFollowUserClient(c.config)
 }
@@ -246,6 +254,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Booking:                NewBookingClient(cfg),
 		Business:               NewBusinessClient(cfg),
 		BusinessFollowBusiness: NewBusinessFollowBusinessClient(cfg),
+		BusinessFollowEvent:    NewBusinessFollowEventClient(cfg),
 		BusinessFollowUser:     NewBusinessFollowUserClient(cfg),
 		Category:               NewCategoryClient(cfg),
 		CategoryAssignment:     NewCategoryAssignmentClient(cfg),
@@ -270,6 +279,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		User:                   NewUserClient(cfg),
 		UserBusiness:           NewUserBusinessClient(cfg),
 		UserFollowBusiness:     NewUserFollowBusinessClient(cfg),
+		UserFollowEvent:        NewUserFollowEventClient(cfg),
 		UserFollowPlace:        NewUserFollowPlaceClient(cfg),
 		UserFollowUser:         NewUserFollowUserClient(cfg),
 	}, nil
@@ -296,6 +306,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Booking:                NewBookingClient(cfg),
 		Business:               NewBusinessClient(cfg),
 		BusinessFollowBusiness: NewBusinessFollowBusinessClient(cfg),
+		BusinessFollowEvent:    NewBusinessFollowEventClient(cfg),
 		BusinessFollowUser:     NewBusinessFollowUserClient(cfg),
 		Category:               NewCategoryClient(cfg),
 		CategoryAssignment:     NewCategoryAssignmentClient(cfg),
@@ -320,6 +331,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		User:                   NewUserClient(cfg),
 		UserBusiness:           NewUserBusinessClient(cfg),
 		UserFollowBusiness:     NewUserFollowBusinessClient(cfg),
+		UserFollowEvent:        NewUserFollowEventClient(cfg),
 		UserFollowPlace:        NewUserFollowPlaceClient(cfg),
 		UserFollowUser:         NewUserFollowUserClient(cfg),
 	}, nil
@@ -352,11 +364,11 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.AccountSettings, c.Amenity, c.Booking, c.Business, c.BusinessFollowBusiness,
-		c.BusinessFollowUser, c.Category, c.CategoryAssignment, c.Chat, c.Comment,
-		c.Event, c.Help, c.Like, c.Media, c.Menu, c.Order, c.Payment, c.Place, c.Post,
-		c.Rating, c.Reaction, c.Reservation, c.Review, c.Room, c.Ticket,
-		c.TicketOption, c.User, c.UserBusiness, c.UserFollowBusiness,
-		c.UserFollowPlace, c.UserFollowUser,
+		c.BusinessFollowEvent, c.BusinessFollowUser, c.Category, c.CategoryAssignment,
+		c.Chat, c.Comment, c.Event, c.Help, c.Like, c.Media, c.Menu, c.Order,
+		c.Payment, c.Place, c.Post, c.Rating, c.Reaction, c.Reservation, c.Review,
+		c.Room, c.Ticket, c.TicketOption, c.User, c.UserBusiness, c.UserFollowBusiness,
+		c.UserFollowEvent, c.UserFollowPlace, c.UserFollowUser,
 	} {
 		n.Use(hooks...)
 	}
@@ -367,11 +379,11 @@ func (c *Client) Use(hooks ...Hook) {
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.AccountSettings, c.Amenity, c.Booking, c.Business, c.BusinessFollowBusiness,
-		c.BusinessFollowUser, c.Category, c.CategoryAssignment, c.Chat, c.Comment,
-		c.Event, c.Help, c.Like, c.Media, c.Menu, c.Order, c.Payment, c.Place, c.Post,
-		c.Rating, c.Reaction, c.Reservation, c.Review, c.Room, c.Ticket,
-		c.TicketOption, c.User, c.UserBusiness, c.UserFollowBusiness,
-		c.UserFollowPlace, c.UserFollowUser,
+		c.BusinessFollowEvent, c.BusinessFollowUser, c.Category, c.CategoryAssignment,
+		c.Chat, c.Comment, c.Event, c.Help, c.Like, c.Media, c.Menu, c.Order,
+		c.Payment, c.Place, c.Post, c.Rating, c.Reaction, c.Reservation, c.Review,
+		c.Room, c.Ticket, c.TicketOption, c.User, c.UserBusiness, c.UserFollowBusiness,
+		c.UserFollowEvent, c.UserFollowPlace, c.UserFollowUser,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -390,6 +402,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Business.mutate(ctx, m)
 	case *BusinessFollowBusinessMutation:
 		return c.BusinessFollowBusiness.mutate(ctx, m)
+	case *BusinessFollowEventMutation:
+		return c.BusinessFollowEvent.mutate(ctx, m)
 	case *BusinessFollowUserMutation:
 		return c.BusinessFollowUser.mutate(ctx, m)
 	case *CategoryMutation:
@@ -438,6 +452,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.UserBusiness.mutate(ctx, m)
 	case *UserFollowBusinessMutation:
 		return c.UserFollowBusiness.mutate(ctx, m)
+	case *UserFollowEventMutation:
+		return c.UserFollowEvent.mutate(ctx, m)
 	case *UserFollowPlaceMutation:
 		return c.UserFollowPlace.mutate(ctx, m)
 	case *UserFollowUserMutation:
@@ -1118,6 +1134,38 @@ func (c *BusinessClient) QueryCategoryAssignments(b *Business) *CategoryAssignme
 	return query
 }
 
+// QueryEvents queries the events edge of a Business.
+func (c *BusinessClient) QueryEvents(b *Business) *EventQuery {
+	query := (&EventClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(business.Table, business.FieldID, id),
+			sqlgraph.To(event.Table, event.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, business.EventsTable, business.EventsColumn),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryBusinessFollowEvents queries the businessFollowEvents edge of a Business.
+func (c *BusinessClient) QueryBusinessFollowEvents(b *Business) *BusinessFollowEventQuery {
+	query := (&BusinessFollowEventClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(business.Table, business.FieldID, id),
+			sqlgraph.To(businessfollowevent.Table, businessfollowevent.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, business.BusinessFollowEventsTable, business.BusinessFollowEventsColumn),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *BusinessClient) Hooks() []Hook {
 	return c.hooks.Business
@@ -1290,6 +1338,156 @@ func (c *BusinessFollowBusinessClient) mutate(ctx context.Context, m *BusinessFo
 		return (&BusinessFollowBusinessDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown BusinessFollowBusiness mutation op: %q", m.Op())
+	}
+}
+
+// BusinessFollowEventClient is a client for the BusinessFollowEvent schema.
+type BusinessFollowEventClient struct {
+	config
+}
+
+// NewBusinessFollowEventClient returns a client for the BusinessFollowEvent from the given config.
+func NewBusinessFollowEventClient(c config) *BusinessFollowEventClient {
+	return &BusinessFollowEventClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `businessfollowevent.Hooks(f(g(h())))`.
+func (c *BusinessFollowEventClient) Use(hooks ...Hook) {
+	c.hooks.BusinessFollowEvent = append(c.hooks.BusinessFollowEvent, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `businessfollowevent.Intercept(f(g(h())))`.
+func (c *BusinessFollowEventClient) Intercept(interceptors ...Interceptor) {
+	c.inters.BusinessFollowEvent = append(c.inters.BusinessFollowEvent, interceptors...)
+}
+
+// Create returns a builder for creating a BusinessFollowEvent entity.
+func (c *BusinessFollowEventClient) Create() *BusinessFollowEventCreate {
+	mutation := newBusinessFollowEventMutation(c.config, OpCreate)
+	return &BusinessFollowEventCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of BusinessFollowEvent entities.
+func (c *BusinessFollowEventClient) CreateBulk(builders ...*BusinessFollowEventCreate) *BusinessFollowEventCreateBulk {
+	return &BusinessFollowEventCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for BusinessFollowEvent.
+func (c *BusinessFollowEventClient) Update() *BusinessFollowEventUpdate {
+	mutation := newBusinessFollowEventMutation(c.config, OpUpdate)
+	return &BusinessFollowEventUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *BusinessFollowEventClient) UpdateOne(bfe *BusinessFollowEvent) *BusinessFollowEventUpdateOne {
+	mutation := newBusinessFollowEventMutation(c.config, OpUpdateOne, withBusinessFollowEvent(bfe))
+	return &BusinessFollowEventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *BusinessFollowEventClient) UpdateOneID(id string) *BusinessFollowEventUpdateOne {
+	mutation := newBusinessFollowEventMutation(c.config, OpUpdateOne, withBusinessFollowEventID(id))
+	return &BusinessFollowEventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for BusinessFollowEvent.
+func (c *BusinessFollowEventClient) Delete() *BusinessFollowEventDelete {
+	mutation := newBusinessFollowEventMutation(c.config, OpDelete)
+	return &BusinessFollowEventDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *BusinessFollowEventClient) DeleteOne(bfe *BusinessFollowEvent) *BusinessFollowEventDeleteOne {
+	return c.DeleteOneID(bfe.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *BusinessFollowEventClient) DeleteOneID(id string) *BusinessFollowEventDeleteOne {
+	builder := c.Delete().Where(businessfollowevent.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &BusinessFollowEventDeleteOne{builder}
+}
+
+// Query returns a query builder for BusinessFollowEvent.
+func (c *BusinessFollowEventClient) Query() *BusinessFollowEventQuery {
+	return &BusinessFollowEventQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeBusinessFollowEvent},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a BusinessFollowEvent entity by its id.
+func (c *BusinessFollowEventClient) Get(ctx context.Context, id string) (*BusinessFollowEvent, error) {
+	return c.Query().Where(businessfollowevent.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *BusinessFollowEventClient) GetX(ctx context.Context, id string) *BusinessFollowEvent {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryBusiness queries the business edge of a BusinessFollowEvent.
+func (c *BusinessFollowEventClient) QueryBusiness(bfe *BusinessFollowEvent) *BusinessQuery {
+	query := (&BusinessClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := bfe.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(businessfollowevent.Table, businessfollowevent.FieldID, id),
+			sqlgraph.To(business.Table, business.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, businessfollowevent.BusinessTable, businessfollowevent.BusinessColumn),
+		)
+		fromV = sqlgraph.Neighbors(bfe.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEvent queries the event edge of a BusinessFollowEvent.
+func (c *BusinessFollowEventClient) QueryEvent(bfe *BusinessFollowEvent) *EventQuery {
+	query := (&EventClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := bfe.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(businessfollowevent.Table, businessfollowevent.FieldID, id),
+			sqlgraph.To(event.Table, event.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, businessfollowevent.EventTable, businessfollowevent.EventColumn),
+		)
+		fromV = sqlgraph.Neighbors(bfe.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *BusinessFollowEventClient) Hooks() []Hook {
+	return c.hooks.BusinessFollowEvent
+}
+
+// Interceptors returns the client interceptors.
+func (c *BusinessFollowEventClient) Interceptors() []Interceptor {
+	return c.inters.BusinessFollowEvent
+}
+
+func (c *BusinessFollowEventClient) mutate(ctx context.Context, m *BusinessFollowEventMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&BusinessFollowEventCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&BusinessFollowEventUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&BusinessFollowEventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&BusinessFollowEventDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown BusinessFollowEvent mutation op: %q", m.Op())
 	}
 }
 
@@ -2145,6 +2343,118 @@ func (c *EventClient) QueryTicketOptions(e *Event) *TicketOptionQuery {
 			sqlgraph.From(event.Table, event.FieldID, id),
 			sqlgraph.To(ticketoption.Table, ticketoption.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, event.TicketOptionsTable, event.TicketOptionsColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPlace queries the place edge of a Event.
+func (c *EventClient) QueryPlace(e *Event) *PlaceQuery {
+	query := (&PlaceClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(event.Table, event.FieldID, id),
+			sqlgraph.To(place.Table, place.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, event.PlaceTable, event.PlaceColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEventCategories queries the event_categories edge of a Event.
+func (c *EventClient) QueryEventCategories(e *Event) *CategoryQuery {
+	query := (&CategoryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(event.Table, event.FieldID, id),
+			sqlgraph.To(category.Table, category.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, event.EventCategoriesTable, event.EventCategoriesColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEventCategoryAssignments queries the event_category_assignments edge of a Event.
+func (c *EventClient) QueryEventCategoryAssignments(e *Event) *CategoryAssignmentQuery {
+	query := (&CategoryAssignmentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(event.Table, event.FieldID, id),
+			sqlgraph.To(categoryassignment.Table, categoryassignment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, event.EventCategoryAssignmentsTable, event.EventCategoryAssignmentsColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryOwnerUser queries the ownerUser edge of a Event.
+func (c *EventClient) QueryOwnerUser(e *Event) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(event.Table, event.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, event.OwnerUserTable, event.OwnerUserColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryOwnerBusiness queries the ownerBusiness edge of a Event.
+func (c *EventClient) QueryOwnerBusiness(e *Event) *BusinessQuery {
+	query := (&BusinessClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(event.Table, event.FieldID, id),
+			sqlgraph.To(business.Table, business.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, event.OwnerBusinessTable, event.OwnerBusinessColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryUserFollowers queries the userFollowers edge of a Event.
+func (c *EventClient) QueryUserFollowers(e *Event) *UserFollowEventQuery {
+	query := (&UserFollowEventClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(event.Table, event.FieldID, id),
+			sqlgraph.To(userfollowevent.Table, userfollowevent.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, event.UserFollowersTable, event.UserFollowersColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryBusinessFollowers queries the businessFollowers edge of a Event.
+func (c *EventClient) QueryBusinessFollowers(e *Event) *BusinessFollowEventQuery {
+	query := (&BusinessFollowEventClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(event.Table, event.FieldID, id),
+			sqlgraph.To(businessfollowevent.Table, businessfollowevent.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, event.BusinessFollowersTable, event.BusinessFollowersColumn),
 		)
 		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
 		return fromV, nil
@@ -4792,22 +5102,6 @@ func (c *UserClient) QueryCategories(u *User) *CategoryQuery {
 	return query
 }
 
-// QueryEvents queries the events edge of a User.
-func (c *UserClient) QueryEvents(u *User) *EventQuery {
-	query := (&EventClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := u.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(user.Table, user.FieldID, id),
-			sqlgraph.To(event.Table, event.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.EventsTable, user.EventsColumn),
-		)
-		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // QueryPlaces queries the places edge of a User.
 func (c *UserClient) QueryPlaces(u *User) *PlaceQuery {
 	query := (&PlaceClient{config: c.config}).Query()
@@ -4849,6 +5143,38 @@ func (c *UserClient) QueryFollowedPlaces(u *User) *UserFollowPlaceQuery {
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(userfollowplace.Table, userfollowplace.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.FollowedPlacesTable, user.FollowedPlacesColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryOwnedEvents queries the ownedEvents edge of a User.
+func (c *UserClient) QueryOwnedEvents(u *User) *EventQuery {
+	query := (&EventClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(event.Table, event.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, user.OwnedEventsTable, user.OwnedEventsColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryUserFollowEvents queries the userFollowEvents edge of a User.
+func (c *UserClient) QueryUserFollowEvents(u *User) *UserFollowEventQuery {
+	query := (&UserFollowEventClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(userfollowevent.Table, userfollowevent.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.UserFollowEventsTable, user.UserFollowEventsColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil
@@ -5181,6 +5507,156 @@ func (c *UserFollowBusinessClient) mutate(ctx context.Context, m *UserFollowBusi
 	}
 }
 
+// UserFollowEventClient is a client for the UserFollowEvent schema.
+type UserFollowEventClient struct {
+	config
+}
+
+// NewUserFollowEventClient returns a client for the UserFollowEvent from the given config.
+func NewUserFollowEventClient(c config) *UserFollowEventClient {
+	return &UserFollowEventClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `userfollowevent.Hooks(f(g(h())))`.
+func (c *UserFollowEventClient) Use(hooks ...Hook) {
+	c.hooks.UserFollowEvent = append(c.hooks.UserFollowEvent, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `userfollowevent.Intercept(f(g(h())))`.
+func (c *UserFollowEventClient) Intercept(interceptors ...Interceptor) {
+	c.inters.UserFollowEvent = append(c.inters.UserFollowEvent, interceptors...)
+}
+
+// Create returns a builder for creating a UserFollowEvent entity.
+func (c *UserFollowEventClient) Create() *UserFollowEventCreate {
+	mutation := newUserFollowEventMutation(c.config, OpCreate)
+	return &UserFollowEventCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of UserFollowEvent entities.
+func (c *UserFollowEventClient) CreateBulk(builders ...*UserFollowEventCreate) *UserFollowEventCreateBulk {
+	return &UserFollowEventCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for UserFollowEvent.
+func (c *UserFollowEventClient) Update() *UserFollowEventUpdate {
+	mutation := newUserFollowEventMutation(c.config, OpUpdate)
+	return &UserFollowEventUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *UserFollowEventClient) UpdateOne(ufe *UserFollowEvent) *UserFollowEventUpdateOne {
+	mutation := newUserFollowEventMutation(c.config, OpUpdateOne, withUserFollowEvent(ufe))
+	return &UserFollowEventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *UserFollowEventClient) UpdateOneID(id string) *UserFollowEventUpdateOne {
+	mutation := newUserFollowEventMutation(c.config, OpUpdateOne, withUserFollowEventID(id))
+	return &UserFollowEventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for UserFollowEvent.
+func (c *UserFollowEventClient) Delete() *UserFollowEventDelete {
+	mutation := newUserFollowEventMutation(c.config, OpDelete)
+	return &UserFollowEventDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *UserFollowEventClient) DeleteOne(ufe *UserFollowEvent) *UserFollowEventDeleteOne {
+	return c.DeleteOneID(ufe.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *UserFollowEventClient) DeleteOneID(id string) *UserFollowEventDeleteOne {
+	builder := c.Delete().Where(userfollowevent.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &UserFollowEventDeleteOne{builder}
+}
+
+// Query returns a query builder for UserFollowEvent.
+func (c *UserFollowEventClient) Query() *UserFollowEventQuery {
+	return &UserFollowEventQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeUserFollowEvent},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a UserFollowEvent entity by its id.
+func (c *UserFollowEventClient) Get(ctx context.Context, id string) (*UserFollowEvent, error) {
+	return c.Query().Where(userfollowevent.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *UserFollowEventClient) GetX(ctx context.Context, id string) *UserFollowEvent {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryUser queries the user edge of a UserFollowEvent.
+func (c *UserFollowEventClient) QueryUser(ufe *UserFollowEvent) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ufe.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(userfollowevent.Table, userfollowevent.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, userfollowevent.UserTable, userfollowevent.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(ufe.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEvent queries the event edge of a UserFollowEvent.
+func (c *UserFollowEventClient) QueryEvent(ufe *UserFollowEvent) *EventQuery {
+	query := (&EventClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ufe.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(userfollowevent.Table, userfollowevent.FieldID, id),
+			sqlgraph.To(event.Table, event.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, userfollowevent.EventTable, userfollowevent.EventColumn),
+		)
+		fromV = sqlgraph.Neighbors(ufe.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *UserFollowEventClient) Hooks() []Hook {
+	return c.hooks.UserFollowEvent
+}
+
+// Interceptors returns the client interceptors.
+func (c *UserFollowEventClient) Interceptors() []Interceptor {
+	return c.inters.UserFollowEvent
+}
+
+func (c *UserFollowEventClient) mutate(ctx context.Context, m *UserFollowEventMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&UserFollowEventCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&UserFollowEventUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&UserFollowEventUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&UserFollowEventDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown UserFollowEvent mutation op: %q", m.Op())
+	}
+}
+
 // UserFollowPlaceClient is a client for the UserFollowPlace schema.
 type UserFollowPlaceClient struct {
 	config
@@ -5485,16 +5961,17 @@ func (c *UserFollowUserClient) mutate(ctx context.Context, m *UserFollowUserMuta
 type (
 	hooks struct {
 		AccountSettings, Amenity, Booking, Business, BusinessFollowBusiness,
-		BusinessFollowUser, Category, CategoryAssignment, Chat, Comment, Event, Help,
-		Like, Media, Menu, Order, Payment, Place, Post, Rating, Reaction, Reservation,
-		Review, Room, Ticket, TicketOption, User, UserBusiness, UserFollowBusiness,
-		UserFollowPlace, UserFollowUser []ent.Hook
+		BusinessFollowEvent, BusinessFollowUser, Category, CategoryAssignment, Chat,
+		Comment, Event, Help, Like, Media, Menu, Order, Payment, Place, Post, Rating,
+		Reaction, Reservation, Review, Room, Ticket, TicketOption, User, UserBusiness,
+		UserFollowBusiness, UserFollowEvent, UserFollowPlace, UserFollowUser []ent.Hook
 	}
 	inters struct {
 		AccountSettings, Amenity, Booking, Business, BusinessFollowBusiness,
-		BusinessFollowUser, Category, CategoryAssignment, Chat, Comment, Event, Help,
-		Like, Media, Menu, Order, Payment, Place, Post, Rating, Reaction, Reservation,
-		Review, Room, Ticket, TicketOption, User, UserBusiness, UserFollowBusiness,
-		UserFollowPlace, UserFollowUser []ent.Interceptor
+		BusinessFollowEvent, BusinessFollowUser, Category, CategoryAssignment, Chat,
+		Comment, Event, Help, Like, Media, Menu, Order, Payment, Place, Post, Rating,
+		Reaction, Reservation, Review, Room, Ticket, TicketOption, User, UserBusiness,
+		UserFollowBusiness, UserFollowEvent, UserFollowPlace,
+		UserFollowUser []ent.Interceptor
 	}
 )

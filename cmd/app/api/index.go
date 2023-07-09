@@ -134,6 +134,11 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		postController := controller.NewPostController(postService, userService, businessService, mediaService)
 		postController.RegisterRoutes(routerGroupV1)
 
+		// events
+		eventService := service.NewEventService(client, searchService)
+		eventController := controller.NewEventController(eventService, utility.NewUtility())
+		eventController.RegisterRoutes(routerGroupV1)
+
 		//// ratings
 		//ratingService := service.NewRatingService(db)
 		//ratingController := controller.NewRatingController(ratingService)

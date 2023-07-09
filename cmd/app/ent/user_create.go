@@ -21,6 +21,7 @@ import (
 	"placio-app/ent/user"
 	"placio-app/ent/userbusiness"
 	"placio-app/ent/userfollowbusiness"
+	"placio-app/ent/userfollowevent"
 	"placio-app/ent/userfollowplace"
 	"placio-app/ent/userfollowuser"
 
@@ -379,21 +380,6 @@ func (uc *UserCreate) AddCategories(c ...*Category) *UserCreate {
 	return uc.AddCategoryIDs(ids...)
 }
 
-// AddEventIDs adds the "events" edge to the Event entity by IDs.
-func (uc *UserCreate) AddEventIDs(ids ...string) *UserCreate {
-	uc.mutation.AddEventIDs(ids...)
-	return uc
-}
-
-// AddEvents adds the "events" edges to the Event entity.
-func (uc *UserCreate) AddEvents(e ...*Event) *UserCreate {
-	ids := make([]string, len(e))
-	for i := range e {
-		ids[i] = e[i].ID
-	}
-	return uc.AddEventIDs(ids...)
-}
-
 // AddPlaceIDs adds the "places" edge to the Place entity by IDs.
 func (uc *UserCreate) AddPlaceIDs(ids ...string) *UserCreate {
 	uc.mutation.AddPlaceIDs(ids...)
@@ -437,6 +423,40 @@ func (uc *UserCreate) AddFollowedPlaces(u ...*UserFollowPlace) *UserCreate {
 		ids[i] = u[i].ID
 	}
 	return uc.AddFollowedPlaceIDs(ids...)
+}
+
+// SetOwnedEventsID sets the "ownedEvents" edge to the Event entity by ID.
+func (uc *UserCreate) SetOwnedEventsID(id string) *UserCreate {
+	uc.mutation.SetOwnedEventsID(id)
+	return uc
+}
+
+// SetNillableOwnedEventsID sets the "ownedEvents" edge to the Event entity by ID if the given value is not nil.
+func (uc *UserCreate) SetNillableOwnedEventsID(id *string) *UserCreate {
+	if id != nil {
+		uc = uc.SetOwnedEventsID(*id)
+	}
+	return uc
+}
+
+// SetOwnedEvents sets the "ownedEvents" edge to the Event entity.
+func (uc *UserCreate) SetOwnedEvents(e *Event) *UserCreate {
+	return uc.SetOwnedEventsID(e.ID)
+}
+
+// AddUserFollowEventIDs adds the "userFollowEvents" edge to the UserFollowEvent entity by IDs.
+func (uc *UserCreate) AddUserFollowEventIDs(ids ...string) *UserCreate {
+	uc.mutation.AddUserFollowEventIDs(ids...)
+	return uc
+}
+
+// AddUserFollowEvents adds the "userFollowEvents" edges to the UserFollowEvent entity.
+func (uc *UserCreate) AddUserFollowEvents(u ...*UserFollowEvent) *UserCreate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uc.AddUserFollowEventIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -792,22 +812,6 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := uc.mutation.EventsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.EventsTable,
-			Columns: []string{user.EventsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(event.FieldID, field.TypeString),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
 	if nodes := uc.mutation.PlacesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
@@ -849,6 +853,38 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(userfollowplace.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.OwnedEventsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   user.OwnedEventsTable,
+			Columns: []string{user.OwnedEventsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(event.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.UserFollowEventsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.UserFollowEventsTable,
+			Columns: []string{user.UserFollowEventsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userfollowevent.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

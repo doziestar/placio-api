@@ -28,8 +28,9 @@ type CategoryAssignment struct {
 	CategoryID string `json:"category_id,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CategoryAssignmentQuery when eager-loading is set.
-	Edges        CategoryAssignmentEdges `json:"edges"`
-	selectValues sql.SelectValues
+	Edges                            CategoryAssignmentEdges `json:"edges"`
+	event_event_category_assignments *string
+	selectValues                     sql.SelectValues
 }
 
 // CategoryAssignmentEdges holds the relations/edges for other nodes in the graph.
@@ -106,6 +107,8 @@ func (*CategoryAssignment) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case categoryassignment.FieldID, categoryassignment.FieldEntityID, categoryassignment.FieldEntityType, categoryassignment.FieldCategoryID:
 			values[i] = new(sql.NullString)
+		case categoryassignment.ForeignKeys[0]: // event_event_category_assignments
+			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -144,6 +147,13 @@ func (ca *CategoryAssignment) assignValues(columns []string, values []any) error
 				return fmt.Errorf("unexpected type %T for field category_id", values[i])
 			} else if value.Valid {
 				ca.CategoryID = value.String
+			}
+		case categoryassignment.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field event_event_category_assignments", values[i])
+			} else if value.Valid {
+				ca.event_event_category_assignments = new(string)
+				*ca.event_event_category_assignments = value.String
 			}
 		default:
 			ca.selectValues.Set(columns[i], values[i])

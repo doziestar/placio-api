@@ -21,6 +21,9 @@ type Business func(*sql.Selector)
 // BusinessFollowBusiness is the predicate function for businessfollowbusiness builders.
 type BusinessFollowBusiness func(*sql.Selector)
 
+// BusinessFollowEvent is the predicate function for businessfollowevent builders.
+type BusinessFollowEvent func(*sql.Selector)
+
 // BusinessFollowUser is the predicate function for businessfollowuser builders.
 type BusinessFollowUser func(*sql.Selector)
 
@@ -92,6 +95,9 @@ type UserBusiness func(*sql.Selector)
 
 // UserFollowBusiness is the predicate function for userfollowbusiness builders.
 type UserFollowBusiness func(*sql.Selector)
+
+// UserFollowEvent is the predicate function for userfollowevent builders.
+type UserFollowEvent func(*sql.Selector)
 
 // UserFollowPlace is the predicate function for userfollowplace builders.
 type UserFollowPlace func(*sql.Selector)

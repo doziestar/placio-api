@@ -42,7 +42,7 @@ type BusinessAccountServiceImpl struct {
 	searchService SearchService
 	cacheService  *utility.RedisClient
 	placesService PlaceService
-	eventService  EventService
+	eventService  IEventService
 }
 
 func NewBusinessAccountService(client *ent.Client, searchService SearchService, cache *utility.RedisClient, service PlaceService) BusinessAccountService {

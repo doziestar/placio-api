@@ -9,9 +9,11 @@ import (
 	"placio-app/ent/accountsettings"
 	"placio-app/ent/business"
 	"placio-app/ent/businessfollowbusiness"
+	"placio-app/ent/businessfollowevent"
 	"placio-app/ent/businessfollowuser"
 	"placio-app/ent/category"
 	"placio-app/ent/categoryassignment"
+	"placio-app/ent/event"
 	"placio-app/ent/place"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
@@ -415,6 +417,36 @@ func (bu *BusinessUpdate) AddCategoryAssignments(c ...*CategoryAssignment) *Busi
 	return bu.AddCategoryAssignmentIDs(ids...)
 }
 
+// AddEventIDs adds the "events" edge to the Event entity by IDs.
+func (bu *BusinessUpdate) AddEventIDs(ids ...string) *BusinessUpdate {
+	bu.mutation.AddEventIDs(ids...)
+	return bu
+}
+
+// AddEvents adds the "events" edges to the Event entity.
+func (bu *BusinessUpdate) AddEvents(e ...*Event) *BusinessUpdate {
+	ids := make([]string, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return bu.AddEventIDs(ids...)
+}
+
+// AddBusinessFollowEventIDs adds the "businessFollowEvents" edge to the BusinessFollowEvent entity by IDs.
+func (bu *BusinessUpdate) AddBusinessFollowEventIDs(ids ...string) *BusinessUpdate {
+	bu.mutation.AddBusinessFollowEventIDs(ids...)
+	return bu
+}
+
+// AddBusinessFollowEvents adds the "businessFollowEvents" edges to the BusinessFollowEvent entity.
+func (bu *BusinessUpdate) AddBusinessFollowEvents(b ...*BusinessFollowEvent) *BusinessUpdate {
+	ids := make([]string, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return bu.AddBusinessFollowEventIDs(ids...)
+}
+
 // Mutation returns the BusinessMutation object of the builder.
 func (bu *BusinessUpdate) Mutation() *BusinessMutation {
 	return bu.mutation
@@ -613,6 +645,48 @@ func (bu *BusinessUpdate) RemoveCategoryAssignments(c ...*CategoryAssignment) *B
 		ids[i] = c[i].ID
 	}
 	return bu.RemoveCategoryAssignmentIDs(ids...)
+}
+
+// ClearEvents clears all "events" edges to the Event entity.
+func (bu *BusinessUpdate) ClearEvents() *BusinessUpdate {
+	bu.mutation.ClearEvents()
+	return bu
+}
+
+// RemoveEventIDs removes the "events" edge to Event entities by IDs.
+func (bu *BusinessUpdate) RemoveEventIDs(ids ...string) *BusinessUpdate {
+	bu.mutation.RemoveEventIDs(ids...)
+	return bu
+}
+
+// RemoveEvents removes "events" edges to Event entities.
+func (bu *BusinessUpdate) RemoveEvents(e ...*Event) *BusinessUpdate {
+	ids := make([]string, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return bu.RemoveEventIDs(ids...)
+}
+
+// ClearBusinessFollowEvents clears all "businessFollowEvents" edges to the BusinessFollowEvent entity.
+func (bu *BusinessUpdate) ClearBusinessFollowEvents() *BusinessUpdate {
+	bu.mutation.ClearBusinessFollowEvents()
+	return bu
+}
+
+// RemoveBusinessFollowEventIDs removes the "businessFollowEvents" edge to BusinessFollowEvent entities by IDs.
+func (bu *BusinessUpdate) RemoveBusinessFollowEventIDs(ids ...string) *BusinessUpdate {
+	bu.mutation.RemoveBusinessFollowEventIDs(ids...)
+	return bu
+}
+
+// RemoveBusinessFollowEvents removes "businessFollowEvents" edges to BusinessFollowEvent entities.
+func (bu *BusinessUpdate) RemoveBusinessFollowEvents(b ...*BusinessFollowEvent) *BusinessUpdate {
+	ids := make([]string, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return bu.RemoveBusinessFollowEventIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1157,6 +1231,96 @@ func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if bu.mutation.EventsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.EventsTable,
+			Columns: []string{business.EventsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(event.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.RemovedEventsIDs(); len(nodes) > 0 && !bu.mutation.EventsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.EventsTable,
+			Columns: []string{business.EventsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(event.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.EventsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.EventsTable,
+			Columns: []string{business.EventsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(event.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if bu.mutation.BusinessFollowEventsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.BusinessFollowEventsTable,
+			Columns: []string{business.BusinessFollowEventsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(businessfollowevent.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.RemovedBusinessFollowEventsIDs(); len(nodes) > 0 && !bu.mutation.BusinessFollowEventsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.BusinessFollowEventsTable,
+			Columns: []string{business.BusinessFollowEventsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(businessfollowevent.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.BusinessFollowEventsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.BusinessFollowEventsTable,
+			Columns: []string{business.BusinessFollowEventsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(businessfollowevent.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, bu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{business.Label}
@@ -1556,6 +1720,36 @@ func (buo *BusinessUpdateOne) AddCategoryAssignments(c ...*CategoryAssignment) *
 	return buo.AddCategoryAssignmentIDs(ids...)
 }
 
+// AddEventIDs adds the "events" edge to the Event entity by IDs.
+func (buo *BusinessUpdateOne) AddEventIDs(ids ...string) *BusinessUpdateOne {
+	buo.mutation.AddEventIDs(ids...)
+	return buo
+}
+
+// AddEvents adds the "events" edges to the Event entity.
+func (buo *BusinessUpdateOne) AddEvents(e ...*Event) *BusinessUpdateOne {
+	ids := make([]string, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return buo.AddEventIDs(ids...)
+}
+
+// AddBusinessFollowEventIDs adds the "businessFollowEvents" edge to the BusinessFollowEvent entity by IDs.
+func (buo *BusinessUpdateOne) AddBusinessFollowEventIDs(ids ...string) *BusinessUpdateOne {
+	buo.mutation.AddBusinessFollowEventIDs(ids...)
+	return buo
+}
+
+// AddBusinessFollowEvents adds the "businessFollowEvents" edges to the BusinessFollowEvent entity.
+func (buo *BusinessUpdateOne) AddBusinessFollowEvents(b ...*BusinessFollowEvent) *BusinessUpdateOne {
+	ids := make([]string, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return buo.AddBusinessFollowEventIDs(ids...)
+}
+
 // Mutation returns the BusinessMutation object of the builder.
 func (buo *BusinessUpdateOne) Mutation() *BusinessMutation {
 	return buo.mutation
@@ -1754,6 +1948,48 @@ func (buo *BusinessUpdateOne) RemoveCategoryAssignments(c ...*CategoryAssignment
 		ids[i] = c[i].ID
 	}
 	return buo.RemoveCategoryAssignmentIDs(ids...)
+}
+
+// ClearEvents clears all "events" edges to the Event entity.
+func (buo *BusinessUpdateOne) ClearEvents() *BusinessUpdateOne {
+	buo.mutation.ClearEvents()
+	return buo
+}
+
+// RemoveEventIDs removes the "events" edge to Event entities by IDs.
+func (buo *BusinessUpdateOne) RemoveEventIDs(ids ...string) *BusinessUpdateOne {
+	buo.mutation.RemoveEventIDs(ids...)
+	return buo
+}
+
+// RemoveEvents removes "events" edges to Event entities.
+func (buo *BusinessUpdateOne) RemoveEvents(e ...*Event) *BusinessUpdateOne {
+	ids := make([]string, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return buo.RemoveEventIDs(ids...)
+}
+
+// ClearBusinessFollowEvents clears all "businessFollowEvents" edges to the BusinessFollowEvent entity.
+func (buo *BusinessUpdateOne) ClearBusinessFollowEvents() *BusinessUpdateOne {
+	buo.mutation.ClearBusinessFollowEvents()
+	return buo
+}
+
+// RemoveBusinessFollowEventIDs removes the "businessFollowEvents" edge to BusinessFollowEvent entities by IDs.
+func (buo *BusinessUpdateOne) RemoveBusinessFollowEventIDs(ids ...string) *BusinessUpdateOne {
+	buo.mutation.RemoveBusinessFollowEventIDs(ids...)
+	return buo
+}
+
+// RemoveBusinessFollowEvents removes "businessFollowEvents" edges to BusinessFollowEvent entities.
+func (buo *BusinessUpdateOne) RemoveBusinessFollowEvents(b ...*BusinessFollowEvent) *BusinessUpdateOne {
+	ids := make([]string, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return buo.RemoveBusinessFollowEventIDs(ids...)
 }
 
 // Where appends a list predicates to the BusinessUpdate builder.
@@ -2321,6 +2557,96 @@ func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(categoryassignment.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if buo.mutation.EventsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.EventsTable,
+			Columns: []string{business.EventsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(event.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.RemovedEventsIDs(); len(nodes) > 0 && !buo.mutation.EventsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.EventsTable,
+			Columns: []string{business.EventsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(event.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.EventsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.EventsTable,
+			Columns: []string{business.EventsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(event.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if buo.mutation.BusinessFollowEventsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.BusinessFollowEventsTable,
+			Columns: []string{business.BusinessFollowEventsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(businessfollowevent.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.RemovedBusinessFollowEventsIDs(); len(nodes) > 0 && !buo.mutation.BusinessFollowEventsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.BusinessFollowEventsTable,
+			Columns: []string{business.BusinessFollowEventsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(businessfollowevent.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.BusinessFollowEventsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.BusinessFollowEventsTable,
+			Columns: []string{business.BusinessFollowEventsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(businessfollowevent.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

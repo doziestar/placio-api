@@ -7,10 +7,17 @@ import (
 	"database/sql/driver"
 	"fmt"
 	"math"
+	"placio-app/ent/business"
+	"placio-app/ent/businessfollowevent"
+	"placio-app/ent/category"
+	"placio-app/ent/categoryassignment"
 	"placio-app/ent/event"
+	"placio-app/ent/place"
 	"placio-app/ent/predicate"
 	"placio-app/ent/ticket"
 	"placio-app/ent/ticketoption"
+	"placio-app/ent/user"
+	"placio-app/ent/userfollowevent"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -20,13 +27,20 @@ import (
 // EventQuery is the builder for querying Event entities.
 type EventQuery struct {
 	config
-	ctx               *QueryContext
-	order             []event.OrderOption
-	inters            []Interceptor
-	predicates        []predicate.Event
-	withTickets       *TicketQuery
-	withTicketOptions *TicketOptionQuery
-	withFKs           bool
+	ctx                          *QueryContext
+	order                        []event.OrderOption
+	inters                       []Interceptor
+	predicates                   []predicate.Event
+	withTickets                  *TicketQuery
+	withTicketOptions            *TicketOptionQuery
+	withPlace                    *PlaceQuery
+	withEventCategories          *CategoryQuery
+	withEventCategoryAssignments *CategoryAssignmentQuery
+	withOwnerUser                *UserQuery
+	withOwnerBusiness            *BusinessQuery
+	withUserFollowers            *UserFollowEventQuery
+	withBusinessFollowers        *BusinessFollowEventQuery
+	withFKs                      bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -100,6 +114,160 @@ func (eq *EventQuery) QueryTicketOptions() *TicketOptionQuery {
 			sqlgraph.From(event.Table, event.FieldID, selector),
 			sqlgraph.To(ticketoption.Table, ticketoption.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, event.TicketOptionsTable, event.TicketOptionsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryPlace chains the current query on the "place" edge.
+func (eq *EventQuery) QueryPlace() *PlaceQuery {
+	query := (&PlaceClient{config: eq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(event.Table, event.FieldID, selector),
+			sqlgraph.To(place.Table, place.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, event.PlaceTable, event.PlaceColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryEventCategories chains the current query on the "event_categories" edge.
+func (eq *EventQuery) QueryEventCategories() *CategoryQuery {
+	query := (&CategoryClient{config: eq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(event.Table, event.FieldID, selector),
+			sqlgraph.To(category.Table, category.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, event.EventCategoriesTable, event.EventCategoriesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryEventCategoryAssignments chains the current query on the "event_category_assignments" edge.
+func (eq *EventQuery) QueryEventCategoryAssignments() *CategoryAssignmentQuery {
+	query := (&CategoryAssignmentClient{config: eq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(event.Table, event.FieldID, selector),
+			sqlgraph.To(categoryassignment.Table, categoryassignment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, event.EventCategoryAssignmentsTable, event.EventCategoryAssignmentsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryOwnerUser chains the current query on the "ownerUser" edge.
+func (eq *EventQuery) QueryOwnerUser() *UserQuery {
+	query := (&UserClient{config: eq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(event.Table, event.FieldID, selector),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, event.OwnerUserTable, event.OwnerUserColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryOwnerBusiness chains the current query on the "ownerBusiness" edge.
+func (eq *EventQuery) QueryOwnerBusiness() *BusinessQuery {
+	query := (&BusinessClient{config: eq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(event.Table, event.FieldID, selector),
+			sqlgraph.To(business.Table, business.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, event.OwnerBusinessTable, event.OwnerBusinessColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryUserFollowers chains the current query on the "userFollowers" edge.
+func (eq *EventQuery) QueryUserFollowers() *UserFollowEventQuery {
+	query := (&UserFollowEventClient{config: eq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(event.Table, event.FieldID, selector),
+			sqlgraph.To(userfollowevent.Table, userfollowevent.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, event.UserFollowersTable, event.UserFollowersColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryBusinessFollowers chains the current query on the "businessFollowers" edge.
+func (eq *EventQuery) QueryBusinessFollowers() *BusinessFollowEventQuery {
+	query := (&BusinessFollowEventClient{config: eq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(event.Table, event.FieldID, selector),
+			sqlgraph.To(businessfollowevent.Table, businessfollowevent.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, event.BusinessFollowersTable, event.BusinessFollowersColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
 		return fromU, nil
@@ -294,13 +462,20 @@ func (eq *EventQuery) Clone() *EventQuery {
 		return nil
 	}
 	return &EventQuery{
-		config:            eq.config,
-		ctx:               eq.ctx.Clone(),
-		order:             append([]event.OrderOption{}, eq.order...),
-		inters:            append([]Interceptor{}, eq.inters...),
-		predicates:        append([]predicate.Event{}, eq.predicates...),
-		withTickets:       eq.withTickets.Clone(),
-		withTicketOptions: eq.withTicketOptions.Clone(),
+		config:                       eq.config,
+		ctx:                          eq.ctx.Clone(),
+		order:                        append([]event.OrderOption{}, eq.order...),
+		inters:                       append([]Interceptor{}, eq.inters...),
+		predicates:                   append([]predicate.Event{}, eq.predicates...),
+		withTickets:                  eq.withTickets.Clone(),
+		withTicketOptions:            eq.withTicketOptions.Clone(),
+		withPlace:                    eq.withPlace.Clone(),
+		withEventCategories:          eq.withEventCategories.Clone(),
+		withEventCategoryAssignments: eq.withEventCategoryAssignments.Clone(),
+		withOwnerUser:                eq.withOwnerUser.Clone(),
+		withOwnerBusiness:            eq.withOwnerBusiness.Clone(),
+		withUserFollowers:            eq.withUserFollowers.Clone(),
+		withBusinessFollowers:        eq.withBusinessFollowers.Clone(),
 		// clone intermediate query.
 		sql:  eq.sql.Clone(),
 		path: eq.path,
@@ -326,6 +501,83 @@ func (eq *EventQuery) WithTicketOptions(opts ...func(*TicketOptionQuery)) *Event
 		opt(query)
 	}
 	eq.withTicketOptions = query
+	return eq
+}
+
+// WithPlace tells the query-builder to eager-load the nodes that are connected to
+// the "place" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EventQuery) WithPlace(opts ...func(*PlaceQuery)) *EventQuery {
+	query := (&PlaceClient{config: eq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withPlace = query
+	return eq
+}
+
+// WithEventCategories tells the query-builder to eager-load the nodes that are connected to
+// the "event_categories" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EventQuery) WithEventCategories(opts ...func(*CategoryQuery)) *EventQuery {
+	query := (&CategoryClient{config: eq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withEventCategories = query
+	return eq
+}
+
+// WithEventCategoryAssignments tells the query-builder to eager-load the nodes that are connected to
+// the "event_category_assignments" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EventQuery) WithEventCategoryAssignments(opts ...func(*CategoryAssignmentQuery)) *EventQuery {
+	query := (&CategoryAssignmentClient{config: eq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withEventCategoryAssignments = query
+	return eq
+}
+
+// WithOwnerUser tells the query-builder to eager-load the nodes that are connected to
+// the "ownerUser" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EventQuery) WithOwnerUser(opts ...func(*UserQuery)) *EventQuery {
+	query := (&UserClient{config: eq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withOwnerUser = query
+	return eq
+}
+
+// WithOwnerBusiness tells the query-builder to eager-load the nodes that are connected to
+// the "ownerBusiness" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EventQuery) WithOwnerBusiness(opts ...func(*BusinessQuery)) *EventQuery {
+	query := (&BusinessClient{config: eq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withOwnerBusiness = query
+	return eq
+}
+
+// WithUserFollowers tells the query-builder to eager-load the nodes that are connected to
+// the "userFollowers" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EventQuery) WithUserFollowers(opts ...func(*UserFollowEventQuery)) *EventQuery {
+	query := (&UserFollowEventClient{config: eq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withUserFollowers = query
+	return eq
+}
+
+// WithBusinessFollowers tells the query-builder to eager-load the nodes that are connected to
+// the "businessFollowers" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EventQuery) WithBusinessFollowers(opts ...func(*BusinessFollowEventQuery)) *EventQuery {
+	query := (&BusinessFollowEventClient{config: eq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withBusinessFollowers = query
 	return eq
 }
 
@@ -408,11 +660,21 @@ func (eq *EventQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Event,
 		nodes       = []*Event{}
 		withFKs     = eq.withFKs
 		_spec       = eq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [9]bool{
 			eq.withTickets != nil,
 			eq.withTicketOptions != nil,
+			eq.withPlace != nil,
+			eq.withEventCategories != nil,
+			eq.withEventCategoryAssignments != nil,
+			eq.withOwnerUser != nil,
+			eq.withOwnerBusiness != nil,
+			eq.withUserFollowers != nil,
+			eq.withBusinessFollowers != nil,
 		}
 	)
+	if eq.withOwnerUser != nil || eq.withOwnerBusiness != nil {
+		withFKs = true
+	}
 	if withFKs {
 		_spec.Node.Columns = append(_spec.Node.Columns, event.ForeignKeys...)
 	}
@@ -445,6 +707,57 @@ func (eq *EventQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Event,
 		if err := eq.loadTicketOptions(ctx, query, nodes,
 			func(n *Event) { n.Edges.TicketOptions = []*TicketOption{} },
 			func(n *Event, e *TicketOption) { n.Edges.TicketOptions = append(n.Edges.TicketOptions, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := eq.withPlace; query != nil {
+		if err := eq.loadPlace(ctx, query, nodes,
+			func(n *Event) { n.Edges.Place = []*Place{} },
+			func(n *Event, e *Place) { n.Edges.Place = append(n.Edges.Place, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := eq.withEventCategories; query != nil {
+		if err := eq.loadEventCategories(ctx, query, nodes,
+			func(n *Event) { n.Edges.EventCategories = []*Category{} },
+			func(n *Event, e *Category) { n.Edges.EventCategories = append(n.Edges.EventCategories, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := eq.withEventCategoryAssignments; query != nil {
+		if err := eq.loadEventCategoryAssignments(ctx, query, nodes,
+			func(n *Event) { n.Edges.EventCategoryAssignments = []*CategoryAssignment{} },
+			func(n *Event, e *CategoryAssignment) {
+				n.Edges.EventCategoryAssignments = append(n.Edges.EventCategoryAssignments, e)
+			}); err != nil {
+			return nil, err
+		}
+	}
+	if query := eq.withOwnerUser; query != nil {
+		if err := eq.loadOwnerUser(ctx, query, nodes, nil,
+			func(n *Event, e *User) { n.Edges.OwnerUser = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := eq.withOwnerBusiness; query != nil {
+		if err := eq.loadOwnerBusiness(ctx, query, nodes, nil,
+			func(n *Event, e *Business) { n.Edges.OwnerBusiness = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := eq.withUserFollowers; query != nil {
+		if err := eq.loadUserFollowers(ctx, query, nodes,
+			func(n *Event) { n.Edges.UserFollowers = []*UserFollowEvent{} },
+			func(n *Event, e *UserFollowEvent) { n.Edges.UserFollowers = append(n.Edges.UserFollowers, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := eq.withBusinessFollowers; query != nil {
+		if err := eq.loadBusinessFollowers(ctx, query, nodes,
+			func(n *Event) { n.Edges.BusinessFollowers = []*BusinessFollowEvent{} },
+			func(n *Event, e *BusinessFollowEvent) {
+				n.Edges.BusinessFollowers = append(n.Edges.BusinessFollowers, e)
+			}); err != nil {
 			return nil, err
 		}
 	}
@@ -508,6 +821,225 @@ func (eq *EventQuery) loadTicketOptions(ctx context.Context, query *TicketOption
 		node, ok := nodeids[*fk]
 		if !ok {
 			return fmt.Errorf(`unexpected referenced foreign-key "event_ticket_options" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (eq *EventQuery) loadPlace(ctx context.Context, query *PlaceQuery, nodes []*Event, init func(*Event), assign func(*Event, *Place)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Event)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Place(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(event.PlaceColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.event_place
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "event_place" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "event_place" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (eq *EventQuery) loadEventCategories(ctx context.Context, query *CategoryQuery, nodes []*Event, init func(*Event), assign func(*Event, *Category)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Event)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Category(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(event.EventCategoriesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.event_event_categories
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "event_event_categories" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "event_event_categories" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (eq *EventQuery) loadEventCategoryAssignments(ctx context.Context, query *CategoryAssignmentQuery, nodes []*Event, init func(*Event), assign func(*Event, *CategoryAssignment)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Event)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.CategoryAssignment(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(event.EventCategoryAssignmentsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.event_event_category_assignments
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "event_event_category_assignments" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "event_event_category_assignments" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (eq *EventQuery) loadOwnerUser(ctx context.Context, query *UserQuery, nodes []*Event, init func(*Event), assign func(*Event, *User)) error {
+	ids := make([]string, 0, len(nodes))
+	nodeids := make(map[string][]*Event)
+	for i := range nodes {
+		if nodes[i].user_owned_events == nil {
+			continue
+		}
+		fk := *nodes[i].user_owned_events
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(user.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "user_owned_events" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (eq *EventQuery) loadOwnerBusiness(ctx context.Context, query *BusinessQuery, nodes []*Event, init func(*Event), assign func(*Event, *Business)) error {
+	ids := make([]string, 0, len(nodes))
+	nodeids := make(map[string][]*Event)
+	for i := range nodes {
+		if nodes[i].business_events == nil {
+			continue
+		}
+		fk := *nodes[i].business_events
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(business.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "business_events" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (eq *EventQuery) loadUserFollowers(ctx context.Context, query *UserFollowEventQuery, nodes []*Event, init func(*Event), assign func(*Event, *UserFollowEvent)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Event)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.UserFollowEvent(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(event.UserFollowersColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.user_follow_event_event
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "user_follow_event_event" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "user_follow_event_event" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (eq *EventQuery) loadBusinessFollowers(ctx context.Context, query *BusinessFollowEventQuery, nodes []*Event, init func(*Event), assign func(*Event, *BusinessFollowEvent)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Event)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.BusinessFollowEvent(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(event.BusinessFollowersColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.business_follow_event_event
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "business_follow_event_event" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "business_follow_event_event" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

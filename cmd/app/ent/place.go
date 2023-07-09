@@ -74,6 +74,7 @@ type Place struct {
 	// The values are being populated by the PlaceQuery when eager-loading is set.
 	Edges           PlaceEdges `json:"edges"`
 	business_places *string
+	event_place     *string
 	selectValues    sql.SelectValues
 }
 
@@ -232,6 +233,8 @@ func (*Place) scanValues(columns []string) ([]any, error) {
 		case place.FieldID, place.FieldName, place.FieldType, place.FieldDescription, place.FieldLocation, place.FieldEmail, place.FieldPhone, place.FieldWebsite, place.FieldCoverImage, place.FieldPicture, place.FieldCountry, place.FieldCity, place.FieldState, place.FieldSpecialOffers, place.FieldSearchText:
 			values[i] = new(sql.NullString)
 		case place.ForeignKeys[0]: // business_places
+			values[i] = new(sql.NullString)
+		case place.ForeignKeys[1]: // event_place
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -436,6 +439,13 @@ func (pl *Place) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				pl.business_places = new(string)
 				*pl.business_places = value.String
+			}
+		case place.ForeignKeys[1]:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field event_place", values[i])
+			} else if value.Valid {
+				pl.event_place = new(string)
+				*pl.event_place = value.String
 			}
 		default:
 			pl.selectValues.Set(columns[i], values[i])

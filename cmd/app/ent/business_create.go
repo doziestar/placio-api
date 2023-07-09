@@ -9,9 +9,11 @@ import (
 	"placio-app/ent/accountsettings"
 	"placio-app/ent/business"
 	"placio-app/ent/businessfollowbusiness"
+	"placio-app/ent/businessfollowevent"
 	"placio-app/ent/businessfollowuser"
 	"placio-app/ent/category"
 	"placio-app/ent/categoryassignment"
+	"placio-app/ent/event"
 	"placio-app/ent/place"
 	"placio-app/ent/post"
 	"placio-app/ent/userbusiness"
@@ -340,6 +342,36 @@ func (bc *BusinessCreate) AddCategoryAssignments(c ...*CategoryAssignment) *Busi
 	return bc.AddCategoryAssignmentIDs(ids...)
 }
 
+// AddEventIDs adds the "events" edge to the Event entity by IDs.
+func (bc *BusinessCreate) AddEventIDs(ids ...string) *BusinessCreate {
+	bc.mutation.AddEventIDs(ids...)
+	return bc
+}
+
+// AddEvents adds the "events" edges to the Event entity.
+func (bc *BusinessCreate) AddEvents(e ...*Event) *BusinessCreate {
+	ids := make([]string, len(e))
+	for i := range e {
+		ids[i] = e[i].ID
+	}
+	return bc.AddEventIDs(ids...)
+}
+
+// AddBusinessFollowEventIDs adds the "businessFollowEvents" edge to the BusinessFollowEvent entity by IDs.
+func (bc *BusinessCreate) AddBusinessFollowEventIDs(ids ...string) *BusinessCreate {
+	bc.mutation.AddBusinessFollowEventIDs(ids...)
+	return bc
+}
+
+// AddBusinessFollowEvents adds the "businessFollowEvents" edges to the BusinessFollowEvent entity.
+func (bc *BusinessCreate) AddBusinessFollowEvents(b ...*BusinessFollowEvent) *BusinessCreate {
+	ids := make([]string, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return bc.AddBusinessFollowEventIDs(ids...)
+}
+
 // Mutation returns the BusinessMutation object of the builder.
 func (bc *BusinessCreate) Mutation() *BusinessMutation {
 	return bc.mutation
@@ -627,6 +659,38 @@ func (bc *BusinessCreate) createSpec() (*Business, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(categoryassignment.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := bc.mutation.EventsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.EventsTable,
+			Columns: []string{business.EventsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(event.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := bc.mutation.BusinessFollowEventsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.BusinessFollowEventsTable,
+			Columns: []string{business.BusinessFollowEventsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(businessfollowevent.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

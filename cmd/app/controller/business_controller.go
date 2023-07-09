@@ -13,7 +13,8 @@ import (
 )
 
 type BusinessAccountController struct {
-	service service.BusinessAccountService
+	service      service.BusinessAccountService
+	eventService service.EventService
 }
 
 func NewBusinessAccountController(service service.BusinessAccountService) *BusinessAccountController {
@@ -40,6 +41,11 @@ func (bc *BusinessAccountController) RegisterRoutes(router *gin.RouterGroup) {
 		businessRouter.GET("/:businessAccountID/associated-users", utility.Use(bc.getUsersForBusinessAccount))
 		businessRouter.GET("/", utility.Use(bc.listBusinessAccounts))
 		businessRouter.GET("/:businessAccountID/associated", utility.Use(bc.getPlacesAndEventsAssociatedWithBusinessAccount))
+		//businessRouter.POST("/:businessAccountID/place/:placeID", utility.Use(bc.associatePlaceWithBusinessAccount))
+		//businessRouter.DELETE("/:businessAccountID/place/:placeID", utility.Use(bc.removePlaceFromBusinessAccount))
+		//businessRouter.POST("/:businessAccountID/event/:eventID", utility.Use(bc.associateEventWithBusinessAccount))
+		//businessRouter.DELETE("/:businessAccountID/event/:eventID", utility.Use(bc.removeEventFromBusinessAccount))
+		businessRouter.POST("/:businessAccountID/event/", utility.Use(bc.addANewEventToBusinessAccount))
 	}
 }
 
@@ -71,6 +77,39 @@ func (bc *BusinessAccountController) getPlacesAndEventsAssociatedWithBusinessAcc
 	}
 
 	c.JSON(http.StatusOK, placesAndEvents)
+	return nil
+}
+
+// @Summary Add a new Event to a Business Account
+// @ID add-a-new-event-to-business-account
+// @Tags Business
+// @Produce json
+// @Param businessAccountID path string true "Business Account ID"
+// @Param Dto.EventDTO body Dto.EventDTO true "Event DTO"
+// @Security Bearer
+// @Param Authorization header string true "Bearer token"
+// @Accept json
+// @Description Add a new Event to a Business Account
+// @Success 200 {object} ent.Event
+// @Failure 400 {object} Dto.Error
+// @Failure 401 {object} Dto.Error
+// @Router /business/{businessAccountID}/event [post]
+func (bc *BusinessAccountController) addANewEventToBusinessAccount(c *gin.Context) error {
+	businessAccountID := c.Param("businessAccountID")
+
+	var eventDto Dto.EventDTO
+	if err := c.ShouldBindJSON(&eventDto); err != nil {
+		c.JSON(http.StatusBadRequest, utility.ProcessResponse(nil, "failed", err.Error()))
+		return err
+	}
+
+	event, err := bc.eventService.CreateEvent(c, businessAccountID, eventDto)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error()))
+		return err
+	}
+
+	c.JSON(http.StatusOK, event)
 	return nil
 }
 

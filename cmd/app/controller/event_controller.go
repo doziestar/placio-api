@@ -1,9 +1,12 @@
 package controller
 
 import (
+	"github.com/gin-gonic/gin"
 	"github.com/gofiber/fiber/v2"
+	"net/http"
+	"placio-app/Dto"
 	_ "placio-app/Dto"
-	_ "placio-app/models"
+	_ "placio-app/ent"
 	"placio-app/service"
 	"placio-app/utility"
 )
@@ -17,16 +20,16 @@ func NewEventController(service service.IEventService, utility utility.IUtility)
 	return &EventController{service: service, utility: utility}
 }
 
-func (c *EventController) RegisterRoutes(router fiber.Router) {
+func (c *EventController) RegisterRoutes(router *gin.RouterGroup) {
 	eventRouter := router.Group("/event")
-	eventRouter.Post("/create", c.createEvent)
-	eventRouter.Get("/:eventId", c.getEventID)
-	eventRouter.Get("/get/location/:locationId", c.getEventByLocation)
-	eventRouter.Get("/get/category/:categoryId", c.getEventByCategory)
-	eventRouter.Get("/get/date/:date", c.getEventByDate)
-	eventRouter.Delete("/delete/:eventId", c.deleteEvent)
-	eventRouter.Put("/update/:eventId", c.updateEvent)
-	eventRouter.Get("/participants/:eventId", c.getEventParticipants)
+	eventRouter.POST("/create", utility.Use(c.createEvent))
+	//eventRouter.Get("/:eventId", c.getEventID)
+	//eventRouter.Get("/get/location/:locationId", c.getEventByLocation)
+	//eventRouter.Get("/get/category/:categoryId", c.getEventByCategory)
+	//eventRouter.Get("/get/date/:date", c.getEventByDate)
+	//eventRouter.Delete("/delete/:eventId", c.deleteEvent)
+	//eventRouter.Put("/update/:eventId", c.updateEvent)
+	//eventRouter.Get("/participants/:eventId", c.getEventParticipants)
 
 }
 
@@ -36,12 +39,26 @@ func (c *EventController) RegisterRoutes(router fiber.Router) {
 // @Tags Event
 // @Accept  json
 // @Produce  json
-// @Param data body Dto.EventDto true "Event Data"
-// @Success 200 {object} models.Event
+// @Param data body Dto.EventDTO true "Event Data"
+// @Param businessId query string false "Business ID"
+// @Param Authorization header string true "Bearer Token"
+// @Security Bearer
+// @Success 200 {object} ent.Event
 // @Failure 400 {object} Dto.ErrorDTO
 // @Failure 500 {object} Dto.ErrorDTO
 // @Router /event/create [post]
-func (c *EventController) createEvent(ctx *fiber.Ctx) error {
+func (c *EventController) createEvent(ctx *gin.Context) error {
+	var data Dto.EventDTO
+	if err := ctx.ShouldBindJSON(&data); err != nil {
+		return err
+	}
+	businessId := ctx.Query("businessId")
+	event, err := c.service.CreateEvent(ctx, businessId, data)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
+		return err
+	}
+	ctx.JSON(http.StatusCreated, event)
 	return nil
 }
 
@@ -52,7 +69,7 @@ func (c *EventController) createEvent(ctx *fiber.Ctx) error {
 // @Accept  json
 // @Produce  json
 // @Param eventId path string true "Event ID"
-// @Success 200 {object} models.Event
+// @Success 200 {object} ent.Event
 // @Failure 400 {object} Dto.ErrorDTO
 // @Failure 500 {object} Dto.ErrorDTO
 // @Router /event/{eventId} [get]
@@ -67,7 +84,7 @@ func (c *EventController) getEventID(ctx *fiber.Ctx) error {
 // @Accept  json
 // @Produce  json
 // @Param address path string true "Location Address"
-// @Success 200 {object} []models.Event
+// @Success 200 {object} []ent.Event
 // @Failure 400 {object} Dto.ErrorDTO
 // @Failure 500 {object} Dto.ErrorDTO
 // @Router /event/get/location/{locationId} [get]
@@ -82,7 +99,7 @@ func (c *EventController) getEventByLocation(ctx *fiber.Ctx) error {
 // @Accept  json
 // @Produce  json
 // @Param categoryId path string true "Category ID"
-// @Success 200 {object} []models.Event
+// @Success 200 {object} []ent.Event
 // @Failure 400 {object} Dto.ErrorDTO
 // @Failure 500 {object} Dto.ErrorDTO
 // @Router /event/get/category/{categoryId} [get]
@@ -97,7 +114,7 @@ func (c *EventController) getEventByCategory(ctx *fiber.Ctx) error {
 // @Accept  json
 // @Produce  json
 // @Param date path string true "Event Date"
-// @Success 200 {object} []models.Event
+// @Success 200 {object} []ent.Event
 // @Failure 400 {object} Dto.ErrorDTO
 // @Failure 500 {object} Dto.ErrorDTO
 // @Router /event/get/date/{date} [get]
@@ -127,8 +144,8 @@ func (c *EventController) deleteEvent(ctx *fiber.Ctx) error {
 // @Accept  json
 // @Produce  json
 // @Param eventId path string true "Event ID"
-// @Param data body Dto.EventDto true "Event Data"
-// @Success 200 {object} models.Event
+// @Param data body Dto.EventDTO true "Event Data"
+// @Success 200 {object} ent.Event
 // @Failure 400 {object} Dto.ErrorDTO
 // @Failure 500 {object} Dto.ErrorDTO
 // @Router /event/update/{eventId} [put]
@@ -143,7 +160,7 @@ func (c *EventController) updateEvent(ctx *fiber.Ctx) error {
 // @Accept  json
 // @Produce  json
 // @Param eventId path string true "Event ID"
-// @Success 200 {object} []models.User
+// @Success 200 {object} []ent.Event
 // @Failure 400 {object} Dto.ErrorDTO
 // @Failure 500 {object} Dto.ErrorDTO
 // @Router /event/participants/{eventId} [get]

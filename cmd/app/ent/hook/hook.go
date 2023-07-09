@@ -68,6 +68,18 @@ func (f BusinessFollowBusinessFunc) Mutate(ctx context.Context, m ent.Mutation) 
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.BusinessFollowBusinessMutation", m)
 }
 
+// The BusinessFollowEventFunc type is an adapter to allow the use of ordinary
+// function as BusinessFollowEvent mutator.
+type BusinessFollowEventFunc func(context.Context, *ent.BusinessFollowEventMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f BusinessFollowEventFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.BusinessFollowEventMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.BusinessFollowEventMutation", m)
+}
+
 // The BusinessFollowUserFunc type is an adapter to allow the use of ordinary
 // function as BusinessFollowUser mutator.
 type BusinessFollowUserFunc func(context.Context, *ent.BusinessFollowUserMutation) (ent.Value, error)
@@ -354,6 +366,18 @@ func (f UserFollowBusinessFunc) Mutate(ctx context.Context, m ent.Mutation) (ent
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserFollowBusinessMutation", m)
+}
+
+// The UserFollowEventFunc type is an adapter to allow the use of ordinary
+// function as UserFollowEvent mutator.
+type UserFollowEventFunc func(context.Context, *ent.UserFollowEventMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f UserFollowEventFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.UserFollowEventMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserFollowEventMutation", m)
 }
 
 // The UserFollowPlaceFunc type is an adapter to allow the use of ordinary

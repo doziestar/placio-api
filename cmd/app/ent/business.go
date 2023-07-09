@@ -70,9 +70,13 @@ type BusinessEdges struct {
 	Categories []*Category `json:"categories,omitempty"`
 	// CategoryAssignments holds the value of the categoryAssignments edge.
 	CategoryAssignments []*CategoryAssignment `json:"categoryAssignments,omitempty"`
+	// Events holds the value of the events edge.
+	Events []*Event `json:"events,omitempty"`
+	// BusinessFollowEvents holds the value of the businessFollowEvents edge.
+	BusinessFollowEvents []*BusinessFollowEvent `json:"businessFollowEvents,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [10]bool
+	loadedTypes [12]bool
 }
 
 // UserBusinessesOrErr returns the UserBusinesses value or an error if the edge
@@ -167,6 +171,24 @@ func (e BusinessEdges) CategoryAssignmentsOrErr() ([]*CategoryAssignment, error)
 		return e.CategoryAssignments, nil
 	}
 	return nil, &NotLoadedError{edge: "categoryAssignments"}
+}
+
+// EventsOrErr returns the Events value or an error if the edge
+// was not loaded in eager-loading.
+func (e BusinessEdges) EventsOrErr() ([]*Event, error) {
+	if e.loadedTypes[10] {
+		return e.Events, nil
+	}
+	return nil, &NotLoadedError{edge: "events"}
+}
+
+// BusinessFollowEventsOrErr returns the BusinessFollowEvents value or an error if the edge
+// was not loaded in eager-loading.
+func (e BusinessEdges) BusinessFollowEventsOrErr() ([]*BusinessFollowEvent, error) {
+	if e.loadedTypes[11] {
+		return e.BusinessFollowEvents, nil
+	}
+	return nil, &NotLoadedError{edge: "businessFollowEvents"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -336,6 +358,16 @@ func (b *Business) QueryCategories() *CategoryQuery {
 // QueryCategoryAssignments queries the "categoryAssignments" edge of the Business entity.
 func (b *Business) QueryCategoryAssignments() *CategoryAssignmentQuery {
 	return NewBusinessClient(b.config).QueryCategoryAssignments(b)
+}
+
+// QueryEvents queries the "events" edge of the Business entity.
+func (b *Business) QueryEvents() *EventQuery {
+	return NewBusinessClient(b.config).QueryEvents(b)
+}
+
+// QueryBusinessFollowEvents queries the "businessFollowEvents" edge of the Business entity.
+func (b *Business) QueryBusinessFollowEvents() *BusinessFollowEventQuery {
+	return NewBusinessClient(b.config).QueryBusinessFollowEvents(b)
 }
 
 // Update returns a builder for updating this Business.

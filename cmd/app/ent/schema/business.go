@@ -47,5 +47,7 @@ func (Business) Edges() []ent.Edge {
 		edge.To("places", Place.Type),
 		edge.To("categories", Category.Type),
 		edge.To("categoryAssignments", CategoryAssignment.Type),
+		edge.To("events", Event.Type),
+		edge.To("businessFollowEvents", BusinessFollowEvent.Type),
 	}
 }
