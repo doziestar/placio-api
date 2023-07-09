@@ -22,6 +22,8 @@ type Tx struct {
 	Business *BusinessClient
 	// BusinessFollowBusiness is the client for interacting with the BusinessFollowBusiness builders.
 	BusinessFollowBusiness *BusinessFollowBusinessClient
+	// BusinessFollowEvent is the client for interacting with the BusinessFollowEvent builders.
+	BusinessFollowEvent *BusinessFollowEventClient
 	// BusinessFollowUser is the client for interacting with the BusinessFollowUser builders.
 	BusinessFollowUser *BusinessFollowUserClient
 	// Category is the client for interacting with the Category builders.
@@ -70,6 +72,8 @@ type Tx struct {
 	UserBusiness *UserBusinessClient
 	// UserFollowBusiness is the client for interacting with the UserFollowBusiness builders.
 	UserFollowBusiness *UserFollowBusinessClient
+	// UserFollowEvent is the client for interacting with the UserFollowEvent builders.
+	UserFollowEvent *UserFollowEventClient
 	// UserFollowPlace is the client for interacting with the UserFollowPlace builders.
 	UserFollowPlace *UserFollowPlaceClient
 	// UserFollowUser is the client for interacting with the UserFollowUser builders.
@@ -210,6 +214,7 @@ func (tx *Tx) init() {
 	tx.Booking = NewBookingClient(tx.config)
 	tx.Business = NewBusinessClient(tx.config)
 	tx.BusinessFollowBusiness = NewBusinessFollowBusinessClient(tx.config)
+	tx.BusinessFollowEvent = NewBusinessFollowEventClient(tx.config)
 	tx.BusinessFollowUser = NewBusinessFollowUserClient(tx.config)
 	tx.Category = NewCategoryClient(tx.config)
 	tx.CategoryAssignment = NewCategoryAssignmentClient(tx.config)
@@ -234,6 +239,7 @@ func (tx *Tx) init() {
 	tx.User = NewUserClient(tx.config)
 	tx.UserBusiness = NewUserBusinessClient(tx.config)
 	tx.UserFollowBusiness = NewUserFollowBusinessClient(tx.config)
+	tx.UserFollowEvent = NewUserFollowEventClient(tx.config)
 	tx.UserFollowPlace = NewUserFollowPlaceClient(tx.config)
 	tx.UserFollowUser = NewUserFollowUserClient(tx.config)
 }

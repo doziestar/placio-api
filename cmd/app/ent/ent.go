@@ -11,6 +11,7 @@ import (
 	"placio-app/ent/booking"
 	"placio-app/ent/business"
 	"placio-app/ent/businessfollowbusiness"
+	"placio-app/ent/businessfollowevent"
 	"placio-app/ent/businessfollowuser"
 	"placio-app/ent/category"
 	"placio-app/ent/categoryassignment"
@@ -35,6 +36,7 @@ import (
 	"placio-app/ent/user"
 	"placio-app/ent/userbusiness"
 	"placio-app/ent/userfollowbusiness"
+	"placio-app/ent/userfollowevent"
 	"placio-app/ent/userfollowplace"
 	"placio-app/ent/userfollowuser"
 	"reflect"
@@ -108,6 +110,7 @@ func checkColumn(table, column string) error {
 			booking.Table:                booking.ValidColumn,
 			business.Table:               business.ValidColumn,
 			businessfollowbusiness.Table: businessfollowbusiness.ValidColumn,
+			businessfollowevent.Table:    businessfollowevent.ValidColumn,
 			businessfollowuser.Table:     businessfollowuser.ValidColumn,
 			category.Table:               category.ValidColumn,
 			categoryassignment.Table:     categoryassignment.ValidColumn,
@@ -132,6 +135,7 @@ func checkColumn(table, column string) error {
 			user.Table:                   user.ValidColumn,
 			userbusiness.Table:           userbusiness.ValidColumn,
 			userfollowbusiness.Table:     userfollowbusiness.ValidColumn,
+			userfollowevent.Table:        userfollowevent.ValidColumn,
 			userfollowplace.Table:        userfollowplace.ValidColumn,
 			userfollowuser.Table:         userfollowuser.ValidColumn,
 		})

@@ -56,6 +56,10 @@ const (
 	EdgeCategories = "categories"
 	// EdgeCategoryAssignments holds the string denoting the categoryassignments edge name in mutations.
 	EdgeCategoryAssignments = "categoryAssignments"
+	// EdgeEvents holds the string denoting the events edge name in mutations.
+	EdgeEvents = "events"
+	// EdgeBusinessFollowEvents holds the string denoting the businessfollowevents edge name in mutations.
+	EdgeBusinessFollowEvents = "businessFollowEvents"
 	// Table holds the table name of the business in the database.
 	Table = "businesses"
 	// UserBusinessesTable is the table that holds the userBusinesses relation/edge.
@@ -128,6 +132,20 @@ const (
 	CategoryAssignmentsInverseTable = "category_assignments"
 	// CategoryAssignmentsColumn is the table column denoting the categoryAssignments relation/edge.
 	CategoryAssignmentsColumn = "entity_id"
+	// EventsTable is the table that holds the events relation/edge.
+	EventsTable = "events"
+	// EventsInverseTable is the table name for the Event entity.
+	// It exists in this package in order to avoid circular dependency with the "event" package.
+	EventsInverseTable = "events"
+	// EventsColumn is the table column denoting the events relation/edge.
+	EventsColumn = "business_events"
+	// BusinessFollowEventsTable is the table that holds the businessFollowEvents relation/edge.
+	BusinessFollowEventsTable = "business_follow_events"
+	// BusinessFollowEventsInverseTable is the table name for the BusinessFollowEvent entity.
+	// It exists in this package in order to avoid circular dependency with the "businessfollowevent" package.
+	BusinessFollowEventsInverseTable = "business_follow_events"
+	// BusinessFollowEventsColumn is the table column denoting the businessFollowEvents relation/edge.
+	BusinessFollowEventsColumn = "business_business_follow_events"
 )
 
 // Columns holds all SQL columns for business fields.
@@ -359,6 +377,34 @@ func ByCategoryAssignments(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOpti
 		sqlgraph.OrderByNeighborTerms(s, newCategoryAssignmentsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByEventsCount orders the results by events count.
+func ByEventsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newEventsStep(), opts...)
+	}
+}
+
+// ByEvents orders the results by events terms.
+func ByEvents(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newEventsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByBusinessFollowEventsCount orders the results by businessFollowEvents count.
+func ByBusinessFollowEventsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newBusinessFollowEventsStep(), opts...)
+	}
+}
+
+// ByBusinessFollowEvents orders the results by businessFollowEvents terms.
+func ByBusinessFollowEvents(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newBusinessFollowEventsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newUserBusinessesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -427,5 +473,19 @@ func newCategoryAssignmentsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CategoryAssignmentsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, CategoryAssignmentsTable, CategoryAssignmentsColumn),
+	)
+}
+func newEventsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(EventsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, EventsTable, EventsColumn),
+	)
+}
+func newBusinessFollowEventsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(BusinessFollowEventsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, BusinessFollowEventsTable, BusinessFollowEventsColumn),
 	)
 }

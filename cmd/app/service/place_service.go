@@ -5,6 +5,7 @@ import (
 	"github.com/google/uuid"
 	"placio-app/Dto"
 	"placio-app/ent"
+	"placio-app/ent/business"
 	"placio-app/ent/place"
 )
 
@@ -13,6 +14,7 @@ type PlaceService interface {
 	CreatePlace(ctx context.Context, placeData Dto.CreatePlaceDTO) (*ent.Place, error)
 	UpdatePlace(ctx context.Context, placeID string, placeData Dto.UpdatePlaceDTO) (*ent.Place, error)
 	DeletePlace(ctx context.Context, placeID string) error
+	GetPlacesAssociatedWithBusinessAccount(c context.Context, businessId string) ([]*ent.Place, error)
 }
 
 type PlaceServiceImpl struct {
@@ -20,10 +22,26 @@ type PlaceServiceImpl struct {
 	searchService SearchService
 }
 
+func (s *PlaceServiceImpl) CreateEvent(ctx context.Context, businessId string, data Dto.EventDTO) (*ent.Event, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
 func NewPlaceService(client *ent.Client, searchService SearchService) *PlaceServiceImpl {
 	return &PlaceServiceImpl{client: client, searchService: searchService}
 }
 
+func (s *PlaceServiceImpl) GetPlacesAssociatedWithBusinessAccount(c context.Context, businessId string) ([]*ent.Place, error) {
+	places, err := s.client.Place.
+		Query().
+		Where(place.HasBusinessWith(business.ID(businessId))).
+		All(c)
+	if err != nil {
+		return nil, err
+	}
+
+	return places, nil
+}
 func (s *PlaceServiceImpl) GetPlace(ctx context.Context, placeID string) (*ent.Place, error) {
 	placeData, err := s.client.Place.
 		Query().

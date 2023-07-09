@@ -3,8 +3,11 @@
 package ent
 
 import (
+	"encoding/json"
 	"fmt"
+	"placio-app/ent/business"
 	"placio-app/ent/event"
+	"placio-app/ent/user"
 	"strings"
 	"time"
 
@@ -19,6 +22,68 @@ type Event struct {
 	ID string `json:"id,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
+	// EventType holds the value of the "EventType" field.
+	EventType event.EventType `json:"EventType,omitempty"`
+	// Status holds the value of the "status" field.
+	Status string `json:"status,omitempty"`
+	// Location holds the value of the "location" field.
+	Location string `json:"location,omitempty"`
+	// URL holds the value of the "url" field.
+	URL string `json:"url,omitempty"`
+	// Title holds the value of the "title" field.
+	Title string `json:"title,omitempty"`
+	// TimeZone holds the value of the "time_zone" field.
+	TimeZone string `json:"time_zone,omitempty"`
+	// StartTime holds the value of the "start_time" field.
+	StartTime time.Time `json:"start_time,omitempty"`
+	// EndTime holds the value of the "end_time" field.
+	EndTime time.Time `json:"end_time,omitempty"`
+	// StartDate holds the value of the "start_date" field.
+	StartDate string `json:"start_date,omitempty"`
+	// EndDate holds the value of the "end_date" field.
+	EndDate string `json:"end_date,omitempty"`
+	// Frequency holds the value of the "frequency" field.
+	Frequency event.Frequency `json:"frequency,omitempty"`
+	// FrequencyInterval holds the value of the "frequency_interval" field.
+	FrequencyInterval string `json:"frequency_interval,omitempty"`
+	// FrequencyDayOfWeek holds the value of the "frequency_day_of_week" field.
+	FrequencyDayOfWeek string `json:"frequency_day_of_week,omitempty"`
+	// FrequencyDayOfMonth holds the value of the "frequency_day_of_month" field.
+	FrequencyDayOfMonth string `json:"frequency_day_of_month,omitempty"`
+	// FrequencyMonthOfYear holds the value of the "frequency_month_of_year" field.
+	FrequencyMonthOfYear string `json:"frequency_month_of_year,omitempty"`
+	// VenueType holds the value of the "venue_type" field.
+	VenueType event.VenueType `json:"venue_type,omitempty"`
+	// VenueName holds the value of the "venue_name" field.
+	VenueName string `json:"venue_name,omitempty"`
+	// VenueAddress holds the value of the "venue_address" field.
+	VenueAddress string `json:"venue_address,omitempty"`
+	// VenueCity holds the value of the "venue_city" field.
+	VenueCity string `json:"venue_city,omitempty"`
+	// VenueState holds the value of the "venue_state" field.
+	VenueState string `json:"venue_state,omitempty"`
+	// VenueCountry holds the value of the "venue_country" field.
+	VenueCountry string `json:"venue_country,omitempty"`
+	// VenueZip holds the value of the "venue_zip" field.
+	VenueZip string `json:"venue_zip,omitempty"`
+	// VenueLat holds the value of the "venue_lat" field.
+	VenueLat string `json:"venue_lat,omitempty"`
+	// VenueLon holds the value of the "venue_lon" field.
+	VenueLon string `json:"venue_lon,omitempty"`
+	// VenueURL holds the value of the "venue_url" field.
+	VenueURL string `json:"venue_url,omitempty"`
+	// VenuePhone holds the value of the "venue_phone" field.
+	VenuePhone string `json:"venue_phone,omitempty"`
+	// VenueEmail holds the value of the "venue_email" field.
+	VenueEmail string `json:"venue_email,omitempty"`
+	// Tags holds the value of the "tags" field.
+	Tags string `json:"tags,omitempty"`
+	// Description holds the value of the "description" field.
+	Description string `json:"description,omitempty"`
+	// EventSettings holds the value of the "event_settings" field.
+	EventSettings map[string]interface{} `json:"event_settings,omitempty"`
+	// CoverImage holds the value of the "cover_image" field.
+	CoverImage string `json:"cover_image,omitempty"`
 	// CreatedAt holds the value of the "createdAt" field.
 	CreatedAt time.Time `json:"createdAt,omitempty"`
 	// UpdatedAt holds the value of the "updatedAt" field.
@@ -29,10 +94,11 @@ type Event struct {
 	RelevanceScore float64 `json:"relevance_score,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EventQuery when eager-loading is set.
-	Edges        EventEdges `json:"edges"`
-	place_events *string
-	user_events  *string
-	selectValues sql.SelectValues
+	Edges             EventEdges `json:"edges"`
+	business_events   *string
+	place_events      *string
+	user_owned_events *string
+	selectValues      sql.SelectValues
 }
 
 // EventEdges holds the relations/edges for other nodes in the graph.
@@ -41,9 +107,23 @@ type EventEdges struct {
 	Tickets []*Ticket `json:"tickets,omitempty"`
 	// TicketOptions holds the value of the ticket_options edge.
 	TicketOptions []*TicketOption `json:"ticket_options,omitempty"`
+	// Place holds the value of the place edge.
+	Place []*Place `json:"place,omitempty"`
+	// EventCategories holds the value of the event_categories edge.
+	EventCategories []*Category `json:"event_categories,omitempty"`
+	// EventCategoryAssignments holds the value of the event_category_assignments edge.
+	EventCategoryAssignments []*CategoryAssignment `json:"event_category_assignments,omitempty"`
+	// OwnerUser holds the value of the ownerUser edge.
+	OwnerUser *User `json:"ownerUser,omitempty"`
+	// OwnerBusiness holds the value of the ownerBusiness edge.
+	OwnerBusiness *Business `json:"ownerBusiness,omitempty"`
+	// UserFollowers holds the value of the userFollowers edge.
+	UserFollowers []*UserFollowEvent `json:"userFollowers,omitempty"`
+	// BusinessFollowers holds the value of the businessFollowers edge.
+	BusinessFollowers []*BusinessFollowEvent `json:"businessFollowers,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [9]bool
 }
 
 // TicketsOrErr returns the Tickets value or an error if the edge
@@ -64,20 +144,95 @@ func (e EventEdges) TicketOptionsOrErr() ([]*TicketOption, error) {
 	return nil, &NotLoadedError{edge: "ticket_options"}
 }
 
+// PlaceOrErr returns the Place value or an error if the edge
+// was not loaded in eager-loading.
+func (e EventEdges) PlaceOrErr() ([]*Place, error) {
+	if e.loadedTypes[2] {
+		return e.Place, nil
+	}
+	return nil, &NotLoadedError{edge: "place"}
+}
+
+// EventCategoriesOrErr returns the EventCategories value or an error if the edge
+// was not loaded in eager-loading.
+func (e EventEdges) EventCategoriesOrErr() ([]*Category, error) {
+	if e.loadedTypes[3] {
+		return e.EventCategories, nil
+	}
+	return nil, &NotLoadedError{edge: "event_categories"}
+}
+
+// EventCategoryAssignmentsOrErr returns the EventCategoryAssignments value or an error if the edge
+// was not loaded in eager-loading.
+func (e EventEdges) EventCategoryAssignmentsOrErr() ([]*CategoryAssignment, error) {
+	if e.loadedTypes[4] {
+		return e.EventCategoryAssignments, nil
+	}
+	return nil, &NotLoadedError{edge: "event_category_assignments"}
+}
+
+// OwnerUserOrErr returns the OwnerUser value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e EventEdges) OwnerUserOrErr() (*User, error) {
+	if e.loadedTypes[5] {
+		if e.OwnerUser == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: user.Label}
+		}
+		return e.OwnerUser, nil
+	}
+	return nil, &NotLoadedError{edge: "ownerUser"}
+}
+
+// OwnerBusinessOrErr returns the OwnerBusiness value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e EventEdges) OwnerBusinessOrErr() (*Business, error) {
+	if e.loadedTypes[6] {
+		if e.OwnerBusiness == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: business.Label}
+		}
+		return e.OwnerBusiness, nil
+	}
+	return nil, &NotLoadedError{edge: "ownerBusiness"}
+}
+
+// UserFollowersOrErr returns the UserFollowers value or an error if the edge
+// was not loaded in eager-loading.
+func (e EventEdges) UserFollowersOrErr() ([]*UserFollowEvent, error) {
+	if e.loadedTypes[7] {
+		return e.UserFollowers, nil
+	}
+	return nil, &NotLoadedError{edge: "userFollowers"}
+}
+
+// BusinessFollowersOrErr returns the BusinessFollowers value or an error if the edge
+// was not loaded in eager-loading.
+func (e EventEdges) BusinessFollowersOrErr() ([]*BusinessFollowEvent, error) {
+	if e.loadedTypes[8] {
+		return e.BusinessFollowers, nil
+	}
+	return nil, &NotLoadedError{edge: "businessFollowers"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Event) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case event.FieldEventSettings:
+			values[i] = new([]byte)
 		case event.FieldRelevanceScore:
 			values[i] = new(sql.NullFloat64)
-		case event.FieldID, event.FieldName, event.FieldSearchText:
+		case event.FieldID, event.FieldName, event.FieldEventType, event.FieldStatus, event.FieldLocation, event.FieldURL, event.FieldTitle, event.FieldTimeZone, event.FieldStartDate, event.FieldEndDate, event.FieldFrequency, event.FieldFrequencyInterval, event.FieldFrequencyDayOfWeek, event.FieldFrequencyDayOfMonth, event.FieldFrequencyMonthOfYear, event.FieldVenueType, event.FieldVenueName, event.FieldVenueAddress, event.FieldVenueCity, event.FieldVenueState, event.FieldVenueCountry, event.FieldVenueZip, event.FieldVenueLat, event.FieldVenueLon, event.FieldVenueURL, event.FieldVenuePhone, event.FieldVenueEmail, event.FieldTags, event.FieldDescription, event.FieldCoverImage, event.FieldSearchText:
 			values[i] = new(sql.NullString)
-		case event.FieldCreatedAt, event.FieldUpdatedAt:
+		case event.FieldStartTime, event.FieldEndTime, event.FieldCreatedAt, event.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case event.ForeignKeys[0]: // place_events
+		case event.ForeignKeys[0]: // business_events
 			values[i] = new(sql.NullString)
-		case event.ForeignKeys[1]: // user_events
+		case event.ForeignKeys[1]: // place_events
+			values[i] = new(sql.NullString)
+		case event.ForeignKeys[2]: // user_owned_events
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -106,6 +261,194 @@ func (e *Event) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				e.Name = value.String
 			}
+		case event.FieldEventType:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field EventType", values[i])
+			} else if value.Valid {
+				e.EventType = event.EventType(value.String)
+			}
+		case event.FieldStatus:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field status", values[i])
+			} else if value.Valid {
+				e.Status = value.String
+			}
+		case event.FieldLocation:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field location", values[i])
+			} else if value.Valid {
+				e.Location = value.String
+			}
+		case event.FieldURL:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field url", values[i])
+			} else if value.Valid {
+				e.URL = value.String
+			}
+		case event.FieldTitle:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field title", values[i])
+			} else if value.Valid {
+				e.Title = value.String
+			}
+		case event.FieldTimeZone:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field time_zone", values[i])
+			} else if value.Valid {
+				e.TimeZone = value.String
+			}
+		case event.FieldStartTime:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field start_time", values[i])
+			} else if value.Valid {
+				e.StartTime = value.Time
+			}
+		case event.FieldEndTime:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field end_time", values[i])
+			} else if value.Valid {
+				e.EndTime = value.Time
+			}
+		case event.FieldStartDate:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field start_date", values[i])
+			} else if value.Valid {
+				e.StartDate = value.String
+			}
+		case event.FieldEndDate:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field end_date", values[i])
+			} else if value.Valid {
+				e.EndDate = value.String
+			}
+		case event.FieldFrequency:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field frequency", values[i])
+			} else if value.Valid {
+				e.Frequency = event.Frequency(value.String)
+			}
+		case event.FieldFrequencyInterval:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field frequency_interval", values[i])
+			} else if value.Valid {
+				e.FrequencyInterval = value.String
+			}
+		case event.FieldFrequencyDayOfWeek:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field frequency_day_of_week", values[i])
+			} else if value.Valid {
+				e.FrequencyDayOfWeek = value.String
+			}
+		case event.FieldFrequencyDayOfMonth:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field frequency_day_of_month", values[i])
+			} else if value.Valid {
+				e.FrequencyDayOfMonth = value.String
+			}
+		case event.FieldFrequencyMonthOfYear:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field frequency_month_of_year", values[i])
+			} else if value.Valid {
+				e.FrequencyMonthOfYear = value.String
+			}
+		case event.FieldVenueType:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field venue_type", values[i])
+			} else if value.Valid {
+				e.VenueType = event.VenueType(value.String)
+			}
+		case event.FieldVenueName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field venue_name", values[i])
+			} else if value.Valid {
+				e.VenueName = value.String
+			}
+		case event.FieldVenueAddress:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field venue_address", values[i])
+			} else if value.Valid {
+				e.VenueAddress = value.String
+			}
+		case event.FieldVenueCity:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field venue_city", values[i])
+			} else if value.Valid {
+				e.VenueCity = value.String
+			}
+		case event.FieldVenueState:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field venue_state", values[i])
+			} else if value.Valid {
+				e.VenueState = value.String
+			}
+		case event.FieldVenueCountry:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field venue_country", values[i])
+			} else if value.Valid {
+				e.VenueCountry = value.String
+			}
+		case event.FieldVenueZip:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field venue_zip", values[i])
+			} else if value.Valid {
+				e.VenueZip = value.String
+			}
+		case event.FieldVenueLat:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field venue_lat", values[i])
+			} else if value.Valid {
+				e.VenueLat = value.String
+			}
+		case event.FieldVenueLon:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field venue_lon", values[i])
+			} else if value.Valid {
+				e.VenueLon = value.String
+			}
+		case event.FieldVenueURL:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field venue_url", values[i])
+			} else if value.Valid {
+				e.VenueURL = value.String
+			}
+		case event.FieldVenuePhone:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field venue_phone", values[i])
+			} else if value.Valid {
+				e.VenuePhone = value.String
+			}
+		case event.FieldVenueEmail:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field venue_email", values[i])
+			} else if value.Valid {
+				e.VenueEmail = value.String
+			}
+		case event.FieldTags:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field tags", values[i])
+			} else if value.Valid {
+				e.Tags = value.String
+			}
+		case event.FieldDescription:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field description", values[i])
+			} else if value.Valid {
+				e.Description = value.String
+			}
+		case event.FieldEventSettings:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field event_settings", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &e.EventSettings); err != nil {
+					return fmt.Errorf("unmarshal field event_settings: %w", err)
+				}
+			}
+		case event.FieldCoverImage:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field cover_image", values[i])
+			} else if value.Valid {
+				e.CoverImage = value.String
+			}
 		case event.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field createdAt", values[i])
@@ -132,17 +475,24 @@ func (e *Event) assignValues(columns []string, values []any) error {
 			}
 		case event.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field business_events", values[i])
+			} else if value.Valid {
+				e.business_events = new(string)
+				*e.business_events = value.String
+			}
+		case event.ForeignKeys[1]:
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field place_events", values[i])
 			} else if value.Valid {
 				e.place_events = new(string)
 				*e.place_events = value.String
 			}
-		case event.ForeignKeys[1]:
+		case event.ForeignKeys[2]:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field user_events", values[i])
+				return fmt.Errorf("unexpected type %T for field user_owned_events", values[i])
 			} else if value.Valid {
-				e.user_events = new(string)
-				*e.user_events = value.String
+				e.user_owned_events = new(string)
+				*e.user_owned_events = value.String
 			}
 		default:
 			e.selectValues.Set(columns[i], values[i])
@@ -165,6 +515,41 @@ func (e *Event) QueryTickets() *TicketQuery {
 // QueryTicketOptions queries the "ticket_options" edge of the Event entity.
 func (e *Event) QueryTicketOptions() *TicketOptionQuery {
 	return NewEventClient(e.config).QueryTicketOptions(e)
+}
+
+// QueryPlace queries the "place" edge of the Event entity.
+func (e *Event) QueryPlace() *PlaceQuery {
+	return NewEventClient(e.config).QueryPlace(e)
+}
+
+// QueryEventCategories queries the "event_categories" edge of the Event entity.
+func (e *Event) QueryEventCategories() *CategoryQuery {
+	return NewEventClient(e.config).QueryEventCategories(e)
+}
+
+// QueryEventCategoryAssignments queries the "event_category_assignments" edge of the Event entity.
+func (e *Event) QueryEventCategoryAssignments() *CategoryAssignmentQuery {
+	return NewEventClient(e.config).QueryEventCategoryAssignments(e)
+}
+
+// QueryOwnerUser queries the "ownerUser" edge of the Event entity.
+func (e *Event) QueryOwnerUser() *UserQuery {
+	return NewEventClient(e.config).QueryOwnerUser(e)
+}
+
+// QueryOwnerBusiness queries the "ownerBusiness" edge of the Event entity.
+func (e *Event) QueryOwnerBusiness() *BusinessQuery {
+	return NewEventClient(e.config).QueryOwnerBusiness(e)
+}
+
+// QueryUserFollowers queries the "userFollowers" edge of the Event entity.
+func (e *Event) QueryUserFollowers() *UserFollowEventQuery {
+	return NewEventClient(e.config).QueryUserFollowers(e)
+}
+
+// QueryBusinessFollowers queries the "businessFollowers" edge of the Event entity.
+func (e *Event) QueryBusinessFollowers() *BusinessFollowEventQuery {
+	return NewEventClient(e.config).QueryBusinessFollowers(e)
 }
 
 // Update returns a builder for updating this Event.
@@ -192,6 +577,99 @@ func (e *Event) String() string {
 	builder.WriteString(fmt.Sprintf("id=%v, ", e.ID))
 	builder.WriteString("name=")
 	builder.WriteString(e.Name)
+	builder.WriteString(", ")
+	builder.WriteString("EventType=")
+	builder.WriteString(fmt.Sprintf("%v", e.EventType))
+	builder.WriteString(", ")
+	builder.WriteString("status=")
+	builder.WriteString(e.Status)
+	builder.WriteString(", ")
+	builder.WriteString("location=")
+	builder.WriteString(e.Location)
+	builder.WriteString(", ")
+	builder.WriteString("url=")
+	builder.WriteString(e.URL)
+	builder.WriteString(", ")
+	builder.WriteString("title=")
+	builder.WriteString(e.Title)
+	builder.WriteString(", ")
+	builder.WriteString("time_zone=")
+	builder.WriteString(e.TimeZone)
+	builder.WriteString(", ")
+	builder.WriteString("start_time=")
+	builder.WriteString(e.StartTime.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("end_time=")
+	builder.WriteString(e.EndTime.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("start_date=")
+	builder.WriteString(e.StartDate)
+	builder.WriteString(", ")
+	builder.WriteString("end_date=")
+	builder.WriteString(e.EndDate)
+	builder.WriteString(", ")
+	builder.WriteString("frequency=")
+	builder.WriteString(fmt.Sprintf("%v", e.Frequency))
+	builder.WriteString(", ")
+	builder.WriteString("frequency_interval=")
+	builder.WriteString(e.FrequencyInterval)
+	builder.WriteString(", ")
+	builder.WriteString("frequency_day_of_week=")
+	builder.WriteString(e.FrequencyDayOfWeek)
+	builder.WriteString(", ")
+	builder.WriteString("frequency_day_of_month=")
+	builder.WriteString(e.FrequencyDayOfMonth)
+	builder.WriteString(", ")
+	builder.WriteString("frequency_month_of_year=")
+	builder.WriteString(e.FrequencyMonthOfYear)
+	builder.WriteString(", ")
+	builder.WriteString("venue_type=")
+	builder.WriteString(fmt.Sprintf("%v", e.VenueType))
+	builder.WriteString(", ")
+	builder.WriteString("venue_name=")
+	builder.WriteString(e.VenueName)
+	builder.WriteString(", ")
+	builder.WriteString("venue_address=")
+	builder.WriteString(e.VenueAddress)
+	builder.WriteString(", ")
+	builder.WriteString("venue_city=")
+	builder.WriteString(e.VenueCity)
+	builder.WriteString(", ")
+	builder.WriteString("venue_state=")
+	builder.WriteString(e.VenueState)
+	builder.WriteString(", ")
+	builder.WriteString("venue_country=")
+	builder.WriteString(e.VenueCountry)
+	builder.WriteString(", ")
+	builder.WriteString("venue_zip=")
+	builder.WriteString(e.VenueZip)
+	builder.WriteString(", ")
+	builder.WriteString("venue_lat=")
+	builder.WriteString(e.VenueLat)
+	builder.WriteString(", ")
+	builder.WriteString("venue_lon=")
+	builder.WriteString(e.VenueLon)
+	builder.WriteString(", ")
+	builder.WriteString("venue_url=")
+	builder.WriteString(e.VenueURL)
+	builder.WriteString(", ")
+	builder.WriteString("venue_phone=")
+	builder.WriteString(e.VenuePhone)
+	builder.WriteString(", ")
+	builder.WriteString("venue_email=")
+	builder.WriteString(e.VenueEmail)
+	builder.WriteString(", ")
+	builder.WriteString("tags=")
+	builder.WriteString(e.Tags)
+	builder.WriteString(", ")
+	builder.WriteString("description=")
+	builder.WriteString(e.Description)
+	builder.WriteString(", ")
+	builder.WriteString("event_settings=")
+	builder.WriteString(fmt.Sprintf("%v", e.EventSettings))
+	builder.WriteString(", ")
+	builder.WriteString("cover_image=")
+	builder.WriteString(e.CoverImage)
 	builder.WriteString(", ")
 	builder.WriteString("createdAt=")
 	builder.WriteString(e.CreatedAt.Format(time.ANSIC))

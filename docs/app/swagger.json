@@ -4455,6 +4455,141 @@
                 }
             }
         },
+        "/business/{businessAccountID}/associated": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Retrieve All Places and Events associated with a Business Account",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Business"
+                ],
+                "summary": "Get Places and Events associated with a Business Account",
+                "operationId": "get-places-and-events-associated-with-business-account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Business Account ID",
+                        "name": "businessAccountID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "All",
+                        "name": "All",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.BusinessAccountPlacesAndEvents"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/business/{businessAccountID}/event": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Add a new Event to a Business Account",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Business"
+                ],
+                "summary": "Add a new Event to a Business Account",
+                "operationId": "add-a-new-event-to-business-account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Business Account ID",
+                        "name": "businessAccountID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Event DTO",
+                        "name": "Dto.EventDTO",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.EventDTO"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.Event"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/business/{businessAccountID}/user/{currentOwnerID}/{newOwnerID}": {
             "put": {
                 "produces": [
@@ -5290,6 +5425,11 @@
         },
         "/event/create": {
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Create Event",
                 "consumes": [
                     "application/json"
@@ -5308,15 +5448,28 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.EventDto"
+                            "$ref": "#/definitions/placio-app_Dto.EventDTO"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Business ID",
+                        "name": "businessId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/placio-app_models.Event"
+                            "$ref": "#/definitions/placio-app_ent.Event"
                         }
                     },
                     "400": {
@@ -5406,7 +5559,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/placio-app_models.Event"
+                                "$ref": "#/definitions/placio-app_ent.Event"
                             }
                         }
                     },
@@ -5453,7 +5606,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/placio-app_models.Event"
+                                "$ref": "#/definitions/placio-app_ent.Event"
                             }
                         }
                     },
@@ -5500,7 +5653,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/placio-app_models.Event"
+                                "$ref": "#/definitions/placio-app_ent.Event"
                             }
                         }
                     },
@@ -5547,7 +5700,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/placio-app_models.User"
+                                "$ref": "#/definitions/placio-app_ent.Event"
                             }
                         }
                     },
@@ -5593,7 +5746,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.EventDto"
+                            "$ref": "#/definitions/placio-app_Dto.EventDTO"
                         }
                     }
                 ],
@@ -5601,7 +5754,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/placio-app_models.Event"
+                            "$ref": "#/definitions/placio-app_ent.Event"
                         }
                     },
                     "400": {
@@ -5645,7 +5798,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/placio-app_models.Event"
+                            "$ref": "#/definitions/placio-app_ent.Event"
                         }
                     },
                     "400": {
@@ -5834,6 +5987,23 @@
                 },
                 "refresh_token": {
                     "type": "string"
+                }
+            }
+        },
+        "placio-app_Dto.BusinessAccountPlacesAndEvents": {
+            "type": "object",
+            "properties": {
+                "events": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Event"
+                    }
+                },
+                "places": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Place"
+                    }
                 }
             }
         },
@@ -6031,21 +6201,113 @@
                 }
             }
         },
-        "placio-app_Dto.EventDto": {
+        "placio-app_Dto.EventDTO": {
             "type": "object",
-            "required": [
-                "date",
-                "name",
-                "time"
-            ],
             "properties": {
-                "date": {
+                "coverImage": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "endDate": {
+                    "type": "string"
+                },
+                "endTime": {
+                    "type": "string"
+                },
+                "eventSettings": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "eventType": {
+                    "type": "string"
+                },
+                "frequency": {
+                    "type": "string"
+                },
+                "frequencyDayOfMonth": {
+                    "type": "string"
+                },
+                "frequencyDayOfWeek": {
+                    "type": "string"
+                },
+                "frequencyInterval": {
+                    "type": "string"
+                },
+                "frequencyMonthOfYear": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "location": {
                     "type": "string"
                 },
                 "name": {
                     "type": "string"
                 },
-                "time": {
+                "startDate": {
+                    "type": "string"
+                },
+                "startTime": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "string"
+                },
+                "timeZone": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "venueAddress": {
+                    "type": "string"
+                },
+                "venueCity": {
+                    "type": "string"
+                },
+                "venueCountry": {
+                    "type": "string"
+                },
+                "venueEmail": {
+                    "type": "string"
+                },
+                "venueLat": {
+                    "type": "string"
+                },
+                "venueLon": {
+                    "type": "string"
+                },
+                "venueName": {
+                    "type": "string"
+                },
+                "venuePhone": {
+                    "type": "string"
+                },
+                "venueState": {
+                    "type": "string"
+                },
+                "venueType": {
+                    "type": "string"
+                },
+                "venueURL": {
+                    "type": "string"
+                },
+                "venueZIP": {
                     "type": "string"
                 }
             }
@@ -6462,6 +6724,13 @@
         "placio-app_ent.BusinessEdges": {
             "type": "object",
             "properties": {
+                "businessFollowEvents": {
+                    "description": "BusinessFollowEvents holds the value of the businessFollowEvents edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.BusinessFollowEvent"
+                    }
+                },
                 "business_account_settings": {
                     "description": "BusinessAccountSettings holds the value of the business_account_settings edge.",
                     "allOf": [
@@ -6482,6 +6751,13 @@
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/placio-app_ent.CategoryAssignment"
+                    }
+                },
+                "events": {
+                    "description": "Events holds the value of the events edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Event"
                     }
                 },
                 "followedBusinesses": {
@@ -6568,6 +6844,52 @@
                     "allOf": [
                         {
                             "$ref": "#/definitions/placio-app_ent.Business"
+                        }
+                    ]
+                }
+            }
+        },
+        "placio-app_ent.BusinessFollowEvent": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "description": "CreatedAt holds the value of the \"createdAt\" field.",
+                    "type": "string"
+                },
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the BusinessFollowEventQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.BusinessFollowEventEdges"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "description": "UpdatedAt holds the value of the \"updatedAt\" field.",
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_ent.BusinessFollowEventEdges": {
+            "type": "object",
+            "properties": {
+                "business": {
+                    "description": "Business holds the value of the business edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.Business"
+                        }
+                    ]
+                },
+                "event": {
+                    "description": "Event holds the value of the event edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.Event"
                         }
                     ]
                 }
@@ -6767,8 +7089,24 @@
         "placio-app_ent.Event": {
             "type": "object",
             "properties": {
+                "EventType": {
+                    "description": "EventType holds the value of the \"EventType\" field.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent_event.EventType"
+                        }
+                    ]
+                },
+                "cover_image": {
+                    "description": "CoverImage holds the value of the \"cover_image\" field.",
+                    "type": "string"
+                },
                 "createdAt": {
                     "description": "CreatedAt holds the value of the \"createdAt\" field.",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "Description holds the value of the \"description\" field.",
                     "type": "string"
                 },
                 "edges": {
@@ -6779,8 +7117,49 @@
                         }
                     ]
                 },
+                "end_date": {
+                    "description": "EndDate holds the value of the \"end_date\" field.",
+                    "type": "string"
+                },
+                "end_time": {
+                    "description": "EndTime holds the value of the \"end_time\" field.",
+                    "type": "string"
+                },
+                "event_settings": {
+                    "description": "EventSettings holds the value of the \"event_settings\" field.",
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "frequency": {
+                    "description": "Frequency holds the value of the \"frequency\" field.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent_event.Frequency"
+                        }
+                    ]
+                },
+                "frequency_day_of_month": {
+                    "description": "FrequencyDayOfMonth holds the value of the \"frequency_day_of_month\" field.",
+                    "type": "string"
+                },
+                "frequency_day_of_week": {
+                    "description": "FrequencyDayOfWeek holds the value of the \"frequency_day_of_week\" field.",
+                    "type": "string"
+                },
+                "frequency_interval": {
+                    "description": "FrequencyInterval holds the value of the \"frequency_interval\" field.",
+                    "type": "string"
+                },
+                "frequency_month_of_year": {
+                    "description": "FrequencyMonthOfYear holds the value of the \"frequency_month_of_year\" field.",
+                    "type": "string"
+                },
                 "id": {
                     "description": "ID of the ent.",
+                    "type": "string"
+                },
+                "location": {
+                    "description": "Location holds the value of the \"location\" field.",
                     "type": "string"
                 },
                 "name": {
@@ -6795,8 +7174,88 @@
                     "description": "SearchText holds the value of the \"search_text\" field.",
                     "type": "string"
                 },
+                "start_date": {
+                    "description": "StartDate holds the value of the \"start_date\" field.",
+                    "type": "string"
+                },
+                "start_time": {
+                    "description": "StartTime holds the value of the \"start_time\" field.",
+                    "type": "string"
+                },
+                "status": {
+                    "description": "Status holds the value of the \"status\" field.",
+                    "type": "string"
+                },
+                "tags": {
+                    "description": "Tags holds the value of the \"tags\" field.",
+                    "type": "string"
+                },
+                "time_zone": {
+                    "description": "TimeZone holds the value of the \"time_zone\" field.",
+                    "type": "string"
+                },
+                "title": {
+                    "description": "Title holds the value of the \"title\" field.",
+                    "type": "string"
+                },
                 "updatedAt": {
                     "description": "UpdatedAt holds the value of the \"updatedAt\" field.",
+                    "type": "string"
+                },
+                "url": {
+                    "description": "URL holds the value of the \"url\" field.",
+                    "type": "string"
+                },
+                "venue_address": {
+                    "description": "VenueAddress holds the value of the \"venue_address\" field.",
+                    "type": "string"
+                },
+                "venue_city": {
+                    "description": "VenueCity holds the value of the \"venue_city\" field.",
+                    "type": "string"
+                },
+                "venue_country": {
+                    "description": "VenueCountry holds the value of the \"venue_country\" field.",
+                    "type": "string"
+                },
+                "venue_email": {
+                    "description": "VenueEmail holds the value of the \"venue_email\" field.",
+                    "type": "string"
+                },
+                "venue_lat": {
+                    "description": "VenueLat holds the value of the \"venue_lat\" field.",
+                    "type": "string"
+                },
+                "venue_lon": {
+                    "description": "VenueLon holds the value of the \"venue_lon\" field.",
+                    "type": "string"
+                },
+                "venue_name": {
+                    "description": "VenueName holds the value of the \"venue_name\" field.",
+                    "type": "string"
+                },
+                "venue_phone": {
+                    "description": "VenuePhone holds the value of the \"venue_phone\" field.",
+                    "type": "string"
+                },
+                "venue_state": {
+                    "description": "VenueState holds the value of the \"venue_state\" field.",
+                    "type": "string"
+                },
+                "venue_type": {
+                    "description": "VenueType holds the value of the \"venue_type\" field.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent_event.VenueType"
+                        }
+                    ]
+                },
+                "venue_url": {
+                    "description": "VenueURL holds the value of the \"venue_url\" field.",
+                    "type": "string"
+                },
+                "venue_zip": {
+                    "description": "VenueZip holds the value of the \"venue_zip\" field.",
                     "type": "string"
                 }
             }
@@ -6804,6 +7263,50 @@
         "placio-app_ent.EventEdges": {
             "type": "object",
             "properties": {
+                "businessFollowers": {
+                    "description": "BusinessFollowers holds the value of the businessFollowers edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.BusinessFollowEvent"
+                    }
+                },
+                "event_categories": {
+                    "description": "EventCategories holds the value of the event_categories edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Category"
+                    }
+                },
+                "event_category_assignments": {
+                    "description": "EventCategoryAssignments holds the value of the event_category_assignments edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.CategoryAssignment"
+                    }
+                },
+                "ownerBusiness": {
+                    "description": "OwnerBusiness holds the value of the ownerBusiness edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.Business"
+                        }
+                    ]
+                },
+                "ownerUser": {
+                    "description": "OwnerUser holds the value of the ownerUser edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.User"
+                        }
+                    ]
+                },
+                "place": {
+                    "description": "Place holds the value of the place edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Place"
+                    }
+                },
                 "ticket_options": {
                     "description": "TicketOptions holds the value of the ticket_options edge.",
                     "type": "array",
@@ -6816,6 +7319,13 @@
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/placio-app_ent.Ticket"
+                    }
+                },
+                "userFollowers": {
+                    "description": "UserFollowers holds the value of the userFollowers edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.UserFollowEvent"
                     }
                 }
             }
@@ -7726,13 +8236,6 @@
                         "$ref": "#/definitions/placio-app_ent.Comment"
                     }
                 },
-                "events": {
-                    "description": "Events holds the value of the events edge.",
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/placio-app_ent.Event"
-                    }
-                },
                 "followedBusinesses": {
                     "description": "FollowedBusinesses holds the value of the followedBusinesses edge.",
                     "type": "array",
@@ -7782,6 +8285,14 @@
                         "$ref": "#/definitions/placio-app_ent.Like"
                     }
                 },
+                "ownedEvents": {
+                    "description": "OwnedEvents holds the value of the ownedEvents edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.Event"
+                        }
+                    ]
+                },
                 "places": {
                     "description": "Places holds the value of the places edge.",
                     "type": "array",
@@ -7816,6 +8327,13 @@
                     "items": {
                         "$ref": "#/definitions/placio-app_ent.UserBusiness"
                     }
+                },
+                "userFollowEvents": {
+                    "description": "UserFollowEvents holds the value of the userFollowEvents edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.UserFollowEvent"
+                    }
                 }
             }
         },
@@ -7844,6 +8362,52 @@
                     "allOf": [
                         {
                             "$ref": "#/definitions/placio-app_ent.Business"
+                        }
+                    ]
+                },
+                "user": {
+                    "description": "User holds the value of the user edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.User"
+                        }
+                    ]
+                }
+            }
+        },
+        "placio-app_ent.UserFollowEvent": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "description": "CreatedAt holds the value of the \"createdAt\" field.",
+                    "type": "string"
+                },
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the UserFollowEventQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.UserFollowEventEdges"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "description": "UpdatedAt holds the value of the \"updatedAt\" field.",
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_ent.UserFollowEventEdges": {
+            "type": "object",
+            "properties": {
+                "event": {
+                    "description": "Event holds the value of the event edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.Event"
                         }
                     ]
                 },
@@ -7932,6 +8496,49 @@
                     ]
                 }
             }
+        },
+        "placio-app_ent_event.EventType": {
+            "type": "string",
+            "enum": [
+                "event",
+                "place",
+                "business"
+            ],
+            "x-enum-varnames": [
+                "EventTypeEvent",
+                "EventTypePlace",
+                "EventTypeBusiness"
+            ]
+        },
+        "placio-app_ent_event.Frequency": {
+            "type": "string",
+            "enum": [
+                "once",
+                "daily",
+                "weekly",
+                "monthly",
+                "yearly"
+            ],
+            "x-enum-varnames": [
+                "FrequencyOnce",
+                "FrequencyDaily",
+                "FrequencyWeekly",
+                "FrequencyMonthly",
+                "FrequencyYearly"
+            ]
+        },
+        "placio-app_ent_event.VenueType": {
+            "type": "string",
+            "enum": [
+                "online",
+                "in_person",
+                "hybrid"
+            ],
+            "x-enum-varnames": [
+                "VenueTypeOnline",
+                "VenueTypeInPerson",
+                "VenueTypeHybrid"
+            ]
         },
         "placio-app_ent_post.Privacy": {
             "type": "string",
@@ -8166,99 +8773,6 @@
                     "type": "string"
                 },
                 "MediaVisibility": {
-                    "type": "string"
-                }
-            }
-        },
-        "placio-app_models.Event": {
-            "type": "object",
-            "properties": {
-                "accountID": {
-                    "description": "Foreign key to Account",
-                    "type": "string"
-                },
-                "address": {
-                    "type": "string"
-                },
-                "capacity": {
-                    "type": "integer"
-                },
-                "category": {
-                    "type": "string"
-                },
-                "city": {
-                    "type": "string"
-                },
-                "country": {
-                    "type": "string"
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "date": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "endDate": {
-                    "type": "string"
-                },
-                "endTime": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "imageURL": {
-                    "type": "string"
-                },
-                "isFree": {
-                    "type": "boolean"
-                },
-                "isOnline": {
-                    "type": "boolean"
-                },
-                "isPublic": {
-                    "type": "boolean"
-                },
-                "location": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "organizer": {
-                    "type": "string"
-                },
-                "organizerEmail": {
-                    "type": "string"
-                },
-                "organizerPhone": {
-                    "type": "string"
-                },
-                "priceRange": {
-                    "type": "string"
-                },
-                "state": {
-                    "type": "string"
-                },
-                "tags": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "ticketURL": {
-                    "type": "string"
-                },
-                "time": {
-                    "type": "string"
-                },
-                "updatedAt": {
-                    "type": "string"
-                },
-                "website": {
                     "type": "string"
                 }
             }

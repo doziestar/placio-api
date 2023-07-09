@@ -5,6 +5,7 @@ package ent
 import (
 	"encoding/json"
 	"fmt"
+	"placio-app/ent/event"
 	"placio-app/ent/user"
 	"strings"
 
@@ -78,17 +79,19 @@ type UserEdges struct {
 	Helps []*Help `json:"helps,omitempty"`
 	// Categories holds the value of the categories edge.
 	Categories []*Category `json:"categories,omitempty"`
-	// Events holds the value of the events edge.
-	Events []*Event `json:"events,omitempty"`
 	// Places holds the value of the places edge.
 	Places []*Place `json:"places,omitempty"`
 	// CategoryAssignments holds the value of the categoryAssignments edge.
 	CategoryAssignments []*CategoryAssignment `json:"categoryAssignments,omitempty"`
 	// FollowedPlaces holds the value of the followedPlaces edge.
 	FollowedPlaces []*UserFollowPlace `json:"followedPlaces,omitempty"`
+	// OwnedEvents holds the value of the ownedEvents edge.
+	OwnedEvents *Event `json:"ownedEvents,omitempty"`
+	// UserFollowEvents holds the value of the userFollowEvents edge.
+	UserFollowEvents []*UserFollowEvent `json:"userFollowEvents,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [17]bool
+	loadedTypes [18]bool
 }
 
 // UserBusinessesOrErr returns the UserBusinesses value or an error if the edge
@@ -208,19 +211,10 @@ func (e UserEdges) CategoriesOrErr() ([]*Category, error) {
 	return nil, &NotLoadedError{edge: "categories"}
 }
 
-// EventsOrErr returns the Events value or an error if the edge
-// was not loaded in eager-loading.
-func (e UserEdges) EventsOrErr() ([]*Event, error) {
-	if e.loadedTypes[13] {
-		return e.Events, nil
-	}
-	return nil, &NotLoadedError{edge: "events"}
-}
-
 // PlacesOrErr returns the Places value or an error if the edge
 // was not loaded in eager-loading.
 func (e UserEdges) PlacesOrErr() ([]*Place, error) {
-	if e.loadedTypes[14] {
+	if e.loadedTypes[13] {
 		return e.Places, nil
 	}
 	return nil, &NotLoadedError{edge: "places"}
@@ -229,7 +223,7 @@ func (e UserEdges) PlacesOrErr() ([]*Place, error) {
 // CategoryAssignmentsOrErr returns the CategoryAssignments value or an error if the edge
 // was not loaded in eager-loading.
 func (e UserEdges) CategoryAssignmentsOrErr() ([]*CategoryAssignment, error) {
-	if e.loadedTypes[15] {
+	if e.loadedTypes[14] {
 		return e.CategoryAssignments, nil
 	}
 	return nil, &NotLoadedError{edge: "categoryAssignments"}
@@ -238,10 +232,32 @@ func (e UserEdges) CategoryAssignmentsOrErr() ([]*CategoryAssignment, error) {
 // FollowedPlacesOrErr returns the FollowedPlaces value or an error if the edge
 // was not loaded in eager-loading.
 func (e UserEdges) FollowedPlacesOrErr() ([]*UserFollowPlace, error) {
-	if e.loadedTypes[16] {
+	if e.loadedTypes[15] {
 		return e.FollowedPlaces, nil
 	}
 	return nil, &NotLoadedError{edge: "followedPlaces"}
+}
+
+// OwnedEventsOrErr returns the OwnedEvents value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e UserEdges) OwnedEventsOrErr() (*Event, error) {
+	if e.loadedTypes[16] {
+		if e.OwnedEvents == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: event.Label}
+		}
+		return e.OwnedEvents, nil
+	}
+	return nil, &NotLoadedError{edge: "ownedEvents"}
+}
+
+// UserFollowEventsOrErr returns the UserFollowEvents value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) UserFollowEventsOrErr() ([]*UserFollowEvent, error) {
+	if e.loadedTypes[17] {
+		return e.UserFollowEvents, nil
+	}
+	return nil, &NotLoadedError{edge: "userFollowEvents"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -438,11 +454,6 @@ func (u *User) QueryCategories() *CategoryQuery {
 	return NewUserClient(u.config).QueryCategories(u)
 }
 
-// QueryEvents queries the "events" edge of the User entity.
-func (u *User) QueryEvents() *EventQuery {
-	return NewUserClient(u.config).QueryEvents(u)
-}
-
 // QueryPlaces queries the "places" edge of the User entity.
 func (u *User) QueryPlaces() *PlaceQuery {
 	return NewUserClient(u.config).QueryPlaces(u)
@@ -456,6 +467,16 @@ func (u *User) QueryCategoryAssignments() *CategoryAssignmentQuery {
 // QueryFollowedPlaces queries the "followedPlaces" edge of the User entity.
 func (u *User) QueryFollowedPlaces() *UserFollowPlaceQuery {
 	return NewUserClient(u.config).QueryFollowedPlaces(u)
+}
+
+// QueryOwnedEvents queries the "ownedEvents" edge of the User entity.
+func (u *User) QueryOwnedEvents() *EventQuery {
+	return NewUserClient(u.config).QueryOwnedEvents(u)
+}
+
+// QueryUserFollowEvents queries the "userFollowEvents" edge of the User entity.
+func (u *User) QueryUserFollowEvents() *UserFollowEventQuery {
+	return NewUserClient(u.config).QueryUserFollowEvents(u)
 }
 
 // Update returns a builder for updating this User.

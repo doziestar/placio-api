@@ -1276,6 +1276,7 @@ func (pq *PlaceQuery) loadCategoryAssignments(ctx context.Context, query *Catego
 			init(nodes[i])
 		}
 	}
+	query.withFKs = true
 	if len(query.ctx.Fields) > 0 {
 		query.ctx.AppendFieldOnce(categoryassignment.FieldEntityID)
 	}

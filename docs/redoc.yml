@@ -143,6 +143,17 @@ definitions:
       refresh_token:
         type: string
     type: object
+  placio-app_Dto.BusinessAccountPlacesAndEvents:
+    properties:
+      events:
+        items:
+          $ref: '#/definitions/placio-app_ent.Event'
+        type: array
+      places:
+        items:
+          $ref: '#/definitions/placio-app_ent.Place'
+        type: array
+    type: object
   placio-app_Dto.BusinessDto:
     properties:
       cover_image:
@@ -272,18 +283,79 @@ definitions:
       status:
         type: integer
     type: object
-  placio-app_Dto.EventDto:
+  placio-app_Dto.EventDTO:
     properties:
-      date:
+      coverImage:
+        type: string
+      createdAt:
+        type: string
+      description:
+        type: string
+      endDate:
+        type: string
+      endTime:
+        type: string
+      eventSettings:
+        additionalProperties: true
+        type: object
+      eventType:
+        type: string
+      frequency:
+        type: string
+      frequencyDayOfMonth:
+        type: string
+      frequencyDayOfWeek:
+        type: string
+      frequencyInterval:
+        type: string
+      frequencyMonthOfYear:
+        type: string
+      id:
+        type: string
+      location:
         type: string
       name:
         type: string
-      time:
+      startDate:
         type: string
-    required:
-      - date
-      - name
-      - time
+      startTime:
+        type: string
+      status:
+        type: string
+      tags:
+        type: string
+      timeZone:
+        type: string
+      title:
+        type: string
+      updatedAt:
+        type: string
+      url:
+        type: string
+      venueAddress:
+        type: string
+      venueCity:
+        type: string
+      venueCountry:
+        type: string
+      venueEmail:
+        type: string
+      venueLat:
+        type: string
+      venueLon:
+        type: string
+      venueName:
+        type: string
+      venuePhone:
+        type: string
+      venueState:
+        type: string
+      venueType:
+        type: string
+      venueURL:
+        type: string
+      venueZIP:
+        type: string
     type: object
   placio-app_Dto.MediaDto:
     properties:
@@ -568,6 +640,11 @@ definitions:
         allOf:
           - $ref: '#/definitions/placio-app_ent.AccountSettings'
         description: BusinessAccountSettings holds the value of the business_account_settings edge.
+      businessFollowEvents:
+        description: BusinessFollowEvents holds the value of the businessFollowEvents edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.BusinessFollowEvent'
+        type: array
       categories:
         description: Categories holds the value of the categories edge.
         items:
@@ -577,6 +654,11 @@ definitions:
         description: CategoryAssignments holds the value of the categoryAssignments edge.
         items:
           $ref: '#/definitions/placio-app_ent.CategoryAssignment'
+        type: array
+      events:
+        description: Events holds the value of the events edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Event'
         type: array
       followedBusinesses:
         description: FollowedBusinesses holds the value of the followedBusinesses edge.
@@ -636,6 +718,35 @@ definitions:
         allOf:
           - $ref: '#/definitions/placio-app_ent.Business'
         description: Follower holds the value of the follower edge.
+    type: object
+  placio-app_ent.BusinessFollowEvent:
+    properties:
+      createdAt:
+        description: CreatedAt holds the value of the "createdAt" field.
+        type: string
+      edges:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.BusinessFollowEventEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the BusinessFollowEventQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: string
+      updatedAt:
+        description: UpdatedAt holds the value of the "updatedAt" field.
+        type: string
+    type: object
+  placio-app_ent.BusinessFollowEventEdges:
+    properties:
+      business:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.Business'
+        description: Business holds the value of the business edge.
+      event:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.Event'
+        description: Event holds the value of the event edge.
     type: object
   placio-app_ent.BusinessFollowUser:
     properties:
@@ -760,8 +871,18 @@ definitions:
     type: object
   placio-app_ent.Event:
     properties:
+      EventType:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent_event.EventType'
+        description: EventType holds the value of the "EventType" field.
+      cover_image:
+        description: CoverImage holds the value of the "cover_image" field.
+        type: string
       createdAt:
         description: CreatedAt holds the value of the "createdAt" field.
+        type: string
+      description:
+        description: Description holds the value of the "description" field.
         type: string
       edges:
         allOf:
@@ -769,8 +890,37 @@ definitions:
         description: |-
           Edges holds the relations/edges for other nodes in the graph.
           The values are being populated by the EventQuery when eager-loading is set.
+      end_date:
+        description: EndDate holds the value of the "end_date" field.
+        type: string
+      end_time:
+        description: EndTime holds the value of the "end_time" field.
+        type: string
+      event_settings:
+        additionalProperties: true
+        description: EventSettings holds the value of the "event_settings" field.
+        type: object
+      frequency:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent_event.Frequency'
+        description: Frequency holds the value of the "frequency" field.
+      frequency_day_of_month:
+        description: FrequencyDayOfMonth holds the value of the "frequency_day_of_month" field.
+        type: string
+      frequency_day_of_week:
+        description: FrequencyDayOfWeek holds the value of the "frequency_day_of_week" field.
+        type: string
+      frequency_interval:
+        description: FrequencyInterval holds the value of the "frequency_interval" field.
+        type: string
+      frequency_month_of_year:
+        description: FrequencyMonthOfYear holds the value of the "frequency_month_of_year" field.
+        type: string
       id:
         description: ID of the ent.
+        type: string
+      location:
+        description: Location holds the value of the "location" field.
         type: string
       name:
         description: Name holds the value of the "name" field.
@@ -781,12 +931,98 @@ definitions:
       search_text:
         description: SearchText holds the value of the "search_text" field.
         type: string
+      start_date:
+        description: StartDate holds the value of the "start_date" field.
+        type: string
+      start_time:
+        description: StartTime holds the value of the "start_time" field.
+        type: string
+      status:
+        description: Status holds the value of the "status" field.
+        type: string
+      tags:
+        description: Tags holds the value of the "tags" field.
+        type: string
+      time_zone:
+        description: TimeZone holds the value of the "time_zone" field.
+        type: string
+      title:
+        description: Title holds the value of the "title" field.
+        type: string
       updatedAt:
         description: UpdatedAt holds the value of the "updatedAt" field.
+        type: string
+      url:
+        description: URL holds the value of the "url" field.
+        type: string
+      venue_address:
+        description: VenueAddress holds the value of the "venue_address" field.
+        type: string
+      venue_city:
+        description: VenueCity holds the value of the "venue_city" field.
+        type: string
+      venue_country:
+        description: VenueCountry holds the value of the "venue_country" field.
+        type: string
+      venue_email:
+        description: VenueEmail holds the value of the "venue_email" field.
+        type: string
+      venue_lat:
+        description: VenueLat holds the value of the "venue_lat" field.
+        type: string
+      venue_lon:
+        description: VenueLon holds the value of the "venue_lon" field.
+        type: string
+      venue_name:
+        description: VenueName holds the value of the "venue_name" field.
+        type: string
+      venue_phone:
+        description: VenuePhone holds the value of the "venue_phone" field.
+        type: string
+      venue_state:
+        description: VenueState holds the value of the "venue_state" field.
+        type: string
+      venue_type:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent_event.VenueType'
+        description: VenueType holds the value of the "venue_type" field.
+      venue_url:
+        description: VenueURL holds the value of the "venue_url" field.
+        type: string
+      venue_zip:
+        description: VenueZip holds the value of the "venue_zip" field.
         type: string
     type: object
   placio-app_ent.EventEdges:
     properties:
+      businessFollowers:
+        description: BusinessFollowers holds the value of the businessFollowers edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.BusinessFollowEvent'
+        type: array
+      event_categories:
+        description: EventCategories holds the value of the event_categories edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Category'
+        type: array
+      event_category_assignments:
+        description: EventCategoryAssignments holds the value of the event_category_assignments edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.CategoryAssignment'
+        type: array
+      ownerBusiness:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.Business'
+        description: OwnerBusiness holds the value of the ownerBusiness edge.
+      ownerUser:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.User'
+        description: OwnerUser holds the value of the ownerUser edge.
+      place:
+        description: Place holds the value of the place edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Place'
+        type: array
       ticket_options:
         description: TicketOptions holds the value of the ticket_options edge.
         items:
@@ -796,6 +1032,11 @@ definitions:
         description: Tickets holds the value of the tickets edge.
         items:
           $ref: '#/definitions/placio-app_ent.Ticket'
+        type: array
+      userFollowers:
+        description: UserFollowers holds the value of the userFollowers edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.UserFollowEvent'
         type: array
     type: object
   placio-app_ent.Help:
@@ -1416,11 +1657,6 @@ definitions:
         items:
           $ref: '#/definitions/placio-app_ent.Comment'
         type: array
-      events:
-        description: Events holds the value of the events edge.
-        items:
-          $ref: '#/definitions/placio-app_ent.Event'
-        type: array
       followedBusinesses:
         description: FollowedBusinesses holds the value of the followedBusinesses edge.
         items:
@@ -1456,6 +1692,10 @@ definitions:
         items:
           $ref: '#/definitions/placio-app_ent.Like'
         type: array
+      ownedEvents:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.Event'
+        description: OwnedEvents holds the value of the ownedEvents edge.
       places:
         description: Places holds the value of the places edge.
         items:
@@ -1481,6 +1721,11 @@ definitions:
         items:
           $ref: '#/definitions/placio-app_ent.UserBusiness'
         type: array
+      userFollowEvents:
+        description: UserFollowEvents holds the value of the userFollowEvents edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.UserFollowEvent'
+        type: array
     type: object
   placio-app_ent.UserFollowBusiness:
     properties:
@@ -1500,6 +1745,35 @@ definitions:
         allOf:
           - $ref: '#/definitions/placio-app_ent.Business'
         description: Business holds the value of the business edge.
+      user:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.User'
+        description: User holds the value of the user edge.
+    type: object
+  placio-app_ent.UserFollowEvent:
+    properties:
+      createdAt:
+        description: CreatedAt holds the value of the "createdAt" field.
+        type: string
+      edges:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.UserFollowEventEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the UserFollowEventQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: string
+      updatedAt:
+        description: UpdatedAt holds the value of the "updatedAt" field.
+        type: string
+    type: object
+  placio-app_ent.UserFollowEventEdges:
+    properties:
+      event:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.Event'
+        description: Event holds the value of the event edge.
       user:
         allOf:
           - $ref: '#/definitions/placio-app_ent.User'
@@ -1551,6 +1825,40 @@ definitions:
           - $ref: '#/definitions/placio-app_ent.User'
         description: Follower holds the value of the follower edge.
     type: object
+  placio-app_ent_event.EventType:
+    enum:
+      - event
+      - place
+      - business
+    type: string
+    x-enum-varnames:
+      - EventTypeEvent
+      - EventTypePlace
+      - EventTypeBusiness
+  placio-app_ent_event.Frequency:
+    enum:
+      - once
+      - daily
+      - weekly
+      - monthly
+      - yearly
+    type: string
+    x-enum-varnames:
+      - FrequencyOnce
+      - FrequencyDaily
+      - FrequencyWeekly
+      - FrequencyMonthly
+      - FrequencyYearly
+  placio-app_ent_event.VenueType:
+    enum:
+      - online
+      - in_person
+      - hybrid
+    type: string
+    x-enum-varnames:
+      - VenueTypeOnline
+      - VenueTypeInPerson
+      - VenueTypeHybrid
   placio-app_ent_post.Privacy:
     enum:
       - Public
@@ -1707,68 +2015,6 @@ definitions:
       ExplicitContentFilter:
         type: string
       MediaVisibility:
-        type: string
-    type: object
-  placio-app_models.Event:
-    properties:
-      accountID:
-        description: Foreign key to Account
-        type: string
-      address:
-        type: string
-      capacity:
-        type: integer
-      category:
-        type: string
-      city:
-        type: string
-      country:
-        type: string
-      createdAt:
-        type: string
-      date:
-        type: string
-      description:
-        type: string
-      endDate:
-        type: string
-      endTime:
-        type: string
-      id:
-        type: string
-      imageURL:
-        type: string
-      isFree:
-        type: boolean
-      isOnline:
-        type: boolean
-      isPublic:
-        type: boolean
-      location:
-        type: string
-      name:
-        type: string
-      organizer:
-        type: string
-      organizerEmail:
-        type: string
-      organizerPhone:
-        type: string
-      priceRange:
-        type: string
-      state:
-        type: string
-      tags:
-        items:
-          type: string
-        type: array
-      ticketURL:
-        type: string
-      time:
-        type: string
-      updatedAt:
-        type: string
-      website:
         type: string
     type: object
   placio-app_models.Like:
@@ -4815,6 +5061,94 @@ paths:
       summary: Get a business account
       tags:
         - Business
+  /business/{businessAccountID}/associated:
+    get:
+      consumes:
+        - application/json
+      description: Retrieve All Places and Events associated with a Business Account
+      operationId: get-places-and-events-associated-with-business-account
+      parameters:
+        - description: Business Account ID
+          in: path
+          name: businessAccountID
+          required: true
+          type: string
+        - description: All
+          in: query
+          name: All
+          type: boolean
+        - description: Bearer token
+          in: header
+          name: Authorization
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_Dto.BusinessAccountPlacesAndEvents'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+      security:
+        - Bearer: []
+      summary: Get Places and Events associated with a Business Account
+      tags:
+        - Business
+  /business/{businessAccountID}/event:
+    post:
+      consumes:
+        - application/json
+      description: Add a new Event to a Business Account
+      operationId: add-a-new-event-to-business-account
+      parameters:
+        - description: Business Account ID
+          in: path
+          name: businessAccountID
+          required: true
+          type: string
+        - description: Event DTO
+          in: body
+          name: Dto.EventDTO
+          required: true
+          schema:
+            $ref: '#/definitions/placio-app_Dto.EventDTO'
+        - description: Bearer token
+          in: header
+          name: Authorization
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_ent.Event'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+      security:
+        - Bearer: []
+      summary: Add a new Event to a Business Account
+      tags:
+        - Business
   /business/{businessAccountID}/user/{currentOwnerID}/{newOwnerID}:
     put:
       operationId: transfer-business-account-ownership
@@ -5413,7 +5747,7 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/placio-app_models.Event'
+            $ref: '#/definitions/placio-app_ent.Event'
         '400':
           description: Bad Request
           schema:
@@ -5436,14 +5770,23 @@ paths:
           name: data
           required: true
           schema:
-            $ref: '#/definitions/placio-app_Dto.EventDto'
+            $ref: '#/definitions/placio-app_Dto.EventDTO'
+        - description: Business ID
+          in: query
+          name: businessId
+          type: string
+        - description: Bearer Token
+          in: header
+          name: Authorization
+          required: true
+          type: string
       produces:
         - application/json
       responses:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/placio-app_models.Event'
+            $ref: '#/definitions/placio-app_ent.Event'
         '400':
           description: Bad Request
           schema:
@@ -5452,6 +5795,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      security:
+        - Bearer: []
       summary: Create Event
       tags:
         - Event
@@ -5502,7 +5847,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/placio-app_models.Event'
+              $ref: '#/definitions/placio-app_ent.Event'
             type: array
         '400':
           description: Bad Request
@@ -5533,7 +5878,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/placio-app_models.Event'
+              $ref: '#/definitions/placio-app_ent.Event'
             type: array
         '400':
           description: Bad Request
@@ -5564,7 +5909,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/placio-app_models.Event'
+              $ref: '#/definitions/placio-app_ent.Event'
             type: array
         '400':
           description: Bad Request
@@ -5595,7 +5940,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/placio-app_models.User'
+              $ref: '#/definitions/placio-app_ent.Event'
             type: array
         '400':
           description: Bad Request
@@ -5624,14 +5969,14 @@ paths:
           name: data
           required: true
           schema:
-            $ref: '#/definitions/placio-app_Dto.EventDto'
+            $ref: '#/definitions/placio-app_Dto.EventDTO'
       produces:
         - application/json
       responses:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/placio-app_models.Event'
+            $ref: '#/definitions/placio-app_ent.Event'
         '400':
           description: Bad Request
           schema:

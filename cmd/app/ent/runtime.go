@@ -7,6 +7,7 @@ import (
 	"placio-app/ent/amenity"
 	"placio-app/ent/booking"
 	"placio-app/ent/business"
+	"placio-app/ent/businessfollowevent"
 	"placio-app/ent/category"
 	"placio-app/ent/comment"
 	"placio-app/ent/event"
@@ -24,6 +25,7 @@ import (
 	"placio-app/ent/ticketoption"
 	"placio-app/ent/user"
 	"placio-app/ent/userbusiness"
+	"placio-app/ent/userfollowevent"
 	"time"
 )
 
@@ -59,6 +61,18 @@ func init() {
 	businessDescID := businessFields[0].Descriptor()
 	// business.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	business.IDValidator = businessDescID.Validators[0].(func(string) error)
+	businessfolloweventFields := schema.BusinessFollowEvent{}.Fields()
+	_ = businessfolloweventFields
+	// businessfolloweventDescCreatedAt is the schema descriptor for createdAt field.
+	businessfolloweventDescCreatedAt := businessfolloweventFields[0].Descriptor()
+	// businessfollowevent.DefaultCreatedAt holds the default value on creation for the createdAt field.
+	businessfollowevent.DefaultCreatedAt = businessfolloweventDescCreatedAt.Default.(func() time.Time)
+	// businessfolloweventDescUpdatedAt is the schema descriptor for updatedAt field.
+	businessfolloweventDescUpdatedAt := businessfolloweventFields[1].Descriptor()
+	// businessfollowevent.DefaultUpdatedAt holds the default value on creation for the updatedAt field.
+	businessfollowevent.DefaultUpdatedAt = businessfolloweventDescUpdatedAt.Default.(func() time.Time)
+	// businessfollowevent.UpdateDefaultUpdatedAt holds the default value on update for the updatedAt field.
+	businessfollowevent.UpdateDefaultUpdatedAt = businessfolloweventDescUpdatedAt.UpdateDefault.(func() time.Time)
 	categoryFields := schema.Category{}.Fields()
 	_ = categoryFields
 	// categoryDescID is the schema descriptor for id field.
@@ -85,16 +99,16 @@ func init() {
 	comment.IDValidator = commentDescID.Validators[0].(func(string) error)
 	eventFields := schema.Event{}.Fields()
 	_ = eventFields
-	// eventDescName is the schema descriptor for name field.
-	eventDescName := eventFields[1].Descriptor()
-	// event.NameValidator is a validator for the "name" field. It is called by the builders before save.
-	event.NameValidator = eventDescName.Validators[0].(func(string) error)
+	// eventDescCoverImage is the schema descriptor for cover_image field.
+	eventDescCoverImage := eventFields[32].Descriptor()
+	// event.DefaultCoverImage holds the default value on creation for the cover_image field.
+	event.DefaultCoverImage = eventDescCoverImage.Default.(string)
 	// eventDescCreatedAt is the schema descriptor for createdAt field.
-	eventDescCreatedAt := eventFields[2].Descriptor()
+	eventDescCreatedAt := eventFields[33].Descriptor()
 	// event.DefaultCreatedAt holds the default value on creation for the createdAt field.
 	event.DefaultCreatedAt = eventDescCreatedAt.Default.(func() time.Time)
 	// eventDescUpdatedAt is the schema descriptor for updatedAt field.
-	eventDescUpdatedAt := eventFields[3].Descriptor()
+	eventDescUpdatedAt := eventFields[34].Descriptor()
 	// event.DefaultUpdatedAt holds the default value on creation for the updatedAt field.
 	event.DefaultUpdatedAt = eventDescUpdatedAt.Default.(func() time.Time)
 	// event.UpdateDefaultUpdatedAt holds the default value on update for the updatedAt field.
@@ -235,4 +249,16 @@ func init() {
 	userbusinessDescID := userbusinessFields[0].Descriptor()
 	// userbusiness.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	userbusiness.IDValidator = userbusinessDescID.Validators[0].(func(string) error)
+	userfolloweventFields := schema.UserFollowEvent{}.Fields()
+	_ = userfolloweventFields
+	// userfolloweventDescCreatedAt is the schema descriptor for createdAt field.
+	userfolloweventDescCreatedAt := userfolloweventFields[0].Descriptor()
+	// userfollowevent.DefaultCreatedAt holds the default value on creation for the createdAt field.
+	userfollowevent.DefaultCreatedAt = userfolloweventDescCreatedAt.Default.(func() time.Time)
+	// userfolloweventDescUpdatedAt is the schema descriptor for updatedAt field.
+	userfolloweventDescUpdatedAt := userfolloweventFields[1].Descriptor()
+	// userfollowevent.DefaultUpdatedAt holds the default value on creation for the updatedAt field.
+	userfollowevent.DefaultUpdatedAt = userfolloweventDescUpdatedAt.Default.(func() time.Time)
+	// userfollowevent.UpdateDefaultUpdatedAt holds the default value on update for the updatedAt field.
+	userfollowevent.UpdateDefaultUpdatedAt = userfolloweventDescUpdatedAt.UpdateDefault.(func() time.Time)
 }

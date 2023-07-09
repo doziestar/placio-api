@@ -21,6 +21,7 @@ import (
 	"placio-app/ent/user"
 	"placio-app/ent/userbusiness"
 	"placio-app/ent/userfollowbusiness"
+	"placio-app/ent/userfollowevent"
 	"placio-app/ent/userfollowplace"
 	"placio-app/ent/userfollowuser"
 
@@ -438,21 +439,6 @@ func (uu *UserUpdate) AddCategories(c ...*Category) *UserUpdate {
 	return uu.AddCategoryIDs(ids...)
 }
 
-// AddEventIDs adds the "events" edge to the Event entity by IDs.
-func (uu *UserUpdate) AddEventIDs(ids ...string) *UserUpdate {
-	uu.mutation.AddEventIDs(ids...)
-	return uu
-}
-
-// AddEvents adds the "events" edges to the Event entity.
-func (uu *UserUpdate) AddEvents(e ...*Event) *UserUpdate {
-	ids := make([]string, len(e))
-	for i := range e {
-		ids[i] = e[i].ID
-	}
-	return uu.AddEventIDs(ids...)
-}
-
 // AddPlaceIDs adds the "places" edge to the Place entity by IDs.
 func (uu *UserUpdate) AddPlaceIDs(ids ...string) *UserUpdate {
 	uu.mutation.AddPlaceIDs(ids...)
@@ -496,6 +482,40 @@ func (uu *UserUpdate) AddFollowedPlaces(u ...*UserFollowPlace) *UserUpdate {
 		ids[i] = u[i].ID
 	}
 	return uu.AddFollowedPlaceIDs(ids...)
+}
+
+// SetOwnedEventsID sets the "ownedEvents" edge to the Event entity by ID.
+func (uu *UserUpdate) SetOwnedEventsID(id string) *UserUpdate {
+	uu.mutation.SetOwnedEventsID(id)
+	return uu
+}
+
+// SetNillableOwnedEventsID sets the "ownedEvents" edge to the Event entity by ID if the given value is not nil.
+func (uu *UserUpdate) SetNillableOwnedEventsID(id *string) *UserUpdate {
+	if id != nil {
+		uu = uu.SetOwnedEventsID(*id)
+	}
+	return uu
+}
+
+// SetOwnedEvents sets the "ownedEvents" edge to the Event entity.
+func (uu *UserUpdate) SetOwnedEvents(e *Event) *UserUpdate {
+	return uu.SetOwnedEventsID(e.ID)
+}
+
+// AddUserFollowEventIDs adds the "userFollowEvents" edge to the UserFollowEvent entity by IDs.
+func (uu *UserUpdate) AddUserFollowEventIDs(ids ...string) *UserUpdate {
+	uu.mutation.AddUserFollowEventIDs(ids...)
+	return uu
+}
+
+// AddUserFollowEvents adds the "userFollowEvents" edges to the UserFollowEvent entity.
+func (uu *UserUpdate) AddUserFollowEvents(u ...*UserFollowEvent) *UserUpdate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uu.AddUserFollowEventIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -755,27 +775,6 @@ func (uu *UserUpdate) RemoveCategories(c ...*Category) *UserUpdate {
 	return uu.RemoveCategoryIDs(ids...)
 }
 
-// ClearEvents clears all "events" edges to the Event entity.
-func (uu *UserUpdate) ClearEvents() *UserUpdate {
-	uu.mutation.ClearEvents()
-	return uu
-}
-
-// RemoveEventIDs removes the "events" edge to Event entities by IDs.
-func (uu *UserUpdate) RemoveEventIDs(ids ...string) *UserUpdate {
-	uu.mutation.RemoveEventIDs(ids...)
-	return uu
-}
-
-// RemoveEvents removes "events" edges to Event entities.
-func (uu *UserUpdate) RemoveEvents(e ...*Event) *UserUpdate {
-	ids := make([]string, len(e))
-	for i := range e {
-		ids[i] = e[i].ID
-	}
-	return uu.RemoveEventIDs(ids...)
-}
-
 // ClearPlaces clears all "places" edges to the Place entity.
 func (uu *UserUpdate) ClearPlaces() *UserUpdate {
 	uu.mutation.ClearPlaces()
@@ -837,6 +836,33 @@ func (uu *UserUpdate) RemoveFollowedPlaces(u ...*UserFollowPlace) *UserUpdate {
 		ids[i] = u[i].ID
 	}
 	return uu.RemoveFollowedPlaceIDs(ids...)
+}
+
+// ClearOwnedEvents clears the "ownedEvents" edge to the Event entity.
+func (uu *UserUpdate) ClearOwnedEvents() *UserUpdate {
+	uu.mutation.ClearOwnedEvents()
+	return uu
+}
+
+// ClearUserFollowEvents clears all "userFollowEvents" edges to the UserFollowEvent entity.
+func (uu *UserUpdate) ClearUserFollowEvents() *UserUpdate {
+	uu.mutation.ClearUserFollowEvents()
+	return uu
+}
+
+// RemoveUserFollowEventIDs removes the "userFollowEvents" edge to UserFollowEvent entities by IDs.
+func (uu *UserUpdate) RemoveUserFollowEventIDs(ids ...string) *UserUpdate {
+	uu.mutation.RemoveUserFollowEventIDs(ids...)
+	return uu
+}
+
+// RemoveUserFollowEvents removes "userFollowEvents" edges to UserFollowEvent entities.
+func (uu *UserUpdate) RemoveUserFollowEvents(u ...*UserFollowEvent) *UserUpdate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uu.RemoveUserFollowEventIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1490,51 +1516,6 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if uu.mutation.EventsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.EventsTable,
-			Columns: []string{user.EventsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(event.FieldID, field.TypeString),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := uu.mutation.RemovedEventsIDs(); len(nodes) > 0 && !uu.mutation.EventsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.EventsTable,
-			Columns: []string{user.EventsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(event.FieldID, field.TypeString),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := uu.mutation.EventsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.EventsTable,
-			Columns: []string{user.EventsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(event.FieldID, field.TypeString),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if uu.mutation.PlacesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
@@ -1663,6 +1644,80 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(userfollowplace.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uu.mutation.OwnedEventsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   user.OwnedEventsTable,
+			Columns: []string{user.OwnedEventsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(event.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.OwnedEventsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   user.OwnedEventsTable,
+			Columns: []string{user.OwnedEventsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(event.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uu.mutation.UserFollowEventsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.UserFollowEventsTable,
+			Columns: []string{user.UserFollowEventsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userfollowevent.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedUserFollowEventsIDs(); len(nodes) > 0 && !uu.mutation.UserFollowEventsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.UserFollowEventsTable,
+			Columns: []string{user.UserFollowEventsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userfollowevent.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.UserFollowEventsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.UserFollowEventsTable,
+			Columns: []string{user.UserFollowEventsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userfollowevent.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -2085,21 +2140,6 @@ func (uuo *UserUpdateOne) AddCategories(c ...*Category) *UserUpdateOne {
 	return uuo.AddCategoryIDs(ids...)
 }
 
-// AddEventIDs adds the "events" edge to the Event entity by IDs.
-func (uuo *UserUpdateOne) AddEventIDs(ids ...string) *UserUpdateOne {
-	uuo.mutation.AddEventIDs(ids...)
-	return uuo
-}
-
-// AddEvents adds the "events" edges to the Event entity.
-func (uuo *UserUpdateOne) AddEvents(e ...*Event) *UserUpdateOne {
-	ids := make([]string, len(e))
-	for i := range e {
-		ids[i] = e[i].ID
-	}
-	return uuo.AddEventIDs(ids...)
-}
-
 // AddPlaceIDs adds the "places" edge to the Place entity by IDs.
 func (uuo *UserUpdateOne) AddPlaceIDs(ids ...string) *UserUpdateOne {
 	uuo.mutation.AddPlaceIDs(ids...)
@@ -2143,6 +2183,40 @@ func (uuo *UserUpdateOne) AddFollowedPlaces(u ...*UserFollowPlace) *UserUpdateOn
 		ids[i] = u[i].ID
 	}
 	return uuo.AddFollowedPlaceIDs(ids...)
+}
+
+// SetOwnedEventsID sets the "ownedEvents" edge to the Event entity by ID.
+func (uuo *UserUpdateOne) SetOwnedEventsID(id string) *UserUpdateOne {
+	uuo.mutation.SetOwnedEventsID(id)
+	return uuo
+}
+
+// SetNillableOwnedEventsID sets the "ownedEvents" edge to the Event entity by ID if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableOwnedEventsID(id *string) *UserUpdateOne {
+	if id != nil {
+		uuo = uuo.SetOwnedEventsID(*id)
+	}
+	return uuo
+}
+
+// SetOwnedEvents sets the "ownedEvents" edge to the Event entity.
+func (uuo *UserUpdateOne) SetOwnedEvents(e *Event) *UserUpdateOne {
+	return uuo.SetOwnedEventsID(e.ID)
+}
+
+// AddUserFollowEventIDs adds the "userFollowEvents" edge to the UserFollowEvent entity by IDs.
+func (uuo *UserUpdateOne) AddUserFollowEventIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.AddUserFollowEventIDs(ids...)
+	return uuo
+}
+
+// AddUserFollowEvents adds the "userFollowEvents" edges to the UserFollowEvent entity.
+func (uuo *UserUpdateOne) AddUserFollowEvents(u ...*UserFollowEvent) *UserUpdateOne {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uuo.AddUserFollowEventIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -2402,27 +2476,6 @@ func (uuo *UserUpdateOne) RemoveCategories(c ...*Category) *UserUpdateOne {
 	return uuo.RemoveCategoryIDs(ids...)
 }
 
-// ClearEvents clears all "events" edges to the Event entity.
-func (uuo *UserUpdateOne) ClearEvents() *UserUpdateOne {
-	uuo.mutation.ClearEvents()
-	return uuo
-}
-
-// RemoveEventIDs removes the "events" edge to Event entities by IDs.
-func (uuo *UserUpdateOne) RemoveEventIDs(ids ...string) *UserUpdateOne {
-	uuo.mutation.RemoveEventIDs(ids...)
-	return uuo
-}
-
-// RemoveEvents removes "events" edges to Event entities.
-func (uuo *UserUpdateOne) RemoveEvents(e ...*Event) *UserUpdateOne {
-	ids := make([]string, len(e))
-	for i := range e {
-		ids[i] = e[i].ID
-	}
-	return uuo.RemoveEventIDs(ids...)
-}
-
 // ClearPlaces clears all "places" edges to the Place entity.
 func (uuo *UserUpdateOne) ClearPlaces() *UserUpdateOne {
 	uuo.mutation.ClearPlaces()
@@ -2484,6 +2537,33 @@ func (uuo *UserUpdateOne) RemoveFollowedPlaces(u ...*UserFollowPlace) *UserUpdat
 		ids[i] = u[i].ID
 	}
 	return uuo.RemoveFollowedPlaceIDs(ids...)
+}
+
+// ClearOwnedEvents clears the "ownedEvents" edge to the Event entity.
+func (uuo *UserUpdateOne) ClearOwnedEvents() *UserUpdateOne {
+	uuo.mutation.ClearOwnedEvents()
+	return uuo
+}
+
+// ClearUserFollowEvents clears all "userFollowEvents" edges to the UserFollowEvent entity.
+func (uuo *UserUpdateOne) ClearUserFollowEvents() *UserUpdateOne {
+	uuo.mutation.ClearUserFollowEvents()
+	return uuo
+}
+
+// RemoveUserFollowEventIDs removes the "userFollowEvents" edge to UserFollowEvent entities by IDs.
+func (uuo *UserUpdateOne) RemoveUserFollowEventIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.RemoveUserFollowEventIDs(ids...)
+	return uuo
+}
+
+// RemoveUserFollowEvents removes "userFollowEvents" edges to UserFollowEvent entities.
+func (uuo *UserUpdateOne) RemoveUserFollowEvents(u ...*UserFollowEvent) *UserUpdateOne {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uuo.RemoveUserFollowEventIDs(ids...)
 }
 
 // Where appends a list predicates to the UserUpdate builder.
@@ -3167,51 +3247,6 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if uuo.mutation.EventsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.EventsTable,
-			Columns: []string{user.EventsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(event.FieldID, field.TypeString),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := uuo.mutation.RemovedEventsIDs(); len(nodes) > 0 && !uuo.mutation.EventsCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.EventsTable,
-			Columns: []string{user.EventsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(event.FieldID, field.TypeString),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := uuo.mutation.EventsIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.EventsTable,
-			Columns: []string{user.EventsColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(event.FieldID, field.TypeString),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if uuo.mutation.PlacesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
@@ -3340,6 +3375,80 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(userfollowplace.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.OwnedEventsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   user.OwnedEventsTable,
+			Columns: []string{user.OwnedEventsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(event.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.OwnedEventsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   user.OwnedEventsTable,
+			Columns: []string{user.OwnedEventsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(event.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.UserFollowEventsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.UserFollowEventsTable,
+			Columns: []string{user.UserFollowEventsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userfollowevent.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedUserFollowEventsIDs(); len(nodes) > 0 && !uuo.mutation.UserFollowEventsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.UserFollowEventsTable,
+			Columns: []string{user.UserFollowEventsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userfollowevent.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.UserFollowEventsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.UserFollowEventsTable,
+			Columns: []string{user.UserFollowEventsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userfollowevent.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

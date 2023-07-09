@@ -1148,29 +1148,6 @@ func HasCategoriesWith(preds ...predicate.Category) predicate.User {
 	})
 }
 
-// HasEvents applies the HasEdge predicate on the "events" edge.
-func HasEvents() predicate.User {
-	return predicate.User(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, EventsTable, EventsColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasEventsWith applies the HasEdge predicate on the "events" edge with a given conditions (other predicates).
-func HasEventsWith(preds ...predicate.Event) predicate.User {
-	return predicate.User(func(s *sql.Selector) {
-		step := newEventsStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
 // HasPlaces applies the HasEdge predicate on the "places" edge.
 func HasPlaces() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
@@ -1232,6 +1209,52 @@ func HasFollowedPlaces() predicate.User {
 func HasFollowedPlacesWith(preds ...predicate.UserFollowPlace) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := newFollowedPlacesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasOwnedEvents applies the HasEdge predicate on the "ownedEvents" edge.
+func HasOwnedEvents() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, OwnedEventsTable, OwnedEventsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasOwnedEventsWith applies the HasEdge predicate on the "ownedEvents" edge with a given conditions (other predicates).
+func HasOwnedEventsWith(preds ...predicate.Event) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newOwnedEventsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasUserFollowEvents applies the HasEdge predicate on the "userFollowEvents" edge.
+func HasUserFollowEvents() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, UserFollowEventsTable, UserFollowEventsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasUserFollowEventsWith applies the HasEdge predicate on the "userFollowEvents" edge with a given conditions (other predicates).
+func HasUserFollowEventsWith(preds ...predicate.UserFollowEvent) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newUserFollowEventsStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

@@ -10,9 +10,11 @@ import (
 	"placio-app/ent/accountsettings"
 	"placio-app/ent/business"
 	"placio-app/ent/businessfollowbusiness"
+	"placio-app/ent/businessfollowevent"
 	"placio-app/ent/businessfollowuser"
 	"placio-app/ent/category"
 	"placio-app/ent/categoryassignment"
+	"placio-app/ent/event"
 	"placio-app/ent/place"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
@@ -41,6 +43,8 @@ type BusinessQuery struct {
 	withPlaces                  *PlaceQuery
 	withCategories              *CategoryQuery
 	withCategoryAssignments     *CategoryAssignmentQuery
+	withEvents                  *EventQuery
+	withBusinessFollowEvents    *BusinessFollowEventQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -297,6 +301,50 @@ func (bq *BusinessQuery) QueryCategoryAssignments() *CategoryAssignmentQuery {
 	return query
 }
 
+// QueryEvents chains the current query on the "events" edge.
+func (bq *BusinessQuery) QueryEvents() *EventQuery {
+	query := (&EventClient{config: bq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := bq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := bq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(business.Table, business.FieldID, selector),
+			sqlgraph.To(event.Table, event.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, business.EventsTable, business.EventsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(bq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryBusinessFollowEvents chains the current query on the "businessFollowEvents" edge.
+func (bq *BusinessQuery) QueryBusinessFollowEvents() *BusinessFollowEventQuery {
+	query := (&BusinessFollowEventClient{config: bq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := bq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := bq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(business.Table, business.FieldID, selector),
+			sqlgraph.To(businessfollowevent.Table, businessfollowevent.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, business.BusinessFollowEventsTable, business.BusinessFollowEventsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(bq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Business entity from the query.
 // Returns a *NotFoundError when no Business was found.
 func (bq *BusinessQuery) First(ctx context.Context) (*Business, error) {
@@ -499,6 +547,8 @@ func (bq *BusinessQuery) Clone() *BusinessQuery {
 		withPlaces:                  bq.withPlaces.Clone(),
 		withCategories:              bq.withCategories.Clone(),
 		withCategoryAssignments:     bq.withCategoryAssignments.Clone(),
+		withEvents:                  bq.withEvents.Clone(),
+		withBusinessFollowEvents:    bq.withBusinessFollowEvents.Clone(),
 		// clone intermediate query.
 		sql:  bq.sql.Clone(),
 		path: bq.path,
@@ -615,6 +665,28 @@ func (bq *BusinessQuery) WithCategoryAssignments(opts ...func(*CategoryAssignmen
 	return bq
 }
 
+// WithEvents tells the query-builder to eager-load the nodes that are connected to
+// the "events" edge. The optional arguments are used to configure the query builder of the edge.
+func (bq *BusinessQuery) WithEvents(opts ...func(*EventQuery)) *BusinessQuery {
+	query := (&EventClient{config: bq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	bq.withEvents = query
+	return bq
+}
+
+// WithBusinessFollowEvents tells the query-builder to eager-load the nodes that are connected to
+// the "businessFollowEvents" edge. The optional arguments are used to configure the query builder of the edge.
+func (bq *BusinessQuery) WithBusinessFollowEvents(opts ...func(*BusinessFollowEventQuery)) *BusinessQuery {
+	query := (&BusinessFollowEventClient{config: bq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	bq.withBusinessFollowEvents = query
+	return bq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -693,7 +765,7 @@ func (bq *BusinessQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Bus
 	var (
 		nodes       = []*Business{}
 		_spec       = bq.querySpec()
-		loadedTypes = [10]bool{
+		loadedTypes = [12]bool{
 			bq.withUserBusinesses != nil,
 			bq.withBusinessAccountSettings != nil,
 			bq.withPosts != nil,
@@ -704,6 +776,8 @@ func (bq *BusinessQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Bus
 			bq.withPlaces != nil,
 			bq.withCategories != nil,
 			bq.withCategoryAssignments != nil,
+			bq.withEvents != nil,
+			bq.withBusinessFollowEvents != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -795,6 +869,22 @@ func (bq *BusinessQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Bus
 			func(n *Business) { n.Edges.CategoryAssignments = []*CategoryAssignment{} },
 			func(n *Business, e *CategoryAssignment) {
 				n.Edges.CategoryAssignments = append(n.Edges.CategoryAssignments, e)
+			}); err != nil {
+			return nil, err
+		}
+	}
+	if query := bq.withEvents; query != nil {
+		if err := bq.loadEvents(ctx, query, nodes,
+			func(n *Business) { n.Edges.Events = []*Event{} },
+			func(n *Business, e *Event) { n.Edges.Events = append(n.Edges.Events, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := bq.withBusinessFollowEvents; query != nil {
+		if err := bq.loadBusinessFollowEvents(ctx, query, nodes,
+			func(n *Business) { n.Edges.BusinessFollowEvents = []*BusinessFollowEvent{} },
+			func(n *Business, e *BusinessFollowEvent) {
+				n.Edges.BusinessFollowEvents = append(n.Edges.BusinessFollowEvents, e)
 			}); err != nil {
 			return nil, err
 		}
@@ -1088,6 +1178,7 @@ func (bq *BusinessQuery) loadCategoryAssignments(ctx context.Context, query *Cat
 			init(nodes[i])
 		}
 	}
+	query.withFKs = true
 	if len(query.ctx.Fields) > 0 {
 		query.ctx.AppendFieldOnce(categoryassignment.FieldEntityID)
 	}
@@ -1103,6 +1194,68 @@ func (bq *BusinessQuery) loadCategoryAssignments(ctx context.Context, query *Cat
 		node, ok := nodeids[fk]
 		if !ok {
 			return fmt.Errorf(`unexpected referenced foreign-key "entity_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (bq *BusinessQuery) loadEvents(ctx context.Context, query *EventQuery, nodes []*Business, init func(*Business), assign func(*Business, *Event)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Business)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Event(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(business.EventsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.business_events
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "business_events" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "business_events" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (bq *BusinessQuery) loadBusinessFollowEvents(ctx context.Context, query *BusinessFollowEventQuery, nodes []*Business, init func(*Business), assign func(*Business, *BusinessFollowEvent)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Business)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.BusinessFollowEvent(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(business.BusinessFollowEventsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.business_business_follow_events
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "business_business_follow_events" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "business_business_follow_events" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

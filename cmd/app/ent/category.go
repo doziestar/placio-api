@@ -22,14 +22,15 @@ type Category struct {
 	Image string `json:"image,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CategoryQuery when eager-loading is set.
-	Edges               CategoryEdges `json:"edges"`
-	business_categories *string
-	media_categories    *string
-	menu_categories     *string
-	place_categories    *string
-	post_categories     *string
-	user_categories     *string
-	selectValues        sql.SelectValues
+	Edges                  CategoryEdges `json:"edges"`
+	business_categories    *string
+	event_event_categories *string
+	media_categories       *string
+	menu_categories        *string
+	place_categories       *string
+	post_categories        *string
+	user_categories        *string
+	selectValues           sql.SelectValues
 }
 
 // CategoryEdges holds the relations/edges for other nodes in the graph.
@@ -59,15 +60,17 @@ func (*Category) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case category.ForeignKeys[0]: // business_categories
 			values[i] = new(sql.NullString)
-		case category.ForeignKeys[1]: // media_categories
+		case category.ForeignKeys[1]: // event_event_categories
 			values[i] = new(sql.NullString)
-		case category.ForeignKeys[2]: // menu_categories
+		case category.ForeignKeys[2]: // media_categories
 			values[i] = new(sql.NullString)
-		case category.ForeignKeys[3]: // place_categories
+		case category.ForeignKeys[3]: // menu_categories
 			values[i] = new(sql.NullString)
-		case category.ForeignKeys[4]: // post_categories
+		case category.ForeignKeys[4]: // place_categories
 			values[i] = new(sql.NullString)
-		case category.ForeignKeys[5]: // user_categories
+		case category.ForeignKeys[5]: // post_categories
+			values[i] = new(sql.NullString)
+		case category.ForeignKeys[6]: // user_categories
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -111,33 +114,40 @@ func (c *Category) assignValues(columns []string, values []any) error {
 			}
 		case category.ForeignKeys[1]:
 			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field event_event_categories", values[i])
+			} else if value.Valid {
+				c.event_event_categories = new(string)
+				*c.event_event_categories = value.String
+			}
+		case category.ForeignKeys[2]:
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field media_categories", values[i])
 			} else if value.Valid {
 				c.media_categories = new(string)
 				*c.media_categories = value.String
 			}
-		case category.ForeignKeys[2]:
+		case category.ForeignKeys[3]:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field menu_categories", values[i])
 			} else if value.Valid {
 				c.menu_categories = new(string)
 				*c.menu_categories = value.String
 			}
-		case category.ForeignKeys[3]:
+		case category.ForeignKeys[4]:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field place_categories", values[i])
 			} else if value.Valid {
 				c.place_categories = new(string)
 				*c.place_categories = value.String
 			}
-		case category.ForeignKeys[4]:
+		case category.ForeignKeys[5]:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field post_categories", values[i])
 			} else if value.Valid {
 				c.post_categories = new(string)
 				*c.post_categories = value.String
 			}
-		case category.ForeignKeys[5]:
+		case category.ForeignKeys[6]:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field user_categories", values[i])
 			} else if value.Valid {

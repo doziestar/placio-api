@@ -14,6 +14,7 @@ import (
 	"placio-app/ent/predicate"
 	"placio-app/ent/user"
 	"placio-app/ent/userbusiness"
+	"placio-app/utility"
 )
 
 type BusinessAccountService interface {
@@ -31,6 +32,7 @@ type BusinessAccountService interface {
 	UnfollowUser(ctx context.Context, businessID string, userID string) error
 	UnfollowBusiness(ctx context.Context, followerID string, followedID string) error
 	GetFollowedContents(ctx context.Context, businessID string) ([]*ent.Post, error)
+	GetPlacesAndEventsAssociatedWithBusinessAccount(c context.Context, businessId string) (Dto.BusinessAccountPlacesAndEvents, error)
 	//CanPerformAction(ctx context.Context, userID, businessAccountID, action string) (bool, error)
 }
 
@@ -38,10 +40,13 @@ type BusinessAccountServiceImpl struct {
 	store         *ent.Business
 	client        *ent.Client
 	searchService SearchService
+	cacheService  *utility.RedisClient
+	placesService PlaceService
+	eventService  IEventService
 }
 
-func NewBusinessAccountService(client *ent.Client, searchService SearchService) BusinessAccountService {
-	return &BusinessAccountServiceImpl{client: client, store: &ent.Business{}, searchService: searchService}
+func NewBusinessAccountService(client *ent.Client, searchService SearchService, cache *utility.RedisClient, service PlaceService) BusinessAccountService {
+	return &BusinessAccountServiceImpl{client: client, store: &ent.Business{}, searchService: searchService, cacheService: cache, placesService: service}
 }
 
 func (s *BusinessAccountServiceImpl) FollowUser(ctx context.Context, businessID string, userID string) error {
@@ -51,6 +56,37 @@ func (s *BusinessAccountServiceImpl) FollowUser(ctx context.Context, businessID 
 		SetUserID(userID).
 		Save(ctx)
 	return err
+}
+
+func (s *BusinessAccountServiceImpl) GetPlacesAndEventsAssociatedWithBusinessAccount(c context.Context, businessId string) (Dto.BusinessAccountPlacesAndEvents, error) {
+	relatedType := c.Value("relatedType").(string)
+	if relatedType == "" {
+		relatedType = "all"
+	}
+
+	var businessAccountPlacesAndEvents Dto.BusinessAccountPlacesAndEvents
+	businessAccount, err := s.GetBusinessAccount(c, businessId)
+	if err != nil {
+		return businessAccountPlacesAndEvents, err
+	}
+
+	if relatedType == "all" || relatedType == "places" {
+		places, err := s.placesService.GetPlacesAssociatedWithBusinessAccount(c, businessAccount.ID)
+		if err != nil {
+			return businessAccountPlacesAndEvents, err
+		}
+		businessAccountPlacesAndEvents.Places = places
+	}
+
+	if relatedType == "all" || relatedType == "events" {
+		//events, err := s.eventService.GetEventsAssociatedWithBusinessAccount(c, businessAccount.ID)
+		//if err != nil {
+		//	return businessAccountPlacesAndEvents, err
+		//}
+		//businessAccountPlacesAndEvents.Events = events
+	}
+
+	return businessAccountPlacesAndEvents, nil
 }
 
 func (s *BusinessAccountServiceImpl) FollowBusiness(ctx context.Context, followerID string, followedID string) error {
@@ -240,12 +276,12 @@ func (s *UserServiceImpl) CanPerformAction(ctx context.Context, userID, business
 	return false, nil
 }
 
-func (bas *BusinessAccountServiceImpl) GetBusinessAccount(ctx context.Context, businessAccountID string) (*ent.Business, error) {
+func (s *BusinessAccountServiceImpl) GetBusinessAccount(ctx context.Context, businessAccountID string) (*ent.Business, error) {
 	if businessAccountID == "" {
 		return nil, errors.New("businessAccountID cannot be nil")
 	}
 
-	businessAccount, err := bas.client.Business.Get(ctx, businessAccountID)
+	businessAccount, err := s.client.Business.Get(ctx, businessAccountID)
 	if err != nil {
 		return nil, err
 	}
@@ -359,9 +395,9 @@ func (s *BusinessAccountServiceImpl) GetUserBusinessAccounts(ctx context.Context
 	return businesses, nil
 }
 
-func (bas *BusinessAccountServiceImpl) UpdateBusinessAccount(ctx context.Context, businessID string, businessData map[string]interface{}) (*ent.Business, error) {
+func (s *BusinessAccountServiceImpl) UpdateBusinessAccount(ctx context.Context, businessID string, businessData map[string]interface{}) (*ent.Business, error) {
 	// Check if business exists
-	business, err := bas.client.Business.Get(ctx, businessID)
+	business, err := s.client.Business.Get(ctx, businessID)
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return nil, fmt.Errorf("business does not exist")
@@ -370,7 +406,7 @@ func (bas *BusinessAccountServiceImpl) UpdateBusinessAccount(ctx context.Context
 	}
 
 	// Get an updater for the business
-	upd := bas.client.Business.UpdateOne(business)
+	upd := s.client.Business.UpdateOne(business)
 
 	// Update fields
 	if v, ok := businessData["name"]; ok {
@@ -417,19 +453,19 @@ func (bas *BusinessAccountServiceImpl) UpdateBusinessAccount(ctx context.Context
 	}
 
 	// update elasticsearch
-	if err := bas.searchService.CreateOrUpdateBusiness(ctx, business); err != nil {
+	if err := s.searchService.CreateOrUpdateBusiness(ctx, business); err != nil {
 		return nil, fmt.Errorf("failed updating business in elasticsearch: %w", err)
 	}
 
 	return business, nil
 }
 
-func (bas *BusinessAccountServiceImpl) DeleteBusinessAccount(ctx context.Context, businessAccountID string) error {
+func (s *BusinessAccountServiceImpl) DeleteBusinessAccount(ctx context.Context, businessAccountID string) error {
 	if businessAccountID == "" {
 		return errors.New("businessAccountID cannot be nil")
 	}
 
-	err := bas.client.Business.DeleteOneID(businessAccountID).Exec(ctx)
+	err := s.client.Business.DeleteOneID(businessAccountID).Exec(ctx)
 	if err != nil {
 		return err
 	}
@@ -437,8 +473,8 @@ func (bas *BusinessAccountServiceImpl) DeleteBusinessAccount(ctx context.Context
 	return nil
 }
 
-func (bas *BusinessAccountServiceImpl) ListBusinessAccounts(ctx context.Context, page, pageSize int, sortBy string, filters ...predicate.Business) ([]*ent.Business, error) {
-	businesses, err := bas.client.Business.Query().
+func (s *BusinessAccountServiceImpl) ListBusinessAccounts(ctx context.Context, page, pageSize int, sortBy string, filters ...predicate.Business) ([]*ent.Business, error) {
+	businesses, err := s.client.Business.Query().
 		Where(filters...).
 		Offset((page - 1) * pageSize).
 		Limit(pageSize).

@@ -419,6 +419,7 @@ func (cq *CategoryQuery) loadCategoryAssignments(ctx context.Context, query *Cat
 			init(nodes[i])
 		}
 	}
+	query.withFKs = true
 	if len(query.ctx.Fields) > 0 {
 		query.ctx.AppendFieldOnce(categoryassignment.FieldCategoryID)
 	}

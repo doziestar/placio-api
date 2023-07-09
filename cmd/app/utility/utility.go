@@ -133,7 +133,7 @@ func Use(fn func(*gin.Context) error) gin.HandlerFunc {
 	}
 }
 
-// StructToMap structToMap converts a struct to a map, omitting fields that are nil.
+// StructToMap converts a struct to a map, omitting fields that are nil.
 func StructToMap(v interface{}) (map[string]interface{}, error) {
 	var m map[string]interface{}
 	data, err := json.Marshal(v)
