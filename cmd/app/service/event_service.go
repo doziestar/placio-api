@@ -7,13 +7,42 @@ import (
 	"placio-app/Dto"
 	"placio-app/ent"
 	"placio-app/ent/event"
-	"placio-app/models"
 	"time"
 )
+
+type EventFilter struct {
+	IDs       []string
+	Name      []string
+	EventType []string
+	Status    []string
+	Location  []string
+	URL       []string
+	Title     []string
+	TimeZone  []string
+	StartDate struct {
+		From string
+		To   string
+	}
+	EndDate struct {
+		From string
+		To   string
+	}
+	StartTime struct {
+		From time.Time
+		To   time.Time
+	}
+	EndTime struct {
+		From time.Time
+		To   time.Time
+	}
+}
 
 type IEventService interface {
 	CreateEvent(ctx context.Context, businessId string, data Dto.EventDTO) (*ent.Event, error)
 	UpdateEvent(ctx context.Context, eventId string, businessId string, data Dto.EventDTO) (*ent.Event, error)
+	GetEventByID(ctx context.Context, id string) (*ent.Event, error)
+	DeleteEvent(ctx context.Context, eventId string) error
+	GetEvents(ctx context.Context, filter *EventFilter, page int, pageSize int) ([]*ent.Event, error)
 	//GetEventByID(eventId string) (*models.Event, error)
 	//GetEventByLocation(locationId string) (*[]models.Event, error)
 	//GetEventByCategory(categoryId string) (*[]models.Event, error)
@@ -201,35 +230,106 @@ func (s *EventService) UpdateEvent(ctx context.Context, eventId string, business
 	return event, nil
 }
 
-func (s *EventService) GetEventByID(eventId string) (*models.Event, error) {
-	return nil, nil
+func (s *EventService) GetEventByID(ctx context.Context, id string) (*ent.Event, error) {
+	// Get event by ID
+	event, err := s.client.Event.Get(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	return event, nil
 }
 
-func (s *EventService) GetEventByLocation(locationId string) (*[]models.Event, error) {
-	return nil, nil
-}
+func (s *EventService) DeleteEvent(ctx context.Context, eventId string) error {
+	// Try to delete the event from the database.
+	err := s.client.Event.
+		DeleteOneID(eventId).
+		Exec(ctx)
 
-func (s *EventService) GetEventByCategory(categoryId string) (*[]models.Event, error) {
-	return nil, nil
-}
+	if err != nil {
+		return err
+	}
 
-func (s *EventService) GetEventByDate(date string) (*[]models.Event, error) {
-	return nil, nil
-}
-
-func (s *EventService) DeleteEvent(eventId string) error {
 	return nil
 }
 
-func (s *EventService) GetEventParticipants(eventId string) error {
-	return nil
-}
+func (s *EventService) GetEvents(ctx context.Context, filter *EventFilter, page int, pageSize int) ([]*ent.Event, error) {
+	query := s.client.Event.
+		Query().
+		WithOwnerUser().
+		WithOwnerBusiness()
 
-//func (s *EventService) GetEventsByAccount(accountID string) ([]models.Event, error) {
-//	var events []models.Event
-//	err := s.db.Where("account_id = ?", accountID).Find(&events).Error
-//	return events, err
-//}
+	// Apply filters
+	if len(filter.IDs) > 0 {
+		query = query.Where(event.IDIn(filter.IDs...))
+	}
+	if len(filter.Name) > 0 {
+		query = query.Where(event.NameIn(filter.Name...))
+	}
+	if len(filter.EventType) > 0 {
+		// use parseEventType to convert string to enum
+		eventTypeEnumArr := make([]event.EventType, len(filter.EventType))
+		for i, v := range filter.EventType {
+			eventTypeEnum, err := parseEventType(v)
+			if err != nil {
+				return nil, err
+			}
+			eventTypeEnumArr[i] = eventTypeEnum
+		}
+		query = query.Where(event.EventTypeIn(eventTypeEnumArr...))
+	}
+	if len(filter.Status) > 0 {
+		query = query.Where(event.StatusIn(filter.Status...))
+	}
+	if len(filter.Location) > 0 {
+		query = query.Where(event.LocationIn(filter.Location...))
+	}
+	if len(filter.URL) > 0 {
+		query = query.Where(event.URLIn(filter.URL...))
+	}
+
+	// Apply date ranges
+	if filter.StartDate.From != "" && filter.StartDate.To != "" {
+		from, err1 := time.Parse("2006-01-02", filter.StartDate.From)
+		to, err2 := time.Parse("2006-01-02", filter.StartDate.To)
+		// convert to string
+		fromStr := from.Format("2006-01-02")
+		toStr := to.Format("2006-01-02")
+		if err1 == nil && err2 == nil {
+			query = query.Where(event.StartDateGTE(fromStr), event.StartDateLTE(toStr))
+		}
+	}
+
+	if filter.EndDate.From != "" && filter.EndDate.To != "" {
+		from, err1 := time.Parse("2006-01-02", filter.EndDate.From)
+		to, err2 := time.Parse("2006-01-02", filter.EndDate.To)
+		// convert to string
+		fromStr := from.Format("2006-01-02")
+		toStr := to.Format("2006-01-02")
+		if err1 == nil && err2 == nil {
+			query = query.Where(event.EndDateGTE(fromStr), event.EndDateLTE(toStr))
+		}
+
+	}
+
+	// Apply time ranges
+	if !filter.StartTime.From.IsZero() && !filter.StartTime.To.IsZero() {
+		query = query.Where(event.StartTimeGTE(filter.StartTime.From), event.StartTimeLTE(filter.StartTime.To))
+	}
+	if !filter.EndTime.From.IsZero() && !filter.EndTime.To.IsZero() {
+		query = query.Where(event.EndTimeGTE(filter.EndTime.From), event.EndTimeLTE(filter.EndTime.To))
+	}
+
+	// Apply pagination
+	query = query.Offset((page - 1) * pageSize).Limit(pageSize)
+
+	// Execute query
+	events, err := query.All(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return events, nil
+}
 
 func parseEventType(s string) (event.EventType, error) {
 	switch s {
