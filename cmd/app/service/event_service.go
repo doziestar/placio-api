@@ -2,15 +2,18 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"placio-app/Dto"
 	"placio-app/ent"
 	"placio-app/ent/event"
 	"placio-app/models"
+	"time"
 )
 
 type IEventService interface {
 	CreateEvent(ctx context.Context, businessId string, data Dto.EventDTO) (*ent.Event, error)
+	UpdateEvent(ctx context.Context, eventId string, businessId string, data Dto.EventDTO) (*ent.Event, error)
 	//GetEventByID(eventId string) (*models.Event, error)
 	//GetEventByLocation(locationId string) (*[]models.Event, error)
 	//GetEventByCategory(categoryId string) (*[]models.Event, error)
@@ -28,8 +31,8 @@ type EventService struct {
 	// account *models.Account
 }
 
-func NewEventService(client *ent.Client, searchService SearchService) *PlaceServiceImpl {
-	return &PlaceServiceImpl{client: client, searchService: searchService}
+func NewEventService(client *ent.Client, searchService SearchService) *EventService {
+	return &EventService{client: client, searchService: searchService}
 }
 
 func (s *EventService) CreateEvent(ctx context.Context, businessId string, data Dto.EventDTO) (*ent.Event, error) {
@@ -112,6 +115,92 @@ func (s *EventService) CreateEvent(ctx context.Context, businessId string, data 
 	return event, nil
 }
 
+func (s *EventService) UpdateEvent(ctx context.Context, eventId string, businessId string, data Dto.EventDTO) (*ent.Event, error) {
+	// get the user from the context
+	user := ctx.Value("user").(string)
+
+	event, err := s.client.Event.Get(ctx, eventId)
+	if err != nil {
+		return nil, err
+	}
+
+	// check if the business is the owner of the event
+	if businessId != "" && event.Edges.OwnerBusiness.ID != businessId {
+		return nil, errors.New("unauthorized: You can only update events that you own")
+	}
+
+	// check if the user is the owner of the event
+	if event.Edges.OwnerUser.ID != user {
+		return nil, errors.New("unauthorized: You can only update events that you own")
+	}
+
+	typeEnum, err := parseEventType(data.EventType)
+	if err != nil {
+		return nil, err
+	}
+	frequencyEnum, err := parseFrequencyType(data.Frequency)
+	if err != nil {
+		return nil, err
+	}
+	venueTypeEnum, err := parseVenueType(data.VenueType)
+	if err != nil {
+		return nil, err
+	}
+
+	upd := s.client.Event.UpdateOne(event)
+
+	if data.Name != "" {
+		upd.SetName(data.Name)
+	}
+
+	upd.SetEventType(typeEnum).
+		SetStatus(data.Status).
+		SetLocation(data.Location).
+		SetURL(data.URL).
+		SetTitle(data.Title).
+		SetTimeZone(data.TimeZone).
+		SetStartTime(data.StartTime).
+		SetEndTime(data.EndTime).
+		SetStartDate(data.StartDate).
+		SetEndDate(data.EndDate).
+		SetFrequency(frequencyEnum).
+		SetFrequencyInterval(data.FrequencyInterval).
+		SetFrequencyDayOfWeek(data.FrequencyDayOfWeek).
+		SetFrequencyDayOfMonth(data.FrequencyDayOfMonth).
+		SetFrequencyMonthOfYear(data.FrequencyMonthOfYear).
+		SetVenueType(venueTypeEnum).
+		SetVenueName(data.VenueName).
+		SetVenueAddress(data.VenueAddress).
+		SetVenueCity(data.VenueCity).
+		SetVenueState(data.VenueState).
+		SetVenueCountry(data.VenueCountry).
+		//SetVenueZIP(data.VenueZIP).
+		SetVenueLat(data.VenueLat).
+		SetVenueLon(data.VenueLon).
+		SetVenueURL(data.VenueURL).
+		SetVenuePhone(data.VenuePhone).
+		SetVenueEmail(data.VenueEmail).
+		SetTags(data.Tags).
+		SetDescription(data.Description).
+		SetCoverImage(data.CoverImage).
+		SetUpdatedAt(time.Now())
+
+	// Merge the existing and new settings.
+	newSettings := data.EventSettings
+	for k, value := range event.EventSettings {
+		if _, exists := newSettings[k]; !exists {
+			newSettings[k] = value
+		}
+	}
+
+	event, err = upd.Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return event, nil
+}
+
 func (s *EventService) GetEventByID(eventId string) (*models.Event, error) {
 	return nil, nil
 }
@@ -131,10 +220,6 @@ func (s *EventService) GetEventByDate(date string) (*[]models.Event, error) {
 func (s *EventService) DeleteEvent(eventId string) error {
 	return nil
 }
-
-//func (s *EventService) UpdateEvent(eventId string, data *Dto.EventDto) (*models.Event, error) {
-//	return nil, nil
-//}
 
 func (s *EventService) GetEventParticipants(eventId string) error {
 	return nil

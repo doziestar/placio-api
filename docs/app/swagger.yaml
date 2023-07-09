@@ -5989,6 +5989,10 @@ paths:
         name: eventId
         required: true
         type: string
+      - description: Business ID
+        in: query
+        name: businessId
+        type: string
       - description: Event Data
         in: body
         name: data

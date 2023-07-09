@@ -5743,6 +5743,12 @@ const docTemplate = `{
                         "required": true
                     },
                     {
+                        "type": "string",
+                        "description": "Business ID",
+                        "name": "businessId",
+                        "in": "query"
+                    },
+                    {
                         "description": "Event Data",
                         "name": "data",
                         "in": "body",

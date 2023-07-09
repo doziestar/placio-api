@@ -21,8 +21,9 @@ func NewEventController(service service.IEventService, utility utility.IUtility)
 }
 
 func (c *EventController) RegisterRoutes(router *gin.RouterGroup) {
-	eventRouter := router.Group("/event")
-	eventRouter.POST("/create", utility.Use(c.createEvent))
+	eventRouter := router.Group("/events")
+	eventRouter.POST("/", utility.Use(c.createEvent))
+	eventRouter.PATCH("/:eventId", utility.Use(c.updateEvent))
 	//eventRouter.Get("/:eventId", c.getEventID)
 	//eventRouter.Get("/get/location/:locationId", c.getEventByLocation)
 	//eventRouter.Get("/get/category/:categoryId", c.getEventByCategory)
@@ -144,12 +145,25 @@ func (c *EventController) deleteEvent(ctx *fiber.Ctx) error {
 // @Accept  json
 // @Produce  json
 // @Param eventId path string true "Event ID"
+// @Param businessId query string false "Business ID"
 // @Param data body Dto.EventDTO true "Event Data"
 // @Success 200 {object} ent.Event
 // @Failure 400 {object} Dto.ErrorDTO
 // @Failure 500 {object} Dto.ErrorDTO
 // @Router /event/update/{eventId} [put]
-func (c *EventController) updateEvent(ctx *fiber.Ctx) error {
+func (c *EventController) updateEvent(ctx *gin.Context) error {
+	var data Dto.EventDTO
+	if err := ctx.ShouldBindJSON(&data); err != nil {
+		return err
+	}
+	eventId := ctx.Param("eventId")
+	businessId := ctx.Query("businessId")
+	event, err := c.service.UpdateEvent(ctx, eventId, businessId, data)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
+		return err
+	}
+	ctx.JSON(http.StatusOK, event)
 	return nil
 }
 
