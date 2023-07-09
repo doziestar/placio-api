@@ -5425,7 +5425,128 @@ const docTemplate = `{
                 }
             }
         },
-        "/event/create": {
+        "/events": {
+            "get": {
+                "description": "Get Events",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Event"
+                ],
+                "summary": "Get all Events",
+                "parameters": [
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "name": "eventType",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "name": "ids",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "name": "location",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "name": "timeZone",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "name": "title",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "name": "url",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page Number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page Size",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/placio-app_ent.Event"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
@@ -5489,192 +5610,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/event/delete/{eventId}": {
-            "delete": {
-                "description": "Delete Event",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Event"
-                ],
-                "summary": "Delete Event",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Event ID",
-                        "name": "eventId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.SuccessDTO"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    }
-                }
-            }
-        },
-        "/event/get/category/{categoryId}": {
-            "get": {
-                "description": "Get Event By Category",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Event"
-                ],
-                "summary": "Get Event By Category",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Category ID",
-                        "name": "categoryId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/placio-app_ent.Event"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    }
-                }
-            }
-        },
-        "/event/get/date/{date}": {
-            "get": {
-                "description": "Get Event By Date",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Event"
-                ],
-                "summary": "Get Event By Date",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Event Date",
-                        "name": "date",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/placio-app_ent.Event"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    }
-                }
-            }
-        },
-        "/event/get/location/{locationId}": {
-            "get": {
-                "description": "Get Event By Location",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Event"
-                ],
-                "summary": "Get Event By Location",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Location Address",
-                        "name": "address",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/placio-app_ent.Event"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    }
-                }
-            }
-        },
-        "/event/participants/{eventId}": {
+        "/events/participants/{eventId}": {
             "get": {
                 "description": "Get Event Participants",
                 "consumes": [
@@ -5721,7 +5657,56 @@ const docTemplate = `{
                 }
             }
         },
-        "/event/update/{eventId}": {
+        "/events/{eventId}": {
+            "get": {
+                "description": "Get a single event by its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Event"
+                ],
+                "summary": "Get Event By ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Event ID",
+                        "name": "eventId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.Event"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    }
+                }
+            },
             "put": {
                 "description": "Update Event",
                 "consumes": [
@@ -5740,6 +5725,19 @@ const docTemplate = `{
                         "description": "Event ID",
                         "name": "eventId",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Business ID",
+                        "name": "businessId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
                         "required": true
                     },
                     {
@@ -5772,11 +5770,9 @@ const docTemplate = `{
                         }
                     }
                 }
-            }
-        },
-        "/event/{eventId}": {
-            "get": {
-                "description": "Get Event By ID",
+            },
+            "delete": {
+                "description": "Delete an existing event",
                 "consumes": [
                     "application/json"
                 ],
@@ -5786,7 +5782,7 @@ const docTemplate = `{
                 "tags": [
                     "Event"
                 ],
-                "summary": "Get Event By ID",
+                "summary": "Delete Event",
                 "parameters": [
                     {
                         "type": "string",
@@ -5794,25 +5790,32 @@ const docTemplate = `{
                         "name": "eventId",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK",
+                        "description": "Deleted",
                         "schema": {
-                            "$ref": "#/definitions/placio-app_ent.Event"
+                            "type": "string"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                            "$ref": "#/definitions/placio-app_Dto.Error"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                            "$ref": "#/definitions/placio-app_Dto.Error"
                         }
                     }
                 }
@@ -6411,17 +6414,6 @@ const docTemplate = `{
         },
         "placio-app_Dto.SearchResponse": {
             "type": "object"
-        },
-        "placio-app_Dto.SuccessDTO": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "integer"
-                }
-            }
         },
         "placio-app_Dto.UpdatePlaceDTO": {
             "type": "object",

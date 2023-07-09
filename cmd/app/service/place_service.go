@@ -22,11 +22,6 @@ type PlaceServiceImpl struct {
 	searchService SearchService
 }
 
-func (s *PlaceServiceImpl) CreateEvent(ctx context.Context, businessId string, data Dto.EventDTO) (*ent.Event, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
 func NewPlaceService(client *ent.Client, searchService SearchService) *PlaceServiceImpl {
 	return &PlaceServiceImpl{client: client, searchService: searchService}
 }

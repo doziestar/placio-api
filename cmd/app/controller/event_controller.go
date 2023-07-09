@@ -9,6 +9,7 @@ import (
 	_ "placio-app/ent"
 	"placio-app/service"
 	"placio-app/utility"
+	"strconv"
 )
 
 type EventController struct {
@@ -21,14 +22,12 @@ func NewEventController(service service.IEventService, utility utility.IUtility)
 }
 
 func (c *EventController) RegisterRoutes(router *gin.RouterGroup) {
-	eventRouter := router.Group("/event")
-	eventRouter.POST("/create", utility.Use(c.createEvent))
-	//eventRouter.Get("/:eventId", c.getEventID)
-	//eventRouter.Get("/get/location/:locationId", c.getEventByLocation)
-	//eventRouter.Get("/get/category/:categoryId", c.getEventByCategory)
-	//eventRouter.Get("/get/date/:date", c.getEventByDate)
-	//eventRouter.Delete("/delete/:eventId", c.deleteEvent)
-	//eventRouter.Put("/update/:eventId", c.updateEvent)
+	eventRouter := router.Group("/events")
+	eventRouter.POST("/", utility.Use(c.createEvent))
+	eventRouter.PATCH("/:eventId", utility.Use(c.updateEvent))
+	eventRouter.DELETE("/:eventId", utility.Use(c.deleteEvent))
+	eventRouter.GET("/:eventId", utility.Use(c.getEventByID))
+	eventRouter.GET("/", utility.Use(c.getEventsByFilters))
 	//eventRouter.Get("/participants/:eventId", c.getEventParticipants)
 
 }
@@ -46,7 +45,7 @@ func (c *EventController) RegisterRoutes(router *gin.RouterGroup) {
 // @Success 200 {object} ent.Event
 // @Failure 400 {object} Dto.ErrorDTO
 // @Failure 500 {object} Dto.ErrorDTO
-// @Router /event/create [post]
+// @Router /events [post]
 func (c *EventController) createEvent(ctx *gin.Context) error {
 	var data Dto.EventDTO
 	if err := ctx.ShouldBindJSON(&data); err != nil {
@@ -62,81 +61,6 @@ func (c *EventController) createEvent(ctx *gin.Context) error {
 	return nil
 }
 
-// GetEventID godoc
-// @Summary Get Event By ID
-// @Description Get Event By ID
-// @Tags Event
-// @Accept  json
-// @Produce  json
-// @Param eventId path string true "Event ID"
-// @Success 200 {object} ent.Event
-// @Failure 400 {object} Dto.ErrorDTO
-// @Failure 500 {object} Dto.ErrorDTO
-// @Router /event/{eventId} [get]
-func (c *EventController) getEventID(ctx *fiber.Ctx) error {
-	return nil
-}
-
-// GetEventByLocation godoc
-// @Summary Get Event By Location
-// @Description Get Event By Location
-// @Tags Event
-// @Accept  json
-// @Produce  json
-// @Param address path string true "Location Address"
-// @Success 200 {object} []ent.Event
-// @Failure 400 {object} Dto.ErrorDTO
-// @Failure 500 {object} Dto.ErrorDTO
-// @Router /event/get/location/{locationId} [get]
-func (c *EventController) getEventByLocation(ctx *fiber.Ctx) error {
-	return nil
-}
-
-// GetEventByCategory godoc
-// @Summary Get Event By Category
-// @Description Get Event By Category
-// @Tags Event
-// @Accept  json
-// @Produce  json
-// @Param categoryId path string true "Category ID"
-// @Success 200 {object} []ent.Event
-// @Failure 400 {object} Dto.ErrorDTO
-// @Failure 500 {object} Dto.ErrorDTO
-// @Router /event/get/category/{categoryId} [get]
-func (c *EventController) getEventByCategory(ctx *fiber.Ctx) error {
-	return nil
-}
-
-// GetEventByDate godoc
-// @Summary Get Event By Date
-// @Description Get Event By Date
-// @Tags Event
-// @Accept  json
-// @Produce  json
-// @Param date path string true "Event Date"
-// @Success 200 {object} []ent.Event
-// @Failure 400 {object} Dto.ErrorDTO
-// @Failure 500 {object} Dto.ErrorDTO
-// @Router /event/get/date/{date} [get]
-func (c *EventController) getEventByDate(ctx *fiber.Ctx) error {
-	return nil
-}
-
-// DeleteEvent godoc
-// @Summary Delete Event
-// @Description Delete Event
-// @Tags Event
-// @Accept  json
-// @Produce  json
-// @Param eventId path string true "Event ID"
-// @Success 200 {object} Dto.SuccessDTO
-// @Failure 400 {object} Dto.ErrorDTO
-// @Failure 500 {object} Dto.ErrorDTO
-// @Router /event/delete/{eventId} [delete]
-func (c *EventController) deleteEvent(ctx *fiber.Ctx) error {
-	return nil
-}
-
 // UpdateEvent godoc
 // @Summary Update Event
 // @Description Update Event
@@ -144,12 +68,113 @@ func (c *EventController) deleteEvent(ctx *fiber.Ctx) error {
 // @Accept  json
 // @Produce  json
 // @Param eventId path string true "Event ID"
+// @Param businessId query string false "Business ID"
+// @Param Authorization header string true "Bearer Token"
 // @Param data body Dto.EventDTO true "Event Data"
 // @Success 200 {object} ent.Event
 // @Failure 400 {object} Dto.ErrorDTO
 // @Failure 500 {object} Dto.ErrorDTO
-// @Router /event/update/{eventId} [put]
-func (c *EventController) updateEvent(ctx *fiber.Ctx) error {
+// @Router /events/{eventId} [put]
+func (c *EventController) updateEvent(ctx *gin.Context) error {
+	var data Dto.EventDTO
+	if err := ctx.ShouldBindJSON(&data); err != nil {
+		return err
+	}
+	eventId := ctx.Param("eventId")
+	businessId := ctx.Query("businessId")
+	event, err := c.service.UpdateEvent(ctx, eventId, businessId, data)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
+		return err
+	}
+	ctx.JSON(http.StatusOK, event)
+	return nil
+}
+
+// GetEvents godoc
+// @Summary Get all Events
+// @Description Get Events
+// @Tags Event
+// @Accept  json
+// @Produce  json
+// @Param filter query service.EventFilter false "Filter"
+// @Param page query int false "Page Number"
+// @Param pageSize query int false "Page Size"
+// @Param Authorization header string true "Bearer Token"
+// @Success 200 {array} ent.Event
+// @Failure 400 {object} Dto.ErrorDTO
+// @Failure 500 {object} Dto.ErrorDTO
+// @Router /events [get]
+func (c *EventController) getEventsByFilters(ctx *gin.Context) error {
+	var filter service.EventFilter
+	if err := ctx.ShouldBindQuery(&filter); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return err
+	}
+
+	page, err := strconv.Atoi(ctx.DefaultQuery("page", "1"))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page number"})
+		return err
+	}
+
+	pageSize, err := strconv.Atoi(ctx.DefaultQuery("pageSize", "10"))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page size"})
+		return err
+	}
+
+	events, err := c.service.GetEvents(ctx, &filter, page, pageSize)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, events)
+	return nil
+}
+
+// @Summary Get Event By ID
+// @Description Get a single event by its ID
+// @Tags Event
+// @Accept  json
+// @Produce  json
+// @Param eventId path string true "Event ID"
+// @Param Authorization header string true "Bearer Token"
+// @Success 200 {object} ent.Event
+// @Failure 400 {object} Dto.Error
+// @Failure 500 {object} Dto.Error
+// @Router /events/{eventId} [get]
+func (c *EventController) getEventByID(ctx *gin.Context) error {
+	eventId := ctx.Param("eventId")
+	event, err := c.service.GetEventByID(ctx, eventId)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return err
+	}
+	ctx.JSON(http.StatusOK, event)
+	return nil
+}
+
+// @Summary Delete Event
+// @Description Delete an existing event
+// @Tags Event
+// @Accept  json
+// @Produce  json
+// @Param eventId path string true "Event ID"
+// @Param Authorization header string true "Bearer Token"
+// @Success 200 {string} string "Deleted"
+// @Failure 400 {object} Dto.Error
+// @Failure 500 {object} Dto.Error
+// @Router /events/{eventId} [delete]
+func (c *EventController) deleteEvent(ctx *gin.Context) error {
+	eventId := ctx.Param("eventId")
+	err := c.service.DeleteEvent(ctx, eventId)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return err
+	}
+	ctx.JSON(http.StatusOK, "Deleted")
 	return nil
 }
 
@@ -163,7 +188,7 @@ func (c *EventController) updateEvent(ctx *fiber.Ctx) error {
 // @Success 200 {object} []ent.Event
 // @Failure 400 {object} Dto.ErrorDTO
 // @Failure 500 {object} Dto.ErrorDTO
-// @Router /event/participants/{eventId} [get]
+// @Router /events/participants/{eventId} [get]
 func (c *EventController) getEventParticipants(ctx *fiber.Ctx) error {
 	return nil
 }

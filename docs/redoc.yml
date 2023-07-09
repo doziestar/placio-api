@@ -420,13 +420,6 @@ definitions:
     type: object
   placio-app_Dto.SearchResponse:
     type: object
-  placio-app_Dto.SuccessDTO:
-    properties:
-      message:
-        type: string
-      status:
-        type: integer
-    type: object
   placio-app_Dto.UpdatePlaceDTO:
     properties:
       additional_info:
@@ -5730,15 +5723,63 @@ paths:
       summary: Search by category
       tags:
         - categories
-  /event/{eventId}:
+  /events:
     get:
       consumes:
         - application/json
-      description: Get Event By ID
+      description: Get Events
       parameters:
-        - description: Event ID
-          in: path
-          name: eventId
+        - in: query
+          items:
+            type: string
+          name: eventType
+          type: array
+        - in: query
+          items:
+            type: string
+          name: ids
+          type: array
+        - in: query
+          items:
+            type: string
+          name: location
+          type: array
+        - in: query
+          items:
+            type: string
+          name: name
+          type: array
+        - in: query
+          items:
+            type: string
+          name: status
+          type: array
+        - in: query
+          items:
+            type: string
+          name: timeZone
+          type: array
+        - in: query
+          items:
+            type: string
+          name: title
+          type: array
+        - in: query
+          items:
+            type: string
+          name: url
+          type: array
+        - description: Page Number
+          in: query
+          name: page
+          type: integer
+        - description: Page Size
+          in: query
+          name: pageSize
+          type: integer
+        - description: Bearer Token
+          in: header
+          name: Authorization
           required: true
           type: string
       produces:
@@ -5747,7 +5788,9 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/placio-app_ent.Event'
+            items:
+              $ref: '#/definitions/placio-app_ent.Event'
+            type: array
         '400':
           description: Bad Request
           schema:
@@ -5756,10 +5799,9 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Get Event By ID
+      summary: Get all Events
       tags:
         - Event
-  /event/create:
     post:
       consumes:
         - application/json
@@ -5800,44 +5842,53 @@ paths:
       summary: Create Event
       tags:
         - Event
-  /event/delete/{eventId}:
+  /events/{eventId}:
     delete:
       consumes:
         - application/json
-      description: Delete Event
+      description: Delete an existing event
       parameters:
         - description: Event ID
           in: path
           name: eventId
           required: true
           type: string
+        - description: Bearer Token
+          in: header
+          name: Authorization
+          required: true
+          type: string
       produces:
         - application/json
       responses:
         '200':
-          description: OK
+          description: Deleted
           schema:
-            $ref: '#/definitions/placio-app_Dto.SuccessDTO'
+            type: string
         '400':
           description: Bad Request
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: '#/definitions/placio-app_Dto.Error'
         '500':
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: '#/definitions/placio-app_Dto.Error'
       summary: Delete Event
       tags:
         - Event
-  /event/get/category/{categoryId}:
     get:
       consumes:
         - application/json
-      description: Get Event By Category
+      description: Get a single event by its ID
       parameters:
-        - description: Category ID
+        - description: Event ID
           in: path
-          name: categoryId
+          name: eventId
+          required: true
+          type: string
+        - description: Bearer Token
+          in: header
+          name: Authorization
           required: true
           type: string
       produces:
@@ -5846,40 +5897,50 @@ paths:
         '200':
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/placio-app_ent.Event'
-            type: array
+            $ref: '#/definitions/placio-app_ent.Event'
         '400':
           description: Bad Request
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+            $ref: '#/definitions/placio-app_Dto.Error'
         '500':
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Get Event By Category
+            $ref: '#/definitions/placio-app_Dto.Error'
+      summary: Get Event By ID
       tags:
         - Event
-  /event/get/date/{date}:
-    get:
+    put:
       consumes:
         - application/json
-      description: Get Event By Date
+      description: Update Event
       parameters:
-        - description: Event Date
+        - description: Event ID
           in: path
-          name: date
+          name: eventId
           required: true
           type: string
+        - description: Business ID
+          in: query
+          name: businessId
+          type: string
+        - description: Bearer Token
+          in: header
+          name: Authorization
+          required: true
+          type: string
+        - description: Event Data
+          in: body
+          name: data
+          required: true
+          schema:
+            $ref: '#/definitions/placio-app_Dto.EventDTO'
       produces:
         - application/json
       responses:
         '200':
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/placio-app_ent.Event'
-            type: array
+            $ref: '#/definitions/placio-app_ent.Event'
         '400':
           description: Bad Request
           schema:
@@ -5888,41 +5949,10 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Get Event By Date
+      summary: Update Event
       tags:
         - Event
-  /event/get/location/{locationId}:
-    get:
-      consumes:
-        - application/json
-      description: Get Event By Location
-      parameters:
-        - description: Location Address
-          in: path
-          name: address
-          required: true
-          type: string
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/placio-app_ent.Event'
-            type: array
-        '400':
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        '500':
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Get Event By Location
-      tags:
-        - Event
-  /event/participants/{eventId}:
+  /events/participants/{eventId}:
     get:
       consumes:
         - application/json
@@ -5951,41 +5981,6 @@ paths:
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
       summary: Get Event Participants
-      tags:
-        - Event
-  /event/update/{eventId}:
-    put:
-      consumes:
-        - application/json
-      description: Update Event
-      parameters:
-        - description: Event ID
-          in: path
-          name: eventId
-          required: true
-          type: string
-        - description: Event Data
-          in: body
-          name: data
-          required: true
-          schema:
-            $ref: '#/definitions/placio-app_Dto.EventDTO'
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/placio-app_ent.Event'
-        '400':
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        '500':
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Update Event
       tags:
         - Event
 schemes:
