@@ -4457,6 +4457,75 @@ const docTemplate = `{
                 }
             }
         },
+        "/business/{businessAccountID}/associated": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Retrieve All Places and Events associated with a Business Account",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Business"
+                ],
+                "summary": "Get Places and Events associated with a Business Account",
+                "operationId": "get-places-and-events-associated-with-business-account",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Business Account ID",
+                        "name": "businessAccountID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "All",
+                        "name": "All",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.BusinessAccountPlacesAndEvents"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/business/{businessAccountID}/user/{currentOwnerID}/{newOwnerID}": {
             "put": {
                 "produces": [
@@ -5836,6 +5905,23 @@ const docTemplate = `{
                 },
                 "refresh_token": {
                     "type": "string"
+                }
+            }
+        },
+        "placio-app_Dto.BusinessAccountPlacesAndEvents": {
+            "type": "object",
+            "properties": {
+                "events": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Event"
+                    }
+                },
+                "places": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Place"
+                    }
                 }
             }
         },

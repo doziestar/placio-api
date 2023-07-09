@@ -1,11 +1,13 @@
 package controller
 
 import (
+	"errors"
 	"log"
 	"net/http"
 	"placio-app/Dto"
 	_ "placio-app/ent"
 	"placio-app/service"
+	"placio-app/utility"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,23 +23,55 @@ func NewBusinessAccountController(service service.BusinessAccountService) *Busin
 func (bc *BusinessAccountController) RegisterRoutes(router *gin.RouterGroup) {
 	businessRouter := router.Group("/business")
 	{
-		businessRouter.POST("/:businessAccountID/follow/user/:userID", bc.followUser)
-		businessRouter.POST("/:businessAccountID/follow/business/:followedID", bc.followBusiness)
-		businessRouter.DELETE("/:businessAccountID/unfollow/user/:userID", bc.unfollowUser)
-		businessRouter.DELETE("/:businessAccountID/unfollow/business/:followedID", bc.unfollowBusiness)
-		businessRouter.GET("/:businessAccountID/followed-contents", bc.getFollowedContents)
-		businessRouter.POST("/", bc.createBusinessAccount)
-		businessRouter.GET("/user-business-account", bc.getUserBusinessAccounts)
-		businessRouter.GET("/:businessAccountID", bc.getBusinessAccount)
-		businessRouter.PATCH("/:businessAccountID", bc.updateBusinessAccount)
-		businessRouter.DELETE("/:businessAccountID", bc.deleteBusinessAccount)
-		businessRouter.POST("/:businessAccountID/user/:userID", bc.associateUserWithBusinessAccount)
-		businessRouter.DELETE("/:businessAccountID/user/:userID", bc.removeUserFromBusinessAccount)
-		businessRouter.PUT("/:businessAccountID/user/:currentOwnerID/:newOwnerID", bc.transferBusinessAccountOwnership)
-		businessRouter.GET("/:businessAccountID/users", bc.getBusinessAccountsForUser)
-		businessRouter.GET("/:businessAccountID/associated-users", bc.getUsersForBusinessAccount)
-		businessRouter.GET("/", bc.listBusinessAccounts)
+		businessRouter.POST("/:businessAccountID/follow/user/:userID", utility.Use(bc.followUser))
+		businessRouter.POST("/:businessAccountID/follow/business/:followedID", utility.Use(bc.followBusiness))
+		businessRouter.DELETE("/:businessAccountID/unfollow/user/:userID", utility.Use(bc.unfollowUser))
+		businessRouter.DELETE("/:businessAccountID/unfollow/business/:followedID", utility.Use(bc.unfollowBusiness))
+		businessRouter.GET("/:businessAccountID/followed-contents", utility.Use(bc.getFollowedContents))
+		businessRouter.POST("/", utility.Use(bc.createBusinessAccount))
+		businessRouter.GET("/user-business-account", utility.Use(bc.getUserBusinessAccounts))
+		businessRouter.GET("/:businessAccountID", utility.Use(bc.getBusinessAccount))
+		businessRouter.PATCH("/:businessAccountID", utility.Use(bc.updateBusinessAccount))
+		businessRouter.DELETE("/:businessAccountID", utility.Use(bc.deleteBusinessAccount))
+		businessRouter.POST("/:businessAccountID/user/:userID", utility.Use(bc.associateUserWithBusinessAccount))
+		businessRouter.DELETE("/:businessAccountID/user/:userID", utility.Use(bc.removeUserFromBusinessAccount))
+		businessRouter.PUT("/:businessAccountID/user/:currentOwnerID/:newOwnerID", utility.Use(bc.transferBusinessAccountOwnership))
+		businessRouter.GET("/:businessAccountID/users", utility.Use(bc.getBusinessAccountsForUser))
+		businessRouter.GET("/:businessAccountID/associated-users", utility.Use(bc.getUsersForBusinessAccount))
+		businessRouter.GET("/", utility.Use(bc.listBusinessAccounts))
+		businessRouter.GET("/:businessAccountID/associated", utility.Use(bc.getPlacesAndEventsAssociatedWithBusinessAccount))
 	}
+}
+
+// @Summary Get Places and Events associated with a Business Account
+// @ID get-places-and-events-associated-with-business-account
+// @Tags Business
+// @Produce json
+// @Param businessAccountID path string true "Business Account ID"
+// @Param All query bool false "All"
+// @Security Bearer
+// @Param Authorization header string true "Bearer token"
+// @QueryParam page query int false "Page Number"
+// @QueryParam limit query int false "Page Size"
+// @QueryParam sort query string false "Sort By"
+// @Accept json
+// @Description Retrieve All Places and Events associated with a Business Account
+// @Success 200 {object} Dto.BusinessAccountPlacesAndEvents
+// @Failure 400 {object} Dto.Error
+// @Failure 401 {object} Dto.Error
+// @Failure 500 {object} Dto.Error
+// @Router /business/{businessAccountID}/associated [get]
+func (bc *BusinessAccountController) getPlacesAndEventsAssociatedWithBusinessAccount(c *gin.Context) error {
+	businessAccountID := c.Param("businessAccountID")
+
+	placesAndEvents, err := bc.service.GetPlacesAndEventsAssociatedWithBusinessAccount(c, businessAccountID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error()))
+		return err
+	}
+
+	c.JSON(http.StatusOK, placesAndEvents)
+	return nil
 }
 
 // @Summary Follow a user by a business
@@ -53,16 +87,17 @@ func (bc *BusinessAccountController) RegisterRoutes(router *gin.RouterGroup) {
 // @Failure 401 {object} Dto.Error
 // @Failure 500 {object} Dto.ErrorDto
 // @Router /business/{businessID}/follow/user/{userID} [post]
-func (bc *BusinessAccountController) followUser(c *gin.Context) {
+func (bc *BusinessAccountController) followUser(c *gin.Context) error {
 	businessID := c.Param("businessID")
 	userID := c.Param("userID")
 
 	if err := bc.service.FollowUser(c, businessID, userID); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		return err
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Successfully followed user"})
+	return nil
 }
 
 // @Summary Follow a business by another business
@@ -76,16 +111,17 @@ func (bc *BusinessAccountController) followUser(c *gin.Context) {
 // @Failure 401 {object} Dto.Error
 // @Failure 500 {object} Dto.ErrorDto
 // @Router /business/{followerBusinessID}/follow/business/{followedID} [post]
-func (bc *BusinessAccountController) followBusiness(c *gin.Context) {
+func (bc *BusinessAccountController) followBusiness(c *gin.Context) error {
 	followerID := c.Param("followerID")
 	followedID := c.Param("followedID")
 
 	if err := bc.service.FollowBusiness(c, followerID, followedID); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		return err
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Successfully followed business"})
+	return nil
 }
 
 // @Summary Unfollow a user by a business
@@ -99,15 +135,16 @@ func (bc *BusinessAccountController) followBusiness(c *gin.Context) {
 // @Failure 401 {object} Dto.Error
 // @Failure 500 {object} Dto.ErrorDto
 // @Router /business/{businessID}/unfollow/user/{userID} [delete]
-func (bc *BusinessAccountController) unfollowUser(c *gin.Context) {
+func (bc *BusinessAccountController) unfollowUser(c *gin.Context) error {
 	businessID := c.Param("businessID")
 	userID := c.Param("userID")
 	err := bc.service.UnfollowUser(c, businessID, userID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		return err
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Successfully unfollowed the user"})
+	return nil
 }
 
 // @Summary Unfollow a business by another business
@@ -121,15 +158,16 @@ func (bc *BusinessAccountController) unfollowUser(c *gin.Context) {
 // @Failure 401 {object} Dto.Error
 // @Failure 500 {object} Dto.ErrorDto
 // @Router /business/{followerBusinessID}/unfollow/business/{followedBusinessID} [delete]
-func (bc *BusinessAccountController) unfollowBusiness(c *gin.Context) {
+func (bc *BusinessAccountController) unfollowBusiness(c *gin.Context) error {
 	followerID := c.Param("followerID")
 	followedID := c.Param("followedID")
 	err := bc.service.UnfollowBusiness(c, followerID, followedID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		return err
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Successfully unfollowed the business"})
+	return nil
 }
 
 // @Summary Get contents followed by a business
@@ -142,14 +180,15 @@ func (bc *BusinessAccountController) unfollowBusiness(c *gin.Context) {
 // @Failure 401 {object} Dto.Error
 // @Failure 500 {object} Dto.ErrorDto
 // @Router /business/{businessID}/followed-contents [get]
-func (bc *BusinessAccountController) getFollowedContents(c *gin.Context) {
+func (bc *BusinessAccountController) getFollowedContents(c *gin.Context) error {
 	businessID := c.Param("businessID")
 	posts, err := bc.service.GetFollowedContents(c, businessID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		return err
 	}
 	c.JSON(http.StatusOK, posts)
+	return nil
 }
 
 // @Summary Create a business account
@@ -163,18 +202,19 @@ func (bc *BusinessAccountController) getFollowedContents(c *gin.Context) {
 // @Failure 401 {object} Dto.Error
 // @Failure 500 {object} Dto.ErrorDto
 // @Router /business/ [post]
-func (bc *BusinessAccountController) createBusinessAccount(c *gin.Context) {
+func (bc *BusinessAccountController) createBusinessAccount(c *gin.Context) error {
 	var businessData Dto.BusinessDto
 	if err := c.ShouldBindJSON(&businessData); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+		return err
 	}
 	business, err := bc.service.CreateBusinessAccount(c, &businessData)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		return err
 	}
 	c.JSON(http.StatusCreated, business)
+	return nil
 }
 
 // @Summary Get a business account
@@ -187,14 +227,15 @@ func (bc *BusinessAccountController) createBusinessAccount(c *gin.Context) {
 // @Failure 401 {object} Dto.Error
 // @Failure 500 {object} Dto.ErrorDto
 // @Router /business/{businessAccountID} [get]
-func (bc *BusinessAccountController) getBusinessAccount(c *gin.Context) {
+func (bc *BusinessAccountController) getBusinessAccount(c *gin.Context) error {
 	businessAccountID := c.Param("businessAccountID")
 	business, err := bc.service.GetBusinessAccount(c, businessAccountID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		return err
 	}
 	c.JSON(http.StatusOK, business)
+	return nil
 }
 
 // updateBusinessAccount updates a business's details.
@@ -210,13 +251,13 @@ func (bc *BusinessAccountController) getBusinessAccount(c *gin.Context) {
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/business/ [patch]
-func (bc *BusinessAccountController) updateBusinessAccount(ctx *gin.Context) {
+func (bc *BusinessAccountController) updateBusinessAccount(ctx *gin.Context) error {
 	businessId := ctx.Param("businessAccountID")
 	if businessId == "" {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": "Business ID required",
 		})
-		return
+		return errors.New("business ID required")
 	}
 
 	var business map[string]interface{}
@@ -224,7 +265,7 @@ func (bc *BusinessAccountController) updateBusinessAccount(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": "Invalid request body",
 		})
-		return
+		return err
 	}
 
 	businessData, err := bc.service.UpdateBusinessAccount(ctx, businessId, business)
@@ -238,10 +279,11 @@ func (bc *BusinessAccountController) updateBusinessAccount(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Internal Server Error",
 		})
-		return
+		return err
 	}
 
 	ctx.JSON(http.StatusOK, businessData)
+	return nil
 }
 
 // @Summary Delete a business account
@@ -254,7 +296,7 @@ func (bc *BusinessAccountController) updateBusinessAccount(ctx *gin.Context) {
 // @Failure 401 {object} Dto.Error
 // @Failure 500 {object} Dto.ErrorDto
 // @Router /business/{businessAccountID} [delete]
-func (bc *BusinessAccountController) deleteBusinessAccount(c *gin.Context) {
+func (bc *BusinessAccountController) deleteBusinessAccount(c *gin.Context) error {
 	//businessAccountID := c.Param("businessAccountID")
 	//err := bc.service.DeleteBusinessAccount(c, businessAccountID)
 	//if err != nil {
@@ -262,6 +304,7 @@ func (bc *BusinessAccountController) deleteBusinessAccount(c *gin.Context) {
 	//	return
 	//}
 	//c.JSON(http.StatusOK, gin.H{"message": "Successfully deleted the business account"})
+	return nil
 }
 
 // @Summary Get user business accounts
@@ -274,14 +317,15 @@ func (bc *BusinessAccountController) deleteBusinessAccount(c *gin.Context) {
 // @Failure 401 {object} Dto.Error
 // @Failure 500 {object} Dto.ErrorDto
 // @Router /business/user-business-account [get]
-func (bc *BusinessAccountController) getUserBusinessAccounts(c *gin.Context) {
+func (bc *BusinessAccountController) getUserBusinessAccounts(c *gin.Context) error {
 	log.Println("Get user business accounts")
 	businessAccount, err := bc.service.GetUserBusinessAccounts(c)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
+		return err
 	}
 	c.JSON(http.StatusOK, gin.H{"businessAccounts": businessAccount})
+	return nil
 }
 
 // @Summary Associate user with business account
@@ -295,8 +339,9 @@ func (bc *BusinessAccountController) getUserBusinessAccounts(c *gin.Context) {
 // @Failure 401 {object} Dto.Error
 // @Failure 500 {object} Dto.ErrorDto
 // @Router /business/{businessAccountID}/user/{userID} [post]
-func (bc *BusinessAccountController) associateUserWithBusinessAccount(c *gin.Context) {
+func (bc *BusinessAccountController) associateUserWithBusinessAccount(c *gin.Context) error {
 	// Implementation...
+	return nil
 }
 
 // @Summary Remove user from business account
@@ -310,8 +355,9 @@ func (bc *BusinessAccountController) associateUserWithBusinessAccount(c *gin.Con
 // @Failure 401 {object} Dto.Error
 // @Failure 500 {object} Dto.ErrorDto
 // @Router /business/{businessAccountID}/user/{userID} [delete]
-func (bc *BusinessAccountController) removeUserFromBusinessAccount(c *gin.Context) {
+func (bc *BusinessAccountController) removeUserFromBusinessAccount(c *gin.Context) error {
 	// Implementation...
+	return nil
 }
 
 // @Summary Transfer business account ownership
@@ -326,8 +372,9 @@ func (bc *BusinessAccountController) removeUserFromBusinessAccount(c *gin.Contex
 // @Failure 401 {object} Dto.Error
 // @Failure 500 {object} Dto.ErrorDto
 // @Router /business/{businessAccountID}/user/{currentOwnerID}/{newOwnerID} [put]
-func (bc *BusinessAccountController) transferBusinessAccountOwnership(c *gin.Context) {
+func (bc *BusinessAccountController) transferBusinessAccountOwnership(c *gin.Context) error {
 	// Implementation...
+	return nil
 }
 
 // @Summary Get business accounts for a user
@@ -340,8 +387,9 @@ func (bc *BusinessAccountController) transferBusinessAccountOwnership(c *gin.Con
 // @Failure 401 {object} Dto.Error
 // @Failure 500 {object} Dto.ErrorDto
 // @Router /business/{businessAccountID}/users [get]
-func (bc *BusinessAccountController) getBusinessAccountsForUser(c *gin.Context) {
+func (bc *BusinessAccountController) getBusinessAccountsForUser(c *gin.Context) error {
 	// Implementation...
+	return nil
 }
 
 // @Summary Get users for a business account
@@ -354,8 +402,9 @@ func (bc *BusinessAccountController) getBusinessAccountsForUser(c *gin.Context) 
 // @Failure 401 {object} Dto.Error
 // @Failure 500 {object} Dto.ErrorDto
 // @Router /business/{businessAccountID}/users [get]
-func (bc *BusinessAccountController) getUsersForBusinessAccount(c *gin.Context) {
+func (bc *BusinessAccountController) getUsersForBusinessAccount(c *gin.Context) error {
 	// Implementation...
+	return nil
 }
 
 // @Summary List all business accounts
@@ -367,6 +416,7 @@ func (bc *BusinessAccountController) getUsersForBusinessAccount(c *gin.Context) 
 // @Failure 401 {object} Dto.Error
 // @Failure 500 {object} Dto.ErrorDto
 // @Router /business/ [get]
-func (bc *BusinessAccountController) listBusinessAccounts(c *gin.Context) {
+func (bc *BusinessAccountController) listBusinessAccounts(c *gin.Context) error {
 	// Implementation...
+	return nil
 }

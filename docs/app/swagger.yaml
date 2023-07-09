@@ -150,6 +150,17 @@ definitions:
       refresh_token:
         type: string
     type: object
+  placio-app_Dto.BusinessAccountPlacesAndEvents:
+    properties:
+      events:
+        items:
+          $ref: '#/definitions/placio-app_ent.Event'
+        type: array
+      places:
+        items:
+          $ref: '#/definitions/placio-app_ent.Place'
+        type: array
+    type: object
   placio-app_Dto.BusinessDto:
     properties:
       cover_image:
@@ -4832,6 +4843,51 @@ paths:
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
       summary: Get a business account
+      tags:
+      - Business
+  /business/{businessAccountID}/associated:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve All Places and Events associated with a Business Account
+      operationId: get-places-and-events-associated-with-business-account
+      parameters:
+      - description: Business Account ID
+        in: path
+        name: businessAccountID
+        required: true
+        type: string
+      - description: All
+        in: query
+        name: All
+        type: boolean
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_Dto.BusinessAccountPlacesAndEvents'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+      security:
+      - Bearer: []
+      summary: Get Places and Events associated with a Business Account
       tags:
       - Business
   /business/{businessAccountID}/user/{currentOwnerID}/{newOwnerID}:

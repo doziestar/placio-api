@@ -74,20 +74,10 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		userController := controller.NewUserController(userService)
 		userController.RegisterRoutes(routerGroupV1)
 
-		// business
-		businessService := service.NewBusinessAccountService(client, searchService)
-		businessController := controller.NewBusinessAccountController(businessService)
-		businessController.RegisterRoutes(routerGroupV1)
-
 		// media
 		mediaService := service.NewMediaService(client)
 		mediaController := controller.NewMediaController(mediaService)
 		mediaController.RegisterRoutes(routerGroupV1)
-
-		// posts
-		postService := service.NewPostService(client, redisClient)
-		postController := controller.NewPostController(postService, userService, businessService, mediaService)
-		postController.RegisterRoutes(routerGroupV1)
 
 		// comments
 		commentService := service.NewCommentService(client)
@@ -133,6 +123,16 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		categoryService := service.NewCategoryService(client)
 		categoryController := controller.NewCategoryController(categoryService)
 		categoryController.RegisterRoutes(routerGroupV1)
+
+		// business
+		businessService := service.NewBusinessAccountService(client, searchService, redisClient, placeService)
+		businessController := controller.NewBusinessAccountController(businessService)
+		businessController.RegisterRoutes(routerGroupV1)
+
+		// posts
+		postService := service.NewPostService(client, redisClient)
+		postController := controller.NewPostController(postService, userService, businessService, mediaService)
+		postController.RegisterRoutes(routerGroupV1)
 
 		//// ratings
 		//ratingService := service.NewRatingService(db)
