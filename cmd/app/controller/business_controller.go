@@ -69,8 +69,9 @@ func (bc *BusinessAccountController) RegisterRoutes(router *gin.RouterGroup) {
 // @Router /business/{businessAccountID}/associated [get]
 func (bc *BusinessAccountController) getPlacesAndEventsAssociatedWithBusinessAccount(c *gin.Context) error {
 	businessAccountID := c.Param("businessAccountID")
+	relatedType := c.Query("relatedType")
 
-	placesAndEvents, err := bc.service.GetPlacesAndEventsAssociatedWithBusinessAccount(c, businessAccountID)
+	placesAndEvents, err := bc.service.GetPlacesAndEventsAssociatedWithBusinessAccount(c, relatedType, businessAccountID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error()))
 		return err

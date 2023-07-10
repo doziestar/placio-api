@@ -32,7 +32,7 @@ type BusinessAccountService interface {
 	UnfollowUser(ctx context.Context, businessID string, userID string) error
 	UnfollowBusiness(ctx context.Context, followerID string, followedID string) error
 	GetFollowedContents(ctx context.Context, businessID string) ([]*ent.Post, error)
-	GetPlacesAndEventsAssociatedWithBusinessAccount(c context.Context, businessId string) (Dto.BusinessAccountPlacesAndEvents, error)
+	GetPlacesAndEventsAssociatedWithBusinessAccount(c context.Context, relatedType string, businessId string) (Dto.BusinessAccountPlacesAndEvents, error)
 	//CanPerformAction(ctx context.Context, userID, businessAccountID, action string) (bool, error)
 }
 
@@ -58,8 +58,7 @@ func (s *BusinessAccountServiceImpl) FollowUser(ctx context.Context, businessID 
 	return err
 }
 
-func (s *BusinessAccountServiceImpl) GetPlacesAndEventsAssociatedWithBusinessAccount(c context.Context, businessId string) (Dto.BusinessAccountPlacesAndEvents, error) {
-	relatedType := c.Value("relatedType").(string)
+func (s *BusinessAccountServiceImpl) GetPlacesAndEventsAssociatedWithBusinessAccount(c context.Context, relatedType string, businessId string) (Dto.BusinessAccountPlacesAndEvents, error) {
 	if relatedType == "" {
 		relatedType = "all"
 	}
