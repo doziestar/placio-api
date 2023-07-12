@@ -3,6 +3,7 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/gofiber/fiber/v2"
+	"log"
 	"net/http"
 	"placio-app/Dto"
 	_ "placio-app/Dto"
@@ -49,9 +50,18 @@ func (c *EventController) RegisterRoutes(router *gin.RouterGroup) {
 func (c *EventController) createEvent(ctx *gin.Context) error {
 	var data Dto.EventDTO
 	if err := ctx.ShouldBindJSON(&data); err != nil {
+		log.Println("error: ", err)
 		return err
 	}
 	businessId := ctx.Query("businessId")
+
+	if businessId == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": "businessId is required",
+		})
+		return nil
+	}
+
 	event, err := c.service.CreateEvent(ctx, businessId, data)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, err)
