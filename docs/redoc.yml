@@ -2461,6 +2461,11 @@ paths:
           name: id
           required: true
           type: string
+        - description: Bearer token
+          in: header
+          name: Authorization
+          required: true
+          type: string
       produces:
         - application/json
       responses:
@@ -4938,6 +4943,12 @@ paths:
   /business/:
     get:
       operationId: list-business-accounts
+      parameters:
+        - description: Bearer token
+          in: header
+          name: Authorization
+          required: true
+          type: string
       produces:
         - application/json
       responses:
@@ -4957,6 +4968,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
+      security:
+        - Bearer: []
       summary: List all business accounts
       tags:
         - Business
@@ -4971,6 +4984,11 @@ paths:
           required: true
           schema:
             $ref: '#/definitions/placio-app_Dto.BusinessDto'
+        - description: Bearer token
+          in: header
+          name: Authorization
+          required: true
+          type: string
       produces:
         - application/json
       responses:
@@ -4990,6 +5008,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
+      security:
+        - Bearer: []
       summary: Create a business account
       tags:
         - Business
@@ -4997,6 +5017,11 @@ paths:
     delete:
       operationId: delete-business-account
       parameters:
+        - description: Bearer token
+          in: header
+          name: Authorization
+          required: true
+          type: string
         - description: Business Account ID
           in: path
           name: businessAccountID
@@ -5021,6 +5046,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
+      security:
+        - Bearer: []
       summary: Delete a business account
       tags:
         - Business
@@ -5032,6 +5059,11 @@ paths:
           name: businessAccountID
           required: true
           type: string
+        - description: Bearer token
+          in: header
+          name: Authorization
+          required: true
+          type: string
       produces:
         - application/json
       responses:
@@ -5051,6 +5083,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
+      security:
+        - Bearer: []
       summary: Get a business account
       tags:
         - Business
@@ -5146,6 +5180,11 @@ paths:
     put:
       operationId: transfer-business-account-ownership
       parameters:
+        - description: Bearer token
+          in: header
+          name: Authorization
+          required: true
+          type: string
         - description: Business Account ID
           in: path
           name: businessAccountID
@@ -5180,6 +5219,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
+      security:
+        - Bearer: []
       summary: Transfer business account ownership
       tags:
         - Business
@@ -5187,6 +5228,11 @@ paths:
     delete:
       operationId: remove-user-business-account
       parameters:
+        - description: Bearer token
+          in: header
+          name: Authorization
+          required: true
+          type: string
         - description: Business Account ID
           in: path
           name: businessAccountID
@@ -5216,12 +5262,19 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
+      security:
+        - Bearer: []
       summary: Remove user from business account
       tags:
         - Business
     post:
       operationId: associate-user-business-account
       parameters:
+        - description: Bearer token
+          in: header
+          name: Authorization
+          required: true
+          type: string
         - description: Business Account ID
           in: path
           name: businessAccountID
@@ -5251,6 +5304,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
+      security:
+        - Bearer: []
       summary: Associate user with business account
       tags:
         - Business
@@ -5258,6 +5313,11 @@ paths:
     get:
       operationId: get-users-business-account
       parameters:
+        - description: Bearer token
+          in: header
+          name: Authorization
+          required: true
+          type: string
         - description: Business Account ID
           in: path
           name: businessAccountID
@@ -5282,6 +5342,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
+      security:
+        - Bearer: []
       summary: Get users for a business account
       tags:
         - Business
@@ -5302,35 +5364,9 @@ paths:
           name: userID
           required: true
           type: string
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: OK
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Response'
-        '400':
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Error'
-        '401':
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Error'
-        '500':
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDto'
-      summary: Follow a user by a business
-      tags:
-        - Business
-  /business/{businessID}/followed-contents:
-    get:
-      operationId: get-followed-contents
-      parameters:
-        - description: Business ID
-          in: path
-          name: businessID
+        - description: Bearer token
+          in: header
+          name: Authorization
           required: true
           type: string
       produces:
@@ -5352,6 +5388,46 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
+      security:
+        - Bearer: []
+      summary: Follow a user by a business
+      tags:
+        - Business
+  /business/{businessID}/followed-contents:
+    get:
+      operationId: get-followed-contents
+      parameters:
+        - description: Business ID
+          in: path
+          name: businessID
+          required: true
+          type: string
+        - description: Bearer token
+          in: header
+          name: Authorization
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Response'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        '401':
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDto'
+      security:
+        - Bearer: []
       summary: Get contents followed by a business
       tags:
         - Business
@@ -5369,6 +5445,11 @@ paths:
           name: userID
           required: true
           type: string
+        - description: Bearer token
+          in: header
+          name: Authorization
+          required: true
+          type: string
       produces:
         - application/json
       responses:
@@ -5388,6 +5469,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
+      security:
+        - Bearer: []
       summary: Unfollow a user by a business
       tags:
         - Business
@@ -5405,6 +5488,11 @@ paths:
           name: followedBusinessID
           required: true
           type: string
+        - description: Bearer token
+          in: header
+          name: Authorization
+          required: true
+          type: string
       produces:
         - application/json
       responses:
@@ -5424,6 +5512,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
+      security:
+        - Bearer: []
       summary: Follow a business by another business
       tags:
         - Business
@@ -5441,6 +5531,11 @@ paths:
           name: followedBusinessID
           required: true
           type: string
+        - description: Bearer token
+          in: header
+          name: Authorization
+          required: true
+          type: string
       produces:
         - application/json
       responses:
@@ -5460,6 +5555,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
+      security:
+        - Bearer: []
       summary: Unfollow a business by another business
       tags:
         - Business
@@ -5467,6 +5564,11 @@ paths:
     get:
       operationId: get-user-business-accounts
       parameters:
+        - description: Bearer token
+          in: header
+          name: Authorization
+          required: true
+          type: string
         - description: User ID
           in: path
           name: userID
@@ -5491,6 +5593,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
+      security:
+        - Bearer: []
       summary: Get user business accounts
       tags:
         - Business
@@ -5983,6 +6087,104 @@ paths:
       summary: Get Event Participants
       tags:
         - Event
+  /places:
+    get:
+      consumes:
+        - application/json
+      description: Get Places by applying various filters (ID, Name, Type, Country, City, State, Tags, Features)
+      parameters:
+        - in: query
+          items:
+            type: string
+          name: city
+          type: array
+        - in: query
+          items:
+            type: string
+          name: country
+          type: array
+        - in: query
+          items:
+            type: string
+          name: email
+          type: array
+        - in: query
+          items:
+            type: string
+          name: features
+          type: array
+        - in: query
+          items:
+            type: string
+          name: ids
+          type: array
+        - in: query
+          items:
+            type: string
+          name: name
+          type: array
+        - in: query
+          items:
+            type: string
+          name: phone
+          type: array
+        - in: query
+          items:
+            type: string
+          name: state
+          type: array
+        - in: query
+          items:
+            type: string
+          name: tags
+          type: array
+        - in: query
+          items:
+            type: string
+          name: type
+          type: array
+        - in: query
+          items:
+            type: string
+          name: website
+          type: array
+        - description: Page Number
+          in: query
+          name: page
+          type: integer
+        - description: Page Size
+          in: query
+          name: pageSize
+          type: integer
+        - description: Bearer Token
+          in: header
+          name: Authorization
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_ent.Place'
+            type: array
+        '400':
+          description: Invalid inputs
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '401':
+          description: Unauthorized. Invalid or expired token
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Get all Places
+      tags:
+        - Place
 schemes:
   - http
   - https

@@ -420,6 +420,13 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -4232,6 +4239,11 @@ const docTemplate = `{
         },
         "/business/": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -4240,6 +4252,15 @@ const docTemplate = `{
                 ],
                 "summary": "List all business accounts",
                 "operationId": "list-business-accounts",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -4268,6 +4289,11 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -4288,6 +4314,13 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/placio-app_Dto.BusinessDto"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -4320,6 +4353,11 @@ const docTemplate = `{
         },
         "/business/user-business-account": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -4329,6 +4367,13 @@ const docTemplate = `{
                 "summary": "Get user business accounts",
                 "operationId": "get-user-business-accounts",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "User ID",
@@ -4367,6 +4412,11 @@ const docTemplate = `{
         },
         "/business/{businessAccountID}": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -4381,6 +4431,13 @@ const docTemplate = `{
                         "description": "Business Account ID",
                         "name": "businessAccountID",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -4412,6 +4469,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -4421,6 +4483,13 @@ const docTemplate = `{
                 "summary": "Delete a business account",
                 "operationId": "delete-business-account",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Business Account ID",
@@ -4594,6 +4663,11 @@ const docTemplate = `{
         },
         "/business/{businessAccountID}/user/{currentOwnerID}/{newOwnerID}": {
             "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -4603,6 +4677,13 @@ const docTemplate = `{
                 "summary": "Transfer business account ownership",
                 "operationId": "transfer-business-account-ownership",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Business Account ID",
@@ -4655,6 +4736,11 @@ const docTemplate = `{
         },
         "/business/{businessAccountID}/user/{userID}": {
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -4664,6 +4750,13 @@ const docTemplate = `{
                 "summary": "Associate user with business account",
                 "operationId": "associate-user-business-account",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Business Account ID",
@@ -4707,6 +4800,11 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -4716,6 +4814,13 @@ const docTemplate = `{
                 "summary": "Remove user from business account",
                 "operationId": "remove-user-business-account",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Business Account ID",
@@ -4761,6 +4866,11 @@ const docTemplate = `{
         },
         "/business/{businessAccountID}/users": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -4770,6 +4880,13 @@ const docTemplate = `{
                 "summary": "Get users for a business account",
                 "operationId": "get-users-business-account",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Business Account ID",
@@ -4808,6 +4925,11 @@ const docTemplate = `{
         },
         "/business/{businessID}/follow/user/{userID}": {
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "description": "Retrieve all comments for a given post",
                 "consumes": [
                     "application/json"
@@ -4833,6 +4955,13 @@ const docTemplate = `{
                         "description": "User ID",
                         "name": "userID",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -4866,6 +4995,11 @@ const docTemplate = `{
         },
         "/business/{businessID}/followed-contents": {
             "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -4880,6 +5014,13 @@ const docTemplate = `{
                         "description": "Business ID",
                         "name": "businessID",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -4913,6 +5054,11 @@ const docTemplate = `{
         },
         "/business/{businessID}/unfollow/user/{userID}": {
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -4934,6 +5080,13 @@ const docTemplate = `{
                         "description": "User ID",
                         "name": "userID",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -4967,6 +5120,11 @@ const docTemplate = `{
         },
         "/business/{followerBusinessID}/follow/business/{followedID}": {
             "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -4988,6 +5146,13 @@ const docTemplate = `{
                         "description": "Followed Business ID",
                         "name": "followedBusinessID",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -5021,6 +5186,11 @@ const docTemplate = `{
         },
         "/business/{followerBusinessID}/unfollow/business/{followedBusinessID}": {
             "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "produces": [
                     "application/json"
                 ],
@@ -5042,6 +5212,13 @@ const docTemplate = `{
                         "description": "Followed Business ID",
                         "name": "followedBusinessID",
                         "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
                         "required": true
                     }
                 ],
@@ -5816,6 +5993,159 @@ const docTemplate = `{
                         "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/places": {
+            "get": {
+                "description": "Get Places by applying various filters (ID, Name, Type, Country, City, State, Tags, Features)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Place"
+                ],
+                "summary": "Get all Places",
+                "parameters": [
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "name": "city",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "name": "country",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "name": "email",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "name": "features",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "name": "ids",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "name": "phone",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "name": "state",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "name": "tags",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "name": "type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "name": "website",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page Number",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Page Size",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/placio-app_ent.Place"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid inputs",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized. Invalid or expired token",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
                         }
                     }
                 }
