@@ -4,9 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"placio-app/Dto"
 	"placio-app/ent"
 	"placio-app/ent/event"
+	"strings"
 	"time"
 )
 
@@ -70,6 +72,7 @@ func (s *EventService) CreateEvent(ctx context.Context, businessId string, data 
 	// get user from database
 	userEnt, err := s.client.User.Get(ctx, user)
 	if err != nil {
+		log.Println("error: ", err)
 		return nil, err
 	}
 
@@ -79,28 +82,34 @@ func (s *EventService) CreateEvent(ctx context.Context, businessId string, data 
 	if businessId != "" {
 		businessEnt, err = s.client.Business.Get(ctx, businessId)
 		if err != nil {
+			log.Println("error: ", err)
 			return nil, err
 		}
 	}
 
-	typeEnum, err := parseEventType(data.EventType)
-	if err != nil {
-		return nil, err
-	}
-	frequencyEnum, err := parseFrequencyType(data.Frequency)
-	if err != nil {
-		return nil, err
-	}
-	venueTypeEnum, err := parseVenueType(data.VenueType)
-	if err != nil {
-		return nil, err
-	}
+	log.Println("data.EventType", data.EventType)
+
+	//typeEnum, err := parseEventType(data.EventType)
+	//if err != nil {
+	//	log.Println("error: ", err)
+	//	return nil, err
+	//}
+	//frequencyEnum, err := parseFrequencyType(data.Frequency)
+	//if err != nil {
+	//	log.Println("error: ", err)
+	//	return nil, err
+	//}
+	//venueTypeEnum, err := parseVenueType(data.VenueType)
+	//if err != nil {
+	//	log.Println("error: ", err)
+	//	return nil, err
+	//}
 
 	event, err := s.client.Event.
 		Create().
 		SetID(data.ID).
 		SetName(data.Name).
-		SetEventType(typeEnum).
+		//SetEventType(typeEnum).
 		SetStatus(data.Status).
 		SetLocation(data.Location).
 		SetURL(data.URL).
@@ -110,12 +119,12 @@ func (s *EventService) CreateEvent(ctx context.Context, businessId string, data 
 		SetEndTime(data.EndTime).
 		SetStartDate(data.StartDate).
 		SetEndDate(data.EndDate).
-		SetFrequency(frequencyEnum).
+		//SetFrequency(frequencyEnum).
 		SetFrequencyInterval(data.FrequencyInterval).
 		SetFrequencyDayOfWeek(data.FrequencyDayOfWeek).
 		SetFrequencyDayOfMonth(data.FrequencyDayOfMonth).
 		SetFrequencyMonthOfYear(data.FrequencyMonthOfYear).
-		SetVenueType(venueTypeEnum).
+		//SetVenueType(venueTypeEnum).
 		SetVenueName(data.VenueName).
 		SetVenueAddress(data.VenueAddress).
 		SetVenueCity(data.VenueCity).
@@ -127,7 +136,9 @@ func (s *EventService) CreateEvent(ctx context.Context, businessId string, data 
 		SetVenueURL(data.VenueURL).
 		SetVenuePhone(data.VenuePhone).
 		SetVenueEmail(data.VenueEmail).
-		SetTags(data.Tags).
+		//SetVenueCapacity(data.VenueCapacity).
+		// TODO: SetTags(data.Tags).
+		//SetTags(data.Tags).
 		SetDescription(data.Description).
 		SetEventSettings(data.EventSettings).
 		SetCoverImage(data.CoverImage).
@@ -138,6 +149,7 @@ func (s *EventService) CreateEvent(ctx context.Context, businessId string, data 
 		Save(ctx)
 
 	if err != nil {
+		log.Println("error: ", err)
 		return nil, err
 	}
 
@@ -209,7 +221,7 @@ func (s *EventService) UpdateEvent(ctx context.Context, eventId string, business
 		SetVenueURL(data.VenueURL).
 		SetVenuePhone(data.VenuePhone).
 		SetVenueEmail(data.VenueEmail).
-		SetTags(data.Tags).
+		//SetTags(data.Tags).
 		SetDescription(data.Description).
 		SetCoverImage(data.CoverImage).
 		SetUpdatedAt(time.Now())
@@ -332,12 +344,15 @@ func (s *EventService) GetEvents(ctx context.Context, filter *EventFilter, page 
 }
 
 func parseEventType(s string) (event.EventType, error) {
-	switch s {
-	case "event":
+	if s == "" {
+		return "", nil
+	}
+	switch strings.ToLower(s) {
+	case strings.ToLower(string(event.EventTypeEvent)):
 		return event.EventTypeEvent, nil
-	case "place":
+	case strings.ToLower(string(event.EventTypePlace)):
 		return event.EventTypePlace, nil
-	case "business":
+	case strings.ToLower(string(event.EventTypeBusiness)):
 		return event.EventTypeBusiness, nil
 	default:
 		return "", fmt.Errorf("invalid EventType: %s", s)
@@ -345,16 +360,19 @@ func parseEventType(s string) (event.EventType, error) {
 }
 
 func parseFrequencyType(s string) (event.Frequency, error) {
-	switch s {
-	case "once":
+	if s == "" {
+		return "", nil
+	}
+	switch strings.ToLower(s) {
+	case strings.ToLower(string(event.FrequencyOnce)):
 		return event.FrequencyOnce, nil
-	case "daily":
+	case strings.ToLower(string(event.FrequencyDaily)):
 		return event.FrequencyDaily, nil
-	case "weekly":
+	case strings.ToLower(string(event.FrequencyWeekly)):
 		return event.FrequencyWeekly, nil
-	case "monthly":
+	case strings.ToLower(string(event.FrequencyMonthly)):
 		return event.FrequencyMonthly, nil
-	case "yearly":
+	case strings.ToLower(string(event.FrequencyYearly)):
 		return event.FrequencyYearly, nil
 	default:
 		return "", fmt.Errorf("invalid FrequencyType: %s", s)
@@ -362,12 +380,15 @@ func parseFrequencyType(s string) (event.Frequency, error) {
 }
 
 func parseVenueType(s string) (event.VenueType, error) {
-	switch s {
-	case "online":
+	if s == "" {
+		return "", nil
+	}
+	switch strings.ToLower(s) {
+	case strings.ToLower(string(event.VenueTypeOnline)):
 		return event.VenueTypeOnline, nil
-	case "in_person":
+	case strings.ToLower(string(event.VenueTypeInPerson)):
 		return event.VenueTypeInPerson, nil
-	case "hybrid":
+	case strings.ToLower(string(event.VenueTypeHybrid)):
 		return event.VenueTypeHybrid, nil
 	default:
 		return "", fmt.Errorf("invalid VenueType: %s", s)

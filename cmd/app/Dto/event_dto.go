@@ -32,7 +32,7 @@ type EventDTO struct {
 	VenueURL             string
 	VenuePhone           string
 	VenueEmail           string
-	Tags                 string
+	Tags                 []string
 	Description          string
 	EventSettings        map[string]interface{}
 	CoverImage           string
