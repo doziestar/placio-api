@@ -9,12 +9,27 @@ import (
 	"placio-app/ent/place"
 )
 
+type PlaceFilter struct {
+	IDs      []string
+	Name     []string
+	Type     []string
+	Country  []string
+	City     []string
+	State    []string
+	Tags     []string
+	Features []string
+	Email    []string
+	Phone    []string
+	Website  []string
+}
+
 type PlaceService interface {
 	GetPlace(ctx context.Context, placeID string) (*ent.Place, error)
 	CreatePlace(ctx context.Context, placeData Dto.CreatePlaceDTO) (*ent.Place, error)
 	UpdatePlace(ctx context.Context, placeID string, placeData Dto.UpdatePlaceDTO) (*ent.Place, error)
 	DeletePlace(ctx context.Context, placeID string) error
 	GetPlacesAssociatedWithBusinessAccount(c context.Context, businessId string) ([]*ent.Place, error)
+	GetPlaces(ctx context.Context, filter *PlaceFilter, page int, pageSize int) ([]*ent.Place, error)
 }
 
 type PlaceServiceImpl struct {
@@ -105,8 +120,7 @@ func (s *PlaceServiceImpl) CreatePlace(ctx context.Context, placeData Dto.Create
 }
 
 func (s *PlaceServiceImpl) UpdatePlace(ctx context.Context, placeID string, placeData Dto.UpdatePlaceDTO) (*ent.Place, error) {
-	// Similar to CreatePlace, you'd parse placeData and use it to update the Place.
-	// This is a basic example, you'll need to handle additional fields and validation.
+
 	place, err := s.client.Place.
 		UpdateOneID(placeID).
 		SetDescription(placeData.Description).
@@ -140,4 +154,135 @@ func (s *PlaceServiceImpl) DeletePlace(ctx context.Context, placeID string) erro
 	return s.client.Place.
 		DeleteOneID(placeID).
 		Exec(ctx)
+}
+
+//func (s *PlaceServiceImpl) GetPlaces(ctx context.Context, filter *PlaceFilter, page int, pageSize int) ([]*ent.Place, error) {
+//	query := s.client.Place.
+//		Query().
+//		WithBusiness().
+//		WithUsers()
+//
+//	// Apply filters
+//	if len(filter.IDs) > 0 {
+//		query = query.Where(place.IDIn(filter.IDs...))
+//	}
+//	if len(filter.Name) > 0 {
+//		query = query.Where(place.NameIn(filter.Name...))
+//	}
+//	if len(filter.Type) > 0 {
+//		query = query.Where(place.TypeIn(filter.Type...))
+//	}
+//	if len(filter.Country) > 0 {
+//		query = query.Where(place.CountryIn(filter.Country...))
+//	}
+//	if len(filter.City) > 0 {
+//		query = query.Where(place.CityIn(filter.City...))
+//	}
+//	if len(filter.State) > 0 {
+//		query = query.Where(place.StateIn(filter.State...))
+//	}
+//	if len(filter.Tags) > 0 {
+//		// To use Tags, Features, etc you may need additional handling as these fields are stored as JSON
+//		// This is just a sample, it might not work as is
+//		query = query.Where(place.HasTagsWith(filter.Tags...))
+//	}
+//	if len(filter.Features) > 0 {
+//		// Similarly to Tags
+//		query = query.Where(place.HasFeaturesWith(filter.Features...))
+//	}
+//
+//	// Apply pagination
+//	query = query.Offset((page - 1) * pageSize).Limit(pageSize)
+//
+//	// Execute query
+//	places, err := query.All(ctx)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	return places, nil
+//}
+
+func (s *PlaceServiceImpl) GetPlaces(ctx context.Context, filter *PlaceFilter, page int, pageSize int) ([]*ent.Place, error) {
+	query := s.client.Place.
+		Query().
+		WithBusiness().
+		WithUsers()
+
+	// Apply filters
+	if len(filter.IDs) > 0 {
+		query = query.Where(place.IDIn(filter.IDs...))
+	}
+	if len(filter.Name) > 0 {
+		query = query.Where(place.NameIn(filter.Name...))
+	}
+	if len(filter.Type) > 0 {
+		query = query.Where(place.TypeIn(filter.Type...))
+	}
+	if len(filter.Country) > 0 {
+		query = query.Where(place.CountryIn(filter.Country...))
+	}
+	if len(filter.City) > 0 {
+		query = query.Where(place.CityIn(filter.City...))
+	}
+	if len(filter.State) > 0 {
+		query = query.Where(place.StateIn(filter.State...))
+	}
+	// ...
+
+	// Execute query
+	places, err := query.All(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	// Filter places by tags and features at the application level
+	filteredPlaces := []*ent.Place{}
+	for _, p := range places {
+		// Check if place tags include all tags from the filter
+		if len(filter.Tags) > 0 && !containsAll(p.Tags, filter.Tags) {
+			continue
+		}
+		// Check if place features include all features from the filter
+		if len(filter.Features) > 0 && !containsAll(p.Features, filter.Features) {
+			continue
+		}
+		filteredPlaces = append(filteredPlaces, p)
+	}
+
+	// Apply pagination
+	// Validate page and pageSize values
+	if page <= 0 {
+		page = 1
+	}
+	if pageSize <= 0 {
+		pageSize = 10
+	}
+
+	// Apply pagination after filtering by tags and features
+	start := (page - 1) * pageSize
+	if start >= len(filteredPlaces) {
+		return []*ent.Place{}, nil // Return an empty slice if page is beyond the total number of pages
+	}
+	end := start + pageSize
+	if end > len(filteredPlaces) {
+		end = len(filteredPlaces)
+	}
+	paginatedPlaces := filteredPlaces[start:end]
+
+	return paginatedPlaces, nil
+}
+
+// containsAll checks if all elements of subset are in the set
+func containsAll(set []string, subset []string) bool {
+	setMap := make(map[string]bool)
+	for _, s := range set {
+		setMap[s] = true
+	}
+	for _, s := range subset {
+		if !setMap[s] {
+			return false
+		}
+	}
+	return true
 }
