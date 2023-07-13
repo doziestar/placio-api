@@ -33,3 +33,22 @@ func (Like) Edges() []ent.Edge {
 		edge.To("post", Post.Type).Unique(),
 	}
 }
+
+type UserLikePlace struct {
+	ent.Schema
+}
+
+func (UserLikePlace) Fields() []ent.Field {
+	return []ent.Field{
+		field.String("id").Unique().Immutable(),
+		field.Time("CreatedAt").Default(time.Now),
+		field.Time("UpdatedAt").UpdateDefault(time.Now),
+	}
+}
+
+func (UserLikePlace) Edges() []ent.Edge {
+	return []ent.Edge{
+		edge.From("user", User.Type).Ref("likedPlaces").Unique(),
+		edge.To("place", Place.Type).Unique(),
+	}
+}

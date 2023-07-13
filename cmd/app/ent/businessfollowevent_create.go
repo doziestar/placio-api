@@ -50,6 +50,12 @@ func (bfec *BusinessFollowEventCreate) SetNillableUpdatedAt(t *time.Time) *Busin
 	return bfec
 }
 
+// SetID sets the "id" field.
+func (bfec *BusinessFollowEventCreate) SetID(s string) *BusinessFollowEventCreate {
+	bfec.mutation.SetID(s)
+	return bfec
+}
+
 // SetBusinessID sets the "business" edge to the Business entity by ID.
 func (bfec *BusinessFollowEventCreate) SetBusinessID(id string) *BusinessFollowEventCreate {
 	bfec.mutation.SetBusinessID(id)
@@ -162,6 +168,10 @@ func (bfec *BusinessFollowEventCreate) createSpec() (*BusinessFollowEvent, *sqlg
 		_node = &BusinessFollowEvent{config: bfec.config}
 		_spec = sqlgraph.NewCreateSpec(businessfollowevent.Table, sqlgraph.NewFieldSpec(businessfollowevent.FieldID, field.TypeString))
 	)
+	if id, ok := bfec.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
 	if value, ok := bfec.mutation.CreatedAt(); ok {
 		_spec.SetField(businessfollowevent.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value

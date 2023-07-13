@@ -103,7 +103,9 @@ var (
 	}
 	// BusinessFollowBusinessesColumns holds the columns for the "business_follow_businesses" table.
 	BusinessFollowBusinessesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString},
+		{Name: "id", Type: field.TypeString, Unique: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "business_followed_businesses", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "business_follower_businesses", Type: field.TypeString, Nullable: true, Size: 36},
 	}
@@ -115,13 +117,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "business_follow_businesses_businesses_followedBusinesses",
-				Columns:    []*schema.Column{BusinessFollowBusinessesColumns[1]},
+				Columns:    []*schema.Column{BusinessFollowBusinessesColumns[3]},
 				RefColumns: []*schema.Column{BusinessesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "business_follow_businesses_businesses_followerBusinesses",
-				Columns:    []*schema.Column{BusinessFollowBusinessesColumns[2]},
+				Columns:    []*schema.Column{BusinessFollowBusinessesColumns[4]},
 				RefColumns: []*schema.Column{BusinessesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -129,7 +131,7 @@ var (
 	}
 	// BusinessFollowEventsColumns holds the columns for the "business_follow_events" table.
 	BusinessFollowEventsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString},
+		{Name: "id", Type: field.TypeString, Unique: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "business_business_follow_events", Type: field.TypeString, Size: 36},
@@ -157,7 +159,9 @@ var (
 	}
 	// BusinessFollowUsersColumns holds the columns for the "business_follow_users" table.
 	BusinessFollowUsersColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString},
+		{Name: "id", Type: field.TypeString, Unique: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "business_followed_users", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "user_follower_businesses", Type: field.TypeString, Nullable: true, Size: 36},
 	}
@@ -169,13 +173,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "business_follow_users_businesses_followedUsers",
-				Columns:    []*schema.Column{BusinessFollowUsersColumns[1]},
+				Columns:    []*schema.Column{BusinessFollowUsersColumns[3]},
 				RefColumns: []*schema.Column{BusinessesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "business_follow_users_users_followerBusinesses",
-				Columns:    []*schema.Column{BusinessFollowUsersColumns[2]},
+				Columns:    []*schema.Column{BusinessFollowUsersColumns[4]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -828,7 +832,9 @@ var (
 	}
 	// UserFollowBusinessesColumns holds the columns for the "user_follow_businesses" table.
 	UserFollowBusinessesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString},
+		{Name: "id", Type: field.TypeString, Unique: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "business_follower_users", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "user_followed_businesses", Type: field.TypeString, Nullable: true, Size: 36},
 	}
@@ -840,13 +846,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "user_follow_businesses_businesses_followerUsers",
-				Columns:    []*schema.Column{UserFollowBusinessesColumns[1]},
+				Columns:    []*schema.Column{UserFollowBusinessesColumns[3]},
 				RefColumns: []*schema.Column{BusinessesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "user_follow_businesses_users_followedBusinesses",
-				Columns:    []*schema.Column{UserFollowBusinessesColumns[2]},
+				Columns:    []*schema.Column{UserFollowBusinessesColumns[4]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -854,7 +860,7 @@ var (
 	}
 	// UserFollowEventsColumns holds the columns for the "user_follow_events" table.
 	UserFollowEventsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString},
+		{Name: "id", Type: field.TypeString, Unique: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "user_user_follow_events", Type: field.TypeString, Size: 36},
@@ -882,9 +888,12 @@ var (
 	}
 	// UserFollowPlacesColumns holds the columns for the "user_follow_places" table.
 	UserFollowPlacesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString},
+		{Name: "id", Type: field.TypeString, Unique: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "place_follower_users", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "user_followed_places", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "user_follow_place_place", Type: field.TypeString, Nullable: true, Size: 36},
 	}
 	// UserFollowPlacesTable holds the schema information for the "user_follow_places" table.
 	UserFollowPlacesTable = &schema.Table{
@@ -894,21 +903,29 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "user_follow_places_places_followerUsers",
-				Columns:    []*schema.Column{UserFollowPlacesColumns[1]},
+				Columns:    []*schema.Column{UserFollowPlacesColumns[3]},
 				RefColumns: []*schema.Column{PlacesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "user_follow_places_users_followedPlaces",
-				Columns:    []*schema.Column{UserFollowPlacesColumns[2]},
+				Columns:    []*schema.Column{UserFollowPlacesColumns[4]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "user_follow_places_places_place",
+				Columns:    []*schema.Column{UserFollowPlacesColumns[5]},
+				RefColumns: []*schema.Column{PlacesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
 	}
 	// UserFollowUsersColumns holds the columns for the "user_follow_users" table.
 	UserFollowUsersColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString},
+		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "user_followed_users", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "user_follower_users", Type: field.TypeString, Nullable: true, Size: 36},
 	}
@@ -920,14 +937,42 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "user_follow_users_users_followedUsers",
-				Columns:    []*schema.Column{UserFollowUsersColumns[1]},
+				Columns:    []*schema.Column{UserFollowUsersColumns[3]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "user_follow_users_users_followerUsers",
-				Columns:    []*schema.Column{UserFollowUsersColumns[2]},
+				Columns:    []*schema.Column{UserFollowUsersColumns[4]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
+	// UserLikePlacesColumns holds the columns for the "user_like_places" table.
+	UserLikePlacesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "user_liked_places", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "user_like_place_place", Type: field.TypeString, Nullable: true, Size: 36},
+	}
+	// UserLikePlacesTable holds the schema information for the "user_like_places" table.
+	UserLikePlacesTable = &schema.Table{
+		Name:       "user_like_places",
+		Columns:    UserLikePlacesColumns,
+		PrimaryKey: []*schema.Column{UserLikePlacesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "user_like_places_users_likedPlaces",
+				Columns:    []*schema.Column{UserLikePlacesColumns[3]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "user_like_places_places_place",
+				Columns:    []*schema.Column{UserLikePlacesColumns[4]},
+				RefColumns: []*schema.Column{PlacesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -1068,6 +1113,7 @@ var (
 		UserFollowEventsTable,
 		UserFollowPlacesTable,
 		UserFollowUsersTable,
+		UserLikePlacesTable,
 		AmenityPlacesTable,
 		FaqPlaceTable,
 		FaqEventTable,
@@ -1130,8 +1176,11 @@ func init() {
 	UserFollowEventsTable.ForeignKeys[1].RefTable = EventsTable
 	UserFollowPlacesTable.ForeignKeys[0].RefTable = PlacesTable
 	UserFollowPlacesTable.ForeignKeys[1].RefTable = UsersTable
+	UserFollowPlacesTable.ForeignKeys[2].RefTable = PlacesTable
 	UserFollowUsersTable.ForeignKeys[0].RefTable = UsersTable
 	UserFollowUsersTable.ForeignKeys[1].RefTable = UsersTable
+	UserLikePlacesTable.ForeignKeys[0].RefTable = UsersTable
+	UserLikePlacesTable.ForeignKeys[1].RefTable = PlacesTable
 	AmenityPlacesTable.ForeignKeys[0].RefTable = AmenitiesTable
 	AmenityPlacesTable.ForeignKeys[1].RefTable = PlacesTable
 	FaqPlaceTable.ForeignKeys[0].RefTable = FaQsTable

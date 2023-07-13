@@ -50,6 +50,12 @@ func (ufec *UserFollowEventCreate) SetNillableUpdatedAt(t *time.Time) *UserFollo
 	return ufec
 }
 
+// SetID sets the "id" field.
+func (ufec *UserFollowEventCreate) SetID(s string) *UserFollowEventCreate {
+	ufec.mutation.SetID(s)
+	return ufec
+}
+
 // SetUserID sets the "user" edge to the User entity by ID.
 func (ufec *UserFollowEventCreate) SetUserID(id string) *UserFollowEventCreate {
 	ufec.mutation.SetUserID(id)
@@ -162,6 +168,10 @@ func (ufec *UserFollowEventCreate) createSpec() (*UserFollowEvent, *sqlgraph.Cre
 		_node = &UserFollowEvent{config: ufec.config}
 		_spec = sqlgraph.NewCreateSpec(userfollowevent.Table, sqlgraph.NewFieldSpec(userfollowevent.FieldID, field.TypeString))
 	)
+	if id, ok := ufec.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
 	if value, ok := ufec.mutation.CreatedAt(); ok {
 		_spec.SetField(userfollowevent.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value

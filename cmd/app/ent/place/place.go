@@ -86,10 +86,12 @@ const (
 	EdgeCategories = "categories"
 	// EdgeCategoryAssignments holds the string denoting the categoryassignments edge name in mutations.
 	EdgeCategoryAssignments = "categoryAssignments"
-	// EdgeFollowerUsers holds the string denoting the followerusers edge name in mutations.
-	EdgeFollowerUsers = "followerUsers"
 	// EdgeFaqs holds the string denoting the faqs edge name in mutations.
 	EdgeFaqs = "faqs"
+	// EdgeLikedByUsers holds the string denoting the likedbyusers edge name in mutations.
+	EdgeLikedByUsers = "likedByUsers"
+	// EdgeFollowerUsers holds the string denoting the followerusers edge name in mutations.
+	EdgeFollowerUsers = "followerUsers"
 	// Table holds the table name of the place in the database.
 	Table = "places"
 	// BusinessTable is the table that holds the business relation/edge.
@@ -165,6 +167,18 @@ const (
 	CategoryAssignmentsInverseTable = "category_assignments"
 	// CategoryAssignmentsColumn is the table column denoting the categoryAssignments relation/edge.
 	CategoryAssignmentsColumn = "entity_id"
+	// FaqsTable is the table that holds the faqs relation/edge. The primary key declared below.
+	FaqsTable = "faq_place"
+	// FaqsInverseTable is the table name for the FAQ entity.
+	// It exists in this package in order to avoid circular dependency with the "faq" package.
+	FaqsInverseTable = "fa_qs"
+	// LikedByUsersTable is the table that holds the likedByUsers relation/edge.
+	LikedByUsersTable = "user_like_places"
+	// LikedByUsersInverseTable is the table name for the UserLikePlace entity.
+	// It exists in this package in order to avoid circular dependency with the "userlikeplace" package.
+	LikedByUsersInverseTable = "user_like_places"
+	// LikedByUsersColumn is the table column denoting the likedByUsers relation/edge.
+	LikedByUsersColumn = "user_like_place_place"
 	// FollowerUsersTable is the table that holds the followerUsers relation/edge.
 	FollowerUsersTable = "user_follow_places"
 	// FollowerUsersInverseTable is the table name for the UserFollowPlace entity.
@@ -172,11 +186,6 @@ const (
 	FollowerUsersInverseTable = "user_follow_places"
 	// FollowerUsersColumn is the table column denoting the followerUsers relation/edge.
 	FollowerUsersColumn = "place_follower_users"
-	// FaqsTable is the table that holds the faqs relation/edge. The primary key declared below.
-	FaqsTable = "faq_place"
-	// FaqsInverseTable is the table name for the FAQ entity.
-	// It exists in this package in order to avoid circular dependency with the "faq" package.
-	FaqsInverseTable = "fa_qs"
 )
 
 // Columns holds all SQL columns for place fields.
@@ -486,20 +495,6 @@ func ByCategoryAssignments(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOpti
 	}
 }
 
-// ByFollowerUsersCount orders the results by followerUsers count.
-func ByFollowerUsersCount(opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newFollowerUsersStep(), opts...)
-	}
-}
-
-// ByFollowerUsers orders the results by followerUsers terms.
-func ByFollowerUsers(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newFollowerUsersStep(), append([]sql.OrderTerm{term}, terms...)...)
-	}
-}
-
 // ByFaqsCount orders the results by faqs count.
 func ByFaqsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -511,6 +506,34 @@ func ByFaqsCount(opts ...sql.OrderTermOption) OrderOption {
 func ByFaqs(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newFaqsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByLikedByUsersCount orders the results by likedByUsers count.
+func ByLikedByUsersCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newLikedByUsersStep(), opts...)
+	}
+}
+
+// ByLikedByUsers orders the results by likedByUsers terms.
+func ByLikedByUsers(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newLikedByUsersStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByFollowerUsersCount orders the results by followerUsers count.
+func ByFollowerUsersCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newFollowerUsersStep(), opts...)
+	}
+}
+
+// ByFollowerUsers orders the results by followerUsers terms.
+func ByFollowerUsers(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newFollowerUsersStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 func newBusinessStep() *sqlgraph.Step {
@@ -590,17 +613,24 @@ func newCategoryAssignmentsStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.O2M, false, CategoryAssignmentsTable, CategoryAssignmentsColumn),
 	)
 }
-func newFollowerUsersStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(FollowerUsersInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, FollowerUsersTable, FollowerUsersColumn),
-	)
-}
 func newFaqsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(FaqsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2M, true, FaqsTable, FaqsPrimaryKey...),
+	)
+}
+func newLikedByUsersStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(LikedByUsersInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, true, LikedByUsersTable, LikedByUsersColumn),
+	)
+}
+func newFollowerUsersStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(FollowerUsersInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, FollowerUsersTable, FollowerUsersColumn),
 	)
 }

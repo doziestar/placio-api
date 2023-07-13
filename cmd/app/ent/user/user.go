@@ -68,12 +68,14 @@ const (
 	EdgePlaces = "places"
 	// EdgeCategoryAssignments holds the string denoting the categoryassignments edge name in mutations.
 	EdgeCategoryAssignments = "categoryAssignments"
-	// EdgeFollowedPlaces holds the string denoting the followedplaces edge name in mutations.
-	EdgeFollowedPlaces = "followedPlaces"
 	// EdgeOwnedEvents holds the string denoting the ownedevents edge name in mutations.
 	EdgeOwnedEvents = "ownedEvents"
 	// EdgeUserFollowEvents holds the string denoting the userfollowevents edge name in mutations.
 	EdgeUserFollowEvents = "userFollowEvents"
+	// EdgeFollowedPlaces holds the string denoting the followedplaces edge name in mutations.
+	EdgeFollowedPlaces = "followedPlaces"
+	// EdgeLikedPlaces holds the string denoting the likedplaces edge name in mutations.
+	EdgeLikedPlaces = "likedPlaces"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// UserBusinessesTable is the table that holds the userBusinesses relation/edge.
@@ -179,13 +181,6 @@ const (
 	CategoryAssignmentsInverseTable = "category_assignments"
 	// CategoryAssignmentsColumn is the table column denoting the categoryAssignments relation/edge.
 	CategoryAssignmentsColumn = "entity_id"
-	// FollowedPlacesTable is the table that holds the followedPlaces relation/edge.
-	FollowedPlacesTable = "user_follow_places"
-	// FollowedPlacesInverseTable is the table name for the UserFollowPlace entity.
-	// It exists in this package in order to avoid circular dependency with the "userfollowplace" package.
-	FollowedPlacesInverseTable = "user_follow_places"
-	// FollowedPlacesColumn is the table column denoting the followedPlaces relation/edge.
-	FollowedPlacesColumn = "user_followed_places"
 	// OwnedEventsTable is the table that holds the ownedEvents relation/edge.
 	OwnedEventsTable = "events"
 	// OwnedEventsInverseTable is the table name for the Event entity.
@@ -200,6 +195,20 @@ const (
 	UserFollowEventsInverseTable = "user_follow_events"
 	// UserFollowEventsColumn is the table column denoting the userFollowEvents relation/edge.
 	UserFollowEventsColumn = "user_user_follow_events"
+	// FollowedPlacesTable is the table that holds the followedPlaces relation/edge.
+	FollowedPlacesTable = "user_follow_places"
+	// FollowedPlacesInverseTable is the table name for the UserFollowPlace entity.
+	// It exists in this package in order to avoid circular dependency with the "userfollowplace" package.
+	FollowedPlacesInverseTable = "user_follow_places"
+	// FollowedPlacesColumn is the table column denoting the followedPlaces relation/edge.
+	FollowedPlacesColumn = "user_followed_places"
+	// LikedPlacesTable is the table that holds the likedPlaces relation/edge.
+	LikedPlacesTable = "user_like_places"
+	// LikedPlacesInverseTable is the table name for the UserLikePlace entity.
+	// It exists in this package in order to avoid circular dependency with the "userlikeplace" package.
+	LikedPlacesInverseTable = "user_like_places"
+	// LikedPlacesColumn is the table column denoting the likedPlaces relation/edge.
+	LikedPlacesColumn = "user_liked_places"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -513,20 +522,6 @@ func ByCategoryAssignments(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOpti
 	}
 }
 
-// ByFollowedPlacesCount orders the results by followedPlaces count.
-func ByFollowedPlacesCount(opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newFollowedPlacesStep(), opts...)
-	}
-}
-
-// ByFollowedPlaces orders the results by followedPlaces terms.
-func ByFollowedPlaces(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newFollowedPlacesStep(), append([]sql.OrderTerm{term}, terms...)...)
-	}
-}
-
 // ByOwnedEventsField orders the results by ownedEvents field.
 func ByOwnedEventsField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -545,6 +540,34 @@ func ByUserFollowEventsCount(opts ...sql.OrderTermOption) OrderOption {
 func ByUserFollowEvents(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newUserFollowEventsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByFollowedPlacesCount orders the results by followedPlaces count.
+func ByFollowedPlacesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newFollowedPlacesStep(), opts...)
+	}
+}
+
+// ByFollowedPlaces orders the results by followedPlaces terms.
+func ByFollowedPlaces(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newFollowedPlacesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByLikedPlacesCount orders the results by likedPlaces count.
+func ByLikedPlacesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newLikedPlacesStep(), opts...)
+	}
+}
+
+// ByLikedPlaces orders the results by likedPlaces terms.
+func ByLikedPlaces(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newLikedPlacesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 func newUserBusinessesStep() *sqlgraph.Step {
@@ -652,13 +675,6 @@ func newCategoryAssignmentsStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.O2M, false, CategoryAssignmentsTable, CategoryAssignmentsColumn),
 	)
 }
-func newFollowedPlacesStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(FollowedPlacesInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, FollowedPlacesTable, FollowedPlacesColumn),
-	)
-}
 func newOwnedEventsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -671,5 +687,19 @@ func newUserFollowEventsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(UserFollowEventsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, UserFollowEventsTable, UserFollowEventsColumn),
+	)
+}
+func newFollowedPlacesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(FollowedPlacesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, FollowedPlacesTable, FollowedPlacesColumn),
+	)
+}
+func newLikedPlacesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(LikedPlacesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, LikedPlacesTable, LikedPlacesColumn),
 	)
 }

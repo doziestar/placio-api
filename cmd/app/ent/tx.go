@@ -80,6 +80,8 @@ type Tx struct {
 	UserFollowPlace *UserFollowPlaceClient
 	// UserFollowUser is the client for interacting with the UserFollowUser builders.
 	UserFollowUser *UserFollowUserClient
+	// UserLikePlace is the client for interacting with the UserLikePlace builders.
+	UserLikePlace *UserLikePlaceClient
 
 	// lazily loaded.
 	client     *Client
@@ -245,6 +247,7 @@ func (tx *Tx) init() {
 	tx.UserFollowEvent = NewUserFollowEventClient(tx.config)
 	tx.UserFollowPlace = NewUserFollowPlaceClient(tx.config)
 	tx.UserFollowUser = NewUserFollowUserClient(tx.config)
+	tx.UserLikePlace = NewUserLikePlaceClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.

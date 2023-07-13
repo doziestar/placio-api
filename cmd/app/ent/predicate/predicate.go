@@ -107,3 +107,6 @@ type UserFollowPlace func(*sql.Selector)
 
 // UserFollowUser is the predicate function for userfollowuser builders.
 type UserFollowUser func(*sql.Selector)
+
+// UserLikePlace is the predicate function for userlikeplace builders.
+type UserLikePlace func(*sql.Selector)

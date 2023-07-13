@@ -87,7 +87,8 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 
 		// likes
 		likeService := service.NewLikeService(client, redisClient)
-		likeController := controller.NewLikeController(likeService)
+		userPlacesLikesService := service.NewUserLikePlaceService(client, redisClient)
+		likeController := controller.NewLikeController(likeService, userPlacesLikesService)
 		likeController.RegisterRoutes(routerGroupV1)
 
 		// places

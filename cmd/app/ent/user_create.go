@@ -24,6 +24,7 @@ import (
 	"placio-app/ent/userfollowevent"
 	"placio-app/ent/userfollowplace"
 	"placio-app/ent/userfollowuser"
+	"placio-app/ent/userlikeplace"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -410,21 +411,6 @@ func (uc *UserCreate) AddCategoryAssignments(c ...*CategoryAssignment) *UserCrea
 	return uc.AddCategoryAssignmentIDs(ids...)
 }
 
-// AddFollowedPlaceIDs adds the "followedPlaces" edge to the UserFollowPlace entity by IDs.
-func (uc *UserCreate) AddFollowedPlaceIDs(ids ...string) *UserCreate {
-	uc.mutation.AddFollowedPlaceIDs(ids...)
-	return uc
-}
-
-// AddFollowedPlaces adds the "followedPlaces" edges to the UserFollowPlace entity.
-func (uc *UserCreate) AddFollowedPlaces(u ...*UserFollowPlace) *UserCreate {
-	ids := make([]string, len(u))
-	for i := range u {
-		ids[i] = u[i].ID
-	}
-	return uc.AddFollowedPlaceIDs(ids...)
-}
-
 // SetOwnedEventsID sets the "ownedEvents" edge to the Event entity by ID.
 func (uc *UserCreate) SetOwnedEventsID(id string) *UserCreate {
 	uc.mutation.SetOwnedEventsID(id)
@@ -457,6 +443,36 @@ func (uc *UserCreate) AddUserFollowEvents(u ...*UserFollowEvent) *UserCreate {
 		ids[i] = u[i].ID
 	}
 	return uc.AddUserFollowEventIDs(ids...)
+}
+
+// AddFollowedPlaceIDs adds the "followedPlaces" edge to the UserFollowPlace entity by IDs.
+func (uc *UserCreate) AddFollowedPlaceIDs(ids ...string) *UserCreate {
+	uc.mutation.AddFollowedPlaceIDs(ids...)
+	return uc
+}
+
+// AddFollowedPlaces adds the "followedPlaces" edges to the UserFollowPlace entity.
+func (uc *UserCreate) AddFollowedPlaces(u ...*UserFollowPlace) *UserCreate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uc.AddFollowedPlaceIDs(ids...)
+}
+
+// AddLikedPlaceIDs adds the "likedPlaces" edge to the UserLikePlace entity by IDs.
+func (uc *UserCreate) AddLikedPlaceIDs(ids ...string) *UserCreate {
+	uc.mutation.AddLikedPlaceIDs(ids...)
+	return uc
+}
+
+// AddLikedPlaces adds the "likedPlaces" edges to the UserLikePlace entity.
+func (uc *UserCreate) AddLikedPlaces(u ...*UserLikePlace) *UserCreate {
+	ids := make([]string, len(u))
+	for i := range u {
+		ids[i] = u[i].ID
+	}
+	return uc.AddLikedPlaceIDs(ids...)
 }
 
 // Mutation returns the UserMutation object of the builder.
@@ -844,22 +860,6 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := uc.mutation.FollowedPlacesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   user.FollowedPlacesTable,
-			Columns: []string{user.FollowedPlacesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(userfollowplace.FieldID, field.TypeString),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
 	if nodes := uc.mutation.OwnedEventsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
@@ -885,6 +885,38 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(userfollowevent.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.FollowedPlacesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.FollowedPlacesTable,
+			Columns: []string{user.FollowedPlacesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userfollowplace.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.LikedPlacesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.LikedPlacesTable,
+			Columns: []string{user.LikedPlacesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(userlikeplace.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

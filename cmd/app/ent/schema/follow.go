@@ -11,6 +11,18 @@ type UserFollowUser struct {
 	ent.Schema
 }
 
+// Fields of the UserFollowUser.
+func (UserFollowUser) Fields() []ent.Field {
+	return []ent.Field{
+		field.String("id").
+			MaxLen(36).
+			Unique().
+			Immutable(),
+		field.Time("CreatedAt").Default(time.Now),
+		field.Time("UpdatedAt").UpdateDefault(time.Now),
+	}
+}
+
 // Edges of the UserFollowUser.
 func (UserFollowUser) Edges() []ent.Edge {
 	return []ent.Edge{
@@ -25,6 +37,15 @@ func (UserFollowUser) Edges() []ent.Edge {
 
 type UserFollowBusiness struct {
 	ent.Schema
+}
+
+// Fields of the UserFollowBusiness.
+func (UserFollowBusiness) Fields() []ent.Field {
+	return []ent.Field{
+		field.String("id").Unique().Immutable(),
+		field.Time("CreatedAt").Default(time.Now),
+		field.Time("UpdatedAt").UpdateDefault(time.Now),
+	}
 }
 
 // Edges of the UserFollowBusiness.
@@ -43,6 +64,15 @@ type BusinessFollowBusiness struct {
 	ent.Schema
 }
 
+// Fields of the BusinessFollowBusiness.
+func (BusinessFollowBusiness) Fields() []ent.Field {
+	return []ent.Field{
+		field.String("id").Unique().Immutable(),
+		field.Time("CreatedAt").Default(time.Now),
+		field.Time("UpdatedAt").UpdateDefault(time.Now),
+	}
+}
+
 // Edges of the BusinessFollowBusiness.
 func (BusinessFollowBusiness) Edges() []ent.Edge {
 	return []ent.Edge{
@@ -57,6 +87,15 @@ func (BusinessFollowBusiness) Edges() []ent.Edge {
 
 type BusinessFollowUser struct {
 	ent.Schema
+}
+
+// Fields of the BusinessFollowUser.
+func (BusinessFollowUser) Fields() []ent.Field {
+	return []ent.Field{
+		field.String("id").Unique().Immutable(),
+		field.Time("CreatedAt").Default(time.Now),
+		field.Time("UpdatedAt").UpdateDefault(time.Now),
+	}
 }
 
 // Edges of the BusinessFollowUser.
@@ -76,15 +115,18 @@ type UserFollowPlace struct {
 	ent.Schema
 }
 
-// Edges of the UserFollowPlace.
+func (UserFollowPlace) Fields() []ent.Field {
+	return []ent.Field{
+		field.String("id").Unique().Immutable(),
+		field.Time("CreatedAt").Default(time.Now),
+		field.Time("UpdatedAt").UpdateDefault(time.Now),
+	}
+}
+
 func (UserFollowPlace) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.From("user", User.Type).
-			Ref("followedPlaces").
-			Unique(),
-		edge.From("place", Place.Type).
-			Ref("followerUsers").
-			Unique(),
+		edge.From("user", User.Type).Ref("followedPlaces").Unique(),
+		edge.To("place", Place.Type).Unique(),
 	}
 }
 
@@ -96,6 +138,7 @@ type UserFollowEvent struct {
 // Fields of the UserFollowEvent.
 func (UserFollowEvent) Fields() []ent.Field {
 	return []ent.Field{
+		field.String("id").Unique().Immutable(),
 		field.Time("createdAt").Default(time.Now),
 		field.Time("updatedAt").Default(time.Now).UpdateDefault(time.Now),
 	}
@@ -122,6 +165,7 @@ type BusinessFollowEvent struct {
 // Fields of the BusinessFollowEvent.
 func (BusinessFollowEvent) Fields() []ent.Field {
 	return []ent.Field{
+		field.String("id").Unique().Immutable(),
 		field.Time("createdAt").Default(time.Now),
 		field.Time("updatedAt").Default(time.Now).UpdateDefault(time.Now),
 	}

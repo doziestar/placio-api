@@ -9,6 +9,7 @@ import (
 	"placio-app/ent/predicate"
 	"placio-app/ent/user"
 	"placio-app/ent/userfollowuser"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -25,6 +26,26 @@ type UserFollowUserUpdate struct {
 // Where appends a list predicates to the UserFollowUserUpdate builder.
 func (ufuu *UserFollowUserUpdate) Where(ps ...predicate.UserFollowUser) *UserFollowUserUpdate {
 	ufuu.mutation.Where(ps...)
+	return ufuu
+}
+
+// SetCreatedAt sets the "CreatedAt" field.
+func (ufuu *UserFollowUserUpdate) SetCreatedAt(t time.Time) *UserFollowUserUpdate {
+	ufuu.mutation.SetCreatedAt(t)
+	return ufuu
+}
+
+// SetNillableCreatedAt sets the "CreatedAt" field if the given value is not nil.
+func (ufuu *UserFollowUserUpdate) SetNillableCreatedAt(t *time.Time) *UserFollowUserUpdate {
+	if t != nil {
+		ufuu.SetCreatedAt(*t)
+	}
+	return ufuu
+}
+
+// SetUpdatedAt sets the "UpdatedAt" field.
+func (ufuu *UserFollowUserUpdate) SetUpdatedAt(t time.Time) *UserFollowUserUpdate {
+	ufuu.mutation.SetUpdatedAt(t)
 	return ufuu
 }
 
@@ -85,6 +106,7 @@ func (ufuu *UserFollowUserUpdate) ClearFollowed() *UserFollowUserUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (ufuu *UserFollowUserUpdate) Save(ctx context.Context) (int, error) {
+	ufuu.defaults()
 	return withHooks(ctx, ufuu.sqlSave, ufuu.mutation, ufuu.hooks)
 }
 
@@ -110,6 +132,14 @@ func (ufuu *UserFollowUserUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (ufuu *UserFollowUserUpdate) defaults() {
+	if _, ok := ufuu.mutation.UpdatedAt(); !ok {
+		v := userfollowuser.UpdateDefaultUpdatedAt()
+		ufuu.mutation.SetUpdatedAt(v)
+	}
+}
+
 func (ufuu *UserFollowUserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	_spec := sqlgraph.NewUpdateSpec(userfollowuser.Table, userfollowuser.Columns, sqlgraph.NewFieldSpec(userfollowuser.FieldID, field.TypeString))
 	if ps := ufuu.mutation.predicates; len(ps) > 0 {
@@ -118,6 +148,12 @@ func (ufuu *UserFollowUserUpdate) sqlSave(ctx context.Context) (n int, err error
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := ufuu.mutation.CreatedAt(); ok {
+		_spec.SetField(userfollowuser.FieldCreatedAt, field.TypeTime, value)
+	}
+	if value, ok := ufuu.mutation.UpdatedAt(); ok {
+		_spec.SetField(userfollowuser.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if ufuu.mutation.FollowerCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -197,6 +233,26 @@ type UserFollowUserUpdateOne struct {
 	mutation *UserFollowUserMutation
 }
 
+// SetCreatedAt sets the "CreatedAt" field.
+func (ufuuo *UserFollowUserUpdateOne) SetCreatedAt(t time.Time) *UserFollowUserUpdateOne {
+	ufuuo.mutation.SetCreatedAt(t)
+	return ufuuo
+}
+
+// SetNillableCreatedAt sets the "CreatedAt" field if the given value is not nil.
+func (ufuuo *UserFollowUserUpdateOne) SetNillableCreatedAt(t *time.Time) *UserFollowUserUpdateOne {
+	if t != nil {
+		ufuuo.SetCreatedAt(*t)
+	}
+	return ufuuo
+}
+
+// SetUpdatedAt sets the "UpdatedAt" field.
+func (ufuuo *UserFollowUserUpdateOne) SetUpdatedAt(t time.Time) *UserFollowUserUpdateOne {
+	ufuuo.mutation.SetUpdatedAt(t)
+	return ufuuo
+}
+
 // SetFollowerID sets the "follower" edge to the User entity by ID.
 func (ufuuo *UserFollowUserUpdateOne) SetFollowerID(id string) *UserFollowUserUpdateOne {
 	ufuuo.mutation.SetFollowerID(id)
@@ -267,6 +323,7 @@ func (ufuuo *UserFollowUserUpdateOne) Select(field string, fields ...string) *Us
 
 // Save executes the query and returns the updated UserFollowUser entity.
 func (ufuuo *UserFollowUserUpdateOne) Save(ctx context.Context) (*UserFollowUser, error) {
+	ufuuo.defaults()
 	return withHooks(ctx, ufuuo.sqlSave, ufuuo.mutation, ufuuo.hooks)
 }
 
@@ -289,6 +346,14 @@ func (ufuuo *UserFollowUserUpdateOne) Exec(ctx context.Context) error {
 func (ufuuo *UserFollowUserUpdateOne) ExecX(ctx context.Context) {
 	if err := ufuuo.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (ufuuo *UserFollowUserUpdateOne) defaults() {
+	if _, ok := ufuuo.mutation.UpdatedAt(); !ok {
+		v := userfollowuser.UpdateDefaultUpdatedAt()
+		ufuuo.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -317,6 +382,12 @@ func (ufuuo *UserFollowUserUpdateOne) sqlSave(ctx context.Context) (_node *UserF
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := ufuuo.mutation.CreatedAt(); ok {
+		_spec.SetField(userfollowuser.FieldCreatedAt, field.TypeTime, value)
+	}
+	if value, ok := ufuuo.mutation.UpdatedAt(); ok {
+		_spec.SetField(userfollowuser.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if ufuuo.mutation.FollowerCleared() {
 		edge := &sqlgraph.EdgeSpec{

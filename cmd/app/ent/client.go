@@ -44,6 +44,7 @@ import (
 	"placio-app/ent/userfollowevent"
 	"placio-app/ent/userfollowplace"
 	"placio-app/ent/userfollowuser"
+	"placio-app/ent/userlikeplace"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
@@ -124,6 +125,8 @@ type Client struct {
 	UserFollowPlace *UserFollowPlaceClient
 	// UserFollowUser is the client for interacting with the UserFollowUser builders.
 	UserFollowUser *UserFollowUserClient
+	// UserLikePlace is the client for interacting with the UserLikePlace builders.
+	UserLikePlace *UserLikePlaceClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -171,6 +174,7 @@ func (c *Client) init() {
 	c.UserFollowEvent = NewUserFollowEventClient(c.config)
 	c.UserFollowPlace = NewUserFollowPlaceClient(c.config)
 	c.UserFollowUser = NewUserFollowUserClient(c.config)
+	c.UserLikePlace = NewUserLikePlaceClient(c.config)
 }
 
 type (
@@ -287,6 +291,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		UserFollowEvent:        NewUserFollowEventClient(cfg),
 		UserFollowPlace:        NewUserFollowPlaceClient(cfg),
 		UserFollowUser:         NewUserFollowUserClient(cfg),
+		UserLikePlace:          NewUserLikePlaceClient(cfg),
 	}, nil
 }
 
@@ -340,6 +345,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		UserFollowEvent:        NewUserFollowEventClient(cfg),
 		UserFollowPlace:        NewUserFollowPlaceClient(cfg),
 		UserFollowUser:         NewUserFollowUserClient(cfg),
+		UserLikePlace:          NewUserLikePlaceClient(cfg),
 	}, nil
 }
 
@@ -374,7 +380,7 @@ func (c *Client) Use(hooks ...Hook) {
 		c.Chat, c.Comment, c.Event, c.FAQ, c.Help, c.Like, c.Media, c.Menu, c.Order,
 		c.Payment, c.Place, c.Post, c.Rating, c.Reaction, c.Reservation, c.Review,
 		c.Room, c.Ticket, c.TicketOption, c.User, c.UserBusiness, c.UserFollowBusiness,
-		c.UserFollowEvent, c.UserFollowPlace, c.UserFollowUser,
+		c.UserFollowEvent, c.UserFollowPlace, c.UserFollowUser, c.UserLikePlace,
 	} {
 		n.Use(hooks...)
 	}
@@ -389,7 +395,7 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.Chat, c.Comment, c.Event, c.FAQ, c.Help, c.Like, c.Media, c.Menu, c.Order,
 		c.Payment, c.Place, c.Post, c.Rating, c.Reaction, c.Reservation, c.Review,
 		c.Room, c.Ticket, c.TicketOption, c.User, c.UserBusiness, c.UserFollowBusiness,
-		c.UserFollowEvent, c.UserFollowPlace, c.UserFollowUser,
+		c.UserFollowEvent, c.UserFollowPlace, c.UserFollowUser, c.UserLikePlace,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -466,6 +472,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.UserFollowPlace.mutate(ctx, m)
 	case *UserFollowUserMutation:
 		return c.UserFollowUser.mutate(ctx, m)
+	case *UserLikePlaceMutation:
+		return c.UserLikePlace.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
 	}
@@ -3782,22 +3790,6 @@ func (c *PlaceClient) QueryCategoryAssignments(pl *Place) *CategoryAssignmentQue
 	return query
 }
 
-// QueryFollowerUsers queries the followerUsers edge of a Place.
-func (c *PlaceClient) QueryFollowerUsers(pl *Place) *UserFollowPlaceQuery {
-	query := (&UserFollowPlaceClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := pl.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(place.Table, place.FieldID, id),
-			sqlgraph.To(userfollowplace.Table, userfollowplace.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, place.FollowerUsersTable, place.FollowerUsersColumn),
-		)
-		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // QueryFaqs queries the faqs edge of a Place.
 func (c *PlaceClient) QueryFaqs(pl *Place) *FAQQuery {
 	query := (&FAQClient{config: c.config}).Query()
@@ -3807,6 +3799,38 @@ func (c *PlaceClient) QueryFaqs(pl *Place) *FAQQuery {
 			sqlgraph.From(place.Table, place.FieldID, id),
 			sqlgraph.To(faq.Table, faq.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, true, place.FaqsTable, place.FaqsPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryLikedByUsers queries the likedByUsers edge of a Place.
+func (c *PlaceClient) QueryLikedByUsers(pl *Place) *UserLikePlaceQuery {
+	query := (&UserLikePlaceClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pl.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(place.Table, place.FieldID, id),
+			sqlgraph.To(userlikeplace.Table, userlikeplace.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, place.LikedByUsersTable, place.LikedByUsersColumn),
+		)
+		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryFollowerUsers queries the followerUsers edge of a Place.
+func (c *PlaceClient) QueryFollowerUsers(pl *Place) *UserFollowPlaceQuery {
+	query := (&UserFollowPlaceClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pl.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(place.Table, place.FieldID, id),
+			sqlgraph.To(userfollowplace.Table, userfollowplace.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, place.FollowerUsersTable, place.FollowerUsersColumn),
 		)
 		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
 		return fromV, nil
@@ -5356,22 +5380,6 @@ func (c *UserClient) QueryCategoryAssignments(u *User) *CategoryAssignmentQuery 
 	return query
 }
 
-// QueryFollowedPlaces queries the followedPlaces edge of a User.
-func (c *UserClient) QueryFollowedPlaces(u *User) *UserFollowPlaceQuery {
-	query := (&UserFollowPlaceClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := u.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(user.Table, user.FieldID, id),
-			sqlgraph.To(userfollowplace.Table, userfollowplace.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.FollowedPlacesTable, user.FollowedPlacesColumn),
-		)
-		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // QueryOwnedEvents queries the ownedEvents edge of a User.
 func (c *UserClient) QueryOwnedEvents(u *User) *EventQuery {
 	query := (&EventClient{config: c.config}).Query()
@@ -5397,6 +5405,38 @@ func (c *UserClient) QueryUserFollowEvents(u *User) *UserFollowEventQuery {
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(userfollowevent.Table, userfollowevent.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.UserFollowEventsTable, user.UserFollowEventsColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryFollowedPlaces queries the followedPlaces edge of a User.
+func (c *UserClient) QueryFollowedPlaces(u *User) *UserFollowPlaceQuery {
+	query := (&UserFollowPlaceClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(userfollowplace.Table, userfollowplace.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.FollowedPlacesTable, user.FollowedPlacesColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryLikedPlaces queries the likedPlaces edge of a User.
+func (c *UserClient) QueryLikedPlaces(u *User) *UserLikePlaceQuery {
+	query := (&UserLikePlaceClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(userlikeplace.Table, userlikeplace.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.LikedPlacesTable, user.LikedPlacesColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil
@@ -5996,7 +6036,7 @@ func (c *UserFollowPlaceClient) QueryPlace(ufp *UserFollowPlace) *PlaceQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(userfollowplace.Table, userfollowplace.FieldID, id),
 			sqlgraph.To(place.Table, place.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, userfollowplace.PlaceTable, userfollowplace.PlaceColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, userfollowplace.PlaceTable, userfollowplace.PlaceColumn),
 		)
 		fromV = sqlgraph.Neighbors(ufp.driver.Dialect(), step)
 		return fromV, nil
@@ -6179,6 +6219,156 @@ func (c *UserFollowUserClient) mutate(ctx context.Context, m *UserFollowUserMuta
 	}
 }
 
+// UserLikePlaceClient is a client for the UserLikePlace schema.
+type UserLikePlaceClient struct {
+	config
+}
+
+// NewUserLikePlaceClient returns a client for the UserLikePlace from the given config.
+func NewUserLikePlaceClient(c config) *UserLikePlaceClient {
+	return &UserLikePlaceClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `userlikeplace.Hooks(f(g(h())))`.
+func (c *UserLikePlaceClient) Use(hooks ...Hook) {
+	c.hooks.UserLikePlace = append(c.hooks.UserLikePlace, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `userlikeplace.Intercept(f(g(h())))`.
+func (c *UserLikePlaceClient) Intercept(interceptors ...Interceptor) {
+	c.inters.UserLikePlace = append(c.inters.UserLikePlace, interceptors...)
+}
+
+// Create returns a builder for creating a UserLikePlace entity.
+func (c *UserLikePlaceClient) Create() *UserLikePlaceCreate {
+	mutation := newUserLikePlaceMutation(c.config, OpCreate)
+	return &UserLikePlaceCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of UserLikePlace entities.
+func (c *UserLikePlaceClient) CreateBulk(builders ...*UserLikePlaceCreate) *UserLikePlaceCreateBulk {
+	return &UserLikePlaceCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for UserLikePlace.
+func (c *UserLikePlaceClient) Update() *UserLikePlaceUpdate {
+	mutation := newUserLikePlaceMutation(c.config, OpUpdate)
+	return &UserLikePlaceUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *UserLikePlaceClient) UpdateOne(ulp *UserLikePlace) *UserLikePlaceUpdateOne {
+	mutation := newUserLikePlaceMutation(c.config, OpUpdateOne, withUserLikePlace(ulp))
+	return &UserLikePlaceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *UserLikePlaceClient) UpdateOneID(id string) *UserLikePlaceUpdateOne {
+	mutation := newUserLikePlaceMutation(c.config, OpUpdateOne, withUserLikePlaceID(id))
+	return &UserLikePlaceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for UserLikePlace.
+func (c *UserLikePlaceClient) Delete() *UserLikePlaceDelete {
+	mutation := newUserLikePlaceMutation(c.config, OpDelete)
+	return &UserLikePlaceDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *UserLikePlaceClient) DeleteOne(ulp *UserLikePlace) *UserLikePlaceDeleteOne {
+	return c.DeleteOneID(ulp.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *UserLikePlaceClient) DeleteOneID(id string) *UserLikePlaceDeleteOne {
+	builder := c.Delete().Where(userlikeplace.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &UserLikePlaceDeleteOne{builder}
+}
+
+// Query returns a query builder for UserLikePlace.
+func (c *UserLikePlaceClient) Query() *UserLikePlaceQuery {
+	return &UserLikePlaceQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeUserLikePlace},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a UserLikePlace entity by its id.
+func (c *UserLikePlaceClient) Get(ctx context.Context, id string) (*UserLikePlace, error) {
+	return c.Query().Where(userlikeplace.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *UserLikePlaceClient) GetX(ctx context.Context, id string) *UserLikePlace {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryUser queries the user edge of a UserLikePlace.
+func (c *UserLikePlaceClient) QueryUser(ulp *UserLikePlace) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ulp.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(userlikeplace.Table, userlikeplace.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, userlikeplace.UserTable, userlikeplace.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(ulp.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPlace queries the place edge of a UserLikePlace.
+func (c *UserLikePlaceClient) QueryPlace(ulp *UserLikePlace) *PlaceQuery {
+	query := (&PlaceClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ulp.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(userlikeplace.Table, userlikeplace.FieldID, id),
+			sqlgraph.To(place.Table, place.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, userlikeplace.PlaceTable, userlikeplace.PlaceColumn),
+		)
+		fromV = sqlgraph.Neighbors(ulp.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *UserLikePlaceClient) Hooks() []Hook {
+	return c.hooks.UserLikePlace
+}
+
+// Interceptors returns the client interceptors.
+func (c *UserLikePlaceClient) Interceptors() []Interceptor {
+	return c.inters.UserLikePlace
+}
+
+func (c *UserLikePlaceClient) mutate(ctx context.Context, m *UserLikePlaceMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&UserLikePlaceCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&UserLikePlaceUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&UserLikePlaceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&UserLikePlaceDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown UserLikePlace mutation op: %q", m.Op())
+	}
+}
+
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
@@ -6187,7 +6377,7 @@ type (
 		Comment, Event, FAQ, Help, Like, Media, Menu, Order, Payment, Place, Post,
 		Rating, Reaction, Reservation, Review, Room, Ticket, TicketOption, User,
 		UserBusiness, UserFollowBusiness, UserFollowEvent, UserFollowPlace,
-		UserFollowUser []ent.Hook
+		UserFollowUser, UserLikePlace []ent.Hook
 	}
 	inters struct {
 		AccountSettings, Amenity, Booking, Business, BusinessFollowBusiness,
@@ -6195,6 +6385,6 @@ type (
 		Comment, Event, FAQ, Help, Like, Media, Menu, Order, Payment, Place, Post,
 		Rating, Reaction, Reservation, Review, Room, Ticket, TicketOption, User,
 		UserBusiness, UserFollowBusiness, UserFollowEvent, UserFollowPlace,
-		UserFollowUser []ent.Interceptor
+		UserFollowUser, UserLikePlace []ent.Interceptor
 	}
 )
