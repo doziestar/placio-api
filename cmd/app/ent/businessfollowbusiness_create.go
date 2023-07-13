@@ -4,9 +4,11 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"placio-app/ent/business"
 	"placio-app/ent/businessfollowbusiness"
+	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -17,6 +19,32 @@ type BusinessFollowBusinessCreate struct {
 	config
 	mutation *BusinessFollowBusinessMutation
 	hooks    []Hook
+}
+
+// SetCreatedAt sets the "CreatedAt" field.
+func (bfbc *BusinessFollowBusinessCreate) SetCreatedAt(t time.Time) *BusinessFollowBusinessCreate {
+	bfbc.mutation.SetCreatedAt(t)
+	return bfbc
+}
+
+// SetNillableCreatedAt sets the "CreatedAt" field if the given value is not nil.
+func (bfbc *BusinessFollowBusinessCreate) SetNillableCreatedAt(t *time.Time) *BusinessFollowBusinessCreate {
+	if t != nil {
+		bfbc.SetCreatedAt(*t)
+	}
+	return bfbc
+}
+
+// SetUpdatedAt sets the "UpdatedAt" field.
+func (bfbc *BusinessFollowBusinessCreate) SetUpdatedAt(t time.Time) *BusinessFollowBusinessCreate {
+	bfbc.mutation.SetUpdatedAt(t)
+	return bfbc
+}
+
+// SetID sets the "id" field.
+func (bfbc *BusinessFollowBusinessCreate) SetID(s string) *BusinessFollowBusinessCreate {
+	bfbc.mutation.SetID(s)
+	return bfbc
 }
 
 // SetFollowerID sets the "follower" edge to the Business entity by ID.
@@ -64,6 +92,7 @@ func (bfbc *BusinessFollowBusinessCreate) Mutation() *BusinessFollowBusinessMuta
 
 // Save creates the BusinessFollowBusiness in the database.
 func (bfbc *BusinessFollowBusinessCreate) Save(ctx context.Context) (*BusinessFollowBusiness, error) {
+	bfbc.defaults()
 	return withHooks(ctx, bfbc.sqlSave, bfbc.mutation, bfbc.hooks)
 }
 
@@ -89,8 +118,22 @@ func (bfbc *BusinessFollowBusinessCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (bfbc *BusinessFollowBusinessCreate) defaults() {
+	if _, ok := bfbc.mutation.CreatedAt(); !ok {
+		v := businessfollowbusiness.DefaultCreatedAt()
+		bfbc.mutation.SetCreatedAt(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (bfbc *BusinessFollowBusinessCreate) check() error {
+	if _, ok := bfbc.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "CreatedAt", err: errors.New(`ent: missing required field "BusinessFollowBusiness.CreatedAt"`)}
+	}
+	if _, ok := bfbc.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "UpdatedAt", err: errors.New(`ent: missing required field "BusinessFollowBusiness.UpdatedAt"`)}
+	}
 	return nil
 }
 
@@ -122,6 +165,18 @@ func (bfbc *BusinessFollowBusinessCreate) createSpec() (*BusinessFollowBusiness,
 		_node = &BusinessFollowBusiness{config: bfbc.config}
 		_spec = sqlgraph.NewCreateSpec(businessfollowbusiness.Table, sqlgraph.NewFieldSpec(businessfollowbusiness.FieldID, field.TypeString))
 	)
+	if id, ok := bfbc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
+	if value, ok := bfbc.mutation.CreatedAt(); ok {
+		_spec.SetField(businessfollowbusiness.FieldCreatedAt, field.TypeTime, value)
+		_node.CreatedAt = value
+	}
+	if value, ok := bfbc.mutation.UpdatedAt(); ok {
+		_spec.SetField(businessfollowbusiness.FieldUpdatedAt, field.TypeTime, value)
+		_node.UpdatedAt = value
+	}
 	if nodes := bfbc.mutation.FollowerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -173,6 +228,7 @@ func (bfbcb *BusinessFollowBusinessCreateBulk) Save(ctx context.Context) ([]*Bus
 	for i := range bfbcb.builders {
 		func(i int, root context.Context) {
 			builder := bfbcb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*BusinessFollowBusinessMutation)
 				if !ok {

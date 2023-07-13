@@ -329,6 +329,18 @@ func (ufuq *UserFollowUserQuery) WithFollowed(opts ...func(*UserQuery)) *UserFol
 
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
+//
+// Example:
+//
+//	var v []struct {
+//		CreatedAt time.Time `json:"CreatedAt,omitempty"`
+//		Count int `json:"count,omitempty"`
+//	}
+//
+//	client.UserFollowUser.Query().
+//		GroupBy(userfollowuser.FieldCreatedAt).
+//		Aggregate(ent.Count()).
+//		Scan(ctx, &v)
 func (ufuq *UserFollowUserQuery) GroupBy(field string, fields ...string) *UserFollowUserGroupBy {
 	ufuq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &UserFollowUserGroupBy{build: ufuq}
@@ -340,6 +352,16 @@ func (ufuq *UserFollowUserQuery) GroupBy(field string, fields ...string) *UserFo
 
 // Select allows the selection one or more fields/columns for the given query,
 // instead of selecting all fields in the entity.
+//
+// Example:
+//
+//	var v []struct {
+//		CreatedAt time.Time `json:"CreatedAt,omitempty"`
+//	}
+//
+//	client.UserFollowUser.Query().
+//		Select(userfollowuser.FieldCreatedAt).
+//		Scan(ctx, &v)
 func (ufuq *UserFollowUserQuery) Select(fields ...string) *UserFollowUserSelect {
 	ufuq.ctx.Fields = append(ufuq.ctx.Fields, fields...)
 	sbuild := &UserFollowUserSelect{UserFollowUserQuery: ufuq}

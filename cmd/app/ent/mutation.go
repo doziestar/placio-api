@@ -36,6 +36,7 @@ import (
 	"placio-app/ent/userfollowevent"
 	"placio-app/ent/userfollowplace"
 	"placio-app/ent/userfollowuser"
+	"placio-app/ent/userlikeplace"
 	"sync"
 	"time"
 
@@ -87,6 +88,7 @@ const (
 	TypeUserFollowEvent        = "UserFollowEvent"
 	TypeUserFollowPlace        = "UserFollowPlace"
 	TypeUserFollowUser         = "UserFollowUser"
+	TypeUserLikePlace          = "UserLikePlace"
 )
 
 // AccountSettingsMutation represents an operation that mutates the AccountSettings nodes in the graph.
@@ -3973,6 +3975,8 @@ type BusinessFollowBusinessMutation struct {
 	op              Op
 	typ             string
 	id              *string
+	_CreatedAt      *time.Time
+	_UpdatedAt      *time.Time
 	clearedFields   map[string]struct{}
 	follower        *string
 	clearedfollower bool
@@ -4053,6 +4057,12 @@ func (m BusinessFollowBusinessMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of BusinessFollowBusiness entities.
+func (m *BusinessFollowBusinessMutation) SetID(id string) {
+	m.id = &id
+}
+
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
 func (m *BusinessFollowBusinessMutation) ID() (id string, exists bool) {
@@ -4079,6 +4089,78 @@ func (m *BusinessFollowBusinessMutation) IDs(ctx context.Context) ([]string, err
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
+}
+
+// SetCreatedAt sets the "CreatedAt" field.
+func (m *BusinessFollowBusinessMutation) SetCreatedAt(t time.Time) {
+	m._CreatedAt = &t
+}
+
+// CreatedAt returns the value of the "CreatedAt" field in the mutation.
+func (m *BusinessFollowBusinessMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m._CreatedAt
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "CreatedAt" field's value of the BusinessFollowBusiness entity.
+// If the BusinessFollowBusiness object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessFollowBusinessMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "CreatedAt" field.
+func (m *BusinessFollowBusinessMutation) ResetCreatedAt() {
+	m._CreatedAt = nil
+}
+
+// SetUpdatedAt sets the "UpdatedAt" field.
+func (m *BusinessFollowBusinessMutation) SetUpdatedAt(t time.Time) {
+	m._UpdatedAt = &t
+}
+
+// UpdatedAt returns the value of the "UpdatedAt" field in the mutation.
+func (m *BusinessFollowBusinessMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m._UpdatedAt
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "UpdatedAt" field's value of the BusinessFollowBusiness entity.
+// If the BusinessFollowBusiness object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessFollowBusinessMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "UpdatedAt" field.
+func (m *BusinessFollowBusinessMutation) ResetUpdatedAt() {
+	m._UpdatedAt = nil
 }
 
 // SetFollowerID sets the "follower" edge to the Business entity by id.
@@ -4193,7 +4275,13 @@ func (m *BusinessFollowBusinessMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *BusinessFollowBusinessMutation) Fields() []string {
-	fields := make([]string, 0, 0)
+	fields := make([]string, 0, 2)
+	if m._CreatedAt != nil {
+		fields = append(fields, businessfollowbusiness.FieldCreatedAt)
+	}
+	if m._UpdatedAt != nil {
+		fields = append(fields, businessfollowbusiness.FieldUpdatedAt)
+	}
 	return fields
 }
 
@@ -4201,6 +4289,12 @@ func (m *BusinessFollowBusinessMutation) Fields() []string {
 // return value indicates that this field was not set, or was not defined in the
 // schema.
 func (m *BusinessFollowBusinessMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case businessfollowbusiness.FieldCreatedAt:
+		return m.CreatedAt()
+	case businessfollowbusiness.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
 	return nil, false
 }
 
@@ -4208,6 +4302,12 @@ func (m *BusinessFollowBusinessMutation) Field(name string) (ent.Value, bool) {
 // returned if the mutation operation is not UpdateOne, or the query to the
 // database failed.
 func (m *BusinessFollowBusinessMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case businessfollowbusiness.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case businessfollowbusiness.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
 	return nil, fmt.Errorf("unknown BusinessFollowBusiness field %s", name)
 }
 
@@ -4216,6 +4316,20 @@ func (m *BusinessFollowBusinessMutation) OldField(ctx context.Context, name stri
 // type.
 func (m *BusinessFollowBusinessMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case businessfollowbusiness.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case businessfollowbusiness.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
 	}
 	return fmt.Errorf("unknown BusinessFollowBusiness field %s", name)
 }
@@ -4237,6 +4351,8 @@ func (m *BusinessFollowBusinessMutation) AddedField(name string) (ent.Value, boo
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
 func (m *BusinessFollowBusinessMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
 	return fmt.Errorf("unknown BusinessFollowBusiness numeric field %s", name)
 }
 
@@ -4262,6 +4378,14 @@ func (m *BusinessFollowBusinessMutation) ClearField(name string) error {
 // ResetField resets all changes in the mutation for the field with the given name.
 // It returns an error if the field is not defined in the schema.
 func (m *BusinessFollowBusinessMutation) ResetField(name string) error {
+	switch name {
+	case businessfollowbusiness.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case businessfollowbusiness.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
 	return fmt.Errorf("unknown BusinessFollowBusiness field %s", name)
 }
 
@@ -4443,6 +4567,12 @@ func (m BusinessFollowEventMutation) Tx() (*Tx, error) {
 	tx := &Tx{config: m.config}
 	tx.init()
 	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of BusinessFollowEvent entities.
+func (m *BusinessFollowEventMutation) SetID(id string) {
+	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
@@ -4869,6 +4999,8 @@ type BusinessFollowUserMutation struct {
 	op              Op
 	typ             string
 	id              *string
+	_CreatedAt      *time.Time
+	_UpdatedAt      *time.Time
 	clearedFields   map[string]struct{}
 	business        *string
 	clearedbusiness bool
@@ -4949,6 +5081,12 @@ func (m BusinessFollowUserMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of BusinessFollowUser entities.
+func (m *BusinessFollowUserMutation) SetID(id string) {
+	m.id = &id
+}
+
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
 func (m *BusinessFollowUserMutation) ID() (id string, exists bool) {
@@ -4975,6 +5113,78 @@ func (m *BusinessFollowUserMutation) IDs(ctx context.Context) ([]string, error) 
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
+}
+
+// SetCreatedAt sets the "CreatedAt" field.
+func (m *BusinessFollowUserMutation) SetCreatedAt(t time.Time) {
+	m._CreatedAt = &t
+}
+
+// CreatedAt returns the value of the "CreatedAt" field in the mutation.
+func (m *BusinessFollowUserMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m._CreatedAt
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "CreatedAt" field's value of the BusinessFollowUser entity.
+// If the BusinessFollowUser object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessFollowUserMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "CreatedAt" field.
+func (m *BusinessFollowUserMutation) ResetCreatedAt() {
+	m._CreatedAt = nil
+}
+
+// SetUpdatedAt sets the "UpdatedAt" field.
+func (m *BusinessFollowUserMutation) SetUpdatedAt(t time.Time) {
+	m._UpdatedAt = &t
+}
+
+// UpdatedAt returns the value of the "UpdatedAt" field in the mutation.
+func (m *BusinessFollowUserMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m._UpdatedAt
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "UpdatedAt" field's value of the BusinessFollowUser entity.
+// If the BusinessFollowUser object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessFollowUserMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "UpdatedAt" field.
+func (m *BusinessFollowUserMutation) ResetUpdatedAt() {
+	m._UpdatedAt = nil
 }
 
 // SetBusinessID sets the "business" edge to the Business entity by id.
@@ -5089,7 +5299,13 @@ func (m *BusinessFollowUserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *BusinessFollowUserMutation) Fields() []string {
-	fields := make([]string, 0, 0)
+	fields := make([]string, 0, 2)
+	if m._CreatedAt != nil {
+		fields = append(fields, businessfollowuser.FieldCreatedAt)
+	}
+	if m._UpdatedAt != nil {
+		fields = append(fields, businessfollowuser.FieldUpdatedAt)
+	}
 	return fields
 }
 
@@ -5097,6 +5313,12 @@ func (m *BusinessFollowUserMutation) Fields() []string {
 // return value indicates that this field was not set, or was not defined in the
 // schema.
 func (m *BusinessFollowUserMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case businessfollowuser.FieldCreatedAt:
+		return m.CreatedAt()
+	case businessfollowuser.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
 	return nil, false
 }
 
@@ -5104,6 +5326,12 @@ func (m *BusinessFollowUserMutation) Field(name string) (ent.Value, bool) {
 // returned if the mutation operation is not UpdateOne, or the query to the
 // database failed.
 func (m *BusinessFollowUserMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case businessfollowuser.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case businessfollowuser.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
 	return nil, fmt.Errorf("unknown BusinessFollowUser field %s", name)
 }
 
@@ -5112,6 +5340,20 @@ func (m *BusinessFollowUserMutation) OldField(ctx context.Context, name string) 
 // type.
 func (m *BusinessFollowUserMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case businessfollowuser.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case businessfollowuser.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
 	}
 	return fmt.Errorf("unknown BusinessFollowUser field %s", name)
 }
@@ -5133,6 +5375,8 @@ func (m *BusinessFollowUserMutation) AddedField(name string) (ent.Value, bool) {
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
 func (m *BusinessFollowUserMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
 	return fmt.Errorf("unknown BusinessFollowUser numeric field %s", name)
 }
 
@@ -5158,6 +5402,14 @@ func (m *BusinessFollowUserMutation) ClearField(name string) error {
 // ResetField resets all changes in the mutation for the field with the given name.
 // It returns an error if the field is not defined in the schema.
 func (m *BusinessFollowUserMutation) ResetField(name string) error {
+	switch name {
+	case businessfollowuser.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case businessfollowuser.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
 	return fmt.Errorf("unknown BusinessFollowUser field %s", name)
 }
 
@@ -14483,12 +14735,15 @@ type PlaceMutation struct {
 	categoryAssignments        map[string]struct{}
 	removedcategoryAssignments map[string]struct{}
 	clearedcategoryAssignments bool
-	followerUsers              map[string]struct{}
-	removedfollowerUsers       map[string]struct{}
-	clearedfollowerUsers       bool
 	faqs                       map[string]struct{}
 	removedfaqs                map[string]struct{}
 	clearedfaqs                bool
+	likedByUsers               map[string]struct{}
+	removedlikedByUsers        map[string]struct{}
+	clearedlikedByUsers        bool
+	followerUsers              map[string]struct{}
+	removedfollowerUsers       map[string]struct{}
+	clearedfollowerUsers       bool
 	done                       bool
 	oldValue                   func(context.Context) (*Place, error)
 	predicates                 []predicate.Place
@@ -16515,60 +16770,6 @@ func (m *PlaceMutation) ResetCategoryAssignments() {
 	m.removedcategoryAssignments = nil
 }
 
-// AddFollowerUserIDs adds the "followerUsers" edge to the UserFollowPlace entity by ids.
-func (m *PlaceMutation) AddFollowerUserIDs(ids ...string) {
-	if m.followerUsers == nil {
-		m.followerUsers = make(map[string]struct{})
-	}
-	for i := range ids {
-		m.followerUsers[ids[i]] = struct{}{}
-	}
-}
-
-// ClearFollowerUsers clears the "followerUsers" edge to the UserFollowPlace entity.
-func (m *PlaceMutation) ClearFollowerUsers() {
-	m.clearedfollowerUsers = true
-}
-
-// FollowerUsersCleared reports if the "followerUsers" edge to the UserFollowPlace entity was cleared.
-func (m *PlaceMutation) FollowerUsersCleared() bool {
-	return m.clearedfollowerUsers
-}
-
-// RemoveFollowerUserIDs removes the "followerUsers" edge to the UserFollowPlace entity by IDs.
-func (m *PlaceMutation) RemoveFollowerUserIDs(ids ...string) {
-	if m.removedfollowerUsers == nil {
-		m.removedfollowerUsers = make(map[string]struct{})
-	}
-	for i := range ids {
-		delete(m.followerUsers, ids[i])
-		m.removedfollowerUsers[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedFollowerUsers returns the removed IDs of the "followerUsers" edge to the UserFollowPlace entity.
-func (m *PlaceMutation) RemovedFollowerUsersIDs() (ids []string) {
-	for id := range m.removedfollowerUsers {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// FollowerUsersIDs returns the "followerUsers" edge IDs in the mutation.
-func (m *PlaceMutation) FollowerUsersIDs() (ids []string) {
-	for id := range m.followerUsers {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// ResetFollowerUsers resets all changes to the "followerUsers" edge.
-func (m *PlaceMutation) ResetFollowerUsers() {
-	m.followerUsers = nil
-	m.clearedfollowerUsers = false
-	m.removedfollowerUsers = nil
-}
-
 // AddFaqIDs adds the "faqs" edge to the FAQ entity by ids.
 func (m *PlaceMutation) AddFaqIDs(ids ...string) {
 	if m.faqs == nil {
@@ -16621,6 +16822,114 @@ func (m *PlaceMutation) ResetFaqs() {
 	m.faqs = nil
 	m.clearedfaqs = false
 	m.removedfaqs = nil
+}
+
+// AddLikedByUserIDs adds the "likedByUsers" edge to the UserLikePlace entity by ids.
+func (m *PlaceMutation) AddLikedByUserIDs(ids ...string) {
+	if m.likedByUsers == nil {
+		m.likedByUsers = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.likedByUsers[ids[i]] = struct{}{}
+	}
+}
+
+// ClearLikedByUsers clears the "likedByUsers" edge to the UserLikePlace entity.
+func (m *PlaceMutation) ClearLikedByUsers() {
+	m.clearedlikedByUsers = true
+}
+
+// LikedByUsersCleared reports if the "likedByUsers" edge to the UserLikePlace entity was cleared.
+func (m *PlaceMutation) LikedByUsersCleared() bool {
+	return m.clearedlikedByUsers
+}
+
+// RemoveLikedByUserIDs removes the "likedByUsers" edge to the UserLikePlace entity by IDs.
+func (m *PlaceMutation) RemoveLikedByUserIDs(ids ...string) {
+	if m.removedlikedByUsers == nil {
+		m.removedlikedByUsers = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.likedByUsers, ids[i])
+		m.removedlikedByUsers[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedLikedByUsers returns the removed IDs of the "likedByUsers" edge to the UserLikePlace entity.
+func (m *PlaceMutation) RemovedLikedByUsersIDs() (ids []string) {
+	for id := range m.removedlikedByUsers {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// LikedByUsersIDs returns the "likedByUsers" edge IDs in the mutation.
+func (m *PlaceMutation) LikedByUsersIDs() (ids []string) {
+	for id := range m.likedByUsers {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetLikedByUsers resets all changes to the "likedByUsers" edge.
+func (m *PlaceMutation) ResetLikedByUsers() {
+	m.likedByUsers = nil
+	m.clearedlikedByUsers = false
+	m.removedlikedByUsers = nil
+}
+
+// AddFollowerUserIDs adds the "followerUsers" edge to the UserFollowPlace entity by ids.
+func (m *PlaceMutation) AddFollowerUserIDs(ids ...string) {
+	if m.followerUsers == nil {
+		m.followerUsers = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.followerUsers[ids[i]] = struct{}{}
+	}
+}
+
+// ClearFollowerUsers clears the "followerUsers" edge to the UserFollowPlace entity.
+func (m *PlaceMutation) ClearFollowerUsers() {
+	m.clearedfollowerUsers = true
+}
+
+// FollowerUsersCleared reports if the "followerUsers" edge to the UserFollowPlace entity was cleared.
+func (m *PlaceMutation) FollowerUsersCleared() bool {
+	return m.clearedfollowerUsers
+}
+
+// RemoveFollowerUserIDs removes the "followerUsers" edge to the UserFollowPlace entity by IDs.
+func (m *PlaceMutation) RemoveFollowerUserIDs(ids ...string) {
+	if m.removedfollowerUsers == nil {
+		m.removedfollowerUsers = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.followerUsers, ids[i])
+		m.removedfollowerUsers[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedFollowerUsers returns the removed IDs of the "followerUsers" edge to the UserFollowPlace entity.
+func (m *PlaceMutation) RemovedFollowerUsersIDs() (ids []string) {
+	for id := range m.removedfollowerUsers {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// FollowerUsersIDs returns the "followerUsers" edge IDs in the mutation.
+func (m *PlaceMutation) FollowerUsersIDs() (ids []string) {
+	for id := range m.followerUsers {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetFollowerUsers resets all changes to the "followerUsers" edge.
+func (m *PlaceMutation) ResetFollowerUsers() {
+	m.followerUsers = nil
+	m.clearedfollowerUsers = false
+	m.removedfollowerUsers = nil
 }
 
 // Where appends a list predicates to the PlaceMutation builder.
@@ -17355,7 +17664,7 @@ func (m *PlaceMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PlaceMutation) AddedEdges() []string {
-	edges := make([]string, 0, 13)
+	edges := make([]string, 0, 14)
 	if m.business != nil {
 		edges = append(edges, place.EdgeBusiness)
 	}
@@ -17389,11 +17698,14 @@ func (m *PlaceMutation) AddedEdges() []string {
 	if m.categoryAssignments != nil {
 		edges = append(edges, place.EdgeCategoryAssignments)
 	}
-	if m.followerUsers != nil {
-		edges = append(edges, place.EdgeFollowerUsers)
-	}
 	if m.faqs != nil {
 		edges = append(edges, place.EdgeFaqs)
+	}
+	if m.likedByUsers != nil {
+		edges = append(edges, place.EdgeLikedByUsers)
+	}
+	if m.followerUsers != nil {
+		edges = append(edges, place.EdgeFollowerUsers)
 	}
 	return edges
 }
@@ -17466,15 +17778,21 @@ func (m *PlaceMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case place.EdgeFollowerUsers:
-		ids := make([]ent.Value, 0, len(m.followerUsers))
-		for id := range m.followerUsers {
-			ids = append(ids, id)
-		}
-		return ids
 	case place.EdgeFaqs:
 		ids := make([]ent.Value, 0, len(m.faqs))
 		for id := range m.faqs {
+			ids = append(ids, id)
+		}
+		return ids
+	case place.EdgeLikedByUsers:
+		ids := make([]ent.Value, 0, len(m.likedByUsers))
+		for id := range m.likedByUsers {
+			ids = append(ids, id)
+		}
+		return ids
+	case place.EdgeFollowerUsers:
+		ids := make([]ent.Value, 0, len(m.followerUsers))
+		for id := range m.followerUsers {
 			ids = append(ids, id)
 		}
 		return ids
@@ -17484,7 +17802,7 @@ func (m *PlaceMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PlaceMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 13)
+	edges := make([]string, 0, 14)
 	if m.removedusers != nil {
 		edges = append(edges, place.EdgeUsers)
 	}
@@ -17515,11 +17833,14 @@ func (m *PlaceMutation) RemovedEdges() []string {
 	if m.removedcategoryAssignments != nil {
 		edges = append(edges, place.EdgeCategoryAssignments)
 	}
-	if m.removedfollowerUsers != nil {
-		edges = append(edges, place.EdgeFollowerUsers)
-	}
 	if m.removedfaqs != nil {
 		edges = append(edges, place.EdgeFaqs)
+	}
+	if m.removedlikedByUsers != nil {
+		edges = append(edges, place.EdgeLikedByUsers)
+	}
+	if m.removedfollowerUsers != nil {
+		edges = append(edges, place.EdgeFollowerUsers)
 	}
 	return edges
 }
@@ -17588,15 +17909,21 @@ func (m *PlaceMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case place.EdgeFollowerUsers:
-		ids := make([]ent.Value, 0, len(m.removedfollowerUsers))
-		for id := range m.removedfollowerUsers {
-			ids = append(ids, id)
-		}
-		return ids
 	case place.EdgeFaqs:
 		ids := make([]ent.Value, 0, len(m.removedfaqs))
 		for id := range m.removedfaqs {
+			ids = append(ids, id)
+		}
+		return ids
+	case place.EdgeLikedByUsers:
+		ids := make([]ent.Value, 0, len(m.removedlikedByUsers))
+		for id := range m.removedlikedByUsers {
+			ids = append(ids, id)
+		}
+		return ids
+	case place.EdgeFollowerUsers:
+		ids := make([]ent.Value, 0, len(m.removedfollowerUsers))
+		for id := range m.removedfollowerUsers {
 			ids = append(ids, id)
 		}
 		return ids
@@ -17606,7 +17933,7 @@ func (m *PlaceMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PlaceMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 13)
+	edges := make([]string, 0, 14)
 	if m.clearedbusiness {
 		edges = append(edges, place.EdgeBusiness)
 	}
@@ -17640,11 +17967,14 @@ func (m *PlaceMutation) ClearedEdges() []string {
 	if m.clearedcategoryAssignments {
 		edges = append(edges, place.EdgeCategoryAssignments)
 	}
-	if m.clearedfollowerUsers {
-		edges = append(edges, place.EdgeFollowerUsers)
-	}
 	if m.clearedfaqs {
 		edges = append(edges, place.EdgeFaqs)
+	}
+	if m.clearedlikedByUsers {
+		edges = append(edges, place.EdgeLikedByUsers)
+	}
+	if m.clearedfollowerUsers {
+		edges = append(edges, place.EdgeFollowerUsers)
 	}
 	return edges
 }
@@ -17675,10 +18005,12 @@ func (m *PlaceMutation) EdgeCleared(name string) bool {
 		return m.clearedcategories
 	case place.EdgeCategoryAssignments:
 		return m.clearedcategoryAssignments
-	case place.EdgeFollowerUsers:
-		return m.clearedfollowerUsers
 	case place.EdgeFaqs:
 		return m.clearedfaqs
+	case place.EdgeLikedByUsers:
+		return m.clearedlikedByUsers
+	case place.EdgeFollowerUsers:
+		return m.clearedfollowerUsers
 	}
 	return false
 }
@@ -17731,11 +18063,14 @@ func (m *PlaceMutation) ResetEdge(name string) error {
 	case place.EdgeCategoryAssignments:
 		m.ResetCategoryAssignments()
 		return nil
-	case place.EdgeFollowerUsers:
-		m.ResetFollowerUsers()
-		return nil
 	case place.EdgeFaqs:
 		m.ResetFaqs()
+		return nil
+	case place.EdgeLikedByUsers:
+		m.ResetLikedByUsers()
+		return nil
+	case place.EdgeFollowerUsers:
+		m.ResetFollowerUsers()
 		return nil
 	}
 	return fmt.Errorf("unknown Place edge %s", name)
@@ -22481,14 +22816,17 @@ type UserMutation struct {
 	categoryAssignments        map[string]struct{}
 	removedcategoryAssignments map[string]struct{}
 	clearedcategoryAssignments bool
-	followedPlaces             map[string]struct{}
-	removedfollowedPlaces      map[string]struct{}
-	clearedfollowedPlaces      bool
 	ownedEvents                *string
 	clearedownedEvents         bool
 	userFollowEvents           map[string]struct{}
 	removeduserFollowEvents    map[string]struct{}
 	cleareduserFollowEvents    bool
+	followedPlaces             map[string]struct{}
+	removedfollowedPlaces      map[string]struct{}
+	clearedfollowedPlaces      bool
+	likedPlaces                map[string]struct{}
+	removedlikedPlaces         map[string]struct{}
+	clearedlikedPlaces         bool
 	done                       bool
 	oldValue                   func(context.Context) (*User, error)
 	predicates                 []predicate.User
@@ -24040,60 +24378,6 @@ func (m *UserMutation) ResetCategoryAssignments() {
 	m.removedcategoryAssignments = nil
 }
 
-// AddFollowedPlaceIDs adds the "followedPlaces" edge to the UserFollowPlace entity by ids.
-func (m *UserMutation) AddFollowedPlaceIDs(ids ...string) {
-	if m.followedPlaces == nil {
-		m.followedPlaces = make(map[string]struct{})
-	}
-	for i := range ids {
-		m.followedPlaces[ids[i]] = struct{}{}
-	}
-}
-
-// ClearFollowedPlaces clears the "followedPlaces" edge to the UserFollowPlace entity.
-func (m *UserMutation) ClearFollowedPlaces() {
-	m.clearedfollowedPlaces = true
-}
-
-// FollowedPlacesCleared reports if the "followedPlaces" edge to the UserFollowPlace entity was cleared.
-func (m *UserMutation) FollowedPlacesCleared() bool {
-	return m.clearedfollowedPlaces
-}
-
-// RemoveFollowedPlaceIDs removes the "followedPlaces" edge to the UserFollowPlace entity by IDs.
-func (m *UserMutation) RemoveFollowedPlaceIDs(ids ...string) {
-	if m.removedfollowedPlaces == nil {
-		m.removedfollowedPlaces = make(map[string]struct{})
-	}
-	for i := range ids {
-		delete(m.followedPlaces, ids[i])
-		m.removedfollowedPlaces[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedFollowedPlaces returns the removed IDs of the "followedPlaces" edge to the UserFollowPlace entity.
-func (m *UserMutation) RemovedFollowedPlacesIDs() (ids []string) {
-	for id := range m.removedfollowedPlaces {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// FollowedPlacesIDs returns the "followedPlaces" edge IDs in the mutation.
-func (m *UserMutation) FollowedPlacesIDs() (ids []string) {
-	for id := range m.followedPlaces {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// ResetFollowedPlaces resets all changes to the "followedPlaces" edge.
-func (m *UserMutation) ResetFollowedPlaces() {
-	m.followedPlaces = nil
-	m.clearedfollowedPlaces = false
-	m.removedfollowedPlaces = nil
-}
-
 // SetOwnedEventsID sets the "ownedEvents" edge to the Event entity by id.
 func (m *UserMutation) SetOwnedEventsID(id string) {
 	m.ownedEvents = &id
@@ -24185,6 +24469,114 @@ func (m *UserMutation) ResetUserFollowEvents() {
 	m.userFollowEvents = nil
 	m.cleareduserFollowEvents = false
 	m.removeduserFollowEvents = nil
+}
+
+// AddFollowedPlaceIDs adds the "followedPlaces" edge to the UserFollowPlace entity by ids.
+func (m *UserMutation) AddFollowedPlaceIDs(ids ...string) {
+	if m.followedPlaces == nil {
+		m.followedPlaces = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.followedPlaces[ids[i]] = struct{}{}
+	}
+}
+
+// ClearFollowedPlaces clears the "followedPlaces" edge to the UserFollowPlace entity.
+func (m *UserMutation) ClearFollowedPlaces() {
+	m.clearedfollowedPlaces = true
+}
+
+// FollowedPlacesCleared reports if the "followedPlaces" edge to the UserFollowPlace entity was cleared.
+func (m *UserMutation) FollowedPlacesCleared() bool {
+	return m.clearedfollowedPlaces
+}
+
+// RemoveFollowedPlaceIDs removes the "followedPlaces" edge to the UserFollowPlace entity by IDs.
+func (m *UserMutation) RemoveFollowedPlaceIDs(ids ...string) {
+	if m.removedfollowedPlaces == nil {
+		m.removedfollowedPlaces = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.followedPlaces, ids[i])
+		m.removedfollowedPlaces[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedFollowedPlaces returns the removed IDs of the "followedPlaces" edge to the UserFollowPlace entity.
+func (m *UserMutation) RemovedFollowedPlacesIDs() (ids []string) {
+	for id := range m.removedfollowedPlaces {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// FollowedPlacesIDs returns the "followedPlaces" edge IDs in the mutation.
+func (m *UserMutation) FollowedPlacesIDs() (ids []string) {
+	for id := range m.followedPlaces {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetFollowedPlaces resets all changes to the "followedPlaces" edge.
+func (m *UserMutation) ResetFollowedPlaces() {
+	m.followedPlaces = nil
+	m.clearedfollowedPlaces = false
+	m.removedfollowedPlaces = nil
+}
+
+// AddLikedPlaceIDs adds the "likedPlaces" edge to the UserLikePlace entity by ids.
+func (m *UserMutation) AddLikedPlaceIDs(ids ...string) {
+	if m.likedPlaces == nil {
+		m.likedPlaces = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.likedPlaces[ids[i]] = struct{}{}
+	}
+}
+
+// ClearLikedPlaces clears the "likedPlaces" edge to the UserLikePlace entity.
+func (m *UserMutation) ClearLikedPlaces() {
+	m.clearedlikedPlaces = true
+}
+
+// LikedPlacesCleared reports if the "likedPlaces" edge to the UserLikePlace entity was cleared.
+func (m *UserMutation) LikedPlacesCleared() bool {
+	return m.clearedlikedPlaces
+}
+
+// RemoveLikedPlaceIDs removes the "likedPlaces" edge to the UserLikePlace entity by IDs.
+func (m *UserMutation) RemoveLikedPlaceIDs(ids ...string) {
+	if m.removedlikedPlaces == nil {
+		m.removedlikedPlaces = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.likedPlaces, ids[i])
+		m.removedlikedPlaces[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedLikedPlaces returns the removed IDs of the "likedPlaces" edge to the UserLikePlace entity.
+func (m *UserMutation) RemovedLikedPlacesIDs() (ids []string) {
+	for id := range m.removedlikedPlaces {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// LikedPlacesIDs returns the "likedPlaces" edge IDs in the mutation.
+func (m *UserMutation) LikedPlacesIDs() (ids []string) {
+	for id := range m.likedPlaces {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetLikedPlaces resets all changes to the "likedPlaces" edge.
+func (m *UserMutation) ResetLikedPlaces() {
+	m.likedPlaces = nil
+	m.clearedlikedPlaces = false
+	m.removedlikedPlaces = nil
 }
 
 // Where appends a list predicates to the UserMutation builder.
@@ -24608,7 +25000,7 @@ func (m *UserMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserMutation) AddedEdges() []string {
-	edges := make([]string, 0, 18)
+	edges := make([]string, 0, 19)
 	if m.userBusinesses != nil {
 		edges = append(edges, user.EdgeUserBusinesses)
 	}
@@ -24654,14 +25046,17 @@ func (m *UserMutation) AddedEdges() []string {
 	if m.categoryAssignments != nil {
 		edges = append(edges, user.EdgeCategoryAssignments)
 	}
-	if m.followedPlaces != nil {
-		edges = append(edges, user.EdgeFollowedPlaces)
-	}
 	if m.ownedEvents != nil {
 		edges = append(edges, user.EdgeOwnedEvents)
 	}
 	if m.userFollowEvents != nil {
 		edges = append(edges, user.EdgeUserFollowEvents)
+	}
+	if m.followedPlaces != nil {
+		edges = append(edges, user.EdgeFollowedPlaces)
+	}
+	if m.likedPlaces != nil {
+		edges = append(edges, user.EdgeLikedPlaces)
 	}
 	return edges
 }
@@ -24760,12 +25155,6 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case user.EdgeFollowedPlaces:
-		ids := make([]ent.Value, 0, len(m.followedPlaces))
-		for id := range m.followedPlaces {
-			ids = append(ids, id)
-		}
-		return ids
 	case user.EdgeOwnedEvents:
 		if id := m.ownedEvents; id != nil {
 			return []ent.Value{*id}
@@ -24776,13 +25165,25 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeFollowedPlaces:
+		ids := make([]ent.Value, 0, len(m.followedPlaces))
+		for id := range m.followedPlaces {
+			ids = append(ids, id)
+		}
+		return ids
+	case user.EdgeLikedPlaces:
+		ids := make([]ent.Value, 0, len(m.likedPlaces))
+		for id := range m.likedPlaces {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 18)
+	edges := make([]string, 0, 19)
 	if m.removeduserBusinesses != nil {
 		edges = append(edges, user.EdgeUserBusinesses)
 	}
@@ -24828,11 +25229,14 @@ func (m *UserMutation) RemovedEdges() []string {
 	if m.removedcategoryAssignments != nil {
 		edges = append(edges, user.EdgeCategoryAssignments)
 	}
+	if m.removeduserFollowEvents != nil {
+		edges = append(edges, user.EdgeUserFollowEvents)
+	}
 	if m.removedfollowedPlaces != nil {
 		edges = append(edges, user.EdgeFollowedPlaces)
 	}
-	if m.removeduserFollowEvents != nil {
-		edges = append(edges, user.EdgeUserFollowEvents)
+	if m.removedlikedPlaces != nil {
+		edges = append(edges, user.EdgeLikedPlaces)
 	}
 	return edges
 }
@@ -24931,15 +25335,21 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeUserFollowEvents:
+		ids := make([]ent.Value, 0, len(m.removeduserFollowEvents))
+		for id := range m.removeduserFollowEvents {
+			ids = append(ids, id)
+		}
+		return ids
 	case user.EdgeFollowedPlaces:
 		ids := make([]ent.Value, 0, len(m.removedfollowedPlaces))
 		for id := range m.removedfollowedPlaces {
 			ids = append(ids, id)
 		}
 		return ids
-	case user.EdgeUserFollowEvents:
-		ids := make([]ent.Value, 0, len(m.removeduserFollowEvents))
-		for id := range m.removeduserFollowEvents {
+	case user.EdgeLikedPlaces:
+		ids := make([]ent.Value, 0, len(m.removedlikedPlaces))
+		for id := range m.removedlikedPlaces {
 			ids = append(ids, id)
 		}
 		return ids
@@ -24949,7 +25359,7 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 18)
+	edges := make([]string, 0, 19)
 	if m.cleareduserBusinesses {
 		edges = append(edges, user.EdgeUserBusinesses)
 	}
@@ -24995,14 +25405,17 @@ func (m *UserMutation) ClearedEdges() []string {
 	if m.clearedcategoryAssignments {
 		edges = append(edges, user.EdgeCategoryAssignments)
 	}
-	if m.clearedfollowedPlaces {
-		edges = append(edges, user.EdgeFollowedPlaces)
-	}
 	if m.clearedownedEvents {
 		edges = append(edges, user.EdgeOwnedEvents)
 	}
 	if m.cleareduserFollowEvents {
 		edges = append(edges, user.EdgeUserFollowEvents)
+	}
+	if m.clearedfollowedPlaces {
+		edges = append(edges, user.EdgeFollowedPlaces)
+	}
+	if m.clearedlikedPlaces {
+		edges = append(edges, user.EdgeLikedPlaces)
 	}
 	return edges
 }
@@ -25041,12 +25454,14 @@ func (m *UserMutation) EdgeCleared(name string) bool {
 		return m.clearedplaces
 	case user.EdgeCategoryAssignments:
 		return m.clearedcategoryAssignments
-	case user.EdgeFollowedPlaces:
-		return m.clearedfollowedPlaces
 	case user.EdgeOwnedEvents:
 		return m.clearedownedEvents
 	case user.EdgeUserFollowEvents:
 		return m.cleareduserFollowEvents
+	case user.EdgeFollowedPlaces:
+		return m.clearedfollowedPlaces
+	case user.EdgeLikedPlaces:
+		return m.clearedlikedPlaces
 	}
 	return false
 }
@@ -25111,14 +25526,17 @@ func (m *UserMutation) ResetEdge(name string) error {
 	case user.EdgeCategoryAssignments:
 		m.ResetCategoryAssignments()
 		return nil
-	case user.EdgeFollowedPlaces:
-		m.ResetFollowedPlaces()
-		return nil
 	case user.EdgeOwnedEvents:
 		m.ResetOwnedEvents()
 		return nil
 	case user.EdgeUserFollowEvents:
 		m.ResetUserFollowEvents()
+		return nil
+	case user.EdgeFollowedPlaces:
+		m.ResetFollowedPlaces()
+		return nil
+	case user.EdgeLikedPlaces:
+		m.ResetLikedPlaces()
 		return nil
 	}
 	return fmt.Errorf("unknown User edge %s", name)
@@ -25588,6 +26006,8 @@ type UserFollowBusinessMutation struct {
 	op              Op
 	typ             string
 	id              *string
+	_CreatedAt      *time.Time
+	_UpdatedAt      *time.Time
 	clearedFields   map[string]struct{}
 	user            *string
 	cleareduser     bool
@@ -25668,6 +26088,12 @@ func (m UserFollowBusinessMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of UserFollowBusiness entities.
+func (m *UserFollowBusinessMutation) SetID(id string) {
+	m.id = &id
+}
+
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
 func (m *UserFollowBusinessMutation) ID() (id string, exists bool) {
@@ -25694,6 +26120,78 @@ func (m *UserFollowBusinessMutation) IDs(ctx context.Context) ([]string, error) 
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
+}
+
+// SetCreatedAt sets the "CreatedAt" field.
+func (m *UserFollowBusinessMutation) SetCreatedAt(t time.Time) {
+	m._CreatedAt = &t
+}
+
+// CreatedAt returns the value of the "CreatedAt" field in the mutation.
+func (m *UserFollowBusinessMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m._CreatedAt
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "CreatedAt" field's value of the UserFollowBusiness entity.
+// If the UserFollowBusiness object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserFollowBusinessMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "CreatedAt" field.
+func (m *UserFollowBusinessMutation) ResetCreatedAt() {
+	m._CreatedAt = nil
+}
+
+// SetUpdatedAt sets the "UpdatedAt" field.
+func (m *UserFollowBusinessMutation) SetUpdatedAt(t time.Time) {
+	m._UpdatedAt = &t
+}
+
+// UpdatedAt returns the value of the "UpdatedAt" field in the mutation.
+func (m *UserFollowBusinessMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m._UpdatedAt
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "UpdatedAt" field's value of the UserFollowBusiness entity.
+// If the UserFollowBusiness object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserFollowBusinessMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "UpdatedAt" field.
+func (m *UserFollowBusinessMutation) ResetUpdatedAt() {
+	m._UpdatedAt = nil
 }
 
 // SetUserID sets the "user" edge to the User entity by id.
@@ -25808,7 +26306,13 @@ func (m *UserFollowBusinessMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserFollowBusinessMutation) Fields() []string {
-	fields := make([]string, 0, 0)
+	fields := make([]string, 0, 2)
+	if m._CreatedAt != nil {
+		fields = append(fields, userfollowbusiness.FieldCreatedAt)
+	}
+	if m._UpdatedAt != nil {
+		fields = append(fields, userfollowbusiness.FieldUpdatedAt)
+	}
 	return fields
 }
 
@@ -25816,6 +26320,12 @@ func (m *UserFollowBusinessMutation) Fields() []string {
 // return value indicates that this field was not set, or was not defined in the
 // schema.
 func (m *UserFollowBusinessMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case userfollowbusiness.FieldCreatedAt:
+		return m.CreatedAt()
+	case userfollowbusiness.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
 	return nil, false
 }
 
@@ -25823,6 +26333,12 @@ func (m *UserFollowBusinessMutation) Field(name string) (ent.Value, bool) {
 // returned if the mutation operation is not UpdateOne, or the query to the
 // database failed.
 func (m *UserFollowBusinessMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case userfollowbusiness.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case userfollowbusiness.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
 	return nil, fmt.Errorf("unknown UserFollowBusiness field %s", name)
 }
 
@@ -25831,6 +26347,20 @@ func (m *UserFollowBusinessMutation) OldField(ctx context.Context, name string) 
 // type.
 func (m *UserFollowBusinessMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case userfollowbusiness.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case userfollowbusiness.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
 	}
 	return fmt.Errorf("unknown UserFollowBusiness field %s", name)
 }
@@ -25852,6 +26382,8 @@ func (m *UserFollowBusinessMutation) AddedField(name string) (ent.Value, bool) {
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
 func (m *UserFollowBusinessMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
 	return fmt.Errorf("unknown UserFollowBusiness numeric field %s", name)
 }
 
@@ -25877,6 +26409,14 @@ func (m *UserFollowBusinessMutation) ClearField(name string) error {
 // ResetField resets all changes in the mutation for the field with the given name.
 // It returns an error if the field is not defined in the schema.
 func (m *UserFollowBusinessMutation) ResetField(name string) error {
+	switch name {
+	case userfollowbusiness.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case userfollowbusiness.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
 	return fmt.Errorf("unknown UserFollowBusiness field %s", name)
 }
 
@@ -26058,6 +26598,12 @@ func (m UserFollowEventMutation) Tx() (*Tx, error) {
 	tx := &Tx{config: m.config}
 	tx.init()
 	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of UserFollowEvent entities.
+func (m *UserFollowEventMutation) SetID(id string) {
+	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
@@ -26484,6 +27030,8 @@ type UserFollowPlaceMutation struct {
 	op            Op
 	typ           string
 	id            *string
+	_CreatedAt    *time.Time
+	_UpdatedAt    *time.Time
 	clearedFields map[string]struct{}
 	user          *string
 	cleareduser   bool
@@ -26564,6 +27112,12 @@ func (m UserFollowPlaceMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of UserFollowPlace entities.
+func (m *UserFollowPlaceMutation) SetID(id string) {
+	m.id = &id
+}
+
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
 func (m *UserFollowPlaceMutation) ID() (id string, exists bool) {
@@ -26590,6 +27144,78 @@ func (m *UserFollowPlaceMutation) IDs(ctx context.Context) ([]string, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
+}
+
+// SetCreatedAt sets the "CreatedAt" field.
+func (m *UserFollowPlaceMutation) SetCreatedAt(t time.Time) {
+	m._CreatedAt = &t
+}
+
+// CreatedAt returns the value of the "CreatedAt" field in the mutation.
+func (m *UserFollowPlaceMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m._CreatedAt
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "CreatedAt" field's value of the UserFollowPlace entity.
+// If the UserFollowPlace object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserFollowPlaceMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "CreatedAt" field.
+func (m *UserFollowPlaceMutation) ResetCreatedAt() {
+	m._CreatedAt = nil
+}
+
+// SetUpdatedAt sets the "UpdatedAt" field.
+func (m *UserFollowPlaceMutation) SetUpdatedAt(t time.Time) {
+	m._UpdatedAt = &t
+}
+
+// UpdatedAt returns the value of the "UpdatedAt" field in the mutation.
+func (m *UserFollowPlaceMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m._UpdatedAt
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "UpdatedAt" field's value of the UserFollowPlace entity.
+// If the UserFollowPlace object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserFollowPlaceMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "UpdatedAt" field.
+func (m *UserFollowPlaceMutation) ResetUpdatedAt() {
+	m._UpdatedAt = nil
 }
 
 // SetUserID sets the "user" edge to the User entity by id.
@@ -26704,7 +27330,13 @@ func (m *UserFollowPlaceMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserFollowPlaceMutation) Fields() []string {
-	fields := make([]string, 0, 0)
+	fields := make([]string, 0, 2)
+	if m._CreatedAt != nil {
+		fields = append(fields, userfollowplace.FieldCreatedAt)
+	}
+	if m._UpdatedAt != nil {
+		fields = append(fields, userfollowplace.FieldUpdatedAt)
+	}
 	return fields
 }
 
@@ -26712,6 +27344,12 @@ func (m *UserFollowPlaceMutation) Fields() []string {
 // return value indicates that this field was not set, or was not defined in the
 // schema.
 func (m *UserFollowPlaceMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case userfollowplace.FieldCreatedAt:
+		return m.CreatedAt()
+	case userfollowplace.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
 	return nil, false
 }
 
@@ -26719,6 +27357,12 @@ func (m *UserFollowPlaceMutation) Field(name string) (ent.Value, bool) {
 // returned if the mutation operation is not UpdateOne, or the query to the
 // database failed.
 func (m *UserFollowPlaceMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case userfollowplace.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case userfollowplace.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
 	return nil, fmt.Errorf("unknown UserFollowPlace field %s", name)
 }
 
@@ -26727,6 +27371,20 @@ func (m *UserFollowPlaceMutation) OldField(ctx context.Context, name string) (en
 // type.
 func (m *UserFollowPlaceMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case userfollowplace.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case userfollowplace.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
 	}
 	return fmt.Errorf("unknown UserFollowPlace field %s", name)
 }
@@ -26748,6 +27406,8 @@ func (m *UserFollowPlaceMutation) AddedField(name string) (ent.Value, bool) {
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
 func (m *UserFollowPlaceMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
 	return fmt.Errorf("unknown UserFollowPlace numeric field %s", name)
 }
 
@@ -26773,6 +27433,14 @@ func (m *UserFollowPlaceMutation) ClearField(name string) error {
 // ResetField resets all changes in the mutation for the field with the given name.
 // It returns an error if the field is not defined in the schema.
 func (m *UserFollowPlaceMutation) ResetField(name string) error {
+	switch name {
+	case userfollowplace.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case userfollowplace.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
 	return fmt.Errorf("unknown UserFollowPlace field %s", name)
 }
 
@@ -26874,6 +27542,8 @@ type UserFollowUserMutation struct {
 	op              Op
 	typ             string
 	id              *string
+	_CreatedAt      *time.Time
+	_UpdatedAt      *time.Time
 	clearedFields   map[string]struct{}
 	follower        *string
 	clearedfollower bool
@@ -26954,6 +27624,12 @@ func (m UserFollowUserMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of UserFollowUser entities.
+func (m *UserFollowUserMutation) SetID(id string) {
+	m.id = &id
+}
+
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
 func (m *UserFollowUserMutation) ID() (id string, exists bool) {
@@ -26980,6 +27656,78 @@ func (m *UserFollowUserMutation) IDs(ctx context.Context) ([]string, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
+}
+
+// SetCreatedAt sets the "CreatedAt" field.
+func (m *UserFollowUserMutation) SetCreatedAt(t time.Time) {
+	m._CreatedAt = &t
+}
+
+// CreatedAt returns the value of the "CreatedAt" field in the mutation.
+func (m *UserFollowUserMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m._CreatedAt
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "CreatedAt" field's value of the UserFollowUser entity.
+// If the UserFollowUser object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserFollowUserMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "CreatedAt" field.
+func (m *UserFollowUserMutation) ResetCreatedAt() {
+	m._CreatedAt = nil
+}
+
+// SetUpdatedAt sets the "UpdatedAt" field.
+func (m *UserFollowUserMutation) SetUpdatedAt(t time.Time) {
+	m._UpdatedAt = &t
+}
+
+// UpdatedAt returns the value of the "UpdatedAt" field in the mutation.
+func (m *UserFollowUserMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m._UpdatedAt
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "UpdatedAt" field's value of the UserFollowUser entity.
+// If the UserFollowUser object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserFollowUserMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "UpdatedAt" field.
+func (m *UserFollowUserMutation) ResetUpdatedAt() {
+	m._UpdatedAt = nil
 }
 
 // SetFollowerID sets the "follower" edge to the User entity by id.
@@ -27094,7 +27842,13 @@ func (m *UserFollowUserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserFollowUserMutation) Fields() []string {
-	fields := make([]string, 0, 0)
+	fields := make([]string, 0, 2)
+	if m._CreatedAt != nil {
+		fields = append(fields, userfollowuser.FieldCreatedAt)
+	}
+	if m._UpdatedAt != nil {
+		fields = append(fields, userfollowuser.FieldUpdatedAt)
+	}
 	return fields
 }
 
@@ -27102,6 +27856,12 @@ func (m *UserFollowUserMutation) Fields() []string {
 // return value indicates that this field was not set, or was not defined in the
 // schema.
 func (m *UserFollowUserMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case userfollowuser.FieldCreatedAt:
+		return m.CreatedAt()
+	case userfollowuser.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
 	return nil, false
 }
 
@@ -27109,6 +27869,12 @@ func (m *UserFollowUserMutation) Field(name string) (ent.Value, bool) {
 // returned if the mutation operation is not UpdateOne, or the query to the
 // database failed.
 func (m *UserFollowUserMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case userfollowuser.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case userfollowuser.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
 	return nil, fmt.Errorf("unknown UserFollowUser field %s", name)
 }
 
@@ -27117,6 +27883,20 @@ func (m *UserFollowUserMutation) OldField(ctx context.Context, name string) (ent
 // type.
 func (m *UserFollowUserMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case userfollowuser.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case userfollowuser.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
 	}
 	return fmt.Errorf("unknown UserFollowUser field %s", name)
 }
@@ -27138,6 +27918,8 @@ func (m *UserFollowUserMutation) AddedField(name string) (ent.Value, bool) {
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
 func (m *UserFollowUserMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
 	return fmt.Errorf("unknown UserFollowUser numeric field %s", name)
 }
 
@@ -27163,6 +27945,14 @@ func (m *UserFollowUserMutation) ClearField(name string) error {
 // ResetField resets all changes in the mutation for the field with the given name.
 // It returns an error if the field is not defined in the schema.
 func (m *UserFollowUserMutation) ResetField(name string) error {
+	switch name {
+	case userfollowuser.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case userfollowuser.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
 	return fmt.Errorf("unknown UserFollowUser field %s", name)
 }
 
@@ -27256,4 +28046,516 @@ func (m *UserFollowUserMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown UserFollowUser edge %s", name)
+}
+
+// UserLikePlaceMutation represents an operation that mutates the UserLikePlace nodes in the graph.
+type UserLikePlaceMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *string
+	_CreatedAt    *time.Time
+	_UpdatedAt    *time.Time
+	clearedFields map[string]struct{}
+	user          *string
+	cleareduser   bool
+	place         *string
+	clearedplace  bool
+	done          bool
+	oldValue      func(context.Context) (*UserLikePlace, error)
+	predicates    []predicate.UserLikePlace
+}
+
+var _ ent.Mutation = (*UserLikePlaceMutation)(nil)
+
+// userlikeplaceOption allows management of the mutation configuration using functional options.
+type userlikeplaceOption func(*UserLikePlaceMutation)
+
+// newUserLikePlaceMutation creates new mutation for the UserLikePlace entity.
+func newUserLikePlaceMutation(c config, op Op, opts ...userlikeplaceOption) *UserLikePlaceMutation {
+	m := &UserLikePlaceMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeUserLikePlace,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withUserLikePlaceID sets the ID field of the mutation.
+func withUserLikePlaceID(id string) userlikeplaceOption {
+	return func(m *UserLikePlaceMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *UserLikePlace
+		)
+		m.oldValue = func(ctx context.Context) (*UserLikePlace, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().UserLikePlace.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withUserLikePlace sets the old UserLikePlace of the mutation.
+func withUserLikePlace(node *UserLikePlace) userlikeplaceOption {
+	return func(m *UserLikePlaceMutation) {
+		m.oldValue = func(context.Context) (*UserLikePlace, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m UserLikePlaceMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m UserLikePlaceMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of UserLikePlace entities.
+func (m *UserLikePlaceMutation) SetID(id string) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *UserLikePlaceMutation) ID() (id string, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *UserLikePlaceMutation) IDs(ctx context.Context) ([]string, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []string{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().UserLikePlace.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "CreatedAt" field.
+func (m *UserLikePlaceMutation) SetCreatedAt(t time.Time) {
+	m._CreatedAt = &t
+}
+
+// CreatedAt returns the value of the "CreatedAt" field in the mutation.
+func (m *UserLikePlaceMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m._CreatedAt
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "CreatedAt" field's value of the UserLikePlace entity.
+// If the UserLikePlace object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserLikePlaceMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "CreatedAt" field.
+func (m *UserLikePlaceMutation) ResetCreatedAt() {
+	m._CreatedAt = nil
+}
+
+// SetUpdatedAt sets the "UpdatedAt" field.
+func (m *UserLikePlaceMutation) SetUpdatedAt(t time.Time) {
+	m._UpdatedAt = &t
+}
+
+// UpdatedAt returns the value of the "UpdatedAt" field in the mutation.
+func (m *UserLikePlaceMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m._UpdatedAt
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "UpdatedAt" field's value of the UserLikePlace entity.
+// If the UserLikePlace object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserLikePlaceMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "UpdatedAt" field.
+func (m *UserLikePlaceMutation) ResetUpdatedAt() {
+	m._UpdatedAt = nil
+}
+
+// SetUserID sets the "user" edge to the User entity by id.
+func (m *UserLikePlaceMutation) SetUserID(id string) {
+	m.user = &id
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (m *UserLikePlaceMutation) ClearUser() {
+	m.cleareduser = true
+}
+
+// UserCleared reports if the "user" edge to the User entity was cleared.
+func (m *UserLikePlaceMutation) UserCleared() bool {
+	return m.cleareduser
+}
+
+// UserID returns the "user" edge ID in the mutation.
+func (m *UserLikePlaceMutation) UserID() (id string, exists bool) {
+	if m.user != nil {
+		return *m.user, true
+	}
+	return
+}
+
+// UserIDs returns the "user" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// UserID instead. It exists only for internal usage by the builders.
+func (m *UserLikePlaceMutation) UserIDs() (ids []string) {
+	if id := m.user; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetUser resets all changes to the "user" edge.
+func (m *UserLikePlaceMutation) ResetUser() {
+	m.user = nil
+	m.cleareduser = false
+}
+
+// SetPlaceID sets the "place" edge to the Place entity by id.
+func (m *UserLikePlaceMutation) SetPlaceID(id string) {
+	m.place = &id
+}
+
+// ClearPlace clears the "place" edge to the Place entity.
+func (m *UserLikePlaceMutation) ClearPlace() {
+	m.clearedplace = true
+}
+
+// PlaceCleared reports if the "place" edge to the Place entity was cleared.
+func (m *UserLikePlaceMutation) PlaceCleared() bool {
+	return m.clearedplace
+}
+
+// PlaceID returns the "place" edge ID in the mutation.
+func (m *UserLikePlaceMutation) PlaceID() (id string, exists bool) {
+	if m.place != nil {
+		return *m.place, true
+	}
+	return
+}
+
+// PlaceIDs returns the "place" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// PlaceID instead. It exists only for internal usage by the builders.
+func (m *UserLikePlaceMutation) PlaceIDs() (ids []string) {
+	if id := m.place; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetPlace resets all changes to the "place" edge.
+func (m *UserLikePlaceMutation) ResetPlace() {
+	m.place = nil
+	m.clearedplace = false
+}
+
+// Where appends a list predicates to the UserLikePlaceMutation builder.
+func (m *UserLikePlaceMutation) Where(ps ...predicate.UserLikePlace) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the UserLikePlaceMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *UserLikePlaceMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.UserLikePlace, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *UserLikePlaceMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *UserLikePlaceMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (UserLikePlace).
+func (m *UserLikePlaceMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *UserLikePlaceMutation) Fields() []string {
+	fields := make([]string, 0, 2)
+	if m._CreatedAt != nil {
+		fields = append(fields, userlikeplace.FieldCreatedAt)
+	}
+	if m._UpdatedAt != nil {
+		fields = append(fields, userlikeplace.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *UserLikePlaceMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case userlikeplace.FieldCreatedAt:
+		return m.CreatedAt()
+	case userlikeplace.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *UserLikePlaceMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case userlikeplace.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case userlikeplace.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown UserLikePlace field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *UserLikePlaceMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case userlikeplace.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case userlikeplace.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown UserLikePlace field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *UserLikePlaceMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *UserLikePlaceMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *UserLikePlaceMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown UserLikePlace numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *UserLikePlaceMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *UserLikePlaceMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *UserLikePlaceMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown UserLikePlace nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *UserLikePlaceMutation) ResetField(name string) error {
+	switch name {
+	case userlikeplace.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case userlikeplace.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown UserLikePlace field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *UserLikePlaceMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.user != nil {
+		edges = append(edges, userlikeplace.EdgeUser)
+	}
+	if m.place != nil {
+		edges = append(edges, userlikeplace.EdgePlace)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *UserLikePlaceMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case userlikeplace.EdgeUser:
+		if id := m.user; id != nil {
+			return []ent.Value{*id}
+		}
+	case userlikeplace.EdgePlace:
+		if id := m.place; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *UserLikePlaceMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *UserLikePlaceMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *UserLikePlaceMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.cleareduser {
+		edges = append(edges, userlikeplace.EdgeUser)
+	}
+	if m.clearedplace {
+		edges = append(edges, userlikeplace.EdgePlace)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *UserLikePlaceMutation) EdgeCleared(name string) bool {
+	switch name {
+	case userlikeplace.EdgeUser:
+		return m.cleareduser
+	case userlikeplace.EdgePlace:
+		return m.clearedplace
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *UserLikePlaceMutation) ClearEdge(name string) error {
+	switch name {
+	case userlikeplace.EdgeUser:
+		m.ClearUser()
+		return nil
+	case userlikeplace.EdgePlace:
+		m.ClearPlace()
+		return nil
+	}
+	return fmt.Errorf("unknown UserLikePlace unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *UserLikePlaceMutation) ResetEdge(name string) error {
+	switch name {
+	case userlikeplace.EdgeUser:
+		m.ResetUser()
+		return nil
+	case userlikeplace.EdgePlace:
+		m.ResetPlace()
+		return nil
+	}
+	return fmt.Errorf("unknown UserLikePlace edge %s", name)
 }

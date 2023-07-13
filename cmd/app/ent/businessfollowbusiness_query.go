@@ -329,6 +329,18 @@ func (bfbq *BusinessFollowBusinessQuery) WithFollowed(opts ...func(*BusinessQuer
 
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
+//
+// Example:
+//
+//	var v []struct {
+//		CreatedAt time.Time `json:"CreatedAt,omitempty"`
+//		Count int `json:"count,omitempty"`
+//	}
+//
+//	client.BusinessFollowBusiness.Query().
+//		GroupBy(businessfollowbusiness.FieldCreatedAt).
+//		Aggregate(ent.Count()).
+//		Scan(ctx, &v)
 func (bfbq *BusinessFollowBusinessQuery) GroupBy(field string, fields ...string) *BusinessFollowBusinessGroupBy {
 	bfbq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &BusinessFollowBusinessGroupBy{build: bfbq}
@@ -340,6 +352,16 @@ func (bfbq *BusinessFollowBusinessQuery) GroupBy(field string, fields ...string)
 
 // Select allows the selection one or more fields/columns for the given query,
 // instead of selecting all fields in the entity.
+//
+// Example:
+//
+//	var v []struct {
+//		CreatedAt time.Time `json:"CreatedAt,omitempty"`
+//	}
+//
+//	client.BusinessFollowBusiness.Query().
+//		Select(businessfollowbusiness.FieldCreatedAt).
+//		Scan(ctx, &v)
 func (bfbq *BusinessFollowBusinessQuery) Select(fields ...string) *BusinessFollowBusinessSelect {
 	bfbq.ctx.Fields = append(bfbq.ctx.Fields, fields...)
 	sbuild := &BusinessFollowBusinessSelect{BusinessFollowBusinessQuery: bfbq}

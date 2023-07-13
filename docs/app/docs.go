@@ -1253,6 +1253,71 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/likes/place/{placeID}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Retrieve all likes for a place",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Like"
+                ],
+                "summary": "Get place likes",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the place",
+                        "name": "placeID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of UserLikePlace records",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/placio-app_ent.UserLikePlace"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/likes/post/{postID}": {
             "get": {
                 "security": [
@@ -1318,7 +1383,7 @@ const docTemplate = `{
                         "Bearer": []
                     }
                 ],
-                "description": "Retrieve all likes by a user",
+                "description": "Retrieve all places liked by a user",
                 "consumes": [
                     "application/json"
                 ],
@@ -1328,7 +1393,7 @@ const docTemplate = `{
                 "tags": [
                     "Like"
                 ],
-                "summary": "Get user likes",
+                "summary": "Get user liked places",
                 "parameters": [
                     {
                         "type": "string",
@@ -1336,15 +1401,22 @@ const docTemplate = `{
                         "name": "userID",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "List of likes",
+                        "description": "List of UserLikePlace records",
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/placio-app_ent.Like"
+                                "$ref": "#/definitions/placio-app_ent.UserLikePlace"
                             }
                         }
                     },
@@ -1463,6 +1535,137 @@ const docTemplate = `{
                         "description": "Successfully unliked post",
                         "schema": {
                             "$ref": "#/definitions/placio-app_Dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/likes/{userID}/place/{placeID}": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Allows a user to like a specific place",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Like"
+                ],
+                "summary": "Like a place",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the user",
+                        "name": "userID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of the place",
+                        "name": "placeID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Successfully liked place",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.UserLikePlace"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/likes/{userLikePlaceID}": {
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Allows a user to unlike a specific place",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Like"
+                ],
+                "summary": "Unlike a place",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the UserLikePlace record",
+                        "name": "userLikePlaceID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Provide JWT access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully unliked place",
+                        "schema": {
+                            "type": "string"
                         }
                     },
                     "400": {
@@ -8025,6 +8228,14 @@ const docTemplate = `{
         "placio-app_ent.BusinessFollowBusiness": {
             "type": "object",
             "properties": {
+                "CreatedAt": {
+                    "description": "CreatedAt holds the value of the \"CreatedAt\" field.",
+                    "type": "string"
+                },
+                "UpdatedAt": {
+                    "description": "UpdatedAt holds the value of the \"UpdatedAt\" field.",
+                    "type": "string"
+                },
                 "edges": {
                     "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the BusinessFollowBusinessQuery when eager-loading is set.",
                     "allOf": [
@@ -8109,6 +8320,14 @@ const docTemplate = `{
         "placio-app_ent.BusinessFollowUser": {
             "type": "object",
             "properties": {
+                "CreatedAt": {
+                    "description": "CreatedAt holds the value of the \"CreatedAt\" field.",
+                    "type": "string"
+                },
+                "UpdatedAt": {
+                    "description": "UpdatedAt holds the value of the \"UpdatedAt\" field.",
+                    "type": "string"
+                },
                 "edges": {
                     "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the BusinessFollowUserQuery when eager-loading is set.",
                     "allOf": [
@@ -8987,6 +9206,13 @@ const docTemplate = `{
                         "$ref": "#/definitions/placio-app_ent.UserFollowPlace"
                     }
                 },
+                "likedByUsers": {
+                    "description": "LikedByUsers holds the value of the likedByUsers edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.UserLikePlace"
+                    }
+                },
                 "menus": {
                     "description": "Menus holds the value of the menus edge.",
                     "type": "array",
@@ -9555,6 +9781,13 @@ const docTemplate = `{
                         "$ref": "#/definitions/placio-app_ent.Help"
                     }
                 },
+                "likedPlaces": {
+                    "description": "LikedPlaces holds the value of the likedPlaces edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.UserLikePlace"
+                    }
+                },
                 "likes": {
                     "description": "Likes holds the value of the likes edge.",
                     "type": "array",
@@ -9617,6 +9850,14 @@ const docTemplate = `{
         "placio-app_ent.UserFollowBusiness": {
             "type": "object",
             "properties": {
+                "CreatedAt": {
+                    "description": "CreatedAt holds the value of the \"CreatedAt\" field.",
+                    "type": "string"
+                },
+                "UpdatedAt": {
+                    "description": "UpdatedAt holds the value of the \"UpdatedAt\" field.",
+                    "type": "string"
+                },
                 "edges": {
                     "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the UserFollowBusinessQuery when eager-loading is set.",
                     "allOf": [
@@ -9701,6 +9942,14 @@ const docTemplate = `{
         "placio-app_ent.UserFollowPlace": {
             "type": "object",
             "properties": {
+                "CreatedAt": {
+                    "description": "CreatedAt holds the value of the \"CreatedAt\" field.",
+                    "type": "string"
+                },
+                "UpdatedAt": {
+                    "description": "UpdatedAt holds the value of the \"UpdatedAt\" field.",
+                    "type": "string"
+                },
                 "edges": {
                     "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the UserFollowPlaceQuery when eager-loading is set.",
                     "allOf": [
@@ -9739,6 +9988,14 @@ const docTemplate = `{
         "placio-app_ent.UserFollowUser": {
             "type": "object",
             "properties": {
+                "CreatedAt": {
+                    "description": "CreatedAt holds the value of the \"CreatedAt\" field.",
+                    "type": "string"
+                },
+                "UpdatedAt": {
+                    "description": "UpdatedAt holds the value of the \"UpdatedAt\" field.",
+                    "type": "string"
+                },
                 "edges": {
                     "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the UserFollowUserQuery when eager-loading is set.",
                     "allOf": [
@@ -9766,6 +10023,52 @@ const docTemplate = `{
                 },
                 "follower": {
                     "description": "Follower holds the value of the follower edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.User"
+                        }
+                    ]
+                }
+            }
+        },
+        "placio-app_ent.UserLikePlace": {
+            "type": "object",
+            "properties": {
+                "CreatedAt": {
+                    "description": "CreatedAt holds the value of the \"CreatedAt\" field.",
+                    "type": "string"
+                },
+                "UpdatedAt": {
+                    "description": "UpdatedAt holds the value of the \"UpdatedAt\" field.",
+                    "type": "string"
+                },
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the UserLikePlaceQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.UserLikePlaceEdges"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_ent.UserLikePlaceEdges": {
+            "type": "object",
+            "properties": {
+                "place": {
+                    "description": "Place holds the value of the place edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.Place"
+                        }
+                    ]
+                },
+                "user": {
+                    "description": "User holds the value of the user edge.",
                     "allOf": [
                         {
                             "$ref": "#/definitions/placio-app_ent.User"

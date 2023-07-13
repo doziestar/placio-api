@@ -8,6 +8,7 @@ import (
 	"placio-app/ent/user"
 	"placio-app/ent/userfollowbusiness"
 	"strings"
+	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -15,9 +16,13 @@ import (
 
 // UserFollowBusiness is the model entity for the UserFollowBusiness schema.
 type UserFollowBusiness struct {
-	config
+	config `json:"-"`
 	// ID of the ent.
 	ID string `json:"id,omitempty"`
+	// CreatedAt holds the value of the "CreatedAt" field.
+	CreatedAt time.Time `json:"CreatedAt,omitempty"`
+	// UpdatedAt holds the value of the "UpdatedAt" field.
+	UpdatedAt time.Time `json:"UpdatedAt,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserFollowBusinessQuery when eager-loading is set.
 	Edges                    UserFollowBusinessEdges `json:"edges"`
@@ -70,6 +75,8 @@ func (*UserFollowBusiness) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case userfollowbusiness.FieldID:
 			values[i] = new(sql.NullString)
+		case userfollowbusiness.FieldCreatedAt, userfollowbusiness.FieldUpdatedAt:
+			values[i] = new(sql.NullTime)
 		case userfollowbusiness.ForeignKeys[0]: // business_follower_users
 			values[i] = new(sql.NullString)
 		case userfollowbusiness.ForeignKeys[1]: // user_followed_businesses
@@ -94,6 +101,18 @@ func (ufb *UserFollowBusiness) assignValues(columns []string, values []any) erro
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value.Valid {
 				ufb.ID = value.String
+			}
+		case userfollowbusiness.FieldCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field CreatedAt", values[i])
+			} else if value.Valid {
+				ufb.CreatedAt = value.Time
+			}
+		case userfollowbusiness.FieldUpdatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field UpdatedAt", values[i])
+			} else if value.Valid {
+				ufb.UpdatedAt = value.Time
 			}
 		case userfollowbusiness.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -154,7 +173,12 @@ func (ufb *UserFollowBusiness) Unwrap() *UserFollowBusiness {
 func (ufb *UserFollowBusiness) String() string {
 	var builder strings.Builder
 	builder.WriteString("UserFollowBusiness(")
-	builder.WriteString(fmt.Sprintf("id=%v", ufb.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", ufb.ID))
+	builder.WriteString("CreatedAt=")
+	builder.WriteString(ufb.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("UpdatedAt=")
+	builder.WriteString(ufb.UpdatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

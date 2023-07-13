@@ -10,6 +10,7 @@ import (
 	"placio-app/ent/predicate"
 	"placio-app/ent/user"
 	"placio-app/ent/userfollowplace"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -26,6 +27,26 @@ type UserFollowPlaceUpdate struct {
 // Where appends a list predicates to the UserFollowPlaceUpdate builder.
 func (ufpu *UserFollowPlaceUpdate) Where(ps ...predicate.UserFollowPlace) *UserFollowPlaceUpdate {
 	ufpu.mutation.Where(ps...)
+	return ufpu
+}
+
+// SetCreatedAt sets the "CreatedAt" field.
+func (ufpu *UserFollowPlaceUpdate) SetCreatedAt(t time.Time) *UserFollowPlaceUpdate {
+	ufpu.mutation.SetCreatedAt(t)
+	return ufpu
+}
+
+// SetNillableCreatedAt sets the "CreatedAt" field if the given value is not nil.
+func (ufpu *UserFollowPlaceUpdate) SetNillableCreatedAt(t *time.Time) *UserFollowPlaceUpdate {
+	if t != nil {
+		ufpu.SetCreatedAt(*t)
+	}
+	return ufpu
+}
+
+// SetUpdatedAt sets the "UpdatedAt" field.
+func (ufpu *UserFollowPlaceUpdate) SetUpdatedAt(t time.Time) *UserFollowPlaceUpdate {
+	ufpu.mutation.SetUpdatedAt(t)
 	return ufpu
 }
 
@@ -86,6 +107,7 @@ func (ufpu *UserFollowPlaceUpdate) ClearPlace() *UserFollowPlaceUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (ufpu *UserFollowPlaceUpdate) Save(ctx context.Context) (int, error) {
+	ufpu.defaults()
 	return withHooks(ctx, ufpu.sqlSave, ufpu.mutation, ufpu.hooks)
 }
 
@@ -111,6 +133,14 @@ func (ufpu *UserFollowPlaceUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (ufpu *UserFollowPlaceUpdate) defaults() {
+	if _, ok := ufpu.mutation.UpdatedAt(); !ok {
+		v := userfollowplace.UpdateDefaultUpdatedAt()
+		ufpu.mutation.SetUpdatedAt(v)
+	}
+}
+
 func (ufpu *UserFollowPlaceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	_spec := sqlgraph.NewUpdateSpec(userfollowplace.Table, userfollowplace.Columns, sqlgraph.NewFieldSpec(userfollowplace.FieldID, field.TypeString))
 	if ps := ufpu.mutation.predicates; len(ps) > 0 {
@@ -119,6 +149,12 @@ func (ufpu *UserFollowPlaceUpdate) sqlSave(ctx context.Context) (n int, err erro
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := ufpu.mutation.CreatedAt(); ok {
+		_spec.SetField(userfollowplace.FieldCreatedAt, field.TypeTime, value)
+	}
+	if value, ok := ufpu.mutation.UpdatedAt(); ok {
+		_spec.SetField(userfollowplace.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if ufpu.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -152,7 +188,7 @@ func (ufpu *UserFollowPlaceUpdate) sqlSave(ctx context.Context) (n int, err erro
 	if ufpu.mutation.PlaceCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   userfollowplace.PlaceTable,
 			Columns: []string{userfollowplace.PlaceColumn},
 			Bidi:    false,
@@ -165,7 +201,7 @@ func (ufpu *UserFollowPlaceUpdate) sqlSave(ctx context.Context) (n int, err erro
 	if nodes := ufpu.mutation.PlaceIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   userfollowplace.PlaceTable,
 			Columns: []string{userfollowplace.PlaceColumn},
 			Bidi:    false,
@@ -196,6 +232,26 @@ type UserFollowPlaceUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *UserFollowPlaceMutation
+}
+
+// SetCreatedAt sets the "CreatedAt" field.
+func (ufpuo *UserFollowPlaceUpdateOne) SetCreatedAt(t time.Time) *UserFollowPlaceUpdateOne {
+	ufpuo.mutation.SetCreatedAt(t)
+	return ufpuo
+}
+
+// SetNillableCreatedAt sets the "CreatedAt" field if the given value is not nil.
+func (ufpuo *UserFollowPlaceUpdateOne) SetNillableCreatedAt(t *time.Time) *UserFollowPlaceUpdateOne {
+	if t != nil {
+		ufpuo.SetCreatedAt(*t)
+	}
+	return ufpuo
+}
+
+// SetUpdatedAt sets the "UpdatedAt" field.
+func (ufpuo *UserFollowPlaceUpdateOne) SetUpdatedAt(t time.Time) *UserFollowPlaceUpdateOne {
+	ufpuo.mutation.SetUpdatedAt(t)
+	return ufpuo
 }
 
 // SetUserID sets the "user" edge to the User entity by ID.
@@ -268,6 +324,7 @@ func (ufpuo *UserFollowPlaceUpdateOne) Select(field string, fields ...string) *U
 
 // Save executes the query and returns the updated UserFollowPlace entity.
 func (ufpuo *UserFollowPlaceUpdateOne) Save(ctx context.Context) (*UserFollowPlace, error) {
+	ufpuo.defaults()
 	return withHooks(ctx, ufpuo.sqlSave, ufpuo.mutation, ufpuo.hooks)
 }
 
@@ -290,6 +347,14 @@ func (ufpuo *UserFollowPlaceUpdateOne) Exec(ctx context.Context) error {
 func (ufpuo *UserFollowPlaceUpdateOne) ExecX(ctx context.Context) {
 	if err := ufpuo.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (ufpuo *UserFollowPlaceUpdateOne) defaults() {
+	if _, ok := ufpuo.mutation.UpdatedAt(); !ok {
+		v := userfollowplace.UpdateDefaultUpdatedAt()
+		ufpuo.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -318,6 +383,12 @@ func (ufpuo *UserFollowPlaceUpdateOne) sqlSave(ctx context.Context) (_node *User
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := ufpuo.mutation.CreatedAt(); ok {
+		_spec.SetField(userfollowplace.FieldCreatedAt, field.TypeTime, value)
+	}
+	if value, ok := ufpuo.mutation.UpdatedAt(); ok {
+		_spec.SetField(userfollowplace.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if ufpuo.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -351,7 +422,7 @@ func (ufpuo *UserFollowPlaceUpdateOne) sqlSave(ctx context.Context) (_node *User
 	if ufpuo.mutation.PlaceCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   userfollowplace.PlaceTable,
 			Columns: []string{userfollowplace.PlaceColumn},
 			Bidi:    false,
@@ -364,7 +435,7 @@ func (ufpuo *UserFollowPlaceUpdateOne) sqlSave(ctx context.Context) (_node *User
 	if nodes := ufpuo.mutation.PlaceIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   userfollowplace.PlaceTable,
 			Columns: []string{userfollowplace.PlaceColumn},
 			Bidi:    false,

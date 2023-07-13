@@ -83,15 +83,17 @@ type UserEdges struct {
 	Places []*Place `json:"places,omitempty"`
 	// CategoryAssignments holds the value of the categoryAssignments edge.
 	CategoryAssignments []*CategoryAssignment `json:"categoryAssignments,omitempty"`
-	// FollowedPlaces holds the value of the followedPlaces edge.
-	FollowedPlaces []*UserFollowPlace `json:"followedPlaces,omitempty"`
 	// OwnedEvents holds the value of the ownedEvents edge.
 	OwnedEvents *Event `json:"ownedEvents,omitempty"`
 	// UserFollowEvents holds the value of the userFollowEvents edge.
 	UserFollowEvents []*UserFollowEvent `json:"userFollowEvents,omitempty"`
+	// FollowedPlaces holds the value of the followedPlaces edge.
+	FollowedPlaces []*UserFollowPlace `json:"followedPlaces,omitempty"`
+	// LikedPlaces holds the value of the likedPlaces edge.
+	LikedPlaces []*UserLikePlace `json:"likedPlaces,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [18]bool
+	loadedTypes [19]bool
 }
 
 // UserBusinessesOrErr returns the UserBusinesses value or an error if the edge
@@ -229,19 +231,10 @@ func (e UserEdges) CategoryAssignmentsOrErr() ([]*CategoryAssignment, error) {
 	return nil, &NotLoadedError{edge: "categoryAssignments"}
 }
 
-// FollowedPlacesOrErr returns the FollowedPlaces value or an error if the edge
-// was not loaded in eager-loading.
-func (e UserEdges) FollowedPlacesOrErr() ([]*UserFollowPlace, error) {
-	if e.loadedTypes[15] {
-		return e.FollowedPlaces, nil
-	}
-	return nil, &NotLoadedError{edge: "followedPlaces"}
-}
-
 // OwnedEventsOrErr returns the OwnedEvents value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e UserEdges) OwnedEventsOrErr() (*Event, error) {
-	if e.loadedTypes[16] {
+	if e.loadedTypes[15] {
 		if e.OwnedEvents == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: event.Label}
@@ -254,10 +247,28 @@ func (e UserEdges) OwnedEventsOrErr() (*Event, error) {
 // UserFollowEventsOrErr returns the UserFollowEvents value or an error if the edge
 // was not loaded in eager-loading.
 func (e UserEdges) UserFollowEventsOrErr() ([]*UserFollowEvent, error) {
-	if e.loadedTypes[17] {
+	if e.loadedTypes[16] {
 		return e.UserFollowEvents, nil
 	}
 	return nil, &NotLoadedError{edge: "userFollowEvents"}
+}
+
+// FollowedPlacesOrErr returns the FollowedPlaces value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) FollowedPlacesOrErr() ([]*UserFollowPlace, error) {
+	if e.loadedTypes[17] {
+		return e.FollowedPlaces, nil
+	}
+	return nil, &NotLoadedError{edge: "followedPlaces"}
+}
+
+// LikedPlacesOrErr returns the LikedPlaces value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) LikedPlacesOrErr() ([]*UserLikePlace, error) {
+	if e.loadedTypes[18] {
+		return e.LikedPlaces, nil
+	}
+	return nil, &NotLoadedError{edge: "likedPlaces"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -464,11 +475,6 @@ func (u *User) QueryCategoryAssignments() *CategoryAssignmentQuery {
 	return NewUserClient(u.config).QueryCategoryAssignments(u)
 }
 
-// QueryFollowedPlaces queries the "followedPlaces" edge of the User entity.
-func (u *User) QueryFollowedPlaces() *UserFollowPlaceQuery {
-	return NewUserClient(u.config).QueryFollowedPlaces(u)
-}
-
 // QueryOwnedEvents queries the "ownedEvents" edge of the User entity.
 func (u *User) QueryOwnedEvents() *EventQuery {
 	return NewUserClient(u.config).QueryOwnedEvents(u)
@@ -477,6 +483,16 @@ func (u *User) QueryOwnedEvents() *EventQuery {
 // QueryUserFollowEvents queries the "userFollowEvents" edge of the User entity.
 func (u *User) QueryUserFollowEvents() *UserFollowEventQuery {
 	return NewUserClient(u.config).QueryUserFollowEvents(u)
+}
+
+// QueryFollowedPlaces queries the "followedPlaces" edge of the User entity.
+func (u *User) QueryFollowedPlaces() *UserFollowPlaceQuery {
+	return NewUserClient(u.config).QueryFollowedPlaces(u)
+}
+
+// QueryLikedPlaces queries the "likedPlaces" edge of the User entity.
+func (u *User) QueryLikedPlaces() *UserLikePlaceQuery {
+	return NewUserClient(u.config).QueryLikedPlaces(u)
 }
 
 // Update returns a builder for updating this User.

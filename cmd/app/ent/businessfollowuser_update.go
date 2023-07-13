@@ -10,6 +10,7 @@ import (
 	"placio-app/ent/businessfollowuser"
 	"placio-app/ent/predicate"
 	"placio-app/ent/user"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -26,6 +27,26 @@ type BusinessFollowUserUpdate struct {
 // Where appends a list predicates to the BusinessFollowUserUpdate builder.
 func (bfuu *BusinessFollowUserUpdate) Where(ps ...predicate.BusinessFollowUser) *BusinessFollowUserUpdate {
 	bfuu.mutation.Where(ps...)
+	return bfuu
+}
+
+// SetCreatedAt sets the "CreatedAt" field.
+func (bfuu *BusinessFollowUserUpdate) SetCreatedAt(t time.Time) *BusinessFollowUserUpdate {
+	bfuu.mutation.SetCreatedAt(t)
+	return bfuu
+}
+
+// SetNillableCreatedAt sets the "CreatedAt" field if the given value is not nil.
+func (bfuu *BusinessFollowUserUpdate) SetNillableCreatedAt(t *time.Time) *BusinessFollowUserUpdate {
+	if t != nil {
+		bfuu.SetCreatedAt(*t)
+	}
+	return bfuu
+}
+
+// SetUpdatedAt sets the "UpdatedAt" field.
+func (bfuu *BusinessFollowUserUpdate) SetUpdatedAt(t time.Time) *BusinessFollowUserUpdate {
+	bfuu.mutation.SetUpdatedAt(t)
 	return bfuu
 }
 
@@ -86,6 +107,7 @@ func (bfuu *BusinessFollowUserUpdate) ClearUser() *BusinessFollowUserUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (bfuu *BusinessFollowUserUpdate) Save(ctx context.Context) (int, error) {
+	bfuu.defaults()
 	return withHooks(ctx, bfuu.sqlSave, bfuu.mutation, bfuu.hooks)
 }
 
@@ -111,6 +133,14 @@ func (bfuu *BusinessFollowUserUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (bfuu *BusinessFollowUserUpdate) defaults() {
+	if _, ok := bfuu.mutation.UpdatedAt(); !ok {
+		v := businessfollowuser.UpdateDefaultUpdatedAt()
+		bfuu.mutation.SetUpdatedAt(v)
+	}
+}
+
 func (bfuu *BusinessFollowUserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	_spec := sqlgraph.NewUpdateSpec(businessfollowuser.Table, businessfollowuser.Columns, sqlgraph.NewFieldSpec(businessfollowuser.FieldID, field.TypeString))
 	if ps := bfuu.mutation.predicates; len(ps) > 0 {
@@ -119,6 +149,12 @@ func (bfuu *BusinessFollowUserUpdate) sqlSave(ctx context.Context) (n int, err e
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := bfuu.mutation.CreatedAt(); ok {
+		_spec.SetField(businessfollowuser.FieldCreatedAt, field.TypeTime, value)
+	}
+	if value, ok := bfuu.mutation.UpdatedAt(); ok {
+		_spec.SetField(businessfollowuser.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if bfuu.mutation.BusinessCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -198,6 +234,26 @@ type BusinessFollowUserUpdateOne struct {
 	mutation *BusinessFollowUserMutation
 }
 
+// SetCreatedAt sets the "CreatedAt" field.
+func (bfuuo *BusinessFollowUserUpdateOne) SetCreatedAt(t time.Time) *BusinessFollowUserUpdateOne {
+	bfuuo.mutation.SetCreatedAt(t)
+	return bfuuo
+}
+
+// SetNillableCreatedAt sets the "CreatedAt" field if the given value is not nil.
+func (bfuuo *BusinessFollowUserUpdateOne) SetNillableCreatedAt(t *time.Time) *BusinessFollowUserUpdateOne {
+	if t != nil {
+		bfuuo.SetCreatedAt(*t)
+	}
+	return bfuuo
+}
+
+// SetUpdatedAt sets the "UpdatedAt" field.
+func (bfuuo *BusinessFollowUserUpdateOne) SetUpdatedAt(t time.Time) *BusinessFollowUserUpdateOne {
+	bfuuo.mutation.SetUpdatedAt(t)
+	return bfuuo
+}
+
 // SetBusinessID sets the "business" edge to the Business entity by ID.
 func (bfuuo *BusinessFollowUserUpdateOne) SetBusinessID(id string) *BusinessFollowUserUpdateOne {
 	bfuuo.mutation.SetBusinessID(id)
@@ -268,6 +324,7 @@ func (bfuuo *BusinessFollowUserUpdateOne) Select(field string, fields ...string)
 
 // Save executes the query and returns the updated BusinessFollowUser entity.
 func (bfuuo *BusinessFollowUserUpdateOne) Save(ctx context.Context) (*BusinessFollowUser, error) {
+	bfuuo.defaults()
 	return withHooks(ctx, bfuuo.sqlSave, bfuuo.mutation, bfuuo.hooks)
 }
 
@@ -290,6 +347,14 @@ func (bfuuo *BusinessFollowUserUpdateOne) Exec(ctx context.Context) error {
 func (bfuuo *BusinessFollowUserUpdateOne) ExecX(ctx context.Context) {
 	if err := bfuuo.Exec(ctx); err != nil {
 		panic(err)
+	}
+}
+
+// defaults sets the default values of the builder before save.
+func (bfuuo *BusinessFollowUserUpdateOne) defaults() {
+	if _, ok := bfuuo.mutation.UpdatedAt(); !ok {
+		v := businessfollowuser.UpdateDefaultUpdatedAt()
+		bfuuo.mutation.SetUpdatedAt(v)
 	}
 }
 
@@ -318,6 +383,12 @@ func (bfuuo *BusinessFollowUserUpdateOne) sqlSave(ctx context.Context) (_node *B
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := bfuuo.mutation.CreatedAt(); ok {
+		_spec.SetField(businessfollowuser.FieldCreatedAt, field.TypeTime, value)
+	}
+	if value, ok := bfuuo.mutation.UpdatedAt(); ok {
+		_spec.SetField(businessfollowuser.FieldUpdatedAt, field.TypeTime, value)
 	}
 	if bfuuo.mutation.BusinessCleared() {
 		edge := &sqlgraph.EdgeSpec{

@@ -4,9 +4,11 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"placio-app/ent/user"
 	"placio-app/ent/userfollowuser"
+	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -17,6 +19,32 @@ type UserFollowUserCreate struct {
 	config
 	mutation *UserFollowUserMutation
 	hooks    []Hook
+}
+
+// SetCreatedAt sets the "CreatedAt" field.
+func (ufuc *UserFollowUserCreate) SetCreatedAt(t time.Time) *UserFollowUserCreate {
+	ufuc.mutation.SetCreatedAt(t)
+	return ufuc
+}
+
+// SetNillableCreatedAt sets the "CreatedAt" field if the given value is not nil.
+func (ufuc *UserFollowUserCreate) SetNillableCreatedAt(t *time.Time) *UserFollowUserCreate {
+	if t != nil {
+		ufuc.SetCreatedAt(*t)
+	}
+	return ufuc
+}
+
+// SetUpdatedAt sets the "UpdatedAt" field.
+func (ufuc *UserFollowUserCreate) SetUpdatedAt(t time.Time) *UserFollowUserCreate {
+	ufuc.mutation.SetUpdatedAt(t)
+	return ufuc
+}
+
+// SetID sets the "id" field.
+func (ufuc *UserFollowUserCreate) SetID(s string) *UserFollowUserCreate {
+	ufuc.mutation.SetID(s)
+	return ufuc
 }
 
 // SetFollowerID sets the "follower" edge to the User entity by ID.
@@ -64,6 +92,7 @@ func (ufuc *UserFollowUserCreate) Mutation() *UserFollowUserMutation {
 
 // Save creates the UserFollowUser in the database.
 func (ufuc *UserFollowUserCreate) Save(ctx context.Context) (*UserFollowUser, error) {
+	ufuc.defaults()
 	return withHooks(ctx, ufuc.sqlSave, ufuc.mutation, ufuc.hooks)
 }
 
@@ -89,8 +118,27 @@ func (ufuc *UserFollowUserCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (ufuc *UserFollowUserCreate) defaults() {
+	if _, ok := ufuc.mutation.CreatedAt(); !ok {
+		v := userfollowuser.DefaultCreatedAt()
+		ufuc.mutation.SetCreatedAt(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (ufuc *UserFollowUserCreate) check() error {
+	if _, ok := ufuc.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "CreatedAt", err: errors.New(`ent: missing required field "UserFollowUser.CreatedAt"`)}
+	}
+	if _, ok := ufuc.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "UpdatedAt", err: errors.New(`ent: missing required field "UserFollowUser.UpdatedAt"`)}
+	}
+	if v, ok := ufuc.mutation.ID(); ok {
+		if err := userfollowuser.IDValidator(v); err != nil {
+			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "UserFollowUser.id": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -122,6 +170,18 @@ func (ufuc *UserFollowUserCreate) createSpec() (*UserFollowUser, *sqlgraph.Creat
 		_node = &UserFollowUser{config: ufuc.config}
 		_spec = sqlgraph.NewCreateSpec(userfollowuser.Table, sqlgraph.NewFieldSpec(userfollowuser.FieldID, field.TypeString))
 	)
+	if id, ok := ufuc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
+	if value, ok := ufuc.mutation.CreatedAt(); ok {
+		_spec.SetField(userfollowuser.FieldCreatedAt, field.TypeTime, value)
+		_node.CreatedAt = value
+	}
+	if value, ok := ufuc.mutation.UpdatedAt(); ok {
+		_spec.SetField(userfollowuser.FieldUpdatedAt, field.TypeTime, value)
+		_node.UpdatedAt = value
+	}
 	if nodes := ufuc.mutation.FollowerIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -173,6 +233,7 @@ func (ufucb *UserFollowUserCreateBulk) Save(ctx context.Context) ([]*UserFollowU
 	for i := range ufucb.builders {
 		func(i int, root context.Context) {
 			builder := ufucb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*UserFollowUserMutation)
 				if !ok {

@@ -743,6 +743,12 @@ definitions:
     type: object
   placio-app_ent.BusinessFollowBusiness:
     properties:
+      CreatedAt:
+        description: CreatedAt holds the value of the "CreatedAt" field.
+        type: string
+      UpdatedAt:
+        description: UpdatedAt holds the value of the "UpdatedAt" field.
+        type: string
       edges:
         allOf:
         - $ref: '#/definitions/placio-app_ent.BusinessFollowBusinessEdges'
@@ -795,6 +801,12 @@ definitions:
     type: object
   placio-app_ent.BusinessFollowUser:
     properties:
+      CreatedAt:
+        description: CreatedAt holds the value of the "CreatedAt" field.
+        type: string
+      UpdatedAt:
+        description: UpdatedAt holds the value of the "UpdatedAt" field.
+        type: string
       edges:
         allOf:
         - $ref: '#/definitions/placio-app_ent.BusinessFollowUserEdges'
@@ -1402,6 +1414,11 @@ definitions:
         items:
           $ref: '#/definitions/placio-app_ent.UserFollowPlace'
         type: array
+      likedByUsers:
+        description: LikedByUsers holds the value of the likedByUsers edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.UserLikePlace'
+        type: array
       menus:
         description: Menus holds the value of the menus edge.
         items:
@@ -1788,6 +1805,11 @@ definitions:
         items:
           $ref: '#/definitions/placio-app_ent.Help'
         type: array
+      likedPlaces:
+        description: LikedPlaces holds the value of the likedPlaces edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.UserLikePlace'
+        type: array
       likes:
         description: Likes holds the value of the likes edge.
         items:
@@ -1830,6 +1852,12 @@ definitions:
     type: object
   placio-app_ent.UserFollowBusiness:
     properties:
+      CreatedAt:
+        description: CreatedAt holds the value of the "CreatedAt" field.
+        type: string
+      UpdatedAt:
+        description: UpdatedAt holds the value of the "UpdatedAt" field.
+        type: string
       edges:
         allOf:
         - $ref: '#/definitions/placio-app_ent.UserFollowBusinessEdges'
@@ -1882,6 +1910,12 @@ definitions:
     type: object
   placio-app_ent.UserFollowPlace:
     properties:
+      CreatedAt:
+        description: CreatedAt holds the value of the "CreatedAt" field.
+        type: string
+      UpdatedAt:
+        description: UpdatedAt holds the value of the "UpdatedAt" field.
+        type: string
       edges:
         allOf:
         - $ref: '#/definitions/placio-app_ent.UserFollowPlaceEdges'
@@ -1905,6 +1939,12 @@ definitions:
     type: object
   placio-app_ent.UserFollowUser:
     properties:
+      CreatedAt:
+        description: CreatedAt holds the value of the "CreatedAt" field.
+        type: string
+      UpdatedAt:
+        description: UpdatedAt holds the value of the "UpdatedAt" field.
+        type: string
       edges:
         allOf:
         - $ref: '#/definitions/placio-app_ent.UserFollowUserEdges'
@@ -1925,6 +1965,35 @@ definitions:
         allOf:
         - $ref: '#/definitions/placio-app_ent.User'
         description: Follower holds the value of the follower edge.
+    type: object
+  placio-app_ent.UserLikePlace:
+    properties:
+      CreatedAt:
+        description: CreatedAt holds the value of the "CreatedAt" field.
+        type: string
+      UpdatedAt:
+        description: UpdatedAt holds the value of the "UpdatedAt" field.
+        type: string
+      edges:
+        allOf:
+        - $ref: '#/definitions/placio-app_ent.UserLikePlaceEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the UserLikePlaceQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: string
+    type: object
+  placio-app_ent.UserLikePlaceEdges:
+    properties:
+      place:
+        allOf:
+        - $ref: '#/definitions/placio-app_ent.Place'
+        description: Place holds the value of the place edge.
+      user:
+        allOf:
+        - $ref: '#/definitions/placio-app_ent.User'
+        description: User holds the value of the user edge.
     type: object
   placio-app_ent_event.EventType:
     enum:
@@ -3150,6 +3219,133 @@ paths:
       summary: Unlike a post
       tags:
       - Like
+  /api/v1/likes/{userID}/place/{placeID}:
+    post:
+      consumes:
+      - application/json
+      description: Allows a user to like a specific place
+      parameters:
+      - description: ID of the user
+        in: path
+        name: userID
+        required: true
+        type: string
+      - description: ID of the place
+        in: path
+        name: placeID
+        required: true
+        type: string
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Successfully liked place
+          schema:
+            $ref: '#/definitions/placio-app_ent.UserLikePlace'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      security:
+      - Bearer: []
+      summary: Like a place
+      tags:
+      - Like
+  /api/v1/likes/{userLikePlaceID}:
+    delete:
+      consumes:
+      - application/json
+      description: Allows a user to unlike a specific place
+      parameters:
+      - description: ID of the UserLikePlace record
+        in: path
+        name: userLikePlaceID
+        required: true
+        type: string
+      - description: Provide JWT access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully unliked place
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      security:
+      - Bearer: []
+      summary: Unlike a place
+      tags:
+      - Like
+  /api/v1/likes/place/{placeID}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all likes for a place
+      parameters:
+      - description: ID of the place
+        in: path
+        name: placeID
+        required: true
+        type: string
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of UserLikePlace records
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_ent.UserLikePlace'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      security:
+      - Bearer: []
+      summary: Get place likes
+      tags:
+      - Like
   /api/v1/likes/post/{postID}:
     get:
       consumes:
@@ -3191,21 +3387,26 @@ paths:
     get:
       consumes:
       - application/json
-      description: Retrieve all likes by a user
+      description: Retrieve all places liked by a user
       parameters:
       - description: ID of the user
         in: path
         name: userID
         required: true
         type: string
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
         "200":
-          description: List of likes
+          description: List of UserLikePlace records
           schema:
             items:
-              $ref: '#/definitions/placio-app_ent.Like'
+              $ref: '#/definitions/placio-app_ent.UserLikePlace'
             type: array
         "400":
           description: Bad Request
@@ -3221,7 +3422,7 @@ paths:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
       security:
       - Bearer: []
-      summary: Get user likes
+      summary: Get user liked places
       tags:
       - Like
   /api/v1/likes/user/{userID}/post/{postID}:

@@ -4,10 +4,12 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"placio-app/ent/business"
 	"placio-app/ent/user"
 	"placio-app/ent/userfollowbusiness"
+	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -18,6 +20,32 @@ type UserFollowBusinessCreate struct {
 	config
 	mutation *UserFollowBusinessMutation
 	hooks    []Hook
+}
+
+// SetCreatedAt sets the "CreatedAt" field.
+func (ufbc *UserFollowBusinessCreate) SetCreatedAt(t time.Time) *UserFollowBusinessCreate {
+	ufbc.mutation.SetCreatedAt(t)
+	return ufbc
+}
+
+// SetNillableCreatedAt sets the "CreatedAt" field if the given value is not nil.
+func (ufbc *UserFollowBusinessCreate) SetNillableCreatedAt(t *time.Time) *UserFollowBusinessCreate {
+	if t != nil {
+		ufbc.SetCreatedAt(*t)
+	}
+	return ufbc
+}
+
+// SetUpdatedAt sets the "UpdatedAt" field.
+func (ufbc *UserFollowBusinessCreate) SetUpdatedAt(t time.Time) *UserFollowBusinessCreate {
+	ufbc.mutation.SetUpdatedAt(t)
+	return ufbc
+}
+
+// SetID sets the "id" field.
+func (ufbc *UserFollowBusinessCreate) SetID(s string) *UserFollowBusinessCreate {
+	ufbc.mutation.SetID(s)
+	return ufbc
 }
 
 // SetUserID sets the "user" edge to the User entity by ID.
@@ -65,6 +93,7 @@ func (ufbc *UserFollowBusinessCreate) Mutation() *UserFollowBusinessMutation {
 
 // Save creates the UserFollowBusiness in the database.
 func (ufbc *UserFollowBusinessCreate) Save(ctx context.Context) (*UserFollowBusiness, error) {
+	ufbc.defaults()
 	return withHooks(ctx, ufbc.sqlSave, ufbc.mutation, ufbc.hooks)
 }
 
@@ -90,8 +119,22 @@ func (ufbc *UserFollowBusinessCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (ufbc *UserFollowBusinessCreate) defaults() {
+	if _, ok := ufbc.mutation.CreatedAt(); !ok {
+		v := userfollowbusiness.DefaultCreatedAt()
+		ufbc.mutation.SetCreatedAt(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (ufbc *UserFollowBusinessCreate) check() error {
+	if _, ok := ufbc.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "CreatedAt", err: errors.New(`ent: missing required field "UserFollowBusiness.CreatedAt"`)}
+	}
+	if _, ok := ufbc.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "UpdatedAt", err: errors.New(`ent: missing required field "UserFollowBusiness.UpdatedAt"`)}
+	}
 	return nil
 }
 
@@ -123,6 +166,18 @@ func (ufbc *UserFollowBusinessCreate) createSpec() (*UserFollowBusiness, *sqlgra
 		_node = &UserFollowBusiness{config: ufbc.config}
 		_spec = sqlgraph.NewCreateSpec(userfollowbusiness.Table, sqlgraph.NewFieldSpec(userfollowbusiness.FieldID, field.TypeString))
 	)
+	if id, ok := ufbc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
+	if value, ok := ufbc.mutation.CreatedAt(); ok {
+		_spec.SetField(userfollowbusiness.FieldCreatedAt, field.TypeTime, value)
+		_node.CreatedAt = value
+	}
+	if value, ok := ufbc.mutation.UpdatedAt(); ok {
+		_spec.SetField(userfollowbusiness.FieldUpdatedAt, field.TypeTime, value)
+		_node.UpdatedAt = value
+	}
 	if nodes := ufbc.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -174,6 +229,7 @@ func (ufbcb *UserFollowBusinessCreateBulk) Save(ctx context.Context) ([]*UserFol
 	for i := range ufbcb.builders {
 		func(i int, root context.Context) {
 			builder := ufbcb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*UserFollowBusinessMutation)
 				if !ok {

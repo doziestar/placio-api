@@ -4,10 +4,12 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"placio-app/ent/place"
 	"placio-app/ent/user"
 	"placio-app/ent/userfollowplace"
+	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -18,6 +20,32 @@ type UserFollowPlaceCreate struct {
 	config
 	mutation *UserFollowPlaceMutation
 	hooks    []Hook
+}
+
+// SetCreatedAt sets the "CreatedAt" field.
+func (ufpc *UserFollowPlaceCreate) SetCreatedAt(t time.Time) *UserFollowPlaceCreate {
+	ufpc.mutation.SetCreatedAt(t)
+	return ufpc
+}
+
+// SetNillableCreatedAt sets the "CreatedAt" field if the given value is not nil.
+func (ufpc *UserFollowPlaceCreate) SetNillableCreatedAt(t *time.Time) *UserFollowPlaceCreate {
+	if t != nil {
+		ufpc.SetCreatedAt(*t)
+	}
+	return ufpc
+}
+
+// SetUpdatedAt sets the "UpdatedAt" field.
+func (ufpc *UserFollowPlaceCreate) SetUpdatedAt(t time.Time) *UserFollowPlaceCreate {
+	ufpc.mutation.SetUpdatedAt(t)
+	return ufpc
+}
+
+// SetID sets the "id" field.
+func (ufpc *UserFollowPlaceCreate) SetID(s string) *UserFollowPlaceCreate {
+	ufpc.mutation.SetID(s)
+	return ufpc
 }
 
 // SetUserID sets the "user" edge to the User entity by ID.
@@ -65,6 +93,7 @@ func (ufpc *UserFollowPlaceCreate) Mutation() *UserFollowPlaceMutation {
 
 // Save creates the UserFollowPlace in the database.
 func (ufpc *UserFollowPlaceCreate) Save(ctx context.Context) (*UserFollowPlace, error) {
+	ufpc.defaults()
 	return withHooks(ctx, ufpc.sqlSave, ufpc.mutation, ufpc.hooks)
 }
 
@@ -90,8 +119,22 @@ func (ufpc *UserFollowPlaceCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (ufpc *UserFollowPlaceCreate) defaults() {
+	if _, ok := ufpc.mutation.CreatedAt(); !ok {
+		v := userfollowplace.DefaultCreatedAt()
+		ufpc.mutation.SetCreatedAt(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (ufpc *UserFollowPlaceCreate) check() error {
+	if _, ok := ufpc.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "CreatedAt", err: errors.New(`ent: missing required field "UserFollowPlace.CreatedAt"`)}
+	}
+	if _, ok := ufpc.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "UpdatedAt", err: errors.New(`ent: missing required field "UserFollowPlace.UpdatedAt"`)}
+	}
 	return nil
 }
 
@@ -123,6 +166,18 @@ func (ufpc *UserFollowPlaceCreate) createSpec() (*UserFollowPlace, *sqlgraph.Cre
 		_node = &UserFollowPlace{config: ufpc.config}
 		_spec = sqlgraph.NewCreateSpec(userfollowplace.Table, sqlgraph.NewFieldSpec(userfollowplace.FieldID, field.TypeString))
 	)
+	if id, ok := ufpc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
+	if value, ok := ufpc.mutation.CreatedAt(); ok {
+		_spec.SetField(userfollowplace.FieldCreatedAt, field.TypeTime, value)
+		_node.CreatedAt = value
+	}
+	if value, ok := ufpc.mutation.UpdatedAt(); ok {
+		_spec.SetField(userfollowplace.FieldUpdatedAt, field.TypeTime, value)
+		_node.UpdatedAt = value
+	}
 	if nodes := ufpc.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -143,7 +198,7 @@ func (ufpc *UserFollowPlaceCreate) createSpec() (*UserFollowPlace, *sqlgraph.Cre
 	if nodes := ufpc.mutation.PlaceIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   userfollowplace.PlaceTable,
 			Columns: []string{userfollowplace.PlaceColumn},
 			Bidi:    false,
@@ -154,7 +209,7 @@ func (ufpc *UserFollowPlaceCreate) createSpec() (*UserFollowPlace, *sqlgraph.Cre
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.place_follower_users = &nodes[0]
+		_node.user_follow_place_place = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -174,6 +229,7 @@ func (ufpcb *UserFollowPlaceCreateBulk) Save(ctx context.Context) ([]*UserFollow
 	for i := range ufpcb.builders {
 		func(i int, root context.Context) {
 			builder := ufpcb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*UserFollowPlaceMutation)
 				if !ok {

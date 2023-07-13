@@ -26,6 +26,7 @@ import (
 	"placio-app/ent/userfollowevent"
 	"placio-app/ent/userfollowplace"
 	"placio-app/ent/userfollowuser"
+	"placio-app/ent/userlikeplace"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -54,9 +55,10 @@ type UserQuery struct {
 	withCategories          *CategoryQuery
 	withPlaces              *PlaceQuery
 	withCategoryAssignments *CategoryAssignmentQuery
-	withFollowedPlaces      *UserFollowPlaceQuery
 	withOwnedEvents         *EventQuery
 	withUserFollowEvents    *UserFollowEventQuery
+	withFollowedPlaces      *UserFollowPlaceQuery
+	withLikedPlaces         *UserLikePlaceQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -423,28 +425,6 @@ func (uq *UserQuery) QueryCategoryAssignments() *CategoryAssignmentQuery {
 	return query
 }
 
-// QueryFollowedPlaces chains the current query on the "followedPlaces" edge.
-func (uq *UserQuery) QueryFollowedPlaces() *UserFollowPlaceQuery {
-	query := (&UserFollowPlaceClient{config: uq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := uq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := uq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(user.Table, user.FieldID, selector),
-			sqlgraph.To(userfollowplace.Table, userfollowplace.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, user.FollowedPlacesTable, user.FollowedPlacesColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
 // QueryOwnedEvents chains the current query on the "ownedEvents" edge.
 func (uq *UserQuery) QueryOwnedEvents() *EventQuery {
 	query := (&EventClient{config: uq.config}).Query()
@@ -482,6 +462,50 @@ func (uq *UserQuery) QueryUserFollowEvents() *UserFollowEventQuery {
 			sqlgraph.From(user.Table, user.FieldID, selector),
 			sqlgraph.To(userfollowevent.Table, userfollowevent.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.UserFollowEventsTable, user.UserFollowEventsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryFollowedPlaces chains the current query on the "followedPlaces" edge.
+func (uq *UserQuery) QueryFollowedPlaces() *UserFollowPlaceQuery {
+	query := (&UserFollowPlaceClient{config: uq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(userfollowplace.Table, userfollowplace.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.FollowedPlacesTable, user.FollowedPlacesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryLikedPlaces chains the current query on the "likedPlaces" edge.
+func (uq *UserQuery) QueryLikedPlaces() *UserLikePlaceQuery {
+	query := (&UserLikePlaceClient{config: uq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(userlikeplace.Table, userlikeplace.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.LikedPlacesTable, user.LikedPlacesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
 		return fromU, nil
@@ -696,9 +720,10 @@ func (uq *UserQuery) Clone() *UserQuery {
 		withCategories:          uq.withCategories.Clone(),
 		withPlaces:              uq.withPlaces.Clone(),
 		withCategoryAssignments: uq.withCategoryAssignments.Clone(),
-		withFollowedPlaces:      uq.withFollowedPlaces.Clone(),
 		withOwnedEvents:         uq.withOwnedEvents.Clone(),
 		withUserFollowEvents:    uq.withUserFollowEvents.Clone(),
+		withFollowedPlaces:      uq.withFollowedPlaces.Clone(),
+		withLikedPlaces:         uq.withLikedPlaces.Clone(),
 		// clone intermediate query.
 		sql:  uq.sql.Clone(),
 		path: uq.path,
@@ -870,17 +895,6 @@ func (uq *UserQuery) WithCategoryAssignments(opts ...func(*CategoryAssignmentQue
 	return uq
 }
 
-// WithFollowedPlaces tells the query-builder to eager-load the nodes that are connected to
-// the "followedPlaces" edge. The optional arguments are used to configure the query builder of the edge.
-func (uq *UserQuery) WithFollowedPlaces(opts ...func(*UserFollowPlaceQuery)) *UserQuery {
-	query := (&UserFollowPlaceClient{config: uq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	uq.withFollowedPlaces = query
-	return uq
-}
-
 // WithOwnedEvents tells the query-builder to eager-load the nodes that are connected to
 // the "ownedEvents" edge. The optional arguments are used to configure the query builder of the edge.
 func (uq *UserQuery) WithOwnedEvents(opts ...func(*EventQuery)) *UserQuery {
@@ -900,6 +914,28 @@ func (uq *UserQuery) WithUserFollowEvents(opts ...func(*UserFollowEventQuery)) *
 		opt(query)
 	}
 	uq.withUserFollowEvents = query
+	return uq
+}
+
+// WithFollowedPlaces tells the query-builder to eager-load the nodes that are connected to
+// the "followedPlaces" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithFollowedPlaces(opts ...func(*UserFollowPlaceQuery)) *UserQuery {
+	query := (&UserFollowPlaceClient{config: uq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	uq.withFollowedPlaces = query
+	return uq
+}
+
+// WithLikedPlaces tells the query-builder to eager-load the nodes that are connected to
+// the "likedPlaces" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithLikedPlaces(opts ...func(*UserLikePlaceQuery)) *UserQuery {
+	query := (&UserLikePlaceClient{config: uq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	uq.withLikedPlaces = query
 	return uq
 }
 
@@ -981,7 +1017,7 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	var (
 		nodes       = []*User{}
 		_spec       = uq.querySpec()
-		loadedTypes = [18]bool{
+		loadedTypes = [19]bool{
 			uq.withUserBusinesses != nil,
 			uq.withComments != nil,
 			uq.withLikes != nil,
@@ -997,9 +1033,10 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 			uq.withCategories != nil,
 			uq.withPlaces != nil,
 			uq.withCategoryAssignments != nil,
-			uq.withFollowedPlaces != nil,
 			uq.withOwnedEvents != nil,
 			uq.withUserFollowEvents != nil,
+			uq.withFollowedPlaces != nil,
+			uq.withLikedPlaces != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -1131,13 +1168,6 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 			return nil, err
 		}
 	}
-	if query := uq.withFollowedPlaces; query != nil {
-		if err := uq.loadFollowedPlaces(ctx, query, nodes,
-			func(n *User) { n.Edges.FollowedPlaces = []*UserFollowPlace{} },
-			func(n *User, e *UserFollowPlace) { n.Edges.FollowedPlaces = append(n.Edges.FollowedPlaces, e) }); err != nil {
-			return nil, err
-		}
-	}
 	if query := uq.withOwnedEvents; query != nil {
 		if err := uq.loadOwnedEvents(ctx, query, nodes, nil,
 			func(n *User, e *Event) { n.Edges.OwnedEvents = e }); err != nil {
@@ -1148,6 +1178,20 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 		if err := uq.loadUserFollowEvents(ctx, query, nodes,
 			func(n *User) { n.Edges.UserFollowEvents = []*UserFollowEvent{} },
 			func(n *User, e *UserFollowEvent) { n.Edges.UserFollowEvents = append(n.Edges.UserFollowEvents, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := uq.withFollowedPlaces; query != nil {
+		if err := uq.loadFollowedPlaces(ctx, query, nodes,
+			func(n *User) { n.Edges.FollowedPlaces = []*UserFollowPlace{} },
+			func(n *User, e *UserFollowPlace) { n.Edges.FollowedPlaces = append(n.Edges.FollowedPlaces, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := uq.withLikedPlaces; query != nil {
+		if err := uq.loadLikedPlaces(ctx, query, nodes,
+			func(n *User) { n.Edges.LikedPlaces = []*UserLikePlace{} },
+			func(n *User, e *UserLikePlace) { n.Edges.LikedPlaces = append(n.Edges.LikedPlaces, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -1648,37 +1692,6 @@ func (uq *UserQuery) loadCategoryAssignments(ctx context.Context, query *Categor
 	}
 	return nil
 }
-func (uq *UserQuery) loadFollowedPlaces(ctx context.Context, query *UserFollowPlaceQuery, nodes []*User, init func(*User), assign func(*User, *UserFollowPlace)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[string]*User)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
-		}
-	}
-	query.withFKs = true
-	query.Where(predicate.UserFollowPlace(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(user.FollowedPlacesColumn), fks...))
-	}))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		fk := n.user_followed_places
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "user_followed_places" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
-		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "user_followed_places" returned %v for node %v`, *fk, n.ID)
-		}
-		assign(node, n)
-	}
-	return nil
-}
 func (uq *UserQuery) loadOwnedEvents(ctx context.Context, query *EventQuery, nodes []*User, init func(*User), assign func(*User, *Event)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[string]*User)
@@ -1733,6 +1746,68 @@ func (uq *UserQuery) loadUserFollowEvents(ctx context.Context, query *UserFollow
 		node, ok := nodeids[*fk]
 		if !ok {
 			return fmt.Errorf(`unexpected referenced foreign-key "user_user_follow_events" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (uq *UserQuery) loadFollowedPlaces(ctx context.Context, query *UserFollowPlaceQuery, nodes []*User, init func(*User), assign func(*User, *UserFollowPlace)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.UserFollowPlace(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.FollowedPlacesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.user_followed_places
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "user_followed_places" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "user_followed_places" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (uq *UserQuery) loadLikedPlaces(ctx context.Context, query *UserLikePlaceQuery, nodes []*User, init func(*User), assign func(*User, *UserLikePlace)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.UserLikePlace(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.LikedPlacesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.user_liked_places
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "user_liked_places" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "user_liked_places" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

@@ -7,6 +7,7 @@ import (
 	"placio-app/ent/user"
 	"placio-app/ent/userfollowuser"
 	"strings"
+	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -14,9 +15,13 @@ import (
 
 // UserFollowUser is the model entity for the UserFollowUser schema.
 type UserFollowUser struct {
-	config
+	config `json:"-"`
 	// ID of the ent.
 	ID string `json:"id,omitempty"`
+	// CreatedAt holds the value of the "CreatedAt" field.
+	CreatedAt time.Time `json:"CreatedAt,omitempty"`
+	// UpdatedAt holds the value of the "UpdatedAt" field.
+	UpdatedAt time.Time `json:"UpdatedAt,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserFollowUserQuery when eager-loading is set.
 	Edges               UserFollowUserEdges `json:"edges"`
@@ -69,6 +74,8 @@ func (*UserFollowUser) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case userfollowuser.FieldID:
 			values[i] = new(sql.NullString)
+		case userfollowuser.FieldCreatedAt, userfollowuser.FieldUpdatedAt:
+			values[i] = new(sql.NullTime)
 		case userfollowuser.ForeignKeys[0]: // user_followed_users
 			values[i] = new(sql.NullString)
 		case userfollowuser.ForeignKeys[1]: // user_follower_users
@@ -93,6 +100,18 @@ func (ufu *UserFollowUser) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value.Valid {
 				ufu.ID = value.String
+			}
+		case userfollowuser.FieldCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field CreatedAt", values[i])
+			} else if value.Valid {
+				ufu.CreatedAt = value.Time
+			}
+		case userfollowuser.FieldUpdatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field UpdatedAt", values[i])
+			} else if value.Valid {
+				ufu.UpdatedAt = value.Time
 			}
 		case userfollowuser.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -153,7 +172,12 @@ func (ufu *UserFollowUser) Unwrap() *UserFollowUser {
 func (ufu *UserFollowUser) String() string {
 	var builder strings.Builder
 	builder.WriteString("UserFollowUser(")
-	builder.WriteString(fmt.Sprintf("id=%v", ufu.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", ufu.ID))
+	builder.WriteString("CreatedAt=")
+	builder.WriteString(ufu.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("UpdatedAt=")
+	builder.WriteString(ufu.UpdatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

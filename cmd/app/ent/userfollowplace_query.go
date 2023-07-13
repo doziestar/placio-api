@@ -98,7 +98,7 @@ func (ufpq *UserFollowPlaceQuery) QueryPlace() *PlaceQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(userfollowplace.Table, userfollowplace.FieldID, selector),
 			sqlgraph.To(place.Table, place.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, userfollowplace.PlaceTable, userfollowplace.PlaceColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, userfollowplace.PlaceTable, userfollowplace.PlaceColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(ufpq.driver.Dialect(), step)
 		return fromU, nil
@@ -330,6 +330,18 @@ func (ufpq *UserFollowPlaceQuery) WithPlace(opts ...func(*PlaceQuery)) *UserFoll
 
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
+//
+// Example:
+//
+//	var v []struct {
+//		CreatedAt time.Time `json:"CreatedAt,omitempty"`
+//		Count int `json:"count,omitempty"`
+//	}
+//
+//	client.UserFollowPlace.Query().
+//		GroupBy(userfollowplace.FieldCreatedAt).
+//		Aggregate(ent.Count()).
+//		Scan(ctx, &v)
 func (ufpq *UserFollowPlaceQuery) GroupBy(field string, fields ...string) *UserFollowPlaceGroupBy {
 	ufpq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &UserFollowPlaceGroupBy{build: ufpq}
@@ -341,6 +353,16 @@ func (ufpq *UserFollowPlaceQuery) GroupBy(field string, fields ...string) *UserF
 
 // Select allows the selection one or more fields/columns for the given query,
 // instead of selecting all fields in the entity.
+//
+// Example:
+//
+//	var v []struct {
+//		CreatedAt time.Time `json:"CreatedAt,omitempty"`
+//	}
+//
+//	client.UserFollowPlace.Query().
+//		Select(userfollowplace.FieldCreatedAt).
+//		Scan(ctx, &v)
 func (ufpq *UserFollowPlaceQuery) Select(fields ...string) *UserFollowPlaceSelect {
 	ufpq.ctx.Fields = append(ufpq.ctx.Fields, fields...)
 	sbuild := &UserFollowPlaceSelect{UserFollowPlaceQuery: ufpq}
@@ -465,10 +487,10 @@ func (ufpq *UserFollowPlaceQuery) loadPlace(ctx context.Context, query *PlaceQue
 	ids := make([]string, 0, len(nodes))
 	nodeids := make(map[string][]*UserFollowPlace)
 	for i := range nodes {
-		if nodes[i].place_follower_users == nil {
+		if nodes[i].user_follow_place_place == nil {
 			continue
 		}
-		fk := *nodes[i].place_follower_users
+		fk := *nodes[i].user_follow_place_place
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -485,7 +507,7 @@ func (ufpq *UserFollowPlaceQuery) loadPlace(ctx context.Context, query *PlaceQue
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "place_follower_users" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "user_follow_place_place" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)

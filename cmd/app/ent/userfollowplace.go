@@ -8,6 +8,7 @@ import (
 	"placio-app/ent/user"
 	"placio-app/ent/userfollowplace"
 	"strings"
+	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -15,15 +16,20 @@ import (
 
 // UserFollowPlace is the model entity for the UserFollowPlace schema.
 type UserFollowPlace struct {
-	config
+	config `json:"-"`
 	// ID of the ent.
 	ID string `json:"id,omitempty"`
+	// CreatedAt holds the value of the "CreatedAt" field.
+	CreatedAt time.Time `json:"CreatedAt,omitempty"`
+	// UpdatedAt holds the value of the "UpdatedAt" field.
+	UpdatedAt time.Time `json:"UpdatedAt,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserFollowPlaceQuery when eager-loading is set.
-	Edges                UserFollowPlaceEdges `json:"edges"`
-	place_follower_users *string
-	user_followed_places *string
-	selectValues         sql.SelectValues
+	Edges                   UserFollowPlaceEdges `json:"edges"`
+	place_follower_users    *string
+	user_followed_places    *string
+	user_follow_place_place *string
+	selectValues            sql.SelectValues
 }
 
 // UserFollowPlaceEdges holds the relations/edges for other nodes in the graph.
@@ -70,9 +76,13 @@ func (*UserFollowPlace) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case userfollowplace.FieldID:
 			values[i] = new(sql.NullString)
+		case userfollowplace.FieldCreatedAt, userfollowplace.FieldUpdatedAt:
+			values[i] = new(sql.NullTime)
 		case userfollowplace.ForeignKeys[0]: // place_follower_users
 			values[i] = new(sql.NullString)
 		case userfollowplace.ForeignKeys[1]: // user_followed_places
+			values[i] = new(sql.NullString)
+		case userfollowplace.ForeignKeys[2]: // user_follow_place_place
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -95,6 +105,18 @@ func (ufp *UserFollowPlace) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				ufp.ID = value.String
 			}
+		case userfollowplace.FieldCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field CreatedAt", values[i])
+			} else if value.Valid {
+				ufp.CreatedAt = value.Time
+			}
+		case userfollowplace.FieldUpdatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field UpdatedAt", values[i])
+			} else if value.Valid {
+				ufp.UpdatedAt = value.Time
+			}
 		case userfollowplace.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field place_follower_users", values[i])
@@ -108,6 +130,13 @@ func (ufp *UserFollowPlace) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				ufp.user_followed_places = new(string)
 				*ufp.user_followed_places = value.String
+			}
+		case userfollowplace.ForeignKeys[2]:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field user_follow_place_place", values[i])
+			} else if value.Valid {
+				ufp.user_follow_place_place = new(string)
+				*ufp.user_follow_place_place = value.String
 			}
 		default:
 			ufp.selectValues.Set(columns[i], values[i])
@@ -154,7 +183,12 @@ func (ufp *UserFollowPlace) Unwrap() *UserFollowPlace {
 func (ufp *UserFollowPlace) String() string {
 	var builder strings.Builder
 	builder.WriteString("UserFollowPlace(")
-	builder.WriteString(fmt.Sprintf("id=%v", ufp.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", ufp.ID))
+	builder.WriteString("CreatedAt=")
+	builder.WriteString(ufp.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("UpdatedAt=")
+	builder.WriteString(ufp.UpdatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -53,9 +53,10 @@ func (User) Edges() []ent.Edge {
 		edge.To("categories", Category.Type),
 		edge.To("places", Place.Type),
 		edge.To("categoryAssignments", CategoryAssignment.Type),
-		edge.To("followedPlaces", UserFollowPlace.Type),
 		edge.To("ownedEvents", Event.Type).
 			Unique(),
 		edge.To("userFollowEvents", UserFollowEvent.Type),
+		edge.To("followedPlaces", UserFollowPlace.Type),
+		edge.To("likedPlaces", UserLikePlace.Type),
 	}
 }

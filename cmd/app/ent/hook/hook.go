@@ -416,6 +416,18 @@ func (f UserFollowUserFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Val
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserFollowUserMutation", m)
 }
 
+// The UserLikePlaceFunc type is an adapter to allow the use of ordinary
+// function as UserLikePlace mutator.
+type UserLikePlaceFunc func(context.Context, *ent.UserLikePlaceMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f UserLikePlaceFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.UserLikePlaceMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserLikePlaceMutation", m)
+}
+
 // Condition is a hook condition function.
 type Condition func(context.Context, ent.Mutation) bool
 
