@@ -27,6 +27,8 @@ func (c *PlaceController) RegisterRoutes(router *gin.RouterGroup) {
 		placeRouter.GET("/", utility.Use(c.getPlacesByFilters))
 		placeRouter.PATCH("/:id", utility.Use(c.updatePlace))
 		placeRouter.DELETE("/:id", utility.Use(c.deletePlace))
+		placeRouter.POST("/:id/amenities", utility.Use(c.addAmenitiesToPlace))
+
 	}
 }
 
@@ -94,6 +96,43 @@ func (c *PlaceController) createPlace(ctx *gin.Context) error {
 	}
 
 	ctx.JSON(http.StatusOK, place)
+	return nil
+}
+
+// @Summary Add amenities to a place
+// @Description Add amenities to a place by ID
+// @Tags Place
+// @Accept json
+// @Produce json
+// @Param id path string true "ID of the place to add amenities to"
+// @Param amenity body Dto.AmenityAdditionDTO true "Amenities to add"
+// @Security Bearer
+// @Success 200 {object} ent.Place "Successfully added amenities to place"
+// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
+// @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
+// @Router /api/v1/places/{id}/amenities [post]
+func (c *PlaceController) addAmenitiesToPlace(ctx *gin.Context) error {
+	id := ctx.Param("id")
+
+	var amenityDTO Dto.AmenityAdditionDTO
+	if err := ctx.ShouldBindJSON(&amenityDTO); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid input",
+		})
+		return err
+	}
+
+	if err := c.placeService.AddAmenitiesToPlace(ctx, id, amenityDTO.AmenityIDs); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Amenities added successfully",
+	})
 	return nil
 }
 
