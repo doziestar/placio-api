@@ -5,6 +5,10 @@ on:
     branches:
       - feat/deploy
       - master
+  pull_request:
+    branches:
+      - feat/deploy
+      - master
 
 jobs:
   deploy-stag:
