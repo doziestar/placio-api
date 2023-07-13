@@ -2486,6 +2486,22 @@ func (c *EventClient) QueryBusinessFollowers(e *Event) *BusinessFollowEventQuery
 	return query
 }
 
+// QueryFaqs queries the faqs edge of a Event.
+func (c *EventClient) QueryFaqs(e *Event) *FAQQuery {
+	query := (&FAQClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(event.Table, event.FieldID, id),
+			sqlgraph.To(faq.Table, faq.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, event.FaqsTable, event.FaqsPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *EventClient) Hooks() []Hook {
 	return c.hooks.Event
@@ -2629,6 +2645,22 @@ func (c *FAQClient) QueryPlace(f *FAQ) *PlaceQuery {
 			sqlgraph.From(faq.Table, faq.FieldID, id),
 			sqlgraph.To(place.Table, place.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, false, faq.PlaceTable, faq.PlacePrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(f.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEvent queries the event edge of a FAQ.
+func (c *FAQClient) QueryEvent(f *FAQ) *EventQuery {
+	query := (&EventClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := f.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(faq.Table, faq.FieldID, id),
+			sqlgraph.To(event.Table, event.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, faq.EventTable, faq.EventPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(f.driver.Dialect(), step)
 		return fromV, nil

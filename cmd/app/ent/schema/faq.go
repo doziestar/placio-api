@@ -29,5 +29,6 @@ func (FAQ) Edges() []ent.Edge {
 			Ref("faqs").
 			Unique(),
 		edge.To("place", Place.Type),
+		edge.To("event", Event.Type),
 	}
 }

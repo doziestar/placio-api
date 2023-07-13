@@ -7376,6 +7376,9 @@ type EventMutation struct {
 	businessFollowers                 map[string]struct{}
 	removedbusinessFollowers          map[string]struct{}
 	clearedbusinessFollowers          bool
+	faqs                              map[string]struct{}
+	removedfaqs                       map[string]struct{}
+	clearedfaqs                       bool
 	done                              bool
 	oldValue                          func(context.Context) (*Event, error)
 	predicates                        []predicate.Event
@@ -9700,6 +9703,60 @@ func (m *EventMutation) ResetBusinessFollowers() {
 	m.removedbusinessFollowers = nil
 }
 
+// AddFaqIDs adds the "faqs" edge to the FAQ entity by ids.
+func (m *EventMutation) AddFaqIDs(ids ...string) {
+	if m.faqs == nil {
+		m.faqs = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.faqs[ids[i]] = struct{}{}
+	}
+}
+
+// ClearFaqs clears the "faqs" edge to the FAQ entity.
+func (m *EventMutation) ClearFaqs() {
+	m.clearedfaqs = true
+}
+
+// FaqsCleared reports if the "faqs" edge to the FAQ entity was cleared.
+func (m *EventMutation) FaqsCleared() bool {
+	return m.clearedfaqs
+}
+
+// RemoveFaqIDs removes the "faqs" edge to the FAQ entity by IDs.
+func (m *EventMutation) RemoveFaqIDs(ids ...string) {
+	if m.removedfaqs == nil {
+		m.removedfaqs = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.faqs, ids[i])
+		m.removedfaqs[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedFaqs returns the removed IDs of the "faqs" edge to the FAQ entity.
+func (m *EventMutation) RemovedFaqsIDs() (ids []string) {
+	for id := range m.removedfaqs {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// FaqsIDs returns the "faqs" edge IDs in the mutation.
+func (m *EventMutation) FaqsIDs() (ids []string) {
+	for id := range m.faqs {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetFaqs resets all changes to the "faqs" edge.
+func (m *EventMutation) ResetFaqs() {
+	m.faqs = nil
+	m.clearedfaqs = false
+	m.removedfaqs = nil
+}
+
 // Where appends a list predicates to the EventMutation builder.
 func (m *EventMutation) Where(ps ...predicate.Event) {
 	m.predicates = append(m.predicates, ps...)
@@ -10650,7 +10707,7 @@ func (m *EventMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *EventMutation) AddedEdges() []string {
-	edges := make([]string, 0, 9)
+	edges := make([]string, 0, 10)
 	if m.tickets != nil {
 		edges = append(edges, event.EdgeTickets)
 	}
@@ -10677,6 +10734,9 @@ func (m *EventMutation) AddedEdges() []string {
 	}
 	if m.businessFollowers != nil {
 		edges = append(edges, event.EdgeBusinessFollowers)
+	}
+	if m.faqs != nil {
+		edges = append(edges, event.EdgeFaqs)
 	}
 	return edges
 }
@@ -10735,13 +10795,19 @@ func (m *EventMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case event.EdgeFaqs:
+		ids := make([]ent.Value, 0, len(m.faqs))
+		for id := range m.faqs {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *EventMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 9)
+	edges := make([]string, 0, 10)
 	if m.removedtickets != nil {
 		edges = append(edges, event.EdgeTickets)
 	}
@@ -10762,6 +10828,9 @@ func (m *EventMutation) RemovedEdges() []string {
 	}
 	if m.removedbusinessFollowers != nil {
 		edges = append(edges, event.EdgeBusinessFollowers)
+	}
+	if m.removedfaqs != nil {
+		edges = append(edges, event.EdgeFaqs)
 	}
 	return edges
 }
@@ -10812,13 +10881,19 @@ func (m *EventMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case event.EdgeFaqs:
+		ids := make([]ent.Value, 0, len(m.removedfaqs))
+		for id := range m.removedfaqs {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *EventMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 9)
+	edges := make([]string, 0, 10)
 	if m.clearedtickets {
 		edges = append(edges, event.EdgeTickets)
 	}
@@ -10846,6 +10921,9 @@ func (m *EventMutation) ClearedEdges() []string {
 	if m.clearedbusinessFollowers {
 		edges = append(edges, event.EdgeBusinessFollowers)
 	}
+	if m.clearedfaqs {
+		edges = append(edges, event.EdgeFaqs)
+	}
 	return edges
 }
 
@@ -10871,6 +10949,8 @@ func (m *EventMutation) EdgeCleared(name string) bool {
 		return m.cleareduserFollowers
 	case event.EdgeBusinessFollowers:
 		return m.clearedbusinessFollowers
+	case event.EdgeFaqs:
+		return m.clearedfaqs
 	}
 	return false
 }
@@ -10920,6 +11000,9 @@ func (m *EventMutation) ResetEdge(name string) error {
 	case event.EdgeBusinessFollowers:
 		m.ResetBusinessFollowers()
 		return nil
+	case event.EdgeFaqs:
+		m.ResetFaqs()
+		return nil
 	}
 	return fmt.Errorf("unknown Event edge %s", name)
 }
@@ -10938,6 +11021,9 @@ type FAQMutation struct {
 	place           map[string]struct{}
 	removedplace    map[string]struct{}
 	clearedplace    bool
+	event           map[string]struct{}
+	removedevent    map[string]struct{}
+	clearedevent    bool
 	done            bool
 	oldValue        func(context.Context) (*FAQ, error)
 	predicates      []predicate.FAQ
@@ -11212,6 +11298,60 @@ func (m *FAQMutation) ResetPlace() {
 	m.removedplace = nil
 }
 
+// AddEventIDs adds the "event" edge to the Event entity by ids.
+func (m *FAQMutation) AddEventIDs(ids ...string) {
+	if m.event == nil {
+		m.event = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.event[ids[i]] = struct{}{}
+	}
+}
+
+// ClearEvent clears the "event" edge to the Event entity.
+func (m *FAQMutation) ClearEvent() {
+	m.clearedevent = true
+}
+
+// EventCleared reports if the "event" edge to the Event entity was cleared.
+func (m *FAQMutation) EventCleared() bool {
+	return m.clearedevent
+}
+
+// RemoveEventIDs removes the "event" edge to the Event entity by IDs.
+func (m *FAQMutation) RemoveEventIDs(ids ...string) {
+	if m.removedevent == nil {
+		m.removedevent = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.event, ids[i])
+		m.removedevent[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedEvent returns the removed IDs of the "event" edge to the Event entity.
+func (m *FAQMutation) RemovedEventIDs() (ids []string) {
+	for id := range m.removedevent {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// EventIDs returns the "event" edge IDs in the mutation.
+func (m *FAQMutation) EventIDs() (ids []string) {
+	for id := range m.event {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetEvent resets all changes to the "event" edge.
+func (m *FAQMutation) ResetEvent() {
+	m.event = nil
+	m.clearedevent = false
+	m.removedevent = nil
+}
+
 // Where appends a list predicates to the FAQMutation builder.
 func (m *FAQMutation) Where(ps ...predicate.FAQ) {
 	m.predicates = append(m.predicates, ps...)
@@ -11362,12 +11502,15 @@ func (m *FAQMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *FAQMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.business != nil {
 		edges = append(edges, faq.EdgeBusiness)
 	}
 	if m.place != nil {
 		edges = append(edges, faq.EdgePlace)
+	}
+	if m.event != nil {
+		edges = append(edges, faq.EdgeEvent)
 	}
 	return edges
 }
@@ -11386,15 +11529,24 @@ func (m *FAQMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case faq.EdgeEvent:
+		ids := make([]ent.Value, 0, len(m.event))
+		for id := range m.event {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *FAQMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.removedplace != nil {
 		edges = append(edges, faq.EdgePlace)
+	}
+	if m.removedevent != nil {
+		edges = append(edges, faq.EdgeEvent)
 	}
 	return edges
 }
@@ -11409,18 +11561,27 @@ func (m *FAQMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case faq.EdgeEvent:
+		ids := make([]ent.Value, 0, len(m.removedevent))
+		for id := range m.removedevent {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *FAQMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.clearedbusiness {
 		edges = append(edges, faq.EdgeBusiness)
 	}
 	if m.clearedplace {
 		edges = append(edges, faq.EdgePlace)
+	}
+	if m.clearedevent {
+		edges = append(edges, faq.EdgeEvent)
 	}
 	return edges
 }
@@ -11433,6 +11594,8 @@ func (m *FAQMutation) EdgeCleared(name string) bool {
 		return m.clearedbusiness
 	case faq.EdgePlace:
 		return m.clearedplace
+	case faq.EdgeEvent:
+		return m.clearedevent
 	}
 	return false
 }
@@ -11457,6 +11620,9 @@ func (m *FAQMutation) ResetEdge(name string) error {
 		return nil
 	case faq.EdgePlace:
 		m.ResetPlace()
+		return nil
+	case faq.EdgeEvent:
+		m.ResetEvent()
 		return nil
 	}
 	return fmt.Errorf("unknown FAQ edge %s", name)

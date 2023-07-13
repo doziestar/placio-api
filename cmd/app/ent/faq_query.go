@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math"
 	"placio-app/ent/business"
+	"placio-app/ent/event"
 	"placio-app/ent/faq"
 	"placio-app/ent/place"
 	"placio-app/ent/predicate"
@@ -26,6 +27,7 @@ type FAQQuery struct {
 	predicates   []predicate.FAQ
 	withBusiness *BusinessQuery
 	withPlace    *PlaceQuery
+	withEvent    *EventQuery
 	withFKs      bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -100,6 +102,28 @@ func (fq *FAQQuery) QueryPlace() *PlaceQuery {
 			sqlgraph.From(faq.Table, faq.FieldID, selector),
 			sqlgraph.To(place.Table, place.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, false, faq.PlaceTable, faq.PlacePrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(fq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryEvent chains the current query on the "event" edge.
+func (fq *FAQQuery) QueryEvent() *EventQuery {
+	query := (&EventClient{config: fq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := fq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := fq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(faq.Table, faq.FieldID, selector),
+			sqlgraph.To(event.Table, event.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, faq.EventTable, faq.EventPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(fq.driver.Dialect(), step)
 		return fromU, nil
@@ -301,6 +325,7 @@ func (fq *FAQQuery) Clone() *FAQQuery {
 		predicates:   append([]predicate.FAQ{}, fq.predicates...),
 		withBusiness: fq.withBusiness.Clone(),
 		withPlace:    fq.withPlace.Clone(),
+		withEvent:    fq.withEvent.Clone(),
 		// clone intermediate query.
 		sql:  fq.sql.Clone(),
 		path: fq.path,
@@ -326,6 +351,17 @@ func (fq *FAQQuery) WithPlace(opts ...func(*PlaceQuery)) *FAQQuery {
 		opt(query)
 	}
 	fq.withPlace = query
+	return fq
+}
+
+// WithEvent tells the query-builder to eager-load the nodes that are connected to
+// the "event" edge. The optional arguments are used to configure the query builder of the edge.
+func (fq *FAQQuery) WithEvent(opts ...func(*EventQuery)) *FAQQuery {
+	query := (&EventClient{config: fq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	fq.withEvent = query
 	return fq
 }
 
@@ -408,9 +444,10 @@ func (fq *FAQQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*FAQ, err
 		nodes       = []*FAQ{}
 		withFKs     = fq.withFKs
 		_spec       = fq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			fq.withBusiness != nil,
 			fq.withPlace != nil,
+			fq.withEvent != nil,
 		}
 	)
 	if fq.withBusiness != nil {
@@ -447,6 +484,13 @@ func (fq *FAQQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*FAQ, err
 		if err := fq.loadPlace(ctx, query, nodes,
 			func(n *FAQ) { n.Edges.Place = []*Place{} },
 			func(n *FAQ, e *Place) { n.Edges.Place = append(n.Edges.Place, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := fq.withEvent; query != nil {
+		if err := fq.loadEvent(ctx, query, nodes,
+			func(n *FAQ) { n.Edges.Event = []*Event{} },
+			func(n *FAQ, e *Event) { n.Edges.Event = append(n.Edges.Event, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -539,6 +583,67 @@ func (fq *FAQQuery) loadPlace(ctx context.Context, query *PlaceQuery, nodes []*F
 		nodes, ok := nids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected "place" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
+		}
+	}
+	return nil
+}
+func (fq *FAQQuery) loadEvent(ctx context.Context, query *EventQuery, nodes []*FAQ, init func(*FAQ), assign func(*FAQ, *Event)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[string]*FAQ)
+	nids := make(map[string]map[*FAQ]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(faq.EventTable)
+		s.Join(joinT).On(s.C(event.FieldID), joinT.C(faq.EventPrimaryKey[1]))
+		s.Where(sql.InValues(joinT.C(faq.EventPrimaryKey[0]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(faq.EventPrimaryKey[0]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(sql.NullString)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := values[0].(*sql.NullString).String
+				inValue := values[1].(*sql.NullString).String
+				if nids[inValue] == nil {
+					nids[inValue] = map[*FAQ]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*Event](ctx, query, qr, query.inters)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "event" node returned %v`, n.ID)
 		}
 		for kn := range nodes {
 			assign(kn, n)

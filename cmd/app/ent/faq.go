@@ -34,9 +34,11 @@ type FAQEdges struct {
 	Business *Business `json:"business,omitempty"`
 	// Place holds the value of the place edge.
 	Place []*Place `json:"place,omitempty"`
+	// Event holds the value of the event edge.
+	Event []*Event `json:"event,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // BusinessOrErr returns the Business value or an error if the edge
@@ -59,6 +61,15 @@ func (e FAQEdges) PlaceOrErr() ([]*Place, error) {
 		return e.Place, nil
 	}
 	return nil, &NotLoadedError{edge: "place"}
+}
+
+// EventOrErr returns the Event value or an error if the edge
+// was not loaded in eager-loading.
+func (e FAQEdges) EventOrErr() ([]*Event, error) {
+	if e.loadedTypes[2] {
+		return e.Event, nil
+	}
+	return nil, &NotLoadedError{edge: "event"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -131,6 +142,11 @@ func (f *FAQ) QueryBusiness() *BusinessQuery {
 // QueryPlace queries the "place" edge of the FAQ entity.
 func (f *FAQ) QueryPlace() *PlaceQuery {
 	return NewFAQClient(f.config).QueryPlace(f)
+}
+
+// QueryEvent queries the "event" edge of the FAQ entity.
+func (f *FAQ) QueryEvent() *EventQuery {
+	return NewFAQClient(f.config).QueryEvent(f)
 }
 
 // Update returns a builder for updating this FAQ.
