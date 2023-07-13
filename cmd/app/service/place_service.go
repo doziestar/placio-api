@@ -7,6 +7,7 @@ import (
 	"placio-app/ent"
 	"placio-app/ent/business"
 	"placio-app/ent/place"
+	"sync"
 )
 
 type PlaceFilter struct {
@@ -30,6 +31,7 @@ type PlaceService interface {
 	DeletePlace(ctx context.Context, placeID string) error
 	GetPlacesAssociatedWithBusinessAccount(c context.Context, businessId string) ([]*ent.Place, error)
 	GetPlaces(ctx context.Context, filter *PlaceFilter, page int, pageSize int) ([]*ent.Place, error)
+	AddAmenitiesToPlace(ctx context.Context, placeID string, amenityIDs []string) error
 }
 
 type PlaceServiceImpl struct {
@@ -82,6 +84,22 @@ func (s *PlaceServiceImpl) CreatePlace(ctx context.Context, placeData Dto.Create
 		return nil, err
 	}
 
+	// Fetch amenities, loop through the IDs and get the amenity from the database. do it using goroutines
+	wg := sync.WaitGroup{}
+	wg.Add(len(placeData.AmenityIDs))
+	amenities := make([]*ent.Amenity, len(placeData.AmenityIDs))
+	for i, amenityID := range placeData.AmenityIDs {
+		go func(i int, amenityID string) {
+			defer wg.Done()
+			amenities[i], err = s.client.Amenity.Get(ctx, amenityID)
+			if err != nil {
+				return
+			}
+		}(i, amenityID)
+		wg.Wait()
+
+	}
+
 	place, err := s.client.Place.
 		Create().
 		SetID(uuid.New().String()).
@@ -106,6 +124,7 @@ func (s *PlaceServiceImpl) CreatePlace(ctx context.Context, placeData Dto.Create
 		SetBusiness(business).
 		SetBusinessID(business.ID).
 		AddUsers(userEnt).
+		AddAmenities(amenities...).
 		Save(ctx)
 	if err != nil {
 		return nil, err
@@ -117,6 +136,38 @@ func (s *PlaceServiceImpl) CreatePlace(ctx context.Context, placeData Dto.Create
 	}
 
 	return place, nil
+}
+
+func (s *PlaceServiceImpl) AddAmenitiesToPlace(ctx context.Context, placeID string, amenityIDs []string) error {
+	// Fetch place
+	place, err := s.client.Place.Get(ctx, placeID)
+	if err != nil {
+		return err
+	}
+
+	// Fetch amenities
+	wg := sync.WaitGroup{}
+	wg.Add(len(amenityIDs))
+	amenities := make([]*ent.Amenity, len(amenityIDs))
+	for i, amenityID := range amenityIDs {
+		go func(i int, amenityID string) {
+			defer wg.Done()
+			amenities[i], err = s.client.Amenity.Get(ctx, amenityID)
+			if err != nil {
+				return
+			}
+		}(i, amenityID)
+		wg.Wait()
+
+	}
+
+	// Update place with new amenities
+	_, err = place.Update().AddAmenities(amenities...).Save(ctx)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (s *PlaceServiceImpl) UpdatePlace(ctx context.Context, placeID string, placeData Dto.UpdatePlaceDTO) (*ent.Place, error) {

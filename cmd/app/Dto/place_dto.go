@@ -28,6 +28,7 @@ type CreatePlaceDTO struct {
 	SearchText          string                 `json:"search_text,omitempty"`
 	RelevanceScore      float64                `json:"relevance_score,omitempty"`
 	BusinessID          string                 `json:"business_id"`
+	AmenityIDs          []string               `json:"amenity_ids"`
 }
 
 type UpdatePlaceDTO struct {
