@@ -384,6 +384,13 @@ definitions:
       venueZIP:
         type: string
     type: object
+  placio-app_Dto.FAQDto:
+    properties:
+      answer:
+        type: string
+      question:
+        type: string
+    type: object
   placio-app_Dto.MediaDto:
     properties:
       type:
@@ -690,6 +697,11 @@ definitions:
         description: Events holds the value of the events edge.
         items:
           $ref: '#/definitions/placio-app_ent.Event'
+        type: array
+      faqs:
+        description: Faqs holds the value of the faqs edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.FAQ'
         type: array
       followedBusinesses:
         description: FollowedBusinesses holds the value of the followedBusinesses
@@ -1049,6 +1061,11 @@ definitions:
         items:
           $ref: '#/definitions/placio-app_ent.CategoryAssignment'
         type: array
+      faqs:
+        description: Faqs holds the value of the faqs edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.FAQ'
+        type: array
       ownerBusiness:
         allOf:
         - $ref: '#/definitions/placio-app_ent.Business'
@@ -1076,6 +1093,41 @@ definitions:
         description: UserFollowers holds the value of the userFollowers edge.
         items:
           $ref: '#/definitions/placio-app_ent.UserFollowEvent'
+        type: array
+    type: object
+  placio-app_ent.FAQ:
+    properties:
+      answer:
+        description: Answer holds the value of the "answer" field.
+        type: string
+      edges:
+        allOf:
+        - $ref: '#/definitions/placio-app_ent.FAQEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the FAQQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: string
+      question:
+        description: Question holds the value of the "question" field.
+        type: string
+    type: object
+  placio-app_ent.FAQEdges:
+    properties:
+      business:
+        allOf:
+        - $ref: '#/definitions/placio-app_ent.Business'
+        description: Business holds the value of the business edge.
+      event:
+        description: Event holds the value of the event edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Event'
+        type: array
+      place:
+        description: Place holds the value of the place edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Place'
         type: array
     type: object
   placio-app_ent.Help:
@@ -1339,6 +1391,11 @@ definitions:
         description: Events holds the value of the events edge.
         items:
           $ref: '#/definitions/placio-app_ent.Event'
+        type: array
+      faqs:
+        description: Faqs holds the value of the faqs edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.FAQ'
         type: array
       followerUsers:
         description: FollowerUsers holds the value of the followerUsers edge.
@@ -1874,11 +1931,15 @@ definitions:
     - event
     - place
     - business
+    - free
+    - paid
     type: string
     x-enum-varnames:
     - EventTypeEvent
     - EventTypePlace
     - EventTypeBusiness
+    - EventTypeFree
+    - EventTypePaid
   placio-app_ent_event.Frequency:
     enum:
     - once
@@ -6417,6 +6478,268 @@ paths:
       summary: Get Event Participants
       tags:
       - Event
+  /faq/{businessID}:
+    post:
+      consumes:
+      - application/json
+      description: Create a new FAQ for a specific Business
+      operationId: create-faq
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessID
+        required: true
+        type: string
+      - description: FAQ Data
+        in: body
+        name: faqData
+        required: true
+        schema:
+          $ref: '#/definitions/placio-app_Dto.FAQDto'
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/placio-app_Dto.FAQDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+      security:
+      - Bearer: []
+      summary: Create a new FAQ
+      tags:
+      - FAQ
+  /faq/{faqID}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete FAQ by ID
+      operationId: delete-FAQ
+      parameters:
+      - description: FAQ ID
+        in: path
+        name: faqID
+        required: true
+        type: string
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: FAQ deleted successfully
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+      security:
+      - Bearer: []
+      summary: Delete FAQ by ID
+      tags:
+      - FAQ
+    get:
+      consumes:
+      - application/json
+      description: Retrieve FAQ by ID
+      operationId: get-FAQ
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: FAQ ID
+        in: path
+        name: faqID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_ent.FAQ'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+      security:
+      - Bearer: []
+      summary: Get FAQ by ID
+      tags:
+      - FAQ
+    patch:
+      consumes:
+      - application/json
+      description: Update FAQ by ID
+      operationId: update-FAQ
+      parameters:
+      - description: FAQ ID
+        in: path
+        name: faqID
+        required: true
+        type: string
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: FAQ Data
+        in: body
+        name: faqData
+        required: true
+        schema:
+          $ref: '#/definitions/placio-app_Dto.FAQDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_ent.FAQ'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+      security:
+      - Bearer: []
+      summary: Update FAQ by ID
+      tags:
+      - FAQ
+  /faq/{faqID}/event/{eventID}:
+    post:
+      consumes:
+      - application/json
+      description: Associate a FAQ with an Event by their IDs
+      operationId: associate-FAQ-event
+      parameters:
+      - description: FAQ ID
+        in: path
+        name: faqID
+        required: true
+        type: string
+      - description: Event ID
+        in: path
+        name: eventID
+        required: true
+        type: string
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: FAQ associated with event successfully
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+      security:
+      - Bearer: []
+      summary: Associate FAQ with Event
+      tags:
+      - FAQ
+  /faq/{faqID}/place/{placeID}:
+    post:
+      consumes:
+      - application/json
+      description: Associate a FAQ with a Place by their IDs
+      operationId: associate-FAQ-place
+      parameters:
+      - description: FAQ ID
+        in: path
+        name: faqID
+        required: true
+        type: string
+      - description: Place ID
+        in: path
+        name: placeID
+        required: true
+        type: string
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: FAQ associated with place successfully
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+      security:
+      - Bearer: []
+      summary: Associate FAQ with Place
+      tags:
+      - FAQ
   /places:
     get:
       consumes:

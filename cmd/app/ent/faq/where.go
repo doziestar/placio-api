@@ -250,6 +250,29 @@ func HasPlaceWith(preds ...predicate.Place) predicate.FAQ {
 	})
 }
 
+// HasEvent applies the HasEdge predicate on the "event" edge.
+func HasEvent() predicate.FAQ {
+	return predicate.FAQ(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, EventTable, EventPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasEventWith applies the HasEdge predicate on the "event" edge with a given conditions (other predicates).
+func HasEventWith(preds ...predicate.Event) predicate.FAQ {
+	return predicate.FAQ(func(s *sql.Selector) {
+		step := newEventStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.FAQ) predicate.FAQ {
 	return predicate.FAQ(func(s *sql.Selector) {

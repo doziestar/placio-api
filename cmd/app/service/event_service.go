@@ -244,7 +244,15 @@ func (s *EventService) UpdateEvent(ctx context.Context, eventId string, business
 
 func (s *EventService) GetEventByID(ctx context.Context, id string) (*ent.Event, error) {
 	// Get event by ID
-	event, err := s.client.Event.Get(ctx, id)
+	event, err := s.client.
+		Event.
+		Query().
+		Where(event.IDEQ(id)).
+		WithOwnerUser().
+		WithOwnerBusiness().
+		WithFaqs().
+		WithTickets().
+		First(ctx)
 	if err != nil {
 		return nil, err
 	}

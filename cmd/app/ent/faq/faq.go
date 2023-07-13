@@ -20,6 +20,8 @@ const (
 	EdgeBusiness = "business"
 	// EdgePlace holds the string denoting the place edge name in mutations.
 	EdgePlace = "place"
+	// EdgeEvent holds the string denoting the event edge name in mutations.
+	EdgeEvent = "event"
 	// Table holds the table name of the faq in the database.
 	Table = "fa_qs"
 	// BusinessTable is the table that holds the business relation/edge.
@@ -34,6 +36,11 @@ const (
 	// PlaceInverseTable is the table name for the Place entity.
 	// It exists in this package in order to avoid circular dependency with the "place" package.
 	PlaceInverseTable = "places"
+	// EventTable is the table that holds the event relation/edge. The primary key declared below.
+	EventTable = "faq_event"
+	// EventInverseTable is the table name for the Event entity.
+	// It exists in this package in order to avoid circular dependency with the "event" package.
+	EventInverseTable = "events"
 )
 
 // Columns holds all SQL columns for faq fields.
@@ -53,6 +60,9 @@ var (
 	// PlacePrimaryKey and PlaceColumn2 are the table columns denoting the
 	// primary key for the place relation (M2M).
 	PlacePrimaryKey = []string{"faq_id", "place_id"}
+	// EventPrimaryKey and EventColumn2 are the table columns denoting the
+	// primary key for the event relation (M2M).
+	EventPrimaryKey = []string{"faq_id", "event_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -113,6 +123,20 @@ func ByPlace(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newPlaceStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByEventCount orders the results by event count.
+func ByEventCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newEventStep(), opts...)
+	}
+}
+
+// ByEvent orders the results by event terms.
+func ByEvent(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newEventStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newBusinessStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -125,5 +149,12 @@ func newPlaceStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(PlaceInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2M, false, PlaceTable, PlacePrimaryKey...),
+	)
+}
+func newEventStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(EventInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, false, EventTable, EventPrimaryKey...),
 	)
 }

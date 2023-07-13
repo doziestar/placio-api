@@ -62,6 +62,11 @@ func (s *PlaceServiceImpl) GetPlace(ctx context.Context, placeID string) (*ent.P
 		WithUsers().
 		WithBusiness().
 		WithCategories().
+		WithEvents().
+		WithAmenities().
+		WithReviews().
+		WithMenus().
+		WithFaqs().
 		First(ctx)
 	if err != nil {
 		return nil, err
@@ -80,6 +85,7 @@ func (s *PlaceServiceImpl) GetAllPlaces(ctx context.Context) ([]*ent.Place, erro
 		WithAmenities().
 		WithReviews().
 		WithMenus().
+		WithFaqs().
 		All(ctx)
 	if err != nil {
 		return nil, err

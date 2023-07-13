@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"github.com/google/uuid"
 	"placio-app/Dto"
 	"placio-app/ent"
 )
@@ -25,6 +26,7 @@ func NewAmenityService(client *ent.Client) AmenityService {
 func (s *amenityServiceImpl) CreateAmenity(input Dto.CreateAmenityInput) (*ent.Amenity, error) {
 	a, err := s.client.Amenity.
 		Create().
+		SetID(uuid.New().String()).
 		SetName(input.Name).
 		SetIcon(input.Icon).
 		Save(context.Background())

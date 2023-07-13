@@ -145,6 +145,11 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		amenityController := controller.NewAmenityController(amenityService, redisClient)
 		amenityController.RegisterRoutes(routerGroupV1)
 
+		// faq
+		faqService := service.NewFAQService(client, redisClient)
+		faqController := controller.NewFAQController(faqService)
+		faqController.RegisterRoutes(routerGroupV1, routerGroupV1WithoutAuth)
+
 		//// ratings
 		//ratingService := service.NewRatingService(db)
 		//ratingController := controller.NewRatingController(ratingService)

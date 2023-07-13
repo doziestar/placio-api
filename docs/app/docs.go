@@ -6425,6 +6425,406 @@ const docTemplate = `{
                 }
             }
         },
+        "/faq/{businessID}": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Create a new FAQ for a specific Business",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "FAQ"
+                ],
+                "summary": "Create a new FAQ",
+                "operationId": "create-faq",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Business ID",
+                        "name": "businessID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "FAQ Data",
+                        "name": "faqData",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.FAQDto"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.FAQDto"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/faq/{faqID}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Retrieve FAQ by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "FAQ"
+                ],
+                "summary": "Get FAQ by ID",
+                "operationId": "get-FAQ",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "FAQ ID",
+                        "name": "faqID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.FAQ"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Delete FAQ by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "FAQ"
+                ],
+                "summary": "Delete FAQ by ID",
+                "operationId": "delete-FAQ",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "FAQ ID",
+                        "name": "faqID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "FAQ deleted successfully",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Update FAQ by ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "FAQ"
+                ],
+                "summary": "Update FAQ by ID",
+                "operationId": "update-FAQ",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "FAQ ID",
+                        "name": "faqID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "FAQ Data",
+                        "name": "faqData",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.FAQDto"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.FAQ"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/faq/{faqID}/event/{eventID}": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Associate a FAQ with an Event by their IDs",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "FAQ"
+                ],
+                "summary": "Associate FAQ with Event",
+                "operationId": "associate-FAQ-event",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "FAQ ID",
+                        "name": "faqID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Event ID",
+                        "name": "eventID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "FAQ associated with event successfully",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    }
+                }
+            }
+        },
+        "/faq/{faqID}/place/{placeID}": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Associate a FAQ with a Place by their IDs",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "FAQ"
+                ],
+                "summary": "Associate FAQ with Place",
+                "operationId": "associate-FAQ-place",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "FAQ ID",
+                        "name": "faqID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Place ID",
+                        "name": "placeID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "FAQ associated with place successfully",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/places": {
             "get": {
                 "description": "Get Places by applying various filters (ID, Name, Type, Country, City, State, Tags, Features)",
@@ -7105,6 +7505,17 @@ const docTemplate = `{
                 }
             }
         },
+        "placio-app_Dto.FAQDto": {
+            "type": "object",
+            "properties": {
+                "answer": {
+                    "type": "string"
+                },
+                "question": {
+                    "type": "string"
+                }
+            }
+        },
         "placio-app_Dto.MediaDto": {
             "type": "object",
             "properties": {
@@ -7551,6 +7962,13 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/placio-app_ent.Event"
+                    }
+                },
+                "faqs": {
+                    "description": "Faqs holds the value of the faqs edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.FAQ"
                     }
                 },
                 "followedBusinesses": {
@@ -8077,6 +8495,13 @@ const docTemplate = `{
                         "$ref": "#/definitions/placio-app_ent.CategoryAssignment"
                     }
                 },
+                "faqs": {
+                    "description": "Faqs holds the value of the faqs edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.FAQ"
+                    }
+                },
                 "ownerBusiness": {
                     "description": "OwnerBusiness holds the value of the ownerBusiness edge.",
                     "allOf": [
@@ -8119,6 +8544,58 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/placio-app_ent.UserFollowEvent"
+                    }
+                }
+            }
+        },
+        "placio-app_ent.FAQ": {
+            "type": "object",
+            "properties": {
+                "answer": {
+                    "description": "Answer holds the value of the \"answer\" field.",
+                    "type": "string"
+                },
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the FAQQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.FAQEdges"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                },
+                "question": {
+                    "description": "Question holds the value of the \"question\" field.",
+                    "type": "string"
+                }
+            }
+        },
+        "placio-app_ent.FAQEdges": {
+            "type": "object",
+            "properties": {
+                "business": {
+                    "description": "Business holds the value of the business edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.Business"
+                        }
+                    ]
+                },
+                "event": {
+                    "description": "Event holds the value of the event edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Event"
+                    }
+                },
+                "place": {
+                    "description": "Place holds the value of the place edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Place"
                     }
                 }
             }
@@ -8494,6 +8971,13 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/placio-app_ent.Event"
+                    }
+                },
+                "faqs": {
+                    "description": "Faqs holds the value of the faqs edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.FAQ"
                     }
                 },
                 "followerUsers": {
@@ -9295,12 +9779,16 @@ const docTemplate = `{
             "enum": [
                 "event",
                 "place",
-                "business"
+                "business",
+                "free",
+                "paid"
             ],
             "x-enum-varnames": [
                 "EventTypeEvent",
                 "EventTypePlace",
-                "EventTypeBusiness"
+                "EventTypeBusiness",
+                "EventTypeFree",
+                "EventTypePaid"
             ]
         },
         "placio-app_ent_event.Frequency": {
