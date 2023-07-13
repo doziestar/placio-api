@@ -1650,6 +1650,29 @@ func HasFollowerUsersWith(preds ...predicate.UserFollowPlace) predicate.Place {
 	})
 }
 
+// HasFaqs applies the HasEdge predicate on the "faqs" edge.
+func HasFaqs() predicate.Place {
+	return predicate.Place(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, FaqsTable, FaqsPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasFaqsWith applies the HasEdge predicate on the "faqs" edge with a given conditions (other predicates).
+func HasFaqsWith(preds ...predicate.FAQ) predicate.Place {
+	return predicate.Place(func(s *sql.Selector) {
+		step := newFaqsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Place) predicate.Place {
 	return predicate.Place(func(s *sql.Selector) {

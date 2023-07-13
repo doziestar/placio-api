@@ -88,6 +88,8 @@ const (
 	EdgeCategoryAssignments = "categoryAssignments"
 	// EdgeFollowerUsers holds the string denoting the followerusers edge name in mutations.
 	EdgeFollowerUsers = "followerUsers"
+	// EdgeFaqs holds the string denoting the faqs edge name in mutations.
+	EdgeFaqs = "faqs"
 	// Table holds the table name of the place in the database.
 	Table = "places"
 	// BusinessTable is the table that holds the business relation/edge.
@@ -170,6 +172,11 @@ const (
 	FollowerUsersInverseTable = "user_follow_places"
 	// FollowerUsersColumn is the table column denoting the followerUsers relation/edge.
 	FollowerUsersColumn = "place_follower_users"
+	// FaqsTable is the table that holds the faqs relation/edge. The primary key declared below.
+	FaqsTable = "faq_place"
+	// FaqsInverseTable is the table name for the FAQ entity.
+	// It exists in this package in order to avoid circular dependency with the "faq" package.
+	FaqsInverseTable = "fa_qs"
 )
 
 // Columns holds all SQL columns for place fields.
@@ -217,6 +224,9 @@ var (
 	// AmenitiesPrimaryKey and AmenitiesColumn2 are the table columns denoting the
 	// primary key for the amenities relation (M2M).
 	AmenitiesPrimaryKey = []string{"amenity_id", "place_id"}
+	// FaqsPrimaryKey and FaqsColumn2 are the table columns denoting the
+	// primary key for the faqs relation (M2M).
+	FaqsPrimaryKey = []string{"faq_id", "place_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -489,6 +499,20 @@ func ByFollowerUsers(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newFollowerUsersStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByFaqsCount orders the results by faqs count.
+func ByFaqsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newFaqsStep(), opts...)
+	}
+}
+
+// ByFaqs orders the results by faqs terms.
+func ByFaqs(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newFaqsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newBusinessStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -571,5 +595,12 @@ func newFollowerUsersStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(FollowerUsersInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, FollowerUsersTable, FollowerUsersColumn),
+	)
+}
+func newFaqsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(FaqsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, true, FaqsTable, FaqsPrimaryKey...),
 	)
 }

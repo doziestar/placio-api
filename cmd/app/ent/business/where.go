@@ -1195,6 +1195,29 @@ func HasBusinessFollowEventsWith(preds ...predicate.BusinessFollowEvent) predica
 	})
 }
 
+// HasFaqs applies the HasEdge predicate on the "faqs" edge.
+func HasFaqs() predicate.Business {
+	return predicate.Business(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, FaqsTable, FaqsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasFaqsWith applies the HasEdge predicate on the "faqs" edge with a given conditions (other predicates).
+func HasFaqsWith(preds ...predicate.FAQ) predicate.Business {
+	return predicate.Business(func(s *sql.Selector) {
+		step := newFaqsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Business) predicate.Business {
 	return predicate.Business(func(s *sql.Selector) {

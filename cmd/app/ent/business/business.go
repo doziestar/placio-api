@@ -60,6 +60,8 @@ const (
 	EdgeEvents = "events"
 	// EdgeBusinessFollowEvents holds the string denoting the businessfollowevents edge name in mutations.
 	EdgeBusinessFollowEvents = "businessFollowEvents"
+	// EdgeFaqs holds the string denoting the faqs edge name in mutations.
+	EdgeFaqs = "faqs"
 	// Table holds the table name of the business in the database.
 	Table = "businesses"
 	// UserBusinessesTable is the table that holds the userBusinesses relation/edge.
@@ -146,6 +148,13 @@ const (
 	BusinessFollowEventsInverseTable = "business_follow_events"
 	// BusinessFollowEventsColumn is the table column denoting the businessFollowEvents relation/edge.
 	BusinessFollowEventsColumn = "business_business_follow_events"
+	// FaqsTable is the table that holds the faqs relation/edge.
+	FaqsTable = "fa_qs"
+	// FaqsInverseTable is the table name for the FAQ entity.
+	// It exists in this package in order to avoid circular dependency with the "faq" package.
+	FaqsInverseTable = "fa_qs"
+	// FaqsColumn is the table column denoting the faqs relation/edge.
+	FaqsColumn = "business_faqs"
 )
 
 // Columns holds all SQL columns for business fields.
@@ -405,6 +414,20 @@ func ByBusinessFollowEvents(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOpt
 		sqlgraph.OrderByNeighborTerms(s, newBusinessFollowEventsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByFaqsCount orders the results by faqs count.
+func ByFaqsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newFaqsStep(), opts...)
+	}
+}
+
+// ByFaqs orders the results by faqs terms.
+func ByFaqs(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newFaqsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newUserBusinessesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -487,5 +510,12 @@ func newBusinessFollowEventsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(BusinessFollowEventsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, BusinessFollowEventsTable, BusinessFollowEventsColumn),
+	)
+}
+func newFaqsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(FaqsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, FaqsTable, FaqsColumn),
 	)
 }

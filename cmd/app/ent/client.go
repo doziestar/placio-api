@@ -22,6 +22,7 @@ import (
 	"placio-app/ent/chat"
 	"placio-app/ent/comment"
 	"placio-app/ent/event"
+	"placio-app/ent/faq"
 	"placio-app/ent/help"
 	"placio-app/ent/like"
 	"placio-app/ent/media"
@@ -79,6 +80,8 @@ type Client struct {
 	Comment *CommentClient
 	// Event is the client for interacting with the Event builders.
 	Event *EventClient
+	// FAQ is the client for interacting with the FAQ builders.
+	FAQ *FAQClient
 	// Help is the client for interacting with the Help builders.
 	Help *HelpClient
 	// Like is the client for interacting with the Like builders.
@@ -146,6 +149,7 @@ func (c *Client) init() {
 	c.Chat = NewChatClient(c.config)
 	c.Comment = NewCommentClient(c.config)
 	c.Event = NewEventClient(c.config)
+	c.FAQ = NewFAQClient(c.config)
 	c.Help = NewHelpClient(c.config)
 	c.Like = NewLikeClient(c.config)
 	c.Media = NewMediaClient(c.config)
@@ -261,6 +265,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Chat:                   NewChatClient(cfg),
 		Comment:                NewCommentClient(cfg),
 		Event:                  NewEventClient(cfg),
+		FAQ:                    NewFAQClient(cfg),
 		Help:                   NewHelpClient(cfg),
 		Like:                   NewLikeClient(cfg),
 		Media:                  NewMediaClient(cfg),
@@ -313,6 +318,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Chat:                   NewChatClient(cfg),
 		Comment:                NewCommentClient(cfg),
 		Event:                  NewEventClient(cfg),
+		FAQ:                    NewFAQClient(cfg),
 		Help:                   NewHelpClient(cfg),
 		Like:                   NewLikeClient(cfg),
 		Media:                  NewMediaClient(cfg),
@@ -365,7 +371,7 @@ func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.AccountSettings, c.Amenity, c.Booking, c.Business, c.BusinessFollowBusiness,
 		c.BusinessFollowEvent, c.BusinessFollowUser, c.Category, c.CategoryAssignment,
-		c.Chat, c.Comment, c.Event, c.Help, c.Like, c.Media, c.Menu, c.Order,
+		c.Chat, c.Comment, c.Event, c.FAQ, c.Help, c.Like, c.Media, c.Menu, c.Order,
 		c.Payment, c.Place, c.Post, c.Rating, c.Reaction, c.Reservation, c.Review,
 		c.Room, c.Ticket, c.TicketOption, c.User, c.UserBusiness, c.UserFollowBusiness,
 		c.UserFollowEvent, c.UserFollowPlace, c.UserFollowUser,
@@ -380,7 +386,7 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.AccountSettings, c.Amenity, c.Booking, c.Business, c.BusinessFollowBusiness,
 		c.BusinessFollowEvent, c.BusinessFollowUser, c.Category, c.CategoryAssignment,
-		c.Chat, c.Comment, c.Event, c.Help, c.Like, c.Media, c.Menu, c.Order,
+		c.Chat, c.Comment, c.Event, c.FAQ, c.Help, c.Like, c.Media, c.Menu, c.Order,
 		c.Payment, c.Place, c.Post, c.Rating, c.Reaction, c.Reservation, c.Review,
 		c.Room, c.Ticket, c.TicketOption, c.User, c.UserBusiness, c.UserFollowBusiness,
 		c.UserFollowEvent, c.UserFollowPlace, c.UserFollowUser,
@@ -416,6 +422,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Comment.mutate(ctx, m)
 	case *EventMutation:
 		return c.Event.mutate(ctx, m)
+	case *FAQMutation:
+		return c.FAQ.mutate(ctx, m)
 	case *HelpMutation:
 		return c.Help.mutate(ctx, m)
 	case *LikeMutation:
@@ -1159,6 +1167,22 @@ func (c *BusinessClient) QueryBusinessFollowEvents(b *Business) *BusinessFollowE
 			sqlgraph.From(business.Table, business.FieldID, id),
 			sqlgraph.To(businessfollowevent.Table, businessfollowevent.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, business.BusinessFollowEventsTable, business.BusinessFollowEventsColumn),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryFaqs queries the faqs edge of a Business.
+func (c *BusinessClient) QueryFaqs(b *Business) *FAQQuery {
+	query := (&FAQClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(business.Table, business.FieldID, id),
+			sqlgraph.To(faq.Table, faq.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, business.FaqsTable, business.FaqsColumn),
 		)
 		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
 		return fromV, nil
@@ -2487,6 +2511,156 @@ func (c *EventClient) mutate(ctx context.Context, m *EventMutation) (Value, erro
 	}
 }
 
+// FAQClient is a client for the FAQ schema.
+type FAQClient struct {
+	config
+}
+
+// NewFAQClient returns a client for the FAQ from the given config.
+func NewFAQClient(c config) *FAQClient {
+	return &FAQClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `faq.Hooks(f(g(h())))`.
+func (c *FAQClient) Use(hooks ...Hook) {
+	c.hooks.FAQ = append(c.hooks.FAQ, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `faq.Intercept(f(g(h())))`.
+func (c *FAQClient) Intercept(interceptors ...Interceptor) {
+	c.inters.FAQ = append(c.inters.FAQ, interceptors...)
+}
+
+// Create returns a builder for creating a FAQ entity.
+func (c *FAQClient) Create() *FAQCreate {
+	mutation := newFAQMutation(c.config, OpCreate)
+	return &FAQCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of FAQ entities.
+func (c *FAQClient) CreateBulk(builders ...*FAQCreate) *FAQCreateBulk {
+	return &FAQCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for FAQ.
+func (c *FAQClient) Update() *FAQUpdate {
+	mutation := newFAQMutation(c.config, OpUpdate)
+	return &FAQUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *FAQClient) UpdateOne(f *FAQ) *FAQUpdateOne {
+	mutation := newFAQMutation(c.config, OpUpdateOne, withFAQ(f))
+	return &FAQUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *FAQClient) UpdateOneID(id string) *FAQUpdateOne {
+	mutation := newFAQMutation(c.config, OpUpdateOne, withFAQID(id))
+	return &FAQUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for FAQ.
+func (c *FAQClient) Delete() *FAQDelete {
+	mutation := newFAQMutation(c.config, OpDelete)
+	return &FAQDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *FAQClient) DeleteOne(f *FAQ) *FAQDeleteOne {
+	return c.DeleteOneID(f.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *FAQClient) DeleteOneID(id string) *FAQDeleteOne {
+	builder := c.Delete().Where(faq.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &FAQDeleteOne{builder}
+}
+
+// Query returns a query builder for FAQ.
+func (c *FAQClient) Query() *FAQQuery {
+	return &FAQQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeFAQ},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a FAQ entity by its id.
+func (c *FAQClient) Get(ctx context.Context, id string) (*FAQ, error) {
+	return c.Query().Where(faq.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *FAQClient) GetX(ctx context.Context, id string) *FAQ {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryBusiness queries the business edge of a FAQ.
+func (c *FAQClient) QueryBusiness(f *FAQ) *BusinessQuery {
+	query := (&BusinessClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := f.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(faq.Table, faq.FieldID, id),
+			sqlgraph.To(business.Table, business.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, faq.BusinessTable, faq.BusinessColumn),
+		)
+		fromV = sqlgraph.Neighbors(f.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPlace queries the place edge of a FAQ.
+func (c *FAQClient) QueryPlace(f *FAQ) *PlaceQuery {
+	query := (&PlaceClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := f.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(faq.Table, faq.FieldID, id),
+			sqlgraph.To(place.Table, place.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, faq.PlaceTable, faq.PlacePrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(f.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *FAQClient) Hooks() []Hook {
+	return c.hooks.FAQ
+}
+
+// Interceptors returns the client interceptors.
+func (c *FAQClient) Interceptors() []Interceptor {
+	return c.inters.FAQ
+}
+
+func (c *FAQClient) mutate(ctx context.Context, m *FAQMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&FAQCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&FAQUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&FAQUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&FAQDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown FAQ mutation op: %q", m.Op())
+	}
+}
+
 // HelpClient is a client for the Help schema.
 type HelpClient struct {
 	config
@@ -3585,6 +3759,22 @@ func (c *PlaceClient) QueryFollowerUsers(pl *Place) *UserFollowPlaceQuery {
 			sqlgraph.From(place.Table, place.FieldID, id),
 			sqlgraph.To(userfollowplace.Table, userfollowplace.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, place.FollowerUsersTable, place.FollowerUsersColumn),
+		)
+		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryFaqs queries the faqs edge of a Place.
+func (c *PlaceClient) QueryFaqs(pl *Place) *FAQQuery {
+	query := (&FAQClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pl.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(place.Table, place.FieldID, id),
+			sqlgraph.To(faq.Table, faq.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, place.FaqsTable, place.FaqsPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
 		return fromV, nil
@@ -5962,16 +6152,17 @@ type (
 	hooks struct {
 		AccountSettings, Amenity, Booking, Business, BusinessFollowBusiness,
 		BusinessFollowEvent, BusinessFollowUser, Category, CategoryAssignment, Chat,
-		Comment, Event, Help, Like, Media, Menu, Order, Payment, Place, Post, Rating,
-		Reaction, Reservation, Review, Room, Ticket, TicketOption, User, UserBusiness,
-		UserFollowBusiness, UserFollowEvent, UserFollowPlace, UserFollowUser []ent.Hook
+		Comment, Event, FAQ, Help, Like, Media, Menu, Order, Payment, Place, Post,
+		Rating, Reaction, Reservation, Review, Room, Ticket, TicketOption, User,
+		UserBusiness, UserFollowBusiness, UserFollowEvent, UserFollowPlace,
+		UserFollowUser []ent.Hook
 	}
 	inters struct {
 		AccountSettings, Amenity, Booking, Business, BusinessFollowBusiness,
 		BusinessFollowEvent, BusinessFollowUser, Category, CategoryAssignment, Chat,
-		Comment, Event, Help, Like, Media, Menu, Order, Payment, Place, Post, Rating,
-		Reaction, Reservation, Review, Room, Ticket, TicketOption, User, UserBusiness,
-		UserFollowBusiness, UserFollowEvent, UserFollowPlace,
+		Comment, Event, FAQ, Help, Like, Media, Menu, Order, Payment, Place, Post,
+		Rating, Reaction, Reservation, Review, Room, Ticket, TicketOption, User,
+		UserBusiness, UserFollowBusiness, UserFollowEvent, UserFollowPlace,
 		UserFollowUser []ent.Interceptor
 	}
 )

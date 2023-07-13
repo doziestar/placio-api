@@ -333,7 +333,7 @@ var (
 	EventsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true},
 		{Name: "name", Type: field.TypeString, Nullable: true},
-		{Name: "event_type", Type: field.TypeEnum, Nullable: true, Enums: []string{"event", "place", "business"}},
+		{Name: "event_type", Type: field.TypeEnum, Nullable: true, Enums: []string{"event", "place", "business", "free", "paid"}},
 		{Name: "status", Type: field.TypeString, Nullable: true},
 		{Name: "location", Type: field.TypeString, Nullable: true},
 		{Name: "url", Type: field.TypeString, Nullable: true},
@@ -394,6 +394,27 @@ var (
 				Symbol:     "events_users_ownedEvents",
 				Columns:    []*schema.Column{EventsColumns[39]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
+	// FaQsColumns holds the columns for the "fa_qs" table.
+	FaQsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
+		{Name: "question", Type: field.TypeString},
+		{Name: "answer", Type: field.TypeString},
+		{Name: "business_faqs", Type: field.TypeString, Nullable: true, Size: 36},
+	}
+	// FaQsTable holds the schema information for the "fa_qs" table.
+	FaQsTable = &schema.Table{
+		Name:       "fa_qs",
+		Columns:    FaQsColumns,
+		PrimaryKey: []*schema.Column{FaQsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "fa_qs_businesses_faqs",
+				Columns:    []*schema.Column{FaQsColumns[3]},
+				RefColumns: []*schema.Column{BusinessesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -936,6 +957,31 @@ var (
 			},
 		},
 	}
+	// FaqPlaceColumns holds the columns for the "faq_place" table.
+	FaqPlaceColumns = []*schema.Column{
+		{Name: "faq_id", Type: field.TypeString, Size: 36},
+		{Name: "place_id", Type: field.TypeString, Size: 36},
+	}
+	// FaqPlaceTable holds the schema information for the "faq_place" table.
+	FaqPlaceTable = &schema.Table{
+		Name:       "faq_place",
+		Columns:    FaqPlaceColumns,
+		PrimaryKey: []*schema.Column{FaqPlaceColumns[0], FaqPlaceColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "faq_place_faq_id",
+				Columns:    []*schema.Column{FaqPlaceColumns[0]},
+				RefColumns: []*schema.Column{FaQsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "faq_place_place_id",
+				Columns:    []*schema.Column{FaqPlaceColumns[1]},
+				RefColumns: []*schema.Column{PlacesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// UserPlacesColumns holds the columns for the "user_places" table.
 	UserPlacesColumns = []*schema.Column{
 		{Name: "user_id", Type: field.TypeString, Size: 36},
@@ -975,6 +1021,7 @@ var (
 		ChatsTable,
 		CommentsTable,
 		EventsTable,
+		FaQsTable,
 		HelpsTable,
 		LikesTable,
 		MediaTable,
@@ -997,6 +1044,7 @@ var (
 		UserFollowPlacesTable,
 		UserFollowUsersTable,
 		AmenityPlacesTable,
+		FaqPlaceTable,
 		UserPlacesTable,
 	}
 )
@@ -1029,6 +1077,7 @@ func init() {
 	EventsTable.ForeignKeys[0].RefTable = BusinessesTable
 	EventsTable.ForeignKeys[1].RefTable = PlacesTable
 	EventsTable.ForeignKeys[2].RefTable = UsersTable
+	FaQsTable.ForeignKeys[0].RefTable = BusinessesTable
 	HelpsTable.ForeignKeys[0].RefTable = UsersTable
 	LikesTable.ForeignKeys[0].RefTable = PostsTable
 	LikesTable.ForeignKeys[1].RefTable = PostsTable
@@ -1059,6 +1108,8 @@ func init() {
 	UserFollowUsersTable.ForeignKeys[1].RefTable = UsersTable
 	AmenityPlacesTable.ForeignKeys[0].RefTable = AmenitiesTable
 	AmenityPlacesTable.ForeignKeys[1].RefTable = PlacesTable
+	FaqPlaceTable.ForeignKeys[0].RefTable = FaQsTable
+	FaqPlaceTable.ForeignKeys[1].RefTable = PlacesTable
 	UserPlacesTable.ForeignKeys[0].RefTable = UsersTable
 	UserPlacesTable.ForeignKeys[1].RefTable = PlacesTable
 }
