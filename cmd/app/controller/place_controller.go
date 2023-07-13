@@ -39,6 +39,7 @@ func (c *PlaceController) RegisterRoutes(router *gin.RouterGroup) {
 // @Produce json
 // @Param id path string true "ID of the place to get"
 // @Security Bearer
+// @Param Authorization header string true "Bearer token"
 // @Success 200 {object} ent.Place "Successfully retrieved place"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
@@ -67,6 +68,7 @@ func (c *PlaceController) getPlace(ctx *gin.Context) error {
 // @Param place body Dto.CreatePlaceDTO true "Place to create"
 // @Param business_id query string true "ID of the business to create the place for"
 // @Security Bearer
+// @Param Authorization header string true "Bearer token"
 // @Success 200 {object} ent.Place "Successfully created place"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
@@ -106,6 +108,7 @@ func (c *PlaceController) createPlace(ctx *gin.Context) error {
 // @Produce json
 // @Param id path string true "ID of the place to add amenities to"
 // @Param amenity body Dto.AmenityAdditionDTO true "Amenities to add"
+// @Param Authorization header string true "Bearer token"
 // @Security Bearer
 // @Success 200 {object} ent.Place "Successfully added amenities to place"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
@@ -144,6 +147,7 @@ func (c *PlaceController) addAmenitiesToPlace(ctx *gin.Context) error {
 // @Param id path string true "ID of the place to update"
 // @Param place body Dto.UpdatePlaceDTO true "Place data to update"
 // @Security Bearer
+// @Param Authorization header string true "Bearer token"
 // @Success 200 {object} ent.Place "Successfully updated place"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
@@ -176,6 +180,7 @@ func (c *PlaceController) updatePlace(ctx *gin.Context) error {
 // @Produce json
 // @Param id path string true "ID of the place to delete"
 // @Security Bearer
+// @Param Authorization header string true "Bearer token"
 // @Success 200 {object} ent.Place "Successfully deleted place"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
