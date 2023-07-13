@@ -1730,6 +1730,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/places/all": {
+            "get": {
+                "description": "Get all places",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Place"
+                ],
+                "summary": "Get all places",
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved all places",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/placio-app_ent.Place"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/places/{id}": {
             "get": {
                 "security": [

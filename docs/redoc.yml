@@ -3510,6 +3510,29 @@ paths:
       summary: Add amenities to a place
       tags:
         - Place
+  /api/v1/places/all:
+    get:
+      consumes:
+        - application/json
+      description: Get all places
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully retrieved all places
+          schema:
+            items:
+              items:
+                $ref: '#/definitions/placio-app_ent.Place'
+              type: array
+            type: array
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Get all places
+      tags:
+        - Place
   /api/v1/posts/:
     post:
       consumes:

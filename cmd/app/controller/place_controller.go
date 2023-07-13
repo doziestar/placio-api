@@ -19,8 +19,9 @@ func NewPlaceController(placeService service.PlaceService) *PlaceController {
 	return &PlaceController{placeService: placeService}
 }
 
-func (c *PlaceController) RegisterRoutes(router *gin.RouterGroup) {
+func (c *PlaceController) RegisterRoutes(router, routerWithoutAuth *gin.RouterGroup) {
 	placeRouter := router.Group("/places")
+	placeRouterWithoutAuth := routerWithoutAuth.Group("/places")
 	{
 		placeRouter.GET("/:id", utility.Use(c.getPlace))
 		placeRouter.POST("/", utility.Use(c.createPlace))
@@ -28,7 +29,7 @@ func (c *PlaceController) RegisterRoutes(router *gin.RouterGroup) {
 		placeRouter.PATCH("/:id", utility.Use(c.updatePlace))
 		placeRouter.DELETE("/:id", utility.Use(c.deletePlace))
 		placeRouter.POST("/:id/amenities", utility.Use(c.addAmenitiesToPlace))
-
+		placeRouterWithoutAuth.GET("/all", utility.Use(c.getAllPlaces))
 	}
 }
 
@@ -98,6 +99,27 @@ func (c *PlaceController) createPlace(ctx *gin.Context) error {
 	}
 
 	ctx.JSON(http.StatusOK, place)
+	return nil
+}
+
+// @Summary Get all places
+// @Description Get all places
+// @Tags Place
+// @Accept json
+// @Produce json
+// @Success 200 {array} []ent.Place "Successfully retrieved all places"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
+// @Router /api/v1/places/all [get]
+func (c *PlaceController) getAllPlaces(ctx *gin.Context) error {
+	places, err := c.placeService.GetAllPlaces(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, places)
 	return nil
 }
 

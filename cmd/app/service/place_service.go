@@ -32,6 +32,7 @@ type PlaceService interface {
 	GetPlacesAssociatedWithBusinessAccount(c context.Context, businessId string) ([]*ent.Place, error)
 	GetPlaces(ctx context.Context, filter *PlaceFilter, page int, pageSize int) ([]*ent.Place, error)
 	AddAmenitiesToPlace(ctx context.Context, placeID string, amenityIDs []string) error
+	GetAllPlaces(ctx context.Context) ([]*ent.Place, error)
 }
 
 type PlaceServiceImpl struct {
@@ -67,6 +68,24 @@ func (s *PlaceServiceImpl) GetPlace(ctx context.Context, placeID string) (*ent.P
 	}
 
 	return placeData, nil
+}
+
+func (s *PlaceServiceImpl) GetAllPlaces(ctx context.Context) ([]*ent.Place, error) {
+	places, err := s.client.Place.
+		Query().
+		WithUsers().
+		WithBusiness().
+		WithCategories().
+		WithEvents().
+		WithAmenities().
+		WithReviews().
+		WithMenus().
+		All(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return places, nil
 }
 
 func (s *PlaceServiceImpl) CreatePlace(ctx context.Context, placeData Dto.CreatePlaceDTO) (*ent.Place, error) {
