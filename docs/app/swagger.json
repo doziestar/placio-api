@@ -1316,6 +1316,137 @@
                 }
             }
         },
+        "/api/v1/likes/place/{userID}/place/{placeID}": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Allows a user to like a specific place",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Like"
+                ],
+                "summary": "Like a place",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the user",
+                        "name": "userID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "ID of the place",
+                        "name": "placeID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Bearer token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Successfully liked place",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.UserLikePlace"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/likes/place/{userLikePlaceID}": {
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Allows a user to unlike a specific place",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Like"
+                ],
+                "summary": "Unlike a place",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the UserLikePlace record",
+                        "name": "userLikePlaceID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Provide JWT access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully unliked place",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/likes/post/{postID}": {
             "get": {
                 "security": [
@@ -1374,7 +1505,7 @@
                 }
             }
         },
-        "/api/v1/likes/user/{userID}": {
+        "/api/v1/likes/user/place/{userID}": {
             "get": {
                 "security": [
                     {
@@ -1415,6 +1546,64 @@
                             "type": "array",
                             "items": {
                                 "$ref": "#/definitions/placio-app_ent.UserLikePlace"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/likes/user/{userID}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Retrieve all likes by a user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Like"
+                ],
+                "summary": "Get user likes",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the user",
+                        "name": "userID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of likes",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/placio-app_ent.Like"
                             }
                         }
                     },
@@ -1533,137 +1722,6 @@
                         "description": "Successfully unliked post",
                         "schema": {
                             "$ref": "#/definitions/placio-app_Dto.Response"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/likes/{userID}/place/{placeID}": {
-            "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Allows a user to like a specific place",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Like"
-                ],
-                "summary": "Like a place",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "ID of the user",
-                        "name": "userID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "ID of the place",
-                        "name": "placeID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Bearer token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Successfully liked place",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_ent.UserLikePlace"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/likes/{userLikePlaceID}": {
-            "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Allows a user to unlike a specific place",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Like"
-                ],
-                "summary": "Unlike a place",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "ID of the UserLikePlace record",
-                        "name": "userLikePlaceID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Provide JWT access token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully unliked place",
-                        "schema": {
-                            "type": "string"
                         }
                     },
                     "400": {

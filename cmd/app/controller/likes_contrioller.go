@@ -147,7 +147,7 @@ func (likesController *LikeController) getPostLikes(ctx *gin.Context) {
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
-// @Router /api/v1/likes/{userID}/place/{placeID} [post]
+// @Router /api/v1/likes/place/{userID}/place/{placeID} [post]
 func (likesController *LikeController) likePlace(c *gin.Context) error {
 	userID := c.Param("userID")
 	placeID := c.Param("placeID")
@@ -174,7 +174,7 @@ func (likesController *LikeController) likePlace(c *gin.Context) error {
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
-// @Router /api/v1/likes/{userLikePlaceID} [delete]
+// @Router /api/v1/likes/place/{userLikePlaceID} [delete]
 func (likesController *LikeController) unlikePlace(c *gin.Context) error {
 	userLikePlaceID := c.Param("userLikePlaceID")
 
@@ -200,7 +200,7 @@ func (likesController *LikeController) unlikePlace(c *gin.Context) error {
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
-// @Router /api/v1/likes/user/{userID} [get]
+// @Router /api/v1/likes/user/place/{userID} [get]
 func (likesController *LikeController) getUserLikedPlaces(c *gin.Context) error {
 	userID := c.Param("userID")
 
