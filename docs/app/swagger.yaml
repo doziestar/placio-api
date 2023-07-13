@@ -3219,7 +3219,49 @@ paths:
       summary: Unlike a post
       tags:
       - Like
-  /api/v1/likes/{userID}/place/{placeID}:
+  /api/v1/likes/place/{placeID}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all likes for a place
+      parameters:
+      - description: ID of the place
+        in: path
+        name: placeID
+        required: true
+        type: string
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of UserLikePlace records
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_ent.UserLikePlace'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      security:
+      - Bearer: []
+      summary: Get place likes
+      tags:
+      - Like
+  /api/v1/likes/place/{userID}/place/{placeID}:
     post:
       consumes:
       - application/json
@@ -3264,7 +3306,7 @@ paths:
       summary: Like a place
       tags:
       - Like
-  /api/v1/likes/{userLikePlaceID}:
+  /api/v1/likes/place/{userLikePlaceID}:
     delete:
       consumes:
       - application/json
@@ -3302,48 +3344,6 @@ paths:
       security:
       - Bearer: []
       summary: Unlike a place
-      tags:
-      - Like
-  /api/v1/likes/place/{placeID}:
-    get:
-      consumes:
-      - application/json
-      description: Retrieve all likes for a place
-      parameters:
-      - description: ID of the place
-        in: path
-        name: placeID
-        required: true
-        type: string
-      - description: Bearer token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: List of UserLikePlace records
-          schema:
-            items:
-              $ref: '#/definitions/placio-app_ent.UserLikePlace'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-      - Bearer: []
-      summary: Get place likes
       tags:
       - Like
   /api/v1/likes/post/{postID}:
@@ -3387,26 +3387,21 @@ paths:
     get:
       consumes:
       - application/json
-      description: Retrieve all places liked by a user
+      description: Retrieve all likes by a user
       parameters:
       - description: ID of the user
         in: path
         name: userID
         required: true
         type: string
-      - description: Bearer token
-        in: header
-        name: Authorization
-        required: true
-        type: string
       produces:
       - application/json
       responses:
         "200":
-          description: List of UserLikePlace records
+          description: List of likes
           schema:
             items:
-              $ref: '#/definitions/placio-app_ent.UserLikePlace'
+              $ref: '#/definitions/placio-app_ent.Like'
             type: array
         "400":
           description: Bad Request
@@ -3422,7 +3417,7 @@ paths:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
       security:
       - Bearer: []
-      summary: Get user liked places
+      summary: Get user likes
       tags:
       - Like
   /api/v1/likes/user/{userID}/post/{postID}:
@@ -3463,6 +3458,48 @@ paths:
       security:
       - Bearer: []
       summary: Like a post
+      tags:
+      - Like
+  /api/v1/likes/user/place/{userID}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all places liked by a user
+      parameters:
+      - description: ID of the user
+        in: path
+        name: userID
+        required: true
+        type: string
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of UserLikePlace records
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_ent.UserLikePlace'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      security:
+      - Bearer: []
+      summary: Get user liked places
       tags:
       - Like
   /api/v1/menus/:
