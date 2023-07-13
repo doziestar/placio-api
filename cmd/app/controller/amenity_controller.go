@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"placio-app/Dto"
+	_ "placio-app/ent"
 	"placio-app/service"
 	"placio-app/utility"
 	"time"
@@ -30,6 +31,20 @@ func (c *AmenityController) RegisterRoutes(r *gin.RouterGroup) {
 	amenityRouterGroup.GET("/", utility.Use(c.getAllAmenities))
 }
 
+// @Summary Create a new amenity
+// @Description Create a new amenity with provided information
+// @Tags Amenity
+// @Accept json
+// @Produce json
+// @Param icons formData file true "Icon files for amenity"
+// @Param amenity body Dto.CreateAmenityInput true "Amenity information"
+// @Security Bearer
+// @Param Authorization header string true "Bearer token"
+// @Success 200 {object} ent.Amenity "Successfully created amenity"
+// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
+// @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
+// @Router /api/v1/amenities [post]
 func (c *AmenityController) createAmenity(ctx *gin.Context) error {
 	var input Dto.CreateAmenityInput
 	if err := ctx.ShouldBindJSON(&input); err != nil {
@@ -72,6 +87,17 @@ func (c *AmenityController) createAmenity(ctx *gin.Context) error {
 	return nil
 }
 
+// @Summary Get an amenity
+// @Description Get an amenity by ID
+// @Tags Amenity
+// @Accept json
+// @Produce json
+// @Param id path string true "ID of the amenity"
+// @Security Bearer
+// @Success 200 {object} ent.Amenity "Successfully retrieved amenity"
+// @Failure 404 {object} Dto.ErrorDTO "Amenity not found"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
+// @Router /api/v1/amenities/{id} [get]
 func (c *AmenityController) getAmenity(ctx *gin.Context) error {
 	id := ctx.Param("id")
 
@@ -85,6 +111,20 @@ func (c *AmenityController) getAmenity(ctx *gin.Context) error {
 	return nil
 }
 
+// @Summary Update an amenity
+// @Description Update an amenity by ID
+// @Tags Amenity
+// @Accept json
+// @Produce json
+// @Param id path string true "ID of the amenity to update"
+// @Param icon formData file true "New icon file for amenity"
+// @Param amenity body Dto.UpdateAmenityInput true "New amenity information"
+// @Security Bearer
+// @Success 200 {object} ent.Amenity "Successfully updated amenity"
+// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
+// @Failure 404 {object} Dto.ErrorDTO "Amenity not found"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
+// @Router /api/v1/amenities/{id} [put]
 func (c *AmenityController) updateAmenity(ctx *gin.Context) error {
 	var input Dto.UpdateAmenityInput
 	if err := ctx.ShouldBindJSON(&input); err != nil {
@@ -128,6 +168,18 @@ func (c *AmenityController) updateAmenity(ctx *gin.Context) error {
 	return nil
 }
 
+// @Summary Delete an amenity
+// @Description Delete an amenity by ID
+// @Tags Amenity
+// @Accept json
+// @Produce json
+// @Param id path string true "ID of the amenity to delete"
+// @Security Bearer
+// @Param Authorization header string true "JWT token"
+// @Success 200 {object} string "Successfully deleted amenity"
+// @Failure 404 {object} Dto.ErrorDTO "Amenity not found"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
+// @Router /api/v1/amenities/{id} [delete]
 func (c *AmenityController) deleteAmenity(ctx *gin.Context) error {
 	id := ctx.Param("id")
 
@@ -140,10 +192,21 @@ func (c *AmenityController) deleteAmenity(ctx *gin.Context) error {
 	c.cache.DeleteCache(ctx, id)
 	c.cache.DeleteCache(ctx, "all_amenities")
 
-	ctx.JSON(http.StatusOK, gin.H{"result": "Amenity deleted successfully"})
+	ctx.JSON(http.StatusOK, gin.H{"success": "Amenity deleted successfully"})
 	return nil
 }
 
+// @Summary Get all amenities
+// @Description Get all amenities
+// @Tags Amenity
+// @Accept json
+// @Produce json
+// @Security Bearer
+// @Param Authorization header string true "JWT token"
+// @Success 200 {object} []ent.Amenity "Successfully retrieved amenities"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
+// @Failure 401 {object} Dto.ErrorDTO
+// @Router /api/v1/amenities [get]
 func (c *AmenityController) getAllAmenities(ctx *gin.Context) error {
 	amenities, err := c.service.GetAllAmenities()
 	if err != nil {

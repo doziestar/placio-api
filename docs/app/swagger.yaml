@@ -150,6 +150,13 @@ definitions:
       refresh_token:
         type: string
     type: object
+  placio-app_Dto.AmenityAdditionDTO:
+    properties:
+      amenity_ids:
+        items:
+          type: string
+        type: array
+    type: object
   placio-app_Dto.BusinessAccountPlacesAndEvents:
     properties:
       events:
@@ -200,11 +207,22 @@ definitions:
       user:
         $ref: '#/definitions/placio-app_ent.User'
     type: object
+  placio-app_Dto.CreateAmenityInput:
+    properties:
+      icon:
+        type: string
+      name:
+        type: string
+    type: object
   placio-app_Dto.CreatePlaceDTO:
     properties:
       additional_info:
         additionalProperties: true
         type: object
+      amenity_ids:
+        items:
+          type: string
+        type: array
       availability:
         additionalProperties: true
         type: object
@@ -330,7 +348,9 @@ definitions:
       status:
         type: string
       tags:
-        type: string
+        items:
+          type: string
+        type: array
       timeZone:
         type: string
       title:
@@ -426,6 +446,13 @@ definitions:
         type: integer
     type: object
   placio-app_Dto.SearchResponse:
+    type: object
+  placio-app_Dto.UpdateAmenityInput:
+    properties:
+      icon:
+        type: string
+      name:
+        type: string
     type: object
   placio-app_Dto.UpdatePlaceDTO:
     properties:
@@ -2228,6 +2255,195 @@ info:
   title: Placio Application Api
   version: "0.01"
 paths:
+  /api/v1/amenities:
+    get:
+      consumes:
+      - application/json
+      description: Get all amenities
+      parameters:
+      - description: JWT token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved amenities
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_ent.Amenity'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      security:
+      - Bearer: []
+      summary: Get all amenities
+      tags:
+      - Amenity
+    post:
+      consumes:
+      - application/json
+      description: Create a new amenity with provided information
+      parameters:
+      - description: Icon files for amenity
+        in: formData
+        name: icons
+        required: true
+        type: file
+      - description: Amenity information
+        in: body
+        name: amenity
+        required: true
+        schema:
+          $ref: '#/definitions/placio-app_Dto.CreateAmenityInput'
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully created amenity
+          schema:
+            $ref: '#/definitions/placio-app_ent.Amenity'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      security:
+      - Bearer: []
+      summary: Create a new amenity
+      tags:
+      - Amenity
+  /api/v1/amenities/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an amenity by ID
+      parameters:
+      - description: ID of the amenity to delete
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: JWT token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully deleted amenity
+          schema:
+            type: string
+        "404":
+          description: Amenity not found
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      security:
+      - Bearer: []
+      summary: Delete an amenity
+      tags:
+      - Amenity
+    get:
+      consumes:
+      - application/json
+      description: Get an amenity by ID
+      parameters:
+      - description: ID of the amenity
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully retrieved amenity
+          schema:
+            $ref: '#/definitions/placio-app_ent.Amenity'
+        "404":
+          description: Amenity not found
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      security:
+      - Bearer: []
+      summary: Get an amenity
+      tags:
+      - Amenity
+    put:
+      consumes:
+      - application/json
+      description: Update an amenity by ID
+      parameters:
+      - description: ID of the amenity to update
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: New icon file for amenity
+        in: formData
+        name: icon
+        required: true
+        type: file
+      - description: New amenity information
+        in: body
+        name: amenity
+        required: true
+        schema:
+          $ref: '#/definitions/placio-app_Dto.UpdateAmenityInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully updated amenity
+          schema:
+            $ref: '#/definitions/placio-app_ent.Amenity'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "404":
+          description: Amenity not found
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      security:
+      - Bearer: []
+      summary: Update an amenity
+      tags:
+      - Amenity
   /api/v1/attendees/:
     post:
       consumes:
@@ -3119,6 +3335,11 @@ paths:
         name: business_id
         required: true
         type: string
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -3154,6 +3375,11 @@ paths:
         name: id
         required: true
         type: string
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -3186,6 +3412,11 @@ paths:
       - description: ID of the place to get
         in: path
         name: id
+        required: true
+        type: string
+      - description: Bearer token
+        in: header
+        name: Authorization
         required: true
         type: string
       produces:
@@ -3228,6 +3459,11 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/placio-app_Dto.UpdatePlaceDTO'
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -3250,6 +3486,52 @@ paths:
       security:
       - Bearer: []
       summary: Update a place
+      tags:
+      - Place
+  /api/v1/places/{id}/amenities:
+    post:
+      consumes:
+      - application/json
+      description: Add amenities to a place by ID
+      parameters:
+      - description: ID of the place to add amenities to
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Amenities to add
+        in: body
+        name: amenity
+        required: true
+        schema:
+          $ref: '#/definitions/placio-app_Dto.AmenityAdditionDTO'
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successfully added amenities to place
+          schema:
+            $ref: '#/definitions/placio-app_ent.Place'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      security:
+      - Bearer: []
+      summary: Add amenities to a place
       tags:
       - Place
   /api/v1/posts/:
