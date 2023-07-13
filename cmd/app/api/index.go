@@ -41,6 +41,7 @@ func JWTMiddleware(db *gorm.DB) gin.HandlerFunc {
 
 func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 	routerGroupV1 := app.Group("/api/v1")
+	routerGroupV1WithoutAuth := app.Group("/api/v1")
 	{
 		routerGroupV1.GET("/docs/*files", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
@@ -92,7 +93,7 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		// places
 		placeService := service.NewPlaceService(client, searchService)
 		placeController := controller.NewPlaceController(placeService)
-		placeController.RegisterRoutes(routerGroupV1)
+		placeController.RegisterRoutes(routerGroupV1, routerGroupV1WithoutAuth)
 
 		// reservations
 		reservationService := service.NewReservationService(client)
