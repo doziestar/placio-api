@@ -139,6 +139,11 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		eventController := controller.NewEventController(eventService, utility.NewUtility())
 		eventController.RegisterRoutes(routerGroupV1)
 
+		// amenities
+		amenityService := service.NewAmenityService(client)
+		amenityController := controller.NewAmenityController(amenityService, redisClient)
+		amenityController.RegisterRoutes(routerGroupV1)
+
 		//// ratings
 		//ratingService := service.NewRatingService(db)
 		//ratingController := controller.NewRatingController(ratingService)

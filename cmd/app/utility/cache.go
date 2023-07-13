@@ -18,6 +18,7 @@ type ICache interface {
 	SetCache(ctx context.Context, key string, value interface{}) error
 	GetCache(ctx context.Context, key string) ([]byte, error)
 	GetOrSetCache(ctx context.Context, key string, value interface{}) ([]byte, error)
+	DeleteCache(ctx context.Context, key string) error
 }
 
 func extractHostPortFromRedisURL(redisURL string) (string, error) {
@@ -62,7 +63,7 @@ func (r *RedisClient) ConnectRedis() *redis.Client {
 	return newClient
 }
 
-func (r *RedisClient) SetCache(ctx context.Context, key string, value interface{}) error {
+func (r *RedisClient) SetCache(ctx context.Context, key string, value interface{}, exp time.Duration) error {
 	log.Println("Setting cache for key", key)
 	if r.client == nil {
 		return errors.New("redis client is nil")
@@ -73,7 +74,13 @@ func (r *RedisClient) SetCache(ctx context.Context, key string, value interface{
 	}
 	log.Println("Setting cache for key", key)
 	//log.Println("Setting cache for value", jsonValue)
-	return r.client.Set(ctx, key, jsonValue, r.exp).Err()
+	exp = func() time.Duration {
+		if exp == 0 {
+			return CacheDuration
+		}
+		return exp
+	}()
+	return r.client.Set(ctx, key, jsonValue, exp).Err()
 }
 
 func (r *RedisClient) GetCache(ctx context.Context, key string) ([]byte, error) {
@@ -107,4 +114,11 @@ func (r *RedisClient) GetOrSetCache(ctx context.Context, key string, value inter
 		return nil, err
 	}
 	return val, nil
+}
+
+func (r *RedisClient) DeleteCache(ctx context.Context, key string) error {
+	if r.client == nil {
+		return errors.New("redis client is nil")
+	}
+	return r.client.Del(ctx, key).Err()
 }
