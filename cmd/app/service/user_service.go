@@ -587,7 +587,7 @@ func (s *UserServiceImpl) GetAuth0ManagementToken(ctx context.Context) (string, 
 	}
 
 	log.Println("Caching encrypted token:", encryptedToken) // Added log line
-	err = s.cache.SetCache(ctx, auth0TokenCacheKey, encryptedToken)
+	err = s.cache.SetCache(ctx, auth0TokenCacheKey, encryptedToken, time.Hour*24)
 	if err != nil {
 		return "", err
 	}
