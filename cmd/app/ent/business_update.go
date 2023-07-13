@@ -14,6 +14,7 @@ import (
 	"placio-app/ent/category"
 	"placio-app/ent/categoryassignment"
 	"placio-app/ent/event"
+	"placio-app/ent/faq"
 	"placio-app/ent/place"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
@@ -447,6 +448,21 @@ func (bu *BusinessUpdate) AddBusinessFollowEvents(b ...*BusinessFollowEvent) *Bu
 	return bu.AddBusinessFollowEventIDs(ids...)
 }
 
+// AddFaqIDs adds the "faqs" edge to the FAQ entity by IDs.
+func (bu *BusinessUpdate) AddFaqIDs(ids ...string) *BusinessUpdate {
+	bu.mutation.AddFaqIDs(ids...)
+	return bu
+}
+
+// AddFaqs adds the "faqs" edges to the FAQ entity.
+func (bu *BusinessUpdate) AddFaqs(f ...*FAQ) *BusinessUpdate {
+	ids := make([]string, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return bu.AddFaqIDs(ids...)
+}
+
 // Mutation returns the BusinessMutation object of the builder.
 func (bu *BusinessUpdate) Mutation() *BusinessMutation {
 	return bu.mutation
@@ -687,6 +703,27 @@ func (bu *BusinessUpdate) RemoveBusinessFollowEvents(b ...*BusinessFollowEvent) 
 		ids[i] = b[i].ID
 	}
 	return bu.RemoveBusinessFollowEventIDs(ids...)
+}
+
+// ClearFaqs clears all "faqs" edges to the FAQ entity.
+func (bu *BusinessUpdate) ClearFaqs() *BusinessUpdate {
+	bu.mutation.ClearFaqs()
+	return bu
+}
+
+// RemoveFaqIDs removes the "faqs" edge to FAQ entities by IDs.
+func (bu *BusinessUpdate) RemoveFaqIDs(ids ...string) *BusinessUpdate {
+	bu.mutation.RemoveFaqIDs(ids...)
+	return bu
+}
+
+// RemoveFaqs removes "faqs" edges to FAQ entities.
+func (bu *BusinessUpdate) RemoveFaqs(f ...*FAQ) *BusinessUpdate {
+	ids := make([]string, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return bu.RemoveFaqIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1321,6 +1358,51 @@ func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if bu.mutation.FaqsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.FaqsTable,
+			Columns: []string{business.FaqsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(faq.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.RemovedFaqsIDs(); len(nodes) > 0 && !bu.mutation.FaqsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.FaqsTable,
+			Columns: []string{business.FaqsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(faq.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.FaqsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.FaqsTable,
+			Columns: []string{business.FaqsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(faq.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, bu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{business.Label}
@@ -1750,6 +1832,21 @@ func (buo *BusinessUpdateOne) AddBusinessFollowEvents(b ...*BusinessFollowEvent)
 	return buo.AddBusinessFollowEventIDs(ids...)
 }
 
+// AddFaqIDs adds the "faqs" edge to the FAQ entity by IDs.
+func (buo *BusinessUpdateOne) AddFaqIDs(ids ...string) *BusinessUpdateOne {
+	buo.mutation.AddFaqIDs(ids...)
+	return buo
+}
+
+// AddFaqs adds the "faqs" edges to the FAQ entity.
+func (buo *BusinessUpdateOne) AddFaqs(f ...*FAQ) *BusinessUpdateOne {
+	ids := make([]string, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return buo.AddFaqIDs(ids...)
+}
+
 // Mutation returns the BusinessMutation object of the builder.
 func (buo *BusinessUpdateOne) Mutation() *BusinessMutation {
 	return buo.mutation
@@ -1990,6 +2087,27 @@ func (buo *BusinessUpdateOne) RemoveBusinessFollowEvents(b ...*BusinessFollowEve
 		ids[i] = b[i].ID
 	}
 	return buo.RemoveBusinessFollowEventIDs(ids...)
+}
+
+// ClearFaqs clears all "faqs" edges to the FAQ entity.
+func (buo *BusinessUpdateOne) ClearFaqs() *BusinessUpdateOne {
+	buo.mutation.ClearFaqs()
+	return buo
+}
+
+// RemoveFaqIDs removes the "faqs" edge to FAQ entities by IDs.
+func (buo *BusinessUpdateOne) RemoveFaqIDs(ids ...string) *BusinessUpdateOne {
+	buo.mutation.RemoveFaqIDs(ids...)
+	return buo
+}
+
+// RemoveFaqs removes "faqs" edges to FAQ entities.
+func (buo *BusinessUpdateOne) RemoveFaqs(f ...*FAQ) *BusinessUpdateOne {
+	ids := make([]string, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return buo.RemoveFaqIDs(ids...)
 }
 
 // Where appends a list predicates to the BusinessUpdate builder.
@@ -2647,6 +2765,51 @@ func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(businessfollowevent.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if buo.mutation.FaqsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.FaqsTable,
+			Columns: []string{business.FaqsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(faq.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.RemovedFaqsIDs(); len(nodes) > 0 && !buo.mutation.FaqsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.FaqsTable,
+			Columns: []string{business.FaqsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(faq.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.FaqsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.FaqsTable,
+			Columns: []string{business.FaqsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(faq.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

@@ -74,9 +74,11 @@ type BusinessEdges struct {
 	Events []*Event `json:"events,omitempty"`
 	// BusinessFollowEvents holds the value of the businessFollowEvents edge.
 	BusinessFollowEvents []*BusinessFollowEvent `json:"businessFollowEvents,omitempty"`
+	// Faqs holds the value of the faqs edge.
+	Faqs []*FAQ `json:"faqs,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [12]bool
+	loadedTypes [13]bool
 }
 
 // UserBusinessesOrErr returns the UserBusinesses value or an error if the edge
@@ -189,6 +191,15 @@ func (e BusinessEdges) BusinessFollowEventsOrErr() ([]*BusinessFollowEvent, erro
 		return e.BusinessFollowEvents, nil
 	}
 	return nil, &NotLoadedError{edge: "businessFollowEvents"}
+}
+
+// FaqsOrErr returns the Faqs value or an error if the edge
+// was not loaded in eager-loading.
+func (e BusinessEdges) FaqsOrErr() ([]*FAQ, error) {
+	if e.loadedTypes[12] {
+		return e.Faqs, nil
+	}
+	return nil, &NotLoadedError{edge: "faqs"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -368,6 +379,11 @@ func (b *Business) QueryEvents() *EventQuery {
 // QueryBusinessFollowEvents queries the "businessFollowEvents" edge of the Business entity.
 func (b *Business) QueryBusinessFollowEvents() *BusinessFollowEventQuery {
 	return NewBusinessClient(b.config).QueryBusinessFollowEvents(b)
+}
+
+// QueryFaqs queries the "faqs" edge of the Business entity.
+func (b *Business) QueryFaqs() *FAQQuery {
+	return NewBusinessClient(b.config).QueryFaqs(b)
 }
 
 // Update returns a builder for updating this Business.

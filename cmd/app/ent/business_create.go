@@ -14,6 +14,7 @@ import (
 	"placio-app/ent/category"
 	"placio-app/ent/categoryassignment"
 	"placio-app/ent/event"
+	"placio-app/ent/faq"
 	"placio-app/ent/place"
 	"placio-app/ent/post"
 	"placio-app/ent/userbusiness"
@@ -372,6 +373,21 @@ func (bc *BusinessCreate) AddBusinessFollowEvents(b ...*BusinessFollowEvent) *Bu
 	return bc.AddBusinessFollowEventIDs(ids...)
 }
 
+// AddFaqIDs adds the "faqs" edge to the FAQ entity by IDs.
+func (bc *BusinessCreate) AddFaqIDs(ids ...string) *BusinessCreate {
+	bc.mutation.AddFaqIDs(ids...)
+	return bc
+}
+
+// AddFaqs adds the "faqs" edges to the FAQ entity.
+func (bc *BusinessCreate) AddFaqs(f ...*FAQ) *BusinessCreate {
+	ids := make([]string, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return bc.AddFaqIDs(ids...)
+}
+
 // Mutation returns the BusinessMutation object of the builder.
 func (bc *BusinessCreate) Mutation() *BusinessMutation {
 	return bc.mutation
@@ -691,6 +707,22 @@ func (bc *BusinessCreate) createSpec() (*Business, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(businessfollowevent.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := bc.mutation.FaqsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.FaqsTable,
+			Columns: []string{business.FaqsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(faq.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

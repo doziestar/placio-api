@@ -15,6 +15,7 @@ import (
 	"placio-app/ent/category"
 	"placio-app/ent/categoryassignment"
 	"placio-app/ent/event"
+	"placio-app/ent/faq"
 	"placio-app/ent/place"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
@@ -45,6 +46,7 @@ type BusinessQuery struct {
 	withCategoryAssignments     *CategoryAssignmentQuery
 	withEvents                  *EventQuery
 	withBusinessFollowEvents    *BusinessFollowEventQuery
+	withFaqs                    *FAQQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -345,6 +347,28 @@ func (bq *BusinessQuery) QueryBusinessFollowEvents() *BusinessFollowEventQuery {
 	return query
 }
 
+// QueryFaqs chains the current query on the "faqs" edge.
+func (bq *BusinessQuery) QueryFaqs() *FAQQuery {
+	query := (&FAQClient{config: bq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := bq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := bq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(business.Table, business.FieldID, selector),
+			sqlgraph.To(faq.Table, faq.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, business.FaqsTable, business.FaqsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(bq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Business entity from the query.
 // Returns a *NotFoundError when no Business was found.
 func (bq *BusinessQuery) First(ctx context.Context) (*Business, error) {
@@ -549,6 +573,7 @@ func (bq *BusinessQuery) Clone() *BusinessQuery {
 		withCategoryAssignments:     bq.withCategoryAssignments.Clone(),
 		withEvents:                  bq.withEvents.Clone(),
 		withBusinessFollowEvents:    bq.withBusinessFollowEvents.Clone(),
+		withFaqs:                    bq.withFaqs.Clone(),
 		// clone intermediate query.
 		sql:  bq.sql.Clone(),
 		path: bq.path,
@@ -687,6 +712,17 @@ func (bq *BusinessQuery) WithBusinessFollowEvents(opts ...func(*BusinessFollowEv
 	return bq
 }
 
+// WithFaqs tells the query-builder to eager-load the nodes that are connected to
+// the "faqs" edge. The optional arguments are used to configure the query builder of the edge.
+func (bq *BusinessQuery) WithFaqs(opts ...func(*FAQQuery)) *BusinessQuery {
+	query := (&FAQClient{config: bq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	bq.withFaqs = query
+	return bq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -765,7 +801,7 @@ func (bq *BusinessQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Bus
 	var (
 		nodes       = []*Business{}
 		_spec       = bq.querySpec()
-		loadedTypes = [12]bool{
+		loadedTypes = [13]bool{
 			bq.withUserBusinesses != nil,
 			bq.withBusinessAccountSettings != nil,
 			bq.withPosts != nil,
@@ -778,6 +814,7 @@ func (bq *BusinessQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Bus
 			bq.withCategoryAssignments != nil,
 			bq.withEvents != nil,
 			bq.withBusinessFollowEvents != nil,
+			bq.withFaqs != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -886,6 +923,13 @@ func (bq *BusinessQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Bus
 			func(n *Business, e *BusinessFollowEvent) {
 				n.Edges.BusinessFollowEvents = append(n.Edges.BusinessFollowEvents, e)
 			}); err != nil {
+			return nil, err
+		}
+	}
+	if query := bq.withFaqs; query != nil {
+		if err := bq.loadFaqs(ctx, query, nodes,
+			func(n *Business) { n.Edges.Faqs = []*FAQ{} },
+			func(n *Business, e *FAQ) { n.Edges.Faqs = append(n.Edges.Faqs, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -1256,6 +1300,37 @@ func (bq *BusinessQuery) loadBusinessFollowEvents(ctx context.Context, query *Bu
 		node, ok := nodeids[*fk]
 		if !ok {
 			return fmt.Errorf(`unexpected referenced foreign-key "business_business_follow_events" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (bq *BusinessQuery) loadFaqs(ctx context.Context, query *FAQQuery, nodes []*Business, init func(*Business), assign func(*Business, *FAQ)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Business)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.FAQ(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(business.FaqsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.business_faqs
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "business_faqs" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "business_faqs" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

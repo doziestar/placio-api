@@ -12,6 +12,7 @@ import (
 	"placio-app/ent/category"
 	"placio-app/ent/categoryassignment"
 	"placio-app/ent/event"
+	"placio-app/ent/faq"
 	"placio-app/ent/menu"
 	"placio-app/ent/place"
 	"placio-app/ent/predicate"
@@ -676,6 +677,21 @@ func (pu *PlaceUpdate) AddFollowerUsers(u ...*UserFollowPlace) *PlaceUpdate {
 	return pu.AddFollowerUserIDs(ids...)
 }
 
+// AddFaqIDs adds the "faqs" edge to the FAQ entity by IDs.
+func (pu *PlaceUpdate) AddFaqIDs(ids ...string) *PlaceUpdate {
+	pu.mutation.AddFaqIDs(ids...)
+	return pu
+}
+
+// AddFaqs adds the "faqs" edges to the FAQ entity.
+func (pu *PlaceUpdate) AddFaqs(f ...*FAQ) *PlaceUpdate {
+	ids := make([]string, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return pu.AddFaqIDs(ids...)
+}
+
 // Mutation returns the PlaceMutation object of the builder.
 func (pu *PlaceUpdate) Mutation() *PlaceMutation {
 	return pu.mutation
@@ -916,6 +932,27 @@ func (pu *PlaceUpdate) RemoveFollowerUsers(u ...*UserFollowPlace) *PlaceUpdate {
 		ids[i] = u[i].ID
 	}
 	return pu.RemoveFollowerUserIDs(ids...)
+}
+
+// ClearFaqs clears all "faqs" edges to the FAQ entity.
+func (pu *PlaceUpdate) ClearFaqs() *PlaceUpdate {
+	pu.mutation.ClearFaqs()
+	return pu
+}
+
+// RemoveFaqIDs removes the "faqs" edge to FAQ entities by IDs.
+func (pu *PlaceUpdate) RemoveFaqIDs(ids ...string) *PlaceUpdate {
+	pu.mutation.RemoveFaqIDs(ids...)
+	return pu
+}
+
+// RemoveFaqs removes "faqs" edges to FAQ entities.
+func (pu *PlaceUpdate) RemoveFaqs(f ...*FAQ) *PlaceUpdate {
+	ids := make([]string, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return pu.RemoveFaqIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1649,6 +1686,51 @@ func (pu *PlaceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if pu.mutation.FaqsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   place.FaqsTable,
+			Columns: place.FaqsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(faq.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.RemovedFaqsIDs(); len(nodes) > 0 && !pu.mutation.FaqsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   place.FaqsTable,
+			Columns: place.FaqsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(faq.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.FaqsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   place.FaqsTable,
+			Columns: place.FaqsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(faq.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, pu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{place.Label}
@@ -2305,6 +2387,21 @@ func (puo *PlaceUpdateOne) AddFollowerUsers(u ...*UserFollowPlace) *PlaceUpdateO
 	return puo.AddFollowerUserIDs(ids...)
 }
 
+// AddFaqIDs adds the "faqs" edge to the FAQ entity by IDs.
+func (puo *PlaceUpdateOne) AddFaqIDs(ids ...string) *PlaceUpdateOne {
+	puo.mutation.AddFaqIDs(ids...)
+	return puo
+}
+
+// AddFaqs adds the "faqs" edges to the FAQ entity.
+func (puo *PlaceUpdateOne) AddFaqs(f ...*FAQ) *PlaceUpdateOne {
+	ids := make([]string, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return puo.AddFaqIDs(ids...)
+}
+
 // Mutation returns the PlaceMutation object of the builder.
 func (puo *PlaceUpdateOne) Mutation() *PlaceMutation {
 	return puo.mutation
@@ -2545,6 +2642,27 @@ func (puo *PlaceUpdateOne) RemoveFollowerUsers(u ...*UserFollowPlace) *PlaceUpda
 		ids[i] = u[i].ID
 	}
 	return puo.RemoveFollowerUserIDs(ids...)
+}
+
+// ClearFaqs clears all "faqs" edges to the FAQ entity.
+func (puo *PlaceUpdateOne) ClearFaqs() *PlaceUpdateOne {
+	puo.mutation.ClearFaqs()
+	return puo
+}
+
+// RemoveFaqIDs removes the "faqs" edge to FAQ entities by IDs.
+func (puo *PlaceUpdateOne) RemoveFaqIDs(ids ...string) *PlaceUpdateOne {
+	puo.mutation.RemoveFaqIDs(ids...)
+	return puo
+}
+
+// RemoveFaqs removes "faqs" edges to FAQ entities.
+func (puo *PlaceUpdateOne) RemoveFaqs(f ...*FAQ) *PlaceUpdateOne {
+	ids := make([]string, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return puo.RemoveFaqIDs(ids...)
 }
 
 // Where appends a list predicates to the PlaceUpdate builder.
@@ -3301,6 +3419,51 @@ func (puo *PlaceUpdateOne) sqlSave(ctx context.Context) (_node *Place, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(userfollowplace.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if puo.mutation.FaqsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   place.FaqsTable,
+			Columns: place.FaqsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(faq.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.RemovedFaqsIDs(); len(nodes) > 0 && !puo.mutation.FaqsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   place.FaqsTable,
+			Columns: place.FaqsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(faq.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.FaqsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   place.FaqsTable,
+			Columns: place.FaqsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(faq.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

@@ -17,6 +17,7 @@ import (
 	"placio-app/ent/categoryassignment"
 	"placio-app/ent/comment"
 	"placio-app/ent/event"
+	"placio-app/ent/faq"
 	"placio-app/ent/help"
 	"placio-app/ent/like"
 	"placio-app/ent/media"
@@ -64,6 +65,7 @@ const (
 	TypeChat                   = "Chat"
 	TypeComment                = "Comment"
 	TypeEvent                  = "Event"
+	TypeFAQ                    = "FAQ"
 	TypeHelp                   = "Help"
 	TypeLike                   = "Like"
 	TypeMedia                  = "Media"
@@ -1780,6 +1782,9 @@ type BusinessMutation struct {
 	businessFollowEvents             map[string]struct{}
 	removedbusinessFollowEvents      map[string]struct{}
 	clearedbusinessFollowEvents      bool
+	faqs                             map[string]struct{}
+	removedfaqs                      map[string]struct{}
+	clearedfaqs                      bool
 	done                             bool
 	oldValue                         func(context.Context) (*Business, error)
 	predicates                       []predicate.Business
@@ -3118,6 +3123,60 @@ func (m *BusinessMutation) ResetBusinessFollowEvents() {
 	m.removedbusinessFollowEvents = nil
 }
 
+// AddFaqIDs adds the "faqs" edge to the FAQ entity by ids.
+func (m *BusinessMutation) AddFaqIDs(ids ...string) {
+	if m.faqs == nil {
+		m.faqs = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.faqs[ids[i]] = struct{}{}
+	}
+}
+
+// ClearFaqs clears the "faqs" edge to the FAQ entity.
+func (m *BusinessMutation) ClearFaqs() {
+	m.clearedfaqs = true
+}
+
+// FaqsCleared reports if the "faqs" edge to the FAQ entity was cleared.
+func (m *BusinessMutation) FaqsCleared() bool {
+	return m.clearedfaqs
+}
+
+// RemoveFaqIDs removes the "faqs" edge to the FAQ entity by IDs.
+func (m *BusinessMutation) RemoveFaqIDs(ids ...string) {
+	if m.removedfaqs == nil {
+		m.removedfaqs = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.faqs, ids[i])
+		m.removedfaqs[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedFaqs returns the removed IDs of the "faqs" edge to the FAQ entity.
+func (m *BusinessMutation) RemovedFaqsIDs() (ids []string) {
+	for id := range m.removedfaqs {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// FaqsIDs returns the "faqs" edge IDs in the mutation.
+func (m *BusinessMutation) FaqsIDs() (ids []string) {
+	for id := range m.faqs {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetFaqs resets all changes to the "faqs" edge.
+func (m *BusinessMutation) ResetFaqs() {
+	m.faqs = nil
+	m.clearedfaqs = false
+	m.removedfaqs = nil
+}
+
 // Where appends a list predicates to the BusinessMutation builder.
 func (m *BusinessMutation) Where(ps ...predicate.Business) {
 	m.predicates = append(m.predicates, ps...)
@@ -3522,7 +3581,7 @@ func (m *BusinessMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *BusinessMutation) AddedEdges() []string {
-	edges := make([]string, 0, 12)
+	edges := make([]string, 0, 13)
 	if m.userBusinesses != nil {
 		edges = append(edges, business.EdgeUserBusinesses)
 	}
@@ -3558,6 +3617,9 @@ func (m *BusinessMutation) AddedEdges() []string {
 	}
 	if m.businessFollowEvents != nil {
 		edges = append(edges, business.EdgeBusinessFollowEvents)
+	}
+	if m.faqs != nil {
+		edges = append(edges, business.EdgeFaqs)
 	}
 	return edges
 }
@@ -3636,13 +3698,19 @@ func (m *BusinessMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case business.EdgeFaqs:
+		ids := make([]ent.Value, 0, len(m.faqs))
+		for id := range m.faqs {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *BusinessMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 12)
+	edges := make([]string, 0, 13)
 	if m.removeduserBusinesses != nil {
 		edges = append(edges, business.EdgeUserBusinesses)
 	}
@@ -3675,6 +3743,9 @@ func (m *BusinessMutation) RemovedEdges() []string {
 	}
 	if m.removedbusinessFollowEvents != nil {
 		edges = append(edges, business.EdgeBusinessFollowEvents)
+	}
+	if m.removedfaqs != nil {
+		edges = append(edges, business.EdgeFaqs)
 	}
 	return edges
 }
@@ -3749,13 +3820,19 @@ func (m *BusinessMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case business.EdgeFaqs:
+		ids := make([]ent.Value, 0, len(m.removedfaqs))
+		for id := range m.removedfaqs {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *BusinessMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 12)
+	edges := make([]string, 0, 13)
 	if m.cleareduserBusinesses {
 		edges = append(edges, business.EdgeUserBusinesses)
 	}
@@ -3792,6 +3869,9 @@ func (m *BusinessMutation) ClearedEdges() []string {
 	if m.clearedbusinessFollowEvents {
 		edges = append(edges, business.EdgeBusinessFollowEvents)
 	}
+	if m.clearedfaqs {
+		edges = append(edges, business.EdgeFaqs)
+	}
 	return edges
 }
 
@@ -3823,6 +3903,8 @@ func (m *BusinessMutation) EdgeCleared(name string) bool {
 		return m.clearedevents
 	case business.EdgeBusinessFollowEvents:
 		return m.clearedbusinessFollowEvents
+	case business.EdgeFaqs:
+		return m.clearedfaqs
 	}
 	return false
 }
@@ -3877,6 +3959,9 @@ func (m *BusinessMutation) ResetEdge(name string) error {
 		return nil
 	case business.EdgeBusinessFollowEvents:
 		m.ResetBusinessFollowEvents()
+		return nil
+	case business.EdgeFaqs:
+		m.ResetFaqs()
 		return nil
 	}
 	return fmt.Errorf("unknown Business edge %s", name)
@@ -10839,6 +10924,544 @@ func (m *EventMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Event edge %s", name)
 }
 
+// FAQMutation represents an operation that mutates the FAQ nodes in the graph.
+type FAQMutation struct {
+	config
+	op              Op
+	typ             string
+	id              *string
+	question        *string
+	answer          *string
+	clearedFields   map[string]struct{}
+	business        *string
+	clearedbusiness bool
+	place           map[string]struct{}
+	removedplace    map[string]struct{}
+	clearedplace    bool
+	done            bool
+	oldValue        func(context.Context) (*FAQ, error)
+	predicates      []predicate.FAQ
+}
+
+var _ ent.Mutation = (*FAQMutation)(nil)
+
+// faqOption allows management of the mutation configuration using functional options.
+type faqOption func(*FAQMutation)
+
+// newFAQMutation creates new mutation for the FAQ entity.
+func newFAQMutation(c config, op Op, opts ...faqOption) *FAQMutation {
+	m := &FAQMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeFAQ,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withFAQID sets the ID field of the mutation.
+func withFAQID(id string) faqOption {
+	return func(m *FAQMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *FAQ
+		)
+		m.oldValue = func(ctx context.Context) (*FAQ, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().FAQ.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withFAQ sets the old FAQ of the mutation.
+func withFAQ(node *FAQ) faqOption {
+	return func(m *FAQMutation) {
+		m.oldValue = func(context.Context) (*FAQ, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m FAQMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m FAQMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of FAQ entities.
+func (m *FAQMutation) SetID(id string) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *FAQMutation) ID() (id string, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *FAQMutation) IDs(ctx context.Context) ([]string, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []string{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().FAQ.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetQuestion sets the "question" field.
+func (m *FAQMutation) SetQuestion(s string) {
+	m.question = &s
+}
+
+// Question returns the value of the "question" field in the mutation.
+func (m *FAQMutation) Question() (r string, exists bool) {
+	v := m.question
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldQuestion returns the old "question" field's value of the FAQ entity.
+// If the FAQ object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FAQMutation) OldQuestion(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldQuestion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldQuestion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldQuestion: %w", err)
+	}
+	return oldValue.Question, nil
+}
+
+// ResetQuestion resets all changes to the "question" field.
+func (m *FAQMutation) ResetQuestion() {
+	m.question = nil
+}
+
+// SetAnswer sets the "answer" field.
+func (m *FAQMutation) SetAnswer(s string) {
+	m.answer = &s
+}
+
+// Answer returns the value of the "answer" field in the mutation.
+func (m *FAQMutation) Answer() (r string, exists bool) {
+	v := m.answer
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAnswer returns the old "answer" field's value of the FAQ entity.
+// If the FAQ object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FAQMutation) OldAnswer(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAnswer is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAnswer requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAnswer: %w", err)
+	}
+	return oldValue.Answer, nil
+}
+
+// ResetAnswer resets all changes to the "answer" field.
+func (m *FAQMutation) ResetAnswer() {
+	m.answer = nil
+}
+
+// SetBusinessID sets the "business" edge to the Business entity by id.
+func (m *FAQMutation) SetBusinessID(id string) {
+	m.business = &id
+}
+
+// ClearBusiness clears the "business" edge to the Business entity.
+func (m *FAQMutation) ClearBusiness() {
+	m.clearedbusiness = true
+}
+
+// BusinessCleared reports if the "business" edge to the Business entity was cleared.
+func (m *FAQMutation) BusinessCleared() bool {
+	return m.clearedbusiness
+}
+
+// BusinessID returns the "business" edge ID in the mutation.
+func (m *FAQMutation) BusinessID() (id string, exists bool) {
+	if m.business != nil {
+		return *m.business, true
+	}
+	return
+}
+
+// BusinessIDs returns the "business" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// BusinessID instead. It exists only for internal usage by the builders.
+func (m *FAQMutation) BusinessIDs() (ids []string) {
+	if id := m.business; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetBusiness resets all changes to the "business" edge.
+func (m *FAQMutation) ResetBusiness() {
+	m.business = nil
+	m.clearedbusiness = false
+}
+
+// AddPlaceIDs adds the "place" edge to the Place entity by ids.
+func (m *FAQMutation) AddPlaceIDs(ids ...string) {
+	if m.place == nil {
+		m.place = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.place[ids[i]] = struct{}{}
+	}
+}
+
+// ClearPlace clears the "place" edge to the Place entity.
+func (m *FAQMutation) ClearPlace() {
+	m.clearedplace = true
+}
+
+// PlaceCleared reports if the "place" edge to the Place entity was cleared.
+func (m *FAQMutation) PlaceCleared() bool {
+	return m.clearedplace
+}
+
+// RemovePlaceIDs removes the "place" edge to the Place entity by IDs.
+func (m *FAQMutation) RemovePlaceIDs(ids ...string) {
+	if m.removedplace == nil {
+		m.removedplace = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.place, ids[i])
+		m.removedplace[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedPlace returns the removed IDs of the "place" edge to the Place entity.
+func (m *FAQMutation) RemovedPlaceIDs() (ids []string) {
+	for id := range m.removedplace {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// PlaceIDs returns the "place" edge IDs in the mutation.
+func (m *FAQMutation) PlaceIDs() (ids []string) {
+	for id := range m.place {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetPlace resets all changes to the "place" edge.
+func (m *FAQMutation) ResetPlace() {
+	m.place = nil
+	m.clearedplace = false
+	m.removedplace = nil
+}
+
+// Where appends a list predicates to the FAQMutation builder.
+func (m *FAQMutation) Where(ps ...predicate.FAQ) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the FAQMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *FAQMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.FAQ, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *FAQMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *FAQMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (FAQ).
+func (m *FAQMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *FAQMutation) Fields() []string {
+	fields := make([]string, 0, 2)
+	if m.question != nil {
+		fields = append(fields, faq.FieldQuestion)
+	}
+	if m.answer != nil {
+		fields = append(fields, faq.FieldAnswer)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *FAQMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case faq.FieldQuestion:
+		return m.Question()
+	case faq.FieldAnswer:
+		return m.Answer()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *FAQMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case faq.FieldQuestion:
+		return m.OldQuestion(ctx)
+	case faq.FieldAnswer:
+		return m.OldAnswer(ctx)
+	}
+	return nil, fmt.Errorf("unknown FAQ field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *FAQMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case faq.FieldQuestion:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetQuestion(v)
+		return nil
+	case faq.FieldAnswer:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAnswer(v)
+		return nil
+	}
+	return fmt.Errorf("unknown FAQ field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *FAQMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *FAQMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *FAQMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown FAQ numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *FAQMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *FAQMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *FAQMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown FAQ nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *FAQMutation) ResetField(name string) error {
+	switch name {
+	case faq.FieldQuestion:
+		m.ResetQuestion()
+		return nil
+	case faq.FieldAnswer:
+		m.ResetAnswer()
+		return nil
+	}
+	return fmt.Errorf("unknown FAQ field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *FAQMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.business != nil {
+		edges = append(edges, faq.EdgeBusiness)
+	}
+	if m.place != nil {
+		edges = append(edges, faq.EdgePlace)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *FAQMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case faq.EdgeBusiness:
+		if id := m.business; id != nil {
+			return []ent.Value{*id}
+		}
+	case faq.EdgePlace:
+		ids := make([]ent.Value, 0, len(m.place))
+		for id := range m.place {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *FAQMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.removedplace != nil {
+		edges = append(edges, faq.EdgePlace)
+	}
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *FAQMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case faq.EdgePlace:
+		ids := make([]ent.Value, 0, len(m.removedplace))
+		for id := range m.removedplace {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *FAQMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedbusiness {
+		edges = append(edges, faq.EdgeBusiness)
+	}
+	if m.clearedplace {
+		edges = append(edges, faq.EdgePlace)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *FAQMutation) EdgeCleared(name string) bool {
+	switch name {
+	case faq.EdgeBusiness:
+		return m.clearedbusiness
+	case faq.EdgePlace:
+		return m.clearedplace
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *FAQMutation) ClearEdge(name string) error {
+	switch name {
+	case faq.EdgeBusiness:
+		m.ClearBusiness()
+		return nil
+	}
+	return fmt.Errorf("unknown FAQ unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *FAQMutation) ResetEdge(name string) error {
+	switch name {
+	case faq.EdgeBusiness:
+		m.ResetBusiness()
+		return nil
+	case faq.EdgePlace:
+		m.ResetPlace()
+		return nil
+	}
+	return fmt.Errorf("unknown FAQ edge %s", name)
+}
+
 // HelpMutation represents an operation that mutates the Help nodes in the graph.
 type HelpMutation struct {
 	config
@@ -13697,6 +14320,9 @@ type PlaceMutation struct {
 	followerUsers              map[string]struct{}
 	removedfollowerUsers       map[string]struct{}
 	clearedfollowerUsers       bool
+	faqs                       map[string]struct{}
+	removedfaqs                map[string]struct{}
+	clearedfaqs                bool
 	done                       bool
 	oldValue                   func(context.Context) (*Place, error)
 	predicates                 []predicate.Place
@@ -15777,6 +16403,60 @@ func (m *PlaceMutation) ResetFollowerUsers() {
 	m.removedfollowerUsers = nil
 }
 
+// AddFaqIDs adds the "faqs" edge to the FAQ entity by ids.
+func (m *PlaceMutation) AddFaqIDs(ids ...string) {
+	if m.faqs == nil {
+		m.faqs = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.faqs[ids[i]] = struct{}{}
+	}
+}
+
+// ClearFaqs clears the "faqs" edge to the FAQ entity.
+func (m *PlaceMutation) ClearFaqs() {
+	m.clearedfaqs = true
+}
+
+// FaqsCleared reports if the "faqs" edge to the FAQ entity was cleared.
+func (m *PlaceMutation) FaqsCleared() bool {
+	return m.clearedfaqs
+}
+
+// RemoveFaqIDs removes the "faqs" edge to the FAQ entity by IDs.
+func (m *PlaceMutation) RemoveFaqIDs(ids ...string) {
+	if m.removedfaqs == nil {
+		m.removedfaqs = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.faqs, ids[i])
+		m.removedfaqs[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedFaqs returns the removed IDs of the "faqs" edge to the FAQ entity.
+func (m *PlaceMutation) RemovedFaqsIDs() (ids []string) {
+	for id := range m.removedfaqs {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// FaqsIDs returns the "faqs" edge IDs in the mutation.
+func (m *PlaceMutation) FaqsIDs() (ids []string) {
+	for id := range m.faqs {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetFaqs resets all changes to the "faqs" edge.
+func (m *PlaceMutation) ResetFaqs() {
+	m.faqs = nil
+	m.clearedfaqs = false
+	m.removedfaqs = nil
+}
+
 // Where appends a list predicates to the PlaceMutation builder.
 func (m *PlaceMutation) Where(ps ...predicate.Place) {
 	m.predicates = append(m.predicates, ps...)
@@ -16509,7 +17189,7 @@ func (m *PlaceMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PlaceMutation) AddedEdges() []string {
-	edges := make([]string, 0, 12)
+	edges := make([]string, 0, 13)
 	if m.business != nil {
 		edges = append(edges, place.EdgeBusiness)
 	}
@@ -16545,6 +17225,9 @@ func (m *PlaceMutation) AddedEdges() []string {
 	}
 	if m.followerUsers != nil {
 		edges = append(edges, place.EdgeFollowerUsers)
+	}
+	if m.faqs != nil {
+		edges = append(edges, place.EdgeFaqs)
 	}
 	return edges
 }
@@ -16623,13 +17306,19 @@ func (m *PlaceMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case place.EdgeFaqs:
+		ids := make([]ent.Value, 0, len(m.faqs))
+		for id := range m.faqs {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PlaceMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 12)
+	edges := make([]string, 0, 13)
 	if m.removedusers != nil {
 		edges = append(edges, place.EdgeUsers)
 	}
@@ -16662,6 +17351,9 @@ func (m *PlaceMutation) RemovedEdges() []string {
 	}
 	if m.removedfollowerUsers != nil {
 		edges = append(edges, place.EdgeFollowerUsers)
+	}
+	if m.removedfaqs != nil {
+		edges = append(edges, place.EdgeFaqs)
 	}
 	return edges
 }
@@ -16736,13 +17428,19 @@ func (m *PlaceMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case place.EdgeFaqs:
+		ids := make([]ent.Value, 0, len(m.removedfaqs))
+		for id := range m.removedfaqs {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PlaceMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 12)
+	edges := make([]string, 0, 13)
 	if m.clearedbusiness {
 		edges = append(edges, place.EdgeBusiness)
 	}
@@ -16779,6 +17477,9 @@ func (m *PlaceMutation) ClearedEdges() []string {
 	if m.clearedfollowerUsers {
 		edges = append(edges, place.EdgeFollowerUsers)
 	}
+	if m.clearedfaqs {
+		edges = append(edges, place.EdgeFaqs)
+	}
 	return edges
 }
 
@@ -16810,6 +17511,8 @@ func (m *PlaceMutation) EdgeCleared(name string) bool {
 		return m.clearedcategoryAssignments
 	case place.EdgeFollowerUsers:
 		return m.clearedfollowerUsers
+	case place.EdgeFaqs:
+		return m.clearedfaqs
 	}
 	return false
 }
@@ -16864,6 +17567,9 @@ func (m *PlaceMutation) ResetEdge(name string) error {
 		return nil
 	case place.EdgeFollowerUsers:
 		m.ResetFollowerUsers()
+		return nil
+	case place.EdgeFaqs:
+		m.ResetFaqs()
 		return nil
 	}
 	return fmt.Errorf("unknown Place edge %s", name)
