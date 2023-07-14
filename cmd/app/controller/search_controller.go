@@ -3,6 +3,7 @@ package controller
 import (
 	"net/http"
 	_ "placio-app/Dto"
+	"placio-app/ent"
 	_ "placio-app/ent"
 	"placio-app/service"
 	"placio-app/utility"
@@ -22,6 +23,7 @@ func (ss *SearchController) RegisterRoutes(route *gin.RouterGroup) {
 	searchRoute := route.Group("/search")
 	{
 		searchRoute.GET("/", utility.Use(ss.search))
+		searchRoute.GET("/db", utility.Use(ss.searchDB))
 		searchRoute.GET("/users", utility.Use(ss.searchUsers))
 		searchRoute.GET("/places", utility.Use(ss.searchPlaces))
 		searchRoute.GET("/events", utility.Use(ss.searchEvents))
@@ -67,6 +69,71 @@ func (ss *SearchController) search(ctx *gin.Context) error {
 		"events":     events,
 		"places":     places,
 	})
+	return nil
+}
+
+// @Summary Search DB
+// @Description Search for Users, Places, Events, and Businesses
+// @Tags Search-DB
+// @Accept json
+// @Produce json
+// @Param type query string false "Type of search - user, place, event, business"
+// @Param searchText query string true "Text to search for"
+// @Success 200 {object} Dto.SearchResponses "Successfully found search results"
+// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
+// @Router /api/v1/search [get]
+func (ss *SearchController) searchDB(ctx *gin.Context) error {
+	searchType := ctx.Query("type")
+	searchText := ctx.Query("searchText")
+
+	searchAll := false
+	if searchType == "" {
+		searchAll = true
+	}
+
+	var users []*ent.User
+	var businesses []*ent.Business
+	var events []*ent.Event
+	var places []*ent.Place
+	var err error
+
+	if searchAll || searchType == "user" {
+		users, err = ss.searchService.SearchUsersDB(ctx, searchText)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return err
+		}
+	}
+	if searchAll || searchType == "business" {
+		businesses, err = ss.searchService.SearchBusinessesDB(ctx, searchText)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return err
+		}
+	}
+	if searchAll || searchType == "event" {
+		events, err = ss.searchService.SearchEventsDB(ctx, searchText)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return err
+		}
+	}
+	if searchAll || searchType == "place" {
+		places, err = ss.searchService.SearchPlacesDB(ctx, searchText)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return err
+		}
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"users":      users,
+		"businesses": businesses,
+		"events":     events,
+		"places":     places,
+	})
+
 	return nil
 }
 
