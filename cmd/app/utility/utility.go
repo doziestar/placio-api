@@ -5,7 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
+	"log"
 	"math/big"
+	"net/http"
+	"placio-app/ent"
 	"placio-app/models"
 	"strings"
 
@@ -119,17 +122,36 @@ func Assert(data interface{}, err string, input map[string]interface{}) bool {
 //	}
 //}
 
+type MyError struct {
+	StatusCode int
+	Msg        string
+}
+
+func (e *MyError) Error() string {
+	return e.Msg
+}
+
 func Use(fn func(*gin.Context) error) gin.HandlerFunc {
-	//fmt.Println("Entering utility.Use function")
-	//logger.Info(context.Background(), "middleware.Use")
-	defer sentry.Recover()
-	//defer sentry.Flush(2 * time.Second)
 	return func(c *gin.Context) {
+		defer sentry.Recover()
 		err := fn(c)
 		if err != nil {
+			// Enhanced logging
+			log.Printf("An error occurred: %s. Method: %s, URL: %s, Client IP: %s",
+				err.Error(), c.Request.Method, c.Request.URL.Path, c.ClientIP())
 			sentry.CaptureException(err)
-			c.Next()
+
+			switch {
+			case ent.IsNotFound(err):
+				c.JSON(http.StatusNotFound, gin.H{"error": "Resource Not Found"})
+			case ent.IsConstraintError(err):
+				c.JSON(http.StatusConflict, gin.H{"error": "Constraint Error"})
+			default:
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+			}
+			return
 		}
+		c.Next()
 	}
 }
 
