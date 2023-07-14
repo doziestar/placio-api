@@ -13,7 +13,6 @@ import (
 	"placio-app/ent/category"
 	"placio-app/ent/comment"
 	"placio-app/ent/event"
-	"placio-app/ent/faq"
 	"placio-app/ent/help"
 	"placio-app/ent/like"
 	"placio-app/ent/media"
@@ -146,12 +145,6 @@ func init() {
 	event.DefaultUpdatedAt = eventDescUpdatedAt.Default.(func() time.Time)
 	// event.UpdateDefaultUpdatedAt holds the default value on update for the updatedAt field.
 	event.UpdateDefaultUpdatedAt = eventDescUpdatedAt.UpdateDefault.(func() time.Time)
-	faqFields := schema.FAQ{}.Fields()
-	_ = faqFields
-	// faqDescID is the schema descriptor for id field.
-	faqDescID := faqFields[0].Descriptor()
-	// faq.IDValidator is a validator for the "id" field. It is called by the builders before save.
-	faq.IDValidator = faqDescID.Validators[0].(func(string) error)
 	helpFields := schema.Help{}.Fields()
 	_ = helpFields
 	// helpDescStatus is the schema descriptor for status field.

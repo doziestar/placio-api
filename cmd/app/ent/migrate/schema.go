@@ -410,7 +410,7 @@ var (
 	}
 	// FaQsColumns holds the columns for the "fa_qs" table.
 	FaQsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
+		{Name: "id", Type: field.TypeString, Unique: true},
 		{Name: "question", Type: field.TypeString},
 		{Name: "answer", Type: field.TypeString},
 		{Name: "business_faqs", Type: field.TypeString, Nullable: true, Size: 36},
@@ -1016,7 +1016,7 @@ var (
 	}
 	// FaqPlaceColumns holds the columns for the "faq_place" table.
 	FaqPlaceColumns = []*schema.Column{
-		{Name: "faq_id", Type: field.TypeString, Size: 36},
+		{Name: "faq_id", Type: field.TypeString},
 		{Name: "place_id", Type: field.TypeString, Size: 36},
 	}
 	// FaqPlaceTable holds the schema information for the "faq_place" table.
@@ -1041,7 +1041,7 @@ var (
 	}
 	// FaqEventColumns holds the columns for the "faq_event" table.
 	FaqEventColumns = []*schema.Column{
-		{Name: "faq_id", Type: field.TypeString, Size: 36},
+		{Name: "faq_id", Type: field.TypeString},
 		{Name: "event_id", Type: field.TypeString},
 	}
 	// FaqEventTable holds the schema information for the "faq_event" table.
