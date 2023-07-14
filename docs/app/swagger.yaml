@@ -4577,7 +4577,7 @@ paths:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
       summary: Search DB
       tags:
-      - Search-DB
+      - Search
   /api/v1/search/events:
     get:
       consumes:

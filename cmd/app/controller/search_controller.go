@@ -74,7 +74,7 @@ func (ss *SearchController) search(ctx *gin.Context) error {
 
 // @Summary Search DB
 // @Description Search for Users, Places, Events, and Businesses
-// @Tags Search-DB
+// @Tags Search
 // @Accept json
 // @Produce json
 // @Param type query string false "Type of search - user, place, event, business"

@@ -3326,7 +3326,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Search-DB"
+                    "Search"
                 ],
                 "summary": "Search DB",
                 "parameters": [
