@@ -4,6 +4,8 @@ volumes:
   pgadmin_data:
   redis_data:
   db_data2:
+  prometheus_data:
+  grafana_data:
 
 services:
   placio-proxy:
@@ -98,6 +100,89 @@ services:
       - "traefik.http.routers.docs-secure.service=docs"
       - traefik.http.services.docs.loadbalancer.server.port=6060
       # add path prefix strip
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prod.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    ports:
+      - "9090:9090"
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=default
+      - "traefik.http.routers.prometheus-secure.entrypoints=websecure"
+      - "traefik.http.routers.prometheus-secure.rule=Host(`prometheus.palnight.com`)"
+      - "traefik.http.routers.prometheus-secure.service=prometheus"
+      - traefik.http.services.prometheus.loadbalancer.server.port=9090
+
+  grafana:
+    image: grafana/grafana:latest
+    volumes:
+      - grafana_data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=default
+      - "traefik.http.routers.grafana-secure.entrypoints=websecure"
+      - "traefik.http.routers.grafana-secure.rule=Host(`grafana.palnight.com`)"
+      - "traefik.http.routers.grafana-secure.service=grafana"
+      - traefik.http.services.grafana.loadbalancer.server.port=3000
+
+  node_exporter:
+    image: quay.io/prometheus/node-exporter:v1.5.0
+    container_name: node_exporter
+    command: "--path.rootfs=/host"
+    pid: host
+    restart: unless-stopped
+    volumes:
+      - /:/host:ro,rslave
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.47.0
+    container_name: cadvisor
+    ports:
+      - "8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    devices:
+      - /dev/kmsg
+    privileged: true
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=default
+      - "traefik.http.routers.cadvisor-secure.entrypoints=websecure"
+      - "traefik.http.routers.cadvisor-secure.rule=Host(`cadvisor.palnight.com`)"
+      - "traefik.http.routers.cadvisor-secure.service=cadvisor"
+      - traefik.http.services.cadvisor.loadbalancer.server.port=8080
+
+  pg_exporter:
+    image: wrouesnel/postgres_exporter:latest
+    environment:
+      DATA_SOURCE_NAME: postgresql://dozie:918273645dozie@db:5432/placio?sslmode=disable
+    command: "-extend.query-path=/custom-queries.yaml"
+    volumes:
+      - ./prometheus/db-queries:/custom-queries.yaml
+    ports:
+      - "9187:9187"
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=default
+      - "traefik.http.routers.pgexporter-secure.entrypoints=websecure"
+      - "traefik.http.routers.pgexporter-secure.rule=Host(`pgexporter.palnight.com`)"
+      - "traefik.http.routers.pgexporter-secure.service=pgexporter"
+      - traefik.http.services.pgexporter.loadbalancer.server.port=9187
 
 # volumes:
 #   app-db-data2:

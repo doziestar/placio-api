@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"github.com/gin-gonic/gin"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"placio-app/api"
 	"placio-app/database"
 	"placio-app/start"
@@ -25,6 +26,8 @@ import (
 func main() {
 	// initialize fiber app
 	app := gin.Default()
+	app.Use(start.PrometheusMiddleware())
+	app.GET("/metrics", gin.WrapH(promhttp.Handler()))
 
 	// initialize middleware
 	start.Middleware(app)
