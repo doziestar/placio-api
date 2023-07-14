@@ -184,8 +184,7 @@ services:
       - "traefik.http.routers.pgexporter-secure.service=pgexporter"
       - traefik.http.services.pgexporter.loadbalancer.server.port=9187
 
-# volumes:
-#   app-db-data2:
+
 networks:
   traefik-public:
     # For local dev, don't expect an external Traefik network
