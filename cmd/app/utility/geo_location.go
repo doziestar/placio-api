@@ -3,40 +3,53 @@ package utility
 import (
 	"encoding/json"
 	"fmt"
+	"io"
+	"log"
 	"net/http"
 	"net/url"
 )
 
-type googleGeoResponse struct {
-	Results []struct {
+const MapboxAPIKey = "pk.eyJ1IjoiZG96aWVzdGFyIiwiYSI6ImNsazJnNnUzbjBlN20zZXAycXo1NXlka3oifQ.e4rvqdG-6RHXNCbX-s1e3g"
+
+type MapboxGeoResponse struct {
+	Type     string `json:"type"`
+	Features []struct {
+		Type     string `json:"type"`
 		Geometry struct {
-			Location struct {
-				Lat float64 `json:"lat"`
-				Lng float64 `json:"lng"`
-			} `json:"location"`
+			Type        string    `json:"type"`
+			Coordinates []float64 `json:"coordinates"`
 		} `json:"geometry"`
-	} `json:"results"`
-	Status string `json:"status"`
+	} `json:"features"`
 }
 
-func GetCoordinates(address string) (float64, float64, error) {
-	var api = "https://maps.googleapis.com/maps/api/geocode/json"
+func GetCoordinates(address string) (MapboxGeoResponse, error) {
+	var api = "https://api.mapbox.com/geocoding/v5/mapbox.places/"
 
-	response, err := http.Get(fmt.Sprintf("%s?address=%s&key=%s", api, url.QueryEscape(address), "your-api-key"))
+	response, err := http.Get(fmt.Sprintf("%s%s.json?access_token=%s", api, url.QueryEscape(address), MapboxAPIKey))
 	if err != nil {
-		return 0, 0, err
+		log.Println("error getting coordinates", err.Error())
+		return MapboxGeoResponse{}, err
 	}
 	defer response.Body.Close()
 
-	var data googleGeoResponse
-	err = json.NewDecoder(response.Body).Decode(&data)
+	bodyBytes, err := io.ReadAll(response.Body)
 	if err != nil {
-		return 0, 0, err
+		log.Fatal(err)
 	}
 
-	if len(data.Results) > 0 {
-		return data.Results[0].Geometry.Location.Lat, data.Results[0].Geometry.Location.Lng, nil
+	//bodyString := string(bodyBytes)
+	//log.Println("API Response", bodyString)
+
+	var data MapboxGeoResponse
+	err = json.Unmarshal(bodyBytes, &data)
+	if err != nil {
+		log.Println("error decoding response", err.Error())
+		return MapboxGeoResponse{}, err
 	}
 
-	return 0, 0, fmt.Errorf("no results")
+	if len(data.Features) > 0 {
+		return data, nil
+	}
+
+	return MapboxGeoResponse{}, err
 }
