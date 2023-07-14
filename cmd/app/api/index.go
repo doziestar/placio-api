@@ -151,6 +151,11 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		faqController := controller.NewFAQController(faqService)
 		faqController.RegisterRoutes(routerGroupV1, routerGroupV1WithoutAuth)
 
+		// follow
+		followService := service.NewFollowService(client)
+		followController := controller.NewFollowController(followService)
+		followController.RegisterRoutes(routerGroupV1)
+
 		//// ratings
 		//ratingService := service.NewRatingService(db)
 		//ratingController := controller.NewRatingController(ratingService)
