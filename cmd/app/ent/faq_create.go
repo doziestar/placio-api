@@ -129,11 +129,6 @@ func (fc *FAQCreate) check() error {
 	if _, ok := fc.mutation.Answer(); !ok {
 		return &ValidationError{Name: "answer", err: errors.New(`ent: missing required field "FAQ.answer"`)}
 	}
-	if v, ok := fc.mutation.ID(); ok {
-		if err := faq.IDValidator(v); err != nil {
-			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "FAQ.id": %w`, err)}
-		}
-	}
 	return nil
 }
 

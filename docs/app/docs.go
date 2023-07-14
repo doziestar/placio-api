@@ -7112,7 +7112,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/faq/{businessID}": {
+        "/faq/business/{businessID}": {
             "post": {
                 "security": [
                     {
@@ -9358,9 +9358,22 @@ const docTemplate = `{
                     "description": "ID of the ent.",
                     "type": "string"
                 },
+                "latitude": {
+                    "description": "Latitude holds the value of the \"latitude\" field.",
+                    "type": "string"
+                },
                 "location": {
                     "description": "Location holds the value of the \"location\" field.",
                     "type": "string"
+                },
+                "longitude": {
+                    "description": "Longitude holds the value of the \"longitude\" field.",
+                    "type": "string"
+                },
+                "map_coordinates": {
+                    "description": "MapCoordinates holds the value of the \"map_coordinates\" field.",
+                    "type": "object",
+                    "additionalProperties": true
                 },
                 "name": {
                     "description": "Name holds the value of the \"name\" field.",
@@ -9852,9 +9865,22 @@ const docTemplate = `{
                     "description": "ID of the ent.",
                     "type": "string"
                 },
+                "latitude": {
+                    "description": "Latitude holds the value of the \"latitude\" field.",
+                    "type": "string"
+                },
                 "location": {
                     "description": "Location holds the value of the \"location\" field.",
                     "type": "string"
+                },
+                "longitude": {
+                    "description": "Longitude holds the value of the \"longitude\" field.",
+                    "type": "string"
+                },
+                "map_coordinates": {
+                    "description": "MapCoordinates holds the value of the \"map_coordinates\" field.",
+                    "type": "object",
+                    "additionalProperties": true
                 },
                 "name": {
                     "description": "Name holds the value of the \"name\" field.",
@@ -10332,8 +10358,16 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
+                "latitude": {
+                    "description": "Latitude holds the value of the \"latitude\" field.",
+                    "type": "string"
+                },
                 "location": {
                     "description": "Location holds the value of the \"location\" field.",
+                    "type": "string"
+                },
+                "longitude": {
+                    "description": "Longitude holds the value of the \"longitude\" field.",
                     "type": "string"
                 },
                 "map_coordinates": {
@@ -10895,9 +10929,22 @@ const docTemplate = `{
                     "description": "ID of the ent.",
                     "type": "string"
                 },
+                "latitude": {
+                    "description": "Latitude holds the value of the \"latitude\" field.",
+                    "type": "string"
+                },
                 "location": {
                     "description": "Location holds the value of the \"location\" field.",
                     "type": "string"
+                },
+                "longitude": {
+                    "description": "Longitude holds the value of the \"longitude\" field.",
+                    "type": "string"
+                },
+                "map_coordinates": {
+                    "description": "MapCoordinates holds the value of the \"map_coordinates\" field.",
+                    "type": "object",
+                    "additionalProperties": true
                 },
                 "name": {
                     "description": "Name holds the value of the \"name\" field.",

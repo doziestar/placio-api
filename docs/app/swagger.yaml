@@ -670,9 +670,19 @@ definitions:
       id:
         description: ID of the ent.
         type: string
+      latitude:
+        description: Latitude holds the value of the "latitude" field.
+        type: string
       location:
         description: Location holds the value of the "location" field.
         type: string
+      longitude:
+        description: Longitude holds the value of the "longitude" field.
+        type: string
+      map_coordinates:
+        additionalProperties: true
+        description: MapCoordinates holds the value of the "map_coordinates" field.
+        type: object
       name:
         description: Name holds the value of the "name" field.
         type: string
@@ -1007,9 +1017,19 @@ definitions:
       id:
         description: ID of the ent.
         type: string
+      latitude:
+        description: Latitude holds the value of the "latitude" field.
+        type: string
       location:
         description: Location holds the value of the "location" field.
         type: string
+      longitude:
+        description: Longitude holds the value of the "longitude" field.
+        type: string
+      map_coordinates:
+        additionalProperties: true
+        description: MapCoordinates holds the value of the "map_coordinates" field.
+        type: object
       name:
         description: Name holds the value of the "name" field.
         type: string
@@ -1338,8 +1358,14 @@ definitions:
         items:
           type: string
         type: array
+      latitude:
+        description: Latitude holds the value of the "latitude" field.
+        type: string
       location:
         description: Location holds the value of the "location" field.
+        type: string
+      longitude:
+        description: Longitude holds the value of the "longitude" field.
         type: string
       map_coordinates:
         additionalProperties: true
@@ -1724,9 +1750,19 @@ definitions:
       id:
         description: ID of the ent.
         type: string
+      latitude:
+        description: Latitude holds the value of the "latitude" field.
+        type: string
       location:
         description: Location holds the value of the "location" field.
         type: string
+      longitude:
+        description: Longitude holds the value of the "longitude" field.
+        type: string
+      map_coordinates:
+        additionalProperties: true
+        description: MapCoordinates holds the value of the "map_coordinates" field.
+        type: object
       name:
         description: Name holds the value of the "name" field.
         type: string
@@ -7024,53 +7060,6 @@ paths:
       summary: Get Event Participants
       tags:
       - Event
-  /faq/{businessID}:
-    post:
-      consumes:
-      - application/json
-      description: Create a new FAQ for a specific Business
-      operationId: create-faq
-      parameters:
-      - description: Business ID
-        in: path
-        name: businessID
-        required: true
-        type: string
-      - description: FAQ Data
-        in: body
-        name: faqData
-        required: true
-        schema:
-          $ref: '#/definitions/placio-app_Dto.FAQDto'
-      - description: Bearer token
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/placio-app_Dto.FAQDto'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Error'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Error'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.Error'
-      security:
-      - Bearer: []
-      summary: Create a new FAQ
-      tags:
-      - FAQ
   /faq/{faqID}:
     delete:
       consumes:
@@ -7284,6 +7273,53 @@ paths:
       security:
       - Bearer: []
       summary: Associate FAQ with Place
+      tags:
+      - FAQ
+  /faq/business/{businessID}:
+    post:
+      consumes:
+      - application/json
+      description: Create a new FAQ for a specific Business
+      operationId: create-faq
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessID
+        required: true
+        type: string
+      - description: FAQ Data
+        in: body
+        name: faqData
+        required: true
+        schema:
+          $ref: '#/definitions/placio-app_Dto.FAQDto'
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/placio-app_Dto.FAQDto'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+      security:
+      - Bearer: []
+      summary: Create a new FAQ
       tags:
       - FAQ
   /follow/business/{businessID}:

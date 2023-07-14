@@ -14,7 +14,6 @@ type FAQ struct {
 func (FAQ) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("id").
-			MaxLen(36).
 			Unique().
 			Immutable(),
 		field.String("question"),
