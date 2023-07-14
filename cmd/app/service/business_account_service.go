@@ -33,6 +33,11 @@ type BusinessAccountService interface {
 	UnfollowBusiness(ctx context.Context, followerID string, followedID string) error
 	GetFollowedContents(ctx context.Context, businessID string) ([]*ent.Post, error)
 	GetPlacesAndEventsAssociatedWithBusinessAccount(c context.Context, relatedType string, businessId string) (Dto.BusinessAccountPlacesAndEvents, error)
+	AddTeamMember(ctx context.Context, userID, businessAccountID, role, permissions string) error
+	ListTeamMembers(ctx context.Context, businessAccountID string) ([]*ent.UserBusiness, error)
+	EditTeamMember(ctx context.Context, userID, businessAccountID, newRole, newPermissions string) error
+	RemoveTeamMember(ctx context.Context, userID, businessAccountID string) error
+	SearchTeamMembers(ctx context.Context, businessAccountID, searchText string) ([]*ent.UserBusiness, error)
 	//CanPerformAction(ctx context.Context, userID, businessAccountID, action string) (bool, error)
 }
 
@@ -286,6 +291,94 @@ func (s *BusinessAccountServiceImpl) GetBusinessAccount(ctx context.Context, bus
 	}
 
 	return businessAccount, nil
+}
+
+func (s *BusinessAccountServiceImpl) AddTeamMember(ctx context.Context, userID, businessAccountID, role, permissions string) error {
+	// Fetch user and business account
+	user, err := s.client.User.Query().Where(user.ID(userID)).Only(ctx)
+	if err != nil {
+		return err
+	}
+
+	businessAccount, err := s.client.Business.Query().Where(business.ID(businessAccountID)).Only(ctx)
+	if err != nil {
+		return err
+	}
+
+	// Create the relationship with role and permissions
+	_, err = s.client.UserBusiness.Create().
+		SetID(uuid.New().String()).
+		SetUser(user).
+		SetBusiness(businessAccount).
+		SetRole(role).
+		SetPermissions(permissions).
+		Save(ctx)
+
+	return err
+}
+
+func (s *BusinessAccountServiceImpl) ListTeamMembers(ctx context.Context, businessAccountID string) ([]*ent.UserBusiness, error) {
+	relationships, err := s.client.Business.Query().
+		Where(business.ID(businessAccountID)).
+		QueryUserBusinesses().
+		WithUser().
+		All(ctx)
+	return relationships, err
+}
+
+func (s *BusinessAccountServiceImpl) EditTeamMember(ctx context.Context, userID, businessAccountID, newRole, newPermissions string) error {
+	userBusinessRel, err := s.client.UserBusiness.Query().
+		Where(
+			userbusiness.HasUserWith(user.ID(userID)),
+			userbusiness.HasBusinessWith(business.ID(businessAccountID)),
+		).Only(ctx)
+
+	if err != nil {
+		return err
+	}
+
+	_, err = s.client.UserBusiness.UpdateOneID(userBusinessRel.ID).
+		SetRole(newRole).
+		SetPermissions(newPermissions).
+		Save(ctx)
+
+	return err
+}
+
+func (s *BusinessAccountServiceImpl) RemoveTeamMember(ctx context.Context, userID, businessAccountID string) error {
+	userBusinessRel, err := s.client.UserBusiness.Query().
+		Where(
+			userbusiness.HasUserWith(user.ID(userID)),
+			userbusiness.HasBusinessWith(business.ID(businessAccountID)),
+		).Only(ctx)
+
+	if err != nil {
+		return err
+	}
+
+	return s.client.UserBusiness.DeleteOne(userBusinessRel).Exec(ctx)
+}
+
+func (s *BusinessAccountServiceImpl) SearchTeamMembers(ctx context.Context, businessAccountID, searchText string) ([]*ent.UserBusiness, error) {
+	relationships, err := s.client.Business.Query().
+		Where(business.ID(businessAccountID)).
+		QueryUserBusinesses().
+		Where(
+			userbusiness.HasUserWith(
+				user.Or(
+					user.NameContains(searchText),
+					user.UsernameContains(searchText),
+				),
+			),
+			userbusiness.Or(
+				userbusiness.RoleContains(searchText),
+				userbusiness.PermissionsContains(searchText),
+			),
+		).
+		WithUser().
+		All(ctx)
+
+	return relationships, err
 }
 
 // RemoveUserFromBusinessAccount removes a User's association with a Business Account.

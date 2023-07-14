@@ -27,6 +27,20 @@ func (ubc *UserBusinessCreate) SetRole(s string) *UserBusinessCreate {
 	return ubc
 }
 
+// SetPermissions sets the "permissions" field.
+func (ubc *UserBusinessCreate) SetPermissions(s string) *UserBusinessCreate {
+	ubc.mutation.SetPermissions(s)
+	return ubc
+}
+
+// SetNillablePermissions sets the "permissions" field if the given value is not nil.
+func (ubc *UserBusinessCreate) SetNillablePermissions(s *string) *UserBusinessCreate {
+	if s != nil {
+		ubc.SetPermissions(*s)
+	}
+	return ubc
+}
+
 // SetID sets the "id" field.
 func (ubc *UserBusinessCreate) SetID(s string) *UserBusinessCreate {
 	ubc.mutation.SetID(s)
@@ -108,6 +122,11 @@ func (ubc *UserBusinessCreate) check() error {
 	if _, ok := ubc.mutation.Role(); !ok {
 		return &ValidationError{Name: "role", err: errors.New(`ent: missing required field "UserBusiness.role"`)}
 	}
+	if v, ok := ubc.mutation.Permissions(); ok {
+		if err := userbusiness.PermissionsValidator(v); err != nil {
+			return &ValidationError{Name: "permissions", err: fmt.Errorf(`ent: validator failed for field "UserBusiness.permissions": %w`, err)}
+		}
+	}
 	if v, ok := ubc.mutation.ID(); ok {
 		if err := userbusiness.IDValidator(v); err != nil {
 			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "UserBusiness.id": %w`, err)}
@@ -151,6 +170,10 @@ func (ubc *UserBusinessCreate) createSpec() (*UserBusiness, *sqlgraph.CreateSpec
 	if value, ok := ubc.mutation.Role(); ok {
 		_spec.SetField(userbusiness.FieldRole, field.TypeString, value)
 		_node.Role = value
+	}
+	if value, ok := ubc.mutation.Permissions(); ok {
+		_spec.SetField(userbusiness.FieldPermissions, field.TypeString, value)
+		_node.Permissions = value
 	}
 	if nodes := ubc.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

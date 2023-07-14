@@ -20,6 +20,8 @@ type UserBusiness struct {
 	ID string `json:"id,omitempty"`
 	// Role holds the value of the "role" field.
 	Role string `json:"role,omitempty"`
+	// Permissions holds the value of the "permissions" field.
+	Permissions string `json:"permissions,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserBusinessQuery when eager-loading is set.
 	Edges                    UserBusinessEdges `json:"edges"`
@@ -70,7 +72,7 @@ func (*UserBusiness) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case userbusiness.FieldID, userbusiness.FieldRole:
+		case userbusiness.FieldID, userbusiness.FieldRole, userbusiness.FieldPermissions:
 			values[i] = new(sql.NullString)
 		case userbusiness.ForeignKeys[0]: // business_user_businesses
 			values[i] = new(sql.NullString)
@@ -102,6 +104,12 @@ func (ub *UserBusiness) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field role", values[i])
 			} else if value.Valid {
 				ub.Role = value.String
+			}
+		case userbusiness.FieldPermissions:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field permissions", values[i])
+			} else if value.Valid {
+				ub.Permissions = value.String
 			}
 		case userbusiness.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -165,6 +173,9 @@ func (ub *UserBusiness) String() string {
 	builder.WriteString(fmt.Sprintf("id=%v, ", ub.ID))
 	builder.WriteString("role=")
 	builder.WriteString(ub.Role)
+	builder.WriteString(", ")
+	builder.WriteString("permissions=")
+	builder.WriteString(ub.Permissions)
 	builder.WriteByte(')')
 	return builder.String()
 }
