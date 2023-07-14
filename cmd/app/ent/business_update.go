@@ -145,6 +145,58 @@ func (bu *BusinessUpdate) ClearLocation() *BusinessUpdate {
 	return bu
 }
 
+// SetLongitude sets the "longitude" field.
+func (bu *BusinessUpdate) SetLongitude(s string) *BusinessUpdate {
+	bu.mutation.SetLongitude(s)
+	return bu
+}
+
+// SetNillableLongitude sets the "longitude" field if the given value is not nil.
+func (bu *BusinessUpdate) SetNillableLongitude(s *string) *BusinessUpdate {
+	if s != nil {
+		bu.SetLongitude(*s)
+	}
+	return bu
+}
+
+// ClearLongitude clears the value of the "longitude" field.
+func (bu *BusinessUpdate) ClearLongitude() *BusinessUpdate {
+	bu.mutation.ClearLongitude()
+	return bu
+}
+
+// SetMapCoordinates sets the "map_coordinates" field.
+func (bu *BusinessUpdate) SetMapCoordinates(m map[string]interface{}) *BusinessUpdate {
+	bu.mutation.SetMapCoordinates(m)
+	return bu
+}
+
+// ClearMapCoordinates clears the value of the "map_coordinates" field.
+func (bu *BusinessUpdate) ClearMapCoordinates() *BusinessUpdate {
+	bu.mutation.ClearMapCoordinates()
+	return bu
+}
+
+// SetLatitude sets the "latitude" field.
+func (bu *BusinessUpdate) SetLatitude(s string) *BusinessUpdate {
+	bu.mutation.SetLatitude(s)
+	return bu
+}
+
+// SetNillableLatitude sets the "latitude" field if the given value is not nil.
+func (bu *BusinessUpdate) SetNillableLatitude(s *string) *BusinessUpdate {
+	if s != nil {
+		bu.SetLatitude(*s)
+	}
+	return bu
+}
+
+// ClearLatitude clears the value of the "latitude" field.
+func (bu *BusinessUpdate) ClearLatitude() *BusinessUpdate {
+	bu.mutation.ClearLatitude()
+	return bu
+}
+
 // SetEmail sets the "email" field.
 func (bu *BusinessUpdate) SetEmail(s string) *BusinessUpdate {
 	bu.mutation.SetEmail(s)
@@ -794,6 +846,24 @@ func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if bu.mutation.LocationCleared() {
 		_spec.ClearField(business.FieldLocation, field.TypeString)
+	}
+	if value, ok := bu.mutation.Longitude(); ok {
+		_spec.SetField(business.FieldLongitude, field.TypeString, value)
+	}
+	if bu.mutation.LongitudeCleared() {
+		_spec.ClearField(business.FieldLongitude, field.TypeString)
+	}
+	if value, ok := bu.mutation.MapCoordinates(); ok {
+		_spec.SetField(business.FieldMapCoordinates, field.TypeJSON, value)
+	}
+	if bu.mutation.MapCoordinatesCleared() {
+		_spec.ClearField(business.FieldMapCoordinates, field.TypeJSON)
+	}
+	if value, ok := bu.mutation.Latitude(); ok {
+		_spec.SetField(business.FieldLatitude, field.TypeString, value)
+	}
+	if bu.mutation.LatitudeCleared() {
+		_spec.ClearField(business.FieldLatitude, field.TypeString)
 	}
 	if value, ok := bu.mutation.Email(); ok {
 		_spec.SetField(business.FieldEmail, field.TypeString, value)
@@ -1529,6 +1599,58 @@ func (buo *BusinessUpdateOne) ClearLocation() *BusinessUpdateOne {
 	return buo
 }
 
+// SetLongitude sets the "longitude" field.
+func (buo *BusinessUpdateOne) SetLongitude(s string) *BusinessUpdateOne {
+	buo.mutation.SetLongitude(s)
+	return buo
+}
+
+// SetNillableLongitude sets the "longitude" field if the given value is not nil.
+func (buo *BusinessUpdateOne) SetNillableLongitude(s *string) *BusinessUpdateOne {
+	if s != nil {
+		buo.SetLongitude(*s)
+	}
+	return buo
+}
+
+// ClearLongitude clears the value of the "longitude" field.
+func (buo *BusinessUpdateOne) ClearLongitude() *BusinessUpdateOne {
+	buo.mutation.ClearLongitude()
+	return buo
+}
+
+// SetMapCoordinates sets the "map_coordinates" field.
+func (buo *BusinessUpdateOne) SetMapCoordinates(m map[string]interface{}) *BusinessUpdateOne {
+	buo.mutation.SetMapCoordinates(m)
+	return buo
+}
+
+// ClearMapCoordinates clears the value of the "map_coordinates" field.
+func (buo *BusinessUpdateOne) ClearMapCoordinates() *BusinessUpdateOne {
+	buo.mutation.ClearMapCoordinates()
+	return buo
+}
+
+// SetLatitude sets the "latitude" field.
+func (buo *BusinessUpdateOne) SetLatitude(s string) *BusinessUpdateOne {
+	buo.mutation.SetLatitude(s)
+	return buo
+}
+
+// SetNillableLatitude sets the "latitude" field if the given value is not nil.
+func (buo *BusinessUpdateOne) SetNillableLatitude(s *string) *BusinessUpdateOne {
+	if s != nil {
+		buo.SetLatitude(*s)
+	}
+	return buo
+}
+
+// ClearLatitude clears the value of the "latitude" field.
+func (buo *BusinessUpdateOne) ClearLatitude() *BusinessUpdateOne {
+	buo.mutation.ClearLatitude()
+	return buo
+}
+
 // SetEmail sets the "email" field.
 func (buo *BusinessUpdateOne) SetEmail(s string) *BusinessUpdateOne {
 	buo.mutation.SetEmail(s)
@@ -2208,6 +2330,24 @@ func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err
 	}
 	if buo.mutation.LocationCleared() {
 		_spec.ClearField(business.FieldLocation, field.TypeString)
+	}
+	if value, ok := buo.mutation.Longitude(); ok {
+		_spec.SetField(business.FieldLongitude, field.TypeString, value)
+	}
+	if buo.mutation.LongitudeCleared() {
+		_spec.ClearField(business.FieldLongitude, field.TypeString)
+	}
+	if value, ok := buo.mutation.MapCoordinates(); ok {
+		_spec.SetField(business.FieldMapCoordinates, field.TypeJSON, value)
+	}
+	if buo.mutation.MapCoordinatesCleared() {
+		_spec.ClearField(business.FieldMapCoordinates, field.TypeJSON)
+	}
+	if value, ok := buo.mutation.Latitude(); ok {
+		_spec.SetField(business.FieldLatitude, field.TypeString, value)
+	}
+	if buo.mutation.LatitudeCleared() {
+		_spec.ClearField(business.FieldLatitude, field.TypeString)
 	}
 	if value, ok := buo.mutation.Email(); ok {
 		_spec.SetField(business.FieldEmail, field.TypeString, value)

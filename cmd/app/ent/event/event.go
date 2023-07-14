@@ -83,6 +83,12 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updatedat field in the database.
 	FieldUpdatedAt = "updated_at"
+	// FieldMapCoordinates holds the string denoting the map_coordinates field in the database.
+	FieldMapCoordinates = "map_coordinates"
+	// FieldLongitude holds the string denoting the longitude field in the database.
+	FieldLongitude = "longitude"
+	// FieldLatitude holds the string denoting the latitude field in the database.
+	FieldLatitude = "latitude"
 	// FieldSearchText holds the string denoting the search_text field in the database.
 	FieldSearchText = "search_text"
 	// FieldRelevanceScore holds the string denoting the relevance_score field in the database.
@@ -216,6 +222,9 @@ var Columns = []string{
 	FieldCoverImage,
 	FieldCreatedAt,
 	FieldUpdatedAt,
+	FieldMapCoordinates,
+	FieldLongitude,
+	FieldLatitude,
 	FieldSearchText,
 	FieldRelevanceScore,
 }
@@ -507,6 +516,16 @@ func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 // ByUpdatedAt orders the results by the updatedAt field.
 func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
+}
+
+// ByLongitude orders the results by the longitude field.
+func ByLongitude(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLongitude, opts...).ToFunc()
+}
+
+// ByLatitude orders the results by the latitude field.
+func ByLatitude(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLatitude, opts...).ToFunc()
 }
 
 // BySearchText orders the results by the search_text field.

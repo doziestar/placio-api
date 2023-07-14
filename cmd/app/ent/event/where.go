@@ -215,6 +215,16 @@ func UpdatedAt(v time.Time) predicate.Event {
 	return predicate.Event(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
+// Longitude applies equality check predicate on the "longitude" field. It's identical to LongitudeEQ.
+func Longitude(v string) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldLongitude, v))
+}
+
+// Latitude applies equality check predicate on the "latitude" field. It's identical to LatitudeEQ.
+func Latitude(v string) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldLatitude, v))
+}
+
 // SearchText applies equality check predicate on the "search_text" field. It's identical to SearchTextEQ.
 func SearchText(v string) predicate.Event {
 	return predicate.Event(sql.FieldEQ(FieldSearchText, v))
@@ -2453,6 +2463,166 @@ func UpdatedAtLT(v time.Time) predicate.Event {
 // UpdatedAtLTE applies the LTE predicate on the "updatedAt" field.
 func UpdatedAtLTE(v time.Time) predicate.Event {
 	return predicate.Event(sql.FieldLTE(FieldUpdatedAt, v))
+}
+
+// MapCoordinatesIsNil applies the IsNil predicate on the "map_coordinates" field.
+func MapCoordinatesIsNil() predicate.Event {
+	return predicate.Event(sql.FieldIsNull(FieldMapCoordinates))
+}
+
+// MapCoordinatesNotNil applies the NotNil predicate on the "map_coordinates" field.
+func MapCoordinatesNotNil() predicate.Event {
+	return predicate.Event(sql.FieldNotNull(FieldMapCoordinates))
+}
+
+// LongitudeEQ applies the EQ predicate on the "longitude" field.
+func LongitudeEQ(v string) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldLongitude, v))
+}
+
+// LongitudeNEQ applies the NEQ predicate on the "longitude" field.
+func LongitudeNEQ(v string) predicate.Event {
+	return predicate.Event(sql.FieldNEQ(FieldLongitude, v))
+}
+
+// LongitudeIn applies the In predicate on the "longitude" field.
+func LongitudeIn(vs ...string) predicate.Event {
+	return predicate.Event(sql.FieldIn(FieldLongitude, vs...))
+}
+
+// LongitudeNotIn applies the NotIn predicate on the "longitude" field.
+func LongitudeNotIn(vs ...string) predicate.Event {
+	return predicate.Event(sql.FieldNotIn(FieldLongitude, vs...))
+}
+
+// LongitudeGT applies the GT predicate on the "longitude" field.
+func LongitudeGT(v string) predicate.Event {
+	return predicate.Event(sql.FieldGT(FieldLongitude, v))
+}
+
+// LongitudeGTE applies the GTE predicate on the "longitude" field.
+func LongitudeGTE(v string) predicate.Event {
+	return predicate.Event(sql.FieldGTE(FieldLongitude, v))
+}
+
+// LongitudeLT applies the LT predicate on the "longitude" field.
+func LongitudeLT(v string) predicate.Event {
+	return predicate.Event(sql.FieldLT(FieldLongitude, v))
+}
+
+// LongitudeLTE applies the LTE predicate on the "longitude" field.
+func LongitudeLTE(v string) predicate.Event {
+	return predicate.Event(sql.FieldLTE(FieldLongitude, v))
+}
+
+// LongitudeContains applies the Contains predicate on the "longitude" field.
+func LongitudeContains(v string) predicate.Event {
+	return predicate.Event(sql.FieldContains(FieldLongitude, v))
+}
+
+// LongitudeHasPrefix applies the HasPrefix predicate on the "longitude" field.
+func LongitudeHasPrefix(v string) predicate.Event {
+	return predicate.Event(sql.FieldHasPrefix(FieldLongitude, v))
+}
+
+// LongitudeHasSuffix applies the HasSuffix predicate on the "longitude" field.
+func LongitudeHasSuffix(v string) predicate.Event {
+	return predicate.Event(sql.FieldHasSuffix(FieldLongitude, v))
+}
+
+// LongitudeIsNil applies the IsNil predicate on the "longitude" field.
+func LongitudeIsNil() predicate.Event {
+	return predicate.Event(sql.FieldIsNull(FieldLongitude))
+}
+
+// LongitudeNotNil applies the NotNil predicate on the "longitude" field.
+func LongitudeNotNil() predicate.Event {
+	return predicate.Event(sql.FieldNotNull(FieldLongitude))
+}
+
+// LongitudeEqualFold applies the EqualFold predicate on the "longitude" field.
+func LongitudeEqualFold(v string) predicate.Event {
+	return predicate.Event(sql.FieldEqualFold(FieldLongitude, v))
+}
+
+// LongitudeContainsFold applies the ContainsFold predicate on the "longitude" field.
+func LongitudeContainsFold(v string) predicate.Event {
+	return predicate.Event(sql.FieldContainsFold(FieldLongitude, v))
+}
+
+// LatitudeEQ applies the EQ predicate on the "latitude" field.
+func LatitudeEQ(v string) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldLatitude, v))
+}
+
+// LatitudeNEQ applies the NEQ predicate on the "latitude" field.
+func LatitudeNEQ(v string) predicate.Event {
+	return predicate.Event(sql.FieldNEQ(FieldLatitude, v))
+}
+
+// LatitudeIn applies the In predicate on the "latitude" field.
+func LatitudeIn(vs ...string) predicate.Event {
+	return predicate.Event(sql.FieldIn(FieldLatitude, vs...))
+}
+
+// LatitudeNotIn applies the NotIn predicate on the "latitude" field.
+func LatitudeNotIn(vs ...string) predicate.Event {
+	return predicate.Event(sql.FieldNotIn(FieldLatitude, vs...))
+}
+
+// LatitudeGT applies the GT predicate on the "latitude" field.
+func LatitudeGT(v string) predicate.Event {
+	return predicate.Event(sql.FieldGT(FieldLatitude, v))
+}
+
+// LatitudeGTE applies the GTE predicate on the "latitude" field.
+func LatitudeGTE(v string) predicate.Event {
+	return predicate.Event(sql.FieldGTE(FieldLatitude, v))
+}
+
+// LatitudeLT applies the LT predicate on the "latitude" field.
+func LatitudeLT(v string) predicate.Event {
+	return predicate.Event(sql.FieldLT(FieldLatitude, v))
+}
+
+// LatitudeLTE applies the LTE predicate on the "latitude" field.
+func LatitudeLTE(v string) predicate.Event {
+	return predicate.Event(sql.FieldLTE(FieldLatitude, v))
+}
+
+// LatitudeContains applies the Contains predicate on the "latitude" field.
+func LatitudeContains(v string) predicate.Event {
+	return predicate.Event(sql.FieldContains(FieldLatitude, v))
+}
+
+// LatitudeHasPrefix applies the HasPrefix predicate on the "latitude" field.
+func LatitudeHasPrefix(v string) predicate.Event {
+	return predicate.Event(sql.FieldHasPrefix(FieldLatitude, v))
+}
+
+// LatitudeHasSuffix applies the HasSuffix predicate on the "latitude" field.
+func LatitudeHasSuffix(v string) predicate.Event {
+	return predicate.Event(sql.FieldHasSuffix(FieldLatitude, v))
+}
+
+// LatitudeIsNil applies the IsNil predicate on the "latitude" field.
+func LatitudeIsNil() predicate.Event {
+	return predicate.Event(sql.FieldIsNull(FieldLatitude))
+}
+
+// LatitudeNotNil applies the NotNil predicate on the "latitude" field.
+func LatitudeNotNil() predicate.Event {
+	return predicate.Event(sql.FieldNotNull(FieldLatitude))
+}
+
+// LatitudeEqualFold applies the EqualFold predicate on the "latitude" field.
+func LatitudeEqualFold(v string) predicate.Event {
+	return predicate.Event(sql.FieldEqualFold(FieldLatitude, v))
+}
+
+// LatitudeContainsFold applies the ContainsFold predicate on the "latitude" field.
+func LatitudeContainsFold(v string) predicate.Event {
+	return predicate.Event(sql.FieldContainsFold(FieldLatitude, v))
 }
 
 // SearchTextEQ applies the EQ predicate on the "search_text" field.
