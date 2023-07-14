@@ -88,6 +88,12 @@ type Event struct {
 	CreatedAt time.Time `json:"createdAt,omitempty"`
 	// UpdatedAt holds the value of the "updatedAt" field.
 	UpdatedAt time.Time `json:"updatedAt,omitempty"`
+	// MapCoordinates holds the value of the "map_coordinates" field.
+	MapCoordinates map[string]interface{} `json:"map_coordinates,omitempty"`
+	// Longitude holds the value of the "longitude" field.
+	Longitude string `json:"longitude,omitempty"`
+	// Latitude holds the value of the "latitude" field.
+	Latitude string `json:"latitude,omitempty"`
 	// SearchText holds the value of the "search_text" field.
 	SearchText string `json:"search_text,omitempty"`
 	// RelevanceScore holds the value of the "relevance_score" field.
@@ -231,11 +237,11 @@ func (*Event) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case event.FieldEventSettings:
+		case event.FieldEventSettings, event.FieldMapCoordinates:
 			values[i] = new([]byte)
 		case event.FieldRelevanceScore:
 			values[i] = new(sql.NullFloat64)
-		case event.FieldID, event.FieldName, event.FieldEventType, event.FieldStatus, event.FieldLocation, event.FieldURL, event.FieldTitle, event.FieldTimeZone, event.FieldStartDate, event.FieldEndDate, event.FieldFrequency, event.FieldFrequencyInterval, event.FieldFrequencyDayOfWeek, event.FieldFrequencyDayOfMonth, event.FieldFrequencyMonthOfYear, event.FieldVenueType, event.FieldVenueName, event.FieldVenueAddress, event.FieldVenueCity, event.FieldVenueState, event.FieldVenueCountry, event.FieldVenueZip, event.FieldVenueLat, event.FieldVenueLon, event.FieldVenueURL, event.FieldVenuePhone, event.FieldVenueEmail, event.FieldTags, event.FieldDescription, event.FieldCoverImage, event.FieldSearchText:
+		case event.FieldID, event.FieldName, event.FieldEventType, event.FieldStatus, event.FieldLocation, event.FieldURL, event.FieldTitle, event.FieldTimeZone, event.FieldStartDate, event.FieldEndDate, event.FieldFrequency, event.FieldFrequencyInterval, event.FieldFrequencyDayOfWeek, event.FieldFrequencyDayOfMonth, event.FieldFrequencyMonthOfYear, event.FieldVenueType, event.FieldVenueName, event.FieldVenueAddress, event.FieldVenueCity, event.FieldVenueState, event.FieldVenueCountry, event.FieldVenueZip, event.FieldVenueLat, event.FieldVenueLon, event.FieldVenueURL, event.FieldVenuePhone, event.FieldVenueEmail, event.FieldTags, event.FieldDescription, event.FieldCoverImage, event.FieldLongitude, event.FieldLatitude, event.FieldSearchText:
 			values[i] = new(sql.NullString)
 		case event.FieldStartTime, event.FieldEndTime, event.FieldCreatedAt, event.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -472,6 +478,26 @@ func (e *Event) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				e.UpdatedAt = value.Time
 			}
+		case event.FieldMapCoordinates:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field map_coordinates", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &e.MapCoordinates); err != nil {
+					return fmt.Errorf("unmarshal field map_coordinates: %w", err)
+				}
+			}
+		case event.FieldLongitude:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field longitude", values[i])
+			} else if value.Valid {
+				e.Longitude = value.String
+			}
+		case event.FieldLatitude:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field latitude", values[i])
+			} else if value.Valid {
+				e.Latitude = value.String
+			}
 		case event.FieldSearchText:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field search_text", values[i])
@@ -692,6 +718,15 @@ func (e *Event) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("updatedAt=")
 	builder.WriteString(e.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("map_coordinates=")
+	builder.WriteString(fmt.Sprintf("%v", e.MapCoordinates))
+	builder.WriteString(", ")
+	builder.WriteString("longitude=")
+	builder.WriteString(e.Longitude)
+	builder.WriteString(", ")
+	builder.WriteString("latitude=")
+	builder.WriteString(e.Latitude)
 	builder.WriteString(", ")
 	builder.WriteString("search_text=")
 	builder.WriteString(e.SearchText)

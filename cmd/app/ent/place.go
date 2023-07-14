@@ -66,6 +66,10 @@ type Place struct {
 	SustainabilityScore float64 `json:"sustainability_score,omitempty"`
 	// MapCoordinates holds the value of the "map_coordinates" field.
 	MapCoordinates map[string]interface{} `json:"map_coordinates,omitempty"`
+	// Longitude holds the value of the "longitude" field.
+	Longitude string `json:"longitude,omitempty"`
+	// Latitude holds the value of the "latitude" field.
+	Latitude string `json:"latitude,omitempty"`
 	// SearchText holds the value of the "search_text" field.
 	SearchText string `json:"search_text,omitempty"`
 	// RelevanceScore holds the value of the "relevance_score" field.
@@ -252,7 +256,7 @@ func (*Place) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case place.FieldSustainabilityScore, place.FieldRelevanceScore:
 			values[i] = new(sql.NullFloat64)
-		case place.FieldID, place.FieldName, place.FieldType, place.FieldDescription, place.FieldLocation, place.FieldEmail, place.FieldPhone, place.FieldWebsite, place.FieldCoverImage, place.FieldPicture, place.FieldCountry, place.FieldCity, place.FieldState, place.FieldSpecialOffers, place.FieldSearchText:
+		case place.FieldID, place.FieldName, place.FieldType, place.FieldDescription, place.FieldLocation, place.FieldEmail, place.FieldPhone, place.FieldWebsite, place.FieldCoverImage, place.FieldPicture, place.FieldCountry, place.FieldCity, place.FieldState, place.FieldSpecialOffers, place.FieldLongitude, place.FieldLatitude, place.FieldSearchText:
 			values[i] = new(sql.NullString)
 		case place.ForeignKeys[0]: // business_places
 			values[i] = new(sql.NullString)
@@ -442,6 +446,18 @@ func (pl *Place) assignValues(columns []string, values []any) error {
 				if err := json.Unmarshal(*value, &pl.MapCoordinates); err != nil {
 					return fmt.Errorf("unmarshal field map_coordinates: %w", err)
 				}
+			}
+		case place.FieldLongitude:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field longitude", values[i])
+			} else if value.Valid {
+				pl.Longitude = value.String
+			}
+		case place.FieldLatitude:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field latitude", values[i])
+			} else if value.Valid {
+				pl.Latitude = value.String
 			}
 		case place.FieldSearchText:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -646,6 +662,12 @@ func (pl *Place) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("map_coordinates=")
 	builder.WriteString(fmt.Sprintf("%v", pl.MapCoordinates))
+	builder.WriteString(", ")
+	builder.WriteString("longitude=")
+	builder.WriteString(pl.Longitude)
+	builder.WriteString(", ")
+	builder.WriteString("latitude=")
+	builder.WriteString(pl.Latitude)
 	builder.WriteString(", ")
 	builder.WriteString("search_text=")
 	builder.WriteString(pl.SearchText)

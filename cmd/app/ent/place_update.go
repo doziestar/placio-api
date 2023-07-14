@@ -447,6 +447,52 @@ func (pu *PlaceUpdate) SetMapCoordinates(m map[string]interface{}) *PlaceUpdate 
 	return pu
 }
 
+// ClearMapCoordinates clears the value of the "map_coordinates" field.
+func (pu *PlaceUpdate) ClearMapCoordinates() *PlaceUpdate {
+	pu.mutation.ClearMapCoordinates()
+	return pu
+}
+
+// SetLongitude sets the "longitude" field.
+func (pu *PlaceUpdate) SetLongitude(s string) *PlaceUpdate {
+	pu.mutation.SetLongitude(s)
+	return pu
+}
+
+// SetNillableLongitude sets the "longitude" field if the given value is not nil.
+func (pu *PlaceUpdate) SetNillableLongitude(s *string) *PlaceUpdate {
+	if s != nil {
+		pu.SetLongitude(*s)
+	}
+	return pu
+}
+
+// ClearLongitude clears the value of the "longitude" field.
+func (pu *PlaceUpdate) ClearLongitude() *PlaceUpdate {
+	pu.mutation.ClearLongitude()
+	return pu
+}
+
+// SetLatitude sets the "latitude" field.
+func (pu *PlaceUpdate) SetLatitude(s string) *PlaceUpdate {
+	pu.mutation.SetLatitude(s)
+	return pu
+}
+
+// SetNillableLatitude sets the "latitude" field if the given value is not nil.
+func (pu *PlaceUpdate) SetNillableLatitude(s *string) *PlaceUpdate {
+	if s != nil {
+		pu.SetLatitude(*s)
+	}
+	return pu
+}
+
+// ClearLatitude clears the value of the "latitude" field.
+func (pu *PlaceUpdate) ClearLatitude() *PlaceUpdate {
+	pu.mutation.ClearLatitude()
+	return pu
+}
+
 // SetSearchText sets the "search_text" field.
 func (pu *PlaceUpdate) SetSearchText(s string) *PlaceUpdate {
 	pu.mutation.SetSearchText(s)
@@ -1183,6 +1229,21 @@ func (pu *PlaceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := pu.mutation.MapCoordinates(); ok {
 		_spec.SetField(place.FieldMapCoordinates, field.TypeJSON, value)
+	}
+	if pu.mutation.MapCoordinatesCleared() {
+		_spec.ClearField(place.FieldMapCoordinates, field.TypeJSON)
+	}
+	if value, ok := pu.mutation.Longitude(); ok {
+		_spec.SetField(place.FieldLongitude, field.TypeString, value)
+	}
+	if pu.mutation.LongitudeCleared() {
+		_spec.ClearField(place.FieldLongitude, field.TypeString)
+	}
+	if value, ok := pu.mutation.Latitude(); ok {
+		_spec.SetField(place.FieldLatitude, field.TypeString, value)
+	}
+	if pu.mutation.LatitudeCleared() {
+		_spec.ClearField(place.FieldLatitude, field.TypeString)
 	}
 	if value, ok := pu.mutation.SearchText(); ok {
 		_spec.SetField(place.FieldSearchText, field.TypeString, value)
@@ -2238,6 +2299,52 @@ func (puo *PlaceUpdateOne) SetMapCoordinates(m map[string]interface{}) *PlaceUpd
 	return puo
 }
 
+// ClearMapCoordinates clears the value of the "map_coordinates" field.
+func (puo *PlaceUpdateOne) ClearMapCoordinates() *PlaceUpdateOne {
+	puo.mutation.ClearMapCoordinates()
+	return puo
+}
+
+// SetLongitude sets the "longitude" field.
+func (puo *PlaceUpdateOne) SetLongitude(s string) *PlaceUpdateOne {
+	puo.mutation.SetLongitude(s)
+	return puo
+}
+
+// SetNillableLongitude sets the "longitude" field if the given value is not nil.
+func (puo *PlaceUpdateOne) SetNillableLongitude(s *string) *PlaceUpdateOne {
+	if s != nil {
+		puo.SetLongitude(*s)
+	}
+	return puo
+}
+
+// ClearLongitude clears the value of the "longitude" field.
+func (puo *PlaceUpdateOne) ClearLongitude() *PlaceUpdateOne {
+	puo.mutation.ClearLongitude()
+	return puo
+}
+
+// SetLatitude sets the "latitude" field.
+func (puo *PlaceUpdateOne) SetLatitude(s string) *PlaceUpdateOne {
+	puo.mutation.SetLatitude(s)
+	return puo
+}
+
+// SetNillableLatitude sets the "latitude" field if the given value is not nil.
+func (puo *PlaceUpdateOne) SetNillableLatitude(s *string) *PlaceUpdateOne {
+	if s != nil {
+		puo.SetLatitude(*s)
+	}
+	return puo
+}
+
+// ClearLatitude clears the value of the "latitude" field.
+func (puo *PlaceUpdateOne) ClearLatitude() *PlaceUpdateOne {
+	puo.mutation.ClearLatitude()
+	return puo
+}
+
 // SetSearchText sets the "search_text" field.
 func (puo *PlaceUpdateOne) SetSearchText(s string) *PlaceUpdateOne {
 	puo.mutation.SetSearchText(s)
@@ -3004,6 +3111,21 @@ func (puo *PlaceUpdateOne) sqlSave(ctx context.Context) (_node *Place, err error
 	}
 	if value, ok := puo.mutation.MapCoordinates(); ok {
 		_spec.SetField(place.FieldMapCoordinates, field.TypeJSON, value)
+	}
+	if puo.mutation.MapCoordinatesCleared() {
+		_spec.ClearField(place.FieldMapCoordinates, field.TypeJSON)
+	}
+	if value, ok := puo.mutation.Longitude(); ok {
+		_spec.SetField(place.FieldLongitude, field.TypeString, value)
+	}
+	if puo.mutation.LongitudeCleared() {
+		_spec.ClearField(place.FieldLongitude, field.TypeString)
+	}
+	if value, ok := puo.mutation.Latitude(); ok {
+		_spec.SetField(place.FieldLatitude, field.TypeString, value)
+	}
+	if puo.mutation.LatitudeCleared() {
+		_spec.ClearField(place.FieldLatitude, field.TypeString)
 	}
 	if value, ok := puo.mutation.SearchText(); ok {
 		_spec.SetField(place.FieldSearchText, field.TypeString, value)

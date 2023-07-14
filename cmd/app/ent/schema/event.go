@@ -50,6 +50,9 @@ func (Event) Fields() []ent.Field {
 		field.String("cover_image").Optional().Default("https://res.cloudinary.com/placio/image/upload/v1686842319/mjl8stmbn5xmfsm50vbg.jpg"),
 		field.Time("createdAt").Default(time.Now),
 		field.Time("updatedAt").Default(time.Now).UpdateDefault(time.Now),
+		field.JSON("map_coordinates", map[string]interface{}{}).Optional(),
+		field.String("longitude").Optional(),
+		field.String("latitude").Optional(),
 		field.String("search_text").Optional(),
 		field.Float("relevance_score").Optional(),
 	}

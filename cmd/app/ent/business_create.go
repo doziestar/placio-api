@@ -107,6 +107,40 @@ func (bc *BusinessCreate) SetNillableLocation(s *string) *BusinessCreate {
 	return bc
 }
 
+// SetLongitude sets the "longitude" field.
+func (bc *BusinessCreate) SetLongitude(s string) *BusinessCreate {
+	bc.mutation.SetLongitude(s)
+	return bc
+}
+
+// SetNillableLongitude sets the "longitude" field if the given value is not nil.
+func (bc *BusinessCreate) SetNillableLongitude(s *string) *BusinessCreate {
+	if s != nil {
+		bc.SetLongitude(*s)
+	}
+	return bc
+}
+
+// SetMapCoordinates sets the "map_coordinates" field.
+func (bc *BusinessCreate) SetMapCoordinates(m map[string]interface{}) *BusinessCreate {
+	bc.mutation.SetMapCoordinates(m)
+	return bc
+}
+
+// SetLatitude sets the "latitude" field.
+func (bc *BusinessCreate) SetLatitude(s string) *BusinessCreate {
+	bc.mutation.SetLatitude(s)
+	return bc
+}
+
+// SetNillableLatitude sets the "latitude" field if the given value is not nil.
+func (bc *BusinessCreate) SetNillableLatitude(s *string) *BusinessCreate {
+	if s != nil {
+		bc.SetLatitude(*s)
+	}
+	return bc
+}
+
 // SetEmail sets the "email" field.
 func (bc *BusinessCreate) SetEmail(s string) *BusinessCreate {
 	bc.mutation.SetEmail(s)
@@ -497,6 +531,18 @@ func (bc *BusinessCreate) createSpec() (*Business, *sqlgraph.CreateSpec) {
 	if value, ok := bc.mutation.Location(); ok {
 		_spec.SetField(business.FieldLocation, field.TypeString, value)
 		_node.Location = value
+	}
+	if value, ok := bc.mutation.Longitude(); ok {
+		_spec.SetField(business.FieldLongitude, field.TypeString, value)
+		_node.Longitude = value
+	}
+	if value, ok := bc.mutation.MapCoordinates(); ok {
+		_spec.SetField(business.FieldMapCoordinates, field.TypeJSON, value)
+		_node.MapCoordinates = value
+	}
+	if value, ok := bc.mutation.Latitude(); ok {
+		_spec.SetField(business.FieldLatitude, field.TypeString, value)
+		_node.Latitude = value
 	}
 	if value, ok := bc.mutation.Email(); ok {
 		_spec.SetField(business.FieldEmail, field.TypeString, value)

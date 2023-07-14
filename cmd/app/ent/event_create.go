@@ -498,6 +498,40 @@ func (ec *EventCreate) SetNillableUpdatedAt(t *time.Time) *EventCreate {
 	return ec
 }
 
+// SetMapCoordinates sets the "map_coordinates" field.
+func (ec *EventCreate) SetMapCoordinates(m map[string]interface{}) *EventCreate {
+	ec.mutation.SetMapCoordinates(m)
+	return ec
+}
+
+// SetLongitude sets the "longitude" field.
+func (ec *EventCreate) SetLongitude(s string) *EventCreate {
+	ec.mutation.SetLongitude(s)
+	return ec
+}
+
+// SetNillableLongitude sets the "longitude" field if the given value is not nil.
+func (ec *EventCreate) SetNillableLongitude(s *string) *EventCreate {
+	if s != nil {
+		ec.SetLongitude(*s)
+	}
+	return ec
+}
+
+// SetLatitude sets the "latitude" field.
+func (ec *EventCreate) SetLatitude(s string) *EventCreate {
+	ec.mutation.SetLatitude(s)
+	return ec
+}
+
+// SetNillableLatitude sets the "latitude" field if the given value is not nil.
+func (ec *EventCreate) SetNillableLatitude(s *string) *EventCreate {
+	if s != nil {
+		ec.SetLatitude(*s)
+	}
+	return ec
+}
+
 // SetSearchText sets the "search_text" field.
 func (ec *EventCreate) SetSearchText(s string) *EventCreate {
 	ec.mutation.SetSearchText(s)
@@ -932,6 +966,18 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 	if value, ok := ec.mutation.UpdatedAt(); ok {
 		_spec.SetField(event.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
+	}
+	if value, ok := ec.mutation.MapCoordinates(); ok {
+		_spec.SetField(event.FieldMapCoordinates, field.TypeJSON, value)
+		_node.MapCoordinates = value
+	}
+	if value, ok := ec.mutation.Longitude(); ok {
+		_spec.SetField(event.FieldLongitude, field.TypeString, value)
+		_node.Longitude = value
+	}
+	if value, ok := ec.mutation.Latitude(); ok {
+		_spec.SetField(event.FieldLatitude, field.TypeString, value)
+		_node.Latitude = value
 	}
 	if value, ok := ec.mutation.SearchText(); ok {
 		_spec.SetField(event.FieldSearchText, field.TypeString, value)

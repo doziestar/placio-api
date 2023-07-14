@@ -24,6 +24,12 @@ const (
 	FieldWebsite = "website"
 	// FieldLocation holds the string denoting the location field in the database.
 	FieldLocation = "location"
+	// FieldLongitude holds the string denoting the longitude field in the database.
+	FieldLongitude = "longitude"
+	// FieldMapCoordinates holds the string denoting the map_coordinates field in the database.
+	FieldMapCoordinates = "map_coordinates"
+	// FieldLatitude holds the string denoting the latitude field in the database.
+	FieldLatitude = "latitude"
 	// FieldEmail holds the string denoting the email field in the database.
 	FieldEmail = "email"
 	// FieldPhone holds the string denoting the phone field in the database.
@@ -166,6 +172,9 @@ var Columns = []string{
 	FieldCoverImage,
 	FieldWebsite,
 	FieldLocation,
+	FieldLongitude,
+	FieldMapCoordinates,
+	FieldLatitude,
 	FieldEmail,
 	FieldPhone,
 	FieldBusinessSettings,
@@ -227,6 +236,16 @@ func ByWebsite(opts ...sql.OrderTermOption) OrderOption {
 // ByLocation orders the results by the location field.
 func ByLocation(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldLocation, opts...).ToFunc()
+}
+
+// ByLongitude orders the results by the longitude field.
+func ByLongitude(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLongitude, opts...).ToFunc()
+}
+
+// ByLatitude orders the results by the latitude field.
+func ByLatitude(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLatitude, opts...).ToFunc()
 }
 
 // ByEmail orders the results by the email field.

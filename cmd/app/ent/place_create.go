@@ -281,6 +281,34 @@ func (pc *PlaceCreate) SetMapCoordinates(m map[string]interface{}) *PlaceCreate 
 	return pc
 }
 
+// SetLongitude sets the "longitude" field.
+func (pc *PlaceCreate) SetLongitude(s string) *PlaceCreate {
+	pc.mutation.SetLongitude(s)
+	return pc
+}
+
+// SetNillableLongitude sets the "longitude" field if the given value is not nil.
+func (pc *PlaceCreate) SetNillableLongitude(s *string) *PlaceCreate {
+	if s != nil {
+		pc.SetLongitude(*s)
+	}
+	return pc
+}
+
+// SetLatitude sets the "latitude" field.
+func (pc *PlaceCreate) SetLatitude(s string) *PlaceCreate {
+	pc.mutation.SetLatitude(s)
+	return pc
+}
+
+// SetNillableLatitude sets the "latitude" field if the given value is not nil.
+func (pc *PlaceCreate) SetNillableLatitude(s *string) *PlaceCreate {
+	if s != nil {
+		pc.SetLatitude(*s)
+	}
+	return pc
+}
+
 // SetSearchText sets the "search_text" field.
 func (pc *PlaceCreate) SetSearchText(s string) *PlaceCreate {
 	pc.mutation.SetSearchText(s)
@@ -575,9 +603,6 @@ func (pc *PlaceCreate) check() error {
 	if _, ok := pc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Place.name"`)}
 	}
-	if _, ok := pc.mutation.MapCoordinates(); !ok {
-		return &ValidationError{Name: "map_coordinates", err: errors.New(`ent: missing required field "Place.map_coordinates"`)}
-	}
 	if v, ok := pc.mutation.ID(); ok {
 		if err := place.IDValidator(v); err != nil {
 			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "Place.id": %w`, err)}
@@ -713,6 +738,14 @@ func (pc *PlaceCreate) createSpec() (*Place, *sqlgraph.CreateSpec) {
 	if value, ok := pc.mutation.MapCoordinates(); ok {
 		_spec.SetField(place.FieldMapCoordinates, field.TypeJSON, value)
 		_node.MapCoordinates = value
+	}
+	if value, ok := pc.mutation.Longitude(); ok {
+		_spec.SetField(place.FieldLongitude, field.TypeString, value)
+		_node.Longitude = value
+	}
+	if value, ok := pc.mutation.Latitude(); ok {
+		_spec.SetField(place.FieldLatitude, field.TypeString, value)
+		_node.Latitude = value
 	}
 	if value, ok := pc.mutation.SearchText(); ok {
 		_spec.SetField(place.FieldSearchText, field.TypeString, value)

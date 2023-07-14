@@ -40,7 +40,9 @@ func (Place) Fields() []ent.Field {
 		field.JSON("availability", map[string]interface{}{}).Optional(),
 		field.String("special_offers").Optional(),
 		field.Float("sustainability_score").Optional(),
-		field.JSON("map_coordinates", map[string]interface{}{}),
+		field.JSON("map_coordinates", map[string]interface{}{}).Optional(),
+		field.String("longitude").Optional(),
+		field.String("latitude").Optional(),
 		field.String("search_text").Optional(),
 		field.Float("relevance_score").Optional(),
 	}

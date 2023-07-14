@@ -1741,6 +1741,9 @@ type BusinessMutation struct {
 	cover_image                      *string
 	website                          *string
 	location                         *string
+	longitude                        *string
+	map_coordinates                  *map[string]interface{}
+	latitude                         *string
 	email                            *string
 	phone                            *string
 	business_settings                *map[string]interface{}
@@ -2175,6 +2178,153 @@ func (m *BusinessMutation) LocationCleared() bool {
 func (m *BusinessMutation) ResetLocation() {
 	m.location = nil
 	delete(m.clearedFields, business.FieldLocation)
+}
+
+// SetLongitude sets the "longitude" field.
+func (m *BusinessMutation) SetLongitude(s string) {
+	m.longitude = &s
+}
+
+// Longitude returns the value of the "longitude" field in the mutation.
+func (m *BusinessMutation) Longitude() (r string, exists bool) {
+	v := m.longitude
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLongitude returns the old "longitude" field's value of the Business entity.
+// If the Business object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessMutation) OldLongitude(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLongitude is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLongitude requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLongitude: %w", err)
+	}
+	return oldValue.Longitude, nil
+}
+
+// ClearLongitude clears the value of the "longitude" field.
+func (m *BusinessMutation) ClearLongitude() {
+	m.longitude = nil
+	m.clearedFields[business.FieldLongitude] = struct{}{}
+}
+
+// LongitudeCleared returns if the "longitude" field was cleared in this mutation.
+func (m *BusinessMutation) LongitudeCleared() bool {
+	_, ok := m.clearedFields[business.FieldLongitude]
+	return ok
+}
+
+// ResetLongitude resets all changes to the "longitude" field.
+func (m *BusinessMutation) ResetLongitude() {
+	m.longitude = nil
+	delete(m.clearedFields, business.FieldLongitude)
+}
+
+// SetMapCoordinates sets the "map_coordinates" field.
+func (m *BusinessMutation) SetMapCoordinates(value map[string]interface{}) {
+	m.map_coordinates = &value
+}
+
+// MapCoordinates returns the value of the "map_coordinates" field in the mutation.
+func (m *BusinessMutation) MapCoordinates() (r map[string]interface{}, exists bool) {
+	v := m.map_coordinates
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMapCoordinates returns the old "map_coordinates" field's value of the Business entity.
+// If the Business object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessMutation) OldMapCoordinates(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMapCoordinates is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMapCoordinates requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMapCoordinates: %w", err)
+	}
+	return oldValue.MapCoordinates, nil
+}
+
+// ClearMapCoordinates clears the value of the "map_coordinates" field.
+func (m *BusinessMutation) ClearMapCoordinates() {
+	m.map_coordinates = nil
+	m.clearedFields[business.FieldMapCoordinates] = struct{}{}
+}
+
+// MapCoordinatesCleared returns if the "map_coordinates" field was cleared in this mutation.
+func (m *BusinessMutation) MapCoordinatesCleared() bool {
+	_, ok := m.clearedFields[business.FieldMapCoordinates]
+	return ok
+}
+
+// ResetMapCoordinates resets all changes to the "map_coordinates" field.
+func (m *BusinessMutation) ResetMapCoordinates() {
+	m.map_coordinates = nil
+	delete(m.clearedFields, business.FieldMapCoordinates)
+}
+
+// SetLatitude sets the "latitude" field.
+func (m *BusinessMutation) SetLatitude(s string) {
+	m.latitude = &s
+}
+
+// Latitude returns the value of the "latitude" field in the mutation.
+func (m *BusinessMutation) Latitude() (r string, exists bool) {
+	v := m.latitude
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLatitude returns the old "latitude" field's value of the Business entity.
+// If the Business object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessMutation) OldLatitude(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLatitude is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLatitude requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLatitude: %w", err)
+	}
+	return oldValue.Latitude, nil
+}
+
+// ClearLatitude clears the value of the "latitude" field.
+func (m *BusinessMutation) ClearLatitude() {
+	m.latitude = nil
+	m.clearedFields[business.FieldLatitude] = struct{}{}
+}
+
+// LatitudeCleared returns if the "latitude" field was cleared in this mutation.
+func (m *BusinessMutation) LatitudeCleared() bool {
+	_, ok := m.clearedFields[business.FieldLatitude]
+	return ok
+}
+
+// ResetLatitude resets all changes to the "latitude" field.
+func (m *BusinessMutation) ResetLatitude() {
+	m.latitude = nil
+	delete(m.clearedFields, business.FieldLatitude)
 }
 
 // SetEmail sets the "email" field.
@@ -3213,7 +3363,7 @@ func (m *BusinessMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *BusinessMutation) Fields() []string {
-	fields := make([]string, 0, 12)
+	fields := make([]string, 0, 15)
 	if m.name != nil {
 		fields = append(fields, business.FieldName)
 	}
@@ -3231,6 +3381,15 @@ func (m *BusinessMutation) Fields() []string {
 	}
 	if m.location != nil {
 		fields = append(fields, business.FieldLocation)
+	}
+	if m.longitude != nil {
+		fields = append(fields, business.FieldLongitude)
+	}
+	if m.map_coordinates != nil {
+		fields = append(fields, business.FieldMapCoordinates)
+	}
+	if m.latitude != nil {
+		fields = append(fields, business.FieldLatitude)
 	}
 	if m.email != nil {
 		fields = append(fields, business.FieldEmail)
@@ -3270,6 +3429,12 @@ func (m *BusinessMutation) Field(name string) (ent.Value, bool) {
 		return m.Website()
 	case business.FieldLocation:
 		return m.Location()
+	case business.FieldLongitude:
+		return m.Longitude()
+	case business.FieldMapCoordinates:
+		return m.MapCoordinates()
+	case business.FieldLatitude:
+		return m.Latitude()
 	case business.FieldEmail:
 		return m.Email()
 	case business.FieldPhone:
@@ -3303,6 +3468,12 @@ func (m *BusinessMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldWebsite(ctx)
 	case business.FieldLocation:
 		return m.OldLocation(ctx)
+	case business.FieldLongitude:
+		return m.OldLongitude(ctx)
+	case business.FieldMapCoordinates:
+		return m.OldMapCoordinates(ctx)
+	case business.FieldLatitude:
+		return m.OldLatitude(ctx)
 	case business.FieldEmail:
 		return m.OldEmail(ctx)
 	case business.FieldPhone:
@@ -3365,6 +3536,27 @@ func (m *BusinessMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetLocation(v)
+		return nil
+	case business.FieldLongitude:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLongitude(v)
+		return nil
+	case business.FieldMapCoordinates:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMapCoordinates(v)
+		return nil
+	case business.FieldLatitude:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLatitude(v)
 		return nil
 	case business.FieldEmail:
 		v, ok := value.(string)
@@ -3468,6 +3660,15 @@ func (m *BusinessMutation) ClearedFields() []string {
 	if m.FieldCleared(business.FieldLocation) {
 		fields = append(fields, business.FieldLocation)
 	}
+	if m.FieldCleared(business.FieldLongitude) {
+		fields = append(fields, business.FieldLongitude)
+	}
+	if m.FieldCleared(business.FieldMapCoordinates) {
+		fields = append(fields, business.FieldMapCoordinates)
+	}
+	if m.FieldCleared(business.FieldLatitude) {
+		fields = append(fields, business.FieldLatitude)
+	}
 	if m.FieldCleared(business.FieldEmail) {
 		fields = append(fields, business.FieldEmail)
 	}
@@ -3515,6 +3716,15 @@ func (m *BusinessMutation) ClearField(name string) error {
 	case business.FieldLocation:
 		m.ClearLocation()
 		return nil
+	case business.FieldLongitude:
+		m.ClearLongitude()
+		return nil
+	case business.FieldMapCoordinates:
+		m.ClearMapCoordinates()
+		return nil
+	case business.FieldLatitude:
+		m.ClearLatitude()
+		return nil
 	case business.FieldEmail:
 		m.ClearEmail()
 		return nil
@@ -3558,6 +3768,15 @@ func (m *BusinessMutation) ResetField(name string) error {
 		return nil
 	case business.FieldLocation:
 		m.ResetLocation()
+		return nil
+	case business.FieldLongitude:
+		m.ResetLongitude()
+		return nil
+	case business.FieldMapCoordinates:
+		m.ResetMapCoordinates()
+		return nil
+	case business.FieldLatitude:
+		m.ResetLatitude()
 		return nil
 	case business.FieldEmail:
 		m.ResetEmail()
@@ -7599,6 +7818,9 @@ type EventMutation struct {
 	cover_image                       *string
 	createdAt                         *time.Time
 	updatedAt                         *time.Time
+	map_coordinates                   *map[string]interface{}
+	longitude                         *string
+	latitude                          *string
 	search_text                       *string
 	relevance_score                   *float64
 	addrelevance_score                *float64
@@ -9380,6 +9602,153 @@ func (m *EventMutation) ResetUpdatedAt() {
 	m.updatedAt = nil
 }
 
+// SetMapCoordinates sets the "map_coordinates" field.
+func (m *EventMutation) SetMapCoordinates(value map[string]interface{}) {
+	m.map_coordinates = &value
+}
+
+// MapCoordinates returns the value of the "map_coordinates" field in the mutation.
+func (m *EventMutation) MapCoordinates() (r map[string]interface{}, exists bool) {
+	v := m.map_coordinates
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMapCoordinates returns the old "map_coordinates" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldMapCoordinates(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMapCoordinates is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMapCoordinates requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMapCoordinates: %w", err)
+	}
+	return oldValue.MapCoordinates, nil
+}
+
+// ClearMapCoordinates clears the value of the "map_coordinates" field.
+func (m *EventMutation) ClearMapCoordinates() {
+	m.map_coordinates = nil
+	m.clearedFields[event.FieldMapCoordinates] = struct{}{}
+}
+
+// MapCoordinatesCleared returns if the "map_coordinates" field was cleared in this mutation.
+func (m *EventMutation) MapCoordinatesCleared() bool {
+	_, ok := m.clearedFields[event.FieldMapCoordinates]
+	return ok
+}
+
+// ResetMapCoordinates resets all changes to the "map_coordinates" field.
+func (m *EventMutation) ResetMapCoordinates() {
+	m.map_coordinates = nil
+	delete(m.clearedFields, event.FieldMapCoordinates)
+}
+
+// SetLongitude sets the "longitude" field.
+func (m *EventMutation) SetLongitude(s string) {
+	m.longitude = &s
+}
+
+// Longitude returns the value of the "longitude" field in the mutation.
+func (m *EventMutation) Longitude() (r string, exists bool) {
+	v := m.longitude
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLongitude returns the old "longitude" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldLongitude(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLongitude is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLongitude requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLongitude: %w", err)
+	}
+	return oldValue.Longitude, nil
+}
+
+// ClearLongitude clears the value of the "longitude" field.
+func (m *EventMutation) ClearLongitude() {
+	m.longitude = nil
+	m.clearedFields[event.FieldLongitude] = struct{}{}
+}
+
+// LongitudeCleared returns if the "longitude" field was cleared in this mutation.
+func (m *EventMutation) LongitudeCleared() bool {
+	_, ok := m.clearedFields[event.FieldLongitude]
+	return ok
+}
+
+// ResetLongitude resets all changes to the "longitude" field.
+func (m *EventMutation) ResetLongitude() {
+	m.longitude = nil
+	delete(m.clearedFields, event.FieldLongitude)
+}
+
+// SetLatitude sets the "latitude" field.
+func (m *EventMutation) SetLatitude(s string) {
+	m.latitude = &s
+}
+
+// Latitude returns the value of the "latitude" field in the mutation.
+func (m *EventMutation) Latitude() (r string, exists bool) {
+	v := m.latitude
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLatitude returns the old "latitude" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldLatitude(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLatitude is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLatitude requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLatitude: %w", err)
+	}
+	return oldValue.Latitude, nil
+}
+
+// ClearLatitude clears the value of the "latitude" field.
+func (m *EventMutation) ClearLatitude() {
+	m.latitude = nil
+	m.clearedFields[event.FieldLatitude] = struct{}{}
+}
+
+// LatitudeCleared returns if the "latitude" field was cleared in this mutation.
+func (m *EventMutation) LatitudeCleared() bool {
+	_, ok := m.clearedFields[event.FieldLatitude]
+	return ok
+}
+
+// ResetLatitude resets all changes to the "latitude" field.
+func (m *EventMutation) ResetLatitude() {
+	m.latitude = nil
+	delete(m.clearedFields, event.FieldLatitude)
+}
+
 // SetSearchText sets the "search_text" field.
 func (m *EventMutation) SetSearchText(s string) {
 	m.search_text = &s
@@ -10043,7 +10412,7 @@ func (m *EventMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EventMutation) Fields() []string {
-	fields := make([]string, 0, 36)
+	fields := make([]string, 0, 39)
 	if m.name != nil {
 		fields = append(fields, event.FieldName)
 	}
@@ -10146,6 +10515,15 @@ func (m *EventMutation) Fields() []string {
 	if m.updatedAt != nil {
 		fields = append(fields, event.FieldUpdatedAt)
 	}
+	if m.map_coordinates != nil {
+		fields = append(fields, event.FieldMapCoordinates)
+	}
+	if m.longitude != nil {
+		fields = append(fields, event.FieldLongitude)
+	}
+	if m.latitude != nil {
+		fields = append(fields, event.FieldLatitude)
+	}
 	if m.search_text != nil {
 		fields = append(fields, event.FieldSearchText)
 	}
@@ -10228,6 +10606,12 @@ func (m *EventMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case event.FieldUpdatedAt:
 		return m.UpdatedAt()
+	case event.FieldMapCoordinates:
+		return m.MapCoordinates()
+	case event.FieldLongitude:
+		return m.Longitude()
+	case event.FieldLatitude:
+		return m.Latitude()
 	case event.FieldSearchText:
 		return m.SearchText()
 	case event.FieldRelevanceScore:
@@ -10309,6 +10693,12 @@ func (m *EventMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldCreatedAt(ctx)
 	case event.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
+	case event.FieldMapCoordinates:
+		return m.OldMapCoordinates(ctx)
+	case event.FieldLongitude:
+		return m.OldLongitude(ctx)
+	case event.FieldLatitude:
+		return m.OldLatitude(ctx)
 	case event.FieldSearchText:
 		return m.OldSearchText(ctx)
 	case event.FieldRelevanceScore:
@@ -10560,6 +10950,27 @@ func (m *EventMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetUpdatedAt(v)
 		return nil
+	case event.FieldMapCoordinates:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMapCoordinates(v)
+		return nil
+	case event.FieldLongitude:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLongitude(v)
+		return nil
+	case event.FieldLatitude:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLatitude(v)
+		return nil
 	case event.FieldSearchText:
 		v, ok := value.(string)
 		if !ok {
@@ -10715,6 +11126,15 @@ func (m *EventMutation) ClearedFields() []string {
 	if m.FieldCleared(event.FieldCoverImage) {
 		fields = append(fields, event.FieldCoverImage)
 	}
+	if m.FieldCleared(event.FieldMapCoordinates) {
+		fields = append(fields, event.FieldMapCoordinates)
+	}
+	if m.FieldCleared(event.FieldLongitude) {
+		fields = append(fields, event.FieldLongitude)
+	}
+	if m.FieldCleared(event.FieldLatitude) {
+		fields = append(fields, event.FieldLatitude)
+	}
 	if m.FieldCleared(event.FieldSearchText) {
 		fields = append(fields, event.FieldSearchText)
 	}
@@ -10831,6 +11251,15 @@ func (m *EventMutation) ClearField(name string) error {
 	case event.FieldCoverImage:
 		m.ClearCoverImage()
 		return nil
+	case event.FieldMapCoordinates:
+		m.ClearMapCoordinates()
+		return nil
+	case event.FieldLongitude:
+		m.ClearLongitude()
+		return nil
+	case event.FieldLatitude:
+		m.ClearLatitude()
+		return nil
 	case event.FieldSearchText:
 		m.ClearSearchText()
 		return nil
@@ -10946,6 +11375,15 @@ func (m *EventMutation) ResetField(name string) error {
 		return nil
 	case event.FieldUpdatedAt:
 		m.ResetUpdatedAt()
+		return nil
+	case event.FieldMapCoordinates:
+		m.ResetMapCoordinates()
+		return nil
+	case event.FieldLongitude:
+		m.ResetLongitude()
+		return nil
+	case event.FieldLatitude:
+		m.ResetLatitude()
 		return nil
 	case event.FieldSearchText:
 		m.ResetSearchText()
@@ -14699,6 +15137,8 @@ type PlaceMutation struct {
 	sustainability_score       *float64
 	addsustainability_score    *float64
 	map_coordinates            *map[string]interface{}
+	longitude                  *string
+	latitude                   *string
 	search_text                *string
 	relevance_score            *float64
 	addrelevance_score         *float64
@@ -16067,9 +16507,120 @@ func (m *PlaceMutation) OldMapCoordinates(ctx context.Context) (v map[string]int
 	return oldValue.MapCoordinates, nil
 }
 
+// ClearMapCoordinates clears the value of the "map_coordinates" field.
+func (m *PlaceMutation) ClearMapCoordinates() {
+	m.map_coordinates = nil
+	m.clearedFields[place.FieldMapCoordinates] = struct{}{}
+}
+
+// MapCoordinatesCleared returns if the "map_coordinates" field was cleared in this mutation.
+func (m *PlaceMutation) MapCoordinatesCleared() bool {
+	_, ok := m.clearedFields[place.FieldMapCoordinates]
+	return ok
+}
+
 // ResetMapCoordinates resets all changes to the "map_coordinates" field.
 func (m *PlaceMutation) ResetMapCoordinates() {
 	m.map_coordinates = nil
+	delete(m.clearedFields, place.FieldMapCoordinates)
+}
+
+// SetLongitude sets the "longitude" field.
+func (m *PlaceMutation) SetLongitude(s string) {
+	m.longitude = &s
+}
+
+// Longitude returns the value of the "longitude" field in the mutation.
+func (m *PlaceMutation) Longitude() (r string, exists bool) {
+	v := m.longitude
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLongitude returns the old "longitude" field's value of the Place entity.
+// If the Place object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceMutation) OldLongitude(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLongitude is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLongitude requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLongitude: %w", err)
+	}
+	return oldValue.Longitude, nil
+}
+
+// ClearLongitude clears the value of the "longitude" field.
+func (m *PlaceMutation) ClearLongitude() {
+	m.longitude = nil
+	m.clearedFields[place.FieldLongitude] = struct{}{}
+}
+
+// LongitudeCleared returns if the "longitude" field was cleared in this mutation.
+func (m *PlaceMutation) LongitudeCleared() bool {
+	_, ok := m.clearedFields[place.FieldLongitude]
+	return ok
+}
+
+// ResetLongitude resets all changes to the "longitude" field.
+func (m *PlaceMutation) ResetLongitude() {
+	m.longitude = nil
+	delete(m.clearedFields, place.FieldLongitude)
+}
+
+// SetLatitude sets the "latitude" field.
+func (m *PlaceMutation) SetLatitude(s string) {
+	m.latitude = &s
+}
+
+// Latitude returns the value of the "latitude" field in the mutation.
+func (m *PlaceMutation) Latitude() (r string, exists bool) {
+	v := m.latitude
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLatitude returns the old "latitude" field's value of the Place entity.
+// If the Place object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceMutation) OldLatitude(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLatitude is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLatitude requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLatitude: %w", err)
+	}
+	return oldValue.Latitude, nil
+}
+
+// ClearLatitude clears the value of the "latitude" field.
+func (m *PlaceMutation) ClearLatitude() {
+	m.latitude = nil
+	m.clearedFields[place.FieldLatitude] = struct{}{}
+}
+
+// LatitudeCleared returns if the "latitude" field was cleared in this mutation.
+func (m *PlaceMutation) LatitudeCleared() bool {
+	_, ok := m.clearedFields[place.FieldLatitude]
+	return ok
+}
+
+// ResetLatitude resets all changes to the "latitude" field.
+func (m *PlaceMutation) ResetLatitude() {
+	m.latitude = nil
+	delete(m.clearedFields, place.FieldLatitude)
 }
 
 // SetSearchText sets the "search_text" field.
@@ -16966,7 +17517,7 @@ func (m *PlaceMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PlaceMutation) Fields() []string {
-	fields := make([]string, 0, 26)
+	fields := make([]string, 0, 28)
 	if m.name != nil {
 		fields = append(fields, place.FieldName)
 	}
@@ -17039,6 +17590,12 @@ func (m *PlaceMutation) Fields() []string {
 	if m.map_coordinates != nil {
 		fields = append(fields, place.FieldMapCoordinates)
 	}
+	if m.longitude != nil {
+		fields = append(fields, place.FieldLongitude)
+	}
+	if m.latitude != nil {
+		fields = append(fields, place.FieldLatitude)
+	}
 	if m.search_text != nil {
 		fields = append(fields, place.FieldSearchText)
 	}
@@ -17101,6 +17658,10 @@ func (m *PlaceMutation) Field(name string) (ent.Value, bool) {
 		return m.SustainabilityScore()
 	case place.FieldMapCoordinates:
 		return m.MapCoordinates()
+	case place.FieldLongitude:
+		return m.Longitude()
+	case place.FieldLatitude:
+		return m.Latitude()
 	case place.FieldSearchText:
 		return m.SearchText()
 	case place.FieldRelevanceScore:
@@ -17162,6 +17723,10 @@ func (m *PlaceMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldSustainabilityScore(ctx)
 	case place.FieldMapCoordinates:
 		return m.OldMapCoordinates(ctx)
+	case place.FieldLongitude:
+		return m.OldLongitude(ctx)
+	case place.FieldLatitude:
+		return m.OldLatitude(ctx)
 	case place.FieldSearchText:
 		return m.OldSearchText(ctx)
 	case place.FieldRelevanceScore:
@@ -17343,6 +17908,20 @@ func (m *PlaceMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetMapCoordinates(v)
 		return nil
+	case place.FieldLongitude:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLongitude(v)
+		return nil
+	case place.FieldLatitude:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLatitude(v)
+		return nil
 	case place.FieldSearchText:
 		v, ok := value.(string)
 		if !ok {
@@ -17480,6 +18059,15 @@ func (m *PlaceMutation) ClearedFields() []string {
 	if m.FieldCleared(place.FieldSustainabilityScore) {
 		fields = append(fields, place.FieldSustainabilityScore)
 	}
+	if m.FieldCleared(place.FieldMapCoordinates) {
+		fields = append(fields, place.FieldMapCoordinates)
+	}
+	if m.FieldCleared(place.FieldLongitude) {
+		fields = append(fields, place.FieldLongitude)
+	}
+	if m.FieldCleared(place.FieldLatitude) {
+		fields = append(fields, place.FieldLatitude)
+	}
 	if m.FieldCleared(place.FieldSearchText) {
 		fields = append(fields, place.FieldSearchText)
 	}
@@ -17566,6 +18154,15 @@ func (m *PlaceMutation) ClearField(name string) error {
 	case place.FieldSustainabilityScore:
 		m.ClearSustainabilityScore()
 		return nil
+	case place.FieldMapCoordinates:
+		m.ClearMapCoordinates()
+		return nil
+	case place.FieldLongitude:
+		m.ClearLongitude()
+		return nil
+	case place.FieldLatitude:
+		m.ClearLatitude()
+		return nil
 	case place.FieldSearchText:
 		m.ClearSearchText()
 		return nil
@@ -17651,6 +18248,12 @@ func (m *PlaceMutation) ResetField(name string) error {
 		return nil
 	case place.FieldMapCoordinates:
 		m.ResetMapCoordinates()
+		return nil
+	case place.FieldLongitude:
+		m.ResetLongitude()
+		return nil
+	case place.FieldLatitude:
+		m.ResetLatitude()
 		return nil
 	case place.FieldSearchText:
 		m.ResetSearchText()

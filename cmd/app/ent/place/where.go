@@ -134,6 +134,16 @@ func SustainabilityScore(v float64) predicate.Place {
 	return predicate.Place(sql.FieldEQ(FieldSustainabilityScore, v))
 }
 
+// Longitude applies equality check predicate on the "longitude" field. It's identical to LongitudeEQ.
+func Longitude(v string) predicate.Place {
+	return predicate.Place(sql.FieldEQ(FieldLongitude, v))
+}
+
+// Latitude applies equality check predicate on the "latitude" field. It's identical to LatitudeEQ.
+func Latitude(v string) predicate.Place {
+	return predicate.Place(sql.FieldEQ(FieldLatitude, v))
+}
+
 // SearchText applies equality check predicate on the "search_text" field. It's identical to SearchTextEQ.
 func SearchText(v string) predicate.Place {
 	return predicate.Place(sql.FieldEQ(FieldSearchText, v))
@@ -1247,6 +1257,166 @@ func SustainabilityScoreIsNil() predicate.Place {
 // SustainabilityScoreNotNil applies the NotNil predicate on the "sustainability_score" field.
 func SustainabilityScoreNotNil() predicate.Place {
 	return predicate.Place(sql.FieldNotNull(FieldSustainabilityScore))
+}
+
+// MapCoordinatesIsNil applies the IsNil predicate on the "map_coordinates" field.
+func MapCoordinatesIsNil() predicate.Place {
+	return predicate.Place(sql.FieldIsNull(FieldMapCoordinates))
+}
+
+// MapCoordinatesNotNil applies the NotNil predicate on the "map_coordinates" field.
+func MapCoordinatesNotNil() predicate.Place {
+	return predicate.Place(sql.FieldNotNull(FieldMapCoordinates))
+}
+
+// LongitudeEQ applies the EQ predicate on the "longitude" field.
+func LongitudeEQ(v string) predicate.Place {
+	return predicate.Place(sql.FieldEQ(FieldLongitude, v))
+}
+
+// LongitudeNEQ applies the NEQ predicate on the "longitude" field.
+func LongitudeNEQ(v string) predicate.Place {
+	return predicate.Place(sql.FieldNEQ(FieldLongitude, v))
+}
+
+// LongitudeIn applies the In predicate on the "longitude" field.
+func LongitudeIn(vs ...string) predicate.Place {
+	return predicate.Place(sql.FieldIn(FieldLongitude, vs...))
+}
+
+// LongitudeNotIn applies the NotIn predicate on the "longitude" field.
+func LongitudeNotIn(vs ...string) predicate.Place {
+	return predicate.Place(sql.FieldNotIn(FieldLongitude, vs...))
+}
+
+// LongitudeGT applies the GT predicate on the "longitude" field.
+func LongitudeGT(v string) predicate.Place {
+	return predicate.Place(sql.FieldGT(FieldLongitude, v))
+}
+
+// LongitudeGTE applies the GTE predicate on the "longitude" field.
+func LongitudeGTE(v string) predicate.Place {
+	return predicate.Place(sql.FieldGTE(FieldLongitude, v))
+}
+
+// LongitudeLT applies the LT predicate on the "longitude" field.
+func LongitudeLT(v string) predicate.Place {
+	return predicate.Place(sql.FieldLT(FieldLongitude, v))
+}
+
+// LongitudeLTE applies the LTE predicate on the "longitude" field.
+func LongitudeLTE(v string) predicate.Place {
+	return predicate.Place(sql.FieldLTE(FieldLongitude, v))
+}
+
+// LongitudeContains applies the Contains predicate on the "longitude" field.
+func LongitudeContains(v string) predicate.Place {
+	return predicate.Place(sql.FieldContains(FieldLongitude, v))
+}
+
+// LongitudeHasPrefix applies the HasPrefix predicate on the "longitude" field.
+func LongitudeHasPrefix(v string) predicate.Place {
+	return predicate.Place(sql.FieldHasPrefix(FieldLongitude, v))
+}
+
+// LongitudeHasSuffix applies the HasSuffix predicate on the "longitude" field.
+func LongitudeHasSuffix(v string) predicate.Place {
+	return predicate.Place(sql.FieldHasSuffix(FieldLongitude, v))
+}
+
+// LongitudeIsNil applies the IsNil predicate on the "longitude" field.
+func LongitudeIsNil() predicate.Place {
+	return predicate.Place(sql.FieldIsNull(FieldLongitude))
+}
+
+// LongitudeNotNil applies the NotNil predicate on the "longitude" field.
+func LongitudeNotNil() predicate.Place {
+	return predicate.Place(sql.FieldNotNull(FieldLongitude))
+}
+
+// LongitudeEqualFold applies the EqualFold predicate on the "longitude" field.
+func LongitudeEqualFold(v string) predicate.Place {
+	return predicate.Place(sql.FieldEqualFold(FieldLongitude, v))
+}
+
+// LongitudeContainsFold applies the ContainsFold predicate on the "longitude" field.
+func LongitudeContainsFold(v string) predicate.Place {
+	return predicate.Place(sql.FieldContainsFold(FieldLongitude, v))
+}
+
+// LatitudeEQ applies the EQ predicate on the "latitude" field.
+func LatitudeEQ(v string) predicate.Place {
+	return predicate.Place(sql.FieldEQ(FieldLatitude, v))
+}
+
+// LatitudeNEQ applies the NEQ predicate on the "latitude" field.
+func LatitudeNEQ(v string) predicate.Place {
+	return predicate.Place(sql.FieldNEQ(FieldLatitude, v))
+}
+
+// LatitudeIn applies the In predicate on the "latitude" field.
+func LatitudeIn(vs ...string) predicate.Place {
+	return predicate.Place(sql.FieldIn(FieldLatitude, vs...))
+}
+
+// LatitudeNotIn applies the NotIn predicate on the "latitude" field.
+func LatitudeNotIn(vs ...string) predicate.Place {
+	return predicate.Place(sql.FieldNotIn(FieldLatitude, vs...))
+}
+
+// LatitudeGT applies the GT predicate on the "latitude" field.
+func LatitudeGT(v string) predicate.Place {
+	return predicate.Place(sql.FieldGT(FieldLatitude, v))
+}
+
+// LatitudeGTE applies the GTE predicate on the "latitude" field.
+func LatitudeGTE(v string) predicate.Place {
+	return predicate.Place(sql.FieldGTE(FieldLatitude, v))
+}
+
+// LatitudeLT applies the LT predicate on the "latitude" field.
+func LatitudeLT(v string) predicate.Place {
+	return predicate.Place(sql.FieldLT(FieldLatitude, v))
+}
+
+// LatitudeLTE applies the LTE predicate on the "latitude" field.
+func LatitudeLTE(v string) predicate.Place {
+	return predicate.Place(sql.FieldLTE(FieldLatitude, v))
+}
+
+// LatitudeContains applies the Contains predicate on the "latitude" field.
+func LatitudeContains(v string) predicate.Place {
+	return predicate.Place(sql.FieldContains(FieldLatitude, v))
+}
+
+// LatitudeHasPrefix applies the HasPrefix predicate on the "latitude" field.
+func LatitudeHasPrefix(v string) predicate.Place {
+	return predicate.Place(sql.FieldHasPrefix(FieldLatitude, v))
+}
+
+// LatitudeHasSuffix applies the HasSuffix predicate on the "latitude" field.
+func LatitudeHasSuffix(v string) predicate.Place {
+	return predicate.Place(sql.FieldHasSuffix(FieldLatitude, v))
+}
+
+// LatitudeIsNil applies the IsNil predicate on the "latitude" field.
+func LatitudeIsNil() predicate.Place {
+	return predicate.Place(sql.FieldIsNull(FieldLatitude))
+}
+
+// LatitudeNotNil applies the NotNil predicate on the "latitude" field.
+func LatitudeNotNil() predicate.Place {
+	return predicate.Place(sql.FieldNotNull(FieldLatitude))
+}
+
+// LatitudeEqualFold applies the EqualFold predicate on the "latitude" field.
+func LatitudeEqualFold(v string) predicate.Place {
+	return predicate.Place(sql.FieldEqualFold(FieldLatitude, v))
+}
+
+// LatitudeContainsFold applies the ContainsFold predicate on the "latitude" field.
+func LatitudeContainsFold(v string) predicate.Place {
+	return predicate.Place(sql.FieldContainsFold(FieldLatitude, v))
 }
 
 // SearchTextEQ applies the EQ predicate on the "search_text" field.

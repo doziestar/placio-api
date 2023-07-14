@@ -690,6 +690,58 @@ func (eu *EventUpdate) SetUpdatedAt(t time.Time) *EventUpdate {
 	return eu
 }
 
+// SetMapCoordinates sets the "map_coordinates" field.
+func (eu *EventUpdate) SetMapCoordinates(m map[string]interface{}) *EventUpdate {
+	eu.mutation.SetMapCoordinates(m)
+	return eu
+}
+
+// ClearMapCoordinates clears the value of the "map_coordinates" field.
+func (eu *EventUpdate) ClearMapCoordinates() *EventUpdate {
+	eu.mutation.ClearMapCoordinates()
+	return eu
+}
+
+// SetLongitude sets the "longitude" field.
+func (eu *EventUpdate) SetLongitude(s string) *EventUpdate {
+	eu.mutation.SetLongitude(s)
+	return eu
+}
+
+// SetNillableLongitude sets the "longitude" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableLongitude(s *string) *EventUpdate {
+	if s != nil {
+		eu.SetLongitude(*s)
+	}
+	return eu
+}
+
+// ClearLongitude clears the value of the "longitude" field.
+func (eu *EventUpdate) ClearLongitude() *EventUpdate {
+	eu.mutation.ClearLongitude()
+	return eu
+}
+
+// SetLatitude sets the "latitude" field.
+func (eu *EventUpdate) SetLatitude(s string) *EventUpdate {
+	eu.mutation.SetLatitude(s)
+	return eu
+}
+
+// SetNillableLatitude sets the "latitude" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableLatitude(s *string) *EventUpdate {
+	if s != nil {
+		eu.SetLatitude(*s)
+	}
+	return eu
+}
+
+// ClearLatitude clears the value of the "latitude" field.
+func (eu *EventUpdate) ClearLatitude() *EventUpdate {
+	eu.mutation.ClearLatitude()
+	return eu
+}
+
 // SetSearchText sets the "search_text" field.
 func (eu *EventUpdate) SetSearchText(s string) *EventUpdate {
 	eu.mutation.SetSearchText(s)
@@ -1345,6 +1397,24 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := eu.mutation.UpdatedAt(); ok {
 		_spec.SetField(event.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if value, ok := eu.mutation.MapCoordinates(); ok {
+		_spec.SetField(event.FieldMapCoordinates, field.TypeJSON, value)
+	}
+	if eu.mutation.MapCoordinatesCleared() {
+		_spec.ClearField(event.FieldMapCoordinates, field.TypeJSON)
+	}
+	if value, ok := eu.mutation.Longitude(); ok {
+		_spec.SetField(event.FieldLongitude, field.TypeString, value)
+	}
+	if eu.mutation.LongitudeCleared() {
+		_spec.ClearField(event.FieldLongitude, field.TypeString)
+	}
+	if value, ok := eu.mutation.Latitude(); ok {
+		_spec.SetField(event.FieldLatitude, field.TypeString, value)
+	}
+	if eu.mutation.LatitudeCleared() {
+		_spec.ClearField(event.FieldLatitude, field.TypeString)
 	}
 	if value, ok := eu.mutation.SearchText(); ok {
 		_spec.SetField(event.FieldSearchText, field.TypeString, value)
@@ -2451,6 +2521,58 @@ func (euo *EventUpdateOne) SetUpdatedAt(t time.Time) *EventUpdateOne {
 	return euo
 }
 
+// SetMapCoordinates sets the "map_coordinates" field.
+func (euo *EventUpdateOne) SetMapCoordinates(m map[string]interface{}) *EventUpdateOne {
+	euo.mutation.SetMapCoordinates(m)
+	return euo
+}
+
+// ClearMapCoordinates clears the value of the "map_coordinates" field.
+func (euo *EventUpdateOne) ClearMapCoordinates() *EventUpdateOne {
+	euo.mutation.ClearMapCoordinates()
+	return euo
+}
+
+// SetLongitude sets the "longitude" field.
+func (euo *EventUpdateOne) SetLongitude(s string) *EventUpdateOne {
+	euo.mutation.SetLongitude(s)
+	return euo
+}
+
+// SetNillableLongitude sets the "longitude" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableLongitude(s *string) *EventUpdateOne {
+	if s != nil {
+		euo.SetLongitude(*s)
+	}
+	return euo
+}
+
+// ClearLongitude clears the value of the "longitude" field.
+func (euo *EventUpdateOne) ClearLongitude() *EventUpdateOne {
+	euo.mutation.ClearLongitude()
+	return euo
+}
+
+// SetLatitude sets the "latitude" field.
+func (euo *EventUpdateOne) SetLatitude(s string) *EventUpdateOne {
+	euo.mutation.SetLatitude(s)
+	return euo
+}
+
+// SetNillableLatitude sets the "latitude" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableLatitude(s *string) *EventUpdateOne {
+	if s != nil {
+		euo.SetLatitude(*s)
+	}
+	return euo
+}
+
+// ClearLatitude clears the value of the "latitude" field.
+func (euo *EventUpdateOne) ClearLatitude() *EventUpdateOne {
+	euo.mutation.ClearLatitude()
+	return euo
+}
+
 // SetSearchText sets the "search_text" field.
 func (euo *EventUpdateOne) SetSearchText(s string) *EventUpdateOne {
 	euo.mutation.SetSearchText(s)
@@ -3136,6 +3258,24 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 	}
 	if value, ok := euo.mutation.UpdatedAt(); ok {
 		_spec.SetField(event.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if value, ok := euo.mutation.MapCoordinates(); ok {
+		_spec.SetField(event.FieldMapCoordinates, field.TypeJSON, value)
+	}
+	if euo.mutation.MapCoordinatesCleared() {
+		_spec.ClearField(event.FieldMapCoordinates, field.TypeJSON)
+	}
+	if value, ok := euo.mutation.Longitude(); ok {
+		_spec.SetField(event.FieldLongitude, field.TypeString, value)
+	}
+	if euo.mutation.LongitudeCleared() {
+		_spec.ClearField(event.FieldLongitude, field.TypeString)
+	}
+	if value, ok := euo.mutation.Latitude(); ok {
+		_spec.SetField(event.FieldLatitude, field.TypeString, value)
+	}
+	if euo.mutation.LatitudeCleared() {
+		_spec.ClearField(event.FieldLatitude, field.TypeString)
 	}
 	if value, ok := euo.mutation.SearchText(); ok {
 		_spec.SetField(event.FieldSearchText, field.TypeString, value)

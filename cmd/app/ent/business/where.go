@@ -94,6 +94,16 @@ func Location(v string) predicate.Business {
 	return predicate.Business(sql.FieldEQ(FieldLocation, v))
 }
 
+// Longitude applies equality check predicate on the "longitude" field. It's identical to LongitudeEQ.
+func Longitude(v string) predicate.Business {
+	return predicate.Business(sql.FieldEQ(FieldLongitude, v))
+}
+
+// Latitude applies equality check predicate on the "latitude" field. It's identical to LatitudeEQ.
+func Latitude(v string) predicate.Business {
+	return predicate.Business(sql.FieldEQ(FieldLatitude, v))
+}
+
 // Email applies equality check predicate on the "email" field. It's identical to EmailEQ.
 func Email(v string) predicate.Business {
 	return predicate.Business(sql.FieldEQ(FieldEmail, v))
@@ -557,6 +567,166 @@ func LocationEqualFold(v string) predicate.Business {
 // LocationContainsFold applies the ContainsFold predicate on the "location" field.
 func LocationContainsFold(v string) predicate.Business {
 	return predicate.Business(sql.FieldContainsFold(FieldLocation, v))
+}
+
+// LongitudeEQ applies the EQ predicate on the "longitude" field.
+func LongitudeEQ(v string) predicate.Business {
+	return predicate.Business(sql.FieldEQ(FieldLongitude, v))
+}
+
+// LongitudeNEQ applies the NEQ predicate on the "longitude" field.
+func LongitudeNEQ(v string) predicate.Business {
+	return predicate.Business(sql.FieldNEQ(FieldLongitude, v))
+}
+
+// LongitudeIn applies the In predicate on the "longitude" field.
+func LongitudeIn(vs ...string) predicate.Business {
+	return predicate.Business(sql.FieldIn(FieldLongitude, vs...))
+}
+
+// LongitudeNotIn applies the NotIn predicate on the "longitude" field.
+func LongitudeNotIn(vs ...string) predicate.Business {
+	return predicate.Business(sql.FieldNotIn(FieldLongitude, vs...))
+}
+
+// LongitudeGT applies the GT predicate on the "longitude" field.
+func LongitudeGT(v string) predicate.Business {
+	return predicate.Business(sql.FieldGT(FieldLongitude, v))
+}
+
+// LongitudeGTE applies the GTE predicate on the "longitude" field.
+func LongitudeGTE(v string) predicate.Business {
+	return predicate.Business(sql.FieldGTE(FieldLongitude, v))
+}
+
+// LongitudeLT applies the LT predicate on the "longitude" field.
+func LongitudeLT(v string) predicate.Business {
+	return predicate.Business(sql.FieldLT(FieldLongitude, v))
+}
+
+// LongitudeLTE applies the LTE predicate on the "longitude" field.
+func LongitudeLTE(v string) predicate.Business {
+	return predicate.Business(sql.FieldLTE(FieldLongitude, v))
+}
+
+// LongitudeContains applies the Contains predicate on the "longitude" field.
+func LongitudeContains(v string) predicate.Business {
+	return predicate.Business(sql.FieldContains(FieldLongitude, v))
+}
+
+// LongitudeHasPrefix applies the HasPrefix predicate on the "longitude" field.
+func LongitudeHasPrefix(v string) predicate.Business {
+	return predicate.Business(sql.FieldHasPrefix(FieldLongitude, v))
+}
+
+// LongitudeHasSuffix applies the HasSuffix predicate on the "longitude" field.
+func LongitudeHasSuffix(v string) predicate.Business {
+	return predicate.Business(sql.FieldHasSuffix(FieldLongitude, v))
+}
+
+// LongitudeIsNil applies the IsNil predicate on the "longitude" field.
+func LongitudeIsNil() predicate.Business {
+	return predicate.Business(sql.FieldIsNull(FieldLongitude))
+}
+
+// LongitudeNotNil applies the NotNil predicate on the "longitude" field.
+func LongitudeNotNil() predicate.Business {
+	return predicate.Business(sql.FieldNotNull(FieldLongitude))
+}
+
+// LongitudeEqualFold applies the EqualFold predicate on the "longitude" field.
+func LongitudeEqualFold(v string) predicate.Business {
+	return predicate.Business(sql.FieldEqualFold(FieldLongitude, v))
+}
+
+// LongitudeContainsFold applies the ContainsFold predicate on the "longitude" field.
+func LongitudeContainsFold(v string) predicate.Business {
+	return predicate.Business(sql.FieldContainsFold(FieldLongitude, v))
+}
+
+// MapCoordinatesIsNil applies the IsNil predicate on the "map_coordinates" field.
+func MapCoordinatesIsNil() predicate.Business {
+	return predicate.Business(sql.FieldIsNull(FieldMapCoordinates))
+}
+
+// MapCoordinatesNotNil applies the NotNil predicate on the "map_coordinates" field.
+func MapCoordinatesNotNil() predicate.Business {
+	return predicate.Business(sql.FieldNotNull(FieldMapCoordinates))
+}
+
+// LatitudeEQ applies the EQ predicate on the "latitude" field.
+func LatitudeEQ(v string) predicate.Business {
+	return predicate.Business(sql.FieldEQ(FieldLatitude, v))
+}
+
+// LatitudeNEQ applies the NEQ predicate on the "latitude" field.
+func LatitudeNEQ(v string) predicate.Business {
+	return predicate.Business(sql.FieldNEQ(FieldLatitude, v))
+}
+
+// LatitudeIn applies the In predicate on the "latitude" field.
+func LatitudeIn(vs ...string) predicate.Business {
+	return predicate.Business(sql.FieldIn(FieldLatitude, vs...))
+}
+
+// LatitudeNotIn applies the NotIn predicate on the "latitude" field.
+func LatitudeNotIn(vs ...string) predicate.Business {
+	return predicate.Business(sql.FieldNotIn(FieldLatitude, vs...))
+}
+
+// LatitudeGT applies the GT predicate on the "latitude" field.
+func LatitudeGT(v string) predicate.Business {
+	return predicate.Business(sql.FieldGT(FieldLatitude, v))
+}
+
+// LatitudeGTE applies the GTE predicate on the "latitude" field.
+func LatitudeGTE(v string) predicate.Business {
+	return predicate.Business(sql.FieldGTE(FieldLatitude, v))
+}
+
+// LatitudeLT applies the LT predicate on the "latitude" field.
+func LatitudeLT(v string) predicate.Business {
+	return predicate.Business(sql.FieldLT(FieldLatitude, v))
+}
+
+// LatitudeLTE applies the LTE predicate on the "latitude" field.
+func LatitudeLTE(v string) predicate.Business {
+	return predicate.Business(sql.FieldLTE(FieldLatitude, v))
+}
+
+// LatitudeContains applies the Contains predicate on the "latitude" field.
+func LatitudeContains(v string) predicate.Business {
+	return predicate.Business(sql.FieldContains(FieldLatitude, v))
+}
+
+// LatitudeHasPrefix applies the HasPrefix predicate on the "latitude" field.
+func LatitudeHasPrefix(v string) predicate.Business {
+	return predicate.Business(sql.FieldHasPrefix(FieldLatitude, v))
+}
+
+// LatitudeHasSuffix applies the HasSuffix predicate on the "latitude" field.
+func LatitudeHasSuffix(v string) predicate.Business {
+	return predicate.Business(sql.FieldHasSuffix(FieldLatitude, v))
+}
+
+// LatitudeIsNil applies the IsNil predicate on the "latitude" field.
+func LatitudeIsNil() predicate.Business {
+	return predicate.Business(sql.FieldIsNull(FieldLatitude))
+}
+
+// LatitudeNotNil applies the NotNil predicate on the "latitude" field.
+func LatitudeNotNil() predicate.Business {
+	return predicate.Business(sql.FieldNotNull(FieldLatitude))
+}
+
+// LatitudeEqualFold applies the EqualFold predicate on the "latitude" field.
+func LatitudeEqualFold(v string) predicate.Business {
+	return predicate.Business(sql.FieldEqualFold(FieldLatitude, v))
+}
+
+// LatitudeContainsFold applies the ContainsFold predicate on the "latitude" field.
+func LatitudeContainsFold(v string) predicate.Business {
+	return predicate.Business(sql.FieldContainsFold(FieldLatitude, v))
 }
 
 // EmailEQ applies the EQ predicate on the "email" field.
