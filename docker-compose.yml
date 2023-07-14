@@ -21,11 +21,6 @@ services:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
-#    healthcheck:
-#      test: [ "CMD-SHELL", "pg_isready -U dozie" ]
-#      interval: 30s
-#      timeout: 30s
-#      retries: 3
 
   #  unleash:
   #    image: unleashorg/unleash-server:latest
