@@ -8,28 +8,39 @@ import (
 	"log"
 	"os"
 	"placio-app/ent"
+	"placio-app/ent/business"
+	"placio-app/ent/event"
+	"placio-app/ent/place"
+	"placio-app/ent/predicate"
+	"placio-app/ent/user"
+	"strings"
 )
 
 type SearchService interface {
 	SearchUsers(ctx context.Context, searchText string) (string, error)
 	CreateOrUpdateUser(ctx context.Context, user *ent.User) error
 	DeleteUser(ctx context.Context, userID string) error
+	SearchUsersDB(ctx context.Context, searchText string) ([]*ent.User, error)
 
 	SearchPlaces(ctx context.Context, searchText string) (string, error)
 	CreateOrUpdatePlace(ctx context.Context, place *ent.Place) error
 	DeletePlace(ctx context.Context, placeID string) error
+	SearchPlacesDB(ctx context.Context, searchText string) ([]*ent.Place, error)
 
 	SearchEvents(ctx context.Context, searchText string) (string, error)
 	CreateOrUpdateEvent(ctx context.Context, event *ent.Event) error
 	DeleteEvent(ctx context.Context, eventID string) error
+	SearchEventsDB(ctx context.Context, searchText string) ([]*ent.Event, error)
 
 	SearchBusinesses(ctx context.Context, searchText string) (string, error)
 	CreateOrUpdateBusiness(ctx context.Context, business *ent.Business) error
 	DeleteBusiness(ctx context.Context, businessID string) error
+	SearchBusinessesDB(ctx context.Context, searchText string) ([]*ent.Business, error)
 }
 
 type SearchServiceImpl struct {
-	client *search.Client
+	client    *search.Client
+	entClient *ent.Client
 }
 
 // NewSearchService Initiate a new search service with an Elasticsearch client
@@ -72,7 +83,7 @@ func (s *SearchServiceImpl) SearchUsers(ctx context.Context, searchText string) 
 	index := s.client.InitIndex("users")
 	res, err := index.Search(searchText, nil)
 	if err != nil {
-		log.Println("Error when searching users: %s", err)
+		log.Printf("Error when searching users: %s\n", err)
 		return "", err
 	}
 
@@ -84,6 +95,129 @@ func (s *SearchServiceImpl) SearchUsers(ctx context.Context, searchText string) 
 
 	return string(bytes), nil
 
+}
+
+// SearchUsersDB performs a search in the User index.
+func (s *SearchServiceImpl) SearchUsersDB(ctx context.Context, searchText string) ([]*ent.User, error) {
+	var users []*ent.User
+	var err error
+
+	predicates := []predicate.User{
+		user.NameContains(searchText),
+		user.UsernameContains(searchText),
+		user.NameHasPrefix(searchText),
+		user.UsernameHasPrefix(searchText),
+		user.NameHasSuffix(searchText),
+		user.UsernameHasSuffix(searchText),
+	}
+
+	// we also need those that have any of the words in the search text in their username or name
+	words := strings.Split(searchText, " ")
+	for _, word := range words {
+		predicates = append(predicates, user.NameContains(word), user.UsernameContains(word))
+	}
+
+	users, err = s.entClient.User.
+		Query().
+		Where(user.Or(predicates...)).
+		WithFollowedBusinesses().
+		WithFollowedPlaces().
+		All(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}
+
+func (s *SearchServiceImpl) SearchBusinessesDB(ctx context.Context, searchText string) ([]*ent.Business, error) {
+	var businesses []*ent.Business
+	var err error
+
+	predicates := []predicate.Business{
+		business.NameContains(searchText),
+		business.DescriptionContains(searchText),
+		business.NameHasPrefix(searchText),
+		business.DescriptionHasPrefix(searchText),
+		business.NameHasSuffix(searchText),
+		business.DescriptionHasSuffix(searchText),
+	}
+
+	// we also need those that have any of the words in the search text in their name or description
+	words := strings.Split(searchText, " ")
+	for _, word := range words {
+		predicates = append(predicates, business.NameContains(word), business.DescriptionContains(word))
+	}
+
+	businesses, err = s.entClient.Business.
+		Query().
+		Where(business.Or(predicates...)).
+		All(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return businesses, nil
+}
+
+func (s *SearchServiceImpl) SearchEventsDB(ctx context.Context, searchText string) ([]*ent.Event, error) {
+	var events []*ent.Event
+	var err error
+
+	predicates := []predicate.Event{
+		event.NameContains(searchText),
+		event.DescriptionContains(searchText),
+		event.NameHasPrefix(searchText),
+		event.DescriptionHasPrefix(searchText),
+		event.NameHasSuffix(searchText),
+		event.DescriptionHasSuffix(searchText),
+	}
+
+	// we also need those that have any of the words in the search text in their name or description
+	words := strings.Split(searchText, " ")
+	for _, word := range words {
+		predicates = append(predicates, event.NameContains(word), event.DescriptionContains(word))
+	}
+
+	events, err = s.entClient.Event.
+		Query().
+		Where(event.Or(predicates...)).
+		All(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return events, nil
+}
+
+func (s *SearchServiceImpl) SearchPlacesDB(ctx context.Context, searchText string) ([]*ent.Place, error) {
+	var places []*ent.Place
+	var err error
+
+	predicates := []predicate.Place{
+		place.NameContains(searchText),
+		place.DescriptionContains(searchText),
+		place.NameHasPrefix(searchText),
+		place.DescriptionHasPrefix(searchText),
+		place.NameHasSuffix(searchText),
+		place.DescriptionHasSuffix(searchText),
+	}
+
+	// we also need those that have any of the words in the search text in their name or description
+	words := strings.Split(searchText, " ")
+	for _, word := range words {
+		predicates = append(predicates, place.NameContains(word), place.DescriptionContains(word))
+	}
+
+	places, err = s.entClient.Place.
+		Query().
+		Where(place.Or(predicates...)).
+		All(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return places, nil
 }
 
 // SearchPlaces performs a search in the Place index.

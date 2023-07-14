@@ -454,6 +454,25 @@ definitions:
     type: object
   placio-app_Dto.SearchResponse:
     type: object
+  placio-app_Dto.SearchResponses:
+    properties:
+      businesses:
+        items:
+          $ref: '#/definitions/placio-app_ent.Business'
+        type: array
+      events:
+        items:
+          $ref: '#/definitions/placio-app_ent.Event'
+        type: array
+      places:
+        items:
+          $ref: '#/definitions/placio-app_ent.Place'
+        type: array
+      users:
+        items:
+          $ref: '#/definitions/placio-app_ent.User'
+        type: array
+    type: object
   placio-app_Dto.UpdateAmenityInput:
     properties:
       icon:
@@ -4472,6 +4491,10 @@ paths:
       - application/json
       description: Search for Users, Places, Events, and Businesses
       parameters:
+      - description: Type of search - user, place, event, business
+        in: query
+        name: type
+        type: string
       - description: Text to search for
         in: query
         name: searchText
@@ -4483,7 +4506,7 @@ paths:
         "200":
           description: Successfully found search results
           schema:
-            $ref: '#/definitions/placio-app_Dto.SearchResponse'
+            $ref: '#/definitions/placio-app_Dto.SearchResponses'
         "400":
           description: Bad Request
           schema:
@@ -4492,9 +4515,9 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Full-text search
+      summary: Search DB
       tags:
-      - Search
+      - Search-DB
   /api/v1/search/businesses:
     get:
       consumes:

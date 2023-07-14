@@ -3235,10 +3235,16 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Search"
+                    "Search-DB"
                 ],
-                "summary": "Full-text search",
+                "summary": "Search DB",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Type of search - user, place, event, business",
+                        "name": "type",
+                        "in": "query"
+                    },
                     {
                         "type": "string",
                         "description": "Text to search for",
@@ -3251,7 +3257,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Successfully found search results",
                         "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.SearchResponse"
+                            "$ref": "#/definitions/placio-app_Dto.SearchResponses"
                         }
                     },
                     "400": {
@@ -8614,6 +8620,35 @@ const docTemplate = `{
         },
         "placio-app_Dto.SearchResponse": {
             "type": "object"
+        },
+        "placio-app_Dto.SearchResponses": {
+            "type": "object",
+            "properties": {
+                "businesses": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Business"
+                    }
+                },
+                "events": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Event"
+                    }
+                },
+                "places": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Place"
+                    }
+                },
+                "users": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.User"
+                    }
+                }
+            }
         },
         "placio-app_Dto.UpdateAmenityInput": {
             "type": "object",
