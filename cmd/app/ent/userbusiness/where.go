@@ -69,6 +69,11 @@ func Role(v string) predicate.UserBusiness {
 	return predicate.UserBusiness(sql.FieldEQ(FieldRole, v))
 }
 
+// Permissions applies equality check predicate on the "permissions" field. It's identical to PermissionsEQ.
+func Permissions(v string) predicate.UserBusiness {
+	return predicate.UserBusiness(sql.FieldEQ(FieldPermissions, v))
+}
+
 // RoleEQ applies the EQ predicate on the "role" field.
 func RoleEQ(v string) predicate.UserBusiness {
 	return predicate.UserBusiness(sql.FieldEQ(FieldRole, v))
@@ -132,6 +137,81 @@ func RoleEqualFold(v string) predicate.UserBusiness {
 // RoleContainsFold applies the ContainsFold predicate on the "role" field.
 func RoleContainsFold(v string) predicate.UserBusiness {
 	return predicate.UserBusiness(sql.FieldContainsFold(FieldRole, v))
+}
+
+// PermissionsEQ applies the EQ predicate on the "permissions" field.
+func PermissionsEQ(v string) predicate.UserBusiness {
+	return predicate.UserBusiness(sql.FieldEQ(FieldPermissions, v))
+}
+
+// PermissionsNEQ applies the NEQ predicate on the "permissions" field.
+func PermissionsNEQ(v string) predicate.UserBusiness {
+	return predicate.UserBusiness(sql.FieldNEQ(FieldPermissions, v))
+}
+
+// PermissionsIn applies the In predicate on the "permissions" field.
+func PermissionsIn(vs ...string) predicate.UserBusiness {
+	return predicate.UserBusiness(sql.FieldIn(FieldPermissions, vs...))
+}
+
+// PermissionsNotIn applies the NotIn predicate on the "permissions" field.
+func PermissionsNotIn(vs ...string) predicate.UserBusiness {
+	return predicate.UserBusiness(sql.FieldNotIn(FieldPermissions, vs...))
+}
+
+// PermissionsGT applies the GT predicate on the "permissions" field.
+func PermissionsGT(v string) predicate.UserBusiness {
+	return predicate.UserBusiness(sql.FieldGT(FieldPermissions, v))
+}
+
+// PermissionsGTE applies the GTE predicate on the "permissions" field.
+func PermissionsGTE(v string) predicate.UserBusiness {
+	return predicate.UserBusiness(sql.FieldGTE(FieldPermissions, v))
+}
+
+// PermissionsLT applies the LT predicate on the "permissions" field.
+func PermissionsLT(v string) predicate.UserBusiness {
+	return predicate.UserBusiness(sql.FieldLT(FieldPermissions, v))
+}
+
+// PermissionsLTE applies the LTE predicate on the "permissions" field.
+func PermissionsLTE(v string) predicate.UserBusiness {
+	return predicate.UserBusiness(sql.FieldLTE(FieldPermissions, v))
+}
+
+// PermissionsContains applies the Contains predicate on the "permissions" field.
+func PermissionsContains(v string) predicate.UserBusiness {
+	return predicate.UserBusiness(sql.FieldContains(FieldPermissions, v))
+}
+
+// PermissionsHasPrefix applies the HasPrefix predicate on the "permissions" field.
+func PermissionsHasPrefix(v string) predicate.UserBusiness {
+	return predicate.UserBusiness(sql.FieldHasPrefix(FieldPermissions, v))
+}
+
+// PermissionsHasSuffix applies the HasSuffix predicate on the "permissions" field.
+func PermissionsHasSuffix(v string) predicate.UserBusiness {
+	return predicate.UserBusiness(sql.FieldHasSuffix(FieldPermissions, v))
+}
+
+// PermissionsIsNil applies the IsNil predicate on the "permissions" field.
+func PermissionsIsNil() predicate.UserBusiness {
+	return predicate.UserBusiness(sql.FieldIsNull(FieldPermissions))
+}
+
+// PermissionsNotNil applies the NotNil predicate on the "permissions" field.
+func PermissionsNotNil() predicate.UserBusiness {
+	return predicate.UserBusiness(sql.FieldNotNull(FieldPermissions))
+}
+
+// PermissionsEqualFold applies the EqualFold predicate on the "permissions" field.
+func PermissionsEqualFold(v string) predicate.UserBusiness {
+	return predicate.UserBusiness(sql.FieldEqualFold(FieldPermissions, v))
+}
+
+// PermissionsContainsFold applies the ContainsFold predicate on the "permissions" field.
+func PermissionsContainsFold(v string) predicate.UserBusiness {
+	return predicate.UserBusiness(sql.FieldContainsFold(FieldPermissions, v))
 }
 
 // HasUser applies the HasEdge predicate on the "user" edge.

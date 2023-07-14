@@ -35,6 +35,26 @@ func (ubu *UserBusinessUpdate) SetRole(s string) *UserBusinessUpdate {
 	return ubu
 }
 
+// SetPermissions sets the "permissions" field.
+func (ubu *UserBusinessUpdate) SetPermissions(s string) *UserBusinessUpdate {
+	ubu.mutation.SetPermissions(s)
+	return ubu
+}
+
+// SetNillablePermissions sets the "permissions" field if the given value is not nil.
+func (ubu *UserBusinessUpdate) SetNillablePermissions(s *string) *UserBusinessUpdate {
+	if s != nil {
+		ubu.SetPermissions(*s)
+	}
+	return ubu
+}
+
+// ClearPermissions clears the value of the "permissions" field.
+func (ubu *UserBusinessUpdate) ClearPermissions() *UserBusinessUpdate {
+	ubu.mutation.ClearPermissions()
+	return ubu
+}
+
 // SetUserID sets the "user" edge to the User entity by ID.
 func (ubu *UserBusinessUpdate) SetUserID(id string) *UserBusinessUpdate {
 	ubu.mutation.SetUserID(id)
@@ -117,7 +137,20 @@ func (ubu *UserBusinessUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (ubu *UserBusinessUpdate) check() error {
+	if v, ok := ubu.mutation.Permissions(); ok {
+		if err := userbusiness.PermissionsValidator(v); err != nil {
+			return &ValidationError{Name: "permissions", err: fmt.Errorf(`ent: validator failed for field "UserBusiness.permissions": %w`, err)}
+		}
+	}
+	return nil
+}
+
 func (ubu *UserBusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := ubu.check(); err != nil {
+		return n, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(userbusiness.Table, userbusiness.Columns, sqlgraph.NewFieldSpec(userbusiness.FieldID, field.TypeString))
 	if ps := ubu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -128,6 +161,12 @@ func (ubu *UserBusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := ubu.mutation.Role(); ok {
 		_spec.SetField(userbusiness.FieldRole, field.TypeString, value)
+	}
+	if value, ok := ubu.mutation.Permissions(); ok {
+		_spec.SetField(userbusiness.FieldPermissions, field.TypeString, value)
+	}
+	if ubu.mutation.PermissionsCleared() {
+		_spec.ClearField(userbusiness.FieldPermissions, field.TypeString)
 	}
 	if ubu.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -210,6 +249,26 @@ type UserBusinessUpdateOne struct {
 // SetRole sets the "role" field.
 func (ubuo *UserBusinessUpdateOne) SetRole(s string) *UserBusinessUpdateOne {
 	ubuo.mutation.SetRole(s)
+	return ubuo
+}
+
+// SetPermissions sets the "permissions" field.
+func (ubuo *UserBusinessUpdateOne) SetPermissions(s string) *UserBusinessUpdateOne {
+	ubuo.mutation.SetPermissions(s)
+	return ubuo
+}
+
+// SetNillablePermissions sets the "permissions" field if the given value is not nil.
+func (ubuo *UserBusinessUpdateOne) SetNillablePermissions(s *string) *UserBusinessUpdateOne {
+	if s != nil {
+		ubuo.SetPermissions(*s)
+	}
+	return ubuo
+}
+
+// ClearPermissions clears the value of the "permissions" field.
+func (ubuo *UserBusinessUpdateOne) ClearPermissions() *UserBusinessUpdateOne {
+	ubuo.mutation.ClearPermissions()
 	return ubuo
 }
 
@@ -308,7 +367,20 @@ func (ubuo *UserBusinessUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (ubuo *UserBusinessUpdateOne) check() error {
+	if v, ok := ubuo.mutation.Permissions(); ok {
+		if err := userbusiness.PermissionsValidator(v); err != nil {
+			return &ValidationError{Name: "permissions", err: fmt.Errorf(`ent: validator failed for field "UserBusiness.permissions": %w`, err)}
+		}
+	}
+	return nil
+}
+
 func (ubuo *UserBusinessUpdateOne) sqlSave(ctx context.Context) (_node *UserBusiness, err error) {
+	if err := ubuo.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(userbusiness.Table, userbusiness.Columns, sqlgraph.NewFieldSpec(userbusiness.FieldID, field.TypeString))
 	id, ok := ubuo.mutation.ID()
 	if !ok {
@@ -336,6 +408,12 @@ func (ubuo *UserBusinessUpdateOne) sqlSave(ctx context.Context) (_node *UserBusi
 	}
 	if value, ok := ubuo.mutation.Role(); ok {
 		_spec.SetField(userbusiness.FieldRole, field.TypeString, value)
+	}
+	if value, ok := ubuo.mutation.Permissions(); ok {
+		_spec.SetField(userbusiness.FieldPermissions, field.TypeString, value)
+	}
+	if ubuo.mutation.PermissionsCleared() {
+		_spec.ClearField(userbusiness.FieldPermissions, field.TypeString)
 	}
 	if ubuo.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{

@@ -807,6 +807,7 @@ var (
 	UserBusinessesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
 		{Name: "role", Type: field.TypeString},
+		{Name: "permissions", Type: field.TypeString, Nullable: true},
 		{Name: "business_user_businesses", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "user_user_businesses", Type: field.TypeString, Nullable: true, Size: 36},
 	}
@@ -818,13 +819,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "user_businesses_businesses_userBusinesses",
-				Columns:    []*schema.Column{UserBusinessesColumns[2]},
+				Columns:    []*schema.Column{UserBusinessesColumns[3]},
 				RefColumns: []*schema.Column{BusinessesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "user_businesses_users_userBusinesses",
-				Columns:    []*schema.Column{UserBusinessesColumns[3]},
+				Columns:    []*schema.Column{UserBusinessesColumns[4]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},

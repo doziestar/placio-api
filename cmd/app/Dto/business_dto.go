@@ -17,3 +17,8 @@ type BusinessAccountPlacesAndEvents struct {
 	Places []*ent.Place `json:"places"`
 	Events []*ent.Event `json:"events"`
 }
+
+type TeamMember struct {
+	Role       string `json:"role"`
+	Permission string `json:"permission"`
+}

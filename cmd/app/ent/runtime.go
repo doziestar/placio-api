@@ -278,6 +278,10 @@ func init() {
 	user.IDValidator = userDescID.Validators[0].(func(string) error)
 	userbusinessFields := schema.UserBusiness{}.Fields()
 	_ = userbusinessFields
+	// userbusinessDescPermissions is the schema descriptor for permissions field.
+	userbusinessDescPermissions := userbusinessFields[2].Descriptor()
+	// userbusiness.PermissionsValidator is a validator for the "permissions" field. It is called by the builders before save.
+	userbusiness.PermissionsValidator = userbusinessDescPermissions.Validators[0].(func(string) error)
 	// userbusinessDescID is the schema descriptor for id field.
 	userbusinessDescID := userbusinessFields[0].Descriptor()
 	// userbusiness.IDValidator is a validator for the "id" field. It is called by the builders before save.

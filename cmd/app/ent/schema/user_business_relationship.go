@@ -19,6 +19,9 @@ func (UserBusiness) Fields() []ent.Field {
 			Unique().
 			Immutable(),
 		field.String("role"),
+		field.String("permissions"). // added this field
+						Optional().
+						NotEmpty(),
 	}
 }
 

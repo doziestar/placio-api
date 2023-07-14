@@ -25549,6 +25549,7 @@ type UserBusinessMutation struct {
 	typ             string
 	id              *string
 	role            *string
+	permissions     *string
 	clearedFields   map[string]struct{}
 	user            *string
 	cleareduser     bool
@@ -25699,6 +25700,55 @@ func (m *UserBusinessMutation) ResetRole() {
 	m.role = nil
 }
 
+// SetPermissions sets the "permissions" field.
+func (m *UserBusinessMutation) SetPermissions(s string) {
+	m.permissions = &s
+}
+
+// Permissions returns the value of the "permissions" field in the mutation.
+func (m *UserBusinessMutation) Permissions() (r string, exists bool) {
+	v := m.permissions
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPermissions returns the old "permissions" field's value of the UserBusiness entity.
+// If the UserBusiness object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserBusinessMutation) OldPermissions(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPermissions is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPermissions requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPermissions: %w", err)
+	}
+	return oldValue.Permissions, nil
+}
+
+// ClearPermissions clears the value of the "permissions" field.
+func (m *UserBusinessMutation) ClearPermissions() {
+	m.permissions = nil
+	m.clearedFields[userbusiness.FieldPermissions] = struct{}{}
+}
+
+// PermissionsCleared returns if the "permissions" field was cleared in this mutation.
+func (m *UserBusinessMutation) PermissionsCleared() bool {
+	_, ok := m.clearedFields[userbusiness.FieldPermissions]
+	return ok
+}
+
+// ResetPermissions resets all changes to the "permissions" field.
+func (m *UserBusinessMutation) ResetPermissions() {
+	m.permissions = nil
+	delete(m.clearedFields, userbusiness.FieldPermissions)
+}
+
 // SetUserID sets the "user" edge to the User entity by id.
 func (m *UserBusinessMutation) SetUserID(id string) {
 	m.user = &id
@@ -25811,9 +25861,12 @@ func (m *UserBusinessMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserBusinessMutation) Fields() []string {
-	fields := make([]string, 0, 1)
+	fields := make([]string, 0, 2)
 	if m.role != nil {
 		fields = append(fields, userbusiness.FieldRole)
+	}
+	if m.permissions != nil {
+		fields = append(fields, userbusiness.FieldPermissions)
 	}
 	return fields
 }
@@ -25825,6 +25878,8 @@ func (m *UserBusinessMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case userbusiness.FieldRole:
 		return m.Role()
+	case userbusiness.FieldPermissions:
+		return m.Permissions()
 	}
 	return nil, false
 }
@@ -25836,6 +25891,8 @@ func (m *UserBusinessMutation) OldField(ctx context.Context, name string) (ent.V
 	switch name {
 	case userbusiness.FieldRole:
 		return m.OldRole(ctx)
+	case userbusiness.FieldPermissions:
+		return m.OldPermissions(ctx)
 	}
 	return nil, fmt.Errorf("unknown UserBusiness field %s", name)
 }
@@ -25851,6 +25908,13 @@ func (m *UserBusinessMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetRole(v)
+		return nil
+	case userbusiness.FieldPermissions:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPermissions(v)
 		return nil
 	}
 	return fmt.Errorf("unknown UserBusiness field %s", name)
@@ -25881,7 +25945,11 @@ func (m *UserBusinessMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *UserBusinessMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(userbusiness.FieldPermissions) {
+		fields = append(fields, userbusiness.FieldPermissions)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -25894,6 +25962,11 @@ func (m *UserBusinessMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *UserBusinessMutation) ClearField(name string) error {
+	switch name {
+	case userbusiness.FieldPermissions:
+		m.ClearPermissions()
+		return nil
+	}
 	return fmt.Errorf("unknown UserBusiness nullable field %s", name)
 }
 
@@ -25903,6 +25976,9 @@ func (m *UserBusinessMutation) ResetField(name string) error {
 	switch name {
 	case userbusiness.FieldRole:
 		m.ResetRole()
+		return nil
+	case userbusiness.FieldPermissions:
+		m.ResetPermissions()
 		return nil
 	}
 	return fmt.Errorf("unknown UserBusiness field %s", name)

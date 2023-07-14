@@ -14,6 +14,8 @@ const (
 	FieldID = "id"
 	// FieldRole holds the string denoting the role field in the database.
 	FieldRole = "role"
+	// FieldPermissions holds the string denoting the permissions field in the database.
+	FieldPermissions = "permissions"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
 	// EdgeBusiness holds the string denoting the business edge name in mutations.
@@ -40,6 +42,7 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldRole,
+	FieldPermissions,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "user_businesses"
@@ -65,6 +68,8 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// PermissionsValidator is a validator for the "permissions" field. It is called by the builders before save.
+	PermissionsValidator func(string) error
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(string) error
 )
@@ -80,6 +85,11 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 // ByRole orders the results by the role field.
 func ByRole(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRole, opts...).ToFunc()
+}
+
+// ByPermissions orders the results by the permissions field.
+func ByPermissions(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPermissions, opts...).ToFunc()
 }
 
 // ByUserField orders the results by user field.

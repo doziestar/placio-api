@@ -46,7 +46,168 @@ func (bc *BusinessAccountController) RegisterRoutes(router *gin.RouterGroup) {
 		//businessRouter.POST("/:businessAccountID/event/:eventID", utility.Use(bc.associateEventWithBusinessAccount))
 		//businessRouter.DELETE("/:businessAccountID/event/:eventID", utility.Use(bc.removeEventFromBusinessAccount))
 		businessRouter.POST("/:businessAccountID/event/", utility.Use(bc.addANewEventToBusinessAccount))
+		businessRouter.POST("/:businessAccountID/team-members/:userID", utility.Use(bc.addTeamMember))
+		businessRouter.GET("/:businessAccountID/team-members", utility.Use(bc.listTeamMembers))
+		businessRouter.DELETE("/:businessAccountID/team-members/:userID", utility.Use(bc.removeTeamMember))
+		businessRouter.PATCH("/:businessAccountID/team-members/:userID", utility.Use(bc.editTeamMember))
+		businessRouter.GET("/:businessAccountID/team-members/search", utility.Use(bc.searchTeamMembers))
+
 	}
+}
+
+// @Summary Add a team member to a Business Account
+// @ID add-team-member
+// @Tags Business
+// @Produce json
+// @Param businessAccountID path string true "Business Account ID"
+// @Param userID path string true "User ID"
+// @Param role body string true "Role"
+// @Param permissions body string true "Permissions"
+// @Security Bearer
+// @Param Authorization header string true "Bearer token"
+// @Accept json
+// @Success 200 {object} Dto.Response
+// @Failure 400 {object} Dto.Error
+// @Failure 401 {object} Dto.Error
+// @Failure 500 {object} Dto.Error
+// @Router /business/{businessAccountID}/team-members/{userID} [post]
+func (bc *BusinessAccountController) addTeamMember(c *gin.Context) error {
+	businessAccountID := c.Param("businessAccountID")
+	userID := c.Param("userID")
+
+	// role and permissions are sent in the request body
+	var teamMember Dto.TeamMember
+	if err := c.ShouldBindJSON(&teamMember); err != nil {
+		c.JSON(http.StatusBadRequest, utility.ProcessResponse(nil, "failed", err.Error()))
+		return err
+	}
+
+	err := bc.service.AddTeamMember(c, userID, businessAccountID, teamMember.Role, teamMember.Permission)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error()))
+		return err
+	}
+
+	c.JSON(http.StatusOK, utility.ProcessResponse("Team member added successfully", "success", ""))
+	return nil
+}
+
+// @Summary List all team members of a Business Account
+// @ID list-team-members
+// @Tags Business
+// @Produce json
+// @Param businessAccountID path string true "Business Account ID"
+// @Security Bearer
+// @Param Authorization header string true "Bearer token"
+// @Accept json
+// @Success 200 {array} Dto.TeamMember
+// @Failure 400 {object} Dto.Error
+// @Failure 401 {object} Dto.Error
+// @Failure 500 {object} Dto.Error
+// @Router /business/{businessAccountID}/team-members [get]
+func (bc *BusinessAccountController) listTeamMembers(c *gin.Context) error {
+	businessAccountID := c.Param("businessAccountID")
+
+	teamMembers, err := bc.service.ListTeamMembers(c, businessAccountID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error()))
+		return err
+	}
+
+	c.JSON(http.StatusOK, utility.ProcessResponse(teamMembers, "success", ""))
+	return nil
+}
+
+// @Summary Edit a team member in a Business Account
+// @ID edit-team-member
+// @Tags Business
+// @Produce json
+// @Param businessAccountID path string true "Business Account ID"
+// @Param userID path string true "User ID"
+// @Param role body string true "Role"
+// @Param permissions body string true "Permissions"
+// @Security Bearer
+// @Param Authorization header string true "Bearer token"
+// @Accept json
+// @Success 200 {object} Dto.Response
+// @Failure 400 {object} Dto.Error
+// @Failure 401 {object} Dto.Error
+// @Failure 500 {object} Dto.Error
+// @Router /business/{businessAccountID}/team-members/{userID} [patch]
+func (bc *BusinessAccountController) editTeamMember(c *gin.Context) error {
+	businessAccountID := c.Param("businessAccountID")
+	userID := c.Param("userID")
+
+	var teamMember Dto.TeamMember
+	if err := c.ShouldBindJSON(&teamMember); err != nil {
+		c.JSON(http.StatusBadRequest, utility.ProcessResponse(nil, "failed", err.Error()))
+		return err
+	}
+
+	err := bc.service.EditTeamMember(c, userID, businessAccountID, teamMember.Role, teamMember.Permission)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error()))
+		return err
+	}
+
+	c.JSON(http.StatusOK, utility.ProcessResponse("Team member edited successfully", "success", ""))
+	return nil
+}
+
+// @Summary Remove a team member from a Business Account
+// @ID remove-team-member
+// @Tags Business
+// @Produce json
+// @Param businessAccountID path string true "Business Account ID"
+// @Param userID path string true "User ID"
+// @Security Bearer
+// @Param Authorization header string true "Bearer token"
+// @Accept json
+// @Success 200 {object} Dto.Response
+// @Failure 400 {object} Dto.Error
+// @Failure 401 {object} Dto.Error
+// @Failure 500 {object} Dto.Error
+// @Router /business/{businessAccountID}/team-members/{userID} [delete]
+func (bc *BusinessAccountController) removeTeamMember(c *gin.Context) error {
+	businessAccountID := c.Param("businessAccountID")
+	userID := c.Param("userID")
+
+	err := bc.service.RemoveTeamMember(c, userID, businessAccountID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error()))
+		return err
+	}
+
+	c.JSON(http.StatusOK, utility.ProcessResponse("Team member removed successfully", "success", ""))
+	return nil
+}
+
+// @Summary Search team members in a Business Account
+// @ID search-team-members
+// @Tags Business
+// @Produce json
+// @Param businessAccountID path string true "Business Account ID"
+// @Param searchText query string true "Search Text"
+// @Security Bearer
+// @Param Authorization header string true "Bearer token"
+// @Accept json
+// @Success 200 {array} Dto.TeamMember
+// @Failure 400 {object} Dto.Error
+// @Failure 401 {object} Dto.Error
+// @Failure 500 {object} Dto.Error
+// @Router /business/{businessAccountID}/team-members/search [get]
+func (bc *BusinessAccountController) searchTeamMembers(c *gin.Context) error {
+	businessAccountID := c.Param("businessAccountID")
+	searchText := c.Query("searchText")
+
+	teamMembers, err := bc.service.SearchTeamMembers(c, businessAccountID, searchText)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error()))
+		return err
+	}
+
+	c.JSON(http.StatusOK, utility.ProcessResponse(teamMembers, "success", ""))
+	return nil
 }
 
 // @Summary Get Places and Events associated with a Business Account
