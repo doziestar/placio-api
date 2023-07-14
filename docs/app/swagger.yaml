@@ -6978,6 +6978,322 @@ paths:
       summary: Associate FAQ with Place
       tags:
       - FAQ
+  /follow/business/{businessID}:
+    post:
+      consumes:
+      - application/json
+      description: Follow a specific Business by the user
+      operationId: user-follow-business
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessID
+        required: true
+        type: string
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User successfully followed the business
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+      security:
+      - Bearer: []
+      summary: Follow a business
+      tags:
+      - Follow
+  /follow/event/{eventID}:
+    post:
+      consumes:
+      - application/json
+      description: Follow a specific Event by the user
+      operationId: follow-event
+      parameters:
+      - description: Event ID
+        in: path
+        name: eventID
+        required: true
+        type: string
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User successfully followed the event
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+      security:
+      - Bearer: []
+      summary: Follow an event
+      tags:
+      - Follow
+  /follow/place/{placeID}:
+    post:
+      consumes:
+      - application/json
+      description: Follow a specific Place by the user
+      operationId: follow-place
+      parameters:
+      - description: Place ID
+        in: path
+        name: placeID
+        required: true
+        type: string
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User successfully followed the place
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+      security:
+      - Bearer: []
+      summary: Follow a place
+      tags:
+      - Follow
+  /follow/user/{userID}:
+    post:
+      consumes:
+      - application/json
+      description: Follow a specific User
+      operationId: user-follow-user
+      parameters:
+      - description: User ID
+        in: path
+        name: userID
+        required: true
+        type: string
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User successfully followed the user
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+      security:
+      - Bearer: []
+      summary: Follow a user
+      tags:
+      - Follow
+  /followed/businesses:
+    get:
+      consumes:
+      - application/json
+      description: Get all Businesses followed by the user
+      operationId: get-followed-businesses
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_ent.Business'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+      security:
+      - Bearer: []
+      summary: Get followed businesses by a user
+      tags:
+      - Follow
+  /followed/events:
+    get:
+      consumes:
+      - application/json
+      description: Get all Events followed by the user
+      operationId: get-followed-events
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_ent.Event'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+      security:
+      - Bearer: []
+      summary: Get followed events by a user
+      tags:
+      - Follow
+  /followed/places:
+    get:
+      consumes:
+      - application/json
+      description: Get all Places followed by the user
+      operationId: get-followed-places
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_ent.Place'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+      security:
+      - Bearer: []
+      summary: Get followed places by a user
+      tags:
+      - Follow
+  /followed/users:
+    get:
+      consumes:
+      - application/json
+      description: Get all Users followed by the user
+      operationId: get-followed-users
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_ent.User'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+      security:
+      - Bearer: []
+      summary: Get followed users by a user
+      tags:
+      - Follow
   /places:
     get:
       consumes:
@@ -7077,6 +7393,170 @@ paths:
       summary: Get all Places
       tags:
       - Place
+  /unfollow/business/{businessID}:
+    delete:
+      consumes:
+      - application/json
+      description: Unfollow a specific Business by the user
+      operationId: user-unfollow-business
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessID
+        required: true
+        type: string
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User successfully unfollowed the business
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+      security:
+      - Bearer: []
+      summary: Unfollow a business
+      tags:
+      - Follow
+  /unfollow/event/{eventID}:
+    delete:
+      consumes:
+      - application/json
+      description: Unfollow a specific Event by the user
+      operationId: unfollow-event
+      parameters:
+      - description: Event ID
+        in: path
+        name: eventID
+        required: true
+        type: string
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User successfully unfollowed the event
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+      security:
+      - Bearer: []
+      summary: Unfollow an event
+      tags:
+      - Follow
+  /unfollow/place/{placeID}:
+    delete:
+      consumes:
+      - application/json
+      description: Unfollow a specific Place by the user
+      operationId: unfollow-place
+      parameters:
+      - description: Place ID
+        in: path
+        name: placeID
+        required: true
+        type: string
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User successfully unfollowed the place
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+      security:
+      - Bearer: []
+      summary: Unfollow a place
+      tags:
+      - Follow
+  /unfollow/user/{userID}:
+    delete:
+      consumes:
+      - application/json
+      description: Unfollow a specific User
+      operationId: user-unfollow-user
+      parameters:
+      - description: User ID
+        in: path
+        name: userID
+        required: true
+        type: string
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User successfully unfollowed the user
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+      security:
+      - Bearer: []
+      summary: Unfollow a user
+      tags:
+      - Follow
 schemes:
 - http
 - https
