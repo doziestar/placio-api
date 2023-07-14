@@ -3235,16 +3235,10 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Search-DB"
+                    "Search"
                 ],
-                "summary": "Search DB",
+                "summary": "Full-text search",
                 "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Type of search - user, place, event, business",
-                        "name": "type",
-                        "in": "query"
-                    },
                     {
                         "type": "string",
                         "description": "Text to search for",
@@ -3257,7 +3251,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Successfully found search results",
                         "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.SearchResponses"
+                            "$ref": "#/definitions/placio-app_Dto.SearchResponse"
                         }
                     },
                     "400": {
@@ -3305,6 +3299,56 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/placio-app_ent.Business"
                             }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/search/db": {
+            "get": {
+                "description": "Search for Users, Places, Events, and Businesses",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Search-DB"
+                ],
+                "summary": "Search DB",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Type of search - user, place, event, business",
+                        "name": "type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Text to search for",
+                        "name": "searchText",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully found search results",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.SearchResponses"
                         }
                     },
                     "400": {

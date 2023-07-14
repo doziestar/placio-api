@@ -82,7 +82,7 @@ func (ss *SearchController) search(ctx *gin.Context) error {
 // @Success 200 {object} Dto.SearchResponses "Successfully found search results"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
-// @Router /api/v1/search [get]
+// @Router /api/v1/search/db [get]
 func (ss *SearchController) searchDB(ctx *gin.Context) error {
 	searchType := ctx.Query("type")
 	searchText := ctx.Query("searchText")

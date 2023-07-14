@@ -4467,10 +4467,6 @@ paths:
         - application/json
       description: Search for Users, Places, Events, and Businesses
       parameters:
-        - description: Type of search - user, place, event, business
-          in: query
-          name: type
-          type: string
         - description: Text to search for
           in: query
           name: searchText
@@ -4482,7 +4478,7 @@ paths:
         '200':
           description: Successfully found search results
           schema:
-            $ref: '#/definitions/placio-app_Dto.SearchResponses'
+            $ref: '#/definitions/placio-app_Dto.SearchResponse'
         '400':
           description: Bad Request
           schema:
@@ -4491,9 +4487,9 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: Search DB
+      summary: Full-text search
       tags:
-        - Search-DB
+        - Search
   /api/v1/search/businesses:
     get:
       consumes:
@@ -4525,6 +4521,39 @@ paths:
       summary: Search for Businesses
       tags:
         - Search
+  /api/v1/search/db:
+    get:
+      consumes:
+        - application/json
+      description: Search for Users, Places, Events, and Businesses
+      parameters:
+        - description: Type of search - user, place, event, business
+          in: query
+          name: type
+          type: string
+        - description: Text to search for
+          in: query
+          name: searchText
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully found search results
+          schema:
+            $ref: '#/definitions/placio-app_Dto.SearchResponses'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Search DB
+      tags:
+        - Search-DB
   /api/v1/search/events:
     get:
       consumes:
