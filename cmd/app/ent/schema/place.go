@@ -1,9 +1,14 @@
 package schema
 
 import (
+	"context"
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"fmt"
+	gen "placio-app/ent"
+	"placio-app/ent/hook"
+	"placio-app/utility"
 )
 
 type Place struct {
@@ -68,5 +73,72 @@ func (Place) Edges() []ent.Edge {
 		edge.From("faqs", FAQ.Type).Ref("place"),
 		edge.From("likedByUsers", UserLikePlace.Type).Ref("place"),
 		edge.To("followerUsers", UserFollowPlace.Type),
+	}
+}
+
+func (Place) Hooks() []ent.Hook {
+	return []ent.Hook{
+		hook.On(
+			func(next ent.Mutator) ent.Mutator {
+				return hook.PlaceFunc(func(ctx context.Context, m *gen.PlaceMutation) (ent.Value, error) {
+					location, exist := m.Location()
+					if exist {
+						// Assuming the new location can be broken down to lat and long
+						data, err := utility.GetCoordinates(location)
+						if err != nil {
+							return nil, fmt.Errorf("failed to get coordinates: %w", err)
+						}
+						latitude := fmt.Sprintf("%f", data.Features[0].Geometry.Coordinates[1])
+						longitude := fmt.Sprintf("%f", data.Features[0].Geometry.Coordinates[0])
+
+						m.SetLatitude(latitude)
+						m.SetLongitude(longitude)
+
+						mapCoordinates, err := utility.StructToMap(data.Features[0])
+						if err != nil {
+							return nil, fmt.Errorf("failed to convert struct to map: %w", err)
+						}
+
+						m.SetMapCoordinates(mapCoordinates)
+					}
+
+					return next.Mutate(ctx, m)
+				})
+			},
+			// Add the hook only for Create operation.
+			ent.OpCreate,
+		),
+
+		hook.On(
+			func(next ent.Mutator) ent.Mutator {
+				return hook.PlaceFunc(func(ctx context.Context, m *gen.PlaceMutation) (ent.Value, error) {
+					location, exist := m.Location()
+					oldLocation, _ := m.OldLocation(ctx)
+					if exist && location != oldLocation {
+						// Assuming the new location can be broken down to lat and long
+						data, err := utility.GetCoordinates(location)
+						if err != nil {
+							return nil, fmt.Errorf("failed to get coordinates: %w", err)
+						}
+						latitude := fmt.Sprintf("%f", data.Features[0].Geometry.Coordinates[1])
+						longitude := fmt.Sprintf("%f", data.Features[0].Geometry.Coordinates[0])
+
+						m.SetLatitude(latitude)
+						m.SetLongitude(longitude)
+
+						mapCoordinates, err := utility.StructToMap(data.Features[0])
+						if err != nil {
+							return nil, fmt.Errorf("failed to convert struct to map: %w", err)
+						}
+
+						m.SetMapCoordinates(mapCoordinates)
+					}
+
+					return next.Mutate(ctx, m)
+				})
+			},
+			// Add the hook only for Update operation.
+			ent.OpUpdate,
+		),
 	}
 }

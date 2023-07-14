@@ -157,6 +157,58 @@ func (uu *UserUpdate) ClearLocation() *UserUpdate {
 	return uu
 }
 
+// SetMapCoordinates sets the "map_coordinates" field.
+func (uu *UserUpdate) SetMapCoordinates(m map[string]interface{}) *UserUpdate {
+	uu.mutation.SetMapCoordinates(m)
+	return uu
+}
+
+// ClearMapCoordinates clears the value of the "map_coordinates" field.
+func (uu *UserUpdate) ClearMapCoordinates() *UserUpdate {
+	uu.mutation.ClearMapCoordinates()
+	return uu
+}
+
+// SetLongitude sets the "longitude" field.
+func (uu *UserUpdate) SetLongitude(s string) *UserUpdate {
+	uu.mutation.SetLongitude(s)
+	return uu
+}
+
+// SetNillableLongitude sets the "longitude" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableLongitude(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetLongitude(*s)
+	}
+	return uu
+}
+
+// ClearLongitude clears the value of the "longitude" field.
+func (uu *UserUpdate) ClearLongitude() *UserUpdate {
+	uu.mutation.ClearLongitude()
+	return uu
+}
+
+// SetLatitude sets the "latitude" field.
+func (uu *UserUpdate) SetLatitude(s string) *UserUpdate {
+	uu.mutation.SetLatitude(s)
+	return uu
+}
+
+// SetNillableLatitude sets the "latitude" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableLatitude(s *string) *UserUpdate {
+	if s != nil {
+		uu.SetLatitude(*s)
+	}
+	return uu
+}
+
+// ClearLatitude clears the value of the "latitude" field.
+func (uu *UserUpdate) ClearLatitude() *UserUpdate {
+	uu.mutation.ClearLatitude()
+	return uu
+}
+
 // SetBio sets the "bio" field.
 func (uu *UserUpdate) SetBio(s string) *UserUpdate {
 	uu.mutation.SetBio(s)
@@ -973,6 +1025,24 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if uu.mutation.LocationCleared() {
 		_spec.ClearField(user.FieldLocation, field.TypeString)
+	}
+	if value, ok := uu.mutation.MapCoordinates(); ok {
+		_spec.SetField(user.FieldMapCoordinates, field.TypeJSON, value)
+	}
+	if uu.mutation.MapCoordinatesCleared() {
+		_spec.ClearField(user.FieldMapCoordinates, field.TypeJSON)
+	}
+	if value, ok := uu.mutation.Longitude(); ok {
+		_spec.SetField(user.FieldLongitude, field.TypeString, value)
+	}
+	if uu.mutation.LongitudeCleared() {
+		_spec.ClearField(user.FieldLongitude, field.TypeString)
+	}
+	if value, ok := uu.mutation.Latitude(); ok {
+		_spec.SetField(user.FieldLatitude, field.TypeString, value)
+	}
+	if uu.mutation.LatitudeCleared() {
+		_spec.ClearField(user.FieldLatitude, field.TypeString)
 	}
 	if value, ok := uu.mutation.Bio(); ok {
 		_spec.SetField(user.FieldBio, field.TypeString, value)
@@ -1939,6 +2009,58 @@ func (uuo *UserUpdateOne) ClearLocation() *UserUpdateOne {
 	return uuo
 }
 
+// SetMapCoordinates sets the "map_coordinates" field.
+func (uuo *UserUpdateOne) SetMapCoordinates(m map[string]interface{}) *UserUpdateOne {
+	uuo.mutation.SetMapCoordinates(m)
+	return uuo
+}
+
+// ClearMapCoordinates clears the value of the "map_coordinates" field.
+func (uuo *UserUpdateOne) ClearMapCoordinates() *UserUpdateOne {
+	uuo.mutation.ClearMapCoordinates()
+	return uuo
+}
+
+// SetLongitude sets the "longitude" field.
+func (uuo *UserUpdateOne) SetLongitude(s string) *UserUpdateOne {
+	uuo.mutation.SetLongitude(s)
+	return uuo
+}
+
+// SetNillableLongitude sets the "longitude" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableLongitude(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetLongitude(*s)
+	}
+	return uuo
+}
+
+// ClearLongitude clears the value of the "longitude" field.
+func (uuo *UserUpdateOne) ClearLongitude() *UserUpdateOne {
+	uuo.mutation.ClearLongitude()
+	return uuo
+}
+
+// SetLatitude sets the "latitude" field.
+func (uuo *UserUpdateOne) SetLatitude(s string) *UserUpdateOne {
+	uuo.mutation.SetLatitude(s)
+	return uuo
+}
+
+// SetNillableLatitude sets the "latitude" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableLatitude(s *string) *UserUpdateOne {
+	if s != nil {
+		uuo.SetLatitude(*s)
+	}
+	return uuo
+}
+
+// ClearLatitude clears the value of the "latitude" field.
+func (uuo *UserUpdateOne) ClearLatitude() *UserUpdateOne {
+	uuo.mutation.ClearLatitude()
+	return uuo
+}
+
 // SetBio sets the "bio" field.
 func (uuo *UserUpdateOne) SetBio(s string) *UserUpdateOne {
 	uuo.mutation.SetBio(s)
@@ -2785,6 +2907,24 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if uuo.mutation.LocationCleared() {
 		_spec.ClearField(user.FieldLocation, field.TypeString)
+	}
+	if value, ok := uuo.mutation.MapCoordinates(); ok {
+		_spec.SetField(user.FieldMapCoordinates, field.TypeJSON, value)
+	}
+	if uuo.mutation.MapCoordinatesCleared() {
+		_spec.ClearField(user.FieldMapCoordinates, field.TypeJSON)
+	}
+	if value, ok := uuo.mutation.Longitude(); ok {
+		_spec.SetField(user.FieldLongitude, field.TypeString, value)
+	}
+	if uuo.mutation.LongitudeCleared() {
+		_spec.ClearField(user.FieldLongitude, field.TypeString)
+	}
+	if value, ok := uuo.mutation.Latitude(); ok {
+		_spec.SetField(user.FieldLatitude, field.TypeString, value)
+	}
+	if uuo.mutation.LatitudeCleared() {
+		_spec.ClearField(user.FieldLatitude, field.TypeString)
 	}
 	if value, ok := uuo.mutation.Bio(); ok {
 		_spec.SetField(user.FieldBio, field.TypeString, value)
