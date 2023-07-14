@@ -3,6 +3,7 @@
 package user
 
 import (
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 )
@@ -26,6 +27,12 @@ const (
 	FieldWebsite = "website"
 	// FieldLocation holds the string denoting the location field in the database.
 	FieldLocation = "location"
+	// FieldMapCoordinates holds the string denoting the map_coordinates field in the database.
+	FieldMapCoordinates = "map_coordinates"
+	// FieldLongitude holds the string denoting the longitude field in the database.
+	FieldLongitude = "longitude"
+	// FieldLatitude holds the string denoting the latitude field in the database.
+	FieldLatitude = "latitude"
 	// FieldBio holds the string denoting the bio field in the database.
 	FieldBio = "bio"
 	// FieldAuth0Data holds the string denoting the auth0_data field in the database.
@@ -221,6 +228,9 @@ var Columns = []string{
 	FieldUsername,
 	FieldWebsite,
 	FieldLocation,
+	FieldMapCoordinates,
+	FieldLongitude,
+	FieldLatitude,
 	FieldBio,
 	FieldAuth0Data,
 	FieldAppSettings,
@@ -245,7 +255,13 @@ func ValidColumn(column string) bool {
 	return false
 }
 
+// Note that the variables below are initialized by the runtime
+// package on the initialization of the application. Therefore,
+// it should be imported in the main as follows:
+//
+//	import _ "placio-app/ent/runtime"
 var (
+	Hooks [1]ent.Hook
 	// DefaultCoverImage holds the default value on creation for the "cover_image" field.
 	DefaultCoverImage string
 	// DefaultBio holds the default value on creation for the "bio" field.
@@ -295,6 +311,16 @@ func ByWebsite(opts ...sql.OrderTermOption) OrderOption {
 // ByLocation orders the results by the location field.
 func ByLocation(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldLocation, opts...).ToFunc()
+}
+
+// ByLongitude orders the results by the longitude field.
+func ByLongitude(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLongitude, opts...).ToFunc()
+}
+
+// ByLatitude orders the results by the latitude field.
+func ByLatitude(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLatitude, opts...).ToFunc()
 }
 
 // ByBio orders the results by the bio field.

@@ -429,7 +429,9 @@ func (bc *BusinessCreate) Mutation() *BusinessMutation {
 
 // Save creates the Business in the database.
 func (bc *BusinessCreate) Save(ctx context.Context) (*Business, error) {
-	bc.defaults()
+	if err := bc.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, bc.sqlSave, bc.mutation, bc.hooks)
 }
 
@@ -456,11 +458,12 @@ func (bc *BusinessCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (bc *BusinessCreate) defaults() {
+func (bc *BusinessCreate) defaults() error {
 	if _, ok := bc.mutation.CoverImage(); !ok {
 		v := business.DefaultCoverImage
 		bc.mutation.SetCoverImage(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

@@ -120,6 +120,40 @@ func (uc *UserCreate) SetNillableLocation(s *string) *UserCreate {
 	return uc
 }
 
+// SetMapCoordinates sets the "map_coordinates" field.
+func (uc *UserCreate) SetMapCoordinates(m map[string]interface{}) *UserCreate {
+	uc.mutation.SetMapCoordinates(m)
+	return uc
+}
+
+// SetLongitude sets the "longitude" field.
+func (uc *UserCreate) SetLongitude(s string) *UserCreate {
+	uc.mutation.SetLongitude(s)
+	return uc
+}
+
+// SetNillableLongitude sets the "longitude" field if the given value is not nil.
+func (uc *UserCreate) SetNillableLongitude(s *string) *UserCreate {
+	if s != nil {
+		uc.SetLongitude(*s)
+	}
+	return uc
+}
+
+// SetLatitude sets the "latitude" field.
+func (uc *UserCreate) SetLatitude(s string) *UserCreate {
+	uc.mutation.SetLatitude(s)
+	return uc
+}
+
+// SetNillableLatitude sets the "latitude" field if the given value is not nil.
+func (uc *UserCreate) SetNillableLatitude(s *string) *UserCreate {
+	if s != nil {
+		uc.SetLatitude(*s)
+	}
+	return uc
+}
+
 // SetBio sets the "bio" field.
 func (uc *UserCreate) SetBio(s string) *UserCreate {
 	uc.mutation.SetBio(s)
@@ -482,7 +516,9 @@ func (uc *UserCreate) Mutation() *UserMutation {
 
 // Save creates the User in the database.
 func (uc *UserCreate) Save(ctx context.Context) (*User, error) {
-	uc.defaults()
+	if err := uc.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, uc.sqlSave, uc.mutation, uc.hooks)
 }
 
@@ -509,7 +545,7 @@ func (uc *UserCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (uc *UserCreate) defaults() {
+func (uc *UserCreate) defaults() error {
 	if _, ok := uc.mutation.CoverImage(); !ok {
 		v := user.DefaultCoverImage
 		uc.mutation.SetCoverImage(v)
@@ -518,6 +554,7 @@ func (uc *UserCreate) defaults() {
 		v := user.DefaultBio
 		uc.mutation.SetBio(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -595,6 +632,18 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.Location(); ok {
 		_spec.SetField(user.FieldLocation, field.TypeString, value)
 		_node.Location = value
+	}
+	if value, ok := uc.mutation.MapCoordinates(); ok {
+		_spec.SetField(user.FieldMapCoordinates, field.TypeJSON, value)
+		_node.MapCoordinates = value
+	}
+	if value, ok := uc.mutation.Longitude(); ok {
+		_spec.SetField(user.FieldLongitude, field.TypeString, value)
+		_node.Longitude = value
+	}
+	if value, ok := uc.mutation.Latitude(); ok {
+		_spec.SetField(user.FieldLatitude, field.TypeString, value)
+		_node.Latitude = value
 	}
 	if value, ok := uc.mutation.Bio(); ok {
 		_spec.SetField(user.FieldBio, field.TypeString, value)

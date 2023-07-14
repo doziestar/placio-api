@@ -1200,7 +1200,8 @@ func (c *BusinessClient) QueryFaqs(b *Business) *FAQQuery {
 
 // Hooks returns the client hooks.
 func (c *BusinessClient) Hooks() []Hook {
-	return c.hooks.Business
+	hooks := c.hooks.Business
+	return append(hooks[:len(hooks):len(hooks)], business.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -2512,7 +2513,8 @@ func (c *EventClient) QueryFaqs(e *Event) *FAQQuery {
 
 // Hooks returns the client hooks.
 func (c *EventClient) Hooks() []Hook {
-	return c.hooks.Event
+	hooks := c.hooks.Event
+	return append(hooks[:len(hooks):len(hooks)], event.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -3840,7 +3842,8 @@ func (c *PlaceClient) QueryFollowerUsers(pl *Place) *UserFollowPlaceQuery {
 
 // Hooks returns the client hooks.
 func (c *PlaceClient) Hooks() []Hook {
-	return c.hooks.Place
+	hooks := c.hooks.Place
+	return append(hooks[:len(hooks):len(hooks)], place.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -5446,7 +5449,8 @@ func (c *UserClient) QueryLikedPlaces(u *User) *UserLikePlaceQuery {
 
 // Hooks returns the client hooks.
 func (c *UserClient) Hooks() []Hook {
-	return c.hooks.User
+	hooks := c.hooks.User
+	return append(hooks[:len(hooks):len(hooks)], user.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.

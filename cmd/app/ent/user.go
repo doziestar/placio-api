@@ -33,6 +33,12 @@ type User struct {
 	Website string `json:"website,omitempty"`
 	// Location holds the value of the "location" field.
 	Location string `json:"location,omitempty"`
+	// MapCoordinates holds the value of the "map_coordinates" field.
+	MapCoordinates map[string]interface{} `json:"map_coordinates,omitempty"`
+	// Longitude holds the value of the "longitude" field.
+	Longitude string `json:"longitude,omitempty"`
+	// Latitude holds the value of the "latitude" field.
+	Latitude string `json:"latitude,omitempty"`
 	// Bio holds the value of the "bio" field.
 	Bio string `json:"bio,omitempty"`
 	// Auth0Data holds the value of the "auth0_data" field.
@@ -276,11 +282,11 @@ func (*User) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case user.FieldAuth0Data, user.FieldAppSettings, user.FieldUserSettings:
+		case user.FieldMapCoordinates, user.FieldAuth0Data, user.FieldAppSettings, user.FieldUserSettings:
 			values[i] = new([]byte)
 		case user.FieldRelevanceScore:
 			values[i] = new(sql.NullFloat64)
-		case user.FieldID, user.FieldAuth0ID, user.FieldName, user.FieldPicture, user.FieldCoverImage, user.FieldUsername, user.FieldWebsite, user.FieldLocation, user.FieldBio, user.FieldSearchText:
+		case user.FieldID, user.FieldAuth0ID, user.FieldName, user.FieldPicture, user.FieldCoverImage, user.FieldUsername, user.FieldWebsite, user.FieldLocation, user.FieldLongitude, user.FieldLatitude, user.FieldBio, user.FieldSearchText:
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -344,6 +350,26 @@ func (u *User) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field location", values[i])
 			} else if value.Valid {
 				u.Location = value.String
+			}
+		case user.FieldMapCoordinates:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field map_coordinates", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &u.MapCoordinates); err != nil {
+					return fmt.Errorf("unmarshal field map_coordinates: %w", err)
+				}
+			}
+		case user.FieldLongitude:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field longitude", values[i])
+			} else if value.Valid {
+				u.Longitude = value.String
+			}
+		case user.FieldLatitude:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field latitude", values[i])
+			} else if value.Valid {
+				u.Latitude = value.String
 			}
 		case user.FieldBio:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -538,6 +564,15 @@ func (u *User) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("location=")
 	builder.WriteString(u.Location)
+	builder.WriteString(", ")
+	builder.WriteString("map_coordinates=")
+	builder.WriteString(fmt.Sprintf("%v", u.MapCoordinates))
+	builder.WriteString(", ")
+	builder.WriteString("longitude=")
+	builder.WriteString(u.Longitude)
+	builder.WriteString(", ")
+	builder.WriteString("latitude=")
+	builder.WriteString(u.Latitude)
 	builder.WriteString(", ")
 	builder.WriteString("bio=")
 	builder.WriteString(u.Bio)
