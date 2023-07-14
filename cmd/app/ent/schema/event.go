@@ -8,6 +8,7 @@ import (
 	"fmt"
 	gen "placio-app/ent"
 	"placio-app/ent/hook"
+	_ "placio-app/ent/runtime"
 	"placio-app/utility"
 	"time"
 )

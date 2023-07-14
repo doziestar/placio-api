@@ -9,6 +9,7 @@ import (
 	"github.com/auth0/go-auth0/management"
 	gen "placio-app/ent"
 	"placio-app/ent/hook"
+	_ "placio-app/ent/runtime"
 	"placio-app/utility"
 )
 
