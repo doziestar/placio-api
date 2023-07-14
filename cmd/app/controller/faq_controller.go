@@ -44,7 +44,7 @@ func (fc *FAQController) RegisterRoutes(router, routerWithoutAuth *gin.RouterGro
 // @Failure 400 {object} Dto.Error
 // @Failure 401 {object} Dto.Error
 // @Failure 500 {object} Dto.Error
-// @Router /faq/{businessID} [post]
+// @Router /faq/business/{businessID} [post]
 func (fc *FAQController) createFAQ(c *gin.Context) error {
 	businessID := c.Param("businessID")
 
