@@ -8,7 +8,6 @@ entryPoints:
       redirections:
         entryPoint:
           to: websecure
-
   websecure:
     address: :443
     http:
@@ -16,6 +15,8 @@ entryPoints:
         - secureHeaders@file
       tls:
         certResolver: letsencrypt
+  metrics:
+    address: :8082
 
 providers:
   docker:
@@ -32,3 +33,12 @@ certificatesResolvers:
       keyType: EC384
       httpChallenge:
         entryPoint: web
+
+metrics:
+  prometheus:
+    entryPoint: "metrics"
+    buckets:
+      - 0.1
+      - 0.3
+      - 1.2
+      - 5.0

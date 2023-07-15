@@ -176,6 +176,7 @@ services:
       - ./prometheus/db-queries:/custom-queries.yaml
     ports:
       - "9187:9187"
+    restart: always
     labels:
       - traefik.enable=true
       - traefik.docker.network=default

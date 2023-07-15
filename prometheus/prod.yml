@@ -16,4 +16,4 @@ scrape_configs:
       - targets: [ 'cadvisor:8080' ]
   - job_name: 'traefik'
     static_configs:
-      - targets: [ 'placio-proxy:80' ]
+      - targets: [ 'placio-proxy:8082' ]
