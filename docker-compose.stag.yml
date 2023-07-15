@@ -177,13 +177,13 @@ services:
     ports:
       - "9187:9187"
     restart: always
-    labels:
-      - traefik.enable=true
-      - traefik.docker.network=default
-      - "traefik.http.routers.pgexporter-secure.entrypoints=websecure"
-      - "traefik.http.routers.pgexporter-secure.rule=Host(`pgexporter.palnight.com`)"
-      - "traefik.http.routers.pgexporter-secure.service=pgexporter"
-      - traefik.http.services.pgexporter.loadbalancer.server.port=9187
+#    labels:
+#      - traefik.enable=true
+#      - traefik.docker.network=default
+#      - "traefik.http.routers.pgexporter-secure.entrypoints=websecure"
+#      - "traefik.http.routers.pgexporter-secure.rule=Host(`pgexporter.palnight.com`)"
+#      - "traefik.http.routers.pgexporter-secure.service=pgexporter"
+#      - traefik.http.services.pgexporter.loadbalancer.server.port=9187
 
 
 networks:
