@@ -39,18 +39,18 @@ services:
       # - 'traefik.http.routers.traefik-secure.middlewares=user-auth@file'
       - "traefik.http.routers.traefik-secure.service=api@internal"
 
-  db:
-    image: postgres:14
-    container_name: postgres-db
-    volumes:
-      - db_data:/var/lib/postgresql/pg-data/pgdata
-    env_file:
-      - ./.envs/.stag
-    networks:
-      - default
-    #    restart: always
-    ports:
-      - "5432:5432"
+#  db:
+#    image: postgres:14
+#    container_name: postgres-db
+#    volumes:
+#      - db_data:/var/lib/postgresql/pg-data/pgdata
+#    env_file:
+#      - ./.envs/.stag
+#    networks:
+#      - default
+#    #    restart: always
+#    ports:
+#      - "5432:5432"
 
   placio-backend:
     ports:
@@ -167,16 +167,16 @@ services:
 #      - "traefik.http.routers.cadvisor-secure.service=cadvisor"
 #      - traefik.http.services.cadvisor.loadbalancer.server.port=8080
 
-  pg_exporter:
-    image: wrouesnel/postgres_exporter:latest
-    environment:
-      DATA_SOURCE_NAME: postgresql://dozie:918273645dozie@db:5432/placio?sslmode=disable
-    command: "-extend.query-path=/custom-queries.yaml"
-    volumes:
-      - ./prometheus/db-queries:/custom-queries.yaml
-    ports:
-      - "9187:9187"
-    restart: always
+#  pg_exporter:
+#    image: wrouesnel/postgres_exporter:latest
+#    environment:
+#      DATA_SOURCE_NAME: postgresql://dozie:918273645dozie@db:5432/placio?sslmode=disable
+#    command: "-extend.query-path=/custom-queries.yaml"
+#    volumes:
+#      - ./prometheus/db-queries:/custom-queries.yaml
+#    ports:
+#      - "9187:9187"
+#    restart: always
 #    labels:
 #      - traefik.enable=true
 #      - traefik.docker.network=default

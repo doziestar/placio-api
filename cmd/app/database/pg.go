@@ -64,11 +64,16 @@ func EntClient(ctx context.Context) *ent.Client {
 	// Load environment variables from .env file if exists
 	_ = godotenv.Load()
 
-	host := getEnv("DB_HOST", "postgres-db")
-	port := getEnv("DB_PORT", "5432")
-	user := getEnv("DB_USER", "dozie")
-	dbName := getEnv("DB_NAME", "placio")
-	password := getEnv("DB_PASSWORD", "918273645dozie")
+	host := getEnv("DB_HOST", "containers-us-west-146.railway.app")
+	//host := getEnv("DB_HOST", "postgres-db")
+	//port := getEnv("DB_PORT", "5432")
+	port := getEnv("DB_PORT", "5756")
+	//user := getEnv("DB_USER", "dozie")
+	user := getEnv("DB_USER", "postgres")
+	//user := getEnv("DB_USER", "dozie")
+	dbName := getEnv("DB_NAME", "postgres")
+	//password := getEnv("DB_PASSWORD", "918273645dozie")
+	password := getEnv("DB_PASSWORD", "ZW36hCaSYMjSbN4S75HJ")
 
 	log.Println("Connecting to database", host, port, user, dbName, password)
 
