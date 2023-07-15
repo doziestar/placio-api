@@ -266,7 +266,7 @@ func ValidColumn(column string) bool {
 //
 //	import _ "placio-app/ent/runtime"
 var (
-	Hooks [2]ent.Hook
+	Hooks [1]ent.Hook
 	// DefaultCoverImage holds the default value on creation for the "cover_image" field.
 	DefaultCoverImage string
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.

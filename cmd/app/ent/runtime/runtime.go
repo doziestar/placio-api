@@ -59,7 +59,6 @@ func init() {
 	booking.IDValidator = bookingDescID.Validators[0].(func(string) error)
 	businessHooks := schema.Business{}.Hooks()
 	business.Hooks[0] = businessHooks[0]
-	business.Hooks[1] = businessHooks[1]
 	businessFields := schema.Business{}.Fields()
 	_ = businessFields
 	// businessDescCoverImage is the schema descriptor for cover_image field.
@@ -128,7 +127,6 @@ func init() {
 	comment.IDValidator = commentDescID.Validators[0].(func(string) error)
 	eventHooks := schema.Event{}.Hooks()
 	event.Hooks[0] = eventHooks[0]
-	event.Hooks[1] = eventHooks[1]
 	eventFields := schema.Event{}.Fields()
 	_ = eventFields
 	// eventDescCoverImage is the schema descriptor for cover_image field.
@@ -193,7 +191,6 @@ func init() {
 	menu.IDValidator = menuDescID.Validators[0].(func(string) error)
 	placeHooks := schema.Place{}.Hooks()
 	place.Hooks[0] = placeHooks[0]
-	place.Hooks[1] = placeHooks[1]
 	placeFields := schema.Place{}.Fields()
 	_ = placeFields
 	// placeDescCoverImage is the schema descriptor for cover_image field.

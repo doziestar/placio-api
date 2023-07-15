@@ -1,47 +1,66 @@
 package schema
 
-//func updateRelevanceScoreHook() ent.Hook {
-//	return func(next ent.Mutator) ent.Mutator {
-//		return hook.On(next, func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-//			switch tp := m.Type(); tp {
-//			case UserFollowUser.Type, UserFollowBusiness.Type, BusinessFollowUser.Type, BusinessFollowBusiness.Type:
-//				if !m.Op().Is(ent.Add) {
-//					break
-//				}
-//				followedID, exists := m.ID()
-//				if !exists {
-//					return nil, errors.New("followed id not provided")
-//				}
-//
-//				// You need to get a handle of your client to make this update operation
-//				client := yourClientFromSomewhere
-//				if _, err := client.Tp.UpdateOneID(followedID).AddRelevanceScore(1).Save(ctx); err != nil {
-//					return nil, err
-//				}
-//			}
-//			return next.Mutate(ctx, m)
-//		})
-//	}
-//}
-//
-//func updateSearchTextHook() ent.Hook {
-//	return func(next ent.Mutator) ent.Mutator {
-//		return hook.On(next, func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-//			switch tp := m.Type(); tp {
-//			case User.Type, Place.Type, Business.Type:
-//				if !m.Op().Is(ent.UpdateOne) {
-//					break
-//				}
-//				name, exists := m.Value("name").(string)
-//				if !exists {
-//					return nil, errors.New("name not provided")
-//				}
-//				description, _ := m.Value("description").(string)
-//				location, _ := m.Value("location").(string)
-//				searchText := name + " " + description + " " + location
-//				m.Set("search_text", searchText)
-//			}
-//			return next.Mutate(ctx, m)
-//		})
-//	}
-//}
+import (
+	"errors"
+	"fmt"
+	gen "placio-app/ent"
+	"placio-app/utility"
+)
+
+func ProcessLocation(mutation interface{}, oldLocation string) error {
+	var location string
+	var setLatitude, setLongitude func(string)
+	var setMapCoordinates func(map[string]interface{})
+
+	switch m := mutation.(type) {
+	case *gen.UserMutation:
+		location, _ = m.Location()
+		setLatitude = m.SetLatitude
+		setLongitude = m.SetLongitude
+		setMapCoordinates = m.SetMapCoordinates
+	case *gen.PlaceMutation:
+		location, _ = m.Location()
+		setLatitude = m.SetLatitude
+		setLongitude = m.SetLongitude
+		setMapCoordinates = m.SetMapCoordinates
+	case *gen.BusinessMutation:
+		location, _ = m.Location()
+		setLatitude = m.SetLatitude
+		setLongitude = m.SetLongitude
+		setMapCoordinates = m.SetMapCoordinates
+	case *gen.EventMutation:
+		location, _ = m.Location()
+		setLatitude = m.SetLatitude
+		setLongitude = m.SetLongitude
+		setMapCoordinates = m.SetMapCoordinates
+	default:
+		return nil
+	}
+
+	if oldLocation != "" && location == oldLocation || location == "" || location == "<string>" {
+		return nil
+	}
+
+	data, err := utility.GetCoordinates(location)
+	if err != nil {
+		return err
+	}
+
+	if len(data.Features) == 0 {
+		return errors.New("no coordinates found")
+	}
+
+	latitude := fmt.Sprintf("%f", data.Features[0].Geometry.Coordinates[1])
+	longitude := fmt.Sprintf("%f", data.Features[0].Geometry.Coordinates[0])
+
+	setLatitude(latitude)
+	setLongitude(longitude)
+
+	mapCoordinates, err := utility.StructToMap(data.Features[0])
+	if err != nil {
+		return err
+	}
+
+	setMapCoordinates(mapCoordinates)
+	return nil
+}
