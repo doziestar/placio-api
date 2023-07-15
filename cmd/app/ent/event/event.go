@@ -265,7 +265,7 @@ func ValidColumn(column string) bool {
 //
 //	import _ "placio-app/ent/runtime"
 var (
-	Hooks [2]ent.Hook
+	Hooks [1]ent.Hook
 	// DefaultCoverImage holds the default value on creation for the "cover_image" field.
 	DefaultCoverImage string
 	// DefaultCreatedAt holds the default value on creation for the "createdAt" field.

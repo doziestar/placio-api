@@ -5,11 +5,10 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
-	"fmt"
 	"github.com/auth0/go-auth0/management"
+	"github.com/getsentry/sentry-go"
 	gen "placio-app/ent"
 	"placio-app/ent/hook"
-	"placio-app/utility"
 )
 
 // User holds the schema definition for the User entity.
@@ -74,55 +73,21 @@ func (User) Hooks() []ent.Hook {
 		hook.On(
 			func(next ent.Mutator) ent.Mutator {
 				return hook.UserFunc(func(ctx context.Context, m *gen.UserMutation) (ent.Value, error) {
-					if m.Op().Is(ent.OpUpdate) {
-						location, exist := m.Location()
-						oldLocation, _ := m.OldLocation(ctx)
-						if exist && location != oldLocation {
-							// Assuming the new location can be broken down to lat and long
-							data, err := utility.GetCoordinates(location)
-							if err != nil {
-								return nil, fmt.Errorf("failed to get coordinates: %w", err)
-							}
-							latitude := fmt.Sprintf("%f", data.Features[0].Geometry.Coordinates[1])
-							longitude := fmt.Sprintf("%f", data.Features[0].Geometry.Coordinates[0])
-
-							m.SetLatitude(latitude)
-							m.SetLongitude(longitude)
-
-							mapCoordinates, err := utility.StructToMap(data.Features[0])
-							if err != nil {
-								return nil, fmt.Errorf("failed to convert struct to map: %w", err)
-							}
-
-							m.SetMapCoordinates(mapCoordinates)
-						}
-					} else if m.Op().Is(ent.OpCreate) {
-						location, exist := m.Location()
-						if exist {
-							// Assuming the new location can be broken down to lat and long
-							data, err := utility.GetCoordinates(location)
-							if err != nil {
-								return nil, fmt.Errorf("failed to get coordinates: %w", err)
-							}
-							latitude := fmt.Sprintf("%f", data.Features[0].Geometry.Coordinates[1])
-							longitude := fmt.Sprintf("%f", data.Features[0].Geometry.Coordinates[0])
-
-							m.SetLatitude(latitude)
-							m.SetLongitude(longitude)
-
-							mapCoordinates, err := utility.StructToMap(data.Features[0])
-							if err != nil {
-								return nil, fmt.Errorf("failed to convert struct to map: %w", err)
-							}
-
-							m.SetMapCoordinates(mapCoordinates)
-						}
+					oldLocation, _ := m.OldLocation(ctx)
+					err := ProcessLocation(m, oldLocation)
+					if err != nil {
+						sentry.CaptureEvent(&sentry.Event{
+							Message: "Failed to process location",
+							Level:   sentry.LevelError,
+							Extra: map[string]interface{}{
+								"error": err,
+								"ctx":   ctx,
+							},
+						})
 					}
-
 					return next.Mutate(ctx, m)
 				})
 			},
-			// Add the hook for both Create and Update operations.
 			ent.OpCreate|ent.OpUpdate,
 		),
 	}
