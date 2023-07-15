@@ -6,6 +6,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"placio-app/api"
 	"placio-app/database"
+	_ "placio-app/ent/runtime"
 	"placio-app/start"
 )
 
