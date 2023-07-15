@@ -159,13 +159,13 @@ services:
       - /dev/kmsg
     privileged: true
     restart: unless-stopped
-    labels:
-      - traefik.enable=true
-      - traefik.docker.network=default
-      - "traefik.http.routers.cadvisor-secure.entrypoints=websecure"
-      - "traefik.http.routers.cadvisor-secure.rule=Host(`cadvisor.palnight.com`)"
-      - "traefik.http.routers.cadvisor-secure.service=cadvisor"
-      - traefik.http.services.cadvisor.loadbalancer.server.port=8080
+#    labels:
+#      - traefik.enable=true
+#      - traefik.docker.network=default
+#      - "traefik.http.routers.cadvisor-secure.entrypoints=websecure"
+#      - "traefik.http.routers.cadvisor-secure.rule=Host(`cadvisor.palnight.com`)"
+#      - "traefik.http.routers.cadvisor-secure.service=cadvisor"
+#      - traefik.http.services.cadvisor.loadbalancer.server.port=8080
 
   pg_exporter:
     image: wrouesnel/postgres_exporter:latest
