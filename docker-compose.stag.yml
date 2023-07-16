@@ -1,9 +1,5 @@
 version: "3.3"
 volumes:
-  db_data:
-  pgadmin_data:
-  redis_data:
-  db_data2:
   prometheus_data:
   grafana_data:
 
@@ -38,19 +34,6 @@ services:
       - "traefik.http.routers.traefik-secure.rule=Host(`traefik.palnight.com`)"
       # - 'traefik.http.routers.traefik-secure.middlewares=user-auth@file'
       - "traefik.http.routers.traefik-secure.service=api@internal"
-
-  db:
-    image: postgres:14
-    container_name: postgres-db
-    volumes:
-      - db_data:/var/lib/postgresql/pg-data/pgdata
-    env_file:
-      - ./.envs/.stag
-    networks:
-      - default
-    #    restart: always
-    ports:
-      - "5432:5432"
 
   placio-backend:
     ports:
@@ -148,7 +131,7 @@ services:
     image: gcr.io/cadvisor/cadvisor:v0.47.0
     container_name: cadvisor
     ports:
-      - "8080:8080"
+      - "8081:8080"
     volumes:
       - /:/rootfs:ro
       - /var/run:/var/run:ro
@@ -159,31 +142,7 @@ services:
       - /dev/kmsg
     privileged: true
     restart: unless-stopped
-    labels:
-      - traefik.enable=true
-      - traefik.docker.network=default
-      - "traefik.http.routers.cadvisor-secure.entrypoints=websecure"
-      - "traefik.http.routers.cadvisor-secure.rule=Host(`cadvisor.palnight.com`)"
-      - "traefik.http.routers.cadvisor-secure.service=cadvisor"
-      - traefik.http.services.cadvisor.loadbalancer.server.port=8080
 
-  pg_exporter:
-    image: wrouesnel/postgres_exporter:latest
-    environment:
-      DATA_SOURCE_NAME: postgresql://dozie:918273645dozie@db:5432/placio?sslmode=disable
-    command: "-extend.query-path=/custom-queries.yaml"
-    volumes:
-      - ./prometheus/db-queries:/custom-queries.yaml
-    ports:
-      - "9187:9187"
-    restart: always
-    labels:
-      - traefik.enable=true
-      - traefik.docker.network=default
-      - "traefik.http.routers.pgexporter-secure.entrypoints=websecure"
-      - "traefik.http.routers.pgexporter-secure.rule=Host(`pgexporter.palnight.com`)"
-      - "traefik.http.routers.pgexporter-secure.service=pgexporter"
-      - traefik.http.services.pgexporter.loadbalancer.server.port=9187
 
 
 networks:
