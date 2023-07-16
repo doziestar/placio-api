@@ -437,6 +437,19 @@ definitions:
       user:
         $ref: '#/definitions/placio-app_ent.User'
     type: object
+  placio-app_Dto.RatingDTO:
+    properties:
+      business:
+        $ref: '#/definitions/placio-app_ent.Business'
+      event:
+        $ref: '#/definitions/placio-app_ent.Event'
+      place:
+        $ref: '#/definitions/placio-app_ent.Place'
+      score:
+        type: integer
+      user:
+        $ref: '#/definitions/placio-app_ent.User'
+    type: object
   placio-app_Dto.Response:
     properties:
       data: {}
@@ -757,6 +770,11 @@ definitions:
         description: Posts holds the value of the posts edge.
         items:
           $ref: '#/definitions/placio-app_ent.Post'
+        type: array
+      ratings:
+        description: Ratings holds the value of the ratings edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Rating'
         type: array
       userBusinesses:
         description: UserBusinesses holds the value of the userBusinesses edge.
@@ -1118,6 +1136,11 @@ definitions:
         items:
           $ref: '#/definitions/placio-app_ent.Place'
         type: array
+      ratings:
+        description: Ratings holds the value of the ratings edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Rating'
+        type: array
       ticket_options:
         description: TicketOptions holds the value of the ticket_options edge.
         items:
@@ -1208,11 +1231,8 @@ definitions:
     type: object
   placio-app_ent.Like:
     properties:
-      CreatedAt:
-        description: CreatedAt holds the value of the "CreatedAt" field.
-        type: string
-      UpdatedAt:
-        description: UpdatedAt holds the value of the "UpdatedAt" field.
+      createdAt:
+        description: CreatedAt holds the value of the "createdAt" field.
         type: string
       edges:
         allOf:
@@ -1223,17 +1243,31 @@ definitions:
       id:
         description: ID of the ent.
         type: string
+      like:
+        description: True for like, False for dislike
+        type: boolean
+      updatedAt:
+        description: UpdatedAt holds the value of the "updatedAt" field.
+        type: string
     type: object
   placio-app_ent.LikeEdges:
     properties:
+      media:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.Media'
+        description: The media content that was liked/disliked.
       post:
         allOf:
           - $ref: '#/definitions/placio-app_ent.Post'
         description: Post holds the value of the post edge.
+      review:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.Review'
+        description: The review that was liked/disliked.
       user:
         allOf:
           - $ref: '#/definitions/placio-app_ent.User'
-        description: User holds the value of the user edge.
+        description: The user who liked/disliked the review/media.
     type: object
   placio-app_ent.Media:
     properties:
@@ -1249,6 +1283,9 @@ definitions:
       UpdatedAt:
         description: UpdatedAt holds the value of the "UpdatedAt" field.
         type: string
+      dislikeCount:
+        description: Count of dislikes for this media.
+        type: integer
       edges:
         allOf:
           - $ref: '#/definitions/placio-app_ent.MediaEdges'
@@ -1258,6 +1295,9 @@ definitions:
       id:
         description: ID of the ent.
         type: string
+      likeCount:
+        description: Count of likes for this media.
+        type: integer
     type: object
   placio-app_ent.MediaEdges:
     properties:
@@ -1270,6 +1310,10 @@ definitions:
         allOf:
           - $ref: '#/definitions/placio-app_ent.Post'
         description: Post holds the value of the post edge.
+      review:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.Review'
+        description: Review holds the value of the review edge.
     type: object
   placio-app_ent.Menu:
     properties:
@@ -1455,6 +1499,11 @@ definitions:
         items:
           $ref: '#/definitions/placio-app_ent.Menu'
         type: array
+      ratings:
+        description: Ratings holds the value of the ratings edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Rating'
+        type: array
       reservations:
         description: Reservations holds the value of the reservations edge.
         items:
@@ -1532,6 +1581,46 @@ definitions:
           - $ref: '#/definitions/placio-app_ent.User'
         description: User holds the value of the user edge.
     type: object
+  placio-app_ent.Rating:
+    properties:
+      edges:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.RatingEdges'
+        description: |-
+          Edges holds the relations/edges for other nodes in the graph.
+          The values are being populated by the RatingQuery when eager-loading is set.
+      id:
+        description: ID of the ent.
+        type: string
+      ratedAt:
+        description: When the rating was given.
+        type: string
+      review:
+        description: User's review to the business/place/event.
+        type: string
+      score:
+        description: Score should be between 1 and 5.
+        type: integer
+    type: object
+  placio-app_ent.RatingEdges:
+    properties:
+      business:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.Business'
+        description: The business that was rated.
+      event:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.Event'
+        description: The event that was rated.
+      place:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.Place'
+        description: The place that was rated.
+      user:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.User'
+        description: The user who gave the rating.
+    type: object
   placio-app_ent.Reservation:
     properties:
       date:
@@ -1569,40 +1658,67 @@ definitions:
     type: object
   placio-app_ent.Review:
     properties:
-      comment:
-        description: Comment holds the value of the "comment" field.
+      content:
+        description: User's review to the business/place/event.
         type: string
+      createdAt:
+        description: When the review was created.
+        type: string
+      dislikeCount:
+        description: Count of dislikes for this review.
+        type: integer
       edges:
         allOf:
           - $ref: '#/definitions/placio-app_ent.ReviewEdges'
         description: |-
           Edges holds the relations/edges for other nodes in the graph.
           The values are being populated by the ReviewQuery when eager-loading is set.
+      flag:
+        description: Flag for this review.
+        type: string
       id:
         description: ID of the ent.
         type: string
-      images_videos:
-        description: ImagesVideos holds the value of the "images_videos" field.
-        items:
-          type: string
-        type: array
-      rating:
-        description: Rating holds the value of the "rating" field.
+      likeCount:
+        description: Count of likes for this review.
+        type: integer
+      score:
+        description: Score should be between 1 and 5.
         type: number
-      timestamp:
-        description: Timestamp holds the value of the "timestamp" field.
-        type: string
     type: object
   placio-app_ent.ReviewEdges:
     properties:
+      business:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.Business'
+        description: The business that was reviewed.
+      comments:
+        description: The comments related to the review.
+        items:
+          $ref: '#/definitions/placio-app_ent.Comment'
+        type: array
+      event:
+        allOf:
+          - $ref: '#/definitions/placio-app_ent.Event'
+        description: The event that was reviewed.
+      likes:
+        description: The likes related to the review.
+        items:
+          $ref: '#/definitions/placio-app_ent.Like'
+        type: array
+      medias:
+        description: The media content related to the review.
+        items:
+          $ref: '#/definitions/placio-app_ent.Media'
+        type: array
       place:
         allOf:
           - $ref: '#/definitions/placio-app_ent.Place'
-        description: Place holds the value of the place edge.
+        description: The place that was reviewed.
       user:
         allOf:
           - $ref: '#/definitions/placio-app_ent.User'
-        description: User holds the value of the user edge.
+        description: The user who wrote the review.
     type: object
   placio-app_ent.Room:
     properties:
@@ -1869,6 +1985,11 @@ definitions:
         description: Posts holds the value of the posts edge.
         items:
           $ref: '#/definitions/placio-app_ent.Post'
+        type: array
+      ratings:
+        description: Ratings holds the value of the ratings edge.
+        items:
+          $ref: '#/definitions/placio-app_ent.Rating'
         type: array
       reservations:
         description: Reservations holds the value of the reservations edge.
@@ -3543,6 +3664,40 @@ paths:
       summary: Get user liked places
       tags:
         - Like
+  /api/v1/media/:
+    post:
+      consumes:
+        - multipart/form-data
+      description: Upload a media file (image, gif, or video) for a post
+      parameters:
+        - description: Media file
+          in: formData
+          name: file
+          required: true
+          type: file
+        - description: Post ID
+          in: formData
+          name: postID
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '201':
+          description: Successfully uploaded media
+          schema:
+            $ref: '#/definitions/placio-app_ent.Media'
+        '400':
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Upload media
+      tags:
+        - Media
   /api/v1/menus/:
     post:
       consumes:
@@ -4085,25 +4240,57 @@ paths:
       summary: Get comments by post
       tags:
         - Post
+  /api/v1/ratings:
+    get:
+      consumes:
+        - application/json
+      description: Retrieve all ratings
+      parameters:
+        - description: JWT Token
+          in: header
+          name: Authorization
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully retrieved ratings
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_ent.Rating'
+            type: array
+        '500':
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: GET all ratings
+      tags:
+        - Rating
   /api/v1/ratings/:
     post:
       consumes:
         - application/json
       description: Create a new rating for the specified event
       parameters:
+        - description: JWT Token
+          in: header
+          name: Authorization
+          required: true
+          type: string
         - description: Rating Data
           in: body
-          name: CreateRatingDto
+          name: Dto.RatingDTO
           required: true
           schema:
-            $ref: '#/definitions/placio-app_models.Rating'
+            $ref: '#/definitions/placio-app_Dto.RatingDTO'
       produces:
         - application/json
       responses:
         '201':
           description: Successfully created rating
           schema:
-            $ref: '#/definitions/placio-app_models.Rating'
+            $ref: '#/definitions/placio-app_ent.Rating'
         '400':
           description: Bad Request
           schema:
@@ -4121,6 +4308,11 @@ paths:
         - application/json
       description: Delete a rating by its ID
       parameters:
+        - description: JWT Token
+          in: header
+          name: Authorization
+          required: true
+          type: string
         - description: Rating ID
           in: path
           name: id
@@ -4151,6 +4343,11 @@ paths:
         - application/json
       description: Retrieve a rating by its ID
       parameters:
+        - description: JWT Token
+          in: header
+          name: Authorization
+          required: true
+          type: string
         - description: Rating ID
           in: path
           name: id
@@ -4162,7 +4359,7 @@ paths:
         '200':
           description: Successfully retrieved rating
           schema:
-            $ref: '#/definitions/placio-app_models.Rating'
+            $ref: '#/definitions/placio-app_ent.Rating'
         '400':
           description: Bad Request
           schema:
@@ -4183,24 +4380,29 @@ paths:
         - application/json
       description: Update a rating by its ID
       parameters:
+        - description: JWT Token
+          in: header
+          name: Authorization
+          required: true
+          type: string
         - description: Rating ID
           in: path
           name: id
           required: true
           type: string
-        - description: Rating Data
+        - description: New Score
           in: body
-          name: UpdateRatingDto
+          name: score
           required: true
           schema:
-            $ref: '#/definitions/placio-app_models.Rating'
+            type: integer
       produces:
         - application/json
       responses:
         '200':
           description: Successfully updated rating
           schema:
-            $ref: '#/definitions/placio-app_models.Rating'
+            $ref: '#/definitions/placio-app_ent.Rating'
         '400':
           description: Bad Request
           schema:
@@ -4214,37 +4416,6 @@ paths:
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
       summary: Update rating by ID
-      tags:
-        - Rating
-  /api/v1/ratings/event/{eventID}:
-    get:
-      consumes:
-        - application/json
-      description: Retrieve all ratings for a given event
-      parameters:
-        - description: Event ID
-          in: path
-          name: eventID
-          required: true
-          type: string
-      produces:
-        - application/json
-      responses:
-        '200':
-          description: Successfully retrieved ratings
-          schema:
-            items:
-              $ref: '#/definitions/placio-app_models.Rating'
-            type: array
-        '400':
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-        '500':
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      summary: GET all ratings for an event
       tags:
         - Rating
   /api/v1/reservations/:
@@ -7711,6 +7882,262 @@ paths:
       summary: Get all Places
       tags:
         - Place
+  /reviews/:
+    get:
+      consumes:
+        - application/json
+      description: Get reviews based on query parameters
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Array of Reviews
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_ent.Review'
+            type: array
+        '500':
+          description: Error message
+          schema:
+            type: string
+      summary: Get reviews by query
+      tags:
+        - Review
+    post:
+      consumes:
+        - application/json
+      description: Rate a place, event, or business
+      parameters:
+        - description: Item Type (place, event, business)
+          in: query
+          name: type
+          required: true
+          type: string
+        - description: Item ID (placeID, eventID, businessID)
+          in: query
+          name: id
+          required: true
+          type: string
+        - description: Rating Score
+          in: body
+          name: score
+          required: true
+          schema:
+            type: number
+        - description: Review Content
+          in: body
+          name: content
+          required: true
+          schema:
+            type: string
+        - description: JWT Token
+          in: header
+          name: Authorization
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully rated [itemType]
+          schema:
+            type: string
+        '400':
+          description: Invalid item type
+          schema:
+            type: string
+        '500':
+          description: Error message
+          schema:
+            type: string
+      summary: Review a Place, Event, or Business
+      tags:
+        - Review
+  /reviews/{reviewID}:
+    delete:
+      consumes:
+        - application/json
+      description: Remove a review based on reviewID
+      parameters:
+        - description: Review ID
+          in: path
+          name: reviewID
+          required: true
+          type: string
+        - description: JWT Token
+          in: header
+          name: Authorization
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully deleted review
+          schema:
+            type: string
+        '500':
+          description: Error message
+          schema:
+            type: string
+      summary: Remove a review
+      tags:
+        - Review
+    get:
+      consumes:
+        - application/json
+      description: Retrieve a review using its ID
+      parameters:
+        - description: Review ID
+          in: path
+          name: reviewID
+          required: true
+          type: string
+        - description: JWT Token
+          in: header
+          name: Authorization
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Review data
+          schema:
+            $ref: '#/definitions/placio-app_ent.Review'
+        '500':
+          description: Error message
+          schema:
+            type: string
+      summary: Get review by ID
+      tags:
+        - Review
+    put:
+      consumes:
+        - application/json
+      description: Update the content of a review based on reviewID
+      parameters:
+        - description: Review ID
+          in: path
+          name: reviewID
+          required: true
+          type: string
+        - description: JWT Token
+          in: header
+          name: Authorization
+          required: true
+          type: string
+        - description: New Review Content
+          in: body
+          name: content
+          required: true
+          schema:
+            type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully updated review
+          schema:
+            type: string
+        '500':
+          description: Error message
+          schema:
+            type: string
+      summary: Update review content
+      tags:
+        - Review
+  /reviews/{reviewID}/addMedia:
+    post:
+      consumes:
+        - application/json
+      description: Add media to a review based on reviewID
+      parameters:
+        - description: Review ID
+          in: path
+          name: reviewID
+          required: true
+          type: string
+        - description: Media File
+          in: body
+          name: string
+          required: true
+          schema:
+            type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully added media to review
+          schema:
+            type: string
+        '500':
+          description: Error message
+          schema:
+            type: string
+      summary: Add media to a review
+      tags:
+        - Review
+  /reviews/{reviewID}/dislike:
+    post:
+      consumes:
+        - application/json
+      description: Dislike a review based on reviewID
+      parameters:
+        - description: Review ID
+          in: path
+          name: reviewID
+          required: true
+          type: string
+        - description: JWT Token
+          in: header
+          name: Authorization
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully disliked review
+          schema:
+            type: string
+        '500':
+          description: Error message
+          schema:
+            type: string
+      summary: Dislike a review
+      tags:
+        - Review
+  /reviews/{reviewID}/like:
+    post:
+      consumes:
+        - application/json
+      description: Like a review based on reviewID
+      parameters:
+        - description: Review ID
+          in: path
+          name: reviewID
+          required: true
+          type: string
+        - description: JWT Token
+          in: header
+          name: Authorization
+          required: true
+          type: string
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Successfully liked review
+          schema:
+            type: string
+        '500':
+          description: Error message
+          schema:
+            type: string
+      summary: Like a review
+      tags:
+        - Review
   /unfollow/business/{businessID}:
     delete:
       consumes:

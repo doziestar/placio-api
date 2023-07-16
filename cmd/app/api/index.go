@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/cloudinary/cloudinary-go/v2"
 	"net/http"
 	_ "placio-api/docs/app"
 	"placio-app/controller"
@@ -61,6 +62,8 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		redisClient := utility.NewRedisClient("redis://default:a3677c1a7b84402eb34efd55ad3cf059@golden-colt-33790.upstash.io:33790", 0, utility.CacheDuration)
 		_ = redisClient.ConnectRedis()
 
+		cld, _ := cloudinary.NewFromParams("placio", "312498583624125", "k4XSQwWuhi3Vy7QAw7Qn0mUaW0s")
+
 		searchService, _ := service.NewSearchService()
 		searchController := controller.NewSearchController(searchService)
 		searchController.RegisterRoutes(routerGroupV1)
@@ -76,9 +79,9 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		userController.RegisterRoutes(routerGroupV1)
 
 		// media
-		mediaService := service.NewMediaService(client)
+		mediaService := service.NewMediaService(client, cld)
 		mediaController := controller.NewMediaController(mediaService)
-		mediaController.RegisterRoutes(routerGroupV1)
+		mediaController.RegisterRoutes(routerGroupV1WithoutAuth)
 
 		// comments
 		commentService := service.NewCommentService(client)

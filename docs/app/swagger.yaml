@@ -3688,6 +3688,40 @@ paths:
       summary: Get user liked places
       tags:
       - Like
+  /api/v1/media/:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload a media file (image, gif, or video) for a post
+      parameters:
+      - description: Media file
+        in: formData
+        name: file
+        required: true
+        type: file
+      - description: Post ID
+        in: formData
+        name: postID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Successfully uploaded media
+          schema:
+            $ref: '#/definitions/placio-app_ent.Media'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Upload media
+      tags:
+      - Media
   /api/v1/menus/:
     post:
       consumes:

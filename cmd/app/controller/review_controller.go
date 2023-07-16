@@ -160,10 +160,12 @@ func (rc *ReviewController) updateReviewContent(ctx *gin.Context) error {
 // @Router /reviews/{reviewID}/addMedia [post]
 func (rc *ReviewController) addMediaToReview(ctx *gin.Context) error {
 	reviewID := ctx.Param("reviewID")
-	mediaFile := ctx.PostForm("media")
+	//mediaFile := ctx.PostForm("media")
 
-	mediaArray := []string{mediaFile}
-	mediaUploaded, err := rc.mediaService.UploadFiles(ctx, mediaArray)
+	files, _ := ctx.MultipartForm()
+	fileArray := files.File["media[]"]
+
+	mediaUploaded, err := rc.mediaService.UploadFiles(ctx, fileArray)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return err
