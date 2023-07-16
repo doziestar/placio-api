@@ -3,7 +3,6 @@ package controller
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
 	_ "placio-app/Dto"
 	_ "placio-app/ent"
@@ -42,9 +41,7 @@ func (mc *MediaController) RegisterRoutes(router *gin.RouterGroup) {
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/media/ [post]
 func (mc *MediaController) uploadMedia(ctx *gin.Context) error {
-	log.Println("uploadMedia")
 
-	log.Println("uploadMedia 0")
 	form, err := ctx.MultipartForm()
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
@@ -52,9 +49,7 @@ func (mc *MediaController) uploadMedia(ctx *gin.Context) error {
 		})
 		return err
 	}
-	log.Println("uploadMedia 1")
 	files, ok := form.File["files"]
-	log.Println("uploadMedia 1.1")
 	if !ok || len(files) == 0 {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": "File is required",
@@ -62,11 +57,6 @@ func (mc *MediaController) uploadMedia(ctx *gin.Context) error {
 		return fmt.Errorf("file is required")
 	}
 
-	for _, file := range files {
-		log.Println(file.Filename)
-	}
-
-	log.Println("uploadMedia 2")
 	uploadedMedia, err := mc.mediaService.UploadFiles(ctx, files)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{

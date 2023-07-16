@@ -37,7 +37,6 @@ func NewMediaService(client *ent.Client, cloud *cloudinary.Cloudinary) MediaServ
 }
 
 func (s *MediaServiceImpl) UploadFiles(ctx context.Context, files []*multipart.FileHeader) ([]MediaInfo, error) {
-	log.Println("Uploading files to cloudinary")
 	ch := make(chan MediaInfo)
 	errCh := make(chan error)
 
