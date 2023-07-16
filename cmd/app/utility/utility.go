@@ -3,12 +3,13 @@ package utility
 import (
 	"crypto/rand"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/google/uuid"
-	"log"
 	"math/big"
 	"net/http"
 	"placio-app/ent"
+	appErrors "placio-app/errors"
 	"placio-app/models"
 	"strings"
 
@@ -137,10 +138,33 @@ func Use(fn func(*gin.Context) error) gin.HandlerFunc {
 		err := fn(c)
 		if err != nil {
 			// Enhanced logging
-			log.Printf("An error occurred: %s. Method: %s, URL: %s, Client IP: %s",
-				err.Error(), c.Request.Method, c.Request.URL.Path, c.ClientIP())
 			sentry.CaptureException(err)
 
+			// Check if the error is of type AppError
+			if appErr, ok := err.(*appErrors.AppError); ok {
+				// It's an AppError, now match on its underlying error
+				switch {
+				case errors.Is(appErr.Unwrap(), appErrors.ErrInvalid):
+					c.JSON(http.StatusBadRequest, gin.H{"error": appErr.Error()})
+				case errors.Is(appErr.Unwrap(), appErrors.ErrUnauthorized):
+					c.JSON(http.StatusUnauthorized, gin.H{"error": appErr.Error()})
+				case errors.Is(appErr.Unwrap(), appErrors.ErrForbidden):
+					c.JSON(http.StatusForbidden, gin.H{"error": appErr.Error()})
+				case errors.Is(appErr.Unwrap(), appErrors.ErrNotFound), ent.IsNotFound(appErr.Unwrap()):
+					c.JSON(http.StatusNotFound, gin.H{"error": appErr.Error()})
+				case errors.Is(appErr.Unwrap(), appErrors.ErrConflict), ent.IsConstraintError(appErr.Unwrap()):
+					c.JSON(http.StatusConflict, gin.H{"error": appErr.Error()})
+				case errors.Is(appErr.Unwrap(), appErrors.ErrUnprocessable):
+					c.JSON(http.StatusUnprocessableEntity, gin.H{"error": appErr.Error()})
+				case errors.Is(appErr.Unwrap(), appErrors.ErrAlreadyExists):
+					c.JSON(http.StatusConflict, gin.H{"error": appErr.Error()})
+				default:
+					c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+				}
+				return
+			}
+
+			// If it's not an AppError, check if it's an ent error
 			switch {
 			case ent.IsNotFound(err):
 				c.JSON(http.StatusNotFound, gin.H{"error": "Resource Not Found"})
