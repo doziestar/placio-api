@@ -50,13 +50,13 @@ func (fc *FAQController) createFAQ(c *gin.Context) error {
 
 	var faqData Dto.FAQDto
 	if err := c.ShouldBindJSON(&faqData); err != nil {
-		c.JSON(http.StatusBadRequest, utility.ProcessResponse(nil, "failed", "Invalid request data"))
+
 		return nil
 	}
 
 	faq, err := fc.service.CreateFAQ(c, businessID, &faqData)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error()))
+
 		return nil
 	}
 
@@ -83,7 +83,7 @@ func (fc *FAQController) getFAQ(c *gin.Context) error {
 
 	faq, err := fc.service.GetFAQ(c, faqID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error()))
+
 		return nil
 	}
 
@@ -110,13 +110,13 @@ func (fc *FAQController) updateFAQ(c *gin.Context) error {
 
 	var faqData map[string]interface{}
 	if err := c.ShouldBindJSON(&faqData); err != nil {
-		c.JSON(http.StatusBadRequest, utility.ProcessResponse(nil, "failed", "Invalid request data"))
+
 		return nil
 	}
 
 	faq, err := fc.service.UpdateFAQ(c, faqID, faqData)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error()))
+
 		return nil
 	}
 
@@ -143,7 +143,7 @@ func (fc *FAQController) deleteFAQ(c *gin.Context) error {
 
 	err := fc.service.DeleteFAQ(c, faqID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error()))
+
 		return nil
 	}
 
@@ -172,7 +172,7 @@ func (fc *FAQController) associateFAQWithPlace(c *gin.Context) error {
 
 	err := fc.service.AssociateFAQWithPlace(c, faqID, placeID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error()))
+
 		return nil
 	}
 
@@ -201,7 +201,7 @@ func (fc *FAQController) associateFAQWithEvent(c *gin.Context) error {
 
 	err := fc.service.AssociateFAQWithEvent(c, faqID, eventID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error()))
+
 		return nil
 	}
 

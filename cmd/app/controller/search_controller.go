@@ -45,22 +45,22 @@ func (ss *SearchController) search(ctx *gin.Context) error {
 	searchText := ctx.Query("searchText")
 	users, err := ss.searchService.SearchUsers(ctx, searchText)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return err
 	}
 	businesses, err := ss.searchService.SearchBusinesses(ctx, searchText)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return err
 	}
 	events, err := ss.searchService.SearchEvents(ctx, searchText)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return err
 	}
 	places, err := ss.searchService.SearchPlaces(ctx, searchText)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return err
 	}
 	ctx.JSON(http.StatusOK, gin.H{
@@ -101,28 +101,28 @@ func (ss *SearchController) searchDB(ctx *gin.Context) error {
 	if searchAll || searchType == "user" {
 		users, err = ss.searchService.SearchUsersDB(ctx, searchText)
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 			return err
 		}
 	}
 	if searchAll || searchType == "business" {
 		businesses, err = ss.searchService.SearchBusinessesDB(ctx, searchText)
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 			return err
 		}
 	}
 	if searchAll || searchType == "event" {
 		events, err = ss.searchService.SearchEventsDB(ctx, searchText)
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 			return err
 		}
 	}
 	if searchAll || searchType == "place" {
 		places, err = ss.searchService.SearchPlacesDB(ctx, searchText)
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 			return err
 		}
 	}
@@ -151,7 +151,7 @@ func (ss *SearchController) searchUsers(ctx *gin.Context) error {
 	searchText := ctx.Query("searchText")
 	users, err := ss.searchService.SearchUsers(ctx, searchText)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return err
 	}
 	ctx.JSON(http.StatusOK, users)
@@ -172,7 +172,7 @@ func (ss *SearchController) searchPlaces(ctx *gin.Context) error {
 	searchText := ctx.Query("searchText")
 	places, err := ss.searchService.SearchPlaces(ctx, searchText)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return err
 	}
 	ctx.JSON(http.StatusOK, places)
@@ -193,7 +193,7 @@ func (ss *SearchController) searchEvents(ctx *gin.Context) error {
 	searchText := ctx.Query("searchText")
 	events, err := ss.searchService.SearchEvents(ctx, searchText)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return err
 	}
 	ctx.JSON(http.StatusOK, events)
@@ -214,7 +214,7 @@ func (ss *SearchController) searchBusinesses(ctx *gin.Context) error {
 	searchText := ctx.Query("searchText")
 	businesses, err := ss.searchService.SearchBusinesses(ctx, searchText)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return err
 	}
 	ctx.JSON(http.StatusOK, businesses)

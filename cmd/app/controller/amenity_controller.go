@@ -48,7 +48,7 @@ func (c *AmenityController) RegisterRoutes(r *gin.RouterGroup) {
 func (c *AmenityController) createAmenity(ctx *gin.Context) error {
 	var input Dto.CreateAmenityInput
 	if err := ctx.ShouldBindJSON(&input); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+
 		return err
 	}
 
@@ -65,7 +65,7 @@ func (c *AmenityController) createAmenity(ctx *gin.Context) error {
 	//uploadParams := uploader.UploadParams{Folder: "your/folder"}
 	urls, err := c.mediaService.UploadFiles(ctx, files)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return err
 	}
 
@@ -74,7 +74,7 @@ func (c *AmenityController) createAmenity(ctx *gin.Context) error {
 
 	amenity, err := c.service.CreateAmenity(input)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return err
 	}
 
@@ -102,7 +102,7 @@ func (c *AmenityController) getAmenity(ctx *gin.Context) error {
 
 	amenity, err := c.service.GetAmenity(id)
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "Amenity not found"})
+
 		return err
 	}
 
@@ -127,7 +127,7 @@ func (c *AmenityController) getAmenity(ctx *gin.Context) error {
 func (c *AmenityController) updateAmenity(ctx *gin.Context) error {
 	var input Dto.UpdateAmenityInput
 	if err := ctx.ShouldBindJSON(&input); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+
 		return err
 	}
 
@@ -142,7 +142,7 @@ func (c *AmenityController) updateAmenity(ctx *gin.Context) error {
 		//uploadParams := uploader.UploadParams{Folder: "your/folder"}
 		mediaInfo, err := c.mediaService.UploadFiles(ctx, []*multipart.FileHeader{file})
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 			return err
 		}
 
@@ -155,7 +155,7 @@ func (c *AmenityController) updateAmenity(ctx *gin.Context) error {
 
 	amenity, err := c.service.UpdateAmenity(id, input)
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "Amenity not found"})
+
 		return err
 	}
 
@@ -184,7 +184,7 @@ func (c *AmenityController) deleteAmenity(ctx *gin.Context) error {
 
 	err := c.service.DeleteAmenity(id)
 	if err != nil {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "Amenity not found"})
+
 		return err
 	}
 
@@ -209,7 +209,7 @@ func (c *AmenityController) deleteAmenity(ctx *gin.Context) error {
 func (c *AmenityController) getAllAmenities(ctx *gin.Context) error {
 	amenities, err := c.service.GetAllAmenities()
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return err
 	}
 

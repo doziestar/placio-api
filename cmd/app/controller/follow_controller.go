@@ -58,7 +58,7 @@ func (fc *FollowController) followUserToBusiness(c *gin.Context) error {
 
 	err := fc.service.FollowUserToBusiness(c, userID, businessID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error()))
+
 		return nil
 	}
 
@@ -86,7 +86,7 @@ func (fc *FollowController) unfollowUserToBusiness(c *gin.Context) error {
 
 	err := fc.service.UnfollowUserToBusiness(c, userID, businessID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error()))
+
 		return nil
 	}
 
@@ -112,7 +112,7 @@ func (fc *FollowController) getFollowedBusinessesByUser(c *gin.Context) error {
 
 	businesses, err := fc.service.GetFollowedBusinessesByUser(c, userID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error()))
+
 		return nil
 	}
 
@@ -140,7 +140,7 @@ func (fc *FollowController) followUserToUser(c *gin.Context) error {
 
 	err := fc.service.FollowUserToUser(c, followerID, followedID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error()))
+
 		return nil
 	}
 
@@ -168,7 +168,7 @@ func (fc *FollowController) unfollowUserToUser(c *gin.Context) error {
 
 	err := fc.service.UnfollowUserToUser(c, followerID, followedID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error()))
+
 		return nil
 	}
 
@@ -194,7 +194,7 @@ func (fc *FollowController) getFollowedUsersByUser(c *gin.Context) error {
 
 	users, err := fc.service.GetFollowedUsersByUser(c, userID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error()))
+
 		return nil
 	}
 
@@ -222,7 +222,7 @@ func (fc *FollowController) followUserToPlace(c *gin.Context) error {
 
 	err := fc.service.FollowUserToPlace(c, userID, placeID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error()))
+
 		return nil
 	}
 
@@ -250,7 +250,7 @@ func (fc *FollowController) unfollowUserToPlace(c *gin.Context) error {
 
 	err := fc.service.UnfollowUserToPlace(c, userID, placeID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error()))
+
 		return nil
 	}
 
@@ -276,7 +276,7 @@ func (fc *FollowController) getFollowedPlacesByUser(c *gin.Context) error {
 
 	places, err := fc.service.GetFollowedPlacesByUser(c, userID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error()))
+
 		return nil
 	}
 
@@ -304,7 +304,7 @@ func (fc *FollowController) followUserToEvent(c *gin.Context) error {
 
 	err := fc.service.FollowUserToEvent(c, userID, eventID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error()))
+
 		return nil
 	}
 
@@ -332,7 +332,7 @@ func (fc *FollowController) unfollowUserToEvent(c *gin.Context) error {
 
 	err := fc.service.UnfollowUserToEvent(c, userID, eventID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error()))
+
 		return nil
 	}
 
@@ -358,7 +358,7 @@ func (fc *FollowController) getFollowedEventsByUser(c *gin.Context) error {
 
 	events, err := fc.service.GetFollowedEventsByUser(c, userID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error()))
+
 		return nil
 	}
 

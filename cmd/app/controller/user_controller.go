@@ -65,9 +65,6 @@ func (uc *UserController) followUser(ctx *gin.Context) error {
 
 	err := uc.userService.FollowUser(ctx, followerID, followedID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Internal Server Error",
-		})
 		return err
 	}
 
@@ -97,9 +94,6 @@ func (uc *UserController) followBusiness(ctx *gin.Context) error {
 
 	err := uc.userService.FollowBusiness(ctx, followerID, businessID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Internal Server Error",
-		})
 		return err
 	}
 
@@ -129,9 +123,6 @@ func (uc *UserController) unfollowUser(ctx *gin.Context) error {
 
 	err := uc.userService.UnfollowUser(ctx, followerID, followedID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Internal Server Error",
-		})
 		return err
 	}
 
@@ -163,9 +154,6 @@ func (uc *UserController) unfollowBusiness(ctx *gin.Context) error {
 
 	err = uc.userService.UnfollowBusiness(ctx, followerID, businessID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Internal Server Error",
-		})
 		return err
 	}
 
@@ -193,9 +181,7 @@ func (uc *UserController) getFollowedContents(ctx *gin.Context) error {
 
 	posts, err := uc.userService.GetFollowedContents(ctx, userID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Internal Server Error",
-		})
+
 		return err
 	}
 
@@ -244,9 +230,7 @@ func (uc *UserController) updateAuth0UserInformation(ctx *gin.Context) error {
 
 	user, err := uc.userService.UpdateAuth0UserInformation(auth0ID, userData)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Internal Server Error",
-		})
+
 		return err
 	}
 
@@ -284,9 +268,7 @@ func (uc *UserController) updateAuth0UserMetadata(ctx *gin.Context) error {
 
 	user, err := uc.userService.UpdateAuth0UserMetadata(auth0ID, userMetaData)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Internal Server Error",
-		})
+
 		return err
 	}
 
@@ -323,9 +305,7 @@ func (uc *UserController) updateAuth0AppMetadata(ctx *gin.Context) error {
 
 	user, err := uc.userService.UpdateAuth0AppMetadata(auth0ID, appData)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Internal Server Error",
-		})
+
 		return err
 	}
 
@@ -364,9 +344,7 @@ func (uc *UserController) GetUser(ctx *gin.Context) error {
 			})
 			return nil
 		}
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Internal Server Error",
-		})
+
 		return err
 	}
 
@@ -413,9 +391,7 @@ func (uc *UserController) UpdateUser(ctx *gin.Context) error {
 			})
 			return nil
 		}
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Internal Server Error",
-		})
+
 		return err
 	}
 

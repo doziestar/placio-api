@@ -65,7 +65,7 @@ func (pc *PostController) createPost(ctx *gin.Context) error {
 	authOID := ctx.MustGet("auth0_id").(string)
 	user, err := pc.userService.GetUser(ctx, authOID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+
 		return err
 	}
 
@@ -77,7 +77,7 @@ func (pc *PostController) createPost(ctx *gin.Context) error {
 		// Verify that the business account exists
 		businessAccount, err = pc.businessAccountService.GetBusinessAccount(ctx, businessAccountId)
 		if err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Business Account ID"})
+
 			return err
 		}
 		businessID = &businessAccount.ID
@@ -86,7 +86,7 @@ func (pc *PostController) createPost(ctx *gin.Context) error {
 	// Bind the incoming JSON to a new PostDto instance
 	data := new(Dto.PostDto)
 	if err := ctx.BindJSON(data); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Bad Request"})
+
 		return err
 	}
 
@@ -102,7 +102,7 @@ func (pc *PostController) createPost(ctx *gin.Context) error {
 	// Create the post
 	newPost, err := pc.postService.CreatePost(ctx, post, user.ID, businessID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+
 		return err
 	}
 
@@ -117,14 +117,14 @@ func (pc *PostController) createPost(ctx *gin.Context) error {
 		// Save the media in the database
 		createdMedia, err := pc.mediaService.CreateMedia(ctx, mediaDto.URL, mediaDto.Type)
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+
 			return err
 		}
 
 		// Add the media to the post
 		err = pc.postService.AddMediaToPost(ctx, newPost, createdMedia)
 		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+
 			return err
 		}
 
@@ -168,16 +168,12 @@ func (pc *PostController) getPost(ctx *gin.Context) error {
 
 	post, err := pc.postService.GetPost(ctx, postID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Internal Server Error",
-		})
+
 		return err
 	}
 
 	if post == nil {
-		ctx.JSON(http.StatusNotFound, gin.H{
-			"error": "Post not found",
-		})
+
 		return nil
 	}
 
@@ -205,7 +201,7 @@ func (pc *PostController) updatePost(ctx *gin.Context) error {
 	authOID := ctx.MustGet("auth0_id").(string)
 	user, err := pc.userService.GetUser(ctx, authOID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+
 		return err
 	}
 
@@ -215,22 +211,22 @@ func (pc *PostController) updatePost(ctx *gin.Context) error {
 	postData, err := pc.postService.GetPost(ctx, postId)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			ctx.JSON(http.StatusNotFound, gin.H{"error": "Post Not Found"})
+
 			return err
 		}
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+
 		return err
 	}
 
 	if postData.Edges.User.ID != user.ID {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+
 		return errors.New("unauthorized")
 	}
 
 	// Bind the incoming JSON to a new PostDto instance
 	data := new(Dto.PostDto)
 	if err := ctx.BindJSON(data); err != nil || data.Content == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Bad Request"})
+
 		return err
 	}
 
@@ -246,7 +242,7 @@ func (pc *PostController) updatePost(ctx *gin.Context) error {
 	// Update the post
 	updatedPost, err := pc.postService.UpdatePost(ctx, postData)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+
 		return err
 	}
 
@@ -282,10 +278,10 @@ func (pc *PostController) deletePost(ctx *gin.Context) error {
 	err := pc.postService.DeletePost(ctx, postID)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			ctx.JSON(http.StatusNotFound, gin.H{"error": "Post Not Found"})
+
 			return nil
 		}
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+
 		return err
 	}
 
@@ -312,7 +308,7 @@ func (pc *PostController) getCommentsByPost(ctx *gin.Context) error {
 
 	comments, err := pc.postService.GetCommentsByPost(ctx, postID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+
 		return err
 	}
 

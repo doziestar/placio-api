@@ -49,12 +49,12 @@ func (uc *HelpController) createHelp(ctx *gin.Context) error {
 	userID := ctx.MustGet("user_d").(string)
 	var helpDto ent.Help
 	if err := ctx.ShouldBindJSON(&helpDto); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+
 		return err
 	}
 	help, err := uc.helpService.CreateHelp(ctx, userID, helpDto.Category, helpDto.Subject, helpDto.Body, helpDto.Media)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+
 		return err
 	}
 	ctx.JSON(http.StatusOK, help)
@@ -77,7 +77,7 @@ func (uc *HelpController) resolveHelp(ctx *gin.Context) error {
 	helpID := ctx.Param("id")
 	help, err := uc.helpService.ResolveHelp(ctx, helpID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+
 		return err
 	}
 	ctx.JSON(http.StatusOK, help)
@@ -100,7 +100,7 @@ func (uc *HelpController) deleteHelp(ctx *gin.Context) error {
 	helpID := ctx.Param("id")
 	err := uc.helpService.DeleteHelp(ctx, helpID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+
 		return err
 	}
 	ctx.JSON(http.StatusOK, gin.H{"status": "success", "message": "Help request successfully deleted"})

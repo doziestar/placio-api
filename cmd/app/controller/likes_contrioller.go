@@ -55,7 +55,7 @@ func (likesController *LikeController) likePost(ctx *gin.Context) {
 
 	like, err := likesController.likeService.LikePost(ctx, userID, postID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+
 		return
 	}
 
@@ -79,7 +79,7 @@ func (likesController *LikeController) unlikePost(ctx *gin.Context) {
 
 	err := likesController.likeService.UnlikePost(ctx, likeID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+
 		return
 	}
 
@@ -103,7 +103,7 @@ func (likesController *LikeController) getUserLikes(ctx *gin.Context) {
 
 	likes, err := likesController.likeService.GetUserLikes(ctx, userID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+
 		return
 	}
 
@@ -127,7 +127,7 @@ func (likesController *LikeController) getPostLikes(ctx *gin.Context) {
 
 	likes, err := likesController.likeService.GetPostLikes(ctx, postID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+
 		return
 	}
 

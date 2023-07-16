@@ -44,24 +44,18 @@ func (mc *MediaController) uploadMedia(ctx *gin.Context) error {
 
 	form, err := ctx.MultipartForm()
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": "Failed to parse multipart form",
-		})
+
 		return err
 	}
 	files, ok := form.File["files"]
 	if !ok || len(files) == 0 {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": "File is required",
-		})
+
 		return fmt.Errorf("file is required")
 	}
 
 	uploadedMedia, err := mc.mediaService.UploadFiles(ctx, files)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Internal Server Error",
-		})
+
 		return err
 	}
 

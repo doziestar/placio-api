@@ -61,9 +61,7 @@ func (toc *TicketOptionController) createTicketOption(ctx *gin.Context) error {
 
 	newTicketOption := toc.ticketOptionService.CreateTicketOption(ticketOption)
 	if newTicketOption == nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Internal Server Error",
-		})
+
 		return errors.New("ticket option not created")
 	}
 
@@ -93,9 +91,7 @@ func (toc *TicketOptionController) getTicketOption(ctx *gin.Context) error {
 			})
 			return err
 		}
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Internal Server Error",
-		})
+
 		return err
 	}
 
@@ -164,9 +160,7 @@ func (toc *TicketOptionController) deleteTicketOption(ctx *gin.Context) error {
 			return err
 
 		}
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Internal Server Error",
-		})
+
 		return err
 	}
 
@@ -195,9 +189,7 @@ func (toc *TicketOptionController) getTicketOptionsByEvent(ctx *gin.Context) err
 			})
 			return err
 		}
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Internal Server Error",
-		})
+
 		return err
 	}
 

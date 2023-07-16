@@ -67,7 +67,7 @@ func (rc *ReviewController) rateItem(ctx *gin.Context) error {
 	}
 
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return err
 	}
 
@@ -91,7 +91,7 @@ func (rc *ReviewController) removeReview(ctx *gin.Context) error {
 
 	err := rc.reviewService.RemoveReview(reviewID, userID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return err
 	}
 
@@ -114,7 +114,7 @@ func (rc *ReviewController) getReviewByID(ctx *gin.Context) error {
 
 	review, err := rc.reviewService.GetReviewByID(reviewID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return err
 	}
 
@@ -140,7 +140,7 @@ func (rc *ReviewController) updateReviewContent(ctx *gin.Context) error {
 
 	err := rc.reviewService.UpdateReviewContent(reviewID, userID, content)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return err
 	}
 
@@ -167,7 +167,7 @@ func (rc *ReviewController) addMediaToReview(ctx *gin.Context) error {
 
 	mediaUploaded, err := rc.mediaService.UploadFiles(ctx, fileArray)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return err
 	}
 
@@ -176,7 +176,7 @@ func (rc *ReviewController) addMediaToReview(ctx *gin.Context) error {
 
 	err = rc.reviewService.AddMediaToReview(reviewID, mediaEnt)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return err
 	}
 
@@ -214,7 +214,7 @@ func (rc *ReviewController) likeReview(ctx *gin.Context) error {
 
 	err := rc.reviewService.LikeReview(reviewID, userID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return err
 	}
 
@@ -238,7 +238,7 @@ func (rc *ReviewController) dislikeReview(ctx *gin.Context) error {
 
 	err := rc.reviewService.DislikeReview(reviewID, userID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return err
 	}
 
