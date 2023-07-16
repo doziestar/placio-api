@@ -2580,6 +2580,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/ratings": {
+            "get": {
+                "description": "Retrieve all ratings",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Rating"
+                ],
+                "summary": "GET all ratings",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "JWT Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved ratings",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/placio-app_ent.Rating"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/ratings/": {
             "post": {
                 "description": "Create a new rating for the specified event",
@@ -2595,12 +2636,19 @@ const docTemplate = `{
                 "summary": "Create a new rating",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "JWT Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "Rating Data",
-                        "name": "CreateRatingDto",
+                        "name": "Dto.RatingDTO",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/placio-app_models.Rating"
+                            "$ref": "#/definitions/placio-app_Dto.RatingDTO"
                         }
                     }
                 ],
@@ -2608,54 +2656,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Successfully created rating",
                         "schema": {
-                            "$ref": "#/definitions/placio-app_models.Rating"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/ratings/event/{eventID}": {
-            "get": {
-                "description": "Retrieve all ratings for a given event",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Rating"
-                ],
-                "summary": "GET all ratings for an event",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Event ID",
-                        "name": "eventID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successfully retrieved ratings",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/placio-app_models.Rating"
-                            }
+                            "$ref": "#/definitions/placio-app_ent.Rating"
                         }
                     },
                     "400": {
@@ -2689,6 +2690,13 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "JWT Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Rating ID",
                         "name": "id",
                         "in": "path",
@@ -2699,7 +2707,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Successfully retrieved rating",
                         "schema": {
-                            "$ref": "#/definitions/placio-app_models.Rating"
+                            "$ref": "#/definitions/placio-app_ent.Rating"
                         }
                     },
                     "400": {
@@ -2737,18 +2745,25 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "JWT Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
                         "description": "Rating ID",
                         "name": "id",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "description": "Rating Data",
-                        "name": "UpdateRatingDto",
+                        "description": "New Score",
+                        "name": "score",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/placio-app_models.Rating"
+                            "type": "integer"
                         }
                     }
                 ],
@@ -2756,7 +2771,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Successfully updated rating",
                         "schema": {
-                            "$ref": "#/definitions/placio-app_models.Rating"
+                            "$ref": "#/definitions/placio-app_ent.Rating"
                         }
                     },
                     "400": {
@@ -2792,6 +2807,13 @@ const docTemplate = `{
                 ],
                 "summary": "Delete rating by ID",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "JWT Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "description": "Rating ID",
@@ -8153,6 +8175,389 @@ const docTemplate = `{
                 }
             }
         },
+        "/reviews/": {
+            "get": {
+                "description": "Get reviews based on query parameters",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Review"
+                ],
+                "summary": "Get reviews by query",
+                "responses": {
+                    "200": {
+                        "description": "Array of Reviews",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/placio-app_ent.Review"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Error message",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Rate a place, event, or business",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Review"
+                ],
+                "summary": "Review a Place, Event, or Business",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Item Type (place, event, business)",
+                        "name": "type",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Item ID (placeID, eventID, businessID)",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "Rating Score",
+                        "name": "score",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "description": "Review Content",
+                        "name": "content",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "type": "string",
+                        "description": "JWT Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully rated [itemType]",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid item type",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Error message",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/reviews/{reviewID}": {
+            "get": {
+                "description": "Retrieve a review using its ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Review"
+                ],
+                "summary": "Get review by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Review ID",
+                        "name": "reviewID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "JWT Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Review data",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.Review"
+                        }
+                    },
+                    "500": {
+                        "description": "Error message",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update the content of a review based on reviewID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Review"
+                ],
+                "summary": "Update review content",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Review ID",
+                        "name": "reviewID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "JWT Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "New Review Content",
+                        "name": "content",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully updated review",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Error message",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Remove a review based on reviewID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Review"
+                ],
+                "summary": "Remove a review",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Review ID",
+                        "name": "reviewID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "JWT Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully deleted review",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Error message",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/reviews/{reviewID}/addMedia": {
+            "post": {
+                "description": "Add media to a review based on reviewID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Review"
+                ],
+                "summary": "Add media to a review",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Review ID",
+                        "name": "reviewID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Media File",
+                        "name": "string",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully added media to review",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Error message",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/reviews/{reviewID}/dislike": {
+            "post": {
+                "description": "Dislike a review based on reviewID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Review"
+                ],
+                "summary": "Dislike a review",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Review ID",
+                        "name": "reviewID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "JWT Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully disliked review",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Error message",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/reviews/{reviewID}/like": {
+            "post": {
+                "description": "Like a review based on reviewID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Review"
+                ],
+                "summary": "Like a review",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Review ID",
+                        "name": "reviewID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "JWT Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully liked review",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "Error message",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/unfollow/business/{businessID}": {
             "delete": {
                 "security": [
@@ -9026,6 +9431,26 @@ const docTemplate = `{
                 }
             }
         },
+        "placio-app_Dto.RatingDTO": {
+            "type": "object",
+            "properties": {
+                "business": {
+                    "$ref": "#/definitions/placio-app_ent.Business"
+                },
+                "event": {
+                    "$ref": "#/definitions/placio-app_ent.Event"
+                },
+                "place": {
+                    "$ref": "#/definitions/placio-app_ent.Place"
+                },
+                "score": {
+                    "type": "integer"
+                },
+                "user": {
+                    "$ref": "#/definitions/placio-app_ent.User"
+                }
+            }
+        },
         "placio-app_Dto.Response": {
             "type": "object",
             "properties": {
@@ -9491,6 +9916,13 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/placio-app_ent.Post"
+                    }
+                },
+                "ratings": {
+                    "description": "Ratings holds the value of the ratings edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Rating"
                     }
                 },
                 "userBusinesses": {
@@ -10034,6 +10466,13 @@ const docTemplate = `{
                         "$ref": "#/definitions/placio-app_ent.Place"
                     }
                 },
+                "ratings": {
+                    "description": "Ratings holds the value of the ratings edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Rating"
+                    }
+                },
                 "ticket_options": {
                     "description": "TicketOptions holds the value of the ticket_options edge.",
                     "type": "array",
@@ -10166,12 +10605,8 @@ const docTemplate = `{
         "placio-app_ent.Like": {
             "type": "object",
             "properties": {
-                "CreatedAt": {
-                    "description": "CreatedAt holds the value of the \"CreatedAt\" field.",
-                    "type": "string"
-                },
-                "UpdatedAt": {
-                    "description": "UpdatedAt holds the value of the \"UpdatedAt\" field.",
+                "createdAt": {
+                    "description": "CreatedAt holds the value of the \"createdAt\" field.",
                     "type": "string"
                 },
                 "edges": {
@@ -10185,12 +10620,28 @@ const docTemplate = `{
                 "id": {
                     "description": "ID of the ent.",
                     "type": "string"
+                },
+                "like": {
+                    "description": "True for like, False for dislike",
+                    "type": "boolean"
+                },
+                "updatedAt": {
+                    "description": "UpdatedAt holds the value of the \"updatedAt\" field.",
+                    "type": "string"
                 }
             }
         },
         "placio-app_ent.LikeEdges": {
             "type": "object",
             "properties": {
+                "media": {
+                    "description": "The media content that was liked/disliked.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.Media"
+                        }
+                    ]
+                },
                 "post": {
                     "description": "Post holds the value of the post edge.",
                     "allOf": [
@@ -10199,8 +10650,16 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "review": {
+                    "description": "The review that was liked/disliked.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.Review"
+                        }
+                    ]
+                },
                 "user": {
-                    "description": "User holds the value of the user edge.",
+                    "description": "The user who liked/disliked the review/media.",
                     "allOf": [
                         {
                             "$ref": "#/definitions/placio-app_ent.User"
@@ -10228,6 +10687,10 @@ const docTemplate = `{
                     "description": "UpdatedAt holds the value of the \"UpdatedAt\" field.",
                     "type": "string"
                 },
+                "dislikeCount": {
+                    "description": "Count of dislikes for this media.",
+                    "type": "integer"
+                },
                 "edges": {
                     "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the MediaQuery when eager-loading is set.",
                     "allOf": [
@@ -10239,6 +10702,10 @@ const docTemplate = `{
                 "id": {
                     "description": "ID of the ent.",
                     "type": "string"
+                },
+                "likeCount": {
+                    "description": "Count of likes for this media.",
+                    "type": "integer"
                 }
             }
         },
@@ -10257,6 +10724,14 @@ const docTemplate = `{
                     "allOf": [
                         {
                             "$ref": "#/definitions/placio-app_ent.Post"
+                        }
+                    ]
+                },
+                "review": {
+                    "description": "Review holds the value of the review edge.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.Review"
                         }
                     ]
                 }
@@ -10518,6 +10993,13 @@ const docTemplate = `{
                         "$ref": "#/definitions/placio-app_ent.Menu"
                     }
                 },
+                "ratings": {
+                    "description": "Ratings holds the value of the ratings edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Rating"
+                    }
+                },
                 "reservations": {
                     "description": "Reservations holds the value of the reservations edge.",
                     "type": "array",
@@ -10634,6 +11116,72 @@ const docTemplate = `{
                 }
             }
         },
+        "placio-app_ent.Rating": {
+            "type": "object",
+            "properties": {
+                "edges": {
+                    "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the RatingQuery when eager-loading is set.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.RatingEdges"
+                        }
+                    ]
+                },
+                "id": {
+                    "description": "ID of the ent.",
+                    "type": "string"
+                },
+                "ratedAt": {
+                    "description": "When the rating was given.",
+                    "type": "string"
+                },
+                "review": {
+                    "description": "User's review to the business/place/event.",
+                    "type": "string"
+                },
+                "score": {
+                    "description": "Score should be between 1 and 5.",
+                    "type": "integer"
+                }
+            }
+        },
+        "placio-app_ent.RatingEdges": {
+            "type": "object",
+            "properties": {
+                "business": {
+                    "description": "The business that was rated.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.Business"
+                        }
+                    ]
+                },
+                "event": {
+                    "description": "The event that was rated.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.Event"
+                        }
+                    ]
+                },
+                "place": {
+                    "description": "The place that was rated.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.Place"
+                        }
+                    ]
+                },
+                "user": {
+                    "description": "The user who gave the rating.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.User"
+                        }
+                    ]
+                }
+            }
+        },
         "placio-app_ent.Reservation": {
             "type": "object",
             "properties": {
@@ -10691,9 +11239,17 @@ const docTemplate = `{
         "placio-app_ent.Review": {
             "type": "object",
             "properties": {
-                "comment": {
-                    "description": "Comment holds the value of the \"comment\" field.",
+                "content": {
+                    "description": "User's review to the business/place/event.",
                     "type": "string"
+                },
+                "createdAt": {
+                    "description": "When the review was created.",
+                    "type": "string"
+                },
+                "dislikeCount": {
+                    "description": "Count of dislikes for this review.",
+                    "type": "integer"
                 },
                 "edges": {
                     "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the ReviewQuery when eager-loading is set.",
@@ -10703,32 +11259,66 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "flag": {
+                    "description": "Flag for this review.",
+                    "type": "string"
+                },
                 "id": {
                     "description": "ID of the ent.",
                     "type": "string"
                 },
-                "images_videos": {
-                    "description": "ImagesVideos holds the value of the \"images_videos\" field.",
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
+                "likeCount": {
+                    "description": "Count of likes for this review.",
+                    "type": "integer"
                 },
-                "rating": {
-                    "description": "Rating holds the value of the \"rating\" field.",
+                "score": {
+                    "description": "Score should be between 1 and 5.",
                     "type": "number"
-                },
-                "timestamp": {
-                    "description": "Timestamp holds the value of the \"timestamp\" field.",
-                    "type": "string"
                 }
             }
         },
         "placio-app_ent.ReviewEdges": {
             "type": "object",
             "properties": {
+                "business": {
+                    "description": "The business that was reviewed.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.Business"
+                        }
+                    ]
+                },
+                "comments": {
+                    "description": "The comments related to the review.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Comment"
+                    }
+                },
+                "event": {
+                    "description": "The event that was reviewed.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/placio-app_ent.Event"
+                        }
+                    ]
+                },
+                "likes": {
+                    "description": "The likes related to the review.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Like"
+                    }
+                },
+                "medias": {
+                    "description": "The media content related to the review.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Media"
+                    }
+                },
                 "place": {
-                    "description": "Place holds the value of the place edge.",
+                    "description": "The place that was reviewed.",
                     "allOf": [
                         {
                             "$ref": "#/definitions/placio-app_ent.Place"
@@ -10736,7 +11326,7 @@ const docTemplate = `{
                     ]
                 },
                 "user": {
-                    "description": "User holds the value of the user edge.",
+                    "description": "The user who wrote the review.",
                     "allOf": [
                         {
                             "$ref": "#/definitions/placio-app_ent.User"
@@ -11130,6 +11720,13 @@ const docTemplate = `{
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/placio-app_ent.Post"
+                    }
+                },
+                "ratings": {
+                    "description": "Ratings holds the value of the ratings edge.",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/placio-app_ent.Rating"
                     }
                 },
                 "reservations": {

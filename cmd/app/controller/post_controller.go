@@ -109,13 +109,13 @@ func (pc *PostController) createPost(ctx *gin.Context) error {
 	// Handle media files, if any were provided
 	medias := make([]*ent.Media, len(data.Medias))
 	for i, mediaDto := range data.Medias {
-		media := &ent.Media{
-			ID:        utility.GenerateID(),
-			URL:       mediaDto.URL,
-			MediaType: mediaDto.Type,
-		}
+		//media := &ent.Media{
+		//	ID:        utility.GenerateID(),
+		//	URL:       mediaDto.URL,
+		//	MediaType: mediaDto.Type,
+		//}
 		// Save the media in the database
-		createdMedia, err := pc.mediaService.CreateMedia(ctx, media)
+		createdMedia, err := pc.mediaService.CreateMedia(ctx, mediaDto.URL, mediaDto.Type)
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 			return err
