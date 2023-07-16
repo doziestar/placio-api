@@ -4,34 +4,58 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"time"
 )
 
 type Review struct {
 	ent.Schema
 }
 
-// Fields of the Review.
 func (Review) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("id").
-			MaxLen(36).
-			Unique().
-			Immutable(),
-		field.Float("rating"),
-		field.String("comment").Optional(),
-		field.JSON("images_videos", []string{}).Optional(),
-		field.Time("timestamp"),
+		field.String("id").Unique().Immutable(),
+		field.Float("score").
+			Min(1).
+			Max(5).
+			Comment("Score should be between 1 and 5."),
+		field.String("content").
+			Comment("User's review to the business/place/event."),
+		field.Time("createdAt").
+			Default(time.Now).
+			Comment("When the review was created."),
+		field.Int("likeCount").
+			Default(0).
+			Comment("Count of likes for this review."),
+		field.Int("dislikeCount").
+			Default(0).
+			Comment("Count of dislikes for this review."),
+		field.String("flag").
+			Default("").
+			Comment("Flag for this review."),
 	}
 }
 
-// Edges of the Review.
 func (Review) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("user", User.Type).
 			Ref("reviews").
-			Unique(),
-		edge.From("place", Place.Type).
-			Ref("reviews").
-			Unique(),
+			Unique().
+			Required().
+			Comment("The user who wrote the review."),
+		edge.To("business", Business.Type).
+			Unique().
+			Comment("The business that was reviewed."),
+		edge.To("place", Place.Type).
+			Unique().
+			Comment("The place that was reviewed."),
+		edge.To("event", Event.Type).
+			Unique().
+			Comment("The event that was reviewed."),
+		edge.To("medias", Media.Type).
+			Comment("The media content related to the review."),
+		edge.To("comments", Comment.Type).
+			Comment("The comments related to the review."),
+		edge.To("likes", Like.Type).
+			Comment("The likes related to the review."),
 	}
 }

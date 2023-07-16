@@ -23,6 +23,12 @@ func (Media) Fields() []ent.Field {
 		field.String("MediaType").Comment("image, gif, or video"),
 		field.Time("CreatedAt").Default(time.Now).Immutable(),
 		field.Time("UpdatedAt").Default(time.Now).UpdateDefault(time.Now),
+		field.Int("likeCount").
+			Default(0).
+			Comment("Count of likes for this media."),
+		field.Int("dislikeCount").
+			Default(0).
+			Comment("Count of dislikes for this media."),
 	}
 }
 
@@ -30,6 +36,9 @@ func (Media) Fields() []ent.Field {
 func (Media) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("post", Post.Type).
+			Ref("medias").
+			Unique(),
+		edge.From("review", Review.Type).
 			Ref("medias").
 			Unique(),
 		edge.To("categories", Category.Type),

@@ -16,6 +16,7 @@ import (
 	"placio-app/ent/place"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
+	"placio-app/ent/rating"
 	"placio-app/ent/reservation"
 	"placio-app/ent/review"
 	"placio-app/ent/user"
@@ -586,6 +587,21 @@ func (uu *UserUpdate) AddLikedPlaces(u ...*UserLikePlace) *UserUpdate {
 	return uu.AddLikedPlaceIDs(ids...)
 }
 
+// AddRatingIDs adds the "ratings" edge to the Rating entity by IDs.
+func (uu *UserUpdate) AddRatingIDs(ids ...string) *UserUpdate {
+	uu.mutation.AddRatingIDs(ids...)
+	return uu
+}
+
+// AddRatings adds the "ratings" edges to the Rating entity.
+func (uu *UserUpdate) AddRatings(r ...*Rating) *UserUpdate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return uu.AddRatingIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -952,6 +968,27 @@ func (uu *UserUpdate) RemoveLikedPlaces(u ...*UserLikePlace) *UserUpdate {
 		ids[i] = u[i].ID
 	}
 	return uu.RemoveLikedPlaceIDs(ids...)
+}
+
+// ClearRatings clears all "ratings" edges to the Rating entity.
+func (uu *UserUpdate) ClearRatings() *UserUpdate {
+	uu.mutation.ClearRatings()
+	return uu
+}
+
+// RemoveRatingIDs removes the "ratings" edge to Rating entities by IDs.
+func (uu *UserUpdate) RemoveRatingIDs(ids ...string) *UserUpdate {
+	uu.mutation.RemoveRatingIDs(ids...)
+	return uu
+}
+
+// RemoveRatings removes "ratings" edges to Rating entities.
+func (uu *UserUpdate) RemoveRatings(r ...*Rating) *UserUpdate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return uu.RemoveRatingIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1877,6 +1914,51 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if uu.mutation.RatingsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.RatingsTable,
+			Columns: []string{user.RatingsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rating.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedRatingsIDs(); len(nodes) > 0 && !uu.mutation.RatingsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.RatingsTable,
+			Columns: []string{user.RatingsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rating.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RatingsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.RatingsTable,
+			Columns: []string{user.RatingsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rating.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -2438,6 +2520,21 @@ func (uuo *UserUpdateOne) AddLikedPlaces(u ...*UserLikePlace) *UserUpdateOne {
 	return uuo.AddLikedPlaceIDs(ids...)
 }
 
+// AddRatingIDs adds the "ratings" edge to the Rating entity by IDs.
+func (uuo *UserUpdateOne) AddRatingIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.AddRatingIDs(ids...)
+	return uuo
+}
+
+// AddRatings adds the "ratings" edges to the Rating entity.
+func (uuo *UserUpdateOne) AddRatings(r ...*Rating) *UserUpdateOne {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return uuo.AddRatingIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
@@ -2804,6 +2901,27 @@ func (uuo *UserUpdateOne) RemoveLikedPlaces(u ...*UserLikePlace) *UserUpdateOne 
 		ids[i] = u[i].ID
 	}
 	return uuo.RemoveLikedPlaceIDs(ids...)
+}
+
+// ClearRatings clears all "ratings" edges to the Rating entity.
+func (uuo *UserUpdateOne) ClearRatings() *UserUpdateOne {
+	uuo.mutation.ClearRatings()
+	return uuo
+}
+
+// RemoveRatingIDs removes the "ratings" edge to Rating entities by IDs.
+func (uuo *UserUpdateOne) RemoveRatingIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.RemoveRatingIDs(ids...)
+	return uuo
+}
+
+// RemoveRatings removes "ratings" edges to Rating entities.
+func (uuo *UserUpdateOne) RemoveRatings(r ...*Rating) *UserUpdateOne {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return uuo.RemoveRatingIDs(ids...)
 }
 
 // Where appends a list predicates to the UserUpdate builder.
@@ -3752,6 +3870,51 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(userlikeplace.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.RatingsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.RatingsTable,
+			Columns: []string{user.RatingsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rating.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedRatingsIDs(); len(nodes) > 0 && !uuo.mutation.RatingsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.RatingsTable,
+			Columns: []string{user.RatingsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rating.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RatingsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.RatingsTable,
+			Columns: []string{user.RatingsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rating.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

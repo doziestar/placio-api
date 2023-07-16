@@ -4,8 +4,13 @@ package ent
 
 import (
 	"fmt"
+	"placio-app/ent/business"
+	"placio-app/ent/event"
+	"placio-app/ent/place"
 	"placio-app/ent/rating"
+	"placio-app/ent/user"
 	"strings"
+	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -13,10 +18,93 @@ import (
 
 // Rating is the model entity for the Rating schema.
 type Rating struct {
-	config
+	config `json:"-"`
 	// ID of the ent.
-	ID           string `json:"id,omitempty"`
-	selectValues sql.SelectValues
+	ID string `json:"id,omitempty"`
+	// Score should be between 1 and 5.
+	Score int `json:"score,omitempty"`
+	// User's review to the business/place/event.
+	Review string `json:"review,omitempty"`
+	// When the rating was given.
+	RatedAt time.Time `json:"ratedAt,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the RatingQuery when eager-loading is set.
+	Edges            RatingEdges `json:"edges"`
+	business_ratings *string
+	event_ratings    *string
+	place_ratings    *string
+	rating_business  *string
+	rating_place     *string
+	rating_event     *string
+	user_ratings     *string
+	selectValues     sql.SelectValues
+}
+
+// RatingEdges holds the relations/edges for other nodes in the graph.
+type RatingEdges struct {
+	// The user who gave the rating.
+	User *User `json:"user,omitempty"`
+	// The business that was rated.
+	Business *Business `json:"business,omitempty"`
+	// The place that was rated.
+	Place *Place `json:"place,omitempty"`
+	// The event that was rated.
+	Event *Event `json:"event,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [4]bool
+}
+
+// UserOrErr returns the User value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e RatingEdges) UserOrErr() (*User, error) {
+	if e.loadedTypes[0] {
+		if e.User == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: user.Label}
+		}
+		return e.User, nil
+	}
+	return nil, &NotLoadedError{edge: "user"}
+}
+
+// BusinessOrErr returns the Business value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e RatingEdges) BusinessOrErr() (*Business, error) {
+	if e.loadedTypes[1] {
+		if e.Business == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: business.Label}
+		}
+		return e.Business, nil
+	}
+	return nil, &NotLoadedError{edge: "business"}
+}
+
+// PlaceOrErr returns the Place value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e RatingEdges) PlaceOrErr() (*Place, error) {
+	if e.loadedTypes[2] {
+		if e.Place == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: place.Label}
+		}
+		return e.Place, nil
+	}
+	return nil, &NotLoadedError{edge: "place"}
+}
+
+// EventOrErr returns the Event value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e RatingEdges) EventOrErr() (*Event, error) {
+	if e.loadedTypes[3] {
+		if e.Event == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: event.Label}
+		}
+		return e.Event, nil
+	}
+	return nil, &NotLoadedError{edge: "event"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -24,7 +112,25 @@ func (*Rating) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case rating.FieldID:
+		case rating.FieldScore:
+			values[i] = new(sql.NullInt64)
+		case rating.FieldID, rating.FieldReview:
+			values[i] = new(sql.NullString)
+		case rating.FieldRatedAt:
+			values[i] = new(sql.NullTime)
+		case rating.ForeignKeys[0]: // business_ratings
+			values[i] = new(sql.NullString)
+		case rating.ForeignKeys[1]: // event_ratings
+			values[i] = new(sql.NullString)
+		case rating.ForeignKeys[2]: // place_ratings
+			values[i] = new(sql.NullString)
+		case rating.ForeignKeys[3]: // rating_business
+			values[i] = new(sql.NullString)
+		case rating.ForeignKeys[4]: // rating_place
+			values[i] = new(sql.NullString)
+		case rating.ForeignKeys[5]: // rating_event
+			values[i] = new(sql.NullString)
+		case rating.ForeignKeys[6]: // user_ratings
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -47,6 +153,73 @@ func (r *Rating) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				r.ID = value.String
 			}
+		case rating.FieldScore:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field score", values[i])
+			} else if value.Valid {
+				r.Score = int(value.Int64)
+			}
+		case rating.FieldReview:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field review", values[i])
+			} else if value.Valid {
+				r.Review = value.String
+			}
+		case rating.FieldRatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field ratedAt", values[i])
+			} else if value.Valid {
+				r.RatedAt = value.Time
+			}
+		case rating.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field business_ratings", values[i])
+			} else if value.Valid {
+				r.business_ratings = new(string)
+				*r.business_ratings = value.String
+			}
+		case rating.ForeignKeys[1]:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field event_ratings", values[i])
+			} else if value.Valid {
+				r.event_ratings = new(string)
+				*r.event_ratings = value.String
+			}
+		case rating.ForeignKeys[2]:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field place_ratings", values[i])
+			} else if value.Valid {
+				r.place_ratings = new(string)
+				*r.place_ratings = value.String
+			}
+		case rating.ForeignKeys[3]:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field rating_business", values[i])
+			} else if value.Valid {
+				r.rating_business = new(string)
+				*r.rating_business = value.String
+			}
+		case rating.ForeignKeys[4]:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field rating_place", values[i])
+			} else if value.Valid {
+				r.rating_place = new(string)
+				*r.rating_place = value.String
+			}
+		case rating.ForeignKeys[5]:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field rating_event", values[i])
+			} else if value.Valid {
+				r.rating_event = new(string)
+				*r.rating_event = value.String
+			}
+		case rating.ForeignKeys[6]:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field user_ratings", values[i])
+			} else if value.Valid {
+				r.user_ratings = new(string)
+				*r.user_ratings = value.String
+			}
 		default:
 			r.selectValues.Set(columns[i], values[i])
 		}
@@ -58,6 +231,26 @@ func (r *Rating) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (r *Rating) Value(name string) (ent.Value, error) {
 	return r.selectValues.Get(name)
+}
+
+// QueryUser queries the "user" edge of the Rating entity.
+func (r *Rating) QueryUser() *UserQuery {
+	return NewRatingClient(r.config).QueryUser(r)
+}
+
+// QueryBusiness queries the "business" edge of the Rating entity.
+func (r *Rating) QueryBusiness() *BusinessQuery {
+	return NewRatingClient(r.config).QueryBusiness(r)
+}
+
+// QueryPlace queries the "place" edge of the Rating entity.
+func (r *Rating) QueryPlace() *PlaceQuery {
+	return NewRatingClient(r.config).QueryPlace(r)
+}
+
+// QueryEvent queries the "event" edge of the Rating entity.
+func (r *Rating) QueryEvent() *EventQuery {
+	return NewRatingClient(r.config).QueryEvent(r)
 }
 
 // Update returns a builder for updating this Rating.
@@ -82,7 +275,15 @@ func (r *Rating) Unwrap() *Rating {
 func (r *Rating) String() string {
 	var builder strings.Builder
 	builder.WriteString("Rating(")
-	builder.WriteString(fmt.Sprintf("id=%v", r.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", r.ID))
+	builder.WriteString("score=")
+	builder.WriteString(fmt.Sprintf("%v", r.Score))
+	builder.WriteString(", ")
+	builder.WriteString("review=")
+	builder.WriteString(r.Review)
+	builder.WriteString(", ")
+	builder.WriteString("ratedAt=")
+	builder.WriteString(r.RatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

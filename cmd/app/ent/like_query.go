@@ -7,8 +7,10 @@ import (
 	"fmt"
 	"math"
 	"placio-app/ent/like"
+	"placio-app/ent/media"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
+	"placio-app/ent/review"
 	"placio-app/ent/user"
 
 	"entgo.io/ent/dialect/sql"
@@ -24,6 +26,8 @@ type LikeQuery struct {
 	inters     []Interceptor
 	predicates []predicate.Like
 	withUser   *UserQuery
+	withReview *ReviewQuery
+	withMedia  *MediaQuery
 	withPost   *PostQuery
 	withFKs    bool
 	// intermediate query (i.e. traversal path).
@@ -77,6 +81,50 @@ func (lq *LikeQuery) QueryUser() *UserQuery {
 			sqlgraph.From(like.Table, like.FieldID, selector),
 			sqlgraph.To(user.Table, user.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, like.UserTable, like.UserColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(lq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryReview chains the current query on the "review" edge.
+func (lq *LikeQuery) QueryReview() *ReviewQuery {
+	query := (&ReviewClient{config: lq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := lq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := lq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(like.Table, like.FieldID, selector),
+			sqlgraph.To(review.Table, review.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, like.ReviewTable, like.ReviewColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(lq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryMedia chains the current query on the "media" edge.
+func (lq *LikeQuery) QueryMedia() *MediaQuery {
+	query := (&MediaClient{config: lq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := lq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := lq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(like.Table, like.FieldID, selector),
+			sqlgraph.To(media.Table, media.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, like.MediaTable, like.MediaColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(lq.driver.Dialect(), step)
 		return fromU, nil
@@ -299,6 +347,8 @@ func (lq *LikeQuery) Clone() *LikeQuery {
 		inters:     append([]Interceptor{}, lq.inters...),
 		predicates: append([]predicate.Like{}, lq.predicates...),
 		withUser:   lq.withUser.Clone(),
+		withReview: lq.withReview.Clone(),
+		withMedia:  lq.withMedia.Clone(),
 		withPost:   lq.withPost.Clone(),
 		// clone intermediate query.
 		sql:  lq.sql.Clone(),
@@ -314,6 +364,28 @@ func (lq *LikeQuery) WithUser(opts ...func(*UserQuery)) *LikeQuery {
 		opt(query)
 	}
 	lq.withUser = query
+	return lq
+}
+
+// WithReview tells the query-builder to eager-load the nodes that are connected to
+// the "review" edge. The optional arguments are used to configure the query builder of the edge.
+func (lq *LikeQuery) WithReview(opts ...func(*ReviewQuery)) *LikeQuery {
+	query := (&ReviewClient{config: lq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	lq.withReview = query
+	return lq
+}
+
+// WithMedia tells the query-builder to eager-load the nodes that are connected to
+// the "media" edge. The optional arguments are used to configure the query builder of the edge.
+func (lq *LikeQuery) WithMedia(opts ...func(*MediaQuery)) *LikeQuery {
+	query := (&MediaClient{config: lq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	lq.withMedia = query
 	return lq
 }
 
@@ -334,7 +406,7 @@ func (lq *LikeQuery) WithPost(opts ...func(*PostQuery)) *LikeQuery {
 // Example:
 //
 //	var v []struct {
-//		CreatedAt time.Time `json:"CreatedAt,omitempty"`
+//		CreatedAt time.Time `json:"createdAt,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
@@ -357,7 +429,7 @@ func (lq *LikeQuery) GroupBy(field string, fields ...string) *LikeGroupBy {
 // Example:
 //
 //	var v []struct {
-//		CreatedAt time.Time `json:"CreatedAt,omitempty"`
+//		CreatedAt time.Time `json:"createdAt,omitempty"`
 //	}
 //
 //	client.Like.Query().
@@ -407,12 +479,14 @@ func (lq *LikeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Like, e
 		nodes       = []*Like{}
 		withFKs     = lq.withFKs
 		_spec       = lq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [4]bool{
 			lq.withUser != nil,
+			lq.withReview != nil,
+			lq.withMedia != nil,
 			lq.withPost != nil,
 		}
 	)
-	if lq.withUser != nil || lq.withPost != nil {
+	if lq.withUser != nil || lq.withReview != nil || lq.withMedia != nil || lq.withPost != nil {
 		withFKs = true
 	}
 	if withFKs {
@@ -439,6 +513,18 @@ func (lq *LikeQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Like, e
 	if query := lq.withUser; query != nil {
 		if err := lq.loadUser(ctx, query, nodes, nil,
 			func(n *Like, e *User) { n.Edges.User = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := lq.withReview; query != nil {
+		if err := lq.loadReview(ctx, query, nodes, nil,
+			func(n *Like, e *Review) { n.Edges.Review = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := lq.withMedia; query != nil {
+		if err := lq.loadMedia(ctx, query, nodes, nil,
+			func(n *Like, e *Media) { n.Edges.Media = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -476,6 +562,70 @@ func (lq *LikeQuery) loadUser(ctx context.Context, query *UserQuery, nodes []*Li
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "user_likes" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (lq *LikeQuery) loadReview(ctx context.Context, query *ReviewQuery, nodes []*Like, init func(*Like), assign func(*Like, *Review)) error {
+	ids := make([]string, 0, len(nodes))
+	nodeids := make(map[string][]*Like)
+	for i := range nodes {
+		if nodes[i].like_review == nil {
+			continue
+		}
+		fk := *nodes[i].like_review
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(review.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "like_review" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (lq *LikeQuery) loadMedia(ctx context.Context, query *MediaQuery, nodes []*Like, init func(*Like), assign func(*Like, *Media)) error {
+	ids := make([]string, 0, len(nodes))
+	nodeids := make(map[string][]*Like)
+	for i := range nodes {
+		if nodes[i].like_media == nil {
+			continue
+		}
+		fk := *nodes[i].like_media
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(media.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "like_media" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)

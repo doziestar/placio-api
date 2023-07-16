@@ -296,6 +296,18 @@ func (f ReservationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value,
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ReservationMutation", m)
 }
 
+// The ResourseFunc type is an adapter to allow the use of ordinary
+// function as Resourse mutator.
+type ResourseFunc func(context.Context, *ent.ResourseMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ResourseFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ResourseMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ResourseMutation", m)
+}
+
 // The ReviewFunc type is an adapter to allow the use of ordinary
 // function as Review mutator.
 type ReviewFunc func(context.Context, *ent.ReviewMutation) (ent.Value, error)

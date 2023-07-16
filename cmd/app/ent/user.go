@@ -97,9 +97,11 @@ type UserEdges struct {
 	FollowedPlaces []*UserFollowPlace `json:"followedPlaces,omitempty"`
 	// LikedPlaces holds the value of the likedPlaces edge.
 	LikedPlaces []*UserLikePlace `json:"likedPlaces,omitempty"`
+	// Ratings holds the value of the ratings edge.
+	Ratings []*Rating `json:"ratings,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [19]bool
+	loadedTypes [20]bool
 }
 
 // UserBusinessesOrErr returns the UserBusinesses value or an error if the edge
@@ -275,6 +277,15 @@ func (e UserEdges) LikedPlacesOrErr() ([]*UserLikePlace, error) {
 		return e.LikedPlaces, nil
 	}
 	return nil, &NotLoadedError{edge: "likedPlaces"}
+}
+
+// RatingsOrErr returns the Ratings value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) RatingsOrErr() ([]*Rating, error) {
+	if e.loadedTypes[19] {
+		return e.Ratings, nil
+	}
+	return nil, &NotLoadedError{edge: "ratings"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -519,6 +530,11 @@ func (u *User) QueryFollowedPlaces() *UserFollowPlaceQuery {
 // QueryLikedPlaces queries the "likedPlaces" edge of the User entity.
 func (u *User) QueryLikedPlaces() *UserLikePlaceQuery {
 	return NewUserClient(u.config).QueryLikedPlaces(u)
+}
+
+// QueryRatings queries the "ratings" edge of the User entity.
+func (u *User) QueryRatings() *RatingQuery {
+	return NewUserClient(u.config).QueryRatings(u)
 }
 
 // Update returns a builder for updating this User.

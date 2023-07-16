@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"placio-app/ent/media"
 	"placio-app/ent/post"
+	"placio-app/ent/review"
 	"strings"
 	"time"
 
@@ -26,22 +27,29 @@ type Media struct {
 	CreatedAt time.Time `json:"CreatedAt,omitempty"`
 	// UpdatedAt holds the value of the "UpdatedAt" field.
 	UpdatedAt time.Time `json:"UpdatedAt,omitempty"`
+	// Count of likes for this media.
+	LikeCount int `json:"likeCount,omitempty"`
+	// Count of dislikes for this media.
+	DislikeCount int `json:"dislikeCount,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the MediaQuery when eager-loading is set.
-	Edges        MediaEdges `json:"edges"`
-	post_medias  *string
-	selectValues sql.SelectValues
+	Edges         MediaEdges `json:"edges"`
+	post_medias   *string
+	review_medias *string
+	selectValues  sql.SelectValues
 }
 
 // MediaEdges holds the relations/edges for other nodes in the graph.
 type MediaEdges struct {
 	// Post holds the value of the post edge.
 	Post *Post `json:"post,omitempty"`
+	// Review holds the value of the review edge.
+	Review *Review `json:"review,omitempty"`
 	// Categories holds the value of the categories edge.
 	Categories []*Category `json:"categories,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // PostOrErr returns the Post value or an error if the edge
@@ -57,10 +65,23 @@ func (e MediaEdges) PostOrErr() (*Post, error) {
 	return nil, &NotLoadedError{edge: "post"}
 }
 
+// ReviewOrErr returns the Review value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e MediaEdges) ReviewOrErr() (*Review, error) {
+	if e.loadedTypes[1] {
+		if e.Review == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: review.Label}
+		}
+		return e.Review, nil
+	}
+	return nil, &NotLoadedError{edge: "review"}
+}
+
 // CategoriesOrErr returns the Categories value or an error if the edge
 // was not loaded in eager-loading.
 func (e MediaEdges) CategoriesOrErr() ([]*Category, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[2] {
 		return e.Categories, nil
 	}
 	return nil, &NotLoadedError{edge: "categories"}
@@ -71,11 +92,15 @@ func (*Media) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case media.FieldLikeCount, media.FieldDislikeCount:
+			values[i] = new(sql.NullInt64)
 		case media.FieldID, media.FieldURL, media.FieldMediaType:
 			values[i] = new(sql.NullString)
 		case media.FieldCreatedAt, media.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		case media.ForeignKeys[0]: // post_medias
+			values[i] = new(sql.NullString)
+		case media.ForeignKeys[1]: // review_medias
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -122,12 +147,31 @@ func (m *Media) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				m.UpdatedAt = value.Time
 			}
+		case media.FieldLikeCount:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field likeCount", values[i])
+			} else if value.Valid {
+				m.LikeCount = int(value.Int64)
+			}
+		case media.FieldDislikeCount:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field dislikeCount", values[i])
+			} else if value.Valid {
+				m.DislikeCount = int(value.Int64)
+			}
 		case media.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field post_medias", values[i])
 			} else if value.Valid {
 				m.post_medias = new(string)
 				*m.post_medias = value.String
+			}
+		case media.ForeignKeys[1]:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field review_medias", values[i])
+			} else if value.Valid {
+				m.review_medias = new(string)
+				*m.review_medias = value.String
 			}
 		default:
 			m.selectValues.Set(columns[i], values[i])
@@ -145,6 +189,11 @@ func (m *Media) Value(name string) (ent.Value, error) {
 // QueryPost queries the "post" edge of the Media entity.
 func (m *Media) QueryPost() *PostQuery {
 	return NewMediaClient(m.config).QueryPost(m)
+}
+
+// QueryReview queries the "review" edge of the Media entity.
+func (m *Media) QueryReview() *ReviewQuery {
+	return NewMediaClient(m.config).QueryReview(m)
 }
 
 // QueryCategories queries the "categories" edge of the Media entity.
@@ -186,6 +235,12 @@ func (m *Media) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("UpdatedAt=")
 	builder.WriteString(m.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("likeCount=")
+	builder.WriteString(fmt.Sprintf("%v", m.LikeCount))
+	builder.WriteString(", ")
+	builder.WriteString("dislikeCount=")
+	builder.WriteString(fmt.Sprintf("%v", m.DislikeCount))
 	builder.WriteByte(')')
 	return builder.String()
 }

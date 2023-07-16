@@ -6,8 +6,12 @@ import (
 	"context"
 	"fmt"
 	"math"
+	"placio-app/ent/business"
+	"placio-app/ent/event"
+	"placio-app/ent/place"
 	"placio-app/ent/predicate"
 	"placio-app/ent/rating"
+	"placio-app/ent/user"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -17,10 +21,15 @@ import (
 // RatingQuery is the builder for querying Rating entities.
 type RatingQuery struct {
 	config
-	ctx        *QueryContext
-	order      []rating.OrderOption
-	inters     []Interceptor
-	predicates []predicate.Rating
+	ctx          *QueryContext
+	order        []rating.OrderOption
+	inters       []Interceptor
+	predicates   []predicate.Rating
+	withUser     *UserQuery
+	withBusiness *BusinessQuery
+	withPlace    *PlaceQuery
+	withEvent    *EventQuery
+	withFKs      bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -55,6 +64,94 @@ func (rq *RatingQuery) Unique(unique bool) *RatingQuery {
 func (rq *RatingQuery) Order(o ...rating.OrderOption) *RatingQuery {
 	rq.order = append(rq.order, o...)
 	return rq
+}
+
+// QueryUser chains the current query on the "user" edge.
+func (rq *RatingQuery) QueryUser() *UserQuery {
+	query := (&UserClient{config: rq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := rq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := rq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(rating.Table, rating.FieldID, selector),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, rating.UserTable, rating.UserColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryBusiness chains the current query on the "business" edge.
+func (rq *RatingQuery) QueryBusiness() *BusinessQuery {
+	query := (&BusinessClient{config: rq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := rq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := rq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(rating.Table, rating.FieldID, selector),
+			sqlgraph.To(business.Table, business.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, rating.BusinessTable, rating.BusinessColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryPlace chains the current query on the "place" edge.
+func (rq *RatingQuery) QueryPlace() *PlaceQuery {
+	query := (&PlaceClient{config: rq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := rq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := rq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(rating.Table, rating.FieldID, selector),
+			sqlgraph.To(place.Table, place.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, rating.PlaceTable, rating.PlaceColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryEvent chains the current query on the "event" edge.
+func (rq *RatingQuery) QueryEvent() *EventQuery {
+	query := (&EventClient{config: rq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := rq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := rq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(rating.Table, rating.FieldID, selector),
+			sqlgraph.To(event.Table, event.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, rating.EventTable, rating.EventColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first Rating entity from the query.
@@ -244,19 +341,79 @@ func (rq *RatingQuery) Clone() *RatingQuery {
 		return nil
 	}
 	return &RatingQuery{
-		config:     rq.config,
-		ctx:        rq.ctx.Clone(),
-		order:      append([]rating.OrderOption{}, rq.order...),
-		inters:     append([]Interceptor{}, rq.inters...),
-		predicates: append([]predicate.Rating{}, rq.predicates...),
+		config:       rq.config,
+		ctx:          rq.ctx.Clone(),
+		order:        append([]rating.OrderOption{}, rq.order...),
+		inters:       append([]Interceptor{}, rq.inters...),
+		predicates:   append([]predicate.Rating{}, rq.predicates...),
+		withUser:     rq.withUser.Clone(),
+		withBusiness: rq.withBusiness.Clone(),
+		withPlace:    rq.withPlace.Clone(),
+		withEvent:    rq.withEvent.Clone(),
 		// clone intermediate query.
 		sql:  rq.sql.Clone(),
 		path: rq.path,
 	}
 }
 
+// WithUser tells the query-builder to eager-load the nodes that are connected to
+// the "user" edge. The optional arguments are used to configure the query builder of the edge.
+func (rq *RatingQuery) WithUser(opts ...func(*UserQuery)) *RatingQuery {
+	query := (&UserClient{config: rq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	rq.withUser = query
+	return rq
+}
+
+// WithBusiness tells the query-builder to eager-load the nodes that are connected to
+// the "business" edge. The optional arguments are used to configure the query builder of the edge.
+func (rq *RatingQuery) WithBusiness(opts ...func(*BusinessQuery)) *RatingQuery {
+	query := (&BusinessClient{config: rq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	rq.withBusiness = query
+	return rq
+}
+
+// WithPlace tells the query-builder to eager-load the nodes that are connected to
+// the "place" edge. The optional arguments are used to configure the query builder of the edge.
+func (rq *RatingQuery) WithPlace(opts ...func(*PlaceQuery)) *RatingQuery {
+	query := (&PlaceClient{config: rq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	rq.withPlace = query
+	return rq
+}
+
+// WithEvent tells the query-builder to eager-load the nodes that are connected to
+// the "event" edge. The optional arguments are used to configure the query builder of the edge.
+func (rq *RatingQuery) WithEvent(opts ...func(*EventQuery)) *RatingQuery {
+	query := (&EventClient{config: rq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	rq.withEvent = query
+	return rq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
+//
+// Example:
+//
+//	var v []struct {
+//		Score int `json:"score,omitempty"`
+//		Count int `json:"count,omitempty"`
+//	}
+//
+//	client.Rating.Query().
+//		GroupBy(rating.FieldScore).
+//		Aggregate(ent.Count()).
+//		Scan(ctx, &v)
 func (rq *RatingQuery) GroupBy(field string, fields ...string) *RatingGroupBy {
 	rq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &RatingGroupBy{build: rq}
@@ -268,6 +425,16 @@ func (rq *RatingQuery) GroupBy(field string, fields ...string) *RatingGroupBy {
 
 // Select allows the selection one or more fields/columns for the given query,
 // instead of selecting all fields in the entity.
+//
+// Example:
+//
+//	var v []struct {
+//		Score int `json:"score,omitempty"`
+//	}
+//
+//	client.Rating.Query().
+//		Select(rating.FieldScore).
+//		Scan(ctx, &v)
 func (rq *RatingQuery) Select(fields ...string) *RatingSelect {
 	rq.ctx.Fields = append(rq.ctx.Fields, fields...)
 	sbuild := &RatingSelect{RatingQuery: rq}
@@ -309,15 +476,29 @@ func (rq *RatingQuery) prepareQuery(ctx context.Context) error {
 
 func (rq *RatingQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Rating, error) {
 	var (
-		nodes = []*Rating{}
-		_spec = rq.querySpec()
+		nodes       = []*Rating{}
+		withFKs     = rq.withFKs
+		_spec       = rq.querySpec()
+		loadedTypes = [4]bool{
+			rq.withUser != nil,
+			rq.withBusiness != nil,
+			rq.withPlace != nil,
+			rq.withEvent != nil,
+		}
 	)
+	if rq.withUser != nil || rq.withBusiness != nil || rq.withPlace != nil || rq.withEvent != nil {
+		withFKs = true
+	}
+	if withFKs {
+		_spec.Node.Columns = append(_spec.Node.Columns, rating.ForeignKeys...)
+	}
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Rating).scanValues(nil, columns)
 	}
 	_spec.Assign = func(columns []string, values []any) error {
 		node := &Rating{config: rq.config}
 		nodes = append(nodes, node)
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	for i := range hooks {
@@ -329,7 +510,160 @@ func (rq *RatingQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Ratin
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := rq.withUser; query != nil {
+		if err := rq.loadUser(ctx, query, nodes, nil,
+			func(n *Rating, e *User) { n.Edges.User = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := rq.withBusiness; query != nil {
+		if err := rq.loadBusiness(ctx, query, nodes, nil,
+			func(n *Rating, e *Business) { n.Edges.Business = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := rq.withPlace; query != nil {
+		if err := rq.loadPlace(ctx, query, nodes, nil,
+			func(n *Rating, e *Place) { n.Edges.Place = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := rq.withEvent; query != nil {
+		if err := rq.loadEvent(ctx, query, nodes, nil,
+			func(n *Rating, e *Event) { n.Edges.Event = e }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
+}
+
+func (rq *RatingQuery) loadUser(ctx context.Context, query *UserQuery, nodes []*Rating, init func(*Rating), assign func(*Rating, *User)) error {
+	ids := make([]string, 0, len(nodes))
+	nodeids := make(map[string][]*Rating)
+	for i := range nodes {
+		if nodes[i].user_ratings == nil {
+			continue
+		}
+		fk := *nodes[i].user_ratings
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(user.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "user_ratings" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (rq *RatingQuery) loadBusiness(ctx context.Context, query *BusinessQuery, nodes []*Rating, init func(*Rating), assign func(*Rating, *Business)) error {
+	ids := make([]string, 0, len(nodes))
+	nodeids := make(map[string][]*Rating)
+	for i := range nodes {
+		if nodes[i].rating_business == nil {
+			continue
+		}
+		fk := *nodes[i].rating_business
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(business.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "rating_business" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (rq *RatingQuery) loadPlace(ctx context.Context, query *PlaceQuery, nodes []*Rating, init func(*Rating), assign func(*Rating, *Place)) error {
+	ids := make([]string, 0, len(nodes))
+	nodeids := make(map[string][]*Rating)
+	for i := range nodes {
+		if nodes[i].rating_place == nil {
+			continue
+		}
+		fk := *nodes[i].rating_place
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(place.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "rating_place" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (rq *RatingQuery) loadEvent(ctx context.Context, query *EventQuery, nodes []*Rating, init func(*Rating), assign func(*Rating, *Event)) error {
+	ids := make([]string, 0, len(nodes))
+	nodeids := make(map[string][]*Rating)
+	for i := range nodes {
+		if nodes[i].rating_event == nil {
+			continue
+		}
+		fk := *nodes[i].rating_event
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(event.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "rating_event" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
 }
 
 func (rq *RatingQuery) sqlCount(ctx context.Context) (int, error) {

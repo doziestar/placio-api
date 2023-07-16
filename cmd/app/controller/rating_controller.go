@@ -1,12 +1,10 @@
 package controller
 
 import (
-	"errors"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 	"net/http"
-	_ "placio-app/Dto"
-	"placio-app/models"
+	"placio-app/Dto"
+	"placio-app/ent"
 	"placio-app/service"
 	"placio-app/utility"
 )
@@ -26,7 +24,7 @@ func (rc *RatingController) RegisterRoutes(router *gin.RouterGroup) {
 		ratingRouter.GET("/:id", utility.Use(rc.getRating))
 		ratingRouter.PUT("/:id", utility.Use(rc.updateRating))
 		ratingRouter.DELETE("/:id", utility.Use(rc.deleteRating))
-		ratingRouter.GET("/event/:eventID", utility.Use(rc.getRatingsByEvent))
+		ratingRouter.GET("/", utility.Use(rc.listRatings))
 	}
 }
 
@@ -36,33 +34,27 @@ func (rc *RatingController) RegisterRoutes(router *gin.RouterGroup) {
 // @Tags Rating
 // @Accept json
 // @Produce json
-// @Param CreateRatingDto body models.Rating true "Rating Data"
-// @Success 201 {object} models.Rating "Successfully created rating"
+// @Param Authorization header string true "JWT Token"
+// @Param Dto.RatingDTO body Dto.RatingDTO true "Rating Data"
+// @Success 201 {object} ent.Rating "Successfully created rating"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/ratings/ [post]
 func (rc *RatingController) createRating(ctx *gin.Context) error {
-	data := new(models.Rating)
+	data := new(Dto.RatingDTO)
 	if err := ctx.BindJSON(data); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return err
 	}
 
-	rating := &models.Rating{
-		EventID: data.EventID,
-		UserID:  data.UserID,
-		//RateValue: data.RateValue,
-	}
-
-	newRating := rc.ratingService.CreateRating(rating)
-	if newRating == nil {
+	newRating, err := rc.ratingService.CreateRating(ctx, data)
+	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
-		return errors.New("internal server error")
+		return err
 	}
 
 	ctx.JSON(http.StatusCreated, newRating)
 	return nil
-
 }
 
 // getRating retrieves a rating by its ID
@@ -71,17 +63,18 @@ func (rc *RatingController) createRating(ctx *gin.Context) error {
 // @Tags Rating
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "JWT Token"
 // @Param id path string true "Rating ID"
-// @Success 200 {object} models.Rating "Successfully retrieved rating"
+// @Success 200 {object} ent.Rating "Successfully retrieved rating"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 404 {object} Dto.ErrorDTO "Rating Not Found"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/ratings/{id} [get]
 func (rc *RatingController) getRating(ctx *gin.Context) error {
 	ratingID := ctx.Param("id")
-	rating, err := rc.ratingService.GetRatingsByEvent(ratingID)
+	rating, err := rc.ratingService.GetRating(ctx, ratingID)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+		if ent.IsNotFound(err) {
 			ctx.JSON(http.StatusNotFound, gin.H{"error": "Rating Not Found"})
 			return err
 		}
@@ -99,24 +92,25 @@ func (rc *RatingController) getRating(ctx *gin.Context) error {
 // @Tags Rating
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "JWT Token"
 // @Param id path string true "Rating ID"
-// @Param UpdateRatingDto body models.Rating true "Rating Data"
-// @Success 200 {object} models.Rating "Successfully updated rating"
+// @Param score body int true "New Score"
+// @Success 200 {object} ent.Rating "Successfully updated rating"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 404 {object} Dto.ErrorDTO "Rating Not Found"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/ratings/{id} [put]
 func (rc *RatingController) updateRating(ctx *gin.Context) error {
 	ratingID := ctx.Param("id")
-	data := new(models.Rating)
-	if err := ctx.BindJSON(data); err != nil {
+	var score int
+	if err := ctx.BindJSON(&score); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return err
 	}
 
-	_, err := rc.ratingService.GetRatingsByEvent(ratingID)
+	updatedRating, err := rc.ratingService.UpdateRating(ctx, ratingID, score)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+		if ent.IsNotFound(err) {
 			ctx.JSON(http.StatusNotFound, gin.H{"error": "Rating Not Found"})
 			return err
 		}
@@ -124,15 +118,7 @@ func (rc *RatingController) updateRating(ctx *gin.Context) error {
 		return err
 	}
 
-	//rating.RateValue = data.RateValue
-	//updatedRating, err := rc.ratingService.UpdateRating(rating)
-	//if err != nil {
-	//	return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-	//		"error": "Internal Server Error",
-	//	})
-	//}
-
-	ctx.JSON(http.StatusOK, data)
+	ctx.JSON(http.StatusOK, updatedRating)
 	return nil
 }
 
@@ -142,6 +128,7 @@ func (rc *RatingController) updateRating(ctx *gin.Context) error {
 // @Tags Rating
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "JWT Token"
 // @Param id path string true "Rating ID"
 // @Success 204 "Successfully deleted rating"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
@@ -150,9 +137,9 @@ func (rc *RatingController) updateRating(ctx *gin.Context) error {
 // @Router /api/v1/ratings/{id} [delete]
 func (rc *RatingController) deleteRating(ctx *gin.Context) error {
 	ratingID := ctx.Param("id")
-	err := rc.ratingService.DeleteRating(ratingID)
+	err := rc.ratingService.DeleteRating(ctx, ratingID)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+		if ent.IsNotFound(err) {
 			ctx.JSON(http.StatusNotFound, gin.H{"error": "Rating Not Found"})
 			return err
 		}
@@ -163,20 +150,18 @@ func (rc *RatingController) deleteRating(ctx *gin.Context) error {
 	return nil
 }
 
-// getRatingsByEvent retrieves all ratings for a given event
-// @Summary GET all ratings for an event
-// @Description Retrieve all ratings for a given event
+// ListRatings retrieves all ratings
+// @Summary GET all ratings
+// @Description Retrieve all ratings
 // @Tags Rating
 // @Accept json
 // @Produce json
-// @Param eventID path string true "Event ID"
-// @Success 200 {array} models.Rating "Successfully retrieved ratings"
-// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
+// @Param Authorization header string true "JWT Token"
+// @Success 200 {array} ent.Rating "Successfully retrieved ratings"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
-// @Router /api/v1/ratings/event/{eventID} [get]
-func (rc *RatingController) getRatingsByEvent(ctx *gin.Context) error {
-	eventID := ctx.Param("eventID")
-	ratings, err := rc.ratingService.GetRatingsByEvent(eventID)
+// @Router /api/v1/ratings [get]
+func (rc *RatingController) listRatings(ctx *gin.Context) error {
+	ratings, err := rc.ratingService.ListRatings(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 		return err

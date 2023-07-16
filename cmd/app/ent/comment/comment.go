@@ -54,6 +54,7 @@ var Columns = []string{
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
 	"post_comments",
+	"review_comments",
 	"user_comments",
 }
 

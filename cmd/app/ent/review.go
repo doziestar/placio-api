@@ -3,8 +3,9 @@
 package ent
 
 import (
-	"encoding/json"
 	"fmt"
+	"placio-app/ent/business"
+	"placio-app/ent/event"
 	"placio-app/ent/place"
 	"placio-app/ent/review"
 	"placio-app/ent/user"
@@ -20,31 +21,48 @@ type Review struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID string `json:"id,omitempty"`
-	// Rating holds the value of the "rating" field.
-	Rating float64 `json:"rating,omitempty"`
-	// Comment holds the value of the "comment" field.
-	Comment string `json:"comment,omitempty"`
-	// ImagesVideos holds the value of the "images_videos" field.
-	ImagesVideos []string `json:"images_videos,omitempty"`
-	// Timestamp holds the value of the "timestamp" field.
-	Timestamp time.Time `json:"timestamp,omitempty"`
+	// Score should be between 1 and 5.
+	Score float64 `json:"score,omitempty"`
+	// User's review to the business/place/event.
+	Content string `json:"content,omitempty"`
+	// When the review was created.
+	CreatedAt time.Time `json:"createdAt,omitempty"`
+	// Count of likes for this review.
+	LikeCount int `json:"likeCount,omitempty"`
+	// Count of dislikes for this review.
+	DislikeCount int `json:"dislikeCount,omitempty"`
+	// Flag for this review.
+	Flag string `json:"flag,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ReviewQuery when eager-loading is set.
-	Edges         ReviewEdges `json:"edges"`
-	place_reviews *string
-	user_reviews  *string
-	selectValues  sql.SelectValues
+	Edges           ReviewEdges `json:"edges"`
+	place_reviews   *string
+	review_business *string
+	review_place    *string
+	review_event    *string
+	user_reviews    *string
+	selectValues    sql.SelectValues
 }
 
 // ReviewEdges holds the relations/edges for other nodes in the graph.
 type ReviewEdges struct {
-	// User holds the value of the user edge.
+	// The user who wrote the review.
 	User *User `json:"user,omitempty"`
-	// Place holds the value of the place edge.
+	// The business that was reviewed.
+	Business *Business `json:"business,omitempty"`
+	// The place that was reviewed.
 	Place *Place `json:"place,omitempty"`
+	// The event that was reviewed.
+	Event *Event `json:"event,omitempty"`
+	// The media content related to the review.
+	Medias []*Media `json:"medias,omitempty"`
+	// The comments related to the review.
+	Comments []*Comment `json:"comments,omitempty"`
+	// The likes related to the review.
+	Likes []*Like `json:"likes,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [7]bool
 }
 
 // UserOrErr returns the User value or an error if the edge
@@ -60,10 +78,23 @@ func (e ReviewEdges) UserOrErr() (*User, error) {
 	return nil, &NotLoadedError{edge: "user"}
 }
 
+// BusinessOrErr returns the Business value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e ReviewEdges) BusinessOrErr() (*Business, error) {
+	if e.loadedTypes[1] {
+		if e.Business == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: business.Label}
+		}
+		return e.Business, nil
+	}
+	return nil, &NotLoadedError{edge: "business"}
+}
+
 // PlaceOrErr returns the Place value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e ReviewEdges) PlaceOrErr() (*Place, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[2] {
 		if e.Place == nil {
 			// Edge was loaded but was not found.
 			return nil, &NotFoundError{label: place.Label}
@@ -73,22 +104,68 @@ func (e ReviewEdges) PlaceOrErr() (*Place, error) {
 	return nil, &NotLoadedError{edge: "place"}
 }
 
+// EventOrErr returns the Event value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e ReviewEdges) EventOrErr() (*Event, error) {
+	if e.loadedTypes[3] {
+		if e.Event == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: event.Label}
+		}
+		return e.Event, nil
+	}
+	return nil, &NotLoadedError{edge: "event"}
+}
+
+// MediasOrErr returns the Medias value or an error if the edge
+// was not loaded in eager-loading.
+func (e ReviewEdges) MediasOrErr() ([]*Media, error) {
+	if e.loadedTypes[4] {
+		return e.Medias, nil
+	}
+	return nil, &NotLoadedError{edge: "medias"}
+}
+
+// CommentsOrErr returns the Comments value or an error if the edge
+// was not loaded in eager-loading.
+func (e ReviewEdges) CommentsOrErr() ([]*Comment, error) {
+	if e.loadedTypes[5] {
+		return e.Comments, nil
+	}
+	return nil, &NotLoadedError{edge: "comments"}
+}
+
+// LikesOrErr returns the Likes value or an error if the edge
+// was not loaded in eager-loading.
+func (e ReviewEdges) LikesOrErr() ([]*Like, error) {
+	if e.loadedTypes[6] {
+		return e.Likes, nil
+	}
+	return nil, &NotLoadedError{edge: "likes"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Review) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case review.FieldImagesVideos:
-			values[i] = new([]byte)
-		case review.FieldRating:
+		case review.FieldScore:
 			values[i] = new(sql.NullFloat64)
-		case review.FieldID, review.FieldComment:
+		case review.FieldLikeCount, review.FieldDislikeCount:
+			values[i] = new(sql.NullInt64)
+		case review.FieldID, review.FieldContent, review.FieldFlag:
 			values[i] = new(sql.NullString)
-		case review.FieldTimestamp:
+		case review.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
 		case review.ForeignKeys[0]: // place_reviews
 			values[i] = new(sql.NullString)
-		case review.ForeignKeys[1]: // user_reviews
+		case review.ForeignKeys[1]: // review_business
+			values[i] = new(sql.NullString)
+		case review.ForeignKeys[2]: // review_place
+			values[i] = new(sql.NullString)
+		case review.ForeignKeys[3]: // review_event
+			values[i] = new(sql.NullString)
+		case review.ForeignKeys[4]: // user_reviews
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -111,31 +188,41 @@ func (r *Review) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				r.ID = value.String
 			}
-		case review.FieldRating:
+		case review.FieldScore:
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
-				return fmt.Errorf("unexpected type %T for field rating", values[i])
+				return fmt.Errorf("unexpected type %T for field score", values[i])
 			} else if value.Valid {
-				r.Rating = value.Float64
+				r.Score = value.Float64
 			}
-		case review.FieldComment:
+		case review.FieldContent:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field comment", values[i])
+				return fmt.Errorf("unexpected type %T for field content", values[i])
 			} else if value.Valid {
-				r.Comment = value.String
+				r.Content = value.String
 			}
-		case review.FieldImagesVideos:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field images_videos", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &r.ImagesVideos); err != nil {
-					return fmt.Errorf("unmarshal field images_videos: %w", err)
-				}
-			}
-		case review.FieldTimestamp:
+		case review.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field timestamp", values[i])
+				return fmt.Errorf("unexpected type %T for field createdAt", values[i])
 			} else if value.Valid {
-				r.Timestamp = value.Time
+				r.CreatedAt = value.Time
+			}
+		case review.FieldLikeCount:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field likeCount", values[i])
+			} else if value.Valid {
+				r.LikeCount = int(value.Int64)
+			}
+		case review.FieldDislikeCount:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field dislikeCount", values[i])
+			} else if value.Valid {
+				r.DislikeCount = int(value.Int64)
+			}
+		case review.FieldFlag:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field flag", values[i])
+			} else if value.Valid {
+				r.Flag = value.String
 			}
 		case review.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -145,6 +232,27 @@ func (r *Review) assignValues(columns []string, values []any) error {
 				*r.place_reviews = value.String
 			}
 		case review.ForeignKeys[1]:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field review_business", values[i])
+			} else if value.Valid {
+				r.review_business = new(string)
+				*r.review_business = value.String
+			}
+		case review.ForeignKeys[2]:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field review_place", values[i])
+			} else if value.Valid {
+				r.review_place = new(string)
+				*r.review_place = value.String
+			}
+		case review.ForeignKeys[3]:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field review_event", values[i])
+			} else if value.Valid {
+				r.review_event = new(string)
+				*r.review_event = value.String
+			}
+		case review.ForeignKeys[4]:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field user_reviews", values[i])
 			} else if value.Valid {
@@ -169,9 +277,34 @@ func (r *Review) QueryUser() *UserQuery {
 	return NewReviewClient(r.config).QueryUser(r)
 }
 
+// QueryBusiness queries the "business" edge of the Review entity.
+func (r *Review) QueryBusiness() *BusinessQuery {
+	return NewReviewClient(r.config).QueryBusiness(r)
+}
+
 // QueryPlace queries the "place" edge of the Review entity.
 func (r *Review) QueryPlace() *PlaceQuery {
 	return NewReviewClient(r.config).QueryPlace(r)
+}
+
+// QueryEvent queries the "event" edge of the Review entity.
+func (r *Review) QueryEvent() *EventQuery {
+	return NewReviewClient(r.config).QueryEvent(r)
+}
+
+// QueryMedias queries the "medias" edge of the Review entity.
+func (r *Review) QueryMedias() *MediaQuery {
+	return NewReviewClient(r.config).QueryMedias(r)
+}
+
+// QueryComments queries the "comments" edge of the Review entity.
+func (r *Review) QueryComments() *CommentQuery {
+	return NewReviewClient(r.config).QueryComments(r)
+}
+
+// QueryLikes queries the "likes" edge of the Review entity.
+func (r *Review) QueryLikes() *LikeQuery {
+	return NewReviewClient(r.config).QueryLikes(r)
 }
 
 // Update returns a builder for updating this Review.
@@ -197,17 +330,23 @@ func (r *Review) String() string {
 	var builder strings.Builder
 	builder.WriteString("Review(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", r.ID))
-	builder.WriteString("rating=")
-	builder.WriteString(fmt.Sprintf("%v", r.Rating))
+	builder.WriteString("score=")
+	builder.WriteString(fmt.Sprintf("%v", r.Score))
 	builder.WriteString(", ")
-	builder.WriteString("comment=")
-	builder.WriteString(r.Comment)
+	builder.WriteString("content=")
+	builder.WriteString(r.Content)
 	builder.WriteString(", ")
-	builder.WriteString("images_videos=")
-	builder.WriteString(fmt.Sprintf("%v", r.ImagesVideos))
+	builder.WriteString("createdAt=")
+	builder.WriteString(r.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	builder.WriteString("timestamp=")
-	builder.WriteString(r.Timestamp.Format(time.ANSIC))
+	builder.WriteString("likeCount=")
+	builder.WriteString(fmt.Sprintf("%v", r.LikeCount))
+	builder.WriteString(", ")
+	builder.WriteString("dislikeCount=")
+	builder.WriteString(fmt.Sprintf("%v", r.DislikeCount))
+	builder.WriteString(", ")
+	builder.WriteString("flag=")
+	builder.WriteString(r.Flag)
 	builder.WriteByte(')')
 	return builder.String()
 }

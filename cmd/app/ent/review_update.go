@@ -6,6 +6,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"placio-app/ent/business"
+	"placio-app/ent/comment"
+	"placio-app/ent/event"
+	"placio-app/ent/like"
+	"placio-app/ent/media"
 	"placio-app/ent/place"
 	"placio-app/ent/predicate"
 	"placio-app/ent/review"
@@ -14,7 +19,6 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 )
 
@@ -31,60 +35,92 @@ func (ru *ReviewUpdate) Where(ps ...predicate.Review) *ReviewUpdate {
 	return ru
 }
 
-// SetRating sets the "rating" field.
-func (ru *ReviewUpdate) SetRating(f float64) *ReviewUpdate {
-	ru.mutation.ResetRating()
-	ru.mutation.SetRating(f)
+// SetScore sets the "score" field.
+func (ru *ReviewUpdate) SetScore(f float64) *ReviewUpdate {
+	ru.mutation.ResetScore()
+	ru.mutation.SetScore(f)
 	return ru
 }
 
-// AddRating adds f to the "rating" field.
-func (ru *ReviewUpdate) AddRating(f float64) *ReviewUpdate {
-	ru.mutation.AddRating(f)
+// AddScore adds f to the "score" field.
+func (ru *ReviewUpdate) AddScore(f float64) *ReviewUpdate {
+	ru.mutation.AddScore(f)
 	return ru
 }
 
-// SetComment sets the "comment" field.
-func (ru *ReviewUpdate) SetComment(s string) *ReviewUpdate {
-	ru.mutation.SetComment(s)
+// SetContent sets the "content" field.
+func (ru *ReviewUpdate) SetContent(s string) *ReviewUpdate {
+	ru.mutation.SetContent(s)
 	return ru
 }
 
-// SetNillableComment sets the "comment" field if the given value is not nil.
-func (ru *ReviewUpdate) SetNillableComment(s *string) *ReviewUpdate {
-	if s != nil {
-		ru.SetComment(*s)
+// SetCreatedAt sets the "createdAt" field.
+func (ru *ReviewUpdate) SetCreatedAt(t time.Time) *ReviewUpdate {
+	ru.mutation.SetCreatedAt(t)
+	return ru
+}
+
+// SetNillableCreatedAt sets the "createdAt" field if the given value is not nil.
+func (ru *ReviewUpdate) SetNillableCreatedAt(t *time.Time) *ReviewUpdate {
+	if t != nil {
+		ru.SetCreatedAt(*t)
 	}
 	return ru
 }
 
-// ClearComment clears the value of the "comment" field.
-func (ru *ReviewUpdate) ClearComment() *ReviewUpdate {
-	ru.mutation.ClearComment()
+// SetLikeCount sets the "likeCount" field.
+func (ru *ReviewUpdate) SetLikeCount(i int) *ReviewUpdate {
+	ru.mutation.ResetLikeCount()
+	ru.mutation.SetLikeCount(i)
 	return ru
 }
 
-// SetImagesVideos sets the "images_videos" field.
-func (ru *ReviewUpdate) SetImagesVideos(s []string) *ReviewUpdate {
-	ru.mutation.SetImagesVideos(s)
+// SetNillableLikeCount sets the "likeCount" field if the given value is not nil.
+func (ru *ReviewUpdate) SetNillableLikeCount(i *int) *ReviewUpdate {
+	if i != nil {
+		ru.SetLikeCount(*i)
+	}
 	return ru
 }
 
-// AppendImagesVideos appends s to the "images_videos" field.
-func (ru *ReviewUpdate) AppendImagesVideos(s []string) *ReviewUpdate {
-	ru.mutation.AppendImagesVideos(s)
+// AddLikeCount adds i to the "likeCount" field.
+func (ru *ReviewUpdate) AddLikeCount(i int) *ReviewUpdate {
+	ru.mutation.AddLikeCount(i)
 	return ru
 }
 
-// ClearImagesVideos clears the value of the "images_videos" field.
-func (ru *ReviewUpdate) ClearImagesVideos() *ReviewUpdate {
-	ru.mutation.ClearImagesVideos()
+// SetDislikeCount sets the "dislikeCount" field.
+func (ru *ReviewUpdate) SetDislikeCount(i int) *ReviewUpdate {
+	ru.mutation.ResetDislikeCount()
+	ru.mutation.SetDislikeCount(i)
 	return ru
 }
 
-// SetTimestamp sets the "timestamp" field.
-func (ru *ReviewUpdate) SetTimestamp(t time.Time) *ReviewUpdate {
-	ru.mutation.SetTimestamp(t)
+// SetNillableDislikeCount sets the "dislikeCount" field if the given value is not nil.
+func (ru *ReviewUpdate) SetNillableDislikeCount(i *int) *ReviewUpdate {
+	if i != nil {
+		ru.SetDislikeCount(*i)
+	}
+	return ru
+}
+
+// AddDislikeCount adds i to the "dislikeCount" field.
+func (ru *ReviewUpdate) AddDislikeCount(i int) *ReviewUpdate {
+	ru.mutation.AddDislikeCount(i)
+	return ru
+}
+
+// SetFlag sets the "flag" field.
+func (ru *ReviewUpdate) SetFlag(s string) *ReviewUpdate {
+	ru.mutation.SetFlag(s)
+	return ru
+}
+
+// SetNillableFlag sets the "flag" field if the given value is not nil.
+func (ru *ReviewUpdate) SetNillableFlag(s *string) *ReviewUpdate {
+	if s != nil {
+		ru.SetFlag(*s)
+	}
 	return ru
 }
 
@@ -94,17 +130,28 @@ func (ru *ReviewUpdate) SetUserID(id string) *ReviewUpdate {
 	return ru
 }
 
-// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
-func (ru *ReviewUpdate) SetNillableUserID(id *string) *ReviewUpdate {
+// SetUser sets the "user" edge to the User entity.
+func (ru *ReviewUpdate) SetUser(u *User) *ReviewUpdate {
+	return ru.SetUserID(u.ID)
+}
+
+// SetBusinessID sets the "business" edge to the Business entity by ID.
+func (ru *ReviewUpdate) SetBusinessID(id string) *ReviewUpdate {
+	ru.mutation.SetBusinessID(id)
+	return ru
+}
+
+// SetNillableBusinessID sets the "business" edge to the Business entity by ID if the given value is not nil.
+func (ru *ReviewUpdate) SetNillableBusinessID(id *string) *ReviewUpdate {
 	if id != nil {
-		ru = ru.SetUserID(*id)
+		ru = ru.SetBusinessID(*id)
 	}
 	return ru
 }
 
-// SetUser sets the "user" edge to the User entity.
-func (ru *ReviewUpdate) SetUser(u *User) *ReviewUpdate {
-	return ru.SetUserID(u.ID)
+// SetBusiness sets the "business" edge to the Business entity.
+func (ru *ReviewUpdate) SetBusiness(b *Business) *ReviewUpdate {
+	return ru.SetBusinessID(b.ID)
 }
 
 // SetPlaceID sets the "place" edge to the Place entity by ID.
@@ -126,6 +173,70 @@ func (ru *ReviewUpdate) SetPlace(p *Place) *ReviewUpdate {
 	return ru.SetPlaceID(p.ID)
 }
 
+// SetEventID sets the "event" edge to the Event entity by ID.
+func (ru *ReviewUpdate) SetEventID(id string) *ReviewUpdate {
+	ru.mutation.SetEventID(id)
+	return ru
+}
+
+// SetNillableEventID sets the "event" edge to the Event entity by ID if the given value is not nil.
+func (ru *ReviewUpdate) SetNillableEventID(id *string) *ReviewUpdate {
+	if id != nil {
+		ru = ru.SetEventID(*id)
+	}
+	return ru
+}
+
+// SetEvent sets the "event" edge to the Event entity.
+func (ru *ReviewUpdate) SetEvent(e *Event) *ReviewUpdate {
+	return ru.SetEventID(e.ID)
+}
+
+// AddMediaIDs adds the "medias" edge to the Media entity by IDs.
+func (ru *ReviewUpdate) AddMediaIDs(ids ...string) *ReviewUpdate {
+	ru.mutation.AddMediaIDs(ids...)
+	return ru
+}
+
+// AddMedias adds the "medias" edges to the Media entity.
+func (ru *ReviewUpdate) AddMedias(m ...*Media) *ReviewUpdate {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return ru.AddMediaIDs(ids...)
+}
+
+// AddCommentIDs adds the "comments" edge to the Comment entity by IDs.
+func (ru *ReviewUpdate) AddCommentIDs(ids ...string) *ReviewUpdate {
+	ru.mutation.AddCommentIDs(ids...)
+	return ru
+}
+
+// AddComments adds the "comments" edges to the Comment entity.
+func (ru *ReviewUpdate) AddComments(c ...*Comment) *ReviewUpdate {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return ru.AddCommentIDs(ids...)
+}
+
+// AddLikeIDs adds the "likes" edge to the Like entity by IDs.
+func (ru *ReviewUpdate) AddLikeIDs(ids ...string) *ReviewUpdate {
+	ru.mutation.AddLikeIDs(ids...)
+	return ru
+}
+
+// AddLikes adds the "likes" edges to the Like entity.
+func (ru *ReviewUpdate) AddLikes(l ...*Like) *ReviewUpdate {
+	ids := make([]string, len(l))
+	for i := range l {
+		ids[i] = l[i].ID
+	}
+	return ru.AddLikeIDs(ids...)
+}
+
 // Mutation returns the ReviewMutation object of the builder.
 func (ru *ReviewUpdate) Mutation() *ReviewMutation {
 	return ru.mutation
@@ -137,10 +248,85 @@ func (ru *ReviewUpdate) ClearUser() *ReviewUpdate {
 	return ru
 }
 
+// ClearBusiness clears the "business" edge to the Business entity.
+func (ru *ReviewUpdate) ClearBusiness() *ReviewUpdate {
+	ru.mutation.ClearBusiness()
+	return ru
+}
+
 // ClearPlace clears the "place" edge to the Place entity.
 func (ru *ReviewUpdate) ClearPlace() *ReviewUpdate {
 	ru.mutation.ClearPlace()
 	return ru
+}
+
+// ClearEvent clears the "event" edge to the Event entity.
+func (ru *ReviewUpdate) ClearEvent() *ReviewUpdate {
+	ru.mutation.ClearEvent()
+	return ru
+}
+
+// ClearMedias clears all "medias" edges to the Media entity.
+func (ru *ReviewUpdate) ClearMedias() *ReviewUpdate {
+	ru.mutation.ClearMedias()
+	return ru
+}
+
+// RemoveMediaIDs removes the "medias" edge to Media entities by IDs.
+func (ru *ReviewUpdate) RemoveMediaIDs(ids ...string) *ReviewUpdate {
+	ru.mutation.RemoveMediaIDs(ids...)
+	return ru
+}
+
+// RemoveMedias removes "medias" edges to Media entities.
+func (ru *ReviewUpdate) RemoveMedias(m ...*Media) *ReviewUpdate {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return ru.RemoveMediaIDs(ids...)
+}
+
+// ClearComments clears all "comments" edges to the Comment entity.
+func (ru *ReviewUpdate) ClearComments() *ReviewUpdate {
+	ru.mutation.ClearComments()
+	return ru
+}
+
+// RemoveCommentIDs removes the "comments" edge to Comment entities by IDs.
+func (ru *ReviewUpdate) RemoveCommentIDs(ids ...string) *ReviewUpdate {
+	ru.mutation.RemoveCommentIDs(ids...)
+	return ru
+}
+
+// RemoveComments removes "comments" edges to Comment entities.
+func (ru *ReviewUpdate) RemoveComments(c ...*Comment) *ReviewUpdate {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return ru.RemoveCommentIDs(ids...)
+}
+
+// ClearLikes clears all "likes" edges to the Like entity.
+func (ru *ReviewUpdate) ClearLikes() *ReviewUpdate {
+	ru.mutation.ClearLikes()
+	return ru
+}
+
+// RemoveLikeIDs removes the "likes" edge to Like entities by IDs.
+func (ru *ReviewUpdate) RemoveLikeIDs(ids ...string) *ReviewUpdate {
+	ru.mutation.RemoveLikeIDs(ids...)
+	return ru
+}
+
+// RemoveLikes removes "likes" edges to Like entities.
+func (ru *ReviewUpdate) RemoveLikes(l ...*Like) *ReviewUpdate {
+	ids := make([]string, len(l))
+	for i := range l {
+		ids[i] = l[i].ID
+	}
+	return ru.RemoveLikeIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -170,7 +356,23 @@ func (ru *ReviewUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (ru *ReviewUpdate) check() error {
+	if v, ok := ru.mutation.Score(); ok {
+		if err := review.ScoreValidator(v); err != nil {
+			return &ValidationError{Name: "score", err: fmt.Errorf(`ent: validator failed for field "Review.score": %w`, err)}
+		}
+	}
+	if _, ok := ru.mutation.UserID(); ru.mutation.UserCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Review.user"`)
+	}
+	return nil
+}
+
 func (ru *ReviewUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := ru.check(); err != nil {
+		return n, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(review.Table, review.Columns, sqlgraph.NewFieldSpec(review.FieldID, field.TypeString))
 	if ps := ru.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -179,31 +381,32 @@ func (ru *ReviewUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
-	if value, ok := ru.mutation.Rating(); ok {
-		_spec.SetField(review.FieldRating, field.TypeFloat64, value)
+	if value, ok := ru.mutation.Score(); ok {
+		_spec.SetField(review.FieldScore, field.TypeFloat64, value)
 	}
-	if value, ok := ru.mutation.AddedRating(); ok {
-		_spec.AddField(review.FieldRating, field.TypeFloat64, value)
+	if value, ok := ru.mutation.AddedScore(); ok {
+		_spec.AddField(review.FieldScore, field.TypeFloat64, value)
 	}
-	if value, ok := ru.mutation.Comment(); ok {
-		_spec.SetField(review.FieldComment, field.TypeString, value)
+	if value, ok := ru.mutation.Content(); ok {
+		_spec.SetField(review.FieldContent, field.TypeString, value)
 	}
-	if ru.mutation.CommentCleared() {
-		_spec.ClearField(review.FieldComment, field.TypeString)
+	if value, ok := ru.mutation.CreatedAt(); ok {
+		_spec.SetField(review.FieldCreatedAt, field.TypeTime, value)
 	}
-	if value, ok := ru.mutation.ImagesVideos(); ok {
-		_spec.SetField(review.FieldImagesVideos, field.TypeJSON, value)
+	if value, ok := ru.mutation.LikeCount(); ok {
+		_spec.SetField(review.FieldLikeCount, field.TypeInt, value)
 	}
-	if value, ok := ru.mutation.AppendedImagesVideos(); ok {
-		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, review.FieldImagesVideos, value)
-		})
+	if value, ok := ru.mutation.AddedLikeCount(); ok {
+		_spec.AddField(review.FieldLikeCount, field.TypeInt, value)
 	}
-	if ru.mutation.ImagesVideosCleared() {
-		_spec.ClearField(review.FieldImagesVideos, field.TypeJSON)
+	if value, ok := ru.mutation.DislikeCount(); ok {
+		_spec.SetField(review.FieldDislikeCount, field.TypeInt, value)
 	}
-	if value, ok := ru.mutation.Timestamp(); ok {
-		_spec.SetField(review.FieldTimestamp, field.TypeTime, value)
+	if value, ok := ru.mutation.AddedDislikeCount(); ok {
+		_spec.AddField(review.FieldDislikeCount, field.TypeInt, value)
+	}
+	if value, ok := ru.mutation.Flag(); ok {
+		_spec.SetField(review.FieldFlag, field.TypeString, value)
 	}
 	if ru.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -234,10 +437,39 @@ func (ru *ReviewUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if ru.mutation.BusinessCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   review.BusinessTable,
+			Columns: []string{review.BusinessColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(business.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ru.mutation.BusinessIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   review.BusinessTable,
+			Columns: []string{review.BusinessColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(business.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if ru.mutation.PlaceCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   review.PlaceTable,
 			Columns: []string{review.PlaceColumn},
 			Bidi:    false,
@@ -250,12 +482,176 @@ func (ru *ReviewUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if nodes := ru.mutation.PlaceIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   review.PlaceTable,
 			Columns: []string{review.PlaceColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ru.mutation.EventCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   review.EventTable,
+			Columns: []string{review.EventColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(event.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ru.mutation.EventIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   review.EventTable,
+			Columns: []string{review.EventColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(event.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ru.mutation.MediasCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   review.MediasTable,
+			Columns: []string{review.MediasColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ru.mutation.RemovedMediasIDs(); len(nodes) > 0 && !ru.mutation.MediasCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   review.MediasTable,
+			Columns: []string{review.MediasColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ru.mutation.MediasIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   review.MediasTable,
+			Columns: []string{review.MediasColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ru.mutation.CommentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   review.CommentsTable,
+			Columns: []string{review.CommentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(comment.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ru.mutation.RemovedCommentsIDs(); len(nodes) > 0 && !ru.mutation.CommentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   review.CommentsTable,
+			Columns: []string{review.CommentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(comment.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ru.mutation.CommentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   review.CommentsTable,
+			Columns: []string{review.CommentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(comment.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ru.mutation.LikesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   review.LikesTable,
+			Columns: []string{review.LikesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(like.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ru.mutation.RemovedLikesIDs(); len(nodes) > 0 && !ru.mutation.LikesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   review.LikesTable,
+			Columns: []string{review.LikesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(like.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ru.mutation.LikesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   review.LikesTable,
+			Columns: []string{review.LikesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(like.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -283,60 +679,92 @@ type ReviewUpdateOne struct {
 	mutation *ReviewMutation
 }
 
-// SetRating sets the "rating" field.
-func (ruo *ReviewUpdateOne) SetRating(f float64) *ReviewUpdateOne {
-	ruo.mutation.ResetRating()
-	ruo.mutation.SetRating(f)
+// SetScore sets the "score" field.
+func (ruo *ReviewUpdateOne) SetScore(f float64) *ReviewUpdateOne {
+	ruo.mutation.ResetScore()
+	ruo.mutation.SetScore(f)
 	return ruo
 }
 
-// AddRating adds f to the "rating" field.
-func (ruo *ReviewUpdateOne) AddRating(f float64) *ReviewUpdateOne {
-	ruo.mutation.AddRating(f)
+// AddScore adds f to the "score" field.
+func (ruo *ReviewUpdateOne) AddScore(f float64) *ReviewUpdateOne {
+	ruo.mutation.AddScore(f)
 	return ruo
 }
 
-// SetComment sets the "comment" field.
-func (ruo *ReviewUpdateOne) SetComment(s string) *ReviewUpdateOne {
-	ruo.mutation.SetComment(s)
+// SetContent sets the "content" field.
+func (ruo *ReviewUpdateOne) SetContent(s string) *ReviewUpdateOne {
+	ruo.mutation.SetContent(s)
 	return ruo
 }
 
-// SetNillableComment sets the "comment" field if the given value is not nil.
-func (ruo *ReviewUpdateOne) SetNillableComment(s *string) *ReviewUpdateOne {
-	if s != nil {
-		ruo.SetComment(*s)
+// SetCreatedAt sets the "createdAt" field.
+func (ruo *ReviewUpdateOne) SetCreatedAt(t time.Time) *ReviewUpdateOne {
+	ruo.mutation.SetCreatedAt(t)
+	return ruo
+}
+
+// SetNillableCreatedAt sets the "createdAt" field if the given value is not nil.
+func (ruo *ReviewUpdateOne) SetNillableCreatedAt(t *time.Time) *ReviewUpdateOne {
+	if t != nil {
+		ruo.SetCreatedAt(*t)
 	}
 	return ruo
 }
 
-// ClearComment clears the value of the "comment" field.
-func (ruo *ReviewUpdateOne) ClearComment() *ReviewUpdateOne {
-	ruo.mutation.ClearComment()
+// SetLikeCount sets the "likeCount" field.
+func (ruo *ReviewUpdateOne) SetLikeCount(i int) *ReviewUpdateOne {
+	ruo.mutation.ResetLikeCount()
+	ruo.mutation.SetLikeCount(i)
 	return ruo
 }
 
-// SetImagesVideos sets the "images_videos" field.
-func (ruo *ReviewUpdateOne) SetImagesVideos(s []string) *ReviewUpdateOne {
-	ruo.mutation.SetImagesVideos(s)
+// SetNillableLikeCount sets the "likeCount" field if the given value is not nil.
+func (ruo *ReviewUpdateOne) SetNillableLikeCount(i *int) *ReviewUpdateOne {
+	if i != nil {
+		ruo.SetLikeCount(*i)
+	}
 	return ruo
 }
 
-// AppendImagesVideos appends s to the "images_videos" field.
-func (ruo *ReviewUpdateOne) AppendImagesVideos(s []string) *ReviewUpdateOne {
-	ruo.mutation.AppendImagesVideos(s)
+// AddLikeCount adds i to the "likeCount" field.
+func (ruo *ReviewUpdateOne) AddLikeCount(i int) *ReviewUpdateOne {
+	ruo.mutation.AddLikeCount(i)
 	return ruo
 }
 
-// ClearImagesVideos clears the value of the "images_videos" field.
-func (ruo *ReviewUpdateOne) ClearImagesVideos() *ReviewUpdateOne {
-	ruo.mutation.ClearImagesVideos()
+// SetDislikeCount sets the "dislikeCount" field.
+func (ruo *ReviewUpdateOne) SetDislikeCount(i int) *ReviewUpdateOne {
+	ruo.mutation.ResetDislikeCount()
+	ruo.mutation.SetDislikeCount(i)
 	return ruo
 }
 
-// SetTimestamp sets the "timestamp" field.
-func (ruo *ReviewUpdateOne) SetTimestamp(t time.Time) *ReviewUpdateOne {
-	ruo.mutation.SetTimestamp(t)
+// SetNillableDislikeCount sets the "dislikeCount" field if the given value is not nil.
+func (ruo *ReviewUpdateOne) SetNillableDislikeCount(i *int) *ReviewUpdateOne {
+	if i != nil {
+		ruo.SetDislikeCount(*i)
+	}
+	return ruo
+}
+
+// AddDislikeCount adds i to the "dislikeCount" field.
+func (ruo *ReviewUpdateOne) AddDislikeCount(i int) *ReviewUpdateOne {
+	ruo.mutation.AddDislikeCount(i)
+	return ruo
+}
+
+// SetFlag sets the "flag" field.
+func (ruo *ReviewUpdateOne) SetFlag(s string) *ReviewUpdateOne {
+	ruo.mutation.SetFlag(s)
+	return ruo
+}
+
+// SetNillableFlag sets the "flag" field if the given value is not nil.
+func (ruo *ReviewUpdateOne) SetNillableFlag(s *string) *ReviewUpdateOne {
+	if s != nil {
+		ruo.SetFlag(*s)
+	}
 	return ruo
 }
 
@@ -346,17 +774,28 @@ func (ruo *ReviewUpdateOne) SetUserID(id string) *ReviewUpdateOne {
 	return ruo
 }
 
-// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
-func (ruo *ReviewUpdateOne) SetNillableUserID(id *string) *ReviewUpdateOne {
+// SetUser sets the "user" edge to the User entity.
+func (ruo *ReviewUpdateOne) SetUser(u *User) *ReviewUpdateOne {
+	return ruo.SetUserID(u.ID)
+}
+
+// SetBusinessID sets the "business" edge to the Business entity by ID.
+func (ruo *ReviewUpdateOne) SetBusinessID(id string) *ReviewUpdateOne {
+	ruo.mutation.SetBusinessID(id)
+	return ruo
+}
+
+// SetNillableBusinessID sets the "business" edge to the Business entity by ID if the given value is not nil.
+func (ruo *ReviewUpdateOne) SetNillableBusinessID(id *string) *ReviewUpdateOne {
 	if id != nil {
-		ruo = ruo.SetUserID(*id)
+		ruo = ruo.SetBusinessID(*id)
 	}
 	return ruo
 }
 
-// SetUser sets the "user" edge to the User entity.
-func (ruo *ReviewUpdateOne) SetUser(u *User) *ReviewUpdateOne {
-	return ruo.SetUserID(u.ID)
+// SetBusiness sets the "business" edge to the Business entity.
+func (ruo *ReviewUpdateOne) SetBusiness(b *Business) *ReviewUpdateOne {
+	return ruo.SetBusinessID(b.ID)
 }
 
 // SetPlaceID sets the "place" edge to the Place entity by ID.
@@ -378,6 +817,70 @@ func (ruo *ReviewUpdateOne) SetPlace(p *Place) *ReviewUpdateOne {
 	return ruo.SetPlaceID(p.ID)
 }
 
+// SetEventID sets the "event" edge to the Event entity by ID.
+func (ruo *ReviewUpdateOne) SetEventID(id string) *ReviewUpdateOne {
+	ruo.mutation.SetEventID(id)
+	return ruo
+}
+
+// SetNillableEventID sets the "event" edge to the Event entity by ID if the given value is not nil.
+func (ruo *ReviewUpdateOne) SetNillableEventID(id *string) *ReviewUpdateOne {
+	if id != nil {
+		ruo = ruo.SetEventID(*id)
+	}
+	return ruo
+}
+
+// SetEvent sets the "event" edge to the Event entity.
+func (ruo *ReviewUpdateOne) SetEvent(e *Event) *ReviewUpdateOne {
+	return ruo.SetEventID(e.ID)
+}
+
+// AddMediaIDs adds the "medias" edge to the Media entity by IDs.
+func (ruo *ReviewUpdateOne) AddMediaIDs(ids ...string) *ReviewUpdateOne {
+	ruo.mutation.AddMediaIDs(ids...)
+	return ruo
+}
+
+// AddMedias adds the "medias" edges to the Media entity.
+func (ruo *ReviewUpdateOne) AddMedias(m ...*Media) *ReviewUpdateOne {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return ruo.AddMediaIDs(ids...)
+}
+
+// AddCommentIDs adds the "comments" edge to the Comment entity by IDs.
+func (ruo *ReviewUpdateOne) AddCommentIDs(ids ...string) *ReviewUpdateOne {
+	ruo.mutation.AddCommentIDs(ids...)
+	return ruo
+}
+
+// AddComments adds the "comments" edges to the Comment entity.
+func (ruo *ReviewUpdateOne) AddComments(c ...*Comment) *ReviewUpdateOne {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return ruo.AddCommentIDs(ids...)
+}
+
+// AddLikeIDs adds the "likes" edge to the Like entity by IDs.
+func (ruo *ReviewUpdateOne) AddLikeIDs(ids ...string) *ReviewUpdateOne {
+	ruo.mutation.AddLikeIDs(ids...)
+	return ruo
+}
+
+// AddLikes adds the "likes" edges to the Like entity.
+func (ruo *ReviewUpdateOne) AddLikes(l ...*Like) *ReviewUpdateOne {
+	ids := make([]string, len(l))
+	for i := range l {
+		ids[i] = l[i].ID
+	}
+	return ruo.AddLikeIDs(ids...)
+}
+
 // Mutation returns the ReviewMutation object of the builder.
 func (ruo *ReviewUpdateOne) Mutation() *ReviewMutation {
 	return ruo.mutation
@@ -389,10 +892,85 @@ func (ruo *ReviewUpdateOne) ClearUser() *ReviewUpdateOne {
 	return ruo
 }
 
+// ClearBusiness clears the "business" edge to the Business entity.
+func (ruo *ReviewUpdateOne) ClearBusiness() *ReviewUpdateOne {
+	ruo.mutation.ClearBusiness()
+	return ruo
+}
+
 // ClearPlace clears the "place" edge to the Place entity.
 func (ruo *ReviewUpdateOne) ClearPlace() *ReviewUpdateOne {
 	ruo.mutation.ClearPlace()
 	return ruo
+}
+
+// ClearEvent clears the "event" edge to the Event entity.
+func (ruo *ReviewUpdateOne) ClearEvent() *ReviewUpdateOne {
+	ruo.mutation.ClearEvent()
+	return ruo
+}
+
+// ClearMedias clears all "medias" edges to the Media entity.
+func (ruo *ReviewUpdateOne) ClearMedias() *ReviewUpdateOne {
+	ruo.mutation.ClearMedias()
+	return ruo
+}
+
+// RemoveMediaIDs removes the "medias" edge to Media entities by IDs.
+func (ruo *ReviewUpdateOne) RemoveMediaIDs(ids ...string) *ReviewUpdateOne {
+	ruo.mutation.RemoveMediaIDs(ids...)
+	return ruo
+}
+
+// RemoveMedias removes "medias" edges to Media entities.
+func (ruo *ReviewUpdateOne) RemoveMedias(m ...*Media) *ReviewUpdateOne {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return ruo.RemoveMediaIDs(ids...)
+}
+
+// ClearComments clears all "comments" edges to the Comment entity.
+func (ruo *ReviewUpdateOne) ClearComments() *ReviewUpdateOne {
+	ruo.mutation.ClearComments()
+	return ruo
+}
+
+// RemoveCommentIDs removes the "comments" edge to Comment entities by IDs.
+func (ruo *ReviewUpdateOne) RemoveCommentIDs(ids ...string) *ReviewUpdateOne {
+	ruo.mutation.RemoveCommentIDs(ids...)
+	return ruo
+}
+
+// RemoveComments removes "comments" edges to Comment entities.
+func (ruo *ReviewUpdateOne) RemoveComments(c ...*Comment) *ReviewUpdateOne {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return ruo.RemoveCommentIDs(ids...)
+}
+
+// ClearLikes clears all "likes" edges to the Like entity.
+func (ruo *ReviewUpdateOne) ClearLikes() *ReviewUpdateOne {
+	ruo.mutation.ClearLikes()
+	return ruo
+}
+
+// RemoveLikeIDs removes the "likes" edge to Like entities by IDs.
+func (ruo *ReviewUpdateOne) RemoveLikeIDs(ids ...string) *ReviewUpdateOne {
+	ruo.mutation.RemoveLikeIDs(ids...)
+	return ruo
+}
+
+// RemoveLikes removes "likes" edges to Like entities.
+func (ruo *ReviewUpdateOne) RemoveLikes(l ...*Like) *ReviewUpdateOne {
+	ids := make([]string, len(l))
+	for i := range l {
+		ids[i] = l[i].ID
+	}
+	return ruo.RemoveLikeIDs(ids...)
 }
 
 // Where appends a list predicates to the ReviewUpdate builder.
@@ -435,7 +1013,23 @@ func (ruo *ReviewUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (ruo *ReviewUpdateOne) check() error {
+	if v, ok := ruo.mutation.Score(); ok {
+		if err := review.ScoreValidator(v); err != nil {
+			return &ValidationError{Name: "score", err: fmt.Errorf(`ent: validator failed for field "Review.score": %w`, err)}
+		}
+	}
+	if _, ok := ruo.mutation.UserID(); ruo.mutation.UserCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Review.user"`)
+	}
+	return nil
+}
+
 func (ruo *ReviewUpdateOne) sqlSave(ctx context.Context) (_node *Review, err error) {
+	if err := ruo.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(review.Table, review.Columns, sqlgraph.NewFieldSpec(review.FieldID, field.TypeString))
 	id, ok := ruo.mutation.ID()
 	if !ok {
@@ -461,31 +1055,32 @@ func (ruo *ReviewUpdateOne) sqlSave(ctx context.Context) (_node *Review, err err
 			}
 		}
 	}
-	if value, ok := ruo.mutation.Rating(); ok {
-		_spec.SetField(review.FieldRating, field.TypeFloat64, value)
+	if value, ok := ruo.mutation.Score(); ok {
+		_spec.SetField(review.FieldScore, field.TypeFloat64, value)
 	}
-	if value, ok := ruo.mutation.AddedRating(); ok {
-		_spec.AddField(review.FieldRating, field.TypeFloat64, value)
+	if value, ok := ruo.mutation.AddedScore(); ok {
+		_spec.AddField(review.FieldScore, field.TypeFloat64, value)
 	}
-	if value, ok := ruo.mutation.Comment(); ok {
-		_spec.SetField(review.FieldComment, field.TypeString, value)
+	if value, ok := ruo.mutation.Content(); ok {
+		_spec.SetField(review.FieldContent, field.TypeString, value)
 	}
-	if ruo.mutation.CommentCleared() {
-		_spec.ClearField(review.FieldComment, field.TypeString)
+	if value, ok := ruo.mutation.CreatedAt(); ok {
+		_spec.SetField(review.FieldCreatedAt, field.TypeTime, value)
 	}
-	if value, ok := ruo.mutation.ImagesVideos(); ok {
-		_spec.SetField(review.FieldImagesVideos, field.TypeJSON, value)
+	if value, ok := ruo.mutation.LikeCount(); ok {
+		_spec.SetField(review.FieldLikeCount, field.TypeInt, value)
 	}
-	if value, ok := ruo.mutation.AppendedImagesVideos(); ok {
-		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, review.FieldImagesVideos, value)
-		})
+	if value, ok := ruo.mutation.AddedLikeCount(); ok {
+		_spec.AddField(review.FieldLikeCount, field.TypeInt, value)
 	}
-	if ruo.mutation.ImagesVideosCleared() {
-		_spec.ClearField(review.FieldImagesVideos, field.TypeJSON)
+	if value, ok := ruo.mutation.DislikeCount(); ok {
+		_spec.SetField(review.FieldDislikeCount, field.TypeInt, value)
 	}
-	if value, ok := ruo.mutation.Timestamp(); ok {
-		_spec.SetField(review.FieldTimestamp, field.TypeTime, value)
+	if value, ok := ruo.mutation.AddedDislikeCount(); ok {
+		_spec.AddField(review.FieldDislikeCount, field.TypeInt, value)
+	}
+	if value, ok := ruo.mutation.Flag(); ok {
+		_spec.SetField(review.FieldFlag, field.TypeString, value)
 	}
 	if ruo.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -516,10 +1111,39 @@ func (ruo *ReviewUpdateOne) sqlSave(ctx context.Context) (_node *Review, err err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if ruo.mutation.BusinessCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   review.BusinessTable,
+			Columns: []string{review.BusinessColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(business.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ruo.mutation.BusinessIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   review.BusinessTable,
+			Columns: []string{review.BusinessColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(business.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if ruo.mutation.PlaceCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   review.PlaceTable,
 			Columns: []string{review.PlaceColumn},
 			Bidi:    false,
@@ -532,12 +1156,176 @@ func (ruo *ReviewUpdateOne) sqlSave(ctx context.Context) (_node *Review, err err
 	if nodes := ruo.mutation.PlaceIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   review.PlaceTable,
 			Columns: []string{review.PlaceColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ruo.mutation.EventCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   review.EventTable,
+			Columns: []string{review.EventColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(event.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ruo.mutation.EventIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   review.EventTable,
+			Columns: []string{review.EventColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(event.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ruo.mutation.MediasCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   review.MediasTable,
+			Columns: []string{review.MediasColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ruo.mutation.RemovedMediasIDs(); len(nodes) > 0 && !ruo.mutation.MediasCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   review.MediasTable,
+			Columns: []string{review.MediasColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ruo.mutation.MediasIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   review.MediasTable,
+			Columns: []string{review.MediasColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ruo.mutation.CommentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   review.CommentsTable,
+			Columns: []string{review.CommentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(comment.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ruo.mutation.RemovedCommentsIDs(); len(nodes) > 0 && !ruo.mutation.CommentsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   review.CommentsTable,
+			Columns: []string{review.CommentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(comment.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ruo.mutation.CommentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   review.CommentsTable,
+			Columns: []string{review.CommentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(comment.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ruo.mutation.LikesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   review.LikesTable,
+			Columns: []string{review.LikesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(like.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ruo.mutation.RemovedLikesIDs(); len(nodes) > 0 && !ruo.mutation.LikesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   review.LikesTable,
+			Columns: []string{review.LikesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(like.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ruo.mutation.LikesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   review.LikesTable,
+			Columns: []string{review.LikesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(like.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

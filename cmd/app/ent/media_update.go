@@ -10,6 +10,7 @@ import (
 	"placio-app/ent/media"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
+	"placio-app/ent/review"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -48,6 +49,48 @@ func (mu *MediaUpdate) SetUpdatedAt(t time.Time) *MediaUpdate {
 	return mu
 }
 
+// SetLikeCount sets the "likeCount" field.
+func (mu *MediaUpdate) SetLikeCount(i int) *MediaUpdate {
+	mu.mutation.ResetLikeCount()
+	mu.mutation.SetLikeCount(i)
+	return mu
+}
+
+// SetNillableLikeCount sets the "likeCount" field if the given value is not nil.
+func (mu *MediaUpdate) SetNillableLikeCount(i *int) *MediaUpdate {
+	if i != nil {
+		mu.SetLikeCount(*i)
+	}
+	return mu
+}
+
+// AddLikeCount adds i to the "likeCount" field.
+func (mu *MediaUpdate) AddLikeCount(i int) *MediaUpdate {
+	mu.mutation.AddLikeCount(i)
+	return mu
+}
+
+// SetDislikeCount sets the "dislikeCount" field.
+func (mu *MediaUpdate) SetDislikeCount(i int) *MediaUpdate {
+	mu.mutation.ResetDislikeCount()
+	mu.mutation.SetDislikeCount(i)
+	return mu
+}
+
+// SetNillableDislikeCount sets the "dislikeCount" field if the given value is not nil.
+func (mu *MediaUpdate) SetNillableDislikeCount(i *int) *MediaUpdate {
+	if i != nil {
+		mu.SetDislikeCount(*i)
+	}
+	return mu
+}
+
+// AddDislikeCount adds i to the "dislikeCount" field.
+func (mu *MediaUpdate) AddDislikeCount(i int) *MediaUpdate {
+	mu.mutation.AddDislikeCount(i)
+	return mu
+}
+
 // SetPostID sets the "post" edge to the Post entity by ID.
 func (mu *MediaUpdate) SetPostID(id string) *MediaUpdate {
 	mu.mutation.SetPostID(id)
@@ -65,6 +108,25 @@ func (mu *MediaUpdate) SetNillablePostID(id *string) *MediaUpdate {
 // SetPost sets the "post" edge to the Post entity.
 func (mu *MediaUpdate) SetPost(p *Post) *MediaUpdate {
 	return mu.SetPostID(p.ID)
+}
+
+// SetReviewID sets the "review" edge to the Review entity by ID.
+func (mu *MediaUpdate) SetReviewID(id string) *MediaUpdate {
+	mu.mutation.SetReviewID(id)
+	return mu
+}
+
+// SetNillableReviewID sets the "review" edge to the Review entity by ID if the given value is not nil.
+func (mu *MediaUpdate) SetNillableReviewID(id *string) *MediaUpdate {
+	if id != nil {
+		mu = mu.SetReviewID(*id)
+	}
+	return mu
+}
+
+// SetReview sets the "review" edge to the Review entity.
+func (mu *MediaUpdate) SetReview(r *Review) *MediaUpdate {
+	return mu.SetReviewID(r.ID)
 }
 
 // AddCategoryIDs adds the "categories" edge to the Category entity by IDs.
@@ -90,6 +152,12 @@ func (mu *MediaUpdate) Mutation() *MediaMutation {
 // ClearPost clears the "post" edge to the Post entity.
 func (mu *MediaUpdate) ClearPost() *MediaUpdate {
 	mu.mutation.ClearPost()
+	return mu
+}
+
+// ClearReview clears the "review" edge to the Review entity.
+func (mu *MediaUpdate) ClearReview() *MediaUpdate {
+	mu.mutation.ClearReview()
 	return mu
 }
 
@@ -168,6 +236,18 @@ func (mu *MediaUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := mu.mutation.UpdatedAt(); ok {
 		_spec.SetField(media.FieldUpdatedAt, field.TypeTime, value)
 	}
+	if value, ok := mu.mutation.LikeCount(); ok {
+		_spec.SetField(media.FieldLikeCount, field.TypeInt, value)
+	}
+	if value, ok := mu.mutation.AddedLikeCount(); ok {
+		_spec.AddField(media.FieldLikeCount, field.TypeInt, value)
+	}
+	if value, ok := mu.mutation.DislikeCount(); ok {
+		_spec.SetField(media.FieldDislikeCount, field.TypeInt, value)
+	}
+	if value, ok := mu.mutation.AddedDislikeCount(); ok {
+		_spec.AddField(media.FieldDislikeCount, field.TypeInt, value)
+	}
 	if mu.mutation.PostCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -190,6 +270,35 @@ func (mu *MediaUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if mu.mutation.ReviewCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   media.ReviewTable,
+			Columns: []string{media.ReviewColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(review.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.ReviewIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   media.ReviewTable,
+			Columns: []string{media.ReviewColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(review.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -280,6 +389,48 @@ func (muo *MediaUpdateOne) SetUpdatedAt(t time.Time) *MediaUpdateOne {
 	return muo
 }
 
+// SetLikeCount sets the "likeCount" field.
+func (muo *MediaUpdateOne) SetLikeCount(i int) *MediaUpdateOne {
+	muo.mutation.ResetLikeCount()
+	muo.mutation.SetLikeCount(i)
+	return muo
+}
+
+// SetNillableLikeCount sets the "likeCount" field if the given value is not nil.
+func (muo *MediaUpdateOne) SetNillableLikeCount(i *int) *MediaUpdateOne {
+	if i != nil {
+		muo.SetLikeCount(*i)
+	}
+	return muo
+}
+
+// AddLikeCount adds i to the "likeCount" field.
+func (muo *MediaUpdateOne) AddLikeCount(i int) *MediaUpdateOne {
+	muo.mutation.AddLikeCount(i)
+	return muo
+}
+
+// SetDislikeCount sets the "dislikeCount" field.
+func (muo *MediaUpdateOne) SetDislikeCount(i int) *MediaUpdateOne {
+	muo.mutation.ResetDislikeCount()
+	muo.mutation.SetDislikeCount(i)
+	return muo
+}
+
+// SetNillableDislikeCount sets the "dislikeCount" field if the given value is not nil.
+func (muo *MediaUpdateOne) SetNillableDislikeCount(i *int) *MediaUpdateOne {
+	if i != nil {
+		muo.SetDislikeCount(*i)
+	}
+	return muo
+}
+
+// AddDislikeCount adds i to the "dislikeCount" field.
+func (muo *MediaUpdateOne) AddDislikeCount(i int) *MediaUpdateOne {
+	muo.mutation.AddDislikeCount(i)
+	return muo
+}
+
 // SetPostID sets the "post" edge to the Post entity by ID.
 func (muo *MediaUpdateOne) SetPostID(id string) *MediaUpdateOne {
 	muo.mutation.SetPostID(id)
@@ -297,6 +448,25 @@ func (muo *MediaUpdateOne) SetNillablePostID(id *string) *MediaUpdateOne {
 // SetPost sets the "post" edge to the Post entity.
 func (muo *MediaUpdateOne) SetPost(p *Post) *MediaUpdateOne {
 	return muo.SetPostID(p.ID)
+}
+
+// SetReviewID sets the "review" edge to the Review entity by ID.
+func (muo *MediaUpdateOne) SetReviewID(id string) *MediaUpdateOne {
+	muo.mutation.SetReviewID(id)
+	return muo
+}
+
+// SetNillableReviewID sets the "review" edge to the Review entity by ID if the given value is not nil.
+func (muo *MediaUpdateOne) SetNillableReviewID(id *string) *MediaUpdateOne {
+	if id != nil {
+		muo = muo.SetReviewID(*id)
+	}
+	return muo
+}
+
+// SetReview sets the "review" edge to the Review entity.
+func (muo *MediaUpdateOne) SetReview(r *Review) *MediaUpdateOne {
+	return muo.SetReviewID(r.ID)
 }
 
 // AddCategoryIDs adds the "categories" edge to the Category entity by IDs.
@@ -322,6 +492,12 @@ func (muo *MediaUpdateOne) Mutation() *MediaMutation {
 // ClearPost clears the "post" edge to the Post entity.
 func (muo *MediaUpdateOne) ClearPost() *MediaUpdateOne {
 	muo.mutation.ClearPost()
+	return muo
+}
+
+// ClearReview clears the "review" edge to the Review entity.
+func (muo *MediaUpdateOne) ClearReview() *MediaUpdateOne {
+	muo.mutation.ClearReview()
 	return muo
 }
 
@@ -430,6 +606,18 @@ func (muo *MediaUpdateOne) sqlSave(ctx context.Context) (_node *Media, err error
 	if value, ok := muo.mutation.UpdatedAt(); ok {
 		_spec.SetField(media.FieldUpdatedAt, field.TypeTime, value)
 	}
+	if value, ok := muo.mutation.LikeCount(); ok {
+		_spec.SetField(media.FieldLikeCount, field.TypeInt, value)
+	}
+	if value, ok := muo.mutation.AddedLikeCount(); ok {
+		_spec.AddField(media.FieldLikeCount, field.TypeInt, value)
+	}
+	if value, ok := muo.mutation.DislikeCount(); ok {
+		_spec.SetField(media.FieldDislikeCount, field.TypeInt, value)
+	}
+	if value, ok := muo.mutation.AddedDislikeCount(); ok {
+		_spec.AddField(media.FieldDislikeCount, field.TypeInt, value)
+	}
 	if muo.mutation.PostCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -452,6 +640,35 @@ func (muo *MediaUpdateOne) sqlSave(ctx context.Context) (_node *Media, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if muo.mutation.ReviewCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   media.ReviewTable,
+			Columns: []string{media.ReviewColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(review.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.ReviewIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   media.ReviewTable,
+			Columns: []string{media.ReviewColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(review.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

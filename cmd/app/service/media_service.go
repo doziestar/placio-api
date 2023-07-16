@@ -6,13 +6,14 @@ import (
 	"fmt"
 	"github.com/cloudinary/cloudinary-go/v2"
 	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
+	"github.com/google/uuid"
 	"placio-app/ent"
 )
 
 type MediaService interface {
-	CreateMedia(ctx context.Context, media *ent.Media) (*ent.Media, error)
+	CreateMedia(ctx context.Context, url, mediaType string) (*ent.Media, error)
 	GetMedia(ctx context.Context, mediaID string) (*ent.Media, error)
-	UploadFiles(ctx context.Context, files []string, uploadParams uploader.UploadParams) ([]MediaInfo, error)
+	UploadFiles(ctx context.Context, files []string) ([]MediaInfo, error)
 	//UpdateMedia(media *models.Media) (*models.Media, error)
 	//DeleteMedia(mediaID string) error
 	//ListMedia(postID string) ([]*models.Media, error)
@@ -33,13 +34,13 @@ func NewMediaService(client *ent.Client) MediaService {
 	return &MediaServiceImpl{client: client}
 }
 
-func (s *MediaServiceImpl) UploadFiles(ctx context.Context, files []string, uploadParams uploader.UploadParams) ([]MediaInfo, error) {
+func (s *MediaServiceImpl) UploadFiles(ctx context.Context, files []string) ([]MediaInfo, error) {
 	ch := make(chan MediaInfo)
 	errCh := make(chan error)
 
 	for _, file := range files {
 		go func(file string) {
-			uploadResp, err := s.cloud.Upload.Upload(ctx, file, uploadParams)
+			uploadResp, err := s.cloud.Upload.Upload(ctx, file, uploader.UploadParams{})
 			if err != nil {
 				errCh <- err
 				return
@@ -65,17 +66,17 @@ func (s *MediaServiceImpl) UploadFiles(ctx context.Context, files []string, uplo
 	return mediaInfos, nil
 }
 
-func (s *MediaServiceImpl) CreateMedia(ctx context.Context, media *ent.Media) (*ent.Media, error) {
-	if media == nil {
-		return nil, errors.New("media cannot be nil")
+func (s *MediaServiceImpl) CreateMedia(ctx context.Context, url, mediaType string) (*ent.Media, error) {
+	if url == "" || mediaType == "" {
+		return nil, errors.New("url and media type cannot be empty")
 	}
 
 	// Create builder
 	mediaBuilder := s.client.Media.
 		Create().
-		SetID(media.ID).
-		SetURL(media.URL).
-		SetMediaType(media.MediaType)
+		SetID(uuid.New().String()).
+		SetURL(url).
+		SetMediaType(mediaType)
 
 	// Save media
 	createdMedia, err := mediaBuilder.Save(ctx)

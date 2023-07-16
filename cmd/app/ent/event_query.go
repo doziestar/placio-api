@@ -15,6 +15,7 @@ import (
 	"placio-app/ent/faq"
 	"placio-app/ent/place"
 	"placio-app/ent/predicate"
+	"placio-app/ent/rating"
 	"placio-app/ent/ticket"
 	"placio-app/ent/ticketoption"
 	"placio-app/ent/user"
@@ -42,6 +43,7 @@ type EventQuery struct {
 	withUserFollowers            *UserFollowEventQuery
 	withBusinessFollowers        *BusinessFollowEventQuery
 	withFaqs                     *FAQQuery
+	withRatings                  *RatingQuery
 	withFKs                      bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -299,6 +301,28 @@ func (eq *EventQuery) QueryFaqs() *FAQQuery {
 	return query
 }
 
+// QueryRatings chains the current query on the "ratings" edge.
+func (eq *EventQuery) QueryRatings() *RatingQuery {
+	query := (&RatingClient{config: eq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := eq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := eq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(event.Table, event.FieldID, selector),
+			sqlgraph.To(rating.Table, rating.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, event.RatingsTable, event.RatingsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(eq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Event entity from the query.
 // Returns a *NotFoundError when no Event was found.
 func (eq *EventQuery) First(ctx context.Context) (*Event, error) {
@@ -501,6 +525,7 @@ func (eq *EventQuery) Clone() *EventQuery {
 		withUserFollowers:            eq.withUserFollowers.Clone(),
 		withBusinessFollowers:        eq.withBusinessFollowers.Clone(),
 		withFaqs:                     eq.withFaqs.Clone(),
+		withRatings:                  eq.withRatings.Clone(),
 		// clone intermediate query.
 		sql:  eq.sql.Clone(),
 		path: eq.path,
@@ -617,6 +642,17 @@ func (eq *EventQuery) WithFaqs(opts ...func(*FAQQuery)) *EventQuery {
 	return eq
 }
 
+// WithRatings tells the query-builder to eager-load the nodes that are connected to
+// the "ratings" edge. The optional arguments are used to configure the query builder of the edge.
+func (eq *EventQuery) WithRatings(opts ...func(*RatingQuery)) *EventQuery {
+	query := (&RatingClient{config: eq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	eq.withRatings = query
+	return eq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -696,7 +732,7 @@ func (eq *EventQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Event,
 		nodes       = []*Event{}
 		withFKs     = eq.withFKs
 		_spec       = eq.querySpec()
-		loadedTypes = [10]bool{
+		loadedTypes = [11]bool{
 			eq.withTickets != nil,
 			eq.withTicketOptions != nil,
 			eq.withPlace != nil,
@@ -707,6 +743,7 @@ func (eq *EventQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Event,
 			eq.withUserFollowers != nil,
 			eq.withBusinessFollowers != nil,
 			eq.withFaqs != nil,
+			eq.withRatings != nil,
 		}
 	)
 	if eq.withOwnerUser != nil || eq.withOwnerBusiness != nil {
@@ -802,6 +839,13 @@ func (eq *EventQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Event,
 		if err := eq.loadFaqs(ctx, query, nodes,
 			func(n *Event) { n.Edges.Faqs = []*FAQ{} },
 			func(n *Event, e *FAQ) { n.Edges.Faqs = append(n.Edges.Faqs, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := eq.withRatings; query != nil {
+		if err := eq.loadRatings(ctx, query, nodes,
+			func(n *Event) { n.Edges.Ratings = []*Rating{} },
+			func(n *Event, e *Rating) { n.Edges.Ratings = append(n.Edges.Ratings, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -1147,6 +1191,37 @@ func (eq *EventQuery) loadFaqs(ctx context.Context, query *FAQQuery, nodes []*Ev
 		for kn := range nodes {
 			assign(kn, n)
 		}
+	}
+	return nil
+}
+func (eq *EventQuery) loadRatings(ctx context.Context, query *RatingQuery, nodes []*Event, init func(*Event), assign func(*Event, *Rating)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Event)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Rating(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(event.RatingsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.event_ratings
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "event_ratings" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "event_ratings" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
 	}
 	return nil
 }

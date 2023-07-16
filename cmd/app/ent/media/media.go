@@ -22,8 +22,14 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updatedat field in the database.
 	FieldUpdatedAt = "updated_at"
+	// FieldLikeCount holds the string denoting the likecount field in the database.
+	FieldLikeCount = "like_count"
+	// FieldDislikeCount holds the string denoting the dislikecount field in the database.
+	FieldDislikeCount = "dislike_count"
 	// EdgePost holds the string denoting the post edge name in mutations.
 	EdgePost = "post"
+	// EdgeReview holds the string denoting the review edge name in mutations.
+	EdgeReview = "review"
 	// EdgeCategories holds the string denoting the categories edge name in mutations.
 	EdgeCategories = "categories"
 	// Table holds the table name of the media in the database.
@@ -35,6 +41,13 @@ const (
 	PostInverseTable = "posts"
 	// PostColumn is the table column denoting the post relation/edge.
 	PostColumn = "post_medias"
+	// ReviewTable is the table that holds the review relation/edge.
+	ReviewTable = "media"
+	// ReviewInverseTable is the table name for the Review entity.
+	// It exists in this package in order to avoid circular dependency with the "review" package.
+	ReviewInverseTable = "reviews"
+	// ReviewColumn is the table column denoting the review relation/edge.
+	ReviewColumn = "review_medias"
 	// CategoriesTable is the table that holds the categories relation/edge.
 	CategoriesTable = "categories"
 	// CategoriesInverseTable is the table name for the Category entity.
@@ -51,12 +64,15 @@ var Columns = []string{
 	FieldMediaType,
 	FieldCreatedAt,
 	FieldUpdatedAt,
+	FieldLikeCount,
+	FieldDislikeCount,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "media"
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
 	"post_medias",
+	"review_medias",
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -81,6 +97,10 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "UpdatedAt" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultLikeCount holds the default value on creation for the "likeCount" field.
+	DefaultLikeCount int
+	// DefaultDislikeCount holds the default value on creation for the "dislikeCount" field.
+	DefaultDislikeCount int
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(string) error
 )
@@ -113,10 +133,27 @@ func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
 }
 
+// ByLikeCount orders the results by the likeCount field.
+func ByLikeCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLikeCount, opts...).ToFunc()
+}
+
+// ByDislikeCount orders the results by the dislikeCount field.
+func ByDislikeCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDislikeCount, opts...).ToFunc()
+}
+
 // ByPostField orders the results by post field.
 func ByPostField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newPostStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByReviewField orders the results by review field.
+func ByReviewField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newReviewStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -138,6 +175,13 @@ func newPostStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(PostInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, true, PostTable, PostColumn),
+	)
+}
+func newReviewStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ReviewInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, ReviewTable, ReviewColumn),
 	)
 }
 func newCategoriesStep() *sqlgraph.Step {

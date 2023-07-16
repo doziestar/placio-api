@@ -3,6 +3,8 @@
 package review
 
 import (
+	"time"
+
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 )
@@ -12,18 +14,32 @@ const (
 	Label = "review"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldRating holds the string denoting the rating field in the database.
-	FieldRating = "rating"
-	// FieldComment holds the string denoting the comment field in the database.
-	FieldComment = "comment"
-	// FieldImagesVideos holds the string denoting the images_videos field in the database.
-	FieldImagesVideos = "images_videos"
-	// FieldTimestamp holds the string denoting the timestamp field in the database.
-	FieldTimestamp = "timestamp"
+	// FieldScore holds the string denoting the score field in the database.
+	FieldScore = "score"
+	// FieldContent holds the string denoting the content field in the database.
+	FieldContent = "content"
+	// FieldCreatedAt holds the string denoting the createdat field in the database.
+	FieldCreatedAt = "created_at"
+	// FieldLikeCount holds the string denoting the likecount field in the database.
+	FieldLikeCount = "like_count"
+	// FieldDislikeCount holds the string denoting the dislikecount field in the database.
+	FieldDislikeCount = "dislike_count"
+	// FieldFlag holds the string denoting the flag field in the database.
+	FieldFlag = "flag"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
+	// EdgeBusiness holds the string denoting the business edge name in mutations.
+	EdgeBusiness = "business"
 	// EdgePlace holds the string denoting the place edge name in mutations.
 	EdgePlace = "place"
+	// EdgeEvent holds the string denoting the event edge name in mutations.
+	EdgeEvent = "event"
+	// EdgeMedias holds the string denoting the medias edge name in mutations.
+	EdgeMedias = "medias"
+	// EdgeComments holds the string denoting the comments edge name in mutations.
+	EdgeComments = "comments"
+	// EdgeLikes holds the string denoting the likes edge name in mutations.
+	EdgeLikes = "likes"
 	// Table holds the table name of the review in the database.
 	Table = "reviews"
 	// UserTable is the table that holds the user relation/edge.
@@ -33,28 +49,68 @@ const (
 	UserInverseTable = "users"
 	// UserColumn is the table column denoting the user relation/edge.
 	UserColumn = "user_reviews"
+	// BusinessTable is the table that holds the business relation/edge.
+	BusinessTable = "reviews"
+	// BusinessInverseTable is the table name for the Business entity.
+	// It exists in this package in order to avoid circular dependency with the "business" package.
+	BusinessInverseTable = "businesses"
+	// BusinessColumn is the table column denoting the business relation/edge.
+	BusinessColumn = "review_business"
 	// PlaceTable is the table that holds the place relation/edge.
 	PlaceTable = "reviews"
 	// PlaceInverseTable is the table name for the Place entity.
 	// It exists in this package in order to avoid circular dependency with the "place" package.
 	PlaceInverseTable = "places"
 	// PlaceColumn is the table column denoting the place relation/edge.
-	PlaceColumn = "place_reviews"
+	PlaceColumn = "review_place"
+	// EventTable is the table that holds the event relation/edge.
+	EventTable = "reviews"
+	// EventInverseTable is the table name for the Event entity.
+	// It exists in this package in order to avoid circular dependency with the "event" package.
+	EventInverseTable = "events"
+	// EventColumn is the table column denoting the event relation/edge.
+	EventColumn = "review_event"
+	// MediasTable is the table that holds the medias relation/edge.
+	MediasTable = "media"
+	// MediasInverseTable is the table name for the Media entity.
+	// It exists in this package in order to avoid circular dependency with the "media" package.
+	MediasInverseTable = "media"
+	// MediasColumn is the table column denoting the medias relation/edge.
+	MediasColumn = "review_medias"
+	// CommentsTable is the table that holds the comments relation/edge.
+	CommentsTable = "comments"
+	// CommentsInverseTable is the table name for the Comment entity.
+	// It exists in this package in order to avoid circular dependency with the "comment" package.
+	CommentsInverseTable = "comments"
+	// CommentsColumn is the table column denoting the comments relation/edge.
+	CommentsColumn = "review_comments"
+	// LikesTable is the table that holds the likes relation/edge.
+	LikesTable = "likes"
+	// LikesInverseTable is the table name for the Like entity.
+	// It exists in this package in order to avoid circular dependency with the "like" package.
+	LikesInverseTable = "likes"
+	// LikesColumn is the table column denoting the likes relation/edge.
+	LikesColumn = "review_likes"
 )
 
 // Columns holds all SQL columns for review fields.
 var Columns = []string{
 	FieldID,
-	FieldRating,
-	FieldComment,
-	FieldImagesVideos,
-	FieldTimestamp,
+	FieldScore,
+	FieldContent,
+	FieldCreatedAt,
+	FieldLikeCount,
+	FieldDislikeCount,
+	FieldFlag,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "reviews"
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
 	"place_reviews",
+	"review_business",
+	"review_place",
+	"review_event",
 	"user_reviews",
 }
 
@@ -74,8 +130,16 @@ func ValidColumn(column string) bool {
 }
 
 var (
-	// IDValidator is a validator for the "id" field. It is called by the builders before save.
-	IDValidator func(string) error
+	// ScoreValidator is a validator for the "score" field. It is called by the builders before save.
+	ScoreValidator func(float64) error
+	// DefaultCreatedAt holds the default value on creation for the "createdAt" field.
+	DefaultCreatedAt func() time.Time
+	// DefaultLikeCount holds the default value on creation for the "likeCount" field.
+	DefaultLikeCount int
+	// DefaultDislikeCount holds the default value on creation for the "dislikeCount" field.
+	DefaultDislikeCount int
+	// DefaultFlag holds the default value on creation for the "flag" field.
+	DefaultFlag string
 )
 
 // OrderOption defines the ordering options for the Review queries.
@@ -86,19 +150,34 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
 }
 
-// ByRating orders the results by the rating field.
-func ByRating(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldRating, opts...).ToFunc()
+// ByScore orders the results by the score field.
+func ByScore(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldScore, opts...).ToFunc()
 }
 
-// ByComment orders the results by the comment field.
-func ByComment(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldComment, opts...).ToFunc()
+// ByContent orders the results by the content field.
+func ByContent(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldContent, opts...).ToFunc()
 }
 
-// ByTimestamp orders the results by the timestamp field.
-func ByTimestamp(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldTimestamp, opts...).ToFunc()
+// ByCreatedAt orders the results by the createdAt field.
+func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
+}
+
+// ByLikeCount orders the results by the likeCount field.
+func ByLikeCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLikeCount, opts...).ToFunc()
+}
+
+// ByDislikeCount orders the results by the dislikeCount field.
+func ByDislikeCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDislikeCount, opts...).ToFunc()
+}
+
+// ByFlag orders the results by the flag field.
+func ByFlag(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFlag, opts...).ToFunc()
 }
 
 // ByUserField orders the results by user field.
@@ -108,10 +187,66 @@ func ByUserField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
+// ByBusinessField orders the results by business field.
+func ByBusinessField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newBusinessStep(), sql.OrderByField(field, opts...))
+	}
+}
+
 // ByPlaceField orders the results by place field.
 func ByPlaceField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newPlaceStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByEventField orders the results by event field.
+func ByEventField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newEventStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByMediasCount orders the results by medias count.
+func ByMediasCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newMediasStep(), opts...)
+	}
+}
+
+// ByMedias orders the results by medias terms.
+func ByMedias(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newMediasStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByCommentsCount orders the results by comments count.
+func ByCommentsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newCommentsStep(), opts...)
+	}
+}
+
+// ByComments orders the results by comments terms.
+func ByComments(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCommentsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByLikesCount orders the results by likes count.
+func ByLikesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newLikesStep(), opts...)
+	}
+}
+
+// ByLikes orders the results by likes terms.
+func ByLikes(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newLikesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 func newUserStep() *sqlgraph.Step {
@@ -121,10 +256,45 @@ func newUserStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.M2O, true, UserTable, UserColumn),
 	)
 }
+func newBusinessStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(BusinessInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, BusinessTable, BusinessColumn),
+	)
+}
 func newPlaceStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(PlaceInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, true, PlaceTable, PlaceColumn),
+		sqlgraph.Edge(sqlgraph.M2O, false, PlaceTable, PlaceColumn),
+	)
+}
+func newEventStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(EventInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, EventTable, EventColumn),
+	)
+}
+func newMediasStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(MediasInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, MediasTable, MediasColumn),
+	)
+}
+func newCommentsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CommentsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, CommentsTable, CommentsColumn),
+	)
+}
+func newLikesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(LikesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, LikesTable, LikesColumn),
 	)
 }

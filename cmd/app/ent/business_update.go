@@ -18,6 +18,7 @@ import (
 	"placio-app/ent/place"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
+	"placio-app/ent/rating"
 	"placio-app/ent/userbusiness"
 	"placio-app/ent/userfollowbusiness"
 
@@ -515,6 +516,21 @@ func (bu *BusinessUpdate) AddFaqs(f ...*FAQ) *BusinessUpdate {
 	return bu.AddFaqIDs(ids...)
 }
 
+// AddRatingIDs adds the "ratings" edge to the Rating entity by IDs.
+func (bu *BusinessUpdate) AddRatingIDs(ids ...string) *BusinessUpdate {
+	bu.mutation.AddRatingIDs(ids...)
+	return bu
+}
+
+// AddRatings adds the "ratings" edges to the Rating entity.
+func (bu *BusinessUpdate) AddRatings(r ...*Rating) *BusinessUpdate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return bu.AddRatingIDs(ids...)
+}
+
 // Mutation returns the BusinessMutation object of the builder.
 func (bu *BusinessUpdate) Mutation() *BusinessMutation {
 	return bu.mutation
@@ -776,6 +792,27 @@ func (bu *BusinessUpdate) RemoveFaqs(f ...*FAQ) *BusinessUpdate {
 		ids[i] = f[i].ID
 	}
 	return bu.RemoveFaqIDs(ids...)
+}
+
+// ClearRatings clears all "ratings" edges to the Rating entity.
+func (bu *BusinessUpdate) ClearRatings() *BusinessUpdate {
+	bu.mutation.ClearRatings()
+	return bu
+}
+
+// RemoveRatingIDs removes the "ratings" edge to Rating entities by IDs.
+func (bu *BusinessUpdate) RemoveRatingIDs(ids ...string) *BusinessUpdate {
+	bu.mutation.RemoveRatingIDs(ids...)
+	return bu
+}
+
+// RemoveRatings removes "ratings" edges to Rating entities.
+func (bu *BusinessUpdate) RemoveRatings(r ...*Rating) *BusinessUpdate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return bu.RemoveRatingIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1473,6 +1510,51 @@ func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if bu.mutation.RatingsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.RatingsTable,
+			Columns: []string{business.RatingsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rating.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.RemovedRatingsIDs(); len(nodes) > 0 && !bu.mutation.RatingsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.RatingsTable,
+			Columns: []string{business.RatingsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rating.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.RatingsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.RatingsTable,
+			Columns: []string{business.RatingsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rating.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, bu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{business.Label}
@@ -1969,6 +2051,21 @@ func (buo *BusinessUpdateOne) AddFaqs(f ...*FAQ) *BusinessUpdateOne {
 	return buo.AddFaqIDs(ids...)
 }
 
+// AddRatingIDs adds the "ratings" edge to the Rating entity by IDs.
+func (buo *BusinessUpdateOne) AddRatingIDs(ids ...string) *BusinessUpdateOne {
+	buo.mutation.AddRatingIDs(ids...)
+	return buo
+}
+
+// AddRatings adds the "ratings" edges to the Rating entity.
+func (buo *BusinessUpdateOne) AddRatings(r ...*Rating) *BusinessUpdateOne {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return buo.AddRatingIDs(ids...)
+}
+
 // Mutation returns the BusinessMutation object of the builder.
 func (buo *BusinessUpdateOne) Mutation() *BusinessMutation {
 	return buo.mutation
@@ -2230,6 +2327,27 @@ func (buo *BusinessUpdateOne) RemoveFaqs(f ...*FAQ) *BusinessUpdateOne {
 		ids[i] = f[i].ID
 	}
 	return buo.RemoveFaqIDs(ids...)
+}
+
+// ClearRatings clears all "ratings" edges to the Rating entity.
+func (buo *BusinessUpdateOne) ClearRatings() *BusinessUpdateOne {
+	buo.mutation.ClearRatings()
+	return buo
+}
+
+// RemoveRatingIDs removes the "ratings" edge to Rating entities by IDs.
+func (buo *BusinessUpdateOne) RemoveRatingIDs(ids ...string) *BusinessUpdateOne {
+	buo.mutation.RemoveRatingIDs(ids...)
+	return buo
+}
+
+// RemoveRatings removes "ratings" edges to Rating entities.
+func (buo *BusinessUpdateOne) RemoveRatings(r ...*Rating) *BusinessUpdateOne {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return buo.RemoveRatingIDs(ids...)
 }
 
 // Where appends a list predicates to the BusinessUpdate builder.
@@ -2950,6 +3068,51 @@ func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(faq.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if buo.mutation.RatingsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.RatingsTable,
+			Columns: []string{business.RatingsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rating.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.RemovedRatingsIDs(); len(nodes) > 0 && !buo.mutation.RatingsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.RatingsTable,
+			Columns: []string{business.RatingsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rating.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.RatingsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.RatingsTable,
+			Columns: []string{business.RatingsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rating.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

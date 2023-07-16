@@ -314,6 +314,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "post_comments", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "review_comments", Type: field.TypeString, Nullable: true},
 		{Name: "user_comments", Type: field.TypeString, Nullable: true, Size: 36},
 	}
 	// CommentsTable holds the schema information for the "comments" table.
@@ -329,8 +330,14 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "comments_users_comments",
+				Symbol:     "comments_reviews_comments",
 				Columns:    []*schema.Column{CommentsColumns[5]},
+				RefColumns: []*schema.Column{ReviewsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "comments_users_comments",
+				Columns:    []*schema.Column{CommentsColumns[6]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -458,8 +465,12 @@ var (
 		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "like", Type: field.TypeBool},
+		{Name: "like_review", Type: field.TypeString, Nullable: true},
+		{Name: "like_media", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "like_post", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "post_likes", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "review_likes", Type: field.TypeString, Nullable: true},
 		{Name: "user_likes", Type: field.TypeString, Nullable: true, Size: 36},
 	}
 	// LikesTable holds the schema information for the "likes" table.
@@ -469,20 +480,38 @@ var (
 		PrimaryKey: []*schema.Column{LikesColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
+				Symbol:     "likes_reviews_review",
+				Columns:    []*schema.Column{LikesColumns[4]},
+				RefColumns: []*schema.Column{ReviewsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "likes_media_media",
+				Columns:    []*schema.Column{LikesColumns[5]},
+				RefColumns: []*schema.Column{MediaColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
 				Symbol:     "likes_posts_post",
-				Columns:    []*schema.Column{LikesColumns[3]},
+				Columns:    []*schema.Column{LikesColumns[6]},
 				RefColumns: []*schema.Column{PostsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "likes_posts_likes",
-				Columns:    []*schema.Column{LikesColumns[4]},
+				Columns:    []*schema.Column{LikesColumns[7]},
 				RefColumns: []*schema.Column{PostsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
+				Symbol:     "likes_reviews_likes",
+				Columns:    []*schema.Column{LikesColumns[8]},
+				RefColumns: []*schema.Column{ReviewsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
 				Symbol:     "likes_users_likes",
-				Columns:    []*schema.Column{LikesColumns[5]},
+				Columns:    []*schema.Column{LikesColumns[9]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -495,7 +524,10 @@ var (
 		{Name: "media_type", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "like_count", Type: field.TypeInt, Default: 0},
+		{Name: "dislike_count", Type: field.TypeInt, Default: 0},
 		{Name: "post_medias", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "review_medias", Type: field.TypeString, Nullable: true},
 	}
 	// MediaTable holds the schema information for the "media" table.
 	MediaTable = &schema.Table{
@@ -505,8 +537,14 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "media_posts_medias",
-				Columns:    []*schema.Column{MediaColumns[5]},
+				Columns:    []*schema.Column{MediaColumns[7]},
 				RefColumns: []*schema.Column{PostsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "media_reviews_medias",
+				Columns:    []*schema.Column{MediaColumns[8]},
+				RefColumns: []*schema.Column{ReviewsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -636,13 +674,67 @@ var (
 	}
 	// RatingsColumns holds the columns for the "ratings" table.
 	RatingsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString},
+		{Name: "id", Type: field.TypeString, Unique: true},
+		{Name: "score", Type: field.TypeInt},
+		{Name: "review", Type: field.TypeString, Nullable: true},
+		{Name: "rated_at", Type: field.TypeTime},
+		{Name: "business_ratings", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "event_ratings", Type: field.TypeString, Nullable: true},
+		{Name: "place_ratings", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "rating_business", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "rating_place", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "rating_event", Type: field.TypeString, Nullable: true},
+		{Name: "user_ratings", Type: field.TypeString, Size: 36},
 	}
 	// RatingsTable holds the schema information for the "ratings" table.
 	RatingsTable = &schema.Table{
 		Name:       "ratings",
 		Columns:    RatingsColumns,
 		PrimaryKey: []*schema.Column{RatingsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "ratings_businesses_ratings",
+				Columns:    []*schema.Column{RatingsColumns[4]},
+				RefColumns: []*schema.Column{BusinessesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "ratings_events_ratings",
+				Columns:    []*schema.Column{RatingsColumns[5]},
+				RefColumns: []*schema.Column{EventsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "ratings_places_ratings",
+				Columns:    []*schema.Column{RatingsColumns[6]},
+				RefColumns: []*schema.Column{PlacesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "ratings_businesses_business",
+				Columns:    []*schema.Column{RatingsColumns[7]},
+				RefColumns: []*schema.Column{BusinessesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "ratings_places_place",
+				Columns:    []*schema.Column{RatingsColumns[8]},
+				RefColumns: []*schema.Column{PlacesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "ratings_events_event",
+				Columns:    []*schema.Column{RatingsColumns[9]},
+				RefColumns: []*schema.Column{EventsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "ratings_users_ratings",
+				Columns:    []*schema.Column{RatingsColumns[10]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
 	}
 	// ReactionsColumns holds the columns for the "reactions" table.
 	ReactionsColumns = []*schema.Column{
@@ -684,15 +776,30 @@ var (
 			},
 		},
 	}
+	// ResoursesColumns holds the columns for the "resourses" table.
+	ResoursesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+	}
+	// ResoursesTable holds the schema information for the "resourses" table.
+	ResoursesTable = &schema.Table{
+		Name:       "resourses",
+		Columns:    ResoursesColumns,
+		PrimaryKey: []*schema.Column{ResoursesColumns[0]},
+	}
 	// ReviewsColumns holds the columns for the "reviews" table.
 	ReviewsColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
-		{Name: "rating", Type: field.TypeFloat64},
-		{Name: "comment", Type: field.TypeString, Nullable: true},
-		{Name: "images_videos", Type: field.TypeJSON, Nullable: true},
-		{Name: "timestamp", Type: field.TypeTime},
+		{Name: "id", Type: field.TypeString, Unique: true},
+		{Name: "score", Type: field.TypeFloat64},
+		{Name: "content", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "like_count", Type: field.TypeInt, Default: 0},
+		{Name: "dislike_count", Type: field.TypeInt, Default: 0},
+		{Name: "flag", Type: field.TypeString, Default: ""},
 		{Name: "place_reviews", Type: field.TypeString, Nullable: true, Size: 36},
-		{Name: "user_reviews", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "review_business", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "review_place", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "review_event", Type: field.TypeString, Nullable: true},
+		{Name: "user_reviews", Type: field.TypeString, Size: 36},
 	}
 	// ReviewsTable holds the schema information for the "reviews" table.
 	ReviewsTable = &schema.Table{
@@ -702,15 +809,33 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "reviews_places_reviews",
-				Columns:    []*schema.Column{ReviewsColumns[5]},
+				Columns:    []*schema.Column{ReviewsColumns[7]},
 				RefColumns: []*schema.Column{PlacesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "reviews_users_reviews",
-				Columns:    []*schema.Column{ReviewsColumns[6]},
-				RefColumns: []*schema.Column{UsersColumns[0]},
+				Symbol:     "reviews_businesses_business",
+				Columns:    []*schema.Column{ReviewsColumns[8]},
+				RefColumns: []*schema.Column{BusinessesColumns[0]},
 				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "reviews_places_place",
+				Columns:    []*schema.Column{ReviewsColumns[9]},
+				RefColumns: []*schema.Column{PlacesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "reviews_events_event",
+				Columns:    []*schema.Column{ReviewsColumns[10]},
+				RefColumns: []*schema.Column{EventsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "reviews_users_reviews",
+				Columns:    []*schema.Column{ReviewsColumns[11]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}
@@ -1115,6 +1240,7 @@ var (
 		RatingsTable,
 		ReactionsTable,
 		ReservationsTable,
+		ResoursesTable,
 		ReviewsTable,
 		RoomsTable,
 		TicketsTable,
@@ -1157,25 +1283,40 @@ func init() {
 	CategoryAssignmentsTable.ForeignKeys[3].RefTable = PlacesTable
 	CategoryAssignmentsTable.ForeignKeys[4].RefTable = UsersTable
 	CommentsTable.ForeignKeys[0].RefTable = PostsTable
-	CommentsTable.ForeignKeys[1].RefTable = UsersTable
+	CommentsTable.ForeignKeys[1].RefTable = ReviewsTable
+	CommentsTable.ForeignKeys[2].RefTable = UsersTable
 	EventsTable.ForeignKeys[0].RefTable = BusinessesTable
 	EventsTable.ForeignKeys[1].RefTable = PlacesTable
 	EventsTable.ForeignKeys[2].RefTable = UsersTable
 	FaQsTable.ForeignKeys[0].RefTable = BusinessesTable
 	HelpsTable.ForeignKeys[0].RefTable = UsersTable
-	LikesTable.ForeignKeys[0].RefTable = PostsTable
-	LikesTable.ForeignKeys[1].RefTable = PostsTable
-	LikesTable.ForeignKeys[2].RefTable = UsersTable
+	LikesTable.ForeignKeys[0].RefTable = ReviewsTable
+	LikesTable.ForeignKeys[1].RefTable = MediaTable
+	LikesTable.ForeignKeys[2].RefTable = PostsTable
+	LikesTable.ForeignKeys[3].RefTable = PostsTable
+	LikesTable.ForeignKeys[4].RefTable = ReviewsTable
+	LikesTable.ForeignKeys[5].RefTable = UsersTable
 	MediaTable.ForeignKeys[0].RefTable = PostsTable
+	MediaTable.ForeignKeys[1].RefTable = ReviewsTable
 	MenusTable.ForeignKeys[0].RefTable = PlacesTable
 	PlacesTable.ForeignKeys[0].RefTable = BusinessesTable
 	PlacesTable.ForeignKeys[1].RefTable = EventsTable
 	PostsTable.ForeignKeys[0].RefTable = BusinessesTable
 	PostsTable.ForeignKeys[1].RefTable = UsersTable
+	RatingsTable.ForeignKeys[0].RefTable = BusinessesTable
+	RatingsTable.ForeignKeys[1].RefTable = EventsTable
+	RatingsTable.ForeignKeys[2].RefTable = PlacesTable
+	RatingsTable.ForeignKeys[3].RefTable = BusinessesTable
+	RatingsTable.ForeignKeys[4].RefTable = PlacesTable
+	RatingsTable.ForeignKeys[5].RefTable = EventsTable
+	RatingsTable.ForeignKeys[6].RefTable = UsersTable
 	ReservationsTable.ForeignKeys[0].RefTable = PlacesTable
 	ReservationsTable.ForeignKeys[1].RefTable = UsersTable
 	ReviewsTable.ForeignKeys[0].RefTable = PlacesTable
-	ReviewsTable.ForeignKeys[1].RefTable = UsersTable
+	ReviewsTable.ForeignKeys[1].RefTable = BusinessesTable
+	ReviewsTable.ForeignKeys[2].RefTable = PlacesTable
+	ReviewsTable.ForeignKeys[3].RefTable = EventsTable
+	ReviewsTable.ForeignKeys[4].RefTable = UsersTable
 	RoomsTable.ForeignKeys[0].RefTable = PlacesTable
 	TicketsTable.ForeignKeys[0].RefTable = EventsTable
 	TicketOptionsTable.ForeignKeys[0].RefTable = EventsTable

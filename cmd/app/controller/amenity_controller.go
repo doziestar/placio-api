@@ -2,7 +2,6 @@ package controller
 
 import (
 	"encoding/json"
-	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"placio-app/Dto"
@@ -63,8 +62,8 @@ func (c *AmenityController) createAmenity(ctx *gin.Context) error {
 		filePaths[i] = tempFilePath
 	}
 
-	uploadParams := uploader.UploadParams{Folder: "your/folder"}
-	urls, err := c.mediaService.UploadFiles(ctx, filePaths, uploadParams)
+	//uploadParams := uploader.UploadParams{Folder: "your/folder"}
+	urls, err := c.mediaService.UploadFiles(ctx, filePaths)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return err
@@ -140,8 +139,8 @@ func (c *AmenityController) updateAmenity(ctx *gin.Context) error {
 		tempFilePath := "/tmp/" + file.Filename
 		ctx.SaveUploadedFile(file, tempFilePath)
 
-		uploadParams := uploader.UploadParams{Folder: "your/folder"}
-		mediaInfo, err := c.mediaService.UploadFiles(ctx, []string{tempFilePath}, uploadParams)
+		//uploadParams := uploader.UploadParams{Folder: "your/folder"}
+		mediaInfo, err := c.mediaService.UploadFiles(ctx, []string{tempFilePath})
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return err

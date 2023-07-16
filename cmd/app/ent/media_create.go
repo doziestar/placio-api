@@ -9,6 +9,7 @@ import (
 	"placio-app/ent/category"
 	"placio-app/ent/media"
 	"placio-app/ent/post"
+	"placio-app/ent/review"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -62,6 +63,34 @@ func (mc *MediaCreate) SetNillableUpdatedAt(t *time.Time) *MediaCreate {
 	return mc
 }
 
+// SetLikeCount sets the "likeCount" field.
+func (mc *MediaCreate) SetLikeCount(i int) *MediaCreate {
+	mc.mutation.SetLikeCount(i)
+	return mc
+}
+
+// SetNillableLikeCount sets the "likeCount" field if the given value is not nil.
+func (mc *MediaCreate) SetNillableLikeCount(i *int) *MediaCreate {
+	if i != nil {
+		mc.SetLikeCount(*i)
+	}
+	return mc
+}
+
+// SetDislikeCount sets the "dislikeCount" field.
+func (mc *MediaCreate) SetDislikeCount(i int) *MediaCreate {
+	mc.mutation.SetDislikeCount(i)
+	return mc
+}
+
+// SetNillableDislikeCount sets the "dislikeCount" field if the given value is not nil.
+func (mc *MediaCreate) SetNillableDislikeCount(i *int) *MediaCreate {
+	if i != nil {
+		mc.SetDislikeCount(*i)
+	}
+	return mc
+}
+
 // SetID sets the "id" field.
 func (mc *MediaCreate) SetID(s string) *MediaCreate {
 	mc.mutation.SetID(s)
@@ -85,6 +114,25 @@ func (mc *MediaCreate) SetNillablePostID(id *string) *MediaCreate {
 // SetPost sets the "post" edge to the Post entity.
 func (mc *MediaCreate) SetPost(p *Post) *MediaCreate {
 	return mc.SetPostID(p.ID)
+}
+
+// SetReviewID sets the "review" edge to the Review entity by ID.
+func (mc *MediaCreate) SetReviewID(id string) *MediaCreate {
+	mc.mutation.SetReviewID(id)
+	return mc
+}
+
+// SetNillableReviewID sets the "review" edge to the Review entity by ID if the given value is not nil.
+func (mc *MediaCreate) SetNillableReviewID(id *string) *MediaCreate {
+	if id != nil {
+		mc = mc.SetReviewID(*id)
+	}
+	return mc
+}
+
+// SetReview sets the "review" edge to the Review entity.
+func (mc *MediaCreate) SetReview(r *Review) *MediaCreate {
+	return mc.SetReviewID(r.ID)
 }
 
 // AddCategoryIDs adds the "categories" edge to the Category entity by IDs.
@@ -145,6 +193,14 @@ func (mc *MediaCreate) defaults() {
 		v := media.DefaultUpdatedAt()
 		mc.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := mc.mutation.LikeCount(); !ok {
+		v := media.DefaultLikeCount
+		mc.mutation.SetLikeCount(v)
+	}
+	if _, ok := mc.mutation.DislikeCount(); !ok {
+		v := media.DefaultDislikeCount
+		mc.mutation.SetDislikeCount(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -160,6 +216,12 @@ func (mc *MediaCreate) check() error {
 	}
 	if _, ok := mc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "UpdatedAt", err: errors.New(`ent: missing required field "Media.UpdatedAt"`)}
+	}
+	if _, ok := mc.mutation.LikeCount(); !ok {
+		return &ValidationError{Name: "likeCount", err: errors.New(`ent: missing required field "Media.likeCount"`)}
+	}
+	if _, ok := mc.mutation.DislikeCount(); !ok {
+		return &ValidationError{Name: "dislikeCount", err: errors.New(`ent: missing required field "Media.dislikeCount"`)}
 	}
 	if v, ok := mc.mutation.ID(); ok {
 		if err := media.IDValidator(v); err != nil {
@@ -217,6 +279,14 @@ func (mc *MediaCreate) createSpec() (*Media, *sqlgraph.CreateSpec) {
 		_spec.SetField(media.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
+	if value, ok := mc.mutation.LikeCount(); ok {
+		_spec.SetField(media.FieldLikeCount, field.TypeInt, value)
+		_node.LikeCount = value
+	}
+	if value, ok := mc.mutation.DislikeCount(); ok {
+		_spec.SetField(media.FieldDislikeCount, field.TypeInt, value)
+		_node.DislikeCount = value
+	}
 	if nodes := mc.mutation.PostIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -232,6 +302,23 @@ func (mc *MediaCreate) createSpec() (*Media, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.post_medias = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := mc.mutation.ReviewIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   media.ReviewTable,
+			Columns: []string{media.ReviewColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(review.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.review_medias = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := mc.mutation.CategoriesIDs(); len(nodes) > 0 {

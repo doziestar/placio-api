@@ -81,6 +81,7 @@ func (Event) Edges() []ent.Edge {
 		edge.From("businessFollowers", BusinessFollowEvent.Type).
 			Ref("event"),
 		edge.From("faqs", FAQ.Type).Ref("event"),
+		edge.To("ratings", Rating.Type),
 	}
 }
 

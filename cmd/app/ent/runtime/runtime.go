@@ -19,6 +19,7 @@ import (
 	"placio-app/ent/menu"
 	"placio-app/ent/place"
 	"placio-app/ent/post"
+	"placio-app/ent/rating"
 	"placio-app/ent/reservation"
 	"placio-app/ent/review"
 	"placio-app/ent/room"
@@ -155,13 +156,13 @@ func init() {
 	help.UserIDValidator = helpDescUserID.Validators[0].(func(string) error)
 	likeFields := schema.Like{}.Fields()
 	_ = likeFields
-	// likeDescCreatedAt is the schema descriptor for CreatedAt field.
+	// likeDescCreatedAt is the schema descriptor for createdAt field.
 	likeDescCreatedAt := likeFields[1].Descriptor()
-	// like.DefaultCreatedAt holds the default value on creation for the CreatedAt field.
+	// like.DefaultCreatedAt holds the default value on creation for the createdAt field.
 	like.DefaultCreatedAt = likeDescCreatedAt.Default.(func() time.Time)
-	// likeDescUpdatedAt is the schema descriptor for UpdatedAt field.
+	// likeDescUpdatedAt is the schema descriptor for updatedAt field.
 	likeDescUpdatedAt := likeFields[2].Descriptor()
-	// like.UpdateDefaultUpdatedAt holds the default value on update for the UpdatedAt field.
+	// like.UpdateDefaultUpdatedAt holds the default value on update for the updatedAt field.
 	like.UpdateDefaultUpdatedAt = likeDescUpdatedAt.UpdateDefault.(func() time.Time)
 	// likeDescID is the schema descriptor for id field.
 	likeDescID := likeFields[0].Descriptor()
@@ -179,6 +180,14 @@ func init() {
 	media.DefaultUpdatedAt = mediaDescUpdatedAt.Default.(func() time.Time)
 	// media.UpdateDefaultUpdatedAt holds the default value on update for the UpdatedAt field.
 	media.UpdateDefaultUpdatedAt = mediaDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// mediaDescLikeCount is the schema descriptor for likeCount field.
+	mediaDescLikeCount := mediaFields[5].Descriptor()
+	// media.DefaultLikeCount holds the default value on creation for the likeCount field.
+	media.DefaultLikeCount = mediaDescLikeCount.Default.(int)
+	// mediaDescDislikeCount is the schema descriptor for dislikeCount field.
+	mediaDescDislikeCount := mediaFields[6].Descriptor()
+	// media.DefaultDislikeCount holds the default value on creation for the dislikeCount field.
+	media.DefaultDislikeCount = mediaDescDislikeCount.Default.(int)
 	// mediaDescID is the schema descriptor for id field.
 	mediaDescID := mediaFields[0].Descriptor()
 	// media.IDValidator is a validator for the "id" field. It is called by the builders before save.
@@ -219,6 +228,32 @@ func init() {
 	postDescID := postFields[0].Descriptor()
 	// post.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	post.IDValidator = postDescID.Validators[0].(func(string) error)
+	ratingHooks := schema.Rating{}.Hooks()
+	rating.Hooks[0] = ratingHooks[0]
+	ratingFields := schema.Rating{}.Fields()
+	_ = ratingFields
+	// ratingDescScore is the schema descriptor for score field.
+	ratingDescScore := ratingFields[1].Descriptor()
+	// rating.ScoreValidator is a validator for the "score" field. It is called by the builders before save.
+	rating.ScoreValidator = func() func(int) error {
+		validators := ratingDescScore.Validators
+		fns := [...]func(int) error{
+			validators[0].(func(int) error),
+			validators[1].(func(int) error),
+		}
+		return func(score int) error {
+			for _, fn := range fns {
+				if err := fn(score); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// ratingDescRatedAt is the schema descriptor for ratedAt field.
+	ratingDescRatedAt := ratingFields[3].Descriptor()
+	// rating.DefaultRatedAt holds the default value on creation for the ratedAt field.
+	rating.DefaultRatedAt = ratingDescRatedAt.Default.(func() time.Time)
 	reservationFields := schema.Reservation{}.Fields()
 	_ = reservationFields
 	// reservationDescID is the schema descriptor for id field.
@@ -227,10 +262,40 @@ func init() {
 	reservation.IDValidator = reservationDescID.Validators[0].(func(string) error)
 	reviewFields := schema.Review{}.Fields()
 	_ = reviewFields
-	// reviewDescID is the schema descriptor for id field.
-	reviewDescID := reviewFields[0].Descriptor()
-	// review.IDValidator is a validator for the "id" field. It is called by the builders before save.
-	review.IDValidator = reviewDescID.Validators[0].(func(string) error)
+	// reviewDescScore is the schema descriptor for score field.
+	reviewDescScore := reviewFields[1].Descriptor()
+	// review.ScoreValidator is a validator for the "score" field. It is called by the builders before save.
+	review.ScoreValidator = func() func(float64) error {
+		validators := reviewDescScore.Validators
+		fns := [...]func(float64) error{
+			validators[0].(func(float64) error),
+			validators[1].(func(float64) error),
+		}
+		return func(score float64) error {
+			for _, fn := range fns {
+				if err := fn(score); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// reviewDescCreatedAt is the schema descriptor for createdAt field.
+	reviewDescCreatedAt := reviewFields[3].Descriptor()
+	// review.DefaultCreatedAt holds the default value on creation for the createdAt field.
+	review.DefaultCreatedAt = reviewDescCreatedAt.Default.(func() time.Time)
+	// reviewDescLikeCount is the schema descriptor for likeCount field.
+	reviewDescLikeCount := reviewFields[4].Descriptor()
+	// review.DefaultLikeCount holds the default value on creation for the likeCount field.
+	review.DefaultLikeCount = reviewDescLikeCount.Default.(int)
+	// reviewDescDislikeCount is the schema descriptor for dislikeCount field.
+	reviewDescDislikeCount := reviewFields[5].Descriptor()
+	// review.DefaultDislikeCount holds the default value on creation for the dislikeCount field.
+	review.DefaultDislikeCount = reviewDescDislikeCount.Default.(int)
+	// reviewDescFlag is the schema descriptor for flag field.
+	reviewDescFlag := reviewFields[6].Descriptor()
+	// review.DefaultFlag holds the default value on creation for the flag field.
+	review.DefaultFlag = reviewDescFlag.Default.(string)
 	roomFields := schema.Room{}.Fields()
 	_ = roomFields
 	// roomDescID is the schema descriptor for id field.

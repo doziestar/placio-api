@@ -72,6 +72,7 @@ func (Place) Edges() []ent.Edge {
 		edge.From("faqs", FAQ.Type).Ref("place"),
 		edge.From("likedByUsers", UserLikePlace.Type).Ref("place"),
 		edge.To("followerUsers", UserFollowPlace.Type),
+		edge.To("ratings", Rating.Type),
 	}
 }
 

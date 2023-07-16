@@ -156,11 +156,16 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		followController := controller.NewFollowController(followService)
 		followController.RegisterRoutes(routerGroupV1)
 
-		//// ratings
-		//ratingService := service.NewRatingService(db)
+		// Review
+		reviewService := service.NewReviewService(client)
+		reviewController := controller.NewReviewController(reviewService, mediaService)
+		reviewController.RegisterRoutes(routerGroupV1)
+
+		// ratings
+		//ratingService := service.NewRatingService(client)
 		//ratingController := controller.NewRatingController(ratingService)
 		//ratingController.RegisterRoutes(routerGroupV1)
-		//
+
 		//// tickets
 		//ticketService := service.NewTicketService(db)
 		//ticketController := controller.NewTicketController(ticketService)

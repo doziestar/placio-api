@@ -30,6 +30,7 @@ import (
 	"placio-app/ent/rating"
 	"placio-app/ent/reaction"
 	"placio-app/ent/reservation"
+	"placio-app/ent/resourse"
 	"placio-app/ent/review"
 	"placio-app/ent/room"
 	"placio-app/ent/ticket"
@@ -131,6 +132,7 @@ func checkColumn(table, column string) error {
 			rating.Table:                 rating.ValidColumn,
 			reaction.Table:               reaction.ValidColumn,
 			reservation.Table:            reservation.ValidColumn,
+			resourse.Table:               resourse.ValidColumn,
 			review.Table:                 review.ValidColumn,
 			room.Table:                   room.ValidColumn,
 			ticket.Table:                 ticket.ValidColumn,
