@@ -97,6 +97,8 @@ const (
 	EdgeLikedByUsers = "likedByUsers"
 	// EdgeFollowerUsers holds the string denoting the followerusers edge name in mutations.
 	EdgeFollowerUsers = "followerUsers"
+	// EdgeRatings holds the string denoting the ratings edge name in mutations.
+	EdgeRatings = "ratings"
 	// Table holds the table name of the place in the database.
 	Table = "places"
 	// BusinessTable is the table that holds the business relation/edge.
@@ -191,6 +193,13 @@ const (
 	FollowerUsersInverseTable = "user_follow_places"
 	// FollowerUsersColumn is the table column denoting the followerUsers relation/edge.
 	FollowerUsersColumn = "place_follower_users"
+	// RatingsTable is the table that holds the ratings relation/edge.
+	RatingsTable = "ratings"
+	// RatingsInverseTable is the table name for the Rating entity.
+	// It exists in this package in order to avoid circular dependency with the "rating" package.
+	RatingsInverseTable = "ratings"
+	// RatingsColumn is the table column denoting the ratings relation/edge.
+	RatingsColumn = "place_ratings"
 )
 
 // Columns holds all SQL columns for place fields.
@@ -559,6 +568,20 @@ func ByFollowerUsers(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newFollowerUsersStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByRatingsCount orders the results by ratings count.
+func ByRatingsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newRatingsStep(), opts...)
+	}
+}
+
+// ByRatings orders the results by ratings terms.
+func ByRatings(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRatingsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newBusinessStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -655,5 +678,12 @@ func newFollowerUsersStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(FollowerUsersInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, FollowerUsersTable, FollowerUsersColumn),
+	)
+}
+func newRatingsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(RatingsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, RatingsTable, RatingsColumn),
 	)
 }

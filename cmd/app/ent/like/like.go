@@ -18,8 +18,14 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updatedat field in the database.
 	FieldUpdatedAt = "updated_at"
+	// FieldLike holds the string denoting the like field in the database.
+	FieldLike = "like"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
+	// EdgeReview holds the string denoting the review edge name in mutations.
+	EdgeReview = "review"
+	// EdgeMedia holds the string denoting the media edge name in mutations.
+	EdgeMedia = "media"
 	// EdgePost holds the string denoting the post edge name in mutations.
 	EdgePost = "post"
 	// Table holds the table name of the like in the database.
@@ -31,6 +37,20 @@ const (
 	UserInverseTable = "users"
 	// UserColumn is the table column denoting the user relation/edge.
 	UserColumn = "user_likes"
+	// ReviewTable is the table that holds the review relation/edge.
+	ReviewTable = "likes"
+	// ReviewInverseTable is the table name for the Review entity.
+	// It exists in this package in order to avoid circular dependency with the "review" package.
+	ReviewInverseTable = "reviews"
+	// ReviewColumn is the table column denoting the review relation/edge.
+	ReviewColumn = "like_review"
+	// MediaTable is the table that holds the media relation/edge.
+	MediaTable = "likes"
+	// MediaInverseTable is the table name for the Media entity.
+	// It exists in this package in order to avoid circular dependency with the "media" package.
+	MediaInverseTable = "media"
+	// MediaColumn is the table column denoting the media relation/edge.
+	MediaColumn = "like_media"
 	// PostTable is the table that holds the post relation/edge.
 	PostTable = "likes"
 	// PostInverseTable is the table name for the Post entity.
@@ -45,13 +65,17 @@ var Columns = []string{
 	FieldID,
 	FieldCreatedAt,
 	FieldUpdatedAt,
+	FieldLike,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "likes"
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
+	"like_review",
+	"like_media",
 	"like_post",
 	"post_likes",
+	"review_likes",
 	"user_likes",
 }
 
@@ -71,9 +95,9 @@ func ValidColumn(column string) bool {
 }
 
 var (
-	// DefaultCreatedAt holds the default value on creation for the "CreatedAt" field.
+	// DefaultCreatedAt holds the default value on creation for the "createdAt" field.
 	DefaultCreatedAt func() time.Time
-	// UpdateDefaultUpdatedAt holds the default value on update for the "UpdatedAt" field.
+	// UpdateDefaultUpdatedAt holds the default value on update for the "updatedAt" field.
 	UpdateDefaultUpdatedAt func() time.Time
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(string) error
@@ -87,20 +111,39 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
 }
 
-// ByCreatedAt orders the results by the CreatedAt field.
+// ByCreatedAt orders the results by the createdAt field.
 func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCreatedAt, opts...).ToFunc()
 }
 
-// ByUpdatedAt orders the results by the UpdatedAt field.
+// ByUpdatedAt orders the results by the updatedAt field.
 func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
+}
+
+// ByLike orders the results by the like field.
+func ByLike(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLike, opts...).ToFunc()
 }
 
 // ByUserField orders the results by user field.
 func ByUserField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newUserStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByReviewField orders the results by review field.
+func ByReviewField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newReviewStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByMediaField orders the results by media field.
+func ByMediaField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newMediaStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -115,6 +158,20 @@ func newUserStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(UserInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, true, UserTable, UserColumn),
+	)
+}
+func newReviewStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ReviewInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, ReviewTable, ReviewColumn),
+	)
+}
+func newMediaStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(MediaInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, false, MediaTable, MediaColumn),
 	)
 }
 func newPostStep() *sqlgraph.Step {

@@ -7,7 +7,9 @@ import (
 	"errors"
 	"fmt"
 	"placio-app/ent/like"
+	"placio-app/ent/media"
 	"placio-app/ent/post"
+	"placio-app/ent/review"
 	"placio-app/ent/user"
 	"time"
 
@@ -22,13 +24,13 @@ type LikeCreate struct {
 	hooks    []Hook
 }
 
-// SetCreatedAt sets the "CreatedAt" field.
+// SetCreatedAt sets the "createdAt" field.
 func (lc *LikeCreate) SetCreatedAt(t time.Time) *LikeCreate {
 	lc.mutation.SetCreatedAt(t)
 	return lc
 }
 
-// SetNillableCreatedAt sets the "CreatedAt" field if the given value is not nil.
+// SetNillableCreatedAt sets the "createdAt" field if the given value is not nil.
 func (lc *LikeCreate) SetNillableCreatedAt(t *time.Time) *LikeCreate {
 	if t != nil {
 		lc.SetCreatedAt(*t)
@@ -36,9 +38,15 @@ func (lc *LikeCreate) SetNillableCreatedAt(t *time.Time) *LikeCreate {
 	return lc
 }
 
-// SetUpdatedAt sets the "UpdatedAt" field.
+// SetUpdatedAt sets the "updatedAt" field.
 func (lc *LikeCreate) SetUpdatedAt(t time.Time) *LikeCreate {
 	lc.mutation.SetUpdatedAt(t)
+	return lc
+}
+
+// SetLike sets the "like" field.
+func (lc *LikeCreate) SetLike(b bool) *LikeCreate {
+	lc.mutation.SetLike(b)
 	return lc
 }
 
@@ -65,6 +73,44 @@ func (lc *LikeCreate) SetNillableUserID(id *string) *LikeCreate {
 // SetUser sets the "user" edge to the User entity.
 func (lc *LikeCreate) SetUser(u *User) *LikeCreate {
 	return lc.SetUserID(u.ID)
+}
+
+// SetReviewID sets the "review" edge to the Review entity by ID.
+func (lc *LikeCreate) SetReviewID(id string) *LikeCreate {
+	lc.mutation.SetReviewID(id)
+	return lc
+}
+
+// SetNillableReviewID sets the "review" edge to the Review entity by ID if the given value is not nil.
+func (lc *LikeCreate) SetNillableReviewID(id *string) *LikeCreate {
+	if id != nil {
+		lc = lc.SetReviewID(*id)
+	}
+	return lc
+}
+
+// SetReview sets the "review" edge to the Review entity.
+func (lc *LikeCreate) SetReview(r *Review) *LikeCreate {
+	return lc.SetReviewID(r.ID)
+}
+
+// SetMediaID sets the "media" edge to the Media entity by ID.
+func (lc *LikeCreate) SetMediaID(id string) *LikeCreate {
+	lc.mutation.SetMediaID(id)
+	return lc
+}
+
+// SetNillableMediaID sets the "media" edge to the Media entity by ID if the given value is not nil.
+func (lc *LikeCreate) SetNillableMediaID(id *string) *LikeCreate {
+	if id != nil {
+		lc = lc.SetMediaID(*id)
+	}
+	return lc
+}
+
+// SetMedia sets the "media" edge to the Media entity.
+func (lc *LikeCreate) SetMedia(m *Media) *LikeCreate {
+	return lc.SetMediaID(m.ID)
 }
 
 // SetPostID sets the "post" edge to the Post entity by ID.
@@ -130,10 +176,13 @@ func (lc *LikeCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (lc *LikeCreate) check() error {
 	if _, ok := lc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "CreatedAt", err: errors.New(`ent: missing required field "Like.CreatedAt"`)}
+		return &ValidationError{Name: "createdAt", err: errors.New(`ent: missing required field "Like.createdAt"`)}
 	}
 	if _, ok := lc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "UpdatedAt", err: errors.New(`ent: missing required field "Like.UpdatedAt"`)}
+		return &ValidationError{Name: "updatedAt", err: errors.New(`ent: missing required field "Like.updatedAt"`)}
+	}
+	if _, ok := lc.mutation.Like(); !ok {
+		return &ValidationError{Name: "like", err: errors.New(`ent: missing required field "Like.like"`)}
 	}
 	if v, ok := lc.mutation.ID(); ok {
 		if err := like.IDValidator(v); err != nil {
@@ -183,6 +232,10 @@ func (lc *LikeCreate) createSpec() (*Like, *sqlgraph.CreateSpec) {
 		_spec.SetField(like.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
+	if value, ok := lc.mutation.Like(); ok {
+		_spec.SetField(like.FieldLike, field.TypeBool, value)
+		_node.Like = value
+	}
 	if nodes := lc.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -198,6 +251,40 @@ func (lc *LikeCreate) createSpec() (*Like, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.user_likes = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := lc.mutation.ReviewIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   like.ReviewTable,
+			Columns: []string{like.ReviewColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(review.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.like_review = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := lc.mutation.MediaIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   like.MediaTable,
+			Columns: []string{like.MediaColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.like_media = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := lc.mutation.PostIDs(); len(nodes) > 0 {

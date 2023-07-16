@@ -4,8 +4,14 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"fmt"
 	"math"
+	"placio-app/ent/business"
+	"placio-app/ent/comment"
+	"placio-app/ent/event"
+	"placio-app/ent/like"
+	"placio-app/ent/media"
 	"placio-app/ent/place"
 	"placio-app/ent/predicate"
 	"placio-app/ent/review"
@@ -19,13 +25,18 @@ import (
 // ReviewQuery is the builder for querying Review entities.
 type ReviewQuery struct {
 	config
-	ctx        *QueryContext
-	order      []review.OrderOption
-	inters     []Interceptor
-	predicates []predicate.Review
-	withUser   *UserQuery
-	withPlace  *PlaceQuery
-	withFKs    bool
+	ctx          *QueryContext
+	order        []review.OrderOption
+	inters       []Interceptor
+	predicates   []predicate.Review
+	withUser     *UserQuery
+	withBusiness *BusinessQuery
+	withPlace    *PlaceQuery
+	withEvent    *EventQuery
+	withMedias   *MediaQuery
+	withComments *CommentQuery
+	withLikes    *LikeQuery
+	withFKs      bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -84,6 +95,28 @@ func (rq *ReviewQuery) QueryUser() *UserQuery {
 	return query
 }
 
+// QueryBusiness chains the current query on the "business" edge.
+func (rq *ReviewQuery) QueryBusiness() *BusinessQuery {
+	query := (&BusinessClient{config: rq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := rq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := rq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(review.Table, review.FieldID, selector),
+			sqlgraph.To(business.Table, business.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, review.BusinessTable, review.BusinessColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // QueryPlace chains the current query on the "place" edge.
 func (rq *ReviewQuery) QueryPlace() *PlaceQuery {
 	query := (&PlaceClient{config: rq.config}).Query()
@@ -98,7 +131,95 @@ func (rq *ReviewQuery) QueryPlace() *PlaceQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(review.Table, review.FieldID, selector),
 			sqlgraph.To(place.Table, place.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, review.PlaceTable, review.PlaceColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, review.PlaceTable, review.PlaceColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryEvent chains the current query on the "event" edge.
+func (rq *ReviewQuery) QueryEvent() *EventQuery {
+	query := (&EventClient{config: rq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := rq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := rq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(review.Table, review.FieldID, selector),
+			sqlgraph.To(event.Table, event.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, review.EventTable, review.EventColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryMedias chains the current query on the "medias" edge.
+func (rq *ReviewQuery) QueryMedias() *MediaQuery {
+	query := (&MediaClient{config: rq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := rq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := rq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(review.Table, review.FieldID, selector),
+			sqlgraph.To(media.Table, media.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, review.MediasTable, review.MediasColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryComments chains the current query on the "comments" edge.
+func (rq *ReviewQuery) QueryComments() *CommentQuery {
+	query := (&CommentClient{config: rq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := rq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := rq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(review.Table, review.FieldID, selector),
+			sqlgraph.To(comment.Table, comment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, review.CommentsTable, review.CommentsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryLikes chains the current query on the "likes" edge.
+func (rq *ReviewQuery) QueryLikes() *LikeQuery {
+	query := (&LikeClient{config: rq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := rq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := rq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(review.Table, review.FieldID, selector),
+			sqlgraph.To(like.Table, like.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, review.LikesTable, review.LikesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(rq.driver.Dialect(), step)
 		return fromU, nil
@@ -293,13 +414,18 @@ func (rq *ReviewQuery) Clone() *ReviewQuery {
 		return nil
 	}
 	return &ReviewQuery{
-		config:     rq.config,
-		ctx:        rq.ctx.Clone(),
-		order:      append([]review.OrderOption{}, rq.order...),
-		inters:     append([]Interceptor{}, rq.inters...),
-		predicates: append([]predicate.Review{}, rq.predicates...),
-		withUser:   rq.withUser.Clone(),
-		withPlace:  rq.withPlace.Clone(),
+		config:       rq.config,
+		ctx:          rq.ctx.Clone(),
+		order:        append([]review.OrderOption{}, rq.order...),
+		inters:       append([]Interceptor{}, rq.inters...),
+		predicates:   append([]predicate.Review{}, rq.predicates...),
+		withUser:     rq.withUser.Clone(),
+		withBusiness: rq.withBusiness.Clone(),
+		withPlace:    rq.withPlace.Clone(),
+		withEvent:    rq.withEvent.Clone(),
+		withMedias:   rq.withMedias.Clone(),
+		withComments: rq.withComments.Clone(),
+		withLikes:    rq.withLikes.Clone(),
 		// clone intermediate query.
 		sql:  rq.sql.Clone(),
 		path: rq.path,
@@ -317,6 +443,17 @@ func (rq *ReviewQuery) WithUser(opts ...func(*UserQuery)) *ReviewQuery {
 	return rq
 }
 
+// WithBusiness tells the query-builder to eager-load the nodes that are connected to
+// the "business" edge. The optional arguments are used to configure the query builder of the edge.
+func (rq *ReviewQuery) WithBusiness(opts ...func(*BusinessQuery)) *ReviewQuery {
+	query := (&BusinessClient{config: rq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	rq.withBusiness = query
+	return rq
+}
+
 // WithPlace tells the query-builder to eager-load the nodes that are connected to
 // the "place" edge. The optional arguments are used to configure the query builder of the edge.
 func (rq *ReviewQuery) WithPlace(opts ...func(*PlaceQuery)) *ReviewQuery {
@@ -328,18 +465,62 @@ func (rq *ReviewQuery) WithPlace(opts ...func(*PlaceQuery)) *ReviewQuery {
 	return rq
 }
 
+// WithEvent tells the query-builder to eager-load the nodes that are connected to
+// the "event" edge. The optional arguments are used to configure the query builder of the edge.
+func (rq *ReviewQuery) WithEvent(opts ...func(*EventQuery)) *ReviewQuery {
+	query := (&EventClient{config: rq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	rq.withEvent = query
+	return rq
+}
+
+// WithMedias tells the query-builder to eager-load the nodes that are connected to
+// the "medias" edge. The optional arguments are used to configure the query builder of the edge.
+func (rq *ReviewQuery) WithMedias(opts ...func(*MediaQuery)) *ReviewQuery {
+	query := (&MediaClient{config: rq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	rq.withMedias = query
+	return rq
+}
+
+// WithComments tells the query-builder to eager-load the nodes that are connected to
+// the "comments" edge. The optional arguments are used to configure the query builder of the edge.
+func (rq *ReviewQuery) WithComments(opts ...func(*CommentQuery)) *ReviewQuery {
+	query := (&CommentClient{config: rq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	rq.withComments = query
+	return rq
+}
+
+// WithLikes tells the query-builder to eager-load the nodes that are connected to
+// the "likes" edge. The optional arguments are used to configure the query builder of the edge.
+func (rq *ReviewQuery) WithLikes(opts ...func(*LikeQuery)) *ReviewQuery {
+	query := (&LikeClient{config: rq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	rq.withLikes = query
+	return rq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
 // Example:
 //
 //	var v []struct {
-//		Rating float64 `json:"rating,omitempty"`
+//		Score float64 `json:"score,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Review.Query().
-//		GroupBy(review.FieldRating).
+//		GroupBy(review.FieldScore).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (rq *ReviewQuery) GroupBy(field string, fields ...string) *ReviewGroupBy {
@@ -357,11 +538,11 @@ func (rq *ReviewQuery) GroupBy(field string, fields ...string) *ReviewGroupBy {
 // Example:
 //
 //	var v []struct {
-//		Rating float64 `json:"rating,omitempty"`
+//		Score float64 `json:"score,omitempty"`
 //	}
 //
 //	client.Review.Query().
-//		Select(review.FieldRating).
+//		Select(review.FieldScore).
 //		Scan(ctx, &v)
 func (rq *ReviewQuery) Select(fields ...string) *ReviewSelect {
 	rq.ctx.Fields = append(rq.ctx.Fields, fields...)
@@ -407,12 +588,17 @@ func (rq *ReviewQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Revie
 		nodes       = []*Review{}
 		withFKs     = rq.withFKs
 		_spec       = rq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [7]bool{
 			rq.withUser != nil,
+			rq.withBusiness != nil,
 			rq.withPlace != nil,
+			rq.withEvent != nil,
+			rq.withMedias != nil,
+			rq.withComments != nil,
+			rq.withLikes != nil,
 		}
 	)
-	if rq.withUser != nil || rq.withPlace != nil {
+	if rq.withUser != nil || rq.withBusiness != nil || rq.withPlace != nil || rq.withEvent != nil {
 		withFKs = true
 	}
 	if withFKs {
@@ -442,9 +628,42 @@ func (rq *ReviewQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Revie
 			return nil, err
 		}
 	}
+	if query := rq.withBusiness; query != nil {
+		if err := rq.loadBusiness(ctx, query, nodes, nil,
+			func(n *Review, e *Business) { n.Edges.Business = e }); err != nil {
+			return nil, err
+		}
+	}
 	if query := rq.withPlace; query != nil {
 		if err := rq.loadPlace(ctx, query, nodes, nil,
 			func(n *Review, e *Place) { n.Edges.Place = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := rq.withEvent; query != nil {
+		if err := rq.loadEvent(ctx, query, nodes, nil,
+			func(n *Review, e *Event) { n.Edges.Event = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := rq.withMedias; query != nil {
+		if err := rq.loadMedias(ctx, query, nodes,
+			func(n *Review) { n.Edges.Medias = []*Media{} },
+			func(n *Review, e *Media) { n.Edges.Medias = append(n.Edges.Medias, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := rq.withComments; query != nil {
+		if err := rq.loadComments(ctx, query, nodes,
+			func(n *Review) { n.Edges.Comments = []*Comment{} },
+			func(n *Review, e *Comment) { n.Edges.Comments = append(n.Edges.Comments, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := rq.withLikes; query != nil {
+		if err := rq.loadLikes(ctx, query, nodes,
+			func(n *Review) { n.Edges.Likes = []*Like{} },
+			func(n *Review, e *Like) { n.Edges.Likes = append(n.Edges.Likes, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -483,14 +702,46 @@ func (rq *ReviewQuery) loadUser(ctx context.Context, query *UserQuery, nodes []*
 	}
 	return nil
 }
+func (rq *ReviewQuery) loadBusiness(ctx context.Context, query *BusinessQuery, nodes []*Review, init func(*Review), assign func(*Review, *Business)) error {
+	ids := make([]string, 0, len(nodes))
+	nodeids := make(map[string][]*Review)
+	for i := range nodes {
+		if nodes[i].review_business == nil {
+			continue
+		}
+		fk := *nodes[i].review_business
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(business.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "review_business" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
 func (rq *ReviewQuery) loadPlace(ctx context.Context, query *PlaceQuery, nodes []*Review, init func(*Review), assign func(*Review, *Place)) error {
 	ids := make([]string, 0, len(nodes))
 	nodeids := make(map[string][]*Review)
 	for i := range nodes {
-		if nodes[i].place_reviews == nil {
+		if nodes[i].review_place == nil {
 			continue
 		}
-		fk := *nodes[i].place_reviews
+		fk := *nodes[i].review_place
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -507,11 +758,136 @@ func (rq *ReviewQuery) loadPlace(ctx context.Context, query *PlaceQuery, nodes [
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "place_reviews" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "review_place" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
 		}
+	}
+	return nil
+}
+func (rq *ReviewQuery) loadEvent(ctx context.Context, query *EventQuery, nodes []*Review, init func(*Review), assign func(*Review, *Event)) error {
+	ids := make([]string, 0, len(nodes))
+	nodeids := make(map[string][]*Review)
+	for i := range nodes {
+		if nodes[i].review_event == nil {
+			continue
+		}
+		fk := *nodes[i].review_event
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(event.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "review_event" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (rq *ReviewQuery) loadMedias(ctx context.Context, query *MediaQuery, nodes []*Review, init func(*Review), assign func(*Review, *Media)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Review)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Media(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(review.MediasColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.review_medias
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "review_medias" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "review_medias" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (rq *ReviewQuery) loadComments(ctx context.Context, query *CommentQuery, nodes []*Review, init func(*Review), assign func(*Review, *Comment)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Review)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Comment(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(review.CommentsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.review_comments
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "review_comments" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "review_comments" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (rq *ReviewQuery) loadLikes(ctx context.Context, query *LikeQuery, nodes []*Review, init func(*Review), assign func(*Review, *Like)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Review)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Like(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(review.LikesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.review_likes
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "review_likes" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "review_likes" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
 	}
 	return nil
 }

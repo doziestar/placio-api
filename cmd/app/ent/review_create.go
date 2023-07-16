@@ -6,6 +6,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"placio-app/ent/business"
+	"placio-app/ent/comment"
+	"placio-app/ent/event"
+	"placio-app/ent/like"
+	"placio-app/ent/media"
 	"placio-app/ent/place"
 	"placio-app/ent/review"
 	"placio-app/ent/user"
@@ -22,35 +27,71 @@ type ReviewCreate struct {
 	hooks    []Hook
 }
 
-// SetRating sets the "rating" field.
-func (rc *ReviewCreate) SetRating(f float64) *ReviewCreate {
-	rc.mutation.SetRating(f)
+// SetScore sets the "score" field.
+func (rc *ReviewCreate) SetScore(f float64) *ReviewCreate {
+	rc.mutation.SetScore(f)
 	return rc
 }
 
-// SetComment sets the "comment" field.
-func (rc *ReviewCreate) SetComment(s string) *ReviewCreate {
-	rc.mutation.SetComment(s)
+// SetContent sets the "content" field.
+func (rc *ReviewCreate) SetContent(s string) *ReviewCreate {
+	rc.mutation.SetContent(s)
 	return rc
 }
 
-// SetNillableComment sets the "comment" field if the given value is not nil.
-func (rc *ReviewCreate) SetNillableComment(s *string) *ReviewCreate {
-	if s != nil {
-		rc.SetComment(*s)
+// SetCreatedAt sets the "createdAt" field.
+func (rc *ReviewCreate) SetCreatedAt(t time.Time) *ReviewCreate {
+	rc.mutation.SetCreatedAt(t)
+	return rc
+}
+
+// SetNillableCreatedAt sets the "createdAt" field if the given value is not nil.
+func (rc *ReviewCreate) SetNillableCreatedAt(t *time.Time) *ReviewCreate {
+	if t != nil {
+		rc.SetCreatedAt(*t)
 	}
 	return rc
 }
 
-// SetImagesVideos sets the "images_videos" field.
-func (rc *ReviewCreate) SetImagesVideos(s []string) *ReviewCreate {
-	rc.mutation.SetImagesVideos(s)
+// SetLikeCount sets the "likeCount" field.
+func (rc *ReviewCreate) SetLikeCount(i int) *ReviewCreate {
+	rc.mutation.SetLikeCount(i)
 	return rc
 }
 
-// SetTimestamp sets the "timestamp" field.
-func (rc *ReviewCreate) SetTimestamp(t time.Time) *ReviewCreate {
-	rc.mutation.SetTimestamp(t)
+// SetNillableLikeCount sets the "likeCount" field if the given value is not nil.
+func (rc *ReviewCreate) SetNillableLikeCount(i *int) *ReviewCreate {
+	if i != nil {
+		rc.SetLikeCount(*i)
+	}
+	return rc
+}
+
+// SetDislikeCount sets the "dislikeCount" field.
+func (rc *ReviewCreate) SetDislikeCount(i int) *ReviewCreate {
+	rc.mutation.SetDislikeCount(i)
+	return rc
+}
+
+// SetNillableDislikeCount sets the "dislikeCount" field if the given value is not nil.
+func (rc *ReviewCreate) SetNillableDislikeCount(i *int) *ReviewCreate {
+	if i != nil {
+		rc.SetDislikeCount(*i)
+	}
+	return rc
+}
+
+// SetFlag sets the "flag" field.
+func (rc *ReviewCreate) SetFlag(s string) *ReviewCreate {
+	rc.mutation.SetFlag(s)
+	return rc
+}
+
+// SetNillableFlag sets the "flag" field if the given value is not nil.
+func (rc *ReviewCreate) SetNillableFlag(s *string) *ReviewCreate {
+	if s != nil {
+		rc.SetFlag(*s)
+	}
 	return rc
 }
 
@@ -66,17 +107,28 @@ func (rc *ReviewCreate) SetUserID(id string) *ReviewCreate {
 	return rc
 }
 
-// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
-func (rc *ReviewCreate) SetNillableUserID(id *string) *ReviewCreate {
+// SetUser sets the "user" edge to the User entity.
+func (rc *ReviewCreate) SetUser(u *User) *ReviewCreate {
+	return rc.SetUserID(u.ID)
+}
+
+// SetBusinessID sets the "business" edge to the Business entity by ID.
+func (rc *ReviewCreate) SetBusinessID(id string) *ReviewCreate {
+	rc.mutation.SetBusinessID(id)
+	return rc
+}
+
+// SetNillableBusinessID sets the "business" edge to the Business entity by ID if the given value is not nil.
+func (rc *ReviewCreate) SetNillableBusinessID(id *string) *ReviewCreate {
 	if id != nil {
-		rc = rc.SetUserID(*id)
+		rc = rc.SetBusinessID(*id)
 	}
 	return rc
 }
 
-// SetUser sets the "user" edge to the User entity.
-func (rc *ReviewCreate) SetUser(u *User) *ReviewCreate {
-	return rc.SetUserID(u.ID)
+// SetBusiness sets the "business" edge to the Business entity.
+func (rc *ReviewCreate) SetBusiness(b *Business) *ReviewCreate {
+	return rc.SetBusinessID(b.ID)
 }
 
 // SetPlaceID sets the "place" edge to the Place entity by ID.
@@ -98,6 +150,70 @@ func (rc *ReviewCreate) SetPlace(p *Place) *ReviewCreate {
 	return rc.SetPlaceID(p.ID)
 }
 
+// SetEventID sets the "event" edge to the Event entity by ID.
+func (rc *ReviewCreate) SetEventID(id string) *ReviewCreate {
+	rc.mutation.SetEventID(id)
+	return rc
+}
+
+// SetNillableEventID sets the "event" edge to the Event entity by ID if the given value is not nil.
+func (rc *ReviewCreate) SetNillableEventID(id *string) *ReviewCreate {
+	if id != nil {
+		rc = rc.SetEventID(*id)
+	}
+	return rc
+}
+
+// SetEvent sets the "event" edge to the Event entity.
+func (rc *ReviewCreate) SetEvent(e *Event) *ReviewCreate {
+	return rc.SetEventID(e.ID)
+}
+
+// AddMediaIDs adds the "medias" edge to the Media entity by IDs.
+func (rc *ReviewCreate) AddMediaIDs(ids ...string) *ReviewCreate {
+	rc.mutation.AddMediaIDs(ids...)
+	return rc
+}
+
+// AddMedias adds the "medias" edges to the Media entity.
+func (rc *ReviewCreate) AddMedias(m ...*Media) *ReviewCreate {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return rc.AddMediaIDs(ids...)
+}
+
+// AddCommentIDs adds the "comments" edge to the Comment entity by IDs.
+func (rc *ReviewCreate) AddCommentIDs(ids ...string) *ReviewCreate {
+	rc.mutation.AddCommentIDs(ids...)
+	return rc
+}
+
+// AddComments adds the "comments" edges to the Comment entity.
+func (rc *ReviewCreate) AddComments(c ...*Comment) *ReviewCreate {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return rc.AddCommentIDs(ids...)
+}
+
+// AddLikeIDs adds the "likes" edge to the Like entity by IDs.
+func (rc *ReviewCreate) AddLikeIDs(ids ...string) *ReviewCreate {
+	rc.mutation.AddLikeIDs(ids...)
+	return rc
+}
+
+// AddLikes adds the "likes" edges to the Like entity.
+func (rc *ReviewCreate) AddLikes(l ...*Like) *ReviewCreate {
+	ids := make([]string, len(l))
+	for i := range l {
+		ids[i] = l[i].ID
+	}
+	return rc.AddLikeIDs(ids...)
+}
+
 // Mutation returns the ReviewMutation object of the builder.
 func (rc *ReviewCreate) Mutation() *ReviewMutation {
 	return rc.mutation
@@ -105,6 +221,7 @@ func (rc *ReviewCreate) Mutation() *ReviewMutation {
 
 // Save creates the Review in the database.
 func (rc *ReviewCreate) Save(ctx context.Context) (*Review, error) {
+	rc.defaults()
 	return withHooks(ctx, rc.sqlSave, rc.mutation, rc.hooks)
 }
 
@@ -130,18 +247,53 @@ func (rc *ReviewCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (rc *ReviewCreate) defaults() {
+	if _, ok := rc.mutation.CreatedAt(); !ok {
+		v := review.DefaultCreatedAt()
+		rc.mutation.SetCreatedAt(v)
+	}
+	if _, ok := rc.mutation.LikeCount(); !ok {
+		v := review.DefaultLikeCount
+		rc.mutation.SetLikeCount(v)
+	}
+	if _, ok := rc.mutation.DislikeCount(); !ok {
+		v := review.DefaultDislikeCount
+		rc.mutation.SetDislikeCount(v)
+	}
+	if _, ok := rc.mutation.Flag(); !ok {
+		v := review.DefaultFlag
+		rc.mutation.SetFlag(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (rc *ReviewCreate) check() error {
-	if _, ok := rc.mutation.Rating(); !ok {
-		return &ValidationError{Name: "rating", err: errors.New(`ent: missing required field "Review.rating"`)}
+	if _, ok := rc.mutation.Score(); !ok {
+		return &ValidationError{Name: "score", err: errors.New(`ent: missing required field "Review.score"`)}
 	}
-	if _, ok := rc.mutation.Timestamp(); !ok {
-		return &ValidationError{Name: "timestamp", err: errors.New(`ent: missing required field "Review.timestamp"`)}
-	}
-	if v, ok := rc.mutation.ID(); ok {
-		if err := review.IDValidator(v); err != nil {
-			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "Review.id": %w`, err)}
+	if v, ok := rc.mutation.Score(); ok {
+		if err := review.ScoreValidator(v); err != nil {
+			return &ValidationError{Name: "score", err: fmt.Errorf(`ent: validator failed for field "Review.score": %w`, err)}
 		}
+	}
+	if _, ok := rc.mutation.Content(); !ok {
+		return &ValidationError{Name: "content", err: errors.New(`ent: missing required field "Review.content"`)}
+	}
+	if _, ok := rc.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "createdAt", err: errors.New(`ent: missing required field "Review.createdAt"`)}
+	}
+	if _, ok := rc.mutation.LikeCount(); !ok {
+		return &ValidationError{Name: "likeCount", err: errors.New(`ent: missing required field "Review.likeCount"`)}
+	}
+	if _, ok := rc.mutation.DislikeCount(); !ok {
+		return &ValidationError{Name: "dislikeCount", err: errors.New(`ent: missing required field "Review.dislikeCount"`)}
+	}
+	if _, ok := rc.mutation.Flag(); !ok {
+		return &ValidationError{Name: "flag", err: errors.New(`ent: missing required field "Review.flag"`)}
+	}
+	if _, ok := rc.mutation.UserID(); !ok {
+		return &ValidationError{Name: "user", err: errors.New(`ent: missing required edge "Review.user"`)}
 	}
 	return nil
 }
@@ -178,21 +330,29 @@ func (rc *ReviewCreate) createSpec() (*Review, *sqlgraph.CreateSpec) {
 		_node.ID = id
 		_spec.ID.Value = id
 	}
-	if value, ok := rc.mutation.Rating(); ok {
-		_spec.SetField(review.FieldRating, field.TypeFloat64, value)
-		_node.Rating = value
+	if value, ok := rc.mutation.Score(); ok {
+		_spec.SetField(review.FieldScore, field.TypeFloat64, value)
+		_node.Score = value
 	}
-	if value, ok := rc.mutation.Comment(); ok {
-		_spec.SetField(review.FieldComment, field.TypeString, value)
-		_node.Comment = value
+	if value, ok := rc.mutation.Content(); ok {
+		_spec.SetField(review.FieldContent, field.TypeString, value)
+		_node.Content = value
 	}
-	if value, ok := rc.mutation.ImagesVideos(); ok {
-		_spec.SetField(review.FieldImagesVideos, field.TypeJSON, value)
-		_node.ImagesVideos = value
+	if value, ok := rc.mutation.CreatedAt(); ok {
+		_spec.SetField(review.FieldCreatedAt, field.TypeTime, value)
+		_node.CreatedAt = value
 	}
-	if value, ok := rc.mutation.Timestamp(); ok {
-		_spec.SetField(review.FieldTimestamp, field.TypeTime, value)
-		_node.Timestamp = value
+	if value, ok := rc.mutation.LikeCount(); ok {
+		_spec.SetField(review.FieldLikeCount, field.TypeInt, value)
+		_node.LikeCount = value
+	}
+	if value, ok := rc.mutation.DislikeCount(); ok {
+		_spec.SetField(review.FieldDislikeCount, field.TypeInt, value)
+		_node.DislikeCount = value
+	}
+	if value, ok := rc.mutation.Flag(); ok {
+		_spec.SetField(review.FieldFlag, field.TypeString, value)
+		_node.Flag = value
 	}
 	if nodes := rc.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -211,10 +371,27 @@ func (rc *ReviewCreate) createSpec() (*Review, *sqlgraph.CreateSpec) {
 		_node.user_reviews = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := rc.mutation.BusinessIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   review.BusinessTable,
+			Columns: []string{review.BusinessColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(business.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.review_business = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := rc.mutation.PlaceIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
-			Inverse: true,
+			Inverse: false,
 			Table:   review.PlaceTable,
 			Columns: []string{review.PlaceColumn},
 			Bidi:    false,
@@ -225,7 +402,72 @@ func (rc *ReviewCreate) createSpec() (*Review, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.place_reviews = &nodes[0]
+		_node.review_place = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := rc.mutation.EventIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: false,
+			Table:   review.EventTable,
+			Columns: []string{review.EventColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(event.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.review_event = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := rc.mutation.MediasIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   review.MediasTable,
+			Columns: []string{review.MediasColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := rc.mutation.CommentsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   review.CommentsTable,
+			Columns: []string{review.CommentsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(comment.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := rc.mutation.LikesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   review.LikesTable,
+			Columns: []string{review.LikesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(like.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -245,6 +487,7 @@ func (rcb *ReviewCreateBulk) Save(ctx context.Context) ([]*Review, error) {
 	for i := range rcb.builders {
 		func(i int, root context.Context) {
 			builder := rcb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*ReviewMutation)
 				if !ok {

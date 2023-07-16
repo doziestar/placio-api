@@ -16,6 +16,7 @@ import (
 	"placio-app/ent/menu"
 	"placio-app/ent/place"
 	"placio-app/ent/predicate"
+	"placio-app/ent/rating"
 	"placio-app/ent/reservation"
 	"placio-app/ent/review"
 	"placio-app/ent/room"
@@ -754,6 +755,21 @@ func (pu *PlaceUpdate) AddFollowerUsers(u ...*UserFollowPlace) *PlaceUpdate {
 	return pu.AddFollowerUserIDs(ids...)
 }
 
+// AddRatingIDs adds the "ratings" edge to the Rating entity by IDs.
+func (pu *PlaceUpdate) AddRatingIDs(ids ...string) *PlaceUpdate {
+	pu.mutation.AddRatingIDs(ids...)
+	return pu
+}
+
+// AddRatings adds the "ratings" edges to the Rating entity.
+func (pu *PlaceUpdate) AddRatings(r ...*Rating) *PlaceUpdate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return pu.AddRatingIDs(ids...)
+}
+
 // Mutation returns the PlaceMutation object of the builder.
 func (pu *PlaceUpdate) Mutation() *PlaceMutation {
 	return pu.mutation
@@ -1036,6 +1052,27 @@ func (pu *PlaceUpdate) RemoveFollowerUsers(u ...*UserFollowPlace) *PlaceUpdate {
 		ids[i] = u[i].ID
 	}
 	return pu.RemoveFollowerUserIDs(ids...)
+}
+
+// ClearRatings clears all "ratings" edges to the Rating entity.
+func (pu *PlaceUpdate) ClearRatings() *PlaceUpdate {
+	pu.mutation.ClearRatings()
+	return pu
+}
+
+// RemoveRatingIDs removes the "ratings" edge to Rating entities by IDs.
+func (pu *PlaceUpdate) RemoveRatingIDs(ids ...string) *PlaceUpdate {
+	pu.mutation.RemoveRatingIDs(ids...)
+	return pu
+}
+
+// RemoveRatings removes "ratings" edges to Rating entities.
+func (pu *PlaceUpdate) RemoveRatings(r ...*Rating) *PlaceUpdate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return pu.RemoveRatingIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1874,6 +1911,51 @@ func (pu *PlaceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if pu.mutation.RatingsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   place.RatingsTable,
+			Columns: []string{place.RatingsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rating.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.RemovedRatingsIDs(); len(nodes) > 0 && !pu.mutation.RatingsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   place.RatingsTable,
+			Columns: []string{place.RatingsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rating.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.RatingsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   place.RatingsTable,
+			Columns: []string{place.RatingsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rating.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, pu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{place.Label}
@@ -2606,6 +2688,21 @@ func (puo *PlaceUpdateOne) AddFollowerUsers(u ...*UserFollowPlace) *PlaceUpdateO
 	return puo.AddFollowerUserIDs(ids...)
 }
 
+// AddRatingIDs adds the "ratings" edge to the Rating entity by IDs.
+func (puo *PlaceUpdateOne) AddRatingIDs(ids ...string) *PlaceUpdateOne {
+	puo.mutation.AddRatingIDs(ids...)
+	return puo
+}
+
+// AddRatings adds the "ratings" edges to the Rating entity.
+func (puo *PlaceUpdateOne) AddRatings(r ...*Rating) *PlaceUpdateOne {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return puo.AddRatingIDs(ids...)
+}
+
 // Mutation returns the PlaceMutation object of the builder.
 func (puo *PlaceUpdateOne) Mutation() *PlaceMutation {
 	return puo.mutation
@@ -2888,6 +2985,27 @@ func (puo *PlaceUpdateOne) RemoveFollowerUsers(u ...*UserFollowPlace) *PlaceUpda
 		ids[i] = u[i].ID
 	}
 	return puo.RemoveFollowerUserIDs(ids...)
+}
+
+// ClearRatings clears all "ratings" edges to the Rating entity.
+func (puo *PlaceUpdateOne) ClearRatings() *PlaceUpdateOne {
+	puo.mutation.ClearRatings()
+	return puo
+}
+
+// RemoveRatingIDs removes the "ratings" edge to Rating entities by IDs.
+func (puo *PlaceUpdateOne) RemoveRatingIDs(ids ...string) *PlaceUpdateOne {
+	puo.mutation.RemoveRatingIDs(ids...)
+	return puo
+}
+
+// RemoveRatings removes "ratings" edges to Rating entities.
+func (puo *PlaceUpdateOne) RemoveRatings(r ...*Rating) *PlaceUpdateOne {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return puo.RemoveRatingIDs(ids...)
 }
 
 // Where appends a list predicates to the PlaceUpdate builder.
@@ -3749,6 +3867,51 @@ func (puo *PlaceUpdateOne) sqlSave(ctx context.Context) (_node *Place, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(userfollowplace.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if puo.mutation.RatingsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   place.RatingsTable,
+			Columns: []string{place.RatingsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rating.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.RemovedRatingsIDs(); len(nodes) > 0 && !puo.mutation.RatingsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   place.RatingsTable,
+			Columns: []string{place.RatingsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rating.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.RatingsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   place.RatingsTable,
+			Columns: []string{place.RatingsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rating.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

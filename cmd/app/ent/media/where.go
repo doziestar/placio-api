@@ -85,6 +85,16 @@ func UpdatedAt(v time.Time) predicate.Media {
 	return predicate.Media(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
+// LikeCount applies equality check predicate on the "likeCount" field. It's identical to LikeCountEQ.
+func LikeCount(v int) predicate.Media {
+	return predicate.Media(sql.FieldEQ(FieldLikeCount, v))
+}
+
+// DislikeCount applies equality check predicate on the "dislikeCount" field. It's identical to DislikeCountEQ.
+func DislikeCount(v int) predicate.Media {
+	return predicate.Media(sql.FieldEQ(FieldDislikeCount, v))
+}
+
 // URLEQ applies the EQ predicate on the "URL" field.
 func URLEQ(v string) predicate.Media {
 	return predicate.Media(sql.FieldEQ(FieldURL, v))
@@ -295,6 +305,86 @@ func UpdatedAtLTE(v time.Time) predicate.Media {
 	return predicate.Media(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
+// LikeCountEQ applies the EQ predicate on the "likeCount" field.
+func LikeCountEQ(v int) predicate.Media {
+	return predicate.Media(sql.FieldEQ(FieldLikeCount, v))
+}
+
+// LikeCountNEQ applies the NEQ predicate on the "likeCount" field.
+func LikeCountNEQ(v int) predicate.Media {
+	return predicate.Media(sql.FieldNEQ(FieldLikeCount, v))
+}
+
+// LikeCountIn applies the In predicate on the "likeCount" field.
+func LikeCountIn(vs ...int) predicate.Media {
+	return predicate.Media(sql.FieldIn(FieldLikeCount, vs...))
+}
+
+// LikeCountNotIn applies the NotIn predicate on the "likeCount" field.
+func LikeCountNotIn(vs ...int) predicate.Media {
+	return predicate.Media(sql.FieldNotIn(FieldLikeCount, vs...))
+}
+
+// LikeCountGT applies the GT predicate on the "likeCount" field.
+func LikeCountGT(v int) predicate.Media {
+	return predicate.Media(sql.FieldGT(FieldLikeCount, v))
+}
+
+// LikeCountGTE applies the GTE predicate on the "likeCount" field.
+func LikeCountGTE(v int) predicate.Media {
+	return predicate.Media(sql.FieldGTE(FieldLikeCount, v))
+}
+
+// LikeCountLT applies the LT predicate on the "likeCount" field.
+func LikeCountLT(v int) predicate.Media {
+	return predicate.Media(sql.FieldLT(FieldLikeCount, v))
+}
+
+// LikeCountLTE applies the LTE predicate on the "likeCount" field.
+func LikeCountLTE(v int) predicate.Media {
+	return predicate.Media(sql.FieldLTE(FieldLikeCount, v))
+}
+
+// DislikeCountEQ applies the EQ predicate on the "dislikeCount" field.
+func DislikeCountEQ(v int) predicate.Media {
+	return predicate.Media(sql.FieldEQ(FieldDislikeCount, v))
+}
+
+// DislikeCountNEQ applies the NEQ predicate on the "dislikeCount" field.
+func DislikeCountNEQ(v int) predicate.Media {
+	return predicate.Media(sql.FieldNEQ(FieldDislikeCount, v))
+}
+
+// DislikeCountIn applies the In predicate on the "dislikeCount" field.
+func DislikeCountIn(vs ...int) predicate.Media {
+	return predicate.Media(sql.FieldIn(FieldDislikeCount, vs...))
+}
+
+// DislikeCountNotIn applies the NotIn predicate on the "dislikeCount" field.
+func DislikeCountNotIn(vs ...int) predicate.Media {
+	return predicate.Media(sql.FieldNotIn(FieldDislikeCount, vs...))
+}
+
+// DislikeCountGT applies the GT predicate on the "dislikeCount" field.
+func DislikeCountGT(v int) predicate.Media {
+	return predicate.Media(sql.FieldGT(FieldDislikeCount, v))
+}
+
+// DislikeCountGTE applies the GTE predicate on the "dislikeCount" field.
+func DislikeCountGTE(v int) predicate.Media {
+	return predicate.Media(sql.FieldGTE(FieldDislikeCount, v))
+}
+
+// DislikeCountLT applies the LT predicate on the "dislikeCount" field.
+func DislikeCountLT(v int) predicate.Media {
+	return predicate.Media(sql.FieldLT(FieldDislikeCount, v))
+}
+
+// DislikeCountLTE applies the LTE predicate on the "dislikeCount" field.
+func DislikeCountLTE(v int) predicate.Media {
+	return predicate.Media(sql.FieldLTE(FieldDislikeCount, v))
+}
+
 // HasPost applies the HasEdge predicate on the "post" edge.
 func HasPost() predicate.Media {
 	return predicate.Media(func(s *sql.Selector) {
@@ -310,6 +400,29 @@ func HasPost() predicate.Media {
 func HasPostWith(preds ...predicate.Post) predicate.Media {
 	return predicate.Media(func(s *sql.Selector) {
 		step := newPostStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasReview applies the HasEdge predicate on the "review" edge.
+func HasReview() predicate.Media {
+	return predicate.Media(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, ReviewTable, ReviewColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasReviewWith applies the HasEdge predicate on the "review" edge with a given conditions (other predicates).
+func HasReviewWith(preds ...predicate.Review) predicate.Media {
+	return predicate.Media(func(s *sql.Selector) {
+		step := newReviewStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

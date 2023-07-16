@@ -25,6 +25,7 @@ import (
 	"placio-app/ent/place"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
+	"placio-app/ent/rating"
 	"placio-app/ent/reservation"
 	"placio-app/ent/review"
 	"placio-app/ent/room"
@@ -78,6 +79,7 @@ const (
 	TypeRating                 = "Rating"
 	TypeReaction               = "Reaction"
 	TypeReservation            = "Reservation"
+	TypeResourse               = "Resourse"
 	TypeReview                 = "Review"
 	TypeRoom                   = "Room"
 	TypeTicket                 = "Ticket"
@@ -1790,6 +1792,9 @@ type BusinessMutation struct {
 	faqs                             map[string]struct{}
 	removedfaqs                      map[string]struct{}
 	clearedfaqs                      bool
+	ratings                          map[string]struct{}
+	removedratings                   map[string]struct{}
+	clearedratings                   bool
 	done                             bool
 	oldValue                         func(context.Context) (*Business, error)
 	predicates                       []predicate.Business
@@ -3329,6 +3334,60 @@ func (m *BusinessMutation) ResetFaqs() {
 	m.removedfaqs = nil
 }
 
+// AddRatingIDs adds the "ratings" edge to the Rating entity by ids.
+func (m *BusinessMutation) AddRatingIDs(ids ...string) {
+	if m.ratings == nil {
+		m.ratings = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.ratings[ids[i]] = struct{}{}
+	}
+}
+
+// ClearRatings clears the "ratings" edge to the Rating entity.
+func (m *BusinessMutation) ClearRatings() {
+	m.clearedratings = true
+}
+
+// RatingsCleared reports if the "ratings" edge to the Rating entity was cleared.
+func (m *BusinessMutation) RatingsCleared() bool {
+	return m.clearedratings
+}
+
+// RemoveRatingIDs removes the "ratings" edge to the Rating entity by IDs.
+func (m *BusinessMutation) RemoveRatingIDs(ids ...string) {
+	if m.removedratings == nil {
+		m.removedratings = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.ratings, ids[i])
+		m.removedratings[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedRatings returns the removed IDs of the "ratings" edge to the Rating entity.
+func (m *BusinessMutation) RemovedRatingsIDs() (ids []string) {
+	for id := range m.removedratings {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// RatingsIDs returns the "ratings" edge IDs in the mutation.
+func (m *BusinessMutation) RatingsIDs() (ids []string) {
+	for id := range m.ratings {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetRatings resets all changes to the "ratings" edge.
+func (m *BusinessMutation) ResetRatings() {
+	m.ratings = nil
+	m.clearedratings = false
+	m.removedratings = nil
+}
+
 // Where appends a list predicates to the BusinessMutation builder.
 func (m *BusinessMutation) Where(ps ...predicate.Business) {
 	m.predicates = append(m.predicates, ps...)
@@ -3802,7 +3861,7 @@ func (m *BusinessMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *BusinessMutation) AddedEdges() []string {
-	edges := make([]string, 0, 13)
+	edges := make([]string, 0, 14)
 	if m.userBusinesses != nil {
 		edges = append(edges, business.EdgeUserBusinesses)
 	}
@@ -3841,6 +3900,9 @@ func (m *BusinessMutation) AddedEdges() []string {
 	}
 	if m.faqs != nil {
 		edges = append(edges, business.EdgeFaqs)
+	}
+	if m.ratings != nil {
+		edges = append(edges, business.EdgeRatings)
 	}
 	return edges
 }
@@ -3925,13 +3987,19 @@ func (m *BusinessMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case business.EdgeRatings:
+		ids := make([]ent.Value, 0, len(m.ratings))
+		for id := range m.ratings {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *BusinessMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 13)
+	edges := make([]string, 0, 14)
 	if m.removeduserBusinesses != nil {
 		edges = append(edges, business.EdgeUserBusinesses)
 	}
@@ -3967,6 +4035,9 @@ func (m *BusinessMutation) RemovedEdges() []string {
 	}
 	if m.removedfaqs != nil {
 		edges = append(edges, business.EdgeFaqs)
+	}
+	if m.removedratings != nil {
+		edges = append(edges, business.EdgeRatings)
 	}
 	return edges
 }
@@ -4047,13 +4118,19 @@ func (m *BusinessMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case business.EdgeRatings:
+		ids := make([]ent.Value, 0, len(m.removedratings))
+		for id := range m.removedratings {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *BusinessMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 13)
+	edges := make([]string, 0, 14)
 	if m.cleareduserBusinesses {
 		edges = append(edges, business.EdgeUserBusinesses)
 	}
@@ -4093,6 +4170,9 @@ func (m *BusinessMutation) ClearedEdges() []string {
 	if m.clearedfaqs {
 		edges = append(edges, business.EdgeFaqs)
 	}
+	if m.clearedratings {
+		edges = append(edges, business.EdgeRatings)
+	}
 	return edges
 }
 
@@ -4126,6 +4206,8 @@ func (m *BusinessMutation) EdgeCleared(name string) bool {
 		return m.clearedbusinessFollowEvents
 	case business.EdgeFaqs:
 		return m.clearedfaqs
+	case business.EdgeRatings:
+		return m.clearedratings
 	}
 	return false
 }
@@ -4183,6 +4265,9 @@ func (m *BusinessMutation) ResetEdge(name string) error {
 		return nil
 	case business.EdgeFaqs:
 		m.ResetFaqs()
+		return nil
+	case business.EdgeRatings:
+		m.ResetRatings()
 		return nil
 	}
 	return fmt.Errorf("unknown Business edge %s", name)
@@ -7853,6 +7938,9 @@ type EventMutation struct {
 	faqs                              map[string]struct{}
 	removedfaqs                       map[string]struct{}
 	clearedfaqs                       bool
+	ratings                           map[string]struct{}
+	removedratings                    map[string]struct{}
+	clearedratings                    bool
 	done                              bool
 	oldValue                          func(context.Context) (*Event, error)
 	predicates                        []predicate.Event
@@ -10378,6 +10466,60 @@ func (m *EventMutation) ResetFaqs() {
 	m.removedfaqs = nil
 }
 
+// AddRatingIDs adds the "ratings" edge to the Rating entity by ids.
+func (m *EventMutation) AddRatingIDs(ids ...string) {
+	if m.ratings == nil {
+		m.ratings = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.ratings[ids[i]] = struct{}{}
+	}
+}
+
+// ClearRatings clears the "ratings" edge to the Rating entity.
+func (m *EventMutation) ClearRatings() {
+	m.clearedratings = true
+}
+
+// RatingsCleared reports if the "ratings" edge to the Rating entity was cleared.
+func (m *EventMutation) RatingsCleared() bool {
+	return m.clearedratings
+}
+
+// RemoveRatingIDs removes the "ratings" edge to the Rating entity by IDs.
+func (m *EventMutation) RemoveRatingIDs(ids ...string) {
+	if m.removedratings == nil {
+		m.removedratings = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.ratings, ids[i])
+		m.removedratings[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedRatings returns the removed IDs of the "ratings" edge to the Rating entity.
+func (m *EventMutation) RemovedRatingsIDs() (ids []string) {
+	for id := range m.removedratings {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// RatingsIDs returns the "ratings" edge IDs in the mutation.
+func (m *EventMutation) RatingsIDs() (ids []string) {
+	for id := range m.ratings {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetRatings resets all changes to the "ratings" edge.
+func (m *EventMutation) ResetRatings() {
+	m.ratings = nil
+	m.clearedratings = false
+	m.removedratings = nil
+}
+
 // Where appends a list predicates to the EventMutation builder.
 func (m *EventMutation) Where(ps ...predicate.Event) {
 	m.predicates = append(m.predicates, ps...)
@@ -11397,7 +11539,7 @@ func (m *EventMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *EventMutation) AddedEdges() []string {
-	edges := make([]string, 0, 10)
+	edges := make([]string, 0, 11)
 	if m.tickets != nil {
 		edges = append(edges, event.EdgeTickets)
 	}
@@ -11427,6 +11569,9 @@ func (m *EventMutation) AddedEdges() []string {
 	}
 	if m.faqs != nil {
 		edges = append(edges, event.EdgeFaqs)
+	}
+	if m.ratings != nil {
+		edges = append(edges, event.EdgeRatings)
 	}
 	return edges
 }
@@ -11491,13 +11636,19 @@ func (m *EventMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case event.EdgeRatings:
+		ids := make([]ent.Value, 0, len(m.ratings))
+		for id := range m.ratings {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *EventMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 10)
+	edges := make([]string, 0, 11)
 	if m.removedtickets != nil {
 		edges = append(edges, event.EdgeTickets)
 	}
@@ -11521,6 +11672,9 @@ func (m *EventMutation) RemovedEdges() []string {
 	}
 	if m.removedfaqs != nil {
 		edges = append(edges, event.EdgeFaqs)
+	}
+	if m.removedratings != nil {
+		edges = append(edges, event.EdgeRatings)
 	}
 	return edges
 }
@@ -11577,13 +11731,19 @@ func (m *EventMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case event.EdgeRatings:
+		ids := make([]ent.Value, 0, len(m.removedratings))
+		for id := range m.removedratings {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *EventMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 10)
+	edges := make([]string, 0, 11)
 	if m.clearedtickets {
 		edges = append(edges, event.EdgeTickets)
 	}
@@ -11614,6 +11774,9 @@ func (m *EventMutation) ClearedEdges() []string {
 	if m.clearedfaqs {
 		edges = append(edges, event.EdgeFaqs)
 	}
+	if m.clearedratings {
+		edges = append(edges, event.EdgeRatings)
+	}
 	return edges
 }
 
@@ -11641,6 +11804,8 @@ func (m *EventMutation) EdgeCleared(name string) bool {
 		return m.clearedbusinessFollowers
 	case event.EdgeFaqs:
 		return m.clearedfaqs
+	case event.EdgeRatings:
+		return m.clearedratings
 	}
 	return false
 }
@@ -11692,6 +11857,9 @@ func (m *EventMutation) ResetEdge(name string) error {
 		return nil
 	case event.EdgeFaqs:
 		m.ResetFaqs()
+		return nil
+	case event.EdgeRatings:
+		m.ResetRatings()
 		return nil
 	}
 	return fmt.Errorf("unknown Event edge %s", name)
@@ -13001,11 +13169,16 @@ type LikeMutation struct {
 	op            Op
 	typ           string
 	id            *string
-	_CreatedAt    *time.Time
-	_UpdatedAt    *time.Time
+	createdAt     *time.Time
+	updatedAt     *time.Time
+	like          *bool
 	clearedFields map[string]struct{}
 	user          *string
 	cleareduser   bool
+	review        *string
+	clearedreview bool
+	media         *string
+	clearedmedia  bool
 	post          *string
 	clearedpost   bool
 	done          bool
@@ -13117,21 +13290,21 @@ func (m *LikeMutation) IDs(ctx context.Context) ([]string, error) {
 	}
 }
 
-// SetCreatedAt sets the "CreatedAt" field.
+// SetCreatedAt sets the "createdAt" field.
 func (m *LikeMutation) SetCreatedAt(t time.Time) {
-	m._CreatedAt = &t
+	m.createdAt = &t
 }
 
-// CreatedAt returns the value of the "CreatedAt" field in the mutation.
+// CreatedAt returns the value of the "createdAt" field in the mutation.
 func (m *LikeMutation) CreatedAt() (r time.Time, exists bool) {
-	v := m._CreatedAt
+	v := m.createdAt
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldCreatedAt returns the old "CreatedAt" field's value of the Like entity.
+// OldCreatedAt returns the old "createdAt" field's value of the Like entity.
 // If the Like object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
 func (m *LikeMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
@@ -13148,26 +13321,26 @@ func (m *LikeMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error
 	return oldValue.CreatedAt, nil
 }
 
-// ResetCreatedAt resets all changes to the "CreatedAt" field.
+// ResetCreatedAt resets all changes to the "createdAt" field.
 func (m *LikeMutation) ResetCreatedAt() {
-	m._CreatedAt = nil
+	m.createdAt = nil
 }
 
-// SetUpdatedAt sets the "UpdatedAt" field.
+// SetUpdatedAt sets the "updatedAt" field.
 func (m *LikeMutation) SetUpdatedAt(t time.Time) {
-	m._UpdatedAt = &t
+	m.updatedAt = &t
 }
 
-// UpdatedAt returns the value of the "UpdatedAt" field in the mutation.
+// UpdatedAt returns the value of the "updatedAt" field in the mutation.
 func (m *LikeMutation) UpdatedAt() (r time.Time, exists bool) {
-	v := m._UpdatedAt
+	v := m.updatedAt
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldUpdatedAt returns the old "UpdatedAt" field's value of the Like entity.
+// OldUpdatedAt returns the old "updatedAt" field's value of the Like entity.
 // If the Like object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
 func (m *LikeMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
@@ -13184,9 +13357,45 @@ func (m *LikeMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error
 	return oldValue.UpdatedAt, nil
 }
 
-// ResetUpdatedAt resets all changes to the "UpdatedAt" field.
+// ResetUpdatedAt resets all changes to the "updatedAt" field.
 func (m *LikeMutation) ResetUpdatedAt() {
-	m._UpdatedAt = nil
+	m.updatedAt = nil
+}
+
+// SetLike sets the "like" field.
+func (m *LikeMutation) SetLike(b bool) {
+	m.like = &b
+}
+
+// Like returns the value of the "like" field in the mutation.
+func (m *LikeMutation) Like() (r bool, exists bool) {
+	v := m.like
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLike returns the old "like" field's value of the Like entity.
+// If the Like object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *LikeMutation) OldLike(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLike is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLike requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLike: %w", err)
+	}
+	return oldValue.Like, nil
+}
+
+// ResetLike resets all changes to the "like" field.
+func (m *LikeMutation) ResetLike() {
+	m.like = nil
 }
 
 // SetUserID sets the "user" edge to the User entity by id.
@@ -13226,6 +13435,84 @@ func (m *LikeMutation) UserIDs() (ids []string) {
 func (m *LikeMutation) ResetUser() {
 	m.user = nil
 	m.cleareduser = false
+}
+
+// SetReviewID sets the "review" edge to the Review entity by id.
+func (m *LikeMutation) SetReviewID(id string) {
+	m.review = &id
+}
+
+// ClearReview clears the "review" edge to the Review entity.
+func (m *LikeMutation) ClearReview() {
+	m.clearedreview = true
+}
+
+// ReviewCleared reports if the "review" edge to the Review entity was cleared.
+func (m *LikeMutation) ReviewCleared() bool {
+	return m.clearedreview
+}
+
+// ReviewID returns the "review" edge ID in the mutation.
+func (m *LikeMutation) ReviewID() (id string, exists bool) {
+	if m.review != nil {
+		return *m.review, true
+	}
+	return
+}
+
+// ReviewIDs returns the "review" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ReviewID instead. It exists only for internal usage by the builders.
+func (m *LikeMutation) ReviewIDs() (ids []string) {
+	if id := m.review; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetReview resets all changes to the "review" edge.
+func (m *LikeMutation) ResetReview() {
+	m.review = nil
+	m.clearedreview = false
+}
+
+// SetMediaID sets the "media" edge to the Media entity by id.
+func (m *LikeMutation) SetMediaID(id string) {
+	m.media = &id
+}
+
+// ClearMedia clears the "media" edge to the Media entity.
+func (m *LikeMutation) ClearMedia() {
+	m.clearedmedia = true
+}
+
+// MediaCleared reports if the "media" edge to the Media entity was cleared.
+func (m *LikeMutation) MediaCleared() bool {
+	return m.clearedmedia
+}
+
+// MediaID returns the "media" edge ID in the mutation.
+func (m *LikeMutation) MediaID() (id string, exists bool) {
+	if m.media != nil {
+		return *m.media, true
+	}
+	return
+}
+
+// MediaIDs returns the "media" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// MediaID instead. It exists only for internal usage by the builders.
+func (m *LikeMutation) MediaIDs() (ids []string) {
+	if id := m.media; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetMedia resets all changes to the "media" edge.
+func (m *LikeMutation) ResetMedia() {
+	m.media = nil
+	m.clearedmedia = false
 }
 
 // SetPostID sets the "post" edge to the Post entity by id.
@@ -13301,12 +13588,15 @@ func (m *LikeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *LikeMutation) Fields() []string {
-	fields := make([]string, 0, 2)
-	if m._CreatedAt != nil {
+	fields := make([]string, 0, 3)
+	if m.createdAt != nil {
 		fields = append(fields, like.FieldCreatedAt)
 	}
-	if m._UpdatedAt != nil {
+	if m.updatedAt != nil {
 		fields = append(fields, like.FieldUpdatedAt)
+	}
+	if m.like != nil {
+		fields = append(fields, like.FieldLike)
 	}
 	return fields
 }
@@ -13320,6 +13610,8 @@ func (m *LikeMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case like.FieldUpdatedAt:
 		return m.UpdatedAt()
+	case like.FieldLike:
+		return m.Like()
 	}
 	return nil, false
 }
@@ -13333,6 +13625,8 @@ func (m *LikeMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldCreatedAt(ctx)
 	case like.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
+	case like.FieldLike:
+		return m.OldLike(ctx)
 	}
 	return nil, fmt.Errorf("unknown Like field %s", name)
 }
@@ -13355,6 +13649,13 @@ func (m *LikeMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUpdatedAt(v)
+		return nil
+	case like.FieldLike:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLike(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Like field %s", name)
@@ -13411,15 +13712,24 @@ func (m *LikeMutation) ResetField(name string) error {
 	case like.FieldUpdatedAt:
 		m.ResetUpdatedAt()
 		return nil
+	case like.FieldLike:
+		m.ResetLike()
+		return nil
 	}
 	return fmt.Errorf("unknown Like field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *LikeMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 4)
 	if m.user != nil {
 		edges = append(edges, like.EdgeUser)
+	}
+	if m.review != nil {
+		edges = append(edges, like.EdgeReview)
+	}
+	if m.media != nil {
+		edges = append(edges, like.EdgeMedia)
 	}
 	if m.post != nil {
 		edges = append(edges, like.EdgePost)
@@ -13435,6 +13745,14 @@ func (m *LikeMutation) AddedIDs(name string) []ent.Value {
 		if id := m.user; id != nil {
 			return []ent.Value{*id}
 		}
+	case like.EdgeReview:
+		if id := m.review; id != nil {
+			return []ent.Value{*id}
+		}
+	case like.EdgeMedia:
+		if id := m.media; id != nil {
+			return []ent.Value{*id}
+		}
 	case like.EdgePost:
 		if id := m.post; id != nil {
 			return []ent.Value{*id}
@@ -13445,7 +13763,7 @@ func (m *LikeMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *LikeMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 4)
 	return edges
 }
 
@@ -13457,9 +13775,15 @@ func (m *LikeMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *LikeMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 4)
 	if m.cleareduser {
 		edges = append(edges, like.EdgeUser)
+	}
+	if m.clearedreview {
+		edges = append(edges, like.EdgeReview)
+	}
+	if m.clearedmedia {
+		edges = append(edges, like.EdgeMedia)
 	}
 	if m.clearedpost {
 		edges = append(edges, like.EdgePost)
@@ -13473,6 +13797,10 @@ func (m *LikeMutation) EdgeCleared(name string) bool {
 	switch name {
 	case like.EdgeUser:
 		return m.cleareduser
+	case like.EdgeReview:
+		return m.clearedreview
+	case like.EdgeMedia:
+		return m.clearedmedia
 	case like.EdgePost:
 		return m.clearedpost
 	}
@@ -13485,6 +13813,12 @@ func (m *LikeMutation) ClearEdge(name string) error {
 	switch name {
 	case like.EdgeUser:
 		m.ClearUser()
+		return nil
+	case like.EdgeReview:
+		m.ClearReview()
+		return nil
+	case like.EdgeMedia:
+		m.ClearMedia()
 		return nil
 	case like.EdgePost:
 		m.ClearPost()
@@ -13499,6 +13833,12 @@ func (m *LikeMutation) ResetEdge(name string) error {
 	switch name {
 	case like.EdgeUser:
 		m.ResetUser()
+		return nil
+	case like.EdgeReview:
+		m.ResetReview()
+		return nil
+	case like.EdgeMedia:
+		m.ResetMedia()
 		return nil
 	case like.EdgePost:
 		m.ResetPost()
@@ -13517,9 +13857,15 @@ type MediaMutation struct {
 	_MediaType        *string
 	_CreatedAt        *time.Time
 	_UpdatedAt        *time.Time
+	likeCount         *int
+	addlikeCount      *int
+	dislikeCount      *int
+	adddislikeCount   *int
 	clearedFields     map[string]struct{}
 	post              *string
 	clearedpost       bool
+	review            *string
+	clearedreview     bool
 	categories        map[string]struct{}
 	removedcategories map[string]struct{}
 	clearedcategories bool
@@ -13776,6 +14122,118 @@ func (m *MediaMutation) ResetUpdatedAt() {
 	m._UpdatedAt = nil
 }
 
+// SetLikeCount sets the "likeCount" field.
+func (m *MediaMutation) SetLikeCount(i int) {
+	m.likeCount = &i
+	m.addlikeCount = nil
+}
+
+// LikeCount returns the value of the "likeCount" field in the mutation.
+func (m *MediaMutation) LikeCount() (r int, exists bool) {
+	v := m.likeCount
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLikeCount returns the old "likeCount" field's value of the Media entity.
+// If the Media object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MediaMutation) OldLikeCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLikeCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLikeCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLikeCount: %w", err)
+	}
+	return oldValue.LikeCount, nil
+}
+
+// AddLikeCount adds i to the "likeCount" field.
+func (m *MediaMutation) AddLikeCount(i int) {
+	if m.addlikeCount != nil {
+		*m.addlikeCount += i
+	} else {
+		m.addlikeCount = &i
+	}
+}
+
+// AddedLikeCount returns the value that was added to the "likeCount" field in this mutation.
+func (m *MediaMutation) AddedLikeCount() (r int, exists bool) {
+	v := m.addlikeCount
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetLikeCount resets all changes to the "likeCount" field.
+func (m *MediaMutation) ResetLikeCount() {
+	m.likeCount = nil
+	m.addlikeCount = nil
+}
+
+// SetDislikeCount sets the "dislikeCount" field.
+func (m *MediaMutation) SetDislikeCount(i int) {
+	m.dislikeCount = &i
+	m.adddislikeCount = nil
+}
+
+// DislikeCount returns the value of the "dislikeCount" field in the mutation.
+func (m *MediaMutation) DislikeCount() (r int, exists bool) {
+	v := m.dislikeCount
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDislikeCount returns the old "dislikeCount" field's value of the Media entity.
+// If the Media object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MediaMutation) OldDislikeCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDislikeCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDislikeCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDislikeCount: %w", err)
+	}
+	return oldValue.DislikeCount, nil
+}
+
+// AddDislikeCount adds i to the "dislikeCount" field.
+func (m *MediaMutation) AddDislikeCount(i int) {
+	if m.adddislikeCount != nil {
+		*m.adddislikeCount += i
+	} else {
+		m.adddislikeCount = &i
+	}
+}
+
+// AddedDislikeCount returns the value that was added to the "dislikeCount" field in this mutation.
+func (m *MediaMutation) AddedDislikeCount() (r int, exists bool) {
+	v := m.adddislikeCount
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetDislikeCount resets all changes to the "dislikeCount" field.
+func (m *MediaMutation) ResetDislikeCount() {
+	m.dislikeCount = nil
+	m.adddislikeCount = nil
+}
+
 // SetPostID sets the "post" edge to the Post entity by id.
 func (m *MediaMutation) SetPostID(id string) {
 	m.post = &id
@@ -13813,6 +14271,45 @@ func (m *MediaMutation) PostIDs() (ids []string) {
 func (m *MediaMutation) ResetPost() {
 	m.post = nil
 	m.clearedpost = false
+}
+
+// SetReviewID sets the "review" edge to the Review entity by id.
+func (m *MediaMutation) SetReviewID(id string) {
+	m.review = &id
+}
+
+// ClearReview clears the "review" edge to the Review entity.
+func (m *MediaMutation) ClearReview() {
+	m.clearedreview = true
+}
+
+// ReviewCleared reports if the "review" edge to the Review entity was cleared.
+func (m *MediaMutation) ReviewCleared() bool {
+	return m.clearedreview
+}
+
+// ReviewID returns the "review" edge ID in the mutation.
+func (m *MediaMutation) ReviewID() (id string, exists bool) {
+	if m.review != nil {
+		return *m.review, true
+	}
+	return
+}
+
+// ReviewIDs returns the "review" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ReviewID instead. It exists only for internal usage by the builders.
+func (m *MediaMutation) ReviewIDs() (ids []string) {
+	if id := m.review; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetReview resets all changes to the "review" edge.
+func (m *MediaMutation) ResetReview() {
+	m.review = nil
+	m.clearedreview = false
 }
 
 // AddCategoryIDs adds the "categories" edge to the Category entity by ids.
@@ -13903,7 +14400,7 @@ func (m *MediaMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *MediaMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 6)
 	if m._URL != nil {
 		fields = append(fields, media.FieldURL)
 	}
@@ -13915,6 +14412,12 @@ func (m *MediaMutation) Fields() []string {
 	}
 	if m._UpdatedAt != nil {
 		fields = append(fields, media.FieldUpdatedAt)
+	}
+	if m.likeCount != nil {
+		fields = append(fields, media.FieldLikeCount)
+	}
+	if m.dislikeCount != nil {
+		fields = append(fields, media.FieldDislikeCount)
 	}
 	return fields
 }
@@ -13932,6 +14435,10 @@ func (m *MediaMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case media.FieldUpdatedAt:
 		return m.UpdatedAt()
+	case media.FieldLikeCount:
+		return m.LikeCount()
+	case media.FieldDislikeCount:
+		return m.DislikeCount()
 	}
 	return nil, false
 }
@@ -13949,6 +14456,10 @@ func (m *MediaMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldCreatedAt(ctx)
 	case media.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
+	case media.FieldLikeCount:
+		return m.OldLikeCount(ctx)
+	case media.FieldDislikeCount:
+		return m.OldDislikeCount(ctx)
 	}
 	return nil, fmt.Errorf("unknown Media field %s", name)
 }
@@ -13986,6 +14497,20 @@ func (m *MediaMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetUpdatedAt(v)
 		return nil
+	case media.FieldLikeCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLikeCount(v)
+		return nil
+	case media.FieldDislikeCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDislikeCount(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Media field %s", name)
 }
@@ -13993,13 +14518,26 @@ func (m *MediaMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *MediaMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	if m.addlikeCount != nil {
+		fields = append(fields, media.FieldLikeCount)
+	}
+	if m.adddislikeCount != nil {
+		fields = append(fields, media.FieldDislikeCount)
+	}
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *MediaMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case media.FieldLikeCount:
+		return m.AddedLikeCount()
+	case media.FieldDislikeCount:
+		return m.AddedDislikeCount()
+	}
 	return nil, false
 }
 
@@ -14008,6 +14546,20 @@ func (m *MediaMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *MediaMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case media.FieldLikeCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddLikeCount(v)
+		return nil
+	case media.FieldDislikeCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDislikeCount(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Media numeric field %s", name)
 }
@@ -14047,15 +14599,24 @@ func (m *MediaMutation) ResetField(name string) error {
 	case media.FieldUpdatedAt:
 		m.ResetUpdatedAt()
 		return nil
+	case media.FieldLikeCount:
+		m.ResetLikeCount()
+		return nil
+	case media.FieldDislikeCount:
+		m.ResetDislikeCount()
+		return nil
 	}
 	return fmt.Errorf("unknown Media field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *MediaMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.post != nil {
 		edges = append(edges, media.EdgePost)
+	}
+	if m.review != nil {
+		edges = append(edges, media.EdgeReview)
 	}
 	if m.categories != nil {
 		edges = append(edges, media.EdgeCategories)
@@ -14071,6 +14632,10 @@ func (m *MediaMutation) AddedIDs(name string) []ent.Value {
 		if id := m.post; id != nil {
 			return []ent.Value{*id}
 		}
+	case media.EdgeReview:
+		if id := m.review; id != nil {
+			return []ent.Value{*id}
+		}
 	case media.EdgeCategories:
 		ids := make([]ent.Value, 0, len(m.categories))
 		for id := range m.categories {
@@ -14083,7 +14648,7 @@ func (m *MediaMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *MediaMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.removedcategories != nil {
 		edges = append(edges, media.EdgeCategories)
 	}
@@ -14106,9 +14671,12 @@ func (m *MediaMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *MediaMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.clearedpost {
 		edges = append(edges, media.EdgePost)
+	}
+	if m.clearedreview {
+		edges = append(edges, media.EdgeReview)
 	}
 	if m.clearedcategories {
 		edges = append(edges, media.EdgeCategories)
@@ -14122,6 +14690,8 @@ func (m *MediaMutation) EdgeCleared(name string) bool {
 	switch name {
 	case media.EdgePost:
 		return m.clearedpost
+	case media.EdgeReview:
+		return m.clearedreview
 	case media.EdgeCategories:
 		return m.clearedcategories
 	}
@@ -14135,6 +14705,9 @@ func (m *MediaMutation) ClearEdge(name string) error {
 	case media.EdgePost:
 		m.ClearPost()
 		return nil
+	case media.EdgeReview:
+		m.ClearReview()
+		return nil
 	}
 	return fmt.Errorf("unknown Media unique edge %s", name)
 }
@@ -14145,6 +14718,9 @@ func (m *MediaMutation) ResetEdge(name string) error {
 	switch name {
 	case media.EdgePost:
 		m.ResetPost()
+		return nil
+	case media.EdgeReview:
+		m.ResetReview()
 		return nil
 	case media.EdgeCategories:
 		m.ResetCategories()
@@ -15184,6 +15760,9 @@ type PlaceMutation struct {
 	followerUsers              map[string]struct{}
 	removedfollowerUsers       map[string]struct{}
 	clearedfollowerUsers       bool
+	ratings                    map[string]struct{}
+	removedratings             map[string]struct{}
+	clearedratings             bool
 	done                       bool
 	oldValue                   func(context.Context) (*Place, error)
 	predicates                 []predicate.Place
@@ -17483,6 +18062,60 @@ func (m *PlaceMutation) ResetFollowerUsers() {
 	m.removedfollowerUsers = nil
 }
 
+// AddRatingIDs adds the "ratings" edge to the Rating entity by ids.
+func (m *PlaceMutation) AddRatingIDs(ids ...string) {
+	if m.ratings == nil {
+		m.ratings = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.ratings[ids[i]] = struct{}{}
+	}
+}
+
+// ClearRatings clears the "ratings" edge to the Rating entity.
+func (m *PlaceMutation) ClearRatings() {
+	m.clearedratings = true
+}
+
+// RatingsCleared reports if the "ratings" edge to the Rating entity was cleared.
+func (m *PlaceMutation) RatingsCleared() bool {
+	return m.clearedratings
+}
+
+// RemoveRatingIDs removes the "ratings" edge to the Rating entity by IDs.
+func (m *PlaceMutation) RemoveRatingIDs(ids ...string) {
+	if m.removedratings == nil {
+		m.removedratings = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.ratings, ids[i])
+		m.removedratings[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedRatings returns the removed IDs of the "ratings" edge to the Rating entity.
+func (m *PlaceMutation) RemovedRatingsIDs() (ids []string) {
+	for id := range m.removedratings {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// RatingsIDs returns the "ratings" edge IDs in the mutation.
+func (m *PlaceMutation) RatingsIDs() (ids []string) {
+	for id := range m.ratings {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetRatings resets all changes to the "ratings" edge.
+func (m *PlaceMutation) ResetRatings() {
+	m.ratings = nil
+	m.clearedratings = false
+	m.removedratings = nil
+}
+
 // Where appends a list predicates to the PlaceMutation builder.
 func (m *PlaceMutation) Where(ps ...predicate.Place) {
 	m.predicates = append(m.predicates, ps...)
@@ -18267,7 +18900,7 @@ func (m *PlaceMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PlaceMutation) AddedEdges() []string {
-	edges := make([]string, 0, 14)
+	edges := make([]string, 0, 15)
 	if m.business != nil {
 		edges = append(edges, place.EdgeBusiness)
 	}
@@ -18309,6 +18942,9 @@ func (m *PlaceMutation) AddedEdges() []string {
 	}
 	if m.followerUsers != nil {
 		edges = append(edges, place.EdgeFollowerUsers)
+	}
+	if m.ratings != nil {
+		edges = append(edges, place.EdgeRatings)
 	}
 	return edges
 }
@@ -18399,13 +19035,19 @@ func (m *PlaceMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case place.EdgeRatings:
+		ids := make([]ent.Value, 0, len(m.ratings))
+		for id := range m.ratings {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PlaceMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 14)
+	edges := make([]string, 0, 15)
 	if m.removedusers != nil {
 		edges = append(edges, place.EdgeUsers)
 	}
@@ -18444,6 +19086,9 @@ func (m *PlaceMutation) RemovedEdges() []string {
 	}
 	if m.removedfollowerUsers != nil {
 		edges = append(edges, place.EdgeFollowerUsers)
+	}
+	if m.removedratings != nil {
+		edges = append(edges, place.EdgeRatings)
 	}
 	return edges
 }
@@ -18530,13 +19175,19 @@ func (m *PlaceMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case place.EdgeRatings:
+		ids := make([]ent.Value, 0, len(m.removedratings))
+		for id := range m.removedratings {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PlaceMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 14)
+	edges := make([]string, 0, 15)
 	if m.clearedbusiness {
 		edges = append(edges, place.EdgeBusiness)
 	}
@@ -18579,6 +19230,9 @@ func (m *PlaceMutation) ClearedEdges() []string {
 	if m.clearedfollowerUsers {
 		edges = append(edges, place.EdgeFollowerUsers)
 	}
+	if m.clearedratings {
+		edges = append(edges, place.EdgeRatings)
+	}
 	return edges
 }
 
@@ -18614,6 +19268,8 @@ func (m *PlaceMutation) EdgeCleared(name string) bool {
 		return m.clearedlikedByUsers
 	case place.EdgeFollowerUsers:
 		return m.clearedfollowerUsers
+	case place.EdgeRatings:
+		return m.clearedratings
 	}
 	return false
 }
@@ -18674,6 +19330,9 @@ func (m *PlaceMutation) ResetEdge(name string) error {
 		return nil
 	case place.EdgeFollowerUsers:
 		m.ResetFollowerUsers()
+		return nil
+	case place.EdgeRatings:
+		m.ResetRatings()
 		return nil
 	}
 	return fmt.Errorf("unknown Place edge %s", name)
@@ -19636,13 +20295,25 @@ func (m *PostMutation) ResetEdge(name string) error {
 // RatingMutation represents an operation that mutates the Rating nodes in the graph.
 type RatingMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *string
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*Rating, error)
-	predicates    []predicate.Rating
+	op              Op
+	typ             string
+	id              *string
+	score           *int
+	addscore        *int
+	review          *string
+	ratedAt         *time.Time
+	clearedFields   map[string]struct{}
+	user            *string
+	cleareduser     bool
+	business        *string
+	clearedbusiness bool
+	place           *string
+	clearedplace    bool
+	event           *string
+	clearedevent    bool
+	done            bool
+	oldValue        func(context.Context) (*Rating, error)
+	predicates      []predicate.Rating
 }
 
 var _ ent.Mutation = (*RatingMutation)(nil)
@@ -19715,6 +20386,12 @@ func (m RatingMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Rating entities.
+func (m *RatingMutation) SetID(id string) {
+	m.id = &id
+}
+
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
 func (m *RatingMutation) ID() (id string, exists bool) {
@@ -19741,6 +20418,303 @@ func (m *RatingMutation) IDs(ctx context.Context) ([]string, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
+}
+
+// SetScore sets the "score" field.
+func (m *RatingMutation) SetScore(i int) {
+	m.score = &i
+	m.addscore = nil
+}
+
+// Score returns the value of the "score" field in the mutation.
+func (m *RatingMutation) Score() (r int, exists bool) {
+	v := m.score
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldScore returns the old "score" field's value of the Rating entity.
+// If the Rating object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RatingMutation) OldScore(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldScore is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldScore requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldScore: %w", err)
+	}
+	return oldValue.Score, nil
+}
+
+// AddScore adds i to the "score" field.
+func (m *RatingMutation) AddScore(i int) {
+	if m.addscore != nil {
+		*m.addscore += i
+	} else {
+		m.addscore = &i
+	}
+}
+
+// AddedScore returns the value that was added to the "score" field in this mutation.
+func (m *RatingMutation) AddedScore() (r int, exists bool) {
+	v := m.addscore
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetScore resets all changes to the "score" field.
+func (m *RatingMutation) ResetScore() {
+	m.score = nil
+	m.addscore = nil
+}
+
+// SetReview sets the "review" field.
+func (m *RatingMutation) SetReview(s string) {
+	m.review = &s
+}
+
+// Review returns the value of the "review" field in the mutation.
+func (m *RatingMutation) Review() (r string, exists bool) {
+	v := m.review
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldReview returns the old "review" field's value of the Rating entity.
+// If the Rating object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RatingMutation) OldReview(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldReview is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldReview requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldReview: %w", err)
+	}
+	return oldValue.Review, nil
+}
+
+// ClearReview clears the value of the "review" field.
+func (m *RatingMutation) ClearReview() {
+	m.review = nil
+	m.clearedFields[rating.FieldReview] = struct{}{}
+}
+
+// ReviewCleared returns if the "review" field was cleared in this mutation.
+func (m *RatingMutation) ReviewCleared() bool {
+	_, ok := m.clearedFields[rating.FieldReview]
+	return ok
+}
+
+// ResetReview resets all changes to the "review" field.
+func (m *RatingMutation) ResetReview() {
+	m.review = nil
+	delete(m.clearedFields, rating.FieldReview)
+}
+
+// SetRatedAt sets the "ratedAt" field.
+func (m *RatingMutation) SetRatedAt(t time.Time) {
+	m.ratedAt = &t
+}
+
+// RatedAt returns the value of the "ratedAt" field in the mutation.
+func (m *RatingMutation) RatedAt() (r time.Time, exists bool) {
+	v := m.ratedAt
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRatedAt returns the old "ratedAt" field's value of the Rating entity.
+// If the Rating object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RatingMutation) OldRatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRatedAt: %w", err)
+	}
+	return oldValue.RatedAt, nil
+}
+
+// ResetRatedAt resets all changes to the "ratedAt" field.
+func (m *RatingMutation) ResetRatedAt() {
+	m.ratedAt = nil
+}
+
+// SetUserID sets the "user" edge to the User entity by id.
+func (m *RatingMutation) SetUserID(id string) {
+	m.user = &id
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (m *RatingMutation) ClearUser() {
+	m.cleareduser = true
+}
+
+// UserCleared reports if the "user" edge to the User entity was cleared.
+func (m *RatingMutation) UserCleared() bool {
+	return m.cleareduser
+}
+
+// UserID returns the "user" edge ID in the mutation.
+func (m *RatingMutation) UserID() (id string, exists bool) {
+	if m.user != nil {
+		return *m.user, true
+	}
+	return
+}
+
+// UserIDs returns the "user" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// UserID instead. It exists only for internal usage by the builders.
+func (m *RatingMutation) UserIDs() (ids []string) {
+	if id := m.user; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetUser resets all changes to the "user" edge.
+func (m *RatingMutation) ResetUser() {
+	m.user = nil
+	m.cleareduser = false
+}
+
+// SetBusinessID sets the "business" edge to the Business entity by id.
+func (m *RatingMutation) SetBusinessID(id string) {
+	m.business = &id
+}
+
+// ClearBusiness clears the "business" edge to the Business entity.
+func (m *RatingMutation) ClearBusiness() {
+	m.clearedbusiness = true
+}
+
+// BusinessCleared reports if the "business" edge to the Business entity was cleared.
+func (m *RatingMutation) BusinessCleared() bool {
+	return m.clearedbusiness
+}
+
+// BusinessID returns the "business" edge ID in the mutation.
+func (m *RatingMutation) BusinessID() (id string, exists bool) {
+	if m.business != nil {
+		return *m.business, true
+	}
+	return
+}
+
+// BusinessIDs returns the "business" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// BusinessID instead. It exists only for internal usage by the builders.
+func (m *RatingMutation) BusinessIDs() (ids []string) {
+	if id := m.business; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetBusiness resets all changes to the "business" edge.
+func (m *RatingMutation) ResetBusiness() {
+	m.business = nil
+	m.clearedbusiness = false
+}
+
+// SetPlaceID sets the "place" edge to the Place entity by id.
+func (m *RatingMutation) SetPlaceID(id string) {
+	m.place = &id
+}
+
+// ClearPlace clears the "place" edge to the Place entity.
+func (m *RatingMutation) ClearPlace() {
+	m.clearedplace = true
+}
+
+// PlaceCleared reports if the "place" edge to the Place entity was cleared.
+func (m *RatingMutation) PlaceCleared() bool {
+	return m.clearedplace
+}
+
+// PlaceID returns the "place" edge ID in the mutation.
+func (m *RatingMutation) PlaceID() (id string, exists bool) {
+	if m.place != nil {
+		return *m.place, true
+	}
+	return
+}
+
+// PlaceIDs returns the "place" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// PlaceID instead. It exists only for internal usage by the builders.
+func (m *RatingMutation) PlaceIDs() (ids []string) {
+	if id := m.place; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetPlace resets all changes to the "place" edge.
+func (m *RatingMutation) ResetPlace() {
+	m.place = nil
+	m.clearedplace = false
+}
+
+// SetEventID sets the "event" edge to the Event entity by id.
+func (m *RatingMutation) SetEventID(id string) {
+	m.event = &id
+}
+
+// ClearEvent clears the "event" edge to the Event entity.
+func (m *RatingMutation) ClearEvent() {
+	m.clearedevent = true
+}
+
+// EventCleared reports if the "event" edge to the Event entity was cleared.
+func (m *RatingMutation) EventCleared() bool {
+	return m.clearedevent
+}
+
+// EventID returns the "event" edge ID in the mutation.
+func (m *RatingMutation) EventID() (id string, exists bool) {
+	if m.event != nil {
+		return *m.event, true
+	}
+	return
+}
+
+// EventIDs returns the "event" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// EventID instead. It exists only for internal usage by the builders.
+func (m *RatingMutation) EventIDs() (ids []string) {
+	if id := m.event; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetEvent resets all changes to the "event" edge.
+func (m *RatingMutation) ResetEvent() {
+	m.event = nil
+	m.clearedevent = false
 }
 
 // Where appends a list predicates to the RatingMutation builder.
@@ -19777,7 +20751,16 @@ func (m *RatingMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RatingMutation) Fields() []string {
-	fields := make([]string, 0, 0)
+	fields := make([]string, 0, 3)
+	if m.score != nil {
+		fields = append(fields, rating.FieldScore)
+	}
+	if m.review != nil {
+		fields = append(fields, rating.FieldReview)
+	}
+	if m.ratedAt != nil {
+		fields = append(fields, rating.FieldRatedAt)
+	}
 	return fields
 }
 
@@ -19785,6 +20768,14 @@ func (m *RatingMutation) Fields() []string {
 // return value indicates that this field was not set, or was not defined in the
 // schema.
 func (m *RatingMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case rating.FieldScore:
+		return m.Score()
+	case rating.FieldReview:
+		return m.Review()
+	case rating.FieldRatedAt:
+		return m.RatedAt()
+	}
 	return nil, false
 }
 
@@ -19792,6 +20783,14 @@ func (m *RatingMutation) Field(name string) (ent.Value, bool) {
 // returned if the mutation operation is not UpdateOne, or the query to the
 // database failed.
 func (m *RatingMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case rating.FieldScore:
+		return m.OldScore(ctx)
+	case rating.FieldReview:
+		return m.OldReview(ctx)
+	case rating.FieldRatedAt:
+		return m.OldRatedAt(ctx)
+	}
 	return nil, fmt.Errorf("unknown Rating field %s", name)
 }
 
@@ -19800,6 +20799,27 @@ func (m *RatingMutation) OldField(ctx context.Context, name string) (ent.Value, 
 // type.
 func (m *RatingMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case rating.FieldScore:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetScore(v)
+		return nil
+	case rating.FieldReview:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetReview(v)
+		return nil
+	case rating.FieldRatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRatedAt(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Rating field %s", name)
 }
@@ -19807,13 +20827,21 @@ func (m *RatingMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *RatingMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	if m.addscore != nil {
+		fields = append(fields, rating.FieldScore)
+	}
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *RatingMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case rating.FieldScore:
+		return m.AddedScore()
+	}
 	return nil, false
 }
 
@@ -19821,13 +20849,26 @@ func (m *RatingMutation) AddedField(name string) (ent.Value, bool) {
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
 func (m *RatingMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case rating.FieldScore:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddScore(v)
+		return nil
+	}
 	return fmt.Errorf("unknown Rating numeric field %s", name)
 }
 
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *RatingMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(rating.FieldReview) {
+		fields = append(fields, rating.FieldReview)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -19840,30 +20881,76 @@ func (m *RatingMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *RatingMutation) ClearField(name string) error {
+	switch name {
+	case rating.FieldReview:
+		m.ClearReview()
+		return nil
+	}
 	return fmt.Errorf("unknown Rating nullable field %s", name)
 }
 
 // ResetField resets all changes in the mutation for the field with the given name.
 // It returns an error if the field is not defined in the schema.
 func (m *RatingMutation) ResetField(name string) error {
+	switch name {
+	case rating.FieldScore:
+		m.ResetScore()
+		return nil
+	case rating.FieldReview:
+		m.ResetReview()
+		return nil
+	case rating.FieldRatedAt:
+		m.ResetRatedAt()
+		return nil
+	}
 	return fmt.Errorf("unknown Rating field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *RatingMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 4)
+	if m.user != nil {
+		edges = append(edges, rating.EdgeUser)
+	}
+	if m.business != nil {
+		edges = append(edges, rating.EdgeBusiness)
+	}
+	if m.place != nil {
+		edges = append(edges, rating.EdgePlace)
+	}
+	if m.event != nil {
+		edges = append(edges, rating.EdgeEvent)
+	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
 func (m *RatingMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case rating.EdgeUser:
+		if id := m.user; id != nil {
+			return []ent.Value{*id}
+		}
+	case rating.EdgeBusiness:
+		if id := m.business; id != nil {
+			return []ent.Value{*id}
+		}
+	case rating.EdgePlace:
+		if id := m.place; id != nil {
+			return []ent.Value{*id}
+		}
+	case rating.EdgeEvent:
+		if id := m.event; id != nil {
+			return []ent.Value{*id}
+		}
+	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *RatingMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 4)
 	return edges
 }
 
@@ -19875,25 +20962,75 @@ func (m *RatingMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *RatingMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 4)
+	if m.cleareduser {
+		edges = append(edges, rating.EdgeUser)
+	}
+	if m.clearedbusiness {
+		edges = append(edges, rating.EdgeBusiness)
+	}
+	if m.clearedplace {
+		edges = append(edges, rating.EdgePlace)
+	}
+	if m.clearedevent {
+		edges = append(edges, rating.EdgeEvent)
+	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
 func (m *RatingMutation) EdgeCleared(name string) bool {
+	switch name {
+	case rating.EdgeUser:
+		return m.cleareduser
+	case rating.EdgeBusiness:
+		return m.clearedbusiness
+	case rating.EdgePlace:
+		return m.clearedplace
+	case rating.EdgeEvent:
+		return m.clearedevent
+	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
 func (m *RatingMutation) ClearEdge(name string) error {
+	switch name {
+	case rating.EdgeUser:
+		m.ClearUser()
+		return nil
+	case rating.EdgeBusiness:
+		m.ClearBusiness()
+		return nil
+	case rating.EdgePlace:
+		m.ClearPlace()
+		return nil
+	case rating.EdgeEvent:
+		m.ClearEvent()
+		return nil
+	}
 	return fmt.Errorf("unknown Rating unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
 func (m *RatingMutation) ResetEdge(name string) error {
+	switch name {
+	case rating.EdgeUser:
+		m.ResetUser()
+		return nil
+	case rating.EdgeBusiness:
+		m.ResetBusiness()
+		return nil
+	case rating.EdgePlace:
+		m.ResetPlace()
+		return nil
+	case rating.EdgeEvent:
+		m.ResetEvent()
+		return nil
+	}
 	return fmt.Errorf("unknown Rating edge %s", name)
 }
 
@@ -20817,26 +21954,306 @@ func (m *ReservationMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Reservation edge %s", name)
 }
 
+// ResourseMutation represents an operation that mutates the Resourse nodes in the graph.
+type ResourseMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *string
+	clearedFields map[string]struct{}
+	done          bool
+	oldValue      func(context.Context) (*Resourse, error)
+	predicates    []predicate.Resourse
+}
+
+var _ ent.Mutation = (*ResourseMutation)(nil)
+
+// resourseOption allows management of the mutation configuration using functional options.
+type resourseOption func(*ResourseMutation)
+
+// newResourseMutation creates new mutation for the Resourse entity.
+func newResourseMutation(c config, op Op, opts ...resourseOption) *ResourseMutation {
+	m := &ResourseMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeResourse,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withResourseID sets the ID field of the mutation.
+func withResourseID(id string) resourseOption {
+	return func(m *ResourseMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Resourse
+		)
+		m.oldValue = func(ctx context.Context) (*Resourse, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Resourse.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withResourse sets the old Resourse of the mutation.
+func withResourse(node *Resourse) resourseOption {
+	return func(m *ResourseMutation) {
+		m.oldValue = func(context.Context) (*Resourse, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ResourseMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ResourseMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ResourseMutation) ID() (id string, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *ResourseMutation) IDs(ctx context.Context) ([]string, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []string{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Resourse.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// Where appends a list predicates to the ResourseMutation builder.
+func (m *ResourseMutation) Where(ps ...predicate.Resourse) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the ResourseMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *ResourseMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Resourse, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *ResourseMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *ResourseMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (Resourse).
+func (m *ResourseMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ResourseMutation) Fields() []string {
+	fields := make([]string, 0, 0)
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ResourseMutation) Field(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ResourseMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	return nil, fmt.Errorf("unknown Resourse field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ResourseMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Resourse field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ResourseMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ResourseMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ResourseMutation) AddField(name string, value ent.Value) error {
+	return fmt.Errorf("unknown Resourse numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ResourseMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ResourseMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ResourseMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Resourse nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ResourseMutation) ResetField(name string) error {
+	return fmt.Errorf("unknown Resourse field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ResourseMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ResourseMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ResourseMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ResourseMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ResourseMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ResourseMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ResourseMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown Resourse unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ResourseMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown Resourse edge %s", name)
+}
+
 // ReviewMutation represents an operation that mutates the Review nodes in the graph.
 type ReviewMutation struct {
 	config
-	op                  Op
-	typ                 string
-	id                  *string
-	rating              *float64
-	addrating           *float64
-	comment             *string
-	images_videos       *[]string
-	appendimages_videos []string
-	timestamp           *time.Time
-	clearedFields       map[string]struct{}
-	user                *string
-	cleareduser         bool
-	place               *string
-	clearedplace        bool
-	done                bool
-	oldValue            func(context.Context) (*Review, error)
-	predicates          []predicate.Review
+	op              Op
+	typ             string
+	id              *string
+	score           *float64
+	addscore        *float64
+	content         *string
+	createdAt       *time.Time
+	likeCount       *int
+	addlikeCount    *int
+	dislikeCount    *int
+	adddislikeCount *int
+	flag            *string
+	clearedFields   map[string]struct{}
+	user            *string
+	cleareduser     bool
+	business        *string
+	clearedbusiness bool
+	place           *string
+	clearedplace    bool
+	event           *string
+	clearedevent    bool
+	medias          map[string]struct{}
+	removedmedias   map[string]struct{}
+	clearedmedias   bool
+	comments        map[string]struct{}
+	removedcomments map[string]struct{}
+	clearedcomments bool
+	likes           map[string]struct{}
+	removedlikes    map[string]struct{}
+	clearedlikes    bool
+	done            bool
+	oldValue        func(context.Context) (*Review, error)
+	predicates      []predicate.Review
 }
 
 var _ ent.Mutation = (*ReviewMutation)(nil)
@@ -20943,210 +22360,280 @@ func (m *ReviewMutation) IDs(ctx context.Context) ([]string, error) {
 	}
 }
 
-// SetRating sets the "rating" field.
-func (m *ReviewMutation) SetRating(f float64) {
-	m.rating = &f
-	m.addrating = nil
+// SetScore sets the "score" field.
+func (m *ReviewMutation) SetScore(f float64) {
+	m.score = &f
+	m.addscore = nil
 }
 
-// Rating returns the value of the "rating" field in the mutation.
-func (m *ReviewMutation) Rating() (r float64, exists bool) {
-	v := m.rating
+// Score returns the value of the "score" field in the mutation.
+func (m *ReviewMutation) Score() (r float64, exists bool) {
+	v := m.score
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldRating returns the old "rating" field's value of the Review entity.
+// OldScore returns the old "score" field's value of the Review entity.
 // If the Review object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ReviewMutation) OldRating(ctx context.Context) (v float64, err error) {
+func (m *ReviewMutation) OldScore(ctx context.Context) (v float64, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldRating is only allowed on UpdateOne operations")
+		return v, errors.New("OldScore is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldRating requires an ID field in the mutation")
+		return v, errors.New("OldScore requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldRating: %w", err)
+		return v, fmt.Errorf("querying old value for OldScore: %w", err)
 	}
-	return oldValue.Rating, nil
+	return oldValue.Score, nil
 }
 
-// AddRating adds f to the "rating" field.
-func (m *ReviewMutation) AddRating(f float64) {
-	if m.addrating != nil {
-		*m.addrating += f
+// AddScore adds f to the "score" field.
+func (m *ReviewMutation) AddScore(f float64) {
+	if m.addscore != nil {
+		*m.addscore += f
 	} else {
-		m.addrating = &f
+		m.addscore = &f
 	}
 }
 
-// AddedRating returns the value that was added to the "rating" field in this mutation.
-func (m *ReviewMutation) AddedRating() (r float64, exists bool) {
-	v := m.addrating
+// AddedScore returns the value that was added to the "score" field in this mutation.
+func (m *ReviewMutation) AddedScore() (r float64, exists bool) {
+	v := m.addscore
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// ResetRating resets all changes to the "rating" field.
-func (m *ReviewMutation) ResetRating() {
-	m.rating = nil
-	m.addrating = nil
+// ResetScore resets all changes to the "score" field.
+func (m *ReviewMutation) ResetScore() {
+	m.score = nil
+	m.addscore = nil
 }
 
-// SetComment sets the "comment" field.
-func (m *ReviewMutation) SetComment(s string) {
-	m.comment = &s
+// SetContent sets the "content" field.
+func (m *ReviewMutation) SetContent(s string) {
+	m.content = &s
 }
 
-// Comment returns the value of the "comment" field in the mutation.
-func (m *ReviewMutation) Comment() (r string, exists bool) {
-	v := m.comment
+// Content returns the value of the "content" field in the mutation.
+func (m *ReviewMutation) Content() (r string, exists bool) {
+	v := m.content
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldComment returns the old "comment" field's value of the Review entity.
+// OldContent returns the old "content" field's value of the Review entity.
 // If the Review object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ReviewMutation) OldComment(ctx context.Context) (v string, err error) {
+func (m *ReviewMutation) OldContent(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldComment is only allowed on UpdateOne operations")
+		return v, errors.New("OldContent is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldComment requires an ID field in the mutation")
+		return v, errors.New("OldContent requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldComment: %w", err)
+		return v, fmt.Errorf("querying old value for OldContent: %w", err)
 	}
-	return oldValue.Comment, nil
+	return oldValue.Content, nil
 }
 
-// ClearComment clears the value of the "comment" field.
-func (m *ReviewMutation) ClearComment() {
-	m.comment = nil
-	m.clearedFields[review.FieldComment] = struct{}{}
+// ResetContent resets all changes to the "content" field.
+func (m *ReviewMutation) ResetContent() {
+	m.content = nil
 }
 
-// CommentCleared returns if the "comment" field was cleared in this mutation.
-func (m *ReviewMutation) CommentCleared() bool {
-	_, ok := m.clearedFields[review.FieldComment]
-	return ok
+// SetCreatedAt sets the "createdAt" field.
+func (m *ReviewMutation) SetCreatedAt(t time.Time) {
+	m.createdAt = &t
 }
 
-// ResetComment resets all changes to the "comment" field.
-func (m *ReviewMutation) ResetComment() {
-	m.comment = nil
-	delete(m.clearedFields, review.FieldComment)
-}
-
-// SetImagesVideos sets the "images_videos" field.
-func (m *ReviewMutation) SetImagesVideos(s []string) {
-	m.images_videos = &s
-	m.appendimages_videos = nil
-}
-
-// ImagesVideos returns the value of the "images_videos" field in the mutation.
-func (m *ReviewMutation) ImagesVideos() (r []string, exists bool) {
-	v := m.images_videos
+// CreatedAt returns the value of the "createdAt" field in the mutation.
+func (m *ReviewMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.createdAt
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldImagesVideos returns the old "images_videos" field's value of the Review entity.
+// OldCreatedAt returns the old "createdAt" field's value of the Review entity.
 // If the Review object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ReviewMutation) OldImagesVideos(ctx context.Context) (v []string, err error) {
+func (m *ReviewMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldImagesVideos is only allowed on UpdateOne operations")
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldImagesVideos requires an ID field in the mutation")
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldImagesVideos: %w", err)
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
 	}
-	return oldValue.ImagesVideos, nil
+	return oldValue.CreatedAt, nil
 }
 
-// AppendImagesVideos adds s to the "images_videos" field.
-func (m *ReviewMutation) AppendImagesVideos(s []string) {
-	m.appendimages_videos = append(m.appendimages_videos, s...)
+// ResetCreatedAt resets all changes to the "createdAt" field.
+func (m *ReviewMutation) ResetCreatedAt() {
+	m.createdAt = nil
 }
 
-// AppendedImagesVideos returns the list of values that were appended to the "images_videos" field in this mutation.
-func (m *ReviewMutation) AppendedImagesVideos() ([]string, bool) {
-	if len(m.appendimages_videos) == 0 {
-		return nil, false
-	}
-	return m.appendimages_videos, true
+// SetLikeCount sets the "likeCount" field.
+func (m *ReviewMutation) SetLikeCount(i int) {
+	m.likeCount = &i
+	m.addlikeCount = nil
 }
 
-// ClearImagesVideos clears the value of the "images_videos" field.
-func (m *ReviewMutation) ClearImagesVideos() {
-	m.images_videos = nil
-	m.appendimages_videos = nil
-	m.clearedFields[review.FieldImagesVideos] = struct{}{}
-}
-
-// ImagesVideosCleared returns if the "images_videos" field was cleared in this mutation.
-func (m *ReviewMutation) ImagesVideosCleared() bool {
-	_, ok := m.clearedFields[review.FieldImagesVideos]
-	return ok
-}
-
-// ResetImagesVideos resets all changes to the "images_videos" field.
-func (m *ReviewMutation) ResetImagesVideos() {
-	m.images_videos = nil
-	m.appendimages_videos = nil
-	delete(m.clearedFields, review.FieldImagesVideos)
-}
-
-// SetTimestamp sets the "timestamp" field.
-func (m *ReviewMutation) SetTimestamp(t time.Time) {
-	m.timestamp = &t
-}
-
-// Timestamp returns the value of the "timestamp" field in the mutation.
-func (m *ReviewMutation) Timestamp() (r time.Time, exists bool) {
-	v := m.timestamp
+// LikeCount returns the value of the "likeCount" field in the mutation.
+func (m *ReviewMutation) LikeCount() (r int, exists bool) {
+	v := m.likeCount
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldTimestamp returns the old "timestamp" field's value of the Review entity.
+// OldLikeCount returns the old "likeCount" field's value of the Review entity.
 // If the Review object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ReviewMutation) OldTimestamp(ctx context.Context) (v time.Time, err error) {
+func (m *ReviewMutation) OldLikeCount(ctx context.Context) (v int, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldTimestamp is only allowed on UpdateOne operations")
+		return v, errors.New("OldLikeCount is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldTimestamp requires an ID field in the mutation")
+		return v, errors.New("OldLikeCount requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldTimestamp: %w", err)
+		return v, fmt.Errorf("querying old value for OldLikeCount: %w", err)
 	}
-	return oldValue.Timestamp, nil
+	return oldValue.LikeCount, nil
 }
 
-// ResetTimestamp resets all changes to the "timestamp" field.
-func (m *ReviewMutation) ResetTimestamp() {
-	m.timestamp = nil
+// AddLikeCount adds i to the "likeCount" field.
+func (m *ReviewMutation) AddLikeCount(i int) {
+	if m.addlikeCount != nil {
+		*m.addlikeCount += i
+	} else {
+		m.addlikeCount = &i
+	}
+}
+
+// AddedLikeCount returns the value that was added to the "likeCount" field in this mutation.
+func (m *ReviewMutation) AddedLikeCount() (r int, exists bool) {
+	v := m.addlikeCount
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetLikeCount resets all changes to the "likeCount" field.
+func (m *ReviewMutation) ResetLikeCount() {
+	m.likeCount = nil
+	m.addlikeCount = nil
+}
+
+// SetDislikeCount sets the "dislikeCount" field.
+func (m *ReviewMutation) SetDislikeCount(i int) {
+	m.dislikeCount = &i
+	m.adddislikeCount = nil
+}
+
+// DislikeCount returns the value of the "dislikeCount" field in the mutation.
+func (m *ReviewMutation) DislikeCount() (r int, exists bool) {
+	v := m.dislikeCount
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDislikeCount returns the old "dislikeCount" field's value of the Review entity.
+// If the Review object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReviewMutation) OldDislikeCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDislikeCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDislikeCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDislikeCount: %w", err)
+	}
+	return oldValue.DislikeCount, nil
+}
+
+// AddDislikeCount adds i to the "dislikeCount" field.
+func (m *ReviewMutation) AddDislikeCount(i int) {
+	if m.adddislikeCount != nil {
+		*m.adddislikeCount += i
+	} else {
+		m.adddislikeCount = &i
+	}
+}
+
+// AddedDislikeCount returns the value that was added to the "dislikeCount" field in this mutation.
+func (m *ReviewMutation) AddedDislikeCount() (r int, exists bool) {
+	v := m.adddislikeCount
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetDislikeCount resets all changes to the "dislikeCount" field.
+func (m *ReviewMutation) ResetDislikeCount() {
+	m.dislikeCount = nil
+	m.adddislikeCount = nil
+}
+
+// SetFlag sets the "flag" field.
+func (m *ReviewMutation) SetFlag(s string) {
+	m.flag = &s
+}
+
+// Flag returns the value of the "flag" field in the mutation.
+func (m *ReviewMutation) Flag() (r string, exists bool) {
+	v := m.flag
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFlag returns the old "flag" field's value of the Review entity.
+// If the Review object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReviewMutation) OldFlag(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFlag is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFlag requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFlag: %w", err)
+	}
+	return oldValue.Flag, nil
+}
+
+// ResetFlag resets all changes to the "flag" field.
+func (m *ReviewMutation) ResetFlag() {
+	m.flag = nil
 }
 
 // SetUserID sets the "user" edge to the User entity by id.
@@ -21188,6 +22675,45 @@ func (m *ReviewMutation) ResetUser() {
 	m.cleareduser = false
 }
 
+// SetBusinessID sets the "business" edge to the Business entity by id.
+func (m *ReviewMutation) SetBusinessID(id string) {
+	m.business = &id
+}
+
+// ClearBusiness clears the "business" edge to the Business entity.
+func (m *ReviewMutation) ClearBusiness() {
+	m.clearedbusiness = true
+}
+
+// BusinessCleared reports if the "business" edge to the Business entity was cleared.
+func (m *ReviewMutation) BusinessCleared() bool {
+	return m.clearedbusiness
+}
+
+// BusinessID returns the "business" edge ID in the mutation.
+func (m *ReviewMutation) BusinessID() (id string, exists bool) {
+	if m.business != nil {
+		return *m.business, true
+	}
+	return
+}
+
+// BusinessIDs returns the "business" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// BusinessID instead. It exists only for internal usage by the builders.
+func (m *ReviewMutation) BusinessIDs() (ids []string) {
+	if id := m.business; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetBusiness resets all changes to the "business" edge.
+func (m *ReviewMutation) ResetBusiness() {
+	m.business = nil
+	m.clearedbusiness = false
+}
+
 // SetPlaceID sets the "place" edge to the Place entity by id.
 func (m *ReviewMutation) SetPlaceID(id string) {
 	m.place = &id
@@ -21227,6 +22753,207 @@ func (m *ReviewMutation) ResetPlace() {
 	m.clearedplace = false
 }
 
+// SetEventID sets the "event" edge to the Event entity by id.
+func (m *ReviewMutation) SetEventID(id string) {
+	m.event = &id
+}
+
+// ClearEvent clears the "event" edge to the Event entity.
+func (m *ReviewMutation) ClearEvent() {
+	m.clearedevent = true
+}
+
+// EventCleared reports if the "event" edge to the Event entity was cleared.
+func (m *ReviewMutation) EventCleared() bool {
+	return m.clearedevent
+}
+
+// EventID returns the "event" edge ID in the mutation.
+func (m *ReviewMutation) EventID() (id string, exists bool) {
+	if m.event != nil {
+		return *m.event, true
+	}
+	return
+}
+
+// EventIDs returns the "event" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// EventID instead. It exists only for internal usage by the builders.
+func (m *ReviewMutation) EventIDs() (ids []string) {
+	if id := m.event; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetEvent resets all changes to the "event" edge.
+func (m *ReviewMutation) ResetEvent() {
+	m.event = nil
+	m.clearedevent = false
+}
+
+// AddMediaIDs adds the "medias" edge to the Media entity by ids.
+func (m *ReviewMutation) AddMediaIDs(ids ...string) {
+	if m.medias == nil {
+		m.medias = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.medias[ids[i]] = struct{}{}
+	}
+}
+
+// ClearMedias clears the "medias" edge to the Media entity.
+func (m *ReviewMutation) ClearMedias() {
+	m.clearedmedias = true
+}
+
+// MediasCleared reports if the "medias" edge to the Media entity was cleared.
+func (m *ReviewMutation) MediasCleared() bool {
+	return m.clearedmedias
+}
+
+// RemoveMediaIDs removes the "medias" edge to the Media entity by IDs.
+func (m *ReviewMutation) RemoveMediaIDs(ids ...string) {
+	if m.removedmedias == nil {
+		m.removedmedias = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.medias, ids[i])
+		m.removedmedias[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedMedias returns the removed IDs of the "medias" edge to the Media entity.
+func (m *ReviewMutation) RemovedMediasIDs() (ids []string) {
+	for id := range m.removedmedias {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// MediasIDs returns the "medias" edge IDs in the mutation.
+func (m *ReviewMutation) MediasIDs() (ids []string) {
+	for id := range m.medias {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetMedias resets all changes to the "medias" edge.
+func (m *ReviewMutation) ResetMedias() {
+	m.medias = nil
+	m.clearedmedias = false
+	m.removedmedias = nil
+}
+
+// AddCommentIDs adds the "comments" edge to the Comment entity by ids.
+func (m *ReviewMutation) AddCommentIDs(ids ...string) {
+	if m.comments == nil {
+		m.comments = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.comments[ids[i]] = struct{}{}
+	}
+}
+
+// ClearComments clears the "comments" edge to the Comment entity.
+func (m *ReviewMutation) ClearComments() {
+	m.clearedcomments = true
+}
+
+// CommentsCleared reports if the "comments" edge to the Comment entity was cleared.
+func (m *ReviewMutation) CommentsCleared() bool {
+	return m.clearedcomments
+}
+
+// RemoveCommentIDs removes the "comments" edge to the Comment entity by IDs.
+func (m *ReviewMutation) RemoveCommentIDs(ids ...string) {
+	if m.removedcomments == nil {
+		m.removedcomments = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.comments, ids[i])
+		m.removedcomments[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedComments returns the removed IDs of the "comments" edge to the Comment entity.
+func (m *ReviewMutation) RemovedCommentsIDs() (ids []string) {
+	for id := range m.removedcomments {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// CommentsIDs returns the "comments" edge IDs in the mutation.
+func (m *ReviewMutation) CommentsIDs() (ids []string) {
+	for id := range m.comments {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetComments resets all changes to the "comments" edge.
+func (m *ReviewMutation) ResetComments() {
+	m.comments = nil
+	m.clearedcomments = false
+	m.removedcomments = nil
+}
+
+// AddLikeIDs adds the "likes" edge to the Like entity by ids.
+func (m *ReviewMutation) AddLikeIDs(ids ...string) {
+	if m.likes == nil {
+		m.likes = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.likes[ids[i]] = struct{}{}
+	}
+}
+
+// ClearLikes clears the "likes" edge to the Like entity.
+func (m *ReviewMutation) ClearLikes() {
+	m.clearedlikes = true
+}
+
+// LikesCleared reports if the "likes" edge to the Like entity was cleared.
+func (m *ReviewMutation) LikesCleared() bool {
+	return m.clearedlikes
+}
+
+// RemoveLikeIDs removes the "likes" edge to the Like entity by IDs.
+func (m *ReviewMutation) RemoveLikeIDs(ids ...string) {
+	if m.removedlikes == nil {
+		m.removedlikes = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.likes, ids[i])
+		m.removedlikes[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedLikes returns the removed IDs of the "likes" edge to the Like entity.
+func (m *ReviewMutation) RemovedLikesIDs() (ids []string) {
+	for id := range m.removedlikes {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// LikesIDs returns the "likes" edge IDs in the mutation.
+func (m *ReviewMutation) LikesIDs() (ids []string) {
+	for id := range m.likes {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetLikes resets all changes to the "likes" edge.
+func (m *ReviewMutation) ResetLikes() {
+	m.likes = nil
+	m.clearedlikes = false
+	m.removedlikes = nil
+}
+
 // Where appends a list predicates to the ReviewMutation builder.
 func (m *ReviewMutation) Where(ps ...predicate.Review) {
 	m.predicates = append(m.predicates, ps...)
@@ -21261,18 +22988,24 @@ func (m *ReviewMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ReviewMutation) Fields() []string {
-	fields := make([]string, 0, 4)
-	if m.rating != nil {
-		fields = append(fields, review.FieldRating)
+	fields := make([]string, 0, 6)
+	if m.score != nil {
+		fields = append(fields, review.FieldScore)
 	}
-	if m.comment != nil {
-		fields = append(fields, review.FieldComment)
+	if m.content != nil {
+		fields = append(fields, review.FieldContent)
 	}
-	if m.images_videos != nil {
-		fields = append(fields, review.FieldImagesVideos)
+	if m.createdAt != nil {
+		fields = append(fields, review.FieldCreatedAt)
 	}
-	if m.timestamp != nil {
-		fields = append(fields, review.FieldTimestamp)
+	if m.likeCount != nil {
+		fields = append(fields, review.FieldLikeCount)
+	}
+	if m.dislikeCount != nil {
+		fields = append(fields, review.FieldDislikeCount)
+	}
+	if m.flag != nil {
+		fields = append(fields, review.FieldFlag)
 	}
 	return fields
 }
@@ -21282,14 +23015,18 @@ func (m *ReviewMutation) Fields() []string {
 // schema.
 func (m *ReviewMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case review.FieldRating:
-		return m.Rating()
-	case review.FieldComment:
-		return m.Comment()
-	case review.FieldImagesVideos:
-		return m.ImagesVideos()
-	case review.FieldTimestamp:
-		return m.Timestamp()
+	case review.FieldScore:
+		return m.Score()
+	case review.FieldContent:
+		return m.Content()
+	case review.FieldCreatedAt:
+		return m.CreatedAt()
+	case review.FieldLikeCount:
+		return m.LikeCount()
+	case review.FieldDislikeCount:
+		return m.DislikeCount()
+	case review.FieldFlag:
+		return m.Flag()
 	}
 	return nil, false
 }
@@ -21299,14 +23036,18 @@ func (m *ReviewMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *ReviewMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case review.FieldRating:
-		return m.OldRating(ctx)
-	case review.FieldComment:
-		return m.OldComment(ctx)
-	case review.FieldImagesVideos:
-		return m.OldImagesVideos(ctx)
-	case review.FieldTimestamp:
-		return m.OldTimestamp(ctx)
+	case review.FieldScore:
+		return m.OldScore(ctx)
+	case review.FieldContent:
+		return m.OldContent(ctx)
+	case review.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case review.FieldLikeCount:
+		return m.OldLikeCount(ctx)
+	case review.FieldDislikeCount:
+		return m.OldDislikeCount(ctx)
+	case review.FieldFlag:
+		return m.OldFlag(ctx)
 	}
 	return nil, fmt.Errorf("unknown Review field %s", name)
 }
@@ -21316,33 +23057,47 @@ func (m *ReviewMutation) OldField(ctx context.Context, name string) (ent.Value, 
 // type.
 func (m *ReviewMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case review.FieldRating:
+	case review.FieldScore:
 		v, ok := value.(float64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetRating(v)
+		m.SetScore(v)
 		return nil
-	case review.FieldComment:
+	case review.FieldContent:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetComment(v)
+		m.SetContent(v)
 		return nil
-	case review.FieldImagesVideos:
-		v, ok := value.([]string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetImagesVideos(v)
-		return nil
-	case review.FieldTimestamp:
+	case review.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetTimestamp(v)
+		m.SetCreatedAt(v)
+		return nil
+	case review.FieldLikeCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLikeCount(v)
+		return nil
+	case review.FieldDislikeCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDislikeCount(v)
+		return nil
+	case review.FieldFlag:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFlag(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Review field %s", name)
@@ -21352,8 +23107,14 @@ func (m *ReviewMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *ReviewMutation) AddedFields() []string {
 	var fields []string
-	if m.addrating != nil {
-		fields = append(fields, review.FieldRating)
+	if m.addscore != nil {
+		fields = append(fields, review.FieldScore)
+	}
+	if m.addlikeCount != nil {
+		fields = append(fields, review.FieldLikeCount)
+	}
+	if m.adddislikeCount != nil {
+		fields = append(fields, review.FieldDislikeCount)
 	}
 	return fields
 }
@@ -21363,8 +23124,12 @@ func (m *ReviewMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *ReviewMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
-	case review.FieldRating:
-		return m.AddedRating()
+	case review.FieldScore:
+		return m.AddedScore()
+	case review.FieldLikeCount:
+		return m.AddedLikeCount()
+	case review.FieldDislikeCount:
+		return m.AddedDislikeCount()
 	}
 	return nil, false
 }
@@ -21374,12 +23139,26 @@ func (m *ReviewMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *ReviewMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case review.FieldRating:
+	case review.FieldScore:
 		v, ok := value.(float64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.AddRating(v)
+		m.AddScore(v)
+		return nil
+	case review.FieldLikeCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddLikeCount(v)
+		return nil
+	case review.FieldDislikeCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDislikeCount(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Review numeric field %s", name)
@@ -21388,14 +23167,7 @@ func (m *ReviewMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *ReviewMutation) ClearedFields() []string {
-	var fields []string
-	if m.FieldCleared(review.FieldComment) {
-		fields = append(fields, review.FieldComment)
-	}
-	if m.FieldCleared(review.FieldImagesVideos) {
-		fields = append(fields, review.FieldImagesVideos)
-	}
-	return fields
+	return nil
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -21408,14 +23180,6 @@ func (m *ReviewMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *ReviewMutation) ClearField(name string) error {
-	switch name {
-	case review.FieldComment:
-		m.ClearComment()
-		return nil
-	case review.FieldImagesVideos:
-		m.ClearImagesVideos()
-		return nil
-	}
 	return fmt.Errorf("unknown Review nullable field %s", name)
 }
 
@@ -21423,17 +23187,23 @@ func (m *ReviewMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *ReviewMutation) ResetField(name string) error {
 	switch name {
-	case review.FieldRating:
-		m.ResetRating()
+	case review.FieldScore:
+		m.ResetScore()
 		return nil
-	case review.FieldComment:
-		m.ResetComment()
+	case review.FieldContent:
+		m.ResetContent()
 		return nil
-	case review.FieldImagesVideos:
-		m.ResetImagesVideos()
+	case review.FieldCreatedAt:
+		m.ResetCreatedAt()
 		return nil
-	case review.FieldTimestamp:
-		m.ResetTimestamp()
+	case review.FieldLikeCount:
+		m.ResetLikeCount()
+		return nil
+	case review.FieldDislikeCount:
+		m.ResetDislikeCount()
+		return nil
+	case review.FieldFlag:
+		m.ResetFlag()
 		return nil
 	}
 	return fmt.Errorf("unknown Review field %s", name)
@@ -21441,12 +23211,27 @@ func (m *ReviewMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *ReviewMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 7)
 	if m.user != nil {
 		edges = append(edges, review.EdgeUser)
 	}
+	if m.business != nil {
+		edges = append(edges, review.EdgeBusiness)
+	}
 	if m.place != nil {
 		edges = append(edges, review.EdgePlace)
+	}
+	if m.event != nil {
+		edges = append(edges, review.EdgeEvent)
+	}
+	if m.medias != nil {
+		edges = append(edges, review.EdgeMedias)
+	}
+	if m.comments != nil {
+		edges = append(edges, review.EdgeComments)
+	}
+	if m.likes != nil {
+		edges = append(edges, review.EdgeLikes)
 	}
 	return edges
 }
@@ -21459,34 +23244,104 @@ func (m *ReviewMutation) AddedIDs(name string) []ent.Value {
 		if id := m.user; id != nil {
 			return []ent.Value{*id}
 		}
+	case review.EdgeBusiness:
+		if id := m.business; id != nil {
+			return []ent.Value{*id}
+		}
 	case review.EdgePlace:
 		if id := m.place; id != nil {
 			return []ent.Value{*id}
 		}
+	case review.EdgeEvent:
+		if id := m.event; id != nil {
+			return []ent.Value{*id}
+		}
+	case review.EdgeMedias:
+		ids := make([]ent.Value, 0, len(m.medias))
+		for id := range m.medias {
+			ids = append(ids, id)
+		}
+		return ids
+	case review.EdgeComments:
+		ids := make([]ent.Value, 0, len(m.comments))
+		for id := range m.comments {
+			ids = append(ids, id)
+		}
+		return ids
+	case review.EdgeLikes:
+		ids := make([]ent.Value, 0, len(m.likes))
+		for id := range m.likes {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *ReviewMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 7)
+	if m.removedmedias != nil {
+		edges = append(edges, review.EdgeMedias)
+	}
+	if m.removedcomments != nil {
+		edges = append(edges, review.EdgeComments)
+	}
+	if m.removedlikes != nil {
+		edges = append(edges, review.EdgeLikes)
+	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *ReviewMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case review.EdgeMedias:
+		ids := make([]ent.Value, 0, len(m.removedmedias))
+		for id := range m.removedmedias {
+			ids = append(ids, id)
+		}
+		return ids
+	case review.EdgeComments:
+		ids := make([]ent.Value, 0, len(m.removedcomments))
+		for id := range m.removedcomments {
+			ids = append(ids, id)
+		}
+		return ids
+	case review.EdgeLikes:
+		ids := make([]ent.Value, 0, len(m.removedlikes))
+		for id := range m.removedlikes {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *ReviewMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 7)
 	if m.cleareduser {
 		edges = append(edges, review.EdgeUser)
 	}
+	if m.clearedbusiness {
+		edges = append(edges, review.EdgeBusiness)
+	}
 	if m.clearedplace {
 		edges = append(edges, review.EdgePlace)
+	}
+	if m.clearedevent {
+		edges = append(edges, review.EdgeEvent)
+	}
+	if m.clearedmedias {
+		edges = append(edges, review.EdgeMedias)
+	}
+	if m.clearedcomments {
+		edges = append(edges, review.EdgeComments)
+	}
+	if m.clearedlikes {
+		edges = append(edges, review.EdgeLikes)
 	}
 	return edges
 }
@@ -21497,8 +23352,18 @@ func (m *ReviewMutation) EdgeCleared(name string) bool {
 	switch name {
 	case review.EdgeUser:
 		return m.cleareduser
+	case review.EdgeBusiness:
+		return m.clearedbusiness
 	case review.EdgePlace:
 		return m.clearedplace
+	case review.EdgeEvent:
+		return m.clearedevent
+	case review.EdgeMedias:
+		return m.clearedmedias
+	case review.EdgeComments:
+		return m.clearedcomments
+	case review.EdgeLikes:
+		return m.clearedlikes
 	}
 	return false
 }
@@ -21510,8 +23375,14 @@ func (m *ReviewMutation) ClearEdge(name string) error {
 	case review.EdgeUser:
 		m.ClearUser()
 		return nil
+	case review.EdgeBusiness:
+		m.ClearBusiness()
+		return nil
 	case review.EdgePlace:
 		m.ClearPlace()
+		return nil
+	case review.EdgeEvent:
+		m.ClearEvent()
 		return nil
 	}
 	return fmt.Errorf("unknown Review unique edge %s", name)
@@ -21524,8 +23395,23 @@ func (m *ReviewMutation) ResetEdge(name string) error {
 	case review.EdgeUser:
 		m.ResetUser()
 		return nil
+	case review.EdgeBusiness:
+		m.ResetBusiness()
+		return nil
 	case review.EdgePlace:
 		m.ResetPlace()
+		return nil
+	case review.EdgeEvent:
+		m.ResetEvent()
+		return nil
+	case review.EdgeMedias:
+		m.ResetMedias()
+		return nil
+	case review.EdgeComments:
+		m.ResetComments()
+		return nil
+	case review.EdgeLikes:
+		m.ResetLikes()
 		return nil
 	}
 	return fmt.Errorf("unknown Review edge %s", name)
@@ -23433,6 +25319,9 @@ type UserMutation struct {
 	likedPlaces                map[string]struct{}
 	removedlikedPlaces         map[string]struct{}
 	clearedlikedPlaces         bool
+	ratings                    map[string]struct{}
+	removedratings             map[string]struct{}
+	clearedratings             bool
 	done                       bool
 	oldValue                   func(context.Context) (*User, error)
 	predicates                 []predicate.User
@@ -25332,6 +27221,60 @@ func (m *UserMutation) ResetLikedPlaces() {
 	m.removedlikedPlaces = nil
 }
 
+// AddRatingIDs adds the "ratings" edge to the Rating entity by ids.
+func (m *UserMutation) AddRatingIDs(ids ...string) {
+	if m.ratings == nil {
+		m.ratings = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.ratings[ids[i]] = struct{}{}
+	}
+}
+
+// ClearRatings clears the "ratings" edge to the Rating entity.
+func (m *UserMutation) ClearRatings() {
+	m.clearedratings = true
+}
+
+// RatingsCleared reports if the "ratings" edge to the Rating entity was cleared.
+func (m *UserMutation) RatingsCleared() bool {
+	return m.clearedratings
+}
+
+// RemoveRatingIDs removes the "ratings" edge to the Rating entity by IDs.
+func (m *UserMutation) RemoveRatingIDs(ids ...string) {
+	if m.removedratings == nil {
+		m.removedratings = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.ratings, ids[i])
+		m.removedratings[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedRatings returns the removed IDs of the "ratings" edge to the Rating entity.
+func (m *UserMutation) RemovedRatingsIDs() (ids []string) {
+	for id := range m.removedratings {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// RatingsIDs returns the "ratings" edge IDs in the mutation.
+func (m *UserMutation) RatingsIDs() (ids []string) {
+	for id := range m.ratings {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetRatings resets all changes to the "ratings" edge.
+func (m *UserMutation) ResetRatings() {
+	m.ratings = nil
+	m.clearedratings = false
+	m.removedratings = nil
+}
+
 // Where appends a list predicates to the UserMutation builder.
 func (m *UserMutation) Where(ps ...predicate.User) {
 	m.predicates = append(m.predicates, ps...)
@@ -25822,7 +27765,7 @@ func (m *UserMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserMutation) AddedEdges() []string {
-	edges := make([]string, 0, 19)
+	edges := make([]string, 0, 20)
 	if m.userBusinesses != nil {
 		edges = append(edges, user.EdgeUserBusinesses)
 	}
@@ -25879,6 +27822,9 @@ func (m *UserMutation) AddedEdges() []string {
 	}
 	if m.likedPlaces != nil {
 		edges = append(edges, user.EdgeLikedPlaces)
+	}
+	if m.ratings != nil {
+		edges = append(edges, user.EdgeRatings)
 	}
 	return edges
 }
@@ -25999,13 +27945,19 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeRatings:
+		ids := make([]ent.Value, 0, len(m.ratings))
+		for id := range m.ratings {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 19)
+	edges := make([]string, 0, 20)
 	if m.removeduserBusinesses != nil {
 		edges = append(edges, user.EdgeUserBusinesses)
 	}
@@ -26059,6 +28011,9 @@ func (m *UserMutation) RemovedEdges() []string {
 	}
 	if m.removedlikedPlaces != nil {
 		edges = append(edges, user.EdgeLikedPlaces)
+	}
+	if m.removedratings != nil {
+		edges = append(edges, user.EdgeRatings)
 	}
 	return edges
 }
@@ -26175,13 +28130,19 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeRatings:
+		ids := make([]ent.Value, 0, len(m.removedratings))
+		for id := range m.removedratings {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 19)
+	edges := make([]string, 0, 20)
 	if m.cleareduserBusinesses {
 		edges = append(edges, user.EdgeUserBusinesses)
 	}
@@ -26239,6 +28200,9 @@ func (m *UserMutation) ClearedEdges() []string {
 	if m.clearedlikedPlaces {
 		edges = append(edges, user.EdgeLikedPlaces)
 	}
+	if m.clearedratings {
+		edges = append(edges, user.EdgeRatings)
+	}
 	return edges
 }
 
@@ -26284,6 +28248,8 @@ func (m *UserMutation) EdgeCleared(name string) bool {
 		return m.clearedfollowedPlaces
 	case user.EdgeLikedPlaces:
 		return m.clearedlikedPlaces
+	case user.EdgeRatings:
+		return m.clearedratings
 	}
 	return false
 }
@@ -26359,6 +28325,9 @@ func (m *UserMutation) ResetEdge(name string) error {
 		return nil
 	case user.EdgeLikedPlaces:
 		m.ResetLikedPlaces()
+		return nil
+	case user.EdgeRatings:
+		m.ResetRatings()
 		return nil
 	}
 	return fmt.Errorf("unknown User edge %s", name)

@@ -13,6 +13,7 @@ import (
 	"placio-app/ent/event"
 	"placio-app/ent/faq"
 	"placio-app/ent/place"
+	"placio-app/ent/rating"
 	"placio-app/ent/ticket"
 	"placio-app/ent/ticketoption"
 	"placio-app/ent/user"
@@ -724,6 +725,21 @@ func (ec *EventCreate) AddFaqs(f ...*FAQ) *EventCreate {
 	return ec.AddFaqIDs(ids...)
 }
 
+// AddRatingIDs adds the "ratings" edge to the Rating entity by IDs.
+func (ec *EventCreate) AddRatingIDs(ids ...string) *EventCreate {
+	ec.mutation.AddRatingIDs(ids...)
+	return ec
+}
+
+// AddRatings adds the "ratings" edges to the Rating entity.
+func (ec *EventCreate) AddRatings(r ...*Rating) *EventCreate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return ec.AddRatingIDs(ids...)
+}
+
 // Mutation returns the EventMutation object of the builder.
 func (ec *EventCreate) Mutation() *EventMutation {
 	return ec.mutation
@@ -1151,6 +1167,22 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(faq.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ec.mutation.RatingsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   event.RatingsTable,
+			Columns: []string{event.RatingsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rating.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

@@ -65,184 +65,324 @@ func IDContainsFold(id string) predicate.Review {
 	return predicate.Review(sql.FieldContainsFold(FieldID, id))
 }
 
-// Rating applies equality check predicate on the "rating" field. It's identical to RatingEQ.
-func Rating(v float64) predicate.Review {
-	return predicate.Review(sql.FieldEQ(FieldRating, v))
+// Score applies equality check predicate on the "score" field. It's identical to ScoreEQ.
+func Score(v float64) predicate.Review {
+	return predicate.Review(sql.FieldEQ(FieldScore, v))
 }
 
-// Comment applies equality check predicate on the "comment" field. It's identical to CommentEQ.
-func Comment(v string) predicate.Review {
-	return predicate.Review(sql.FieldEQ(FieldComment, v))
+// Content applies equality check predicate on the "content" field. It's identical to ContentEQ.
+func Content(v string) predicate.Review {
+	return predicate.Review(sql.FieldEQ(FieldContent, v))
 }
 
-// Timestamp applies equality check predicate on the "timestamp" field. It's identical to TimestampEQ.
-func Timestamp(v time.Time) predicate.Review {
-	return predicate.Review(sql.FieldEQ(FieldTimestamp, v))
+// CreatedAt applies equality check predicate on the "createdAt" field. It's identical to CreatedAtEQ.
+func CreatedAt(v time.Time) predicate.Review {
+	return predicate.Review(sql.FieldEQ(FieldCreatedAt, v))
 }
 
-// RatingEQ applies the EQ predicate on the "rating" field.
-func RatingEQ(v float64) predicate.Review {
-	return predicate.Review(sql.FieldEQ(FieldRating, v))
+// LikeCount applies equality check predicate on the "likeCount" field. It's identical to LikeCountEQ.
+func LikeCount(v int) predicate.Review {
+	return predicate.Review(sql.FieldEQ(FieldLikeCount, v))
 }
 
-// RatingNEQ applies the NEQ predicate on the "rating" field.
-func RatingNEQ(v float64) predicate.Review {
-	return predicate.Review(sql.FieldNEQ(FieldRating, v))
+// DislikeCount applies equality check predicate on the "dislikeCount" field. It's identical to DislikeCountEQ.
+func DislikeCount(v int) predicate.Review {
+	return predicate.Review(sql.FieldEQ(FieldDislikeCount, v))
 }
 
-// RatingIn applies the In predicate on the "rating" field.
-func RatingIn(vs ...float64) predicate.Review {
-	return predicate.Review(sql.FieldIn(FieldRating, vs...))
+// Flag applies equality check predicate on the "flag" field. It's identical to FlagEQ.
+func Flag(v string) predicate.Review {
+	return predicate.Review(sql.FieldEQ(FieldFlag, v))
 }
 
-// RatingNotIn applies the NotIn predicate on the "rating" field.
-func RatingNotIn(vs ...float64) predicate.Review {
-	return predicate.Review(sql.FieldNotIn(FieldRating, vs...))
+// ScoreEQ applies the EQ predicate on the "score" field.
+func ScoreEQ(v float64) predicate.Review {
+	return predicate.Review(sql.FieldEQ(FieldScore, v))
 }
 
-// RatingGT applies the GT predicate on the "rating" field.
-func RatingGT(v float64) predicate.Review {
-	return predicate.Review(sql.FieldGT(FieldRating, v))
+// ScoreNEQ applies the NEQ predicate on the "score" field.
+func ScoreNEQ(v float64) predicate.Review {
+	return predicate.Review(sql.FieldNEQ(FieldScore, v))
 }
 
-// RatingGTE applies the GTE predicate on the "rating" field.
-func RatingGTE(v float64) predicate.Review {
-	return predicate.Review(sql.FieldGTE(FieldRating, v))
+// ScoreIn applies the In predicate on the "score" field.
+func ScoreIn(vs ...float64) predicate.Review {
+	return predicate.Review(sql.FieldIn(FieldScore, vs...))
 }
 
-// RatingLT applies the LT predicate on the "rating" field.
-func RatingLT(v float64) predicate.Review {
-	return predicate.Review(sql.FieldLT(FieldRating, v))
+// ScoreNotIn applies the NotIn predicate on the "score" field.
+func ScoreNotIn(vs ...float64) predicate.Review {
+	return predicate.Review(sql.FieldNotIn(FieldScore, vs...))
 }
 
-// RatingLTE applies the LTE predicate on the "rating" field.
-func RatingLTE(v float64) predicate.Review {
-	return predicate.Review(sql.FieldLTE(FieldRating, v))
+// ScoreGT applies the GT predicate on the "score" field.
+func ScoreGT(v float64) predicate.Review {
+	return predicate.Review(sql.FieldGT(FieldScore, v))
 }
 
-// CommentEQ applies the EQ predicate on the "comment" field.
-func CommentEQ(v string) predicate.Review {
-	return predicate.Review(sql.FieldEQ(FieldComment, v))
+// ScoreGTE applies the GTE predicate on the "score" field.
+func ScoreGTE(v float64) predicate.Review {
+	return predicate.Review(sql.FieldGTE(FieldScore, v))
 }
 
-// CommentNEQ applies the NEQ predicate on the "comment" field.
-func CommentNEQ(v string) predicate.Review {
-	return predicate.Review(sql.FieldNEQ(FieldComment, v))
+// ScoreLT applies the LT predicate on the "score" field.
+func ScoreLT(v float64) predicate.Review {
+	return predicate.Review(sql.FieldLT(FieldScore, v))
 }
 
-// CommentIn applies the In predicate on the "comment" field.
-func CommentIn(vs ...string) predicate.Review {
-	return predicate.Review(sql.FieldIn(FieldComment, vs...))
+// ScoreLTE applies the LTE predicate on the "score" field.
+func ScoreLTE(v float64) predicate.Review {
+	return predicate.Review(sql.FieldLTE(FieldScore, v))
 }
 
-// CommentNotIn applies the NotIn predicate on the "comment" field.
-func CommentNotIn(vs ...string) predicate.Review {
-	return predicate.Review(sql.FieldNotIn(FieldComment, vs...))
+// ContentEQ applies the EQ predicate on the "content" field.
+func ContentEQ(v string) predicate.Review {
+	return predicate.Review(sql.FieldEQ(FieldContent, v))
 }
 
-// CommentGT applies the GT predicate on the "comment" field.
-func CommentGT(v string) predicate.Review {
-	return predicate.Review(sql.FieldGT(FieldComment, v))
+// ContentNEQ applies the NEQ predicate on the "content" field.
+func ContentNEQ(v string) predicate.Review {
+	return predicate.Review(sql.FieldNEQ(FieldContent, v))
 }
 
-// CommentGTE applies the GTE predicate on the "comment" field.
-func CommentGTE(v string) predicate.Review {
-	return predicate.Review(sql.FieldGTE(FieldComment, v))
+// ContentIn applies the In predicate on the "content" field.
+func ContentIn(vs ...string) predicate.Review {
+	return predicate.Review(sql.FieldIn(FieldContent, vs...))
 }
 
-// CommentLT applies the LT predicate on the "comment" field.
-func CommentLT(v string) predicate.Review {
-	return predicate.Review(sql.FieldLT(FieldComment, v))
+// ContentNotIn applies the NotIn predicate on the "content" field.
+func ContentNotIn(vs ...string) predicate.Review {
+	return predicate.Review(sql.FieldNotIn(FieldContent, vs...))
 }
 
-// CommentLTE applies the LTE predicate on the "comment" field.
-func CommentLTE(v string) predicate.Review {
-	return predicate.Review(sql.FieldLTE(FieldComment, v))
+// ContentGT applies the GT predicate on the "content" field.
+func ContentGT(v string) predicate.Review {
+	return predicate.Review(sql.FieldGT(FieldContent, v))
 }
 
-// CommentContains applies the Contains predicate on the "comment" field.
-func CommentContains(v string) predicate.Review {
-	return predicate.Review(sql.FieldContains(FieldComment, v))
+// ContentGTE applies the GTE predicate on the "content" field.
+func ContentGTE(v string) predicate.Review {
+	return predicate.Review(sql.FieldGTE(FieldContent, v))
 }
 
-// CommentHasPrefix applies the HasPrefix predicate on the "comment" field.
-func CommentHasPrefix(v string) predicate.Review {
-	return predicate.Review(sql.FieldHasPrefix(FieldComment, v))
+// ContentLT applies the LT predicate on the "content" field.
+func ContentLT(v string) predicate.Review {
+	return predicate.Review(sql.FieldLT(FieldContent, v))
 }
 
-// CommentHasSuffix applies the HasSuffix predicate on the "comment" field.
-func CommentHasSuffix(v string) predicate.Review {
-	return predicate.Review(sql.FieldHasSuffix(FieldComment, v))
+// ContentLTE applies the LTE predicate on the "content" field.
+func ContentLTE(v string) predicate.Review {
+	return predicate.Review(sql.FieldLTE(FieldContent, v))
 }
 
-// CommentIsNil applies the IsNil predicate on the "comment" field.
-func CommentIsNil() predicate.Review {
-	return predicate.Review(sql.FieldIsNull(FieldComment))
+// ContentContains applies the Contains predicate on the "content" field.
+func ContentContains(v string) predicate.Review {
+	return predicate.Review(sql.FieldContains(FieldContent, v))
 }
 
-// CommentNotNil applies the NotNil predicate on the "comment" field.
-func CommentNotNil() predicate.Review {
-	return predicate.Review(sql.FieldNotNull(FieldComment))
+// ContentHasPrefix applies the HasPrefix predicate on the "content" field.
+func ContentHasPrefix(v string) predicate.Review {
+	return predicate.Review(sql.FieldHasPrefix(FieldContent, v))
 }
 
-// CommentEqualFold applies the EqualFold predicate on the "comment" field.
-func CommentEqualFold(v string) predicate.Review {
-	return predicate.Review(sql.FieldEqualFold(FieldComment, v))
+// ContentHasSuffix applies the HasSuffix predicate on the "content" field.
+func ContentHasSuffix(v string) predicate.Review {
+	return predicate.Review(sql.FieldHasSuffix(FieldContent, v))
 }
 
-// CommentContainsFold applies the ContainsFold predicate on the "comment" field.
-func CommentContainsFold(v string) predicate.Review {
-	return predicate.Review(sql.FieldContainsFold(FieldComment, v))
+// ContentEqualFold applies the EqualFold predicate on the "content" field.
+func ContentEqualFold(v string) predicate.Review {
+	return predicate.Review(sql.FieldEqualFold(FieldContent, v))
 }
 
-// ImagesVideosIsNil applies the IsNil predicate on the "images_videos" field.
-func ImagesVideosIsNil() predicate.Review {
-	return predicate.Review(sql.FieldIsNull(FieldImagesVideos))
+// ContentContainsFold applies the ContainsFold predicate on the "content" field.
+func ContentContainsFold(v string) predicate.Review {
+	return predicate.Review(sql.FieldContainsFold(FieldContent, v))
 }
 
-// ImagesVideosNotNil applies the NotNil predicate on the "images_videos" field.
-func ImagesVideosNotNil() predicate.Review {
-	return predicate.Review(sql.FieldNotNull(FieldImagesVideos))
+// CreatedAtEQ applies the EQ predicate on the "createdAt" field.
+func CreatedAtEQ(v time.Time) predicate.Review {
+	return predicate.Review(sql.FieldEQ(FieldCreatedAt, v))
 }
 
-// TimestampEQ applies the EQ predicate on the "timestamp" field.
-func TimestampEQ(v time.Time) predicate.Review {
-	return predicate.Review(sql.FieldEQ(FieldTimestamp, v))
+// CreatedAtNEQ applies the NEQ predicate on the "createdAt" field.
+func CreatedAtNEQ(v time.Time) predicate.Review {
+	return predicate.Review(sql.FieldNEQ(FieldCreatedAt, v))
 }
 
-// TimestampNEQ applies the NEQ predicate on the "timestamp" field.
-func TimestampNEQ(v time.Time) predicate.Review {
-	return predicate.Review(sql.FieldNEQ(FieldTimestamp, v))
+// CreatedAtIn applies the In predicate on the "createdAt" field.
+func CreatedAtIn(vs ...time.Time) predicate.Review {
+	return predicate.Review(sql.FieldIn(FieldCreatedAt, vs...))
 }
 
-// TimestampIn applies the In predicate on the "timestamp" field.
-func TimestampIn(vs ...time.Time) predicate.Review {
-	return predicate.Review(sql.FieldIn(FieldTimestamp, vs...))
+// CreatedAtNotIn applies the NotIn predicate on the "createdAt" field.
+func CreatedAtNotIn(vs ...time.Time) predicate.Review {
+	return predicate.Review(sql.FieldNotIn(FieldCreatedAt, vs...))
 }
 
-// TimestampNotIn applies the NotIn predicate on the "timestamp" field.
-func TimestampNotIn(vs ...time.Time) predicate.Review {
-	return predicate.Review(sql.FieldNotIn(FieldTimestamp, vs...))
+// CreatedAtGT applies the GT predicate on the "createdAt" field.
+func CreatedAtGT(v time.Time) predicate.Review {
+	return predicate.Review(sql.FieldGT(FieldCreatedAt, v))
 }
 
-// TimestampGT applies the GT predicate on the "timestamp" field.
-func TimestampGT(v time.Time) predicate.Review {
-	return predicate.Review(sql.FieldGT(FieldTimestamp, v))
+// CreatedAtGTE applies the GTE predicate on the "createdAt" field.
+func CreatedAtGTE(v time.Time) predicate.Review {
+	return predicate.Review(sql.FieldGTE(FieldCreatedAt, v))
 }
 
-// TimestampGTE applies the GTE predicate on the "timestamp" field.
-func TimestampGTE(v time.Time) predicate.Review {
-	return predicate.Review(sql.FieldGTE(FieldTimestamp, v))
+// CreatedAtLT applies the LT predicate on the "createdAt" field.
+func CreatedAtLT(v time.Time) predicate.Review {
+	return predicate.Review(sql.FieldLT(FieldCreatedAt, v))
 }
 
-// TimestampLT applies the LT predicate on the "timestamp" field.
-func TimestampLT(v time.Time) predicate.Review {
-	return predicate.Review(sql.FieldLT(FieldTimestamp, v))
+// CreatedAtLTE applies the LTE predicate on the "createdAt" field.
+func CreatedAtLTE(v time.Time) predicate.Review {
+	return predicate.Review(sql.FieldLTE(FieldCreatedAt, v))
 }
 
-// TimestampLTE applies the LTE predicate on the "timestamp" field.
-func TimestampLTE(v time.Time) predicate.Review {
-	return predicate.Review(sql.FieldLTE(FieldTimestamp, v))
+// LikeCountEQ applies the EQ predicate on the "likeCount" field.
+func LikeCountEQ(v int) predicate.Review {
+	return predicate.Review(sql.FieldEQ(FieldLikeCount, v))
+}
+
+// LikeCountNEQ applies the NEQ predicate on the "likeCount" field.
+func LikeCountNEQ(v int) predicate.Review {
+	return predicate.Review(sql.FieldNEQ(FieldLikeCount, v))
+}
+
+// LikeCountIn applies the In predicate on the "likeCount" field.
+func LikeCountIn(vs ...int) predicate.Review {
+	return predicate.Review(sql.FieldIn(FieldLikeCount, vs...))
+}
+
+// LikeCountNotIn applies the NotIn predicate on the "likeCount" field.
+func LikeCountNotIn(vs ...int) predicate.Review {
+	return predicate.Review(sql.FieldNotIn(FieldLikeCount, vs...))
+}
+
+// LikeCountGT applies the GT predicate on the "likeCount" field.
+func LikeCountGT(v int) predicate.Review {
+	return predicate.Review(sql.FieldGT(FieldLikeCount, v))
+}
+
+// LikeCountGTE applies the GTE predicate on the "likeCount" field.
+func LikeCountGTE(v int) predicate.Review {
+	return predicate.Review(sql.FieldGTE(FieldLikeCount, v))
+}
+
+// LikeCountLT applies the LT predicate on the "likeCount" field.
+func LikeCountLT(v int) predicate.Review {
+	return predicate.Review(sql.FieldLT(FieldLikeCount, v))
+}
+
+// LikeCountLTE applies the LTE predicate on the "likeCount" field.
+func LikeCountLTE(v int) predicate.Review {
+	return predicate.Review(sql.FieldLTE(FieldLikeCount, v))
+}
+
+// DislikeCountEQ applies the EQ predicate on the "dislikeCount" field.
+func DislikeCountEQ(v int) predicate.Review {
+	return predicate.Review(sql.FieldEQ(FieldDislikeCount, v))
+}
+
+// DislikeCountNEQ applies the NEQ predicate on the "dislikeCount" field.
+func DislikeCountNEQ(v int) predicate.Review {
+	return predicate.Review(sql.FieldNEQ(FieldDislikeCount, v))
+}
+
+// DislikeCountIn applies the In predicate on the "dislikeCount" field.
+func DislikeCountIn(vs ...int) predicate.Review {
+	return predicate.Review(sql.FieldIn(FieldDislikeCount, vs...))
+}
+
+// DislikeCountNotIn applies the NotIn predicate on the "dislikeCount" field.
+func DislikeCountNotIn(vs ...int) predicate.Review {
+	return predicate.Review(sql.FieldNotIn(FieldDislikeCount, vs...))
+}
+
+// DislikeCountGT applies the GT predicate on the "dislikeCount" field.
+func DislikeCountGT(v int) predicate.Review {
+	return predicate.Review(sql.FieldGT(FieldDislikeCount, v))
+}
+
+// DislikeCountGTE applies the GTE predicate on the "dislikeCount" field.
+func DislikeCountGTE(v int) predicate.Review {
+	return predicate.Review(sql.FieldGTE(FieldDislikeCount, v))
+}
+
+// DislikeCountLT applies the LT predicate on the "dislikeCount" field.
+func DislikeCountLT(v int) predicate.Review {
+	return predicate.Review(sql.FieldLT(FieldDislikeCount, v))
+}
+
+// DislikeCountLTE applies the LTE predicate on the "dislikeCount" field.
+func DislikeCountLTE(v int) predicate.Review {
+	return predicate.Review(sql.FieldLTE(FieldDislikeCount, v))
+}
+
+// FlagEQ applies the EQ predicate on the "flag" field.
+func FlagEQ(v string) predicate.Review {
+	return predicate.Review(sql.FieldEQ(FieldFlag, v))
+}
+
+// FlagNEQ applies the NEQ predicate on the "flag" field.
+func FlagNEQ(v string) predicate.Review {
+	return predicate.Review(sql.FieldNEQ(FieldFlag, v))
+}
+
+// FlagIn applies the In predicate on the "flag" field.
+func FlagIn(vs ...string) predicate.Review {
+	return predicate.Review(sql.FieldIn(FieldFlag, vs...))
+}
+
+// FlagNotIn applies the NotIn predicate on the "flag" field.
+func FlagNotIn(vs ...string) predicate.Review {
+	return predicate.Review(sql.FieldNotIn(FieldFlag, vs...))
+}
+
+// FlagGT applies the GT predicate on the "flag" field.
+func FlagGT(v string) predicate.Review {
+	return predicate.Review(sql.FieldGT(FieldFlag, v))
+}
+
+// FlagGTE applies the GTE predicate on the "flag" field.
+func FlagGTE(v string) predicate.Review {
+	return predicate.Review(sql.FieldGTE(FieldFlag, v))
+}
+
+// FlagLT applies the LT predicate on the "flag" field.
+func FlagLT(v string) predicate.Review {
+	return predicate.Review(sql.FieldLT(FieldFlag, v))
+}
+
+// FlagLTE applies the LTE predicate on the "flag" field.
+func FlagLTE(v string) predicate.Review {
+	return predicate.Review(sql.FieldLTE(FieldFlag, v))
+}
+
+// FlagContains applies the Contains predicate on the "flag" field.
+func FlagContains(v string) predicate.Review {
+	return predicate.Review(sql.FieldContains(FieldFlag, v))
+}
+
+// FlagHasPrefix applies the HasPrefix predicate on the "flag" field.
+func FlagHasPrefix(v string) predicate.Review {
+	return predicate.Review(sql.FieldHasPrefix(FieldFlag, v))
+}
+
+// FlagHasSuffix applies the HasSuffix predicate on the "flag" field.
+func FlagHasSuffix(v string) predicate.Review {
+	return predicate.Review(sql.FieldHasSuffix(FieldFlag, v))
+}
+
+// FlagEqualFold applies the EqualFold predicate on the "flag" field.
+func FlagEqualFold(v string) predicate.Review {
+	return predicate.Review(sql.FieldEqualFold(FieldFlag, v))
+}
+
+// FlagContainsFold applies the ContainsFold predicate on the "flag" field.
+func FlagContainsFold(v string) predicate.Review {
+	return predicate.Review(sql.FieldContainsFold(FieldFlag, v))
 }
 
 // HasUser applies the HasEdge predicate on the "user" edge.
@@ -268,12 +408,35 @@ func HasUserWith(preds ...predicate.User) predicate.Review {
 	})
 }
 
+// HasBusiness applies the HasEdge predicate on the "business" edge.
+func HasBusiness() predicate.Review {
+	return predicate.Review(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, BusinessTable, BusinessColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasBusinessWith applies the HasEdge predicate on the "business" edge with a given conditions (other predicates).
+func HasBusinessWith(preds ...predicate.Business) predicate.Review {
+	return predicate.Review(func(s *sql.Selector) {
+		step := newBusinessStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasPlace applies the HasEdge predicate on the "place" edge.
 func HasPlace() predicate.Review {
 	return predicate.Review(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, PlaceTable, PlaceColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, PlaceTable, PlaceColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -283,6 +446,98 @@ func HasPlace() predicate.Review {
 func HasPlaceWith(preds ...predicate.Place) predicate.Review {
 	return predicate.Review(func(s *sql.Selector) {
 		step := newPlaceStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasEvent applies the HasEdge predicate on the "event" edge.
+func HasEvent() predicate.Review {
+	return predicate.Review(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, EventTable, EventColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasEventWith applies the HasEdge predicate on the "event" edge with a given conditions (other predicates).
+func HasEventWith(preds ...predicate.Event) predicate.Review {
+	return predicate.Review(func(s *sql.Selector) {
+		step := newEventStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasMedias applies the HasEdge predicate on the "medias" edge.
+func HasMedias() predicate.Review {
+	return predicate.Review(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, MediasTable, MediasColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasMediasWith applies the HasEdge predicate on the "medias" edge with a given conditions (other predicates).
+func HasMediasWith(preds ...predicate.Media) predicate.Review {
+	return predicate.Review(func(s *sql.Selector) {
+		step := newMediasStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasComments applies the HasEdge predicate on the "comments" edge.
+func HasComments() predicate.Review {
+	return predicate.Review(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CommentsTable, CommentsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCommentsWith applies the HasEdge predicate on the "comments" edge with a given conditions (other predicates).
+func HasCommentsWith(preds ...predicate.Comment) predicate.Review {
+	return predicate.Review(func(s *sql.Selector) {
+		step := newCommentsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasLikes applies the HasEdge predicate on the "likes" edge.
+func HasLikes() predicate.Review {
+	return predicate.Review(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, LikesTable, LikesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasLikesWith applies the HasEdge predicate on the "likes" edge with a given conditions (other predicates).
+func HasLikesWith(preds ...predicate.Like) predicate.Review {
+	return predicate.Review(func(s *sql.Selector) {
+		step := newLikesStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

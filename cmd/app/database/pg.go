@@ -66,7 +66,6 @@ func EntClient(ctx context.Context) *ent.Client {
 
 	host := getEnv("DB_HOST", "containers-us-west-146.railway.app")
 	//host := getEnv("DB_HOST", "postgres-db")
-	//port := getEnv("DB_PORT", "5432")
 	port := getEnv("DB_PORT", "5756")
 	//user := getEnv("DB_USER", "dozie")
 	user := getEnv("DB_USER", "postgres")

@@ -82,9 +82,11 @@ type BusinessEdges struct {
 	BusinessFollowEvents []*BusinessFollowEvent `json:"businessFollowEvents,omitempty"`
 	// Faqs holds the value of the faqs edge.
 	Faqs []*FAQ `json:"faqs,omitempty"`
+	// Ratings holds the value of the ratings edge.
+	Ratings []*Rating `json:"ratings,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [13]bool
+	loadedTypes [14]bool
 }
 
 // UserBusinessesOrErr returns the UserBusinesses value or an error if the edge
@@ -206,6 +208,15 @@ func (e BusinessEdges) FaqsOrErr() ([]*FAQ, error) {
 		return e.Faqs, nil
 	}
 	return nil, &NotLoadedError{edge: "faqs"}
+}
+
+// RatingsOrErr returns the Ratings value or an error if the edge
+// was not loaded in eager-loading.
+func (e BusinessEdges) RatingsOrErr() ([]*Rating, error) {
+	if e.loadedTypes[13] {
+		return e.Ratings, nil
+	}
+	return nil, &NotLoadedError{edge: "ratings"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -410,6 +421,11 @@ func (b *Business) QueryBusinessFollowEvents() *BusinessFollowEventQuery {
 // QueryFaqs queries the "faqs" edge of the Business entity.
 func (b *Business) QueryFaqs() *FAQQuery {
 	return NewBusinessClient(b.config).QueryFaqs(b)
+}
+
+// QueryRatings queries the "ratings" edge of the Business entity.
+func (b *Business) QueryRatings() *RatingQuery {
+	return NewBusinessClient(b.config).QueryRatings(b)
 }
 
 // Update returns a builder for updating this Business.

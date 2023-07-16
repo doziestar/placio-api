@@ -78,6 +78,9 @@ type Reaction func(*sql.Selector)
 // Reservation is the predicate function for reservation builders.
 type Reservation func(*sql.Selector)
 
+// Resourse is the predicate function for resourse builders.
+type Resourse func(*sql.Selector)
+
 // Review is the predicate function for review builders.
 type Review func(*sql.Selector)
 

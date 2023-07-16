@@ -1,40 +1,66 @@
 package service
 
 import (
-	"gorm.io/gorm"
-	"placio-app/models"
+	"context"
+	"placio-app/Dto"
+	"placio-app/ent"
+	"placio-app/ent/rating"
 )
 
 type RatingService interface {
-	CreateRating(rating *models.Rating) error
-	GetRatingsByEvent(eventID string) ([]models.Rating, error)
-	UpdateRating(rating *models.Rating) error
-	DeleteRating(ratingID string) error
+	CreateRating(ctx context.Context, ratingDTO *Dto.RatingDTO) (*ent.Rating, error)
+	UpdateRating(ctx context.Context, ratingID string, newRating int) (*ent.Rating, error)
+	GetRating(ctx context.Context, ratingID string) (*ent.Rating, error)
+	ListRatings(ctx context.Context) ([]*ent.Rating, error)
+	DeleteRating(ctx context.Context, ratingID string) error
 }
 
 type RatingServiceImpl struct {
-	db          *gorm.DB
-	ratingStore *models.Rating
+	client *ent.Client
 }
 
-func NewRatingService(db *gorm.DB) RatingService {
-	return &RatingServiceImpl{db: db, ratingStore: &models.Rating{}}
+func NewRatingService(client *ent.Client) RatingService {
+	return &RatingServiceImpl{client: client}
 }
 
-func (rs *RatingServiceImpl) CreateRating(rating *models.Rating) error {
-	return rs.db.Create(rating).Error
+func (rs *RatingServiceImpl) CreateRating(ctx context.Context, r *Dto.RatingDTO) (*ent.Rating, error) {
+	rating, err := rs.client.Rating.
+		Create().
+		SetUser(r.User).
+		SetPlace(r.Place).
+		SetEvent(r.Event).
+		SetBusiness(r.Business).
+		SetScore(r.Score).
+		Save(ctx)
+	return rating, err
 }
 
-func (rs *RatingServiceImpl) GetRatingsByEvent(eventID string) ([]models.Rating, error) {
-	var ratings []models.Rating
-	err := rs.db.Where("event_id = ?", eventID).Find(&ratings).Error
+func (rs *RatingServiceImpl) UpdateRating(ctx context.Context, ratingID string, score int) (*ent.Rating, error) {
+	rating, err := rs.client.Rating.
+		UpdateOneID(ratingID).
+		SetScore(score).
+		Save(ctx)
+	return rating, err
+}
+
+func (rs *RatingServiceImpl) GetRating(ctx context.Context, ratingID string) (*ent.Rating, error) {
+	rating, err := rs.client.Rating.
+		Query().
+		Where(rating.IDEQ(ratingID)).
+		Only(ctx)
+	return rating, err
+}
+
+func (rs *RatingServiceImpl) ListRatings(ctx context.Context) ([]*ent.Rating, error) {
+	ratings, err := rs.client.Rating.
+		Query().
+		All(ctx)
 	return ratings, err
 }
 
-func (rs *RatingServiceImpl) UpdateRating(rating *models.Rating) error {
-	return rs.db.Save(rating).Error
-}
-
-func (rs *RatingServiceImpl) DeleteRating(ratingID string) error {
-	return rs.db.Delete(&models.Rating{}, "id = ?", ratingID).Error
+func (rs *RatingServiceImpl) DeleteRating(ctx context.Context, ratingID string) error {
+	err := rs.client.Rating.
+		DeleteOneID(ratingID).
+		Exec(ctx)
+	return err
 }

@@ -34,6 +34,7 @@ import (
 	"placio-app/ent/rating"
 	"placio-app/ent/reaction"
 	"placio-app/ent/reservation"
+	"placio-app/ent/resourse"
 	"placio-app/ent/review"
 	"placio-app/ent/room"
 	"placio-app/ent/ticket"
@@ -105,6 +106,8 @@ type Client struct {
 	Reaction *ReactionClient
 	// Reservation is the client for interacting with the Reservation builders.
 	Reservation *ReservationClient
+	// Resourse is the client for interacting with the Resourse builders.
+	Resourse *ResourseClient
 	// Review is the client for interacting with the Review builders.
 	Review *ReviewClient
 	// Room is the client for interacting with the Room builders.
@@ -164,6 +167,7 @@ func (c *Client) init() {
 	c.Rating = NewRatingClient(c.config)
 	c.Reaction = NewReactionClient(c.config)
 	c.Reservation = NewReservationClient(c.config)
+	c.Resourse = NewResourseClient(c.config)
 	c.Review = NewReviewClient(c.config)
 	c.Room = NewRoomClient(c.config)
 	c.Ticket = NewTicketClient(c.config)
@@ -281,6 +285,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Rating:                 NewRatingClient(cfg),
 		Reaction:               NewReactionClient(cfg),
 		Reservation:            NewReservationClient(cfg),
+		Resourse:               NewResourseClient(cfg),
 		Review:                 NewReviewClient(cfg),
 		Room:                   NewRoomClient(cfg),
 		Ticket:                 NewTicketClient(cfg),
@@ -335,6 +340,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Rating:                 NewRatingClient(cfg),
 		Reaction:               NewReactionClient(cfg),
 		Reservation:            NewReservationClient(cfg),
+		Resourse:               NewResourseClient(cfg),
 		Review:                 NewReviewClient(cfg),
 		Room:                   NewRoomClient(cfg),
 		Ticket:                 NewTicketClient(cfg),
@@ -378,9 +384,10 @@ func (c *Client) Use(hooks ...Hook) {
 		c.AccountSettings, c.Amenity, c.Booking, c.Business, c.BusinessFollowBusiness,
 		c.BusinessFollowEvent, c.BusinessFollowUser, c.Category, c.CategoryAssignment,
 		c.Chat, c.Comment, c.Event, c.FAQ, c.Help, c.Like, c.Media, c.Menu, c.Order,
-		c.Payment, c.Place, c.Post, c.Rating, c.Reaction, c.Reservation, c.Review,
-		c.Room, c.Ticket, c.TicketOption, c.User, c.UserBusiness, c.UserFollowBusiness,
-		c.UserFollowEvent, c.UserFollowPlace, c.UserFollowUser, c.UserLikePlace,
+		c.Payment, c.Place, c.Post, c.Rating, c.Reaction, c.Reservation, c.Resourse,
+		c.Review, c.Room, c.Ticket, c.TicketOption, c.User, c.UserBusiness,
+		c.UserFollowBusiness, c.UserFollowEvent, c.UserFollowPlace, c.UserFollowUser,
+		c.UserLikePlace,
 	} {
 		n.Use(hooks...)
 	}
@@ -393,9 +400,10 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.AccountSettings, c.Amenity, c.Booking, c.Business, c.BusinessFollowBusiness,
 		c.BusinessFollowEvent, c.BusinessFollowUser, c.Category, c.CategoryAssignment,
 		c.Chat, c.Comment, c.Event, c.FAQ, c.Help, c.Like, c.Media, c.Menu, c.Order,
-		c.Payment, c.Place, c.Post, c.Rating, c.Reaction, c.Reservation, c.Review,
-		c.Room, c.Ticket, c.TicketOption, c.User, c.UserBusiness, c.UserFollowBusiness,
-		c.UserFollowEvent, c.UserFollowPlace, c.UserFollowUser, c.UserLikePlace,
+		c.Payment, c.Place, c.Post, c.Rating, c.Reaction, c.Reservation, c.Resourse,
+		c.Review, c.Room, c.Ticket, c.TicketOption, c.User, c.UserBusiness,
+		c.UserFollowBusiness, c.UserFollowEvent, c.UserFollowPlace, c.UserFollowUser,
+		c.UserLikePlace,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -452,6 +460,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Reaction.mutate(ctx, m)
 	case *ReservationMutation:
 		return c.Reservation.mutate(ctx, m)
+	case *ResourseMutation:
+		return c.Resourse.mutate(ctx, m)
 	case *ReviewMutation:
 		return c.Review.mutate(ctx, m)
 	case *RoomMutation:
@@ -1191,6 +1201,22 @@ func (c *BusinessClient) QueryFaqs(b *Business) *FAQQuery {
 			sqlgraph.From(business.Table, business.FieldID, id),
 			sqlgraph.To(faq.Table, faq.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, business.FaqsTable, business.FaqsColumn),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRatings queries the ratings edge of a Business.
+func (c *BusinessClient) QueryRatings(b *Business) *RatingQuery {
+	query := (&RatingClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(business.Table, business.FieldID, id),
+			sqlgraph.To(rating.Table, rating.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, business.RatingsTable, business.RatingsColumn),
 		)
 		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
 		return fromV, nil
@@ -2511,6 +2537,22 @@ func (c *EventClient) QueryFaqs(e *Event) *FAQQuery {
 	return query
 }
 
+// QueryRatings queries the ratings edge of a Event.
+func (c *EventClient) QueryRatings(e *Event) *RatingQuery {
+	query := (&RatingClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := e.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(event.Table, event.FieldID, id),
+			sqlgraph.To(rating.Table, rating.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, event.RatingsTable, event.RatingsColumn),
+		)
+		fromV = sqlgraph.Neighbors(e.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *EventClient) Hooks() []Hook {
 	hooks := c.hooks.Event
@@ -2946,6 +2988,38 @@ func (c *LikeClient) QueryUser(l *Like) *UserQuery {
 	return query
 }
 
+// QueryReview queries the review edge of a Like.
+func (c *LikeClient) QueryReview(l *Like) *ReviewQuery {
+	query := (&ReviewClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := l.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(like.Table, like.FieldID, id),
+			sqlgraph.To(review.Table, review.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, like.ReviewTable, like.ReviewColumn),
+		)
+		fromV = sqlgraph.Neighbors(l.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryMedia queries the media edge of a Like.
+func (c *LikeClient) QueryMedia(l *Like) *MediaQuery {
+	query := (&MediaClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := l.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(like.Table, like.FieldID, id),
+			sqlgraph.To(media.Table, media.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, like.MediaTable, like.MediaColumn),
+		)
+		fromV = sqlgraph.Neighbors(l.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryPost queries the post edge of a Like.
 func (c *LikeClient) QueryPost(l *Like) *PostQuery {
 	query := (&PostClient{config: c.config}).Query()
@@ -3089,6 +3163,22 @@ func (c *MediaClient) QueryPost(m *Media) *PostQuery {
 			sqlgraph.From(media.Table, media.FieldID, id),
 			sqlgraph.To(post.Table, post.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, media.PostTable, media.PostColumn),
+		)
+		fromV = sqlgraph.Neighbors(m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryReview queries the review edge of a Media.
+func (c *MediaClient) QueryReview(m *Media) *ReviewQuery {
+	query := (&ReviewClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(media.Table, media.FieldID, id),
+			sqlgraph.To(review.Table, review.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, media.ReviewTable, media.ReviewColumn),
 		)
 		fromV = sqlgraph.Neighbors(m.driver.Dialect(), step)
 		return fromV, nil
@@ -3840,6 +3930,22 @@ func (c *PlaceClient) QueryFollowerUsers(pl *Place) *UserFollowPlaceQuery {
 	return query
 }
 
+// QueryRatings queries the ratings edge of a Place.
+func (c *PlaceClient) QueryRatings(pl *Place) *RatingQuery {
+	query := (&RatingClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pl.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(place.Table, place.FieldID, id),
+			sqlgraph.To(rating.Table, rating.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, place.RatingsTable, place.RatingsColumn),
+		)
+		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *PlaceClient) Hooks() []Hook {
 	hooks := c.hooks.Place
@@ -4173,9 +4279,74 @@ func (c *RatingClient) GetX(ctx context.Context, id string) *Rating {
 	return obj
 }
 
+// QueryUser queries the user edge of a Rating.
+func (c *RatingClient) QueryUser(r *Rating) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(rating.Table, rating.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, rating.UserTable, rating.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryBusiness queries the business edge of a Rating.
+func (c *RatingClient) QueryBusiness(r *Rating) *BusinessQuery {
+	query := (&BusinessClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(rating.Table, rating.FieldID, id),
+			sqlgraph.To(business.Table, business.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, rating.BusinessTable, rating.BusinessColumn),
+		)
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPlace queries the place edge of a Rating.
+func (c *RatingClient) QueryPlace(r *Rating) *PlaceQuery {
+	query := (&PlaceClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(rating.Table, rating.FieldID, id),
+			sqlgraph.To(place.Table, place.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, rating.PlaceTable, rating.PlaceColumn),
+		)
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEvent queries the event edge of a Rating.
+func (c *RatingClient) QueryEvent(r *Rating) *EventQuery {
+	query := (&EventClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(rating.Table, rating.FieldID, id),
+			sqlgraph.To(event.Table, event.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, rating.EventTable, rating.EventColumn),
+		)
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *RatingClient) Hooks() []Hook {
-	return c.hooks.Rating
+	hooks := c.hooks.Rating
+	return append(hooks[:len(hooks):len(hooks)], rating.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -4466,6 +4637,124 @@ func (c *ReservationClient) mutate(ctx context.Context, m *ReservationMutation) 
 	}
 }
 
+// ResourseClient is a client for the Resourse schema.
+type ResourseClient struct {
+	config
+}
+
+// NewResourseClient returns a client for the Resourse from the given config.
+func NewResourseClient(c config) *ResourseClient {
+	return &ResourseClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `resourse.Hooks(f(g(h())))`.
+func (c *ResourseClient) Use(hooks ...Hook) {
+	c.hooks.Resourse = append(c.hooks.Resourse, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `resourse.Intercept(f(g(h())))`.
+func (c *ResourseClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Resourse = append(c.inters.Resourse, interceptors...)
+}
+
+// Create returns a builder for creating a Resourse entity.
+func (c *ResourseClient) Create() *ResourseCreate {
+	mutation := newResourseMutation(c.config, OpCreate)
+	return &ResourseCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Resourse entities.
+func (c *ResourseClient) CreateBulk(builders ...*ResourseCreate) *ResourseCreateBulk {
+	return &ResourseCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Resourse.
+func (c *ResourseClient) Update() *ResourseUpdate {
+	mutation := newResourseMutation(c.config, OpUpdate)
+	return &ResourseUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ResourseClient) UpdateOne(r *Resourse) *ResourseUpdateOne {
+	mutation := newResourseMutation(c.config, OpUpdateOne, withResourse(r))
+	return &ResourseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ResourseClient) UpdateOneID(id string) *ResourseUpdateOne {
+	mutation := newResourseMutation(c.config, OpUpdateOne, withResourseID(id))
+	return &ResourseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Resourse.
+func (c *ResourseClient) Delete() *ResourseDelete {
+	mutation := newResourseMutation(c.config, OpDelete)
+	return &ResourseDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ResourseClient) DeleteOne(r *Resourse) *ResourseDeleteOne {
+	return c.DeleteOneID(r.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ResourseClient) DeleteOneID(id string) *ResourseDeleteOne {
+	builder := c.Delete().Where(resourse.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ResourseDeleteOne{builder}
+}
+
+// Query returns a query builder for Resourse.
+func (c *ResourseClient) Query() *ResourseQuery {
+	return &ResourseQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeResourse},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Resourse entity by its id.
+func (c *ResourseClient) Get(ctx context.Context, id string) (*Resourse, error) {
+	return c.Query().Where(resourse.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ResourseClient) GetX(ctx context.Context, id string) *Resourse {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ResourseClient) Hooks() []Hook {
+	return c.hooks.Resourse
+}
+
+// Interceptors returns the client interceptors.
+func (c *ResourseClient) Interceptors() []Interceptor {
+	return c.inters.Resourse
+}
+
+func (c *ResourseClient) mutate(ctx context.Context, m *ResourseMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ResourseCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ResourseUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ResourseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ResourseDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Resourse mutation op: %q", m.Op())
+	}
+}
+
 // ReviewClient is a client for the Review schema.
 type ReviewClient struct {
 	config
@@ -4575,6 +4864,22 @@ func (c *ReviewClient) QueryUser(r *Review) *UserQuery {
 	return query
 }
 
+// QueryBusiness queries the business edge of a Review.
+func (c *ReviewClient) QueryBusiness(r *Review) *BusinessQuery {
+	query := (&BusinessClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(review.Table, review.FieldID, id),
+			sqlgraph.To(business.Table, business.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, review.BusinessTable, review.BusinessColumn),
+		)
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryPlace queries the place edge of a Review.
 func (c *ReviewClient) QueryPlace(r *Review) *PlaceQuery {
 	query := (&PlaceClient{config: c.config}).Query()
@@ -4583,7 +4888,71 @@ func (c *ReviewClient) QueryPlace(r *Review) *PlaceQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(review.Table, review.FieldID, id),
 			sqlgraph.To(place.Table, place.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, review.PlaceTable, review.PlaceColumn),
+			sqlgraph.Edge(sqlgraph.M2O, false, review.PlaceTable, review.PlaceColumn),
+		)
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryEvent queries the event edge of a Review.
+func (c *ReviewClient) QueryEvent(r *Review) *EventQuery {
+	query := (&EventClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(review.Table, review.FieldID, id),
+			sqlgraph.To(event.Table, event.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, review.EventTable, review.EventColumn),
+		)
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryMedias queries the medias edge of a Review.
+func (c *ReviewClient) QueryMedias(r *Review) *MediaQuery {
+	query := (&MediaClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(review.Table, review.FieldID, id),
+			sqlgraph.To(media.Table, media.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, review.MediasTable, review.MediasColumn),
+		)
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryComments queries the comments edge of a Review.
+func (c *ReviewClient) QueryComments(r *Review) *CommentQuery {
+	query := (&CommentClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(review.Table, review.FieldID, id),
+			sqlgraph.To(comment.Table, comment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, review.CommentsTable, review.CommentsColumn),
+		)
+		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryLikes queries the likes edge of a Review.
+func (c *ReviewClient) QueryLikes(r *Review) *LikeQuery {
+	query := (&LikeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := r.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(review.Table, review.FieldID, id),
+			sqlgraph.To(like.Table, like.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, review.LikesTable, review.LikesColumn),
 		)
 		fromV = sqlgraph.Neighbors(r.driver.Dialect(), step)
 		return fromV, nil
@@ -5440,6 +5809,22 @@ func (c *UserClient) QueryLikedPlaces(u *User) *UserLikePlaceQuery {
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(userlikeplace.Table, userlikeplace.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.LikedPlacesTable, user.LikedPlacesColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryRatings queries the ratings edge of a User.
+func (c *UserClient) QueryRatings(u *User) *RatingQuery {
+	query := (&RatingClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(rating.Table, rating.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.RatingsTable, user.RatingsColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil
@@ -6379,16 +6764,16 @@ type (
 		AccountSettings, Amenity, Booking, Business, BusinessFollowBusiness,
 		BusinessFollowEvent, BusinessFollowUser, Category, CategoryAssignment, Chat,
 		Comment, Event, FAQ, Help, Like, Media, Menu, Order, Payment, Place, Post,
-		Rating, Reaction, Reservation, Review, Room, Ticket, TicketOption, User,
-		UserBusiness, UserFollowBusiness, UserFollowEvent, UserFollowPlace,
+		Rating, Reaction, Reservation, Resourse, Review, Room, Ticket, TicketOption,
+		User, UserBusiness, UserFollowBusiness, UserFollowEvent, UserFollowPlace,
 		UserFollowUser, UserLikePlace []ent.Hook
 	}
 	inters struct {
 		AccountSettings, Amenity, Booking, Business, BusinessFollowBusiness,
 		BusinessFollowEvent, BusinessFollowUser, Category, CategoryAssignment, Chat,
 		Comment, Event, FAQ, Help, Like, Media, Menu, Order, Payment, Place, Post,
-		Rating, Reaction, Reservation, Review, Room, Ticket, TicketOption, User,
-		UserBusiness, UserFollowBusiness, UserFollowEvent, UserFollowPlace,
+		Rating, Reaction, Reservation, Resourse, Review, Room, Ticket, TicketOption,
+		User, UserBusiness, UserFollowBusiness, UserFollowEvent, UserFollowPlace,
 		UserFollowUser, UserLikePlace []ent.Interceptor
 	}
 )

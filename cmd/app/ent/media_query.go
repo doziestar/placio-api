@@ -11,6 +11,7 @@ import (
 	"placio-app/ent/media"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
+	"placio-app/ent/review"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -25,6 +26,7 @@ type MediaQuery struct {
 	inters         []Interceptor
 	predicates     []predicate.Media
 	withPost       *PostQuery
+	withReview     *ReviewQuery
 	withCategories *CategoryQuery
 	withFKs        bool
 	// intermediate query (i.e. traversal path).
@@ -78,6 +80,28 @@ func (mq *MediaQuery) QueryPost() *PostQuery {
 			sqlgraph.From(media.Table, media.FieldID, selector),
 			sqlgraph.To(post.Table, post.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, media.PostTable, media.PostColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryReview chains the current query on the "review" edge.
+func (mq *MediaQuery) QueryReview() *ReviewQuery {
+	query := (&ReviewClient{config: mq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := mq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := mq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(media.Table, media.FieldID, selector),
+			sqlgraph.To(review.Table, review.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, media.ReviewTable, media.ReviewColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
 		return fromU, nil
@@ -300,6 +324,7 @@ func (mq *MediaQuery) Clone() *MediaQuery {
 		inters:         append([]Interceptor{}, mq.inters...),
 		predicates:     append([]predicate.Media{}, mq.predicates...),
 		withPost:       mq.withPost.Clone(),
+		withReview:     mq.withReview.Clone(),
 		withCategories: mq.withCategories.Clone(),
 		// clone intermediate query.
 		sql:  mq.sql.Clone(),
@@ -315,6 +340,17 @@ func (mq *MediaQuery) WithPost(opts ...func(*PostQuery)) *MediaQuery {
 		opt(query)
 	}
 	mq.withPost = query
+	return mq
+}
+
+// WithReview tells the query-builder to eager-load the nodes that are connected to
+// the "review" edge. The optional arguments are used to configure the query builder of the edge.
+func (mq *MediaQuery) WithReview(opts ...func(*ReviewQuery)) *MediaQuery {
+	query := (&ReviewClient{config: mq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	mq.withReview = query
 	return mq
 }
 
@@ -408,12 +444,13 @@ func (mq *MediaQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Media,
 		nodes       = []*Media{}
 		withFKs     = mq.withFKs
 		_spec       = mq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			mq.withPost != nil,
+			mq.withReview != nil,
 			mq.withCategories != nil,
 		}
 	)
-	if mq.withPost != nil {
+	if mq.withPost != nil || mq.withReview != nil {
 		withFKs = true
 	}
 	if withFKs {
@@ -440,6 +477,12 @@ func (mq *MediaQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Media,
 	if query := mq.withPost; query != nil {
 		if err := mq.loadPost(ctx, query, nodes, nil,
 			func(n *Media, e *Post) { n.Edges.Post = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := mq.withReview; query != nil {
+		if err := mq.loadReview(ctx, query, nodes, nil,
+			func(n *Media, e *Review) { n.Edges.Review = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -478,6 +521,38 @@ func (mq *MediaQuery) loadPost(ctx context.Context, query *PostQuery, nodes []*M
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "post_medias" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (mq *MediaQuery) loadReview(ctx context.Context, query *ReviewQuery, nodes []*Media, init func(*Media), assign func(*Media, *Review)) error {
+	ids := make([]string, 0, len(nodes))
+	nodeids := make(map[string][]*Media)
+	for i := range nodes {
+		if nodes[i].review_medias == nil {
+			continue
+		}
+		fk := *nodes[i].review_medias
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(review.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "review_medias" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)

@@ -17,6 +17,7 @@ import (
 	"placio-app/ent/menu"
 	"placio-app/ent/place"
 	"placio-app/ent/predicate"
+	"placio-app/ent/rating"
 	"placio-app/ent/reservation"
 	"placio-app/ent/review"
 	"placio-app/ent/room"
@@ -50,6 +51,7 @@ type PlaceQuery struct {
 	withFaqs                *FAQQuery
 	withLikedByUsers        *UserLikePlaceQuery
 	withFollowerUsers       *UserFollowPlaceQuery
+	withRatings             *RatingQuery
 	withFKs                 bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -395,6 +397,28 @@ func (pq *PlaceQuery) QueryFollowerUsers() *UserFollowPlaceQuery {
 	return query
 }
 
+// QueryRatings chains the current query on the "ratings" edge.
+func (pq *PlaceQuery) QueryRatings() *RatingQuery {
+	query := (&RatingClient{config: pq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(place.Table, place.FieldID, selector),
+			sqlgraph.To(rating.Table, rating.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, place.RatingsTable, place.RatingsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Place entity from the query.
 // Returns a *NotFoundError when no Place was found.
 func (pq *PlaceQuery) First(ctx context.Context) (*Place, error) {
@@ -601,6 +625,7 @@ func (pq *PlaceQuery) Clone() *PlaceQuery {
 		withFaqs:                pq.withFaqs.Clone(),
 		withLikedByUsers:        pq.withLikedByUsers.Clone(),
 		withFollowerUsers:       pq.withFollowerUsers.Clone(),
+		withRatings:             pq.withRatings.Clone(),
 		// clone intermediate query.
 		sql:  pq.sql.Clone(),
 		path: pq.path,
@@ -761,6 +786,17 @@ func (pq *PlaceQuery) WithFollowerUsers(opts ...func(*UserFollowPlaceQuery)) *Pl
 	return pq
 }
 
+// WithRatings tells the query-builder to eager-load the nodes that are connected to
+// the "ratings" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *PlaceQuery) WithRatings(opts ...func(*RatingQuery)) *PlaceQuery {
+	query := (&RatingClient{config: pq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withRatings = query
+	return pq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -840,7 +876,7 @@ func (pq *PlaceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Place,
 		nodes       = []*Place{}
 		withFKs     = pq.withFKs
 		_spec       = pq.querySpec()
-		loadedTypes = [14]bool{
+		loadedTypes = [15]bool{
 			pq.withBusiness != nil,
 			pq.withUsers != nil,
 			pq.withReviews != nil,
@@ -855,6 +891,7 @@ func (pq *PlaceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Place,
 			pq.withFaqs != nil,
 			pq.withLikedByUsers != nil,
 			pq.withFollowerUsers != nil,
+			pq.withRatings != nil,
 		}
 	)
 	if pq.withBusiness != nil {
@@ -977,6 +1014,13 @@ func (pq *PlaceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Place,
 		if err := pq.loadFollowerUsers(ctx, query, nodes,
 			func(n *Place) { n.Edges.FollowerUsers = []*UserFollowPlace{} },
 			func(n *Place, e *UserFollowPlace) { n.Edges.FollowerUsers = append(n.Edges.FollowerUsers, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := pq.withRatings; query != nil {
+		if err := pq.loadRatings(ctx, query, nodes,
+			func(n *Place) { n.Edges.Ratings = []*Rating{} },
+			func(n *Place, e *Rating) { n.Edges.Ratings = append(n.Edges.Ratings, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -1503,6 +1547,37 @@ func (pq *PlaceQuery) loadFollowerUsers(ctx context.Context, query *UserFollowPl
 		node, ok := nodeids[*fk]
 		if !ok {
 			return fmt.Errorf(`unexpected referenced foreign-key "place_follower_users" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (pq *PlaceQuery) loadRatings(ctx context.Context, query *RatingQuery, nodes []*Place, init func(*Place), assign func(*Place, *Rating)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Place)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Rating(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(place.RatingsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.place_ratings
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "place_ratings" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "place_ratings" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

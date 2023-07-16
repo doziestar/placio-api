@@ -60,6 +60,8 @@ type Tx struct {
 	Reaction *ReactionClient
 	// Reservation is the client for interacting with the Reservation builders.
 	Reservation *ReservationClient
+	// Resourse is the client for interacting with the Resourse builders.
+	Resourse *ResourseClient
 	// Review is the client for interacting with the Review builders.
 	Review *ReviewClient
 	// Room is the client for interacting with the Room builders.
@@ -237,6 +239,7 @@ func (tx *Tx) init() {
 	tx.Rating = NewRatingClient(tx.config)
 	tx.Reaction = NewReactionClient(tx.config)
 	tx.Reservation = NewReservationClient(tx.config)
+	tx.Resourse = NewResourseClient(tx.config)
 	tx.Review = NewReviewClient(tx.config)
 	tx.Room = NewRoomClient(tx.config)
 	tx.Ticket = NewTicketClient(tx.config)

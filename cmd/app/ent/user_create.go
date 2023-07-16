@@ -16,6 +16,7 @@ import (
 	"placio-app/ent/like"
 	"placio-app/ent/place"
 	"placio-app/ent/post"
+	"placio-app/ent/rating"
 	"placio-app/ent/reservation"
 	"placio-app/ent/review"
 	"placio-app/ent/user"
@@ -509,6 +510,21 @@ func (uc *UserCreate) AddLikedPlaces(u ...*UserLikePlace) *UserCreate {
 	return uc.AddLikedPlaceIDs(ids...)
 }
 
+// AddRatingIDs adds the "ratings" edge to the Rating entity by IDs.
+func (uc *UserCreate) AddRatingIDs(ids ...string) *UserCreate {
+	uc.mutation.AddRatingIDs(ids...)
+	return uc
+}
+
+// AddRatings adds the "ratings" edges to the Rating entity.
+func (uc *UserCreate) AddRatings(r ...*Rating) *UserCreate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return uc.AddRatingIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uc *UserCreate) Mutation() *UserMutation {
 	return uc.mutation
@@ -966,6 +982,22 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(userlikeplace.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.RatingsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.RatingsTable,
+			Columns: []string{user.RatingsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(rating.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
