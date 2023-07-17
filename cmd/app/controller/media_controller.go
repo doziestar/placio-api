@@ -137,3 +137,49 @@ func (mc *MediaController) uploadMedia(ctx *gin.Context) error {
 //
 //	return ctx.JSON(mediaList)
 //}
+
+//# Pull the pre-built Redoc Docker image
+//FROM redocly/redoc
+//
+//# Copy your local swagger.json file to a directory inside the Docker image
+//COPY ./app/swagger.json /usr/share/nginx/html/swagger.json
+//
+//# Set the environment variable for your OpenAPI definition URL
+//ENV PAGE_TITLE="Placio API Documentation"
+//ENV PAGE_FAVICON="https://res.cloudinary.com/placio/image/upload/v1686763351/fpv01oen8dx3g7uyiezl.png"
+//ENV SPEC_URL="/swagger.json"
+//ENV PORT=80
+//
+//# Expose port 80 for the app
+//EXPOSE 80
+
+//# --- Build stage ---
+//FROM node:16-alpine AS build-stage
+//
+//WORKDIR /app
+//
+//# Install the Redocly CLI
+//RUN npm install -g @redocly/cli@latest
+//
+//# Copy documentation files
+//COPY ./docs ./docs
+//
+//ENV NODE_OPTIONS="--max-old-space-size=16384"
+//# Bundle the documentation into a static OpenAPI file
+//RUN redocly bundle ./docs/app/swagger.yaml -o ./docs/swagger.yaml
+//
+//# Generate the documentation HTML file
+//RUN redocly build-docs ./docs/swagger.yaml --output ./docs/redoc-static.html
+//
+//# --- Production stage ---
+//FROM nginx:alpine AS production-stage
+//
+//# Remove default nginx page
+//RUN rm -rf /usr/share/nginx/html/*
+//
+//# Copy the static HTML file to the nginx html directory
+//COPY --from=build-stage /app/docs/redoc-static.html /usr/share/nginx/html/index.html
+//
+//EXPOSE 80
+//
+//CMD ["nginx", "-g", "daemon off;"]

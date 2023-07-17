@@ -61,7 +61,7 @@ func (s *MediaServiceImpl) UploadFiles(ctx context.Context, files []*multipart.F
 
 			ch <- MediaInfo{
 				URL:       uploadResp.SecureURL,
-				MediaType: uploadResp.ResourceType, // TODO: You need to ensure this is the correct field for media type
+				MediaType: uploadResp.ResourceType,
 			}
 		}(file)
 	}

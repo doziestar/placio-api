@@ -1,23 +1,34 @@
-# Pull the pre-built Redoc Docker image
-FROM redocly/redoc AS redoc-stage
+# --- Build stage ---
+FROM node:16-alpine AS build-stage
 
-# The port on which Redoc will run
-EXPOSE 80
+WORKDIR /app
 
-# Set the environment variable for your OpenAPI definition URL
-ENV SPEC_URL=https://docs.palnight.com/openapi.json
+# Install the Redocly CLI
+RUN npm install -g @redocly/cli@latest
+
+# Copy documentation files
+COPY . .
+
+# Split the API definition file
+RUN #redocly split ./docs/app/swagger.json --outDir=./docs/split
+RUN redocly split redoc.yml --outDir=./placio-api-docs/split
+
+# Bundle the split files into a static OpenAPI file
+RUN #redocly bundle ./docs/split/main.json -o ./docs/swagger.json
+RUN redocly build-docs ./split/main.json -o ./docs/swagger.json
+
+# Generate the documentation HTML file
+RUN redocly build-docs ./docs/swagger.json --output ./docs/redoc-static.html
 
 # --- Production stage ---
 FROM nginx:alpine AS production-stage
 
-# Copy Redoc files from the Redoc stage to the Nginx HTML directory
-COPY --from=redoc-stage /usr/share/nginx/html /usr/share/nginx/html
-
-# Remove default Nginx page
+# Remove default nginx page
 RUN rm -rf /usr/share/nginx/html/*
 
-# Expose the Nginx port
+# Copy the static HTML file to the nginx html directory
+COPY --from=build-stage /app/docs/redoc-static.html /usr/share/nginx/html/index.html
+
 EXPOSE 80
 
-# Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
