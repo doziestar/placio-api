@@ -1,0 +1,71 @@
+get:
+  tags:
+    - Review
+  summary: Get reviews by query
+  description: Get reviews based on query parameters
+  responses:
+    '200':
+      description: Array of Reviews
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: ../components/schemas/placio-app_ent.Review.yaml
+    '500':
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: string
+post:
+  tags:
+    - Review
+  summary: Review a Place, Event, or Business
+  description: Rate a place, event, or business
+  parameters:
+    - name: type
+      in: query
+      description: Item Type (place, event, business)
+      required: true
+      schema:
+        type: string
+    - name: id
+      in: query
+      description: Item ID (placeID, eventID, businessID)
+      required: true
+      schema:
+        type: string
+    - name: Authorization
+      in: header
+      description: JWT Token
+      required: true
+      schema:
+        type: string
+  requestBody:
+    description: Review Content
+    content:
+      application/json:
+        schema:
+          type: string
+    required: true
+  responses:
+    '200':
+      description: Successfully rated [itemType]
+      content:
+        application/json:
+          schema:
+            type: string
+    '400':
+      description: Invalid item type
+      content:
+        application/json:
+          schema:
+            type: string
+    '500':
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: string
+  x-codegen-request-body-name: content

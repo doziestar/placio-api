@@ -1,0 +1,16 @@
+type: object
+properties:
+  createdAt:
+    type: string
+  eventID:
+    type: string
+  id:
+    type: string
+  name:
+    type: string
+  price:
+    type: number
+  quantity:
+    type: integer
+  updatedAt:
+    type: string

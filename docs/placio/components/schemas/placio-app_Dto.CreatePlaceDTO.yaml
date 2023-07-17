@@ -1,0 +1,72 @@
+type: object
+properties:
+  additional_info:
+    type: object
+    properties: {}
+  amenity_ids:
+    type: array
+    items:
+      type: string
+  availability:
+    type: object
+    properties: {}
+  business_id:
+    type: string
+  city:
+    type: string
+  country:
+    type: string
+  cover_image:
+    type: string
+  description:
+    type: string
+  email:
+    type: string
+  features:
+    type: array
+    items:
+      type: string
+  id:
+    type: string
+  images:
+    type: array
+    items:
+      type: string
+  location:
+    type: string
+  map_coordinates:
+    type: object
+    properties: {}
+  name:
+    type: string
+  opening_hours:
+    type: object
+    properties: {}
+  phone:
+    type: string
+  picture:
+    type: string
+  place_settings:
+    type: object
+    properties: {}
+  relevance_score:
+    type: number
+  search_text:
+    type: string
+  social_media:
+    type: object
+    properties: {}
+  special_offers:
+    type: string
+  state:
+    type: string
+  sustainability_score:
+    type: number
+  tags:
+    type: array
+    items:
+      type: string
+  type:
+    type: string
+  website:
+    type: string

@@ -1,0 +1,61 @@
+type: object
+properties:
+  business_settings:
+    type: object
+    properties: {}
+    description: BusinessSettings holds the value of the "business_settings" field.
+  cover_image:
+    type: string
+    description: CoverImage holds the value of the "cover_image" field.
+  description:
+    type: string
+    description: Description holds the value of the "description" field.
+  edges:
+    type: object
+    description: >-
+      Edges holds the relations/edges for other nodes in the graph.
+
+      The values are being populated by the BusinessQuery when eager-loading is
+      set.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.BusinessEdges'
+  email:
+    type: string
+    description: Email holds the value of the "email" field.
+  id:
+    type: string
+    description: ID of the ent.
+  latitude:
+    type: string
+    description: Latitude holds the value of the "latitude" field.
+  location:
+    type: string
+    description: Location holds the value of the "location" field.
+  longitude:
+    type: string
+    description: Longitude holds the value of the "longitude" field.
+  map_coordinates:
+    type: object
+    properties: {}
+    description: MapCoordinates holds the value of the "map_coordinates" field.
+  name:
+    type: string
+    description: Name holds the value of the "name" field.
+  phone:
+    type: string
+    description: Phone holds the value of the "phone" field.
+  picture:
+    type: string
+    description: Picture holds the value of the "picture" field.
+  relevance_score:
+    type: number
+    description: RelevanceScore holds the value of the "relevance_score" field.
+  search_text:
+    type: string
+    description: SearchText holds the value of the "search_text" field.
+  url:
+    type: string
+    description: URL holds the value of the "url" field.
+  website:
+    type: string
+    description: Website holds the value of the "website" field.

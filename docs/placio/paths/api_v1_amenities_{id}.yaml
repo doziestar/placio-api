@@ -1,0 +1,118 @@
+get:
+  tags:
+    - Amenity
+  summary: Get an amenity
+  description: Get an amenity by ID
+  parameters:
+    - name: id
+      in: path
+      description: ID of the amenity
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Successfully retrieved amenity
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_ent.Amenity.yaml
+    '404':
+      description: Amenity not found
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+put:
+  tags:
+    - Amenity
+  summary: Update an amenity
+  description: Update an amenity by ID
+  parameters:
+    - name: id
+      in: path
+      description: ID of the amenity to update
+      required: true
+      schema:
+        type: string
+  requestBody:
+    content:
+      application/json:
+        schema:
+          required:
+            - icon
+          properties:
+            icon:
+              type: string
+              description: New icon file for amenity
+              format: binary
+    required: true
+  responses:
+    '200':
+      description: Successfully updated amenity
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_ent.Amenity.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '404':
+      description: Amenity not found
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+  x-codegen-request-body-name: amenity
+delete:
+  tags:
+    - Amenity
+  summary: Delete an amenity
+  description: Delete an amenity by ID
+  parameters:
+    - name: id
+      in: path
+      description: ID of the amenity to delete
+      required: true
+      schema:
+        type: string
+    - name: Authorization
+      in: header
+      description: JWT token
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Successfully deleted amenity
+      content:
+        application/json:
+          schema:
+            type: string
+    '404':
+      description: Amenity not found
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml

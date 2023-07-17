@@ -1,0 +1,111 @@
+type: object
+properties:
+  additional_info:
+    type: object
+    properties: {}
+    description: AdditionalInfo holds the value of the "additional_info" field.
+  availability:
+    type: object
+    properties: {}
+    description: Availability holds the value of the "availability" field.
+  city:
+    type: string
+    description: City holds the value of the "city" field.
+  country:
+    type: string
+    description: Country holds the value of the "country" field.
+  cover_image:
+    type: string
+    description: CoverImage holds the value of the "cover_image" field.
+  description:
+    type: string
+    description: Description holds the value of the "description" field.
+  edges:
+    type: object
+    description: >-
+      Edges holds the relations/edges for other nodes in the graph.
+
+      The values are being populated by the PlaceQuery when eager-loading is
+      set.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.PlaceEdges'
+  email:
+    type: string
+    description: Email holds the value of the "email" field.
+  features:
+    type: array
+    description: Features holds the value of the "features" field.
+    items:
+      type: string
+  id:
+    type: string
+    description: ID of the ent.
+  images:
+    type: array
+    description: Images holds the value of the "images" field.
+    items:
+      type: string
+  latitude:
+    type: string
+    description: Latitude holds the value of the "latitude" field.
+  location:
+    type: string
+    description: Location holds the value of the "location" field.
+  longitude:
+    type: string
+    description: Longitude holds the value of the "longitude" field.
+  map_coordinates:
+    type: object
+    properties: {}
+    description: MapCoordinates holds the value of the "map_coordinates" field.
+  name:
+    type: string
+    description: Name holds the value of the "name" field.
+  opening_hours:
+    type: object
+    properties: {}
+    description: OpeningHours holds the value of the "opening_hours" field.
+  payment_options:
+    type: object
+    properties: {}
+    description: PaymentOptions holds the value of the "payment_options" field.
+  phone:
+    type: string
+    description: Phone holds the value of the "phone" field.
+  picture:
+    type: string
+    description: Picture holds the value of the "picture" field.
+  place_settings:
+    type: object
+    properties: {}
+    description: PlaceSettings holds the value of the "place_settings" field.
+  relevance_score:
+    type: number
+    description: RelevanceScore holds the value of the "relevance_score" field.
+  search_text:
+    type: string
+    description: SearchText holds the value of the "search_text" field.
+  social_media:
+    type: object
+    properties: {}
+    description: SocialMedia holds the value of the "social_media" field.
+  special_offers:
+    type: string
+    description: SpecialOffers holds the value of the "special_offers" field.
+  state:
+    type: string
+    description: State holds the value of the "state" field.
+  sustainability_score:
+    type: number
+    description: SustainabilityScore holds the value of the "sustainability_score" field.
+  tags:
+    type: array
+    description: Tags holds the value of the "tags" field.
+    items:
+      type: string
+  type:
+    type: string
+    description: Type holds the value of the "type" field.
+  website:
+    type: string
+    description: Website holds the value of the "website" field.

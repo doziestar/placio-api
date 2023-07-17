@@ -1,0 +1,116 @@
+get:
+  tags:
+    - TicketOption
+  summary: GET ticket option by ID
+  description: GET a ticket option by its ID
+  parameters:
+    - name: id
+      in: path
+      description: Ticket Option ID
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Successfully retrieved ticket option
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_models.TicketOption.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '404':
+      description: Ticket Option Not Found
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+put:
+  tags:
+    - TicketOption
+  summary: Update ticket option by ID
+  description: Update a ticket option by its ID
+  parameters:
+    - name: id
+      in: path
+      description: Ticket Option ID
+      required: true
+      schema:
+        type: string
+  requestBody:
+    description: Ticket Option Data
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/placio-app_models.TicketOption.yaml
+    required: true
+  responses:
+    '200':
+      description: Successfully updated ticket option
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_models.TicketOption.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '404':
+      description: Ticket Option Not Found
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+  x-codegen-request-body-name: UpdateTicketOptionDto
+delete:
+  tags:
+    - TicketOption
+  summary: Delete ticket option by ID
+  description: Delete a ticket option by its ID
+  parameters:
+    - name: id
+      in: path
+      description: Ticket Option ID
+      required: true
+      schema:
+        type: string
+  responses:
+    '204':
+      description: Successfully deleted ticket option
+      content: {}
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '404':
+      description: Ticket Option Not Found
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml

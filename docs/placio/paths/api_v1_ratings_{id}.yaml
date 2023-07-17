@@ -1,0 +1,134 @@
+get:
+  tags:
+    - Rating
+  summary: GET rating by ID
+  description: Retrieve a rating by its ID
+  parameters:
+    - name: Authorization
+      in: header
+      description: JWT Token
+      required: true
+      schema:
+        type: string
+    - name: id
+      in: path
+      description: Rating ID
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Successfully retrieved rating
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_ent.Rating.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '404':
+      description: Rating Not Found
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+put:
+  tags:
+    - Rating
+  summary: Update rating by ID
+  description: Update a rating by its ID
+  parameters:
+    - name: Authorization
+      in: header
+      description: JWT Token
+      required: true
+      schema:
+        type: string
+    - name: id
+      in: path
+      description: Rating ID
+      required: true
+      schema:
+        type: string
+  requestBody:
+    description: New Score
+    content:
+      application/json:
+        schema:
+          type: integer
+    required: true
+  responses:
+    '200':
+      description: Successfully updated rating
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_ent.Rating.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '404':
+      description: Rating Not Found
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+  x-codegen-request-body-name: score
+delete:
+  tags:
+    - Rating
+  summary: Delete rating by ID
+  description: Delete a rating by its ID
+  parameters:
+    - name: Authorization
+      in: header
+      description: JWT Token
+      required: true
+      schema:
+        type: string
+    - name: id
+      in: path
+      description: Rating ID
+      required: true
+      schema:
+        type: string
+  responses:
+    '204':
+      description: Successfully deleted rating
+      content: {}
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '404':
+      description: Rating Not Found
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml

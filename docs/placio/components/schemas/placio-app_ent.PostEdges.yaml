@@ -1,0 +1,32 @@
+type: object
+properties:
+  business_account:
+    type: object
+    description: BusinessAccount holds the value of the business_account edge.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.Business'
+  categories:
+    type: array
+    description: Categories holds the value of the categories edge.
+    items:
+      $ref: ./placio-app_ent.Category.yaml
+  comments:
+    type: array
+    description: Comments holds the value of the comments edge.
+    items:
+      $ref: ./placio-app_ent.Comment.yaml
+  likes:
+    type: array
+    description: Likes holds the value of the likes edge.
+    items:
+      $ref: ./placio-app_ent.Like.yaml
+  medias:
+    type: array
+    description: Medias holds the value of the medias edge.
+    items:
+      $ref: ./placio-app_ent.Media.yaml
+  user:
+    type: object
+    description: User holds the value of the user edge.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.User'

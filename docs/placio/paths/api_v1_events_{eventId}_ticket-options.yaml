@@ -1,0 +1,33 @@
+get:
+  tags:
+    - TicketOption
+  summary: GET ticket options by event ID
+  description: GET all ticket options for an event by its ID
+  parameters:
+    - name: eventId
+      in: path
+      description: Event ID
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Successfully retrieved ticket options for event
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: ../components/schemas/placio-app_models.TicketOption.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml

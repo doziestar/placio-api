@@ -1,0 +1,124 @@
+get:
+  tags:
+    - Event
+  summary: Get Event By ID
+  description: Get a single event by its ID
+  parameters:
+    - name: eventId
+      in: path
+      description: Event ID
+      required: true
+      schema:
+        type: string
+    - name: Authorization
+      in: header
+      description: Bearer Token
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_ent.Event.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.Error.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.Error.yaml
+put:
+  tags:
+    - Event
+  summary: Update Event
+  description: Update Event
+  parameters:
+    - name: eventId
+      in: path
+      description: Event ID
+      required: true
+      schema:
+        type: string
+    - name: businessId
+      in: query
+      description: Business ID
+      schema:
+        type: string
+    - name: Authorization
+      in: header
+      description: Bearer Token
+      required: true
+      schema:
+        type: string
+  requestBody:
+    description: Event Data
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/placio-app_Dto.EventDTO.yaml
+    required: true
+  responses:
+    '200':
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_ent.Event.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+  x-codegen-request-body-name: data
+delete:
+  tags:
+    - Event
+  summary: Delete Event
+  description: Delete an existing event
+  parameters:
+    - name: eventId
+      in: path
+      description: Event ID
+      required: true
+      schema:
+        type: string
+    - name: Authorization
+      in: header
+      description: Bearer Token
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Deleted
+      content:
+        application/json:
+          schema:
+            type: string
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.Error.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.Error.yaml

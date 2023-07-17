@@ -1,0 +1,16 @@
+type: object
+properties:
+  attended:
+    type: boolean
+  createdAt:
+    type: string
+  eventID:
+    type: string
+  id:
+    type: string
+  ticketID:
+    type: string
+  updatedAt:
+    type: string
+  userID:
+    type: string

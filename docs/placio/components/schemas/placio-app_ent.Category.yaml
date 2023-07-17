@@ -1,0 +1,20 @@
+type: object
+properties:
+  edges:
+    type: object
+    description: >-
+      Edges holds the relations/edges for other nodes in the graph.
+
+      The values are being populated by the CategoryQuery when eager-loading is
+      set.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.CategoryEdges'
+  id:
+    type: string
+    description: ID of the ent.
+  image:
+    type: string
+    description: Image holds the value of the "image" field.
+  name:
+    type: string
+    description: Name holds the value of the "name" field.

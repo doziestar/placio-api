@@ -1,0 +1,12 @@
+type: object
+properties:
+  content:
+    type: string
+  createdAt:
+    type: string
+  id:
+    type: string
+  updatedAt:
+    type: string
+  user:
+    $ref: ./placio-app_ent.User.yaml

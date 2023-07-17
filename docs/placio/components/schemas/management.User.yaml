@@ -1,0 +1,128 @@
+type: object
+properties:
+  app_metadata:
+    type: object
+    properties: {}
+    description: >-
+      AppMetadata holds data that the user has read-only access to.
+
+      For example roles, permissions, vip, etc.
+
+      NOTE: Roles added to AppMetadata are not integrated with Auth0 Role-Based
+      Access Control (RBAC).
+
+      For RBAC, see the functions User.Roles, User.AssignRoles, and
+      User.RemoveRoles.
+  blocked:
+    type: boolean
+    description: >-
+      True if the user is blocked from the application, false if the user is
+      enabled.
+  client_id:
+    type: string
+    description: Auth0 client ID. Only valid when updating email address.
+  connection:
+    type: string
+    description: The connection the user belongs to.
+  created_at:
+    type: string
+    description: The time the user was created.
+  description:
+    type: string
+    description: The user-defined UTF-8 string describing their account.
+  email:
+    type: string
+    description: The users' email.
+  family_name:
+    type: string
+    description: The users' family name.
+  given_name:
+    type: string
+    description: The users' given name.
+  identities:
+    type: array
+    description: Identities is a list of user identities for when accounts are linked.
+    items:
+      $ref: ./management.UserIdentity.yaml
+  last_ip:
+    type: string
+    description: >-
+      Last IP address from which this user logged in. Read only, cannot be
+      modified.
+  last_login:
+    type: string
+    description: The last time the user has logged in.
+  last_password_reset:
+    type: string
+    description: |-
+      The last time the user had their password reset.
+      Only available for Database connection users.
+  location:
+    type: string
+    description: The user-defined location for this account’s profile.
+  logins_count:
+    type: integer
+    description: >-
+      Total number of logins this user has performed. Read only, cannot be
+      modified.
+  multifactor:
+    type: array
+    description: >-
+      List of multi-factor authentication providers with which this user has
+      enrolled.
+    items:
+      type: string
+  name:
+    type: string
+    description: The users' name.
+  nickname:
+    type: string
+    description: The users' nickname.
+  password:
+    type: string
+    description: The users' password (mandatory for non SMS connections)
+  phone_number:
+    type: string
+    description: |-
+      The users' phone number (following the E.164 recommendation).
+      Only valid for users to be added to SMS connections.
+  phone_verified:
+    type: boolean
+    description: |-
+      True if the user's phone number is verified, false otherwise. When the
+      user is added to an SMS connection, they will not receive a verification
+      SMS if this is true.
+  picture:
+    type: string
+    description: The user's picture url.
+  screen_name:
+    type: string
+    description: >-
+      The screen name, handle, or alias that this user identifies themselves
+      with.
+  updated_at:
+    type: string
+    description: The last time the user was updated.
+  url:
+    type: string
+    description: A URL provided by the user in association with their profile.
+  user_id:
+    type: string
+    description: The users' identifier.
+  user_metadata:
+    type: object
+    properties: {}
+    description: |-
+      UserMetadata holds data that the user has read/write access to.
+      For example color_preference, blog_url, etc.
+  username:
+    type: string
+    description: The users' username. Only valid if the connection requires a username.
+  verify_email:
+    type: boolean
+    description: |-
+      If true, the user will receive a verification email after creation, even
+      if created with email_verified set to true. If false, the user will not
+      receive a verification email, even if created with email_verified set to
+      false. If unspecified, defaults to the behavior determined by the value
+      of email_verified.

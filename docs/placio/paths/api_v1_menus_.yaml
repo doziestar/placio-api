@@ -1,0 +1,32 @@
+post:
+  tags:
+    - Menu
+  summary: Create a menu
+  description: Create a new menu
+  requestBody:
+    description: Menu data
+    content:
+      application/json:
+        schema:
+          type: object
+    required: true
+  responses:
+    '200':
+      description: Successfully created menu
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_ent.Menu.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+  x-codegen-request-body-name: menu

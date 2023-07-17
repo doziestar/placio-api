@@ -1,0 +1,89 @@
+get:
+  tags:
+    - Menu
+  summary: Get a menu
+  description: Get a menu by its ID
+  parameters:
+    - name: id
+      in: path
+      description: ID of the menu
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Successfully retrieved menu
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_ent.Menu.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+delete:
+  tags:
+    - Menu
+  summary: Delete a menu
+  description: Delete a menu by its ID
+  parameters:
+    - name: id
+      in: path
+      description: ID of the menu
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Successfully deleted menu
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/gin.H.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+patch:
+  tags:
+    - Menu
+  summary: Update a menu
+  description: Update a menu by its ID
+  parameters:
+    - name: id
+      in: path
+      description: ID of the menu
+      required: true
+      schema:
+        type: string
+  requestBody:
+    description: Menu data
+    content:
+      application/json:
+        schema:
+          type: object
+    required: true
+  responses:
+    '200':
+      description: Successfully updated menu
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_ent.Menu.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+  x-codegen-request-body-name: menu

@@ -1,0 +1,89 @@
+get:
+  tags:
+    - Room
+  summary: Get a room
+  description: Get a room by its ID
+  parameters:
+    - name: id
+      in: path
+      description: ID of the room
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Successfully retrieved room
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_ent.Room.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+delete:
+  tags:
+    - Room
+  summary: Delete a room
+  description: Delete a room by its ID
+  parameters:
+    - name: id
+      in: path
+      description: ID of the room
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Successfully deleted room
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/gin.H.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+patch:
+  tags:
+    - Room
+  summary: Update a room
+  description: Update a room by its ID
+  parameters:
+    - name: id
+      in: path
+      description: ID of the room
+      required: true
+      schema:
+        type: string
+  requestBody:
+    description: Room data
+    content:
+      application/json:
+        schema:
+          type: object
+    required: true
+  responses:
+    '200':
+      description: Successfully updated room
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_ent.Room.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+  x-codegen-request-body-name: room

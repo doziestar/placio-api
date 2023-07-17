@@ -63,25 +63,23 @@ services:
       # - "traefik.http.routers.backend-secure.middlewares=cors"
       - traefik.http.services.backend.loadbalancer.server.port=7070
 
-  docs:
-    container_name: placio-docs
-    build:
-      context: .
-      dockerfile: ./docs/Dockerfile
-    restart: always
-    ports:
-      - "6060:6060"
-    volumes:
-      # - ./:/app
-      - ./docs:/app/docs
-
-    labels:
-      - traefik.enable=true
-      - traefik.docker.network=default
-      - "traefik.http.routers.docs-secure.entrypoints=websecure"
-      - "traefik.http.routers.docs-secure.rule=Host(`docs.palnight.com`)"
-      - "traefik.http.routers.docs-secure.service=docs"
-      - traefik.http.services.docs.loadbalancer.server.port=6060
+#  docs:
+#    container_name: placio-docs
+#    build:
+#      context: .
+#      dockerfile: ./docs/Dockerfile
+#    restart: always
+#    volumes:
+#      # - ./:/app
+#      - ./docs:/app/docs
+#
+#    labels:
+#      - traefik.enable=true
+#      - traefik.docker.network=default
+#      - "traefik.http.routers.docs-secure.entrypoints=websecure"
+#      - "traefik.http.routers.docs-secure.rule=Host(`docs.palnight.com`)"
+#      - "traefik.http.routers.docs-secure.service=docs"
+#      - traefik.http.services.docs.loadbalancer.server.port=80
       # add path prefix strip
 
   prometheus:

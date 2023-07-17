@@ -1,0 +1,12 @@
+type: object
+properties:
+  bookings:
+    type: array
+    description: Bookings holds the value of the bookings edge.
+    items:
+      $ref: ./placio-app_ent.Booking.yaml
+  place:
+    type: object
+    description: Place holds the value of the place edge.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.Place'

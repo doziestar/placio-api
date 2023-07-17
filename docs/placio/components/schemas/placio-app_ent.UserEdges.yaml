@@ -1,0 +1,102 @@
+type: object
+properties:
+  bookings:
+    type: array
+    description: Bookings holds the value of the bookings edge.
+    items:
+      $ref: ./placio-app_ent.Booking.yaml
+  categories:
+    type: array
+    description: Categories holds the value of the categories edge.
+    items:
+      $ref: ./placio-app_ent.Category.yaml
+  categoryAssignments:
+    type: array
+    description: CategoryAssignments holds the value of the categoryAssignments edge.
+    items:
+      $ref: ./placio-app_ent.CategoryAssignment.yaml
+  comments:
+    type: array
+    description: Comments holds the value of the comments edge.
+    items:
+      $ref: ./placio-app_ent.Comment.yaml
+  followedBusinesses:
+    type: array
+    description: FollowedBusinesses holds the value of the followedBusinesses edge.
+    items:
+      $ref: ./placio-app_ent.UserFollowBusiness.yaml
+  followedPlaces:
+    type: array
+    description: FollowedPlaces holds the value of the followedPlaces edge.
+    items:
+      $ref: ./placio-app_ent.UserFollowPlace.yaml
+  followedUsers:
+    type: array
+    description: FollowedUsers holds the value of the followedUsers edge.
+    items:
+      $ref: ./placio-app_ent.UserFollowUser.yaml
+  followerBusinesses:
+    type: array
+    description: FollowerBusinesses holds the value of the followerBusinesses edge.
+    items:
+      $ref: ./placio-app_ent.BusinessFollowUser.yaml
+  followerUsers:
+    type: array
+    description: FollowerUsers holds the value of the followerUsers edge.
+    items:
+      $ref: ./placio-app_ent.UserFollowUser.yaml
+  helps:
+    type: array
+    description: Helps holds the value of the helps edge.
+    items:
+      $ref: ./placio-app_ent.Help.yaml
+  likedPlaces:
+    type: array
+    description: LikedPlaces holds the value of the likedPlaces edge.
+    items:
+      $ref: ./placio-app_ent.UserLikePlace.yaml
+  likes:
+    type: array
+    description: Likes holds the value of the likes edge.
+    items:
+      $ref: ./placio-app_ent.Like.yaml
+  ownedEvents:
+    type: object
+    description: OwnedEvents holds the value of the ownedEvents edge.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.Event'
+  places:
+    type: array
+    description: Places holds the value of the places edge.
+    items:
+      $ref: ./placio-app_ent.Place.yaml
+  posts:
+    type: array
+    description: Posts holds the value of the posts edge.
+    items:
+      $ref: ./placio-app_ent.Post.yaml
+  ratings:
+    type: array
+    description: Ratings holds the value of the ratings edge.
+    items:
+      $ref: ./placio-app_ent.Rating.yaml
+  reservations:
+    type: array
+    description: Reservations holds the value of the reservations edge.
+    items:
+      $ref: ./placio-app_ent.Reservation.yaml
+  reviews:
+    type: array
+    description: Reviews holds the value of the reviews edge.
+    items:
+      $ref: ./placio-app_ent.Review.yaml
+  userBusinesses:
+    type: array
+    description: UserBusinesses holds the value of the userBusinesses edge.
+    items:
+      $ref: ./placio-app_ent.UserBusiness.yaml
+  userFollowEvents:
+    type: array
+    description: UserFollowEvents holds the value of the userFollowEvents edge.
+    items:
+      $ref: ./placio-app_ent.UserFollowEvent.yaml

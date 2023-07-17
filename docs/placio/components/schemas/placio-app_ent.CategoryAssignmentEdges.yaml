@@ -1,0 +1,22 @@
+type: object
+properties:
+  business:
+    type: object
+    description: Business holds the value of the business edge.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.Business'
+  category:
+    type: object
+    description: Category holds the value of the category edge.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.Category'
+  place:
+    type: object
+    description: Place holds the value of the place edge.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.Place'
+  user:
+    type: object
+    description: User holds the value of the user edge.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.User'

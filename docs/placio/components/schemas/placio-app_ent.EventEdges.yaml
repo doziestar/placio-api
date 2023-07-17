@@ -1,0 +1,59 @@
+type: object
+properties:
+  businessFollowers:
+    type: array
+    description: BusinessFollowers holds the value of the businessFollowers edge.
+    items:
+      $ref: ./placio-app_ent.BusinessFollowEvent.yaml
+  event_categories:
+    type: array
+    description: EventCategories holds the value of the event_categories edge.
+    items:
+      $ref: ./placio-app_ent.Category.yaml
+  event_category_assignments:
+    type: array
+    description: >-
+      EventCategoryAssignments holds the value of the event_category_assignments
+      edge.
+    items:
+      $ref: ./placio-app_ent.CategoryAssignment.yaml
+  faqs:
+    type: array
+    description: Faqs holds the value of the faqs edge.
+    items:
+      $ref: ./placio-app_ent.FAQ.yaml
+  ownerBusiness:
+    type: object
+    description: OwnerBusiness holds the value of the ownerBusiness edge.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.Business'
+  ownerUser:
+    type: object
+    description: OwnerUser holds the value of the ownerUser edge.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.User'
+  place:
+    type: array
+    description: Place holds the value of the place edge.
+    items:
+      $ref: ./placio-app_ent.Place.yaml
+  ratings:
+    type: array
+    description: Ratings holds the value of the ratings edge.
+    items:
+      $ref: ./placio-app_ent.Rating.yaml
+  ticket_options:
+    type: array
+    description: TicketOptions holds the value of the ticket_options edge.
+    items:
+      $ref: ./placio-app_ent.TicketOption.yaml
+  tickets:
+    type: array
+    description: Tickets holds the value of the tickets edge.
+    items:
+      $ref: ./placio-app_ent.Ticket.yaml
+  userFollowers:
+    type: array
+    description: UserFollowers holds the value of the userFollowers edge.
+    items:
+      $ref: ./placio-app_ent.UserFollowEvent.yaml

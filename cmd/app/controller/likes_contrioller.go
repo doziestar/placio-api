@@ -43,7 +43,6 @@ func (likesController *LikeController) RegisterRoutes(router *gin.RouterGroup) {
 // @Produce json
 // @Param userID path string true "ID of the user"
 // @Param postID path string true "ID of the post"
-// @Security Bearer
 // @Success 200 {object} Dto.Response "Successfully liked post"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
@@ -68,7 +67,6 @@ func (likesController *LikeController) likePost(ctx *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param likeID path string true "ID of the like"
-// @Security Bearer
 // @Success 200 {object} Dto.Response "Successfully unliked post"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
@@ -92,7 +90,6 @@ func (likesController *LikeController) unlikePost(ctx *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param userID path string true "ID of the user"
-// @Security Bearer
 // @Success 200 {array} ent.Like "List of likes"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
@@ -116,7 +113,6 @@ func (likesController *LikeController) getUserLikes(ctx *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param postID path string true "ID of the post"
-// @Security Bearer
 // @Success 200 {array} ent.Like "List of likes"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
@@ -141,7 +137,6 @@ func (likesController *LikeController) getPostLikes(ctx *gin.Context) {
 // @Produce json
 // @Param userID path string true "ID of the user"
 // @Param placeID path string true "ID of the place"
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Success 201 {object} ent.UserLikePlace "Successfully liked place"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
@@ -168,7 +163,6 @@ func (likesController *LikeController) likePlace(c *gin.Context) error {
 // @Accept json
 // @Produce json
 // @Param userLikePlaceID path string true "ID of the UserLikePlace record"
-// @Security Bearer
 // @Param Authorization header string true "Provide JWT access token"
 // @Success 200 {object} string "Successfully unliked place"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
@@ -194,7 +188,6 @@ func (likesController *LikeController) unlikePlace(c *gin.Context) error {
 // @Accept json
 // @Produce json
 // @Param userID path string true "ID of the user"
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Success 200 {array} ent.UserLikePlace "List of UserLikePlace records"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
@@ -220,7 +213,6 @@ func (likesController *LikeController) getUserLikedPlaces(c *gin.Context) error 
 // @Accept json
 // @Produce json
 // @Param placeID path string true "ID of the place"
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Success 200 {array} ent.UserLikePlace "List of UserLikePlace records"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"

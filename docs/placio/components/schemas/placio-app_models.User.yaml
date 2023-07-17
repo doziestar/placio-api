@@ -1,0 +1,23 @@
+type: object
+properties:
+  auth0Data:
+    $ref: ./management.User.yaml
+  auth0ID:
+    type: string
+  createdAt:
+    type: string
+  deleteAt:
+    $ref: ./gorm.DeletedAt.yaml
+  posts:
+    type: array
+    items:
+      $ref: ./placio-app_models.Post.yaml
+  relationships:
+    type: array
+    items:
+      $ref: ./placio-app_models.UserBusinessRelationship.yaml
+  updatedAt:
+    type: string
+  userID:
+    type: string
+    description: gorm.Model

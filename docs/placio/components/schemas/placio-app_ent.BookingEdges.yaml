@@ -1,0 +1,12 @@
+type: object
+properties:
+  room:
+    type: object
+    description: Room holds the value of the room edge.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.Room'
+  user:
+    type: object
+    description: User holds the value of the user edge.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.User'

@@ -1,0 +1,7 @@
+type: object
+properties:
+  time:
+    type: string
+  valid:
+    type: boolean
+    description: Valid is true if Time is not NULL

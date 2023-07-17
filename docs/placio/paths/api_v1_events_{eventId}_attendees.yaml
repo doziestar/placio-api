@@ -1,0 +1,33 @@
+get:
+  tags:
+    - Attendee
+  summary: Get attendees by event
+  description: Get all attendees for a specific event by event ID
+  parameters:
+    - name: eventId
+      in: path
+      description: Event ID
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Successfully retrieved attendees
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: ../components/schemas/placio-app_models.Attendee.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml

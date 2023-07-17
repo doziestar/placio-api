@@ -1,0 +1,17 @@
+type: object
+properties:
+  access_token:
+    type: string
+  access_token_secret:
+    type: string
+  connection:
+    type: string
+  isSocial:
+    type: boolean
+  profileData:
+    type: object
+    properties: {}
+  provider:
+    type: string
+  refresh_token:
+    type: string

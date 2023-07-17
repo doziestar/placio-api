@@ -1,0 +1,22 @@
+type: object
+properties:
+  media:
+    type: object
+    description: The media content that was liked/disliked.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.Media'
+  post:
+    type: object
+    description: Post holds the value of the post edge.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.Post'
+  review:
+    type: object
+    description: The review that was liked/disliked.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.Review'
+  user:
+    type: object
+    description: The user who liked/disliked the review/media.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.User'

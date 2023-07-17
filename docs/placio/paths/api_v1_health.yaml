@@ -1,0 +1,14 @@
+get:
+  tags:
+    - root
+  summary: Show the status of server.
+  description: get the status of server.
+  responses:
+    '200':
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: object
+            additionalProperties:
+              type: object

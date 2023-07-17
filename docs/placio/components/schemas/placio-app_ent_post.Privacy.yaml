@@ -1,0 +1,11 @@
+type: string
+enum:
+  - Public
+  - Public
+  - FollowersOnly
+  - OnlyMe
+x-enum-varnames:
+  - DefaultPrivacy
+  - PrivacyPublic
+  - PrivacyFollowersOnly
+  - PrivacyOnlyMe

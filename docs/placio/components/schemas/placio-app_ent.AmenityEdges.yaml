@@ -1,0 +1,7 @@
+type: object
+properties:
+  places:
+    type: array
+    description: Places holds the value of the places edge.
+    items:
+      $ref: ./placio-app_ent.Place.yaml

@@ -1,0 +1,38 @@
+post:
+  tags:
+    - Post
+  summary: Create a new post
+  description: Create a new post for the authenticated user
+  requestBody:
+    description: Post Data
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/placio-app_Dto.PostDto.yaml
+    required: true
+  responses:
+    '201':
+      description: Successfully created post
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.PostResponseDto.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+  x-codegen-request-body-name: CreatePostDto

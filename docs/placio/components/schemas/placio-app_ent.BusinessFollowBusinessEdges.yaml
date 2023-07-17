@@ -1,0 +1,12 @@
+type: object
+properties:
+  followed:
+    type: object
+    description: Followed holds the value of the followed edge.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.Business'
+  follower:
+    type: object
+    description: Follower holds the value of the follower edge.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.Business'

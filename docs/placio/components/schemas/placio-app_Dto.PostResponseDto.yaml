@@ -1,0 +1,19 @@
+type: object
+properties:
+  business:
+    type: object
+    description: It can be empty if it does not exist
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.Business'
+  content:
+    type: string
+  created_at:
+    type: string
+  id:
+    type: string
+  medias:
+    type: array
+    items:
+      $ref: ./placio-app_Dto.MediaDto.yaml
+  user:
+    $ref: ./placio-app_ent.User.yaml

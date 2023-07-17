@@ -42,7 +42,6 @@ func (c *EventController) RegisterRoutes(router *gin.RouterGroup) {
 // @Param data body Dto.EventDTO true "Event Data"
 // @Param businessId query string false "Business ID"
 // @Param Authorization header string true "Bearer Token"
-// @Security Bearer
 // @Success 200 {object} ent.Event
 // @Failure 400 {object} Dto.ErrorDTO
 // @Failure 500 {object} Dto.ErrorDTO

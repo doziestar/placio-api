@@ -1,0 +1,30 @@
+type: object
+properties:
+  body:
+    type: string
+    description: Body holds the value of the "body" field.
+  category:
+    type: string
+    description: Category holds the value of the "category" field.
+  edges:
+    type: object
+    description: |-
+      Edges holds the relations/edges for other nodes in the graph.
+      The values are being populated by the HelpQuery when eager-loading is set.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.HelpEdges'
+  id:
+    type: string
+    description: ID of the ent.
+  media:
+    type: string
+    description: Media holds the value of the "media" field.
+  status:
+    type: string
+    description: Status holds the value of the "status" field.
+  subject:
+    type: string
+    description: Subject holds the value of the "subject" field.
+  user_id:
+    type: string
+    description: UserID holds the value of the "user_id" field.

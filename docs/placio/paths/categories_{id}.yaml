@@ -1,0 +1,44 @@
+delete:
+  tags:
+    - categories
+  summary: Delete a category
+  parameters:
+    - name: id
+      in: path
+      description: Category ID
+      required: true
+      schema:
+        type: integer
+  responses:
+    '200':
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_ent.Category.yaml
+patch:
+  tags:
+    - categories
+  summary: Update an existing category
+  parameters:
+    - name: id
+      in: path
+      description: Category ID
+      required: true
+      schema:
+        type: integer
+  requestBody:
+    description: Category
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/placio-app_ent.Category.yaml
+    required: true
+  responses:
+    '200':
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_ent.Category.yaml
+  x-codegen-request-body-name: category

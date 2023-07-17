@@ -1,0 +1,50 @@
+get:
+  tags:
+    - Business
+  summary: Get Places and Events associated with a Business Account
+  description: Retrieve All Places and Events associated with a Business Account
+  operationId: get-places-and-events-associated-with-business-account
+  parameters:
+    - name: businessAccountID
+      in: path
+      description: Business Account ID
+      required: true
+      schema:
+        type: string
+    - name: All
+      in: query
+      description: All
+      schema:
+        type: boolean
+    - name: Authorization
+      in: header
+      description: Bearer token
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: >-
+              ../components/schemas/placio-app_Dto.BusinessAccountPlacesAndEvents.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.Error.yaml
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.Error.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.Error.yaml

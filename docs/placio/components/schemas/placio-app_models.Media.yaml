@@ -1,0 +1,15 @@
+type: object
+properties:
+  createdAt:
+    type: string
+  id:
+    type: string
+  mediaType:
+    type: string
+    description: '"image", "gif", or "video"'
+  postID:
+    type: string
+  updatedAt:
+    type: string
+  url:
+    type: string

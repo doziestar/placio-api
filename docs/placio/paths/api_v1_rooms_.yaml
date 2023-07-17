@@ -1,0 +1,32 @@
+post:
+  tags:
+    - Room
+  summary: Create a room
+  description: Create a new room
+  requestBody:
+    description: Room data
+    content:
+      application/json:
+        schema:
+          type: object
+    required: true
+  responses:
+    '200':
+      description: Successfully created room
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_ent.Room.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+  x-codegen-request-body-name: room

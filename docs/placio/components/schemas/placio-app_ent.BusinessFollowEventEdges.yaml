@@ -1,0 +1,12 @@
+type: object
+properties:
+  business:
+    type: object
+    description: Business holds the value of the business edge.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.Business'
+  event:
+    type: object
+    description: Event holds the value of the event edge.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.Event'

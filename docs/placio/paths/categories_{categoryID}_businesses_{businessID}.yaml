@@ -1,0 +1,24 @@
+post:
+  tags:
+    - categories
+  summary: Assign a business to a category
+  parameters:
+    - name: categoryID
+      in: path
+      description: Category ID
+      required: true
+      schema:
+        type: string
+    - name: businessID
+      in: path
+      description: Business ID
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_ent.CategoryAssignment.yaml

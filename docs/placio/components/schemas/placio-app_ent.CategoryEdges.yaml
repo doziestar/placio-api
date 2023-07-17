@@ -1,0 +1,7 @@
+type: object
+properties:
+  categoryAssignments:
+    type: array
+    description: CategoryAssignments holds the value of the categoryAssignments edge.
+    items:
+      $ref: ./placio-app_ent.CategoryAssignment.yaml

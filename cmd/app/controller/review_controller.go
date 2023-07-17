@@ -74,7 +74,7 @@ func (rc *ReviewController) rateItem(ctx *gin.Context) error {
 	if ok && len(scoreStr) > 0 {
 		score, err = strconv.ParseFloat(scoreStr[0], 64)
 		if err != nil || score < 1 || score > 5 {
-			return errors.New("invalid ratin score: must be between 1 and 5")
+			return errors.New("invalid rating score: must be between 1 and 5")
 		}
 	}
 

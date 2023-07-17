@@ -1,0 +1,22 @@
+type: object
+properties:
+  business:
+    type: object
+    description: The business that was rated.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.Business'
+  event:
+    type: object
+    description: The event that was rated.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.Event'
+  place:
+    type: object
+    description: The place that was rated.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.Place'
+  user:
+    type: object
+    description: The user who gave the rating.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.User'

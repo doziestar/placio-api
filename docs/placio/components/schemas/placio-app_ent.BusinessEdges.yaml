@@ -1,0 +1,74 @@
+type: object
+properties:
+  business_account_settings:
+    type: object
+    description: >-
+      BusinessAccountSettings holds the value of the business_account_settings
+      edge.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.AccountSettings'
+  businessFollowEvents:
+    type: array
+    description: BusinessFollowEvents holds the value of the businessFollowEvents edge.
+    items:
+      $ref: ./placio-app_ent.BusinessFollowEvent.yaml
+  categories:
+    type: array
+    description: Categories holds the value of the categories edge.
+    items:
+      $ref: ./placio-app_ent.Category.yaml
+  categoryAssignments:
+    type: array
+    description: CategoryAssignments holds the value of the categoryAssignments edge.
+    items:
+      $ref: ./placio-app_ent.CategoryAssignment.yaml
+  events:
+    type: array
+    description: Events holds the value of the events edge.
+    items:
+      $ref: ./placio-app_ent.Event.yaml
+  faqs:
+    type: array
+    description: Faqs holds the value of the faqs edge.
+    items:
+      $ref: ./placio-app_ent.FAQ.yaml
+  followedBusinesses:
+    type: array
+    description: FollowedBusinesses holds the value of the followedBusinesses edge.
+    items:
+      $ref: ./placio-app_ent.BusinessFollowBusiness.yaml
+  followedUsers:
+    type: array
+    description: FollowedUsers holds the value of the followedUsers edge.
+    items:
+      $ref: ./placio-app_ent.BusinessFollowUser.yaml
+  followerBusinesses:
+    type: array
+    description: FollowerBusinesses holds the value of the followerBusinesses edge.
+    items:
+      $ref: ./placio-app_ent.BusinessFollowBusiness.yaml
+  followerUsers:
+    type: array
+    description: FollowerUsers holds the value of the followerUsers edge.
+    items:
+      $ref: ./placio-app_ent.UserFollowBusiness.yaml
+  places:
+    type: array
+    description: Places holds the value of the places edge.
+    items:
+      $ref: ./placio-app_ent.Place.yaml
+  posts:
+    type: array
+    description: Posts holds the value of the posts edge.
+    items:
+      $ref: ./placio-app_ent.Post.yaml
+  ratings:
+    type: array
+    description: Ratings holds the value of the ratings edge.
+    items:
+      $ref: ./placio-app_ent.Rating.yaml
+  userBusinesses:
+    type: array
+    description: UserBusinesses holds the value of the userBusinesses edge.
+    items:
+      $ref: ./placio-app_ent.UserBusiness.yaml

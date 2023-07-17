@@ -1,0 +1,61 @@
+put:
+  responses:
+    '200':
+      description: Successfully updated comment
+      content:
+        '*/*':
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.CommentResponseDto.yaml
+    '400':
+      description: Bad Request
+      content:
+        '*/*':
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '401':
+      description: Unauthorized
+      content:
+        '*/*':
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '404':
+      description: Comment Not Found
+      content:
+        '*/*':
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        '*/*':
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+delete:
+  responses:
+    '204':
+      description: Successfully deleted comment
+      content: {}
+    '400':
+      description: Bad Request
+      content:
+        '*/*':
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '401':
+      description: Unauthorized
+      content:
+        '*/*':
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '404':
+      description: Comment Not Found
+      content:
+        '*/*':
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        '*/*':
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml

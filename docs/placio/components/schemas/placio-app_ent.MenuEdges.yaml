@@ -1,0 +1,12 @@
+type: object
+properties:
+  categories:
+    type: array
+    description: Categories holds the value of the categories edge.
+    items:
+      $ref: ./placio-app_ent.Category.yaml
+  place:
+    type: object
+    description: Place holds the value of the place edge.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.Place'

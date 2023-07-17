@@ -1,0 +1,16 @@
+type: object
+properties:
+  CommentNotifications:
+    type: boolean
+  DirectMessageNotifications:
+    type: boolean
+  EmailNotifications:
+    type: boolean
+  FollowNotifications:
+    type: boolean
+  LikeNotifications:
+    type: boolean
+  MentionNotifications:
+    type: boolean
+  PushNotifications:
+    type: boolean

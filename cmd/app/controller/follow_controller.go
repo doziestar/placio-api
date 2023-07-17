@@ -43,7 +43,6 @@ func (fc *FollowController) RegisterRoutes(router *gin.RouterGroup) {
 // @Tags Follow
 // @Produce json
 // @Param businessID path string true "Business ID"
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Accept json
 // @Description Follow a specific Business by the user
@@ -71,7 +70,6 @@ func (fc *FollowController) followUserToBusiness(c *gin.Context) error {
 // @Tags Follow
 // @Produce json
 // @Param businessID path string true "Business ID"
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Accept json
 // @Description Unfollow a specific Business by the user
@@ -98,7 +96,6 @@ func (fc *FollowController) unfollowUserToBusiness(c *gin.Context) error {
 // @ID get-followed-businesses
 // @Tags Follow
 // @Produce json
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Accept json
 // @Description Get all Businesses followed by the user
@@ -125,7 +122,6 @@ func (fc *FollowController) getFollowedBusinessesByUser(c *gin.Context) error {
 // @Tags Follow
 // @Produce json
 // @Param userID path string true "User ID"
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Accept json
 // @Description Follow a specific User
@@ -153,7 +149,6 @@ func (fc *FollowController) followUserToUser(c *gin.Context) error {
 // @Tags Follow
 // @Produce json
 // @Param userID path string true "User ID"
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Accept json
 // @Description Unfollow a specific User
@@ -180,7 +175,6 @@ func (fc *FollowController) unfollowUserToUser(c *gin.Context) error {
 // @ID get-followed-users
 // @Tags Follow
 // @Produce json
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Accept json
 // @Description Get all Users followed by the user
@@ -207,7 +201,6 @@ func (fc *FollowController) getFollowedUsersByUser(c *gin.Context) error {
 // @Tags Follow
 // @Produce json
 // @Param placeID path string true "Place ID"
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Accept json
 // @Description Follow a specific Place by the user
@@ -235,7 +228,6 @@ func (fc *FollowController) followUserToPlace(c *gin.Context) error {
 // @Tags Follow
 // @Produce json
 // @Param placeID path string true "Place ID"
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Accept json
 // @Description Unfollow a specific Place by the user
@@ -262,7 +254,6 @@ func (fc *FollowController) unfollowUserToPlace(c *gin.Context) error {
 // @ID get-followed-places
 // @Tags Follow
 // @Produce json
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Accept json
 // @Description Get all Places followed by the user
@@ -289,7 +280,6 @@ func (fc *FollowController) getFollowedPlacesByUser(c *gin.Context) error {
 // @Tags Follow
 // @Produce json
 // @Param eventID path string true "Event ID"
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Accept json
 // @Description Follow a specific Event by the user
@@ -317,7 +307,6 @@ func (fc *FollowController) followUserToEvent(c *gin.Context) error {
 // @Tags Follow
 // @Produce json
 // @Param eventID path string true "Event ID"
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Accept json
 // @Description Unfollow a specific Event by the user
@@ -344,7 +333,6 @@ func (fc *FollowController) unfollowUserToEvent(c *gin.Context) error {
 // @ID get-followed-events
 // @Tags Follow
 // @Produce json
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Accept json
 // @Description Get all Events followed by the user

@@ -1,0 +1,8 @@
+type: object
+properties:
+  data:
+    type: object
+  message:
+    type: string
+  status:
+    type: integer

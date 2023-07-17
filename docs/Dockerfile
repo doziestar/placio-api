@@ -1,15 +1,34 @@
-ARG NODE_ENV=development
-# ARG NODE_ENV=staging
-ARG NODE_VERSION=19-alpine3.16
-
-FROM node:${NODE_VERSION} AS node
+# --- Build stage ---
+FROM node:16-alpine AS build-stage
 
 WORKDIR /app
 
-RUN npm install -g @redocly/cli
+# Install the Redocly CLI
+RUN npm install -g @redocly/cli@latest
 
-COPY ./docs ./docs
+# Copy documentation files
+COPY . .
 
-RUN redocly bundle ./docs/app/swagger.yaml --output ./docs/redoc.yml
+# Split the API definition file
+RUN #redocly split ./docs/app/swagger.json --outDir=./docs/split
+RUN redocly split redoc.yml --outDir=./placio-api-docs/split
 
-CMD redocly preview-docs --host=0.0.0.0 --port=6060 ./docs/redoc.yml
+# Bundle the split files into a static OpenAPI file
+RUN #redocly bundle ./docs/split/main.json -o ./docs/swagger.json
+RUN redocly build-docs ./split/main.json -o ./docs/swagger.json
+
+# Generate the documentation HTML file
+RUN redocly build-docs ./docs/swagger.json --output ./docs/redoc-static.html
+
+# --- Production stage ---
+FROM nginx:alpine AS production-stage
+
+# Remove default nginx page
+RUN rm -rf /usr/share/nginx/html/*
+
+# Copy the static HTML file to the nginx html directory
+COPY --from=build-stage /app/docs/redoc-static.html /usr/share/nginx/html/index.html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

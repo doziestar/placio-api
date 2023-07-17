@@ -1,0 +1,21 @@
+type: object
+properties:
+  createdAt:
+    type: string
+    description: CreatedAt holds the value of the "createdAt" field.
+  edges:
+    type: object
+    description: |-
+      Edges holds the relations/edges for other nodes in the graph.
+      The values are being populated by the LikeQuery when eager-loading is set.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.LikeEdges'
+  id:
+    type: string
+    description: ID of the ent.
+  like:
+    type: boolean
+    description: True for like, False for dislike
+  updatedAt:
+    type: string
+    description: UpdatedAt holds the value of the "updatedAt" field.

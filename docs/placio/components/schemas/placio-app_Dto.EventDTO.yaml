@@ -1,0 +1,75 @@
+type: object
+properties:
+  coverImage:
+    type: string
+  createdAt:
+    type: string
+  description:
+    type: string
+  endDate:
+    type: string
+  endTime:
+    type: string
+  eventSettings:
+    type: object
+    properties: {}
+  eventType:
+    type: string
+  frequency:
+    type: string
+  frequencyDayOfMonth:
+    type: string
+  frequencyDayOfWeek:
+    type: string
+  frequencyInterval:
+    type: string
+  frequencyMonthOfYear:
+    type: string
+  id:
+    type: string
+  location:
+    type: string
+  name:
+    type: string
+  startDate:
+    type: string
+  startTime:
+    type: string
+  status:
+    type: string
+  tags:
+    type: array
+    items:
+      type: string
+  timeZone:
+    type: string
+  title:
+    type: string
+  updatedAt:
+    type: string
+  url:
+    type: string
+  venueAddress:
+    type: string
+  venueCity:
+    type: string
+  venueCountry:
+    type: string
+  venueEmail:
+    type: string
+  venueLat:
+    type: string
+  venueLon:
+    type: string
+  venueName:
+    type: string
+  venuePhone:
+    type: string
+  venueState:
+    type: string
+  venueType:
+    type: string
+  venueURL:
+    type: string
+  venueZIP:
+    type: string

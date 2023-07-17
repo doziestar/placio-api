@@ -1,0 +1,51 @@
+post:
+  tags:
+    - Place
+  summary: Create a place
+  description: Create a new place
+  parameters:
+    - name: business_id
+      in: query
+      description: ID of the business to create the place for
+      required: true
+      schema:
+        type: string
+    - name: Authorization
+      in: header
+      description: Bearer token
+      required: true
+      schema:
+        type: string
+  requestBody:
+    description: Place to create
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/placio-app_Dto.CreatePlaceDTO.yaml
+    required: true
+  responses:
+    '200':
+      description: Successfully created place
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_ent.Place.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+  x-codegen-request-body-name: place

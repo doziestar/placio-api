@@ -1,0 +1,45 @@
+patch:
+  tags:
+    - User
+  summary: Update a user's information
+  description: Update a user's information by their Auth0 ID
+  parameters:
+    - name: id
+      in: path
+      description: User Auth0 ID
+      required: true
+      schema:
+        type: string
+  requestBody:
+    description: User data to update
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/placio-app_models.Auth0UserData.yaml
+    required: true
+  responses:
+    '200':
+      description: Successfully updated user information
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_ent.User.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+  x-codegen-request-body-name: userData

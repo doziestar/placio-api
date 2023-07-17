@@ -1,0 +1,32 @@
+post:
+  tags:
+    - Booking
+  summary: Create a booking
+  description: Create a new booking
+  requestBody:
+    description: Booking data
+    content:
+      application/json:
+        schema:
+          type: object
+    required: true
+  responses:
+    '200':
+      description: Successfully created booking
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_ent.Booking.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+  x-codegen-request-body-name: booking

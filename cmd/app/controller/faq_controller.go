@@ -27,6 +27,7 @@ func (fc *FAQController) RegisterRoutes(router, routerWithoutAuth *gin.RouterGro
 		faqRouter.DELETE("/:faqID", utility.Use(fc.deleteFAQ))
 		faqRouter.POST("/:faqID/place/:placeID", utility.Use(fc.associateFAQWithPlace))
 		faqRouter.POST("/:faqID/event/:eventID", utility.Use(fc.associateFAQWithEvent))
+		faqRouter.GET("/business/:businessID", utility.Use(fc.getFAQsByBusiness))
 	}
 }
 
@@ -36,7 +37,6 @@ func (fc *FAQController) RegisterRoutes(router, routerWithoutAuth *gin.RouterGro
 // @Produce json
 // @Param businessID path string true "Business ID"
 // @Param faqData body Dto.FAQDto true "FAQ Data"
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Accept json
 // @Description Create a new FAQ for a specific Business
@@ -70,7 +70,6 @@ func (fc *FAQController) createFAQ(c *gin.Context) error {
 // @Tags FAQ
 // @Accept  json
 // @Produce  json
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Param faqID path string true "FAQ ID"
 // @Success 200 {object} ent.FAQ
@@ -91,6 +90,32 @@ func (fc *FAQController) getFAQ(c *gin.Context) error {
 	return nil
 }
 
+// @Summary Get FAQs by Business ID
+// @Description Retrieve FAQs by Business ID
+// @ID get-FAQs-by-business
+// @Tags FAQ
+// @Accept  json
+// @Produce  json
+// @Param Authorization header string true "Bearer token"
+// @Param businessID path string true "Business ID"
+// @Success 200 {object} []ent.FAQ
+// @Failure 400 {object} Dto.Error
+// @Failure 401 {object} Dto.Error
+// @Failure 500 {object} Dto.Error
+// @Router /faq/business/{businessID} [get]
+func (fc *FAQController) getFAQsByBusiness(c *gin.Context) error {
+	businessID := c.Param("businessID")
+
+	faqs, err := fc.service.GetFAQsByBusiness(c, businessID)
+	if err != nil {
+
+		return nil
+	}
+
+	c.JSON(http.StatusOK, faqs)
+	return nil
+}
+
 // @Summary Update FAQ by ID
 // @Description Update FAQ by ID
 // @ID update-FAQ
@@ -98,7 +123,6 @@ func (fc *FAQController) getFAQ(c *gin.Context) error {
 // @Accept  json
 // @Produce  json
 // @Param faqID path string true "FAQ ID"
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Param faqData body Dto.FAQDto true "FAQ Data"
 // @Success 200 {object} ent.FAQ
@@ -132,7 +156,6 @@ func (fc *FAQController) updateFAQ(c *gin.Context) error {
 // @Produce  json
 // @Param faqID path string true "FAQ ID"
 // @Success 200 {object} string "FAQ deleted successfully"
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Failure 400 {object} Dto.Error
 // @Failure 401 {object} Dto.Error
@@ -160,7 +183,6 @@ func (fc *FAQController) deleteFAQ(c *gin.Context) error {
 // @Param faqID path string true "FAQ ID"
 // @Param placeID path string true "Place ID"
 // @Success 200 {object} string "FAQ associated with place successfully"
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Failure 400 {object} Dto.Error
 // @Failure 401 {object} Dto.Error
@@ -189,7 +211,6 @@ func (fc *FAQController) associateFAQWithPlace(c *gin.Context) error {
 // @Param faqID path string true "FAQ ID"
 // @Param eventID path string true "Event ID"
 // @Success 200 {object} string "FAQ associated with event successfully"
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Failure 400 {object} Dto.Error
 // @Failure 401 {object} Dto.Error

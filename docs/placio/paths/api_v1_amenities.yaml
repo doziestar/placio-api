@@ -1,0 +1,83 @@
+get:
+  tags:
+    - Amenity
+  summary: Get all amenities
+  description: Get all amenities
+  parameters:
+    - name: Authorization
+      in: header
+      description: JWT token
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Successfully retrieved amenities
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: ../components/schemas/placio-app_ent.Amenity.yaml
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+post:
+  tags:
+    - Amenity
+  summary: Create a new amenity
+  description: Create a new amenity with provided information
+  parameters:
+    - name: Authorization
+      in: header
+      description: Bearer token
+      required: true
+      schema:
+        type: string
+  requestBody:
+    content:
+      application/json:
+        schema:
+          required:
+            - icons
+          properties:
+            icons:
+              type: string
+              description: Icon files for amenity
+              format: binary
+    required: true
+  responses:
+    '200':
+      description: Successfully created amenity
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_ent.Amenity.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+  x-codegen-request-body-name: amenity

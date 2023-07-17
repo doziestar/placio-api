@@ -1,0 +1,18 @@
+type: object
+properties:
+  answer:
+    type: string
+    description: Answer holds the value of the "answer" field.
+  edges:
+    type: object
+    description: |-
+      Edges holds the relations/edges for other nodes in the graph.
+      The values are being populated by the FAQQuery when eager-loading is set.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.FAQEdges'
+  id:
+    type: string
+    description: ID of the ent.
+  question:
+    type: string
+    description: Question holds the value of the "question" field.

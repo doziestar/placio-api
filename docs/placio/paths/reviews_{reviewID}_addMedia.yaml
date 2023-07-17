@@ -1,0 +1,33 @@
+post:
+  tags:
+    - Review
+  summary: Add media to a review
+  description: Add media to a review based on reviewID
+  parameters:
+    - name: reviewID
+      in: path
+      description: Review ID
+      required: true
+      schema:
+        type: string
+  requestBody:
+    description: Media File
+    content:
+      application/json:
+        schema:
+          type: string
+    required: true
+  responses:
+    '200':
+      description: Successfully added media to review
+      content:
+        application/json:
+          schema:
+            type: string
+    '500':
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: string
+  x-codegen-request-body-name: string

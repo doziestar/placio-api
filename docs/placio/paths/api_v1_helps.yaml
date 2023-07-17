@@ -1,0 +1,38 @@
+post:
+  tags:
+    - Help
+  summary: Create a help request
+  description: Create a new help request
+  requestBody:
+    description: Optional media associated with the help request
+    content:
+      application/json:
+        schema:
+          type: string
+    required: false
+  responses:
+    '200':
+      description: Successfully created help request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_ent.Help.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+  x-codegen-request-body-name: media
