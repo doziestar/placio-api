@@ -32,7 +32,7 @@ func (rc *ReservationController) RegisterRoutes(router *gin.RouterGroup) {
 // @Accept json
 // @Produce json
 // @Param id path string true "ID of the reservation to get"
-// @Security Bearer
+
 // @Success 200 {object} ent.Reservation "Successfully retrieved reservation"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
@@ -58,7 +58,7 @@ func (rc *ReservationController) GetReservation(ctx *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param reservation body ent.Reservation true "Reservation to create"
-// @Security Bearer
+
 // @Success 200 {object} ent.Reservation "Successfully created reservation"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
@@ -89,7 +89,7 @@ func (rc *ReservationController) CreateReservation(ctx *gin.Context) {
 // @Produce json
 // @Param id path string true "ID of the reservation to update"
 // @Param reservation body ent.Reservation true "Reservation data to update"
-// @Security Bearer
+
 // @Success 200 {object} ent.Reservation "Successfully updated reservation"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
@@ -120,7 +120,7 @@ func (rc *ReservationController) UpdateReservation(ctx *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string true "ID of the reservation to delete"
-// @Security Bearer
+
 // @Success 200 {object} ent.Reservation "Successfully deleted reservation"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"

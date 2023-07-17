@@ -36,7 +36,6 @@ func (fc *FAQController) RegisterRoutes(router, routerWithoutAuth *gin.RouterGro
 // @Produce json
 // @Param businessID path string true "Business ID"
 // @Param faqData body Dto.FAQDto true "FAQ Data"
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Accept json
 // @Description Create a new FAQ for a specific Business
@@ -70,7 +69,6 @@ func (fc *FAQController) createFAQ(c *gin.Context) error {
 // @Tags FAQ
 // @Accept  json
 // @Produce  json
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Param faqID path string true "FAQ ID"
 // @Success 200 {object} ent.FAQ
@@ -98,7 +96,6 @@ func (fc *FAQController) getFAQ(c *gin.Context) error {
 // @Accept  json
 // @Produce  json
 // @Param faqID path string true "FAQ ID"
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Param faqData body Dto.FAQDto true "FAQ Data"
 // @Success 200 {object} ent.FAQ
@@ -132,7 +129,6 @@ func (fc *FAQController) updateFAQ(c *gin.Context) error {
 // @Produce  json
 // @Param faqID path string true "FAQ ID"
 // @Success 200 {object} string "FAQ deleted successfully"
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Failure 400 {object} Dto.Error
 // @Failure 401 {object} Dto.Error
@@ -160,7 +156,6 @@ func (fc *FAQController) deleteFAQ(c *gin.Context) error {
 // @Param faqID path string true "FAQ ID"
 // @Param placeID path string true "Place ID"
 // @Success 200 {object} string "FAQ associated with place successfully"
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Failure 400 {object} Dto.Error
 // @Failure 401 {object} Dto.Error
@@ -189,7 +184,6 @@ func (fc *FAQController) associateFAQWithPlace(c *gin.Context) error {
 // @Param faqID path string true "FAQ ID"
 // @Param eventID path string true "Event ID"
 // @Success 200 {object} string "FAQ associated with event successfully"
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Failure 400 {object} Dto.Error
 // @Failure 401 {object} Dto.Error

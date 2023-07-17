@@ -53,7 +53,6 @@ func (uc *UserController) RegisterRoutes(router *gin.RouterGroup) {
 // @Produce json
 // @Param followerID path string true "ID of the follower"
 // @Param followedID path string true "ID of the user to follow"
-// @Security Bearer
 // @Success 200 {object} Dto.Response "Successfully followed user"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
@@ -82,7 +81,6 @@ func (uc *UserController) followUser(ctx *gin.Context) error {
 // @Produce json
 // @Param followerID path string true "ID of the follower"
 // @Param businessID path string true "ID of the business to follow"
-// @Security Bearer
 // @Success 200 {object} Dto.Response "Successfully followed business"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
@@ -111,7 +109,6 @@ func (uc *UserController) followBusiness(ctx *gin.Context) error {
 // @Produce json
 // @Param followerID path string true "ID of the follower"
 // @Param followedID path string true "ID of the user to unfollow"
-// @Security Bearer
 // @Success 200 {object} Dto.Response "Successfully unfollowed user"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
@@ -140,7 +137,6 @@ func (uc *UserController) unfollowUser(ctx *gin.Context) error {
 // @Produce json
 // @Param followerID path string true "ID of the follower"
 // @Param businessID path string true "ID of the business to unfollow"
-// @Security Bearer
 // @Success 200 {object} string "Successfully unfollowed business"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
@@ -170,7 +166,6 @@ func (uc *UserController) unfollowBusiness(ctx *gin.Context) error {
 // @Accept json
 // @Produce json
 // @Param userID path string true "ID of the user"
-// @Security Bearer
 // @Success 200 {array} ent.Post "Successfully retrieved posts"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
@@ -196,7 +191,6 @@ func (uc *UserController) getFollowedContents(ctx *gin.Context) error {
 // @Produce json
 // @Param id path string true "User Auth0 ID"
 // @Param userData body models.Auth0UserData true "User data to update"
-// @Security Bearer
 // @Success 200 {object} ent.User "Successfully updated user information"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
@@ -245,7 +239,6 @@ func (uc *UserController) updateAuth0UserInformation(ctx *gin.Context) error {
 // @Produce json
 // @Param id path string true "User Auth0 ID"
 // @Param userMetaData body models.Metadata true "User metadata to update"
-// @Security Bearer
 // @Success 200 {object} models.User "Successfully updated user metadata"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
@@ -283,7 +276,6 @@ func (uc *UserController) updateAuth0UserMetadata(ctx *gin.Context) error {
 // @Produce json
 // @Param id path string true "User Auth0 ID"
 // @Param appData body models.AppMetadata true "App metadata to update"
-// @Security Bearer
 // @Success 200 {object} ent.User "Successfully updated app metadata"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
@@ -320,7 +312,6 @@ func (uc *UserController) updateAuth0AppMetadata(ctx *gin.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "User Auth0 ID"
-// @Security Bearer
 // @Success 200 {object} ent.User "Successfully retrieved user"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
@@ -359,7 +350,6 @@ func (uc *UserController) GetUser(ctx *gin.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "User Auth0 ID"
-// @Security Bearer
 // @Success 200 {object} ent.User "Successfully retrieved user"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
@@ -406,7 +396,6 @@ func (uc *UserController) UpdateUser(ctx *gin.Context) error {
 // @Accept json
 // @Produce json
 // @Param name body string true "Business Account Name"
-// @Security Bearer
 // @Success 201 {object} ent.Business "Successfully created business account"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
@@ -455,7 +444,6 @@ func (uc *UserController) createBusinessAccount(ctx *gin.Context) error {
 // @Tags User
 // @Accept json
 // @Produce json
-// @Security Bearer
 // @Success 200 {array} Dto.PostResponseDto "Successfully retrieved posts"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
@@ -513,7 +501,6 @@ func (uc *UserController) GetPostsByUser(ctx *gin.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "User ID"
-// @Security Bearer
 // @Success 200 {array} ent.Business "Successfully retrieved business accounts"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
@@ -549,7 +536,6 @@ func (uc *UserController) getUserBusinessAccounts(ctx *gin.Context) error {
 // @Param userID path uint true "User ID"
 // @Param businessAccountID path uint true "Business Account ID"
 // @Param role body string true "Role"
-// @Security Bearer
 // @Success 204 "Successfully associated user with business account"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
@@ -568,7 +554,6 @@ func (uc *UserController) associateUserWithBusinessAccount(ctx *gin.Context) err
 // @Produce json
 // @Param userID path uint true "User ID"
 // @Param businessAccountID path uint true "Business Account ID"
-// @Security Bearer
 // @Success 204 "Successfully removed user's association with business account"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
@@ -586,7 +571,6 @@ func (uc *UserController) removeUserFromBusinessAccount(ctx *gin.Context) error 
 // @Accept json
 // @Produce json
 // @Param businessAccountID path uint true "Business Account ID"
-// @Security Bearer
 // @Success 200 {array} ent.User "Successfully retrieved users"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
@@ -604,7 +588,6 @@ func (uc *UserController) getUsersForBusinessAccount(ctx *gin.Context) error {
 // @Accept json
 // @Produce json
 // @Param userID path uint true "User ID"
-// @Security Bearer
 // @Success 200 {array} ent.Business "Successfully retrieved business accounts"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
@@ -624,7 +607,6 @@ func (uc *UserController) getBusinessAccountsForUser(ctx *gin.Context) error {
 // @Param userID path uint true "User ID"
 // @Param businessAccountID path uint true "Business Account ID"
 // @Param action body string true "Action"
-// @Security Bearer
 // @Success 200 {object} Dto.PermissionDTO "Successfully checked permission"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"

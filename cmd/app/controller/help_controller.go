@@ -39,7 +39,6 @@ func (uc *HelpController) RegisterRoutes(router *gin.RouterGroup) {
 // @Param subject body string true "Subject of the help request"
 // @Param body body string true "Body of the help request"
 // @Param media body string false "Optional media associated with the help request"
-// @Security Bearer
 // @Success 200 {object} ent.Help "Successfully created help request"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
@@ -67,7 +66,6 @@ func (uc *HelpController) createHelp(ctx *gin.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "ID of the help request to resolve"
-// @Security Bearer
 // @Success 200 {object} ent.Help "Successfully resolved help request"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
@@ -90,7 +88,6 @@ func (uc *HelpController) resolveHelp(ctx *gin.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "ID of the help request to delete"
-// @Security Bearer
 // @Success 200 {object} Dto.Response "Successfully deleted help request"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"

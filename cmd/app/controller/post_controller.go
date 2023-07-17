@@ -53,7 +53,6 @@ func (pc *PostController) RegisterRoutes(router *gin.RouterGroup) {
 // @Accept json
 // @Produce json
 // @Param CreatePostDto body Dto.PostDto true "Post Data"
-// @Security Bearer
 // @Success 201 {object} Dto.PostResponseDto "Successfully created post"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
@@ -189,7 +188,6 @@ func (pc *PostController) getPost(ctx *gin.Context) error {
 // @Produce json
 // @Param id path string true "Post ID"
 // @Param UpdatePostDto body Dto.PostDto true "Post Data"
-// @Security Bearer
 // @Success 200 {object} Dto.PostResponseDto "Successfully updated post"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
@@ -265,7 +263,6 @@ func (pc *PostController) updatePost(ctx *gin.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "Post ID"
-// @Security Bearer
 // @Success 200 {object} string "Successfully deleted post"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
@@ -296,7 +293,6 @@ func (pc *PostController) deletePost(ctx *gin.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "Post ID"
-// @Security Bearer
 // @Success 200 {object} []ent.Comment "Successfully retrieved comments"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"

@@ -180,13 +180,6 @@ definitions:
       website:
         type: string
     type: object
-  placio-app_Dto.CommentDto:
-    properties:
-      content:
-        type: string
-    required:
-      - content
-    type: object
   placio-app_Dto.CommentResponseDto:
     properties:
       content:
@@ -2575,8 +2568,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Get all amenities
       tags:
         - Amenity
@@ -2620,8 +2611,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Create a new amenity
       tags:
         - Amenity
@@ -2656,8 +2645,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Delete an amenity
       tags:
         - Amenity
@@ -2686,8 +2673,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Get an amenity
       tags:
         - Amenity
@@ -2731,8 +2716,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Update an amenity
       tags:
         - Amenity
@@ -3017,25 +3000,11 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Update a business's details
       tags:
         - Business
   /api/v1/comments/:postId:
     post:
-      consumes:
-        - application/json
-      description: Create a new comment for a post by the authenticated user
-      parameters:
-        - description: Comment Data
-          in: body
-          name: CreateCommentDto
-          required: true
-          schema:
-            $ref: '#/definitions/placio-app_Dto.CommentDto'
-      produces:
-        - application/json
       responses:
         '201':
           description: Successfully created comment
@@ -3053,24 +3022,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
-      summary: Create a new comment for a post
-      tags:
-        - Comment
   /api/v1/comments/{id}:
     delete:
-      consumes:
-        - application/json
-      description: Delete an existing comment by the authenticated user
-      parameters:
-        - description: Comment ID
-          in: path
-          name: id
-          required: true
-          type: string
-      produces:
-        - application/json
       responses:
         '204':
           description: Successfully deleted comment
@@ -3090,29 +3043,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
-      summary: Delete a comment
-      tags:
-        - Comment
     put:
-      consumes:
-        - application/json
-      description: Update an existing comment by the authenticated user
-      parameters:
-        - description: Comment ID
-          in: path
-          name: id
-          required: true
-          type: string
-        - description: Comment Data
-          in: body
-          name: UpdateCommentDto
-          required: true
-          schema:
-            $ref: '#/definitions/placio-app_Dto.CommentDto'
-      produces:
-        - application/json
       responses:
         '200':
           description: Successfully updated comment
@@ -3134,11 +3065,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
-      summary: Update a comment
-      tags:
-        - Comment
   /api/v1/events/{eventId}/attendees:
     get:
       consumes:
@@ -3271,8 +3197,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Create a help request
       tags:
         - Help
@@ -3306,8 +3230,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Delete a help request
       tags:
         - Help
@@ -3341,8 +3263,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Resolve a help request
       tags:
         - Help
@@ -3376,8 +3296,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Unlike a post
       tags:
         - Like
@@ -3418,8 +3336,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Get place likes
       tags:
         - Like
@@ -3463,8 +3379,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Like a place
       tags:
         - Like
@@ -3503,8 +3417,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Unlike a place
       tags:
         - Like
@@ -3540,8 +3452,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Get post likes
       tags:
         - Like
@@ -3577,8 +3487,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Get user likes
       tags:
         - Like
@@ -3617,8 +3525,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Like a post
       tags:
         - Like
@@ -3659,8 +3565,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Get user liked places
       tags:
         - Like
@@ -3854,8 +3758,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Create a place
       tags:
         - Place
@@ -3894,8 +3796,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Delete a place
       tags:
         - Place
@@ -3933,8 +3833,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Get a place
       tags:
         - Place
@@ -3978,8 +3876,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Update a place
       tags:
         - Place
@@ -4024,8 +3920,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Add amenities to a place
       tags:
         - Place
@@ -4083,8 +3977,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Create a new post
       tags:
         - Post
@@ -4122,8 +4014,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Delete a post
       tags:
         - Post
@@ -4194,8 +4084,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Update a post
       tags:
         - Post
@@ -4235,8 +4123,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Get comments by post
       tags:
         - Post
@@ -4420,18 +4306,6 @@ paths:
         - Rating
   /api/v1/reservations/:
     post:
-      consumes:
-        - application/json
-      description: Create a new reservation
-      parameters:
-        - description: Reservation to create
-          in: body
-          name: reservation
-          required: true
-          schema:
-            $ref: '#/definitions/placio-app_ent.Reservation'
-      produces:
-        - application/json
       responses:
         '200':
           description: Successfully created reservation
@@ -4449,24 +4323,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
-      summary: Create a reservation
-      tags:
-        - Reservation
   /api/v1/reservations/{id}:
     delete:
-      consumes:
-        - application/json
-      description: Delete a reservation by ID
-      parameters:
-        - description: ID of the reservation to delete
-          in: path
-          name: id
-          required: true
-          type: string
-      produces:
-        - application/json
       responses:
         '200':
           description: Successfully deleted reservation
@@ -4484,23 +4342,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
-      summary: Delete a reservation
-      tags:
-        - Reservation
     get:
-      consumes:
-        - application/json
-      description: Get a reservation by ID
-      parameters:
-        - description: ID of the reservation to get
-          in: path
-          name: id
-          required: true
-          type: string
-      produces:
-        - application/json
       responses:
         '200':
           description: Successfully retrieved reservation
@@ -4518,29 +4360,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
-      summary: Get a reservation
-      tags:
-        - Reservation
     patch:
-      consumes:
-        - application/json
-      description: Update a reservation by ID
-      parameters:
-        - description: ID of the reservation to update
-          in: path
-          name: id
-          required: true
-          type: string
-        - description: Reservation data to update
-          in: body
-          name: reservation
-          required: true
-          schema:
-            $ref: '#/definitions/placio-app_ent.Reservation'
-      produces:
-        - application/json
       responses:
         '200':
           description: Successfully updated reservation
@@ -4558,11 +4378,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
-      summary: Update a reservation
-      tags:
-        - Reservation
   /api/v1/rooms/:
     post:
       consumes:
@@ -5149,8 +4964,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Get a user's details
       tags:
         - User
@@ -5183,8 +4996,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Update a user's details
       tags:
         - User
@@ -5223,8 +5034,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Follow a business
       tags:
         - User
@@ -5263,8 +5072,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Follow a user
       tags:
         - User
@@ -5303,8 +5110,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Unfollow a business
       tags:
         - User
@@ -5343,8 +5148,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Unfollow a user
       tags:
         - User
@@ -5384,8 +5187,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Update a user's app metadata
       tags:
         - User
@@ -5421,8 +5222,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Get all business accounts for a user
       tags:
         - User
@@ -5462,8 +5261,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Update a user's metadata
       tags:
         - User
@@ -5503,8 +5300,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Update a user's information
       tags:
         - User
@@ -5541,8 +5336,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Remove a user's association with a business account
       tags:
         - User
@@ -5584,8 +5377,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Associate a user with a business account
       tags:
         - User
@@ -5630,8 +5421,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Check if a user can perform an action
       tags:
         - User
@@ -5667,8 +5456,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Get all business accounts a user is associated with
       tags:
         - User
@@ -5704,8 +5491,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Get followed contents
       tags:
         - User
@@ -5735,8 +5520,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Retrieve posts by user
       tags:
         - User
@@ -5771,8 +5554,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Create a new business account
       tags:
         - User
@@ -5808,8 +5589,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Get all users for a business account
       tags:
         - User
@@ -5841,8 +5620,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
-      security:
-        - Bearer: []
       summary: List all business accounts
       tags:
         - Business
@@ -5881,8 +5658,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
-      security:
-        - Bearer: []
       summary: Create a business account
       tags:
         - Business
@@ -5919,8 +5694,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
-      security:
-        - Bearer: []
       summary: Delete a business account
       tags:
         - Business
@@ -5956,8 +5729,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
-      security:
-        - Bearer: []
       summary: Get a business account
       tags:
         - Business
@@ -6001,8 +5772,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.Error'
-      security:
-        - Bearer: []
       summary: Get Places and Events associated with a Business Account
       tags:
         - Business
@@ -6044,8 +5813,6 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/placio-app_Dto.Error'
-      security:
-        - Bearer: []
       summary: Add a new Event to a Business Account
       tags:
         - Business
@@ -6086,8 +5853,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.Error'
-      security:
-        - Bearer: []
       summary: List all team members of a Business Account
       tags:
         - Business
@@ -6131,8 +5896,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.Error'
-      security:
-        - Bearer: []
       summary: Remove a team member from a Business Account
       tags:
         - Business
@@ -6187,8 +5950,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.Error'
-      security:
-        - Bearer: []
       summary: Edit a team member in a Business Account
       tags:
         - Business
@@ -6243,8 +6004,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.Error'
-      security:
-        - Bearer: []
       summary: Add a team member to a Business Account
       tags:
         - Business
@@ -6290,8 +6049,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.Error'
-      security:
-        - Bearer: []
       summary: Search team members in a Business Account
       tags:
         - Business
@@ -6338,8 +6095,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
-      security:
-        - Bearer: []
       summary: Transfer business account ownership
       tags:
         - Business
@@ -6381,8 +6136,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
-      security:
-        - Bearer: []
       summary: Remove user from business account
       tags:
         - Business
@@ -6423,8 +6176,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
-      security:
-        - Bearer: []
       summary: Associate user with business account
       tags:
         - Business
@@ -6461,8 +6212,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
-      security:
-        - Bearer: []
       summary: Get users for a business account
       tags:
         - Business
@@ -6507,8 +6256,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
-      security:
-        - Bearer: []
       summary: Follow a user by a business
       tags:
         - Business
@@ -6545,8 +6292,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
-      security:
-        - Bearer: []
       summary: Get contents followed by a business
       tags:
         - Business
@@ -6588,8 +6333,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
-      security:
-        - Bearer: []
       summary: Unfollow a user by a business
       tags:
         - Business
@@ -6631,8 +6374,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
-      security:
-        - Bearer: []
       summary: Follow a business by another business
       tags:
         - Business
@@ -6674,8 +6415,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
-      security:
-        - Bearer: []
       summary: Unfollow a business by another business
       tags:
         - Business
@@ -6712,8 +6451,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDto'
-      security:
-        - Bearer: []
       summary: Get user business accounts
       tags:
         - Business
@@ -7060,8 +6797,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
-      security:
-        - Bearer: []
       summary: Create Event
       tags:
         - Event
@@ -7242,8 +6977,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.Error'
-      security:
-        - Bearer: []
       summary: Delete FAQ by ID
       tags:
         - FAQ
@@ -7282,8 +7015,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.Error'
-      security:
-        - Bearer: []
       summary: Get FAQ by ID
       tags:
         - FAQ
@@ -7324,8 +7055,6 @@ paths:
           description: Unauthorized
           schema:
             $ref: '#/definitions/placio-app_Dto.Error'
-      security:
-        - Bearer: []
       summary: Update FAQ by ID
       tags:
         - FAQ
@@ -7370,8 +7099,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.Error'
-      security:
-        - Bearer: []
       summary: Associate FAQ with Event
       tags:
         - FAQ
@@ -7416,8 +7143,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.Error'
-      security:
-        - Bearer: []
       summary: Associate FAQ with Place
       tags:
         - FAQ
@@ -7463,8 +7188,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.Error'
-      security:
-        - Bearer: []
       summary: Create a new FAQ
       tags:
         - FAQ
@@ -7504,8 +7227,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.Error'
-      security:
-        - Bearer: []
       summary: Follow a business
       tags:
         - Follow
@@ -7545,8 +7266,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.Error'
-      security:
-        - Bearer: []
       summary: Follow an event
       tags:
         - Follow
@@ -7586,8 +7305,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.Error'
-      security:
-        - Bearer: []
       summary: Follow a place
       tags:
         - Follow
@@ -7627,8 +7344,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.Error'
-      security:
-        - Bearer: []
       summary: Follow a user
       tags:
         - Follow
@@ -7665,8 +7380,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.Error'
-      security:
-        - Bearer: []
       summary: Get followed businesses by a user
       tags:
         - Follow
@@ -7703,8 +7416,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.Error'
-      security:
-        - Bearer: []
       summary: Get followed events by a user
       tags:
         - Follow
@@ -7741,8 +7452,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.Error'
-      security:
-        - Bearer: []
       summary: Get followed places by a user
       tags:
         - Follow
@@ -7779,8 +7488,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.Error'
-      security:
-        - Bearer: []
       summary: Get followed users by a user
       tags:
         - Follow
@@ -8174,8 +7881,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.Error'
-      security:
-        - Bearer: []
       summary: Unfollow a business
       tags:
         - Follow
@@ -8215,8 +7920,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.Error'
-      security:
-        - Bearer: []
       summary: Unfollow an event
       tags:
         - Follow
@@ -8256,8 +7959,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.Error'
-      security:
-        - Bearer: []
       summary: Unfollow a place
       tags:
         - Follow
@@ -8297,8 +7998,6 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.Error'
-      security:
-        - Bearer: []
       summary: Unfollow a user
       tags:
         - Follow

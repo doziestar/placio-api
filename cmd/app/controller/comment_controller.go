@@ -36,7 +36,7 @@ func (cc *CommentController) RegisterRoutes(router *gin.RouterGroup) {
 // @Accept json
 // @Produce json
 // @Param CreateCommentDto body Dto.CommentDto true "Comment Data"
-// @Security Bearer
+
 // @Success 201 {object} Dto.CommentResponseDto "Successfully created comment"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
@@ -78,7 +78,7 @@ func (cc *CommentController) createComment(ctx *gin.Context) error {
 // @Produce json
 // @Param id path string true "Comment ID"
 // @Param UpdateCommentDto body Dto.CommentDto true "Comment Data"
-// @Security Bearer
+
 // @Success 200 {object} Dto.CommentResponseDto "Successfully updated comment"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
@@ -130,7 +130,7 @@ func (cc *CommentController) updateComment(ctx *gin.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "Comment ID"
-// @Security Bearer
+
 // @Success 204 "Successfully deleted comment"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"

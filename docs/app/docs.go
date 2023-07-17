@@ -26,11 +26,6 @@ const docTemplate = `{
     "paths": {
         "/api/v1/amenities": {
             "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Get all amenities",
                 "consumes": [
                     "application/json"
@@ -76,11 +71,6 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Create a new amenity with provided information",
                 "consumes": [
                     "application/json"
@@ -147,11 +137,6 @@ const docTemplate = `{
         },
         "/api/v1/amenities/{id}": {
             "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Get an amenity by ID",
                 "consumes": [
                     "application/json"
@@ -194,11 +179,6 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Update an amenity by ID",
                 "consumes": [
                     "application/json"
@@ -263,11 +243,6 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Delete an amenity by ID",
                 "consumes": [
                     "application/json"
@@ -690,11 +665,6 @@ const docTemplate = `{
         },
         "/api/v1/business/": {
             "patch": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Get a business's details by ID",
                 "consumes": [
                     "application/json"
@@ -752,33 +722,6 @@ const docTemplate = `{
         },
         "/api/v1/comments/:postId": {
             "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Create a new comment for a post by the authenticated user",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Comment"
-                ],
-                "summary": "Create a new comment for a post",
-                "parameters": [
-                    {
-                        "description": "Comment Data",
-                        "name": "CreateCommentDto",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.CommentDto"
-                        }
-                    }
-                ],
                 "responses": {
                     "201": {
                         "description": "Successfully created comment",
@@ -809,40 +752,6 @@ const docTemplate = `{
         },
         "/api/v1/comments/{id}": {
             "put": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Update an existing comment by the authenticated user",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Comment"
-                ],
-                "summary": "Update a comment",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Comment ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Comment Data",
-                        "name": "UpdateCommentDto",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.CommentDto"
-                        }
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "Successfully updated comment",
@@ -877,31 +786,6 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Delete an existing comment by the authenticated user",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Comment"
-                ],
-                "summary": "Delete a comment",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Comment ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "204": {
                         "description": "Successfully deleted comment"
@@ -1053,11 +937,6 @@ const docTemplate = `{
         },
         "/api/v1/helps": {
             "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Create a new help request",
                 "consumes": [
                     "application/json"
@@ -1145,11 +1024,6 @@ const docTemplate = `{
         },
         "/api/v1/helps/{id}": {
             "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Delete an existing help request",
                 "consumes": [
                     "application/json"
@@ -1200,11 +1074,6 @@ const docTemplate = `{
         },
         "/api/v1/helps/{id}/resolve": {
             "patch": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Resolve an existing help request",
                 "consumes": [
                     "application/json"
@@ -1255,11 +1124,6 @@ const docTemplate = `{
         },
         "/api/v1/likes/place/{placeID}": {
             "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Retrieve all likes for a place",
                 "consumes": [
                     "application/json"
@@ -1320,11 +1184,6 @@ const docTemplate = `{
         },
         "/api/v1/likes/place/{userID}/place/{placeID}": {
             "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Allows a user to like a specific place",
                 "consumes": [
                     "application/json"
@@ -1389,11 +1248,6 @@ const docTemplate = `{
         },
         "/api/v1/likes/place/{userLikePlaceID}": {
             "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Allows a user to unlike a specific place",
                 "consumes": [
                     "application/json"
@@ -1451,11 +1305,6 @@ const docTemplate = `{
         },
         "/api/v1/likes/post/{postID}": {
             "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Retrieve all likes for a post",
                 "consumes": [
                     "application/json"
@@ -1509,11 +1358,6 @@ const docTemplate = `{
         },
         "/api/v1/likes/user/place/{userID}": {
             "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Retrieve all places liked by a user",
                 "consumes": [
                     "application/json"
@@ -1574,11 +1418,6 @@ const docTemplate = `{
         },
         "/api/v1/likes/user/{userID}": {
             "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Retrieve all likes by a user",
                 "consumes": [
                     "application/json"
@@ -1632,11 +1471,6 @@ const docTemplate = `{
         },
         "/api/v1/likes/user/{userID}/post/{postID}": {
             "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Add a like to a post by a user",
                 "consumes": [
                     "application/json"
@@ -1694,11 +1528,6 @@ const docTemplate = `{
         },
         "/api/v1/likes/{likeID}": {
             "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Remove a like from a post",
                 "consumes": [
                     "application/json"
@@ -1973,11 +1802,6 @@ const docTemplate = `{
         },
         "/api/v1/places/": {
             "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Create a new place",
                 "consumes": [
                     "application/json"
@@ -2079,11 +1903,6 @@ const docTemplate = `{
         },
         "/api/v1/places/{id}": {
             "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Get a place by ID",
                 "consumes": [
                     "application/json"
@@ -2139,11 +1958,6 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Delete a place by ID",
                 "consumes": [
                     "application/json"
@@ -2199,11 +2013,6 @@ const docTemplate = `{
                 }
             },
             "patch": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Update a place by ID",
                 "consumes": [
                     "application/json"
@@ -2270,11 +2079,6 @@ const docTemplate = `{
         },
         "/api/v1/places/{id}/amenities": {
             "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Add amenities to a place by ID",
                 "consumes": [
                     "application/json"
@@ -2341,11 +2145,6 @@ const docTemplate = `{
         },
         "/api/v1/posts/": {
             "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Create a new post for the authenticated user",
                 "consumes": [
                     "application/json"
@@ -2440,11 +2239,6 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Update an existing post",
                 "consumes": [
                     "application/json"
@@ -2508,11 +2302,6 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Delete an existing post",
                 "consumes": [
                     "application/json"
@@ -2569,11 +2358,6 @@ const docTemplate = `{
         },
         "/api/v1/posts/{id}/comments": {
             "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Retrieve all comments for a given post",
                 "consumes": [
                     "application/json"
@@ -2900,33 +2684,6 @@ const docTemplate = `{
         },
         "/api/v1/reservations/": {
             "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Create a new reservation",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Reservation"
-                ],
-                "summary": "Create a reservation",
-                "parameters": [
-                    {
-                        "description": "Reservation to create",
-                        "name": "reservation",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_ent.Reservation"
-                        }
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "Successfully created reservation",
@@ -2957,31 +2714,6 @@ const docTemplate = `{
         },
         "/api/v1/reservations/{id}": {
             "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Get a reservation by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Reservation"
-                ],
-                "summary": "Get a reservation",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "ID of the reservation to get",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "Successfully retrieved reservation",
@@ -3010,31 +2742,6 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Delete a reservation by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Reservation"
-                ],
-                "summary": "Delete a reservation",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "ID of the reservation to delete",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "Successfully deleted reservation",
@@ -3063,40 +2770,6 @@ const docTemplate = `{
                 }
             },
             "patch": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "description": "Update a reservation by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Reservation"
-                ],
-                "summary": "Update a reservation",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "ID of the reservation to update",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Reservation data to update",
-                        "name": "reservation",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_ent.Reservation"
-                        }
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "Successfully updated reservation",
@@ -3968,11 +3641,6 @@ const docTemplate = `{
         },
         "/api/v1/users/": {
             "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Get a user's details by their Auth0 ID",
                 "consumes": [
                     "application/json"
@@ -4021,11 +3689,6 @@ const docTemplate = `{
                 }
             },
             "patch": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Get a user's details by their Auth0 ID",
                 "consumes": [
                     "application/json"
@@ -4076,11 +3739,6 @@ const docTemplate = `{
         },
         "/api/v1/users/business-account": {
             "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Create a new business account for the authenticated user",
                 "consumes": [
                     "application/json"
@@ -4133,11 +3791,6 @@ const docTemplate = `{
         },
         "/api/v1/users/business-account/{businessAccountID}/users": {
             "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Get all users associated with a specific business account",
                 "consumes": [
                     "application/json"
@@ -4191,11 +3844,6 @@ const docTemplate = `{
         },
         "/api/v1/users/{followerID}/follow/business/{businessID}": {
             "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Follow a business by its ID",
                 "consumes": [
                     "application/json"
@@ -4253,11 +3901,6 @@ const docTemplate = `{
         },
         "/api/v1/users/{followerID}/follow/user/{followedID}": {
             "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Follow a user by their ID",
                 "consumes": [
                     "application/json"
@@ -4315,11 +3958,6 @@ const docTemplate = `{
         },
         "/api/v1/users/{followerID}/unfollow/business/{businessID}": {
             "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Unfollow a business by its ID",
                 "consumes": [
                     "application/json"
@@ -4377,11 +4015,6 @@ const docTemplate = `{
         },
         "/api/v1/users/{followerID}/unfollow/user/{followedID}": {
             "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Unfollow a user by their ID",
                 "consumes": [
                     "application/json"
@@ -4439,11 +4072,6 @@ const docTemplate = `{
         },
         "/api/v1/users/{id}/appdata": {
             "patch": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Update a user's app metadata by their Auth0 ID",
                 "consumes": [
                     "application/json"
@@ -4503,11 +4131,6 @@ const docTemplate = `{
         },
         "/api/v1/users/{id}/business-accounts": {
             "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Get all business accounts associated with a specific user",
                 "consumes": [
                     "application/json"
@@ -4561,11 +4184,6 @@ const docTemplate = `{
         },
         "/api/v1/users/{id}/metadata": {
             "patch": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Update a user's metadata by their Auth0 ID",
                 "consumes": [
                     "application/json"
@@ -4625,11 +4243,6 @@ const docTemplate = `{
         },
         "/api/v1/users/{id}/userinfo": {
             "patch": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Update a user's information by their Auth0 ID",
                 "consumes": [
                     "application/json"
@@ -4689,11 +4302,6 @@ const docTemplate = `{
         },
         "/api/v1/users/{userID}/business-account/{businessAccountID}/association": {
             "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Associate a user with a specific business account",
                 "consumes": [
                     "application/json"
@@ -4755,11 +4363,6 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Remove a user's association with a specific business account",
                 "consumes": [
                     "application/json"
@@ -4814,11 +4417,6 @@ const docTemplate = `{
         },
         "/api/v1/users/{userID}/business-account/{businessAccountID}/can-perform-action": {
             "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Check if a user can perform a certain action based on their role in the business account",
                 "consumes": [
                     "application/json"
@@ -4885,11 +4483,6 @@ const docTemplate = `{
         },
         "/api/v1/users/{userID}/business-accounts": {
             "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Get all business accounts a user is associated with",
                 "consumes": [
                     "application/json"
@@ -4943,11 +4536,6 @@ const docTemplate = `{
         },
         "/api/v1/users/{userID}/followed-contents": {
             "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Get posts of users and businesses followed by the user",
                 "consumes": [
                     "application/json"
@@ -5001,11 +4589,6 @@ const docTemplate = `{
         },
         "/api/v1/users/{userID}/posts": {
             "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Get posts by the authenticated user",
                 "consumes": [
                     "application/json"
@@ -5050,11 +4633,6 @@ const docTemplate = `{
         },
         "/business/": {
             "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -5100,11 +4678,6 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -5164,11 +4737,6 @@ const docTemplate = `{
         },
         "/business/user-business-account": {
             "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -5223,11 +4791,6 @@ const docTemplate = `{
         },
         "/business/{businessAccountID}": {
             "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -5280,11 +4843,6 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -5339,11 +4897,6 @@ const docTemplate = `{
         },
         "/business/{businessAccountID}/associated": {
             "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Retrieve All Places and Events associated with a Business Account",
                 "consumes": [
                     "application/json"
@@ -5408,11 +4961,6 @@ const docTemplate = `{
         },
         "/business/{businessAccountID}/event": {
             "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Add a new Event to a Business Account",
                 "consumes": [
                     "application/json"
@@ -5474,11 +5022,6 @@ const docTemplate = `{
         },
         "/business/{businessAccountID}/team-members": {
             "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -5539,11 +5082,6 @@ const docTemplate = `{
         },
         "/business/{businessAccountID}/team-members/search": {
             "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -5611,11 +5149,6 @@ const docTemplate = `{
         },
         "/business/{businessAccountID}/team-members/{userID}": {
             "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -5696,11 +5229,6 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -5763,11 +5291,6 @@ const docTemplate = `{
                 }
             },
             "patch": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -5850,11 +5373,6 @@ const docTemplate = `{
         },
         "/business/{businessAccountID}/user/{currentOwnerID}/{newOwnerID}": {
             "put": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -5923,11 +5441,6 @@ const docTemplate = `{
         },
         "/business/{businessAccountID}/user/{userID}": {
             "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -5987,11 +5500,6 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -6053,11 +5561,6 @@ const docTemplate = `{
         },
         "/business/{businessAccountID}/users": {
             "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -6112,11 +5615,6 @@ const docTemplate = `{
         },
         "/business/{businessID}/follow/user/{userID}": {
             "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Retrieve all comments for a given post",
                 "consumes": [
                     "application/json"
@@ -6182,11 +5680,6 @@ const docTemplate = `{
         },
         "/business/{businessID}/followed-contents": {
             "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -6241,11 +5734,6 @@ const docTemplate = `{
         },
         "/business/{businessID}/unfollow/user/{userID}": {
             "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -6307,11 +5795,6 @@ const docTemplate = `{
         },
         "/business/{followerBusinessID}/follow/business/{followedID}": {
             "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -6373,11 +5856,6 @@ const docTemplate = `{
         },
         "/business/{followerBusinessID}/unfollow/business/{followedBusinessID}": {
             "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -6912,11 +6390,6 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Create Event",
                 "consumes": [
                     "application/json"
@@ -7187,11 +6660,6 @@ const docTemplate = `{
         },
         "/faq/business/{businessID}": {
             "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Create a new FAQ for a specific Business",
                 "consumes": [
                     "application/json"
@@ -7259,11 +6727,6 @@ const docTemplate = `{
         },
         "/faq/{faqID}": {
             "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Retrieve FAQ by ID",
                 "consumes": [
                     "application/json"
@@ -7320,11 +6783,6 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Delete FAQ by ID",
                 "consumes": [
                     "application/json"
@@ -7381,11 +6839,6 @@ const docTemplate = `{
                 }
             },
             "patch": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Update FAQ by ID",
                 "consumes": [
                     "application/json"
@@ -7447,11 +6900,6 @@ const docTemplate = `{
         },
         "/faq/{faqID}/event/{eventID}": {
             "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Associate a FAQ with an Event by their IDs",
                 "consumes": [
                     "application/json"
@@ -7517,11 +6965,6 @@ const docTemplate = `{
         },
         "/faq/{faqID}/place/{placeID}": {
             "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Associate a FAQ with a Place by their IDs",
                 "consumes": [
                     "application/json"
@@ -7587,11 +7030,6 @@ const docTemplate = `{
         },
         "/follow/business/{businessID}": {
             "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Follow a specific Business by the user",
                 "consumes": [
                     "application/json"
@@ -7650,11 +7088,6 @@ const docTemplate = `{
         },
         "/follow/event/{eventID}": {
             "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Follow a specific Event by the user",
                 "consumes": [
                     "application/json"
@@ -7713,11 +7146,6 @@ const docTemplate = `{
         },
         "/follow/place/{placeID}": {
             "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Follow a specific Place by the user",
                 "consumes": [
                     "application/json"
@@ -7776,11 +7204,6 @@ const docTemplate = `{
         },
         "/follow/user/{userID}": {
             "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Follow a specific User",
                 "consumes": [
                     "application/json"
@@ -7839,11 +7262,6 @@ const docTemplate = `{
         },
         "/followed/businesses": {
             "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Get all Businesses followed by the user",
                 "consumes": [
                     "application/json"
@@ -7898,11 +7316,6 @@ const docTemplate = `{
         },
         "/followed/events": {
             "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Get all Events followed by the user",
                 "consumes": [
                     "application/json"
@@ -7957,11 +7370,6 @@ const docTemplate = `{
         },
         "/followed/places": {
             "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Get all Places followed by the user",
                 "consumes": [
                     "application/json"
@@ -8016,11 +7424,6 @@ const docTemplate = `{
         },
         "/followed/users": {
             "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Get all Users followed by the user",
                 "consumes": [
                     "application/json"
@@ -8611,11 +8014,6 @@ const docTemplate = `{
         },
         "/unfollow/business/{businessID}": {
             "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Unfollow a specific Business by the user",
                 "consumes": [
                     "application/json"
@@ -8674,11 +8072,6 @@ const docTemplate = `{
         },
         "/unfollow/event/{eventID}": {
             "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Unfollow a specific Event by the user",
                 "consumes": [
                     "application/json"
@@ -8737,11 +8130,6 @@ const docTemplate = `{
         },
         "/unfollow/place/{placeID}": {
             "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Unfollow a specific Place by the user",
                 "consumes": [
                     "application/json"
@@ -8800,11 +8188,6 @@ const docTemplate = `{
         },
         "/unfollow/user/{userID}": {
             "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "description": "Unfollow a specific User",
                 "consumes": [
                     "application/json"
@@ -9088,17 +8471,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "website": {
-                    "type": "string"
-                }
-            }
-        },
-        "placio-app_Dto.CommentDto": {
-            "type": "object",
-            "required": [
-                "content"
-            ],
-            "properties": {
-                "content": {
                     "type": "string"
                 }
             }

@@ -63,7 +63,6 @@ func (bc *BusinessAccountController) RegisterRoutes(router *gin.RouterGroup) {
 // @Param userID path string true "User ID"
 // @Param role body string true "Role"
 // @Param permissions body string true "Permissions"
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Accept json
 // @Success 200 {object} Dto.Response
@@ -96,7 +95,6 @@ func (bc *BusinessAccountController) addTeamMember(c *gin.Context) error {
 // @Tags Business
 // @Produce json
 // @Param businessAccountID path string true "Business Account ID"
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Accept json
 // @Success 200 {array} Dto.TeamMember
@@ -125,7 +123,6 @@ func (bc *BusinessAccountController) listTeamMembers(c *gin.Context) error {
 // @Param userID path string true "User ID"
 // @Param role body string true "Role"
 // @Param permissions body string true "Permissions"
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Accept json
 // @Success 200 {object} Dto.Response
@@ -159,7 +156,6 @@ func (bc *BusinessAccountController) editTeamMember(c *gin.Context) error {
 // @Produce json
 // @Param businessAccountID path string true "Business Account ID"
 // @Param userID path string true "User ID"
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Accept json
 // @Success 200 {object} Dto.Response
@@ -187,7 +183,6 @@ func (bc *BusinessAccountController) removeTeamMember(c *gin.Context) error {
 // @Produce json
 // @Param businessAccountID path string true "Business Account ID"
 // @Param searchText query string true "Search Text"
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Accept json
 // @Success 200 {array} Dto.TeamMember
@@ -215,7 +210,6 @@ func (bc *BusinessAccountController) searchTeamMembers(c *gin.Context) error {
 // @Produce json
 // @Param businessAccountID path string true "Business Account ID"
 // @Param All query bool false "All"
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @QueryParam page query int false "Page Number"
 // @QueryParam limit query int false "Page Size"
@@ -247,7 +241,6 @@ func (bc *BusinessAccountController) getPlacesAndEventsAssociatedWithBusinessAcc
 // @Produce json
 // @Param businessAccountID path string true "Business Account ID"
 // @Param Dto.EventDTO body Dto.EventDTO true "Event DTO"
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Accept json
 // @Description Add a new Event to a Business Account
@@ -282,7 +275,6 @@ func (bc *BusinessAccountController) addANewEventToBusinessAccount(c *gin.Contex
 // @Accept json
 // @Param businessID path string true "Business ID"
 // @Param userID path string true "User ID"
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Success 200 {object} Dto.Response
 // @Failure 400 {object} Dto.Error
@@ -308,7 +300,6 @@ func (bc *BusinessAccountController) followUser(c *gin.Context) error {
 // @Produce json
 // @Param followerBusinessID path string true "Follower Business ID"
 // @Param followedBusinessID path string true "Followed Business ID"
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Success 200 {object} Dto.Response
 // @Failure 400 {object} Dto.Error
@@ -334,7 +325,6 @@ func (bc *BusinessAccountController) followBusiness(c *gin.Context) error {
 // @Produce json
 // @Param businessID path string true "Business ID"
 // @Param userID path string true "User ID"
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Success 200 {object} Dto.Response
 // @Failure 400 {object} Dto.Error
@@ -359,7 +349,6 @@ func (bc *BusinessAccountController) unfollowUser(c *gin.Context) error {
 // @Produce json
 // @Param followerBusinessID path string true "Follower Business ID"
 // @Param followedBusinessID path string true "Followed Business ID"
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Success 200 {object} Dto.Response
 // @Failure 400 {object} Dto.Error
@@ -383,7 +372,6 @@ func (bc *BusinessAccountController) unfollowBusiness(c *gin.Context) error {
 // @Tags Business
 // @Produce json
 // @Param businessID path string true "Business ID"
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Success 200 {object} Dto.Response
 // @Failure 400 {object} Dto.Error
@@ -407,7 +395,6 @@ func (bc *BusinessAccountController) getFollowedContents(c *gin.Context) error {
 // @Accept  json
 // @Produce  json
 // @Param Dto.BusinessDto body Dto.BusinessDto true "Business Account Data"
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Success 200 {object} Dto.Response
 // @Failure 400 {object} Dto.Error
@@ -434,7 +421,6 @@ func (bc *BusinessAccountController) createBusinessAccount(c *gin.Context) error
 // @Tags Business
 // @Produce json
 // @Param businessAccountID path string true "Business Account ID"
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Success 200 {object} Dto.Response
 // @Failure 400 {object} Dto.Error
@@ -459,7 +445,6 @@ func (bc *BusinessAccountController) getBusinessAccount(c *gin.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "Business ID"
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Success 200 {object} ent.Business "Successfully retrieved business"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
@@ -505,7 +490,6 @@ func (bc *BusinessAccountController) updateBusinessAccount(ctx *gin.Context) err
 // @ID delete-business-account
 // @Tags Business
 // @Produce json
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Param businessAccountID path string true "Business Account ID"
 // @Success 200 {object} Dto.Response
@@ -528,7 +512,6 @@ func (bc *BusinessAccountController) deleteBusinessAccount(c *gin.Context) error
 // @ID get-user-business-accounts
 // @Tags Business
 // @Produce json
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Param userID path string true "User ID"
 // @Success 200 {object} Dto.Response
@@ -551,7 +534,6 @@ func (bc *BusinessAccountController) getUserBusinessAccounts(c *gin.Context) err
 // @ID associate-user-business-account
 // @Produce json
 // @Tags Business
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Param businessAccountID path string true "Business Account ID"
 // @Param userID path string true "User ID"
@@ -568,7 +550,6 @@ func (bc *BusinessAccountController) associateUserWithBusinessAccount(c *gin.Con
 // @Summary Remove user from business account
 // @ID remove-user-business-account
 // @Produce json
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Tags Business
 // @Param businessAccountID path string true "Business Account ID"
@@ -587,7 +568,6 @@ func (bc *BusinessAccountController) removeUserFromBusinessAccount(c *gin.Contex
 // @ID transfer-business-account-ownership
 // @Produce json
 // @Tags Business
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Param businessAccountID path string true "Business Account ID"
 // @Param currentOwnerID path string true "Current Owner ID"
@@ -606,7 +586,6 @@ func (bc *BusinessAccountController) transferBusinessAccountOwnership(c *gin.Con
 // @ID get-business-accounts-for-user
 // @Produce json
 // @Tags Business
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Param businessAccountID path string true "Business Account ID"
 // @Success 200 {object} Dto.Response
@@ -623,7 +602,6 @@ func (bc *BusinessAccountController) getBusinessAccountsForUser(c *gin.Context) 
 // @ID get-users-business-account
 // @Produce json
 // @Tags Business
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Param businessAccountID path string true "Business Account ID"
 // @Success 200 {object} Dto.Response
@@ -640,7 +618,6 @@ func (bc *BusinessAccountController) getUsersForBusinessAccount(c *gin.Context) 
 // @ID list-business-accounts
 // @Produce json
 // @Tags Business
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Success 200 {object} Dto.Response
 // @Failure 400 {object} Dto.Error

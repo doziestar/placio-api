@@ -9,6 +9,7 @@ RUN npm install -g @redocly/cli@latest
 # Copy documentation files
 COPY ./docs ./docs
 
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 # Bundle the documentation into a static OpenAPI file
 RUN redocly bundle ./docs/app/swagger.yaml -o ./docs/swagger.yaml
 

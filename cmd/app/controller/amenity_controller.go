@@ -38,7 +38,6 @@ func (c *AmenityController) RegisterRoutes(r *gin.RouterGroup) {
 // @Produce json
 // @Param icons formData file true "Icon files for amenity"
 // @Param amenity body Dto.CreateAmenityInput true "Amenity information"
-// @Security Bearer
 // @Param Authorization header string true "Bearer token"
 // @Success 200 {object} ent.Amenity "Successfully created amenity"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
@@ -92,7 +91,6 @@ func (c *AmenityController) createAmenity(ctx *gin.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "ID of the amenity"
-// @Security Bearer
 // @Success 200 {object} ent.Amenity "Successfully retrieved amenity"
 // @Failure 404 {object} Dto.ErrorDTO "Amenity not found"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
@@ -118,7 +116,6 @@ func (c *AmenityController) getAmenity(ctx *gin.Context) error {
 // @Param id path string true "ID of the amenity to update"
 // @Param icon formData file true "New icon file for amenity"
 // @Param amenity body Dto.UpdateAmenityInput true "New amenity information"
-// @Security Bearer
 // @Success 200 {object} ent.Amenity "Successfully updated amenity"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 404 {object} Dto.ErrorDTO "Amenity not found"
@@ -173,7 +170,6 @@ func (c *AmenityController) updateAmenity(ctx *gin.Context) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "ID of the amenity to delete"
-// @Security Bearer
 // @Param Authorization header string true "JWT token"
 // @Success 200 {object} string "Successfully deleted amenity"
 // @Failure 404 {object} Dto.ErrorDTO "Amenity not found"
@@ -200,7 +196,6 @@ func (c *AmenityController) deleteAmenity(ctx *gin.Context) error {
 // @Tags Amenity
 // @Accept json
 // @Produce json
-// @Security Bearer
 // @Param Authorization header string true "JWT token"
 // @Success 200 {object} []ent.Amenity "Successfully retrieved amenities"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
