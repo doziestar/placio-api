@@ -1,0 +1,46 @@
+post:
+  tags:
+    - Business
+  summary: Add a new Event to a Business Account
+  description: Add a new Event to a Business Account
+  operationId: add-a-new-event-to-business-account
+  parameters:
+    - name: businessAccountID
+      in: path
+      description: Business Account ID
+      required: true
+      schema:
+        type: string
+    - name: Authorization
+      in: header
+      description: Bearer token
+      required: true
+      schema:
+        type: string
+  requestBody:
+    description: Event DTO
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/placio-app_Dto.EventDTO.yaml
+    required: true
+  responses:
+    '200':
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_ent.Event.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.Error.yaml
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.Error.yaml
+  x-codegen-request-body-name: Dto.EventDTO

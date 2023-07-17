@@ -1,0 +1,12 @@
+type: object
+properties:
+  business:
+    $ref: ./placio-app_ent.Business.yaml
+  event:
+    $ref: ./placio-app_ent.Event.yaml
+  place:
+    $ref: ./placio-app_ent.Place.yaml
+  score:
+    type: integer
+  user:
+    $ref: ./placio-app_ent.User.yaml

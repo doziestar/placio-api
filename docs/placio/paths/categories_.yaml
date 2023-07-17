@@ -1,0 +1,19 @@
+post:
+  tags:
+    - categories
+  summary: Create a new category
+  requestBody:
+    description: Category
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/placio-app_ent.Category.yaml
+    required: true
+  responses:
+    '200':
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_ent.Category.yaml
+  x-codegen-request-body-name: category

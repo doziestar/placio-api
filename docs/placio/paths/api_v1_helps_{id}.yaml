@@ -1,0 +1,37 @@
+delete:
+  tags:
+    - Help
+  summary: Delete a help request
+  description: Delete an existing help request
+  parameters:
+    - name: id
+      in: path
+      description: ID of the help request to delete
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Successfully deleted help request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.Response.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml

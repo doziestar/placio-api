@@ -1,0 +1,38 @@
+post:
+  tags:
+    - User
+  summary: Create a new business account
+  description: Create a new business account for the authenticated user
+  requestBody:
+    description: Business Account Name
+    content:
+      application/json:
+        schema:
+          type: string
+    required: true
+  responses:
+    '201':
+      description: Successfully created business account
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_ent.Business.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+  x-codegen-request-body-name: name

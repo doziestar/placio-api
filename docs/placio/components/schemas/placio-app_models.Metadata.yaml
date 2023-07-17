@@ -1,0 +1,16 @@
+type: object
+properties:
+  Content:
+    $ref: ./placio-app_models.Content.yaml
+  CreatedAt:
+    type: string
+  DeletedAt:
+    type: object
+  Language:
+    type: string
+  Privacy:
+    type: string
+  Theme:
+    type: string
+  UpdatedAt:
+    type: string

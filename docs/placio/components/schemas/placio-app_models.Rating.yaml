@@ -1,0 +1,16 @@
+type: object
+properties:
+  createdAt:
+    type: string
+  eventID:
+    type: string
+  id:
+    type: string
+  review:
+    type: string
+  score:
+    type: integer
+  updatedAt:
+    type: string
+  userID:
+    type: string

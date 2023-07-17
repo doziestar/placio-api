@@ -1,0 +1,44 @@
+post:
+  tags:
+    - Follow
+  summary: Follow a user
+  description: Follow a specific User
+  operationId: user-follow-user
+  parameters:
+    - name: userID
+      in: path
+      description: User ID
+      required: true
+      schema:
+        type: string
+    - name: Authorization
+      in: header
+      description: Bearer token
+      required: true
+      schema:
+        type: string
+  responses:
+    '201':
+      description: User successfully followed the user
+      content:
+        application/json:
+          schema:
+            type: string
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.Error.yaml
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.Error.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.Error.yaml

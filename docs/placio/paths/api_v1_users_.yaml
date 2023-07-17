@@ -1,0 +1,74 @@
+get:
+  tags:
+    - User
+  summary: Get a user's details
+  description: Get a user's details by their Auth0 ID
+  parameters:
+    - name: id
+      in: path
+      description: User Auth0 ID
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Successfully retrieved user
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_ent.User.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+patch:
+  tags:
+    - User
+  summary: Update a user's details
+  description: Get a user's details by their Auth0 ID
+  parameters:
+    - name: id
+      in: path
+      description: User Auth0 ID
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Successfully retrieved user
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_ent.User.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml

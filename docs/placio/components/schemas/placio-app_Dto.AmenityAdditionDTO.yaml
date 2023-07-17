@@ -1,0 +1,6 @@
+type: object
+properties:
+  amenity_ids:
+    type: array
+    items:
+      type: string

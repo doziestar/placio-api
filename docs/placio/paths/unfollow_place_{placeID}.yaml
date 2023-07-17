@@ -1,0 +1,44 @@
+delete:
+  tags:
+    - Follow
+  summary: Unfollow a place
+  description: Unfollow a specific Place by the user
+  operationId: unfollow-place
+  parameters:
+    - name: placeID
+      in: path
+      description: Place ID
+      required: true
+      schema:
+        type: string
+    - name: Authorization
+      in: header
+      description: Bearer token
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: User successfully unfollowed the place
+      content:
+        application/json:
+          schema:
+            type: string
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.Error.yaml
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.Error.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.Error.yaml

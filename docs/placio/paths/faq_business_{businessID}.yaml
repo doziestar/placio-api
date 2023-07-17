@@ -1,0 +1,52 @@
+post:
+  tags:
+    - FAQ
+  summary: Create a new FAQ
+  description: Create a new FAQ for a specific Business
+  operationId: create-faq
+  parameters:
+    - name: businessID
+      in: path
+      description: Business ID
+      required: true
+      schema:
+        type: string
+    - name: Authorization
+      in: header
+      description: Bearer token
+      required: true
+      schema:
+        type: string
+  requestBody:
+    description: FAQ Data
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/placio-app_Dto.FAQDto.yaml
+    required: true
+  responses:
+    '201':
+      description: Created
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.FAQDto.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.Error.yaml
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.Error.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.Error.yaml
+  x-codegen-request-body-name: faqData

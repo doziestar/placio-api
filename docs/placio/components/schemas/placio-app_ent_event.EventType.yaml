@@ -1,0 +1,13 @@
+type: string
+enum:
+  - event
+  - place
+  - business
+  - free
+  - paid
+x-enum-varnames:
+  - EventTypeEvent
+  - EventTypePlace
+  - EventTypeBusiness
+  - EventTypeFree
+  - EventTypePaid

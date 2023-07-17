@@ -1,0 +1,134 @@
+get:
+  tags:
+    - FAQ
+  summary: Get FAQ by ID
+  description: Retrieve FAQ by ID
+  operationId: get-FAQ
+  parameters:
+    - name: Authorization
+      in: header
+      description: Bearer token
+      required: true
+      schema:
+        type: string
+    - name: faqID
+      in: path
+      description: FAQ ID
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_ent.FAQ.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.Error.yaml
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.Error.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.Error.yaml
+delete:
+  tags:
+    - FAQ
+  summary: Delete FAQ by ID
+  description: Delete FAQ by ID
+  operationId: delete-FAQ
+  parameters:
+    - name: faqID
+      in: path
+      description: FAQ ID
+      required: true
+      schema:
+        type: string
+    - name: Authorization
+      in: header
+      description: Bearer token
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: FAQ deleted successfully
+      content:
+        application/json:
+          schema:
+            type: string
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.Error.yaml
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.Error.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.Error.yaml
+patch:
+  tags:
+    - FAQ
+  summary: Update FAQ by ID
+  description: Update FAQ by ID
+  operationId: update-FAQ
+  parameters:
+    - name: faqID
+      in: path
+      description: FAQ ID
+      required: true
+      schema:
+        type: string
+    - name: Authorization
+      in: header
+      description: Bearer token
+      required: true
+      schema:
+        type: string
+  requestBody:
+    description: FAQ Data
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/placio-app_Dto.FAQDto.yaml
+    required: true
+  responses:
+    '200':
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_ent.FAQ.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.Error.yaml
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.Error.yaml
+  x-codegen-request-body-name: faqData

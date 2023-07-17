@@ -1,0 +1,23 @@
+type: object
+properties:
+  category_id:
+    type: string
+    description: This represents the ID of the category
+  edges:
+    type: object
+    description: >-
+      Edges holds the relations/edges for other nodes in the graph.
+
+      The values are being populated by the CategoryAssignmentQuery when
+      eager-loading is set.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.CategoryAssignmentEdges'
+  entity_id:
+    type: string
+    description: This represents the ID of User, Business or Place entity
+  entity_type:
+    type: string
+    description: 'This represents the type of entity: User, Business, or Place'
+  id:
+    type: string
+    description: ID of the ent.

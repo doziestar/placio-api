@@ -1,0 +1,37 @@
+type: object
+properties:
+  business:
+    type: object
+    description: The business that was reviewed.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.Business'
+  comments:
+    type: array
+    description: The comments related to the review.
+    items:
+      $ref: ./placio-app_ent.Comment.yaml
+  event:
+    type: object
+    description: The event that was reviewed.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.Event'
+  likes:
+    type: array
+    description: The likes related to the review.
+    items:
+      $ref: ./placio-app_ent.Like.yaml
+  medias:
+    type: array
+    description: The media content related to the review.
+    items:
+      $ref: ./placio-app_ent.Media.yaml
+  place:
+    type: object
+    description: The place that was reviewed.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.Place'
+  user:
+    type: object
+    description: The user who wrote the review.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.User'

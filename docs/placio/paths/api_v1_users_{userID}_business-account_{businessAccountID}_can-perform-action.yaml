@@ -1,0 +1,53 @@
+post:
+  tags:
+    - User
+  summary: Check if a user can perform an action
+  description: >-
+    Check if a user can perform a certain action based on their role in the
+    business account
+  parameters:
+    - name: userID
+      in: path
+      description: User ID
+      required: true
+      schema:
+        type: integer
+    - name: businessAccountID
+      in: path
+      description: Business Account ID
+      required: true
+      schema:
+        type: integer
+  requestBody:
+    description: Action
+    content:
+      application/json:
+        schema:
+          type: string
+    required: true
+  responses:
+    '200':
+      description: Successfully checked permission
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.PermissionDTO.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+  x-codegen-request-body-name: action

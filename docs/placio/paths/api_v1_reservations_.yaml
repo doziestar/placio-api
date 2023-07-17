@@ -1,0 +1,26 @@
+post:
+  responses:
+    '200':
+      description: Successfully created reservation
+      content:
+        '*/*':
+          schema:
+            $ref: ../components/schemas/placio-app_ent.Reservation.yaml
+    '400':
+      description: Bad Request
+      content:
+        '*/*':
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '401':
+      description: Unauthorized
+      content:
+        '*/*':
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        '*/*':
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml

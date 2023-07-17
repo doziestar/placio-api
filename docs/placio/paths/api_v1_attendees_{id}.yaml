@@ -1,0 +1,116 @@
+get:
+  tags:
+    - Attendee
+  summary: Get attendee by ID
+  description: Get attendee details by their ID
+  parameters:
+    - name: id
+      in: path
+      description: Attendee ID
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Successfully retrieved attendee
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_models.Attendee.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '404':
+      description: Attendee Not Found
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+put:
+  tags:
+    - Attendee
+  summary: Update attendee details
+  description: Update an attendee's details by their ID
+  parameters:
+    - name: id
+      in: path
+      description: Attendee ID
+      required: true
+      schema:
+        type: string
+  requestBody:
+    description: Attendee Data
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/placio-app_models.Attendee.yaml
+    required: true
+  responses:
+    '200':
+      description: Successfully updated attendee
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_models.Attendee.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '404':
+      description: Attendee Not Found
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+  x-codegen-request-body-name: UpdateAttendeeDto
+delete:
+  tags:
+    - Attendee
+  summary: Remove attendee from an event
+  description: Remove an attendee from the specified event by their ID
+  parameters:
+    - name: id
+      in: path
+      description: Attendee ID
+      required: true
+      schema:
+        type: string
+  responses:
+    '204':
+      description: Successfully removed attendee
+      content: {}
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '404':
+      description: Attendee Not Found
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml

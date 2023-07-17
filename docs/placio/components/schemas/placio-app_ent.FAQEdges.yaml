@@ -1,0 +1,17 @@
+type: object
+properties:
+  business:
+    type: object
+    description: Business holds the value of the business edge.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.Business'
+  event:
+    type: array
+    description: Event holds the value of the event edge.
+    items:
+      $ref: ./placio-app_ent.Event.yaml
+  place:
+    type: array
+    description: Place holds the value of the place edge.
+    items:
+      $ref: ./placio-app_ent.Place.yaml

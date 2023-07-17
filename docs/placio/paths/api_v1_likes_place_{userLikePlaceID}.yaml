@@ -1,0 +1,43 @@
+delete:
+  tags:
+    - Like
+  summary: Unlike a place
+  description: Allows a user to unlike a specific place
+  parameters:
+    - name: userLikePlaceID
+      in: path
+      description: ID of the UserLikePlace record
+      required: true
+      schema:
+        type: string
+    - name: Authorization
+      in: header
+      description: Provide JWT access token
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Successfully unliked place
+      content:
+        application/json:
+          schema:
+            type: string
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml

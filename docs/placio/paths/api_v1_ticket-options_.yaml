@@ -1,0 +1,32 @@
+post:
+  tags:
+    - TicketOption
+  summary: Create a new ticket option
+  description: Create a new ticket option for the specified event
+  requestBody:
+    description: Ticket Option Data
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/placio-app_models.TicketOption.yaml
+    required: true
+  responses:
+    '201':
+      description: Successfully created ticket option
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_models.TicketOption.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+  x-codegen-request-body-name: CreateTicketOptionDto

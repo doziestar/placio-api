@@ -1,0 +1,25 @@
+type: object
+properties:
+  accountSettings:
+    $ref: ./placio-app_models.AccountSettings.yaml
+  active:
+    type: boolean
+  createdAt:
+    type: string
+  deleteAt:
+    $ref: ./gorm.DeletedAt.yaml
+  id:
+    type: string
+    description: gorm.Model
+  name:
+    type: string
+  posts:
+    type: array
+    items:
+      $ref: ./placio-app_models.Post.yaml
+  relationships:
+    type: array
+    items:
+      $ref: ./placio-app_models.UserBusinessRelationship.yaml
+  updatedAt:
+    type: string

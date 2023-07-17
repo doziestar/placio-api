@@ -1,0 +1,12 @@
+type: object
+properties:
+  place:
+    type: object
+    description: Place holds the value of the place edge.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.Place'
+  user:
+    type: object
+    description: User holds the value of the user edge.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.User'

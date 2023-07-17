@@ -1,0 +1,23 @@
+type: object
+properties:
+  Content:
+    type: string
+    description: Content holds the value of the "Content" field.
+  CreatedAt:
+    type: string
+    description: CreatedAt holds the value of the "CreatedAt" field.
+  UpdatedAt:
+    type: string
+    description: UpdatedAt holds the value of the "UpdatedAt" field.
+  edges:
+    type: object
+    description: >-
+      Edges holds the relations/edges for other nodes in the graph.
+
+      The values are being populated by the CommentQuery when eager-loading is
+      set.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.CommentEdges'
+  id:
+    type: string
+    description: ID of the ent.

@@ -1,0 +1,26 @@
+type: object
+properties:
+  bookingDate:
+    type: string
+    description: BookingDate holds the value of the "bookingDate" field.
+  edges:
+    type: object
+    description: >-
+      Edges holds the relations/edges for other nodes in the graph.
+
+      The values are being populated by the BookingQuery when eager-loading is
+      set.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.BookingEdges'
+  endDate:
+    type: string
+    description: EndDate holds the value of the "endDate" field.
+  id:
+    type: string
+    description: ID of the ent.
+  startDate:
+    type: string
+    description: StartDate holds the value of the "startDate" field.
+  status:
+    type: string
+    description: Status holds the value of the "status" field.

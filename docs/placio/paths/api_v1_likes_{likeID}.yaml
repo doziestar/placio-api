@@ -1,0 +1,37 @@
+delete:
+  tags:
+    - Like
+  summary: Unlike a post
+  description: Remove a like from a post
+  parameters:
+    - name: likeID
+      in: path
+      description: ID of the like
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Successfully unliked post
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.Response.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml

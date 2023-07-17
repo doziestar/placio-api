@@ -1,0 +1,7 @@
+type: object
+properties:
+  business_account:
+    type: object
+    description: BusinessAccount holds the value of the business_account edge.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.Business'

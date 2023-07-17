@@ -1,0 +1,71 @@
+get:
+  tags:
+    - Ticket
+  summary: GET ticket by ID
+  description: GET a ticket by its ID
+  parameters:
+    - name: id
+      in: path
+      description: Ticket ID
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Successfully retrieved ticket
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_models.Ticket.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '404':
+      description: Ticket Not Found
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+delete:
+  tags:
+    - Ticket
+  summary: Delete ticket by ID
+  description: Delete a ticket by its ID
+  parameters:
+    - name: id
+      in: path
+      description: Ticket ID
+      required: true
+      schema:
+        type: string
+  responses:
+    '204':
+      description: Successfully deleted ticket
+      content: {}
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '404':
+      description: Ticket Not Found
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml

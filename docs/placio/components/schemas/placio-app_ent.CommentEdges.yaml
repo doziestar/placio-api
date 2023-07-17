@@ -1,0 +1,12 @@
+type: object
+properties:
+  post:
+    type: object
+    description: Post holds the value of the post edge.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.Post'
+  user:
+    type: object
+    description: User holds the value of the user edge.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.User'

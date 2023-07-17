@@ -1,0 +1,20 @@
+type: object
+properties:
+  businessAccount:
+    $ref: ./placio-app_models.BusinessAccount.yaml
+  businessAccountID:
+    type: string
+  createdAt:
+    type: string
+  deleteAt:
+    $ref: ./gorm.DeletedAt.yaml
+  id:
+    type: string
+  role:
+    type: string
+  updatedAt:
+    type: string
+  user:
+    $ref: ./placio-app_models.User.yaml
+  userID:
+    type: string

@@ -1,0 +1,31 @@
+post:
+  tags:
+    - Review
+  summary: Dislike a review
+  description: Dislike a review based on reviewID
+  parameters:
+    - name: reviewID
+      in: path
+      description: Review ID
+      required: true
+      schema:
+        type: string
+    - name: Authorization
+      in: header
+      description: JWT Token
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Successfully disliked review
+      content:
+        application/json:
+          schema:
+            type: string
+    '500':
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: string

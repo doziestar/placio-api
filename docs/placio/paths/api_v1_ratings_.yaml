@@ -1,0 +1,39 @@
+post:
+  tags:
+    - Rating
+  summary: Create a new rating
+  description: Create a new rating for the specified event
+  parameters:
+    - name: Authorization
+      in: header
+      description: JWT Token
+      required: true
+      schema:
+        type: string
+  requestBody:
+    description: Rating Data
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/placio-app_Dto.RatingDTO.yaml
+    required: true
+  responses:
+    '201':
+      description: Successfully created rating
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_ent.Rating.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+  x-codegen-request-body-name: Dto.RatingDTO

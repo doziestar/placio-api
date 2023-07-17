@@ -1,0 +1,141 @@
+type: object
+properties:
+  EventType:
+    type: object
+    description: EventType holds the value of the "EventType" field.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent_event.EventType'
+  cover_image:
+    type: string
+    description: CoverImage holds the value of the "cover_image" field.
+  createdAt:
+    type: string
+    description: CreatedAt holds the value of the "createdAt" field.
+  description:
+    type: string
+    description: Description holds the value of the "description" field.
+  edges:
+    type: object
+    description: >-
+      Edges holds the relations/edges for other nodes in the graph.
+
+      The values are being populated by the EventQuery when eager-loading is
+      set.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.EventEdges'
+  end_date:
+    type: string
+    description: EndDate holds the value of the "end_date" field.
+  end_time:
+    type: string
+    description: EndTime holds the value of the "end_time" field.
+  event_settings:
+    type: object
+    properties: {}
+    description: EventSettings holds the value of the "event_settings" field.
+  frequency:
+    type: object
+    description: Frequency holds the value of the "frequency" field.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent_event.Frequency'
+  frequency_day_of_month:
+    type: string
+    description: FrequencyDayOfMonth holds the value of the "frequency_day_of_month" field.
+  frequency_day_of_week:
+    type: string
+    description: FrequencyDayOfWeek holds the value of the "frequency_day_of_week" field.
+  frequency_interval:
+    type: string
+    description: FrequencyInterval holds the value of the "frequency_interval" field.
+  frequency_month_of_year:
+    type: string
+    description: >-
+      FrequencyMonthOfYear holds the value of the "frequency_month_of_year"
+      field.
+  id:
+    type: string
+    description: ID of the ent.
+  latitude:
+    type: string
+    description: Latitude holds the value of the "latitude" field.
+  location:
+    type: string
+    description: Location holds the value of the "location" field.
+  longitude:
+    type: string
+    description: Longitude holds the value of the "longitude" field.
+  map_coordinates:
+    type: object
+    properties: {}
+    description: MapCoordinates holds the value of the "map_coordinates" field.
+  name:
+    type: string
+    description: Name holds the value of the "name" field.
+  relevance_score:
+    type: number
+    description: RelevanceScore holds the value of the "relevance_score" field.
+  search_text:
+    type: string
+    description: SearchText holds the value of the "search_text" field.
+  start_date:
+    type: string
+    description: StartDate holds the value of the "start_date" field.
+  start_time:
+    type: string
+    description: StartTime holds the value of the "start_time" field.
+  status:
+    type: string
+    description: Status holds the value of the "status" field.
+  tags:
+    type: string
+    description: Tags holds the value of the "tags" field.
+  time_zone:
+    type: string
+    description: TimeZone holds the value of the "time_zone" field.
+  title:
+    type: string
+    description: Title holds the value of the "title" field.
+  updatedAt:
+    type: string
+    description: UpdatedAt holds the value of the "updatedAt" field.
+  url:
+    type: string
+    description: URL holds the value of the "url" field.
+  venue_address:
+    type: string
+    description: VenueAddress holds the value of the "venue_address" field.
+  venue_city:
+    type: string
+    description: VenueCity holds the value of the "venue_city" field.
+  venue_country:
+    type: string
+    description: VenueCountry holds the value of the "venue_country" field.
+  venue_email:
+    type: string
+    description: VenueEmail holds the value of the "venue_email" field.
+  venue_lat:
+    type: string
+    description: VenueLat holds the value of the "venue_lat" field.
+  venue_lon:
+    type: string
+    description: VenueLon holds the value of the "venue_lon" field.
+  venue_name:
+    type: string
+    description: VenueName holds the value of the "venue_name" field.
+  venue_phone:
+    type: string
+    description: VenuePhone holds the value of the "venue_phone" field.
+  venue_state:
+    type: string
+    description: VenueState holds the value of the "venue_state" field.
+  venue_type:
+    type: object
+    description: VenueType holds the value of the "venue_type" field.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent_event.VenueType'
+  venue_url:
+    type: string
+    description: VenueURL holds the value of the "venue_url" field.
+  venue_zip:
+    type: string
+    description: VenueZip holds the value of the "venue_zip" field.

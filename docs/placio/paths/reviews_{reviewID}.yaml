@@ -1,0 +1,101 @@
+get:
+  tags:
+    - Review
+  summary: Get review by ID
+  description: Retrieve a review using its ID
+  parameters:
+    - name: reviewID
+      in: path
+      description: Review ID
+      required: true
+      schema:
+        type: string
+    - name: Authorization
+      in: header
+      description: JWT Token
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Review data
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_ent.Review.yaml
+    '500':
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: string
+put:
+  tags:
+    - Review
+  summary: Update review content
+  description: Update the content of a review based on reviewID
+  parameters:
+    - name: reviewID
+      in: path
+      description: Review ID
+      required: true
+      schema:
+        type: string
+    - name: Authorization
+      in: header
+      description: JWT Token
+      required: true
+      schema:
+        type: string
+  requestBody:
+    description: New Review Content
+    content:
+      application/json:
+        schema:
+          type: string
+    required: true
+  responses:
+    '200':
+      description: Successfully updated review
+      content:
+        application/json:
+          schema:
+            type: string
+    '500':
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: string
+  x-codegen-request-body-name: content
+delete:
+  tags:
+    - Review
+  summary: Remove a review
+  description: Remove a review based on reviewID
+  parameters:
+    - name: reviewID
+      in: path
+      description: Review ID
+      required: true
+      schema:
+        type: string
+    - name: Authorization
+      in: header
+      description: JWT Token
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Successfully deleted review
+      content:
+        application/json:
+          schema:
+            type: string
+    '500':
+      description: Error message
+      content:
+        application/json:
+          schema:
+            type: string

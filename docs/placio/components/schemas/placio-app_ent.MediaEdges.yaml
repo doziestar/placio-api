@@ -1,0 +1,17 @@
+type: object
+properties:
+  categories:
+    type: array
+    description: Categories holds the value of the categories edge.
+    items:
+      $ref: ./placio-app_ent.Category.yaml
+  post:
+    type: object
+    description: Post holds the value of the post edge.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.Post'
+  review:
+    type: object
+    description: Review holds the value of the review edge.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.Review'

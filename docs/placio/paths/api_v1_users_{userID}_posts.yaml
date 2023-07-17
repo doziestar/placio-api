@@ -1,0 +1,32 @@
+get:
+  tags:
+    - User
+  summary: Retrieve posts by user
+  description: Get posts by the authenticated user
+  responses:
+    '200':
+      description: Successfully retrieved posts
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: ../components/schemas/placio-app_Dto.PostResponseDto.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml

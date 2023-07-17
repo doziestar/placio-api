@@ -1,0 +1,18 @@
+type: object
+properties:
+  accountID:
+    type: string
+  blockedUsers:
+    type: array
+    items:
+      type: string
+  businessAccountID:
+    type: string
+  id:
+    type: string
+  mutedUsers:
+    type: array
+    items:
+      type: string
+  twoFactorAuthentication:
+    type: boolean

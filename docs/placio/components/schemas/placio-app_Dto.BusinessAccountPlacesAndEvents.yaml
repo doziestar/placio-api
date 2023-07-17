@@ -1,0 +1,10 @@
+type: object
+properties:
+  events:
+    type: array
+    items:
+      $ref: ./placio-app_ent.Event.yaml
+  places:
+    type: array
+    items:
+      $ref: ./placio-app_ent.Place.yaml

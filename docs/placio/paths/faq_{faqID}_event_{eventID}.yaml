@@ -1,0 +1,50 @@
+post:
+  tags:
+    - FAQ
+  summary: Associate FAQ with Event
+  description: Associate a FAQ with an Event by their IDs
+  operationId: associate-FAQ-event
+  parameters:
+    - name: faqID
+      in: path
+      description: FAQ ID
+      required: true
+      schema:
+        type: string
+    - name: eventID
+      in: path
+      description: Event ID
+      required: true
+      schema:
+        type: string
+    - name: Authorization
+      in: header
+      description: Bearer token
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: FAQ associated with event successfully
+      content:
+        application/json:
+          schema:
+            type: string
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.Error.yaml
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.Error.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.Error.yaml

@@ -1,0 +1,43 @@
+patch:
+  tags:
+    - Business
+  summary: Update a business's details
+  description: Get a business's details by ID
+  parameters:
+    - name: id
+      in: path
+      description: Business ID
+      required: true
+      schema:
+        type: string
+    - name: Authorization
+      in: header
+      description: Bearer token
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Successfully retrieved business
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_ent.Business.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml

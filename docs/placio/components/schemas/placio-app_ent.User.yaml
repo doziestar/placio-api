@@ -1,0 +1,65 @@
+type: object
+properties:
+  app_settings:
+    type: object
+    properties: {}
+    description: AppSettings holds the value of the "app_settings" field.
+  auth0_data:
+    type: object
+    description: Auth0Data holds the value of the "auth0_data" field.
+    allOf:
+      - $ref: '#/definitions/management.User'
+  auth0_id:
+    type: string
+    description: Auth0ID holds the value of the "auth0_id" field.
+  bio:
+    type: string
+    description: Bio holds the value of the "bio" field.
+  cover_image:
+    type: string
+    description: CoverImage holds the value of the "cover_image" field.
+  edges:
+    type: object
+    description: |-
+      Edges holds the relations/edges for other nodes in the graph.
+      The values are being populated by the UserQuery when eager-loading is set.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.UserEdges'
+  id:
+    type: string
+    description: ID of the ent.
+  latitude:
+    type: string
+    description: Latitude holds the value of the "latitude" field.
+  location:
+    type: string
+    description: Location holds the value of the "location" field.
+  longitude:
+    type: string
+    description: Longitude holds the value of the "longitude" field.
+  map_coordinates:
+    type: object
+    properties: {}
+    description: MapCoordinates holds the value of the "map_coordinates" field.
+  name:
+    type: string
+    description: Name holds the value of the "name" field.
+  picture:
+    type: string
+    description: Picture holds the value of the "picture" field.
+  relevance_score:
+    type: number
+    description: RelevanceScore holds the value of the "relevance_score" field.
+  search_text:
+    type: string
+    description: SearchText holds the value of the "search_text" field.
+  user_settings:
+    type: object
+    properties: {}
+    description: UserSettings holds the value of the "user_settings" field.
+  username:
+    type: string
+    description: Username holds the value of the "username" field.
+  website:
+    type: string
+    description: Website holds the value of the "website" field.

@@ -1,0 +1,20 @@
+type: object
+properties:
+  createdAt:
+    type: string
+    description: CreatedAt holds the value of the "createdAt" field.
+  edges:
+    type: object
+    description: >-
+      Edges holds the relations/edges for other nodes in the graph.
+
+      The values are being populated by the UserFollowEventQuery when
+      eager-loading is set.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.UserFollowEventEdges'
+  id:
+    type: string
+    description: ID of the ent.
+  updatedAt:
+    type: string
+    description: UpdatedAt holds the value of the "updatedAt" field.

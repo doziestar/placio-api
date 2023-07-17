@@ -1,0 +1,18 @@
+type: object
+properties:
+  businesses:
+    type: array
+    items:
+      $ref: ./placio-app_ent.Business.yaml
+  events:
+    type: array
+    items:
+      $ref: ./placio-app_ent.Event.yaml
+  places:
+    type: array
+    items:
+      $ref: ./placio-app_ent.Place.yaml
+  users:
+    type: array
+    items:
+      $ref: ./placio-app_ent.User.yaml

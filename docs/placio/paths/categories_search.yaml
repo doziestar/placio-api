@@ -1,0 +1,20 @@
+get:
+  tags:
+    - categories
+  summary: Search by category
+  parameters:
+    - name: name
+      in: query
+      description: Category name
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: ../components/schemas/placio-app_ent.Category.yaml

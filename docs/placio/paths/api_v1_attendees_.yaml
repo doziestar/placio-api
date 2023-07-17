@@ -1,0 +1,32 @@
+post:
+  tags:
+    - Attendee
+  summary: Add attendee to an event
+  description: Add an attendee to the specified event
+  requestBody:
+    description: Attendee Data
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/placio-app_models.Attendee.yaml
+    required: true
+  responses:
+    '201':
+      description: Successfully added attendee
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_models.Attendee.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+  x-codegen-request-body-name: AddAttendeeDto

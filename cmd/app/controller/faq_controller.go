@@ -27,6 +27,7 @@ func (fc *FAQController) RegisterRoutes(router, routerWithoutAuth *gin.RouterGro
 		faqRouter.DELETE("/:faqID", utility.Use(fc.deleteFAQ))
 		faqRouter.POST("/:faqID/place/:placeID", utility.Use(fc.associateFAQWithPlace))
 		faqRouter.POST("/:faqID/event/:eventID", utility.Use(fc.associateFAQWithEvent))
+		faqRouter.GET("/business/:businessID", utility.Use(fc.getFAQsByBusiness))
 	}
 }
 
@@ -86,6 +87,32 @@ func (fc *FAQController) getFAQ(c *gin.Context) error {
 	}
 
 	c.JSON(http.StatusOK, faq)
+	return nil
+}
+
+// @Summary Get FAQs by Business ID
+// @Description Retrieve FAQs by Business ID
+// @ID get-FAQs-by-business
+// @Tags FAQ
+// @Accept  json
+// @Produce  json
+// @Param Authorization header string true "Bearer token"
+// @Param businessID path string true "Business ID"
+// @Success 200 {object} []ent.FAQ
+// @Failure 400 {object} Dto.Error
+// @Failure 401 {object} Dto.Error
+// @Failure 500 {object} Dto.Error
+// @Router /faq/business/{businessID} [get]
+func (fc *FAQController) getFAQsByBusiness(c *gin.Context) error {
+	businessID := c.Param("businessID")
+
+	faqs, err := fc.service.GetFAQsByBusiness(c, businessID)
+	if err != nil {
+
+		return nil
+	}
+
+	c.JSON(http.StatusOK, faqs)
 	return nil
 }
 

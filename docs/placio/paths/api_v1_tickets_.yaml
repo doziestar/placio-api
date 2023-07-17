@@ -1,0 +1,32 @@
+post:
+  tags:
+    - Ticket
+  summary: Create a new ticket
+  description: Create a new ticket for the specified event
+  requestBody:
+    description: Ticket Data
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/placio-app_models.Ticket.yaml
+    required: true
+  responses:
+    '201':
+      description: Successfully created ticket
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_models.Ticket.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+  x-codegen-request-body-name: CreateTicketDto

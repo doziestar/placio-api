@@ -1,0 +1,18 @@
+type: object
+properties:
+  cover_image:
+    type: string
+  description:
+    type: string
+  email:
+    type: string
+  location:
+    type: string
+  name:
+    type: string
+  phone:
+    type: string
+  picture:
+    type: string
+  website:
+    type: string

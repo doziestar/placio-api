@@ -1,0 +1,27 @@
+get:
+  tags:
+    - Rating
+  summary: GET all ratings
+  description: Retrieve all ratings
+  parameters:
+    - name: Authorization
+      in: header
+      description: JWT Token
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Successfully retrieved ratings
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: ../components/schemas/placio-app_ent.Rating.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml

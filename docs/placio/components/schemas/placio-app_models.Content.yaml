@@ -1,0 +1,12 @@
+type: object
+properties:
+  AutoplayVideos:
+    type: boolean
+  DefaultPostPrivacy:
+    type: string
+  DisplaySensitiveMedia:
+    type: boolean
+  ExplicitContentFilter:
+    type: string
+  MediaVisibility:
+    type: string

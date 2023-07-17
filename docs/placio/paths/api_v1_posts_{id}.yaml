@@ -1,0 +1,125 @@
+get:
+  tags:
+    - Post
+  summary: Get a post
+  description: Get a post by ID
+  parameters:
+    - name: id
+      in: path
+      description: Post ID
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Successfully retrieved post
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_ent.Post.yaml
+    '404':
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+put:
+  tags:
+    - Post
+  summary: Update a post
+  description: Update an existing post
+  parameters:
+    - name: id
+      in: path
+      description: Post ID
+      required: true
+      schema:
+        type: string
+  requestBody:
+    description: Post Data
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/placio-app_Dto.PostDto.yaml
+    required: true
+  responses:
+    '200':
+      description: Successfully updated post
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.PostResponseDto.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '404':
+      description: Post Not Found
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+  x-codegen-request-body-name: UpdatePostDto
+delete:
+  tags:
+    - Post
+  summary: Delete a post
+  description: Delete an existing post
+  parameters:
+    - name: id
+      in: path
+      description: Post ID
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Successfully deleted post
+      content:
+        application/json:
+          schema:
+            type: string
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '404':
+      description: Post Not Found
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml

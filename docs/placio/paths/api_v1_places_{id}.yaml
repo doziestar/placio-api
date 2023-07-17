@@ -1,0 +1,137 @@
+get:
+  tags:
+    - Place
+  summary: Get a place
+  description: Get a place by ID
+  parameters:
+    - name: id
+      in: path
+      description: ID of the place to get
+      required: true
+      schema:
+        type: string
+    - name: Authorization
+      in: header
+      description: Bearer token
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Successfully retrieved place
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_ent.Place.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+delete:
+  tags:
+    - Place
+  summary: Delete a place
+  description: Delete a place by ID
+  parameters:
+    - name: id
+      in: path
+      description: ID of the place to delete
+      required: true
+      schema:
+        type: string
+    - name: Authorization
+      in: header
+      description: Bearer token
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Successfully deleted place
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_ent.Place.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+patch:
+  tags:
+    - Place
+  summary: Update a place
+  description: Update a place by ID
+  parameters:
+    - name: id
+      in: path
+      description: ID of the place to update
+      required: true
+      schema:
+        type: string
+    - name: Authorization
+      in: header
+      description: Bearer token
+      required: true
+      schema:
+        type: string
+  requestBody:
+    description: Place data to update
+    content:
+      application/json:
+        schema:
+          $ref: ../components/schemas/placio-app_Dto.UpdatePlaceDTO.yaml
+    required: true
+  responses:
+    '200':
+      description: Successfully updated place
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_ent.Place.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+  x-codegen-request-body-name: place

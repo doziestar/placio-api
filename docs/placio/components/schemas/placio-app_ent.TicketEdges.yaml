@@ -1,0 +1,12 @@
+type: object
+properties:
+  event:
+    type: object
+    description: Event holds the value of the event edge.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.Event'
+  ticket_options:
+    type: array
+    description: TicketOptions holds the value of the ticket_options edge.
+    items:
+      $ref: ./placio-app_ent.TicketOption.yaml

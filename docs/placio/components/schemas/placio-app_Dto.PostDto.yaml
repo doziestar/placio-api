@@ -1,0 +1,19 @@
+type: object
+properties:
+  business_id:
+    type: string
+    description: It can be empty if it does not exist
+  content:
+    type: string
+  created_at:
+    type: string
+  id:
+    type: string
+  medias:
+    type: array
+    items:
+      $ref: ./placio-app_Dto.MediaDto.yaml
+  privacy:
+    type: string
+  user_id:
+    type: string

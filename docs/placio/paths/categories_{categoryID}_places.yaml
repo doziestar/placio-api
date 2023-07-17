@@ -1,0 +1,20 @@
+get:
+  tags:
+    - categories
+  summary: Get places by category
+  parameters:
+    - name: categoryID
+      in: path
+      description: Category ID
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: OK
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: ../components/schemas/placio-app_ent.Place.yaml

@@ -1,0 +1,36 @@
+get:
+  tags:
+    - Search
+  summary: Search DB
+  description: Search for Users, Places, Events, and Businesses
+  parameters:
+    - name: type
+      in: query
+      description: Type of search - user, place, event, business
+      schema:
+        type: string
+    - name: searchText
+      in: query
+      description: Text to search for
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Successfully found search results
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.SearchResponses.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml

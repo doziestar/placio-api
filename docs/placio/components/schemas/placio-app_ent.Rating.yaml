@@ -1,0 +1,23 @@
+type: object
+properties:
+  edges:
+    type: object
+    description: >-
+      Edges holds the relations/edges for other nodes in the graph.
+
+      The values are being populated by the RatingQuery when eager-loading is
+      set.
+    allOf:
+      - $ref: '#/definitions/placio-app_ent.RatingEdges'
+  id:
+    type: string
+    description: ID of the ent.
+  ratedAt:
+    type: string
+    description: When the rating was given.
+  review:
+    type: string
+    description: User's review to the business/place/event.
+  score:
+    type: integer
+    description: Score should be between 1 and 5.

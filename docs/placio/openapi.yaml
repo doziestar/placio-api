@@ -1,0 +1,254 @@
+openapi: 3.0.1
+info:
+  title: Placio Application Api
+  description: This is the documentation for the Placio Application Api
+  termsOfService: https://placio.io/terms
+  contact:
+    name: Placio Ltd
+    url: https://placio.io
+    email: support@placio.io
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: '0.01'
+servers:
+  - url: http://https://api.palnight.com/api/v1
+  - url: https://https://api.palnight.com/api/v1
+paths:
+  /api/v1/amenities:
+    $ref: paths/api_v1_amenities.yaml
+  /api/v1/amenities/{id}:
+    $ref: paths/api_v1_amenities_{id}.yaml
+  /api/v1/attendees/:
+    $ref: paths/api_v1_attendees_.yaml
+  /api/v1/attendees/{id}:
+    $ref: paths/api_v1_attendees_{id}.yaml
+  /api/v1/bookings/:
+    $ref: paths/api_v1_bookings_.yaml
+  /api/v1/bookings/{id}:
+    $ref: paths/api_v1_bookings_{id}.yaml
+  /api/v1/business/:
+    $ref: paths/api_v1_business_.yaml
+  /api/v1/comments/:postId:
+    $ref: paths/api_v1_comments_:postId.yaml
+  /api/v1/comments/{id}:
+    $ref: paths/api_v1_comments_{id}.yaml
+  /api/v1/events/{eventId}/attendees:
+    $ref: paths/api_v1_events_{eventId}_attendees.yaml
+  /api/v1/events/{eventId}/ticket-options:
+    $ref: paths/api_v1_events_{eventId}_ticket-options.yaml
+  /api/v1/health:
+    $ref: paths/api_v1_health.yaml
+  /api/v1/helps:
+    $ref: paths/api_v1_helps.yaml
+  /api/v1/helps/{id}:
+    $ref: paths/api_v1_helps_{id}.yaml
+  /api/v1/helps/{id}/resolve:
+    $ref: paths/api_v1_helps_{id}_resolve.yaml
+  /api/v1/likes/{likeID}:
+    $ref: paths/api_v1_likes_{likeID}.yaml
+  /api/v1/likes/place/{placeID}:
+    $ref: paths/api_v1_likes_place_{placeID}.yaml
+  /api/v1/likes/place/{userID}/place/{placeID}:
+    $ref: paths/api_v1_likes_place_{userID}_place_{placeID}.yaml
+  /api/v1/likes/place/{userLikePlaceID}:
+    $ref: paths/api_v1_likes_place_{userLikePlaceID}.yaml
+  /api/v1/likes/post/{postID}:
+    $ref: paths/api_v1_likes_post_{postID}.yaml
+  /api/v1/likes/user/{userID}:
+    $ref: paths/api_v1_likes_user_{userID}.yaml
+  /api/v1/likes/user/{userID}/post/{postID}:
+    $ref: paths/api_v1_likes_user_{userID}_post_{postID}.yaml
+  /api/v1/likes/user/place/{userID}:
+    $ref: paths/api_v1_likes_user_place_{userID}.yaml
+  /api/v1/media/:
+    $ref: paths/api_v1_media_.yaml
+  /api/v1/menus/:
+    $ref: paths/api_v1_menus_.yaml
+  /api/v1/menus/{id}:
+    $ref: paths/api_v1_menus_{id}.yaml
+  /api/v1/places/:
+    $ref: paths/api_v1_places_.yaml
+  /api/v1/places/{id}:
+    $ref: paths/api_v1_places_{id}.yaml
+  /api/v1/places/{id}/amenities:
+    $ref: paths/api_v1_places_{id}_amenities.yaml
+  /api/v1/places/all:
+    $ref: paths/api_v1_places_all.yaml
+  /api/v1/posts/:
+    $ref: paths/api_v1_posts_.yaml
+  /api/v1/posts/{id}:
+    $ref: paths/api_v1_posts_{id}.yaml
+  /api/v1/posts/{id}/comments:
+    $ref: paths/api_v1_posts_{id}_comments.yaml
+  /api/v1/ratings:
+    $ref: paths/api_v1_ratings.yaml
+  /api/v1/ratings/:
+    $ref: paths/api_v1_ratings_.yaml
+  /api/v1/ratings/{id}:
+    $ref: paths/api_v1_ratings_{id}.yaml
+  /api/v1/reservations/:
+    $ref: paths/api_v1_reservations_.yaml
+  /api/v1/reservations/{id}:
+    $ref: paths/api_v1_reservations_{id}.yaml
+  /api/v1/rooms/:
+    $ref: paths/api_v1_rooms_.yaml
+  /api/v1/rooms/{id}:
+    $ref: paths/api_v1_rooms_{id}.yaml
+  /api/v1/search:
+    $ref: paths/api_v1_search.yaml
+  /api/v1/search/businesses:
+    $ref: paths/api_v1_search_businesses.yaml
+  /api/v1/search/db:
+    $ref: paths/api_v1_search_db.yaml
+  /api/v1/search/events:
+    $ref: paths/api_v1_search_events.yaml
+  /api/v1/search/places:
+    $ref: paths/api_v1_search_places.yaml
+  /api/v1/search/users:
+    $ref: paths/api_v1_search_users.yaml
+  /api/v1/ticket-options/:
+    $ref: paths/api_v1_ticket-options_.yaml
+  /api/v1/ticket-options/{id}:
+    $ref: paths/api_v1_ticket-options_{id}.yaml
+  /api/v1/tickets/:
+    $ref: paths/api_v1_tickets_.yaml
+  /api/v1/tickets/{id}:
+    $ref: paths/api_v1_tickets_{id}.yaml
+  /api/v1/tickets/event/{eventId}:
+    $ref: paths/api_v1_tickets_event_{eventId}.yaml
+  /api/v1/users/:
+    $ref: paths/api_v1_users_.yaml
+  /api/v1/users/{followerID}/follow/business/{businessID}:
+    $ref: paths/api_v1_users_{followerID}_follow_business_{businessID}.yaml
+  /api/v1/users/{followerID}/follow/user/{followedID}:
+    $ref: paths/api_v1_users_{followerID}_follow_user_{followedID}.yaml
+  /api/v1/users/{followerID}/unfollow/business/{businessID}:
+    $ref: paths/api_v1_users_{followerID}_unfollow_business_{businessID}.yaml
+  /api/v1/users/{followerID}/unfollow/user/{followedID}:
+    $ref: paths/api_v1_users_{followerID}_unfollow_user_{followedID}.yaml
+  /api/v1/users/{id}/appdata:
+    $ref: paths/api_v1_users_{id}_appdata.yaml
+  /api/v1/users/{id}/business-accounts:
+    $ref: paths/api_v1_users_{id}_business-accounts.yaml
+  /api/v1/users/{id}/metadata:
+    $ref: paths/api_v1_users_{id}_metadata.yaml
+  /api/v1/users/{id}/userinfo:
+    $ref: paths/api_v1_users_{id}_userinfo.yaml
+  /api/v1/users/{userID}/business-account/{businessAccountID}/association:
+    $ref: >-
+      paths/api_v1_users_{userID}_business-account_{businessAccountID}_association.yaml
+  /api/v1/users/{userID}/business-account/{businessAccountID}/can-perform-action:
+    $ref: >-
+      paths/api_v1_users_{userID}_business-account_{businessAccountID}_can-perform-action.yaml
+  /api/v1/users/{userID}/business-accounts:
+    $ref: paths/api_v1_users_{userID}_business-accounts.yaml
+  /api/v1/users/{userID}/followed-contents:
+    $ref: paths/api_v1_users_{userID}_followed-contents.yaml
+  /api/v1/users/{userID}/posts:
+    $ref: paths/api_v1_users_{userID}_posts.yaml
+  /api/v1/users/business-account:
+    $ref: paths/api_v1_users_business-account.yaml
+  /api/v1/users/business-account/{businessAccountID}/users:
+    $ref: paths/api_v1_users_business-account_{businessAccountID}_users.yaml
+  /business/:
+    $ref: paths/business_.yaml
+  /business/{businessAccountID}:
+    $ref: paths/business_{businessAccountID}.yaml
+  /business/{businessAccountID}/associated:
+    $ref: paths/business_{businessAccountID}_associated.yaml
+  /business/{businessAccountID}/event:
+    $ref: paths/business_{businessAccountID}_event.yaml
+  /business/{businessAccountID}/team-members:
+    $ref: paths/business_{businessAccountID}_team-members.yaml
+  /business/{businessAccountID}/team-members/{userID}:
+    $ref: paths/business_{businessAccountID}_team-members_{userID}.yaml
+  /business/{businessAccountID}/team-members/search:
+    $ref: paths/business_{businessAccountID}_team-members_search.yaml
+  /business/{businessAccountID}/user/{currentOwnerID}/{newOwnerID}:
+    $ref: paths/business_{businessAccountID}_user_{currentOwnerID}_{newOwnerID}.yaml
+  /business/{businessAccountID}/user/{userID}:
+    $ref: paths/business_{businessAccountID}_user_{userID}.yaml
+  /business/{businessAccountID}/users:
+    $ref: paths/business_{businessAccountID}_users.yaml
+  /business/{businessID}/follow/user/{userID}:
+    $ref: paths/business_{businessID}_follow_user_{userID}.yaml
+  /business/{businessID}/followed-contents:
+    $ref: paths/business_{businessID}_followed-contents.yaml
+  /business/{businessID}/unfollow/user/{userID}:
+    $ref: paths/business_{businessID}_unfollow_user_{userID}.yaml
+  /business/{followerBusinessID}/follow/business/{followedID}:
+    $ref: paths/business_{followerBusinessID}_follow_business_{followedID}.yaml
+  /business/{followerBusinessID}/unfollow/business/{followedBusinessID}:
+    $ref: >-
+      paths/business_{followerBusinessID}_unfollow_business_{followedBusinessID}.yaml
+  /business/user-business-account:
+    $ref: paths/business_user-business-account.yaml
+  /categories/:
+    $ref: paths/categories_.yaml
+  /categories/{categoryID}/businesses:
+    $ref: paths/categories_{categoryID}_businesses.yaml
+  /categories/{categoryID}/businesses/{businessID}:
+    $ref: paths/categories_{categoryID}_businesses_{businessID}.yaml
+  /categories/{categoryID}/places:
+    $ref: paths/categories_{categoryID}_places.yaml
+  /categories/{categoryID}/places/{placeID}:
+    $ref: paths/categories_{categoryID}_places_{placeID}.yaml
+  /categories/{categoryID}/users:
+    $ref: paths/categories_{categoryID}_users.yaml
+  /categories/{categoryID}/users/{userID}:
+    $ref: paths/categories_{categoryID}_users_{userID}.yaml
+  /categories/{id}:
+    $ref: paths/categories_{id}.yaml
+  /categories/search:
+    $ref: paths/categories_search.yaml
+  /events:
+    $ref: paths/events.yaml
+  /events/{eventId}:
+    $ref: paths/events_{eventId}.yaml
+  /events/participants/{eventId}:
+    $ref: paths/events_participants_{eventId}.yaml
+  /faq/{faqID}:
+    $ref: paths/faq_{faqID}.yaml
+  /faq/{faqID}/event/{eventID}:
+    $ref: paths/faq_{faqID}_event_{eventID}.yaml
+  /faq/{faqID}/place/{placeID}:
+    $ref: paths/faq_{faqID}_place_{placeID}.yaml
+  /faq/business/{businessID}:
+    $ref: paths/faq_business_{businessID}.yaml
+  /follow/business/{businessID}:
+    $ref: paths/follow_business_{businessID}.yaml
+  /follow/event/{eventID}:
+    $ref: paths/follow_event_{eventID}.yaml
+  /follow/place/{placeID}:
+    $ref: paths/follow_place_{placeID}.yaml
+  /follow/user/{userID}:
+    $ref: paths/follow_user_{userID}.yaml
+  /followed/businesses:
+    $ref: paths/followed_businesses.yaml
+  /followed/events:
+    $ref: paths/followed_events.yaml
+  /followed/places:
+    $ref: paths/followed_places.yaml
+  /followed/users:
+    $ref: paths/followed_users.yaml
+  /places:
+    $ref: paths/places.yaml
+  /reviews/:
+    $ref: paths/reviews_.yaml
+  /reviews/{reviewID}:
+    $ref: paths/reviews_{reviewID}.yaml
+  /reviews/{reviewID}/addMedia:
+    $ref: paths/reviews_{reviewID}_addMedia.yaml
+  /reviews/{reviewID}/dislike:
+    $ref: paths/reviews_{reviewID}_dislike.yaml
+  /reviews/{reviewID}/like:
+    $ref: paths/reviews_{reviewID}_like.yaml
+  /unfollow/business/{businessID}:
+    $ref: paths/unfollow_business_{businessID}.yaml
+  /unfollow/event/{eventID}:
+    $ref: paths/unfollow_event_{eventID}.yaml
+  /unfollow/place/{placeID}:
+    $ref: paths/unfollow_place_{placeID}.yaml
+  /unfollow/user/{userID}:
+    $ref: paths/unfollow_user_{userID}.yaml

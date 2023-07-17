@@ -1,0 +1,14 @@
+type: object
+properties:
+  content:
+    type: string
+  createdAt:
+    type: string
+  id:
+    type: string
+  postID:
+    type: string
+  updatedAt:
+    type: string
+  userID:
+    type: string

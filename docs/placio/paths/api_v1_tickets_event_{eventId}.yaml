@@ -1,0 +1,33 @@
+get:
+  tags:
+    - Ticket
+  summary: GET tickets by event ID
+  description: GET all tickets for a specific event
+  parameters:
+    - name: eventId
+      in: path
+      description: Event ID
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Successfully retrieved tickets
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: ../components/schemas/placio-app_models.Ticket.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml

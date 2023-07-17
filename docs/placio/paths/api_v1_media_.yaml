@@ -1,0 +1,40 @@
+post:
+  tags:
+    - Media
+  summary: Upload media
+  description: Upload a media file (image, gif, or video) for a post
+  requestBody:
+    content:
+      multipart/form-data:
+        schema:
+          required:
+            - file
+            - postID
+          properties:
+            file:
+              type: string
+              description: Media file
+              format: binary
+            postID:
+              type: string
+              description: Post ID
+    required: true
+  responses:
+    '201':
+      description: Successfully uploaded media
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_ent.Media.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml

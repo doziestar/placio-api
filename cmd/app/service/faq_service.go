@@ -7,6 +7,8 @@ import (
 	"github.com/google/uuid"
 	"placio-app/Dto"
 	"placio-app/ent"
+	"placio-app/ent/business"
+	"placio-app/ent/faq"
 	"placio-app/utility"
 	"time"
 )
@@ -18,6 +20,7 @@ type FAQService interface {
 	DeleteFAQ(ctx context.Context, faqID string) error
 	AssociateFAQWithPlace(ctx context.Context, faqID, placeID string) error
 	AssociateFAQWithEvent(ctx context.Context, faqID, eventID string) error
+	GetFAQsByBusiness(ctx context.Context, businessID string) ([]*ent.FAQ, error)
 }
 
 type FAQServiceImpl struct {
@@ -79,6 +82,18 @@ func (s *FAQServiceImpl) GetFAQ(ctx context.Context, faqID string) (*ent.FAQ, er
 	}()
 
 	return faq, nil
+}
+
+func (s *FAQServiceImpl) GetFAQsByBusiness(ctx context.Context, businessID string) ([]*ent.FAQ, error) {
+	faqs, err := s.client.FAQ.
+		Query().
+		Where(faq.HasBusinessWith(business.IDEQ(businessID))).
+		All(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return faqs, nil
 }
 
 func (s *FAQServiceImpl) UpdateFAQ(ctx context.Context, faqID string, faqData map[string]interface{}) (*ent.FAQ, error) {

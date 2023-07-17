@@ -1,0 +1,49 @@
+post:
+  tags:
+    - Business
+  summary: Follow a business by another business
+  operationId: follow-business
+  parameters:
+    - name: followerBusinessID
+      in: path
+      description: Follower Business ID
+      required: true
+      schema:
+        type: string
+    - name: followedBusinessID
+      in: path
+      description: Followed Business ID
+      required: true
+      schema:
+        type: string
+    - name: Authorization
+      in: header
+      description: Bearer token
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.Response.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.Error.yaml
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.Error.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDto.yaml

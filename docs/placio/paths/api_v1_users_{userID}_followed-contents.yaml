@@ -1,0 +1,39 @@
+get:
+  tags:
+    - User
+  summary: Get followed contents
+  description: Get posts of users and businesses followed by the user
+  parameters:
+    - name: userID
+      in: path
+      description: ID of the user
+      required: true
+      schema:
+        type: string
+  responses:
+    '200':
+      description: Successfully retrieved posts
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: ../components/schemas/placio-app_ent.Post.yaml
+    '400':
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '401':
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
+    '500':
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: ../components/schemas/placio-app_Dto.ErrorDTO.yaml
