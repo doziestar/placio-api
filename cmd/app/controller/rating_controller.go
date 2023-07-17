@@ -43,13 +43,13 @@ func (rc *RatingController) RegisterRoutes(router *gin.RouterGroup) {
 func (rc *RatingController) createRating(ctx *gin.Context) error {
 	data := new(Dto.RatingDTO)
 	if err := ctx.BindJSON(data); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+
 		return err
 	}
 
 	newRating, err := rc.ratingService.CreateRating(ctx, data)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+
 		return err
 	}
 
@@ -78,7 +78,7 @@ func (rc *RatingController) getRating(ctx *gin.Context) error {
 			ctx.JSON(http.StatusNotFound, gin.H{"error": "Rating Not Found"})
 			return err
 		}
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+
 		return err
 	}
 
@@ -104,7 +104,7 @@ func (rc *RatingController) updateRating(ctx *gin.Context) error {
 	ratingID := ctx.Param("id")
 	var score int
 	if err := ctx.BindJSON(&score); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+
 		return err
 	}
 
@@ -114,7 +114,7 @@ func (rc *RatingController) updateRating(ctx *gin.Context) error {
 			ctx.JSON(http.StatusNotFound, gin.H{"error": "Rating Not Found"})
 			return err
 		}
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+
 		return err
 	}
 
@@ -143,7 +143,7 @@ func (rc *RatingController) deleteRating(ctx *gin.Context) error {
 			ctx.JSON(http.StatusNotFound, gin.H{"error": "Rating Not Found"})
 			return err
 		}
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+
 		return err
 	}
 	ctx.JSON(http.StatusNoContent, nil)
@@ -163,7 +163,7 @@ func (rc *RatingController) deleteRating(ctx *gin.Context) error {
 func (rc *RatingController) listRatings(ctx *gin.Context) error {
 	ratings, err := rc.ratingService.ListRatings(ctx)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+
 		return err
 	}
 

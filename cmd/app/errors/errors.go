@@ -20,6 +20,10 @@ var (
 	ErrConflict          = errors.New("conflict")
 	ErrUnprocessable     = errors.New("unprocessable")
 	ErrAlreadyExists     = errors.New("already exists")
+	InvalidItemType      = errors.New("invalid item type")
+	IDMismatch           = errors.New("id mismatch")
+	IDMissing            = errors.New("id missing")
+	ErrInvalidInput      = errors.New("invalid input")
 )
 
 // New returns new app error that formats as the given text.

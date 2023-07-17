@@ -7,13 +7,17 @@ import (
 	"github.com/cloudinary/cloudinary-go/v2"
 	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 	"github.com/google/uuid"
+	"log"
+	"mime/multipart"
 	"placio-app/ent"
+	"sync"
 )
 
 type MediaService interface {
 	CreateMedia(ctx context.Context, url, mediaType string) (*ent.Media, error)
 	GetMedia(ctx context.Context, mediaID string) (*ent.Media, error)
-	UploadFiles(ctx context.Context, files []string) ([]MediaInfo, error)
+	UploadFiles(ctx context.Context, files []*multipart.FileHeader) ([]MediaInfo, error)
+	UploadAndCreateMedia(ctx context.Context, files []*multipart.FileHeader) ([]*ent.Media, error)
 	//UpdateMedia(media *models.Media) (*models.Media, error)
 	//DeleteMedia(mediaID string) error
 	//ListMedia(postID string) ([]*models.Media, error)
@@ -30,18 +34,27 @@ type MediaServiceImpl struct {
 	cloud  *cloudinary.Cloudinary
 }
 
-func NewMediaService(client *ent.Client) MediaService {
-	return &MediaServiceImpl{client: client}
+func NewMediaService(client *ent.Client, cloud *cloudinary.Cloudinary) MediaService {
+	return &MediaServiceImpl{client: client, cloud: cloud}
 }
 
-func (s *MediaServiceImpl) UploadFiles(ctx context.Context, files []string) ([]MediaInfo, error) {
+func (s *MediaServiceImpl) UploadFiles(ctx context.Context, files []*multipart.FileHeader) ([]MediaInfo, error) {
 	ch := make(chan MediaInfo)
 	errCh := make(chan error)
 
 	for _, file := range files {
-		go func(file string) {
-			uploadResp, err := s.cloud.Upload.Upload(ctx, file, uploader.UploadParams{})
+		go func(file *multipart.FileHeader) {
+			openedFile, err := file.Open() // Open the file to get a stream
 			if err != nil {
+				log.Println("Error opening file", err)
+				errCh <- err
+				return
+			}
+			defer openedFile.Close()
+
+			uploadResp, err := s.cloud.Upload.Upload(ctx, openedFile, uploader.UploadParams{})
+			if err != nil {
+				log.Println("Error uploading file", err)
 				errCh <- err
 				return
 			}
@@ -96,6 +109,33 @@ func (s *MediaServiceImpl) GetMedia(ctx context.Context, mediaID string) (*ent.M
 		return nil, fmt.Errorf("failed retrieving media: %w", err)
 	}
 	return media, nil
+}
+
+func (s *MediaServiceImpl) UploadAndCreateMedia(ctx context.Context, files []*multipart.FileHeader) ([]*ent.Media, error) {
+	mediaInfos, err := s.UploadFiles(ctx, files)
+	if err != nil {
+		return nil, fmt.Errorf("failed uploading files: %w", err)
+	}
+
+	wg := sync.WaitGroup{}
+
+	// Create media
+	mediaList := make([]*ent.Media, 0, len(mediaInfos))
+	for _, info := range mediaInfos {
+		wg.Add(1)
+		go func(info MediaInfo) {
+			defer wg.Done()
+			media, err := s.CreateMedia(ctx, info.URL, info.MediaType)
+			if err != nil {
+				log.Println("Error creating media", err)
+				return
+			}
+			mediaList = append(mediaList, media)
+		}(info)
+	}
+	wg.Wait()
+
+	return mediaList, nil
 }
 
 //

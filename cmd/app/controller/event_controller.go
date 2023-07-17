@@ -56,15 +56,13 @@ func (c *EventController) createEvent(ctx *gin.Context) error {
 	businessId := ctx.Query("businessId")
 
 	if businessId == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": "businessId is required",
-		})
+
 		return nil
 	}
 
 	event, err := c.service.CreateEvent(ctx, businessId, data)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, err)
+
 		return err
 	}
 	ctx.JSON(http.StatusCreated, event)
@@ -94,7 +92,7 @@ func (c *EventController) updateEvent(ctx *gin.Context) error {
 	businessId := ctx.Query("businessId")
 	event, err := c.service.UpdateEvent(ctx, eventId, businessId, data)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, err)
+
 		return err
 	}
 	ctx.JSON(http.StatusOK, event)
@@ -124,19 +122,19 @@ func (c *EventController) getEventsByFilters(ctx *gin.Context) error {
 
 	page, err := strconv.Atoi(ctx.DefaultQuery("page", "1"))
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page number"})
+
 		return err
 	}
 
 	pageSize, err := strconv.Atoi(ctx.DefaultQuery("pageSize", "10"))
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page size"})
+
 		return err
 	}
 
 	events, err := c.service.GetEvents(ctx, &filter, page, pageSize)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return err
 	}
 
@@ -159,7 +157,7 @@ func (c *EventController) getEventByID(ctx *gin.Context) error {
 	eventId := ctx.Param("eventId")
 	event, err := c.service.GetEventByID(ctx, eventId)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return err
 	}
 	ctx.JSON(http.StatusOK, event)
@@ -181,7 +179,7 @@ func (c *EventController) deleteEvent(ctx *gin.Context) error {
 	eventId := ctx.Param("eventId")
 	err := c.service.DeleteEvent(ctx, eventId)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return err
 	}
 	ctx.JSON(http.StatusOK, "Deleted")

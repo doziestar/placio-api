@@ -1,9 +1,11 @@
 package controller
 
 import (
+	"errors"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	_ "placio-app/ent"
+	appErr "placio-app/errors"
 	"placio-app/service"
 	"placio-app/utility"
 	"strconv"
@@ -47,27 +49,51 @@ func (rc *ReviewController) RegisterRoutes(router *gin.RouterGroup) {
 // @Failure 500 {string} string "Error message"
 // @Router /reviews/ [post]
 func (rc *ReviewController) rateItem(ctx *gin.Context) error {
-	itemType := ctx.Query("type")          // query parameter: type
-	itemID := ctx.Query("id")              // query parameter: id
-	userID := ctx.MustGet("user").(string) // query parameter: userID
-	score, _ := strconv.ParseFloat(ctx.PostForm("score"), 64)
-	content := ctx.PostForm("content")
+	itemType := ctx.Query("type")
+	if itemType != "place" && itemType != "event" && itemType != "business" {
+		return appErr.InvalidItemType
+	}
+	itemID := ctx.Query("id")
+	if itemID == "" {
+		return appErr.IDMissing
+	}
+	userID := ctx.MustGet("user").(string)
+	if userID == "" {
+		return appErr.ErrUnauthorized
+	}
 
-	var err error
+	form, err := ctx.MultipartForm()
+	if err != nil {
+		return err
+	}
+
+	files, _ := form.File["files"]
+
+	var score float64
+	scoreStr, ok := form.Value["score"]
+	if ok && len(scoreStr) > 0 {
+		score, err = strconv.ParseFloat(scoreStr[0], 64)
+		if err != nil || score < 1 || score > 5 {
+			return errors.New("invalid ratin score: must be between 1 and 5")
+		}
+	}
+
+	content := form.Value["content"][0]
+
 	switch itemType {
 	case "place":
-		err = rc.reviewService.RatePlace(itemID, userID, score, content)
+		err = rc.reviewService.RatePlace(itemID, userID, score, content, files)
 	case "event":
-		err = rc.reviewService.RateEvent(itemID, userID, score, content)
+		err = rc.reviewService.RateEvent(itemID, userID, score, content, files)
 	case "business":
-		err = rc.reviewService.RateBusiness(itemID, userID, score, content)
+		err = rc.reviewService.RateBusiness(itemID, userID, score, content, files)
 	default:
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid item type"})
 		return nil
 	}
 
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return err
 	}
 
@@ -91,7 +117,7 @@ func (rc *ReviewController) removeReview(ctx *gin.Context) error {
 
 	err := rc.reviewService.RemoveReview(reviewID, userID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return err
 	}
 
@@ -114,7 +140,7 @@ func (rc *ReviewController) getReviewByID(ctx *gin.Context) error {
 
 	review, err := rc.reviewService.GetReviewByID(reviewID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return err
 	}
 
@@ -140,7 +166,7 @@ func (rc *ReviewController) updateReviewContent(ctx *gin.Context) error {
 
 	err := rc.reviewService.UpdateReviewContent(reviewID, userID, content)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return err
 	}
 
@@ -160,21 +186,16 @@ func (rc *ReviewController) updateReviewContent(ctx *gin.Context) error {
 // @Router /reviews/{reviewID}/addMedia [post]
 func (rc *ReviewController) addMediaToReview(ctx *gin.Context) error {
 	reviewID := ctx.Param("reviewID")
-	mediaFile := ctx.PostForm("media")
+	//mediaFile := ctx.PostForm("media")
 
-	mediaArray := []string{mediaFile}
-	mediaUploaded, err := rc.mediaService.UploadFiles(ctx, mediaArray)
+	files, _ := ctx.MultipartForm()
+	fileArray := files.File["media"]
+
+	mediaUploaded, err := rc.mediaService.UploadAndCreateMedia(ctx, fileArray)
+
+	err = rc.reviewService.AddMediaToReview(reviewID, mediaUploaded)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return err
-	}
 
-	// create media object
-	mediaEnt, err := rc.mediaService.CreateMedia(ctx, mediaUploaded[0].URL, mediaUploaded[0].MediaType)
-
-	err = rc.reviewService.AddMediaToReview(reviewID, mediaEnt)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return err
 	}
 
@@ -212,7 +233,7 @@ func (rc *ReviewController) likeReview(ctx *gin.Context) error {
 
 	err := rc.reviewService.LikeReview(reviewID, userID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return err
 	}
 
@@ -236,7 +257,7 @@ func (rc *ReviewController) dislikeReview(ctx *gin.Context) error {
 
 	err := rc.reviewService.DislikeReview(reviewID, userID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return err
 	}
 

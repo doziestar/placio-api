@@ -45,9 +45,7 @@ func (tc *TicketController) RegisterRoutes(router *gin.RouterGroup) {
 func (tc *TicketController) createTicket(ctx *gin.Context) error {
 	data := new(models.Ticket)
 	if err := ctx.BindJSON(data); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": "Bad Request",
-		})
+
 		return err
 	}
 
@@ -117,9 +115,7 @@ func (tc *TicketController) updateTicket(ctx *gin.Context) error {
 	ticketID := ctx.Param("id")
 	data := new(models.Ticket)
 	if err := ctx.BindJSON(data); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": "Bad Request",
-		})
+
 		return err
 	}
 

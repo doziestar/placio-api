@@ -260,6 +260,8 @@ func init() {
 	reservationDescID := reservationFields[0].Descriptor()
 	// reservation.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	reservation.IDValidator = reservationDescID.Validators[0].(func(string) error)
+	reviewHooks := schema.Review{}.Hooks()
+	review.Hooks[0] = reviewHooks[0]
 	reviewFields := schema.Review{}.Fields()
 	_ = reviewFields
 	// reviewDescScore is the schema descriptor for score field.

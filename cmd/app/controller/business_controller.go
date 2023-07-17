@@ -78,13 +78,12 @@ func (bc *BusinessAccountController) addTeamMember(c *gin.Context) error {
 	// role and permissions are sent in the request body
 	var teamMember Dto.TeamMember
 	if err := c.ShouldBindJSON(&teamMember); err != nil {
-		c.JSON(http.StatusBadRequest, utility.ProcessResponse(nil, "failed", err.Error()))
 		return err
 	}
 
 	err := bc.service.AddTeamMember(c, userID, businessAccountID, teamMember.Role, teamMember.Permission)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error()))
+
 		return err
 	}
 
@@ -110,7 +109,7 @@ func (bc *BusinessAccountController) listTeamMembers(c *gin.Context) error {
 
 	teamMembers, err := bc.service.ListTeamMembers(c, businessAccountID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error()))
+
 		return err
 	}
 
@@ -140,13 +139,13 @@ func (bc *BusinessAccountController) editTeamMember(c *gin.Context) error {
 
 	var teamMember Dto.TeamMember
 	if err := c.ShouldBindJSON(&teamMember); err != nil {
-		c.JSON(http.StatusBadRequest, utility.ProcessResponse(nil, "failed", err.Error()))
+
 		return err
 	}
 
 	err := bc.service.EditTeamMember(c, userID, businessAccountID, teamMember.Role, teamMember.Permission)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error()))
+
 		return err
 	}
 
@@ -174,7 +173,7 @@ func (bc *BusinessAccountController) removeTeamMember(c *gin.Context) error {
 
 	err := bc.service.RemoveTeamMember(c, userID, businessAccountID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error()))
+
 		return err
 	}
 
@@ -202,7 +201,7 @@ func (bc *BusinessAccountController) searchTeamMembers(c *gin.Context) error {
 
 	teamMembers, err := bc.service.SearchTeamMembers(c, businessAccountID, searchText)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error()))
+
 		return err
 	}
 
@@ -234,7 +233,7 @@ func (bc *BusinessAccountController) getPlacesAndEventsAssociatedWithBusinessAcc
 
 	placesAndEvents, err := bc.service.GetPlacesAndEventsAssociatedWithBusinessAccount(c, relatedType, businessAccountID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error()))
+
 		return err
 	}
 
@@ -261,13 +260,13 @@ func (bc *BusinessAccountController) addANewEventToBusinessAccount(c *gin.Contex
 
 	var eventDto Dto.EventDTO
 	if err := c.ShouldBindJSON(&eventDto); err != nil {
-		c.JSON(http.StatusBadRequest, utility.ProcessResponse(nil, "failed", err.Error()))
+
 		return err
 	}
 
 	event, err := bc.eventService.CreateEvent(c, businessAccountID, eventDto)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error()))
+
 		return err
 	}
 
@@ -295,7 +294,7 @@ func (bc *BusinessAccountController) followUser(c *gin.Context) error {
 	userID := c.Param("userID")
 
 	if err := bc.service.FollowUser(c, businessID, userID); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return err
 	}
 
@@ -321,7 +320,7 @@ func (bc *BusinessAccountController) followBusiness(c *gin.Context) error {
 	followedID := c.Param("followedID")
 
 	if err := bc.service.FollowBusiness(c, followerID, followedID); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return err
 	}
 
@@ -347,7 +346,7 @@ func (bc *BusinessAccountController) unfollowUser(c *gin.Context) error {
 	userID := c.Param("userID")
 	err := bc.service.UnfollowUser(c, businessID, userID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return err
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Successfully unfollowed the user"})
@@ -372,7 +371,7 @@ func (bc *BusinessAccountController) unfollowBusiness(c *gin.Context) error {
 	followedID := c.Param("followedID")
 	err := bc.service.UnfollowBusiness(c, followerID, followedID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return err
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Successfully unfollowed the business"})
@@ -395,7 +394,7 @@ func (bc *BusinessAccountController) getFollowedContents(c *gin.Context) error {
 	businessID := c.Param("businessID")
 	posts, err := bc.service.GetFollowedContents(c, businessID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return err
 	}
 	c.JSON(http.StatusOK, posts)
@@ -418,12 +417,12 @@ func (bc *BusinessAccountController) getFollowedContents(c *gin.Context) error {
 func (bc *BusinessAccountController) createBusinessAccount(c *gin.Context) error {
 	var businessData Dto.BusinessDto
 	if err := c.ShouldBindJSON(&businessData); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+
 		return err
 	}
 	business, err := bc.service.CreateBusinessAccount(c, &businessData)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return err
 	}
 	c.JSON(http.StatusCreated, business)
@@ -446,7 +445,7 @@ func (bc *BusinessAccountController) getBusinessAccount(c *gin.Context) error {
 	businessAccountID := c.Param("businessAccountID")
 	business, err := bc.service.GetBusinessAccount(c, businessAccountID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return err
 	}
 	c.JSON(http.StatusOK, business)
@@ -518,7 +517,7 @@ func (bc *BusinessAccountController) deleteBusinessAccount(c *gin.Context) error
 	//businessAccountID := c.Param("businessAccountID")
 	//err := bc.service.DeleteBusinessAccount(c, businessAccountID)
 	//if err != nil {
-	//	c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	//
 	//	return
 	//}
 	//c.JSON(http.StatusOK, gin.H{"message": "Successfully deleted the business account"})
@@ -541,7 +540,7 @@ func (bc *BusinessAccountController) getUserBusinessAccounts(c *gin.Context) err
 	log.Println("Get user business accounts")
 	businessAccount, err := bc.service.GetUserBusinessAccounts(c)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return err
 	}
 	c.JSON(http.StatusOK, gin.H{"businessAccounts": businessAccount})

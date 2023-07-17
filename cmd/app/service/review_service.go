@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"github.com/google/uuid"
+	"mime/multipart"
 	"placio-app/ent"
 	"placio-app/ent/business"
 	"placio-app/ent/event"
@@ -15,9 +16,9 @@ import (
 
 // ReviewService represents the contract for your review related operations.
 type ReviewService interface {
-	RatePlace(placeID, userID string, score float64, content string) error
-	RateEvent(eventID, userID string, score float64, content string) error
-	RateBusiness(businessID, userID string, score float64, content string) error
+	RatePlace(placeID, userID string, score float64, content string, files []*multipart.FileHeader) error
+	RateEvent(eventID, userID string, score float64, content string, files []*multipart.FileHeader) error
+	RateBusiness(businessID, userID string, score float64, content string, files []*multipart.FileHeader) error
 	RemoveReview(reviewID, userID string) error
 	GetReviewByID(reviewID string) (*ent.Review, error)
 	GetReviewsByUserID(userID string) ([]*ent.Review, error)
@@ -29,46 +30,92 @@ type ReviewService interface {
 	LikeReview(reviewID, userID string) error
 	DislikeReview(reviewID, userID string) error
 	UpdateReviewContent(reviewID, userID, newContent string) error
-	AddMediaToReview(reviewID string, media *ent.Media) error
+	AddMediaToReview(reviewID string, media []*ent.Media) error
 	// GetReviewsByLikeCount FlagReview(reviewID, userID string) error
 	//AddResponseToReview(reviewID, userID, response string) error
 	GetReviewsByLikeCount() ([]*ent.Review, error)
 	GetReviewsByDislikeCount() ([]*ent.Review, error)
 }
 
+type Reviewable interface {
+	GetID() string
+}
+
+type ReviewablePlace struct {
+	*ent.Place
+}
+
+func (rp ReviewablePlace) GetID() string {
+	return rp.ID
+}
+
+type ReviewableEvent struct {
+	*ent.Event
+}
+
+func (re ReviewableEvent) GetID() string {
+	return re.ID
+}
+
+type ReviewableBusiness struct {
+	*ent.Business
+}
+
+func (rb ReviewableBusiness) GetID() string {
+	return rb.ID
+}
+
 type ReviewServiceImpl struct {
-	client *ent.Client
+	client       *ent.Client
+	mediaService MediaService
 }
 
 func NewReviewService(client *ent.Client) ReviewService {
 	return &ReviewServiceImpl{client: client}
 }
 
-// RatePlace allows a user to rate and review a place.
-func (rs *ReviewServiceImpl) RatePlace(placeID, userID string, score float64, content string) error {
-	placeData, err := rs.client.Place.Get(context.Background(), placeID)
+func (rs *ReviewServiceImpl) rateItem(item Reviewable, userID string, score float64, content string, files []*multipart.FileHeader) error {
+	user, err := rs.client.User.Get(context.Background(), userID)
 	if err != nil {
 		return err
 	}
 
-	userData, _ := rs.client.User.Get(context.Background(), userID)
-
-	// Check if user has already rated this place
-	_, err = rs.client.Review.Query().
-		Where(review.HasPlaceWith(place.HasUsersWith(user.ID(userID)))).
-		Only(context.Background())
-	if err == nil {
-		return errors.New("user has already rated this place")
-	}
-
-	_, err = rs.client.Review.Create().
+	reviewResp, err := rs.client.Review.Create().
 		SetID(uuid.New().String()).
-		SetPlace(placeData).
-		SetUser(userData).
+		//SetID(item.GetID()).
+		SetUser(user).
 		SetScore(score).
 		SetContent(content).
 		Save(context.Background())
-	return err
+
+	if err != nil {
+		return err
+	}
+
+	if len(files) > 0 {
+		go func() {
+			media, err := rs.mediaService.UploadAndCreateMedia(context.Background(), files)
+			if err != nil {
+				return
+			}
+			err = rs.AddMediaToReview(reviewResp.ID, media)
+			if err != nil {
+				return
+			}
+		}()
+	}
+
+	return nil
+}
+
+// RatePlace allows a user to rate and review a place.
+func (rs *ReviewServiceImpl) RatePlace(placeID, userID string, score float64, content string, files []*multipart.FileHeader) error {
+	place, err := rs.client.Place.Get(context.Background(), placeID)
+	if err != nil {
+		return err
+	}
+
+	return rs.rateItem(ReviewablePlace{place}, userID, score, content, files)
 }
 
 // RemoveReview allows a user to remove a review.
@@ -102,8 +149,8 @@ func (rs *ReviewServiceImpl) UpdateReviewContent(reviewID, userID, newContent st
 }
 
 // AddMediaToReview allows a user to add media to their review.
-func (rs *ReviewServiceImpl) AddMediaToReview(reviewID string, media *ent.Media) error {
-	_, err := rs.client.Review.UpdateOneID(reviewID).AddMedias(media).Save(context.Background())
+func (rs *ReviewServiceImpl) AddMediaToReview(reviewID string, media []*ent.Media) error {
+	_, err := rs.client.Review.UpdateOneID(reviewID).AddMedias(media...).Save(context.Background())
 	return err
 }
 
@@ -165,49 +212,25 @@ func (rs *ReviewServiceImpl) DislikeReview(reviewID, userID string) error {
 }
 
 // RateEvent allows a user to rate and review an event.
-func (rs *ReviewServiceImpl) RateEvent(eventID, userID string, score float64, content string) error {
+func (rs *ReviewServiceImpl) RateEvent(eventID, userID string, score float64, content string, files []*multipart.FileHeader) error {
 	event, err := rs.client.Event.Get(context.Background(), eventID)
 	if err != nil {
 		return err
 	}
 
-	user, err := rs.client.User.Get(context.Background(), userID)
-	if err != nil {
-		return err
-	}
+	reviewable := ReviewableEvent{Event: event}
 
-	_, err = rs.client.Review.Create().
-		SetID(uuid.New().String()).
-		SetScore(score).
-		SetEventID(eventID).
-		SetEvent(event).
-		SetUserID(userID).
-		SetUser(user).
-		SetContent(content).
-		Save(context.Background())
-	return err
+	return rs.rateItem(reviewable, userID, score, content, files)
 }
 
 // RateBusiness allows a user to rate and review a business.
-func (rs *ReviewServiceImpl) RateBusiness(businessID, userID string, score float64, content string) error {
+func (rs *ReviewServiceImpl) RateBusiness(businessID, userID string, score float64, content string, files []*multipart.FileHeader) error {
 	business, err := rs.client.Business.Get(context.Background(), businessID)
 	if err != nil {
 		return err
 	}
 
-	user, err := rs.client.User.Get(context.Background(), userID)
-	if err != nil {
-		return err
-	}
+	reviewable := ReviewableBusiness{Business: business}
 
-	_, err = rs.client.Review.Create().
-		SetID(uuid.New().String()).
-		SetScore(score).
-		SetBusinessID(businessID).
-		SetBusiness(business).
-		SetUserID(userID).
-		SetUser(user).
-		SetContent(content).
-		Save(context.Background())
-	return err
+	return rs.rateItem(reviewable, userID, score, content, files)
 }

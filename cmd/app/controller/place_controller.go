@@ -51,9 +51,7 @@ func (c *PlaceController) getPlace(ctx *gin.Context) error {
 
 	place, err := c.placeService.GetPlace(ctx, id)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+
 		return err
 	}
 
@@ -78,23 +76,19 @@ func (c *PlaceController) getPlace(ctx *gin.Context) error {
 func (c *PlaceController) createPlace(ctx *gin.Context) error {
 	var placeData Dto.CreatePlaceDTO
 	if err := ctx.ShouldBindJSON(&placeData); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+
 		return err
 	}
 
 	placeData.BusinessID = ctx.Query("business_id")
 	if placeData.BusinessID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": "Business ID is required",
-		})
+
 		return nil
 	}
 
 	place, err := c.placeService.CreatePlace(ctx, placeData)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+
 		return err
 	}
 
@@ -113,9 +107,7 @@ func (c *PlaceController) createPlace(ctx *gin.Context) error {
 func (c *PlaceController) getAllPlaces(ctx *gin.Context) error {
 	places, err := c.placeService.GetAllPlaces(ctx)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+
 		return err
 	}
 
@@ -142,16 +134,12 @@ func (c *PlaceController) addAmenitiesToPlace(ctx *gin.Context) error {
 
 	var amenityDTO Dto.AmenityAdditionDTO
 	if err := ctx.ShouldBindJSON(&amenityDTO); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid input",
-		})
+
 		return err
 	}
 
 	if err := c.placeService.AddAmenitiesToPlace(ctx, id, amenityDTO.AmenityIDs); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+
 		return err
 	}
 
@@ -179,15 +167,13 @@ func (c *PlaceController) updatePlace(ctx *gin.Context) error {
 	id := ctx.Param("id")
 	var placeData Dto.UpdatePlaceDTO
 	if err := ctx.ShouldBindJSON(&placeData); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+
 		return err
 	}
 
 	place, err := c.placeService.UpdatePlace(ctx, id, placeData)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Internal Server Error",
-		})
+
 		return err
 	}
 
@@ -213,9 +199,7 @@ func (c *PlaceController) deletePlace(ctx *gin.Context) error {
 
 	err := c.placeService.DeletePlace(ctx, id)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Internal Server Error",
-		})
+
 		return err
 	}
 
@@ -244,25 +228,25 @@ func (c *PlaceController) deletePlace(ctx *gin.Context) error {
 func (c *PlaceController) getPlacesByFilters(ctx *gin.Context) error {
 	var filter service.PlaceFilter
 	if err := ctx.ShouldBindQuery(&filter); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+
 		return err
 	}
 
 	page, err := strconv.Atoi(ctx.DefaultQuery("page", "1"))
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page number"})
+
 		return err
 	}
 
 	pageSize, err := strconv.Atoi(ctx.DefaultQuery("pageSize", "10"))
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid page size"})
+
 		return err
 	}
 
 	places, err := c.placeService.GetPlaces(ctx, &filter, page, pageSize)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+
 		return err
 	}
 

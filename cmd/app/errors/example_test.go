@@ -20,7 +20,6 @@ func ExampleNew() {
 
 	// Output:
 	// example
-	// /home/runner/work/go-api-boilerplate/go-api-boilerplate/pkg/errors/example_test.go:13
 }
 
 func ExampleWrap() {
@@ -35,8 +34,6 @@ func ExampleWrap() {
 
 	// Output:
 	// example
-	// /home/runner/work/go-api-boilerplate/go-api-boilerplate/pkg/errors/example_test.go:28
-	// /home/runner/work/go-api-boilerplate/go-api-boilerplate/pkg/errors/example_test.go:27
 }
 
 func ExampleWrap_second() {
@@ -53,7 +50,6 @@ func ExampleWrap_second() {
 
 	// Output:
 	// test2: original
-	// /home/runner/work/go-api-boilerplate/go-api-boilerplate/pkg/errors/example_test.go:44
 }
 
 func ExampleWrap_third() {
@@ -72,9 +68,4 @@ func ExampleWrap_third() {
 
 	// Output:
 	// third: second: first
-	// /home/runner/work/go-api-boilerplate/go-api-boilerplate/pkg/errors/example_test.go:65
-	// /home/runner/work/go-api-boilerplate/go-api-boilerplate/pkg/errors/example_test.go:64
-	// /home/runner/work/go-api-boilerplate/go-api-boilerplate/pkg/errors/example_test.go:63
-	// /home/runner/work/go-api-boilerplate/go-api-boilerplate/pkg/errors/example_test.go:61
-	// /home/runner/work/go-api-boilerplate/go-api-boilerplate/pkg/errors/example_test.go:60
 }

@@ -1,10 +1,13 @@
 package controller
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"net/http"
 	_ "placio-app/Dto"
-	_ "placio-app/models"
+	_ "placio-app/ent"
 	"placio-app/service"
+	"placio-app/utility"
 )
 
 type MediaController struct {
@@ -16,11 +19,11 @@ func NewMediaController(mediaService service.MediaService) *MediaController {
 }
 
 func (mc *MediaController) RegisterRoutes(router *gin.RouterGroup) {
-	//mediaRouter := router.Group("/media")
+	mediaRouter := router.Group("/media")
 	{
 		//mediaRouter.Get("/", mc.getAllMedia)
 		//mediaRouter.GET("/:id", utility.Use(mc.getMedia))
-		//mediaRouter.Post("/", mc.createMedia)
+		mediaRouter.POST("/", utility.Use(mc.uploadMedia))
 		//mediaRouter.Put("/:id", mc.updateMedia)
 		//mediaRouter.POST("/:id", utility.Use(mc.deleteMedia))
 	}
@@ -33,34 +36,32 @@ func (mc *MediaController) RegisterRoutes(router *gin.RouterGroup) {
 // @Produce json
 // @Param file formData file true "Media file"
 // @Param postID formData string true "Post ID"
-// @Success 201 {object} models.Media "Successfully uploaded media"
+// @Success 201 {object} ent.Media "Successfully uploaded media"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/media/ [post]
-//func (c *MediaController) uploadMedia(ctx *fiber.Ctx) error {
-//	file, err := ctx.FormFile("file")
-//	if err != nil {
-//		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-//			"error": "Bad Request",
-//		})
-//	}
-//
-//	postID := ctx.FormValue("postID")
-//	if postID == "" {
-//		return ctx.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-//			"error": "Post ID is required",
-//		})
-//	}
-//
-//	uploadedMedia, err := c.mediaService.UploadMedia(file, postID)
-//	if err != nil {
-//		return ctx.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-//			"error": "Internal Server Error",
-//		})
-//	}
-//
-//	return ctx.Status(fiber.StatusCreated).JSON(uploadedMedia)
-//}
+func (mc *MediaController) uploadMedia(ctx *gin.Context) error {
+
+	form, err := ctx.MultipartForm()
+	if err != nil {
+
+		return err
+	}
+	files, ok := form.File["files"]
+	if !ok || len(files) == 0 {
+
+		return fmt.Errorf("file is required")
+	}
+
+	uploadedMedia, err := mc.mediaService.UploadFiles(ctx, files)
+	if err != nil {
+
+		return err
+	}
+
+	ctx.JSON(http.StatusCreated, uploadedMedia)
+	return nil
+}
 
 // @Summary Get media
 // @Description Retrieve media by its ID
