@@ -10,12 +10,14 @@ import (
 	"log"
 	"mime/multipart"
 	"placio-app/ent"
+	"sync"
 )
 
 type MediaService interface {
 	CreateMedia(ctx context.Context, url, mediaType string) (*ent.Media, error)
 	GetMedia(ctx context.Context, mediaID string) (*ent.Media, error)
 	UploadFiles(ctx context.Context, files []*multipart.FileHeader) ([]MediaInfo, error)
+	UploadAndCreateMedia(ctx context.Context, files []*multipart.FileHeader) ([]*ent.Media, error)
 	//UpdateMedia(media *models.Media) (*models.Media, error)
 	//DeleteMedia(mediaID string) error
 	//ListMedia(postID string) ([]*models.Media, error)
@@ -107,6 +109,33 @@ func (s *MediaServiceImpl) GetMedia(ctx context.Context, mediaID string) (*ent.M
 		return nil, fmt.Errorf("failed retrieving media: %w", err)
 	}
 	return media, nil
+}
+
+func (s *MediaServiceImpl) UploadAndCreateMedia(ctx context.Context, files []*multipart.FileHeader) ([]*ent.Media, error) {
+	mediaInfos, err := s.UploadFiles(ctx, files)
+	if err != nil {
+		return nil, fmt.Errorf("failed uploading files: %w", err)
+	}
+
+	wg := sync.WaitGroup{}
+
+	// Create media
+	mediaList := make([]*ent.Media, 0, len(mediaInfos))
+	for _, info := range mediaInfos {
+		wg.Add(1)
+		go func(info MediaInfo) {
+			defer wg.Done()
+			media, err := s.CreateMedia(ctx, info.URL, info.MediaType)
+			if err != nil {
+				log.Println("Error creating media", err)
+				return
+			}
+			mediaList = append(mediaList, media)
+		}(info)
+	}
+	wg.Wait()
+
+	return mediaList, nil
 }
 
 //

@@ -158,6 +158,20 @@ func Use(fn func(*gin.Context) error) gin.HandlerFunc {
 					c.JSON(http.StatusUnprocessableEntity, gin.H{"error": appErr.Error()})
 				case errors.Is(appErr.Unwrap(), appErrors.ErrAlreadyExists):
 					c.JSON(http.StatusConflict, gin.H{"error": appErr.Error()})
+				case errors.Is(appErr.Unwrap(), appErrors.ErrInternal):
+					c.JSON(http.StatusInternalServerError, gin.H{"error": appErr.Error()})
+				case errors.Is(appErr.Unwrap(), appErrors.ErrTimeout):
+					c.JSON(http.StatusRequestTimeout, gin.H{"error": appErr.Error()})
+				case errors.Is(appErr.Unwrap(), appErrors.InvalidItemType):
+					c.JSON(http.StatusBadRequest, gin.H{"error": appErr.Error()})
+				case errors.Is(appErr.Unwrap(), appErrors.ErrInvalidInput):
+					c.JSON(http.StatusBadRequest, gin.H{"error": appErr.Error()})
+				case errors.Is(appErr.Unwrap(), appErrors.IDMissing):
+					c.JSON(http.StatusBadRequest, gin.H{"error": appErr.Error()})
+				case errors.Is(appErr.Unwrap(), appErrors.IDMismatch):
+					c.JSON(http.StatusBadRequest, gin.H{"error": appErr.Error()})
+				case errors.Is(appErr.Unwrap(), appErrors.ErrTemporaryDisabled):
+					c.JSON(http.StatusServiceUnavailable, gin.H{"error": appErr.Error()})
 				default:
 					c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 				}

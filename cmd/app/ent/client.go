@@ -4962,7 +4962,8 @@ func (c *ReviewClient) QueryLikes(r *Review) *LikeQuery {
 
 // Hooks returns the client hooks.
 func (c *ReviewClient) Hooks() []Hook {
-	return c.hooks.Review
+	hooks := c.hooks.Review
+	return append(hooks[:len(hooks):len(hooks)], review.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.

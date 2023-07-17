@@ -1,9 +1,13 @@
 package schema
 
 import (
+	"context"
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
+	gen "placio-app/ent"
+	"placio-app/ent/hook"
 	"time"
 )
 
@@ -57,5 +61,23 @@ func (Review) Edges() []ent.Edge {
 			Comment("The comments related to the review."),
 		edge.To("likes", Like.Type).
 			Comment("The likes related to the review."),
+	}
+}
+
+func (Review) Hooks() []ent.Hook {
+	return []ent.Hook{
+		hook.On(func(next ent.Mutator) ent.Mutator {
+			return hook.ReviewFunc(func(ctx context.Context, m *gen.ReviewMutation) (ent.Value, error) {
+				// check if the operation is not update
+				if !m.Op().Is(ent.OpUpdateOne) {
+					// check if the id is not provided
+					id, ok := m.ID()
+					if !ok || id == "" {
+						m.SetID(uuid.New().String())
+					}
+				}
+				return next.Mutate(ctx, m)
+			})
+		}, ent.OpCreate),
 	}
 }
