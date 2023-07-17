@@ -1,15 +1,26 @@
-ARG NODE_ENV=development
-# ARG NODE_ENV=staging
-ARG NODE_VERSION=19-alpine3.16
-
-FROM node:${NODE_VERSION} AS node
+# --- Build stage ---
+FROM node:16-alpine AS build-stage
 
 WORKDIR /app
 
-RUN npm install -g @redocly/cli
+# Install the Redocly CLI
+RUN npm install -g @redocly/openapi-cli
 
+# Copy documentation files
 COPY ./docs ./docs
 
-RUN redocly bundle ./docs/app/swagger.yaml --output ./docs/redoc.yml
+# Bundle the documentation into a static HTML file
+RUN openapi bundle ./docs/app/swagger.yaml -o ./docs/redoc.html
 
-CMD redocly preview-docs --host=0.0.0.0 --port=6060 ./docs/redoc.yml
+# --- Production stage ---
+FROM nginx:alpine AS production-stage
+
+# Remove default nginx page
+RUN rm -rf /usr/share/nginx/html/*
+
+# Copy the static HTML file to the nginx html directory
+COPY --from=build-stage /app/docs/redoc.html /usr/share/nginx/html/index.html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
