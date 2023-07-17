@@ -64,7 +64,8 @@ redoc: ##  Generate redoc
 	redocly bundle docs/app/swagger.yaml --output docs/redoc.yml
 
 swagger-build: swagger redoc ## Generate docs
-	NODE_OPTIONS="--max-old-space-size=4096" redocly build-docs docs/app/swagger.yaml --output docs/redoc-static.html
+	export NODE_OPTIONS="--max-old-space-size=16384"
+	redocly build-docs docs/app/swagger.yaml --output docs/redoc-static.html
 
 docs: ## Generate documentation
 	swag init -g cmd/app/main.go --output docs/app --parseDependency --parseInternal

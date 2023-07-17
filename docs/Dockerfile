@@ -1,30 +1,23 @@
-# --- Build stage ---
-FROM node:16-alpine AS build-stage
+# Pull the pre-built Redoc Docker image
+FROM redocly/redoc AS redoc-stage
 
-WORKDIR /app
+# The port on which Redoc will run
+EXPOSE 80
 
-# Install the Redocly CLI
-RUN npm install -g @redocly/cli@latest
-
-# Copy documentation files
-COPY ./docs ./docs
-
-ENV NODE_OPTIONS="--max-old-space-size=4096"
-# Bundle the documentation into a static OpenAPI file
-RUN redocly bundle ./docs/app/swagger.yaml -o ./docs/swagger.yaml
-
-# Generate the documentation HTML file
-RUN redocly build-docs ./docs/swagger.yaml --output ./docs/redoc-static.html
+# Set the environment variable for your OpenAPI definition URL
+ENV SPEC_URL=https://docs.palnight.com/openapi.json
 
 # --- Production stage ---
 FROM nginx:alpine AS production-stage
 
-# Remove default nginx page
+# Copy Redoc files from the Redoc stage to the Nginx HTML directory
+COPY --from=redoc-stage /usr/share/nginx/html /usr/share/nginx/html
+
+# Remove default Nginx page
 RUN rm -rf /usr/share/nginx/html/*
 
-# Copy the static HTML file to the nginx html directory
-COPY --from=build-stage /app/docs/redoc-static.html /usr/share/nginx/html/index.html
-
+# Expose the Nginx port
 EXPOSE 80
 
+# Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
