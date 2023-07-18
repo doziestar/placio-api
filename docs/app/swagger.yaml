@@ -7172,6 +7172,46 @@ paths:
       tags:
       - FAQ
   /faq/business/{businessID}:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve FAQs by Business ID
+      operationId: get-FAQs-by-business
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Business ID
+        in: path
+        name: businessID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_ent.FAQ'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+      summary: Get FAQs by Business ID
+      tags:
+      - FAQ
     post:
       consumes:
       - application/json

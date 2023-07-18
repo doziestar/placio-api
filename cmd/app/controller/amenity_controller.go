@@ -51,26 +51,6 @@ func (c *AmenityController) createAmenity(ctx *gin.Context) error {
 		return err
 	}
 
-	form, _ := ctx.MultipartForm()
-	files := form.File["icons"]
-
-	for i, file := range files {
-		// Save the file to a temporary path before uploading
-		tempFilePath := "/tmp/" + file.Filename
-		ctx.SaveUploadedFile(file, tempFilePath)
-		files[i].Filename = tempFilePath
-	}
-
-	//uploadParams := uploader.UploadParams{Folder: "your/folder"}
-	urls, err := c.mediaService.UploadFiles(ctx, files)
-	if err != nil {
-
-		return err
-	}
-
-	// If you're storing multiple icon URLs, you should modify the input and Amenity structures accordingly
-	input.Icon = urls[0].URL
-
 	amenity, err := c.service.CreateAmenity(input)
 	if err != nil {
 
