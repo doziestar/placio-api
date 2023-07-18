@@ -64,7 +64,7 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 
 		cld, _ := cloudinary.NewFromParams("placio", "312498583624125", "k4XSQwWuhi3Vy7QAw7Qn0mUaW0s")
 
-		searchService, _ := service.NewSearchService()
+		searchService, _ := service.NewSearchService(client)
 		searchController := controller.NewSearchController(searchService)
 		searchController.RegisterRoutes(routerGroupV1)
 
