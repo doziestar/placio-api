@@ -44,14 +44,14 @@ type SearchServiceImpl struct {
 }
 
 // NewSearchService Initiate a new search service with an Elasticsearch client
-func NewSearchService() (SearchService, error) {
+func NewSearchService(entClient *ent.Client) (SearchService, error) {
 	log.Println("Creating algolia client")
 	client := search.NewClient(os.Getenv("ALGOLIA_APP_ID"), os.Getenv("ALGOLIA_API_KEY"))
 	if client == nil {
 		return nil, errors.New("error creating algolia client")
 	}
 	log.Println("Created algolia client")
-	return &SearchServiceImpl{client: client}, nil
+	return &SearchServiceImpl{client: client, entClient: entClient}, nil
 }
 
 // CreateOrUpdateUser updates an existing user or creates a new one.
@@ -122,8 +122,10 @@ func (s *SearchServiceImpl) SearchUsersDB(ctx context.Context, searchText string
 		Where(user.Or(predicates...)).
 		WithFollowedBusinesses().
 		WithFollowedPlaces().
+		WithUserFollowEvents().
 		All(ctx)
 	if err != nil {
+		log.Printf("Error when searching users: %s\n", err)
 		return nil, err
 	}
 
