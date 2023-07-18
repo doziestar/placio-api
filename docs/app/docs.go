@@ -1180,9 +1180,7 @@ const docTemplate = `{
                         }
                     }
                 }
-            }
-        },
-        "/api/v1/likes/place/{userID}/place/{placeID}": {
+            },
             "post": {
                 "description": "Allows a user to like a specific place",
                 "consumes": [
