@@ -3363,7 +3363,6 @@ paths:
       summary: Get place likes
       tags:
       - Like
-  /api/v1/likes/place/{userID}/place/{placeID}:
     post:
       consumes:
       - application/json

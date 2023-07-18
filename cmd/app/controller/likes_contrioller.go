@@ -28,7 +28,7 @@ func (likesController *LikeController) RegisterRoutes(router *gin.RouterGroup) {
 
 		likePlaceRouter := likeRouter.Group("/place")
 		{
-			likePlaceRouter.POST("/:userID/:placeID", utility.Use(likesController.likePlace))
+			likePlaceRouter.POST("/:placeID", utility.Use(likesController.likePlace))
 			likePlaceRouter.DELETE("/:userLikePlaceID", utility.Use(likesController.unlikePlace))
 			likePlaceRouter.GET("/user/:userID", utility.Use(likesController.getUserLikedPlaces))
 			likePlaceRouter.GET("/:placeID", utility.Use(likesController.getPlaceLikes))
@@ -142,9 +142,9 @@ func (likesController *LikeController) getPostLikes(ctx *gin.Context) {
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
-// @Router /api/v1/likes/place/{userID}/place/{placeID} [post]
+// @Router /api/v1/likes/place/{placeID} [post]
 func (likesController *LikeController) likePlace(c *gin.Context) error {
-	userID := c.Param("userID")
+	userID := c.MustGet("user").(string)
 	placeID := c.Param("placeID")
 
 	like, err := likesController.userPlacesLikes.LikePlace(c, userID, placeID)
