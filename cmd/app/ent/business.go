@@ -48,6 +48,10 @@ type Business struct {
 	SearchText string `json:"search_text,omitempty"`
 	// RelevanceScore holds the value of the "relevance_score" field.
 	RelevanceScore float64 `json:"relevance_score,omitempty"`
+	// FollowerCount holds the value of the "follower_count" field.
+	FollowerCount int `json:"follower_count,omitempty"`
+	// FollowingCount holds the value of the "following_count" field.
+	FollowingCount int `json:"following_count,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the BusinessQuery when eager-loading is set.
 	Edges        BusinessEdges `json:"edges"`
@@ -228,6 +232,8 @@ func (*Business) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case business.FieldRelevanceScore:
 			values[i] = new(sql.NullFloat64)
+		case business.FieldFollowerCount, business.FieldFollowingCount:
+			values[i] = new(sql.NullInt64)
 		case business.FieldID, business.FieldName, business.FieldDescription, business.FieldPicture, business.FieldCoverImage, business.FieldWebsite, business.FieldLocation, business.FieldLongitude, business.FieldLatitude, business.FieldEmail, business.FieldPhone, business.FieldURL, business.FieldSearchText:
 			values[i] = new(sql.NullString)
 		default:
@@ -344,6 +350,18 @@ func (b *Business) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field relevance_score", values[i])
 			} else if value.Valid {
 				b.RelevanceScore = value.Float64
+			}
+		case business.FieldFollowerCount:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field follower_count", values[i])
+			} else if value.Valid {
+				b.FollowerCount = int(value.Int64)
+			}
+		case business.FieldFollowingCount:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field following_count", values[i])
+			} else if value.Valid {
+				b.FollowingCount = int(value.Int64)
 			}
 		default:
 			b.selectValues.Set(columns[i], values[i])
@@ -495,6 +513,12 @@ func (b *Business) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("relevance_score=")
 	builder.WriteString(fmt.Sprintf("%v", b.RelevanceScore))
+	builder.WriteString(", ")
+	builder.WriteString("follower_count=")
+	builder.WriteString(fmt.Sprintf("%v", b.FollowerCount))
+	builder.WriteString(", ")
+	builder.WriteString("following_count=")
+	builder.WriteString(fmt.Sprintf("%v", b.FollowingCount))
 	builder.WriteByte(')')
 	return builder.String()
 }

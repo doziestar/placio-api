@@ -45,6 +45,10 @@ const (
 	FieldSearchText = "search_text"
 	// FieldRelevanceScore holds the string denoting the relevance_score field in the database.
 	FieldRelevanceScore = "relevance_score"
+	// FieldFollowerCount holds the string denoting the follower_count field in the database.
+	FieldFollowerCount = "follower_count"
+	// FieldFollowingCount holds the string denoting the following_count field in the database.
+	FieldFollowingCount = "following_count"
 	// EdgeUserBusinesses holds the string denoting the userbusinesses edge name in mutations.
 	EdgeUserBusinesses = "userBusinesses"
 	// EdgeComments holds the string denoting the comments edge name in mutations.
@@ -246,6 +250,8 @@ var Columns = []string{
 	FieldUserSettings,
 	FieldSearchText,
 	FieldRelevanceScore,
+	FieldFollowerCount,
+	FieldFollowingCount,
 }
 
 var (
@@ -275,6 +281,10 @@ var (
 	DefaultCoverImage string
 	// DefaultBio holds the default value on creation for the "bio" field.
 	DefaultBio string
+	// DefaultFollowerCount holds the default value on creation for the "follower_count" field.
+	DefaultFollowerCount int
+	// DefaultFollowingCount holds the default value on creation for the "following_count" field.
+	DefaultFollowingCount int
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(string) error
 )
@@ -345,6 +355,16 @@ func BySearchText(opts ...sql.OrderTermOption) OrderOption {
 // ByRelevanceScore orders the results by the relevance_score field.
 func ByRelevanceScore(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRelevanceScore, opts...).ToFunc()
+}
+
+// ByFollowerCount orders the results by the follower_count field.
+func ByFollowerCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFollowerCount, opts...).ToFunc()
+}
+
+// ByFollowingCount orders the results by the following_count field.
+func ByFollowingCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFollowingCount, opts...).ToFunc()
 }
 
 // ByUserBusinessesCount orders the results by userBusinesses count.

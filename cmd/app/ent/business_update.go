@@ -317,6 +317,48 @@ func (bu *BusinessUpdate) ClearRelevanceScore() *BusinessUpdate {
 	return bu
 }
 
+// SetFollowerCount sets the "follower_count" field.
+func (bu *BusinessUpdate) SetFollowerCount(i int) *BusinessUpdate {
+	bu.mutation.ResetFollowerCount()
+	bu.mutation.SetFollowerCount(i)
+	return bu
+}
+
+// SetNillableFollowerCount sets the "follower_count" field if the given value is not nil.
+func (bu *BusinessUpdate) SetNillableFollowerCount(i *int) *BusinessUpdate {
+	if i != nil {
+		bu.SetFollowerCount(*i)
+	}
+	return bu
+}
+
+// AddFollowerCount adds i to the "follower_count" field.
+func (bu *BusinessUpdate) AddFollowerCount(i int) *BusinessUpdate {
+	bu.mutation.AddFollowerCount(i)
+	return bu
+}
+
+// SetFollowingCount sets the "following_count" field.
+func (bu *BusinessUpdate) SetFollowingCount(i int) *BusinessUpdate {
+	bu.mutation.ResetFollowingCount()
+	bu.mutation.SetFollowingCount(i)
+	return bu
+}
+
+// SetNillableFollowingCount sets the "following_count" field if the given value is not nil.
+func (bu *BusinessUpdate) SetNillableFollowingCount(i *int) *BusinessUpdate {
+	if i != nil {
+		bu.SetFollowingCount(*i)
+	}
+	return bu
+}
+
+// AddFollowingCount adds i to the "following_count" field.
+func (bu *BusinessUpdate) AddFollowingCount(i int) *BusinessUpdate {
+	bu.mutation.AddFollowingCount(i)
+	return bu
+}
+
 // AddUserBusinessIDs adds the "userBusinesses" edge to the UserBusiness entity by IDs.
 func (bu *BusinessUpdate) AddUserBusinessIDs(ids ...string) *BusinessUpdate {
 	bu.mutation.AddUserBusinessIDs(ids...)
@@ -940,6 +982,18 @@ func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if bu.mutation.RelevanceScoreCleared() {
 		_spec.ClearField(business.FieldRelevanceScore, field.TypeFloat64)
+	}
+	if value, ok := bu.mutation.FollowerCount(); ok {
+		_spec.SetField(business.FieldFollowerCount, field.TypeInt, value)
+	}
+	if value, ok := bu.mutation.AddedFollowerCount(); ok {
+		_spec.AddField(business.FieldFollowerCount, field.TypeInt, value)
+	}
+	if value, ok := bu.mutation.FollowingCount(); ok {
+		_spec.SetField(business.FieldFollowingCount, field.TypeInt, value)
+	}
+	if value, ok := bu.mutation.AddedFollowingCount(); ok {
+		_spec.AddField(business.FieldFollowingCount, field.TypeInt, value)
 	}
 	if bu.mutation.UserBusinessesCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1852,6 +1906,48 @@ func (buo *BusinessUpdateOne) ClearRelevanceScore() *BusinessUpdateOne {
 	return buo
 }
 
+// SetFollowerCount sets the "follower_count" field.
+func (buo *BusinessUpdateOne) SetFollowerCount(i int) *BusinessUpdateOne {
+	buo.mutation.ResetFollowerCount()
+	buo.mutation.SetFollowerCount(i)
+	return buo
+}
+
+// SetNillableFollowerCount sets the "follower_count" field if the given value is not nil.
+func (buo *BusinessUpdateOne) SetNillableFollowerCount(i *int) *BusinessUpdateOne {
+	if i != nil {
+		buo.SetFollowerCount(*i)
+	}
+	return buo
+}
+
+// AddFollowerCount adds i to the "follower_count" field.
+func (buo *BusinessUpdateOne) AddFollowerCount(i int) *BusinessUpdateOne {
+	buo.mutation.AddFollowerCount(i)
+	return buo
+}
+
+// SetFollowingCount sets the "following_count" field.
+func (buo *BusinessUpdateOne) SetFollowingCount(i int) *BusinessUpdateOne {
+	buo.mutation.ResetFollowingCount()
+	buo.mutation.SetFollowingCount(i)
+	return buo
+}
+
+// SetNillableFollowingCount sets the "following_count" field if the given value is not nil.
+func (buo *BusinessUpdateOne) SetNillableFollowingCount(i *int) *BusinessUpdateOne {
+	if i != nil {
+		buo.SetFollowingCount(*i)
+	}
+	return buo
+}
+
+// AddFollowingCount adds i to the "following_count" field.
+func (buo *BusinessUpdateOne) AddFollowingCount(i int) *BusinessUpdateOne {
+	buo.mutation.AddFollowingCount(i)
+	return buo
+}
+
 // AddUserBusinessIDs adds the "userBusinesses" edge to the UserBusiness entity by IDs.
 func (buo *BusinessUpdateOne) AddUserBusinessIDs(ids ...string) *BusinessUpdateOne {
 	buo.mutation.AddUserBusinessIDs(ids...)
@@ -2505,6 +2601,18 @@ func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err
 	}
 	if buo.mutation.RelevanceScoreCleared() {
 		_spec.ClearField(business.FieldRelevanceScore, field.TypeFloat64)
+	}
+	if value, ok := buo.mutation.FollowerCount(); ok {
+		_spec.SetField(business.FieldFollowerCount, field.TypeInt, value)
+	}
+	if value, ok := buo.mutation.AddedFollowerCount(); ok {
+		_spec.AddField(business.FieldFollowerCount, field.TypeInt, value)
+	}
+	if value, ok := buo.mutation.FollowingCount(); ok {
+		_spec.SetField(business.FieldFollowingCount, field.TypeInt, value)
+	}
+	if value, ok := buo.mutation.AddedFollowingCount(); ok {
+		_spec.AddField(business.FieldFollowingCount, field.TypeInt, value)
 	}
 	if buo.mutation.UserBusinessesCleared() {
 		edge := &sqlgraph.EdgeSpec{

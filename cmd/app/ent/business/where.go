@@ -129,6 +129,16 @@ func RelevanceScore(v float64) predicate.Business {
 	return predicate.Business(sql.FieldEQ(FieldRelevanceScore, v))
 }
 
+// FollowerCount applies equality check predicate on the "follower_count" field. It's identical to FollowerCountEQ.
+func FollowerCount(v int) predicate.Business {
+	return predicate.Business(sql.FieldEQ(FieldFollowerCount, v))
+}
+
+// FollowingCount applies equality check predicate on the "following_count" field. It's identical to FollowingCountEQ.
+func FollowingCount(v int) predicate.Business {
+	return predicate.Business(sql.FieldEQ(FieldFollowingCount, v))
+}
+
 // NameEQ applies the EQ predicate on the "name" field.
 func NameEQ(v string) predicate.Business {
 	return predicate.Business(sql.FieldEQ(FieldName, v))
@@ -1087,6 +1097,86 @@ func RelevanceScoreIsNil() predicate.Business {
 // RelevanceScoreNotNil applies the NotNil predicate on the "relevance_score" field.
 func RelevanceScoreNotNil() predicate.Business {
 	return predicate.Business(sql.FieldNotNull(FieldRelevanceScore))
+}
+
+// FollowerCountEQ applies the EQ predicate on the "follower_count" field.
+func FollowerCountEQ(v int) predicate.Business {
+	return predicate.Business(sql.FieldEQ(FieldFollowerCount, v))
+}
+
+// FollowerCountNEQ applies the NEQ predicate on the "follower_count" field.
+func FollowerCountNEQ(v int) predicate.Business {
+	return predicate.Business(sql.FieldNEQ(FieldFollowerCount, v))
+}
+
+// FollowerCountIn applies the In predicate on the "follower_count" field.
+func FollowerCountIn(vs ...int) predicate.Business {
+	return predicate.Business(sql.FieldIn(FieldFollowerCount, vs...))
+}
+
+// FollowerCountNotIn applies the NotIn predicate on the "follower_count" field.
+func FollowerCountNotIn(vs ...int) predicate.Business {
+	return predicate.Business(sql.FieldNotIn(FieldFollowerCount, vs...))
+}
+
+// FollowerCountGT applies the GT predicate on the "follower_count" field.
+func FollowerCountGT(v int) predicate.Business {
+	return predicate.Business(sql.FieldGT(FieldFollowerCount, v))
+}
+
+// FollowerCountGTE applies the GTE predicate on the "follower_count" field.
+func FollowerCountGTE(v int) predicate.Business {
+	return predicate.Business(sql.FieldGTE(FieldFollowerCount, v))
+}
+
+// FollowerCountLT applies the LT predicate on the "follower_count" field.
+func FollowerCountLT(v int) predicate.Business {
+	return predicate.Business(sql.FieldLT(FieldFollowerCount, v))
+}
+
+// FollowerCountLTE applies the LTE predicate on the "follower_count" field.
+func FollowerCountLTE(v int) predicate.Business {
+	return predicate.Business(sql.FieldLTE(FieldFollowerCount, v))
+}
+
+// FollowingCountEQ applies the EQ predicate on the "following_count" field.
+func FollowingCountEQ(v int) predicate.Business {
+	return predicate.Business(sql.FieldEQ(FieldFollowingCount, v))
+}
+
+// FollowingCountNEQ applies the NEQ predicate on the "following_count" field.
+func FollowingCountNEQ(v int) predicate.Business {
+	return predicate.Business(sql.FieldNEQ(FieldFollowingCount, v))
+}
+
+// FollowingCountIn applies the In predicate on the "following_count" field.
+func FollowingCountIn(vs ...int) predicate.Business {
+	return predicate.Business(sql.FieldIn(FieldFollowingCount, vs...))
+}
+
+// FollowingCountNotIn applies the NotIn predicate on the "following_count" field.
+func FollowingCountNotIn(vs ...int) predicate.Business {
+	return predicate.Business(sql.FieldNotIn(FieldFollowingCount, vs...))
+}
+
+// FollowingCountGT applies the GT predicate on the "following_count" field.
+func FollowingCountGT(v int) predicate.Business {
+	return predicate.Business(sql.FieldGT(FieldFollowingCount, v))
+}
+
+// FollowingCountGTE applies the GTE predicate on the "following_count" field.
+func FollowingCountGTE(v int) predicate.Business {
+	return predicate.Business(sql.FieldGTE(FieldFollowingCount, v))
+}
+
+// FollowingCountLT applies the LT predicate on the "following_count" field.
+func FollowingCountLT(v int) predicate.Business {
+	return predicate.Business(sql.FieldLT(FieldFollowingCount, v))
+}
+
+// FollowingCountLTE applies the LTE predicate on the "following_count" field.
+func FollowingCountLTE(v int) predicate.Business {
+	return predicate.Business(sql.FieldLTE(FieldFollowingCount, v))
 }
 
 // HasUserBusinesses applies the HasEdge predicate on the "userBusinesses" edge.

@@ -66,6 +66,14 @@ func init() {
 	businessDescCoverImage := businessFields[4].Descriptor()
 	// business.DefaultCoverImage holds the default value on creation for the cover_image field.
 	business.DefaultCoverImage = businessDescCoverImage.Default.(string)
+	// businessDescFollowerCount is the schema descriptor for follower_count field.
+	businessDescFollowerCount := businessFields[16].Descriptor()
+	// business.DefaultFollowerCount holds the default value on creation for the follower_count field.
+	business.DefaultFollowerCount = businessDescFollowerCount.Default.(int)
+	// businessDescFollowingCount is the schema descriptor for following_count field.
+	businessDescFollowingCount := businessFields[17].Descriptor()
+	// business.DefaultFollowingCount holds the default value on creation for the following_count field.
+	business.DefaultFollowingCount = businessDescFollowingCount.Default.(int)
 	// businessDescID is the schema descriptor for id field.
 	businessDescID := businessFields[0].Descriptor()
 	// business.IDValidator is a validator for the "id" field. It is called by the builders before save.
@@ -144,6 +152,14 @@ func init() {
 	event.DefaultUpdatedAt = eventDescUpdatedAt.Default.(func() time.Time)
 	// event.UpdateDefaultUpdatedAt holds the default value on update for the updatedAt field.
 	event.UpdateDefaultUpdatedAt = eventDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// eventDescFollowerCount is the schema descriptor for follower_count field.
+	eventDescFollowerCount := eventFields[40].Descriptor()
+	// event.DefaultFollowerCount holds the default value on creation for the follower_count field.
+	event.DefaultFollowerCount = eventDescFollowerCount.Default.(int)
+	// eventDescFollowingCount is the schema descriptor for following_count field.
+	eventDescFollowingCount := eventFields[41].Descriptor()
+	// event.DefaultFollowingCount holds the default value on creation for the following_count field.
+	event.DefaultFollowingCount = eventDescFollowingCount.Default.(int)
 	helpFields := schema.Help{}.Fields()
 	_ = helpFields
 	// helpDescStatus is the schema descriptor for status field.
@@ -206,6 +222,14 @@ func init() {
 	placeDescCoverImage := placeFields[8].Descriptor()
 	// place.DefaultCoverImage holds the default value on creation for the cover_image field.
 	place.DefaultCoverImage = placeDescCoverImage.Default.(string)
+	// placeDescFollowerCount is the schema descriptor for follower_count field.
+	placeDescFollowerCount := placeFields[29].Descriptor()
+	// place.DefaultFollowerCount holds the default value on creation for the follower_count field.
+	place.DefaultFollowerCount = placeDescFollowerCount.Default.(int)
+	// placeDescFollowingCount is the schema descriptor for following_count field.
+	placeDescFollowingCount := placeFields[30].Descriptor()
+	// place.DefaultFollowingCount holds the default value on creation for the following_count field.
+	place.DefaultFollowingCount = placeDescFollowingCount.Default.(int)
 	// placeDescID is the schema descriptor for id field.
 	placeDescID := placeFields[0].Descriptor()
 	// place.IDValidator is a validator for the "id" field. It is called by the builders before save.
@@ -340,6 +364,14 @@ func init() {
 	userDescBio := userFields[11].Descriptor()
 	// user.DefaultBio holds the default value on creation for the bio field.
 	user.DefaultBio = userDescBio.Default.(string)
+	// userDescFollowerCount is the schema descriptor for follower_count field.
+	userDescFollowerCount := userFields[17].Descriptor()
+	// user.DefaultFollowerCount holds the default value on creation for the follower_count field.
+	user.DefaultFollowerCount = userDescFollowerCount.Default.(int)
+	// userDescFollowingCount is the schema descriptor for following_count field.
+	userDescFollowingCount := userFields[18].Descriptor()
+	// user.DefaultFollowingCount holds the default value on creation for the following_count field.
+	user.DefaultFollowingCount = userDescFollowingCount.Default.(int)
 	// userDescID is the schema descriptor for id field.
 	userDescID := userFields[0].Descriptor()
 	// user.IDValidator is a validator for the "id" field. It is called by the builders before save.

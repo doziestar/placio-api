@@ -338,6 +338,34 @@ func (pc *PlaceCreate) SetNillableRelevanceScore(f *float64) *PlaceCreate {
 	return pc
 }
 
+// SetFollowerCount sets the "follower_count" field.
+func (pc *PlaceCreate) SetFollowerCount(i int) *PlaceCreate {
+	pc.mutation.SetFollowerCount(i)
+	return pc
+}
+
+// SetNillableFollowerCount sets the "follower_count" field if the given value is not nil.
+func (pc *PlaceCreate) SetNillableFollowerCount(i *int) *PlaceCreate {
+	if i != nil {
+		pc.SetFollowerCount(*i)
+	}
+	return pc
+}
+
+// SetFollowingCount sets the "following_count" field.
+func (pc *PlaceCreate) SetFollowingCount(i int) *PlaceCreate {
+	pc.mutation.SetFollowingCount(i)
+	return pc
+}
+
+// SetNillableFollowingCount sets the "following_count" field if the given value is not nil.
+func (pc *PlaceCreate) SetNillableFollowingCount(i *int) *PlaceCreate {
+	if i != nil {
+		pc.SetFollowingCount(*i)
+	}
+	return pc
+}
+
 // SetID sets the "id" field.
 func (pc *PlaceCreate) SetID(s string) *PlaceCreate {
 	pc.mutation.SetID(s)
@@ -614,6 +642,14 @@ func (pc *PlaceCreate) defaults() error {
 		v := place.DefaultCoverImage
 		pc.mutation.SetCoverImage(v)
 	}
+	if _, ok := pc.mutation.FollowerCount(); !ok {
+		v := place.DefaultFollowerCount
+		pc.mutation.SetFollowerCount(v)
+	}
+	if _, ok := pc.mutation.FollowingCount(); !ok {
+		v := place.DefaultFollowingCount
+		pc.mutation.SetFollowingCount(v)
+	}
 	return nil
 }
 
@@ -621,6 +657,12 @@ func (pc *PlaceCreate) defaults() error {
 func (pc *PlaceCreate) check() error {
 	if _, ok := pc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Place.name"`)}
+	}
+	if _, ok := pc.mutation.FollowerCount(); !ok {
+		return &ValidationError{Name: "follower_count", err: errors.New(`ent: missing required field "Place.follower_count"`)}
+	}
+	if _, ok := pc.mutation.FollowingCount(); !ok {
+		return &ValidationError{Name: "following_count", err: errors.New(`ent: missing required field "Place.following_count"`)}
 	}
 	if v, ok := pc.mutation.ID(); ok {
 		if err := place.IDValidator(v); err != nil {
@@ -773,6 +815,14 @@ func (pc *PlaceCreate) createSpec() (*Place, *sqlgraph.CreateSpec) {
 	if value, ok := pc.mutation.RelevanceScore(); ok {
 		_spec.SetField(place.FieldRelevanceScore, field.TypeFloat64, value)
 		_node.RelevanceScore = value
+	}
+	if value, ok := pc.mutation.FollowerCount(); ok {
+		_spec.SetField(place.FieldFollowerCount, field.TypeInt, value)
+		_node.FollowerCount = value
+	}
+	if value, ok := pc.mutation.FollowingCount(); ok {
+		_spec.SetField(place.FieldFollowingCount, field.TypeInt, value)
+		_node.FollowingCount = value
 	}
 	if nodes := pc.mutation.BusinessIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
