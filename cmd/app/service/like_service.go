@@ -10,6 +10,7 @@ import (
 	"placio-app/ent/user"
 	"placio-app/ent/userlikeplace"
 	"placio-app/utility"
+	"time"
 )
 
 type LikeService interface {
@@ -121,6 +122,7 @@ func (s *UserLikePlaceServiceImpl) LikePlace(ctx context.Context, userID string,
 		SetID(uuid.New().String()).
 		SetUser(user).
 		SetPlace(place).
+		SetUpdatedAt(time.Now()).
 		Save(ctx)
 	if err != nil {
 		return nil, err

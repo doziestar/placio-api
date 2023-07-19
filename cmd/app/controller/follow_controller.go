@@ -211,7 +211,7 @@ func (fc *FollowController) getFollowedUsersByUser(c *gin.Context) error {
 // @Router /follow/place/{placeID} [post]
 func (fc *FollowController) followUserToPlace(c *gin.Context) error {
 	placeID := c.Param("placeID")
-	userID := c.GetString("userID")
+	userID := c.GetString("user")
 
 	err := fc.service.FollowUserToPlace(c, userID, placeID)
 	if err != nil {
