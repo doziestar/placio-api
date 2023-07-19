@@ -97,6 +97,12 @@ var (
 		{Name: "url", Type: field.TypeString, Nullable: true},
 		{Name: "search_text", Type: field.TypeString, Nullable: true},
 		{Name: "relevance_score", Type: field.TypeFloat64, Nullable: true},
+		{Name: "followers_count", Type: field.TypeInt, Default: 0},
+		{Name: "following_count", Type: field.TypeInt, Default: 0},
+		{Name: "likes_count", Type: field.TypeInt, Default: 0},
+		{Name: "posts_count", Type: field.TypeInt, Default: 0},
+		{Name: "events_count", Type: field.TypeInt, Default: 0},
+		{Name: "places_count", Type: field.TypeInt, Default: 0},
 	}
 	// BusinessesTable holds the schema information for the "businesses" table.
 	BusinessesTable = &schema.Table{
@@ -385,6 +391,9 @@ var (
 		{Name: "latitude", Type: field.TypeString, Nullable: true},
 		{Name: "search_text", Type: field.TypeString, Nullable: true},
 		{Name: "relevance_score", Type: field.TypeFloat64, Nullable: true},
+		{Name: "followers_count", Type: field.TypeInt, Default: 0},
+		{Name: "following_count", Type: field.TypeInt, Default: 0},
+		{Name: "likes_count", Type: field.TypeInt, Default: 0},
 		{Name: "business_events", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "place_events", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "user_owned_events", Type: field.TypeString, Unique: true, Nullable: true, Size: 36},
@@ -397,19 +406,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "events_businesses_events",
-				Columns:    []*schema.Column{EventsColumns[40]},
+				Columns:    []*schema.Column{EventsColumns[43]},
 				RefColumns: []*schema.Column{BusinessesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "events_places_events",
-				Columns:    []*schema.Column{EventsColumns[41]},
+				Columns:    []*schema.Column{EventsColumns[44]},
 				RefColumns: []*schema.Column{PlacesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "events_users_ownedEvents",
-				Columns:    []*schema.Column{EventsColumns[42]},
+				Columns:    []*schema.Column{EventsColumns[45]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -619,6 +628,9 @@ var (
 		{Name: "latitude", Type: field.TypeString, Nullable: true},
 		{Name: "search_text", Type: field.TypeString, Nullable: true},
 		{Name: "relevance_score", Type: field.TypeFloat64, Nullable: true},
+		{Name: "followers_count", Type: field.TypeInt, Default: 0},
+		{Name: "following_count", Type: field.TypeInt, Default: 0},
+		{Name: "likes_count", Type: field.TypeInt, Default: 0},
 		{Name: "business_places", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "event_place", Type: field.TypeString, Nullable: true},
 	}
@@ -630,13 +642,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "places_businesses_places",
-				Columns:    []*schema.Column{PlacesColumns[29]},
+				Columns:    []*schema.Column{PlacesColumns[32]},
 				RefColumns: []*schema.Column{BusinessesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "places_events_place",
-				Columns:    []*schema.Column{PlacesColumns[30]},
+				Columns:    []*schema.Column{PlacesColumns[33]},
 				RefColumns: []*schema.Column{EventsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -932,6 +944,11 @@ var (
 		{Name: "user_settings", Type: field.TypeJSON, Nullable: true},
 		{Name: "search_text", Type: field.TypeString, Nullable: true},
 		{Name: "relevance_score", Type: field.TypeFloat64, Nullable: true},
+		{Name: "followers_count", Type: field.TypeInt, Default: 0},
+		{Name: "following_count", Type: field.TypeInt, Default: 0},
+		{Name: "posts_count", Type: field.TypeInt, Default: 0},
+		{Name: "reviews_count", Type: field.TypeInt, Default: 0},
+		{Name: "likes_count", Type: field.TypeInt, Default: 0},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{

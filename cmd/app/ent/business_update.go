@@ -317,6 +317,132 @@ func (bu *BusinessUpdate) ClearRelevanceScore() *BusinessUpdate {
 	return bu
 }
 
+// SetFollowersCount sets the "followers_count" field.
+func (bu *BusinessUpdate) SetFollowersCount(i int) *BusinessUpdate {
+	bu.mutation.ResetFollowersCount()
+	bu.mutation.SetFollowersCount(i)
+	return bu
+}
+
+// SetNillableFollowersCount sets the "followers_count" field if the given value is not nil.
+func (bu *BusinessUpdate) SetNillableFollowersCount(i *int) *BusinessUpdate {
+	if i != nil {
+		bu.SetFollowersCount(*i)
+	}
+	return bu
+}
+
+// AddFollowersCount adds i to the "followers_count" field.
+func (bu *BusinessUpdate) AddFollowersCount(i int) *BusinessUpdate {
+	bu.mutation.AddFollowersCount(i)
+	return bu
+}
+
+// SetFollowingCount sets the "following_count" field.
+func (bu *BusinessUpdate) SetFollowingCount(i int) *BusinessUpdate {
+	bu.mutation.ResetFollowingCount()
+	bu.mutation.SetFollowingCount(i)
+	return bu
+}
+
+// SetNillableFollowingCount sets the "following_count" field if the given value is not nil.
+func (bu *BusinessUpdate) SetNillableFollowingCount(i *int) *BusinessUpdate {
+	if i != nil {
+		bu.SetFollowingCount(*i)
+	}
+	return bu
+}
+
+// AddFollowingCount adds i to the "following_count" field.
+func (bu *BusinessUpdate) AddFollowingCount(i int) *BusinessUpdate {
+	bu.mutation.AddFollowingCount(i)
+	return bu
+}
+
+// SetLikesCount sets the "likes_count" field.
+func (bu *BusinessUpdate) SetLikesCount(i int) *BusinessUpdate {
+	bu.mutation.ResetLikesCount()
+	bu.mutation.SetLikesCount(i)
+	return bu
+}
+
+// SetNillableLikesCount sets the "likes_count" field if the given value is not nil.
+func (bu *BusinessUpdate) SetNillableLikesCount(i *int) *BusinessUpdate {
+	if i != nil {
+		bu.SetLikesCount(*i)
+	}
+	return bu
+}
+
+// AddLikesCount adds i to the "likes_count" field.
+func (bu *BusinessUpdate) AddLikesCount(i int) *BusinessUpdate {
+	bu.mutation.AddLikesCount(i)
+	return bu
+}
+
+// SetPostsCount sets the "posts_count" field.
+func (bu *BusinessUpdate) SetPostsCount(i int) *BusinessUpdate {
+	bu.mutation.ResetPostsCount()
+	bu.mutation.SetPostsCount(i)
+	return bu
+}
+
+// SetNillablePostsCount sets the "posts_count" field if the given value is not nil.
+func (bu *BusinessUpdate) SetNillablePostsCount(i *int) *BusinessUpdate {
+	if i != nil {
+		bu.SetPostsCount(*i)
+	}
+	return bu
+}
+
+// AddPostsCount adds i to the "posts_count" field.
+func (bu *BusinessUpdate) AddPostsCount(i int) *BusinessUpdate {
+	bu.mutation.AddPostsCount(i)
+	return bu
+}
+
+// SetEventsCount sets the "events_count" field.
+func (bu *BusinessUpdate) SetEventsCount(i int) *BusinessUpdate {
+	bu.mutation.ResetEventsCount()
+	bu.mutation.SetEventsCount(i)
+	return bu
+}
+
+// SetNillableEventsCount sets the "events_count" field if the given value is not nil.
+func (bu *BusinessUpdate) SetNillableEventsCount(i *int) *BusinessUpdate {
+	if i != nil {
+		bu.SetEventsCount(*i)
+	}
+	return bu
+}
+
+// AddEventsCount adds i to the "events_count" field.
+func (bu *BusinessUpdate) AddEventsCount(i int) *BusinessUpdate {
+	bu.mutation.AddEventsCount(i)
+	return bu
+}
+
+// SetPlacesCount sets the "places_count" field.
+func (bu *BusinessUpdate) SetPlacesCount(i int) *BusinessUpdate {
+	bu.mutation.ResetPlacesCount()
+	bu.mutation.SetPlacesCount(i)
+	return bu
+}
+
+// SetNillablePlacesCount sets the "places_count" field if the given value is not nil.
+func (bu *BusinessUpdate) SetNillablePlacesCount(i *int) *BusinessUpdate {
+	if i != nil {
+		bu.SetPlacesCount(*i)
+	}
+	return bu
+}
+
+// AddPlacesCount adds i to the "places_count" field.
+func (bu *BusinessUpdate) AddPlacesCount(i int) *BusinessUpdate {
+	bu.mutation.AddPlacesCount(i)
+	return bu
+}
+
 // AddUserBusinessIDs adds the "userBusinesses" edge to the UserBusiness entity by IDs.
 func (bu *BusinessUpdate) AddUserBusinessIDs(ids ...string) *BusinessUpdate {
 	bu.mutation.AddUserBusinessIDs(ids...)
@@ -940,6 +1066,42 @@ func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if bu.mutation.RelevanceScoreCleared() {
 		_spec.ClearField(business.FieldRelevanceScore, field.TypeFloat64)
+	}
+	if value, ok := bu.mutation.FollowersCount(); ok {
+		_spec.SetField(business.FieldFollowersCount, field.TypeInt, value)
+	}
+	if value, ok := bu.mutation.AddedFollowersCount(); ok {
+		_spec.AddField(business.FieldFollowersCount, field.TypeInt, value)
+	}
+	if value, ok := bu.mutation.FollowingCount(); ok {
+		_spec.SetField(business.FieldFollowingCount, field.TypeInt, value)
+	}
+	if value, ok := bu.mutation.AddedFollowingCount(); ok {
+		_spec.AddField(business.FieldFollowingCount, field.TypeInt, value)
+	}
+	if value, ok := bu.mutation.LikesCount(); ok {
+		_spec.SetField(business.FieldLikesCount, field.TypeInt, value)
+	}
+	if value, ok := bu.mutation.AddedLikesCount(); ok {
+		_spec.AddField(business.FieldLikesCount, field.TypeInt, value)
+	}
+	if value, ok := bu.mutation.PostsCount(); ok {
+		_spec.SetField(business.FieldPostsCount, field.TypeInt, value)
+	}
+	if value, ok := bu.mutation.AddedPostsCount(); ok {
+		_spec.AddField(business.FieldPostsCount, field.TypeInt, value)
+	}
+	if value, ok := bu.mutation.EventsCount(); ok {
+		_spec.SetField(business.FieldEventsCount, field.TypeInt, value)
+	}
+	if value, ok := bu.mutation.AddedEventsCount(); ok {
+		_spec.AddField(business.FieldEventsCount, field.TypeInt, value)
+	}
+	if value, ok := bu.mutation.PlacesCount(); ok {
+		_spec.SetField(business.FieldPlacesCount, field.TypeInt, value)
+	}
+	if value, ok := bu.mutation.AddedPlacesCount(); ok {
+		_spec.AddField(business.FieldPlacesCount, field.TypeInt, value)
 	}
 	if bu.mutation.UserBusinessesCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1852,6 +2014,132 @@ func (buo *BusinessUpdateOne) ClearRelevanceScore() *BusinessUpdateOne {
 	return buo
 }
 
+// SetFollowersCount sets the "followers_count" field.
+func (buo *BusinessUpdateOne) SetFollowersCount(i int) *BusinessUpdateOne {
+	buo.mutation.ResetFollowersCount()
+	buo.mutation.SetFollowersCount(i)
+	return buo
+}
+
+// SetNillableFollowersCount sets the "followers_count" field if the given value is not nil.
+func (buo *BusinessUpdateOne) SetNillableFollowersCount(i *int) *BusinessUpdateOne {
+	if i != nil {
+		buo.SetFollowersCount(*i)
+	}
+	return buo
+}
+
+// AddFollowersCount adds i to the "followers_count" field.
+func (buo *BusinessUpdateOne) AddFollowersCount(i int) *BusinessUpdateOne {
+	buo.mutation.AddFollowersCount(i)
+	return buo
+}
+
+// SetFollowingCount sets the "following_count" field.
+func (buo *BusinessUpdateOne) SetFollowingCount(i int) *BusinessUpdateOne {
+	buo.mutation.ResetFollowingCount()
+	buo.mutation.SetFollowingCount(i)
+	return buo
+}
+
+// SetNillableFollowingCount sets the "following_count" field if the given value is not nil.
+func (buo *BusinessUpdateOne) SetNillableFollowingCount(i *int) *BusinessUpdateOne {
+	if i != nil {
+		buo.SetFollowingCount(*i)
+	}
+	return buo
+}
+
+// AddFollowingCount adds i to the "following_count" field.
+func (buo *BusinessUpdateOne) AddFollowingCount(i int) *BusinessUpdateOne {
+	buo.mutation.AddFollowingCount(i)
+	return buo
+}
+
+// SetLikesCount sets the "likes_count" field.
+func (buo *BusinessUpdateOne) SetLikesCount(i int) *BusinessUpdateOne {
+	buo.mutation.ResetLikesCount()
+	buo.mutation.SetLikesCount(i)
+	return buo
+}
+
+// SetNillableLikesCount sets the "likes_count" field if the given value is not nil.
+func (buo *BusinessUpdateOne) SetNillableLikesCount(i *int) *BusinessUpdateOne {
+	if i != nil {
+		buo.SetLikesCount(*i)
+	}
+	return buo
+}
+
+// AddLikesCount adds i to the "likes_count" field.
+func (buo *BusinessUpdateOne) AddLikesCount(i int) *BusinessUpdateOne {
+	buo.mutation.AddLikesCount(i)
+	return buo
+}
+
+// SetPostsCount sets the "posts_count" field.
+func (buo *BusinessUpdateOne) SetPostsCount(i int) *BusinessUpdateOne {
+	buo.mutation.ResetPostsCount()
+	buo.mutation.SetPostsCount(i)
+	return buo
+}
+
+// SetNillablePostsCount sets the "posts_count" field if the given value is not nil.
+func (buo *BusinessUpdateOne) SetNillablePostsCount(i *int) *BusinessUpdateOne {
+	if i != nil {
+		buo.SetPostsCount(*i)
+	}
+	return buo
+}
+
+// AddPostsCount adds i to the "posts_count" field.
+func (buo *BusinessUpdateOne) AddPostsCount(i int) *BusinessUpdateOne {
+	buo.mutation.AddPostsCount(i)
+	return buo
+}
+
+// SetEventsCount sets the "events_count" field.
+func (buo *BusinessUpdateOne) SetEventsCount(i int) *BusinessUpdateOne {
+	buo.mutation.ResetEventsCount()
+	buo.mutation.SetEventsCount(i)
+	return buo
+}
+
+// SetNillableEventsCount sets the "events_count" field if the given value is not nil.
+func (buo *BusinessUpdateOne) SetNillableEventsCount(i *int) *BusinessUpdateOne {
+	if i != nil {
+		buo.SetEventsCount(*i)
+	}
+	return buo
+}
+
+// AddEventsCount adds i to the "events_count" field.
+func (buo *BusinessUpdateOne) AddEventsCount(i int) *BusinessUpdateOne {
+	buo.mutation.AddEventsCount(i)
+	return buo
+}
+
+// SetPlacesCount sets the "places_count" field.
+func (buo *BusinessUpdateOne) SetPlacesCount(i int) *BusinessUpdateOne {
+	buo.mutation.ResetPlacesCount()
+	buo.mutation.SetPlacesCount(i)
+	return buo
+}
+
+// SetNillablePlacesCount sets the "places_count" field if the given value is not nil.
+func (buo *BusinessUpdateOne) SetNillablePlacesCount(i *int) *BusinessUpdateOne {
+	if i != nil {
+		buo.SetPlacesCount(*i)
+	}
+	return buo
+}
+
+// AddPlacesCount adds i to the "places_count" field.
+func (buo *BusinessUpdateOne) AddPlacesCount(i int) *BusinessUpdateOne {
+	buo.mutation.AddPlacesCount(i)
+	return buo
+}
+
 // AddUserBusinessIDs adds the "userBusinesses" edge to the UserBusiness entity by IDs.
 func (buo *BusinessUpdateOne) AddUserBusinessIDs(ids ...string) *BusinessUpdateOne {
 	buo.mutation.AddUserBusinessIDs(ids...)
@@ -2505,6 +2793,42 @@ func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err
 	}
 	if buo.mutation.RelevanceScoreCleared() {
 		_spec.ClearField(business.FieldRelevanceScore, field.TypeFloat64)
+	}
+	if value, ok := buo.mutation.FollowersCount(); ok {
+		_spec.SetField(business.FieldFollowersCount, field.TypeInt, value)
+	}
+	if value, ok := buo.mutation.AddedFollowersCount(); ok {
+		_spec.AddField(business.FieldFollowersCount, field.TypeInt, value)
+	}
+	if value, ok := buo.mutation.FollowingCount(); ok {
+		_spec.SetField(business.FieldFollowingCount, field.TypeInt, value)
+	}
+	if value, ok := buo.mutation.AddedFollowingCount(); ok {
+		_spec.AddField(business.FieldFollowingCount, field.TypeInt, value)
+	}
+	if value, ok := buo.mutation.LikesCount(); ok {
+		_spec.SetField(business.FieldLikesCount, field.TypeInt, value)
+	}
+	if value, ok := buo.mutation.AddedLikesCount(); ok {
+		_spec.AddField(business.FieldLikesCount, field.TypeInt, value)
+	}
+	if value, ok := buo.mutation.PostsCount(); ok {
+		_spec.SetField(business.FieldPostsCount, field.TypeInt, value)
+	}
+	if value, ok := buo.mutation.AddedPostsCount(); ok {
+		_spec.AddField(business.FieldPostsCount, field.TypeInt, value)
+	}
+	if value, ok := buo.mutation.EventsCount(); ok {
+		_spec.SetField(business.FieldEventsCount, field.TypeInt, value)
+	}
+	if value, ok := buo.mutation.AddedEventsCount(); ok {
+		_spec.AddField(business.FieldEventsCount, field.TypeInt, value)
+	}
+	if value, ok := buo.mutation.PlacesCount(); ok {
+		_spec.SetField(business.FieldPlacesCount, field.TypeInt, value)
+	}
+	if value, ok := buo.mutation.AddedPlacesCount(); ok {
+		_spec.AddField(business.FieldPlacesCount, field.TypeInt, value)
 	}
 	if buo.mutation.UserBusinessesCleared() {
 		edge := &sqlgraph.EdgeSpec{

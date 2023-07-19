@@ -790,6 +790,69 @@ func (eu *EventUpdate) ClearRelevanceScore() *EventUpdate {
 	return eu
 }
 
+// SetFollowersCount sets the "followers_count" field.
+func (eu *EventUpdate) SetFollowersCount(i int) *EventUpdate {
+	eu.mutation.ResetFollowersCount()
+	eu.mutation.SetFollowersCount(i)
+	return eu
+}
+
+// SetNillableFollowersCount sets the "followers_count" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableFollowersCount(i *int) *EventUpdate {
+	if i != nil {
+		eu.SetFollowersCount(*i)
+	}
+	return eu
+}
+
+// AddFollowersCount adds i to the "followers_count" field.
+func (eu *EventUpdate) AddFollowersCount(i int) *EventUpdate {
+	eu.mutation.AddFollowersCount(i)
+	return eu
+}
+
+// SetFollowingCount sets the "following_count" field.
+func (eu *EventUpdate) SetFollowingCount(i int) *EventUpdate {
+	eu.mutation.ResetFollowingCount()
+	eu.mutation.SetFollowingCount(i)
+	return eu
+}
+
+// SetNillableFollowingCount sets the "following_count" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableFollowingCount(i *int) *EventUpdate {
+	if i != nil {
+		eu.SetFollowingCount(*i)
+	}
+	return eu
+}
+
+// AddFollowingCount adds i to the "following_count" field.
+func (eu *EventUpdate) AddFollowingCount(i int) *EventUpdate {
+	eu.mutation.AddFollowingCount(i)
+	return eu
+}
+
+// SetLikesCount sets the "likes_count" field.
+func (eu *EventUpdate) SetLikesCount(i int) *EventUpdate {
+	eu.mutation.ResetLikesCount()
+	eu.mutation.SetLikesCount(i)
+	return eu
+}
+
+// SetNillableLikesCount sets the "likes_count" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableLikesCount(i *int) *EventUpdate {
+	if i != nil {
+		eu.SetLikesCount(*i)
+	}
+	return eu
+}
+
+// AddLikesCount adds i to the "likes_count" field.
+func (eu *EventUpdate) AddLikesCount(i int) *EventUpdate {
+	eu.mutation.AddLikesCount(i)
+	return eu
+}
+
 // AddTicketIDs adds the "tickets" edge to the Ticket entity by IDs.
 func (eu *EventUpdate) AddTicketIDs(ids ...string) *EventUpdate {
 	eu.mutation.AddTicketIDs(ids...)
@@ -1473,6 +1536,24 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if eu.mutation.RelevanceScoreCleared() {
 		_spec.ClearField(event.FieldRelevanceScore, field.TypeFloat64)
+	}
+	if value, ok := eu.mutation.FollowersCount(); ok {
+		_spec.SetField(event.FieldFollowersCount, field.TypeInt, value)
+	}
+	if value, ok := eu.mutation.AddedFollowersCount(); ok {
+		_spec.AddField(event.FieldFollowersCount, field.TypeInt, value)
+	}
+	if value, ok := eu.mutation.FollowingCount(); ok {
+		_spec.SetField(event.FieldFollowingCount, field.TypeInt, value)
+	}
+	if value, ok := eu.mutation.AddedFollowingCount(); ok {
+		_spec.AddField(event.FieldFollowingCount, field.TypeInt, value)
+	}
+	if value, ok := eu.mutation.LikesCount(); ok {
+		_spec.SetField(event.FieldLikesCount, field.TypeInt, value)
+	}
+	if value, ok := eu.mutation.AddedLikesCount(); ok {
+		_spec.AddField(event.FieldLikesCount, field.TypeInt, value)
 	}
 	if eu.mutation.TicketsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -2708,6 +2789,69 @@ func (euo *EventUpdateOne) ClearRelevanceScore() *EventUpdateOne {
 	return euo
 }
 
+// SetFollowersCount sets the "followers_count" field.
+func (euo *EventUpdateOne) SetFollowersCount(i int) *EventUpdateOne {
+	euo.mutation.ResetFollowersCount()
+	euo.mutation.SetFollowersCount(i)
+	return euo
+}
+
+// SetNillableFollowersCount sets the "followers_count" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableFollowersCount(i *int) *EventUpdateOne {
+	if i != nil {
+		euo.SetFollowersCount(*i)
+	}
+	return euo
+}
+
+// AddFollowersCount adds i to the "followers_count" field.
+func (euo *EventUpdateOne) AddFollowersCount(i int) *EventUpdateOne {
+	euo.mutation.AddFollowersCount(i)
+	return euo
+}
+
+// SetFollowingCount sets the "following_count" field.
+func (euo *EventUpdateOne) SetFollowingCount(i int) *EventUpdateOne {
+	euo.mutation.ResetFollowingCount()
+	euo.mutation.SetFollowingCount(i)
+	return euo
+}
+
+// SetNillableFollowingCount sets the "following_count" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableFollowingCount(i *int) *EventUpdateOne {
+	if i != nil {
+		euo.SetFollowingCount(*i)
+	}
+	return euo
+}
+
+// AddFollowingCount adds i to the "following_count" field.
+func (euo *EventUpdateOne) AddFollowingCount(i int) *EventUpdateOne {
+	euo.mutation.AddFollowingCount(i)
+	return euo
+}
+
+// SetLikesCount sets the "likes_count" field.
+func (euo *EventUpdateOne) SetLikesCount(i int) *EventUpdateOne {
+	euo.mutation.ResetLikesCount()
+	euo.mutation.SetLikesCount(i)
+	return euo
+}
+
+// SetNillableLikesCount sets the "likes_count" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableLikesCount(i *int) *EventUpdateOne {
+	if i != nil {
+		euo.SetLikesCount(*i)
+	}
+	return euo
+}
+
+// AddLikesCount adds i to the "likes_count" field.
+func (euo *EventUpdateOne) AddLikesCount(i int) *EventUpdateOne {
+	euo.mutation.AddLikesCount(i)
+	return euo
+}
+
 // AddTicketIDs adds the "tickets" edge to the Ticket entity by IDs.
 func (euo *EventUpdateOne) AddTicketIDs(ids ...string) *EventUpdateOne {
 	euo.mutation.AddTicketIDs(ids...)
@@ -3421,6 +3565,24 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 	}
 	if euo.mutation.RelevanceScoreCleared() {
 		_spec.ClearField(event.FieldRelevanceScore, field.TypeFloat64)
+	}
+	if value, ok := euo.mutation.FollowersCount(); ok {
+		_spec.SetField(event.FieldFollowersCount, field.TypeInt, value)
+	}
+	if value, ok := euo.mutation.AddedFollowersCount(); ok {
+		_spec.AddField(event.FieldFollowersCount, field.TypeInt, value)
+	}
+	if value, ok := euo.mutation.FollowingCount(); ok {
+		_spec.SetField(event.FieldFollowingCount, field.TypeInt, value)
+	}
+	if value, ok := euo.mutation.AddedFollowingCount(); ok {
+		_spec.AddField(event.FieldFollowingCount, field.TypeInt, value)
+	}
+	if value, ok := euo.mutation.LikesCount(); ok {
+		_spec.SetField(event.FieldLikesCount, field.TypeInt, value)
+	}
+	if value, ok := euo.mutation.AddedLikesCount(); ok {
+		_spec.AddField(event.FieldLikesCount, field.TypeInt, value)
 	}
 	if euo.mutation.TicketsCleared() {
 		edge := &sqlgraph.EdgeSpec{

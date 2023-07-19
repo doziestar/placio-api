@@ -1753,6 +1753,18 @@ type BusinessMutation struct {
 	search_text                      *string
 	relevance_score                  *float64
 	addrelevance_score               *float64
+	followers_count                  *int
+	addfollowers_count               *int
+	following_count                  *int
+	addfollowing_count               *int
+	likes_count                      *int
+	addlikes_count                   *int
+	posts_count                      *int
+	addposts_count                   *int
+	events_count                     *int
+	addevents_count                  *int
+	places_count                     *int
+	addplaces_count                  *int
 	clearedFields                    map[string]struct{}
 	userBusinesses                   map[string]struct{}
 	removeduserBusinesses            map[string]struct{}
@@ -2647,6 +2659,342 @@ func (m *BusinessMutation) ResetRelevanceScore() {
 	delete(m.clearedFields, business.FieldRelevanceScore)
 }
 
+// SetFollowersCount sets the "followers_count" field.
+func (m *BusinessMutation) SetFollowersCount(i int) {
+	m.followers_count = &i
+	m.addfollowers_count = nil
+}
+
+// FollowersCount returns the value of the "followers_count" field in the mutation.
+func (m *BusinessMutation) FollowersCount() (r int, exists bool) {
+	v := m.followers_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFollowersCount returns the old "followers_count" field's value of the Business entity.
+// If the Business object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessMutation) OldFollowersCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFollowersCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFollowersCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFollowersCount: %w", err)
+	}
+	return oldValue.FollowersCount, nil
+}
+
+// AddFollowersCount adds i to the "followers_count" field.
+func (m *BusinessMutation) AddFollowersCount(i int) {
+	if m.addfollowers_count != nil {
+		*m.addfollowers_count += i
+	} else {
+		m.addfollowers_count = &i
+	}
+}
+
+// AddedFollowersCount returns the value that was added to the "followers_count" field in this mutation.
+func (m *BusinessMutation) AddedFollowersCount() (r int, exists bool) {
+	v := m.addfollowers_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetFollowersCount resets all changes to the "followers_count" field.
+func (m *BusinessMutation) ResetFollowersCount() {
+	m.followers_count = nil
+	m.addfollowers_count = nil
+}
+
+// SetFollowingCount sets the "following_count" field.
+func (m *BusinessMutation) SetFollowingCount(i int) {
+	m.following_count = &i
+	m.addfollowing_count = nil
+}
+
+// FollowingCount returns the value of the "following_count" field in the mutation.
+func (m *BusinessMutation) FollowingCount() (r int, exists bool) {
+	v := m.following_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFollowingCount returns the old "following_count" field's value of the Business entity.
+// If the Business object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessMutation) OldFollowingCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFollowingCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFollowingCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFollowingCount: %w", err)
+	}
+	return oldValue.FollowingCount, nil
+}
+
+// AddFollowingCount adds i to the "following_count" field.
+func (m *BusinessMutation) AddFollowingCount(i int) {
+	if m.addfollowing_count != nil {
+		*m.addfollowing_count += i
+	} else {
+		m.addfollowing_count = &i
+	}
+}
+
+// AddedFollowingCount returns the value that was added to the "following_count" field in this mutation.
+func (m *BusinessMutation) AddedFollowingCount() (r int, exists bool) {
+	v := m.addfollowing_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetFollowingCount resets all changes to the "following_count" field.
+func (m *BusinessMutation) ResetFollowingCount() {
+	m.following_count = nil
+	m.addfollowing_count = nil
+}
+
+// SetLikesCount sets the "likes_count" field.
+func (m *BusinessMutation) SetLikesCount(i int) {
+	m.likes_count = &i
+	m.addlikes_count = nil
+}
+
+// LikesCount returns the value of the "likes_count" field in the mutation.
+func (m *BusinessMutation) LikesCount() (r int, exists bool) {
+	v := m.likes_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLikesCount returns the old "likes_count" field's value of the Business entity.
+// If the Business object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessMutation) OldLikesCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLikesCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLikesCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLikesCount: %w", err)
+	}
+	return oldValue.LikesCount, nil
+}
+
+// AddLikesCount adds i to the "likes_count" field.
+func (m *BusinessMutation) AddLikesCount(i int) {
+	if m.addlikes_count != nil {
+		*m.addlikes_count += i
+	} else {
+		m.addlikes_count = &i
+	}
+}
+
+// AddedLikesCount returns the value that was added to the "likes_count" field in this mutation.
+func (m *BusinessMutation) AddedLikesCount() (r int, exists bool) {
+	v := m.addlikes_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetLikesCount resets all changes to the "likes_count" field.
+func (m *BusinessMutation) ResetLikesCount() {
+	m.likes_count = nil
+	m.addlikes_count = nil
+}
+
+// SetPostsCount sets the "posts_count" field.
+func (m *BusinessMutation) SetPostsCount(i int) {
+	m.posts_count = &i
+	m.addposts_count = nil
+}
+
+// PostsCount returns the value of the "posts_count" field in the mutation.
+func (m *BusinessMutation) PostsCount() (r int, exists bool) {
+	v := m.posts_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPostsCount returns the old "posts_count" field's value of the Business entity.
+// If the Business object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessMutation) OldPostsCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPostsCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPostsCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPostsCount: %w", err)
+	}
+	return oldValue.PostsCount, nil
+}
+
+// AddPostsCount adds i to the "posts_count" field.
+func (m *BusinessMutation) AddPostsCount(i int) {
+	if m.addposts_count != nil {
+		*m.addposts_count += i
+	} else {
+		m.addposts_count = &i
+	}
+}
+
+// AddedPostsCount returns the value that was added to the "posts_count" field in this mutation.
+func (m *BusinessMutation) AddedPostsCount() (r int, exists bool) {
+	v := m.addposts_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetPostsCount resets all changes to the "posts_count" field.
+func (m *BusinessMutation) ResetPostsCount() {
+	m.posts_count = nil
+	m.addposts_count = nil
+}
+
+// SetEventsCount sets the "events_count" field.
+func (m *BusinessMutation) SetEventsCount(i int) {
+	m.events_count = &i
+	m.addevents_count = nil
+}
+
+// EventsCount returns the value of the "events_count" field in the mutation.
+func (m *BusinessMutation) EventsCount() (r int, exists bool) {
+	v := m.events_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEventsCount returns the old "events_count" field's value of the Business entity.
+// If the Business object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessMutation) OldEventsCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEventsCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEventsCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEventsCount: %w", err)
+	}
+	return oldValue.EventsCount, nil
+}
+
+// AddEventsCount adds i to the "events_count" field.
+func (m *BusinessMutation) AddEventsCount(i int) {
+	if m.addevents_count != nil {
+		*m.addevents_count += i
+	} else {
+		m.addevents_count = &i
+	}
+}
+
+// AddedEventsCount returns the value that was added to the "events_count" field in this mutation.
+func (m *BusinessMutation) AddedEventsCount() (r int, exists bool) {
+	v := m.addevents_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetEventsCount resets all changes to the "events_count" field.
+func (m *BusinessMutation) ResetEventsCount() {
+	m.events_count = nil
+	m.addevents_count = nil
+}
+
+// SetPlacesCount sets the "places_count" field.
+func (m *BusinessMutation) SetPlacesCount(i int) {
+	m.places_count = &i
+	m.addplaces_count = nil
+}
+
+// PlacesCount returns the value of the "places_count" field in the mutation.
+func (m *BusinessMutation) PlacesCount() (r int, exists bool) {
+	v := m.places_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPlacesCount returns the old "places_count" field's value of the Business entity.
+// If the Business object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BusinessMutation) OldPlacesCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPlacesCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPlacesCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPlacesCount: %w", err)
+	}
+	return oldValue.PlacesCount, nil
+}
+
+// AddPlacesCount adds i to the "places_count" field.
+func (m *BusinessMutation) AddPlacesCount(i int) {
+	if m.addplaces_count != nil {
+		*m.addplaces_count += i
+	} else {
+		m.addplaces_count = &i
+	}
+}
+
+// AddedPlacesCount returns the value that was added to the "places_count" field in this mutation.
+func (m *BusinessMutation) AddedPlacesCount() (r int, exists bool) {
+	v := m.addplaces_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetPlacesCount resets all changes to the "places_count" field.
+func (m *BusinessMutation) ResetPlacesCount() {
+	m.places_count = nil
+	m.addplaces_count = nil
+}
+
 // AddUserBusinessIDs adds the "userBusinesses" edge to the UserBusiness entity by ids.
 func (m *BusinessMutation) AddUserBusinessIDs(ids ...string) {
 	if m.userBusinesses == nil {
@@ -3422,7 +3770,7 @@ func (m *BusinessMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *BusinessMutation) Fields() []string {
-	fields := make([]string, 0, 15)
+	fields := make([]string, 0, 21)
 	if m.name != nil {
 		fields = append(fields, business.FieldName)
 	}
@@ -3468,6 +3816,24 @@ func (m *BusinessMutation) Fields() []string {
 	if m.relevance_score != nil {
 		fields = append(fields, business.FieldRelevanceScore)
 	}
+	if m.followers_count != nil {
+		fields = append(fields, business.FieldFollowersCount)
+	}
+	if m.following_count != nil {
+		fields = append(fields, business.FieldFollowingCount)
+	}
+	if m.likes_count != nil {
+		fields = append(fields, business.FieldLikesCount)
+	}
+	if m.posts_count != nil {
+		fields = append(fields, business.FieldPostsCount)
+	}
+	if m.events_count != nil {
+		fields = append(fields, business.FieldEventsCount)
+	}
+	if m.places_count != nil {
+		fields = append(fields, business.FieldPlacesCount)
+	}
 	return fields
 }
 
@@ -3506,6 +3872,18 @@ func (m *BusinessMutation) Field(name string) (ent.Value, bool) {
 		return m.SearchText()
 	case business.FieldRelevanceScore:
 		return m.RelevanceScore()
+	case business.FieldFollowersCount:
+		return m.FollowersCount()
+	case business.FieldFollowingCount:
+		return m.FollowingCount()
+	case business.FieldLikesCount:
+		return m.LikesCount()
+	case business.FieldPostsCount:
+		return m.PostsCount()
+	case business.FieldEventsCount:
+		return m.EventsCount()
+	case business.FieldPlacesCount:
+		return m.PlacesCount()
 	}
 	return nil, false
 }
@@ -3545,6 +3923,18 @@ func (m *BusinessMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldSearchText(ctx)
 	case business.FieldRelevanceScore:
 		return m.OldRelevanceScore(ctx)
+	case business.FieldFollowersCount:
+		return m.OldFollowersCount(ctx)
+	case business.FieldFollowingCount:
+		return m.OldFollowingCount(ctx)
+	case business.FieldLikesCount:
+		return m.OldLikesCount(ctx)
+	case business.FieldPostsCount:
+		return m.OldPostsCount(ctx)
+	case business.FieldEventsCount:
+		return m.OldEventsCount(ctx)
+	case business.FieldPlacesCount:
+		return m.OldPlacesCount(ctx)
 	}
 	return nil, fmt.Errorf("unknown Business field %s", name)
 }
@@ -3659,6 +4049,48 @@ func (m *BusinessMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetRelevanceScore(v)
 		return nil
+	case business.FieldFollowersCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFollowersCount(v)
+		return nil
+	case business.FieldFollowingCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFollowingCount(v)
+		return nil
+	case business.FieldLikesCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLikesCount(v)
+		return nil
+	case business.FieldPostsCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPostsCount(v)
+		return nil
+	case business.FieldEventsCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEventsCount(v)
+		return nil
+	case business.FieldPlacesCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPlacesCount(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Business field %s", name)
 }
@@ -3670,6 +4102,24 @@ func (m *BusinessMutation) AddedFields() []string {
 	if m.addrelevance_score != nil {
 		fields = append(fields, business.FieldRelevanceScore)
 	}
+	if m.addfollowers_count != nil {
+		fields = append(fields, business.FieldFollowersCount)
+	}
+	if m.addfollowing_count != nil {
+		fields = append(fields, business.FieldFollowingCount)
+	}
+	if m.addlikes_count != nil {
+		fields = append(fields, business.FieldLikesCount)
+	}
+	if m.addposts_count != nil {
+		fields = append(fields, business.FieldPostsCount)
+	}
+	if m.addevents_count != nil {
+		fields = append(fields, business.FieldEventsCount)
+	}
+	if m.addplaces_count != nil {
+		fields = append(fields, business.FieldPlacesCount)
+	}
 	return fields
 }
 
@@ -3680,6 +4130,18 @@ func (m *BusinessMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
 	case business.FieldRelevanceScore:
 		return m.AddedRelevanceScore()
+	case business.FieldFollowersCount:
+		return m.AddedFollowersCount()
+	case business.FieldFollowingCount:
+		return m.AddedFollowingCount()
+	case business.FieldLikesCount:
+		return m.AddedLikesCount()
+	case business.FieldPostsCount:
+		return m.AddedPostsCount()
+	case business.FieldEventsCount:
+		return m.AddedEventsCount()
+	case business.FieldPlacesCount:
+		return m.AddedPlacesCount()
 	}
 	return nil, false
 }
@@ -3695,6 +4157,48 @@ func (m *BusinessMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddRelevanceScore(v)
+		return nil
+	case business.FieldFollowersCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddFollowersCount(v)
+		return nil
+	case business.FieldFollowingCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddFollowingCount(v)
+		return nil
+	case business.FieldLikesCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddLikesCount(v)
+		return nil
+	case business.FieldPostsCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddPostsCount(v)
+		return nil
+	case business.FieldEventsCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddEventsCount(v)
+		return nil
+	case business.FieldPlacesCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddPlacesCount(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Business numeric field %s", name)
@@ -3854,6 +4358,24 @@ func (m *BusinessMutation) ResetField(name string) error {
 		return nil
 	case business.FieldRelevanceScore:
 		m.ResetRelevanceScore()
+		return nil
+	case business.FieldFollowersCount:
+		m.ResetFollowersCount()
+		return nil
+	case business.FieldFollowingCount:
+		m.ResetFollowingCount()
+		return nil
+	case business.FieldLikesCount:
+		m.ResetLikesCount()
+		return nil
+	case business.FieldPostsCount:
+		m.ResetPostsCount()
+		return nil
+	case business.FieldEventsCount:
+		m.ResetEventsCount()
+		return nil
+	case business.FieldPlacesCount:
+		m.ResetPlacesCount()
 		return nil
 	}
 	return fmt.Errorf("unknown Business field %s", name)
@@ -7909,6 +8431,12 @@ type EventMutation struct {
 	search_text                       *string
 	relevance_score                   *float64
 	addrelevance_score                *float64
+	followers_count                   *int
+	addfollowers_count                *int
+	following_count                   *int
+	addfollowing_count                *int
+	likes_count                       *int
+	addlikes_count                    *int
 	clearedFields                     map[string]struct{}
 	tickets                           map[string]struct{}
 	removedtickets                    map[string]struct{}
@@ -9956,6 +10484,174 @@ func (m *EventMutation) ResetRelevanceScore() {
 	delete(m.clearedFields, event.FieldRelevanceScore)
 }
 
+// SetFollowersCount sets the "followers_count" field.
+func (m *EventMutation) SetFollowersCount(i int) {
+	m.followers_count = &i
+	m.addfollowers_count = nil
+}
+
+// FollowersCount returns the value of the "followers_count" field in the mutation.
+func (m *EventMutation) FollowersCount() (r int, exists bool) {
+	v := m.followers_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFollowersCount returns the old "followers_count" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldFollowersCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFollowersCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFollowersCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFollowersCount: %w", err)
+	}
+	return oldValue.FollowersCount, nil
+}
+
+// AddFollowersCount adds i to the "followers_count" field.
+func (m *EventMutation) AddFollowersCount(i int) {
+	if m.addfollowers_count != nil {
+		*m.addfollowers_count += i
+	} else {
+		m.addfollowers_count = &i
+	}
+}
+
+// AddedFollowersCount returns the value that was added to the "followers_count" field in this mutation.
+func (m *EventMutation) AddedFollowersCount() (r int, exists bool) {
+	v := m.addfollowers_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetFollowersCount resets all changes to the "followers_count" field.
+func (m *EventMutation) ResetFollowersCount() {
+	m.followers_count = nil
+	m.addfollowers_count = nil
+}
+
+// SetFollowingCount sets the "following_count" field.
+func (m *EventMutation) SetFollowingCount(i int) {
+	m.following_count = &i
+	m.addfollowing_count = nil
+}
+
+// FollowingCount returns the value of the "following_count" field in the mutation.
+func (m *EventMutation) FollowingCount() (r int, exists bool) {
+	v := m.following_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFollowingCount returns the old "following_count" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldFollowingCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFollowingCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFollowingCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFollowingCount: %w", err)
+	}
+	return oldValue.FollowingCount, nil
+}
+
+// AddFollowingCount adds i to the "following_count" field.
+func (m *EventMutation) AddFollowingCount(i int) {
+	if m.addfollowing_count != nil {
+		*m.addfollowing_count += i
+	} else {
+		m.addfollowing_count = &i
+	}
+}
+
+// AddedFollowingCount returns the value that was added to the "following_count" field in this mutation.
+func (m *EventMutation) AddedFollowingCount() (r int, exists bool) {
+	v := m.addfollowing_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetFollowingCount resets all changes to the "following_count" field.
+func (m *EventMutation) ResetFollowingCount() {
+	m.following_count = nil
+	m.addfollowing_count = nil
+}
+
+// SetLikesCount sets the "likes_count" field.
+func (m *EventMutation) SetLikesCount(i int) {
+	m.likes_count = &i
+	m.addlikes_count = nil
+}
+
+// LikesCount returns the value of the "likes_count" field in the mutation.
+func (m *EventMutation) LikesCount() (r int, exists bool) {
+	v := m.likes_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLikesCount returns the old "likes_count" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldLikesCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLikesCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLikesCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLikesCount: %w", err)
+	}
+	return oldValue.LikesCount, nil
+}
+
+// AddLikesCount adds i to the "likes_count" field.
+func (m *EventMutation) AddLikesCount(i int) {
+	if m.addlikes_count != nil {
+		*m.addlikes_count += i
+	} else {
+		m.addlikes_count = &i
+	}
+}
+
+// AddedLikesCount returns the value that was added to the "likes_count" field in this mutation.
+func (m *EventMutation) AddedLikesCount() (r int, exists bool) {
+	v := m.addlikes_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetLikesCount resets all changes to the "likes_count" field.
+func (m *EventMutation) ResetLikesCount() {
+	m.likes_count = nil
+	m.addlikes_count = nil
+}
+
 // AddTicketIDs adds the "tickets" edge to the Ticket entity by ids.
 func (m *EventMutation) AddTicketIDs(ids ...string) {
 	if m.tickets == nil {
@@ -10554,7 +11250,7 @@ func (m *EventMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EventMutation) Fields() []string {
-	fields := make([]string, 0, 39)
+	fields := make([]string, 0, 42)
 	if m.name != nil {
 		fields = append(fields, event.FieldName)
 	}
@@ -10672,6 +11368,15 @@ func (m *EventMutation) Fields() []string {
 	if m.relevance_score != nil {
 		fields = append(fields, event.FieldRelevanceScore)
 	}
+	if m.followers_count != nil {
+		fields = append(fields, event.FieldFollowersCount)
+	}
+	if m.following_count != nil {
+		fields = append(fields, event.FieldFollowingCount)
+	}
+	if m.likes_count != nil {
+		fields = append(fields, event.FieldLikesCount)
+	}
 	return fields
 }
 
@@ -10758,6 +11463,12 @@ func (m *EventMutation) Field(name string) (ent.Value, bool) {
 		return m.SearchText()
 	case event.FieldRelevanceScore:
 		return m.RelevanceScore()
+	case event.FieldFollowersCount:
+		return m.FollowersCount()
+	case event.FieldFollowingCount:
+		return m.FollowingCount()
+	case event.FieldLikesCount:
+		return m.LikesCount()
 	}
 	return nil, false
 }
@@ -10845,6 +11556,12 @@ func (m *EventMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldSearchText(ctx)
 	case event.FieldRelevanceScore:
 		return m.OldRelevanceScore(ctx)
+	case event.FieldFollowersCount:
+		return m.OldFollowersCount(ctx)
+	case event.FieldFollowingCount:
+		return m.OldFollowingCount(ctx)
+	case event.FieldLikesCount:
+		return m.OldLikesCount(ctx)
 	}
 	return nil, fmt.Errorf("unknown Event field %s", name)
 }
@@ -11127,6 +11844,27 @@ func (m *EventMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetRelevanceScore(v)
 		return nil
+	case event.FieldFollowersCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFollowersCount(v)
+		return nil
+	case event.FieldFollowingCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFollowingCount(v)
+		return nil
+	case event.FieldLikesCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLikesCount(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Event field %s", name)
 }
@@ -11138,6 +11876,15 @@ func (m *EventMutation) AddedFields() []string {
 	if m.addrelevance_score != nil {
 		fields = append(fields, event.FieldRelevanceScore)
 	}
+	if m.addfollowers_count != nil {
+		fields = append(fields, event.FieldFollowersCount)
+	}
+	if m.addfollowing_count != nil {
+		fields = append(fields, event.FieldFollowingCount)
+	}
+	if m.addlikes_count != nil {
+		fields = append(fields, event.FieldLikesCount)
+	}
 	return fields
 }
 
@@ -11148,6 +11895,12 @@ func (m *EventMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
 	case event.FieldRelevanceScore:
 		return m.AddedRelevanceScore()
+	case event.FieldFollowersCount:
+		return m.AddedFollowersCount()
+	case event.FieldFollowingCount:
+		return m.AddedFollowingCount()
+	case event.FieldLikesCount:
+		return m.AddedLikesCount()
 	}
 	return nil, false
 }
@@ -11163,6 +11916,27 @@ func (m *EventMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddRelevanceScore(v)
+		return nil
+	case event.FieldFollowersCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddFollowersCount(v)
+		return nil
+	case event.FieldFollowingCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddFollowingCount(v)
+		return nil
+	case event.FieldLikesCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddLikesCount(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Event numeric field %s", name)
@@ -11532,6 +12306,15 @@ func (m *EventMutation) ResetField(name string) error {
 		return nil
 	case event.FieldRelevanceScore:
 		m.ResetRelevanceScore()
+		return nil
+	case event.FieldFollowersCount:
+		m.ResetFollowersCount()
+		return nil
+	case event.FieldFollowingCount:
+		m.ResetFollowingCount()
+		return nil
+	case event.FieldLikesCount:
+		m.ResetLikesCount()
 		return nil
 	}
 	return fmt.Errorf("unknown Event field %s", name)
@@ -15718,6 +16501,12 @@ type PlaceMutation struct {
 	search_text                *string
 	relevance_score            *float64
 	addrelevance_score         *float64
+	followers_count            *int
+	addfollowers_count         *int
+	following_count            *int
+	addfollowing_count         *int
+	likes_count                *int
+	addlikes_count             *int
 	clearedFields              map[string]struct{}
 	business                   *string
 	clearedbusiness            bool
@@ -17321,6 +18110,174 @@ func (m *PlaceMutation) ResetRelevanceScore() {
 	delete(m.clearedFields, place.FieldRelevanceScore)
 }
 
+// SetFollowersCount sets the "followers_count" field.
+func (m *PlaceMutation) SetFollowersCount(i int) {
+	m.followers_count = &i
+	m.addfollowers_count = nil
+}
+
+// FollowersCount returns the value of the "followers_count" field in the mutation.
+func (m *PlaceMutation) FollowersCount() (r int, exists bool) {
+	v := m.followers_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFollowersCount returns the old "followers_count" field's value of the Place entity.
+// If the Place object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceMutation) OldFollowersCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFollowersCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFollowersCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFollowersCount: %w", err)
+	}
+	return oldValue.FollowersCount, nil
+}
+
+// AddFollowersCount adds i to the "followers_count" field.
+func (m *PlaceMutation) AddFollowersCount(i int) {
+	if m.addfollowers_count != nil {
+		*m.addfollowers_count += i
+	} else {
+		m.addfollowers_count = &i
+	}
+}
+
+// AddedFollowersCount returns the value that was added to the "followers_count" field in this mutation.
+func (m *PlaceMutation) AddedFollowersCount() (r int, exists bool) {
+	v := m.addfollowers_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetFollowersCount resets all changes to the "followers_count" field.
+func (m *PlaceMutation) ResetFollowersCount() {
+	m.followers_count = nil
+	m.addfollowers_count = nil
+}
+
+// SetFollowingCount sets the "following_count" field.
+func (m *PlaceMutation) SetFollowingCount(i int) {
+	m.following_count = &i
+	m.addfollowing_count = nil
+}
+
+// FollowingCount returns the value of the "following_count" field in the mutation.
+func (m *PlaceMutation) FollowingCount() (r int, exists bool) {
+	v := m.following_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFollowingCount returns the old "following_count" field's value of the Place entity.
+// If the Place object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceMutation) OldFollowingCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFollowingCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFollowingCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFollowingCount: %w", err)
+	}
+	return oldValue.FollowingCount, nil
+}
+
+// AddFollowingCount adds i to the "following_count" field.
+func (m *PlaceMutation) AddFollowingCount(i int) {
+	if m.addfollowing_count != nil {
+		*m.addfollowing_count += i
+	} else {
+		m.addfollowing_count = &i
+	}
+}
+
+// AddedFollowingCount returns the value that was added to the "following_count" field in this mutation.
+func (m *PlaceMutation) AddedFollowingCount() (r int, exists bool) {
+	v := m.addfollowing_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetFollowingCount resets all changes to the "following_count" field.
+func (m *PlaceMutation) ResetFollowingCount() {
+	m.following_count = nil
+	m.addfollowing_count = nil
+}
+
+// SetLikesCount sets the "likes_count" field.
+func (m *PlaceMutation) SetLikesCount(i int) {
+	m.likes_count = &i
+	m.addlikes_count = nil
+}
+
+// LikesCount returns the value of the "likes_count" field in the mutation.
+func (m *PlaceMutation) LikesCount() (r int, exists bool) {
+	v := m.likes_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLikesCount returns the old "likes_count" field's value of the Place entity.
+// If the Place object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceMutation) OldLikesCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLikesCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLikesCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLikesCount: %w", err)
+	}
+	return oldValue.LikesCount, nil
+}
+
+// AddLikesCount adds i to the "likes_count" field.
+func (m *PlaceMutation) AddLikesCount(i int) {
+	if m.addlikes_count != nil {
+		*m.addlikes_count += i
+	} else {
+		m.addlikes_count = &i
+	}
+}
+
+// AddedLikesCount returns the value that was added to the "likes_count" field in this mutation.
+func (m *PlaceMutation) AddedLikesCount() (r int, exists bool) {
+	v := m.addlikes_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetLikesCount resets all changes to the "likes_count" field.
+func (m *PlaceMutation) ResetLikesCount() {
+	m.likes_count = nil
+	m.addlikes_count = nil
+}
+
 // SetBusinessID sets the "business" edge to the Business entity by id.
 func (m *PlaceMutation) SetBusinessID(id string) {
 	m.business = &id
@@ -18150,7 +19107,7 @@ func (m *PlaceMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PlaceMutation) Fields() []string {
-	fields := make([]string, 0, 28)
+	fields := make([]string, 0, 31)
 	if m.name != nil {
 		fields = append(fields, place.FieldName)
 	}
@@ -18235,6 +19192,15 @@ func (m *PlaceMutation) Fields() []string {
 	if m.relevance_score != nil {
 		fields = append(fields, place.FieldRelevanceScore)
 	}
+	if m.followers_count != nil {
+		fields = append(fields, place.FieldFollowersCount)
+	}
+	if m.following_count != nil {
+		fields = append(fields, place.FieldFollowingCount)
+	}
+	if m.likes_count != nil {
+		fields = append(fields, place.FieldLikesCount)
+	}
 	return fields
 }
 
@@ -18299,6 +19265,12 @@ func (m *PlaceMutation) Field(name string) (ent.Value, bool) {
 		return m.SearchText()
 	case place.FieldRelevanceScore:
 		return m.RelevanceScore()
+	case place.FieldFollowersCount:
+		return m.FollowersCount()
+	case place.FieldFollowingCount:
+		return m.FollowingCount()
+	case place.FieldLikesCount:
+		return m.LikesCount()
 	}
 	return nil, false
 }
@@ -18364,6 +19336,12 @@ func (m *PlaceMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldSearchText(ctx)
 	case place.FieldRelevanceScore:
 		return m.OldRelevanceScore(ctx)
+	case place.FieldFollowersCount:
+		return m.OldFollowersCount(ctx)
+	case place.FieldFollowingCount:
+		return m.OldFollowingCount(ctx)
+	case place.FieldLikesCount:
+		return m.OldLikesCount(ctx)
 	}
 	return nil, fmt.Errorf("unknown Place field %s", name)
 }
@@ -18569,6 +19547,27 @@ func (m *PlaceMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetRelevanceScore(v)
 		return nil
+	case place.FieldFollowersCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFollowersCount(v)
+		return nil
+	case place.FieldFollowingCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFollowingCount(v)
+		return nil
+	case place.FieldLikesCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLikesCount(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Place field %s", name)
 }
@@ -18583,6 +19582,15 @@ func (m *PlaceMutation) AddedFields() []string {
 	if m.addrelevance_score != nil {
 		fields = append(fields, place.FieldRelevanceScore)
 	}
+	if m.addfollowers_count != nil {
+		fields = append(fields, place.FieldFollowersCount)
+	}
+	if m.addfollowing_count != nil {
+		fields = append(fields, place.FieldFollowingCount)
+	}
+	if m.addlikes_count != nil {
+		fields = append(fields, place.FieldLikesCount)
+	}
 	return fields
 }
 
@@ -18595,6 +19603,12 @@ func (m *PlaceMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedSustainabilityScore()
 	case place.FieldRelevanceScore:
 		return m.AddedRelevanceScore()
+	case place.FieldFollowersCount:
+		return m.AddedFollowersCount()
+	case place.FieldFollowingCount:
+		return m.AddedFollowingCount()
+	case place.FieldLikesCount:
+		return m.AddedLikesCount()
 	}
 	return nil, false
 }
@@ -18617,6 +19631,27 @@ func (m *PlaceMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddRelevanceScore(v)
+		return nil
+	case place.FieldFollowersCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddFollowersCount(v)
+		return nil
+	case place.FieldFollowingCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddFollowingCount(v)
+		return nil
+	case place.FieldLikesCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddLikesCount(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Place numeric field %s", name)
@@ -18893,6 +19928,15 @@ func (m *PlaceMutation) ResetField(name string) error {
 		return nil
 	case place.FieldRelevanceScore:
 		m.ResetRelevanceScore()
+		return nil
+	case place.FieldFollowersCount:
+		m.ResetFollowersCount()
+		return nil
+	case place.FieldFollowingCount:
+		m.ResetFollowingCount()
+		return nil
+	case place.FieldLikesCount:
+		m.ResetLikesCount()
 		return nil
 	}
 	return fmt.Errorf("unknown Place field %s", name)
@@ -25262,6 +26306,16 @@ type UserMutation struct {
 	search_text                *string
 	relevance_score            *float64
 	addrelevance_score         *float64
+	followers_count            *int
+	addfollowers_count         *int
+	following_count            *int
+	addfollowing_count         *int
+	posts_count                *int
+	addposts_count             *int
+	reviews_count              *int
+	addreviews_count           *int
+	likes_count                *int
+	addlikes_count             *int
 	clearedFields              map[string]struct{}
 	userBusinesses             map[string]struct{}
 	removeduserBusinesses      map[string]struct{}
@@ -26208,6 +27262,286 @@ func (m *UserMutation) ResetRelevanceScore() {
 	m.relevance_score = nil
 	m.addrelevance_score = nil
 	delete(m.clearedFields, user.FieldRelevanceScore)
+}
+
+// SetFollowersCount sets the "followers_count" field.
+func (m *UserMutation) SetFollowersCount(i int) {
+	m.followers_count = &i
+	m.addfollowers_count = nil
+}
+
+// FollowersCount returns the value of the "followers_count" field in the mutation.
+func (m *UserMutation) FollowersCount() (r int, exists bool) {
+	v := m.followers_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFollowersCount returns the old "followers_count" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldFollowersCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFollowersCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFollowersCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFollowersCount: %w", err)
+	}
+	return oldValue.FollowersCount, nil
+}
+
+// AddFollowersCount adds i to the "followers_count" field.
+func (m *UserMutation) AddFollowersCount(i int) {
+	if m.addfollowers_count != nil {
+		*m.addfollowers_count += i
+	} else {
+		m.addfollowers_count = &i
+	}
+}
+
+// AddedFollowersCount returns the value that was added to the "followers_count" field in this mutation.
+func (m *UserMutation) AddedFollowersCount() (r int, exists bool) {
+	v := m.addfollowers_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetFollowersCount resets all changes to the "followers_count" field.
+func (m *UserMutation) ResetFollowersCount() {
+	m.followers_count = nil
+	m.addfollowers_count = nil
+}
+
+// SetFollowingCount sets the "following_count" field.
+func (m *UserMutation) SetFollowingCount(i int) {
+	m.following_count = &i
+	m.addfollowing_count = nil
+}
+
+// FollowingCount returns the value of the "following_count" field in the mutation.
+func (m *UserMutation) FollowingCount() (r int, exists bool) {
+	v := m.following_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFollowingCount returns the old "following_count" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldFollowingCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFollowingCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFollowingCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFollowingCount: %w", err)
+	}
+	return oldValue.FollowingCount, nil
+}
+
+// AddFollowingCount adds i to the "following_count" field.
+func (m *UserMutation) AddFollowingCount(i int) {
+	if m.addfollowing_count != nil {
+		*m.addfollowing_count += i
+	} else {
+		m.addfollowing_count = &i
+	}
+}
+
+// AddedFollowingCount returns the value that was added to the "following_count" field in this mutation.
+func (m *UserMutation) AddedFollowingCount() (r int, exists bool) {
+	v := m.addfollowing_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetFollowingCount resets all changes to the "following_count" field.
+func (m *UserMutation) ResetFollowingCount() {
+	m.following_count = nil
+	m.addfollowing_count = nil
+}
+
+// SetPostsCount sets the "posts_count" field.
+func (m *UserMutation) SetPostsCount(i int) {
+	m.posts_count = &i
+	m.addposts_count = nil
+}
+
+// PostsCount returns the value of the "posts_count" field in the mutation.
+func (m *UserMutation) PostsCount() (r int, exists bool) {
+	v := m.posts_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPostsCount returns the old "posts_count" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldPostsCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPostsCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPostsCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPostsCount: %w", err)
+	}
+	return oldValue.PostsCount, nil
+}
+
+// AddPostsCount adds i to the "posts_count" field.
+func (m *UserMutation) AddPostsCount(i int) {
+	if m.addposts_count != nil {
+		*m.addposts_count += i
+	} else {
+		m.addposts_count = &i
+	}
+}
+
+// AddedPostsCount returns the value that was added to the "posts_count" field in this mutation.
+func (m *UserMutation) AddedPostsCount() (r int, exists bool) {
+	v := m.addposts_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetPostsCount resets all changes to the "posts_count" field.
+func (m *UserMutation) ResetPostsCount() {
+	m.posts_count = nil
+	m.addposts_count = nil
+}
+
+// SetReviewsCount sets the "reviews_count" field.
+func (m *UserMutation) SetReviewsCount(i int) {
+	m.reviews_count = &i
+	m.addreviews_count = nil
+}
+
+// ReviewsCount returns the value of the "reviews_count" field in the mutation.
+func (m *UserMutation) ReviewsCount() (r int, exists bool) {
+	v := m.reviews_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldReviewsCount returns the old "reviews_count" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldReviewsCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldReviewsCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldReviewsCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldReviewsCount: %w", err)
+	}
+	return oldValue.ReviewsCount, nil
+}
+
+// AddReviewsCount adds i to the "reviews_count" field.
+func (m *UserMutation) AddReviewsCount(i int) {
+	if m.addreviews_count != nil {
+		*m.addreviews_count += i
+	} else {
+		m.addreviews_count = &i
+	}
+}
+
+// AddedReviewsCount returns the value that was added to the "reviews_count" field in this mutation.
+func (m *UserMutation) AddedReviewsCount() (r int, exists bool) {
+	v := m.addreviews_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetReviewsCount resets all changes to the "reviews_count" field.
+func (m *UserMutation) ResetReviewsCount() {
+	m.reviews_count = nil
+	m.addreviews_count = nil
+}
+
+// SetLikesCount sets the "likes_count" field.
+func (m *UserMutation) SetLikesCount(i int) {
+	m.likes_count = &i
+	m.addlikes_count = nil
+}
+
+// LikesCount returns the value of the "likes_count" field in the mutation.
+func (m *UserMutation) LikesCount() (r int, exists bool) {
+	v := m.likes_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLikesCount returns the old "likes_count" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldLikesCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLikesCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLikesCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLikesCount: %w", err)
+	}
+	return oldValue.LikesCount, nil
+}
+
+// AddLikesCount adds i to the "likes_count" field.
+func (m *UserMutation) AddLikesCount(i int) {
+	if m.addlikes_count != nil {
+		*m.addlikes_count += i
+	} else {
+		m.addlikes_count = &i
+	}
+}
+
+// AddedLikesCount returns the value that was added to the "likes_count" field in this mutation.
+func (m *UserMutation) AddedLikesCount() (r int, exists bool) {
+	v := m.addlikes_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetLikesCount resets all changes to the "likes_count" field.
+func (m *UserMutation) ResetLikesCount() {
+	m.likes_count = nil
+	m.addlikes_count = nil
 }
 
 // AddUserBusinessIDs adds the "userBusinesses" edge to the UserBusiness entity by ids.
@@ -27309,7 +28643,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 16)
+	fields := make([]string, 0, 21)
 	if m.auth0_id != nil {
 		fields = append(fields, user.FieldAuth0ID)
 	}
@@ -27358,6 +28692,21 @@ func (m *UserMutation) Fields() []string {
 	if m.relevance_score != nil {
 		fields = append(fields, user.FieldRelevanceScore)
 	}
+	if m.followers_count != nil {
+		fields = append(fields, user.FieldFollowersCount)
+	}
+	if m.following_count != nil {
+		fields = append(fields, user.FieldFollowingCount)
+	}
+	if m.posts_count != nil {
+		fields = append(fields, user.FieldPostsCount)
+	}
+	if m.reviews_count != nil {
+		fields = append(fields, user.FieldReviewsCount)
+	}
+	if m.likes_count != nil {
+		fields = append(fields, user.FieldLikesCount)
+	}
 	return fields
 }
 
@@ -27398,6 +28747,16 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.SearchText()
 	case user.FieldRelevanceScore:
 		return m.RelevanceScore()
+	case user.FieldFollowersCount:
+		return m.FollowersCount()
+	case user.FieldFollowingCount:
+		return m.FollowingCount()
+	case user.FieldPostsCount:
+		return m.PostsCount()
+	case user.FieldReviewsCount:
+		return m.ReviewsCount()
+	case user.FieldLikesCount:
+		return m.LikesCount()
 	}
 	return nil, false
 }
@@ -27439,6 +28798,16 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldSearchText(ctx)
 	case user.FieldRelevanceScore:
 		return m.OldRelevanceScore(ctx)
+	case user.FieldFollowersCount:
+		return m.OldFollowersCount(ctx)
+	case user.FieldFollowingCount:
+		return m.OldFollowingCount(ctx)
+	case user.FieldPostsCount:
+		return m.OldPostsCount(ctx)
+	case user.FieldReviewsCount:
+		return m.OldReviewsCount(ctx)
+	case user.FieldLikesCount:
+		return m.OldLikesCount(ctx)
 	}
 	return nil, fmt.Errorf("unknown User field %s", name)
 }
@@ -27560,6 +28929,41 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetRelevanceScore(v)
 		return nil
+	case user.FieldFollowersCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFollowersCount(v)
+		return nil
+	case user.FieldFollowingCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFollowingCount(v)
+		return nil
+	case user.FieldPostsCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPostsCount(v)
+		return nil
+	case user.FieldReviewsCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetReviewsCount(v)
+		return nil
+	case user.FieldLikesCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLikesCount(v)
+		return nil
 	}
 	return fmt.Errorf("unknown User field %s", name)
 }
@@ -27571,6 +28975,21 @@ func (m *UserMutation) AddedFields() []string {
 	if m.addrelevance_score != nil {
 		fields = append(fields, user.FieldRelevanceScore)
 	}
+	if m.addfollowers_count != nil {
+		fields = append(fields, user.FieldFollowersCount)
+	}
+	if m.addfollowing_count != nil {
+		fields = append(fields, user.FieldFollowingCount)
+	}
+	if m.addposts_count != nil {
+		fields = append(fields, user.FieldPostsCount)
+	}
+	if m.addreviews_count != nil {
+		fields = append(fields, user.FieldReviewsCount)
+	}
+	if m.addlikes_count != nil {
+		fields = append(fields, user.FieldLikesCount)
+	}
 	return fields
 }
 
@@ -27581,6 +29000,16 @@ func (m *UserMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
 	case user.FieldRelevanceScore:
 		return m.AddedRelevanceScore()
+	case user.FieldFollowersCount:
+		return m.AddedFollowersCount()
+	case user.FieldFollowingCount:
+		return m.AddedFollowingCount()
+	case user.FieldPostsCount:
+		return m.AddedPostsCount()
+	case user.FieldReviewsCount:
+		return m.AddedReviewsCount()
+	case user.FieldLikesCount:
+		return m.AddedLikesCount()
 	}
 	return nil, false
 }
@@ -27596,6 +29025,41 @@ func (m *UserMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddRelevanceScore(v)
+		return nil
+	case user.FieldFollowersCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddFollowersCount(v)
+		return nil
+	case user.FieldFollowingCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddFollowingCount(v)
+		return nil
+	case user.FieldPostsCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddPostsCount(v)
+		return nil
+	case user.FieldReviewsCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddReviewsCount(v)
+		return nil
+	case user.FieldLikesCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddLikesCount(v)
 		return nil
 	}
 	return fmt.Errorf("unknown User numeric field %s", name)
@@ -27758,6 +29222,21 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldRelevanceScore:
 		m.ResetRelevanceScore()
+		return nil
+	case user.FieldFollowersCount:
+		m.ResetFollowersCount()
+		return nil
+	case user.FieldFollowingCount:
+		m.ResetFollowingCount()
+		return nil
+	case user.FieldPostsCount:
+		m.ResetPostsCount()
+		return nil
+	case user.FieldReviewsCount:
+		m.ResetReviewsCount()
+		return nil
+	case user.FieldLikesCount:
+		m.ResetLikesCount()
 		return nil
 	}
 	return fmt.Errorf("unknown User field %s", name)

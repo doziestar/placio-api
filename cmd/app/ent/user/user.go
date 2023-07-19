@@ -45,6 +45,16 @@ const (
 	FieldSearchText = "search_text"
 	// FieldRelevanceScore holds the string denoting the relevance_score field in the database.
 	FieldRelevanceScore = "relevance_score"
+	// FieldFollowersCount holds the string denoting the followers_count field in the database.
+	FieldFollowersCount = "followers_count"
+	// FieldFollowingCount holds the string denoting the following_count field in the database.
+	FieldFollowingCount = "following_count"
+	// FieldPostsCount holds the string denoting the posts_count field in the database.
+	FieldPostsCount = "posts_count"
+	// FieldReviewsCount holds the string denoting the reviews_count field in the database.
+	FieldReviewsCount = "reviews_count"
+	// FieldLikesCount holds the string denoting the likes_count field in the database.
+	FieldLikesCount = "likes_count"
 	// EdgeUserBusinesses holds the string denoting the userbusinesses edge name in mutations.
 	EdgeUserBusinesses = "userBusinesses"
 	// EdgeComments holds the string denoting the comments edge name in mutations.
@@ -246,6 +256,11 @@ var Columns = []string{
 	FieldUserSettings,
 	FieldSearchText,
 	FieldRelevanceScore,
+	FieldFollowersCount,
+	FieldFollowingCount,
+	FieldPostsCount,
+	FieldReviewsCount,
+	FieldLikesCount,
 }
 
 var (
@@ -275,6 +290,16 @@ var (
 	DefaultCoverImage string
 	// DefaultBio holds the default value on creation for the "bio" field.
 	DefaultBio string
+	// DefaultFollowersCount holds the default value on creation for the "followers_count" field.
+	DefaultFollowersCount int
+	// DefaultFollowingCount holds the default value on creation for the "following_count" field.
+	DefaultFollowingCount int
+	// DefaultPostsCount holds the default value on creation for the "posts_count" field.
+	DefaultPostsCount int
+	// DefaultReviewsCount holds the default value on creation for the "reviews_count" field.
+	DefaultReviewsCount int
+	// DefaultLikesCount holds the default value on creation for the "likes_count" field.
+	DefaultLikesCount int
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(string) error
 )
@@ -345,6 +370,31 @@ func BySearchText(opts ...sql.OrderTermOption) OrderOption {
 // ByRelevanceScore orders the results by the relevance_score field.
 func ByRelevanceScore(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRelevanceScore, opts...).ToFunc()
+}
+
+// ByFollowersCount orders the results by the followers_count field.
+func ByFollowersCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFollowersCount, opts...).ToFunc()
+}
+
+// ByFollowingCount orders the results by the following_count field.
+func ByFollowingCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFollowingCount, opts...).ToFunc()
+}
+
+// ByPostsCount orders the results by the posts_count field.
+func ByPostsCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPostsCount, opts...).ToFunc()
+}
+
+// ByReviewsCount orders the results by the reviews_count field.
+func ByReviewsCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldReviewsCount, opts...).ToFunc()
+}
+
+// ByLikesCount orders the results by the likes_count field.
+func ByLikesCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLikesCount, opts...).ToFunc()
 }
 
 // ByUserBusinessesCount orders the results by userBusinesses count.

@@ -66,6 +66,30 @@ func init() {
 	businessDescCoverImage := businessFields[4].Descriptor()
 	// business.DefaultCoverImage holds the default value on creation for the cover_image field.
 	business.DefaultCoverImage = businessDescCoverImage.Default.(string)
+	// businessDescFollowersCount is the schema descriptor for followers_count field.
+	businessDescFollowersCount := businessFields[16].Descriptor()
+	// business.DefaultFollowersCount holds the default value on creation for the followers_count field.
+	business.DefaultFollowersCount = businessDescFollowersCount.Default.(int)
+	// businessDescFollowingCount is the schema descriptor for following_count field.
+	businessDescFollowingCount := businessFields[17].Descriptor()
+	// business.DefaultFollowingCount holds the default value on creation for the following_count field.
+	business.DefaultFollowingCount = businessDescFollowingCount.Default.(int)
+	// businessDescLikesCount is the schema descriptor for likes_count field.
+	businessDescLikesCount := businessFields[18].Descriptor()
+	// business.DefaultLikesCount holds the default value on creation for the likes_count field.
+	business.DefaultLikesCount = businessDescLikesCount.Default.(int)
+	// businessDescPostsCount is the schema descriptor for posts_count field.
+	businessDescPostsCount := businessFields[19].Descriptor()
+	// business.DefaultPostsCount holds the default value on creation for the posts_count field.
+	business.DefaultPostsCount = businessDescPostsCount.Default.(int)
+	// businessDescEventsCount is the schema descriptor for events_count field.
+	businessDescEventsCount := businessFields[20].Descriptor()
+	// business.DefaultEventsCount holds the default value on creation for the events_count field.
+	business.DefaultEventsCount = businessDescEventsCount.Default.(int)
+	// businessDescPlacesCount is the schema descriptor for places_count field.
+	businessDescPlacesCount := businessFields[21].Descriptor()
+	// business.DefaultPlacesCount holds the default value on creation for the places_count field.
+	business.DefaultPlacesCount = businessDescPlacesCount.Default.(int)
 	// businessDescID is the schema descriptor for id field.
 	businessDescID := businessFields[0].Descriptor()
 	// business.IDValidator is a validator for the "id" field. It is called by the builders before save.
@@ -144,6 +168,18 @@ func init() {
 	event.DefaultUpdatedAt = eventDescUpdatedAt.Default.(func() time.Time)
 	// event.UpdateDefaultUpdatedAt holds the default value on update for the updatedAt field.
 	event.UpdateDefaultUpdatedAt = eventDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// eventDescFollowersCount is the schema descriptor for followers_count field.
+	eventDescFollowersCount := eventFields[40].Descriptor()
+	// event.DefaultFollowersCount holds the default value on creation for the followers_count field.
+	event.DefaultFollowersCount = eventDescFollowersCount.Default.(int)
+	// eventDescFollowingCount is the schema descriptor for following_count field.
+	eventDescFollowingCount := eventFields[41].Descriptor()
+	// event.DefaultFollowingCount holds the default value on creation for the following_count field.
+	event.DefaultFollowingCount = eventDescFollowingCount.Default.(int)
+	// eventDescLikesCount is the schema descriptor for likes_count field.
+	eventDescLikesCount := eventFields[42].Descriptor()
+	// event.DefaultLikesCount holds the default value on creation for the likes_count field.
+	event.DefaultLikesCount = eventDescLikesCount.Default.(int)
 	helpFields := schema.Help{}.Fields()
 	_ = helpFields
 	// helpDescStatus is the schema descriptor for status field.
@@ -206,6 +242,18 @@ func init() {
 	placeDescCoverImage := placeFields[8].Descriptor()
 	// place.DefaultCoverImage holds the default value on creation for the cover_image field.
 	place.DefaultCoverImage = placeDescCoverImage.Default.(string)
+	// placeDescFollowersCount is the schema descriptor for followers_count field.
+	placeDescFollowersCount := placeFields[29].Descriptor()
+	// place.DefaultFollowersCount holds the default value on creation for the followers_count field.
+	place.DefaultFollowersCount = placeDescFollowersCount.Default.(int)
+	// placeDescFollowingCount is the schema descriptor for following_count field.
+	placeDescFollowingCount := placeFields[30].Descriptor()
+	// place.DefaultFollowingCount holds the default value on creation for the following_count field.
+	place.DefaultFollowingCount = placeDescFollowingCount.Default.(int)
+	// placeDescLikesCount is the schema descriptor for likes_count field.
+	placeDescLikesCount := placeFields[31].Descriptor()
+	// place.DefaultLikesCount holds the default value on creation for the likes_count field.
+	place.DefaultLikesCount = placeDescLikesCount.Default.(int)
 	// placeDescID is the schema descriptor for id field.
 	placeDescID := placeFields[0].Descriptor()
 	// place.IDValidator is a validator for the "id" field. It is called by the builders before save.
@@ -340,6 +388,26 @@ func init() {
 	userDescBio := userFields[11].Descriptor()
 	// user.DefaultBio holds the default value on creation for the bio field.
 	user.DefaultBio = userDescBio.Default.(string)
+	// userDescFollowersCount is the schema descriptor for followers_count field.
+	userDescFollowersCount := userFields[17].Descriptor()
+	// user.DefaultFollowersCount holds the default value on creation for the followers_count field.
+	user.DefaultFollowersCount = userDescFollowersCount.Default.(int)
+	// userDescFollowingCount is the schema descriptor for following_count field.
+	userDescFollowingCount := userFields[18].Descriptor()
+	// user.DefaultFollowingCount holds the default value on creation for the following_count field.
+	user.DefaultFollowingCount = userDescFollowingCount.Default.(int)
+	// userDescPostsCount is the schema descriptor for posts_count field.
+	userDescPostsCount := userFields[19].Descriptor()
+	// user.DefaultPostsCount holds the default value on creation for the posts_count field.
+	user.DefaultPostsCount = userDescPostsCount.Default.(int)
+	// userDescReviewsCount is the schema descriptor for reviews_count field.
+	userDescReviewsCount := userFields[20].Descriptor()
+	// user.DefaultReviewsCount holds the default value on creation for the reviews_count field.
+	user.DefaultReviewsCount = userDescReviewsCount.Default.(int)
+	// userDescLikesCount is the schema descriptor for likes_count field.
+	userDescLikesCount := userFields[21].Descriptor()
+	// user.DefaultLikesCount holds the default value on creation for the likes_count field.
+	user.DefaultLikesCount = userDescLikesCount.Default.(int)
 	// userDescID is the schema descriptor for id field.
 	userDescID := userFields[0].Descriptor()
 	// user.IDValidator is a validator for the "id" field. It is called by the builders before save.

@@ -673,12 +673,24 @@ definitions:
       email:
         description: Email holds the value of the "email" field.
         type: string
+      events_count:
+        description: EventsCount holds the value of the "events_count" field.
+        type: integer
+      followers_count:
+        description: FollowersCount holds the value of the "followers_count" field.
+        type: integer
+      following_count:
+        description: FollowingCount holds the value of the "following_count" field.
+        type: integer
       id:
         description: ID of the ent.
         type: string
       latitude:
         description: Latitude holds the value of the "latitude" field.
         type: string
+      likes_count:
+        description: LikesCount holds the value of the "likes_count" field.
+        type: integer
       location:
         description: Location holds the value of the "location" field.
         type: string
@@ -698,6 +710,12 @@ definitions:
       picture:
         description: Picture holds the value of the "picture" field.
         type: string
+      places_count:
+        description: PlacesCount holds the value of the "places_count" field.
+        type: integer
+      posts_count:
+        description: PostsCount holds the value of the "posts_count" field.
+        type: integer
       relevance_score:
         description: RelevanceScore holds the value of the "relevance_score" field.
         type: number
@@ -1005,6 +1023,12 @@ definitions:
         additionalProperties: true
         description: EventSettings holds the value of the "event_settings" field.
         type: object
+      followers_count:
+        description: FollowersCount holds the value of the "followers_count" field.
+        type: integer
+      following_count:
+        description: FollowingCount holds the value of the "following_count" field.
+        type: integer
       frequency:
         allOf:
         - $ref: '#/definitions/placio-app_ent_event.Frequency'
@@ -1031,6 +1055,9 @@ definitions:
       latitude:
         description: Latitude holds the value of the "latitude" field.
         type: string
+      likes_count:
+        description: LikesCount holds the value of the "likes_count" field.
+        type: integer
       location:
         description: Location holds the value of the "location" field.
         type: string
@@ -1387,6 +1414,12 @@ definitions:
         items:
           type: string
         type: array
+      followers_count:
+        description: FollowersCount holds the value of the "followers_count" field.
+        type: integer
+      following_count:
+        description: FollowingCount holds the value of the "following_count" field.
+        type: integer
       id:
         description: ID of the ent.
         type: string
@@ -1398,6 +1431,9 @@ definitions:
       latitude:
         description: Latitude holds the value of the "latitude" field.
         type: string
+      likes_count:
+        description: LikesCount holds the value of the "likes_count" field.
+        type: integer
       location:
         description: Location holds the value of the "location" field.
         type: string
@@ -1856,12 +1892,21 @@ definitions:
         description: |-
           Edges holds the relations/edges for other nodes in the graph.
           The values are being populated by the UserQuery when eager-loading is set.
+      followers_count:
+        description: FollowersCount holds the value of the "followers_count" field.
+        type: integer
+      following_count:
+        description: FollowingCount holds the value of the "following_count" field.
+        type: integer
       id:
         description: ID of the ent.
         type: string
       latitude:
         description: Latitude holds the value of the "latitude" field.
         type: string
+      likes_count:
+        description: LikesCount holds the value of the "likes_count" field.
+        type: integer
       location:
         description: Location holds the value of the "location" field.
         type: string
@@ -1878,9 +1923,15 @@ definitions:
       picture:
         description: Picture holds the value of the "picture" field.
         type: string
+      posts_count:
+        description: PostsCount holds the value of the "posts_count" field.
+        type: integer
       relevance_score:
         description: RelevanceScore holds the value of the "relevance_score" field.
         type: number
+      reviews_count:
+        description: ReviewsCount holds the value of the "reviews_count" field.
+        type: integer
       search_text:
         description: SearchText holds the value of the "search_text" field.
         type: string

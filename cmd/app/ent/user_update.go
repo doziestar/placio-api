@@ -313,6 +313,111 @@ func (uu *UserUpdate) ClearRelevanceScore() *UserUpdate {
 	return uu
 }
 
+// SetFollowersCount sets the "followers_count" field.
+func (uu *UserUpdate) SetFollowersCount(i int) *UserUpdate {
+	uu.mutation.ResetFollowersCount()
+	uu.mutation.SetFollowersCount(i)
+	return uu
+}
+
+// SetNillableFollowersCount sets the "followers_count" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableFollowersCount(i *int) *UserUpdate {
+	if i != nil {
+		uu.SetFollowersCount(*i)
+	}
+	return uu
+}
+
+// AddFollowersCount adds i to the "followers_count" field.
+func (uu *UserUpdate) AddFollowersCount(i int) *UserUpdate {
+	uu.mutation.AddFollowersCount(i)
+	return uu
+}
+
+// SetFollowingCount sets the "following_count" field.
+func (uu *UserUpdate) SetFollowingCount(i int) *UserUpdate {
+	uu.mutation.ResetFollowingCount()
+	uu.mutation.SetFollowingCount(i)
+	return uu
+}
+
+// SetNillableFollowingCount sets the "following_count" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableFollowingCount(i *int) *UserUpdate {
+	if i != nil {
+		uu.SetFollowingCount(*i)
+	}
+	return uu
+}
+
+// AddFollowingCount adds i to the "following_count" field.
+func (uu *UserUpdate) AddFollowingCount(i int) *UserUpdate {
+	uu.mutation.AddFollowingCount(i)
+	return uu
+}
+
+// SetPostsCount sets the "posts_count" field.
+func (uu *UserUpdate) SetPostsCount(i int) *UserUpdate {
+	uu.mutation.ResetPostsCount()
+	uu.mutation.SetPostsCount(i)
+	return uu
+}
+
+// SetNillablePostsCount sets the "posts_count" field if the given value is not nil.
+func (uu *UserUpdate) SetNillablePostsCount(i *int) *UserUpdate {
+	if i != nil {
+		uu.SetPostsCount(*i)
+	}
+	return uu
+}
+
+// AddPostsCount adds i to the "posts_count" field.
+func (uu *UserUpdate) AddPostsCount(i int) *UserUpdate {
+	uu.mutation.AddPostsCount(i)
+	return uu
+}
+
+// SetReviewsCount sets the "reviews_count" field.
+func (uu *UserUpdate) SetReviewsCount(i int) *UserUpdate {
+	uu.mutation.ResetReviewsCount()
+	uu.mutation.SetReviewsCount(i)
+	return uu
+}
+
+// SetNillableReviewsCount sets the "reviews_count" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableReviewsCount(i *int) *UserUpdate {
+	if i != nil {
+		uu.SetReviewsCount(*i)
+	}
+	return uu
+}
+
+// AddReviewsCount adds i to the "reviews_count" field.
+func (uu *UserUpdate) AddReviewsCount(i int) *UserUpdate {
+	uu.mutation.AddReviewsCount(i)
+	return uu
+}
+
+// SetLikesCount sets the "likes_count" field.
+func (uu *UserUpdate) SetLikesCount(i int) *UserUpdate {
+	uu.mutation.ResetLikesCount()
+	uu.mutation.SetLikesCount(i)
+	return uu
+}
+
+// SetNillableLikesCount sets the "likes_count" field if the given value is not nil.
+func (uu *UserUpdate) SetNillableLikesCount(i *int) *UserUpdate {
+	if i != nil {
+		uu.SetLikesCount(*i)
+	}
+	return uu
+}
+
+// AddLikesCount adds i to the "likes_count" field.
+func (uu *UserUpdate) AddLikesCount(i int) *UserUpdate {
+	uu.mutation.AddLikesCount(i)
+	return uu
+}
+
 // AddUserBusinessIDs adds the "userBusinesses" edge to the UserBusiness entity by IDs.
 func (uu *UserUpdate) AddUserBusinessIDs(ids ...string) *UserUpdate {
 	uu.mutation.AddUserBusinessIDs(ids...)
@@ -1119,6 +1224,36 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if uu.mutation.RelevanceScoreCleared() {
 		_spec.ClearField(user.FieldRelevanceScore, field.TypeFloat64)
+	}
+	if value, ok := uu.mutation.FollowersCount(); ok {
+		_spec.SetField(user.FieldFollowersCount, field.TypeInt, value)
+	}
+	if value, ok := uu.mutation.AddedFollowersCount(); ok {
+		_spec.AddField(user.FieldFollowersCount, field.TypeInt, value)
+	}
+	if value, ok := uu.mutation.FollowingCount(); ok {
+		_spec.SetField(user.FieldFollowingCount, field.TypeInt, value)
+	}
+	if value, ok := uu.mutation.AddedFollowingCount(); ok {
+		_spec.AddField(user.FieldFollowingCount, field.TypeInt, value)
+	}
+	if value, ok := uu.mutation.PostsCount(); ok {
+		_spec.SetField(user.FieldPostsCount, field.TypeInt, value)
+	}
+	if value, ok := uu.mutation.AddedPostsCount(); ok {
+		_spec.AddField(user.FieldPostsCount, field.TypeInt, value)
+	}
+	if value, ok := uu.mutation.ReviewsCount(); ok {
+		_spec.SetField(user.FieldReviewsCount, field.TypeInt, value)
+	}
+	if value, ok := uu.mutation.AddedReviewsCount(); ok {
+		_spec.AddField(user.FieldReviewsCount, field.TypeInt, value)
+	}
+	if value, ok := uu.mutation.LikesCount(); ok {
+		_spec.SetField(user.FieldLikesCount, field.TypeInt, value)
+	}
+	if value, ok := uu.mutation.AddedLikesCount(); ok {
+		_spec.AddField(user.FieldLikesCount, field.TypeInt, value)
 	}
 	if uu.mutation.UserBusinessesCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -2246,6 +2381,111 @@ func (uuo *UserUpdateOne) ClearRelevanceScore() *UserUpdateOne {
 	return uuo
 }
 
+// SetFollowersCount sets the "followers_count" field.
+func (uuo *UserUpdateOne) SetFollowersCount(i int) *UserUpdateOne {
+	uuo.mutation.ResetFollowersCount()
+	uuo.mutation.SetFollowersCount(i)
+	return uuo
+}
+
+// SetNillableFollowersCount sets the "followers_count" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableFollowersCount(i *int) *UserUpdateOne {
+	if i != nil {
+		uuo.SetFollowersCount(*i)
+	}
+	return uuo
+}
+
+// AddFollowersCount adds i to the "followers_count" field.
+func (uuo *UserUpdateOne) AddFollowersCount(i int) *UserUpdateOne {
+	uuo.mutation.AddFollowersCount(i)
+	return uuo
+}
+
+// SetFollowingCount sets the "following_count" field.
+func (uuo *UserUpdateOne) SetFollowingCount(i int) *UserUpdateOne {
+	uuo.mutation.ResetFollowingCount()
+	uuo.mutation.SetFollowingCount(i)
+	return uuo
+}
+
+// SetNillableFollowingCount sets the "following_count" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableFollowingCount(i *int) *UserUpdateOne {
+	if i != nil {
+		uuo.SetFollowingCount(*i)
+	}
+	return uuo
+}
+
+// AddFollowingCount adds i to the "following_count" field.
+func (uuo *UserUpdateOne) AddFollowingCount(i int) *UserUpdateOne {
+	uuo.mutation.AddFollowingCount(i)
+	return uuo
+}
+
+// SetPostsCount sets the "posts_count" field.
+func (uuo *UserUpdateOne) SetPostsCount(i int) *UserUpdateOne {
+	uuo.mutation.ResetPostsCount()
+	uuo.mutation.SetPostsCount(i)
+	return uuo
+}
+
+// SetNillablePostsCount sets the "posts_count" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillablePostsCount(i *int) *UserUpdateOne {
+	if i != nil {
+		uuo.SetPostsCount(*i)
+	}
+	return uuo
+}
+
+// AddPostsCount adds i to the "posts_count" field.
+func (uuo *UserUpdateOne) AddPostsCount(i int) *UserUpdateOne {
+	uuo.mutation.AddPostsCount(i)
+	return uuo
+}
+
+// SetReviewsCount sets the "reviews_count" field.
+func (uuo *UserUpdateOne) SetReviewsCount(i int) *UserUpdateOne {
+	uuo.mutation.ResetReviewsCount()
+	uuo.mutation.SetReviewsCount(i)
+	return uuo
+}
+
+// SetNillableReviewsCount sets the "reviews_count" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableReviewsCount(i *int) *UserUpdateOne {
+	if i != nil {
+		uuo.SetReviewsCount(*i)
+	}
+	return uuo
+}
+
+// AddReviewsCount adds i to the "reviews_count" field.
+func (uuo *UserUpdateOne) AddReviewsCount(i int) *UserUpdateOne {
+	uuo.mutation.AddReviewsCount(i)
+	return uuo
+}
+
+// SetLikesCount sets the "likes_count" field.
+func (uuo *UserUpdateOne) SetLikesCount(i int) *UserUpdateOne {
+	uuo.mutation.ResetLikesCount()
+	uuo.mutation.SetLikesCount(i)
+	return uuo
+}
+
+// SetNillableLikesCount sets the "likes_count" field if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableLikesCount(i *int) *UserUpdateOne {
+	if i != nil {
+		uuo.SetLikesCount(*i)
+	}
+	return uuo
+}
+
+// AddLikesCount adds i to the "likes_count" field.
+func (uuo *UserUpdateOne) AddLikesCount(i int) *UserUpdateOne {
+	uuo.mutation.AddLikesCount(i)
+	return uuo
+}
+
 // AddUserBusinessIDs adds the "userBusinesses" edge to the UserBusiness entity by IDs.
 func (uuo *UserUpdateOne) AddUserBusinessIDs(ids ...string) *UserUpdateOne {
 	uuo.mutation.AddUserBusinessIDs(ids...)
@@ -3082,6 +3322,36 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if uuo.mutation.RelevanceScoreCleared() {
 		_spec.ClearField(user.FieldRelevanceScore, field.TypeFloat64)
+	}
+	if value, ok := uuo.mutation.FollowersCount(); ok {
+		_spec.SetField(user.FieldFollowersCount, field.TypeInt, value)
+	}
+	if value, ok := uuo.mutation.AddedFollowersCount(); ok {
+		_spec.AddField(user.FieldFollowersCount, field.TypeInt, value)
+	}
+	if value, ok := uuo.mutation.FollowingCount(); ok {
+		_spec.SetField(user.FieldFollowingCount, field.TypeInt, value)
+	}
+	if value, ok := uuo.mutation.AddedFollowingCount(); ok {
+		_spec.AddField(user.FieldFollowingCount, field.TypeInt, value)
+	}
+	if value, ok := uuo.mutation.PostsCount(); ok {
+		_spec.SetField(user.FieldPostsCount, field.TypeInt, value)
+	}
+	if value, ok := uuo.mutation.AddedPostsCount(); ok {
+		_spec.AddField(user.FieldPostsCount, field.TypeInt, value)
+	}
+	if value, ok := uuo.mutation.ReviewsCount(); ok {
+		_spec.SetField(user.FieldReviewsCount, field.TypeInt, value)
+	}
+	if value, ok := uuo.mutation.AddedReviewsCount(); ok {
+		_spec.AddField(user.FieldReviewsCount, field.TypeInt, value)
+	}
+	if value, ok := uuo.mutation.LikesCount(); ok {
+		_spec.SetField(user.FieldLikesCount, field.TypeInt, value)
+	}
+	if value, ok := uuo.mutation.AddedLikesCount(); ok {
+		_spec.AddField(user.FieldLikesCount, field.TypeInt, value)
 	}
 	if uuo.mutation.UserBusinessesCleared() {
 		edge := &sqlgraph.EdgeSpec{

@@ -9259,6 +9259,18 @@ const docTemplate = `{
                     "description": "Email holds the value of the \"email\" field.",
                     "type": "string"
                 },
+                "events_count": {
+                    "description": "EventsCount holds the value of the \"events_count\" field.",
+                    "type": "integer"
+                },
+                "followers_count": {
+                    "description": "FollowersCount holds the value of the \"followers_count\" field.",
+                    "type": "integer"
+                },
+                "following_count": {
+                    "description": "FollowingCount holds the value of the \"following_count\" field.",
+                    "type": "integer"
+                },
                 "id": {
                     "description": "ID of the ent.",
                     "type": "string"
@@ -9266,6 +9278,10 @@ const docTemplate = `{
                 "latitude": {
                     "description": "Latitude holds the value of the \"latitude\" field.",
                     "type": "string"
+                },
+                "likes_count": {
+                    "description": "LikesCount holds the value of the \"likes_count\" field.",
+                    "type": "integer"
                 },
                 "location": {
                     "description": "Location holds the value of the \"location\" field.",
@@ -9291,6 +9307,14 @@ const docTemplate = `{
                 "picture": {
                     "description": "Picture holds the value of the \"picture\" field.",
                     "type": "string"
+                },
+                "places_count": {
+                    "description": "PlacesCount holds the value of the \"places_count\" field.",
+                    "type": "integer"
+                },
+                "posts_count": {
+                    "description": "PostsCount holds the value of the \"posts_count\" field.",
+                    "type": "integer"
                 },
                 "relevance_score": {
                     "description": "RelevanceScore holds the value of the \"relevance_score\" field.",
@@ -9749,6 +9773,14 @@ const docTemplate = `{
                     "type": "object",
                     "additionalProperties": true
                 },
+                "followers_count": {
+                    "description": "FollowersCount holds the value of the \"followers_count\" field.",
+                    "type": "integer"
+                },
+                "following_count": {
+                    "description": "FollowingCount holds the value of the \"following_count\" field.",
+                    "type": "integer"
+                },
                 "frequency": {
                     "description": "Frequency holds the value of the \"frequency\" field.",
                     "allOf": [
@@ -9780,6 +9812,10 @@ const docTemplate = `{
                 "latitude": {
                     "description": "Latitude holds the value of the \"latitude\" field.",
                     "type": "string"
+                },
+                "likes_count": {
+                    "description": "LikesCount holds the value of the \"likes_count\" field.",
+                    "type": "integer"
                 },
                 "location": {
                     "description": "Location holds the value of the \"location\" field.",
@@ -10302,6 +10338,14 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
+                "followers_count": {
+                    "description": "FollowersCount holds the value of the \"followers_count\" field.",
+                    "type": "integer"
+                },
+                "following_count": {
+                    "description": "FollowingCount holds the value of the \"following_count\" field.",
+                    "type": "integer"
+                },
                 "id": {
                     "description": "ID of the ent.",
                     "type": "string"
@@ -10316,6 +10360,10 @@ const docTemplate = `{
                 "latitude": {
                     "description": "Latitude holds the value of the \"latitude\" field.",
                     "type": "string"
+                },
+                "likes_count": {
+                    "description": "LikesCount holds the value of the \"likes_count\" field.",
+                    "type": "integer"
                 },
                 "location": {
                     "description": "Location holds the value of the \"location\" field.",
@@ -10995,6 +11043,14 @@ const docTemplate = `{
                         }
                     ]
                 },
+                "followers_count": {
+                    "description": "FollowersCount holds the value of the \"followers_count\" field.",
+                    "type": "integer"
+                },
+                "following_count": {
+                    "description": "FollowingCount holds the value of the \"following_count\" field.",
+                    "type": "integer"
+                },
                 "id": {
                     "description": "ID of the ent.",
                     "type": "string"
@@ -11002,6 +11058,10 @@ const docTemplate = `{
                 "latitude": {
                     "description": "Latitude holds the value of the \"latitude\" field.",
                     "type": "string"
+                },
+                "likes_count": {
+                    "description": "LikesCount holds the value of the \"likes_count\" field.",
+                    "type": "integer"
                 },
                 "location": {
                     "description": "Location holds the value of the \"location\" field.",
@@ -11024,9 +11084,17 @@ const docTemplate = `{
                     "description": "Picture holds the value of the \"picture\" field.",
                     "type": "string"
                 },
+                "posts_count": {
+                    "description": "PostsCount holds the value of the \"posts_count\" field.",
+                    "type": "integer"
+                },
                 "relevance_score": {
                     "description": "RelevanceScore holds the value of the \"relevance_score\" field.",
                     "type": "number"
+                },
+                "reviews_count": {
+                    "description": "ReviewsCount holds the value of the \"reviews_count\" field.",
+                    "type": "integer"
                 },
                 "search_text": {
                     "description": "SearchText holds the value of the \"search_text\" field.",

@@ -541,6 +541,69 @@ func (pu *PlaceUpdate) ClearRelevanceScore() *PlaceUpdate {
 	return pu
 }
 
+// SetFollowersCount sets the "followers_count" field.
+func (pu *PlaceUpdate) SetFollowersCount(i int) *PlaceUpdate {
+	pu.mutation.ResetFollowersCount()
+	pu.mutation.SetFollowersCount(i)
+	return pu
+}
+
+// SetNillableFollowersCount sets the "followers_count" field if the given value is not nil.
+func (pu *PlaceUpdate) SetNillableFollowersCount(i *int) *PlaceUpdate {
+	if i != nil {
+		pu.SetFollowersCount(*i)
+	}
+	return pu
+}
+
+// AddFollowersCount adds i to the "followers_count" field.
+func (pu *PlaceUpdate) AddFollowersCount(i int) *PlaceUpdate {
+	pu.mutation.AddFollowersCount(i)
+	return pu
+}
+
+// SetFollowingCount sets the "following_count" field.
+func (pu *PlaceUpdate) SetFollowingCount(i int) *PlaceUpdate {
+	pu.mutation.ResetFollowingCount()
+	pu.mutation.SetFollowingCount(i)
+	return pu
+}
+
+// SetNillableFollowingCount sets the "following_count" field if the given value is not nil.
+func (pu *PlaceUpdate) SetNillableFollowingCount(i *int) *PlaceUpdate {
+	if i != nil {
+		pu.SetFollowingCount(*i)
+	}
+	return pu
+}
+
+// AddFollowingCount adds i to the "following_count" field.
+func (pu *PlaceUpdate) AddFollowingCount(i int) *PlaceUpdate {
+	pu.mutation.AddFollowingCount(i)
+	return pu
+}
+
+// SetLikesCount sets the "likes_count" field.
+func (pu *PlaceUpdate) SetLikesCount(i int) *PlaceUpdate {
+	pu.mutation.ResetLikesCount()
+	pu.mutation.SetLikesCount(i)
+	return pu
+}
+
+// SetNillableLikesCount sets the "likes_count" field if the given value is not nil.
+func (pu *PlaceUpdate) SetNillableLikesCount(i *int) *PlaceUpdate {
+	if i != nil {
+		pu.SetLikesCount(*i)
+	}
+	return pu
+}
+
+// AddLikesCount adds i to the "likes_count" field.
+func (pu *PlaceUpdate) AddLikesCount(i int) *PlaceUpdate {
+	pu.mutation.AddLikesCount(i)
+	return pu
+}
+
 // SetBusinessID sets the "business" edge to the Business entity by ID.
 func (pu *PlaceUpdate) SetBusinessID(id string) *PlaceUpdate {
 	pu.mutation.SetBusinessID(id)
@@ -1296,6 +1359,24 @@ func (pu *PlaceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if pu.mutation.RelevanceScoreCleared() {
 		_spec.ClearField(place.FieldRelevanceScore, field.TypeFloat64)
+	}
+	if value, ok := pu.mutation.FollowersCount(); ok {
+		_spec.SetField(place.FieldFollowersCount, field.TypeInt, value)
+	}
+	if value, ok := pu.mutation.AddedFollowersCount(); ok {
+		_spec.AddField(place.FieldFollowersCount, field.TypeInt, value)
+	}
+	if value, ok := pu.mutation.FollowingCount(); ok {
+		_spec.SetField(place.FieldFollowingCount, field.TypeInt, value)
+	}
+	if value, ok := pu.mutation.AddedFollowingCount(); ok {
+		_spec.AddField(place.FieldFollowingCount, field.TypeInt, value)
+	}
+	if value, ok := pu.mutation.LikesCount(); ok {
+		_spec.SetField(place.FieldLikesCount, field.TypeInt, value)
+	}
+	if value, ok := pu.mutation.AddedLikesCount(); ok {
+		_spec.AddField(place.FieldLikesCount, field.TypeInt, value)
 	}
 	if pu.mutation.BusinessCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -2474,6 +2555,69 @@ func (puo *PlaceUpdateOne) ClearRelevanceScore() *PlaceUpdateOne {
 	return puo
 }
 
+// SetFollowersCount sets the "followers_count" field.
+func (puo *PlaceUpdateOne) SetFollowersCount(i int) *PlaceUpdateOne {
+	puo.mutation.ResetFollowersCount()
+	puo.mutation.SetFollowersCount(i)
+	return puo
+}
+
+// SetNillableFollowersCount sets the "followers_count" field if the given value is not nil.
+func (puo *PlaceUpdateOne) SetNillableFollowersCount(i *int) *PlaceUpdateOne {
+	if i != nil {
+		puo.SetFollowersCount(*i)
+	}
+	return puo
+}
+
+// AddFollowersCount adds i to the "followers_count" field.
+func (puo *PlaceUpdateOne) AddFollowersCount(i int) *PlaceUpdateOne {
+	puo.mutation.AddFollowersCount(i)
+	return puo
+}
+
+// SetFollowingCount sets the "following_count" field.
+func (puo *PlaceUpdateOne) SetFollowingCount(i int) *PlaceUpdateOne {
+	puo.mutation.ResetFollowingCount()
+	puo.mutation.SetFollowingCount(i)
+	return puo
+}
+
+// SetNillableFollowingCount sets the "following_count" field if the given value is not nil.
+func (puo *PlaceUpdateOne) SetNillableFollowingCount(i *int) *PlaceUpdateOne {
+	if i != nil {
+		puo.SetFollowingCount(*i)
+	}
+	return puo
+}
+
+// AddFollowingCount adds i to the "following_count" field.
+func (puo *PlaceUpdateOne) AddFollowingCount(i int) *PlaceUpdateOne {
+	puo.mutation.AddFollowingCount(i)
+	return puo
+}
+
+// SetLikesCount sets the "likes_count" field.
+func (puo *PlaceUpdateOne) SetLikesCount(i int) *PlaceUpdateOne {
+	puo.mutation.ResetLikesCount()
+	puo.mutation.SetLikesCount(i)
+	return puo
+}
+
+// SetNillableLikesCount sets the "likes_count" field if the given value is not nil.
+func (puo *PlaceUpdateOne) SetNillableLikesCount(i *int) *PlaceUpdateOne {
+	if i != nil {
+		puo.SetLikesCount(*i)
+	}
+	return puo
+}
+
+// AddLikesCount adds i to the "likes_count" field.
+func (puo *PlaceUpdateOne) AddLikesCount(i int) *PlaceUpdateOne {
+	puo.mutation.AddLikesCount(i)
+	return puo
+}
+
 // SetBusinessID sets the "business" edge to the Business entity by ID.
 func (puo *PlaceUpdateOne) SetBusinessID(id string) *PlaceUpdateOne {
 	puo.mutation.SetBusinessID(id)
@@ -3259,6 +3403,24 @@ func (puo *PlaceUpdateOne) sqlSave(ctx context.Context) (_node *Place, err error
 	}
 	if puo.mutation.RelevanceScoreCleared() {
 		_spec.ClearField(place.FieldRelevanceScore, field.TypeFloat64)
+	}
+	if value, ok := puo.mutation.FollowersCount(); ok {
+		_spec.SetField(place.FieldFollowersCount, field.TypeInt, value)
+	}
+	if value, ok := puo.mutation.AddedFollowersCount(); ok {
+		_spec.AddField(place.FieldFollowersCount, field.TypeInt, value)
+	}
+	if value, ok := puo.mutation.FollowingCount(); ok {
+		_spec.SetField(place.FieldFollowingCount, field.TypeInt, value)
+	}
+	if value, ok := puo.mutation.AddedFollowingCount(); ok {
+		_spec.AddField(place.FieldFollowingCount, field.TypeInt, value)
+	}
+	if value, ok := puo.mutation.LikesCount(); ok {
+		_spec.SetField(place.FieldLikesCount, field.TypeInt, value)
+	}
+	if value, ok := puo.mutation.AddedLikesCount(); ok {
+		_spec.AddField(place.FieldLikesCount, field.TypeInt, value)
 	}
 	if puo.mutation.BusinessCleared() {
 		edge := &sqlgraph.EdgeSpec{

@@ -43,6 +43,18 @@ const (
 	FieldSearchText = "search_text"
 	// FieldRelevanceScore holds the string denoting the relevance_score field in the database.
 	FieldRelevanceScore = "relevance_score"
+	// FieldFollowersCount holds the string denoting the followers_count field in the database.
+	FieldFollowersCount = "followers_count"
+	// FieldFollowingCount holds the string denoting the following_count field in the database.
+	FieldFollowingCount = "following_count"
+	// FieldLikesCount holds the string denoting the likes_count field in the database.
+	FieldLikesCount = "likes_count"
+	// FieldPostsCount holds the string denoting the posts_count field in the database.
+	FieldPostsCount = "posts_count"
+	// FieldEventsCount holds the string denoting the events_count field in the database.
+	FieldEventsCount = "events_count"
+	// FieldPlacesCount holds the string denoting the places_count field in the database.
+	FieldPlacesCount = "places_count"
 	// EdgeUserBusinesses holds the string denoting the userbusinesses edge name in mutations.
 	EdgeUserBusinesses = "userBusinesses"
 	// EdgeBusinessAccountSettings holds the string denoting the business_account_settings edge name in mutations.
@@ -191,6 +203,12 @@ var Columns = []string{
 	FieldURL,
 	FieldSearchText,
 	FieldRelevanceScore,
+	FieldFollowersCount,
+	FieldFollowingCount,
+	FieldLikesCount,
+	FieldPostsCount,
+	FieldEventsCount,
+	FieldPlacesCount,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -212,6 +230,18 @@ var (
 	Hooks [1]ent.Hook
 	// DefaultCoverImage holds the default value on creation for the "cover_image" field.
 	DefaultCoverImage string
+	// DefaultFollowersCount holds the default value on creation for the "followers_count" field.
+	DefaultFollowersCount int
+	// DefaultFollowingCount holds the default value on creation for the "following_count" field.
+	DefaultFollowingCount int
+	// DefaultLikesCount holds the default value on creation for the "likes_count" field.
+	DefaultLikesCount int
+	// DefaultPostsCount holds the default value on creation for the "posts_count" field.
+	DefaultPostsCount int
+	// DefaultEventsCount holds the default value on creation for the "events_count" field.
+	DefaultEventsCount int
+	// DefaultPlacesCount holds the default value on creation for the "places_count" field.
+	DefaultPlacesCount int
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(string) error
 )
@@ -287,6 +317,36 @@ func BySearchText(opts ...sql.OrderTermOption) OrderOption {
 // ByRelevanceScore orders the results by the relevance_score field.
 func ByRelevanceScore(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRelevanceScore, opts...).ToFunc()
+}
+
+// ByFollowersCount orders the results by the followers_count field.
+func ByFollowersCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFollowersCount, opts...).ToFunc()
+}
+
+// ByFollowingCount orders the results by the following_count field.
+func ByFollowingCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFollowingCount, opts...).ToFunc()
+}
+
+// ByLikesCount orders the results by the likes_count field.
+func ByLikesCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLikesCount, opts...).ToFunc()
+}
+
+// ByPostsCount orders the results by the posts_count field.
+func ByPostsCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPostsCount, opts...).ToFunc()
+}
+
+// ByEventsCount orders the results by the events_count field.
+func ByEventsCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldEventsCount, opts...).ToFunc()
+}
+
+// ByPlacesCount orders the results by the places_count field.
+func ByPlacesCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPlacesCount, opts...).ToFunc()
 }
 
 // ByUserBusinessesCount orders the results by userBusinesses count.

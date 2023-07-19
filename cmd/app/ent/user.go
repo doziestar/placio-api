@@ -51,6 +51,16 @@ type User struct {
 	SearchText string `json:"search_text,omitempty"`
 	// RelevanceScore holds the value of the "relevance_score" field.
 	RelevanceScore float64 `json:"relevance_score,omitempty"`
+	// FollowersCount holds the value of the "followers_count" field.
+	FollowersCount int `json:"followers_count,omitempty"`
+	// FollowingCount holds the value of the "following_count" field.
+	FollowingCount int `json:"following_count,omitempty"`
+	// PostsCount holds the value of the "posts_count" field.
+	PostsCount int `json:"posts_count,omitempty"`
+	// ReviewsCount holds the value of the "reviews_count" field.
+	ReviewsCount int `json:"reviews_count,omitempty"`
+	// LikesCount holds the value of the "likes_count" field.
+	LikesCount int `json:"likes_count,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserQuery when eager-loading is set.
 	Edges        UserEdges `json:"edges"`
@@ -297,6 +307,8 @@ func (*User) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case user.FieldRelevanceScore:
 			values[i] = new(sql.NullFloat64)
+		case user.FieldFollowersCount, user.FieldFollowingCount, user.FieldPostsCount, user.FieldReviewsCount, user.FieldLikesCount:
+			values[i] = new(sql.NullInt64)
 		case user.FieldID, user.FieldAuth0ID, user.FieldName, user.FieldPicture, user.FieldCoverImage, user.FieldUsername, user.FieldWebsite, user.FieldLocation, user.FieldLongitude, user.FieldLatitude, user.FieldBio, user.FieldSearchText:
 			values[i] = new(sql.NullString)
 		default:
@@ -423,6 +435,36 @@ func (u *User) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field relevance_score", values[i])
 			} else if value.Valid {
 				u.RelevanceScore = value.Float64
+			}
+		case user.FieldFollowersCount:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field followers_count", values[i])
+			} else if value.Valid {
+				u.FollowersCount = int(value.Int64)
+			}
+		case user.FieldFollowingCount:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field following_count", values[i])
+			} else if value.Valid {
+				u.FollowingCount = int(value.Int64)
+			}
+		case user.FieldPostsCount:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field posts_count", values[i])
+			} else if value.Valid {
+				u.PostsCount = int(value.Int64)
+			}
+		case user.FieldReviewsCount:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field reviews_count", values[i])
+			} else if value.Valid {
+				u.ReviewsCount = int(value.Int64)
+			}
+		case user.FieldLikesCount:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field likes_count", values[i])
+			} else if value.Valid {
+				u.LikesCount = int(value.Int64)
 			}
 		default:
 			u.selectValues.Set(columns[i], values[i])
@@ -607,6 +649,21 @@ func (u *User) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("relevance_score=")
 	builder.WriteString(fmt.Sprintf("%v", u.RelevanceScore))
+	builder.WriteString(", ")
+	builder.WriteString("followers_count=")
+	builder.WriteString(fmt.Sprintf("%v", u.FollowersCount))
+	builder.WriteString(", ")
+	builder.WriteString("following_count=")
+	builder.WriteString(fmt.Sprintf("%v", u.FollowingCount))
+	builder.WriteString(", ")
+	builder.WriteString("posts_count=")
+	builder.WriteString(fmt.Sprintf("%v", u.PostsCount))
+	builder.WriteString(", ")
+	builder.WriteString("reviews_count=")
+	builder.WriteString(fmt.Sprintf("%v", u.ReviewsCount))
+	builder.WriteString(", ")
+	builder.WriteString("likes_count=")
+	builder.WriteString(fmt.Sprintf("%v", u.LikesCount))
 	builder.WriteByte(')')
 	return builder.String()
 }

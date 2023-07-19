@@ -124,6 +124,31 @@ func RelevanceScore(v float64) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldRelevanceScore, v))
 }
 
+// FollowersCount applies equality check predicate on the "followers_count" field. It's identical to FollowersCountEQ.
+func FollowersCount(v int) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldFollowersCount, v))
+}
+
+// FollowingCount applies equality check predicate on the "following_count" field. It's identical to FollowingCountEQ.
+func FollowingCount(v int) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldFollowingCount, v))
+}
+
+// PostsCount applies equality check predicate on the "posts_count" field. It's identical to PostsCountEQ.
+func PostsCount(v int) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldPostsCount, v))
+}
+
+// ReviewsCount applies equality check predicate on the "reviews_count" field. It's identical to ReviewsCountEQ.
+func ReviewsCount(v int) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldReviewsCount, v))
+}
+
+// LikesCount applies equality check predicate on the "likes_count" field. It's identical to LikesCountEQ.
+func LikesCount(v int) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldLikesCount, v))
+}
+
 // Auth0IDEQ applies the EQ predicate on the "auth0_id" field.
 func Auth0IDEQ(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldAuth0ID, v))
@@ -1017,6 +1042,206 @@ func RelevanceScoreIsNil() predicate.User {
 // RelevanceScoreNotNil applies the NotNil predicate on the "relevance_score" field.
 func RelevanceScoreNotNil() predicate.User {
 	return predicate.User(sql.FieldNotNull(FieldRelevanceScore))
+}
+
+// FollowersCountEQ applies the EQ predicate on the "followers_count" field.
+func FollowersCountEQ(v int) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldFollowersCount, v))
+}
+
+// FollowersCountNEQ applies the NEQ predicate on the "followers_count" field.
+func FollowersCountNEQ(v int) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldFollowersCount, v))
+}
+
+// FollowersCountIn applies the In predicate on the "followers_count" field.
+func FollowersCountIn(vs ...int) predicate.User {
+	return predicate.User(sql.FieldIn(FieldFollowersCount, vs...))
+}
+
+// FollowersCountNotIn applies the NotIn predicate on the "followers_count" field.
+func FollowersCountNotIn(vs ...int) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldFollowersCount, vs...))
+}
+
+// FollowersCountGT applies the GT predicate on the "followers_count" field.
+func FollowersCountGT(v int) predicate.User {
+	return predicate.User(sql.FieldGT(FieldFollowersCount, v))
+}
+
+// FollowersCountGTE applies the GTE predicate on the "followers_count" field.
+func FollowersCountGTE(v int) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldFollowersCount, v))
+}
+
+// FollowersCountLT applies the LT predicate on the "followers_count" field.
+func FollowersCountLT(v int) predicate.User {
+	return predicate.User(sql.FieldLT(FieldFollowersCount, v))
+}
+
+// FollowersCountLTE applies the LTE predicate on the "followers_count" field.
+func FollowersCountLTE(v int) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldFollowersCount, v))
+}
+
+// FollowingCountEQ applies the EQ predicate on the "following_count" field.
+func FollowingCountEQ(v int) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldFollowingCount, v))
+}
+
+// FollowingCountNEQ applies the NEQ predicate on the "following_count" field.
+func FollowingCountNEQ(v int) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldFollowingCount, v))
+}
+
+// FollowingCountIn applies the In predicate on the "following_count" field.
+func FollowingCountIn(vs ...int) predicate.User {
+	return predicate.User(sql.FieldIn(FieldFollowingCount, vs...))
+}
+
+// FollowingCountNotIn applies the NotIn predicate on the "following_count" field.
+func FollowingCountNotIn(vs ...int) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldFollowingCount, vs...))
+}
+
+// FollowingCountGT applies the GT predicate on the "following_count" field.
+func FollowingCountGT(v int) predicate.User {
+	return predicate.User(sql.FieldGT(FieldFollowingCount, v))
+}
+
+// FollowingCountGTE applies the GTE predicate on the "following_count" field.
+func FollowingCountGTE(v int) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldFollowingCount, v))
+}
+
+// FollowingCountLT applies the LT predicate on the "following_count" field.
+func FollowingCountLT(v int) predicate.User {
+	return predicate.User(sql.FieldLT(FieldFollowingCount, v))
+}
+
+// FollowingCountLTE applies the LTE predicate on the "following_count" field.
+func FollowingCountLTE(v int) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldFollowingCount, v))
+}
+
+// PostsCountEQ applies the EQ predicate on the "posts_count" field.
+func PostsCountEQ(v int) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldPostsCount, v))
+}
+
+// PostsCountNEQ applies the NEQ predicate on the "posts_count" field.
+func PostsCountNEQ(v int) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldPostsCount, v))
+}
+
+// PostsCountIn applies the In predicate on the "posts_count" field.
+func PostsCountIn(vs ...int) predicate.User {
+	return predicate.User(sql.FieldIn(FieldPostsCount, vs...))
+}
+
+// PostsCountNotIn applies the NotIn predicate on the "posts_count" field.
+func PostsCountNotIn(vs ...int) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldPostsCount, vs...))
+}
+
+// PostsCountGT applies the GT predicate on the "posts_count" field.
+func PostsCountGT(v int) predicate.User {
+	return predicate.User(sql.FieldGT(FieldPostsCount, v))
+}
+
+// PostsCountGTE applies the GTE predicate on the "posts_count" field.
+func PostsCountGTE(v int) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldPostsCount, v))
+}
+
+// PostsCountLT applies the LT predicate on the "posts_count" field.
+func PostsCountLT(v int) predicate.User {
+	return predicate.User(sql.FieldLT(FieldPostsCount, v))
+}
+
+// PostsCountLTE applies the LTE predicate on the "posts_count" field.
+func PostsCountLTE(v int) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldPostsCount, v))
+}
+
+// ReviewsCountEQ applies the EQ predicate on the "reviews_count" field.
+func ReviewsCountEQ(v int) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldReviewsCount, v))
+}
+
+// ReviewsCountNEQ applies the NEQ predicate on the "reviews_count" field.
+func ReviewsCountNEQ(v int) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldReviewsCount, v))
+}
+
+// ReviewsCountIn applies the In predicate on the "reviews_count" field.
+func ReviewsCountIn(vs ...int) predicate.User {
+	return predicate.User(sql.FieldIn(FieldReviewsCount, vs...))
+}
+
+// ReviewsCountNotIn applies the NotIn predicate on the "reviews_count" field.
+func ReviewsCountNotIn(vs ...int) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldReviewsCount, vs...))
+}
+
+// ReviewsCountGT applies the GT predicate on the "reviews_count" field.
+func ReviewsCountGT(v int) predicate.User {
+	return predicate.User(sql.FieldGT(FieldReviewsCount, v))
+}
+
+// ReviewsCountGTE applies the GTE predicate on the "reviews_count" field.
+func ReviewsCountGTE(v int) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldReviewsCount, v))
+}
+
+// ReviewsCountLT applies the LT predicate on the "reviews_count" field.
+func ReviewsCountLT(v int) predicate.User {
+	return predicate.User(sql.FieldLT(FieldReviewsCount, v))
+}
+
+// ReviewsCountLTE applies the LTE predicate on the "reviews_count" field.
+func ReviewsCountLTE(v int) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldReviewsCount, v))
+}
+
+// LikesCountEQ applies the EQ predicate on the "likes_count" field.
+func LikesCountEQ(v int) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldLikesCount, v))
+}
+
+// LikesCountNEQ applies the NEQ predicate on the "likes_count" field.
+func LikesCountNEQ(v int) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldLikesCount, v))
+}
+
+// LikesCountIn applies the In predicate on the "likes_count" field.
+func LikesCountIn(vs ...int) predicate.User {
+	return predicate.User(sql.FieldIn(FieldLikesCount, vs...))
+}
+
+// LikesCountNotIn applies the NotIn predicate on the "likes_count" field.
+func LikesCountNotIn(vs ...int) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldLikesCount, vs...))
+}
+
+// LikesCountGT applies the GT predicate on the "likes_count" field.
+func LikesCountGT(v int) predicate.User {
+	return predicate.User(sql.FieldGT(FieldLikesCount, v))
+}
+
+// LikesCountGTE applies the GTE predicate on the "likes_count" field.
+func LikesCountGTE(v int) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldLikesCount, v))
+}
+
+// LikesCountLT applies the LT predicate on the "likes_count" field.
+func LikesCountLT(v int) predicate.User {
+	return predicate.User(sql.FieldLT(FieldLikesCount, v))
+}
+
+// LikesCountLTE applies the LTE predicate on the "likes_count" field.
+func LikesCountLTE(v int) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldLikesCount, v))
 }
 
 // HasUserBusinesses applies the HasEdge predicate on the "userBusinesses" edge.

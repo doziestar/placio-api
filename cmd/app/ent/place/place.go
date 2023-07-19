@@ -69,6 +69,12 @@ const (
 	FieldSearchText = "search_text"
 	// FieldRelevanceScore holds the string denoting the relevance_score field in the database.
 	FieldRelevanceScore = "relevance_score"
+	// FieldFollowersCount holds the string denoting the followers_count field in the database.
+	FieldFollowersCount = "followers_count"
+	// FieldFollowingCount holds the string denoting the following_count field in the database.
+	FieldFollowingCount = "following_count"
+	// FieldLikesCount holds the string denoting the likes_count field in the database.
+	FieldLikesCount = "likes_count"
 	// EdgeBusiness holds the string denoting the business edge name in mutations.
 	EdgeBusiness = "business"
 	// EdgeUsers holds the string denoting the users edge name in mutations.
@@ -233,6 +239,9 @@ var Columns = []string{
 	FieldLatitude,
 	FieldSearchText,
 	FieldRelevanceScore,
+	FieldFollowersCount,
+	FieldFollowingCount,
+	FieldLikesCount,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "places"
@@ -278,6 +287,12 @@ var (
 	Hooks [1]ent.Hook
 	// DefaultCoverImage holds the default value on creation for the "cover_image" field.
 	DefaultCoverImage string
+	// DefaultFollowersCount holds the default value on creation for the "followers_count" field.
+	DefaultFollowersCount int
+	// DefaultFollowingCount holds the default value on creation for the "following_count" field.
+	DefaultFollowingCount int
+	// DefaultLikesCount holds the default value on creation for the "likes_count" field.
+	DefaultLikesCount int
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(string) error
 )
@@ -378,6 +393,21 @@ func BySearchText(opts ...sql.OrderTermOption) OrderOption {
 // ByRelevanceScore orders the results by the relevance_score field.
 func ByRelevanceScore(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRelevanceScore, opts...).ToFunc()
+}
+
+// ByFollowersCount orders the results by the followers_count field.
+func ByFollowersCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFollowersCount, opts...).ToFunc()
+}
+
+// ByFollowingCount orders the results by the following_count field.
+func ByFollowingCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFollowingCount, opts...).ToFunc()
+}
+
+// ByLikesCount orders the results by the likes_count field.
+func ByLikesCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLikesCount, opts...).ToFunc()
 }
 
 // ByBusinessField orders the results by business field.

@@ -215,6 +215,76 @@ func (uc *UserCreate) SetNillableRelevanceScore(f *float64) *UserCreate {
 	return uc
 }
 
+// SetFollowersCount sets the "followers_count" field.
+func (uc *UserCreate) SetFollowersCount(i int) *UserCreate {
+	uc.mutation.SetFollowersCount(i)
+	return uc
+}
+
+// SetNillableFollowersCount sets the "followers_count" field if the given value is not nil.
+func (uc *UserCreate) SetNillableFollowersCount(i *int) *UserCreate {
+	if i != nil {
+		uc.SetFollowersCount(*i)
+	}
+	return uc
+}
+
+// SetFollowingCount sets the "following_count" field.
+func (uc *UserCreate) SetFollowingCount(i int) *UserCreate {
+	uc.mutation.SetFollowingCount(i)
+	return uc
+}
+
+// SetNillableFollowingCount sets the "following_count" field if the given value is not nil.
+func (uc *UserCreate) SetNillableFollowingCount(i *int) *UserCreate {
+	if i != nil {
+		uc.SetFollowingCount(*i)
+	}
+	return uc
+}
+
+// SetPostsCount sets the "posts_count" field.
+func (uc *UserCreate) SetPostsCount(i int) *UserCreate {
+	uc.mutation.SetPostsCount(i)
+	return uc
+}
+
+// SetNillablePostsCount sets the "posts_count" field if the given value is not nil.
+func (uc *UserCreate) SetNillablePostsCount(i *int) *UserCreate {
+	if i != nil {
+		uc.SetPostsCount(*i)
+	}
+	return uc
+}
+
+// SetReviewsCount sets the "reviews_count" field.
+func (uc *UserCreate) SetReviewsCount(i int) *UserCreate {
+	uc.mutation.SetReviewsCount(i)
+	return uc
+}
+
+// SetNillableReviewsCount sets the "reviews_count" field if the given value is not nil.
+func (uc *UserCreate) SetNillableReviewsCount(i *int) *UserCreate {
+	if i != nil {
+		uc.SetReviewsCount(*i)
+	}
+	return uc
+}
+
+// SetLikesCount sets the "likes_count" field.
+func (uc *UserCreate) SetLikesCount(i int) *UserCreate {
+	uc.mutation.SetLikesCount(i)
+	return uc
+}
+
+// SetNillableLikesCount sets the "likes_count" field if the given value is not nil.
+func (uc *UserCreate) SetNillableLikesCount(i *int) *UserCreate {
+	if i != nil {
+		uc.SetLikesCount(*i)
+	}
+	return uc
+}
+
 // SetID sets the "id" field.
 func (uc *UserCreate) SetID(s string) *UserCreate {
 	uc.mutation.SetID(s)
@@ -570,6 +640,26 @@ func (uc *UserCreate) defaults() error {
 		v := user.DefaultBio
 		uc.mutation.SetBio(v)
 	}
+	if _, ok := uc.mutation.FollowersCount(); !ok {
+		v := user.DefaultFollowersCount
+		uc.mutation.SetFollowersCount(v)
+	}
+	if _, ok := uc.mutation.FollowingCount(); !ok {
+		v := user.DefaultFollowingCount
+		uc.mutation.SetFollowingCount(v)
+	}
+	if _, ok := uc.mutation.PostsCount(); !ok {
+		v := user.DefaultPostsCount
+		uc.mutation.SetPostsCount(v)
+	}
+	if _, ok := uc.mutation.ReviewsCount(); !ok {
+		v := user.DefaultReviewsCount
+		uc.mutation.SetReviewsCount(v)
+	}
+	if _, ok := uc.mutation.LikesCount(); !ok {
+		v := user.DefaultLikesCount
+		uc.mutation.SetLikesCount(v)
+	}
 	return nil
 }
 
@@ -580,6 +670,21 @@ func (uc *UserCreate) check() error {
 	}
 	if _, ok := uc.mutation.Username(); !ok {
 		return &ValidationError{Name: "username", err: errors.New(`ent: missing required field "User.username"`)}
+	}
+	if _, ok := uc.mutation.FollowersCount(); !ok {
+		return &ValidationError{Name: "followers_count", err: errors.New(`ent: missing required field "User.followers_count"`)}
+	}
+	if _, ok := uc.mutation.FollowingCount(); !ok {
+		return &ValidationError{Name: "following_count", err: errors.New(`ent: missing required field "User.following_count"`)}
+	}
+	if _, ok := uc.mutation.PostsCount(); !ok {
+		return &ValidationError{Name: "posts_count", err: errors.New(`ent: missing required field "User.posts_count"`)}
+	}
+	if _, ok := uc.mutation.ReviewsCount(); !ok {
+		return &ValidationError{Name: "reviews_count", err: errors.New(`ent: missing required field "User.reviews_count"`)}
+	}
+	if _, ok := uc.mutation.LikesCount(); !ok {
+		return &ValidationError{Name: "likes_count", err: errors.New(`ent: missing required field "User.likes_count"`)}
 	}
 	if v, ok := uc.mutation.ID(); ok {
 		if err := user.IDValidator(v); err != nil {
@@ -684,6 +789,26 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.RelevanceScore(); ok {
 		_spec.SetField(user.FieldRelevanceScore, field.TypeFloat64, value)
 		_node.RelevanceScore = value
+	}
+	if value, ok := uc.mutation.FollowersCount(); ok {
+		_spec.SetField(user.FieldFollowersCount, field.TypeInt, value)
+		_node.FollowersCount = value
+	}
+	if value, ok := uc.mutation.FollowingCount(); ok {
+		_spec.SetField(user.FieldFollowingCount, field.TypeInt, value)
+		_node.FollowingCount = value
+	}
+	if value, ok := uc.mutation.PostsCount(); ok {
+		_spec.SetField(user.FieldPostsCount, field.TypeInt, value)
+		_node.PostsCount = value
+	}
+	if value, ok := uc.mutation.ReviewsCount(); ok {
+		_spec.SetField(user.FieldReviewsCount, field.TypeInt, value)
+		_node.ReviewsCount = value
+	}
+	if value, ok := uc.mutation.LikesCount(); ok {
+		_spec.SetField(user.FieldLikesCount, field.TypeInt, value)
+		_node.LikesCount = value
 	}
 	if nodes := uc.mutation.UserBusinessesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

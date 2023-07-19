@@ -218,6 +218,90 @@ func (bc *BusinessCreate) SetNillableRelevanceScore(f *float64) *BusinessCreate 
 	return bc
 }
 
+// SetFollowersCount sets the "followers_count" field.
+func (bc *BusinessCreate) SetFollowersCount(i int) *BusinessCreate {
+	bc.mutation.SetFollowersCount(i)
+	return bc
+}
+
+// SetNillableFollowersCount sets the "followers_count" field if the given value is not nil.
+func (bc *BusinessCreate) SetNillableFollowersCount(i *int) *BusinessCreate {
+	if i != nil {
+		bc.SetFollowersCount(*i)
+	}
+	return bc
+}
+
+// SetFollowingCount sets the "following_count" field.
+func (bc *BusinessCreate) SetFollowingCount(i int) *BusinessCreate {
+	bc.mutation.SetFollowingCount(i)
+	return bc
+}
+
+// SetNillableFollowingCount sets the "following_count" field if the given value is not nil.
+func (bc *BusinessCreate) SetNillableFollowingCount(i *int) *BusinessCreate {
+	if i != nil {
+		bc.SetFollowingCount(*i)
+	}
+	return bc
+}
+
+// SetLikesCount sets the "likes_count" field.
+func (bc *BusinessCreate) SetLikesCount(i int) *BusinessCreate {
+	bc.mutation.SetLikesCount(i)
+	return bc
+}
+
+// SetNillableLikesCount sets the "likes_count" field if the given value is not nil.
+func (bc *BusinessCreate) SetNillableLikesCount(i *int) *BusinessCreate {
+	if i != nil {
+		bc.SetLikesCount(*i)
+	}
+	return bc
+}
+
+// SetPostsCount sets the "posts_count" field.
+func (bc *BusinessCreate) SetPostsCount(i int) *BusinessCreate {
+	bc.mutation.SetPostsCount(i)
+	return bc
+}
+
+// SetNillablePostsCount sets the "posts_count" field if the given value is not nil.
+func (bc *BusinessCreate) SetNillablePostsCount(i *int) *BusinessCreate {
+	if i != nil {
+		bc.SetPostsCount(*i)
+	}
+	return bc
+}
+
+// SetEventsCount sets the "events_count" field.
+func (bc *BusinessCreate) SetEventsCount(i int) *BusinessCreate {
+	bc.mutation.SetEventsCount(i)
+	return bc
+}
+
+// SetNillableEventsCount sets the "events_count" field if the given value is not nil.
+func (bc *BusinessCreate) SetNillableEventsCount(i *int) *BusinessCreate {
+	if i != nil {
+		bc.SetEventsCount(*i)
+	}
+	return bc
+}
+
+// SetPlacesCount sets the "places_count" field.
+func (bc *BusinessCreate) SetPlacesCount(i int) *BusinessCreate {
+	bc.mutation.SetPlacesCount(i)
+	return bc
+}
+
+// SetNillablePlacesCount sets the "places_count" field if the given value is not nil.
+func (bc *BusinessCreate) SetNillablePlacesCount(i *int) *BusinessCreate {
+	if i != nil {
+		bc.SetPlacesCount(*i)
+	}
+	return bc
+}
+
 // SetID sets the "id" field.
 func (bc *BusinessCreate) SetID(s string) *BusinessCreate {
 	bc.mutation.SetID(s)
@@ -479,6 +563,30 @@ func (bc *BusinessCreate) defaults() error {
 		v := business.DefaultCoverImage
 		bc.mutation.SetCoverImage(v)
 	}
+	if _, ok := bc.mutation.FollowersCount(); !ok {
+		v := business.DefaultFollowersCount
+		bc.mutation.SetFollowersCount(v)
+	}
+	if _, ok := bc.mutation.FollowingCount(); !ok {
+		v := business.DefaultFollowingCount
+		bc.mutation.SetFollowingCount(v)
+	}
+	if _, ok := bc.mutation.LikesCount(); !ok {
+		v := business.DefaultLikesCount
+		bc.mutation.SetLikesCount(v)
+	}
+	if _, ok := bc.mutation.PostsCount(); !ok {
+		v := business.DefaultPostsCount
+		bc.mutation.SetPostsCount(v)
+	}
+	if _, ok := bc.mutation.EventsCount(); !ok {
+		v := business.DefaultEventsCount
+		bc.mutation.SetEventsCount(v)
+	}
+	if _, ok := bc.mutation.PlacesCount(); !ok {
+		v := business.DefaultPlacesCount
+		bc.mutation.SetPlacesCount(v)
+	}
 	return nil
 }
 
@@ -486,6 +594,24 @@ func (bc *BusinessCreate) defaults() error {
 func (bc *BusinessCreate) check() error {
 	if _, ok := bc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Business.name"`)}
+	}
+	if _, ok := bc.mutation.FollowersCount(); !ok {
+		return &ValidationError{Name: "followers_count", err: errors.New(`ent: missing required field "Business.followers_count"`)}
+	}
+	if _, ok := bc.mutation.FollowingCount(); !ok {
+		return &ValidationError{Name: "following_count", err: errors.New(`ent: missing required field "Business.following_count"`)}
+	}
+	if _, ok := bc.mutation.LikesCount(); !ok {
+		return &ValidationError{Name: "likes_count", err: errors.New(`ent: missing required field "Business.likes_count"`)}
+	}
+	if _, ok := bc.mutation.PostsCount(); !ok {
+		return &ValidationError{Name: "posts_count", err: errors.New(`ent: missing required field "Business.posts_count"`)}
+	}
+	if _, ok := bc.mutation.EventsCount(); !ok {
+		return &ValidationError{Name: "events_count", err: errors.New(`ent: missing required field "Business.events_count"`)}
+	}
+	if _, ok := bc.mutation.PlacesCount(); !ok {
+		return &ValidationError{Name: "places_count", err: errors.New(`ent: missing required field "Business.places_count"`)}
 	}
 	if v, ok := bc.mutation.ID(); ok {
 		if err := business.IDValidator(v); err != nil {
@@ -586,6 +712,30 @@ func (bc *BusinessCreate) createSpec() (*Business, *sqlgraph.CreateSpec) {
 	if value, ok := bc.mutation.RelevanceScore(); ok {
 		_spec.SetField(business.FieldRelevanceScore, field.TypeFloat64, value)
 		_node.RelevanceScore = value
+	}
+	if value, ok := bc.mutation.FollowersCount(); ok {
+		_spec.SetField(business.FieldFollowersCount, field.TypeInt, value)
+		_node.FollowersCount = value
+	}
+	if value, ok := bc.mutation.FollowingCount(); ok {
+		_spec.SetField(business.FieldFollowingCount, field.TypeInt, value)
+		_node.FollowingCount = value
+	}
+	if value, ok := bc.mutation.LikesCount(); ok {
+		_spec.SetField(business.FieldLikesCount, field.TypeInt, value)
+		_node.LikesCount = value
+	}
+	if value, ok := bc.mutation.PostsCount(); ok {
+		_spec.SetField(business.FieldPostsCount, field.TypeInt, value)
+		_node.PostsCount = value
+	}
+	if value, ok := bc.mutation.EventsCount(); ok {
+		_spec.SetField(business.FieldEventsCount, field.TypeInt, value)
+		_node.EventsCount = value
+	}
+	if value, ok := bc.mutation.PlacesCount(); ok {
+		_spec.SetField(business.FieldPlacesCount, field.TypeInt, value)
+		_node.PlacesCount = value
 	}
 	if nodes := bc.mutation.UserBusinessesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"github.com/google/uuid"
 	"placio-app/ent"
 	"placio-app/ent/business"
@@ -106,16 +107,49 @@ func (s *FollowService) GetFollowedUsersByUser(ctx context.Context, userID strin
 }
 
 // FollowUserToPlace User-Place methods
+//func (s *FollowService) FollowUserToPlace(ctx context.Context, userID, placeID string) error {
+//
+//	_, err := s.client.UserFollowPlace.
+//		Create().
+//		SetID(uuid.New().String()).
+//		SetUserID(userID).
+//		SetPlaceID(placeID).
+//		SetUpdatedAt(time.Now()).
+//		Save(ctx)
+//	if err != nil {
+//		return err
+//	}
+//
+//	return nil
+//}
+
 func (s *FollowService) FollowUserToPlace(ctx context.Context, userID, placeID string) error {
 
-	_, err := s.client.UserFollowPlace.
-		Create().
-		SetID(uuid.New().String()).
-		SetUserID(userID).
-		SetPlaceID(placeID).
-		SetUpdatedAt(time.Now()).
-		Save(ctx)
-	if err != nil {
+	// Check if the user already follows the place
+	existingFollow, err := s.client.UserFollowPlace.
+		Query().
+		Where(userfollowplace.HasUserWith(user.ID(userID))).
+		Where(userfollowplace.HasPlaceWith(place.ID(placeID))).
+		Only(ctx)
+
+	// If there is no error, that means a follow record already exists
+	if err == nil && existingFollow != nil {
+		return fmt.Errorf("User %s already follows place %s", userID, placeID)
+	}
+
+	// If the error is a not found error, that means the user does not yet follow the place
+	if ent.IsNotFound(err) {
+		_, err = s.client.UserFollowPlace.
+			Create().
+			SetID(uuid.New().String()).
+			SetUserID(userID).
+			SetPlaceID(placeID).
+			SetUpdatedAt(time.Now()).
+			Save(ctx)
+		if err != nil {
+			return err
+		}
+	} else if err != nil { // If the error is not a not found error, return the error
 		return err
 	}
 

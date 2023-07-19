@@ -98,6 +98,12 @@ type Event struct {
 	SearchText string `json:"search_text,omitempty"`
 	// RelevanceScore holds the value of the "relevance_score" field.
 	RelevanceScore float64 `json:"relevance_score,omitempty"`
+	// FollowersCount holds the value of the "followers_count" field.
+	FollowersCount int `json:"followers_count,omitempty"`
+	// FollowingCount holds the value of the "following_count" field.
+	FollowingCount int `json:"following_count,omitempty"`
+	// LikesCount holds the value of the "likes_count" field.
+	LikesCount int `json:"likes_count,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EventQuery when eager-loading is set.
 	Edges             EventEdges `json:"edges"`
@@ -252,6 +258,8 @@ func (*Event) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case event.FieldRelevanceScore:
 			values[i] = new(sql.NullFloat64)
+		case event.FieldFollowersCount, event.FieldFollowingCount, event.FieldLikesCount:
+			values[i] = new(sql.NullInt64)
 		case event.FieldID, event.FieldName, event.FieldEventType, event.FieldStatus, event.FieldLocation, event.FieldURL, event.FieldTitle, event.FieldTimeZone, event.FieldStartDate, event.FieldEndDate, event.FieldFrequency, event.FieldFrequencyInterval, event.FieldFrequencyDayOfWeek, event.FieldFrequencyDayOfMonth, event.FieldFrequencyMonthOfYear, event.FieldVenueType, event.FieldVenueName, event.FieldVenueAddress, event.FieldVenueCity, event.FieldVenueState, event.FieldVenueCountry, event.FieldVenueZip, event.FieldVenueLat, event.FieldVenueLon, event.FieldVenueURL, event.FieldVenuePhone, event.FieldVenueEmail, event.FieldTags, event.FieldDescription, event.FieldCoverImage, event.FieldLongitude, event.FieldLatitude, event.FieldSearchText:
 			values[i] = new(sql.NullString)
 		case event.FieldStartTime, event.FieldEndTime, event.FieldCreatedAt, event.FieldUpdatedAt:
@@ -521,6 +529,24 @@ func (e *Event) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				e.RelevanceScore = value.Float64
 			}
+		case event.FieldFollowersCount:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field followers_count", values[i])
+			} else if value.Valid {
+				e.FollowersCount = int(value.Int64)
+			}
+		case event.FieldFollowingCount:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field following_count", values[i])
+			} else if value.Valid {
+				e.FollowingCount = int(value.Int64)
+			}
+		case event.FieldLikesCount:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field likes_count", values[i])
+			} else if value.Valid {
+				e.LikesCount = int(value.Int64)
+			}
 		case event.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field business_events", values[i])
@@ -749,6 +775,15 @@ func (e *Event) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("relevance_score=")
 	builder.WriteString(fmt.Sprintf("%v", e.RelevanceScore))
+	builder.WriteString(", ")
+	builder.WriteString("followers_count=")
+	builder.WriteString(fmt.Sprintf("%v", e.FollowersCount))
+	builder.WriteString(", ")
+	builder.WriteString("following_count=")
+	builder.WriteString(fmt.Sprintf("%v", e.FollowingCount))
+	builder.WriteString(", ")
+	builder.WriteString("likes_count=")
+	builder.WriteString(fmt.Sprintf("%v", e.LikesCount))
 	builder.WriteByte(')')
 	return builder.String()
 }

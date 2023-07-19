@@ -235,6 +235,21 @@ func RelevanceScore(v float64) predicate.Event {
 	return predicate.Event(sql.FieldEQ(FieldRelevanceScore, v))
 }
 
+// FollowersCount applies equality check predicate on the "followers_count" field. It's identical to FollowersCountEQ.
+func FollowersCount(v int) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldFollowersCount, v))
+}
+
+// FollowingCount applies equality check predicate on the "following_count" field. It's identical to FollowingCountEQ.
+func FollowingCount(v int) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldFollowingCount, v))
+}
+
+// LikesCount applies equality check predicate on the "likes_count" field. It's identical to LikesCountEQ.
+func LikesCount(v int) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldLikesCount, v))
+}
+
 // NameEQ applies the EQ predicate on the "name" field.
 func NameEQ(v string) predicate.Event {
 	return predicate.Event(sql.FieldEQ(FieldName, v))
@@ -2748,6 +2763,126 @@ func RelevanceScoreIsNil() predicate.Event {
 // RelevanceScoreNotNil applies the NotNil predicate on the "relevance_score" field.
 func RelevanceScoreNotNil() predicate.Event {
 	return predicate.Event(sql.FieldNotNull(FieldRelevanceScore))
+}
+
+// FollowersCountEQ applies the EQ predicate on the "followers_count" field.
+func FollowersCountEQ(v int) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldFollowersCount, v))
+}
+
+// FollowersCountNEQ applies the NEQ predicate on the "followers_count" field.
+func FollowersCountNEQ(v int) predicate.Event {
+	return predicate.Event(sql.FieldNEQ(FieldFollowersCount, v))
+}
+
+// FollowersCountIn applies the In predicate on the "followers_count" field.
+func FollowersCountIn(vs ...int) predicate.Event {
+	return predicate.Event(sql.FieldIn(FieldFollowersCount, vs...))
+}
+
+// FollowersCountNotIn applies the NotIn predicate on the "followers_count" field.
+func FollowersCountNotIn(vs ...int) predicate.Event {
+	return predicate.Event(sql.FieldNotIn(FieldFollowersCount, vs...))
+}
+
+// FollowersCountGT applies the GT predicate on the "followers_count" field.
+func FollowersCountGT(v int) predicate.Event {
+	return predicate.Event(sql.FieldGT(FieldFollowersCount, v))
+}
+
+// FollowersCountGTE applies the GTE predicate on the "followers_count" field.
+func FollowersCountGTE(v int) predicate.Event {
+	return predicate.Event(sql.FieldGTE(FieldFollowersCount, v))
+}
+
+// FollowersCountLT applies the LT predicate on the "followers_count" field.
+func FollowersCountLT(v int) predicate.Event {
+	return predicate.Event(sql.FieldLT(FieldFollowersCount, v))
+}
+
+// FollowersCountLTE applies the LTE predicate on the "followers_count" field.
+func FollowersCountLTE(v int) predicate.Event {
+	return predicate.Event(sql.FieldLTE(FieldFollowersCount, v))
+}
+
+// FollowingCountEQ applies the EQ predicate on the "following_count" field.
+func FollowingCountEQ(v int) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldFollowingCount, v))
+}
+
+// FollowingCountNEQ applies the NEQ predicate on the "following_count" field.
+func FollowingCountNEQ(v int) predicate.Event {
+	return predicate.Event(sql.FieldNEQ(FieldFollowingCount, v))
+}
+
+// FollowingCountIn applies the In predicate on the "following_count" field.
+func FollowingCountIn(vs ...int) predicate.Event {
+	return predicate.Event(sql.FieldIn(FieldFollowingCount, vs...))
+}
+
+// FollowingCountNotIn applies the NotIn predicate on the "following_count" field.
+func FollowingCountNotIn(vs ...int) predicate.Event {
+	return predicate.Event(sql.FieldNotIn(FieldFollowingCount, vs...))
+}
+
+// FollowingCountGT applies the GT predicate on the "following_count" field.
+func FollowingCountGT(v int) predicate.Event {
+	return predicate.Event(sql.FieldGT(FieldFollowingCount, v))
+}
+
+// FollowingCountGTE applies the GTE predicate on the "following_count" field.
+func FollowingCountGTE(v int) predicate.Event {
+	return predicate.Event(sql.FieldGTE(FieldFollowingCount, v))
+}
+
+// FollowingCountLT applies the LT predicate on the "following_count" field.
+func FollowingCountLT(v int) predicate.Event {
+	return predicate.Event(sql.FieldLT(FieldFollowingCount, v))
+}
+
+// FollowingCountLTE applies the LTE predicate on the "following_count" field.
+func FollowingCountLTE(v int) predicate.Event {
+	return predicate.Event(sql.FieldLTE(FieldFollowingCount, v))
+}
+
+// LikesCountEQ applies the EQ predicate on the "likes_count" field.
+func LikesCountEQ(v int) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldLikesCount, v))
+}
+
+// LikesCountNEQ applies the NEQ predicate on the "likes_count" field.
+func LikesCountNEQ(v int) predicate.Event {
+	return predicate.Event(sql.FieldNEQ(FieldLikesCount, v))
+}
+
+// LikesCountIn applies the In predicate on the "likes_count" field.
+func LikesCountIn(vs ...int) predicate.Event {
+	return predicate.Event(sql.FieldIn(FieldLikesCount, vs...))
+}
+
+// LikesCountNotIn applies the NotIn predicate on the "likes_count" field.
+func LikesCountNotIn(vs ...int) predicate.Event {
+	return predicate.Event(sql.FieldNotIn(FieldLikesCount, vs...))
+}
+
+// LikesCountGT applies the GT predicate on the "likes_count" field.
+func LikesCountGT(v int) predicate.Event {
+	return predicate.Event(sql.FieldGT(FieldLikesCount, v))
+}
+
+// LikesCountGTE applies the GTE predicate on the "likes_count" field.
+func LikesCountGTE(v int) predicate.Event {
+	return predicate.Event(sql.FieldGTE(FieldLikesCount, v))
+}
+
+// LikesCountLT applies the LT predicate on the "likes_count" field.
+func LikesCountLT(v int) predicate.Event {
+	return predicate.Event(sql.FieldLT(FieldLikesCount, v))
+}
+
+// LikesCountLTE applies the LTE predicate on the "likes_count" field.
+func LikesCountLTE(v int) predicate.Event {
+	return predicate.Event(sql.FieldLTE(FieldLikesCount, v))
 }
 
 // HasTickets applies the HasEdge predicate on the "tickets" edge.

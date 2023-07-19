@@ -94,6 +94,12 @@ const (
 	FieldSearchText = "search_text"
 	// FieldRelevanceScore holds the string denoting the relevance_score field in the database.
 	FieldRelevanceScore = "relevance_score"
+	// FieldFollowersCount holds the string denoting the followers_count field in the database.
+	FieldFollowersCount = "followers_count"
+	// FieldFollowingCount holds the string denoting the following_count field in the database.
+	FieldFollowingCount = "following_count"
+	// FieldLikesCount holds the string denoting the likes_count field in the database.
+	FieldLikesCount = "likes_count"
 	// EdgeTickets holds the string denoting the tickets edge name in mutations.
 	EdgeTickets = "tickets"
 	// EdgeTicketOptions holds the string denoting the ticket_options edge name in mutations.
@@ -237,6 +243,9 @@ var Columns = []string{
 	FieldLatitude,
 	FieldSearchText,
 	FieldRelevanceScore,
+	FieldFollowersCount,
+	FieldFollowingCount,
+	FieldLikesCount,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "events"
@@ -283,6 +292,12 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updatedAt" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultFollowersCount holds the default value on creation for the "followers_count" field.
+	DefaultFollowersCount int
+	// DefaultFollowingCount holds the default value on creation for the "following_count" field.
+	DefaultFollowingCount int
+	// DefaultLikesCount holds the default value on creation for the "likes_count" field.
+	DefaultLikesCount int
 )
 
 // EventType defines the type for the "EventType" enum field.
@@ -552,6 +567,21 @@ func BySearchText(opts ...sql.OrderTermOption) OrderOption {
 // ByRelevanceScore orders the results by the relevance_score field.
 func ByRelevanceScore(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRelevanceScore, opts...).ToFunc()
+}
+
+// ByFollowersCount orders the results by the followers_count field.
+func ByFollowersCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFollowersCount, opts...).ToFunc()
+}
+
+// ByFollowingCount orders the results by the following_count field.
+func ByFollowingCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFollowingCount, opts...).ToFunc()
+}
+
+// ByLikesCount orders the results by the likes_count field.
+func ByLikesCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLikesCount, opts...).ToFunc()
 }
 
 // ByTicketsCount orders the results by tickets count.
