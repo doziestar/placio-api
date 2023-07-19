@@ -12,6 +12,7 @@ import (
 	"placio-app/ent/userfollowevent"
 	"placio-app/ent/userfollowplace"
 	"placio-app/ent/userfollowuser"
+	"time"
 )
 
 type IFollowService interface {
@@ -106,14 +107,19 @@ func (s *FollowService) GetFollowedUsersByUser(ctx context.Context, userID strin
 
 // FollowUserToPlace User-Place methods
 func (s *FollowService) FollowUserToPlace(ctx context.Context, userID, placeID string) error {
+
 	_, err := s.client.UserFollowPlace.
 		Create().
 		SetID(uuid.New().String()).
 		SetUserID(userID).
 		SetPlaceID(placeID).
+		SetUpdatedAt(time.Now()).
 		Save(ctx)
+	if err != nil {
+		return err
+	}
 
-	return err
+	return nil
 }
 
 func (s *FollowService) UnfollowUserToPlace(ctx context.Context, userID, placeID string) error {
