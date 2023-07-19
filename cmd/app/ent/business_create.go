@@ -218,6 +218,34 @@ func (bc *BusinessCreate) SetNillableRelevanceScore(f *float64) *BusinessCreate 
 	return bc
 }
 
+// SetFollowerCount sets the "follower_count" field.
+func (bc *BusinessCreate) SetFollowerCount(i int) *BusinessCreate {
+	bc.mutation.SetFollowerCount(i)
+	return bc
+}
+
+// SetNillableFollowerCount sets the "follower_count" field if the given value is not nil.
+func (bc *BusinessCreate) SetNillableFollowerCount(i *int) *BusinessCreate {
+	if i != nil {
+		bc.SetFollowerCount(*i)
+	}
+	return bc
+}
+
+// SetFollowingCount sets the "following_count" field.
+func (bc *BusinessCreate) SetFollowingCount(i int) *BusinessCreate {
+	bc.mutation.SetFollowingCount(i)
+	return bc
+}
+
+// SetNillableFollowingCount sets the "following_count" field if the given value is not nil.
+func (bc *BusinessCreate) SetNillableFollowingCount(i *int) *BusinessCreate {
+	if i != nil {
+		bc.SetFollowingCount(*i)
+	}
+	return bc
+}
+
 // SetID sets the "id" field.
 func (bc *BusinessCreate) SetID(s string) *BusinessCreate {
 	bc.mutation.SetID(s)
@@ -479,6 +507,14 @@ func (bc *BusinessCreate) defaults() error {
 		v := business.DefaultCoverImage
 		bc.mutation.SetCoverImage(v)
 	}
+	if _, ok := bc.mutation.FollowerCount(); !ok {
+		v := business.DefaultFollowerCount
+		bc.mutation.SetFollowerCount(v)
+	}
+	if _, ok := bc.mutation.FollowingCount(); !ok {
+		v := business.DefaultFollowingCount
+		bc.mutation.SetFollowingCount(v)
+	}
 	return nil
 }
 
@@ -486,6 +522,12 @@ func (bc *BusinessCreate) defaults() error {
 func (bc *BusinessCreate) check() error {
 	if _, ok := bc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Business.name"`)}
+	}
+	if _, ok := bc.mutation.FollowerCount(); !ok {
+		return &ValidationError{Name: "follower_count", err: errors.New(`ent: missing required field "Business.follower_count"`)}
+	}
+	if _, ok := bc.mutation.FollowingCount(); !ok {
+		return &ValidationError{Name: "following_count", err: errors.New(`ent: missing required field "Business.following_count"`)}
 	}
 	if v, ok := bc.mutation.ID(); ok {
 		if err := business.IDValidator(v); err != nil {
@@ -586,6 +628,14 @@ func (bc *BusinessCreate) createSpec() (*Business, *sqlgraph.CreateSpec) {
 	if value, ok := bc.mutation.RelevanceScore(); ok {
 		_spec.SetField(business.FieldRelevanceScore, field.TypeFloat64, value)
 		_node.RelevanceScore = value
+	}
+	if value, ok := bc.mutation.FollowerCount(); ok {
+		_spec.SetField(business.FieldFollowerCount, field.TypeInt, value)
+		_node.FollowerCount = value
+	}
+	if value, ok := bc.mutation.FollowingCount(); ok {
+		_spec.SetField(business.FieldFollowingCount, field.TypeInt, value)
+		_node.FollowingCount = value
 	}
 	if nodes := bc.mutation.UserBusinessesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

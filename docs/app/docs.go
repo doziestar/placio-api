@@ -9259,6 +9259,14 @@ const docTemplate = `{
                     "description": "Email holds the value of the \"email\" field.",
                     "type": "string"
                 },
+                "follower_count": {
+                    "description": "FollowerCount holds the value of the \"follower_count\" field.",
+                    "type": "integer"
+                },
+                "following_count": {
+                    "description": "FollowingCount holds the value of the \"following_count\" field.",
+                    "type": "integer"
+                },
                 "id": {
                     "description": "ID of the ent.",
                     "type": "string"
@@ -9748,6 +9756,14 @@ const docTemplate = `{
                     "description": "EventSettings holds the value of the \"event_settings\" field.",
                     "type": "object",
                     "additionalProperties": true
+                },
+                "follower_count": {
+                    "description": "FollowerCount holds the value of the \"follower_count\" field.",
+                    "type": "integer"
+                },
+                "following_count": {
+                    "description": "FollowingCount holds the value of the \"following_count\" field.",
+                    "type": "integer"
                 },
                 "frequency": {
                     "description": "Frequency holds the value of the \"frequency\" field.",
@@ -10301,6 +10317,14 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                },
+                "follower_count": {
+                    "description": "FollowerCount holds the value of the \"follower_count\" field.",
+                    "type": "integer"
+                },
+                "following_count": {
+                    "description": "FollowingCount holds the value of the \"following_count\" field.",
+                    "type": "integer"
                 },
                 "id": {
                     "description": "ID of the ent.",
@@ -10994,6 +11018,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/placio-app_ent.UserEdges"
                         }
                     ]
+                },
+                "follower_count": {
+                    "description": "FollowerCount holds the value of the \"follower_count\" field.",
+                    "type": "integer"
+                },
+                "following_count": {
+                    "description": "FollowingCount holds the value of the \"following_count\" field.",
+                    "type": "integer"
                 },
                 "id": {
                     "description": "ID of the ent.",

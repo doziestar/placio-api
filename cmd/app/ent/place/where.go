@@ -154,6 +154,16 @@ func RelevanceScore(v float64) predicate.Place {
 	return predicate.Place(sql.FieldEQ(FieldRelevanceScore, v))
 }
 
+// FollowerCount applies equality check predicate on the "follower_count" field. It's identical to FollowerCountEQ.
+func FollowerCount(v int) predicate.Place {
+	return predicate.Place(sql.FieldEQ(FieldFollowerCount, v))
+}
+
+// FollowingCount applies equality check predicate on the "following_count" field. It's identical to FollowingCountEQ.
+func FollowingCount(v int) predicate.Place {
+	return predicate.Place(sql.FieldEQ(FieldFollowingCount, v))
+}
+
 // NameEQ applies the EQ predicate on the "name" field.
 func NameEQ(v string) predicate.Place {
 	return predicate.Place(sql.FieldEQ(FieldName, v))
@@ -1542,6 +1552,86 @@ func RelevanceScoreIsNil() predicate.Place {
 // RelevanceScoreNotNil applies the NotNil predicate on the "relevance_score" field.
 func RelevanceScoreNotNil() predicate.Place {
 	return predicate.Place(sql.FieldNotNull(FieldRelevanceScore))
+}
+
+// FollowerCountEQ applies the EQ predicate on the "follower_count" field.
+func FollowerCountEQ(v int) predicate.Place {
+	return predicate.Place(sql.FieldEQ(FieldFollowerCount, v))
+}
+
+// FollowerCountNEQ applies the NEQ predicate on the "follower_count" field.
+func FollowerCountNEQ(v int) predicate.Place {
+	return predicate.Place(sql.FieldNEQ(FieldFollowerCount, v))
+}
+
+// FollowerCountIn applies the In predicate on the "follower_count" field.
+func FollowerCountIn(vs ...int) predicate.Place {
+	return predicate.Place(sql.FieldIn(FieldFollowerCount, vs...))
+}
+
+// FollowerCountNotIn applies the NotIn predicate on the "follower_count" field.
+func FollowerCountNotIn(vs ...int) predicate.Place {
+	return predicate.Place(sql.FieldNotIn(FieldFollowerCount, vs...))
+}
+
+// FollowerCountGT applies the GT predicate on the "follower_count" field.
+func FollowerCountGT(v int) predicate.Place {
+	return predicate.Place(sql.FieldGT(FieldFollowerCount, v))
+}
+
+// FollowerCountGTE applies the GTE predicate on the "follower_count" field.
+func FollowerCountGTE(v int) predicate.Place {
+	return predicate.Place(sql.FieldGTE(FieldFollowerCount, v))
+}
+
+// FollowerCountLT applies the LT predicate on the "follower_count" field.
+func FollowerCountLT(v int) predicate.Place {
+	return predicate.Place(sql.FieldLT(FieldFollowerCount, v))
+}
+
+// FollowerCountLTE applies the LTE predicate on the "follower_count" field.
+func FollowerCountLTE(v int) predicate.Place {
+	return predicate.Place(sql.FieldLTE(FieldFollowerCount, v))
+}
+
+// FollowingCountEQ applies the EQ predicate on the "following_count" field.
+func FollowingCountEQ(v int) predicate.Place {
+	return predicate.Place(sql.FieldEQ(FieldFollowingCount, v))
+}
+
+// FollowingCountNEQ applies the NEQ predicate on the "following_count" field.
+func FollowingCountNEQ(v int) predicate.Place {
+	return predicate.Place(sql.FieldNEQ(FieldFollowingCount, v))
+}
+
+// FollowingCountIn applies the In predicate on the "following_count" field.
+func FollowingCountIn(vs ...int) predicate.Place {
+	return predicate.Place(sql.FieldIn(FieldFollowingCount, vs...))
+}
+
+// FollowingCountNotIn applies the NotIn predicate on the "following_count" field.
+func FollowingCountNotIn(vs ...int) predicate.Place {
+	return predicate.Place(sql.FieldNotIn(FieldFollowingCount, vs...))
+}
+
+// FollowingCountGT applies the GT predicate on the "following_count" field.
+func FollowingCountGT(v int) predicate.Place {
+	return predicate.Place(sql.FieldGT(FieldFollowingCount, v))
+}
+
+// FollowingCountGTE applies the GTE predicate on the "following_count" field.
+func FollowingCountGTE(v int) predicate.Place {
+	return predicate.Place(sql.FieldGTE(FieldFollowingCount, v))
+}
+
+// FollowingCountLT applies the LT predicate on the "following_count" field.
+func FollowingCountLT(v int) predicate.Place {
+	return predicate.Place(sql.FieldLT(FieldFollowingCount, v))
+}
+
+// FollowingCountLTE applies the LTE predicate on the "following_count" field.
+func FollowingCountLTE(v int) predicate.Place {
+	return predicate.Place(sql.FieldLTE(FieldFollowingCount, v))
 }
 
 // HasBusiness applies the HasEdge predicate on the "business" edge.

@@ -561,6 +561,34 @@ func (ec *EventCreate) SetNillableRelevanceScore(f *float64) *EventCreate {
 	return ec
 }
 
+// SetFollowerCount sets the "follower_count" field.
+func (ec *EventCreate) SetFollowerCount(i int) *EventCreate {
+	ec.mutation.SetFollowerCount(i)
+	return ec
+}
+
+// SetNillableFollowerCount sets the "follower_count" field if the given value is not nil.
+func (ec *EventCreate) SetNillableFollowerCount(i *int) *EventCreate {
+	if i != nil {
+		ec.SetFollowerCount(*i)
+	}
+	return ec
+}
+
+// SetFollowingCount sets the "following_count" field.
+func (ec *EventCreate) SetFollowingCount(i int) *EventCreate {
+	ec.mutation.SetFollowingCount(i)
+	return ec
+}
+
+// SetNillableFollowingCount sets the "following_count" field if the given value is not nil.
+func (ec *EventCreate) SetNillableFollowingCount(i *int) *EventCreate {
+	if i != nil {
+		ec.SetFollowingCount(*i)
+	}
+	return ec
+}
+
 // SetID sets the "id" field.
 func (ec *EventCreate) SetID(s string) *EventCreate {
 	ec.mutation.SetID(s)
@@ -795,6 +823,14 @@ func (ec *EventCreate) defaults() error {
 		v := event.DefaultUpdatedAt()
 		ec.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := ec.mutation.FollowerCount(); !ok {
+		v := event.DefaultFollowerCount
+		ec.mutation.SetFollowerCount(v)
+	}
+	if _, ok := ec.mutation.FollowingCount(); !ok {
+		v := event.DefaultFollowingCount
+		ec.mutation.SetFollowingCount(v)
+	}
 	return nil
 }
 
@@ -820,6 +856,12 @@ func (ec *EventCreate) check() error {
 	}
 	if _, ok := ec.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updatedAt", err: errors.New(`ent: missing required field "Event.updatedAt"`)}
+	}
+	if _, ok := ec.mutation.FollowerCount(); !ok {
+		return &ValidationError{Name: "follower_count", err: errors.New(`ent: missing required field "Event.follower_count"`)}
+	}
+	if _, ok := ec.mutation.FollowingCount(); !ok {
+		return &ValidationError{Name: "following_count", err: errors.New(`ent: missing required field "Event.following_count"`)}
 	}
 	return nil
 }
@@ -1011,6 +1053,14 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 	if value, ok := ec.mutation.RelevanceScore(); ok {
 		_spec.SetField(event.FieldRelevanceScore, field.TypeFloat64, value)
 		_node.RelevanceScore = value
+	}
+	if value, ok := ec.mutation.FollowerCount(); ok {
+		_spec.SetField(event.FieldFollowerCount, field.TypeInt, value)
+		_node.FollowerCount = value
+	}
+	if value, ok := ec.mutation.FollowingCount(); ok {
+		_spec.SetField(event.FieldFollowingCount, field.TypeInt, value)
+		_node.FollowingCount = value
 	}
 	if nodes := ec.mutation.TicketsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

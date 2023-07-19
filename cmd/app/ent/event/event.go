@@ -94,6 +94,10 @@ const (
 	FieldSearchText = "search_text"
 	// FieldRelevanceScore holds the string denoting the relevance_score field in the database.
 	FieldRelevanceScore = "relevance_score"
+	// FieldFollowerCount holds the string denoting the follower_count field in the database.
+	FieldFollowerCount = "follower_count"
+	// FieldFollowingCount holds the string denoting the following_count field in the database.
+	FieldFollowingCount = "following_count"
 	// EdgeTickets holds the string denoting the tickets edge name in mutations.
 	EdgeTickets = "tickets"
 	// EdgeTicketOptions holds the string denoting the ticket_options edge name in mutations.
@@ -237,6 +241,8 @@ var Columns = []string{
 	FieldLatitude,
 	FieldSearchText,
 	FieldRelevanceScore,
+	FieldFollowerCount,
+	FieldFollowingCount,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "events"
@@ -283,6 +289,10 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updatedAt" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultFollowerCount holds the default value on creation for the "follower_count" field.
+	DefaultFollowerCount int
+	// DefaultFollowingCount holds the default value on creation for the "following_count" field.
+	DefaultFollowingCount int
 )
 
 // EventType defines the type for the "EventType" enum field.
@@ -552,6 +562,16 @@ func BySearchText(opts ...sql.OrderTermOption) OrderOption {
 // ByRelevanceScore orders the results by the relevance_score field.
 func ByRelevanceScore(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRelevanceScore, opts...).ToFunc()
+}
+
+// ByFollowerCount orders the results by the follower_count field.
+func ByFollowerCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFollowerCount, opts...).ToFunc()
+}
+
+// ByFollowingCount orders the results by the following_count field.
+func ByFollowingCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFollowingCount, opts...).ToFunc()
 }
 
 // ByTicketsCount orders the results by tickets count.

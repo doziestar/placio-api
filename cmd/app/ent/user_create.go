@@ -215,6 +215,34 @@ func (uc *UserCreate) SetNillableRelevanceScore(f *float64) *UserCreate {
 	return uc
 }
 
+// SetFollowerCount sets the "follower_count" field.
+func (uc *UserCreate) SetFollowerCount(i int) *UserCreate {
+	uc.mutation.SetFollowerCount(i)
+	return uc
+}
+
+// SetNillableFollowerCount sets the "follower_count" field if the given value is not nil.
+func (uc *UserCreate) SetNillableFollowerCount(i *int) *UserCreate {
+	if i != nil {
+		uc.SetFollowerCount(*i)
+	}
+	return uc
+}
+
+// SetFollowingCount sets the "following_count" field.
+func (uc *UserCreate) SetFollowingCount(i int) *UserCreate {
+	uc.mutation.SetFollowingCount(i)
+	return uc
+}
+
+// SetNillableFollowingCount sets the "following_count" field if the given value is not nil.
+func (uc *UserCreate) SetNillableFollowingCount(i *int) *UserCreate {
+	if i != nil {
+		uc.SetFollowingCount(*i)
+	}
+	return uc
+}
+
 // SetID sets the "id" field.
 func (uc *UserCreate) SetID(s string) *UserCreate {
 	uc.mutation.SetID(s)
@@ -570,6 +598,14 @@ func (uc *UserCreate) defaults() error {
 		v := user.DefaultBio
 		uc.mutation.SetBio(v)
 	}
+	if _, ok := uc.mutation.FollowerCount(); !ok {
+		v := user.DefaultFollowerCount
+		uc.mutation.SetFollowerCount(v)
+	}
+	if _, ok := uc.mutation.FollowingCount(); !ok {
+		v := user.DefaultFollowingCount
+		uc.mutation.SetFollowingCount(v)
+	}
 	return nil
 }
 
@@ -580,6 +616,12 @@ func (uc *UserCreate) check() error {
 	}
 	if _, ok := uc.mutation.Username(); !ok {
 		return &ValidationError{Name: "username", err: errors.New(`ent: missing required field "User.username"`)}
+	}
+	if _, ok := uc.mutation.FollowerCount(); !ok {
+		return &ValidationError{Name: "follower_count", err: errors.New(`ent: missing required field "User.follower_count"`)}
+	}
+	if _, ok := uc.mutation.FollowingCount(); !ok {
+		return &ValidationError{Name: "following_count", err: errors.New(`ent: missing required field "User.following_count"`)}
 	}
 	if v, ok := uc.mutation.ID(); ok {
 		if err := user.IDValidator(v); err != nil {
@@ -684,6 +726,14 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.RelevanceScore(); ok {
 		_spec.SetField(user.FieldRelevanceScore, field.TypeFloat64, value)
 		_node.RelevanceScore = value
+	}
+	if value, ok := uc.mutation.FollowerCount(); ok {
+		_spec.SetField(user.FieldFollowerCount, field.TypeInt, value)
+		_node.FollowerCount = value
+	}
+	if value, ok := uc.mutation.FollowingCount(); ok {
+		_spec.SetField(user.FieldFollowingCount, field.TypeInt, value)
+		_node.FollowingCount = value
 	}
 	if nodes := uc.mutation.UserBusinessesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

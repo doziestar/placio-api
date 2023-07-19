@@ -37,6 +37,8 @@ func (Business) Fields() []ent.Field {
 		field.String("url").Optional(),
 		field.String("search_text").Optional(),
 		field.Float("relevance_score").Optional(),
+		field.Int("follower_count").Default(0),
+		field.Int("following_count").Default(0),
 	}
 }
 

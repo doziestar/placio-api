@@ -673,6 +673,12 @@ definitions:
       email:
         description: Email holds the value of the "email" field.
         type: string
+      follower_count:
+        description: FollowerCount holds the value of the "follower_count" field.
+        type: integer
+      following_count:
+        description: FollowingCount holds the value of the "following_count" field.
+        type: integer
       id:
         description: ID of the ent.
         type: string
@@ -1005,6 +1011,12 @@ definitions:
         additionalProperties: true
         description: EventSettings holds the value of the "event_settings" field.
         type: object
+      follower_count:
+        description: FollowerCount holds the value of the "follower_count" field.
+        type: integer
+      following_count:
+        description: FollowingCount holds the value of the "following_count" field.
+        type: integer
       frequency:
         allOf:
         - $ref: '#/definitions/placio-app_ent_event.Frequency'
@@ -1387,6 +1399,12 @@ definitions:
         items:
           type: string
         type: array
+      follower_count:
+        description: FollowerCount holds the value of the "follower_count" field.
+        type: integer
+      following_count:
+        description: FollowingCount holds the value of the "following_count" field.
+        type: integer
       id:
         description: ID of the ent.
         type: string
@@ -1856,6 +1874,12 @@ definitions:
         description: |-
           Edges holds the relations/edges for other nodes in the graph.
           The values are being populated by the UserQuery when eager-loading is set.
+      follower_count:
+        description: FollowerCount holds the value of the "follower_count" field.
+        type: integer
+      following_count:
+        description: FollowingCount holds the value of the "following_count" field.
+        type: integer
       id:
         description: ID of the ent.
         type: string

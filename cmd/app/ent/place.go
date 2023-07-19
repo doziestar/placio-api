@@ -74,6 +74,10 @@ type Place struct {
 	SearchText string `json:"search_text,omitempty"`
 	// RelevanceScore holds the value of the "relevance_score" field.
 	RelevanceScore float64 `json:"relevance_score,omitempty"`
+	// FollowerCount holds the value of the "follower_count" field.
+	FollowerCount int `json:"follower_count,omitempty"`
+	// FollowingCount holds the value of the "following_count" field.
+	FollowingCount int `json:"following_count,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PlaceQuery when eager-loading is set.
 	Edges           PlaceEdges `json:"edges"`
@@ -267,6 +271,8 @@ func (*Place) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case place.FieldSustainabilityScore, place.FieldRelevanceScore:
 			values[i] = new(sql.NullFloat64)
+		case place.FieldFollowerCount, place.FieldFollowingCount:
+			values[i] = new(sql.NullInt64)
 		case place.FieldID, place.FieldName, place.FieldType, place.FieldDescription, place.FieldLocation, place.FieldEmail, place.FieldPhone, place.FieldWebsite, place.FieldCoverImage, place.FieldPicture, place.FieldCountry, place.FieldCity, place.FieldState, place.FieldSpecialOffers, place.FieldLongitude, place.FieldLatitude, place.FieldSearchText:
 			values[i] = new(sql.NullString)
 		case place.ForeignKeys[0]: // business_places
@@ -482,6 +488,18 @@ func (pl *Place) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				pl.RelevanceScore = value.Float64
 			}
+		case place.FieldFollowerCount:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field follower_count", values[i])
+			} else if value.Valid {
+				pl.FollowerCount = int(value.Int64)
+			}
+		case place.FieldFollowingCount:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field following_count", values[i])
+			} else if value.Valid {
+				pl.FollowingCount = int(value.Int64)
+			}
 		case place.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field business_places", values[i])
@@ -690,6 +708,12 @@ func (pl *Place) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("relevance_score=")
 	builder.WriteString(fmt.Sprintf("%v", pl.RelevanceScore))
+	builder.WriteString(", ")
+	builder.WriteString("follower_count=")
+	builder.WriteString(fmt.Sprintf("%v", pl.FollowerCount))
+	builder.WriteString(", ")
+	builder.WriteString("following_count=")
+	builder.WriteString(fmt.Sprintf("%v", pl.FollowingCount))
 	builder.WriteByte(')')
 	return builder.String()
 }

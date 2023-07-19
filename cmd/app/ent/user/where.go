@@ -124,6 +124,16 @@ func RelevanceScore(v float64) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldRelevanceScore, v))
 }
 
+// FollowerCount applies equality check predicate on the "follower_count" field. It's identical to FollowerCountEQ.
+func FollowerCount(v int) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldFollowerCount, v))
+}
+
+// FollowingCount applies equality check predicate on the "following_count" field. It's identical to FollowingCountEQ.
+func FollowingCount(v int) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldFollowingCount, v))
+}
+
 // Auth0IDEQ applies the EQ predicate on the "auth0_id" field.
 func Auth0IDEQ(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldAuth0ID, v))
@@ -1017,6 +1027,86 @@ func RelevanceScoreIsNil() predicate.User {
 // RelevanceScoreNotNil applies the NotNil predicate on the "relevance_score" field.
 func RelevanceScoreNotNil() predicate.User {
 	return predicate.User(sql.FieldNotNull(FieldRelevanceScore))
+}
+
+// FollowerCountEQ applies the EQ predicate on the "follower_count" field.
+func FollowerCountEQ(v int) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldFollowerCount, v))
+}
+
+// FollowerCountNEQ applies the NEQ predicate on the "follower_count" field.
+func FollowerCountNEQ(v int) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldFollowerCount, v))
+}
+
+// FollowerCountIn applies the In predicate on the "follower_count" field.
+func FollowerCountIn(vs ...int) predicate.User {
+	return predicate.User(sql.FieldIn(FieldFollowerCount, vs...))
+}
+
+// FollowerCountNotIn applies the NotIn predicate on the "follower_count" field.
+func FollowerCountNotIn(vs ...int) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldFollowerCount, vs...))
+}
+
+// FollowerCountGT applies the GT predicate on the "follower_count" field.
+func FollowerCountGT(v int) predicate.User {
+	return predicate.User(sql.FieldGT(FieldFollowerCount, v))
+}
+
+// FollowerCountGTE applies the GTE predicate on the "follower_count" field.
+func FollowerCountGTE(v int) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldFollowerCount, v))
+}
+
+// FollowerCountLT applies the LT predicate on the "follower_count" field.
+func FollowerCountLT(v int) predicate.User {
+	return predicate.User(sql.FieldLT(FieldFollowerCount, v))
+}
+
+// FollowerCountLTE applies the LTE predicate on the "follower_count" field.
+func FollowerCountLTE(v int) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldFollowerCount, v))
+}
+
+// FollowingCountEQ applies the EQ predicate on the "following_count" field.
+func FollowingCountEQ(v int) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldFollowingCount, v))
+}
+
+// FollowingCountNEQ applies the NEQ predicate on the "following_count" field.
+func FollowingCountNEQ(v int) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldFollowingCount, v))
+}
+
+// FollowingCountIn applies the In predicate on the "following_count" field.
+func FollowingCountIn(vs ...int) predicate.User {
+	return predicate.User(sql.FieldIn(FieldFollowingCount, vs...))
+}
+
+// FollowingCountNotIn applies the NotIn predicate on the "following_count" field.
+func FollowingCountNotIn(vs ...int) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldFollowingCount, vs...))
+}
+
+// FollowingCountGT applies the GT predicate on the "following_count" field.
+func FollowingCountGT(v int) predicate.User {
+	return predicate.User(sql.FieldGT(FieldFollowingCount, v))
+}
+
+// FollowingCountGTE applies the GTE predicate on the "following_count" field.
+func FollowingCountGTE(v int) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldFollowingCount, v))
+}
+
+// FollowingCountLT applies the LT predicate on the "following_count" field.
+func FollowingCountLT(v int) predicate.User {
+	return predicate.User(sql.FieldLT(FieldFollowingCount, v))
+}
+
+// FollowingCountLTE applies the LTE predicate on the "following_count" field.
+func FollowingCountLTE(v int) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldFollowingCount, v))
 }
 
 // HasUserBusinesses applies the HasEdge predicate on the "userBusinesses" edge.
