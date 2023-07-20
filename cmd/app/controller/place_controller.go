@@ -23,9 +23,9 @@ func (c *PlaceController) RegisterRoutes(router, routerWithoutAuth *gin.RouterGr
 	placeRouter := router.Group("/places")
 	placeRouterWithoutAuth := routerWithoutAuth.Group("/places")
 	{
-		placeRouter.GET("/:id", utility.Use(c.getPlace))
+		placeRouterWithoutAuth.GET("/:id", utility.Use(c.getPlace))
 		placeRouter.POST("/", utility.Use(c.createPlace))
-		placeRouter.GET("/", utility.Use(c.getPlacesByFilters))
+		placeRouterWithoutAuth.GET("/", utility.Use(c.getPlacesByFilters))
 		placeRouter.PATCH("/:id", utility.Use(c.updatePlace))
 		placeRouter.DELETE("/:id", utility.Use(c.deletePlace))
 		placeRouter.POST("/:id/amenities", utility.Use(c.addAmenitiesToPlace))
