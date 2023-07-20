@@ -34,7 +34,6 @@ func (bc *BusinessAccountController) RegisterRoutes(router *gin.RouterGroup) {
 		businessRouter.GET("/:businessAccountID", utility.Use(bc.getBusinessAccount))
 		businessRouter.PATCH("/:businessAccountID", utility.Use(bc.updateBusinessAccount))
 		businessRouter.DELETE("/:businessAccountID", utility.Use(bc.deleteBusinessAccount))
-		businessRouter.POST("/:businessAccountID/user/:userID", utility.Use(bc.associateUserWithBusinessAccount))
 		businessRouter.DELETE("/:businessAccountID/user/:userID", utility.Use(bc.removeUserFromBusinessAccount))
 		businessRouter.PUT("/:businessAccountID/user/:currentOwnerID/:newOwnerID", utility.Use(bc.transferBusinessAccountOwnership))
 		businessRouter.GET("/:businessAccountID/users", utility.Use(bc.getBusinessAccountsForUser))
@@ -61,8 +60,7 @@ func (bc *BusinessAccountController) RegisterRoutes(router *gin.RouterGroup) {
 // @Produce json
 // @Param businessAccountID path string true "Business Account ID"
 // @Param userID path string true "User ID"
-// @Param role body string true "Role"
-// @Param permissions body string true "Permissions"
+// @Param data body Dto.TeamMember true "Team Member"
 // @Param Authorization header string true "Bearer token"
 // @Accept json
 // @Success 200 {object} Dto.Response
@@ -73,6 +71,7 @@ func (bc *BusinessAccountController) RegisterRoutes(router *gin.RouterGroup) {
 func (bc *BusinessAccountController) addTeamMember(c *gin.Context) error {
 	businessAccountID := c.Param("businessAccountID")
 	userID := c.Param("userID")
+	adminUser := c.GetString("userID")
 
 	// role and permissions are sent in the request body
 	var teamMember Dto.TeamMember
@@ -80,7 +79,7 @@ func (bc *BusinessAccountController) addTeamMember(c *gin.Context) error {
 		return err
 	}
 
-	err := bc.service.AddTeamMember(c, userID, businessAccountID, teamMember.Role, teamMember.Permission)
+	err := bc.service.AddTeamMember(c, adminUser, userID, businessAccountID, teamMember.Role, teamMember.Permission)
 	if err != nil {
 
 		return err
@@ -527,23 +526,6 @@ func (bc *BusinessAccountController) getUserBusinessAccounts(c *gin.Context) err
 		return err
 	}
 	c.JSON(http.StatusOK, gin.H{"businessAccounts": businessAccount})
-	return nil
-}
-
-// @Summary Associate user with business account
-// @ID associate-user-business-account
-// @Produce json
-// @Tags Business
-// @Param Authorization header string true "Bearer token"
-// @Param businessAccountID path string true "Business Account ID"
-// @Param userID path string true "User ID"
-// @Success 200 {object} Dto.Response
-// @Failure 400 {object} Dto.Error
-// @Failure 401 {object} Dto.Error
-// @Failure 500 {object} Dto.ErrorDto
-// @Router /business/{businessAccountID}/user/{userID} [post]
-func (bc *BusinessAccountController) associateUserWithBusinessAccount(c *gin.Context) error {
-	// Implementation...
 	return nil
 }
 
