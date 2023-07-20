@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"github.com/google/uuid"
 	"log"
 	"placio-app/ent"
@@ -121,6 +122,7 @@ func (s *UserLikePlaceServiceImpl) LikePlace(ctx context.Context, userID string,
 		Where(user.ID(userID)).
 		Only(ctx)
 	if err != nil {
+		log.Println("Failed to query user:", userID)
 		return nil, err
 	}
 
@@ -129,6 +131,7 @@ func (s *UserLikePlaceServiceImpl) LikePlace(ctx context.Context, userID string,
 		Where(place.ID(placeID)).
 		Only(ctx)
 	if err != nil {
+		log.Println("Failed to query place:", placeID)
 		return nil, err
 	}
 
@@ -140,34 +143,43 @@ func (s *UserLikePlaceServiceImpl) LikePlace(ctx context.Context, userID string,
 		SetUpdatedAt(time.Now()).
 		Save(ctx)
 	if err != nil {
+		log.Println("Failed to create UserLikePlace:", err)
 		return nil, err
 	}
 
+	log.Println("Successfully created UserLikePlace for user and place:", userID, placeID)
 	return userLike, nil
 }
 
 func (s *UserLikePlaceServiceImpl) UnlikePlace(ctx context.Context, userId, placeID string) error {
-	userLikePlace, err := s.client.UserLikePlace.
+	userLikePlaces, err := s.client.UserLikePlace.
 		Query().
 		Where(userlikeplace.HasUserWith(user.ID(userId))).
 		Where(userlikeplace.HasPlaceWith(place.ID(placeID))).
-		Only(ctx)
-
+		All(ctx)
 	if err != nil {
+		log.Println("Error querying UserLikePlace with given user and place:", userId, placeID)
+		return err
+	}
+
+	if len(userLikePlaces) == 0 {
 		log.Println("UserLikePlace with given user and place does not exist:", userId, placeID)
-		return err
+		return errors.New("UserLikePlace with given user and place does not exist")
 	}
 
-	_, err = s.client.UserLikePlace.
-		Delete().
-		Where(userlikeplace.ID(userLikePlace.ID)).
-		Exec(ctx)
-	if err != nil {
-		log.Println("Failed to unlike place:", err)
-		return err
+	// Loop through all userLikePlaces and delete them
+	for _, userLikePlace := range userLikePlaces {
+		_, err = s.client.UserLikePlace.
+			Delete().
+			Where(userlikeplace.ID(userLikePlace.ID)).
+			Exec(ctx)
+		if err != nil {
+			log.Println("Failed to unlike place:", err)
+			return err
+		}
 	}
-
 	return nil
+
 }
 
 func (s *UserLikePlaceServiceImpl) GetUserLikedPlaces(ctx context.Context, userID string) ([]*ent.UserLikePlace, error) {
