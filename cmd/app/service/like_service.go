@@ -117,7 +117,24 @@ func (s *LikeServiceImpl) GetPostLikes(ctx context.Context, postID string) ([]*e
 }
 
 func (s *UserLikePlaceServiceImpl) LikePlace(ctx context.Context, userID string, placeID string) (*ent.UserLikePlace, error) {
-	user, err := s.client.User.
+
+	// Check if the UserLikePlace relation already exists
+	existingUserLikePlaces, err := s.client.UserLikePlace.
+		Query().
+		Where(userlikeplace.HasUserWith(user.ID(userID))).
+		Where(userlikeplace.HasPlaceWith(place.ID(placeID))).
+		All(ctx)
+	if err != nil {
+		log.Println("Failed to query UserLikePlace:", err)
+		return nil, err
+	}
+
+	if len(existingUserLikePlaces) > 0 {
+		log.Println("UserLikePlace already exists for user and place:", userID, placeID)
+		return nil, errors.New("you already like this place")
+	}
+
+	userData, err := s.client.User.
 		Query().
 		Where(user.ID(userID)).
 		Only(ctx)
@@ -126,7 +143,7 @@ func (s *UserLikePlaceServiceImpl) LikePlace(ctx context.Context, userID string,
 		return nil, err
 	}
 
-	place, err := s.client.Place.
+	placeData, err := s.client.Place.
 		Query().
 		Where(place.ID(placeID)).
 		Only(ctx)
@@ -138,8 +155,8 @@ func (s *UserLikePlaceServiceImpl) LikePlace(ctx context.Context, userID string,
 	userLike, err := s.client.UserLikePlace.
 		Create().
 		SetID(uuid.New().String()).
-		SetUser(user).
-		SetPlace(place).
+		SetUser(userData).
+		SetPlace(placeData).
 		SetUpdatedAt(time.Now()).
 		Save(ctx)
 	if err != nil {
@@ -158,13 +175,11 @@ func (s *UserLikePlaceServiceImpl) UnlikePlace(ctx context.Context, userId, plac
 		Where(userlikeplace.HasPlaceWith(place.ID(placeID))).
 		All(ctx)
 	if err != nil {
-		log.Println("Error querying UserLikePlace with given user and place:", userId, placeID)
 		return err
 	}
 
 	if len(userLikePlaces) == 0 {
-		log.Println("UserLikePlace with given user and place does not exist:", userId, placeID)
-		return errors.New("UserLikePlace with given user and place does not exist")
+		return errors.New("you don't like this place")
 	}
 
 	// Loop through all userLikePlaces and delete them
@@ -174,7 +189,6 @@ func (s *UserLikePlaceServiceImpl) UnlikePlace(ctx context.Context, userId, plac
 			Where(userlikeplace.ID(userLikePlace.ID)).
 			Exec(ctx)
 		if err != nil {
-			log.Println("Failed to unlike place:", err)
 			return err
 		}
 	}
