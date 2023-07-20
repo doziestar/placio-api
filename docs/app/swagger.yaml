@@ -7318,6 +7318,162 @@ paths:
       summary: Follow a business
       tags:
       - Follow
+  /follow/check/business/{businessID}:
+    get:
+      consumes:
+      - application/json
+      description: Check if the user follows a specific Business
+      operationId: user-check-follow-business
+      parameters:
+      - description: Business ID
+        in: path
+        name: businessID
+        required: true
+        type: string
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Follow status returned successfully
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+      summary: Check if user follows a business
+      tags:
+      - Follow
+  /follow/check/event/{eventID}:
+    get:
+      consumes:
+      - application/json
+      description: Check if the user follows an Event
+      operationId: user-check-follow-event
+      parameters:
+      - description: Event ID
+        in: path
+        name: eventID
+        required: true
+        type: string
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Follow status returned successfully
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+      summary: Check if user follows an event
+      tags:
+      - Follow
+  /follow/check/place/{placeID}:
+    get:
+      consumes:
+      - application/json
+      description: Check if the user follows a Place
+      operationId: user-check-follow-place
+      parameters:
+      - description: Place ID
+        in: path
+        name: placeID
+        required: true
+        type: string
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Follow status returned successfully
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+      summary: Check if user follows a place
+      tags:
+      - Follow
+  /follow/check/user/{followedID}:
+    get:
+      consumes:
+      - application/json
+      description: Check if the user follows another User
+      operationId: user-check-follow-user
+      parameters:
+      - description: User ID
+        in: path
+        name: followedID
+        required: true
+        type: string
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Follow status returned successfully
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+      summary: Check if user follows another user
+      tags:
+      - Follow
   /follow/event/{eventID}:
     post:
       consumes:

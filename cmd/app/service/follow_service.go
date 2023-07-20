@@ -31,6 +31,11 @@ type IFollowService interface {
 	FollowUserToEvent(ctx context.Context, userID, eventID string) error
 	UnfollowUserToEvent(ctx context.Context, userID, eventID string) error
 	GetFollowedEventsByUser(ctx context.Context, userID string) ([]*ent.Event, error)
+
+	CheckIfUserFollowsBusiness(ctx context.Context, userID, businessID string) (bool, error)
+	CheckIfUserFollowsUser(ctx context.Context, followerID, followedID string) (bool, error)
+	CheckIfUserFollowsPlace(ctx context.Context, userID, placeID string) (bool, error)
+	CheckIfUserFollowsEvent(ctx context.Context, userID, eventID string) (bool, error)
 }
 
 type FollowService struct {
@@ -119,6 +124,18 @@ func (s *FollowService) FollowUserToPlace(ctx context.Context, userID, placeID s
 		return err
 	}
 
+	placeToUpdate, err := s.client.Place.Get(ctx, placeID)
+	if err != nil {
+		return err
+	}
+	_, err = s.client.Place.
+		UpdateOne(placeToUpdate).
+		SetFollowerCount(placeToUpdate.FollowerCount + 1).
+		Save(ctx)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -171,4 +188,64 @@ func (s *FollowService) GetFollowedEventsByUser(ctx context.Context, userID stri
 		All(ctx)
 
 	return events, err
+}
+
+func (s *FollowService) CheckIfUserFollowsBusiness(ctx context.Context, userID, businessID string) (bool, error) {
+	exists, err := s.client.UserFollowBusiness.
+		Query().
+		Where(
+			userfollowbusiness.HasUserWith(user.ID(userID)),
+			userfollowbusiness.HasBusinessWith(business.ID(businessID)),
+		).
+		Exist(ctx)
+
+	if err != nil {
+		return false, err
+	}
+	return exists, nil
+}
+
+func (s *FollowService) CheckIfUserFollowsUser(ctx context.Context, followerID, followedID string) (bool, error) {
+	exists, err := s.client.UserFollowUser.
+		Query().
+		Where(
+			userfollowuser.HasFollowerWith(user.ID(followerID)),
+			userfollowuser.HasFollowedWith(user.ID(followedID)),
+		).
+		Exist(ctx)
+
+	if err != nil {
+		return false, err
+	}
+	return exists, nil
+}
+
+func (s *FollowService) CheckIfUserFollowsPlace(ctx context.Context, userID, placeID string) (bool, error) {
+	exists, err := s.client.UserFollowPlace.
+		Query().
+		Where(
+			userfollowplace.HasUserWith(user.ID(userID)),
+			userfollowplace.HasPlaceWith(place.ID(placeID)),
+		).
+		Exist(ctx)
+
+	if err != nil {
+		return false, err
+	}
+	return exists, nil
+}
+
+func (s *FollowService) CheckIfUserFollowsEvent(ctx context.Context, userID, eventID string) (bool, error) {
+	exists, err := s.client.UserFollowEvent.
+		Query().
+		Where(
+			userfollowevent.HasUserWith(user.ID(userID)),
+			userfollowevent.HasEventWith(event.ID(eventID)),
+		).
+		Exist(ctx)
+
+	if err != nil {
+		return false, err
+	}
+	return exists, nil
 }
