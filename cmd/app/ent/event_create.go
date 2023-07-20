@@ -589,6 +589,160 @@ func (ec *EventCreate) SetNillableFollowingCount(i *int) *EventCreate {
 	return ec
 }
 
+// SetIsPremium sets the "is_Premium" field.
+func (ec *EventCreate) SetIsPremium(b bool) *EventCreate {
+	ec.mutation.SetIsPremium(b)
+	return ec
+}
+
+// SetNillableIsPremium sets the "is_Premium" field if the given value is not nil.
+func (ec *EventCreate) SetNillableIsPremium(b *bool) *EventCreate {
+	if b != nil {
+		ec.SetIsPremium(*b)
+	}
+	return ec
+}
+
+// SetIsPublished sets the "is_published" field.
+func (ec *EventCreate) SetIsPublished(b bool) *EventCreate {
+	ec.mutation.SetIsPublished(b)
+	return ec
+}
+
+// SetNillableIsPublished sets the "is_published" field if the given value is not nil.
+func (ec *EventCreate) SetNillableIsPublished(b *bool) *EventCreate {
+	if b != nil {
+		ec.SetIsPublished(*b)
+	}
+	return ec
+}
+
+// SetIsOnline sets the "is_Online" field.
+func (ec *EventCreate) SetIsOnline(b bool) *EventCreate {
+	ec.mutation.SetIsOnline(b)
+	return ec
+}
+
+// SetNillableIsOnline sets the "is_Online" field if the given value is not nil.
+func (ec *EventCreate) SetNillableIsOnline(b *bool) *EventCreate {
+	if b != nil {
+		ec.SetIsOnline(*b)
+	}
+	return ec
+}
+
+// SetIsFree sets the "is_Free" field.
+func (ec *EventCreate) SetIsFree(b bool) *EventCreate {
+	ec.mutation.SetIsFree(b)
+	return ec
+}
+
+// SetNillableIsFree sets the "is_Free" field if the given value is not nil.
+func (ec *EventCreate) SetNillableIsFree(b *bool) *EventCreate {
+	if b != nil {
+		ec.SetIsFree(*b)
+	}
+	return ec
+}
+
+// SetIsPaid sets the "is_Paid" field.
+func (ec *EventCreate) SetIsPaid(b bool) *EventCreate {
+	ec.mutation.SetIsPaid(b)
+	return ec
+}
+
+// SetNillableIsPaid sets the "is_Paid" field if the given value is not nil.
+func (ec *EventCreate) SetNillableIsPaid(b *bool) *EventCreate {
+	if b != nil {
+		ec.SetIsPaid(*b)
+	}
+	return ec
+}
+
+// SetIsOnlineOnly sets the "is_Online_Only" field.
+func (ec *EventCreate) SetIsOnlineOnly(b bool) *EventCreate {
+	ec.mutation.SetIsOnlineOnly(b)
+	return ec
+}
+
+// SetNillableIsOnlineOnly sets the "is_Online_Only" field if the given value is not nil.
+func (ec *EventCreate) SetNillableIsOnlineOnly(b *bool) *EventCreate {
+	if b != nil {
+		ec.SetIsOnlineOnly(*b)
+	}
+	return ec
+}
+
+// SetIsInPersonOnly sets the "is_In_Person_Only" field.
+func (ec *EventCreate) SetIsInPersonOnly(b bool) *EventCreate {
+	ec.mutation.SetIsInPersonOnly(b)
+	return ec
+}
+
+// SetNillableIsInPersonOnly sets the "is_In_Person_Only" field if the given value is not nil.
+func (ec *EventCreate) SetNillableIsInPersonOnly(b *bool) *EventCreate {
+	if b != nil {
+		ec.SetIsInPersonOnly(*b)
+	}
+	return ec
+}
+
+// SetIsHybrid sets the "is_Hybrid" field.
+func (ec *EventCreate) SetIsHybrid(b bool) *EventCreate {
+	ec.mutation.SetIsHybrid(b)
+	return ec
+}
+
+// SetNillableIsHybrid sets the "is_Hybrid" field if the given value is not nil.
+func (ec *EventCreate) SetNillableIsHybrid(b *bool) *EventCreate {
+	if b != nil {
+		ec.SetIsHybrid(*b)
+	}
+	return ec
+}
+
+// SetIsOnlineAndInPerson sets the "is_Online_And_In_Person" field.
+func (ec *EventCreate) SetIsOnlineAndInPerson(b bool) *EventCreate {
+	ec.mutation.SetIsOnlineAndInPerson(b)
+	return ec
+}
+
+// SetNillableIsOnlineAndInPerson sets the "is_Online_And_In_Person" field if the given value is not nil.
+func (ec *EventCreate) SetNillableIsOnlineAndInPerson(b *bool) *EventCreate {
+	if b != nil {
+		ec.SetIsOnlineAndInPerson(*b)
+	}
+	return ec
+}
+
+// SetIsOnlineAndInPersonOnly sets the "is_Online_And_In_Person_Only" field.
+func (ec *EventCreate) SetIsOnlineAndInPersonOnly(b bool) *EventCreate {
+	ec.mutation.SetIsOnlineAndInPersonOnly(b)
+	return ec
+}
+
+// SetNillableIsOnlineAndInPersonOnly sets the "is_Online_And_In_Person_Only" field if the given value is not nil.
+func (ec *EventCreate) SetNillableIsOnlineAndInPersonOnly(b *bool) *EventCreate {
+	if b != nil {
+		ec.SetIsOnlineAndInPersonOnly(*b)
+	}
+	return ec
+}
+
+// SetIsOnlineAndInPersonOrHybrid sets the "is_Online_And_In_Person_Or_Hybrid" field.
+func (ec *EventCreate) SetIsOnlineAndInPersonOrHybrid(b bool) *EventCreate {
+	ec.mutation.SetIsOnlineAndInPersonOrHybrid(b)
+	return ec
+}
+
+// SetNillableIsOnlineAndInPersonOrHybrid sets the "is_Online_And_In_Person_Or_Hybrid" field if the given value is not nil.
+func (ec *EventCreate) SetNillableIsOnlineAndInPersonOrHybrid(b *bool) *EventCreate {
+	if b != nil {
+		ec.SetIsOnlineAndInPersonOrHybrid(*b)
+	}
+	return ec
+}
+
 // SetID sets the "id" field.
 func (ec *EventCreate) SetID(s string) *EventCreate {
 	ec.mutation.SetID(s)
@@ -831,6 +985,50 @@ func (ec *EventCreate) defaults() error {
 		v := event.DefaultFollowingCount
 		ec.mutation.SetFollowingCount(v)
 	}
+	if _, ok := ec.mutation.IsPremium(); !ok {
+		v := event.DefaultIsPremium
+		ec.mutation.SetIsPremium(v)
+	}
+	if _, ok := ec.mutation.IsPublished(); !ok {
+		v := event.DefaultIsPublished
+		ec.mutation.SetIsPublished(v)
+	}
+	if _, ok := ec.mutation.IsOnline(); !ok {
+		v := event.DefaultIsOnline
+		ec.mutation.SetIsOnline(v)
+	}
+	if _, ok := ec.mutation.IsFree(); !ok {
+		v := event.DefaultIsFree
+		ec.mutation.SetIsFree(v)
+	}
+	if _, ok := ec.mutation.IsPaid(); !ok {
+		v := event.DefaultIsPaid
+		ec.mutation.SetIsPaid(v)
+	}
+	if _, ok := ec.mutation.IsOnlineOnly(); !ok {
+		v := event.DefaultIsOnlineOnly
+		ec.mutation.SetIsOnlineOnly(v)
+	}
+	if _, ok := ec.mutation.IsInPersonOnly(); !ok {
+		v := event.DefaultIsInPersonOnly
+		ec.mutation.SetIsInPersonOnly(v)
+	}
+	if _, ok := ec.mutation.IsHybrid(); !ok {
+		v := event.DefaultIsHybrid
+		ec.mutation.SetIsHybrid(v)
+	}
+	if _, ok := ec.mutation.IsOnlineAndInPerson(); !ok {
+		v := event.DefaultIsOnlineAndInPerson
+		ec.mutation.SetIsOnlineAndInPerson(v)
+	}
+	if _, ok := ec.mutation.IsOnlineAndInPersonOnly(); !ok {
+		v := event.DefaultIsOnlineAndInPersonOnly
+		ec.mutation.SetIsOnlineAndInPersonOnly(v)
+	}
+	if _, ok := ec.mutation.IsOnlineAndInPersonOrHybrid(); !ok {
+		v := event.DefaultIsOnlineAndInPersonOrHybrid
+		ec.mutation.SetIsOnlineAndInPersonOrHybrid(v)
+	}
 	return nil
 }
 
@@ -862,6 +1060,39 @@ func (ec *EventCreate) check() error {
 	}
 	if _, ok := ec.mutation.FollowingCount(); !ok {
 		return &ValidationError{Name: "following_count", err: errors.New(`ent: missing required field "Event.following_count"`)}
+	}
+	if _, ok := ec.mutation.IsPremium(); !ok {
+		return &ValidationError{Name: "is_Premium", err: errors.New(`ent: missing required field "Event.is_Premium"`)}
+	}
+	if _, ok := ec.mutation.IsPublished(); !ok {
+		return &ValidationError{Name: "is_published", err: errors.New(`ent: missing required field "Event.is_published"`)}
+	}
+	if _, ok := ec.mutation.IsOnline(); !ok {
+		return &ValidationError{Name: "is_Online", err: errors.New(`ent: missing required field "Event.is_Online"`)}
+	}
+	if _, ok := ec.mutation.IsFree(); !ok {
+		return &ValidationError{Name: "is_Free", err: errors.New(`ent: missing required field "Event.is_Free"`)}
+	}
+	if _, ok := ec.mutation.IsPaid(); !ok {
+		return &ValidationError{Name: "is_Paid", err: errors.New(`ent: missing required field "Event.is_Paid"`)}
+	}
+	if _, ok := ec.mutation.IsOnlineOnly(); !ok {
+		return &ValidationError{Name: "is_Online_Only", err: errors.New(`ent: missing required field "Event.is_Online_Only"`)}
+	}
+	if _, ok := ec.mutation.IsInPersonOnly(); !ok {
+		return &ValidationError{Name: "is_In_Person_Only", err: errors.New(`ent: missing required field "Event.is_In_Person_Only"`)}
+	}
+	if _, ok := ec.mutation.IsHybrid(); !ok {
+		return &ValidationError{Name: "is_Hybrid", err: errors.New(`ent: missing required field "Event.is_Hybrid"`)}
+	}
+	if _, ok := ec.mutation.IsOnlineAndInPerson(); !ok {
+		return &ValidationError{Name: "is_Online_And_In_Person", err: errors.New(`ent: missing required field "Event.is_Online_And_In_Person"`)}
+	}
+	if _, ok := ec.mutation.IsOnlineAndInPersonOnly(); !ok {
+		return &ValidationError{Name: "is_Online_And_In_Person_Only", err: errors.New(`ent: missing required field "Event.is_Online_And_In_Person_Only"`)}
+	}
+	if _, ok := ec.mutation.IsOnlineAndInPersonOrHybrid(); !ok {
+		return &ValidationError{Name: "is_Online_And_In_Person_Or_Hybrid", err: errors.New(`ent: missing required field "Event.is_Online_And_In_Person_Or_Hybrid"`)}
 	}
 	return nil
 }
@@ -1061,6 +1292,50 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 	if value, ok := ec.mutation.FollowingCount(); ok {
 		_spec.SetField(event.FieldFollowingCount, field.TypeInt, value)
 		_node.FollowingCount = value
+	}
+	if value, ok := ec.mutation.IsPremium(); ok {
+		_spec.SetField(event.FieldIsPremium, field.TypeBool, value)
+		_node.IsPremium = value
+	}
+	if value, ok := ec.mutation.IsPublished(); ok {
+		_spec.SetField(event.FieldIsPublished, field.TypeBool, value)
+		_node.IsPublished = value
+	}
+	if value, ok := ec.mutation.IsOnline(); ok {
+		_spec.SetField(event.FieldIsOnline, field.TypeBool, value)
+		_node.IsOnline = value
+	}
+	if value, ok := ec.mutation.IsFree(); ok {
+		_spec.SetField(event.FieldIsFree, field.TypeBool, value)
+		_node.IsFree = value
+	}
+	if value, ok := ec.mutation.IsPaid(); ok {
+		_spec.SetField(event.FieldIsPaid, field.TypeBool, value)
+		_node.IsPaid = value
+	}
+	if value, ok := ec.mutation.IsOnlineOnly(); ok {
+		_spec.SetField(event.FieldIsOnlineOnly, field.TypeBool, value)
+		_node.IsOnlineOnly = value
+	}
+	if value, ok := ec.mutation.IsInPersonOnly(); ok {
+		_spec.SetField(event.FieldIsInPersonOnly, field.TypeBool, value)
+		_node.IsInPersonOnly = value
+	}
+	if value, ok := ec.mutation.IsHybrid(); ok {
+		_spec.SetField(event.FieldIsHybrid, field.TypeBool, value)
+		_node.IsHybrid = value
+	}
+	if value, ok := ec.mutation.IsOnlineAndInPerson(); ok {
+		_spec.SetField(event.FieldIsOnlineAndInPerson, field.TypeBool, value)
+		_node.IsOnlineAndInPerson = value
+	}
+	if value, ok := ec.mutation.IsOnlineAndInPersonOnly(); ok {
+		_spec.SetField(event.FieldIsOnlineAndInPersonOnly, field.TypeBool, value)
+		_node.IsOnlineAndInPersonOnly = value
+	}
+	if value, ok := ec.mutation.IsOnlineAndInPersonOrHybrid(); ok {
+		_spec.SetField(event.FieldIsOnlineAndInPersonOrHybrid, field.TypeBool, value)
+		_node.IsOnlineAndInPersonOrHybrid = value
 	}
 	if nodes := ec.mutation.TicketsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

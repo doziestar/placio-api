@@ -164,6 +164,16 @@ func FollowingCount(v int) predicate.Place {
 	return predicate.Place(sql.FieldEQ(FieldFollowingCount, v))
 }
 
+// IsPremium applies equality check predicate on the "is_Premium" field. It's identical to IsPremiumEQ.
+func IsPremium(v bool) predicate.Place {
+	return predicate.Place(sql.FieldEQ(FieldIsPremium, v))
+}
+
+// IsPublished applies equality check predicate on the "is_published" field. It's identical to IsPublishedEQ.
+func IsPublished(v bool) predicate.Place {
+	return predicate.Place(sql.FieldEQ(FieldIsPublished, v))
+}
+
 // NameEQ applies the EQ predicate on the "name" field.
 func NameEQ(v string) predicate.Place {
 	return predicate.Place(sql.FieldEQ(FieldName, v))
@@ -1632,6 +1642,26 @@ func FollowingCountLT(v int) predicate.Place {
 // FollowingCountLTE applies the LTE predicate on the "following_count" field.
 func FollowingCountLTE(v int) predicate.Place {
 	return predicate.Place(sql.FieldLTE(FieldFollowingCount, v))
+}
+
+// IsPremiumEQ applies the EQ predicate on the "is_Premium" field.
+func IsPremiumEQ(v bool) predicate.Place {
+	return predicate.Place(sql.FieldEQ(FieldIsPremium, v))
+}
+
+// IsPremiumNEQ applies the NEQ predicate on the "is_Premium" field.
+func IsPremiumNEQ(v bool) predicate.Place {
+	return predicate.Place(sql.FieldNEQ(FieldIsPremium, v))
+}
+
+// IsPublishedEQ applies the EQ predicate on the "is_published" field.
+func IsPublishedEQ(v bool) predicate.Place {
+	return predicate.Place(sql.FieldEQ(FieldIsPublished, v))
+}
+
+// IsPublishedNEQ applies the NEQ predicate on the "is_published" field.
+func IsPublishedNEQ(v bool) predicate.Place {
+	return predicate.Place(sql.FieldNEQ(FieldIsPublished, v))
 }
 
 // HasBusiness applies the HasEdge predicate on the "business" edge.

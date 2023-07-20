@@ -98,6 +98,28 @@ const (
 	FieldFollowerCount = "follower_count"
 	// FieldFollowingCount holds the string denoting the following_count field in the database.
 	FieldFollowingCount = "following_count"
+	// FieldIsPremium holds the string denoting the is_premium field in the database.
+	FieldIsPremium = "is_premium"
+	// FieldIsPublished holds the string denoting the is_published field in the database.
+	FieldIsPublished = "is_published"
+	// FieldIsOnline holds the string denoting the is_online field in the database.
+	FieldIsOnline = "is_online"
+	// FieldIsFree holds the string denoting the is_free field in the database.
+	FieldIsFree = "is_free"
+	// FieldIsPaid holds the string denoting the is_paid field in the database.
+	FieldIsPaid = "is_paid"
+	// FieldIsOnlineOnly holds the string denoting the is_online_only field in the database.
+	FieldIsOnlineOnly = "is_online_only"
+	// FieldIsInPersonOnly holds the string denoting the is_in_person_only field in the database.
+	FieldIsInPersonOnly = "is_in_person_only"
+	// FieldIsHybrid holds the string denoting the is_hybrid field in the database.
+	FieldIsHybrid = "is_hybrid"
+	// FieldIsOnlineAndInPerson holds the string denoting the is_online_and_in_person field in the database.
+	FieldIsOnlineAndInPerson = "is_online_and_in_person"
+	// FieldIsOnlineAndInPersonOnly holds the string denoting the is_online_and_in_person_only field in the database.
+	FieldIsOnlineAndInPersonOnly = "is_online_and_in_person_only"
+	// FieldIsOnlineAndInPersonOrHybrid holds the string denoting the is_online_and_in_person_or_hybrid field in the database.
+	FieldIsOnlineAndInPersonOrHybrid = "is_online_and_in_person_or_hybrid"
 	// EdgeTickets holds the string denoting the tickets edge name in mutations.
 	EdgeTickets = "tickets"
 	// EdgeTicketOptions holds the string denoting the ticket_options edge name in mutations.
@@ -243,6 +265,17 @@ var Columns = []string{
 	FieldRelevanceScore,
 	FieldFollowerCount,
 	FieldFollowingCount,
+	FieldIsPremium,
+	FieldIsPublished,
+	FieldIsOnline,
+	FieldIsFree,
+	FieldIsPaid,
+	FieldIsOnlineOnly,
+	FieldIsInPersonOnly,
+	FieldIsHybrid,
+	FieldIsOnlineAndInPerson,
+	FieldIsOnlineAndInPersonOnly,
+	FieldIsOnlineAndInPersonOrHybrid,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "events"
@@ -293,6 +326,28 @@ var (
 	DefaultFollowerCount int
 	// DefaultFollowingCount holds the default value on creation for the "following_count" field.
 	DefaultFollowingCount int
+	// DefaultIsPremium holds the default value on creation for the "is_Premium" field.
+	DefaultIsPremium bool
+	// DefaultIsPublished holds the default value on creation for the "is_published" field.
+	DefaultIsPublished bool
+	// DefaultIsOnline holds the default value on creation for the "is_Online" field.
+	DefaultIsOnline bool
+	// DefaultIsFree holds the default value on creation for the "is_Free" field.
+	DefaultIsFree bool
+	// DefaultIsPaid holds the default value on creation for the "is_Paid" field.
+	DefaultIsPaid bool
+	// DefaultIsOnlineOnly holds the default value on creation for the "is_Online_Only" field.
+	DefaultIsOnlineOnly bool
+	// DefaultIsInPersonOnly holds the default value on creation for the "is_In_Person_Only" field.
+	DefaultIsInPersonOnly bool
+	// DefaultIsHybrid holds the default value on creation for the "is_Hybrid" field.
+	DefaultIsHybrid bool
+	// DefaultIsOnlineAndInPerson holds the default value on creation for the "is_Online_And_In_Person" field.
+	DefaultIsOnlineAndInPerson bool
+	// DefaultIsOnlineAndInPersonOnly holds the default value on creation for the "is_Online_And_In_Person_Only" field.
+	DefaultIsOnlineAndInPersonOnly bool
+	// DefaultIsOnlineAndInPersonOrHybrid holds the default value on creation for the "is_Online_And_In_Person_Or_Hybrid" field.
+	DefaultIsOnlineAndInPersonOrHybrid bool
 )
 
 // EventType defines the type for the "EventType" enum field.
@@ -572,6 +627,61 @@ func ByFollowerCount(opts ...sql.OrderTermOption) OrderOption {
 // ByFollowingCount orders the results by the following_count field.
 func ByFollowingCount(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldFollowingCount, opts...).ToFunc()
+}
+
+// ByIsPremium orders the results by the is_Premium field.
+func ByIsPremium(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsPremium, opts...).ToFunc()
+}
+
+// ByIsPublished orders the results by the is_published field.
+func ByIsPublished(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsPublished, opts...).ToFunc()
+}
+
+// ByIsOnline orders the results by the is_Online field.
+func ByIsOnline(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsOnline, opts...).ToFunc()
+}
+
+// ByIsFree orders the results by the is_Free field.
+func ByIsFree(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsFree, opts...).ToFunc()
+}
+
+// ByIsPaid orders the results by the is_Paid field.
+func ByIsPaid(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsPaid, opts...).ToFunc()
+}
+
+// ByIsOnlineOnly orders the results by the is_Online_Only field.
+func ByIsOnlineOnly(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsOnlineOnly, opts...).ToFunc()
+}
+
+// ByIsInPersonOnly orders the results by the is_In_Person_Only field.
+func ByIsInPersonOnly(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsInPersonOnly, opts...).ToFunc()
+}
+
+// ByIsHybrid orders the results by the is_Hybrid field.
+func ByIsHybrid(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsHybrid, opts...).ToFunc()
+}
+
+// ByIsOnlineAndInPerson orders the results by the is_Online_And_In_Person field.
+func ByIsOnlineAndInPerson(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsOnlineAndInPerson, opts...).ToFunc()
+}
+
+// ByIsOnlineAndInPersonOnly orders the results by the is_Online_And_In_Person_Only field.
+func ByIsOnlineAndInPersonOnly(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsOnlineAndInPersonOnly, opts...).ToFunc()
+}
+
+// ByIsOnlineAndInPersonOrHybrid orders the results by the is_Online_And_In_Person_Or_Hybrid field.
+func ByIsOnlineAndInPersonOrHybrid(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsOnlineAndInPersonOrHybrid, opts...).ToFunc()
 }
 
 // ByTicketsCount orders the results by tickets count.

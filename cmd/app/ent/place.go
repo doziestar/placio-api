@@ -78,6 +78,10 @@ type Place struct {
 	FollowerCount int `json:"follower_count,omitempty"`
 	// FollowingCount holds the value of the "following_count" field.
 	FollowingCount int `json:"following_count,omitempty"`
+	// IsPremium holds the value of the "is_Premium" field.
+	IsPremium bool `json:"is_Premium,omitempty"`
+	// IsPublished holds the value of the "is_published" field.
+	IsPublished bool `json:"is_published,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PlaceQuery when eager-loading is set.
 	Edges           PlaceEdges `json:"edges"`
@@ -269,6 +273,8 @@ func (*Place) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case place.FieldPlaceSettings, place.FieldOpeningHours, place.FieldSocialMedia, place.FieldPaymentOptions, place.FieldTags, place.FieldFeatures, place.FieldAdditionalInfo, place.FieldImages, place.FieldAvailability, place.FieldMapCoordinates:
 			values[i] = new([]byte)
+		case place.FieldIsPremium, place.FieldIsPublished:
+			values[i] = new(sql.NullBool)
 		case place.FieldSustainabilityScore, place.FieldRelevanceScore:
 			values[i] = new(sql.NullFloat64)
 		case place.FieldFollowerCount, place.FieldFollowingCount:
@@ -500,6 +506,18 @@ func (pl *Place) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				pl.FollowingCount = int(value.Int64)
 			}
+		case place.FieldIsPremium:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_Premium", values[i])
+			} else if value.Valid {
+				pl.IsPremium = value.Bool
+			}
+		case place.FieldIsPublished:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_published", values[i])
+			} else if value.Valid {
+				pl.IsPublished = value.Bool
+			}
 		case place.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field business_places", values[i])
@@ -714,6 +732,12 @@ func (pl *Place) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("following_count=")
 	builder.WriteString(fmt.Sprintf("%v", pl.FollowingCount))
+	builder.WriteString(", ")
+	builder.WriteString("is_Premium=")
+	builder.WriteString(fmt.Sprintf("%v", pl.IsPremium))
+	builder.WriteString(", ")
+	builder.WriteString("is_published=")
+	builder.WriteString(fmt.Sprintf("%v", pl.IsPublished))
 	builder.WriteByte(')')
 	return builder.String()
 }

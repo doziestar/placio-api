@@ -366,6 +366,34 @@ func (pc *PlaceCreate) SetNillableFollowingCount(i *int) *PlaceCreate {
 	return pc
 }
 
+// SetIsPremium sets the "is_Premium" field.
+func (pc *PlaceCreate) SetIsPremium(b bool) *PlaceCreate {
+	pc.mutation.SetIsPremium(b)
+	return pc
+}
+
+// SetNillableIsPremium sets the "is_Premium" field if the given value is not nil.
+func (pc *PlaceCreate) SetNillableIsPremium(b *bool) *PlaceCreate {
+	if b != nil {
+		pc.SetIsPremium(*b)
+	}
+	return pc
+}
+
+// SetIsPublished sets the "is_published" field.
+func (pc *PlaceCreate) SetIsPublished(b bool) *PlaceCreate {
+	pc.mutation.SetIsPublished(b)
+	return pc
+}
+
+// SetNillableIsPublished sets the "is_published" field if the given value is not nil.
+func (pc *PlaceCreate) SetNillableIsPublished(b *bool) *PlaceCreate {
+	if b != nil {
+		pc.SetIsPublished(*b)
+	}
+	return pc
+}
+
 // SetID sets the "id" field.
 func (pc *PlaceCreate) SetID(s string) *PlaceCreate {
 	pc.mutation.SetID(s)
@@ -650,6 +678,14 @@ func (pc *PlaceCreate) defaults() error {
 		v := place.DefaultFollowingCount
 		pc.mutation.SetFollowingCount(v)
 	}
+	if _, ok := pc.mutation.IsPremium(); !ok {
+		v := place.DefaultIsPremium
+		pc.mutation.SetIsPremium(v)
+	}
+	if _, ok := pc.mutation.IsPublished(); !ok {
+		v := place.DefaultIsPublished
+		pc.mutation.SetIsPublished(v)
+	}
 	return nil
 }
 
@@ -663,6 +699,12 @@ func (pc *PlaceCreate) check() error {
 	}
 	if _, ok := pc.mutation.FollowingCount(); !ok {
 		return &ValidationError{Name: "following_count", err: errors.New(`ent: missing required field "Place.following_count"`)}
+	}
+	if _, ok := pc.mutation.IsPremium(); !ok {
+		return &ValidationError{Name: "is_Premium", err: errors.New(`ent: missing required field "Place.is_Premium"`)}
+	}
+	if _, ok := pc.mutation.IsPublished(); !ok {
+		return &ValidationError{Name: "is_published", err: errors.New(`ent: missing required field "Place.is_published"`)}
 	}
 	if v, ok := pc.mutation.ID(); ok {
 		if err := place.IDValidator(v); err != nil {
@@ -823,6 +865,14 @@ func (pc *PlaceCreate) createSpec() (*Place, *sqlgraph.CreateSpec) {
 	if value, ok := pc.mutation.FollowingCount(); ok {
 		_spec.SetField(place.FieldFollowingCount, field.TypeInt, value)
 		_node.FollowingCount = value
+	}
+	if value, ok := pc.mutation.IsPremium(); ok {
+		_spec.SetField(place.FieldIsPremium, field.TypeBool, value)
+		_node.IsPremium = value
+	}
+	if value, ok := pc.mutation.IsPublished(); ok {
+		_spec.SetField(place.FieldIsPublished, field.TypeBool, value)
+		_node.IsPublished = value
 	}
 	if nodes := pc.mutation.BusinessIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

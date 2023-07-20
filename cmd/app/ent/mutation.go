@@ -8087,6 +8087,17 @@ type EventMutation struct {
 	addfollower_count                 *int
 	following_count                   *int
 	addfollowing_count                *int
+	is_Premium                        *bool
+	is_published                      *bool
+	is_Online                         *bool
+	is_Free                           *bool
+	is_Paid                           *bool
+	is_Online_Only                    *bool
+	is_In_Person_Only                 *bool
+	is_Hybrid                         *bool
+	is_Online_And_In_Person           *bool
+	is_Online_And_In_Person_Only      *bool
+	is_Online_And_In_Person_Or_Hybrid *bool
 	clearedFields                     map[string]struct{}
 	tickets                           map[string]struct{}
 	removedtickets                    map[string]struct{}
@@ -10246,6 +10257,402 @@ func (m *EventMutation) ResetFollowingCount() {
 	m.addfollowing_count = nil
 }
 
+// SetIsPremium sets the "is_Premium" field.
+func (m *EventMutation) SetIsPremium(b bool) {
+	m.is_Premium = &b
+}
+
+// IsPremium returns the value of the "is_Premium" field in the mutation.
+func (m *EventMutation) IsPremium() (r bool, exists bool) {
+	v := m.is_Premium
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsPremium returns the old "is_Premium" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldIsPremium(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsPremium is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsPremium requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsPremium: %w", err)
+	}
+	return oldValue.IsPremium, nil
+}
+
+// ResetIsPremium resets all changes to the "is_Premium" field.
+func (m *EventMutation) ResetIsPremium() {
+	m.is_Premium = nil
+}
+
+// SetIsPublished sets the "is_published" field.
+func (m *EventMutation) SetIsPublished(b bool) {
+	m.is_published = &b
+}
+
+// IsPublished returns the value of the "is_published" field in the mutation.
+func (m *EventMutation) IsPublished() (r bool, exists bool) {
+	v := m.is_published
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsPublished returns the old "is_published" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldIsPublished(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsPublished is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsPublished requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsPublished: %w", err)
+	}
+	return oldValue.IsPublished, nil
+}
+
+// ResetIsPublished resets all changes to the "is_published" field.
+func (m *EventMutation) ResetIsPublished() {
+	m.is_published = nil
+}
+
+// SetIsOnline sets the "is_Online" field.
+func (m *EventMutation) SetIsOnline(b bool) {
+	m.is_Online = &b
+}
+
+// IsOnline returns the value of the "is_Online" field in the mutation.
+func (m *EventMutation) IsOnline() (r bool, exists bool) {
+	v := m.is_Online
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsOnline returns the old "is_Online" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldIsOnline(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsOnline is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsOnline requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsOnline: %w", err)
+	}
+	return oldValue.IsOnline, nil
+}
+
+// ResetIsOnline resets all changes to the "is_Online" field.
+func (m *EventMutation) ResetIsOnline() {
+	m.is_Online = nil
+}
+
+// SetIsFree sets the "is_Free" field.
+func (m *EventMutation) SetIsFree(b bool) {
+	m.is_Free = &b
+}
+
+// IsFree returns the value of the "is_Free" field in the mutation.
+func (m *EventMutation) IsFree() (r bool, exists bool) {
+	v := m.is_Free
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsFree returns the old "is_Free" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldIsFree(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsFree is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsFree requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsFree: %w", err)
+	}
+	return oldValue.IsFree, nil
+}
+
+// ResetIsFree resets all changes to the "is_Free" field.
+func (m *EventMutation) ResetIsFree() {
+	m.is_Free = nil
+}
+
+// SetIsPaid sets the "is_Paid" field.
+func (m *EventMutation) SetIsPaid(b bool) {
+	m.is_Paid = &b
+}
+
+// IsPaid returns the value of the "is_Paid" field in the mutation.
+func (m *EventMutation) IsPaid() (r bool, exists bool) {
+	v := m.is_Paid
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsPaid returns the old "is_Paid" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldIsPaid(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsPaid is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsPaid requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsPaid: %w", err)
+	}
+	return oldValue.IsPaid, nil
+}
+
+// ResetIsPaid resets all changes to the "is_Paid" field.
+func (m *EventMutation) ResetIsPaid() {
+	m.is_Paid = nil
+}
+
+// SetIsOnlineOnly sets the "is_Online_Only" field.
+func (m *EventMutation) SetIsOnlineOnly(b bool) {
+	m.is_Online_Only = &b
+}
+
+// IsOnlineOnly returns the value of the "is_Online_Only" field in the mutation.
+func (m *EventMutation) IsOnlineOnly() (r bool, exists bool) {
+	v := m.is_Online_Only
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsOnlineOnly returns the old "is_Online_Only" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldIsOnlineOnly(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsOnlineOnly is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsOnlineOnly requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsOnlineOnly: %w", err)
+	}
+	return oldValue.IsOnlineOnly, nil
+}
+
+// ResetIsOnlineOnly resets all changes to the "is_Online_Only" field.
+func (m *EventMutation) ResetIsOnlineOnly() {
+	m.is_Online_Only = nil
+}
+
+// SetIsInPersonOnly sets the "is_In_Person_Only" field.
+func (m *EventMutation) SetIsInPersonOnly(b bool) {
+	m.is_In_Person_Only = &b
+}
+
+// IsInPersonOnly returns the value of the "is_In_Person_Only" field in the mutation.
+func (m *EventMutation) IsInPersonOnly() (r bool, exists bool) {
+	v := m.is_In_Person_Only
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsInPersonOnly returns the old "is_In_Person_Only" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldIsInPersonOnly(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsInPersonOnly is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsInPersonOnly requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsInPersonOnly: %w", err)
+	}
+	return oldValue.IsInPersonOnly, nil
+}
+
+// ResetIsInPersonOnly resets all changes to the "is_In_Person_Only" field.
+func (m *EventMutation) ResetIsInPersonOnly() {
+	m.is_In_Person_Only = nil
+}
+
+// SetIsHybrid sets the "is_Hybrid" field.
+func (m *EventMutation) SetIsHybrid(b bool) {
+	m.is_Hybrid = &b
+}
+
+// IsHybrid returns the value of the "is_Hybrid" field in the mutation.
+func (m *EventMutation) IsHybrid() (r bool, exists bool) {
+	v := m.is_Hybrid
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsHybrid returns the old "is_Hybrid" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldIsHybrid(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsHybrid is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsHybrid requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsHybrid: %w", err)
+	}
+	return oldValue.IsHybrid, nil
+}
+
+// ResetIsHybrid resets all changes to the "is_Hybrid" field.
+func (m *EventMutation) ResetIsHybrid() {
+	m.is_Hybrid = nil
+}
+
+// SetIsOnlineAndInPerson sets the "is_Online_And_In_Person" field.
+func (m *EventMutation) SetIsOnlineAndInPerson(b bool) {
+	m.is_Online_And_In_Person = &b
+}
+
+// IsOnlineAndInPerson returns the value of the "is_Online_And_In_Person" field in the mutation.
+func (m *EventMutation) IsOnlineAndInPerson() (r bool, exists bool) {
+	v := m.is_Online_And_In_Person
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsOnlineAndInPerson returns the old "is_Online_And_In_Person" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldIsOnlineAndInPerson(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsOnlineAndInPerson is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsOnlineAndInPerson requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsOnlineAndInPerson: %w", err)
+	}
+	return oldValue.IsOnlineAndInPerson, nil
+}
+
+// ResetIsOnlineAndInPerson resets all changes to the "is_Online_And_In_Person" field.
+func (m *EventMutation) ResetIsOnlineAndInPerson() {
+	m.is_Online_And_In_Person = nil
+}
+
+// SetIsOnlineAndInPersonOnly sets the "is_Online_And_In_Person_Only" field.
+func (m *EventMutation) SetIsOnlineAndInPersonOnly(b bool) {
+	m.is_Online_And_In_Person_Only = &b
+}
+
+// IsOnlineAndInPersonOnly returns the value of the "is_Online_And_In_Person_Only" field in the mutation.
+func (m *EventMutation) IsOnlineAndInPersonOnly() (r bool, exists bool) {
+	v := m.is_Online_And_In_Person_Only
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsOnlineAndInPersonOnly returns the old "is_Online_And_In_Person_Only" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldIsOnlineAndInPersonOnly(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsOnlineAndInPersonOnly is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsOnlineAndInPersonOnly requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsOnlineAndInPersonOnly: %w", err)
+	}
+	return oldValue.IsOnlineAndInPersonOnly, nil
+}
+
+// ResetIsOnlineAndInPersonOnly resets all changes to the "is_Online_And_In_Person_Only" field.
+func (m *EventMutation) ResetIsOnlineAndInPersonOnly() {
+	m.is_Online_And_In_Person_Only = nil
+}
+
+// SetIsOnlineAndInPersonOrHybrid sets the "is_Online_And_In_Person_Or_Hybrid" field.
+func (m *EventMutation) SetIsOnlineAndInPersonOrHybrid(b bool) {
+	m.is_Online_And_In_Person_Or_Hybrid = &b
+}
+
+// IsOnlineAndInPersonOrHybrid returns the value of the "is_Online_And_In_Person_Or_Hybrid" field in the mutation.
+func (m *EventMutation) IsOnlineAndInPersonOrHybrid() (r bool, exists bool) {
+	v := m.is_Online_And_In_Person_Or_Hybrid
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsOnlineAndInPersonOrHybrid returns the old "is_Online_And_In_Person_Or_Hybrid" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldIsOnlineAndInPersonOrHybrid(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsOnlineAndInPersonOrHybrid is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsOnlineAndInPersonOrHybrid requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsOnlineAndInPersonOrHybrid: %w", err)
+	}
+	return oldValue.IsOnlineAndInPersonOrHybrid, nil
+}
+
+// ResetIsOnlineAndInPersonOrHybrid resets all changes to the "is_Online_And_In_Person_Or_Hybrid" field.
+func (m *EventMutation) ResetIsOnlineAndInPersonOrHybrid() {
+	m.is_Online_And_In_Person_Or_Hybrid = nil
+}
+
 // AddTicketIDs adds the "tickets" edge to the Ticket entity by ids.
 func (m *EventMutation) AddTicketIDs(ids ...string) {
 	if m.tickets == nil {
@@ -10844,7 +11251,7 @@ func (m *EventMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EventMutation) Fields() []string {
-	fields := make([]string, 0, 41)
+	fields := make([]string, 0, 52)
 	if m.name != nil {
 		fields = append(fields, event.FieldName)
 	}
@@ -10968,6 +11375,39 @@ func (m *EventMutation) Fields() []string {
 	if m.following_count != nil {
 		fields = append(fields, event.FieldFollowingCount)
 	}
+	if m.is_Premium != nil {
+		fields = append(fields, event.FieldIsPremium)
+	}
+	if m.is_published != nil {
+		fields = append(fields, event.FieldIsPublished)
+	}
+	if m.is_Online != nil {
+		fields = append(fields, event.FieldIsOnline)
+	}
+	if m.is_Free != nil {
+		fields = append(fields, event.FieldIsFree)
+	}
+	if m.is_Paid != nil {
+		fields = append(fields, event.FieldIsPaid)
+	}
+	if m.is_Online_Only != nil {
+		fields = append(fields, event.FieldIsOnlineOnly)
+	}
+	if m.is_In_Person_Only != nil {
+		fields = append(fields, event.FieldIsInPersonOnly)
+	}
+	if m.is_Hybrid != nil {
+		fields = append(fields, event.FieldIsHybrid)
+	}
+	if m.is_Online_And_In_Person != nil {
+		fields = append(fields, event.FieldIsOnlineAndInPerson)
+	}
+	if m.is_Online_And_In_Person_Only != nil {
+		fields = append(fields, event.FieldIsOnlineAndInPersonOnly)
+	}
+	if m.is_Online_And_In_Person_Or_Hybrid != nil {
+		fields = append(fields, event.FieldIsOnlineAndInPersonOrHybrid)
+	}
 	return fields
 }
 
@@ -11058,6 +11498,28 @@ func (m *EventMutation) Field(name string) (ent.Value, bool) {
 		return m.FollowerCount()
 	case event.FieldFollowingCount:
 		return m.FollowingCount()
+	case event.FieldIsPremium:
+		return m.IsPremium()
+	case event.FieldIsPublished:
+		return m.IsPublished()
+	case event.FieldIsOnline:
+		return m.IsOnline()
+	case event.FieldIsFree:
+		return m.IsFree()
+	case event.FieldIsPaid:
+		return m.IsPaid()
+	case event.FieldIsOnlineOnly:
+		return m.IsOnlineOnly()
+	case event.FieldIsInPersonOnly:
+		return m.IsInPersonOnly()
+	case event.FieldIsHybrid:
+		return m.IsHybrid()
+	case event.FieldIsOnlineAndInPerson:
+		return m.IsOnlineAndInPerson()
+	case event.FieldIsOnlineAndInPersonOnly:
+		return m.IsOnlineAndInPersonOnly()
+	case event.FieldIsOnlineAndInPersonOrHybrid:
+		return m.IsOnlineAndInPersonOrHybrid()
 	}
 	return nil, false
 }
@@ -11149,6 +11611,28 @@ func (m *EventMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldFollowerCount(ctx)
 	case event.FieldFollowingCount:
 		return m.OldFollowingCount(ctx)
+	case event.FieldIsPremium:
+		return m.OldIsPremium(ctx)
+	case event.FieldIsPublished:
+		return m.OldIsPublished(ctx)
+	case event.FieldIsOnline:
+		return m.OldIsOnline(ctx)
+	case event.FieldIsFree:
+		return m.OldIsFree(ctx)
+	case event.FieldIsPaid:
+		return m.OldIsPaid(ctx)
+	case event.FieldIsOnlineOnly:
+		return m.OldIsOnlineOnly(ctx)
+	case event.FieldIsInPersonOnly:
+		return m.OldIsInPersonOnly(ctx)
+	case event.FieldIsHybrid:
+		return m.OldIsHybrid(ctx)
+	case event.FieldIsOnlineAndInPerson:
+		return m.OldIsOnlineAndInPerson(ctx)
+	case event.FieldIsOnlineAndInPersonOnly:
+		return m.OldIsOnlineAndInPersonOnly(ctx)
+	case event.FieldIsOnlineAndInPersonOrHybrid:
+		return m.OldIsOnlineAndInPersonOrHybrid(ctx)
 	}
 	return nil, fmt.Errorf("unknown Event field %s", name)
 }
@@ -11444,6 +11928,83 @@ func (m *EventMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetFollowingCount(v)
+		return nil
+	case event.FieldIsPremium:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsPremium(v)
+		return nil
+	case event.FieldIsPublished:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsPublished(v)
+		return nil
+	case event.FieldIsOnline:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsOnline(v)
+		return nil
+	case event.FieldIsFree:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsFree(v)
+		return nil
+	case event.FieldIsPaid:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsPaid(v)
+		return nil
+	case event.FieldIsOnlineOnly:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsOnlineOnly(v)
+		return nil
+	case event.FieldIsInPersonOnly:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsInPersonOnly(v)
+		return nil
+	case event.FieldIsHybrid:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsHybrid(v)
+		return nil
+	case event.FieldIsOnlineAndInPerson:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsOnlineAndInPerson(v)
+		return nil
+	case event.FieldIsOnlineAndInPersonOnly:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsOnlineAndInPersonOnly(v)
+		return nil
+	case event.FieldIsOnlineAndInPersonOrHybrid:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsOnlineAndInPersonOrHybrid(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Event field %s", name)
@@ -11880,6 +12441,39 @@ func (m *EventMutation) ResetField(name string) error {
 		return nil
 	case event.FieldFollowingCount:
 		m.ResetFollowingCount()
+		return nil
+	case event.FieldIsPremium:
+		m.ResetIsPremium()
+		return nil
+	case event.FieldIsPublished:
+		m.ResetIsPublished()
+		return nil
+	case event.FieldIsOnline:
+		m.ResetIsOnline()
+		return nil
+	case event.FieldIsFree:
+		m.ResetIsFree()
+		return nil
+	case event.FieldIsPaid:
+		m.ResetIsPaid()
+		return nil
+	case event.FieldIsOnlineOnly:
+		m.ResetIsOnlineOnly()
+		return nil
+	case event.FieldIsInPersonOnly:
+		m.ResetIsInPersonOnly()
+		return nil
+	case event.FieldIsHybrid:
+		m.ResetIsHybrid()
+		return nil
+	case event.FieldIsOnlineAndInPerson:
+		m.ResetIsOnlineAndInPerson()
+		return nil
+	case event.FieldIsOnlineAndInPersonOnly:
+		m.ResetIsOnlineAndInPersonOnly()
+		return nil
+	case event.FieldIsOnlineAndInPersonOrHybrid:
+		m.ResetIsOnlineAndInPersonOrHybrid()
 		return nil
 	}
 	return fmt.Errorf("unknown Event field %s", name)
@@ -16070,6 +16664,8 @@ type PlaceMutation struct {
 	addfollower_count          *int
 	following_count            *int
 	addfollowing_count         *int
+	is_Premium                 *bool
+	is_published               *bool
 	clearedFields              map[string]struct{}
 	business                   *string
 	clearedbusiness            bool
@@ -17785,6 +18381,78 @@ func (m *PlaceMutation) ResetFollowingCount() {
 	m.addfollowing_count = nil
 }
 
+// SetIsPremium sets the "is_Premium" field.
+func (m *PlaceMutation) SetIsPremium(b bool) {
+	m.is_Premium = &b
+}
+
+// IsPremium returns the value of the "is_Premium" field in the mutation.
+func (m *PlaceMutation) IsPremium() (r bool, exists bool) {
+	v := m.is_Premium
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsPremium returns the old "is_Premium" field's value of the Place entity.
+// If the Place object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceMutation) OldIsPremium(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsPremium is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsPremium requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsPremium: %w", err)
+	}
+	return oldValue.IsPremium, nil
+}
+
+// ResetIsPremium resets all changes to the "is_Premium" field.
+func (m *PlaceMutation) ResetIsPremium() {
+	m.is_Premium = nil
+}
+
+// SetIsPublished sets the "is_published" field.
+func (m *PlaceMutation) SetIsPublished(b bool) {
+	m.is_published = &b
+}
+
+// IsPublished returns the value of the "is_published" field in the mutation.
+func (m *PlaceMutation) IsPublished() (r bool, exists bool) {
+	v := m.is_published
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsPublished returns the old "is_published" field's value of the Place entity.
+// If the Place object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceMutation) OldIsPublished(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsPublished is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsPublished requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsPublished: %w", err)
+	}
+	return oldValue.IsPublished, nil
+}
+
+// ResetIsPublished resets all changes to the "is_published" field.
+func (m *PlaceMutation) ResetIsPublished() {
+	m.is_published = nil
+}
+
 // SetBusinessID sets the "business" edge to the Business entity by id.
 func (m *PlaceMutation) SetBusinessID(id string) {
 	m.business = &id
@@ -18614,7 +19282,7 @@ func (m *PlaceMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PlaceMutation) Fields() []string {
-	fields := make([]string, 0, 30)
+	fields := make([]string, 0, 32)
 	if m.name != nil {
 		fields = append(fields, place.FieldName)
 	}
@@ -18705,6 +19373,12 @@ func (m *PlaceMutation) Fields() []string {
 	if m.following_count != nil {
 		fields = append(fields, place.FieldFollowingCount)
 	}
+	if m.is_Premium != nil {
+		fields = append(fields, place.FieldIsPremium)
+	}
+	if m.is_published != nil {
+		fields = append(fields, place.FieldIsPublished)
+	}
 	return fields
 }
 
@@ -18773,6 +19447,10 @@ func (m *PlaceMutation) Field(name string) (ent.Value, bool) {
 		return m.FollowerCount()
 	case place.FieldFollowingCount:
 		return m.FollowingCount()
+	case place.FieldIsPremium:
+		return m.IsPremium()
+	case place.FieldIsPublished:
+		return m.IsPublished()
 	}
 	return nil, false
 }
@@ -18842,6 +19520,10 @@ func (m *PlaceMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldFollowerCount(ctx)
 	case place.FieldFollowingCount:
 		return m.OldFollowingCount(ctx)
+	case place.FieldIsPremium:
+		return m.OldIsPremium(ctx)
+	case place.FieldIsPublished:
+		return m.OldIsPublished(ctx)
 	}
 	return nil, fmt.Errorf("unknown Place field %s", name)
 }
@@ -19060,6 +19742,20 @@ func (m *PlaceMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetFollowingCount(v)
+		return nil
+	case place.FieldIsPremium:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsPremium(v)
+		return nil
+	case place.FieldIsPublished:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsPublished(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Place field %s", name)
@@ -19415,6 +20111,12 @@ func (m *PlaceMutation) ResetField(name string) error {
 		return nil
 	case place.FieldFollowingCount:
 		m.ResetFollowingCount()
+		return nil
+	case place.FieldIsPremium:
+		m.ResetIsPremium()
+		return nil
+	case place.FieldIsPublished:
+		m.ResetIsPublished()
 		return nil
 	}
 	return fmt.Errorf("unknown Place field %s", name)

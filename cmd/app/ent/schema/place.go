@@ -51,6 +51,8 @@ func (Place) Fields() []ent.Field {
 		field.Float("relevance_score").Optional(),
 		field.Int("follower_count").Default(0),
 		field.Int("following_count").Default(0),
+		field.Bool("is_Premium").Default(false),
+		field.Bool("is_published").Default(false),
 	}
 }
 

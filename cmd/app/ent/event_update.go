@@ -832,6 +832,160 @@ func (eu *EventUpdate) AddFollowingCount(i int) *EventUpdate {
 	return eu
 }
 
+// SetIsPremium sets the "is_Premium" field.
+func (eu *EventUpdate) SetIsPremium(b bool) *EventUpdate {
+	eu.mutation.SetIsPremium(b)
+	return eu
+}
+
+// SetNillableIsPremium sets the "is_Premium" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableIsPremium(b *bool) *EventUpdate {
+	if b != nil {
+		eu.SetIsPremium(*b)
+	}
+	return eu
+}
+
+// SetIsPublished sets the "is_published" field.
+func (eu *EventUpdate) SetIsPublished(b bool) *EventUpdate {
+	eu.mutation.SetIsPublished(b)
+	return eu
+}
+
+// SetNillableIsPublished sets the "is_published" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableIsPublished(b *bool) *EventUpdate {
+	if b != nil {
+		eu.SetIsPublished(*b)
+	}
+	return eu
+}
+
+// SetIsOnline sets the "is_Online" field.
+func (eu *EventUpdate) SetIsOnline(b bool) *EventUpdate {
+	eu.mutation.SetIsOnline(b)
+	return eu
+}
+
+// SetNillableIsOnline sets the "is_Online" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableIsOnline(b *bool) *EventUpdate {
+	if b != nil {
+		eu.SetIsOnline(*b)
+	}
+	return eu
+}
+
+// SetIsFree sets the "is_Free" field.
+func (eu *EventUpdate) SetIsFree(b bool) *EventUpdate {
+	eu.mutation.SetIsFree(b)
+	return eu
+}
+
+// SetNillableIsFree sets the "is_Free" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableIsFree(b *bool) *EventUpdate {
+	if b != nil {
+		eu.SetIsFree(*b)
+	}
+	return eu
+}
+
+// SetIsPaid sets the "is_Paid" field.
+func (eu *EventUpdate) SetIsPaid(b bool) *EventUpdate {
+	eu.mutation.SetIsPaid(b)
+	return eu
+}
+
+// SetNillableIsPaid sets the "is_Paid" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableIsPaid(b *bool) *EventUpdate {
+	if b != nil {
+		eu.SetIsPaid(*b)
+	}
+	return eu
+}
+
+// SetIsOnlineOnly sets the "is_Online_Only" field.
+func (eu *EventUpdate) SetIsOnlineOnly(b bool) *EventUpdate {
+	eu.mutation.SetIsOnlineOnly(b)
+	return eu
+}
+
+// SetNillableIsOnlineOnly sets the "is_Online_Only" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableIsOnlineOnly(b *bool) *EventUpdate {
+	if b != nil {
+		eu.SetIsOnlineOnly(*b)
+	}
+	return eu
+}
+
+// SetIsInPersonOnly sets the "is_In_Person_Only" field.
+func (eu *EventUpdate) SetIsInPersonOnly(b bool) *EventUpdate {
+	eu.mutation.SetIsInPersonOnly(b)
+	return eu
+}
+
+// SetNillableIsInPersonOnly sets the "is_In_Person_Only" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableIsInPersonOnly(b *bool) *EventUpdate {
+	if b != nil {
+		eu.SetIsInPersonOnly(*b)
+	}
+	return eu
+}
+
+// SetIsHybrid sets the "is_Hybrid" field.
+func (eu *EventUpdate) SetIsHybrid(b bool) *EventUpdate {
+	eu.mutation.SetIsHybrid(b)
+	return eu
+}
+
+// SetNillableIsHybrid sets the "is_Hybrid" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableIsHybrid(b *bool) *EventUpdate {
+	if b != nil {
+		eu.SetIsHybrid(*b)
+	}
+	return eu
+}
+
+// SetIsOnlineAndInPerson sets the "is_Online_And_In_Person" field.
+func (eu *EventUpdate) SetIsOnlineAndInPerson(b bool) *EventUpdate {
+	eu.mutation.SetIsOnlineAndInPerson(b)
+	return eu
+}
+
+// SetNillableIsOnlineAndInPerson sets the "is_Online_And_In_Person" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableIsOnlineAndInPerson(b *bool) *EventUpdate {
+	if b != nil {
+		eu.SetIsOnlineAndInPerson(*b)
+	}
+	return eu
+}
+
+// SetIsOnlineAndInPersonOnly sets the "is_Online_And_In_Person_Only" field.
+func (eu *EventUpdate) SetIsOnlineAndInPersonOnly(b bool) *EventUpdate {
+	eu.mutation.SetIsOnlineAndInPersonOnly(b)
+	return eu
+}
+
+// SetNillableIsOnlineAndInPersonOnly sets the "is_Online_And_In_Person_Only" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableIsOnlineAndInPersonOnly(b *bool) *EventUpdate {
+	if b != nil {
+		eu.SetIsOnlineAndInPersonOnly(*b)
+	}
+	return eu
+}
+
+// SetIsOnlineAndInPersonOrHybrid sets the "is_Online_And_In_Person_Or_Hybrid" field.
+func (eu *EventUpdate) SetIsOnlineAndInPersonOrHybrid(b bool) *EventUpdate {
+	eu.mutation.SetIsOnlineAndInPersonOrHybrid(b)
+	return eu
+}
+
+// SetNillableIsOnlineAndInPersonOrHybrid sets the "is_Online_And_In_Person_Or_Hybrid" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableIsOnlineAndInPersonOrHybrid(b *bool) *EventUpdate {
+	if b != nil {
+		eu.SetIsOnlineAndInPersonOrHybrid(*b)
+	}
+	return eu
+}
+
 // AddTicketIDs adds the "tickets" edge to the Ticket entity by IDs.
 func (eu *EventUpdate) AddTicketIDs(ids ...string) *EventUpdate {
 	eu.mutation.AddTicketIDs(ids...)
@@ -1527,6 +1681,39 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := eu.mutation.AddedFollowingCount(); ok {
 		_spec.AddField(event.FieldFollowingCount, field.TypeInt, value)
+	}
+	if value, ok := eu.mutation.IsPremium(); ok {
+		_spec.SetField(event.FieldIsPremium, field.TypeBool, value)
+	}
+	if value, ok := eu.mutation.IsPublished(); ok {
+		_spec.SetField(event.FieldIsPublished, field.TypeBool, value)
+	}
+	if value, ok := eu.mutation.IsOnline(); ok {
+		_spec.SetField(event.FieldIsOnline, field.TypeBool, value)
+	}
+	if value, ok := eu.mutation.IsFree(); ok {
+		_spec.SetField(event.FieldIsFree, field.TypeBool, value)
+	}
+	if value, ok := eu.mutation.IsPaid(); ok {
+		_spec.SetField(event.FieldIsPaid, field.TypeBool, value)
+	}
+	if value, ok := eu.mutation.IsOnlineOnly(); ok {
+		_spec.SetField(event.FieldIsOnlineOnly, field.TypeBool, value)
+	}
+	if value, ok := eu.mutation.IsInPersonOnly(); ok {
+		_spec.SetField(event.FieldIsInPersonOnly, field.TypeBool, value)
+	}
+	if value, ok := eu.mutation.IsHybrid(); ok {
+		_spec.SetField(event.FieldIsHybrid, field.TypeBool, value)
+	}
+	if value, ok := eu.mutation.IsOnlineAndInPerson(); ok {
+		_spec.SetField(event.FieldIsOnlineAndInPerson, field.TypeBool, value)
+	}
+	if value, ok := eu.mutation.IsOnlineAndInPersonOnly(); ok {
+		_spec.SetField(event.FieldIsOnlineAndInPersonOnly, field.TypeBool, value)
+	}
+	if value, ok := eu.mutation.IsOnlineAndInPersonOrHybrid(); ok {
+		_spec.SetField(event.FieldIsOnlineAndInPersonOrHybrid, field.TypeBool, value)
 	}
 	if eu.mutation.TicketsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -2804,6 +2991,160 @@ func (euo *EventUpdateOne) AddFollowingCount(i int) *EventUpdateOne {
 	return euo
 }
 
+// SetIsPremium sets the "is_Premium" field.
+func (euo *EventUpdateOne) SetIsPremium(b bool) *EventUpdateOne {
+	euo.mutation.SetIsPremium(b)
+	return euo
+}
+
+// SetNillableIsPremium sets the "is_Premium" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableIsPremium(b *bool) *EventUpdateOne {
+	if b != nil {
+		euo.SetIsPremium(*b)
+	}
+	return euo
+}
+
+// SetIsPublished sets the "is_published" field.
+func (euo *EventUpdateOne) SetIsPublished(b bool) *EventUpdateOne {
+	euo.mutation.SetIsPublished(b)
+	return euo
+}
+
+// SetNillableIsPublished sets the "is_published" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableIsPublished(b *bool) *EventUpdateOne {
+	if b != nil {
+		euo.SetIsPublished(*b)
+	}
+	return euo
+}
+
+// SetIsOnline sets the "is_Online" field.
+func (euo *EventUpdateOne) SetIsOnline(b bool) *EventUpdateOne {
+	euo.mutation.SetIsOnline(b)
+	return euo
+}
+
+// SetNillableIsOnline sets the "is_Online" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableIsOnline(b *bool) *EventUpdateOne {
+	if b != nil {
+		euo.SetIsOnline(*b)
+	}
+	return euo
+}
+
+// SetIsFree sets the "is_Free" field.
+func (euo *EventUpdateOne) SetIsFree(b bool) *EventUpdateOne {
+	euo.mutation.SetIsFree(b)
+	return euo
+}
+
+// SetNillableIsFree sets the "is_Free" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableIsFree(b *bool) *EventUpdateOne {
+	if b != nil {
+		euo.SetIsFree(*b)
+	}
+	return euo
+}
+
+// SetIsPaid sets the "is_Paid" field.
+func (euo *EventUpdateOne) SetIsPaid(b bool) *EventUpdateOne {
+	euo.mutation.SetIsPaid(b)
+	return euo
+}
+
+// SetNillableIsPaid sets the "is_Paid" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableIsPaid(b *bool) *EventUpdateOne {
+	if b != nil {
+		euo.SetIsPaid(*b)
+	}
+	return euo
+}
+
+// SetIsOnlineOnly sets the "is_Online_Only" field.
+func (euo *EventUpdateOne) SetIsOnlineOnly(b bool) *EventUpdateOne {
+	euo.mutation.SetIsOnlineOnly(b)
+	return euo
+}
+
+// SetNillableIsOnlineOnly sets the "is_Online_Only" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableIsOnlineOnly(b *bool) *EventUpdateOne {
+	if b != nil {
+		euo.SetIsOnlineOnly(*b)
+	}
+	return euo
+}
+
+// SetIsInPersonOnly sets the "is_In_Person_Only" field.
+func (euo *EventUpdateOne) SetIsInPersonOnly(b bool) *EventUpdateOne {
+	euo.mutation.SetIsInPersonOnly(b)
+	return euo
+}
+
+// SetNillableIsInPersonOnly sets the "is_In_Person_Only" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableIsInPersonOnly(b *bool) *EventUpdateOne {
+	if b != nil {
+		euo.SetIsInPersonOnly(*b)
+	}
+	return euo
+}
+
+// SetIsHybrid sets the "is_Hybrid" field.
+func (euo *EventUpdateOne) SetIsHybrid(b bool) *EventUpdateOne {
+	euo.mutation.SetIsHybrid(b)
+	return euo
+}
+
+// SetNillableIsHybrid sets the "is_Hybrid" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableIsHybrid(b *bool) *EventUpdateOne {
+	if b != nil {
+		euo.SetIsHybrid(*b)
+	}
+	return euo
+}
+
+// SetIsOnlineAndInPerson sets the "is_Online_And_In_Person" field.
+func (euo *EventUpdateOne) SetIsOnlineAndInPerson(b bool) *EventUpdateOne {
+	euo.mutation.SetIsOnlineAndInPerson(b)
+	return euo
+}
+
+// SetNillableIsOnlineAndInPerson sets the "is_Online_And_In_Person" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableIsOnlineAndInPerson(b *bool) *EventUpdateOne {
+	if b != nil {
+		euo.SetIsOnlineAndInPerson(*b)
+	}
+	return euo
+}
+
+// SetIsOnlineAndInPersonOnly sets the "is_Online_And_In_Person_Only" field.
+func (euo *EventUpdateOne) SetIsOnlineAndInPersonOnly(b bool) *EventUpdateOne {
+	euo.mutation.SetIsOnlineAndInPersonOnly(b)
+	return euo
+}
+
+// SetNillableIsOnlineAndInPersonOnly sets the "is_Online_And_In_Person_Only" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableIsOnlineAndInPersonOnly(b *bool) *EventUpdateOne {
+	if b != nil {
+		euo.SetIsOnlineAndInPersonOnly(*b)
+	}
+	return euo
+}
+
+// SetIsOnlineAndInPersonOrHybrid sets the "is_Online_And_In_Person_Or_Hybrid" field.
+func (euo *EventUpdateOne) SetIsOnlineAndInPersonOrHybrid(b bool) *EventUpdateOne {
+	euo.mutation.SetIsOnlineAndInPersonOrHybrid(b)
+	return euo
+}
+
+// SetNillableIsOnlineAndInPersonOrHybrid sets the "is_Online_And_In_Person_Or_Hybrid" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableIsOnlineAndInPersonOrHybrid(b *bool) *EventUpdateOne {
+	if b != nil {
+		euo.SetIsOnlineAndInPersonOrHybrid(*b)
+	}
+	return euo
+}
+
 // AddTicketIDs adds the "tickets" edge to the Ticket entity by IDs.
 func (euo *EventUpdateOne) AddTicketIDs(ids ...string) *EventUpdateOne {
 	euo.mutation.AddTicketIDs(ids...)
@@ -3529,6 +3870,39 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 	}
 	if value, ok := euo.mutation.AddedFollowingCount(); ok {
 		_spec.AddField(event.FieldFollowingCount, field.TypeInt, value)
+	}
+	if value, ok := euo.mutation.IsPremium(); ok {
+		_spec.SetField(event.FieldIsPremium, field.TypeBool, value)
+	}
+	if value, ok := euo.mutation.IsPublished(); ok {
+		_spec.SetField(event.FieldIsPublished, field.TypeBool, value)
+	}
+	if value, ok := euo.mutation.IsOnline(); ok {
+		_spec.SetField(event.FieldIsOnline, field.TypeBool, value)
+	}
+	if value, ok := euo.mutation.IsFree(); ok {
+		_spec.SetField(event.FieldIsFree, field.TypeBool, value)
+	}
+	if value, ok := euo.mutation.IsPaid(); ok {
+		_spec.SetField(event.FieldIsPaid, field.TypeBool, value)
+	}
+	if value, ok := euo.mutation.IsOnlineOnly(); ok {
+		_spec.SetField(event.FieldIsOnlineOnly, field.TypeBool, value)
+	}
+	if value, ok := euo.mutation.IsInPersonOnly(); ok {
+		_spec.SetField(event.FieldIsInPersonOnly, field.TypeBool, value)
+	}
+	if value, ok := euo.mutation.IsHybrid(); ok {
+		_spec.SetField(event.FieldIsHybrid, field.TypeBool, value)
+	}
+	if value, ok := euo.mutation.IsOnlineAndInPerson(); ok {
+		_spec.SetField(event.FieldIsOnlineAndInPerson, field.TypeBool, value)
+	}
+	if value, ok := euo.mutation.IsOnlineAndInPersonOnly(); ok {
+		_spec.SetField(event.FieldIsOnlineAndInPersonOnly, field.TypeBool, value)
+	}
+	if value, ok := euo.mutation.IsOnlineAndInPersonOrHybrid(); ok {
+		_spec.SetField(event.FieldIsOnlineAndInPersonOrHybrid, field.TypeBool, value)
 	}
 	if euo.mutation.TicketsCleared() {
 		edge := &sqlgraph.EdgeSpec{

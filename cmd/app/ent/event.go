@@ -102,6 +102,28 @@ type Event struct {
 	FollowerCount int `json:"follower_count,omitempty"`
 	// FollowingCount holds the value of the "following_count" field.
 	FollowingCount int `json:"following_count,omitempty"`
+	// IsPremium holds the value of the "is_Premium" field.
+	IsPremium bool `json:"is_Premium,omitempty"`
+	// IsPublished holds the value of the "is_published" field.
+	IsPublished bool `json:"is_published,omitempty"`
+	// IsOnline holds the value of the "is_Online" field.
+	IsOnline bool `json:"is_Online,omitempty"`
+	// IsFree holds the value of the "is_Free" field.
+	IsFree bool `json:"is_Free,omitempty"`
+	// IsPaid holds the value of the "is_Paid" field.
+	IsPaid bool `json:"is_Paid,omitempty"`
+	// IsOnlineOnly holds the value of the "is_Online_Only" field.
+	IsOnlineOnly bool `json:"is_Online_Only,omitempty"`
+	// IsInPersonOnly holds the value of the "is_In_Person_Only" field.
+	IsInPersonOnly bool `json:"is_In_Person_Only,omitempty"`
+	// IsHybrid holds the value of the "is_Hybrid" field.
+	IsHybrid bool `json:"is_Hybrid,omitempty"`
+	// IsOnlineAndInPerson holds the value of the "is_Online_And_In_Person" field.
+	IsOnlineAndInPerson bool `json:"is_Online_And_In_Person,omitempty"`
+	// IsOnlineAndInPersonOnly holds the value of the "is_Online_And_In_Person_Only" field.
+	IsOnlineAndInPersonOnly bool `json:"is_Online_And_In_Person_Only,omitempty"`
+	// IsOnlineAndInPersonOrHybrid holds the value of the "is_Online_And_In_Person_Or_Hybrid" field.
+	IsOnlineAndInPersonOrHybrid bool `json:"is_Online_And_In_Person_Or_Hybrid,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EventQuery when eager-loading is set.
 	Edges             EventEdges `json:"edges"`
@@ -254,6 +276,8 @@ func (*Event) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case event.FieldEventSettings, event.FieldMapCoordinates:
 			values[i] = new([]byte)
+		case event.FieldIsPremium, event.FieldIsPublished, event.FieldIsOnline, event.FieldIsFree, event.FieldIsPaid, event.FieldIsOnlineOnly, event.FieldIsInPersonOnly, event.FieldIsHybrid, event.FieldIsOnlineAndInPerson, event.FieldIsOnlineAndInPersonOnly, event.FieldIsOnlineAndInPersonOrHybrid:
+			values[i] = new(sql.NullBool)
 		case event.FieldRelevanceScore:
 			values[i] = new(sql.NullFloat64)
 		case event.FieldFollowerCount, event.FieldFollowingCount:
@@ -539,6 +563,72 @@ func (e *Event) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				e.FollowingCount = int(value.Int64)
 			}
+		case event.FieldIsPremium:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_Premium", values[i])
+			} else if value.Valid {
+				e.IsPremium = value.Bool
+			}
+		case event.FieldIsPublished:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_published", values[i])
+			} else if value.Valid {
+				e.IsPublished = value.Bool
+			}
+		case event.FieldIsOnline:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_Online", values[i])
+			} else if value.Valid {
+				e.IsOnline = value.Bool
+			}
+		case event.FieldIsFree:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_Free", values[i])
+			} else if value.Valid {
+				e.IsFree = value.Bool
+			}
+		case event.FieldIsPaid:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_Paid", values[i])
+			} else if value.Valid {
+				e.IsPaid = value.Bool
+			}
+		case event.FieldIsOnlineOnly:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_Online_Only", values[i])
+			} else if value.Valid {
+				e.IsOnlineOnly = value.Bool
+			}
+		case event.FieldIsInPersonOnly:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_In_Person_Only", values[i])
+			} else if value.Valid {
+				e.IsInPersonOnly = value.Bool
+			}
+		case event.FieldIsHybrid:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_Hybrid", values[i])
+			} else if value.Valid {
+				e.IsHybrid = value.Bool
+			}
+		case event.FieldIsOnlineAndInPerson:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_Online_And_In_Person", values[i])
+			} else if value.Valid {
+				e.IsOnlineAndInPerson = value.Bool
+			}
+		case event.FieldIsOnlineAndInPersonOnly:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_Online_And_In_Person_Only", values[i])
+			} else if value.Valid {
+				e.IsOnlineAndInPersonOnly = value.Bool
+			}
+		case event.FieldIsOnlineAndInPersonOrHybrid:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_Online_And_In_Person_Or_Hybrid", values[i])
+			} else if value.Valid {
+				e.IsOnlineAndInPersonOrHybrid = value.Bool
+			}
 		case event.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field business_events", values[i])
@@ -773,6 +863,39 @@ func (e *Event) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("following_count=")
 	builder.WriteString(fmt.Sprintf("%v", e.FollowingCount))
+	builder.WriteString(", ")
+	builder.WriteString("is_Premium=")
+	builder.WriteString(fmt.Sprintf("%v", e.IsPremium))
+	builder.WriteString(", ")
+	builder.WriteString("is_published=")
+	builder.WriteString(fmt.Sprintf("%v", e.IsPublished))
+	builder.WriteString(", ")
+	builder.WriteString("is_Online=")
+	builder.WriteString(fmt.Sprintf("%v", e.IsOnline))
+	builder.WriteString(", ")
+	builder.WriteString("is_Free=")
+	builder.WriteString(fmt.Sprintf("%v", e.IsFree))
+	builder.WriteString(", ")
+	builder.WriteString("is_Paid=")
+	builder.WriteString(fmt.Sprintf("%v", e.IsPaid))
+	builder.WriteString(", ")
+	builder.WriteString("is_Online_Only=")
+	builder.WriteString(fmt.Sprintf("%v", e.IsOnlineOnly))
+	builder.WriteString(", ")
+	builder.WriteString("is_In_Person_Only=")
+	builder.WriteString(fmt.Sprintf("%v", e.IsInPersonOnly))
+	builder.WriteString(", ")
+	builder.WriteString("is_Hybrid=")
+	builder.WriteString(fmt.Sprintf("%v", e.IsHybrid))
+	builder.WriteString(", ")
+	builder.WriteString("is_Online_And_In_Person=")
+	builder.WriteString(fmt.Sprintf("%v", e.IsOnlineAndInPerson))
+	builder.WriteString(", ")
+	builder.WriteString("is_Online_And_In_Person_Only=")
+	builder.WriteString(fmt.Sprintf("%v", e.IsOnlineAndInPersonOnly))
+	builder.WriteString(", ")
+	builder.WriteString("is_Online_And_In_Person_Or_Hybrid=")
+	builder.WriteString(fmt.Sprintf("%v", e.IsOnlineAndInPersonOrHybrid))
 	builder.WriteByte(')')
 	return builder.String()
 }
