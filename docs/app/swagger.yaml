@@ -3467,6 +3467,45 @@ paths:
       summary: Unlike a place
       tags:
       - Like
+  /api/v1/likes/place/check/{placeID}:
+    get:
+      consumes:
+      - application/json
+      description: Check if the user likes a Place
+      operationId: user-check-like-place
+      parameters:
+      - description: Place ID
+        in: path
+        name: placeID
+        required: true
+        type: string
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Like status returned successfully
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.ErrorDTO'
+      summary: Check if user likes a place
+      tags:
+      - Like
   /api/v1/likes/post/{postID}:
     get:
       consumes:

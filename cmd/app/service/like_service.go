@@ -34,6 +34,7 @@ type UserLikePlaceService interface {
 	UnlikePlace(ctx context.Context, userLikePlaceID string) error
 	GetUserLikedPlaces(ctx context.Context, userID string) ([]*ent.UserLikePlace, error)
 	GetPlaceLikes(ctx context.Context, placeID string) ([]*ent.UserLikePlace, error)
+	CheckIfUserLikesPlace(ctx context.Context, userID string, placeID string) (bool, error)
 }
 
 type UserLikePlaceServiceImpl struct {
@@ -43,6 +44,19 @@ type UserLikePlaceServiceImpl struct {
 
 func NewUserLikePlaceService(client *ent.Client, cache *utility.RedisClient) *UserLikePlaceServiceImpl {
 	return &UserLikePlaceServiceImpl{client: client, cache: cache}
+}
+
+func (s *UserLikePlaceServiceImpl) CheckIfUserLikesPlace(ctx context.Context, userID, placeID string) (bool, error) {
+	count, err := s.client.UserLikePlace.
+		Query().
+		Where(userlikeplace.HasUserWith(user.ID(userID))).
+		Where(userlikeplace.HasPlaceWith(place.ID(placeID))).
+		Count(ctx)
+	if err != nil {
+		return false, err
+	}
+
+	return count > 0, nil
 }
 
 func (s *LikeServiceImpl) LikePost(ctx context.Context, userID string, postID string) (*ent.Like, error) {
