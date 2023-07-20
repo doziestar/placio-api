@@ -24,6 +24,7 @@ var (
 	IDMismatch           = errors.New("id mismatch")
 	IDMissing            = errors.New("id missing")
 	ErrInvalidInput      = errors.New("invalid input")
+	ErrPermissionDenied  = errors.New("permission denied")
 )
 
 // New returns new app error that formats as the given text.

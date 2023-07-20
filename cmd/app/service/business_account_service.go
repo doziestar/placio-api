@@ -14,6 +14,7 @@ import (
 	"placio-app/ent/predicate"
 	"placio-app/ent/user"
 	"placio-app/ent/userbusiness"
+	appErrors "placio-app/errors"
 	"placio-app/utility"
 )
 
@@ -21,7 +22,7 @@ type BusinessAccountService interface {
 	CreateBusinessAccount(ctx context.Context, businessData *Dto.BusinessDto) (*ent.Business, error)
 	GetBusinessAccount(ctx context.Context, businessAccountID string) (*ent.Business, error)
 	GetUserBusinessAccounts(ctx context.Context) ([]*ent.Business, error)
-	AssociateUserWithBusinessAccount(ctx context.Context, userID, businessAccountID, role string) error
+	AssociateUserWithBusinessAccount(ctx context.Context, adminUser, userID, businessAccountID, role string) error
 	GetBusinessAccountsForUser(ctx context.Context, userID string) ([]*ent.UserBusiness, error)
 	ListBusinessAccounts(ctx context.Context, page, pageSize int, sortBy string, filters ...predicate.Business) ([]*ent.Business, error)
 	RemoveUserFromBusinessAccount(ctx context.Context, userID, businessAccountID string) error
@@ -33,7 +34,7 @@ type BusinessAccountService interface {
 	UnfollowBusiness(ctx context.Context, followerID string, followedID string) error
 	GetFollowedContents(ctx context.Context, businessID string) ([]*ent.Post, error)
 	GetPlacesAndEventsAssociatedWithBusinessAccount(c context.Context, relatedType string, businessId string) (Dto.BusinessAccountPlacesAndEvents, error)
-	AddTeamMember(ctx context.Context, userID, businessAccountID, role, permissions string) error
+	AddTeamMember(ctx context.Context, adminUser, userID, businessAccountID, role, permissions string) error
 	ListTeamMembers(ctx context.Context, businessAccountID string) ([]*ent.UserBusiness, error)
 	EditTeamMember(ctx context.Context, userID, businessAccountID, newRole, newPermissions string) error
 	RemoveTeamMember(ctx context.Context, userID, businessAccountID string) error
@@ -293,9 +294,24 @@ func (s *BusinessAccountServiceImpl) GetBusinessAccount(ctx context.Context, bus
 	return businessAccount, nil
 }
 
-func (s *BusinessAccountServiceImpl) AddTeamMember(ctx context.Context, userID, businessAccountID, role, permissions string) error {
+func (s *BusinessAccountServiceImpl) AddTeamMember(ctx context.Context, adminUser, userID, businessAccountID, role, permissions string) error {
+
+	// Check if adminUser is indeed an admin of the business account
+	adminUserBusiness, err := s.client.UserBusiness.
+		Query().
+		Where(userbusiness.HasUserWith(user.ID(adminUser))).
+		Where(userbusiness.HasBusinessWith(business.ID(businessAccountID))).
+		Only(ctx)
+
+	if err != nil {
+		return err
+	}
+
+	if adminUserBusiness.Role != "admin" {
+		return appErrors.ErrPermissionDenied
+	}
 	// Fetch user and business account
-	user, err := s.client.User.Query().Where(user.ID(userID)).Only(ctx)
+	userToAdd, err := s.client.User.Query().Where(user.ID(userID)).Only(ctx)
 	if err != nil {
 		return err
 	}
@@ -308,7 +324,7 @@ func (s *BusinessAccountServiceImpl) AddTeamMember(ctx context.Context, userID, 
 	// Create the relationship with role and permissions
 	_, err = s.client.UserBusiness.Create().
 		SetID(uuid.New().String()).
-		SetUser(user).
+		SetUser(userToAdd).
 		SetBusiness(businessAccount).
 		SetRole(role).
 		SetPermissions(permissions).
@@ -404,11 +420,11 @@ func (s *BusinessAccountServiceImpl) TransferBusinessAccountOwnership(ctx contex
 }
 
 // AssociateUserWithBusinessAccount associates a user with a Business Account.
-func (s *BusinessAccountServiceImpl) AssociateUserWithBusinessAccount(ctx context.Context, userID, businessAccountID, role string) error {
+func (s *BusinessAccountServiceImpl) AssociateUserWithBusinessAccount(ctx context.Context, adminUser, userID, businessAccountID, role string) error {
 	// get the user
 	user, err := s.client.User.
 		Query().
-		Where(user.Auth0ID(userID)).
+		Where(user.ID(userID)).
 		Only(ctx)
 
 	if err != nil {

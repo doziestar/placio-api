@@ -5232,21 +5232,12 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Role",
-                        "name": "role",
+                        "description": "Team Member",
+                        "name": "data",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "description": "Permissions",
-                        "name": "permissions",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/placio-app_Dto.TeamMember"
                         }
                     },
                     {
@@ -5496,65 +5487,6 @@ const docTemplate = `{
             }
         },
         "/business/{businessAccountID}/user/{userID}": {
-            "post": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Business"
-                ],
-                "summary": "Associate user with business account",
-                "operationId": "associate-user-business-account",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer token",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Business Account ID",
-                        "name": "businessAccountID",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "User ID",
-                        "name": "userID",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.Response"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.Error"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.Error"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/placio-app_Dto.ErrorDto"
-                        }
-                    }
-                }
-            },
             "delete": {
                 "produces": [
                     "application/json"
