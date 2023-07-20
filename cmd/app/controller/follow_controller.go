@@ -35,7 +35,117 @@ func (fc *FollowController) RegisterRoutes(router *gin.RouterGroup) {
 		followRouter.POST("event/:eventID", utility.Use(fc.followUserToEvent))
 		followRouter.DELETE("event/:eventID", utility.Use(fc.unfollowUserToEvent))
 		followRouter.GET("event", utility.Use(fc.getFollowedEventsByUser))
+
+		followRouter.GET("check/business/:businessID", utility.Use(fc.checkUserFollowsBusiness))
+		followRouter.GET("check/user/:userID", utility.Use(fc.checkUserFollowsUser))
+		followRouter.GET("check/place/:placeID", utility.Use(fc.checkUserFollowsPlace))
+		followRouter.GET("check/event/:eventID", utility.Use(fc.checkUserFollowsEvent))
+
 	}
+}
+
+// @Summary Check if user follows a business
+// @ID user-check-follow-business
+// @Tags Follow
+// @Produce json
+// @Param businessID path string true "Business ID"
+// @Param Authorization header string true "Bearer token"
+// @Accept json
+// @Description Check if the user follows a specific Business
+// @Success 200 {object} string "Follow status returned successfully"
+// @Failure 400 {object} Dto.Error
+// @Failure 401 {object} Dto.Error
+// @Failure 500 {object} Dto.Error
+// @Router /follow/check/business/{businessID} [get]
+func (fc *FollowController) checkUserFollowsBusiness(c *gin.Context) error {
+	businessID := c.Param("businessID")
+	userID := c.GetString("user")
+
+	follows, err := fc.service.CheckIfUserFollowsBusiness(c, userID, businessID)
+	if err != nil {
+		return err
+	}
+
+	c.JSON(http.StatusOK, gin.H{"follows": follows})
+	return nil
+}
+
+// @Summary Check if user follows another user
+// @ID user-check-follow-user
+// @Tags Follow
+// @Produce json
+// @Param followedID path string true "User ID"
+// @Param Authorization header string true "Bearer token"
+// @Accept json
+// @Description Check if the user follows another User
+// @Success 200 {object} string "Follow status returned successfully"
+// @Failure 400 {object} Dto.Error
+// @Failure 401 {object} Dto.Error
+// @Failure 500 {object} Dto.Error
+// @Router /follow/check/user/{followedID} [get]
+func (fc *FollowController) checkUserFollowsUser(c *gin.Context) error {
+	followedID := c.Param("followedID")
+	followerID := c.GetString("user")
+
+	follows, err := fc.service.CheckIfUserFollowsUser(c, followerID, followedID)
+	if err != nil {
+		return err
+	}
+
+	c.JSON(http.StatusOK, gin.H{"follows": follows})
+	return nil
+}
+
+// @Summary Check if user follows a place
+// @ID user-check-follow-place
+// @Tags Follow
+// @Produce json
+// @Param placeID path string true "Place ID"
+// @Param Authorization header string true "Bearer token"
+// @Accept json
+// @Description Check if the user follows a Place
+// @Success 200 {object} string "Follow status returned successfully"
+// @Failure 400 {object} Dto.Error
+// @Failure 401 {object} Dto.Error
+// @Failure 500 {object} Dto.Error
+// @Router /follow/check/place/{placeID} [get]
+func (fc *FollowController) checkUserFollowsPlace(c *gin.Context) error {
+	placeID := c.Param("placeID")
+	userID := c.GetString("user")
+
+	follows, err := fc.service.CheckIfUserFollowsPlace(c, userID, placeID)
+	if err != nil {
+		return err
+	}
+
+	c.JSON(http.StatusOK, gin.H{"follows": follows})
+	return nil
+}
+
+// @Summary Check if user follows an event
+// @ID user-check-follow-event
+// @Tags Follow
+// @Produce json
+// @Param eventID path string true "Event ID"
+// @Param Authorization header string true "Bearer token"
+// @Accept json
+// @Description Check if the user follows an Event
+// @Success 200 {object} string "Follow status returned successfully"
+// @Failure 400 {object} Dto.Error
+// @Failure 401 {object} Dto.Error
+// @Failure 500 {object} Dto.Error
+// @Router /follow/check/event/{eventID} [get]
+func (fc *FollowController) checkUserFollowsEvent(c *gin.Context) error {
+	eventID := c.Param("eventID")
+	userID := c.GetString("user")
+
+	follows, err := fc.service.CheckIfUserFollowsEvent(c, userID, eventID)
+	if err != nil {
+		return err
+	}
+
+	c.JSON(http.StatusOK, gin.H{"follows": follows})
+	return nil
 }
 
 // @Summary Follow a business
