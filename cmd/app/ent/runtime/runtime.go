@@ -160,6 +160,50 @@ func init() {
 	eventDescFollowingCount := eventFields[41].Descriptor()
 	// event.DefaultFollowingCount holds the default value on creation for the following_count field.
 	event.DefaultFollowingCount = eventDescFollowingCount.Default.(int)
+	// eventDescIsPremium is the schema descriptor for is_Premium field.
+	eventDescIsPremium := eventFields[42].Descriptor()
+	// event.DefaultIsPremium holds the default value on creation for the is_Premium field.
+	event.DefaultIsPremium = eventDescIsPremium.Default.(bool)
+	// eventDescIsPublished is the schema descriptor for is_published field.
+	eventDescIsPublished := eventFields[43].Descriptor()
+	// event.DefaultIsPublished holds the default value on creation for the is_published field.
+	event.DefaultIsPublished = eventDescIsPublished.Default.(bool)
+	// eventDescIsOnline is the schema descriptor for is_Online field.
+	eventDescIsOnline := eventFields[44].Descriptor()
+	// event.DefaultIsOnline holds the default value on creation for the is_Online field.
+	event.DefaultIsOnline = eventDescIsOnline.Default.(bool)
+	// eventDescIsFree is the schema descriptor for is_Free field.
+	eventDescIsFree := eventFields[45].Descriptor()
+	// event.DefaultIsFree holds the default value on creation for the is_Free field.
+	event.DefaultIsFree = eventDescIsFree.Default.(bool)
+	// eventDescIsPaid is the schema descriptor for is_Paid field.
+	eventDescIsPaid := eventFields[46].Descriptor()
+	// event.DefaultIsPaid holds the default value on creation for the is_Paid field.
+	event.DefaultIsPaid = eventDescIsPaid.Default.(bool)
+	// eventDescIsOnlineOnly is the schema descriptor for is_Online_Only field.
+	eventDescIsOnlineOnly := eventFields[47].Descriptor()
+	// event.DefaultIsOnlineOnly holds the default value on creation for the is_Online_Only field.
+	event.DefaultIsOnlineOnly = eventDescIsOnlineOnly.Default.(bool)
+	// eventDescIsInPersonOnly is the schema descriptor for is_In_Person_Only field.
+	eventDescIsInPersonOnly := eventFields[48].Descriptor()
+	// event.DefaultIsInPersonOnly holds the default value on creation for the is_In_Person_Only field.
+	event.DefaultIsInPersonOnly = eventDescIsInPersonOnly.Default.(bool)
+	// eventDescIsHybrid is the schema descriptor for is_Hybrid field.
+	eventDescIsHybrid := eventFields[49].Descriptor()
+	// event.DefaultIsHybrid holds the default value on creation for the is_Hybrid field.
+	event.DefaultIsHybrid = eventDescIsHybrid.Default.(bool)
+	// eventDescIsOnlineAndInPerson is the schema descriptor for is_Online_And_In_Person field.
+	eventDescIsOnlineAndInPerson := eventFields[50].Descriptor()
+	// event.DefaultIsOnlineAndInPerson holds the default value on creation for the is_Online_And_In_Person field.
+	event.DefaultIsOnlineAndInPerson = eventDescIsOnlineAndInPerson.Default.(bool)
+	// eventDescIsOnlineAndInPersonOnly is the schema descriptor for is_Online_And_In_Person_Only field.
+	eventDescIsOnlineAndInPersonOnly := eventFields[51].Descriptor()
+	// event.DefaultIsOnlineAndInPersonOnly holds the default value on creation for the is_Online_And_In_Person_Only field.
+	event.DefaultIsOnlineAndInPersonOnly = eventDescIsOnlineAndInPersonOnly.Default.(bool)
+	// eventDescIsOnlineAndInPersonOrHybrid is the schema descriptor for is_Online_And_In_Person_Or_Hybrid field.
+	eventDescIsOnlineAndInPersonOrHybrid := eventFields[52].Descriptor()
+	// event.DefaultIsOnlineAndInPersonOrHybrid holds the default value on creation for the is_Online_And_In_Person_Or_Hybrid field.
+	event.DefaultIsOnlineAndInPersonOrHybrid = eventDescIsOnlineAndInPersonOrHybrid.Default.(bool)
 	helpFields := schema.Help{}.Fields()
 	_ = helpFields
 	// helpDescStatus is the schema descriptor for status field.
@@ -230,6 +274,14 @@ func init() {
 	placeDescFollowingCount := placeFields[30].Descriptor()
 	// place.DefaultFollowingCount holds the default value on creation for the following_count field.
 	place.DefaultFollowingCount = placeDescFollowingCount.Default.(int)
+	// placeDescIsPremium is the schema descriptor for is_Premium field.
+	placeDescIsPremium := placeFields[31].Descriptor()
+	// place.DefaultIsPremium holds the default value on creation for the is_Premium field.
+	place.DefaultIsPremium = placeDescIsPremium.Default.(bool)
+	// placeDescIsPublished is the schema descriptor for is_published field.
+	placeDescIsPublished := placeFields[32].Descriptor()
+	// place.DefaultIsPublished holds the default value on creation for the is_published field.
+	place.DefaultIsPublished = placeDescIsPublished.Default.(bool)
 	// placeDescID is the schema descriptor for id field.
 	placeDescID := placeFields[0].Descriptor()
 	// place.IDValidator is a validator for the "id" field. It is called by the builders before save.

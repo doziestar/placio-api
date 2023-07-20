@@ -73,6 +73,10 @@ const (
 	FieldFollowerCount = "follower_count"
 	// FieldFollowingCount holds the string denoting the following_count field in the database.
 	FieldFollowingCount = "following_count"
+	// FieldIsPremium holds the string denoting the is_premium field in the database.
+	FieldIsPremium = "is_premium"
+	// FieldIsPublished holds the string denoting the is_published field in the database.
+	FieldIsPublished = "is_published"
 	// EdgeBusiness holds the string denoting the business edge name in mutations.
 	EdgeBusiness = "business"
 	// EdgeUsers holds the string denoting the users edge name in mutations.
@@ -239,6 +243,8 @@ var Columns = []string{
 	FieldRelevanceScore,
 	FieldFollowerCount,
 	FieldFollowingCount,
+	FieldIsPremium,
+	FieldIsPublished,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "places"
@@ -288,6 +294,10 @@ var (
 	DefaultFollowerCount int
 	// DefaultFollowingCount holds the default value on creation for the "following_count" field.
 	DefaultFollowingCount int
+	// DefaultIsPremium holds the default value on creation for the "is_Premium" field.
+	DefaultIsPremium bool
+	// DefaultIsPublished holds the default value on creation for the "is_published" field.
+	DefaultIsPublished bool
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(string) error
 )
@@ -398,6 +408,16 @@ func ByFollowerCount(opts ...sql.OrderTermOption) OrderOption {
 // ByFollowingCount orders the results by the following_count field.
 func ByFollowingCount(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldFollowingCount, opts...).ToFunc()
+}
+
+// ByIsPremium orders the results by the is_Premium field.
+func ByIsPremium(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsPremium, opts...).ToFunc()
+}
+
+// ByIsPublished orders the results by the is_published field.
+func ByIsPublished(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsPublished, opts...).ToFunc()
 }
 
 // ByBusinessField orders the results by business field.

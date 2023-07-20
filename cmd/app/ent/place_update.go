@@ -583,6 +583,34 @@ func (pu *PlaceUpdate) AddFollowingCount(i int) *PlaceUpdate {
 	return pu
 }
 
+// SetIsPremium sets the "is_Premium" field.
+func (pu *PlaceUpdate) SetIsPremium(b bool) *PlaceUpdate {
+	pu.mutation.SetIsPremium(b)
+	return pu
+}
+
+// SetNillableIsPremium sets the "is_Premium" field if the given value is not nil.
+func (pu *PlaceUpdate) SetNillableIsPremium(b *bool) *PlaceUpdate {
+	if b != nil {
+		pu.SetIsPremium(*b)
+	}
+	return pu
+}
+
+// SetIsPublished sets the "is_published" field.
+func (pu *PlaceUpdate) SetIsPublished(b bool) *PlaceUpdate {
+	pu.mutation.SetIsPublished(b)
+	return pu
+}
+
+// SetNillableIsPublished sets the "is_published" field if the given value is not nil.
+func (pu *PlaceUpdate) SetNillableIsPublished(b *bool) *PlaceUpdate {
+	if b != nil {
+		pu.SetIsPublished(*b)
+	}
+	return pu
+}
+
 // SetBusinessID sets the "business" edge to the Business entity by ID.
 func (pu *PlaceUpdate) SetBusinessID(id string) *PlaceUpdate {
 	pu.mutation.SetBusinessID(id)
@@ -1350,6 +1378,12 @@ func (pu *PlaceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := pu.mutation.AddedFollowingCount(); ok {
 		_spec.AddField(place.FieldFollowingCount, field.TypeInt, value)
+	}
+	if value, ok := pu.mutation.IsPremium(); ok {
+		_spec.SetField(place.FieldIsPremium, field.TypeBool, value)
+	}
+	if value, ok := pu.mutation.IsPublished(); ok {
+		_spec.SetField(place.FieldIsPublished, field.TypeBool, value)
 	}
 	if pu.mutation.BusinessCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -2570,6 +2604,34 @@ func (puo *PlaceUpdateOne) AddFollowingCount(i int) *PlaceUpdateOne {
 	return puo
 }
 
+// SetIsPremium sets the "is_Premium" field.
+func (puo *PlaceUpdateOne) SetIsPremium(b bool) *PlaceUpdateOne {
+	puo.mutation.SetIsPremium(b)
+	return puo
+}
+
+// SetNillableIsPremium sets the "is_Premium" field if the given value is not nil.
+func (puo *PlaceUpdateOne) SetNillableIsPremium(b *bool) *PlaceUpdateOne {
+	if b != nil {
+		puo.SetIsPremium(*b)
+	}
+	return puo
+}
+
+// SetIsPublished sets the "is_published" field.
+func (puo *PlaceUpdateOne) SetIsPublished(b bool) *PlaceUpdateOne {
+	puo.mutation.SetIsPublished(b)
+	return puo
+}
+
+// SetNillableIsPublished sets the "is_published" field if the given value is not nil.
+func (puo *PlaceUpdateOne) SetNillableIsPublished(b *bool) *PlaceUpdateOne {
+	if b != nil {
+		puo.SetIsPublished(*b)
+	}
+	return puo
+}
+
 // SetBusinessID sets the "business" edge to the Business entity by ID.
 func (puo *PlaceUpdateOne) SetBusinessID(id string) *PlaceUpdateOne {
 	puo.mutation.SetBusinessID(id)
@@ -3367,6 +3429,12 @@ func (puo *PlaceUpdateOne) sqlSave(ctx context.Context) (_node *Place, err error
 	}
 	if value, ok := puo.mutation.AddedFollowingCount(); ok {
 		_spec.AddField(place.FieldFollowingCount, field.TypeInt, value)
+	}
+	if value, ok := puo.mutation.IsPremium(); ok {
+		_spec.SetField(place.FieldIsPremium, field.TypeBool, value)
+	}
+	if value, ok := puo.mutation.IsPublished(); ok {
+		_spec.SetField(place.FieldIsPublished, field.TypeBool, value)
 	}
 	if puo.mutation.BusinessCleared() {
 		edge := &sqlgraph.EdgeSpec{

@@ -245,6 +245,61 @@ func FollowingCount(v int) predicate.Event {
 	return predicate.Event(sql.FieldEQ(FieldFollowingCount, v))
 }
 
+// IsPremium applies equality check predicate on the "is_Premium" field. It's identical to IsPremiumEQ.
+func IsPremium(v bool) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldIsPremium, v))
+}
+
+// IsPublished applies equality check predicate on the "is_published" field. It's identical to IsPublishedEQ.
+func IsPublished(v bool) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldIsPublished, v))
+}
+
+// IsOnline applies equality check predicate on the "is_Online" field. It's identical to IsOnlineEQ.
+func IsOnline(v bool) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldIsOnline, v))
+}
+
+// IsFree applies equality check predicate on the "is_Free" field. It's identical to IsFreeEQ.
+func IsFree(v bool) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldIsFree, v))
+}
+
+// IsPaid applies equality check predicate on the "is_Paid" field. It's identical to IsPaidEQ.
+func IsPaid(v bool) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldIsPaid, v))
+}
+
+// IsOnlineOnly applies equality check predicate on the "is_Online_Only" field. It's identical to IsOnlineOnlyEQ.
+func IsOnlineOnly(v bool) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldIsOnlineOnly, v))
+}
+
+// IsInPersonOnly applies equality check predicate on the "is_In_Person_Only" field. It's identical to IsInPersonOnlyEQ.
+func IsInPersonOnly(v bool) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldIsInPersonOnly, v))
+}
+
+// IsHybrid applies equality check predicate on the "is_Hybrid" field. It's identical to IsHybridEQ.
+func IsHybrid(v bool) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldIsHybrid, v))
+}
+
+// IsOnlineAndInPerson applies equality check predicate on the "is_Online_And_In_Person" field. It's identical to IsOnlineAndInPersonEQ.
+func IsOnlineAndInPerson(v bool) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldIsOnlineAndInPerson, v))
+}
+
+// IsOnlineAndInPersonOnly applies equality check predicate on the "is_Online_And_In_Person_Only" field. It's identical to IsOnlineAndInPersonOnlyEQ.
+func IsOnlineAndInPersonOnly(v bool) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldIsOnlineAndInPersonOnly, v))
+}
+
+// IsOnlineAndInPersonOrHybrid applies equality check predicate on the "is_Online_And_In_Person_Or_Hybrid" field. It's identical to IsOnlineAndInPersonOrHybridEQ.
+func IsOnlineAndInPersonOrHybrid(v bool) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldIsOnlineAndInPersonOrHybrid, v))
+}
+
 // NameEQ applies the EQ predicate on the "name" field.
 func NameEQ(v string) predicate.Event {
 	return predicate.Event(sql.FieldEQ(FieldName, v))
@@ -2838,6 +2893,116 @@ func FollowingCountLT(v int) predicate.Event {
 // FollowingCountLTE applies the LTE predicate on the "following_count" field.
 func FollowingCountLTE(v int) predicate.Event {
 	return predicate.Event(sql.FieldLTE(FieldFollowingCount, v))
+}
+
+// IsPremiumEQ applies the EQ predicate on the "is_Premium" field.
+func IsPremiumEQ(v bool) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldIsPremium, v))
+}
+
+// IsPremiumNEQ applies the NEQ predicate on the "is_Premium" field.
+func IsPremiumNEQ(v bool) predicate.Event {
+	return predicate.Event(sql.FieldNEQ(FieldIsPremium, v))
+}
+
+// IsPublishedEQ applies the EQ predicate on the "is_published" field.
+func IsPublishedEQ(v bool) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldIsPublished, v))
+}
+
+// IsPublishedNEQ applies the NEQ predicate on the "is_published" field.
+func IsPublishedNEQ(v bool) predicate.Event {
+	return predicate.Event(sql.FieldNEQ(FieldIsPublished, v))
+}
+
+// IsOnlineEQ applies the EQ predicate on the "is_Online" field.
+func IsOnlineEQ(v bool) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldIsOnline, v))
+}
+
+// IsOnlineNEQ applies the NEQ predicate on the "is_Online" field.
+func IsOnlineNEQ(v bool) predicate.Event {
+	return predicate.Event(sql.FieldNEQ(FieldIsOnline, v))
+}
+
+// IsFreeEQ applies the EQ predicate on the "is_Free" field.
+func IsFreeEQ(v bool) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldIsFree, v))
+}
+
+// IsFreeNEQ applies the NEQ predicate on the "is_Free" field.
+func IsFreeNEQ(v bool) predicate.Event {
+	return predicate.Event(sql.FieldNEQ(FieldIsFree, v))
+}
+
+// IsPaidEQ applies the EQ predicate on the "is_Paid" field.
+func IsPaidEQ(v bool) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldIsPaid, v))
+}
+
+// IsPaidNEQ applies the NEQ predicate on the "is_Paid" field.
+func IsPaidNEQ(v bool) predicate.Event {
+	return predicate.Event(sql.FieldNEQ(FieldIsPaid, v))
+}
+
+// IsOnlineOnlyEQ applies the EQ predicate on the "is_Online_Only" field.
+func IsOnlineOnlyEQ(v bool) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldIsOnlineOnly, v))
+}
+
+// IsOnlineOnlyNEQ applies the NEQ predicate on the "is_Online_Only" field.
+func IsOnlineOnlyNEQ(v bool) predicate.Event {
+	return predicate.Event(sql.FieldNEQ(FieldIsOnlineOnly, v))
+}
+
+// IsInPersonOnlyEQ applies the EQ predicate on the "is_In_Person_Only" field.
+func IsInPersonOnlyEQ(v bool) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldIsInPersonOnly, v))
+}
+
+// IsInPersonOnlyNEQ applies the NEQ predicate on the "is_In_Person_Only" field.
+func IsInPersonOnlyNEQ(v bool) predicate.Event {
+	return predicate.Event(sql.FieldNEQ(FieldIsInPersonOnly, v))
+}
+
+// IsHybridEQ applies the EQ predicate on the "is_Hybrid" field.
+func IsHybridEQ(v bool) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldIsHybrid, v))
+}
+
+// IsHybridNEQ applies the NEQ predicate on the "is_Hybrid" field.
+func IsHybridNEQ(v bool) predicate.Event {
+	return predicate.Event(sql.FieldNEQ(FieldIsHybrid, v))
+}
+
+// IsOnlineAndInPersonEQ applies the EQ predicate on the "is_Online_And_In_Person" field.
+func IsOnlineAndInPersonEQ(v bool) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldIsOnlineAndInPerson, v))
+}
+
+// IsOnlineAndInPersonNEQ applies the NEQ predicate on the "is_Online_And_In_Person" field.
+func IsOnlineAndInPersonNEQ(v bool) predicate.Event {
+	return predicate.Event(sql.FieldNEQ(FieldIsOnlineAndInPerson, v))
+}
+
+// IsOnlineAndInPersonOnlyEQ applies the EQ predicate on the "is_Online_And_In_Person_Only" field.
+func IsOnlineAndInPersonOnlyEQ(v bool) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldIsOnlineAndInPersonOnly, v))
+}
+
+// IsOnlineAndInPersonOnlyNEQ applies the NEQ predicate on the "is_Online_And_In_Person_Only" field.
+func IsOnlineAndInPersonOnlyNEQ(v bool) predicate.Event {
+	return predicate.Event(sql.FieldNEQ(FieldIsOnlineAndInPersonOnly, v))
+}
+
+// IsOnlineAndInPersonOrHybridEQ applies the EQ predicate on the "is_Online_And_In_Person_Or_Hybrid" field.
+func IsOnlineAndInPersonOrHybridEQ(v bool) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldIsOnlineAndInPersonOrHybrid, v))
+}
+
+// IsOnlineAndInPersonOrHybridNEQ applies the NEQ predicate on the "is_Online_And_In_Person_Or_Hybrid" field.
+func IsOnlineAndInPersonOrHybridNEQ(v bool) predicate.Event {
+	return predicate.Event(sql.FieldNEQ(FieldIsOnlineAndInPersonOrHybrid, v))
 }
 
 // HasTickets applies the HasEdge predicate on the "tickets" edge.

@@ -61,6 +61,17 @@ func (Event) Fields() []ent.Field {
 		field.Float("relevance_score").Optional(),
 		field.Int("follower_count").Default(0),
 		field.Int("following_count").Default(0),
+		field.Bool("is_Premium").Default(false),
+		field.Bool("is_published").Default(false),
+		field.Bool("is_Online").Default(false),
+		field.Bool("is_Free").Default(false),
+		field.Bool("is_Paid").Default(false),
+		field.Bool("is_Online_Only").Default(false),
+		field.Bool("is_In_Person_Only").Default(false),
+		field.Bool("is_Hybrid").Default(false),
+		field.Bool("is_Online_And_In_Person").Default(false),
+		field.Bool("is_Online_And_In_Person_Only").Default(false),
+		field.Bool("is_Online_And_In_Person_Or_Hybrid").Default(false),
 	}
 }
 
