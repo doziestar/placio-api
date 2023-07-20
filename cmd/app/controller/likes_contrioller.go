@@ -32,8 +32,35 @@ func (likesController *LikeController) RegisterRoutes(router *gin.RouterGroup) {
 			likePlaceRouter.DELETE("/:userLikePlaceID", utility.Use(likesController.unlikePlace))
 			likePlaceRouter.GET("/user/:userID", utility.Use(likesController.getUserLikedPlaces))
 			likePlaceRouter.GET("/:placeID", utility.Use(likesController.getPlaceLikes))
+			likePlaceRouter.GET("check/:placeID", utility.Use(likesController.checkUserLikesPlace))
 		}
 	}
+}
+
+// @Summary Check if user likes a place
+// @ID user-check-like-place
+// @Tags Like
+// @Produce json
+// @Param placeID path string true "Place ID"
+// @Param Authorization header string true "Bearer token"
+// @Accept json
+// @Description Check if the user likes a Place
+// @Success 200 {object} string "Like status returned successfully"
+// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
+// @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
+// @Router /api/v1/likes/place/check/{placeID} [get]
+func (likesController *LikeController) checkUserLikesPlace(ctx *gin.Context) error {
+	placeID := ctx.Param("placeID")
+	userID := ctx.GetString("user")
+
+	doesUserLike, err := likesController.userPlacesLikes.CheckIfUserLikesPlace(ctx, userID, placeID)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"likes": doesUserLike})
+	return nil
 }
 
 // @Summary Like a post
