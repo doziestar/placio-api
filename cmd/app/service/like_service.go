@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"github.com/google/uuid"
+	"log"
 	"placio-app/ent"
 	"placio-app/ent/like"
 	"placio-app/ent/place"
@@ -31,7 +32,7 @@ func NewLikeService(client *ent.Client, cache *utility.RedisClient) *LikeService
 
 type UserLikePlaceService interface {
 	LikePlace(ctx context.Context, userID string, placeID string) (*ent.UserLikePlace, error)
-	UnlikePlace(ctx context.Context, userLikePlaceID string) error
+	UnlikePlace(ctx context.Context, userId, placeID string) error
 	GetUserLikedPlaces(ctx context.Context, userID string) ([]*ent.UserLikePlace, error)
 	GetPlaceLikes(ctx context.Context, placeID string) ([]*ent.UserLikePlace, error)
 	CheckIfUserLikesPlace(ctx context.Context, userID string, placeID string) (bool, error)
@@ -145,14 +146,27 @@ func (s *UserLikePlaceServiceImpl) LikePlace(ctx context.Context, userID string,
 	return userLike, nil
 }
 
-func (s *UserLikePlaceServiceImpl) UnlikePlace(ctx context.Context, userLikePlaceID string) error {
-	_, err := s.client.UserLikePlace.
-		Delete().
-		Where(userlikeplace.ID(userLikePlaceID)).
-		Exec(ctx)
+func (s *UserLikePlaceServiceImpl) UnlikePlace(ctx context.Context, userId, placeID string) error {
+	userLikePlace, err := s.client.UserLikePlace.
+		Query().
+		Where(userlikeplace.HasUserWith(user.ID(userId))).
+		Where(userlikeplace.HasPlaceWith(place.ID(placeID))).
+		Only(ctx)
+
 	if err != nil {
+		log.Println("UserLikePlace with given user and place does not exist:", userId, placeID)
 		return err
 	}
+
+	_, err = s.client.UserLikePlace.
+		Delete().
+		Where(userlikeplace.ID(userLikePlace.ID)).
+		Exec(ctx)
+	if err != nil {
+		log.Println("Failed to unlike place:", err)
+		return err
+	}
+
 	return nil
 }
 

@@ -198,8 +198,9 @@ func (likesController *LikeController) likePlace(c *gin.Context) error {
 // @Router /api/v1/likes/place/{userLikePlaceID} [delete]
 func (likesController *LikeController) unlikePlace(c *gin.Context) error {
 	userLikePlaceID := c.Param("userLikePlaceID")
+	userId := c.MustGet("user").(string)
 
-	err := likesController.userPlacesLikes.UnlikePlace(c, userLikePlaceID)
+	err := likesController.userPlacesLikes.UnlikePlace(c, userId, userLikePlaceID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error()))
 		return nil
