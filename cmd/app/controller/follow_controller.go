@@ -21,19 +21,15 @@ func (fc *FollowController) RegisterRoutes(router *gin.RouterGroup) {
 	followRouter := router.Group("/follow")
 	{
 		followRouter.POST("business/:businessID", utility.Use(fc.followUserToBusiness))
-		followRouter.DELETE("business/:businessID", utility.Use(fc.unfollowUserToBusiness))
 		followRouter.GET("business", utility.Use(fc.getFollowedBusinessesByUser))
 
 		followRouter.POST("user/:userID", utility.Use(fc.followUserToUser))
-		followRouter.DELETE("user/:userID", utility.Use(fc.unfollowUserToUser))
 		followRouter.GET("user", utility.Use(fc.getFollowedUsersByUser))
 
 		followRouter.POST("place/:placeID", utility.Use(fc.followUserToPlace))
-		followRouter.DELETE("place/:placeID", utility.Use(fc.unfollowUserToPlace))
 		followRouter.GET("place", utility.Use(fc.getFollowedPlacesByUser))
 
 		followRouter.POST("event/:eventID", utility.Use(fc.followUserToEvent))
-		followRouter.DELETE("event/:eventID", utility.Use(fc.unfollowUserToEvent))
 		followRouter.GET("event", utility.Use(fc.getFollowedEventsByUser))
 
 		followRouter.GET("check/business/:businessID", utility.Use(fc.checkUserFollowsBusiness))
@@ -42,6 +38,15 @@ func (fc *FollowController) RegisterRoutes(router *gin.RouterGroup) {
 		followRouter.GET("check/event/:eventID", utility.Use(fc.checkUserFollowsEvent))
 
 	}
+
+	unfollowRouter := router.Group("/unfollow")
+	{
+		unfollowRouter.DELETE("business/:businessID", utility.Use(fc.unfollowUserToBusiness))
+		unfollowRouter.DELETE("user/:userID", utility.Use(fc.unfollowUserToUser))
+		unfollowRouter.DELETE("place/:placeID", utility.Use(fc.unfollowUserToPlace))
+		unfollowRouter.DELETE("event/:eventID", utility.Use(fc.unfollowUserToEvent))
+	}
+
 }
 
 // @Summary Check if user follows a business
