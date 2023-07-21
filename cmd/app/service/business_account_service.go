@@ -295,7 +295,6 @@ func (s *BusinessAccountServiceImpl) GetBusinessAccount(ctx context.Context, bus
 }
 
 func (s *BusinessAccountServiceImpl) AddTeamMember(ctx context.Context, adminUser, userID, businessAccountID, role, permissions string) error {
-
 	// Check if adminUser is indeed an admin of the business account
 	adminUserBusiness, err := s.client.UserBusiness.
 		Query().
@@ -304,17 +303,41 @@ func (s *BusinessAccountServiceImpl) AddTeamMember(ctx context.Context, adminUse
 		Only(ctx)
 
 	if err != nil {
+		// Add proper error handling here
+		log.Println(err)
 		return err
 	}
 
 	if adminUserBusiness.Role != "admin" {
 		return appErrors.ErrPermissionDenied
 	}
+
+	// Check if the user is already part of the team
+	existingRelation, err := s.client.UserBusiness.
+		Query().
+		Where(userbusiness.HasUserWith(user.ID(userID))).
+		Where(userbusiness.HasBusinessWith(business.ID(businessAccountID))).
+		Only(ctx)
+
+	if err != nil && !ent.IsNotFound(err) {
+		// Add proper error handling here
+		log.Println(err)
+		return err
+	}
+
+	if existingRelation != nil {
+		// Handle situation when user is already part of the team. Return an error or ignore based on your requirements
+		return appErrors.ErrUserAlreadyInTeam
+	}
+
+	log.Println("role", role)
+
 	// Fetch user and business account
-	userToAdd, err := s.client.User.Query().Where(user.ID(userID)).Only(ctx)
+	userToAdd, err := s.client.User.Get(ctx, userID)
 	if err != nil {
 		return err
 	}
+	log.Println("userToAdd", userToAdd)
 
 	businessAccount, err := s.client.Business.Query().Where(business.ID(businessAccountID)).Only(ctx)
 	if err != nil {
@@ -324,7 +347,7 @@ func (s *BusinessAccountServiceImpl) AddTeamMember(ctx context.Context, adminUse
 	// Create the relationship with role and permissions
 	_, err = s.client.UserBusiness.Create().
 		SetID(uuid.New().String()).
-		SetUser(userToAdd).
+		//SetUser(userToAdd).
 		SetBusiness(businessAccount).
 		SetRole(role).
 		SetPermissions(permissions).

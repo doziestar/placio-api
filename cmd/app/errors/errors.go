@@ -25,6 +25,7 @@ var (
 	IDMissing            = errors.New("id missing")
 	ErrInvalidInput      = errors.New("invalid input")
 	ErrPermissionDenied  = errors.New("permission denied")
+	ErrUserAlreadyInTeam = errors.New("user already in team")
 )
 
 // New returns new app error that formats as the given text.

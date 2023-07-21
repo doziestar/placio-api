@@ -69,9 +69,10 @@ func (bc *BusinessAccountController) RegisterRoutes(router *gin.RouterGroup) {
 // @Failure 500 {object} Dto.Error
 // @Router /business/{businessAccountID}/team-members/{userID} [post]
 func (bc *BusinessAccountController) addTeamMember(c *gin.Context) error {
+	//log.Println("addTeamMember")
 	businessAccountID := c.Param("businessAccountID")
 	userID := c.Param("userID")
-	adminUser := c.GetString("userID")
+	adminUser := c.MustGet("user").(string)
 
 	// role and permissions are sent in the request body
 	var teamMember Dto.TeamMember
