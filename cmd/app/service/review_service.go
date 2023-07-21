@@ -2,7 +2,9 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"github.com/google/uuid"
+	"log"
 	"mime/multipart"
 	"placio-app/ent"
 	"placio-app/ent/business"
@@ -16,9 +18,9 @@ import (
 
 // ReviewService represents the contract for your review related operations.
 type ReviewService interface {
-	RatePlace(placeID, userID string, score float64, content string, files []*multipart.FileHeader) error
-	RateEvent(eventID, userID string, score float64, content string, files []*multipart.FileHeader) error
-	RateBusiness(businessID, userID string, score float64, content string, files []*multipart.FileHeader) error
+	RatePlace(placeID, userID string, score float64, content string, files []*multipart.FileHeader) (*ent.Review, error)
+	RateEvent(eventID, userID string, score float64, content string, files []*multipart.FileHeader) (*ent.Review, error)
+	RateBusiness(businessID, userID string, score float64, content string, files []*multipart.FileHeader) (*ent.Review, error)
 	RemoveReview(reviewID, userID string) error
 	GetReviewByID(reviewID string) (*ent.Review, error)
 	GetReviewsByUserID(userID string) ([]*ent.Review, error)
@@ -70,51 +72,72 @@ type ReviewServiceImpl struct {
 	mediaService MediaService
 }
 
-func NewReviewService(client *ent.Client) ReviewService {
-	return &ReviewServiceImpl{client: client}
+func NewReviewService(client *ent.Client, mediaService MediaService) ReviewService {
+	return &ReviewServiceImpl{client: client, mediaService: mediaService}
 }
 
-func (rs *ReviewServiceImpl) rateItem(item Reviewable, userID string, score float64, content string, files []*multipart.FileHeader) error {
+func (rs *ReviewServiceImpl) rateItem(item Reviewable, userID string, score float64, content string, files []*multipart.FileHeader) (*ent.Review, error) {
 	user, err := rs.client.User.Get(context.Background(), userID)
 	if err != nil {
-		return err
+		return nil, err
 	}
+	fmt.Println("rateItem", item.GetID(), userID, score, content)
 
-	reviewResp, err := rs.client.Review.Create().
+	// Create a new review
+	reviewCreate := rs.client.Review.Create().
 		SetID(uuid.New().String()).
-		//SetID(item.GetID()).
 		SetUser(user).
 		SetScore(score).
 		SetContent(content).
-		Save(context.Background())
+		SetCreatedAt(time.Now())
+
+	// Use type assertions to determine the type of the reviewable and set the correct field
+	switch v := item.(type) {
+	case ReviewablePlace:
+		reviewCreate.SetPlace(v.Place)
+	case ReviewableEvent:
+		reviewCreate.SetEvent(v.Event)
+	case ReviewableBusiness:
+		reviewCreate.SetBusiness(v.Business)
+	default:
+		return nil, errors.New("invalid reviewable type")
+	}
+
+	// Save the review
+	reviewResp, err := reviewCreate.Save(context.Background())
+	log.Println("reviewResp", reviewResp)
 
 	if err != nil {
-		return err
+		log.Println("reviewResp error", err.Error())
+		return nil, err
 	}
 
 	if len(files) > 0 {
 		go func() {
 			media, err := rs.mediaService.UploadAndCreateMedia(context.Background(), files)
 			if err != nil {
+				log.Println("error uploading media", err.Error())
 				return
 			}
 			err = rs.AddMediaToReview(reviewResp.ID, media)
 			if err != nil {
+				log.Println("error adding media to review", err.Error())
 				return
 			}
 		}()
 	}
 
-	return nil
+	return reviewResp, nil
 }
 
 // RatePlace allows a user to rate and review a place.
-func (rs *ReviewServiceImpl) RatePlace(placeID, userID string, score float64, content string, files []*multipart.FileHeader) error {
+func (rs *ReviewServiceImpl) RatePlace(placeID, userID string, score float64, content string, files []*multipart.FileHeader) (*ent.Review, error) {
+	fmt.Println("RatePlace")
 	place, err := rs.client.Place.Get(context.Background(), placeID)
 	if err != nil {
-		return err
+		return nil, err
 	}
-
+	fmt.Println("RatePlace2")
 	return rs.rateItem(ReviewablePlace{place}, userID, score, content, files)
 }
 
@@ -212,10 +235,10 @@ func (rs *ReviewServiceImpl) DislikeReview(reviewID, userID string) error {
 }
 
 // RateEvent allows a user to rate and review an event.
-func (rs *ReviewServiceImpl) RateEvent(eventID, userID string, score float64, content string, files []*multipart.FileHeader) error {
+func (rs *ReviewServiceImpl) RateEvent(eventID, userID string, score float64, content string, files []*multipart.FileHeader) (*ent.Review, error) {
 	event, err := rs.client.Event.Get(context.Background(), eventID)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	reviewable := ReviewableEvent{Event: event}
@@ -224,10 +247,10 @@ func (rs *ReviewServiceImpl) RateEvent(eventID, userID string, score float64, co
 }
 
 // RateBusiness allows a user to rate and review a business.
-func (rs *ReviewServiceImpl) RateBusiness(businessID, userID string, score float64, content string, files []*multipart.FileHeader) error {
+func (rs *ReviewServiceImpl) RateBusiness(businessID, userID string, score float64, content string, files []*multipart.FileHeader) (*ent.Review, error) {
 	business, err := rs.client.Business.Get(context.Background(), businessID)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	reviewable := ReviewableBusiness{Business: business}

@@ -3,7 +3,9 @@ package controller
 import (
 	"errors"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
+	"placio-app/ent"
 	_ "placio-app/ent"
 	appErr "placio-app/errors"
 	"placio-app/service"
@@ -80,13 +82,16 @@ func (rc *ReviewController) rateItem(ctx *gin.Context) error {
 
 	content := form.Value["content"][0]
 
+	var review *ent.Review
+
 	switch itemType {
 	case "place":
-		err = rc.reviewService.RatePlace(itemID, userID, score, content, files)
+		log.Println("rate place")
+		review, err = rc.reviewService.RatePlace(itemID, userID, score, content, files)
 	case "event":
-		err = rc.reviewService.RateEvent(itemID, userID, score, content, files)
+		review, err = rc.reviewService.RateEvent(itemID, userID, score, content, files)
 	case "business":
-		err = rc.reviewService.RateBusiness(itemID, userID, score, content, files)
+		review, err = rc.reviewService.RateBusiness(itemID, userID, score, content, files)
 	default:
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid item type"})
 		return nil
@@ -97,7 +102,7 @@ func (rc *ReviewController) rateItem(ctx *gin.Context) error {
 		return err
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "Successfully rated " + itemType})
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(review, "success", "Successfully rated "+itemType))
 	return nil
 }
 

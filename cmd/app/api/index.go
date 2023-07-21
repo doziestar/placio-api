@@ -160,7 +160,7 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		followController.RegisterRoutes(routerGroupV1)
 
 		// Review
-		reviewService := service.NewReviewService(client)
+		reviewService := service.NewReviewService(client, mediaService)
 		reviewController := controller.NewReviewController(reviewService, mediaService)
 		reviewController.RegisterRoutes(routerGroupV1)
 

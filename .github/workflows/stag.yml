@@ -10,7 +10,6 @@ on:
       - feat/deploy
       - master
 
-
 jobs:
   deploy-stag:
     runs-on: self-hosted
@@ -25,6 +24,17 @@ jobs:
           echo ${{ secrets.VPS_PASSWORD }} | sudo -S rm -rf /home/dozie/placio-api/_work/nightout-server/placio-api/backend
           echo ${{ secrets.VPS_PASSWORD }} | sudo -S rm -rf /home/dozie/placio-api/_work/placio-api/placio-api/portainer
           echo ${{ secrets.VPS_PASSWORD }} | sudo -S rm -rf /home/dozie/placio-api/_work/placio-api/placio-api/traefik
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
 
       - name: Build and Start Docker Containers
         run: |
