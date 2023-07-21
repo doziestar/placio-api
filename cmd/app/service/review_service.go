@@ -151,16 +151,25 @@ func (rs *ReviewServiceImpl) GetReviewByIDTypeID(typeId, typeToReview string) ([
 		reviews, err = rs.client.Review.
 			Query().
 			Where(review.HasPlaceWith(place.ID(typeId))).
+			WithLikes().
+			WithMedias().
+			WithUser().
 			All(context.Background())
 	case "event":
 		reviews, err = rs.client.Review.
 			Query().
 			Where(review.HasEventWith(event.ID(typeId))).
+			WithLikes().
+			WithMedias().
+			WithUser().
 			All(context.Background())
 	case "business":
 		reviews, err = rs.client.Review.
 			Query().
 			Where(review.HasBusinessWith(business.ID(typeId))).
+			WithLikes().
+			WithMedias().
+			WithUser().
 			All(context.Background())
 	default:
 		return nil, errors.New("invalid typeToReview")
