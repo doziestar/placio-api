@@ -347,7 +347,7 @@ func (s *BusinessAccountServiceImpl) AddTeamMember(ctx context.Context, adminUse
 	// Create the relationship with role and permissions
 	_, err = s.client.UserBusiness.Create().
 		SetID(uuid.New().String()).
-		//SetUser(userToAdd).
+		SetUser(userToAdd).
 		SetBusiness(businessAccount).
 		SetRole(role).
 		SetPermissions(permissions).
