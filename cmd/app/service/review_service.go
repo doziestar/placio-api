@@ -147,17 +147,17 @@ func (rs *ReviewServiceImpl) GetReviewByIDTypeID(typeId, typeToReview string) ([
 	var err error
 
 	switch typeToReview {
-	case "Place":
+	case "place":
 		reviews, err = rs.client.Review.
 			Query().
 			Where(review.HasPlaceWith(place.ID(typeId))).
 			All(context.Background())
-	case "Event":
+	case "event":
 		reviews, err = rs.client.Review.
 			Query().
 			Where(review.HasEventWith(event.ID(typeId))).
 			All(context.Background())
-	case "Business":
+	case "business":
 		reviews, err = rs.client.Review.
 			Query().
 			Where(review.HasBusinessWith(business.ID(typeId))).
