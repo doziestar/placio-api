@@ -28,6 +28,7 @@ func (rc *ReviewController) RegisterRoutes(router *gin.RouterGroup) {
 		reviewRouter.POST("/", utility.Use(rc.rateItem))
 		reviewRouter.DELETE("/:reviewID", utility.Use(rc.removeReview))
 		reviewRouter.GET("/:reviewID", utility.Use(rc.getReviewByID))
+		reviewRouter.GET("/:reviewID/by-type", utility.Use(rc.getReviewByTypeId))
 		reviewRouter.PUT("/:reviewID", utility.Use(rc.updateReviewContent))
 		reviewRouter.POST("/:reviewID/addMedia", utility.Use(rc.addMediaToReview))
 		reviewRouter.GET("/", utility.Use(rc.getReviewsByQuery))
@@ -150,6 +151,30 @@ func (rc *ReviewController) getReviewByID(ctx *gin.Context) error {
 	}
 
 	ctx.JSON(http.StatusOK, review)
+	return nil
+}
+
+// @Summary Get review by Type and ID
+// @Description Retrieve a review using its ID and type
+// @Tags Review
+// @Accept  json
+// @Produce  json
+// @Param reviewID path string true "Review ID (placeID, eventID, businessID)"
+// @Param type query string true "Type (place, event, business)"
+// @Param Authorization header string true "JWT Token"
+// @Success 200 {object} ent.Review "Review data"
+// @Failure 500 {string} string "Error message"
+// @Router /reviews/{reviewID}/by-type [get]
+func (rc *ReviewController) getReviewByTypeId(ctx *gin.Context) error {
+	reviewID := ctx.Param("reviewID")
+	itemType := ctx.Query("type")
+
+	reviews, err := rc.reviewService.GetReviewByIDTypeID(reviewID, itemType)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(reviews, "success", "Successfully retrieved reviews"))
 	return nil
 }
 
