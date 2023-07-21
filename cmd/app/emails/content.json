@@ -1,7 +1,7 @@
 {
   "welcome": {
     "title": "Welcome to Placio",
-    "body": "Thank you for joining us.",
+    "body": "<p>We're thrilled to welcome you to Placio, your personal key to discovering new places, attending exciting events, and immersing in your local culture.</p>\n            <p>As a part of our community, you now have access to the largest, most diverse collection of restaurants, bars, clubs, and local happenings right at your fingertips. Whether you're a foodie, a nightlife enthusiast, or just someone who loves exploring, we believe you will find immense value with us.</p>\n            <p>Experience our intuitive interface, personalized recommendations, efficient planning tools, and much more. Make use of our features like in-app reservations, interactive menus, and business management tools to elevate your experience.</p>\n            <p>We are excited to have you on this journey. If you have any questions, suggestions or need further information, please do not hesitate to contact us. Remember, your feedback helps us make your Placio experience even better.</p>",
     "buttonURL": "https://placio.io/welcome",
     "buttonLabel": "Get Started"
   },
