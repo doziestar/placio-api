@@ -37,6 +37,7 @@ type ReviewService interface {
 	//AddResponseToReview(reviewID, userID, response string) error
 	GetReviewsByLikeCount() ([]*ent.Review, error)
 	GetReviewsByDislikeCount() ([]*ent.Review, error)
+	GetReviewByIDTypeID(typeId, typeOToReview string) ([]*ent.Review, error)
 }
 
 type Reviewable interface {
@@ -139,6 +140,38 @@ func (rs *ReviewServiceImpl) RatePlace(placeID, userID string, score float64, co
 	}
 	fmt.Println("RatePlace2")
 	return rs.rateItem(ReviewablePlace{place}, userID, score, content, files)
+}
+
+func (rs *ReviewServiceImpl) GetReviewByIDTypeID(typeId, typeToReview string) ([]*ent.Review, error) {
+	var reviews []*ent.Review
+	var err error
+
+	switch typeToReview {
+	case "Place":
+		reviews, err = rs.client.Review.
+			Query().
+			Where(review.HasPlaceWith(place.ID(typeId))).
+			All(context.Background())
+	case "Event":
+		reviews, err = rs.client.Review.
+			Query().
+			Where(review.HasEventWith(event.ID(typeId))).
+			All(context.Background())
+	case "Business":
+		reviews, err = rs.client.Review.
+			Query().
+			Where(review.HasBusinessWith(business.ID(typeId))).
+			All(context.Background())
+	default:
+		return nil, errors.New("invalid typeToReview")
+	}
+
+	if err != nil {
+		log.Println("GetReviewByIDTypeID error", err.Error())
+		return nil, err
+	}
+
+	return reviews, nil
 }
 
 // RemoveReview allows a user to remove a review.
