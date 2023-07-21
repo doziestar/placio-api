@@ -15,18 +15,19 @@ jobs:
     runs-on: self-hosted
     env:
       TAG: stag
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Remove old application stack
-        run: |
-          echo ${{ secrets.VPS_PASSWORD }} | sudo -S rm -rf /home/dozie/placio-api/_work/nightout-server/placio-api/backend
-          echo ${{ secrets.VPS_PASSWORD }} | sudo -S rm -rf /home/dozie/placio-api/_work/placio-api/placio-api/portainer
-          echo ${{ secrets.VPS_PASSWORD }} | sudo -S rm -rf /home/dozie/placio-api/_work/placio-api/placio-api/traefik
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
+        with:
+          driver: docker-container
+          buildkitd-flags: --allow-insecure-entitlement security.insecure --allow-insecure-entitlement network.host
+          install: false
+          use: true
+          cleanup: true
 
       - name: Cache Docker layers
         uses: actions/cache@v2
@@ -35,6 +36,12 @@ jobs:
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-buildx-
+
+      - name: Remove old application stack
+        run: |
+          echo ${{ secrets.VPS_PASSWORD }} | sudo -S rm -rf /home/placio/placio-api/_work/placio-api/placio-api/backend
+          echo ${{ secrets.VPS_PASSWORD }} | sudo -S rm -rf /home/placio/placio-api/_work/placio-api/placio-api/portainer
+          echo ${{ secrets.VPS_PASSWORD }} | sudo -S rm -rf /home/placio/placio-api/_work/placio-api/placio-api/traefik
 
       - name: Build and Start Docker Containers
         run: |
