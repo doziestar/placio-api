@@ -228,7 +228,7 @@ func (uc *UserController) updateAuth0UserInformation(ctx *gin.Context) error {
 		return err
 	}
 
-	ctx.JSON(http.StatusOK, utility.ProcessResponse(user, "success", "Successfully updated user"))
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(user, "success", "Successfully updated user", ""))
 	return nil
 }
 
@@ -265,7 +265,7 @@ func (uc *UserController) updateAuth0UserMetadata(ctx *gin.Context) error {
 		return err
 	}
 
-	ctx.JSON(http.StatusOK, utility.ProcessResponse(user, "success", "Successfully updated user metadata"))
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(user, "success", "Successfully updated user metadata", ""))
 	return nil
 }
 
@@ -301,7 +301,7 @@ func (uc *UserController) updateAuth0AppMetadata(ctx *gin.Context) error {
 		return err
 	}
 
-	ctx.JSON(http.StatusOK, utility.ProcessResponse(user, "success", "Successfully updated app metadata"))
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(user, "success", "Successfully updated app metadata", ""))
 	return nil
 }
 

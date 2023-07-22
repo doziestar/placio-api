@@ -103,7 +103,7 @@ func (rc *ReviewController) rateItem(ctx *gin.Context) error {
 		return err
 	}
 
-	ctx.JSON(http.StatusOK, utility.ProcessResponse(review, "success", "Successfully rated "+itemType))
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(review, "success", "Successfully rated "+itemType, ""))
 	return nil
 }
 
@@ -161,6 +161,8 @@ func (rc *ReviewController) getReviewByID(ctx *gin.Context) error {
 // @Produce  json
 // @Param reviewID path string true "Review ID (placeID, eventID, businessID)"
 // @Param type query string true "Type (place, event, business)"
+// @Param nextPageToken query string false "Next Page Token"
+// @Param limit query string false "Limit"
 // @Param Authorization header string true "JWT Token"
 // @Success 200 {object} ent.Review "Review data"
 // @Failure 500 {string} string "Error message"
@@ -168,13 +170,25 @@ func (rc *ReviewController) getReviewByID(ctx *gin.Context) error {
 func (rc *ReviewController) getReviewByTypeId(ctx *gin.Context) error {
 	reviewID := ctx.Param("reviewID")
 	itemType := ctx.Query("type")
+	nextPageToken := ctx.Query("nextPageToken")
+	limit := ctx.Query("limit")
 
-	reviews, err := rc.reviewService.GetReviewByIDTypeID(reviewID, itemType)
+	if itemType != "place" && itemType != "event" && itemType != "business" {
+		return appErr.InvalidItemType
+	}
+
+	if limit == "" {
+		limit = "4"
+	}
+
+	limitInt, err := strconv.Atoi(limit)
+
+	reviews, nextPageToken, err := rc.reviewService.GetReviewByIDTypeID(reviewID, itemType, nextPageToken, limitInt)
 	if err != nil {
 		return err
 	}
 
-	ctx.JSON(http.StatusOK, utility.ProcessResponse(reviews, "success", "Successfully retrieved reviews"))
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(reviews, "success", "Successfully retrieved reviews", nextPageToken))
 	return nil
 }
 

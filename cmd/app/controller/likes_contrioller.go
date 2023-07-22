@@ -176,7 +176,7 @@ func (likesController *LikeController) likePlace(c *gin.Context) error {
 
 	like, err := likesController.userPlacesLikes.LikePlace(c, userID, placeID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error()))
+		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error(), ""))
 		return nil
 	}
 
@@ -202,11 +202,11 @@ func (likesController *LikeController) unlikePlace(c *gin.Context) error {
 
 	err := likesController.userPlacesLikes.UnlikePlace(c, userId, userLikePlaceID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error()))
+		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error(), ""))
 		return nil
 	}
 
-	c.JSON(http.StatusOK, utility.ProcessResponse(nil, "success", "Unliked successfully"))
+	c.JSON(http.StatusOK, utility.ProcessResponse(nil, "success", "Unliked successfully", ""))
 	return nil
 }
 
@@ -227,7 +227,7 @@ func (likesController *LikeController) getUserLikedPlaces(c *gin.Context) error 
 
 	likes, err := likesController.userPlacesLikes.GetUserLikedPlaces(c, userID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error()))
+		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error(), ""))
 		return nil
 	}
 
@@ -252,7 +252,7 @@ func (likesController *LikeController) getPlaceLikes(c *gin.Context) error {
 
 	likes, err := likesController.userPlacesLikes.GetPlaceLikes(c, placeID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error()))
+		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(nil, "failed", err.Error(), ""))
 		return nil
 	}
 

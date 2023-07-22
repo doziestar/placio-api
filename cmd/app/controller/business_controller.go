@@ -86,7 +86,7 @@ func (bc *BusinessAccountController) addTeamMember(c *gin.Context) error {
 		return err
 	}
 
-	c.JSON(http.StatusOK, utility.ProcessResponse("Team member added successfully", "success", ""))
+	c.JSON(http.StatusOK, utility.ProcessResponse(nil, "success", "Team member added successfully", ""))
 	return nil
 }
 
@@ -111,7 +111,7 @@ func (bc *BusinessAccountController) listTeamMembers(c *gin.Context) error {
 		return err
 	}
 
-	c.JSON(http.StatusOK, utility.ProcessResponse(teamMembers, "success", ""))
+	c.JSON(http.StatusOK, utility.ProcessResponse(teamMembers, "success", "", ""))
 	return nil
 }
 
@@ -146,7 +146,7 @@ func (bc *BusinessAccountController) editTeamMember(c *gin.Context) error {
 		return err
 	}
 
-	c.JSON(http.StatusOK, utility.ProcessResponse("Team member edited successfully", "success", ""))
+	c.JSON(http.StatusOK, utility.ProcessResponse("Team member edited successfully", "success", "", ""))
 	return nil
 }
 
@@ -173,7 +173,7 @@ func (bc *BusinessAccountController) removeTeamMember(c *gin.Context) error {
 		return err
 	}
 
-	c.JSON(http.StatusOK, utility.ProcessResponse("Team member removed successfully", "success", ""))
+	c.JSON(http.StatusOK, utility.ProcessResponse("Team member removed successfully", "success", "", ""))
 	return nil
 }
 
@@ -200,7 +200,7 @@ func (bc *BusinessAccountController) searchTeamMembers(c *gin.Context) error {
 		return err
 	}
 
-	c.JSON(http.StatusOK, utility.ProcessResponse(teamMembers, "success", ""))
+	c.JSON(http.StatusOK, utility.ProcessResponse(teamMembers, "success", "", ""))
 	return nil
 }
 
