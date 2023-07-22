@@ -32,7 +32,7 @@ type PlaceService interface {
 	GetPlacesAssociatedWithBusinessAccount(c context.Context, businessId string) ([]*ent.Place, error)
 	GetPlaces(ctx context.Context, filter *PlaceFilter, page int, pageSize int) ([]*ent.Place, error)
 	AddAmenitiesToPlace(ctx context.Context, placeID string, amenityIDs []string) error
-	GetAllPlaces(ctx context.Context) ([]*ent.Place, error)
+	GetAllPlaces(ctx context.Context, nextPageToken string, limit int) ([]*ent.Place, string, error)
 }
 
 type PlaceServiceImpl struct {
@@ -75,8 +75,11 @@ func (s *PlaceServiceImpl) GetPlace(ctx context.Context, placeID string) (*ent.P
 	return placeData, nil
 }
 
-func (s *PlaceServiceImpl) GetAllPlaces(ctx context.Context) ([]*ent.Place, error) {
-	places, err := s.client.Place.
+func (s *PlaceServiceImpl) GetAllPlaces(ctx context.Context, lastId string, limit int) ([]*ent.Place, string, error) {
+	if limit == 0 {
+		limit = 10
+	}
+	query := s.client.Place.
 		Query().
 		WithUsers().
 		WithBusiness().
@@ -86,12 +89,28 @@ func (s *PlaceServiceImpl) GetAllPlaces(ctx context.Context) ([]*ent.Place, erro
 		WithReviews().
 		WithMenus().
 		WithFaqs().
-		All(ctx)
-	if err != nil {
-		return nil, err
+		Limit(limit + 1) // We retrieve one extra record to determine if there are more pages
+
+	if lastId != "" {
+		// If lastId is provided, we fetch records after it
+		query = query.Where(place.IDGT(lastId))
 	}
 
-	return places, nil
+	places, err := query.All(ctx)
+	if err != nil {
+		return nil, "", err
+	}
+
+	var nextId string
+	if len(places) == limit+1 {
+		// We have an extra record, that means there is a next page.
+		// We take the ID of the last item as the cursor for the next page.
+		// Also, we remove the extra item from the list that we return.
+		nextId = places[len(places)-1].ID
+		places = places[:limit]
+	}
+
+	return places, nextId, nil
 }
 
 func (s *PlaceServiceImpl) CreatePlace(ctx context.Context, placeData Dto.CreatePlaceDTO) (*ent.Place, error) {

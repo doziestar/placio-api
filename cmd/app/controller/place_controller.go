@@ -99,17 +99,25 @@ func (c *PlaceController) createPlace(ctx *gin.Context) error {
 // @Tags Place
 // @Accept json
 // @Produce json
+// @Param nextPageToken query string false "Token for the next page of results"
+// @Param limit query int false "Number of results to return"
 // @Success 200 {array} []ent.Place "Successfully retrieved all places"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/places/all [get]
 func (c *PlaceController) getAllPlaces(ctx *gin.Context) error {
-	places, err := c.placeService.GetAllPlaces(ctx)
+	nextPageToken := ctx.Query("nextPageToken")
+	limit, err := strconv.Atoi(ctx.Query("limit"))
+	if err != nil {
+		limit = 10
+	}
+
+	places, token, err := c.placeService.GetAllPlaces(ctx, nextPageToken, limit)
 	if err != nil {
 
 		return err
 	}
 
-	ctx.JSON(http.StatusOK, places)
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(places, "success", "places retrieved successfully", token))
 	return nil
 }
 
