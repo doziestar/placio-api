@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	_ "placio-app/Dto"
-	"placio-app/ent"
 	"placio-app/models"
 	"placio-app/service"
 	"placio-app/utility"
@@ -199,9 +198,6 @@ func (uc *UserController) getFollowedContents(ctx *gin.Context) error {
 func (uc *UserController) updateAuth0UserInformation(ctx *gin.Context) error {
 	auth0ID := ctx.MustGet("auth0_id").(string)
 	if auth0ID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": "User Auth0 ID required",
-		})
 		return nil
 	}
 
@@ -211,9 +207,6 @@ func (uc *UserController) updateAuth0UserInformation(ctx *gin.Context) error {
 	provider := utility.SplitString(auth0ID, "|")[0]
 	log.Println("provider: ", provider)
 	if provider != "auth0" {
-		ctx.JSON(http.StatusUnauthorized, gin.H{
-			"error": "User is not authorized to update user information",
-		})
 		return errors.New("user is not authorized to update user information")
 	}
 
@@ -248,9 +241,6 @@ func (uc *UserController) updateAuth0UserMetadata(ctx *gin.Context) error {
 	log.Println("updateAuth0UserMetadata")
 	auth0ID := ctx.MustGet("auth0_id").(string)
 	if auth0ID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": "User Auth0 ID required",
-		})
 		return nil
 	}
 
@@ -284,9 +274,6 @@ func (uc *UserController) updateAuth0UserMetadata(ctx *gin.Context) error {
 func (uc *UserController) updateAuth0AppMetadata(ctx *gin.Context) error {
 	auth0ID := ctx.MustGet("auth0_id").(string)
 	if auth0ID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": "User Auth0 ID required",
-		})
 		return nil
 	}
 
@@ -319,23 +306,12 @@ func (uc *UserController) updateAuth0AppMetadata(ctx *gin.Context) error {
 // @Router /api/v1/users/ [get]
 func (uc *UserController) GetUser(ctx *gin.Context) error {
 	auth0ID := ctx.MustGet("auth0_id").(string)
-	log.Println("GetUser", ctx.Request.URL.Path, ctx.Request.Method, auth0ID)
 	if auth0ID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": "User Auth0 ID required",
-		})
-		return nil
+		return errors.New("user Auth0 ID required")
 	}
 
 	user, err := uc.userService.GetUser(ctx, auth0ID)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			ctx.JSON(http.StatusNotFound, gin.H{
-				"error": "User not found",
-			})
-			return nil
-		}
-
 		return err
 	}
 
@@ -359,26 +335,17 @@ func (uc *UserController) UpdateUser(ctx *gin.Context) error {
 	userId := ctx.MustGet("user").(string)
 	log.Println("UpdateUser", ctx.Request.URL.Path, ctx.Request.Method, userId)
 	if userId == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": "User ID required",
-		})
 		return nil
 	}
 
 	var user map[string]interface{}
 	if err := ctx.ShouldBindJSON(&user); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid request body",
-		})
 		return nil
 	}
 
 	userData, err := uc.userService.UpdateUser(ctx, userId, user)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			ctx.JSON(http.StatusNotFound, gin.H{
-				"error": "User not found",
-			})
 			return nil
 		}
 
@@ -406,21 +373,12 @@ func (uc *UserController) createBusinessAccount(ctx *gin.Context) error {
 
 	var businessAccount models.BusinessAccount
 	if err := ctx.ShouldBindJSON(&businessAccount); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid request body",
-		})
 		return err
 	}
 
 	role := "admin" // Define role or get it from somewhere
 	user, err := uc.userService.GetUser(ctx, auth0ID)
 	if err != nil {
-		if ent.IsNotFound(err) {
-			ctx.JSON(http.StatusNotFound, gin.H{
-				"error": "User not found",
-			})
-			return nil
-		}
 		return err
 	}
 
@@ -459,13 +417,6 @@ func (uc *UserController) GetPostsByUser(ctx *gin.Context) error {
 	posts, err := uc.userService.GetPostsByUser(ctx, userID)
 	log.Println("GetPostsByUser and userId", ctx.Request.URL.Path, ctx.Request.Method, userID, posts)
 	if err != nil {
-		if ent.IsNotFound(err) {
-			// If no posts were found, return a 404 Not Found status
-			ctx.JSON(http.StatusNotFound, gin.H{"error": "No posts found"})
-			return err
-		}
-		// For other types of errors, return a 500 Internal Server Error status
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 		return err
 	}
 	//
@@ -509,9 +460,6 @@ func (uc *UserController) GetPostsByUser(ctx *gin.Context) error {
 func (uc *UserController) getUserBusinessAccounts(ctx *gin.Context) error {
 	userID := ctx.Param("id")
 	if userID == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"error": "User ID required",
-		})
 		return nil
 	}
 
