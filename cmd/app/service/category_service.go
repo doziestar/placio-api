@@ -15,18 +15,29 @@ type CategoryService interface {
 	CreateCategory(ctx context.Context, id string, name string, image string) (*ent.Category, error)
 	UpdateCategory(ctx context.Context, id string, name string, image string) (*ent.Category, error)
 	DeleteCategory(ctx context.Context, id string) error
+	GetAllCategories(ctx context.Context) ([]*ent.Category, error)
 	GetCategory(ctx context.Context, id string) (*ent.Category, error)
 	GetPostsByCategory(ctx context.Context, name string) ([]*ent.Post, error)
 	GetMediasByCategory(ctx context.Context, name string) ([]*ent.Media, error)
 	GetMenusByCategory(ctx context.Context, name string) ([]*ent.Menu, error)
-	GetPlacesByCategory(ctx context.Context, name string) ([]*ent.Place, error)
-	GetBusinessesByCategory(ctx context.Context, name string) ([]*ent.Business, error)
-	GetEntitiesByCategory(ctx context.Context, name string) (*CategorySearchResult, error)
+	GetEntitiesByCategory(ctx context.Context, name, lastId string, limit int) (*CategorySearchResult, error)
 	AssignBusinessToCategory(ctx context.Context, businessID string, categoryID string) (*ent.CategoryAssignment, error)
 	AssignPlaceToCategory(ctx context.Context, placeID string, categoryID string) (*ent.CategoryAssignment, error)
 	AssignUserToCategory(ctx context.Context, userID string, categoryID string) (*ent.CategoryAssignment, error)
+	GetPlacesByCategory(ctx context.Context, categoryID, lastId string, limit int) ([]*ent.Place, string, error)
 	CreateCategoryAssignment(ctx context.Context, entityID string, entityType string, categoryID string) (*ent.CategoryAssignment, error)
+	GetBusinessesByCategory(ctx context.Context, categoryID, lastId string, limit int) ([]*ent.Business, string, error)
 }
+
+type EntityType int
+
+const (
+	Place EntityType = iota
+	Business
+	Event
+)
+
+type EntityQueryFunc func(*ent.Query) *ent.Query
 
 type CategoryServiceImpl struct {
 	client *ent.Client
@@ -37,12 +48,13 @@ func NewCategoryService(client *ent.Client) CategoryService {
 }
 
 type CategorySearchResult struct {
-	Users      []*ent.User
-	Posts      []*ent.Post
-	Medias     []*ent.Media
-	Menus      []*ent.Menu
-	Places     []*ent.Place
-	Businesses []*ent.Business
+	Users         []*ent.User
+	Posts         []*ent.Post
+	Medias        []*ent.Media
+	Menus         []*ent.Menu
+	Places        []*ent.Place
+	Businesses    []*ent.Business
+	NextPageToken string "json:nextPageToken"
 }
 
 func (cs *CategoryServiceImpl) CreateCategory(ctx context.Context, id string, name string, image string) (*ent.Category, error) {
@@ -66,6 +78,12 @@ func (cs *CategoryServiceImpl) DeleteCategory(ctx context.Context, id string) er
 	return cs.client.Category.
 		DeleteOneID(id).
 		Exec(ctx)
+}
+
+func (cs *CategoryServiceImpl) GetAllCategories(ctx context.Context) ([]*ent.Category, error) {
+	return cs.client.Category.
+		Query().
+		All(ctx)
 }
 
 func (cs *CategoryServiceImpl) GetCategory(ctx context.Context, id string) (*ent.Category, error) {
@@ -122,89 +140,114 @@ func (cs *CategoryServiceImpl) AssignUserToCategory(ctx context.Context, userID 
 	return cs.CreateCategoryAssignment(ctx, userID, "User", categoryID)
 }
 
-func (cs *CategoryServiceImpl) GetEntitiesByCategory(ctx context.Context, name string) (*CategorySearchResult, error) {
-	users, err := cs.GetUsersByCategory(ctx, name)
+func (cs *CategoryServiceImpl) GetEntitiesByCategory(ctx context.Context, name, lastId string, limit int) (*CategorySearchResult, error) {
+	//users, nextPageToken, err := cs.GetUsersByCategory(ctx, name, lastId, limit)
+	//if err != nil {
+	//	return nil, err
+	//}
+
+	//posts, nextPageToken, err := cs.GetPostsByCategory(ctx, name, lastId, limit)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//
+	//medias, nextPageToken, err := cs.GetMediasByCategory(ctx, name, lastId, limit)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//
+	//menus, nextPageToken, err := cs.GetMenusByCategory(ctx, name, lastId, limit)
+	//if err != nil {
+	//	return nil, err
+	//}
+
+	places, nextPageToken, err := cs.GetPlacesByCategory(ctx, name, lastId, limit)
 	if err != nil {
 		return nil, err
 	}
 
-	posts, err := cs.GetPostsByCategory(ctx, name)
-	if err != nil {
-		return nil, err
-	}
-
-	medias, err := cs.GetMediasByCategory(ctx, name)
-	if err != nil {
-		return nil, err
-	}
-
-	menus, err := cs.GetMenusByCategory(ctx, name)
-	if err != nil {
-		return nil, err
-	}
-
-	places, err := cs.GetPlacesByCategory(ctx, name)
-	if err != nil {
-		return nil, err
-	}
-
-	businesses, err := cs.GetBusinessesByCategory(ctx, name)
+	businesses, nextPageToken, err := cs.GetBusinessesByCategory(ctx, name, lastId, limit)
 	if err != nil {
 		return nil, err
 	}
 
 	result := &CategorySearchResult{
-		Users:      users,
-		Posts:      posts,
-		Medias:     medias,
-		Menus:      menus,
-		Places:     places,
-		Businesses: businesses,
+		//Users:         users,
+		//Posts:         posts,
+		//Medias:        medias,
+		//Menus:         menus,
+		Places:        places,
+		Businesses:    businesses,
+		NextPageToken: nextPageToken,
 	}
 
 	return result, nil
 }
 
-func (cs *CategoryServiceImpl) GetBusinessesByCategory(ctx context.Context, categoryID string) ([]*ent.Business, error) {
-	assignments, err := cs.client.CategoryAssignment.
+func (cs *CategoryServiceImpl) GetBusinessesByCategory(ctx context.Context, categoryID, lastId string, limit int) ([]*ent.Business, string, error) {
+	query := cs.client.CategoryAssignment.
 		Query().
 		Where(categoryassignment.CategoryID(categoryID), categoryassignment.EntityType("Business")).
-		All(ctx)
+		Limit(limit + 1) // Retrieve one extra record to determine if there are more pages
+
+	if lastId != "" {
+		query = query.Where(categoryassignment.IDGT(lastId)) // Fetch records after the lastId
+	}
+
+	assignments, err := query.All(ctx)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
 	var businesses []*ent.Business
 	for _, assignment := range assignments {
 		business, err := cs.client.Business.Get(ctx, assignment.EntityID)
 		if err != nil {
-			return nil, err // Or you might want to continue and skip this one.
+			return nil, "", err
 		}
 		businesses = append(businesses, business)
 	}
 
-	return businesses, nil
+	var nextId string
+	if len(businesses) == limit+1 {
+		nextId = businesses[len(businesses)-1].ID
+		businesses = businesses[:limit]
+	}
+
+	return businesses, nextId, nil
 }
 
-func (cs *CategoryServiceImpl) GetPlacesByCategory(ctx context.Context, categoryID string) ([]*ent.Place, error) {
-	assignments, err := cs.client.CategoryAssignment.
+func (cs *CategoryServiceImpl) GetPlacesByCategory(ctx context.Context, categoryID, lastId string, limit int) ([]*ent.Place, string, error) {
+	query := cs.client.CategoryAssignment.
 		Query().
 		Where(categoryassignment.CategoryID(categoryID), categoryassignment.EntityType("Place")).
-		All(ctx)
+		Limit(limit + 1) // Retrieve one extra record to determine if there are more pages
+
+	if lastId != "" {
+		query = query.Where(categoryassignment.IDGT(lastId)) // Fetch records after the lastId
+	}
+
+	assignments, err := query.All(ctx)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
 	var places []*ent.Place
 	for _, assignment := range assignments {
 		place, err := cs.client.Place.Get(ctx, assignment.EntityID)
 		if err != nil {
-			return nil, err // Or you might want to continue and skip this one.
+			return nil, "", err
 		}
 		places = append(places, place)
 	}
 
-	return places, nil
+	var nextId string
+	if len(places) == limit+1 {
+		nextId = places[len(places)-1].ID
+		places = places[:limit]
+	}
+
+	return places, nextId, nil
 }
 
 func (cs *CategoryServiceImpl) GetUsersByCategory(ctx context.Context, categoryID string) ([]*ent.User, error) {
