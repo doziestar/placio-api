@@ -29,6 +29,8 @@ func (uc *UserController) RegisterRoutes(router *gin.RouterGroup) {
 		userRouter.GET("/", utility.Use(uc.GetUser))
 		userRouter.GET("/followers", utility.Use(uc.getFollowers))
 		userRouter.GET("/:id/followers", utility.Use(uc.getFollowersByUserID))
+		userRouter.GET("/likes", utility.Use(uc.getLikes))
+		userRouter.GET("/:id/likes", utility.Use(uc.getUserLikesUserID))
 		userRouter.PATCH("/", utility.Use(uc.UpdateUser))
 		userRouter.GET("/posts", utility.Use(uc.GetPostsByUser))
 		userRouter.PATCH("/:id/userinfo", utility.Use(uc.updateAuth0UserInformation))
@@ -107,6 +109,36 @@ func (uc *UserController) getFollowers(ctx *gin.Context) error {
 	return nil
 }
 
+// @Summary Get User Likes
+// @Description Get followers of a user by their ID
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param nextPageToken query string false "Next page token"
+// @Param limit query string false "Limit"
+// @Success 200 {object} Dto.Response
+// @Failure 400 {object} Dto.Error
+// @Failure 401 {object} Dto.Error
+// @Failure 500 {object} Dto.Error
+// @Router /api/v1/users/followers [get]
+func (uc *UserController) getLikes(ctx *gin.Context) error {
+	userId := ctx.GetString("user")
+	nextPageToken := ctx.Query("nextPageToken")
+	limit := ctx.DefaultQuery("limit", "10")
+
+	limitInt, err := strconv.Atoi(limit)
+	if err != nil {
+		return err
+	}
+	followers, err := uc.userService.GetLikes(ctx, userId, nextPageToken, limitInt)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(followers, "success", "Successfully retrieved followers", nextPageToken))
+	return nil
+}
+
 // @Summary Get User Follwers By User ID
 // @Description Get followers of a user by their ID
 // @Tags User
@@ -130,6 +162,37 @@ func (uc *UserController) getFollowersByUserID(ctx *gin.Context) error {
 		return err
 	}
 	followers, err := uc.userService.GetFollowers(ctx, userID, nextPageToken, limitInt)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(followers, "success", "Successfully retrieved followers", nextPageToken))
+	return nil
+}
+
+// @Summary Get User Likes By User ID
+// @Description Get followers of a user by their ID
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param userID path string true "ID of the user"
+// @Param nextPageToken query string false "Next page token"
+// @Param limit query string false "Limit"
+// @Success 200 {object} Dto.Response
+// @Failure 400 {object} Dto.Error
+// @Failure 401 {object} Dto.Error
+// @Failure 500 {object} Dto.Error
+// @Router /api/v1/users/{userID}/followers [get]
+func (uc *UserController) getUserLikesUserID(ctx *gin.Context) error {
+	userID := ctx.Param("id")
+	nextPageToken := ctx.Query("nextPageToken")
+	limit := ctx.DefaultQuery("limit", "10")
+
+	limitInt, err := strconv.Atoi(limit)
+	if err != nil {
+		return err
+	}
+	followers, err := uc.userService.GetLikes(ctx, userID, nextPageToken, limitInt)
 	if err != nil {
 		return err
 	}

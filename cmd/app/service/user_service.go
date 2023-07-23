@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"placio-app/ent"
 	"placio-app/ent/business"
+	"placio-app/ent/like"
 	"placio-app/ent/user"
 	"placio-app/ent/userfollowbusiness"
 	"placio-app/ent/userfollowuser"
@@ -56,6 +57,7 @@ type UserService interface {
 	UnfollowBusiness(ctx context.Context, followerID string, businessID string) error
 	GetFollowedContents(ctx context.Context, userID string) ([]*ent.Post, error)
 	GetFollowers(ctx context.Context, userID, nextPageToken string, limit int) ([]*ent.User, error)
+	GetLikes(ctx context.Context, userID, nextPageToken string, limit int) ([]*ent.Like, error)
 }
 
 type UserServiceImpl struct {
@@ -682,6 +684,33 @@ func (s *UserServiceImpl) GetFollowers(ctx context.Context, userID, nextPageToke
 	// If a nextPageToken (UUID) is provided, we start the query after this user
 	if nextPageToken != "" {
 		q = q.Where(user.IDGT(nextPageToken)) // users after the given UUID
+	}
+
+	// Execute the query
+	followedUsers, err := q.All(ctx)
+	if err != nil {
+		// Handle possible database errors
+		return nil, fmt.Errorf("failed querying followed users: %w", err)
+	}
+
+	// Return fetched followed users
+	return followedUsers, nil
+}
+
+func (s *UserServiceImpl) GetLikes(ctx context.Context, userID, nextPageToken string, limit int) ([]*ent.Like, error) {
+	// Check if user exists
+	userData, err := s.client.User.Get(ctx, userID)
+	if err != nil {
+		return nil, fmt.Errorf("failed checking user existence: %w", err)
+	}
+
+	// Query followed users
+	q := userData.QueryLikes().
+		Limit(limit) // Limit the number of users fetched
+
+	// If a nextPageToken (UUID) is provided, we start the query after this user
+	if nextPageToken != "" {
+		q = q.Where(like.IDGT(nextPageToken)) // users after the given UUID
 	}
 
 	// Execute the query
