@@ -3912,6 +3912,61 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/users/followers": {
+            "get": {
+                "description": "Get followers of a user by their ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get Followers",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Next page token",
+                        "name": "nextPageToken",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/users/{followerID}/follow/business/{businessID}": {
             "post": {
                 "description": "Follow a business by its ID",
@@ -4652,6 +4707,68 @@ const docTemplate = `{
                         "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/placio-app_Dto.ErrorDTO"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/{userID}/followers": {
+            "get": {
+                "description": "Get followers of a user by their ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "Get User Follwers By User ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the user",
+                        "name": "userID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Next page token",
+                        "name": "nextPageToken",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_Dto.Error"
                         }
                     }
                 }
