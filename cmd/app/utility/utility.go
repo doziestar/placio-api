@@ -11,6 +11,7 @@ import (
 	"placio-app/ent"
 	appErrors "placio-app/errors"
 	"placio-app/models"
+	"reflect"
 	"strings"
 
 	sentry "github.com/getsentry/sentry-go"
@@ -220,11 +221,12 @@ func MergeMaps(map1, map2 map[string]interface{}) map[string]interface{} {
 }
 
 // ProcessResponse processes the response from a service.
-func ProcessResponse(data interface{}, status string, message string) gin.H {
+func ProcessResponse(data interface{}, status string, message, nextPageToken string) gin.H {
 	return gin.H{
-		"data":    data,
-		"status":  status,
-		"message": message,
+		"data":          data,
+		"status":        status,
+		"message":       message,
+		"nextPageToken": nextPageToken,
 	}
 }
 
@@ -238,6 +240,23 @@ func ProcessError(err error) gin.H {
 // SplitString splits a string into a slice of strings.
 func SplitString(s string, sep string) []string {
 	return strings.Split(s, sep)
+}
+
+// ConvertToInterfaceSlice converts a slice of any type to a slice of interface{}.
+func ConvertToInterfaceSlice(slice interface{}) []interface{} {
+	s := reflect.ValueOf(slice)
+
+	if s.Kind() != reflect.Slice {
+		panic("InterfaceSlice() given a non-slice type")
+	}
+
+	ret := make([]interface{}, s.Len())
+
+	for i := 0; i < s.Len(); i++ {
+		ret[i] = s.Index(i).Interface()
+	}
+
+	return ret
 }
 
 // RemoveSensitiveInfo removes sensitive information from a user object.

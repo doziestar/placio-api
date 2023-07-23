@@ -1935,6 +1935,20 @@ const docTemplate = `{
                     "Place"
                 ],
                 "summary": "Get all places",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Token for the next page of results",
+                        "name": "nextPageToken",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of results to return",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Successfully retrieved all places",
@@ -5904,6 +5918,38 @@ const docTemplate = `{
             }
         },
         "/categories/": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "categories"
+                ],
+                "summary": "Get all categories",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Category name",
+                        "name": "name",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/placio-app_ent.Category"
+                            }
+                        }
+                    }
+                }
+            },
             "post": {
                 "consumes": [
                     "application/json"
@@ -6057,8 +6103,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Category ID",
-                        "name": "categoryID",
+                        "description": "Category name",
+                        "name": "categoryName",
                         "in": "path",
                         "required": true
                     }
@@ -8201,6 +8247,70 @@ const docTemplate = `{
                 }
             }
         },
+        "/reviews/{reviewID}/by-type": {
+            "get": {
+                "description": "Retrieve a review using its ID and type",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Review"
+                ],
+                "summary": "Get review by Type and ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Review ID (placeID, eventID, businessID)",
+                        "name": "reviewID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Type (place, event, business)",
+                        "name": "type",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Next Page Token",
+                        "name": "nextPageToken",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "JWT Token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Review data",
+                        "schema": {
+                            "$ref": "#/definitions/placio-app_ent.Review"
+                        }
+                    },
+                    "500": {
+                        "description": "Error message",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/reviews/{reviewID}/dislike": {
             "post": {
                 "description": "Dislike a review based on reviewID",
@@ -8804,6 +8914,12 @@ const docTemplate = `{
                 },
                 "business_id": {
                     "type": "string"
+                },
+                "categories": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "city": {
                     "type": "string"
@@ -10015,6 +10131,50 @@ const docTemplate = `{
                     "description": "ID of the ent.",
                     "type": "string"
                 },
+                "is_Free": {
+                    "description": "IsFree holds the value of the \"is_Free\" field.",
+                    "type": "boolean"
+                },
+                "is_Hybrid": {
+                    "description": "IsHybrid holds the value of the \"is_Hybrid\" field.",
+                    "type": "boolean"
+                },
+                "is_In_Person_Only": {
+                    "description": "IsInPersonOnly holds the value of the \"is_In_Person_Only\" field.",
+                    "type": "boolean"
+                },
+                "is_Online": {
+                    "description": "IsOnline holds the value of the \"is_Online\" field.",
+                    "type": "boolean"
+                },
+                "is_Online_And_In_Person": {
+                    "description": "IsOnlineAndInPerson holds the value of the \"is_Online_And_In_Person\" field.",
+                    "type": "boolean"
+                },
+                "is_Online_And_In_Person_Only": {
+                    "description": "IsOnlineAndInPersonOnly holds the value of the \"is_Online_And_In_Person_Only\" field.",
+                    "type": "boolean"
+                },
+                "is_Online_And_In_Person_Or_Hybrid": {
+                    "description": "IsOnlineAndInPersonOrHybrid holds the value of the \"is_Online_And_In_Person_Or_Hybrid\" field.",
+                    "type": "boolean"
+                },
+                "is_Online_Only": {
+                    "description": "IsOnlineOnly holds the value of the \"is_Online_Only\" field.",
+                    "type": "boolean"
+                },
+                "is_Paid": {
+                    "description": "IsPaid holds the value of the \"is_Paid\" field.",
+                    "type": "boolean"
+                },
+                "is_Premium": {
+                    "description": "IsPremium holds the value of the \"is_Premium\" field.",
+                    "type": "boolean"
+                },
+                "is_published": {
+                    "description": "IsPublished holds the value of the \"is_published\" field.",
+                    "type": "boolean"
+                },
                 "latitude": {
                     "description": "Latitude holds the value of the \"latitude\" field.",
                     "type": "string"
@@ -10558,6 +10718,14 @@ const docTemplate = `{
                     "items": {
                         "type": "string"
                     }
+                },
+                "is_Premium": {
+                    "description": "IsPremium holds the value of the \"is_Premium\" field.",
+                    "type": "boolean"
+                },
+                "is_published": {
+                    "description": "IsPublished holds the value of the \"is_published\" field.",
+                    "type": "boolean"
                 },
                 "latitude": {
                     "description": "Latitude holds the value of the \"latitude\" field.",

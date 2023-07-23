@@ -66,7 +66,7 @@ func (cc *CommentController) createComment(ctx *gin.Context) error {
 		return err
 	}
 
-	ctx.JSON(http.StatusCreated, utility.ProcessResponse(newComment, "Success", "Successfully created comment"))
+	ctx.JSON(http.StatusCreated, utility.ProcessResponse(newComment, "Success", "Successfully created comment", ""))
 	return nil
 }
 
@@ -119,7 +119,7 @@ func (cc *CommentController) updateComment(ctx *gin.Context) error {
 	//	CreatedAt: updatedComment.CreatedAt,
 	//}
 
-	ctx.JSON(http.StatusOK, utility.ProcessResponse(updatedComment, "Success", "Successfully updated comment"))
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(updatedComment, "Success", "Successfully updated comment", ""))
 	return nil
 }
 
@@ -156,6 +156,6 @@ func (cc *CommentController) deleteComment(ctx *gin.Context) error {
 		return err
 	}
 
-	ctx.JSON(http.StatusNoContent, utility.ProcessResponse(nil, "Success", "Successfully deleted comment"))
+	ctx.JSON(http.StatusNoContent, utility.ProcessResponse(nil, "Success", "Successfully deleted comment", ""))
 	return nil
 }

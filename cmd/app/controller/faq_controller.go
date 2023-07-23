@@ -170,7 +170,7 @@ func (fc *FAQController) deleteFAQ(c *gin.Context) error {
 		return nil
 	}
 
-	c.JSON(http.StatusOK, utility.ProcessResponse(nil, "success", "FAQ deleted successfully"))
+	c.JSON(http.StatusOK, utility.ProcessResponse(nil, "success", "FAQ deleted successfully", ""))
 	return nil
 }
 
@@ -198,7 +198,7 @@ func (fc *FAQController) associateFAQWithPlace(c *gin.Context) error {
 		return nil
 	}
 
-	c.JSON(http.StatusOK, utility.ProcessResponse(nil, "success", "FAQ associated with place successfully"))
+	c.JSON(http.StatusOK, utility.ProcessResponse(nil, "success", "FAQ associated with place successfully", ""))
 	return nil
 }
 
@@ -226,6 +226,6 @@ func (fc *FAQController) associateFAQWithEvent(c *gin.Context) error {
 		return nil
 	}
 
-	c.JSON(http.StatusOK, utility.ProcessResponse(nil, "success", "FAQ associated with event successfully"))
+	c.JSON(http.StatusOK, utility.ProcessResponse(nil, "success", "FAQ associated with event successfully", ""))
 	return nil
 }

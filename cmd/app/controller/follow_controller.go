@@ -176,7 +176,7 @@ func (fc *FollowController) followUserToBusiness(c *gin.Context) error {
 		return nil
 	}
 
-	c.JSON(http.StatusCreated, utility.ProcessResponse(nil, "success", "User successfully followed the business"))
+	c.JSON(http.StatusCreated, utility.ProcessResponse(nil, "success", "User successfully followed the business", ""))
 	return nil
 }
 
@@ -203,7 +203,7 @@ func (fc *FollowController) unfollowUserToBusiness(c *gin.Context) error {
 		return nil
 	}
 
-	c.JSON(http.StatusOK, utility.ProcessResponse(nil, "success", "User successfully unfollowed the business"))
+	c.JSON(http.StatusOK, utility.ProcessResponse(nil, "success", "User successfully unfollowed the business", ""))
 	return nil
 }
 
@@ -228,7 +228,7 @@ func (fc *FollowController) getFollowedBusinessesByUser(c *gin.Context) error {
 		return nil
 	}
 
-	c.JSON(http.StatusOK, utility.ProcessResponse(businesses, "success", "Successfully retrieved followed businesses"))
+	c.JSON(http.StatusOK, utility.ProcessResponse(businesses, "success", "Successfully retrieved followed businesses", ""))
 	return nil
 }
 
@@ -255,7 +255,7 @@ func (fc *FollowController) followUserToUser(c *gin.Context) error {
 		return nil
 	}
 
-	c.JSON(http.StatusCreated, utility.ProcessResponse(nil, "success", "User successfully followed the user"))
+	c.JSON(http.StatusCreated, utility.ProcessResponse(nil, "success", "User successfully followed the user", ""))
 	return nil
 }
 
@@ -282,7 +282,7 @@ func (fc *FollowController) unfollowUserToUser(c *gin.Context) error {
 		return nil
 	}
 
-	c.JSON(http.StatusOK, utility.ProcessResponse(nil, "success", "User successfully unfollowed the user"))
+	c.JSON(http.StatusOK, utility.ProcessResponse(nil, "success", "User successfully unfollowed the user", ""))
 	return nil
 }
 
@@ -307,7 +307,7 @@ func (fc *FollowController) getFollowedUsersByUser(c *gin.Context) error {
 		return nil
 	}
 
-	c.JSON(http.StatusOK, utility.ProcessResponse(users, "success", "Successfully retrieved followed users"))
+	c.JSON(http.StatusOK, utility.ProcessResponse(users, "success", "Successfully retrieved followed users", ""))
 	return nil
 }
 
@@ -334,7 +334,7 @@ func (fc *FollowController) followUserToPlace(c *gin.Context) error {
 		return nil
 	}
 
-	c.JSON(http.StatusCreated, utility.ProcessResponse(nil, "success", "User successfully followed the place"))
+	c.JSON(http.StatusCreated, utility.ProcessResponse(nil, "success", "User successfully followed the place", ""))
 	return nil
 }
 
@@ -361,7 +361,7 @@ func (fc *FollowController) unfollowUserToPlace(c *gin.Context) error {
 		return nil
 	}
 
-	c.JSON(http.StatusOK, utility.ProcessResponse(nil, "success", "User successfully unfollowed the place"))
+	c.JSON(http.StatusOK, utility.ProcessResponse(nil, "success", "User successfully unfollowed the place", ""))
 	return nil
 }
 
@@ -386,7 +386,7 @@ func (fc *FollowController) getFollowedPlacesByUser(c *gin.Context) error {
 		return nil
 	}
 
-	c.JSON(http.StatusOK, utility.ProcessResponse(places, "success", "Successfully retrieved followed places"))
+	c.JSON(http.StatusOK, utility.ProcessResponse(places, "success", "Successfully retrieved followed places", ""))
 	return nil
 }
 
@@ -413,7 +413,7 @@ func (fc *FollowController) followUserToEvent(c *gin.Context) error {
 		return nil
 	}
 
-	c.JSON(http.StatusCreated, utility.ProcessResponse(nil, "success", "User successfully followed the event"))
+	c.JSON(http.StatusCreated, utility.ProcessResponse(nil, "success", "User successfully followed the event", ""))
 	return nil
 }
 
@@ -440,7 +440,7 @@ func (fc *FollowController) unfollowUserToEvent(c *gin.Context) error {
 		return nil
 	}
 
-	c.JSON(http.StatusOK, utility.ProcessResponse(nil, "success", "User successfully unfollowed the event"))
+	c.JSON(http.StatusOK, utility.ProcessResponse(nil, "success", "User successfully unfollowed the event", ""))
 	return nil
 }
 
@@ -465,6 +465,6 @@ func (fc *FollowController) getFollowedEventsByUser(c *gin.Context) error {
 		return nil
 	}
 
-	c.JSON(http.StatusOK, utility.ProcessResponse(events, "success", "Successfully retrieved followed events"))
+	c.JSON(http.StatusOK, utility.ProcessResponse(events, "success", "Successfully retrieved followed events", ""))
 	return nil
 }

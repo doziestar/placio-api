@@ -221,6 +221,10 @@ definitions:
         type: object
       business_id:
         type: string
+      categories:
+        items:
+          type: string
+        type: array
       city:
         type: string
       country:
@@ -1040,6 +1044,42 @@ definitions:
       id:
         description: ID of the ent.
         type: string
+      is_Free:
+        description: IsFree holds the value of the "is_Free" field.
+        type: boolean
+      is_Hybrid:
+        description: IsHybrid holds the value of the "is_Hybrid" field.
+        type: boolean
+      is_In_Person_Only:
+        description: IsInPersonOnly holds the value of the "is_In_Person_Only" field.
+        type: boolean
+      is_Online:
+        description: IsOnline holds the value of the "is_Online" field.
+        type: boolean
+      is_Online_And_In_Person:
+        description: IsOnlineAndInPerson holds the value of the "is_Online_And_In_Person"
+          field.
+        type: boolean
+      is_Online_And_In_Person_Only:
+        description: IsOnlineAndInPersonOnly holds the value of the "is_Online_And_In_Person_Only"
+          field.
+        type: boolean
+      is_Online_And_In_Person_Or_Hybrid:
+        description: IsOnlineAndInPersonOrHybrid holds the value of the "is_Online_And_In_Person_Or_Hybrid"
+          field.
+        type: boolean
+      is_Online_Only:
+        description: IsOnlineOnly holds the value of the "is_Online_Only" field.
+        type: boolean
+      is_Paid:
+        description: IsPaid holds the value of the "is_Paid" field.
+        type: boolean
+      is_Premium:
+        description: IsPremium holds the value of the "is_Premium" field.
+        type: boolean
+      is_published:
+        description: IsPublished holds the value of the "is_published" field.
+        type: boolean
       latitude:
         description: Latitude holds the value of the "latitude" field.
         type: string
@@ -1413,6 +1453,12 @@ definitions:
         items:
           type: string
         type: array
+      is_Premium:
+        description: IsPremium holds the value of the "is_Premium" field.
+        type: boolean
+      is_published:
+        description: IsPublished holds the value of the "is_published" field.
+        type: boolean
       latitude:
         description: Latitude holds the value of the "latitude" field.
         type: string
@@ -4014,6 +4060,15 @@ paths:
       consumes:
       - application/json
       description: Get all places
+      parameters:
+      - description: Token for the next page of results
+        in: query
+        name: nextPageToken
+        type: string
+      - description: Number of results to return
+        in: query
+        name: limit
+        type: integer
       produces:
       - application/json
       responses:
@@ -6496,6 +6551,27 @@ paths:
       tags:
       - Business
   /categories/:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Category name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_ent.Category'
+            type: array
+      summary: Get all categories
+      tags:
+      - categories
     post:
       consumes:
       - application/json
@@ -6568,9 +6644,9 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: Category ID
+      - description: Category name
         in: path
-        name: categoryID
+        name: categoryName
         required: true
         type: string
       produces:
@@ -8021,6 +8097,49 @@ paths:
           schema:
             type: string
       summary: Add media to a review
+      tags:
+      - Review
+  /reviews/{reviewID}/by-type:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a review using its ID and type
+      parameters:
+      - description: Review ID (placeID, eventID, businessID)
+        in: path
+        name: reviewID
+        required: true
+        type: string
+      - description: Type (place, event, business)
+        in: query
+        name: type
+        required: true
+        type: string
+      - description: Next Page Token
+        in: query
+        name: nextPageToken
+        type: string
+      - description: Limit
+        in: query
+        name: limit
+        type: string
+      - description: JWT Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Review data
+          schema:
+            $ref: '#/definitions/placio-app_ent.Review'
+        "500":
+          description: Error message
+          schema:
+            type: string
+      summary: Get review by Type and ID
       tags:
       - Review
   /reviews/{reviewID}/dislike:
