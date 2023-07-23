@@ -3924,7 +3924,7 @@ const docTemplate = `{
                 "tags": [
                     "User"
                 ],
-                "summary": "Get Followers",
+                "summary": "Get User Likes",
                 "parameters": [
                     {
                         "type": "string",
@@ -4724,7 +4724,7 @@ const docTemplate = `{
                 "tags": [
                     "User"
                 ],
-                "summary": "Get User Follwers By User ID",
+                "summary": "Get User Likes By User ID",
                 "parameters": [
                     {
                         "type": "string",
