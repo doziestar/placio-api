@@ -9,6 +9,7 @@ import (
 	"placio-app/models"
 	"placio-app/service"
 	"placio-app/utility"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -26,6 +27,8 @@ func (uc *UserController) RegisterRoutes(router *gin.RouterGroup) {
 	userRouter := router.Group("/users")
 	{
 		userRouter.GET("/", utility.Use(uc.GetUser))
+		userRouter.GET("/followers", utility.Use(uc.getFollowers))
+		userRouter.GET("/:id/followers", utility.Use(uc.getFollowersByUserID))
 		userRouter.PATCH("/", utility.Use(uc.UpdateUser))
 		userRouter.GET("/posts", utility.Use(uc.GetPostsByUser))
 		userRouter.PATCH("/:id/userinfo", utility.Use(uc.updateAuth0UserInformation))
@@ -71,6 +74,67 @@ func (uc *UserController) followUser(ctx *gin.Context) error {
 		"status":  "success",
 		"message": "Successfully followed user",
 	})
+	return nil
+}
+
+// @Summary Get Followers
+// @Description Get followers of a user by their ID
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param nextPageToken query string false "Next page token"
+// @Param limit query string false "Limit"
+// @Success 200 {object} Dto.Response
+// @Failure 400 {object} Dto.Error
+// @Failure 401 {object} Dto.Error
+// @Failure 500 {object} Dto.Error
+// @Router /api/v1/users/followers [get]
+func (uc *UserController) getFollowers(ctx *gin.Context) error {
+	userId := ctx.GetString("user")
+	nextPageToken := ctx.Query("nextPageToken")
+	limit := ctx.DefaultQuery("limit", "10")
+
+	limitInt, err := strconv.Atoi(limit)
+	if err != nil {
+		return err
+	}
+	followers, err := uc.userService.GetFollowers(ctx, userId, nextPageToken, limitInt)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(followers, "success", "Successfully retrieved followers", nextPageToken))
+	return nil
+}
+
+// @Summary Get User Follwers By User ID
+// @Description Get followers of a user by their ID
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param userID path string true "ID of the user"
+// @Param nextPageToken query string false "Next page token"
+// @Param limit query string false "Limit"
+// @Success 200 {object} Dto.Response
+// @Failure 400 {object} Dto.Error
+// @Failure 401 {object} Dto.Error
+// @Failure 500 {object} Dto.Error
+// @Router /api/v1/users/{userID}/followers [get]
+func (uc *UserController) getFollowersByUserID(ctx *gin.Context) error {
+	userID := ctx.Param("id")
+	nextPageToken := ctx.Query("nextPageToken")
+	limit := ctx.DefaultQuery("limit", "10")
+
+	limitInt, err := strconv.Atoi(limit)
+	if err != nil {
+		return err
+	}
+	followers, err := uc.userService.GetFollowers(ctx, userID, nextPageToken, limitInt)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(followers, "success", "Successfully retrieved followers", nextPageToken))
 	return nil
 }
 

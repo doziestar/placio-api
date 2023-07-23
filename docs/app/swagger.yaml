@@ -5636,6 +5636,47 @@ paths:
       summary: Get followed contents
       tags:
       - User
+  /api/v1/users/{userID}/followers:
+    get:
+      consumes:
+      - application/json
+      description: Get followers of a user by their ID
+      parameters:
+      - description: ID of the user
+        in: path
+        name: userID
+        required: true
+        type: string
+      - description: Next page token
+        in: query
+        name: nextPageToken
+        type: string
+      - description: Limit
+        in: query
+        name: limit
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+      summary: Get User Follwers By User ID
+      tags:
+      - User
   /api/v1/users/{userID}/posts:
     get:
       consumes:
@@ -5732,6 +5773,42 @@ paths:
           schema:
             $ref: '#/definitions/placio-app_Dto.ErrorDTO'
       summary: Get all users for a business account
+      tags:
+      - User
+  /api/v1/users/followers:
+    get:
+      consumes:
+      - application/json
+      description: Get followers of a user by their ID
+      parameters:
+      - description: Next page token
+        in: query
+        name: nextPageToken
+        type: string
+      - description: Limit
+        in: query
+        name: limit
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/placio-app_Dto.Error'
+      summary: Get Followers
       tags:
       - User
   /business/:
