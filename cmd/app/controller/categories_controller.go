@@ -6,6 +6,7 @@ import (
 	_ "placio-app/ent"
 	"placio-app/service"
 	"placio-app/utility"
+	"strconv"
 )
 
 type CategoryController struct {
@@ -22,7 +23,8 @@ func (cc *CategoryController) RegisterRoutes(router *gin.RouterGroup) {
 		categoryRouter.POST("/", utility.Use(cc.createCategory))
 		categoryRouter.PATCH("/:id", utility.Use(cc.updateCategory))
 		categoryRouter.DELETE("/:id", utility.Use(cc.deleteCategory))
-		categoryRouter.GET("/search", utility.Use(cc.searchByCategory)) // new route
+		categoryRouter.GET("/search", utility.Use(cc.searchByCategory))
+		categoryRouter.GET("/", utility.Use(cc.getAllCategories))
 
 		// New routes for User, Business, and Place
 		categoryRouter.POST("/:categoryID/users/:userID", utility.Use(cc.assignUserToCategory))
@@ -47,7 +49,6 @@ func (cc *CategoryController) createCategory(ctx *gin.Context) error {
 	image := ctx.GetString("image")
 	category, err := cc.categoryService.CreateCategory(ctx, id, name, image)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 		return err
 	}
 	ctx.JSON(http.StatusOK, category)
@@ -68,7 +69,6 @@ func (cc *CategoryController) updateCategory(ctx *gin.Context) error {
 	image := ctx.GetString("image")
 	category, err := cc.categoryService.UpdateCategory(ctx, categoryID, name, image)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 		return err
 	}
 	ctx.JSON(http.StatusOK, category)
@@ -86,7 +86,6 @@ func (cc *CategoryController) deleteCategory(ctx *gin.Context) error {
 	categoryID := ctx.Param("id")
 	err := cc.categoryService.DeleteCategory(ctx, categoryID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 		return err
 	}
 	ctx.JSON(http.StatusOK, gin.H{"status": "success", "message": "Category successfully deleted"})
@@ -102,9 +101,31 @@ func (cc *CategoryController) deleteCategory(ctx *gin.Context) error {
 // @Router /categories/search [get]
 func (cc *CategoryController) searchByCategory(ctx *gin.Context) error {
 	categoryName := ctx.Query("name")
-	categories, err := cc.categoryService.GetEntitiesByCategory(ctx, categoryName)
+	nextPageToken := ctx.Query("nextPageToken")
+	limiter := ctx.Query("limit")
+
+	limit, err := strconv.Atoi(limiter)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+		return err
+	}
+	categories, err := cc.categoryService.GetEntitiesByCategory(ctx, categoryName, nextPageToken, limit)
+	if err != nil {
+		return err
+	}
+	ctx.JSON(http.StatusOK, categories)
+	return nil
+}
+
+// @Summary Get all categories
+// @Tags categories
+// @Accept  json
+// @Produce  json
+// @Param name query string true "Category name"
+// @Success 200 {array} ent.Category
+// @Router /categories/ [get]
+func (cc *CategoryController) getAllCategories(ctx *gin.Context) error {
+	categories, err := cc.categoryService.GetAllCategories(ctx)
+	if err != nil {
 		return err
 	}
 	ctx.JSON(http.StatusOK, categories)
@@ -124,7 +145,6 @@ func (cc *CategoryController) assignUserToCategory(ctx *gin.Context) error {
 	categoryID := ctx.Param("categoryID")
 	assignment, err := cc.categoryService.AssignUserToCategory(ctx, userID, categoryID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 		return err
 	}
 	ctx.JSON(http.StatusOK, assignment)
@@ -142,7 +162,6 @@ func (cc *CategoryController) getUsersByCategory(ctx *gin.Context) error {
 	categoryID := ctx.Param("categoryID")
 	users, err := cc.categoryService.GetUsersByCategory(ctx, categoryID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 		return err
 	}
 	ctx.JSON(http.StatusOK, users)
@@ -162,7 +181,6 @@ func (cc *CategoryController) assignBusinessToCategory(ctx *gin.Context) error {
 	categoryID := ctx.Param("categoryID")
 	assignment, err := cc.categoryService.AssignBusinessToCategory(ctx, businessID, categoryID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 		return err
 	}
 	ctx.JSON(http.StatusOK, assignment)
@@ -177,13 +195,16 @@ func (cc *CategoryController) assignBusinessToCategory(ctx *gin.Context) error {
 // @Success 200 {array} ent.Business
 // @Router /categories/{categoryID}/businesses [get]
 func (cc *CategoryController) getBusinessesByCategory(ctx *gin.Context) error {
-	categoryID := ctx.Param("categoryID")
-	businesses, err := cc.categoryService.GetBusinessesByCategory(ctx, categoryID)
+	categoryID := ctx.Param("categoryName")
+	nextPageToken := ctx.Query("nextPageToken")
+	limiter := ctx.Query("limit")
+
+	limit, err := strconv.Atoi(limiter)
+	businesses, nextPageToken, err := cc.categoryService.GetBusinessesByCategory(ctx, categoryID, nextPageToken, limit)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 		return err
 	}
-	ctx.JSON(http.StatusOK, businesses)
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(businesses, "success", "retrieve businesses successfully", nextPageToken))
 	return nil
 }
 
@@ -200,7 +221,6 @@ func (cc *CategoryController) assignPlaceToCategory(ctx *gin.Context) error {
 	categoryID := ctx.Param("categoryID")
 	assignment, err := cc.categoryService.AssignPlaceToCategory(ctx, placeID, categoryID)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 		return err
 	}
 	ctx.JSON(http.StatusOK, assignment)
@@ -211,16 +231,19 @@ func (cc *CategoryController) assignPlaceToCategory(ctx *gin.Context) error {
 // @Tags categories
 // @Accept  json
 // @Produce  json
-// @Param categoryID path string true "Category ID"
+// @Param categoryName path string true "Category name"
 // @Success 200 {array} ent.Place
 // @Router /categories/{categoryID}/places [get]
 func (cc *CategoryController) getPlacesByCategory(ctx *gin.Context) error {
-	categoryID := ctx.Param("categoryID")
-	places, err := cc.categoryService.GetPlacesByCategory(ctx, categoryID)
+	categoryID := ctx.Param("categoryName")
+	nextPageToken := ctx.Query("nextPageToken")
+	limiter := ctx.Query("limit")
+
+	limit, err := strconv.Atoi(limiter)
+	places, nextPageToken, err := cc.categoryService.GetPlacesByCategory(ctx, categoryID, nextPageToken, limit)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 		return err
 	}
-	ctx.JSON(http.StatusOK, places)
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(places, "success", "retrieve places successfully", nextPageToken))
 	return nil
 }

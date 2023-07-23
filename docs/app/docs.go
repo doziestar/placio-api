@@ -1935,6 +1935,20 @@ const docTemplate = `{
                     "Place"
                 ],
                 "summary": "Get all places",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Token for the next page of results",
+                        "name": "nextPageToken",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of results to return",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Successfully retrieved all places",
@@ -5904,6 +5918,38 @@ const docTemplate = `{
             }
         },
         "/categories/": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "categories"
+                ],
+                "summary": "Get all categories",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Category name",
+                        "name": "name",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/placio-app_ent.Category"
+                            }
+                        }
+                    }
+                }
+            },
             "post": {
                 "consumes": [
                     "application/json"
@@ -6057,8 +6103,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Category ID",
-                        "name": "categoryID",
+                        "description": "Category name",
+                        "name": "categoryName",
                         "in": "path",
                         "required": true
                     }
@@ -8868,6 +8914,12 @@ const docTemplate = `{
                 },
                 "business_id": {
                     "type": "string"
+                },
+                "categories": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "city": {
                     "type": "string"

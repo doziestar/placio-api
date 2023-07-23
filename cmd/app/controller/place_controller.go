@@ -6,6 +6,7 @@ import (
 	"placio-app/Dto"
 	_ "placio-app/Dto"
 	_ "placio-app/ent"
+	"placio-app/errors"
 	"placio-app/service"
 	"placio-app/utility"
 	"strconv"
@@ -80,8 +81,7 @@ func (c *PlaceController) createPlace(ctx *gin.Context) error {
 
 	placeData.BusinessID = ctx.Query("business_id")
 	if placeData.BusinessID == "" {
-
-		return nil
+		return errors.IDMissing
 	}
 
 	place, err := c.placeService.CreatePlace(ctx, placeData)

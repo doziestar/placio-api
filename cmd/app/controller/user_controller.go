@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	_ "placio-app/Dto"
+	_ "placio-app/ent"
 	"placio-app/models"
 	"placio-app/service"
 	"placio-app/utility"

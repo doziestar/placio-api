@@ -221,6 +221,10 @@ definitions:
         type: object
       business_id:
         type: string
+      categories:
+        items:
+          type: string
+        type: array
       city:
         type: string
       country:
@@ -4056,6 +4060,15 @@ paths:
       consumes:
       - application/json
       description: Get all places
+      parameters:
+      - description: Token for the next page of results
+        in: query
+        name: nextPageToken
+        type: string
+      - description: Number of results to return
+        in: query
+        name: limit
+        type: integer
       produces:
       - application/json
       responses:
@@ -6538,6 +6551,27 @@ paths:
       tags:
       - Business
   /categories/:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Category name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/placio-app_ent.Category'
+            type: array
+      summary: Get all categories
+      tags:
+      - categories
     post:
       consumes:
       - application/json
@@ -6610,9 +6644,9 @@ paths:
       consumes:
       - application/json
       parameters:
-      - description: Category ID
+      - description: Category name
         in: path
-        name: categoryID
+        name: categoryName
         required: true
         type: string
       produces:

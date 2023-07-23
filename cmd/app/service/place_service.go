@@ -128,27 +128,53 @@ func (s *PlaceServiceImpl) CreatePlace(ctx context.Context, placeData Dto.Create
 		return nil, err
 	}
 
-	// Fetch amenities, loop through the IDs and get the amenity from the database. do it using goroutines
-	wg := sync.WaitGroup{}
-	wg.Add(len(placeData.AmenityIDs))
-	amenities := make([]*ent.Amenity, len(placeData.AmenityIDs))
-	for i, amenityID := range placeData.AmenityIDs {
-		go func(i int, amenityID string) {
-			defer wg.Done()
-			amenities[i], err = s.client.Amenity.Get(ctx, amenityID)
-			if err != nil {
-				return
-			}
-		}(i, amenityID)
-		wg.Wait()
+	var wg sync.WaitGroup
+	var amenities []*ent.Amenity
+	var categories []*ent.Category
 
+	// Fetch amenities, loop through the IDs and get the amenity from the database. do it using goroutines
+	if len(placeData.AmenityIDs) != 0 {
+		wg.Add(len(placeData.AmenityIDs))
+		amenities = make([]*ent.Amenity, len(placeData.AmenityIDs))
+		for i, amenityID := range placeData.AmenityIDs {
+			go func(i int, amenityID string) {
+				defer wg.Done()
+				amenities[i], err = s.client.Amenity.Get(ctx, amenityID)
+				if err != nil {
+					return
+				}
+			}(i, amenityID)
+			wg.Wait()
+		}
 	}
 
-	place, err := s.client.Place.
+	// Fetch categories, loop through the IDs and get the category from the database. do it using goroutines
+	if len(placeData.Categories) != 0 {
+		wg.Add(len(placeData.Categories))
+		categories = make([]*ent.Category, len(placeData.Categories))
+		for i, categoryID := range placeData.Categories {
+			go func(i int, categoryID string) {
+				defer wg.Done()
+				categories[i], err = s.client.Category.Get(ctx, categoryID)
+				if err != nil {
+					return
+				}
+			}(i, categoryID)
+			wg.Wait()
+		}
+	}
+
+	// Begin a transaction to ensure all operations occur atomically
+	tx, err := s.client.Tx(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	// Create the Place without associating Categories directly
+	place, err := tx.Place.
 		Create().
 		SetID(uuid.New().String()).
 		SetName(placeData.Name).
-		SetID(uuid.New().String()).
 		SetDescription(placeData.Description).
 		SetPicture(placeData.Picture).
 		SetCoverImage(placeData.CoverImage).
@@ -171,6 +197,26 @@ func (s *PlaceServiceImpl) CreatePlace(ctx context.Context, placeData Dto.Create
 		AddAmenities(amenities...).
 		Save(ctx)
 	if err != nil {
+		_ = tx.Rollback() // rollback the transaction in case of error
+		return nil, err
+	}
+
+	// Now loop over each Category and create a CategoryAssignment for each
+	for _, category := range categories {
+		_, err := tx.CategoryAssignment.
+			Create().
+			SetEntityID(place.ID).
+			SetEntityType("place").
+			SetCategoryID(category.ID).
+			Save(ctx)
+		if err != nil {
+			_ = tx.Rollback() // rollback the transaction in case of error
+			return nil, err
+		}
+	}
+
+	// Now that all operations have succeeded, commit the transaction
+	if err := tx.Commit(); err != nil {
 		return nil, err
 	}
 
