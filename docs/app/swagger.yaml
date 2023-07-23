@@ -5674,7 +5674,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.Error'
-      summary: Get User Follwers By User ID
+      summary: Get User Likes By User ID
       tags:
       - User
   /api/v1/users/{userID}/posts:
@@ -5808,7 +5808,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/placio-app_Dto.Error'
-      summary: Get Followers
+      summary: Get User Likes
       tags:
       - User
   /business/:
