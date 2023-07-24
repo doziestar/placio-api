@@ -162,7 +162,7 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		// Review
 		reviewService := service.NewReviewService(client, mediaService)
 		reviewController := controller.NewReviewController(reviewService, mediaService)
-		reviewController.RegisterRoutes(routerGroupV1)
+		reviewController.RegisterRoutes(routerGroupV1, routerGroupV1WithoutAuth)
 
 		// ratings
 		//ratingService := service.NewRatingService(client)
