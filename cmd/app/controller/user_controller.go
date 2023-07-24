@@ -153,7 +153,7 @@ func (uc *UserController) getLikes(ctx *gin.Context) error {
 // @Failure 500 {object} Dto.Error
 // @Router /api/v1/users/{userID}/followers [get]
 func (uc *UserController) getFollowersByUserID(ctx *gin.Context) error {
-	userID := ctx.Param("id")
+	userID := ctx.Param("userID")
 	nextPageToken := ctx.Query("nextPageToken")
 	limit := ctx.DefaultQuery("limit", "10")
 
