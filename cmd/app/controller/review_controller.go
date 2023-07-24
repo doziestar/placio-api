@@ -22,16 +22,17 @@ func NewReviewController(reviewService service.ReviewService, mediaService servi
 	return &ReviewController{reviewService: reviewService, mediaService: mediaService}
 }
 
-func (rc *ReviewController) RegisterRoutes(router *gin.RouterGroup) {
+func (rc *ReviewController) RegisterRoutes(router, routerWithoutAuth *gin.RouterGroup) {
 	reviewRouter := router.Group("/reviews")
+	reviewRouterWithoutAuth := routerWithoutAuth.Group("/reviews")
 	{
 		reviewRouter.POST("/", utility.Use(rc.rateItem))
 		reviewRouter.DELETE("/:reviewID", utility.Use(rc.removeReview))
-		reviewRouter.GET("/:reviewID", utility.Use(rc.getReviewByID))
-		reviewRouter.GET("/:reviewID/by-type", utility.Use(rc.getReviewByTypeId))
+		reviewRouterWithoutAuth.GET("/:reviewID", utility.Use(rc.getReviewByID))
+		reviewRouterWithoutAuth.GET("/:reviewID/by-type", utility.Use(rc.getReviewByTypeId))
 		reviewRouter.PUT("/:reviewID", utility.Use(rc.updateReviewContent))
 		reviewRouter.POST("/:reviewID/addMedia", utility.Use(rc.addMediaToReview))
-		reviewRouter.GET("/", utility.Use(rc.getReviewsByQuery))
+		reviewRouterWithoutAuth.GET("/", utility.Use(rc.getReviewsByQuery))
 		reviewRouter.POST("/:reviewID/like", utility.Use(rc.likeReview))
 		reviewRouter.POST("/:reviewID/dislike", utility.Use(rc.dislikeReview))
 	}
