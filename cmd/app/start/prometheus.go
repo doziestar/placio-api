@@ -1,6 +1,8 @@
 package start
 
 import (
+	"fmt"
+	"github.com/getsentry/sentry-go"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus"
 	"strconv"
@@ -46,10 +48,22 @@ func PrometheusMiddleware() gin.HandlerFunc {
 		httpRequestsInProgress.WithLabelValues(c.Request.Method, c.FullPath()).Inc()
 		startTime := time.Now()
 
-		c.Next()
+		defer func() {
+			// If something panics, recover and report to Sentry.
+			if err := recover(); err != nil {
+				sentry.CaptureException(fmt.Errorf("panic in PrometheusMiddleware: %v", err))
+				sentry.Flush(time.Second * 5)
+			}
 
-		httpRequestsInProgress.WithLabelValues(c.Request.Method, c.FullPath()).Dec()
-		httpRequestsTotal.WithLabelValues(c.Request.Method, c.FullPath()).Inc()
-		httpRequestDuration.WithLabelValues(c.Request.Method, c.Request.URL.Path, strconv.Itoa(c.Writer.Status())).Observe(time.Since(startTime).Seconds())
+			// Decrement requests in progress and increment total requests counters.
+			httpRequestsInProgress.WithLabelValues(c.Request.Method, c.FullPath()).Dec()
+			httpRequestsTotal.WithLabelValues(c.Request.Method, c.FullPath()).Inc()
+
+			// Record the duration of the request.
+			httpRequestDuration.WithLabelValues(c.Request.Method, c.Request.URL.Path, strconv.Itoa(c.Writer.Status())).Observe(time.Since(startTime).Seconds())
+		}()
+
+		// Continue with the next middleware/handler function.
+		c.Next()
 	}
 }
