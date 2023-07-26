@@ -82,6 +82,10 @@ type Place struct {
 	IsPremium bool `json:"is_Premium,omitempty"`
 	// IsPublished holds the value of the "is_published" field.
 	IsPublished bool `json:"is_published,omitempty"`
+	// LikedByCurrentUser holds the value of the "likedByCurrentUser" field.
+	LikedByCurrentUser bool `json:"likedByCurrentUser,omitempty"`
+	// FollowedByCurrentUser holds the value of the "followedByCurrentUser" field.
+	FollowedByCurrentUser bool `json:"followedByCurrentUser,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PlaceQuery when eager-loading is set.
 	Edges           PlaceEdges `json:"edges"`
@@ -273,7 +277,7 @@ func (*Place) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case place.FieldPlaceSettings, place.FieldOpeningHours, place.FieldSocialMedia, place.FieldPaymentOptions, place.FieldTags, place.FieldFeatures, place.FieldAdditionalInfo, place.FieldImages, place.FieldAvailability, place.FieldMapCoordinates:
 			values[i] = new([]byte)
-		case place.FieldIsPremium, place.FieldIsPublished:
+		case place.FieldIsPremium, place.FieldIsPublished, place.FieldLikedByCurrentUser, place.FieldFollowedByCurrentUser:
 			values[i] = new(sql.NullBool)
 		case place.FieldSustainabilityScore, place.FieldRelevanceScore:
 			values[i] = new(sql.NullFloat64)
@@ -518,6 +522,18 @@ func (pl *Place) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				pl.IsPublished = value.Bool
 			}
+		case place.FieldLikedByCurrentUser:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field likedByCurrentUser", values[i])
+			} else if value.Valid {
+				pl.LikedByCurrentUser = value.Bool
+			}
+		case place.FieldFollowedByCurrentUser:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field followedByCurrentUser", values[i])
+			} else if value.Valid {
+				pl.FollowedByCurrentUser = value.Bool
+			}
 		case place.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field business_places", values[i])
@@ -738,6 +754,12 @@ func (pl *Place) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("is_published=")
 	builder.WriteString(fmt.Sprintf("%v", pl.IsPublished))
+	builder.WriteString(", ")
+	builder.WriteString("likedByCurrentUser=")
+	builder.WriteString(fmt.Sprintf("%v", pl.LikedByCurrentUser))
+	builder.WriteString(", ")
+	builder.WriteString("followedByCurrentUser=")
+	builder.WriteString(fmt.Sprintf("%v", pl.FollowedByCurrentUser))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -72,6 +72,8 @@ func (Event) Fields() []ent.Field {
 		field.Bool("is_Online_And_In_Person").Default(false),
 		field.Bool("is_Online_And_In_Person_Only").Default(false),
 		field.Bool("is_Online_And_In_Person_Or_Hybrid").Default(false),
+		field.Bool("likedByCurrentUser").Default(false),
+		field.Bool("followedByCurrentUser").Default(false),
 	}
 }
 

@@ -77,6 +77,10 @@ const (
 	FieldIsPremium = "is_premium"
 	// FieldIsPublished holds the string denoting the is_published field in the database.
 	FieldIsPublished = "is_published"
+	// FieldLikedByCurrentUser holds the string denoting the likedbycurrentuser field in the database.
+	FieldLikedByCurrentUser = "liked_by_current_user"
+	// FieldFollowedByCurrentUser holds the string denoting the followedbycurrentuser field in the database.
+	FieldFollowedByCurrentUser = "followed_by_current_user"
 	// EdgeBusiness holds the string denoting the business edge name in mutations.
 	EdgeBusiness = "business"
 	// EdgeUsers holds the string denoting the users edge name in mutations.
@@ -245,6 +249,8 @@ var Columns = []string{
 	FieldFollowingCount,
 	FieldIsPremium,
 	FieldIsPublished,
+	FieldLikedByCurrentUser,
+	FieldFollowedByCurrentUser,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "places"
@@ -298,6 +304,10 @@ var (
 	DefaultIsPremium bool
 	// DefaultIsPublished holds the default value on creation for the "is_published" field.
 	DefaultIsPublished bool
+	// DefaultLikedByCurrentUser holds the default value on creation for the "likedByCurrentUser" field.
+	DefaultLikedByCurrentUser bool
+	// DefaultFollowedByCurrentUser holds the default value on creation for the "followedByCurrentUser" field.
+	DefaultFollowedByCurrentUser bool
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(string) error
 )
@@ -418,6 +428,16 @@ func ByIsPremium(opts ...sql.OrderTermOption) OrderOption {
 // ByIsPublished orders the results by the is_published field.
 func ByIsPublished(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIsPublished, opts...).ToFunc()
+}
+
+// ByLikedByCurrentUser orders the results by the likedByCurrentUser field.
+func ByLikedByCurrentUser(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLikedByCurrentUser, opts...).ToFunc()
+}
+
+// ByFollowedByCurrentUser orders the results by the followedByCurrentUser field.
+func ByFollowedByCurrentUser(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFollowedByCurrentUser, opts...).ToFunc()
 }
 
 // ByBusinessField orders the results by business field.

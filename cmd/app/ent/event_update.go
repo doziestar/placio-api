@@ -986,6 +986,34 @@ func (eu *EventUpdate) SetNillableIsOnlineAndInPersonOrHybrid(b *bool) *EventUpd
 	return eu
 }
 
+// SetLikedByCurrentUser sets the "likedByCurrentUser" field.
+func (eu *EventUpdate) SetLikedByCurrentUser(b bool) *EventUpdate {
+	eu.mutation.SetLikedByCurrentUser(b)
+	return eu
+}
+
+// SetNillableLikedByCurrentUser sets the "likedByCurrentUser" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableLikedByCurrentUser(b *bool) *EventUpdate {
+	if b != nil {
+		eu.SetLikedByCurrentUser(*b)
+	}
+	return eu
+}
+
+// SetFollowedByCurrentUser sets the "followedByCurrentUser" field.
+func (eu *EventUpdate) SetFollowedByCurrentUser(b bool) *EventUpdate {
+	eu.mutation.SetFollowedByCurrentUser(b)
+	return eu
+}
+
+// SetNillableFollowedByCurrentUser sets the "followedByCurrentUser" field if the given value is not nil.
+func (eu *EventUpdate) SetNillableFollowedByCurrentUser(b *bool) *EventUpdate {
+	if b != nil {
+		eu.SetFollowedByCurrentUser(*b)
+	}
+	return eu
+}
+
 // AddTicketIDs adds the "tickets" edge to the Ticket entity by IDs.
 func (eu *EventUpdate) AddTicketIDs(ids ...string) *EventUpdate {
 	eu.mutation.AddTicketIDs(ids...)
@@ -1714,6 +1742,12 @@ func (eu *EventUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := eu.mutation.IsOnlineAndInPersonOrHybrid(); ok {
 		_spec.SetField(event.FieldIsOnlineAndInPersonOrHybrid, field.TypeBool, value)
+	}
+	if value, ok := eu.mutation.LikedByCurrentUser(); ok {
+		_spec.SetField(event.FieldLikedByCurrentUser, field.TypeBool, value)
+	}
+	if value, ok := eu.mutation.FollowedByCurrentUser(); ok {
+		_spec.SetField(event.FieldFollowedByCurrentUser, field.TypeBool, value)
 	}
 	if eu.mutation.TicketsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -3145,6 +3179,34 @@ func (euo *EventUpdateOne) SetNillableIsOnlineAndInPersonOrHybrid(b *bool) *Even
 	return euo
 }
 
+// SetLikedByCurrentUser sets the "likedByCurrentUser" field.
+func (euo *EventUpdateOne) SetLikedByCurrentUser(b bool) *EventUpdateOne {
+	euo.mutation.SetLikedByCurrentUser(b)
+	return euo
+}
+
+// SetNillableLikedByCurrentUser sets the "likedByCurrentUser" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableLikedByCurrentUser(b *bool) *EventUpdateOne {
+	if b != nil {
+		euo.SetLikedByCurrentUser(*b)
+	}
+	return euo
+}
+
+// SetFollowedByCurrentUser sets the "followedByCurrentUser" field.
+func (euo *EventUpdateOne) SetFollowedByCurrentUser(b bool) *EventUpdateOne {
+	euo.mutation.SetFollowedByCurrentUser(b)
+	return euo
+}
+
+// SetNillableFollowedByCurrentUser sets the "followedByCurrentUser" field if the given value is not nil.
+func (euo *EventUpdateOne) SetNillableFollowedByCurrentUser(b *bool) *EventUpdateOne {
+	if b != nil {
+		euo.SetFollowedByCurrentUser(*b)
+	}
+	return euo
+}
+
 // AddTicketIDs adds the "tickets" edge to the Ticket entity by IDs.
 func (euo *EventUpdateOne) AddTicketIDs(ids ...string) *EventUpdateOne {
 	euo.mutation.AddTicketIDs(ids...)
@@ -3903,6 +3965,12 @@ func (euo *EventUpdateOne) sqlSave(ctx context.Context) (_node *Event, err error
 	}
 	if value, ok := euo.mutation.IsOnlineAndInPersonOrHybrid(); ok {
 		_spec.SetField(event.FieldIsOnlineAndInPersonOrHybrid, field.TypeBool, value)
+	}
+	if value, ok := euo.mutation.LikedByCurrentUser(); ok {
+		_spec.SetField(event.FieldLikedByCurrentUser, field.TypeBool, value)
+	}
+	if value, ok := euo.mutation.FollowedByCurrentUser(); ok {
+		_spec.SetField(event.FieldFollowedByCurrentUser, field.TypeBool, value)
 	}
 	if euo.mutation.TicketsCleared() {
 		edge := &sqlgraph.EdgeSpec{

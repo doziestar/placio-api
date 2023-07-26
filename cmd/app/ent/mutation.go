@@ -8098,6 +8098,8 @@ type EventMutation struct {
 	is_Online_And_In_Person           *bool
 	is_Online_And_In_Person_Only      *bool
 	is_Online_And_In_Person_Or_Hybrid *bool
+	likedByCurrentUser                *bool
+	followedByCurrentUser             *bool
 	clearedFields                     map[string]struct{}
 	tickets                           map[string]struct{}
 	removedtickets                    map[string]struct{}
@@ -10653,6 +10655,78 @@ func (m *EventMutation) ResetIsOnlineAndInPersonOrHybrid() {
 	m.is_Online_And_In_Person_Or_Hybrid = nil
 }
 
+// SetLikedByCurrentUser sets the "likedByCurrentUser" field.
+func (m *EventMutation) SetLikedByCurrentUser(b bool) {
+	m.likedByCurrentUser = &b
+}
+
+// LikedByCurrentUser returns the value of the "likedByCurrentUser" field in the mutation.
+func (m *EventMutation) LikedByCurrentUser() (r bool, exists bool) {
+	v := m.likedByCurrentUser
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLikedByCurrentUser returns the old "likedByCurrentUser" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldLikedByCurrentUser(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLikedByCurrentUser is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLikedByCurrentUser requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLikedByCurrentUser: %w", err)
+	}
+	return oldValue.LikedByCurrentUser, nil
+}
+
+// ResetLikedByCurrentUser resets all changes to the "likedByCurrentUser" field.
+func (m *EventMutation) ResetLikedByCurrentUser() {
+	m.likedByCurrentUser = nil
+}
+
+// SetFollowedByCurrentUser sets the "followedByCurrentUser" field.
+func (m *EventMutation) SetFollowedByCurrentUser(b bool) {
+	m.followedByCurrentUser = &b
+}
+
+// FollowedByCurrentUser returns the value of the "followedByCurrentUser" field in the mutation.
+func (m *EventMutation) FollowedByCurrentUser() (r bool, exists bool) {
+	v := m.followedByCurrentUser
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFollowedByCurrentUser returns the old "followedByCurrentUser" field's value of the Event entity.
+// If the Event object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EventMutation) OldFollowedByCurrentUser(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFollowedByCurrentUser is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFollowedByCurrentUser requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFollowedByCurrentUser: %w", err)
+	}
+	return oldValue.FollowedByCurrentUser, nil
+}
+
+// ResetFollowedByCurrentUser resets all changes to the "followedByCurrentUser" field.
+func (m *EventMutation) ResetFollowedByCurrentUser() {
+	m.followedByCurrentUser = nil
+}
+
 // AddTicketIDs adds the "tickets" edge to the Ticket entity by ids.
 func (m *EventMutation) AddTicketIDs(ids ...string) {
 	if m.tickets == nil {
@@ -11251,7 +11325,7 @@ func (m *EventMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EventMutation) Fields() []string {
-	fields := make([]string, 0, 52)
+	fields := make([]string, 0, 54)
 	if m.name != nil {
 		fields = append(fields, event.FieldName)
 	}
@@ -11408,6 +11482,12 @@ func (m *EventMutation) Fields() []string {
 	if m.is_Online_And_In_Person_Or_Hybrid != nil {
 		fields = append(fields, event.FieldIsOnlineAndInPersonOrHybrid)
 	}
+	if m.likedByCurrentUser != nil {
+		fields = append(fields, event.FieldLikedByCurrentUser)
+	}
+	if m.followedByCurrentUser != nil {
+		fields = append(fields, event.FieldFollowedByCurrentUser)
+	}
 	return fields
 }
 
@@ -11520,6 +11600,10 @@ func (m *EventMutation) Field(name string) (ent.Value, bool) {
 		return m.IsOnlineAndInPersonOnly()
 	case event.FieldIsOnlineAndInPersonOrHybrid:
 		return m.IsOnlineAndInPersonOrHybrid()
+	case event.FieldLikedByCurrentUser:
+		return m.LikedByCurrentUser()
+	case event.FieldFollowedByCurrentUser:
+		return m.FollowedByCurrentUser()
 	}
 	return nil, false
 }
@@ -11633,6 +11717,10 @@ func (m *EventMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldIsOnlineAndInPersonOnly(ctx)
 	case event.FieldIsOnlineAndInPersonOrHybrid:
 		return m.OldIsOnlineAndInPersonOrHybrid(ctx)
+	case event.FieldLikedByCurrentUser:
+		return m.OldLikedByCurrentUser(ctx)
+	case event.FieldFollowedByCurrentUser:
+		return m.OldFollowedByCurrentUser(ctx)
 	}
 	return nil, fmt.Errorf("unknown Event field %s", name)
 }
@@ -12005,6 +12093,20 @@ func (m *EventMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetIsOnlineAndInPersonOrHybrid(v)
+		return nil
+	case event.FieldLikedByCurrentUser:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLikedByCurrentUser(v)
+		return nil
+	case event.FieldFollowedByCurrentUser:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFollowedByCurrentUser(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Event field %s", name)
@@ -12474,6 +12576,12 @@ func (m *EventMutation) ResetField(name string) error {
 		return nil
 	case event.FieldIsOnlineAndInPersonOrHybrid:
 		m.ResetIsOnlineAndInPersonOrHybrid()
+		return nil
+	case event.FieldLikedByCurrentUser:
+		m.ResetLikedByCurrentUser()
+		return nil
+	case event.FieldFollowedByCurrentUser:
+		m.ResetFollowedByCurrentUser()
 		return nil
 	}
 	return fmt.Errorf("unknown Event field %s", name)
@@ -16666,6 +16774,8 @@ type PlaceMutation struct {
 	addfollowing_count         *int
 	is_Premium                 *bool
 	is_published               *bool
+	likedByCurrentUser         *bool
+	followedByCurrentUser      *bool
 	clearedFields              map[string]struct{}
 	business                   *string
 	clearedbusiness            bool
@@ -18453,6 +18563,78 @@ func (m *PlaceMutation) ResetIsPublished() {
 	m.is_published = nil
 }
 
+// SetLikedByCurrentUser sets the "likedByCurrentUser" field.
+func (m *PlaceMutation) SetLikedByCurrentUser(b bool) {
+	m.likedByCurrentUser = &b
+}
+
+// LikedByCurrentUser returns the value of the "likedByCurrentUser" field in the mutation.
+func (m *PlaceMutation) LikedByCurrentUser() (r bool, exists bool) {
+	v := m.likedByCurrentUser
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLikedByCurrentUser returns the old "likedByCurrentUser" field's value of the Place entity.
+// If the Place object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceMutation) OldLikedByCurrentUser(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLikedByCurrentUser is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLikedByCurrentUser requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLikedByCurrentUser: %w", err)
+	}
+	return oldValue.LikedByCurrentUser, nil
+}
+
+// ResetLikedByCurrentUser resets all changes to the "likedByCurrentUser" field.
+func (m *PlaceMutation) ResetLikedByCurrentUser() {
+	m.likedByCurrentUser = nil
+}
+
+// SetFollowedByCurrentUser sets the "followedByCurrentUser" field.
+func (m *PlaceMutation) SetFollowedByCurrentUser(b bool) {
+	m.followedByCurrentUser = &b
+}
+
+// FollowedByCurrentUser returns the value of the "followedByCurrentUser" field in the mutation.
+func (m *PlaceMutation) FollowedByCurrentUser() (r bool, exists bool) {
+	v := m.followedByCurrentUser
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFollowedByCurrentUser returns the old "followedByCurrentUser" field's value of the Place entity.
+// If the Place object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceMutation) OldFollowedByCurrentUser(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFollowedByCurrentUser is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFollowedByCurrentUser requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFollowedByCurrentUser: %w", err)
+	}
+	return oldValue.FollowedByCurrentUser, nil
+}
+
+// ResetFollowedByCurrentUser resets all changes to the "followedByCurrentUser" field.
+func (m *PlaceMutation) ResetFollowedByCurrentUser() {
+	m.followedByCurrentUser = nil
+}
+
 // SetBusinessID sets the "business" edge to the Business entity by id.
 func (m *PlaceMutation) SetBusinessID(id string) {
 	m.business = &id
@@ -19282,7 +19464,7 @@ func (m *PlaceMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PlaceMutation) Fields() []string {
-	fields := make([]string, 0, 32)
+	fields := make([]string, 0, 34)
 	if m.name != nil {
 		fields = append(fields, place.FieldName)
 	}
@@ -19379,6 +19561,12 @@ func (m *PlaceMutation) Fields() []string {
 	if m.is_published != nil {
 		fields = append(fields, place.FieldIsPublished)
 	}
+	if m.likedByCurrentUser != nil {
+		fields = append(fields, place.FieldLikedByCurrentUser)
+	}
+	if m.followedByCurrentUser != nil {
+		fields = append(fields, place.FieldFollowedByCurrentUser)
+	}
 	return fields
 }
 
@@ -19451,6 +19639,10 @@ func (m *PlaceMutation) Field(name string) (ent.Value, bool) {
 		return m.IsPremium()
 	case place.FieldIsPublished:
 		return m.IsPublished()
+	case place.FieldLikedByCurrentUser:
+		return m.LikedByCurrentUser()
+	case place.FieldFollowedByCurrentUser:
+		return m.FollowedByCurrentUser()
 	}
 	return nil, false
 }
@@ -19524,6 +19716,10 @@ func (m *PlaceMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldIsPremium(ctx)
 	case place.FieldIsPublished:
 		return m.OldIsPublished(ctx)
+	case place.FieldLikedByCurrentUser:
+		return m.OldLikedByCurrentUser(ctx)
+	case place.FieldFollowedByCurrentUser:
+		return m.OldFollowedByCurrentUser(ctx)
 	}
 	return nil, fmt.Errorf("unknown Place field %s", name)
 }
@@ -19756,6 +19952,20 @@ func (m *PlaceMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetIsPublished(v)
+		return nil
+	case place.FieldLikedByCurrentUser:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLikedByCurrentUser(v)
+		return nil
+	case place.FieldFollowedByCurrentUser:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFollowedByCurrentUser(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Place field %s", name)
@@ -20117,6 +20327,12 @@ func (m *PlaceMutation) ResetField(name string) error {
 		return nil
 	case place.FieldIsPublished:
 		m.ResetIsPublished()
+		return nil
+	case place.FieldLikedByCurrentUser:
+		m.ResetLikedByCurrentUser()
+		return nil
+	case place.FieldFollowedByCurrentUser:
+		m.ResetFollowedByCurrentUser()
 		return nil
 	}
 	return fmt.Errorf("unknown Place field %s", name)
