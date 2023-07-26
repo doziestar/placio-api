@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"github.com/google/uuid"
+	"log"
 	"placio-app/Dto"
 	"placio-app/ent"
 	"placio-app/ent/business"
@@ -74,7 +75,10 @@ func (s *PlaceServiceImpl) GetPlace(ctx context.Context, placeID string) (*ent.P
 		return nil, err
 	}
 
-	userID := ctx.Value("user").(string)
+	userID, ok := ctx.Value("user").(string)
+	if !ok {
+		return placeData, nil
+	}
 	if userID != "" {
 		if err := s.checkUserInteraction(ctx, userID, placeID, placeData); err != nil {
 			return nil, err
@@ -119,10 +123,14 @@ func (s *PlaceServiceImpl) GetAllPlaces(ctx context.Context, lastId string, limi
 		places = places[:limit]
 	}
 
-	userID := ctx.Value("user").(string)
+	userID, ok := ctx.Value("user").(string)
+	if !ok {
+		return places, nextId, nil
+	}
 	var wg sync.WaitGroup
 	var firstErr error
 	var lock sync.Mutex
+	log.Println("checking if the user likes and follows the place", userID)
 	if userID != "" {
 		for _, place := range places {
 			wg.Add(1)
@@ -475,6 +483,35 @@ func (s *PlaceServiceImpl) GetPlaces(ctx context.Context, filter *PlaceFilter, p
 		end = len(filteredPlaces)
 	}
 	paginatedPlaces := filteredPlaces[start:end]
+
+	userID, ok := ctx.Value("user").(string)
+	if !ok {
+		return paginatedPlaces, nil
+	}
+	var wg sync.WaitGroup
+	var firstErr error
+	var lock sync.Mutex
+	log.Println("checking if the user likes and follows the place", userID)
+	if userID != "" {
+		for _, place := range places {
+			wg.Add(1)
+			go func(place *ent.Place) {
+				defer wg.Done()
+				err := s.checkUserInteraction(ctx, userID, place.ID, place)
+				if err != nil && firstErr == nil { // only capture the first error
+					lock.Lock()
+					if firstErr == nil {
+						firstErr = err
+					}
+					lock.Unlock()
+				}
+			}(place)
+		}
+		wg.Wait()
+		if firstErr != nil {
+			return nil, firstErr
+		}
+	}
 
 	return paginatedPlaces, nil
 }
