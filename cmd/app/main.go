@@ -39,15 +39,6 @@ func main() {
 	// initialize routes
 	api.InitializeRoutes(app, client)
 
-	//userEmail := "chidosiky2015@gmail.com"
-	//userName := "Dozie"
-	//emailType := emails.WelcomeEmailType
-	//
-	//err := emails.SendCustomEmail(userName, userEmail, emailType)
-	//if err != nil {
-	//	fmt.Println(err.Error())
-	//}
-
 	// set port
 	start.Initialize(app)
 

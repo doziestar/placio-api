@@ -174,6 +174,16 @@ func IsPublished(v bool) predicate.Place {
 	return predicate.Place(sql.FieldEQ(FieldIsPublished, v))
 }
 
+// LikedByCurrentUser applies equality check predicate on the "likedByCurrentUser" field. It's identical to LikedByCurrentUserEQ.
+func LikedByCurrentUser(v bool) predicate.Place {
+	return predicate.Place(sql.FieldEQ(FieldLikedByCurrentUser, v))
+}
+
+// FollowedByCurrentUser applies equality check predicate on the "followedByCurrentUser" field. It's identical to FollowedByCurrentUserEQ.
+func FollowedByCurrentUser(v bool) predicate.Place {
+	return predicate.Place(sql.FieldEQ(FieldFollowedByCurrentUser, v))
+}
+
 // NameEQ applies the EQ predicate on the "name" field.
 func NameEQ(v string) predicate.Place {
 	return predicate.Place(sql.FieldEQ(FieldName, v))
@@ -1662,6 +1672,26 @@ func IsPublishedEQ(v bool) predicate.Place {
 // IsPublishedNEQ applies the NEQ predicate on the "is_published" field.
 func IsPublishedNEQ(v bool) predicate.Place {
 	return predicate.Place(sql.FieldNEQ(FieldIsPublished, v))
+}
+
+// LikedByCurrentUserEQ applies the EQ predicate on the "likedByCurrentUser" field.
+func LikedByCurrentUserEQ(v bool) predicate.Place {
+	return predicate.Place(sql.FieldEQ(FieldLikedByCurrentUser, v))
+}
+
+// LikedByCurrentUserNEQ applies the NEQ predicate on the "likedByCurrentUser" field.
+func LikedByCurrentUserNEQ(v bool) predicate.Place {
+	return predicate.Place(sql.FieldNEQ(FieldLikedByCurrentUser, v))
+}
+
+// FollowedByCurrentUserEQ applies the EQ predicate on the "followedByCurrentUser" field.
+func FollowedByCurrentUserEQ(v bool) predicate.Place {
+	return predicate.Place(sql.FieldEQ(FieldFollowedByCurrentUser, v))
+}
+
+// FollowedByCurrentUserNEQ applies the NEQ predicate on the "followedByCurrentUser" field.
+func FollowedByCurrentUserNEQ(v bool) predicate.Place {
+	return predicate.Place(sql.FieldNEQ(FieldFollowedByCurrentUser, v))
 }
 
 // HasBusiness applies the HasEdge predicate on the "business" edge.

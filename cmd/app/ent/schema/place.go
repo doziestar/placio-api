@@ -53,6 +53,8 @@ func (Place) Fields() []ent.Field {
 		field.Int("following_count").Default(0),
 		field.Bool("is_Premium").Default(false),
 		field.Bool("is_published").Default(false),
+		field.Bool("likedByCurrentUser").Default(false),
+		field.Bool("followedByCurrentUser").Default(false),
 	}
 }
 

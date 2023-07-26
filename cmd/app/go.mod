@@ -8,8 +8,11 @@ require (
 	github.com/auth0/go-jwt-middleware/v2 v2.1.0
 	github.com/axiaoxin-com/logging v1.2.16
 	github.com/coreos/go-oidc/v3 v3.6.0
+	github.com/didip/tollbooth/v7 v7.0.1
+	github.com/didip/tollbooth_gin v0.0.0-20170928041415-5752492be505
 	github.com/getsentry/sentry-go v0.22.0
 	github.com/gin-contrib/cors v1.4.0
+	github.com/gin-contrib/requestid v0.0.6
 	github.com/gin-contrib/sessions v0.0.5
 	github.com/gin-gonic/gin v1.9.0
 	github.com/go-oauth2/oauth2/v4 v4.5.2
@@ -31,7 +34,9 @@ require (
 	ariga.io/atlas v0.10.2-0.20230427182402-87a07dfb83bf // indirect
 	github.com/agext/levenshtein v1.2.1 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
+	github.com/didip/tollbooth v4.0.2+incompatible // indirect
 	github.com/go-openapi/inflect v0.19.0 // indirect
+	github.com/go-pkgz/expirable-cache v0.1.0 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/hashicorp/hcl/v2 v2.13.0 // indirect
 	github.com/mitchellh/go-wordwrap v0.0.0-20150314170334-ad45545899c7 // indirect
@@ -41,6 +46,7 @@ require (
 	go.uber.org/goleak v1.1.12 // indirect
 	golang.org/x/crypto v0.7.0 // indirect
 	golang.org/x/mod v0.10.0 // indirect
+	golang.org/x/time v0.3.0 // indirect
 )
 
 require (

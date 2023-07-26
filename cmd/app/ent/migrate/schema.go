@@ -400,6 +400,8 @@ var (
 		{Name: "is_online_and_in_person", Type: field.TypeBool, Default: false},
 		{Name: "is_online_and_in_person_only", Type: field.TypeBool, Default: false},
 		{Name: "is_online_and_in_person_or_hybrid", Type: field.TypeBool, Default: false},
+		{Name: "liked_by_current_user", Type: field.TypeBool, Default: false},
+		{Name: "followed_by_current_user", Type: field.TypeBool, Default: false},
 		{Name: "business_events", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "place_events", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "user_owned_events", Type: field.TypeString, Unique: true, Nullable: true, Size: 36},
@@ -412,19 +414,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "events_businesses_events",
-				Columns:    []*schema.Column{EventsColumns[53]},
+				Columns:    []*schema.Column{EventsColumns[55]},
 				RefColumns: []*schema.Column{BusinessesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "events_places_events",
-				Columns:    []*schema.Column{EventsColumns[54]},
+				Columns:    []*schema.Column{EventsColumns[56]},
 				RefColumns: []*schema.Column{PlacesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "events_users_ownedEvents",
-				Columns:    []*schema.Column{EventsColumns[55]},
+				Columns:    []*schema.Column{EventsColumns[57]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -638,6 +640,8 @@ var (
 		{Name: "following_count", Type: field.TypeInt, Default: 0},
 		{Name: "is_premium", Type: field.TypeBool, Default: false},
 		{Name: "is_published", Type: field.TypeBool, Default: false},
+		{Name: "liked_by_current_user", Type: field.TypeBool, Default: false},
+		{Name: "followed_by_current_user", Type: field.TypeBool, Default: false},
 		{Name: "business_places", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "event_place", Type: field.TypeString, Nullable: true},
 	}
@@ -649,13 +653,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "places_businesses_places",
-				Columns:    []*schema.Column{PlacesColumns[33]},
+				Columns:    []*schema.Column{PlacesColumns[35]},
 				RefColumns: []*schema.Column{BusinessesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "places_events_place",
-				Columns:    []*schema.Column{PlacesColumns[34]},
+				Columns:    []*schema.Column{PlacesColumns[36]},
 				RefColumns: []*schema.Column{EventsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
