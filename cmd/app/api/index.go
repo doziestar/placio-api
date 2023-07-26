@@ -94,8 +94,13 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		likeController := controller.NewLikeController(likeService, userPlacesLikesService)
 		likeController.RegisterRoutes(routerGroupV1)
 
+		// follow
+		followService := service.NewFollowService(client)
+		followController := controller.NewFollowController(followService)
+		followController.RegisterRoutes(routerGroupV1)
+
 		// places
-		placeService := service.NewPlaceService(client, searchService)
+		placeService := service.NewPlaceService(client, searchService, userPlacesLikesService, *followService)
 		placeController := controller.NewPlaceController(placeService)
 		placeController.RegisterRoutes(routerGroupV1, routerGroupV1WithoutAuth)
 
@@ -153,11 +158,6 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		faqService := service.NewFAQService(client, redisClient)
 		faqController := controller.NewFAQController(faqService)
 		faqController.RegisterRoutes(routerGroupV1, routerGroupV1WithoutAuth)
-
-		// follow
-		followService := service.NewFollowService(client)
-		followController := controller.NewFollowController(followService)
-		followController.RegisterRoutes(routerGroupV1)
 
 		// Review
 		reviewService := service.NewReviewService(client, mediaService)
