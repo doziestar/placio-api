@@ -124,6 +124,10 @@ type Event struct {
 	IsOnlineAndInPersonOnly bool `json:"is_Online_And_In_Person_Only,omitempty"`
 	// IsOnlineAndInPersonOrHybrid holds the value of the "is_Online_And_In_Person_Or_Hybrid" field.
 	IsOnlineAndInPersonOrHybrid bool `json:"is_Online_And_In_Person_Or_Hybrid,omitempty"`
+	// LikedByCurrentUser holds the value of the "likedByCurrentUser" field.
+	LikedByCurrentUser bool `json:"likedByCurrentUser,omitempty"`
+	// FollowedByCurrentUser holds the value of the "followedByCurrentUser" field.
+	FollowedByCurrentUser bool `json:"followedByCurrentUser,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EventQuery when eager-loading is set.
 	Edges             EventEdges `json:"edges"`
@@ -276,7 +280,7 @@ func (*Event) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case event.FieldEventSettings, event.FieldMapCoordinates:
 			values[i] = new([]byte)
-		case event.FieldIsPremium, event.FieldIsPublished, event.FieldIsOnline, event.FieldIsFree, event.FieldIsPaid, event.FieldIsOnlineOnly, event.FieldIsInPersonOnly, event.FieldIsHybrid, event.FieldIsOnlineAndInPerson, event.FieldIsOnlineAndInPersonOnly, event.FieldIsOnlineAndInPersonOrHybrid:
+		case event.FieldIsPremium, event.FieldIsPublished, event.FieldIsOnline, event.FieldIsFree, event.FieldIsPaid, event.FieldIsOnlineOnly, event.FieldIsInPersonOnly, event.FieldIsHybrid, event.FieldIsOnlineAndInPerson, event.FieldIsOnlineAndInPersonOnly, event.FieldIsOnlineAndInPersonOrHybrid, event.FieldLikedByCurrentUser, event.FieldFollowedByCurrentUser:
 			values[i] = new(sql.NullBool)
 		case event.FieldRelevanceScore:
 			values[i] = new(sql.NullFloat64)
@@ -629,6 +633,18 @@ func (e *Event) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				e.IsOnlineAndInPersonOrHybrid = value.Bool
 			}
+		case event.FieldLikedByCurrentUser:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field likedByCurrentUser", values[i])
+			} else if value.Valid {
+				e.LikedByCurrentUser = value.Bool
+			}
+		case event.FieldFollowedByCurrentUser:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field followedByCurrentUser", values[i])
+			} else if value.Valid {
+				e.FollowedByCurrentUser = value.Bool
+			}
 		case event.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field business_events", values[i])
@@ -896,6 +912,12 @@ func (e *Event) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("is_Online_And_In_Person_Or_Hybrid=")
 	builder.WriteString(fmt.Sprintf("%v", e.IsOnlineAndInPersonOrHybrid))
+	builder.WriteString(", ")
+	builder.WriteString("likedByCurrentUser=")
+	builder.WriteString(fmt.Sprintf("%v", e.LikedByCurrentUser))
+	builder.WriteString(", ")
+	builder.WriteString("followedByCurrentUser=")
+	builder.WriteString(fmt.Sprintf("%v", e.FollowedByCurrentUser))
 	builder.WriteByte(')')
 	return builder.String()
 }

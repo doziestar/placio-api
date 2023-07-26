@@ -611,6 +611,34 @@ func (pu *PlaceUpdate) SetNillableIsPublished(b *bool) *PlaceUpdate {
 	return pu
 }
 
+// SetLikedByCurrentUser sets the "likedByCurrentUser" field.
+func (pu *PlaceUpdate) SetLikedByCurrentUser(b bool) *PlaceUpdate {
+	pu.mutation.SetLikedByCurrentUser(b)
+	return pu
+}
+
+// SetNillableLikedByCurrentUser sets the "likedByCurrentUser" field if the given value is not nil.
+func (pu *PlaceUpdate) SetNillableLikedByCurrentUser(b *bool) *PlaceUpdate {
+	if b != nil {
+		pu.SetLikedByCurrentUser(*b)
+	}
+	return pu
+}
+
+// SetFollowedByCurrentUser sets the "followedByCurrentUser" field.
+func (pu *PlaceUpdate) SetFollowedByCurrentUser(b bool) *PlaceUpdate {
+	pu.mutation.SetFollowedByCurrentUser(b)
+	return pu
+}
+
+// SetNillableFollowedByCurrentUser sets the "followedByCurrentUser" field if the given value is not nil.
+func (pu *PlaceUpdate) SetNillableFollowedByCurrentUser(b *bool) *PlaceUpdate {
+	if b != nil {
+		pu.SetFollowedByCurrentUser(*b)
+	}
+	return pu
+}
+
 // SetBusinessID sets the "business" edge to the Business entity by ID.
 func (pu *PlaceUpdate) SetBusinessID(id string) *PlaceUpdate {
 	pu.mutation.SetBusinessID(id)
@@ -1384,6 +1412,12 @@ func (pu *PlaceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := pu.mutation.IsPublished(); ok {
 		_spec.SetField(place.FieldIsPublished, field.TypeBool, value)
+	}
+	if value, ok := pu.mutation.LikedByCurrentUser(); ok {
+		_spec.SetField(place.FieldLikedByCurrentUser, field.TypeBool, value)
+	}
+	if value, ok := pu.mutation.FollowedByCurrentUser(); ok {
+		_spec.SetField(place.FieldFollowedByCurrentUser, field.TypeBool, value)
 	}
 	if pu.mutation.BusinessCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -2632,6 +2666,34 @@ func (puo *PlaceUpdateOne) SetNillableIsPublished(b *bool) *PlaceUpdateOne {
 	return puo
 }
 
+// SetLikedByCurrentUser sets the "likedByCurrentUser" field.
+func (puo *PlaceUpdateOne) SetLikedByCurrentUser(b bool) *PlaceUpdateOne {
+	puo.mutation.SetLikedByCurrentUser(b)
+	return puo
+}
+
+// SetNillableLikedByCurrentUser sets the "likedByCurrentUser" field if the given value is not nil.
+func (puo *PlaceUpdateOne) SetNillableLikedByCurrentUser(b *bool) *PlaceUpdateOne {
+	if b != nil {
+		puo.SetLikedByCurrentUser(*b)
+	}
+	return puo
+}
+
+// SetFollowedByCurrentUser sets the "followedByCurrentUser" field.
+func (puo *PlaceUpdateOne) SetFollowedByCurrentUser(b bool) *PlaceUpdateOne {
+	puo.mutation.SetFollowedByCurrentUser(b)
+	return puo
+}
+
+// SetNillableFollowedByCurrentUser sets the "followedByCurrentUser" field if the given value is not nil.
+func (puo *PlaceUpdateOne) SetNillableFollowedByCurrentUser(b *bool) *PlaceUpdateOne {
+	if b != nil {
+		puo.SetFollowedByCurrentUser(*b)
+	}
+	return puo
+}
+
 // SetBusinessID sets the "business" edge to the Business entity by ID.
 func (puo *PlaceUpdateOne) SetBusinessID(id string) *PlaceUpdateOne {
 	puo.mutation.SetBusinessID(id)
@@ -3435,6 +3497,12 @@ func (puo *PlaceUpdateOne) sqlSave(ctx context.Context) (_node *Place, err error
 	}
 	if value, ok := puo.mutation.IsPublished(); ok {
 		_spec.SetField(place.FieldIsPublished, field.TypeBool, value)
+	}
+	if value, ok := puo.mutation.LikedByCurrentUser(); ok {
+		_spec.SetField(place.FieldLikedByCurrentUser, field.TypeBool, value)
+	}
+	if value, ok := puo.mutation.FollowedByCurrentUser(); ok {
+		_spec.SetField(place.FieldFollowedByCurrentUser, field.TypeBool, value)
 	}
 	if puo.mutation.BusinessCleared() {
 		edge := &sqlgraph.EdgeSpec{

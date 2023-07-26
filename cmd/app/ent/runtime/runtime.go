@@ -204,6 +204,14 @@ func init() {
 	eventDescIsOnlineAndInPersonOrHybrid := eventFields[52].Descriptor()
 	// event.DefaultIsOnlineAndInPersonOrHybrid holds the default value on creation for the is_Online_And_In_Person_Or_Hybrid field.
 	event.DefaultIsOnlineAndInPersonOrHybrid = eventDescIsOnlineAndInPersonOrHybrid.Default.(bool)
+	// eventDescLikedByCurrentUser is the schema descriptor for likedByCurrentUser field.
+	eventDescLikedByCurrentUser := eventFields[53].Descriptor()
+	// event.DefaultLikedByCurrentUser holds the default value on creation for the likedByCurrentUser field.
+	event.DefaultLikedByCurrentUser = eventDescLikedByCurrentUser.Default.(bool)
+	// eventDescFollowedByCurrentUser is the schema descriptor for followedByCurrentUser field.
+	eventDescFollowedByCurrentUser := eventFields[54].Descriptor()
+	// event.DefaultFollowedByCurrentUser holds the default value on creation for the followedByCurrentUser field.
+	event.DefaultFollowedByCurrentUser = eventDescFollowedByCurrentUser.Default.(bool)
 	helpFields := schema.Help{}.Fields()
 	_ = helpFields
 	// helpDescStatus is the schema descriptor for status field.
@@ -282,6 +290,14 @@ func init() {
 	placeDescIsPublished := placeFields[32].Descriptor()
 	// place.DefaultIsPublished holds the default value on creation for the is_published field.
 	place.DefaultIsPublished = placeDescIsPublished.Default.(bool)
+	// placeDescLikedByCurrentUser is the schema descriptor for likedByCurrentUser field.
+	placeDescLikedByCurrentUser := placeFields[33].Descriptor()
+	// place.DefaultLikedByCurrentUser holds the default value on creation for the likedByCurrentUser field.
+	place.DefaultLikedByCurrentUser = placeDescLikedByCurrentUser.Default.(bool)
+	// placeDescFollowedByCurrentUser is the schema descriptor for followedByCurrentUser field.
+	placeDescFollowedByCurrentUser := placeFields[34].Descriptor()
+	// place.DefaultFollowedByCurrentUser holds the default value on creation for the followedByCurrentUser field.
+	place.DefaultFollowedByCurrentUser = placeDescFollowedByCurrentUser.Default.(bool)
 	// placeDescID is the schema descriptor for id field.
 	placeDescID := placeFields[0].Descriptor()
 	// place.IDValidator is a validator for the "id" field. It is called by the builders before save.

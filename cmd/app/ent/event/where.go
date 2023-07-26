@@ -300,6 +300,16 @@ func IsOnlineAndInPersonOrHybrid(v bool) predicate.Event {
 	return predicate.Event(sql.FieldEQ(FieldIsOnlineAndInPersonOrHybrid, v))
 }
 
+// LikedByCurrentUser applies equality check predicate on the "likedByCurrentUser" field. It's identical to LikedByCurrentUserEQ.
+func LikedByCurrentUser(v bool) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldLikedByCurrentUser, v))
+}
+
+// FollowedByCurrentUser applies equality check predicate on the "followedByCurrentUser" field. It's identical to FollowedByCurrentUserEQ.
+func FollowedByCurrentUser(v bool) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldFollowedByCurrentUser, v))
+}
+
 // NameEQ applies the EQ predicate on the "name" field.
 func NameEQ(v string) predicate.Event {
 	return predicate.Event(sql.FieldEQ(FieldName, v))
@@ -3003,6 +3013,26 @@ func IsOnlineAndInPersonOrHybridEQ(v bool) predicate.Event {
 // IsOnlineAndInPersonOrHybridNEQ applies the NEQ predicate on the "is_Online_And_In_Person_Or_Hybrid" field.
 func IsOnlineAndInPersonOrHybridNEQ(v bool) predicate.Event {
 	return predicate.Event(sql.FieldNEQ(FieldIsOnlineAndInPersonOrHybrid, v))
+}
+
+// LikedByCurrentUserEQ applies the EQ predicate on the "likedByCurrentUser" field.
+func LikedByCurrentUserEQ(v bool) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldLikedByCurrentUser, v))
+}
+
+// LikedByCurrentUserNEQ applies the NEQ predicate on the "likedByCurrentUser" field.
+func LikedByCurrentUserNEQ(v bool) predicate.Event {
+	return predicate.Event(sql.FieldNEQ(FieldLikedByCurrentUser, v))
+}
+
+// FollowedByCurrentUserEQ applies the EQ predicate on the "followedByCurrentUser" field.
+func FollowedByCurrentUserEQ(v bool) predicate.Event {
+	return predicate.Event(sql.FieldEQ(FieldFollowedByCurrentUser, v))
+}
+
+// FollowedByCurrentUserNEQ applies the NEQ predicate on the "followedByCurrentUser" field.
+func FollowedByCurrentUserNEQ(v bool) predicate.Event {
+	return predicate.Event(sql.FieldNEQ(FieldFollowedByCurrentUser, v))
 }
 
 // HasTickets applies the HasEdge predicate on the "tickets" edge.

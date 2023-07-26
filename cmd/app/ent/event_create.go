@@ -743,6 +743,34 @@ func (ec *EventCreate) SetNillableIsOnlineAndInPersonOrHybrid(b *bool) *EventCre
 	return ec
 }
 
+// SetLikedByCurrentUser sets the "likedByCurrentUser" field.
+func (ec *EventCreate) SetLikedByCurrentUser(b bool) *EventCreate {
+	ec.mutation.SetLikedByCurrentUser(b)
+	return ec
+}
+
+// SetNillableLikedByCurrentUser sets the "likedByCurrentUser" field if the given value is not nil.
+func (ec *EventCreate) SetNillableLikedByCurrentUser(b *bool) *EventCreate {
+	if b != nil {
+		ec.SetLikedByCurrentUser(*b)
+	}
+	return ec
+}
+
+// SetFollowedByCurrentUser sets the "followedByCurrentUser" field.
+func (ec *EventCreate) SetFollowedByCurrentUser(b bool) *EventCreate {
+	ec.mutation.SetFollowedByCurrentUser(b)
+	return ec
+}
+
+// SetNillableFollowedByCurrentUser sets the "followedByCurrentUser" field if the given value is not nil.
+func (ec *EventCreate) SetNillableFollowedByCurrentUser(b *bool) *EventCreate {
+	if b != nil {
+		ec.SetFollowedByCurrentUser(*b)
+	}
+	return ec
+}
+
 // SetID sets the "id" field.
 func (ec *EventCreate) SetID(s string) *EventCreate {
 	ec.mutation.SetID(s)
@@ -1029,6 +1057,14 @@ func (ec *EventCreate) defaults() error {
 		v := event.DefaultIsOnlineAndInPersonOrHybrid
 		ec.mutation.SetIsOnlineAndInPersonOrHybrid(v)
 	}
+	if _, ok := ec.mutation.LikedByCurrentUser(); !ok {
+		v := event.DefaultLikedByCurrentUser
+		ec.mutation.SetLikedByCurrentUser(v)
+	}
+	if _, ok := ec.mutation.FollowedByCurrentUser(); !ok {
+		v := event.DefaultFollowedByCurrentUser
+		ec.mutation.SetFollowedByCurrentUser(v)
+	}
 	return nil
 }
 
@@ -1093,6 +1129,12 @@ func (ec *EventCreate) check() error {
 	}
 	if _, ok := ec.mutation.IsOnlineAndInPersonOrHybrid(); !ok {
 		return &ValidationError{Name: "is_Online_And_In_Person_Or_Hybrid", err: errors.New(`ent: missing required field "Event.is_Online_And_In_Person_Or_Hybrid"`)}
+	}
+	if _, ok := ec.mutation.LikedByCurrentUser(); !ok {
+		return &ValidationError{Name: "likedByCurrentUser", err: errors.New(`ent: missing required field "Event.likedByCurrentUser"`)}
+	}
+	if _, ok := ec.mutation.FollowedByCurrentUser(); !ok {
+		return &ValidationError{Name: "followedByCurrentUser", err: errors.New(`ent: missing required field "Event.followedByCurrentUser"`)}
 	}
 	return nil
 }
@@ -1336,6 +1378,14 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 	if value, ok := ec.mutation.IsOnlineAndInPersonOrHybrid(); ok {
 		_spec.SetField(event.FieldIsOnlineAndInPersonOrHybrid, field.TypeBool, value)
 		_node.IsOnlineAndInPersonOrHybrid = value
+	}
+	if value, ok := ec.mutation.LikedByCurrentUser(); ok {
+		_spec.SetField(event.FieldLikedByCurrentUser, field.TypeBool, value)
+		_node.LikedByCurrentUser = value
+	}
+	if value, ok := ec.mutation.FollowedByCurrentUser(); ok {
+		_spec.SetField(event.FieldFollowedByCurrentUser, field.TypeBool, value)
+		_node.FollowedByCurrentUser = value
 	}
 	if nodes := ec.mutation.TicketsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

@@ -394,6 +394,34 @@ func (pc *PlaceCreate) SetNillableIsPublished(b *bool) *PlaceCreate {
 	return pc
 }
 
+// SetLikedByCurrentUser sets the "likedByCurrentUser" field.
+func (pc *PlaceCreate) SetLikedByCurrentUser(b bool) *PlaceCreate {
+	pc.mutation.SetLikedByCurrentUser(b)
+	return pc
+}
+
+// SetNillableLikedByCurrentUser sets the "likedByCurrentUser" field if the given value is not nil.
+func (pc *PlaceCreate) SetNillableLikedByCurrentUser(b *bool) *PlaceCreate {
+	if b != nil {
+		pc.SetLikedByCurrentUser(*b)
+	}
+	return pc
+}
+
+// SetFollowedByCurrentUser sets the "followedByCurrentUser" field.
+func (pc *PlaceCreate) SetFollowedByCurrentUser(b bool) *PlaceCreate {
+	pc.mutation.SetFollowedByCurrentUser(b)
+	return pc
+}
+
+// SetNillableFollowedByCurrentUser sets the "followedByCurrentUser" field if the given value is not nil.
+func (pc *PlaceCreate) SetNillableFollowedByCurrentUser(b *bool) *PlaceCreate {
+	if b != nil {
+		pc.SetFollowedByCurrentUser(*b)
+	}
+	return pc
+}
+
 // SetID sets the "id" field.
 func (pc *PlaceCreate) SetID(s string) *PlaceCreate {
 	pc.mutation.SetID(s)
@@ -686,6 +714,14 @@ func (pc *PlaceCreate) defaults() error {
 		v := place.DefaultIsPublished
 		pc.mutation.SetIsPublished(v)
 	}
+	if _, ok := pc.mutation.LikedByCurrentUser(); !ok {
+		v := place.DefaultLikedByCurrentUser
+		pc.mutation.SetLikedByCurrentUser(v)
+	}
+	if _, ok := pc.mutation.FollowedByCurrentUser(); !ok {
+		v := place.DefaultFollowedByCurrentUser
+		pc.mutation.SetFollowedByCurrentUser(v)
+	}
 	return nil
 }
 
@@ -705,6 +741,12 @@ func (pc *PlaceCreate) check() error {
 	}
 	if _, ok := pc.mutation.IsPublished(); !ok {
 		return &ValidationError{Name: "is_published", err: errors.New(`ent: missing required field "Place.is_published"`)}
+	}
+	if _, ok := pc.mutation.LikedByCurrentUser(); !ok {
+		return &ValidationError{Name: "likedByCurrentUser", err: errors.New(`ent: missing required field "Place.likedByCurrentUser"`)}
+	}
+	if _, ok := pc.mutation.FollowedByCurrentUser(); !ok {
+		return &ValidationError{Name: "followedByCurrentUser", err: errors.New(`ent: missing required field "Place.followedByCurrentUser"`)}
 	}
 	if v, ok := pc.mutation.ID(); ok {
 		if err := place.IDValidator(v); err != nil {
@@ -873,6 +915,14 @@ func (pc *PlaceCreate) createSpec() (*Place, *sqlgraph.CreateSpec) {
 	if value, ok := pc.mutation.IsPublished(); ok {
 		_spec.SetField(place.FieldIsPublished, field.TypeBool, value)
 		_node.IsPublished = value
+	}
+	if value, ok := pc.mutation.LikedByCurrentUser(); ok {
+		_spec.SetField(place.FieldLikedByCurrentUser, field.TypeBool, value)
+		_node.LikedByCurrentUser = value
+	}
+	if value, ok := pc.mutation.FollowedByCurrentUser(); ok {
+		_spec.SetField(place.FieldFollowedByCurrentUser, field.TypeBool, value)
+		_node.FollowedByCurrentUser = value
 	}
 	if nodes := pc.mutation.BusinessIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

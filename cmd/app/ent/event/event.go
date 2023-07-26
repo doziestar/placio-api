@@ -120,6 +120,10 @@ const (
 	FieldIsOnlineAndInPersonOnly = "is_online_and_in_person_only"
 	// FieldIsOnlineAndInPersonOrHybrid holds the string denoting the is_online_and_in_person_or_hybrid field in the database.
 	FieldIsOnlineAndInPersonOrHybrid = "is_online_and_in_person_or_hybrid"
+	// FieldLikedByCurrentUser holds the string denoting the likedbycurrentuser field in the database.
+	FieldLikedByCurrentUser = "liked_by_current_user"
+	// FieldFollowedByCurrentUser holds the string denoting the followedbycurrentuser field in the database.
+	FieldFollowedByCurrentUser = "followed_by_current_user"
 	// EdgeTickets holds the string denoting the tickets edge name in mutations.
 	EdgeTickets = "tickets"
 	// EdgeTicketOptions holds the string denoting the ticket_options edge name in mutations.
@@ -276,6 +280,8 @@ var Columns = []string{
 	FieldIsOnlineAndInPerson,
 	FieldIsOnlineAndInPersonOnly,
 	FieldIsOnlineAndInPersonOrHybrid,
+	FieldLikedByCurrentUser,
+	FieldFollowedByCurrentUser,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "events"
@@ -348,6 +354,10 @@ var (
 	DefaultIsOnlineAndInPersonOnly bool
 	// DefaultIsOnlineAndInPersonOrHybrid holds the default value on creation for the "is_Online_And_In_Person_Or_Hybrid" field.
 	DefaultIsOnlineAndInPersonOrHybrid bool
+	// DefaultLikedByCurrentUser holds the default value on creation for the "likedByCurrentUser" field.
+	DefaultLikedByCurrentUser bool
+	// DefaultFollowedByCurrentUser holds the default value on creation for the "followedByCurrentUser" field.
+	DefaultFollowedByCurrentUser bool
 )
 
 // EventType defines the type for the "EventType" enum field.
@@ -682,6 +692,16 @@ func ByIsOnlineAndInPersonOnly(opts ...sql.OrderTermOption) OrderOption {
 // ByIsOnlineAndInPersonOrHybrid orders the results by the is_Online_And_In_Person_Or_Hybrid field.
 func ByIsOnlineAndInPersonOrHybrid(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIsOnlineAndInPersonOrHybrid, opts...).ToFunc()
+}
+
+// ByLikedByCurrentUser orders the results by the likedByCurrentUser field.
+func ByLikedByCurrentUser(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLikedByCurrentUser, opts...).ToFunc()
+}
+
+// ByFollowedByCurrentUser orders the results by the followedByCurrentUser field.
+func ByFollowedByCurrentUser(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFollowedByCurrentUser, opts...).ToFunc()
 }
 
 // ByTicketsCount orders the results by tickets count.
