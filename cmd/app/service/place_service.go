@@ -38,10 +38,12 @@ type PlaceService interface {
 type PlaceServiceImpl struct {
 	client        *ent.Client
 	searchService SearchService
+	userLikes     UserLikePlaceService
+	followService FollowService
 }
 
-func NewPlaceService(client *ent.Client, searchService SearchService) *PlaceServiceImpl {
-	return &PlaceServiceImpl{client: client, searchService: searchService}
+func NewPlaceService(client *ent.Client, searchService SearchService, userLikes UserLikePlaceService, followService FollowService) *PlaceServiceImpl {
+	return &PlaceServiceImpl{client: client, searchService: searchService, userLikes: userLikes, followService: followService}
 }
 
 func (s *PlaceServiceImpl) GetPlacesAssociatedWithBusinessAccount(c context.Context, businessId string) ([]*ent.Place, error) {
@@ -70,6 +72,13 @@ func (s *PlaceServiceImpl) GetPlace(ctx context.Context, placeID string) (*ent.P
 		First(ctx)
 	if err != nil {
 		return nil, err
+	}
+
+	userID := ctx.Value("user").(string)
+	if userID != "" {
+		if err := s.checkUserInteraction(ctx, userID, placeID, placeData); err != nil {
+			return nil, err
+		}
 	}
 
 	return placeData, nil
@@ -110,7 +119,63 @@ func (s *PlaceServiceImpl) GetAllPlaces(ctx context.Context, lastId string, limi
 		places = places[:limit]
 	}
 
+	userID := ctx.Value("user").(string)
+	var wg sync.WaitGroup
+	var firstErr error
+	var lock sync.Mutex
+	if userID != "" {
+		for _, place := range places {
+			wg.Add(1)
+			go func(place *ent.Place) {
+				defer wg.Done()
+				err := s.checkUserInteraction(ctx, userID, place.ID, place)
+				if err != nil && firstErr == nil { // only capture the first error
+					lock.Lock()
+					if firstErr == nil {
+						firstErr = err
+					}
+					lock.Unlock()
+				}
+			}(place)
+		}
+		wg.Wait()
+		if firstErr != nil {
+			return nil, "", firstErr
+		}
+	}
+
 	return places, nextId, nil
+}
+
+func (s *PlaceServiceImpl) checkUserInteraction(ctx context.Context, userID, placeID string, place *ent.Place) error {
+	var wg sync.WaitGroup
+	var userLikesPlace, userFollowsPlace bool
+	var errUserLikesPlace, errUserFollowsPlace error
+
+	wg.Add(2)
+	go func() {
+		defer wg.Done()
+		userLikesPlace, errUserLikesPlace = s.userLikes.CheckIfUserLikesPlace(ctx, userID, placeID)
+	}()
+
+	go func() {
+		defer wg.Done()
+		userFollowsPlace, errUserFollowsPlace = s.followService.CheckIfUserFollowsPlace(ctx, userID, placeID)
+	}()
+
+	wg.Wait()
+
+	if errUserLikesPlace != nil {
+		return errUserLikesPlace
+	}
+	if errUserFollowsPlace != nil {
+		return errUserFollowsPlace
+	}
+
+	place.FollowedByCurrentUser = userFollowsPlace
+	place.LikedByCurrentUser = userLikesPlace
+
+	return nil
 }
 
 func (s *PlaceServiceImpl) CreatePlace(ctx context.Context, placeData Dto.CreatePlaceDTO) (*ent.Place, error) {
