@@ -6085,7 +6085,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/placio-app_ent.Category"
+                            "$ref": "#/definitions/placio-app_Dto.CreateCategoryRequest"
                         }
                     }
                 ],
@@ -9012,6 +9012,9 @@ const docTemplate = `{
                 }
             }
         },
+        "placio-app_Dto.CreateCategoryRequest": {
+            "type": "object"
+        },
         "placio-app_Dto.CreatePlaceDTO": {
             "type": "object",
             "properties": {
@@ -10018,6 +10021,10 @@ const docTemplate = `{
         "placio-app_ent.Category": {
             "type": "object",
             "properties": {
+                "description": {
+                    "description": "Description holds the value of the \"description\" field.",
+                    "type": "string"
+                },
                 "edges": {
                     "description": "Edges holds the relations/edges for other nodes in the graph.\nThe values are being populated by the CategoryQuery when eager-loading is set.",
                     "allOf": [
@@ -10025,6 +10032,10 @@ const docTemplate = `{
                             "$ref": "#/definitions/placio-app_ent.CategoryEdges"
                         }
                     ]
+                },
+                "icon": {
+                    "description": "Icon holds the value of the \"icon\" field.",
+                    "type": "string"
                 },
                 "id": {
                     "description": "ID of the ent.",
@@ -10036,6 +10047,26 @@ const docTemplate = `{
                 },
                 "name": {
                     "description": "Name holds the value of the \"name\" field.",
+                    "type": "string"
+                },
+                "parent_description": {
+                    "description": "ParentDescription holds the value of the \"parent_description\" field.",
+                    "type": "string"
+                },
+                "parent_id": {
+                    "description": "ParentID holds the value of the \"parent_id\" field.",
+                    "type": "string"
+                },
+                "parent_image": {
+                    "description": "ParentImage holds the value of the \"parent_image\" field.",
+                    "type": "string"
+                },
+                "parent_name": {
+                    "description": "ParentName holds the value of the \"parent_name\" field.",
+                    "type": "string"
+                },
+                "type": {
+                    "description": "Type holds the value of the \"type\" field.",
                     "type": "string"
                 }
             }
@@ -10212,6 +10243,10 @@ const docTemplate = `{
                     "type": "object",
                     "additionalProperties": true
                 },
+                "followedByCurrentUser": {
+                    "description": "FollowedByCurrentUser holds the value of the \"followedByCurrentUser\" field.",
+                    "type": "boolean"
+                },
                 "follower_count": {
                     "description": "FollowerCount holds the value of the \"follower_count\" field.",
                     "type": "integer"
@@ -10295,6 +10330,10 @@ const docTemplate = `{
                 "latitude": {
                     "description": "Latitude holds the value of the \"latitude\" field.",
                     "type": "string"
+                },
+                "likedByCurrentUser": {
+                    "description": "LikedByCurrentUser holds the value of the \"likedByCurrentUser\" field.",
+                    "type": "boolean"
                 },
                 "location": {
                     "description": "Location holds the value of the \"location\" field.",
@@ -10817,6 +10856,10 @@ const docTemplate = `{
                         "type": "string"
                     }
                 },
+                "followedByCurrentUser": {
+                    "description": "FollowedByCurrentUser holds the value of the \"followedByCurrentUser\" field.",
+                    "type": "boolean"
+                },
                 "follower_count": {
                     "description": "FollowerCount holds the value of the \"follower_count\" field.",
                     "type": "integer"
@@ -10847,6 +10890,10 @@ const docTemplate = `{
                 "latitude": {
                     "description": "Latitude holds the value of the \"latitude\" field.",
                     "type": "string"
+                },
+                "likedByCurrentUser": {
+                    "description": "LikedByCurrentUser holds the value of the \"likedByCurrentUser\" field.",
+                    "type": "boolean"
                 },
                 "location": {
                     "description": "Location holds the value of the \"location\" field.",

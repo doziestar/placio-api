@@ -20,6 +20,20 @@ type Category struct {
 	Name string `json:"name,omitempty"`
 	// Image holds the value of the "image" field.
 	Image string `json:"image,omitempty"`
+	// Description holds the value of the "description" field.
+	Description string `json:"description,omitempty"`
+	// Icon holds the value of the "icon" field.
+	Icon string `json:"icon,omitempty"`
+	// Type holds the value of the "type" field.
+	Type string `json:"type,omitempty"`
+	// ParentID holds the value of the "parent_id" field.
+	ParentID string `json:"parent_id,omitempty"`
+	// ParentName holds the value of the "parent_name" field.
+	ParentName string `json:"parent_name,omitempty"`
+	// ParentImage holds the value of the "parent_image" field.
+	ParentImage string `json:"parent_image,omitempty"`
+	// ParentDescription holds the value of the "parent_description" field.
+	ParentDescription string `json:"parent_description,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CategoryQuery when eager-loading is set.
 	Edges                  CategoryEdges `json:"edges"`
@@ -56,7 +70,7 @@ func (*Category) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case category.FieldID, category.FieldName, category.FieldImage:
+		case category.FieldID, category.FieldName, category.FieldImage, category.FieldDescription, category.FieldIcon, category.FieldType, category.FieldParentID, category.FieldParentName, category.FieldParentImage, category.FieldParentDescription:
 			values[i] = new(sql.NullString)
 		case category.ForeignKeys[0]: // business_categories
 			values[i] = new(sql.NullString)
@@ -104,6 +118,48 @@ func (c *Category) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field image", values[i])
 			} else if value.Valid {
 				c.Image = value.String
+			}
+		case category.FieldDescription:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field description", values[i])
+			} else if value.Valid {
+				c.Description = value.String
+			}
+		case category.FieldIcon:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field icon", values[i])
+			} else if value.Valid {
+				c.Icon = value.String
+			}
+		case category.FieldType:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field type", values[i])
+			} else if value.Valid {
+				c.Type = value.String
+			}
+		case category.FieldParentID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field parent_id", values[i])
+			} else if value.Valid {
+				c.ParentID = value.String
+			}
+		case category.FieldParentName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field parent_name", values[i])
+			} else if value.Valid {
+				c.ParentName = value.String
+			}
+		case category.FieldParentImage:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field parent_image", values[i])
+			} else if value.Valid {
+				c.ParentImage = value.String
+			}
+		case category.FieldParentDescription:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field parent_description", values[i])
+			} else if value.Valid {
+				c.ParentDescription = value.String
 			}
 		case category.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -200,6 +256,27 @@ func (c *Category) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("image=")
 	builder.WriteString(c.Image)
+	builder.WriteString(", ")
+	builder.WriteString("description=")
+	builder.WriteString(c.Description)
+	builder.WriteString(", ")
+	builder.WriteString("icon=")
+	builder.WriteString(c.Icon)
+	builder.WriteString(", ")
+	builder.WriteString("type=")
+	builder.WriteString(c.Type)
+	builder.WriteString(", ")
+	builder.WriteString("parent_id=")
+	builder.WriteString(c.ParentID)
+	builder.WriteString(", ")
+	builder.WriteString("parent_name=")
+	builder.WriteString(c.ParentName)
+	builder.WriteString(", ")
+	builder.WriteString("parent_image=")
+	builder.WriteString(c.ParentImage)
+	builder.WriteString(", ")
+	builder.WriteString("parent_description=")
+	builder.WriteString(c.ParentDescription)
 	builder.WriteByte(')')
 	return builder.String()
 }

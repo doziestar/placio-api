@@ -16,6 +16,20 @@ const (
 	FieldName = "name"
 	// FieldImage holds the string denoting the image field in the database.
 	FieldImage = "image"
+	// FieldDescription holds the string denoting the description field in the database.
+	FieldDescription = "description"
+	// FieldIcon holds the string denoting the icon field in the database.
+	FieldIcon = "icon"
+	// FieldType holds the string denoting the type field in the database.
+	FieldType = "type"
+	// FieldParentID holds the string denoting the parent_id field in the database.
+	FieldParentID = "parent_id"
+	// FieldParentName holds the string denoting the parent_name field in the database.
+	FieldParentName = "parent_name"
+	// FieldParentImage holds the string denoting the parent_image field in the database.
+	FieldParentImage = "parent_image"
+	// FieldParentDescription holds the string denoting the parent_description field in the database.
+	FieldParentDescription = "parent_description"
 	// EdgeCategoryAssignments holds the string denoting the categoryassignments edge name in mutations.
 	EdgeCategoryAssignments = "categoryAssignments"
 	// Table holds the table name of the category in the database.
@@ -34,6 +48,13 @@ var Columns = []string{
 	FieldID,
 	FieldName,
 	FieldImage,
+	FieldDescription,
+	FieldIcon,
+	FieldType,
+	FieldParentID,
+	FieldParentName,
+	FieldParentImage,
+	FieldParentDescription,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "categories"
@@ -84,6 +105,41 @@ func ByName(opts ...sql.OrderTermOption) OrderOption {
 // ByImage orders the results by the image field.
 func ByImage(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldImage, opts...).ToFunc()
+}
+
+// ByDescription orders the results by the description field.
+func ByDescription(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDescription, opts...).ToFunc()
+}
+
+// ByIcon orders the results by the icon field.
+func ByIcon(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIcon, opts...).ToFunc()
+}
+
+// ByType orders the results by the type field.
+func ByType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldType, opts...).ToFunc()
+}
+
+// ByParentID orders the results by the parent_id field.
+func ByParentID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldParentID, opts...).ToFunc()
+}
+
+// ByParentName orders the results by the parent_name field.
+func ByParentName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldParentName, opts...).ToFunc()
+}
+
+// ByParentImage orders the results by the parent_image field.
+func ByParentImage(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldParentImage, opts...).ToFunc()
+}
+
+// ByParentDescription orders the results by the parent_description field.
+func ByParentDescription(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldParentDescription, opts...).ToFunc()
 }
 
 // ByCategoryAssignmentsCount orders the results by categoryAssignments count.

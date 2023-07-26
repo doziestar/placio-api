@@ -3,6 +3,7 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	_ "placio-app/Dto"
 	_ "placio-app/ent"
 	"placio-app/service"
 	"placio-app/utility"
@@ -40,18 +41,24 @@ func (cc *CategoryController) RegisterRoutes(router *gin.RouterGroup) {
 // @Tags categories
 // @Accept  json
 // @Produce  json
-// @Param category body ent.Category true "Category"
+// @Param category body Dto.CreateCategoryRequest true "Category"
 // @Success 200 {object} ent.Category
 // @Router /categories/ [post]
 func (cc *CategoryController) createCategory(ctx *gin.Context) error {
-	id := ctx.GetString("id")
-	name := ctx.GetString("name")
-	image := ctx.GetString("image")
-	category, err := cc.categoryService.CreateCategory(ctx, id, name, image)
+	form, err := ctx.MultipartForm()
+	if err != nil {
+		return err
+	}
+	name := form.Value["name"][0]
+	image := form.File["image"]
+	icon := form.Value["icon"][0]
+
+	category, err := cc.categoryService.CreateCategory(ctx, icon, name, image)
 	if err != nil {
 		return err
 	}
 	ctx.JSON(http.StatusOK, category)
+
 	return nil
 }
 

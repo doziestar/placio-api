@@ -74,6 +74,41 @@ func Image(v string) predicate.Category {
 	return predicate.Category(sql.FieldEQ(FieldImage, v))
 }
 
+// Description applies equality check predicate on the "description" field. It's identical to DescriptionEQ.
+func Description(v string) predicate.Category {
+	return predicate.Category(sql.FieldEQ(FieldDescription, v))
+}
+
+// Icon applies equality check predicate on the "icon" field. It's identical to IconEQ.
+func Icon(v string) predicate.Category {
+	return predicate.Category(sql.FieldEQ(FieldIcon, v))
+}
+
+// Type applies equality check predicate on the "type" field. It's identical to TypeEQ.
+func Type(v string) predicate.Category {
+	return predicate.Category(sql.FieldEQ(FieldType, v))
+}
+
+// ParentID applies equality check predicate on the "parent_id" field. It's identical to ParentIDEQ.
+func ParentID(v string) predicate.Category {
+	return predicate.Category(sql.FieldEQ(FieldParentID, v))
+}
+
+// ParentName applies equality check predicate on the "parent_name" field. It's identical to ParentNameEQ.
+func ParentName(v string) predicate.Category {
+	return predicate.Category(sql.FieldEQ(FieldParentName, v))
+}
+
+// ParentImage applies equality check predicate on the "parent_image" field. It's identical to ParentImageEQ.
+func ParentImage(v string) predicate.Category {
+	return predicate.Category(sql.FieldEQ(FieldParentImage, v))
+}
+
+// ParentDescription applies equality check predicate on the "parent_description" field. It's identical to ParentDescriptionEQ.
+func ParentDescription(v string) predicate.Category {
+	return predicate.Category(sql.FieldEQ(FieldParentDescription, v))
+}
+
 // NameEQ applies the EQ predicate on the "name" field.
 func NameEQ(v string) predicate.Category {
 	return predicate.Category(sql.FieldEQ(FieldName, v))
@@ -212,6 +247,531 @@ func ImageEqualFold(v string) predicate.Category {
 // ImageContainsFold applies the ContainsFold predicate on the "image" field.
 func ImageContainsFold(v string) predicate.Category {
 	return predicate.Category(sql.FieldContainsFold(FieldImage, v))
+}
+
+// DescriptionEQ applies the EQ predicate on the "description" field.
+func DescriptionEQ(v string) predicate.Category {
+	return predicate.Category(sql.FieldEQ(FieldDescription, v))
+}
+
+// DescriptionNEQ applies the NEQ predicate on the "description" field.
+func DescriptionNEQ(v string) predicate.Category {
+	return predicate.Category(sql.FieldNEQ(FieldDescription, v))
+}
+
+// DescriptionIn applies the In predicate on the "description" field.
+func DescriptionIn(vs ...string) predicate.Category {
+	return predicate.Category(sql.FieldIn(FieldDescription, vs...))
+}
+
+// DescriptionNotIn applies the NotIn predicate on the "description" field.
+func DescriptionNotIn(vs ...string) predicate.Category {
+	return predicate.Category(sql.FieldNotIn(FieldDescription, vs...))
+}
+
+// DescriptionGT applies the GT predicate on the "description" field.
+func DescriptionGT(v string) predicate.Category {
+	return predicate.Category(sql.FieldGT(FieldDescription, v))
+}
+
+// DescriptionGTE applies the GTE predicate on the "description" field.
+func DescriptionGTE(v string) predicate.Category {
+	return predicate.Category(sql.FieldGTE(FieldDescription, v))
+}
+
+// DescriptionLT applies the LT predicate on the "description" field.
+func DescriptionLT(v string) predicate.Category {
+	return predicate.Category(sql.FieldLT(FieldDescription, v))
+}
+
+// DescriptionLTE applies the LTE predicate on the "description" field.
+func DescriptionLTE(v string) predicate.Category {
+	return predicate.Category(sql.FieldLTE(FieldDescription, v))
+}
+
+// DescriptionContains applies the Contains predicate on the "description" field.
+func DescriptionContains(v string) predicate.Category {
+	return predicate.Category(sql.FieldContains(FieldDescription, v))
+}
+
+// DescriptionHasPrefix applies the HasPrefix predicate on the "description" field.
+func DescriptionHasPrefix(v string) predicate.Category {
+	return predicate.Category(sql.FieldHasPrefix(FieldDescription, v))
+}
+
+// DescriptionHasSuffix applies the HasSuffix predicate on the "description" field.
+func DescriptionHasSuffix(v string) predicate.Category {
+	return predicate.Category(sql.FieldHasSuffix(FieldDescription, v))
+}
+
+// DescriptionIsNil applies the IsNil predicate on the "description" field.
+func DescriptionIsNil() predicate.Category {
+	return predicate.Category(sql.FieldIsNull(FieldDescription))
+}
+
+// DescriptionNotNil applies the NotNil predicate on the "description" field.
+func DescriptionNotNil() predicate.Category {
+	return predicate.Category(sql.FieldNotNull(FieldDescription))
+}
+
+// DescriptionEqualFold applies the EqualFold predicate on the "description" field.
+func DescriptionEqualFold(v string) predicate.Category {
+	return predicate.Category(sql.FieldEqualFold(FieldDescription, v))
+}
+
+// DescriptionContainsFold applies the ContainsFold predicate on the "description" field.
+func DescriptionContainsFold(v string) predicate.Category {
+	return predicate.Category(sql.FieldContainsFold(FieldDescription, v))
+}
+
+// IconEQ applies the EQ predicate on the "icon" field.
+func IconEQ(v string) predicate.Category {
+	return predicate.Category(sql.FieldEQ(FieldIcon, v))
+}
+
+// IconNEQ applies the NEQ predicate on the "icon" field.
+func IconNEQ(v string) predicate.Category {
+	return predicate.Category(sql.FieldNEQ(FieldIcon, v))
+}
+
+// IconIn applies the In predicate on the "icon" field.
+func IconIn(vs ...string) predicate.Category {
+	return predicate.Category(sql.FieldIn(FieldIcon, vs...))
+}
+
+// IconNotIn applies the NotIn predicate on the "icon" field.
+func IconNotIn(vs ...string) predicate.Category {
+	return predicate.Category(sql.FieldNotIn(FieldIcon, vs...))
+}
+
+// IconGT applies the GT predicate on the "icon" field.
+func IconGT(v string) predicate.Category {
+	return predicate.Category(sql.FieldGT(FieldIcon, v))
+}
+
+// IconGTE applies the GTE predicate on the "icon" field.
+func IconGTE(v string) predicate.Category {
+	return predicate.Category(sql.FieldGTE(FieldIcon, v))
+}
+
+// IconLT applies the LT predicate on the "icon" field.
+func IconLT(v string) predicate.Category {
+	return predicate.Category(sql.FieldLT(FieldIcon, v))
+}
+
+// IconLTE applies the LTE predicate on the "icon" field.
+func IconLTE(v string) predicate.Category {
+	return predicate.Category(sql.FieldLTE(FieldIcon, v))
+}
+
+// IconContains applies the Contains predicate on the "icon" field.
+func IconContains(v string) predicate.Category {
+	return predicate.Category(sql.FieldContains(FieldIcon, v))
+}
+
+// IconHasPrefix applies the HasPrefix predicate on the "icon" field.
+func IconHasPrefix(v string) predicate.Category {
+	return predicate.Category(sql.FieldHasPrefix(FieldIcon, v))
+}
+
+// IconHasSuffix applies the HasSuffix predicate on the "icon" field.
+func IconHasSuffix(v string) predicate.Category {
+	return predicate.Category(sql.FieldHasSuffix(FieldIcon, v))
+}
+
+// IconIsNil applies the IsNil predicate on the "icon" field.
+func IconIsNil() predicate.Category {
+	return predicate.Category(sql.FieldIsNull(FieldIcon))
+}
+
+// IconNotNil applies the NotNil predicate on the "icon" field.
+func IconNotNil() predicate.Category {
+	return predicate.Category(sql.FieldNotNull(FieldIcon))
+}
+
+// IconEqualFold applies the EqualFold predicate on the "icon" field.
+func IconEqualFold(v string) predicate.Category {
+	return predicate.Category(sql.FieldEqualFold(FieldIcon, v))
+}
+
+// IconContainsFold applies the ContainsFold predicate on the "icon" field.
+func IconContainsFold(v string) predicate.Category {
+	return predicate.Category(sql.FieldContainsFold(FieldIcon, v))
+}
+
+// TypeEQ applies the EQ predicate on the "type" field.
+func TypeEQ(v string) predicate.Category {
+	return predicate.Category(sql.FieldEQ(FieldType, v))
+}
+
+// TypeNEQ applies the NEQ predicate on the "type" field.
+func TypeNEQ(v string) predicate.Category {
+	return predicate.Category(sql.FieldNEQ(FieldType, v))
+}
+
+// TypeIn applies the In predicate on the "type" field.
+func TypeIn(vs ...string) predicate.Category {
+	return predicate.Category(sql.FieldIn(FieldType, vs...))
+}
+
+// TypeNotIn applies the NotIn predicate on the "type" field.
+func TypeNotIn(vs ...string) predicate.Category {
+	return predicate.Category(sql.FieldNotIn(FieldType, vs...))
+}
+
+// TypeGT applies the GT predicate on the "type" field.
+func TypeGT(v string) predicate.Category {
+	return predicate.Category(sql.FieldGT(FieldType, v))
+}
+
+// TypeGTE applies the GTE predicate on the "type" field.
+func TypeGTE(v string) predicate.Category {
+	return predicate.Category(sql.FieldGTE(FieldType, v))
+}
+
+// TypeLT applies the LT predicate on the "type" field.
+func TypeLT(v string) predicate.Category {
+	return predicate.Category(sql.FieldLT(FieldType, v))
+}
+
+// TypeLTE applies the LTE predicate on the "type" field.
+func TypeLTE(v string) predicate.Category {
+	return predicate.Category(sql.FieldLTE(FieldType, v))
+}
+
+// TypeContains applies the Contains predicate on the "type" field.
+func TypeContains(v string) predicate.Category {
+	return predicate.Category(sql.FieldContains(FieldType, v))
+}
+
+// TypeHasPrefix applies the HasPrefix predicate on the "type" field.
+func TypeHasPrefix(v string) predicate.Category {
+	return predicate.Category(sql.FieldHasPrefix(FieldType, v))
+}
+
+// TypeHasSuffix applies the HasSuffix predicate on the "type" field.
+func TypeHasSuffix(v string) predicate.Category {
+	return predicate.Category(sql.FieldHasSuffix(FieldType, v))
+}
+
+// TypeIsNil applies the IsNil predicate on the "type" field.
+func TypeIsNil() predicate.Category {
+	return predicate.Category(sql.FieldIsNull(FieldType))
+}
+
+// TypeNotNil applies the NotNil predicate on the "type" field.
+func TypeNotNil() predicate.Category {
+	return predicate.Category(sql.FieldNotNull(FieldType))
+}
+
+// TypeEqualFold applies the EqualFold predicate on the "type" field.
+func TypeEqualFold(v string) predicate.Category {
+	return predicate.Category(sql.FieldEqualFold(FieldType, v))
+}
+
+// TypeContainsFold applies the ContainsFold predicate on the "type" field.
+func TypeContainsFold(v string) predicate.Category {
+	return predicate.Category(sql.FieldContainsFold(FieldType, v))
+}
+
+// ParentIDEQ applies the EQ predicate on the "parent_id" field.
+func ParentIDEQ(v string) predicate.Category {
+	return predicate.Category(sql.FieldEQ(FieldParentID, v))
+}
+
+// ParentIDNEQ applies the NEQ predicate on the "parent_id" field.
+func ParentIDNEQ(v string) predicate.Category {
+	return predicate.Category(sql.FieldNEQ(FieldParentID, v))
+}
+
+// ParentIDIn applies the In predicate on the "parent_id" field.
+func ParentIDIn(vs ...string) predicate.Category {
+	return predicate.Category(sql.FieldIn(FieldParentID, vs...))
+}
+
+// ParentIDNotIn applies the NotIn predicate on the "parent_id" field.
+func ParentIDNotIn(vs ...string) predicate.Category {
+	return predicate.Category(sql.FieldNotIn(FieldParentID, vs...))
+}
+
+// ParentIDGT applies the GT predicate on the "parent_id" field.
+func ParentIDGT(v string) predicate.Category {
+	return predicate.Category(sql.FieldGT(FieldParentID, v))
+}
+
+// ParentIDGTE applies the GTE predicate on the "parent_id" field.
+func ParentIDGTE(v string) predicate.Category {
+	return predicate.Category(sql.FieldGTE(FieldParentID, v))
+}
+
+// ParentIDLT applies the LT predicate on the "parent_id" field.
+func ParentIDLT(v string) predicate.Category {
+	return predicate.Category(sql.FieldLT(FieldParentID, v))
+}
+
+// ParentIDLTE applies the LTE predicate on the "parent_id" field.
+func ParentIDLTE(v string) predicate.Category {
+	return predicate.Category(sql.FieldLTE(FieldParentID, v))
+}
+
+// ParentIDContains applies the Contains predicate on the "parent_id" field.
+func ParentIDContains(v string) predicate.Category {
+	return predicate.Category(sql.FieldContains(FieldParentID, v))
+}
+
+// ParentIDHasPrefix applies the HasPrefix predicate on the "parent_id" field.
+func ParentIDHasPrefix(v string) predicate.Category {
+	return predicate.Category(sql.FieldHasPrefix(FieldParentID, v))
+}
+
+// ParentIDHasSuffix applies the HasSuffix predicate on the "parent_id" field.
+func ParentIDHasSuffix(v string) predicate.Category {
+	return predicate.Category(sql.FieldHasSuffix(FieldParentID, v))
+}
+
+// ParentIDIsNil applies the IsNil predicate on the "parent_id" field.
+func ParentIDIsNil() predicate.Category {
+	return predicate.Category(sql.FieldIsNull(FieldParentID))
+}
+
+// ParentIDNotNil applies the NotNil predicate on the "parent_id" field.
+func ParentIDNotNil() predicate.Category {
+	return predicate.Category(sql.FieldNotNull(FieldParentID))
+}
+
+// ParentIDEqualFold applies the EqualFold predicate on the "parent_id" field.
+func ParentIDEqualFold(v string) predicate.Category {
+	return predicate.Category(sql.FieldEqualFold(FieldParentID, v))
+}
+
+// ParentIDContainsFold applies the ContainsFold predicate on the "parent_id" field.
+func ParentIDContainsFold(v string) predicate.Category {
+	return predicate.Category(sql.FieldContainsFold(FieldParentID, v))
+}
+
+// ParentNameEQ applies the EQ predicate on the "parent_name" field.
+func ParentNameEQ(v string) predicate.Category {
+	return predicate.Category(sql.FieldEQ(FieldParentName, v))
+}
+
+// ParentNameNEQ applies the NEQ predicate on the "parent_name" field.
+func ParentNameNEQ(v string) predicate.Category {
+	return predicate.Category(sql.FieldNEQ(FieldParentName, v))
+}
+
+// ParentNameIn applies the In predicate on the "parent_name" field.
+func ParentNameIn(vs ...string) predicate.Category {
+	return predicate.Category(sql.FieldIn(FieldParentName, vs...))
+}
+
+// ParentNameNotIn applies the NotIn predicate on the "parent_name" field.
+func ParentNameNotIn(vs ...string) predicate.Category {
+	return predicate.Category(sql.FieldNotIn(FieldParentName, vs...))
+}
+
+// ParentNameGT applies the GT predicate on the "parent_name" field.
+func ParentNameGT(v string) predicate.Category {
+	return predicate.Category(sql.FieldGT(FieldParentName, v))
+}
+
+// ParentNameGTE applies the GTE predicate on the "parent_name" field.
+func ParentNameGTE(v string) predicate.Category {
+	return predicate.Category(sql.FieldGTE(FieldParentName, v))
+}
+
+// ParentNameLT applies the LT predicate on the "parent_name" field.
+func ParentNameLT(v string) predicate.Category {
+	return predicate.Category(sql.FieldLT(FieldParentName, v))
+}
+
+// ParentNameLTE applies the LTE predicate on the "parent_name" field.
+func ParentNameLTE(v string) predicate.Category {
+	return predicate.Category(sql.FieldLTE(FieldParentName, v))
+}
+
+// ParentNameContains applies the Contains predicate on the "parent_name" field.
+func ParentNameContains(v string) predicate.Category {
+	return predicate.Category(sql.FieldContains(FieldParentName, v))
+}
+
+// ParentNameHasPrefix applies the HasPrefix predicate on the "parent_name" field.
+func ParentNameHasPrefix(v string) predicate.Category {
+	return predicate.Category(sql.FieldHasPrefix(FieldParentName, v))
+}
+
+// ParentNameHasSuffix applies the HasSuffix predicate on the "parent_name" field.
+func ParentNameHasSuffix(v string) predicate.Category {
+	return predicate.Category(sql.FieldHasSuffix(FieldParentName, v))
+}
+
+// ParentNameIsNil applies the IsNil predicate on the "parent_name" field.
+func ParentNameIsNil() predicate.Category {
+	return predicate.Category(sql.FieldIsNull(FieldParentName))
+}
+
+// ParentNameNotNil applies the NotNil predicate on the "parent_name" field.
+func ParentNameNotNil() predicate.Category {
+	return predicate.Category(sql.FieldNotNull(FieldParentName))
+}
+
+// ParentNameEqualFold applies the EqualFold predicate on the "parent_name" field.
+func ParentNameEqualFold(v string) predicate.Category {
+	return predicate.Category(sql.FieldEqualFold(FieldParentName, v))
+}
+
+// ParentNameContainsFold applies the ContainsFold predicate on the "parent_name" field.
+func ParentNameContainsFold(v string) predicate.Category {
+	return predicate.Category(sql.FieldContainsFold(FieldParentName, v))
+}
+
+// ParentImageEQ applies the EQ predicate on the "parent_image" field.
+func ParentImageEQ(v string) predicate.Category {
+	return predicate.Category(sql.FieldEQ(FieldParentImage, v))
+}
+
+// ParentImageNEQ applies the NEQ predicate on the "parent_image" field.
+func ParentImageNEQ(v string) predicate.Category {
+	return predicate.Category(sql.FieldNEQ(FieldParentImage, v))
+}
+
+// ParentImageIn applies the In predicate on the "parent_image" field.
+func ParentImageIn(vs ...string) predicate.Category {
+	return predicate.Category(sql.FieldIn(FieldParentImage, vs...))
+}
+
+// ParentImageNotIn applies the NotIn predicate on the "parent_image" field.
+func ParentImageNotIn(vs ...string) predicate.Category {
+	return predicate.Category(sql.FieldNotIn(FieldParentImage, vs...))
+}
+
+// ParentImageGT applies the GT predicate on the "parent_image" field.
+func ParentImageGT(v string) predicate.Category {
+	return predicate.Category(sql.FieldGT(FieldParentImage, v))
+}
+
+// ParentImageGTE applies the GTE predicate on the "parent_image" field.
+func ParentImageGTE(v string) predicate.Category {
+	return predicate.Category(sql.FieldGTE(FieldParentImage, v))
+}
+
+// ParentImageLT applies the LT predicate on the "parent_image" field.
+func ParentImageLT(v string) predicate.Category {
+	return predicate.Category(sql.FieldLT(FieldParentImage, v))
+}
+
+// ParentImageLTE applies the LTE predicate on the "parent_image" field.
+func ParentImageLTE(v string) predicate.Category {
+	return predicate.Category(sql.FieldLTE(FieldParentImage, v))
+}
+
+// ParentImageContains applies the Contains predicate on the "parent_image" field.
+func ParentImageContains(v string) predicate.Category {
+	return predicate.Category(sql.FieldContains(FieldParentImage, v))
+}
+
+// ParentImageHasPrefix applies the HasPrefix predicate on the "parent_image" field.
+func ParentImageHasPrefix(v string) predicate.Category {
+	return predicate.Category(sql.FieldHasPrefix(FieldParentImage, v))
+}
+
+// ParentImageHasSuffix applies the HasSuffix predicate on the "parent_image" field.
+func ParentImageHasSuffix(v string) predicate.Category {
+	return predicate.Category(sql.FieldHasSuffix(FieldParentImage, v))
+}
+
+// ParentImageIsNil applies the IsNil predicate on the "parent_image" field.
+func ParentImageIsNil() predicate.Category {
+	return predicate.Category(sql.FieldIsNull(FieldParentImage))
+}
+
+// ParentImageNotNil applies the NotNil predicate on the "parent_image" field.
+func ParentImageNotNil() predicate.Category {
+	return predicate.Category(sql.FieldNotNull(FieldParentImage))
+}
+
+// ParentImageEqualFold applies the EqualFold predicate on the "parent_image" field.
+func ParentImageEqualFold(v string) predicate.Category {
+	return predicate.Category(sql.FieldEqualFold(FieldParentImage, v))
+}
+
+// ParentImageContainsFold applies the ContainsFold predicate on the "parent_image" field.
+func ParentImageContainsFold(v string) predicate.Category {
+	return predicate.Category(sql.FieldContainsFold(FieldParentImage, v))
+}
+
+// ParentDescriptionEQ applies the EQ predicate on the "parent_description" field.
+func ParentDescriptionEQ(v string) predicate.Category {
+	return predicate.Category(sql.FieldEQ(FieldParentDescription, v))
+}
+
+// ParentDescriptionNEQ applies the NEQ predicate on the "parent_description" field.
+func ParentDescriptionNEQ(v string) predicate.Category {
+	return predicate.Category(sql.FieldNEQ(FieldParentDescription, v))
+}
+
+// ParentDescriptionIn applies the In predicate on the "parent_description" field.
+func ParentDescriptionIn(vs ...string) predicate.Category {
+	return predicate.Category(sql.FieldIn(FieldParentDescription, vs...))
+}
+
+// ParentDescriptionNotIn applies the NotIn predicate on the "parent_description" field.
+func ParentDescriptionNotIn(vs ...string) predicate.Category {
+	return predicate.Category(sql.FieldNotIn(FieldParentDescription, vs...))
+}
+
+// ParentDescriptionGT applies the GT predicate on the "parent_description" field.
+func ParentDescriptionGT(v string) predicate.Category {
+	return predicate.Category(sql.FieldGT(FieldParentDescription, v))
+}
+
+// ParentDescriptionGTE applies the GTE predicate on the "parent_description" field.
+func ParentDescriptionGTE(v string) predicate.Category {
+	return predicate.Category(sql.FieldGTE(FieldParentDescription, v))
+}
+
+// ParentDescriptionLT applies the LT predicate on the "parent_description" field.
+func ParentDescriptionLT(v string) predicate.Category {
+	return predicate.Category(sql.FieldLT(FieldParentDescription, v))
+}
+
+// ParentDescriptionLTE applies the LTE predicate on the "parent_description" field.
+func ParentDescriptionLTE(v string) predicate.Category {
+	return predicate.Category(sql.FieldLTE(FieldParentDescription, v))
+}
+
+// ParentDescriptionContains applies the Contains predicate on the "parent_description" field.
+func ParentDescriptionContains(v string) predicate.Category {
+	return predicate.Category(sql.FieldContains(FieldParentDescription, v))
+}
+
+// ParentDescriptionHasPrefix applies the HasPrefix predicate on the "parent_description" field.
+func ParentDescriptionHasPrefix(v string) predicate.Category {
+	return predicate.Category(sql.FieldHasPrefix(FieldParentDescription, v))
+}
+
+// ParentDescriptionHasSuffix applies the HasSuffix predicate on the "parent_description" field.
+func ParentDescriptionHasSuffix(v string) predicate.Category {
+	return predicate.Category(sql.FieldHasSuffix(FieldParentDescription, v))
+}
+
+// ParentDescriptionIsNil applies the IsNil predicate on the "parent_description" field.
+func ParentDescriptionIsNil() predicate.Category {
+	return predicate.Category(sql.FieldIsNull(FieldParentDescription))
+}
+
+// ParentDescriptionNotNil applies the NotNil predicate on the "parent_description" field.
+func ParentDescriptionNotNil() predicate.Category {
+	return predicate.Category(sql.FieldNotNull(FieldParentDescription))
+}
+
+// ParentDescriptionEqualFold applies the EqualFold predicate on the "parent_description" field.
+func ParentDescriptionEqualFold(v string) predicate.Category {
+	return predicate.Category(sql.FieldEqualFold(FieldParentDescription, v))
+}
+
+// ParentDescriptionContainsFold applies the ContainsFold predicate on the "parent_description" field.
+func ParentDescriptionContainsFold(v string) predicate.Category {
+	return predicate.Category(sql.FieldContainsFold(FieldParentDescription, v))
 }
 
 // HasCategoryAssignments applies the HasEdge predicate on the "categoryAssignments" edge.

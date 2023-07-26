@@ -5991,6 +5991,13 @@ type CategoryMutation struct {
 	id                         *string
 	name                       *string
 	image                      *string
+	description                *string
+	icon                       *string
+	_type                      *string
+	parent_id                  *string
+	parent_name                *string
+	parent_image               *string
+	parent_description         *string
 	clearedFields              map[string]struct{}
 	categoryAssignments        map[string]struct{}
 	removedcategoryAssignments map[string]struct{}
@@ -6189,6 +6196,349 @@ func (m *CategoryMutation) ResetImage() {
 	delete(m.clearedFields, category.FieldImage)
 }
 
+// SetDescription sets the "description" field.
+func (m *CategoryMutation) SetDescription(s string) {
+	m.description = &s
+}
+
+// Description returns the value of the "description" field in the mutation.
+func (m *CategoryMutation) Description() (r string, exists bool) {
+	v := m.description
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDescription returns the old "description" field's value of the Category entity.
+// If the Category object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CategoryMutation) OldDescription(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDescription is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDescription requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDescription: %w", err)
+	}
+	return oldValue.Description, nil
+}
+
+// ClearDescription clears the value of the "description" field.
+func (m *CategoryMutation) ClearDescription() {
+	m.description = nil
+	m.clearedFields[category.FieldDescription] = struct{}{}
+}
+
+// DescriptionCleared returns if the "description" field was cleared in this mutation.
+func (m *CategoryMutation) DescriptionCleared() bool {
+	_, ok := m.clearedFields[category.FieldDescription]
+	return ok
+}
+
+// ResetDescription resets all changes to the "description" field.
+func (m *CategoryMutation) ResetDescription() {
+	m.description = nil
+	delete(m.clearedFields, category.FieldDescription)
+}
+
+// SetIcon sets the "icon" field.
+func (m *CategoryMutation) SetIcon(s string) {
+	m.icon = &s
+}
+
+// Icon returns the value of the "icon" field in the mutation.
+func (m *CategoryMutation) Icon() (r string, exists bool) {
+	v := m.icon
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIcon returns the old "icon" field's value of the Category entity.
+// If the Category object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CategoryMutation) OldIcon(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIcon is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIcon requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIcon: %w", err)
+	}
+	return oldValue.Icon, nil
+}
+
+// ClearIcon clears the value of the "icon" field.
+func (m *CategoryMutation) ClearIcon() {
+	m.icon = nil
+	m.clearedFields[category.FieldIcon] = struct{}{}
+}
+
+// IconCleared returns if the "icon" field was cleared in this mutation.
+func (m *CategoryMutation) IconCleared() bool {
+	_, ok := m.clearedFields[category.FieldIcon]
+	return ok
+}
+
+// ResetIcon resets all changes to the "icon" field.
+func (m *CategoryMutation) ResetIcon() {
+	m.icon = nil
+	delete(m.clearedFields, category.FieldIcon)
+}
+
+// SetType sets the "type" field.
+func (m *CategoryMutation) SetType(s string) {
+	m._type = &s
+}
+
+// GetType returns the value of the "type" field in the mutation.
+func (m *CategoryMutation) GetType() (r string, exists bool) {
+	v := m._type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldType returns the old "type" field's value of the Category entity.
+// If the Category object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CategoryMutation) OldType(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldType: %w", err)
+	}
+	return oldValue.Type, nil
+}
+
+// ClearType clears the value of the "type" field.
+func (m *CategoryMutation) ClearType() {
+	m._type = nil
+	m.clearedFields[category.FieldType] = struct{}{}
+}
+
+// TypeCleared returns if the "type" field was cleared in this mutation.
+func (m *CategoryMutation) TypeCleared() bool {
+	_, ok := m.clearedFields[category.FieldType]
+	return ok
+}
+
+// ResetType resets all changes to the "type" field.
+func (m *CategoryMutation) ResetType() {
+	m._type = nil
+	delete(m.clearedFields, category.FieldType)
+}
+
+// SetParentID sets the "parent_id" field.
+func (m *CategoryMutation) SetParentID(s string) {
+	m.parent_id = &s
+}
+
+// ParentID returns the value of the "parent_id" field in the mutation.
+func (m *CategoryMutation) ParentID() (r string, exists bool) {
+	v := m.parent_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldParentID returns the old "parent_id" field's value of the Category entity.
+// If the Category object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CategoryMutation) OldParentID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldParentID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldParentID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldParentID: %w", err)
+	}
+	return oldValue.ParentID, nil
+}
+
+// ClearParentID clears the value of the "parent_id" field.
+func (m *CategoryMutation) ClearParentID() {
+	m.parent_id = nil
+	m.clearedFields[category.FieldParentID] = struct{}{}
+}
+
+// ParentIDCleared returns if the "parent_id" field was cleared in this mutation.
+func (m *CategoryMutation) ParentIDCleared() bool {
+	_, ok := m.clearedFields[category.FieldParentID]
+	return ok
+}
+
+// ResetParentID resets all changes to the "parent_id" field.
+func (m *CategoryMutation) ResetParentID() {
+	m.parent_id = nil
+	delete(m.clearedFields, category.FieldParentID)
+}
+
+// SetParentName sets the "parent_name" field.
+func (m *CategoryMutation) SetParentName(s string) {
+	m.parent_name = &s
+}
+
+// ParentName returns the value of the "parent_name" field in the mutation.
+func (m *CategoryMutation) ParentName() (r string, exists bool) {
+	v := m.parent_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldParentName returns the old "parent_name" field's value of the Category entity.
+// If the Category object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CategoryMutation) OldParentName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldParentName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldParentName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldParentName: %w", err)
+	}
+	return oldValue.ParentName, nil
+}
+
+// ClearParentName clears the value of the "parent_name" field.
+func (m *CategoryMutation) ClearParentName() {
+	m.parent_name = nil
+	m.clearedFields[category.FieldParentName] = struct{}{}
+}
+
+// ParentNameCleared returns if the "parent_name" field was cleared in this mutation.
+func (m *CategoryMutation) ParentNameCleared() bool {
+	_, ok := m.clearedFields[category.FieldParentName]
+	return ok
+}
+
+// ResetParentName resets all changes to the "parent_name" field.
+func (m *CategoryMutation) ResetParentName() {
+	m.parent_name = nil
+	delete(m.clearedFields, category.FieldParentName)
+}
+
+// SetParentImage sets the "parent_image" field.
+func (m *CategoryMutation) SetParentImage(s string) {
+	m.parent_image = &s
+}
+
+// ParentImage returns the value of the "parent_image" field in the mutation.
+func (m *CategoryMutation) ParentImage() (r string, exists bool) {
+	v := m.parent_image
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldParentImage returns the old "parent_image" field's value of the Category entity.
+// If the Category object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CategoryMutation) OldParentImage(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldParentImage is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldParentImage requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldParentImage: %w", err)
+	}
+	return oldValue.ParentImage, nil
+}
+
+// ClearParentImage clears the value of the "parent_image" field.
+func (m *CategoryMutation) ClearParentImage() {
+	m.parent_image = nil
+	m.clearedFields[category.FieldParentImage] = struct{}{}
+}
+
+// ParentImageCleared returns if the "parent_image" field was cleared in this mutation.
+func (m *CategoryMutation) ParentImageCleared() bool {
+	_, ok := m.clearedFields[category.FieldParentImage]
+	return ok
+}
+
+// ResetParentImage resets all changes to the "parent_image" field.
+func (m *CategoryMutation) ResetParentImage() {
+	m.parent_image = nil
+	delete(m.clearedFields, category.FieldParentImage)
+}
+
+// SetParentDescription sets the "parent_description" field.
+func (m *CategoryMutation) SetParentDescription(s string) {
+	m.parent_description = &s
+}
+
+// ParentDescription returns the value of the "parent_description" field in the mutation.
+func (m *CategoryMutation) ParentDescription() (r string, exists bool) {
+	v := m.parent_description
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldParentDescription returns the old "parent_description" field's value of the Category entity.
+// If the Category object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CategoryMutation) OldParentDescription(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldParentDescription is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldParentDescription requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldParentDescription: %w", err)
+	}
+	return oldValue.ParentDescription, nil
+}
+
+// ClearParentDescription clears the value of the "parent_description" field.
+func (m *CategoryMutation) ClearParentDescription() {
+	m.parent_description = nil
+	m.clearedFields[category.FieldParentDescription] = struct{}{}
+}
+
+// ParentDescriptionCleared returns if the "parent_description" field was cleared in this mutation.
+func (m *CategoryMutation) ParentDescriptionCleared() bool {
+	_, ok := m.clearedFields[category.FieldParentDescription]
+	return ok
+}
+
+// ResetParentDescription resets all changes to the "parent_description" field.
+func (m *CategoryMutation) ResetParentDescription() {
+	m.parent_description = nil
+	delete(m.clearedFields, category.FieldParentDescription)
+}
+
 // AddCategoryAssignmentIDs adds the "categoryAssignments" edge to the CategoryAssignment entity by ids.
 func (m *CategoryMutation) AddCategoryAssignmentIDs(ids ...string) {
 	if m.categoryAssignments == nil {
@@ -6277,12 +6627,33 @@ func (m *CategoryMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CategoryMutation) Fields() []string {
-	fields := make([]string, 0, 2)
+	fields := make([]string, 0, 9)
 	if m.name != nil {
 		fields = append(fields, category.FieldName)
 	}
 	if m.image != nil {
 		fields = append(fields, category.FieldImage)
+	}
+	if m.description != nil {
+		fields = append(fields, category.FieldDescription)
+	}
+	if m.icon != nil {
+		fields = append(fields, category.FieldIcon)
+	}
+	if m._type != nil {
+		fields = append(fields, category.FieldType)
+	}
+	if m.parent_id != nil {
+		fields = append(fields, category.FieldParentID)
+	}
+	if m.parent_name != nil {
+		fields = append(fields, category.FieldParentName)
+	}
+	if m.parent_image != nil {
+		fields = append(fields, category.FieldParentImage)
+	}
+	if m.parent_description != nil {
+		fields = append(fields, category.FieldParentDescription)
 	}
 	return fields
 }
@@ -6296,6 +6667,20 @@ func (m *CategoryMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case category.FieldImage:
 		return m.Image()
+	case category.FieldDescription:
+		return m.Description()
+	case category.FieldIcon:
+		return m.Icon()
+	case category.FieldType:
+		return m.GetType()
+	case category.FieldParentID:
+		return m.ParentID()
+	case category.FieldParentName:
+		return m.ParentName()
+	case category.FieldParentImage:
+		return m.ParentImage()
+	case category.FieldParentDescription:
+		return m.ParentDescription()
 	}
 	return nil, false
 }
@@ -6309,6 +6694,20 @@ func (m *CategoryMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldName(ctx)
 	case category.FieldImage:
 		return m.OldImage(ctx)
+	case category.FieldDescription:
+		return m.OldDescription(ctx)
+	case category.FieldIcon:
+		return m.OldIcon(ctx)
+	case category.FieldType:
+		return m.OldType(ctx)
+	case category.FieldParentID:
+		return m.OldParentID(ctx)
+	case category.FieldParentName:
+		return m.OldParentName(ctx)
+	case category.FieldParentImage:
+		return m.OldParentImage(ctx)
+	case category.FieldParentDescription:
+		return m.OldParentDescription(ctx)
 	}
 	return nil, fmt.Errorf("unknown Category field %s", name)
 }
@@ -6331,6 +6730,55 @@ func (m *CategoryMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetImage(v)
+		return nil
+	case category.FieldDescription:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDescription(v)
+		return nil
+	case category.FieldIcon:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIcon(v)
+		return nil
+	case category.FieldType:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetType(v)
+		return nil
+	case category.FieldParentID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetParentID(v)
+		return nil
+	case category.FieldParentName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetParentName(v)
+		return nil
+	case category.FieldParentImage:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetParentImage(v)
+		return nil
+	case category.FieldParentDescription:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetParentDescription(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Category field %s", name)
@@ -6365,6 +6813,27 @@ func (m *CategoryMutation) ClearedFields() []string {
 	if m.FieldCleared(category.FieldImage) {
 		fields = append(fields, category.FieldImage)
 	}
+	if m.FieldCleared(category.FieldDescription) {
+		fields = append(fields, category.FieldDescription)
+	}
+	if m.FieldCleared(category.FieldIcon) {
+		fields = append(fields, category.FieldIcon)
+	}
+	if m.FieldCleared(category.FieldType) {
+		fields = append(fields, category.FieldType)
+	}
+	if m.FieldCleared(category.FieldParentID) {
+		fields = append(fields, category.FieldParentID)
+	}
+	if m.FieldCleared(category.FieldParentName) {
+		fields = append(fields, category.FieldParentName)
+	}
+	if m.FieldCleared(category.FieldParentImage) {
+		fields = append(fields, category.FieldParentImage)
+	}
+	if m.FieldCleared(category.FieldParentDescription) {
+		fields = append(fields, category.FieldParentDescription)
+	}
 	return fields
 }
 
@@ -6382,6 +6851,27 @@ func (m *CategoryMutation) ClearField(name string) error {
 	case category.FieldImage:
 		m.ClearImage()
 		return nil
+	case category.FieldDescription:
+		m.ClearDescription()
+		return nil
+	case category.FieldIcon:
+		m.ClearIcon()
+		return nil
+	case category.FieldType:
+		m.ClearType()
+		return nil
+	case category.FieldParentID:
+		m.ClearParentID()
+		return nil
+	case category.FieldParentName:
+		m.ClearParentName()
+		return nil
+	case category.FieldParentImage:
+		m.ClearParentImage()
+		return nil
+	case category.FieldParentDescription:
+		m.ClearParentDescription()
+		return nil
 	}
 	return fmt.Errorf("unknown Category nullable field %s", name)
 }
@@ -6395,6 +6885,27 @@ func (m *CategoryMutation) ResetField(name string) error {
 		return nil
 	case category.FieldImage:
 		m.ResetImage()
+		return nil
+	case category.FieldDescription:
+		m.ResetDescription()
+		return nil
+	case category.FieldIcon:
+		m.ResetIcon()
+		return nil
+	case category.FieldType:
+		m.ResetType()
+		return nil
+	case category.FieldParentID:
+		m.ResetParentID()
+		return nil
+	case category.FieldParentName:
+		m.ResetParentName()
+		return nil
+	case category.FieldParentImage:
+		m.ResetParentImage()
+		return nil
+	case category.FieldParentDescription:
+		m.ResetParentDescription()
 		return nil
 	}
 	return fmt.Errorf("unknown Category field %s", name)

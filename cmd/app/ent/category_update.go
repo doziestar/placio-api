@@ -54,6 +54,146 @@ func (cu *CategoryUpdate) ClearImage() *CategoryUpdate {
 	return cu
 }
 
+// SetDescription sets the "description" field.
+func (cu *CategoryUpdate) SetDescription(s string) *CategoryUpdate {
+	cu.mutation.SetDescription(s)
+	return cu
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (cu *CategoryUpdate) SetNillableDescription(s *string) *CategoryUpdate {
+	if s != nil {
+		cu.SetDescription(*s)
+	}
+	return cu
+}
+
+// ClearDescription clears the value of the "description" field.
+func (cu *CategoryUpdate) ClearDescription() *CategoryUpdate {
+	cu.mutation.ClearDescription()
+	return cu
+}
+
+// SetIcon sets the "icon" field.
+func (cu *CategoryUpdate) SetIcon(s string) *CategoryUpdate {
+	cu.mutation.SetIcon(s)
+	return cu
+}
+
+// SetNillableIcon sets the "icon" field if the given value is not nil.
+func (cu *CategoryUpdate) SetNillableIcon(s *string) *CategoryUpdate {
+	if s != nil {
+		cu.SetIcon(*s)
+	}
+	return cu
+}
+
+// ClearIcon clears the value of the "icon" field.
+func (cu *CategoryUpdate) ClearIcon() *CategoryUpdate {
+	cu.mutation.ClearIcon()
+	return cu
+}
+
+// SetType sets the "type" field.
+func (cu *CategoryUpdate) SetType(s string) *CategoryUpdate {
+	cu.mutation.SetType(s)
+	return cu
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (cu *CategoryUpdate) SetNillableType(s *string) *CategoryUpdate {
+	if s != nil {
+		cu.SetType(*s)
+	}
+	return cu
+}
+
+// ClearType clears the value of the "type" field.
+func (cu *CategoryUpdate) ClearType() *CategoryUpdate {
+	cu.mutation.ClearType()
+	return cu
+}
+
+// SetParentID sets the "parent_id" field.
+func (cu *CategoryUpdate) SetParentID(s string) *CategoryUpdate {
+	cu.mutation.SetParentID(s)
+	return cu
+}
+
+// SetNillableParentID sets the "parent_id" field if the given value is not nil.
+func (cu *CategoryUpdate) SetNillableParentID(s *string) *CategoryUpdate {
+	if s != nil {
+		cu.SetParentID(*s)
+	}
+	return cu
+}
+
+// ClearParentID clears the value of the "parent_id" field.
+func (cu *CategoryUpdate) ClearParentID() *CategoryUpdate {
+	cu.mutation.ClearParentID()
+	return cu
+}
+
+// SetParentName sets the "parent_name" field.
+func (cu *CategoryUpdate) SetParentName(s string) *CategoryUpdate {
+	cu.mutation.SetParentName(s)
+	return cu
+}
+
+// SetNillableParentName sets the "parent_name" field if the given value is not nil.
+func (cu *CategoryUpdate) SetNillableParentName(s *string) *CategoryUpdate {
+	if s != nil {
+		cu.SetParentName(*s)
+	}
+	return cu
+}
+
+// ClearParentName clears the value of the "parent_name" field.
+func (cu *CategoryUpdate) ClearParentName() *CategoryUpdate {
+	cu.mutation.ClearParentName()
+	return cu
+}
+
+// SetParentImage sets the "parent_image" field.
+func (cu *CategoryUpdate) SetParentImage(s string) *CategoryUpdate {
+	cu.mutation.SetParentImage(s)
+	return cu
+}
+
+// SetNillableParentImage sets the "parent_image" field if the given value is not nil.
+func (cu *CategoryUpdate) SetNillableParentImage(s *string) *CategoryUpdate {
+	if s != nil {
+		cu.SetParentImage(*s)
+	}
+	return cu
+}
+
+// ClearParentImage clears the value of the "parent_image" field.
+func (cu *CategoryUpdate) ClearParentImage() *CategoryUpdate {
+	cu.mutation.ClearParentImage()
+	return cu
+}
+
+// SetParentDescription sets the "parent_description" field.
+func (cu *CategoryUpdate) SetParentDescription(s string) *CategoryUpdate {
+	cu.mutation.SetParentDescription(s)
+	return cu
+}
+
+// SetNillableParentDescription sets the "parent_description" field if the given value is not nil.
+func (cu *CategoryUpdate) SetNillableParentDescription(s *string) *CategoryUpdate {
+	if s != nil {
+		cu.SetParentDescription(*s)
+	}
+	return cu
+}
+
+// ClearParentDescription clears the value of the "parent_description" field.
+func (cu *CategoryUpdate) ClearParentDescription() *CategoryUpdate {
+	cu.mutation.ClearParentDescription()
+	return cu
+}
+
 // AddCategoryAssignmentIDs adds the "categoryAssignments" edge to the CategoryAssignment entity by IDs.
 func (cu *CategoryUpdate) AddCategoryAssignmentIDs(ids ...string) *CategoryUpdate {
 	cu.mutation.AddCategoryAssignmentIDs(ids...)
@@ -139,6 +279,48 @@ func (cu *CategoryUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if cu.mutation.ImageCleared() {
 		_spec.ClearField(category.FieldImage, field.TypeString)
+	}
+	if value, ok := cu.mutation.Description(); ok {
+		_spec.SetField(category.FieldDescription, field.TypeString, value)
+	}
+	if cu.mutation.DescriptionCleared() {
+		_spec.ClearField(category.FieldDescription, field.TypeString)
+	}
+	if value, ok := cu.mutation.Icon(); ok {
+		_spec.SetField(category.FieldIcon, field.TypeString, value)
+	}
+	if cu.mutation.IconCleared() {
+		_spec.ClearField(category.FieldIcon, field.TypeString)
+	}
+	if value, ok := cu.mutation.GetType(); ok {
+		_spec.SetField(category.FieldType, field.TypeString, value)
+	}
+	if cu.mutation.TypeCleared() {
+		_spec.ClearField(category.FieldType, field.TypeString)
+	}
+	if value, ok := cu.mutation.ParentID(); ok {
+		_spec.SetField(category.FieldParentID, field.TypeString, value)
+	}
+	if cu.mutation.ParentIDCleared() {
+		_spec.ClearField(category.FieldParentID, field.TypeString)
+	}
+	if value, ok := cu.mutation.ParentName(); ok {
+		_spec.SetField(category.FieldParentName, field.TypeString, value)
+	}
+	if cu.mutation.ParentNameCleared() {
+		_spec.ClearField(category.FieldParentName, field.TypeString)
+	}
+	if value, ok := cu.mutation.ParentImage(); ok {
+		_spec.SetField(category.FieldParentImage, field.TypeString, value)
+	}
+	if cu.mutation.ParentImageCleared() {
+		_spec.ClearField(category.FieldParentImage, field.TypeString)
+	}
+	if value, ok := cu.mutation.ParentDescription(); ok {
+		_spec.SetField(category.FieldParentDescription, field.TypeString, value)
+	}
+	if cu.mutation.ParentDescriptionCleared() {
+		_spec.ClearField(category.FieldParentDescription, field.TypeString)
 	}
 	if cu.mutation.CategoryAssignmentsCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -228,6 +410,146 @@ func (cuo *CategoryUpdateOne) SetNillableImage(s *string) *CategoryUpdateOne {
 // ClearImage clears the value of the "image" field.
 func (cuo *CategoryUpdateOne) ClearImage() *CategoryUpdateOne {
 	cuo.mutation.ClearImage()
+	return cuo
+}
+
+// SetDescription sets the "description" field.
+func (cuo *CategoryUpdateOne) SetDescription(s string) *CategoryUpdateOne {
+	cuo.mutation.SetDescription(s)
+	return cuo
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (cuo *CategoryUpdateOne) SetNillableDescription(s *string) *CategoryUpdateOne {
+	if s != nil {
+		cuo.SetDescription(*s)
+	}
+	return cuo
+}
+
+// ClearDescription clears the value of the "description" field.
+func (cuo *CategoryUpdateOne) ClearDescription() *CategoryUpdateOne {
+	cuo.mutation.ClearDescription()
+	return cuo
+}
+
+// SetIcon sets the "icon" field.
+func (cuo *CategoryUpdateOne) SetIcon(s string) *CategoryUpdateOne {
+	cuo.mutation.SetIcon(s)
+	return cuo
+}
+
+// SetNillableIcon sets the "icon" field if the given value is not nil.
+func (cuo *CategoryUpdateOne) SetNillableIcon(s *string) *CategoryUpdateOne {
+	if s != nil {
+		cuo.SetIcon(*s)
+	}
+	return cuo
+}
+
+// ClearIcon clears the value of the "icon" field.
+func (cuo *CategoryUpdateOne) ClearIcon() *CategoryUpdateOne {
+	cuo.mutation.ClearIcon()
+	return cuo
+}
+
+// SetType sets the "type" field.
+func (cuo *CategoryUpdateOne) SetType(s string) *CategoryUpdateOne {
+	cuo.mutation.SetType(s)
+	return cuo
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (cuo *CategoryUpdateOne) SetNillableType(s *string) *CategoryUpdateOne {
+	if s != nil {
+		cuo.SetType(*s)
+	}
+	return cuo
+}
+
+// ClearType clears the value of the "type" field.
+func (cuo *CategoryUpdateOne) ClearType() *CategoryUpdateOne {
+	cuo.mutation.ClearType()
+	return cuo
+}
+
+// SetParentID sets the "parent_id" field.
+func (cuo *CategoryUpdateOne) SetParentID(s string) *CategoryUpdateOne {
+	cuo.mutation.SetParentID(s)
+	return cuo
+}
+
+// SetNillableParentID sets the "parent_id" field if the given value is not nil.
+func (cuo *CategoryUpdateOne) SetNillableParentID(s *string) *CategoryUpdateOne {
+	if s != nil {
+		cuo.SetParentID(*s)
+	}
+	return cuo
+}
+
+// ClearParentID clears the value of the "parent_id" field.
+func (cuo *CategoryUpdateOne) ClearParentID() *CategoryUpdateOne {
+	cuo.mutation.ClearParentID()
+	return cuo
+}
+
+// SetParentName sets the "parent_name" field.
+func (cuo *CategoryUpdateOne) SetParentName(s string) *CategoryUpdateOne {
+	cuo.mutation.SetParentName(s)
+	return cuo
+}
+
+// SetNillableParentName sets the "parent_name" field if the given value is not nil.
+func (cuo *CategoryUpdateOne) SetNillableParentName(s *string) *CategoryUpdateOne {
+	if s != nil {
+		cuo.SetParentName(*s)
+	}
+	return cuo
+}
+
+// ClearParentName clears the value of the "parent_name" field.
+func (cuo *CategoryUpdateOne) ClearParentName() *CategoryUpdateOne {
+	cuo.mutation.ClearParentName()
+	return cuo
+}
+
+// SetParentImage sets the "parent_image" field.
+func (cuo *CategoryUpdateOne) SetParentImage(s string) *CategoryUpdateOne {
+	cuo.mutation.SetParentImage(s)
+	return cuo
+}
+
+// SetNillableParentImage sets the "parent_image" field if the given value is not nil.
+func (cuo *CategoryUpdateOne) SetNillableParentImage(s *string) *CategoryUpdateOne {
+	if s != nil {
+		cuo.SetParentImage(*s)
+	}
+	return cuo
+}
+
+// ClearParentImage clears the value of the "parent_image" field.
+func (cuo *CategoryUpdateOne) ClearParentImage() *CategoryUpdateOne {
+	cuo.mutation.ClearParentImage()
+	return cuo
+}
+
+// SetParentDescription sets the "parent_description" field.
+func (cuo *CategoryUpdateOne) SetParentDescription(s string) *CategoryUpdateOne {
+	cuo.mutation.SetParentDescription(s)
+	return cuo
+}
+
+// SetNillableParentDescription sets the "parent_description" field if the given value is not nil.
+func (cuo *CategoryUpdateOne) SetNillableParentDescription(s *string) *CategoryUpdateOne {
+	if s != nil {
+		cuo.SetParentDescription(*s)
+	}
+	return cuo
+}
+
+// ClearParentDescription clears the value of the "parent_description" field.
+func (cuo *CategoryUpdateOne) ClearParentDescription() *CategoryUpdateOne {
+	cuo.mutation.ClearParentDescription()
 	return cuo
 }
 
@@ -346,6 +668,48 @@ func (cuo *CategoryUpdateOne) sqlSave(ctx context.Context) (_node *Category, err
 	}
 	if cuo.mutation.ImageCleared() {
 		_spec.ClearField(category.FieldImage, field.TypeString)
+	}
+	if value, ok := cuo.mutation.Description(); ok {
+		_spec.SetField(category.FieldDescription, field.TypeString, value)
+	}
+	if cuo.mutation.DescriptionCleared() {
+		_spec.ClearField(category.FieldDescription, field.TypeString)
+	}
+	if value, ok := cuo.mutation.Icon(); ok {
+		_spec.SetField(category.FieldIcon, field.TypeString, value)
+	}
+	if cuo.mutation.IconCleared() {
+		_spec.ClearField(category.FieldIcon, field.TypeString)
+	}
+	if value, ok := cuo.mutation.GetType(); ok {
+		_spec.SetField(category.FieldType, field.TypeString, value)
+	}
+	if cuo.mutation.TypeCleared() {
+		_spec.ClearField(category.FieldType, field.TypeString)
+	}
+	if value, ok := cuo.mutation.ParentID(); ok {
+		_spec.SetField(category.FieldParentID, field.TypeString, value)
+	}
+	if cuo.mutation.ParentIDCleared() {
+		_spec.ClearField(category.FieldParentID, field.TypeString)
+	}
+	if value, ok := cuo.mutation.ParentName(); ok {
+		_spec.SetField(category.FieldParentName, field.TypeString, value)
+	}
+	if cuo.mutation.ParentNameCleared() {
+		_spec.ClearField(category.FieldParentName, field.TypeString)
+	}
+	if value, ok := cuo.mutation.ParentImage(); ok {
+		_spec.SetField(category.FieldParentImage, field.TypeString, value)
+	}
+	if cuo.mutation.ParentImageCleared() {
+		_spec.ClearField(category.FieldParentImage, field.TypeString)
+	}
+	if value, ok := cuo.mutation.ParentDescription(); ok {
+		_spec.SetField(category.FieldParentDescription, field.TypeString, value)
+	}
+	if cuo.mutation.ParentDescriptionCleared() {
+		_spec.ClearField(category.FieldParentDescription, field.TypeString)
 	}
 	if cuo.mutation.CategoryAssignmentsCleared() {
 		edge := &sqlgraph.EdgeSpec{

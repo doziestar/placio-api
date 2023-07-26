@@ -2,6 +2,9 @@ package service
 
 import (
 	"context"
+	"github.com/google/uuid"
+	"log"
+	"mime/multipart"
 	"placio-app/ent"
 	"placio-app/ent/category"
 	"placio-app/ent/categoryassignment"
@@ -12,7 +15,7 @@ import (
 
 type CategoryService interface {
 	GetUsersByCategory(ctx context.Context, name string) ([]*ent.User, error)
-	CreateCategory(ctx context.Context, id string, name string, image string) (*ent.Category, error)
+	CreateCategory(ctx context.Context, icon string, name string, image []*multipart.FileHeader) (*ent.Category, error)
 	UpdateCategory(ctx context.Context, id string, name string, image string) (*ent.Category, error)
 	DeleteCategory(ctx context.Context, id string) error
 	GetAllCategories(ctx context.Context) ([]*ent.Category, error)
@@ -40,11 +43,12 @@ const (
 type EntityQueryFunc func(*ent.Query) *ent.Query
 
 type CategoryServiceImpl struct {
-	client *ent.Client
+	client       *ent.Client
+	mediaService MediaService
 }
 
-func NewCategoryService(client *ent.Client) CategoryService {
-	return &CategoryServiceImpl{client: client}
+func NewCategoryService(client *ent.Client, mediaService MediaService) CategoryService {
+	return &CategoryServiceImpl{client: client, mediaService: mediaService}
 }
 
 type CategorySearchResult struct {
@@ -57,13 +61,40 @@ type CategorySearchResult struct {
 	NextPageToken string "json:nextPageToken"
 }
 
-func (cs *CategoryServiceImpl) CreateCategory(ctx context.Context, id string, name string, image string) (*ent.Category, error) {
-	return cs.client.Category.
+func (cs *CategoryServiceImpl) CreateCategory(ctx context.Context, icon string, name string, image []*multipart.FileHeader) (*ent.Category, error) {
+	// Create the category without the image first
+	category, err := cs.client.Category.
 		Create().
-		SetID(id).
+		SetID(uuid.New().String()).
+		SetIcon(icon).
 		SetName(name).
-		SetImage(image).
 		Save(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if len(image) > 0 {
+		go func() {
+			media, err := cs.mediaService.UploadAndCreateMedia(ctx, image)
+			if err != nil {
+				log.Println("error uploading image", err.Error())
+				return
+			}
+
+			_, err = cs.client.Category.
+				UpdateOneID(category.ID).
+				SetImage(media[0].URL).
+				Save(ctx)
+
+			if err != nil {
+				log.Println("error adding image to category", err.Error())
+				return
+			}
+		}()
+	}
+
+	return category, nil
 }
 
 func (cs *CategoryServiceImpl) UpdateCategory(ctx context.Context, id string, name string, image string) (*ent.Category, error) {
