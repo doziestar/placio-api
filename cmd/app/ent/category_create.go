@@ -40,6 +40,104 @@ func (cc *CategoryCreate) SetNillableImage(s *string) *CategoryCreate {
 	return cc
 }
 
+// SetDescription sets the "description" field.
+func (cc *CategoryCreate) SetDescription(s string) *CategoryCreate {
+	cc.mutation.SetDescription(s)
+	return cc
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (cc *CategoryCreate) SetNillableDescription(s *string) *CategoryCreate {
+	if s != nil {
+		cc.SetDescription(*s)
+	}
+	return cc
+}
+
+// SetIcon sets the "icon" field.
+func (cc *CategoryCreate) SetIcon(s string) *CategoryCreate {
+	cc.mutation.SetIcon(s)
+	return cc
+}
+
+// SetNillableIcon sets the "icon" field if the given value is not nil.
+func (cc *CategoryCreate) SetNillableIcon(s *string) *CategoryCreate {
+	if s != nil {
+		cc.SetIcon(*s)
+	}
+	return cc
+}
+
+// SetType sets the "type" field.
+func (cc *CategoryCreate) SetType(s string) *CategoryCreate {
+	cc.mutation.SetType(s)
+	return cc
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (cc *CategoryCreate) SetNillableType(s *string) *CategoryCreate {
+	if s != nil {
+		cc.SetType(*s)
+	}
+	return cc
+}
+
+// SetParentID sets the "parent_id" field.
+func (cc *CategoryCreate) SetParentID(s string) *CategoryCreate {
+	cc.mutation.SetParentID(s)
+	return cc
+}
+
+// SetNillableParentID sets the "parent_id" field if the given value is not nil.
+func (cc *CategoryCreate) SetNillableParentID(s *string) *CategoryCreate {
+	if s != nil {
+		cc.SetParentID(*s)
+	}
+	return cc
+}
+
+// SetParentName sets the "parent_name" field.
+func (cc *CategoryCreate) SetParentName(s string) *CategoryCreate {
+	cc.mutation.SetParentName(s)
+	return cc
+}
+
+// SetNillableParentName sets the "parent_name" field if the given value is not nil.
+func (cc *CategoryCreate) SetNillableParentName(s *string) *CategoryCreate {
+	if s != nil {
+		cc.SetParentName(*s)
+	}
+	return cc
+}
+
+// SetParentImage sets the "parent_image" field.
+func (cc *CategoryCreate) SetParentImage(s string) *CategoryCreate {
+	cc.mutation.SetParentImage(s)
+	return cc
+}
+
+// SetNillableParentImage sets the "parent_image" field if the given value is not nil.
+func (cc *CategoryCreate) SetNillableParentImage(s *string) *CategoryCreate {
+	if s != nil {
+		cc.SetParentImage(*s)
+	}
+	return cc
+}
+
+// SetParentDescription sets the "parent_description" field.
+func (cc *CategoryCreate) SetParentDescription(s string) *CategoryCreate {
+	cc.mutation.SetParentDescription(s)
+	return cc
+}
+
+// SetNillableParentDescription sets the "parent_description" field if the given value is not nil.
+func (cc *CategoryCreate) SetNillableParentDescription(s *string) *CategoryCreate {
+	if s != nil {
+		cc.SetParentDescription(*s)
+	}
+	return cc
+}
+
 // SetID sets the "id" field.
 func (cc *CategoryCreate) SetID(s string) *CategoryCreate {
 	cc.mutation.SetID(s)
@@ -145,6 +243,34 @@ func (cc *CategoryCreate) createSpec() (*Category, *sqlgraph.CreateSpec) {
 	if value, ok := cc.mutation.Image(); ok {
 		_spec.SetField(category.FieldImage, field.TypeString, value)
 		_node.Image = value
+	}
+	if value, ok := cc.mutation.Description(); ok {
+		_spec.SetField(category.FieldDescription, field.TypeString, value)
+		_node.Description = value
+	}
+	if value, ok := cc.mutation.Icon(); ok {
+		_spec.SetField(category.FieldIcon, field.TypeString, value)
+		_node.Icon = value
+	}
+	if value, ok := cc.mutation.GetType(); ok {
+		_spec.SetField(category.FieldType, field.TypeString, value)
+		_node.Type = value
+	}
+	if value, ok := cc.mutation.ParentID(); ok {
+		_spec.SetField(category.FieldParentID, field.TypeString, value)
+		_node.ParentID = value
+	}
+	if value, ok := cc.mutation.ParentName(); ok {
+		_spec.SetField(category.FieldParentName, field.TypeString, value)
+		_node.ParentName = value
+	}
+	if value, ok := cc.mutation.ParentImage(); ok {
+		_spec.SetField(category.FieldParentImage, field.TypeString, value)
+		_node.ParentImage = value
+	}
+	if value, ok := cc.mutation.ParentDescription(); ok {
+		_spec.SetField(category.FieldParentDescription, field.TypeString, value)
+		_node.ParentDescription = value
 	}
 	if nodes := cc.mutation.CategoryAssignmentsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

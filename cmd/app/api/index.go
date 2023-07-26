@@ -131,7 +131,7 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		helpController.RegisterRoutes(routerGroupV1)
 
 		// category
-		categoryService := service.NewCategoryService(client)
+		categoryService := service.NewCategoryService(client, mediaService)
 		categoryController := controller.NewCategoryController(categoryService)
 		categoryController.RegisterRoutes(routerGroupV1)
 

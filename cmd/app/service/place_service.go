@@ -65,6 +65,7 @@ func (s *PlaceServiceImpl) GetPlace(ctx context.Context, placeID string) (*ent.P
 		WithUsers().
 		WithBusiness().
 		WithCategories().
+		WithCategoryAssignments().
 		WithEvents().
 		WithAmenities().
 		WithReviews().

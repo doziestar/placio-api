@@ -19,6 +19,13 @@ func (Category) Fields() []ent.Field {
 			Immutable(),
 		field.String("name").Unique(),
 		field.String("image").Optional(),
+		field.String("description").Optional(),
+		field.String("icon").Optional(),
+		field.String("type").Optional(),
+		field.String("parent_id").Optional(),
+		field.String("parent_name").Optional(),
+		field.String("parent_image").Optional(),
+		field.String("parent_description").Optional(),
 	}
 }
 
