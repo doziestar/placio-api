@@ -3,6 +3,7 @@ package errors
 
 import (
 	"errors"
+	"github.com/getsentry/sentry-go"
 	"strings"
 
 	"github.com/vardius/trace"
@@ -27,6 +28,15 @@ var (
 	ErrPermissionDenied  = errors.New("permission denied")
 	ErrUserAlreadyInTeam = errors.New("user already in team")
 )
+
+// LogAndReturnError Log to sentry and return error
+func LogAndReturnError(err error) error {
+	if err == nil {
+		return nil
+	}
+	sentry.CaptureException(err)
+	return err
+}
 
 // New returns new app error that formats as the given text.
 func New(message string) *AppError {
