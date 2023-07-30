@@ -58,25 +58,6 @@ services:
       - "traefik.http.routers.backend-secure.service=backend"
       - traefik.http.services.backend.loadbalancer.server.port=7070
 
-#  docs:
-#    container_name: placio-docs
-#    build:
-#      context: .
-#      dockerfile: ./docs/Dockerfile
-#    restart: always
-#    volumes:
-#      # - ./:/app
-#      - ./docs:/app/docs
-#
-#    labels:
-#      - traefik.enable=true
-#      - traefik.docker.network=default
-#      - "traefik.http.routers.docs-secure.entrypoints=websecure"
-#      - "traefik.http.routers.docs-secure.rule=Host(`docs.palnight.com`)"
-#      - "traefik.http.routers.docs-secure.service=docs"
-#      - traefik.http.services.docs.loadbalancer.server.port=80
-      # add path prefix strip
-
   prometheus:
     image: prom/prometheus:latest
     volumes:
@@ -139,6 +120,6 @@ services:
 
 
 networks:
-  traefik-public:
-    # For local dev, don't expect an external Traefik network
-    external: false
+  default:
+    external:
+      name: traefik-public

@@ -1,12 +1,4 @@
 version: "3.8"
-volumes:
-  db_data:
-  pgadmin_data:
-  mongo_data:
-  redis_data:
-  es_data:
-  prometheus_data:
-  grafana_data:
 
 services:
   #  unleash:
@@ -44,20 +36,6 @@ services:
     volumes:
       - ./:/app
       - ./cmd/app:/app/cmd/app
-      - ./config:/app/config
-    env_file:
-      - ./.envs/.local
-
-  feeds:
-    build:
-      context: .
-      dockerfile: ./placid-feed/Dockerfile
-    restart: always
-    ports:
-      - "7071:7071"
-    volumes:
-      - ./:/app
-      - ./placid-feed:/app/placid-feed
       - ./config:/app/config
     env_file:
       - ./.envs/.local
