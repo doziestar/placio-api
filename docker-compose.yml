@@ -54,7 +54,7 @@ services:
       dockerfile: ./placid-feed/Dockerfile
     restart: always
     ports:
-      - "7070:7070"
+      - "7071:7071"
     volumes:
       - ./:/app
       - ./placid-feed:/app/placid-feed
