@@ -8,4 +8,5 @@ use (
 	./pkg
 	//./archive/chats
 	.
+	placid-feed
 )

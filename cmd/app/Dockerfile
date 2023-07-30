@@ -7,7 +7,7 @@ WORKDIR /app
 #RUN mkdir -p /app/cmd/auth
 #RUN mkdir -p /app/pkg
 
-RUN #echo "Listing /app"
+RUN #echo "Listing /app"x
 RUN #ls -la /app
 
 COPY ./go.mod .
