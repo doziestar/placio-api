@@ -1,12 +1,6 @@
 use (
 	./cmd/app
-	//./archive/auth
-	//./archive/business
-	//./archive/events
-	//./archive/media
-	//./archive/users
 	./pkg
-	//./archive/chats
 	.
 	placid-feed
 )
