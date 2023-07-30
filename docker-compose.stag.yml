@@ -56,12 +56,30 @@ services:
       - "traefik.http.routers.backend-secure.entrypoints=websecure"
       - "traefik.http.routers.backend-secure.rule=Host(`api.palnight.com`)"
       - "traefik.http.routers.backend-secure.service=backend"
-      # - "traefik.http.middlewares.cors.headers.accesscontrolallowmethods=*"
-      # - "traefik.http.middlewares.cors.headers.accesscontrolalloworiginlist=*"
-      # - "traefik.http.middlewares.cors.headers.accesscontrolmaxage=100"
-      # - "traefik.http.middlewares.cors.headers.addvaryheader=true"
-      # - "traefik.http.routers.backend-secure.middlewares=cors"
       - traefik.http.services.backend.loadbalancer.server.port=7070
+
+  placio-feeds:
+    ports:
+      - "7071:7071"
+    env_file:
+      - ./.envs/.stag
+    restart: always
+    volumes:
+      - ./:/app
+      - ./placid-feed:/app/placid-feed
+      - ./config:/app/config
+    build:
+      context: .
+      dockerfile: ./placid-feed/stag.dockerfile
+    networks:
+      - default
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=default
+      - "traefik.http.routers.backend-secure.entrypoints=websecure"
+      - "traefik.http.routers.backend-secure.rule=Host(`feeds.palnight.com`)"
+      - "traefik.http.routers.backend-secure.service=backend"
+      - traefik.http.services.backend.loadbalancer.server.port=7071
 
 #  docs:
 #    container_name: placio-docs

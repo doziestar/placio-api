@@ -9,19 +9,6 @@ volumes:
   grafana_data:
 
 services:
-#  db:
-#    image: postgres:14
-#    container_name: postgres-db
-#    restart: always
-#    environment:
-#      POSTGRES_USER: dozie
-#      POSTGRES_PASSWORD: 918273645dozie
-#      POSTGRES_DB: placio
-#    ports:
-#      - "5432:5432"
-#    volumes:
-#      - db_data:/var/lib/postgresql/data
-
   #  unleash:
   #    image: unleashorg/unleash-server:latest
   #    ports:
@@ -48,17 +35,12 @@ services:
   ##      timeout: 1m
   ##      retries: 5
   app:
-    #    container_name: placio-app
-    # platform: linux/x86_64
     build:
       context: .
-#      dockerfile: ./cmd/app/Dockerfile
       dockerfile: ./cmd/app/Dockerfile
     restart: always
     ports:
       - "7070:7070"
-#    depends_on:
-#      - db
     volumes:
       - ./:/app
       - ./cmd/app:/app/cmd/app
@@ -66,50 +48,19 @@ services:
     env_file:
       - ./.envs/.local
 
-#  prometheus:
-#    image: prom/prometheus:latest
-#    volumes:
-#      - ./prometheus:/etc/prometheus
-#      - prometheus_data:/prometheus
-#    command:
-#      - '--config.file=/etc/prometheus/local.yml'
-#      - '--storage.tsdb.path=/prometheus'
-#      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
-#      - '--web.console.templates=/usr/share/prometheus/consoles'
-#    ports:
-#      - 9090:9090
-#
-#  grafana:
-#    image: grafana/grafana:latest
-#    volumes:
-#      - grafana_data:/var/lib/grafana
-#    ports:
-#      - 3000:3000
+  feeds:
+    build:
+      context: .
+      dockerfile: ./placid-feed/Dockerfile
+    restart: always
+    ports:
+      - "7070:7070"
+    volumes:
+      - ./:/app
+      - ./placid-feed:/app/placid-feed
+      - ./config:/app/config
+    env_file:
+      - ./.envs/.local
 
-#  cadvisor:
-#    image: gcr.io/cadvisor/cadvisor:v0.47.0
-#    container_name: cadvisor
-#    ports:
-#      - "8080:8080"
-#    network_mode: host
-#    volumes:
-#      - /:/rootfs:ro
-#      - /var/run:/var/run:ro
-#      - /sys:/sys:ro
-#      - /var/lib/docker/:/var/lib/docker:ro
-#      - /dev/disk/:/dev/disk:ro
-#    devices:
-#      - /dev/kmsg
-#    privileged: true
-#    restart: unless-stopped
-
-#  node_exporter:
-#    image: quay.io/prometheus/node-exporter:v1.5.0
-#    container_name: node_exporter
-#    command: "--path.rootfs=/host"
-#    pid: host
-#    restart: unless-stopped
-#    volumes:
-#      - /:/host:ro,rslave
 
 
