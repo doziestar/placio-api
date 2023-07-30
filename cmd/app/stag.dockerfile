@@ -16,6 +16,9 @@ RUN go mod download
 # Copy the entire project directory inside the container
 COPY . .
 
+# Make sure the placid-feed submodule is initialized and updated
+RUN git submodule update --init --recursive placid-feed
+
 ENV PORT=7070
 # Build the Go app for a smaller binary size
 # -v: print the names of packages as they are compiled.
