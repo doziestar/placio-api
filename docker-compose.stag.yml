@@ -69,8 +69,8 @@ services:
       - ./placid-feed:/app/placid-feed
       - ./config:/app/config
     build:
-      context: .
-      dockerfile: ./placid-feed/stag.dockerfile
+      context: ./placid-feed
+      dockerfile: ./stag.dockerfile
     networks:
       - default
     labels:

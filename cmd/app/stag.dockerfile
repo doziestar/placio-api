@@ -2,9 +2,6 @@
 ARG GOLANG_VERSION=1.20
 FROM golang:${GOLANG_VERSION}-alpine3.17 AS builder
 
-# Install git in the Docker image
-RUN apk add --no-cache git
-
 # Set the current working directory inside the container
 WORKDIR /app
 
@@ -18,9 +15,6 @@ RUN go mod download
 
 # Copy the entire project directory inside the container
 COPY . .
-
-# Make sure the placid-feed submodule is initialized and updated
-RUN git submodule update --init --recursive placid-feed
 
 ENV PORT=7070
 # Build the Go app for a smaller binary size
