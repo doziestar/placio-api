@@ -2,11 +2,12 @@ package middleware
 
 import (
 	"context"
+	"github.com/getsentry/sentry-go"
 	"log"
 	"net/http"
 	"net/url"
 	"os"
-	"placio-app/ent"
+	"placio-app/errors"
 	"strings"
 	"time"
 
@@ -35,9 +36,10 @@ func (c CustomClaims) Validate(ctx context.Context) error {
 }
 
 // EnsureValidToken is a middleware that will check the validity of our JWT.
-func EnsureValidToken(client *ent.Client) gin.HandlerFunc {
+func EnsureValidToken() gin.HandlerFunc {
 	issuerURL, err := url.Parse(os.Getenv("AUTH0_DOMAIN") + "/")
 	if err != nil {
+		sentry.CaptureException(err)
 		log.Fatalf("Failed to parse the issuer url: %v", err)
 	}
 
@@ -56,6 +58,7 @@ func EnsureValidToken(client *ent.Client) gin.HandlerFunc {
 		validator.WithAllowedClockSkew(time.Minute),
 	)
 	if err != nil {
+		sentry.CaptureException(err)
 		log.Fatalf("Failed to set up the jwt validator")
 	}
 
@@ -73,6 +76,7 @@ func EnsureValidToken(client *ent.Client) gin.HandlerFunc {
 		tokenInterface, err := jwtValidator.ValidateToken(context.Background(), tokenString)
 		if err != nil {
 			log.Printf("Encountered error while validating JWT: %v", err)
+			sentry.CaptureException(err)
 			c.JSON(http.StatusUnauthorized, gin.H{"message": "Failed to validate JWT."})
 			c.Abort()
 			return
@@ -83,14 +87,16 @@ func EnsureValidToken(client *ent.Client) gin.HandlerFunc {
 			c.Set("auth0_id", validatedClaims.RegisteredClaims.Subject)
 			c.Next()
 		} else {
+			sentry.CaptureException(err)
 			// handle error, the assertion failed
 		}
 	}
 }
 
-func EnsureValidTokenButAllowAccess(client *ent.Client) gin.HandlerFunc {
+func EnsureValidTokenButAllowAccess() gin.HandlerFunc {
 	issuerURL, err := url.Parse(os.Getenv("AUTH0_DOMAIN") + "/")
 	if err != nil {
+		sentry.CaptureException(err)
 		log.Fatalf("Failed to parse the issuer url: %v", err)
 	}
 
@@ -109,7 +115,7 @@ func EnsureValidTokenButAllowAccess(client *ent.Client) gin.HandlerFunc {
 		validator.WithAllowedClockSkew(time.Minute),
 	)
 	if err != nil {
-		log.Fatalf("Failed to set up the jwt validator")
+		errors.LogAndReturnError(err)
 	}
 
 	return func(c *gin.Context) {

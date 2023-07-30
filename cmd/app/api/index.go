@@ -68,8 +68,8 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		searchController := controller.NewSearchController(searchService)
 		searchController.RegisterRoutes(routerGroupV1)
 
-		routerGroupV1.Use(middleware.EnsureValidToken(client))
-		routerGroupV1WithoutAuth.Use(middleware.EnsureValidTokenButAllowAccess(client))
+		routerGroupV1.Use(middleware.EnsureValidToken())
+		routerGroupV1WithoutAuth.Use(middleware.EnsureValidTokenButAllowAccess())
 
 		// utility
 		//newUtils := utility.NewUtility()

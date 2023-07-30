@@ -1,0 +1,3 @@
+[submodule "placid-feed"]
+	path = placid-feed
+	url = https://github.com/CNC-Technologies/placid-feed.git

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	_ "placio-app/Dto"
 	_ "placio-app/ent"
+	"placio-app/errors"
 	"placio-app/service"
 	"placio-app/utility"
 	"strconv"
@@ -55,7 +56,7 @@ func (cc *CategoryController) createCategory(ctx *gin.Context) error {
 
 	category, err := cc.categoryService.CreateCategory(ctx, icon, name, image)
 	if err != nil {
-		return err
+		return errors.LogAndReturnError(err)
 	}
 	ctx.JSON(http.StatusOK, category)
 
@@ -76,7 +77,7 @@ func (cc *CategoryController) updateCategory(ctx *gin.Context) error {
 	image := ctx.GetString("image")
 	category, err := cc.categoryService.UpdateCategory(ctx, categoryID, name, image)
 	if err != nil {
-		return err
+		return errors.LogAndReturnError(err)
 	}
 	ctx.JSON(http.StatusOK, category)
 	return nil
@@ -93,7 +94,7 @@ func (cc *CategoryController) deleteCategory(ctx *gin.Context) error {
 	categoryID := ctx.Param("id")
 	err := cc.categoryService.DeleteCategory(ctx, categoryID)
 	if err != nil {
-		return err
+		return errors.LogAndReturnError(err)
 	}
 	ctx.JSON(http.StatusOK, gin.H{"status": "success", "message": "Category successfully deleted"})
 	return nil
@@ -117,7 +118,7 @@ func (cc *CategoryController) searchByCategory(ctx *gin.Context) error {
 	}
 	categories, err := cc.categoryService.GetEntitiesByCategory(ctx, categoryName, nextPageToken, limit)
 	if err != nil {
-		return err
+		return errors.LogAndReturnError(err)
 	}
 	ctx.JSON(http.StatusOK, categories)
 	return nil
@@ -133,7 +134,7 @@ func (cc *CategoryController) searchByCategory(ctx *gin.Context) error {
 func (cc *CategoryController) getAllCategories(ctx *gin.Context) error {
 	categories, err := cc.categoryService.GetAllCategories(ctx)
 	if err != nil {
-		return err
+		return errors.LogAndReturnError(err)
 	}
 	ctx.JSON(http.StatusOK, categories)
 	return nil
@@ -152,7 +153,7 @@ func (cc *CategoryController) assignUserToCategory(ctx *gin.Context) error {
 	categoryID := ctx.Param("categoryID")
 	assignment, err := cc.categoryService.AssignUserToCategory(ctx, userID, categoryID)
 	if err != nil {
-		return err
+		return errors.LogAndReturnError(err)
 	}
 	ctx.JSON(http.StatusOK, assignment)
 	return nil
@@ -169,7 +170,7 @@ func (cc *CategoryController) getUsersByCategory(ctx *gin.Context) error {
 	categoryID := ctx.Param("categoryID")
 	users, err := cc.categoryService.GetUsersByCategory(ctx, categoryID)
 	if err != nil {
-		return err
+		return errors.LogAndReturnError(err)
 	}
 	ctx.JSON(http.StatusOK, users)
 	return nil
@@ -188,7 +189,7 @@ func (cc *CategoryController) assignBusinessToCategory(ctx *gin.Context) error {
 	categoryID := ctx.Param("categoryID")
 	assignment, err := cc.categoryService.AssignBusinessToCategory(ctx, businessID, categoryID)
 	if err != nil {
-		return err
+		return errors.LogAndReturnError(err)
 	}
 	ctx.JSON(http.StatusOK, assignment)
 	return nil
@@ -209,7 +210,7 @@ func (cc *CategoryController) getBusinessesByCategory(ctx *gin.Context) error {
 	limit, err := strconv.Atoi(limiter)
 	businesses, nextPageToken, err := cc.categoryService.GetBusinessesByCategory(ctx, categoryID, nextPageToken, limit)
 	if err != nil {
-		return err
+		return errors.LogAndReturnError(err)
 	}
 	ctx.JSON(http.StatusOK, utility.ProcessResponse(businesses, "success", "retrieve businesses successfully", nextPageToken))
 	return nil
@@ -228,7 +229,7 @@ func (cc *CategoryController) assignPlaceToCategory(ctx *gin.Context) error {
 	categoryID := ctx.Param("categoryID")
 	assignment, err := cc.categoryService.AssignPlaceToCategory(ctx, placeID, categoryID)
 	if err != nil {
-		return err
+		return errors.LogAndReturnError(err)
 	}
 	ctx.JSON(http.StatusOK, assignment)
 	return nil
@@ -249,7 +250,7 @@ func (cc *CategoryController) getPlacesByCategory(ctx *gin.Context) error {
 	limit, err := strconv.Atoi(limiter)
 	places, nextPageToken, err := cc.categoryService.GetPlacesByCategory(ctx, categoryID, nextPageToken, limit)
 	if err != nil {
-		return err
+		return errors.LogAndReturnError(err)
 	}
 	ctx.JSON(http.StatusOK, utility.ProcessResponse(places, "success", "retrieve places successfully", nextPageToken))
 	return nil

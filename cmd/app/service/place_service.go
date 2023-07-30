@@ -8,6 +8,7 @@ import (
 	"placio-app/ent"
 	"placio-app/ent/business"
 	"placio-app/ent/place"
+	"placio-app/errors"
 	"sync"
 )
 
@@ -56,7 +57,7 @@ func (s *PlaceServiceImpl) GetPlacesAssociatedWithBusinessAccount(c context.Cont
 		return nil, err
 	}
 
-	return places, nil
+	return places, errors.LogAndReturnError(err)
 }
 func (s *PlaceServiceImpl) GetPlace(ctx context.Context, placeID string) (*ent.Place, error) {
 	placeData, err := s.client.Place.
@@ -73,7 +74,7 @@ func (s *PlaceServiceImpl) GetPlace(ctx context.Context, placeID string) (*ent.P
 		WithFaqs().
 		First(ctx)
 	if err != nil {
-		return nil, err
+		return nil, errors.LogAndReturnError(err)
 	}
 
 	userID, ok := ctx.Value("user").(string)
@@ -82,7 +83,7 @@ func (s *PlaceServiceImpl) GetPlace(ctx context.Context, placeID string) (*ent.P
 	}
 	if userID != "" {
 		if err := s.checkUserInteraction(ctx, userID, placeID, placeData); err != nil {
-			return nil, err
+			return nil, errors.LogAndReturnError(err)
 		}
 	}
 
