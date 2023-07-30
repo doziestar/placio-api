@@ -2,6 +2,9 @@
 ARG GOLANG_VERSION=1.20
 FROM golang:${GOLANG_VERSION}-alpine3.17 AS builder
 
+# Install git in the Docker image
+RUN apk add --no-cache git
+
 # Set the current working directory inside the container
 WORKDIR /app
 
