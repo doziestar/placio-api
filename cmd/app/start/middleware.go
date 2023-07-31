@@ -21,7 +21,7 @@ import (
 
 func Middleware(app *gin.Engine) {
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*"},
+		AllowOrigins:     []string{"http://localhost:3000", "https://placio.io", "http://127.0.0.1:3000"},
 		AllowMethods:     []string{"*"},
 		AllowHeaders:     []string{"*"},
 		ExposeHeaders:    []string{"Content-Length,Content-Type,Authorization,X-CSRF-Token"},
