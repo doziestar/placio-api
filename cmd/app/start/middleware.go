@@ -37,13 +37,13 @@ func Middleware(app *gin.Engine) {
 	app.Use(requestid.New())
 
 	// Secure headers
-	app.Use(func(c *gin.Context) {
-		c.Header("Strict-Transport-Security", "max-age=63072000; includeSubDomains")
-		c.Header("Content-Security-Policy", "default-src 'self'")
-		c.Header("X-Content-Type-Options", "nosniff")
-		c.Header("X-Frame-Options", "SAMEORIGIN")
-		c.Next()
-	})
+	//app.Use(func(c *gin.Context) {
+	//	c.Header("Strict-Transport-Security", "max-age=63072000; includeSubDomains")
+	//	c.Header("Content-Security-Policy", "default-src 'self'")
+	//	c.Header("X-Content-Type-Options", "nosniff")
+	//	c.Header("X-Frame-Options", "SAMEORIGIN")
+	//	c.Next()
+	//})
 
 	// Session middleware
 	store := cookie.NewStore([]byte("secret"))
