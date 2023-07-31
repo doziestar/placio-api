@@ -2,6 +2,7 @@ package controller
 
 import (
 	"errors"
+	"github.com/getsentry/sentry-go"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -75,11 +76,15 @@ func (rc *ReviewController) rateItem(ctx *gin.Context) error {
 
 	var score float64
 	scoreStr, ok := form.Value["score"]
-	if ok && len(scoreStr) > 0 {
-		score, err = strconv.ParseFloat(scoreStr[0], 64)
-		if err != nil || score < 1 || score > 5 {
-			return appErr.LogAndReturnError(errors.New("invalid rating score: must be between 1 and 5"))
+	if len(scoreStr) > 0 {
+		if ok && len(scoreStr) > 0 {
+			score, err = strconv.ParseFloat(scoreStr[0], 64)
+			if err != nil || score < 1 || score > 5 {
+				return appErr.LogAndReturnError(errors.New("invalid rating score: must be between 1 and 5"))
+			}
 		}
+	} else {
+		score = 1
 	}
 
 	content := form.Value["content"][0]
@@ -175,7 +180,8 @@ func (rc *ReviewController) getReviewByTypeId(ctx *gin.Context) error {
 	limit := ctx.Query("limit")
 
 	if itemType != "place" && itemType != "event" && itemType != "business" {
-		return appErr.LogAndReturnError(appErr.InvalidItemType)
+		sentry.CaptureException(appErr.InvalidItemType)
+		return appErr.InvalidItemType
 	}
 
 	if limit == "" {
@@ -186,7 +192,8 @@ func (rc *ReviewController) getReviewByTypeId(ctx *gin.Context) error {
 
 	reviews, nextPageToken, err := rc.reviewService.GetReviewByIDTypeID(reviewID, itemType, nextPageToken, limitInt)
 	if err != nil {
-		return appErr.LogAndReturnError(err)
+		sentry.CaptureException(err)
+		return err
 	}
 
 	ctx.JSON(http.StatusOK, utility.ProcessResponse(reviews, "success", "Successfully retrieved reviews", nextPageToken))
