@@ -47,4 +47,4 @@ jobs:
       - name: Build and Start Docker Containers
         run: |
           echo "Starting containers"
-          echo ${{ secrets.VPS_PASSWORD }} | sudo -S docker-compose -f docker-compose.stag.yml up --build -d
+          echo ${{ secrets.VPS_PASSWORD }} | sudo -S docker-compose -f docker-compose.stag.yml up --build -d --force-recreate --remove-orphans

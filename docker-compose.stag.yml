@@ -35,7 +35,7 @@ services:
       # - 'traefik.http.routers.traefik-secure.middlewares=user-auth@file'
       - "traefik.http.routers.traefik-secure.service=api@internal"
 
-  placio-backend:
+  backend:
     ports:
       - "7070:7070"
     env_file:
@@ -56,6 +56,7 @@ services:
       - "traefik.http.routers.backend-secure.entrypoints=websecure"
       - "traefik.http.routers.backend-secure.rule=Host(`api.palnight.com`)"
       - "traefik.http.routers.backend-secure.service=backend"
+      - "traefik.http.routers.backend-secure.middlewares=corsHeaders@file"
       - traefik.http.services.backend.loadbalancer.server.port=7070
 
   prometheus:
