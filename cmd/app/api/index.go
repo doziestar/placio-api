@@ -2,7 +2,6 @@ package api
 
 import (
 	"github.com/cloudinary/cloudinary-go/v2"
-	"net/http"
 	_ "placio-api/docs/app"
 	"placio-app/controller"
 	"placio-app/ent"
@@ -10,35 +9,10 @@ import (
 	"placio-app/service"
 	"placio-app/utility"
 
-	jwtmiddleware "github.com/auth0/go-jwt-middleware/v2"
-	"github.com/auth0/go-jwt-middleware/v2/validator"
 	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"gorm.io/gorm"
 )
-
-func JWTMiddleware(db *gorm.DB) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		validatedClaims, ok := c.Request.Context().Value(jwtmiddleware.ContextKey{}).(*validator.ValidatedClaims)
-		if !ok || validatedClaims == nil {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
-			return
-		}
-		//
-		//if ok && validatedClaims != nil {
-		//	fmt.Println("Issuer:", validatedClaims.RegisteredClaims.Issuer)
-		//	fmt.Println("Subject:", validatedClaims.RegisteredClaims.Subject)
-		//	fmt.Println("Audience:", validatedClaims.RegisteredClaims.Audience)
-		//	fmt.Println("Expiration Time:", validatedClaims.RegisteredClaims.Expiry)
-		//	fmt.Println("Not Before Time:", validatedClaims.RegisteredClaims.NotBefore)
-		//	fmt.Println("Issued At Time:", validatedClaims.RegisteredClaims.IssuedAt)
-		//}
-
-		c.Set("user", validatedClaims.RegisteredClaims.Subject)
-		c.Next()
-	}
-}
 
 func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 	routerGroupV1 := app.Group("/api/v1")
@@ -49,12 +23,6 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		routerGroupV1.GET("/ready", func(c *gin.Context) {
 			c.JSON(200, gin.H{
 				"message": "ready",
-			})
-		})
-
-		routerGroupV1.GET("/health", func(c *gin.Context) {
-			c.JSON(200, gin.H{
-				"message": "health",
 			})
 		})
 
@@ -70,9 +38,6 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 
 		routerGroupV1.Use(middleware.EnsureValidToken())
 		routerGroupV1WithoutAuth.Use(middleware.EnsureValidTokenButAllowAccess())
-
-		// utility
-		//newUtils := utility.NewUtility()
 
 		// user
 		userService := service.NewUserService(client, redisClient, searchService)
