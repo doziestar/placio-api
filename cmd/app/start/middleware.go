@@ -30,19 +30,19 @@ func Middleware(app *gin.Engine) {
 	}))
 
 	// Rate limiting
-	lmt := tollbooth.NewLimiter(1, nil)
+	lmt := tollbooth.NewLimiter(20, nil)
 	app.Use(tollbooth_gin.LimitHandler(lmt))
 
 	// Request ID
 	app.Use(requestid.New())
 
-	// Secure headers
+	//// Secure headers
 	//app.Use(func(c *gin.Context) {
 	//	c.Header("Strict-Transport-Security", "max-age=63072000; includeSubDomains")
-	//	c.Header("Content-Security-Policy", "default-src 'self'")
-	//	c.Header("X-Content-Type-Options", "nosniff")
-	//	c.Header("X-Frame-Options", "SAMEORIGIN")
-	//	c.Next()
+	//	//c.Header("Content-Security-Policy", "default-src 'self'")
+	//	//c.Header("X-Content-Type-Options", "nosniff")
+	//	//c.Header("X-Frame-Options", "SAMEORIGIN")
+	//	//c.Next()
 	//})
 
 	// Session middleware

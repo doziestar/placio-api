@@ -28,11 +28,11 @@ func main() {
 	// initialize gin app
 	app := gin.Default()
 
-	// initialize middleware
-	start.Middleware(app)
-
 	app.Use(start.PrometheusMiddleware())
 	app.GET("/metrics", gin.WrapH(promhttp.Handler()))
+
+	// initialize middleware
+	start.Middleware(app)
 
 	// initialize database
 	client := database.EntClient(context.Background())

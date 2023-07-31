@@ -68,7 +68,7 @@ func (rc *ReviewController) rateItem(ctx *gin.Context) error {
 
 	form, err := ctx.MultipartForm()
 	if err != nil {
-		return err
+		return appErr.LogAndReturnError(err)
 	}
 
 	files, _ := form.File["files"]
@@ -78,7 +78,7 @@ func (rc *ReviewController) rateItem(ctx *gin.Context) error {
 	if ok && len(scoreStr) > 0 {
 		score, err = strconv.ParseFloat(scoreStr[0], 64)
 		if err != nil || score < 1 || score > 5 {
-			return errors.New("invalid rating score: must be between 1 and 5")
+			return appErr.LogAndReturnError(errors.New("invalid rating score: must be between 1 and 5"))
 		}
 	}
 
@@ -101,7 +101,7 @@ func (rc *ReviewController) rateItem(ctx *gin.Context) error {
 
 	if err != nil {
 
-		return err
+		return appErr.LogAndReturnError(err)
 	}
 
 	ctx.JSON(http.StatusOK, utility.ProcessResponse(review, "success", "Successfully rated "+itemType, ""))
@@ -175,7 +175,7 @@ func (rc *ReviewController) getReviewByTypeId(ctx *gin.Context) error {
 	limit := ctx.Query("limit")
 
 	if itemType != "place" && itemType != "event" && itemType != "business" {
-		return appErr.InvalidItemType
+		return appErr.LogAndReturnError(appErr.InvalidItemType)
 	}
 
 	if limit == "" {
@@ -186,7 +186,7 @@ func (rc *ReviewController) getReviewByTypeId(ctx *gin.Context) error {
 
 	reviews, nextPageToken, err := rc.reviewService.GetReviewByIDTypeID(reviewID, itemType, nextPageToken, limitInt)
 	if err != nil {
-		return err
+		return appErr.LogAndReturnError(err)
 	}
 
 	ctx.JSON(http.StatusOK, utility.ProcessResponse(reviews, "success", "Successfully retrieved reviews", nextPageToken))
