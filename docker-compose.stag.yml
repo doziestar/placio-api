@@ -56,13 +56,15 @@ services:
       - "traefik.http.routers.backend-secure.entrypoints=websecure"
       - "traefik.http.routers.backend-secure.rule=Host(`api.palnight.com`)"
       - "traefik.http.routers.backend-secure.service=backend"
-      - "traefik.http.routers.backend-secure.middlewares=cors-headers"
-      - "traefik.http.middlewares.cors-headers.headers.accesscontrolalloworiginlist=*"
+      - "traefik.http.middlewares.cors-headers.headers.accesscontrolalloworiginlist=https://placio.io,http://localhost:3000,http://127.0.0.1:3000"
       - "traefik.http.middlewares.cors-headers.headers.accesscontrolallowmethods=GET,OPTIONS,PUT,POST,DELETE,PATCH"
       - "traefik.http.middlewares.cors-headers.headers.accesscontrolallowheaders=Accept,Accept-Language,Content-Language,Content-Type,DPR,Origin,Authorization,X-Requested-With,X-CSRF-Token,X-Auth-Token,X-Forwarded-For,X-Real-IP,X-Forwarded-Proto,X-Forwarded-Host,X-Forwarded-Port,X-Forwarded-Server,X-Forwarded-By,X-Request-ID,X-Correlation-ID"
       - "traefik.http.middlewares.cors-headers.headers.accesscontrolallowcredentials=true"
       - "traefik.http.middlewares.cors-headers.headers.accesscontrolexposeheaders=DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range"
+      - "traefik.http.middlewares.cors-headers.headers.addvaryheader=true"
+      - "traefik.http.routers.backend-secure.middlewares=cors-headers"
       - traefik.http.services.backend.loadbalancer.server.port=7070
+
 
 
   prometheus:
