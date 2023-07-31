@@ -25,13 +25,14 @@ import (
 // @BasePath /api/v1
 // @schemes http https
 func main() {
-	// initialize fiber app
+	// initialize gin app
 	app := gin.Default()
-	app.Use(start.PrometheusMiddleware())
-	app.GET("/metrics", gin.WrapH(promhttp.Handler()))
 
 	// initialize middleware
 	start.Middleware(app)
+
+	app.Use(start.PrometheusMiddleware())
+	app.GET("/metrics", gin.WrapH(promhttp.Handler()))
 
 	// initialize database
 	client := database.EntClient(context.Background())
