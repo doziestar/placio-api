@@ -62,7 +62,7 @@ services:
       - "traefik.http.middlewares.cors-headers.headers.accesscontrolallowcredentials=true"
       - "traefik.http.middlewares.cors-headers.headers.accesscontrolexposeheaders=DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range"
       - "traefik.http.middlewares.cors-headers.headers.addvaryheader=true"
-      - "traefik.http.routers.backend-secure.middlewares=cors-headers"
+#      - "traefik.http.routers.backend-secure.middlewares=cors-headers"
       - traefik.http.services.backend.loadbalancer.server.port=7070
 
 
