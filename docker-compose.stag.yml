@@ -63,7 +63,6 @@ services:
       - traefik.http.middlewares.cors.headers.accesscontrolmaxage=100
       - traefik.http.middlewares.cors.headers.addvaryheader=true
       - traefik.http.middlewares.cors.headers.allowcredentials=true
-      - traefik.http.middlewares.cors.headers.options=^OPTIONS$
       - traefik.http.middlewares.cors.headers.headers=Origin,Accept,Content-Type,Authorization,X-Requested-With
       - traefik.http.middlewares.cors.headers.methods=GET,PUT,POST,DELETE,OPTIONS
       - traefik.http.middlewares.cors.headers.exposedheaders=Content-Length
