@@ -56,6 +56,18 @@ services:
       - "traefik.http.routers.backend-secure.entrypoints=websecure"
       - "traefik.http.routers.backend-secure.rule=Host(`api.palnight.com`)"
       - "traefik.http.routers.backend-secure.service=backend"
+#      - add cors headers from file
+      - traefik.http.middlewares.cors.headers.accesscontrolallowmethods=GET,OPTIONS,PUT,POST,DELETE
+      - traefik.http.middlewares.cors.headers.accesscontrolalloworiginlist=*
+      - traefik.http.middlewares.cors.headers.accesscontrolallowheaders=*
+      - traefik.http.middlewares.cors.headers.accesscontrolmaxage=100
+      - traefik.http.middlewares.cors.headers.addvaryheader=true
+      - traefik.http.middlewares.cors.headers.allowcredentials=true
+      - traefik.http.middlewares.cors.headers.options=^OPTIONS$
+      - traefik.http.middlewares.cors.headers.headers=Origin,Accept,Content-Type,Authorization,X-Requested-With
+      - traefik.http.middlewares.cors.headers.methods=GET,PUT,POST,DELETE,OPTIONS
+      - traefik.http.middlewares.cors.headers.exposedheaders=Content-Length
+      - traefik.http.middlewares.cors.headers.chain.middlewares=secureHeaders@file,cors
       - traefik.http.services.backend.loadbalancer.server.port=7070
 
 
