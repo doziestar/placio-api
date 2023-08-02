@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 	"github.com/axiaoxin-com/logging"
+	"github.com/gin-contrib/cors"
 	"os"
+	"time"
 
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-contrib/sessions"
@@ -16,14 +18,14 @@ import (
 )
 
 func Middleware(app *gin.Engine) {
-	//app.Use(cors.New(cors.Config{
-	//	AllowOrigins:     []string{"http://localhost:3000", "https://placio.io", "http://127.0.0.1:3000"},
-	//	AllowMethods:     []string{"*"},
-	//	AllowHeaders:     []string{"*"},
-	//	ExposeHeaders:    []string{"Content-Length,Content-Type,Authorization,X-CSRF-Token"},
-	//	AllowCredentials: true,
-	//	MaxAge:           12 * time.Hour,
-	//}))
+	app.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000", "https://placio.io", "http://127.0.0.1:3000"},
+		AllowMethods:     []string{"*"},
+		AllowHeaders:     []string{"*"},
+		ExposeHeaders:    []string{"Content-Length,Content-Type,Authorization,X-CSRF-Token"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
 
 	// Rate limiting
 	lmt := tollbooth.NewLimiter(20, nil)
@@ -33,13 +35,13 @@ func Middleware(app *gin.Engine) {
 	app.Use(requestid.New())
 
 	//// Secure headers
-	//app.Use(func(c *gin.Context) {
-	//	c.Header("Strict-Transport-Security", "max-age=63072000; includeSubDomains")
-	//	//c.Header("Content-Security-Policy", "default-src 'self'")
-	//	//c.Header("X-Content-Type-Options", "nosniff")
-	//	//c.Header("X-Frame-Options", "SAMEORIGIN")
-	//	//c.Next()
-	//})
+	app.Use(func(c *gin.Context) {
+		c.Header("Strict-Transport-Security", "max-age=63072000; includeSubDomains")
+		c.Header("Content-Security-Policy", "default-src 'self'")
+		c.Header("X-Content-Type-Options", "nosniff")
+		c.Header("X-Frame-Options", "SAMEORIGIN")
+		c.Next()
+	})
 
 	// Session middleware
 	store := cookie.NewStore([]byte("secret"))
