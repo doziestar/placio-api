@@ -17,9 +17,10 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /opt/traefik/traefik.yml:/traefik.yml
+#      - /opt/traefik/traefik.yml:/traefik.yml
+      - ./traefik/traefik.yml:/traefik.yml
       - /opt/traefik/acme.json:/acme.json
-      - /opt/traefik/configurations:/configurations
+      - ./traefik/configurations:/configurations
     command:
       - --accesslog
       # Enable the Traefik log, for configurations and errors
@@ -57,13 +58,43 @@ services:
       - "traefik.http.routers.backend-secure.entrypoints=websecure"
       - "traefik.http.routers.backend-secure.rule=Host(`api.palnight.com`)"
       - "traefik.http.routers.backend-secure.service=backend"
-      - "traefik.http.middlewares.cors-headers.headers.accesscontrolalloworiginlist=https://placio.io,http://localhost:3000,http://127.0.0.1:3000"
-      - "traefik.http.middlewares.cors-headers.headers.accesscontrolallowmethods=GET,OPTIONS,PUT,POST,DELETE,PATCH"
-      - "traefik.http.middlewares.cors-headers.headers.accesscontrolallowheaders=Accept,Accept-Language,Content-Language,Content-Type,DPR,Origin,Authorization,X-Requested-With,X-CSRF-Token,X-Auth-Token,X-Forwarded-For,X-Real-IP,X-Forwarded-Proto,X-Forwarded-Host,X-Forwarded-Port,X-Forwarded-Server,X-Forwarded-By,X-Request-ID,X-Correlation-ID"
-      - "traefik.http.middlewares.cors-headers.headers.accesscontrolallowcredentials=true"
-      - "traefik.http.middlewares.cors-headers.headers.accesscontrolexposeheaders=DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Content-Range,Range"
-      - "traefik.http.middlewares.cors-headers.headers.addvaryheader=true"
-#      - "traefik.http.routers.backend-secure.middlewares=cors-headers"
+#      - add cors headers from traefik
+#      - "traefik.http.middlewares.cors.headers.accesscontrolallowmethods=GET,POST,PUT,DELETE,OPTIONS"
+#      - "traefik.http.middlewares.cors.headers.accesscontrolalloworigin=*"
+#      - "traefik.http.middlewares.cors.headers.accesscontrolallowheaders=Origin,Accept,Content-Type,Authorization"
+#      - "traefik.http.middlewares.cors.headers.accesscontrolallowcredentials=true"
+#      - "traefik.http.middlewares.cors.headers.accesscontrolexposeheaders=Content-Length"
+#      - "traefik.http.middlewares.cors.headers.addvaryheader=true"
+#      - "traefik.http.middlewares.cors.headers.allowcredentials=true"
+#      - "traefik.http.middlewares.cors.headers.alloworiginrequest=true"
+#      - "traefik.http.middlewares.cors.headers.alloworiginlist=*"
+#      - "traefik.http.middlewares.cors.headers.allowedheaders=Origin,Accept,Content-Type,Authorization"
+#      - "traefik.http.middlewares.cors.headers.allowedmethods=GET,POST,PUT,DELETE,OPTIONS"
+#      - "traefik.http.middlewares.cors.headers.allowedorigins=*"
+#      - "traefik.http.middlewares.cors.headers.exposedheaders=Content-Length"
+#      - "traefik.http.middlewares.cors.headers.optionspassthrough=true"
+#      - "traefik.http.middlewares.cors.headers.passthrough=true"
+#      - "traefik.http.middlewares.cors.headers.preflightcontinue=false"
+#      - "traefik.http.middlewares.cors.headers.redirect=true"
+#      - "traefik.http.middlewares.cors.headers.retryheaders=Origin,Accept,Content-Type,Authorization"
+#      - "traefik.http.middlewares.cors.headers.status=200"
+#      - "traefik.http.middlewares.cors.headers.timeout=0s"
+#      - "traefik.http.middlewares.cors.headers.tryduration=0s"
+#      - "traefik.http.middlewares.cors.headers.unsafe=true"
+#      - "traefik.http.middlewares.cors.headers.websockets=true"
+#      - "traefik.http.middlewares.cors.headers.defaultallowheaders=Origin,Accept,Content-Type,Authorization"
+#      - "traefik.http.middlewares.cors.headers.defaultallowmethods=GET,POST,PUT,DELETE,OPTIONS"
+#      - "traefik.http.middlewares.cors.headers.defaultalloworigin=*"
+#      - "traefik.http.middlewares.cors.headers.defaultexposedheaders=Content-Length"
+#      - "traefik.http.middlewares.cors.headers.defaultoptionspassthrough=true"
+#      - "traefik.http.middlewares.cors.headers.defaultpassthrough=true"
+#      - "traefik.http.middlewares.cors.headers.defaultretryheaders=Origin,Accept,Content-Type,Authorization"
+#      - "traefik.http.middlewares.cors.headers.defaultstatus=200"
+#      - "traefik.http.middlewares.cors.headers.defaulttimeout=0s"
+#      - "traefik.http.middlewares.cors.headers.defaulttryduration=0s"
+#      - "traefik.http.middlewares.cors.headers.defaultunsafe=true"
+#      - apply the cors middleware to the backend service
+#      - "traefik.http.routers.backend-secure.middlewares=cors@docker"
       - traefik.http.services.backend.loadbalancer.server.port=7070
 
 
