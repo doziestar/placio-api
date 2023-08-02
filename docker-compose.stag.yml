@@ -59,7 +59,7 @@ services:
       - "traefik.http.routers.backend-secure.service=backend"
       - "traefik.http.services.backend.loadbalancer.server.port=7070"
       - "traefik.http.middlewares.cors.headers.accesscontrolallowmethods=GET,POST,PUT,DELETE,OPTIONS"
-      - "traefik.http.middlewares.cors.headers.accesscontrolalloworiginlist=https://placio.io,https://placio.io/,http://localhost:3000,http://localhost:3000/,http://127.0.0.1:3000,http://127.0.0.1:30001"
+      - "traefik.http.middlewares.cors.headers.accesscontrolalloworigin=https://placio.io,https://placio.io/,http://localhost:3000,http://localhost:3000/,http://127.0.0.1:3000,http://127.0.0.1:30001"
       - "traefik.http.middlewares.cors.headers.accesscontrolallowcredentials=true"
       - "traefik.http.middlewares.cors.headers.accesscontrolallowheaders=Content-Type,Authorization"
       - "traefik.http.middlewares.cors.headers.accesscontrolmaxage=100"
