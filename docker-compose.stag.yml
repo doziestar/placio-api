@@ -66,7 +66,6 @@ services:
       - "traefik.http.middlewares.cors.headers.headers=Origin,Accept,Content-Type,Authorization,X-Requested-With"
       - "traefik.http.middlewares.cors.headers.methods=GET,PUT,POST,DELETE,OPTIONS"
       - "traefik.http.middlewares.cors.headers.exposedheaders=Content-Length"
-      - "traefik.http.middlewares.cors.headers.chain.middlewares=secureHeaders@file,cors"
       - "traefik.http.services.backend.loadbalancer.server.port=7070"
 
 
