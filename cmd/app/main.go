@@ -28,7 +28,7 @@ import (
 // @schemes http https
 func main() {
 	// initialize gin app
-	app := gin.Default()
+	app := gin.New()
 
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://localhost:3000", "https://placio.io", "http://127.0.0.1:3000"},
@@ -46,6 +46,10 @@ func main() {
 		c.Header("X-Frame-Options", "SAMEORIGIN")
 		c.Next()
 	})
+
+	// apply gin middleware
+	app.Use(gin.Logger())
+	app.Use(gin.Recovery())
 
 	app.Use(start.PrometheusMiddleware())
 	app.GET("/metrics", gin.WrapH(promhttp.Handler()))
