@@ -7,7 +7,6 @@ import (
 
 	"github.com/axiaoxin-com/logging"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/requestid"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
@@ -15,19 +14,17 @@ import (
 
 	"github.com/didip/tollbooth"
 	"github.com/didip/tollbooth_gin"
-
-	"time"
 )
 
 func Middleware(app *gin.Engine) {
-	app.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000", "https://placio.io", "http://127.0.0.1:3000"},
-		AllowMethods:     []string{"*"},
-		AllowHeaders:     []string{"*"},
-		ExposeHeaders:    []string{"Content-Length,Content-Type,Authorization,X-CSRF-Token"},
-		AllowCredentials: true,
-		MaxAge:           12 * time.Hour,
-	}))
+	//app.Use(cors.New(cors.Config{
+	//	AllowOrigins:     []string{"http://localhost:3000", "https://placio.io", "http://127.0.0.1:3000"},
+	//	AllowMethods:     []string{"*"},
+	//	AllowHeaders:     []string{"*"},
+	//	ExposeHeaders:    []string{"Content-Length,Content-Type,Authorization,X-CSRF-Token"},
+	//	AllowCredentials: true,
+	//	MaxAge:           12 * time.Hour,
+	//}))
 
 	// Rate limiting
 	lmt := tollbooth.NewLimiter(20, nil)
