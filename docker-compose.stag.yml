@@ -16,10 +16,9 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
-#      - /opt/traefik/traefik.yml:/traefik.yml
-      - ./traefik/traefik.yml:/traefik.yml
+      - /opt/traefik/traefik.yml:/traefik.yml
       - /opt/traefik/acme.json:/acme.json
-      - ./traefik/configurations:/configurations
+      - /opt/traefik/configurations:/configurations
     command:
       - --accesslog
       # Enable the Traefik log, for configurations and errors
