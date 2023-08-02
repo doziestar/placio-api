@@ -58,7 +58,7 @@ services:
       - "traefik.http.routers.backend-secure.rule=Host(`api.palnight.com`)"
       - "traefik.http.routers.backend-secure.service=backend"
 #      - add cors headers from traefik
-      - "traefik.http.middlewares.cors.headers.accesscontrolallowmethods=GET,POST,PUT,DELETE,OPTIONS"
+#      - "traefik.http.middlewares.cors.headers.accesscontrolallowmethods=GET,POST,PUT,DELETE,OPTIONS"
 #      - "traefik.http.middlewares.cors.headers.accesscontrolalloworigin=*"
 #      - "traefik.http.middlewares.cors.headers.accesscontrolallowheaders=Origin,Accept,Content-Type,Authorization"
 #      - "traefik.http.middlewares.cors.headers.accesscontrolallowcredentials=true"
@@ -93,7 +93,7 @@ services:
 #      - "traefik.http.middlewares.cors.headers.defaulttryduration=0s"
 #      - "traefik.http.middlewares.cors.headers.defaultunsafe=true"
 #      - apply the cors middleware to the backend service
-      - "traefik.http.routers.backend-secure.middlewares=cors@docker"
+#      - "traefik.http.routers.backend-secure.middlewares=cors@docker"
       - traefik.http.services.backend.loadbalancer.server.port=7070
 
 
