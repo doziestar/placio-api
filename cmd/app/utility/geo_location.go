@@ -3,6 +3,7 @@ package utility
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/getsentry/sentry-go"
 	"io"
 	"log"
 	"net/http"
@@ -27,6 +28,7 @@ func GetCoordinates(address string) (MapboxGeoResponse, error) {
 
 	response, err := http.Get(fmt.Sprintf("%s%s.json?access_token=%s", api, url.QueryEscape(address), MapboxAPIKey))
 	if err != nil {
+		sentry.CaptureException(err)
 		log.Println("error getting coordinates", err.Error())
 		return MapboxGeoResponse{}, err
 	}
@@ -34,6 +36,7 @@ func GetCoordinates(address string) (MapboxGeoResponse, error) {
 
 	bodyBytes, err := io.ReadAll(response.Body)
 	if err != nil {
+		sentry.CaptureException(err)
 		log.Fatal(err)
 	}
 
@@ -43,6 +46,7 @@ func GetCoordinates(address string) (MapboxGeoResponse, error) {
 	var data MapboxGeoResponse
 	err = json.Unmarshal(bodyBytes, &data)
 	if err != nil {
+		sentry.CaptureException(err)
 		log.Println("error decoding response", err.Error())
 		return MapboxGeoResponse{}, err
 	}
