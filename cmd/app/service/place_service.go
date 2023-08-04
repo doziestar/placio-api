@@ -314,10 +314,10 @@ func (s *PlaceServiceImpl) CreatePlace(ctx context.Context, placeData Dto.Create
 	return place, nil
 }
 
-func (s *PlaceServiceImpl) addPlaceToCacheAndSearchIndex(ctx context.Context, place interface{}, other ...string) error {
+func (s *PlaceServiceImpl) addPlaceToCacheAndSearchIndex(ctx context.Context, place *ent.Place, other ...string) error {
 	// Add the new place to the search index.
 	go func() {
-		if err := s.searchService.CreateOrUpdatePlace(ctx, place.(*ent.Place)); err != nil {
+		if err := s.searchService.CreateOrUpdatePlace(ctx, place); err != nil {
 			errors.LogAndReturnError(err)
 		}
 	}()
@@ -326,13 +326,13 @@ func (s *PlaceServiceImpl) addPlaceToCacheAndSearchIndex(ctx context.Context, pl
 	go func() {
 		// check if other is not empty
 		if len(other) != 0 {
-			cacheKey := fmt.Sprintf("place:%s:%s", place.(ent.Place).ID, other[0])
+			cacheKey := fmt.Sprintf("place:%s:%s", place.ID, other[0])
 			if err := s.cache.SetCache(ctx, cacheKey, place); err != nil {
 				errors.LogAndReturnError(err)
 			}
 			return
 		}
-		cacheKey := fmt.Sprintf("place:%s", place.(ent.Place).ID)
+		cacheKey := fmt.Sprintf("place:%s", place.ID)
 		if err := s.cache.SetCache(ctx, cacheKey, place); err != nil {
 			errors.LogAndReturnError(err)
 		}
