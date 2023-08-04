@@ -54,7 +54,7 @@ func (c *PlaceController) getPlace(ctx *gin.Context) error {
 	// get place from cache
 	cacheKey := "place:" + id
 	place, err := c.cache.GetCache(ctx, cacheKey)
-	if err == nil {
+	if err != nil {
 		sentry.CaptureException(err)
 		return err
 	}
