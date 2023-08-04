@@ -2,12 +2,14 @@ package main
 
 import (
 	"context"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"placio-app/api"
 	"placio-app/database"
 	_ "placio-app/ent/runtime"
 	"placio-app/start"
+	"time"
 )
 
 // @title Placio Application Api
@@ -26,7 +28,28 @@ import (
 // @schemes http https
 func main() {
 	// initialize gin app
-	app := gin.Default()
+	app := gin.New()
+
+	app.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000", "https://placio.io", "https://www.placio.io"},
+		AllowMethods:     []string{"*"},
+		AllowHeaders:     []string{"*"},
+		ExposeHeaders:    []string{"Content-Length,Content-Type,Authorization,X-CSRF-Token"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
+
+	app.Use(func(c *gin.Context) {
+		c.Header("Strict-Transport-Security", "max-age=63072000; includeSubDomains")
+		c.Header("Content-Security-Policy", "default-src 'self'")
+		c.Header("X-Content-Type-Options", "nosniff")
+		c.Header("X-Frame-Options", "SAMEORIGIN")
+		c.Next()
+	})
+
+	// apply gin middleware
+	app.Use(gin.Logger())
+	app.Use(gin.Recovery())
 
 	app.Use(start.PrometheusMiddleware())
 	app.GET("/metrics", gin.WrapH(promhttp.Handler()))
