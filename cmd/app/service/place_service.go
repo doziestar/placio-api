@@ -48,7 +48,7 @@ type PlaceServiceImpl struct {
 }
 
 func NewPlaceService(client *ent.Client, searchService SearchService, userLikes UserLikePlaceService, followService FollowService, cache utility.RedisClient) *PlaceServiceImpl {
-	return &PlaceServiceImpl{client: client, searchService: searchService, userLikes: userLikes, followService: followService}
+	return &PlaceServiceImpl{client: client, searchService: searchService, userLikes: userLikes, followService: followService, cache: cache}
 }
 
 func (s *PlaceServiceImpl) GetPlacesAssociatedWithBusinessAccount(c context.Context, businessId string) ([]*ent.Place, error) {
