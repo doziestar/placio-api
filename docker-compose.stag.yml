@@ -3,6 +3,7 @@ volumes:
   prometheus_data:
   grafana_data:
 
+
 services:
   placio-proxy:
     image: traefik:latest
