@@ -10,7 +10,6 @@ import (
 	"placio-app/ent/business"
 	"placio-app/ent/faq"
 	"placio-app/utility"
-	"time"
 )
 
 type FAQService interface {
@@ -48,7 +47,7 @@ func (s *FAQServiceImpl) CreateFAQ(ctx context.Context, businessID string, faqDa
 	go func() {
 		data, err := json.Marshal(faq)
 		if err == nil {
-			s.cache.SetCache(ctx, fmt.Sprintf("faq:%s", faq.ID), data, 12*time.Hour)
+			s.cache.SetCache(ctx, fmt.Sprintf("faq:%s", faq.ID), data)
 		}
 	}()
 
@@ -77,7 +76,7 @@ func (s *FAQServiceImpl) GetFAQ(ctx context.Context, faqID string) (*ent.FAQ, er
 	go func() {
 		data, err := json.Marshal(faq)
 		if err == nil {
-			s.cache.SetCache(ctx, cacheKey, data, 12*time.Hour)
+			s.cache.SetCache(ctx, cacheKey, data)
 		}
 	}()
 
@@ -119,7 +118,7 @@ func (s *FAQServiceImpl) UpdateFAQ(ctx context.Context, faqID string, faqData ma
 	go func() {
 		data, err := json.Marshal(faq)
 		if err == nil {
-			s.cache.SetCache(ctx, fmt.Sprintf("faq:%s", faq.ID), data, 12*time.Hour)
+			s.cache.SetCache(ctx, fmt.Sprintf("faq:%s", faq.ID), data)
 		}
 	}()
 

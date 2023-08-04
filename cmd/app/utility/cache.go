@@ -5,29 +5,10 @@ import (
 	"encoding/json"
 	"errors"
 	"log"
-	"net/url"
 	"time"
 
 	"github.com/go-redis/redis/v8"
 )
-
-const CacheDuration = 24 * time.Hour // 24 hours
-
-type ICache interface {
-	ConnectRedis() (client *redis.Client)
-	SetCache(ctx context.Context, key string, value interface{}) error
-	GetCache(ctx context.Context, key string) ([]byte, error)
-	GetOrSetCache(ctx context.Context, key string, value interface{}) ([]byte, error)
-	DeleteCache(ctx context.Context, key string) error
-}
-
-func extractHostPortFromRedisURL(redisURL string) (string, error) {
-	parsedURL, err := url.Parse(redisURL)
-	if err != nil {
-		return "", err
-	}
-	return parsedURL.Host, nil
-}
 
 type RedisClient struct {
 	host   string
@@ -36,11 +17,11 @@ type RedisClient struct {
 	client *redis.Client
 }
 
-func NewRedisClient(host string, db int, exp time.Duration) *RedisClient {
+func NewRedisClient(host string, db int) *RedisClient {
 	return &RedisClient{
 		host: host,
 		db:   db,
-		exp:  exp,
+		exp:  24 * time.Hour,
 	}
 }
 
@@ -63,7 +44,7 @@ func (r *RedisClient) ConnectRedis() *redis.Client {
 	return newClient
 }
 
-func (r *RedisClient) SetCache(ctx context.Context, key string, value interface{}, exp time.Duration) error {
+func (r *RedisClient) SetCache(ctx context.Context, key string, value interface{}) error {
 	log.Println("Setting cache for key", key)
 	if r.client == nil {
 		return errors.New("redis client is nil")
@@ -73,14 +54,8 @@ func (r *RedisClient) SetCache(ctx context.Context, key string, value interface{
 		return err
 	}
 	log.Println("Setting cache for key", key)
-	//log.Println("Setting cache for value", jsonValue)
-	exp = func() time.Duration {
-		if exp == 0 {
-			return CacheDuration
-		}
-		return exp
-	}()
-	return r.client.Set(ctx, key, jsonValue, exp).Err()
+	const CacheDuration = 24 * time.Hour
+	return r.client.Set(ctx, key, jsonValue, CacheDuration).Err()
 }
 
 func (r *RedisClient) GetCache(ctx context.Context, key string) ([]byte, error) {
@@ -105,7 +80,7 @@ func (r *RedisClient) GetOrSetCache(ctx context.Context, key string, value inter
 		if err != nil {
 			return nil, err
 		}
-		err = r.client.Set(ctx, key, jsonValue, r.exp).Err()
+		err = r.client.Set(ctx, key, jsonValue, 24*time.Hour).Err()
 		if err != nil {
 			return nil, err
 		}
