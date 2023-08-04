@@ -10,7 +10,6 @@ import (
 	"placio-app/ent"
 	"placio-app/ent/business"
 	"placio-app/ent/place"
-	"placio-app/errors"
 	"placio-app/utility"
 	"sync"
 )
@@ -58,10 +57,11 @@ func (s *PlaceServiceImpl) GetPlacesAssociatedWithBusinessAccount(c context.Cont
 		Where(place.HasBusinessWith(business.ID(businessId))).
 		All(c)
 	if err != nil {
+		sentry.CaptureException(err)
 		return nil, err
 	}
 
-	return places, errors.LogAndReturnError(err)
+	return places, nil
 }
 func (s *PlaceServiceImpl) GetPlace(ctx context.Context, placeID string) (*ent.Place, error) {
 	placeData, err := s.client.Place.
@@ -77,7 +77,8 @@ func (s *PlaceServiceImpl) GetPlace(ctx context.Context, placeID string) (*ent.P
 		WithFaqs().
 		First(ctx)
 	if err != nil {
-		return nil, errors.LogAndReturnError(err)
+		sentry.CaptureException(err)
+		return nil, err
 	}
 
 	userID, ok := ctx.Value("user").(string)
@@ -86,7 +87,8 @@ func (s *PlaceServiceImpl) GetPlace(ctx context.Context, placeID string) (*ent.P
 	}
 	if userID != "" {
 		if err := s.checkUserInteraction(ctx, userID, placeID, placeData); err != nil {
-			return nil, errors.LogAndReturnError(err)
+			sentry.CaptureException(err)
+			return nil, err
 		}
 	}
 
@@ -155,6 +157,7 @@ func (s *PlaceServiceImpl) GetAllPlaces(ctx context.Context, lastId string, limi
 		}
 		wg.Wait()
 		if firstErr != nil {
+			sentry.CaptureException(firstErr)
 			return nil, "", firstErr
 		}
 	}
@@ -213,6 +216,7 @@ func (s *PlaceServiceImpl) CreatePlace(ctx context.Context, placeData Dto.Create
 	// get business from database
 	business, err := s.client.Business.Get(ctx, placeData.BusinessID)
 	if err != nil {
+		sentry.CaptureException(err)
 		return nil, err
 	}
 
@@ -255,7 +259,8 @@ func (s *PlaceServiceImpl) CreatePlace(ctx context.Context, placeData Dto.Create
 	// Begin a transaction to ensure all operations occur atomically
 	tx, err := s.client.Tx(ctx)
 	if err != nil {
-		return nil, errors.LogAndReturnError(err)
+		sentry.CaptureException(err)
+		return nil, err
 	}
 
 	// Create the Place without associating Categories directly
@@ -286,7 +291,8 @@ func (s *PlaceServiceImpl) CreatePlace(ctx context.Context, placeData Dto.Create
 		Save(ctx)
 	if err != nil {
 		_ = tx.Rollback() // rollback the transaction in case of error
-		return nil, errors.LogAndReturnError(err)
+		sentry.CaptureException(err)
+		return nil, err
 	}
 
 	// Now loop over each Category and create a CategoryAssignment for each
@@ -298,14 +304,16 @@ func (s *PlaceServiceImpl) CreatePlace(ctx context.Context, placeData Dto.Create
 			SetCategoryID(category.ID).
 			Save(ctx)
 		if err != nil {
-			_ = tx.Rollback() // rollback the transaction in case of error
-			return nil, errors.LogAndReturnError(err)
+			_ = tx.Rollback()
+			sentry.CaptureException(err) // rollback the transaction in case of error
+			return nil, err
 		}
 	}
 
 	// Now that all operations have succeeded, commit the transaction
 	if err := tx.Commit(); err != nil {
-		return nil, errors.LogAndReturnError(err)
+		sentry.CaptureException(err)
+		return nil, err
 	}
 
 	// Add the new place to the search index and cache
@@ -318,23 +326,16 @@ func (s *PlaceServiceImpl) addPlaceToCacheAndSearchIndex(ctx context.Context, pl
 	// Add the new place to the search index.
 	go func() {
 		if err := s.searchService.CreateOrUpdatePlace(ctx, place); err != nil {
-			errors.LogAndReturnError(err)
+			sentry.CaptureException(err)
 		}
 	}()
 
 	// add the new place to cache
 	go func() {
-		// check if other is not empty
-		if len(other) != 0 {
-			cacheKey := fmt.Sprintf("place:%s:%s", place.ID, other[0])
-			if err := s.cache.SetCache(ctx, cacheKey, place); err != nil {
-				errors.LogAndReturnError(err)
-			}
-			return
-		}
 		cacheKey := fmt.Sprintf("place:%s", place.ID)
 		if err := s.cache.SetCache(ctx, cacheKey, place); err != nil {
-			errors.LogAndReturnError(err)
+			sentry.CaptureException(err)
+			return
 		}
 	}()
 
@@ -357,7 +358,7 @@ func (s *PlaceServiceImpl) AddAmenitiesToPlace(ctx context.Context, placeID stri
 			defer wg.Done()
 			amenities[i], err = s.client.Amenity.Get(ctx, amenityID)
 			if err != nil {
-				errors.LogAndReturnError(err)
+				sentry.CaptureException(err)
 				return
 			}
 		}(i, amenityID)
@@ -368,7 +369,8 @@ func (s *PlaceServiceImpl) AddAmenitiesToPlace(ctx context.Context, placeID stri
 	// Update place with new amenities
 	placeData, err := place.Update().AddAmenities(amenities...).Save(ctx)
 	if err != nil {
-		errors.LogAndReturnError(err)
+		sentry.CaptureException(err)
+		return err
 	}
 
 	// Add the new place to the search index and cache
