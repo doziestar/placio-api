@@ -1,11 +1,13 @@
 package controller
 
 import (
+	"encoding/json"
 	"github.com/getsentry/sentry-go"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"placio-app/Dto"
 	_ "placio-app/Dto"
+	"placio-app/ent"
 	_ "placio-app/ent"
 	"placio-app/errors"
 	"placio-app/service"
@@ -53,13 +55,19 @@ func (c *PlaceController) getPlace(ctx *gin.Context) error {
 
 	// get place from cache
 	cacheKey := "place:" + id
-	place, err := c.cache.GetCache(ctx, cacheKey)
-	if err == nil {
+	placeBytes, err := c.cache.GetCache(ctx, cacheKey)
+	if err != nil {
 		sentry.CaptureException(err)
 		return err
 	}
 
-	if place != nil {
+	if placeBytes != nil {
+		var place ent.Place
+		err = json.Unmarshal(placeBytes, &place)
+		if err != nil {
+			sentry.CaptureException(err)
+			return err
+		}
 		ctx.JSON(http.StatusOK, place)
 		return nil
 	}
@@ -69,6 +77,15 @@ func (c *PlaceController) getPlace(ctx *gin.Context) error {
 		sentry.CaptureException(err)
 		return err
 	}
+
+	go func() {
+		placeBytes, err = json.Marshal(placeData)
+		if err != nil {
+			sentry.CaptureException(err)
+			//return err
+		}
+		c.cache.SetCache(ctx, cacheKey, placeBytes)
+	}()
 
 	ctx.JSON(http.StatusOK, placeData)
 	return nil
