@@ -9,6 +9,7 @@ import (
 	"placio-app/ent/business"
 	"placio-app/ent/place"
 	"placio-app/errors"
+	"placio-app/utility"
 	"sync"
 )
 
@@ -42,9 +43,10 @@ type PlaceServiceImpl struct {
 	searchService SearchService
 	userLikes     UserLikePlaceService
 	followService FollowService
+	cache         utility.RedisClient
 }
 
-func NewPlaceService(client *ent.Client, searchService SearchService, userLikes UserLikePlaceService, followService FollowService) *PlaceServiceImpl {
+func NewPlaceService(client *ent.Client, searchService SearchService, userLikes UserLikePlaceService, followService FollowService, cache utility.RedisClient) *PlaceServiceImpl {
 	return &PlaceServiceImpl{client: client, searchService: searchService, userLikes: userLikes, followService: followService}
 }
 
