@@ -67,7 +67,7 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 
 		// places
 		placeService := service.NewPlaceService(client, searchService, userPlacesLikesService, *followService, *redisClient)
-		placeController := controller.NewPlaceController(placeService)
+		placeController := controller.NewPlaceController(placeService, *redisClient)
 		placeController.RegisterRoutes(routerGroupV1, routerGroupV1WithoutAuth)
 
 		// reservations

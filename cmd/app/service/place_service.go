@@ -2,6 +2,8 @@ package service
 
 import (
 	"context"
+	"fmt"
+	"github.com/getsentry/sentry-go"
 	"github.com/google/uuid"
 	"log"
 	"placio-app/Dto"
@@ -33,7 +35,7 @@ type PlaceService interface {
 	UpdatePlace(ctx context.Context, placeID string, placeData Dto.UpdatePlaceDTO) (*ent.Place, error)
 	DeletePlace(ctx context.Context, placeID string) error
 	GetPlacesAssociatedWithBusinessAccount(c context.Context, businessId string) ([]*ent.Place, error)
-	GetPlaces(ctx context.Context, filter *PlaceFilter, page int, pageSize int) ([]*ent.Place, error)
+	GetPlaces(ctx context.Context, filter *PlaceFilter, lastId string, limit int) ([]*ent.Place, string, error)
 	AddAmenitiesToPlace(ctx context.Context, placeID string, amenityIDs []string) error
 	GetAllPlaces(ctx context.Context, nextPageToken string, limit int) ([]*ent.Place, string, error)
 }
@@ -71,7 +73,6 @@ func (s *PlaceServiceImpl) GetPlace(ctx context.Context, placeID string) (*ent.P
 		WithCategoryAssignments().
 		WithEvents().
 		WithAmenities().
-		WithReviews().
 		WithMenus().
 		WithFaqs().
 		First(ctx)
@@ -155,6 +156,14 @@ func (s *PlaceServiceImpl) GetAllPlaces(ctx context.Context, lastId string, limi
 			return nil, "", firstErr
 		}
 	}
+
+	//go func() {
+	//	cacheKey := fmt.Sprintf("places:%s:%s", nextId, strconv.Itoa(limit))
+	//	err := s.cache.SetCache(ctx, cacheKey, places)
+	//	if err != nil {
+	//		errors.LogAndReturnError(err)
+	//	}
+	//}()
 
 	return places, nextId, nil
 }
@@ -244,7 +253,7 @@ func (s *PlaceServiceImpl) CreatePlace(ctx context.Context, placeData Dto.Create
 	// Begin a transaction to ensure all operations occur atomically
 	tx, err := s.client.Tx(ctx)
 	if err != nil {
-		return nil, err
+		return nil, errors.LogAndReturnError(err)
 	}
 
 	// Create the Place without associating Categories directly
@@ -275,7 +284,7 @@ func (s *PlaceServiceImpl) CreatePlace(ctx context.Context, placeData Dto.Create
 		Save(ctx)
 	if err != nil {
 		_ = tx.Rollback() // rollback the transaction in case of error
-		return nil, err
+		return nil, errors.LogAndReturnError(err)
 	}
 
 	// Now loop over each Category and create a CategoryAssignment for each
@@ -288,21 +297,46 @@ func (s *PlaceServiceImpl) CreatePlace(ctx context.Context, placeData Dto.Create
 			Save(ctx)
 		if err != nil {
 			_ = tx.Rollback() // rollback the transaction in case of error
-			return nil, err
+			return nil, errors.LogAndReturnError(err)
 		}
 	}
 
 	// Now that all operations have succeeded, commit the transaction
 	if err := tx.Commit(); err != nil {
-		return nil, err
+		return nil, errors.LogAndReturnError(err)
 	}
 
-	// Add the new place to the search index.
-	if err := s.searchService.CreateOrUpdatePlace(ctx, place); err != nil {
-		return nil, err
-	}
+	// Add the new place to the search index and cache
+	go s.addPlaceToCacheAndSearchIndex(ctx, place)
 
 	return place, nil
+}
+
+func (s *PlaceServiceImpl) addPlaceToCacheAndSearchIndex(ctx context.Context, place interface{}, other ...string) error {
+	// Add the new place to the search index.
+	go func() {
+		if err := s.searchService.CreateOrUpdatePlace(ctx, place.(*ent.Place)); err != nil {
+			errors.LogAndReturnError(err)
+		}
+	}()
+
+	// add the new place to cache
+	go func() {
+		// check if other is not empty
+		if len(other) != 0 {
+			cacheKey := fmt.Sprintf("place:%s:%s", place.(ent.Place).ID, other[0])
+			if err := s.cache.SetCache(ctx, cacheKey, place); err != nil {
+				errors.LogAndReturnError(err)
+			}
+			return
+		}
+		cacheKey := fmt.Sprintf("place:%s", place.(ent.Place).ID)
+		if err := s.cache.SetCache(ctx, cacheKey, place); err != nil {
+			errors.LogAndReturnError(err)
+		}
+	}()
+
+	return nil
 }
 
 func (s *PlaceServiceImpl) AddAmenitiesToPlace(ctx context.Context, placeID string, amenityIDs []string) error {
@@ -321,6 +355,7 @@ func (s *PlaceServiceImpl) AddAmenitiesToPlace(ctx context.Context, placeID stri
 			defer wg.Done()
 			amenities[i], err = s.client.Amenity.Get(ctx, amenityID)
 			if err != nil {
+				errors.LogAndReturnError(err)
 				return
 			}
 		}(i, amenityID)
@@ -329,10 +364,13 @@ func (s *PlaceServiceImpl) AddAmenitiesToPlace(ctx context.Context, placeID stri
 	}
 
 	// Update place with new amenities
-	_, err = place.Update().AddAmenities(amenities...).Save(ctx)
+	placeData, err := place.Update().AddAmenities(amenities...).Save(ctx)
 	if err != nil {
-		return err
+		errors.LogAndReturnError(err)
 	}
+
+	// Add the new place to the search index and cache
+	go s.addPlaceToCacheAndSearchIndex(ctx, placeData)
 
 	return nil
 }
@@ -357,13 +395,12 @@ func (s *PlaceServiceImpl) UpdatePlace(ctx context.Context, placeID string, plac
 		SetState(placeData.State).
 		Save(ctx)
 	if err != nil {
+		sentry.CaptureException(err)
 		return nil, err
 	}
 
 	// Update the place in the search index.
-	if err := s.searchService.CreateOrUpdatePlace(ctx, place); err != nil {
-		return nil, err
-	}
+	go s.addPlaceToCacheAndSearchIndex(ctx, place)
 
 	return place, nil
 }
@@ -421,11 +458,15 @@ func (s *PlaceServiceImpl) DeletePlace(ctx context.Context, placeID string) erro
 //	return places, nil
 //}
 
-func (s *PlaceServiceImpl) GetPlaces(ctx context.Context, filter *PlaceFilter, page int, pageSize int) ([]*ent.Place, error) {
+func (s *PlaceServiceImpl) GetPlaces(ctx context.Context, filter *PlaceFilter, lastId string, limit int) ([]*ent.Place, string, error) {
+	if limit == 0 {
+		limit = 10
+	}
 	query := s.client.Place.
 		Query().
 		WithBusiness().
-		WithUsers()
+		WithUsers().
+		Limit(limit + 1)
 
 	// Apply filters
 	if len(filter.IDs) > 0 {
@@ -448,49 +489,25 @@ func (s *PlaceServiceImpl) GetPlaces(ctx context.Context, filter *PlaceFilter, p
 	}
 	// ...
 
-	// Execute query
+	if lastId != "" {
+		// If lastId is provided, we fetch records after it
+		query = query.Where(place.IDGT(lastId))
+	}
+
 	places, err := query.All(ctx)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
-	// Filter places by tags and features at the application level
-	filteredPlaces := []*ent.Place{}
-	for _, p := range places {
-		// Check if place tags include all tags from the filter
-		if len(filter.Tags) > 0 && !containsAll(p.Tags, filter.Tags) {
-			continue
-		}
-		// Check if place features include all features from the filter
-		if len(filter.Features) > 0 && !containsAll(p.Features, filter.Features) {
-			continue
-		}
-		filteredPlaces = append(filteredPlaces, p)
+	var nextId string
+	if len(places) == limit+1 {
+		nextId = places[len(places)-1].ID
+		places = places[:limit]
 	}
-
-	// Apply pagination
-	// Validate page and pageSize values
-	if page <= 0 {
-		page = 1
-	}
-	if pageSize <= 0 {
-		pageSize = 10
-	}
-
-	// Apply pagination after filtering by tags and features
-	start := (page - 1) * pageSize
-	if start >= len(filteredPlaces) {
-		return []*ent.Place{}, nil // Return an empty slice if page is beyond the total number of pages
-	}
-	end := start + pageSize
-	if end > len(filteredPlaces) {
-		end = len(filteredPlaces)
-	}
-	paginatedPlaces := filteredPlaces[start:end]
 
 	userID, ok := ctx.Value("user").(string)
 	if !ok {
-		return paginatedPlaces, nil
+		return places, nextId, nil
 	}
 	var wg sync.WaitGroup
 	var firstErr error
@@ -513,11 +530,27 @@ func (s *PlaceServiceImpl) GetPlaces(ctx context.Context, filter *PlaceFilter, p
 		}
 		wg.Wait()
 		if firstErr != nil {
-			return nil, firstErr
+			return nil, "", firstErr
 		}
 	}
 
-	return paginatedPlaces, nil
+	// Filter places by tags and features at the application level
+	filteredPlaces := []*ent.Place{}
+	for _, p := range places {
+		// Check if place tags include all tags from the filter
+		if len(filter.Tags) > 0 && !containsAll(p.Tags, filter.Tags) {
+			continue
+		}
+		// Check if place features include all features from the filter
+		if len(filter.Features) > 0 && !containsAll(p.Features, filter.Features) {
+			continue
+		}
+		filteredPlaces = append(filteredPlaces, p)
+	}
+
+	places = filteredPlaces
+
+	return places, nextId, nil
 }
 
 // containsAll checks if all elements of subset are in the set
