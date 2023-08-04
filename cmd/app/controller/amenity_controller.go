@@ -9,7 +9,6 @@ import (
 	_ "placio-app/ent"
 	"placio-app/service"
 	"placio-app/utility"
-	"time"
 )
 
 type AmenityController struct {
@@ -58,7 +57,7 @@ func (c *AmenityController) createAmenity(ctx *gin.Context) error {
 	}
 
 	amenityJSON, _ := json.Marshal(amenity)
-	c.cache.SetCache(ctx, amenity.ID, string(amenityJSON), 1*time.Hour)
+	c.cache.SetCache(ctx, amenity.ID, string(amenityJSON))
 	c.cache.DeleteCache(ctx, "all_amenities")
 
 	ctx.JSON(http.StatusOK, amenity)
@@ -137,7 +136,7 @@ func (c *AmenityController) updateAmenity(ctx *gin.Context) error {
 	}
 
 	amenityJSON, _ := json.Marshal(amenity)
-	c.cache.SetCache(ctx, id, string(amenityJSON), 1*time.Hour)
+	c.cache.SetCache(ctx, id, string(amenityJSON))
 	c.cache.DeleteCache(ctx, "all_amenities")
 
 	ctx.JSON(http.StatusOK, amenity)
@@ -189,7 +188,7 @@ func (c *AmenityController) getAllAmenities(ctx *gin.Context) error {
 	}
 
 	amenitiesJSON, _ := json.Marshal(amenities)
-	c.cache.SetCache(ctx, "all_amenities", string(amenitiesJSON), 1*time.Hour)
+	c.cache.SetCache(ctx, "all_amenities", string(amenitiesJSON))
 
 	ctx.JSON(http.StatusOK, amenities)
 	return nil

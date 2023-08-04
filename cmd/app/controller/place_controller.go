@@ -14,10 +14,11 @@ import (
 
 type PlaceController struct {
 	placeService service.PlaceService
+	cache        utility.RedisClient
 }
 
-func NewPlaceController(placeService service.PlaceService) *PlaceController {
-	return &PlaceController{placeService: placeService}
+func NewPlaceController(placeService service.PlaceService, cache utility.RedisClient) *PlaceController {
+	return &PlaceController{placeService: placeService, cache: cache}
 }
 
 func (c *PlaceController) RegisterRoutes(router, routerWithoutAuth *gin.RouterGroup) {
@@ -49,13 +50,25 @@ func (c *PlaceController) RegisterRoutes(router, routerWithoutAuth *gin.RouterGr
 func (c *PlaceController) getPlace(ctx *gin.Context) error {
 	id := ctx.Param("id")
 
-	place, err := c.placeService.GetPlace(ctx, id)
+	// get place from cache
+	cacheKey := "place:" + id
+	place, err := c.cache.GetCache(ctx, cacheKey)
+	if err == nil {
+		return errors.LogAndReturnError(err)
+	}
+
+	if place != nil {
+		ctx.JSON(http.StatusOK, place)
+		return nil
+	}
+
+	placeData, err := c.placeService.GetPlace(ctx, id)
 	if err != nil {
 
 		return err
 	}
 
-	ctx.JSON(http.StatusOK, place)
+	ctx.JSON(http.StatusOK, placeData)
 	return nil
 }
 
@@ -111,13 +124,13 @@ func (c *PlaceController) getAllPlaces(ctx *gin.Context) error {
 		limit = 10
 	}
 
-	places, token, err := c.placeService.GetAllPlaces(ctx, nextPageToken, limit)
+	placesData, token, err := c.placeService.GetAllPlaces(ctx, nextPageToken, limit)
 	if err != nil {
 
 		return err
 	}
 
-	ctx.JSON(http.StatusOK, utility.ProcessResponse(places, "success", "places retrieved successfully", token))
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(placesData, "success", "places retrieved successfully", token))
 	return nil
 }
 
@@ -235,11 +248,7 @@ func (c *PlaceController) getPlacesByFilters(ctx *gin.Context) error {
 		return err
 	}
 
-	page, err := strconv.Atoi(ctx.DefaultQuery("page", "1"))
-	if err != nil {
-
-		return err
-	}
+	page := ctx.Query("nextPageToken")
 
 	pageSize, err := strconv.Atoi(ctx.DefaultQuery("pageSize", "10"))
 	if err != nil {
@@ -247,12 +256,12 @@ func (c *PlaceController) getPlacesByFilters(ctx *gin.Context) error {
 		return err
 	}
 
-	places, err := c.placeService.GetPlaces(ctx, &filter, page, pageSize)
+	places, nextPageToken, err := c.placeService.GetPlaces(ctx, &filter, page, pageSize)
 	if err != nil {
 
 		return err
 	}
 
-	ctx.JSON(http.StatusOK, places)
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(places, "success", "places retrieved successfully", nextPageToken))
 	return nil
 }
