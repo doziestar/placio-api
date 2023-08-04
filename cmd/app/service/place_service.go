@@ -90,6 +90,8 @@ func (s *PlaceServiceImpl) GetPlace(ctx context.Context, placeID string) (*ent.P
 		}
 	}
 
+	go s.addPlaceToCacheAndSearchIndex(ctx, placeData)
+
 	return placeData, nil
 }
 
