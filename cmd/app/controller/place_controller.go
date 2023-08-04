@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"github.com/getsentry/sentry-go"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"placio-app/Dto"
@@ -54,7 +55,8 @@ func (c *PlaceController) getPlace(ctx *gin.Context) error {
 	cacheKey := "place:" + id
 	place, err := c.cache.GetCache(ctx, cacheKey)
 	if err == nil {
-		return errors.LogAndReturnError(err)
+		sentry.CaptureException(err)
+		return err
 	}
 
 	if place != nil {
@@ -64,7 +66,7 @@ func (c *PlaceController) getPlace(ctx *gin.Context) error {
 
 	placeData, err := c.placeService.GetPlace(ctx, id)
 	if err != nil {
-
+		sentry.CaptureException(err)
 		return err
 	}
 
