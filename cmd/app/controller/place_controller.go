@@ -82,12 +82,12 @@ func (c *PlaceController) getPlace(ctx *gin.Context) error {
 	}
 
 	// Cache the place data before returning
-	placeBytes, err = json.Marshal(placeData)
-	if err != nil {
-		sentry.CaptureException(err)
-		return err
-	}
-	c.cache.SetCache(ctx, cacheKey, placeBytes)
+	//placeBytes, err = json.Marshal(placeData)
+	//if err != nil {
+	//	sentry.CaptureException(err)
+	//	return err
+	//}
+	c.cache.SetCache(ctx, cacheKey, placeData)
 
 	ctx.JSON(http.StatusOK, placeData)
 	return nil
