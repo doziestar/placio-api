@@ -57,8 +57,11 @@ func (c *PlaceController) getPlace(ctx *gin.Context) error {
 	cacheKey := "place:" + id
 	placeBytes, err := c.cache.GetCache(ctx, cacheKey)
 	if err != nil {
-		sentry.CaptureException(err)
-		return err
+		// if the error is redis: nil, just ignore it and fetch from the database
+		if err.Error() != "redis: nil" {
+			sentry.CaptureException(err)
+			return err
+		}
 	}
 
 	if placeBytes != nil {
@@ -78,14 +81,13 @@ func (c *PlaceController) getPlace(ctx *gin.Context) error {
 		return err
 	}
 
-	go func() {
-		placeBytes, err = json.Marshal(placeData)
-		if err != nil {
-			sentry.CaptureException(err)
-			//return err
-		}
-		c.cache.SetCache(ctx, cacheKey, placeBytes)
-	}()
+	// Cache the place data before returning
+	placeBytes, err = json.Marshal(placeData)
+	if err != nil {
+		sentry.CaptureException(err)
+		return err
+	}
+	c.cache.SetCache(ctx, cacheKey, placeBytes)
 
 	ctx.JSON(http.StatusOK, placeData)
 	return nil
