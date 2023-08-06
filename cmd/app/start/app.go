@@ -2,7 +2,9 @@ package start
 
 import (
 	"context"
+	"crypto/tls"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/net/http2"
 	"log"
 	"net/http"
 	"os"
@@ -16,17 +18,12 @@ import (
 func Initialize(app *gin.Engine) {
 
 	err := sentry.Init(sentry.ClientOptions{
-		Dsn: os.Getenv("SENTRY_DSN"),
-		// Set TracesSampleRate to 1.0 to capture 100%
-		// of transactions for performance monitoring.
-		// We recommend adjusting this value in production,
+		Dsn:                os.Getenv("SENTRY_DSN"),
 		TracesSampleRate:   1.0,
 		EnableTracing:      true,
 		AttachStacktrace:   true,
 		ProfilesSampleRate: 1.0,
 		TracesSampler: sentry.TracesSampler(func(ctx sentry.SamplingContext) float64 {
-			// As an example, this custom sampler does not send some
-			// transactions to Sentry based on their name.
 			hub := sentry.GetHubFromContext(context.Background())
 			hub.Scope().SetTag("transaction", ctx.Parent.Name)
 			if hub == nil {
@@ -42,15 +39,23 @@ func Initialize(app *gin.Engine) {
 		log.Fatalf("sentry.Init: %s", err)
 	}
 
+	tlsConfig := &tls.Config{
+		// Cause the server to use HTTP/2.
+		NextProtos: []string{
+			http2.NextProtoTLS,
+		},
+	}
+
 	srv := &http.Server{
-		Addr:    ":" + os.Getenv("PORT"),
-		Handler: app,
+		Addr:      ":" + os.Getenv("PORT"),
+		Handler:   app,
+		TLSConfig: tlsConfig,
 	}
 
 	go func() {
 		// service connections
 		log.Println("Listening on port " + os.Getenv("PORT"))
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		if err := srv.ListenAndServeTLS("/app/cert/server.pem", "/app/cert/server.key"); err != nil && err != http.ErrServerClosed {
 			sentry.CaptureEvent(&sentry.Event{
 				Level:   sentry.LevelError,
 				Message: "Server Listen",
@@ -63,12 +68,7 @@ func Initialize(app *gin.Engine) {
 		}
 	}()
 
-	// Wait for interrupt signal to gracefully shutdown the server with
-	// a timeout of 5 seconds.
 	quit := make(chan os.Signal)
-	// kill (no param) default send syscanll.SIGTERM
-	// kill -2 is syscall.SIGINT
-	// kill -9 is syscall. SIGKILL but can"t be catch, so don't need add it
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 	log.Println("Shutdown Server ...")
@@ -85,11 +85,10 @@ func Initialize(app *gin.Engine) {
 		})
 		log.Fatal("Server Shutdown:", err)
 	}
-	// catching ctx.Done(). timeout of 5 seconds.
+
 	select {
 	case <-ctx.Done():
 		log.Println("timeout of 5 seconds.")
 	}
-	// Flush buffered events before the program terminates.
 	defer sentry.Flush(2 * time.Second)
 }
