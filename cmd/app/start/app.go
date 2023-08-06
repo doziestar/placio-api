@@ -90,7 +90,5 @@ func Initialize(app *gin.Engine) {
 	case <-ctx.Done():
 		log.Println("timeout of 5 seconds.")
 	}
-	log.Println("Server exiting")
-
 	defer sentry.Flush(2 * time.Second)
 }

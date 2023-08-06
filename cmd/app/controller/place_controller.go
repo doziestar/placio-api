@@ -1,8 +1,6 @@
 package controller
 
 import (
-	"encoding/json"
-	"github.com/getsentry/sentry-go"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"placio-app/Dto"
@@ -55,42 +53,7 @@ func (c *PlaceController) getPlace(ctx *gin.Context) error {
 
 	// get place from cache
 	cacheKey := "place:" + id
-	placeBytes, err := c.cache.GetCache(ctx, cacheKey)
-	if err != nil {
-		// if the error is redis: nil, just ignore it and fetch from the database
-		if err.Error() != "redis: nil" {
-			sentry.CaptureException(err)
-			return err
-		}
-	}
-
-	if placeBytes != nil {
-		var place ent.Place
-		err = json.Unmarshal(placeBytes, &place)
-		if err != nil {
-			sentry.CaptureException(err)
-			return err
-		}
-		ctx.JSON(http.StatusOK, place)
-		return nil
-	}
-
-	placeData, err := c.placeService.GetPlace(ctx, id)
-	if err != nil {
-		sentry.CaptureException(err)
-		return err
-	}
-
-	// Cache the place data before returning
-	//placeBytes, err = json.Marshal(placeData)
-	//if err != nil {
-	//	sentry.CaptureException(err)
-	//	return err
-	//}
-	c.cache.SetCache(ctx, cacheKey, placeData)
-
-	ctx.JSON(http.StatusOK, placeData)
-	return nil
+	return utility.GetDataFromCache[*ent.Place](ctx, &c.cache, c.placeService.GetPlace, id, cacheKey)
 }
 
 // @Summary Create a place

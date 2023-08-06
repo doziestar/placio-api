@@ -2,9 +2,11 @@ package controller
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"placio-app/Dto"
+	"placio-app/ent"
 	_ "placio-app/ent"
 	"placio-app/service"
 	"placio-app/utility"
@@ -15,10 +17,11 @@ import (
 type BusinessAccountController struct {
 	service      service.BusinessAccountService
 	eventService service.EventService
+	cache        utility.RedisClient
 }
 
-func NewBusinessAccountController(service service.BusinessAccountService) *BusinessAccountController {
-	return &BusinessAccountController{service: service}
+func NewBusinessAccountController(service service.BusinessAccountService, cache utility.RedisClient) *BusinessAccountController {
+	return &BusinessAccountController{service: service, cache: cache}
 }
 
 func (bc *BusinessAccountController) RegisterRoutes(router *gin.RouterGroup) {
@@ -521,13 +524,9 @@ func (bc *BusinessAccountController) deleteBusinessAccount(c *gin.Context) error
 // @Router /business/user-business-account [get]
 func (bc *BusinessAccountController) getUserBusinessAccounts(c *gin.Context) error {
 	log.Println("Get user business accounts")
-	businessAccount, err := bc.service.GetUserBusinessAccounts(c)
-	if err != nil {
-
-		return err
-	}
-	c.JSON(http.StatusOK, gin.H{"businessAccounts": businessAccount})
-	return nil
+	// get user id from context
+	userID := c.GetString("user")
+	return utility.GetDataFromCache[[]*ent.Business](c, &bc.cache, bc.service.GetUserBusinessAccounts, userID, fmt.Sprintf("business:%s", userID))
 }
 
 // @Summary Remove user from business account

@@ -4,7 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"github.com/getsentry/sentry-go"
+	"github.com/gin-gonic/gin"
 	"log"
+	"net/http"
 	"time"
 
 	"github.com/go-redis/redis/v8"
@@ -23,6 +26,42 @@ func NewRedisClient(host string, db int) *RedisClient {
 		db:   db,
 		exp:  24 * time.Hour,
 	}
+}
+
+func GetDataFromCache[T any](ctx *gin.Context, cache *RedisClient, service func(ctx2 context.Context, id string) (T, error), id, cacheKey string) error {
+
+	// get data from cache
+	bytes, err := cache.GetCache(ctx, cacheKey)
+	if err != nil {
+		// if the error is redis: nil, just ignore it and fetch from the database
+		if err.Error() != "redis: nil" {
+			sentry.CaptureException(err)
+			return err
+		}
+	}
+
+	if bytes != nil {
+		var data T
+		err = json.Unmarshal(bytes, &data)
+		if err != nil {
+			sentry.CaptureException(err)
+			return err
+		}
+		ctx.JSON(http.StatusOK, data)
+		return nil
+	}
+
+	data, err := service(ctx, id)
+	if err != nil {
+		sentry.CaptureException(err)
+		return err
+	}
+
+	// Cache the data before returning
+	cache.SetCache(ctx, cacheKey, data)
+
+	ctx.JSON(http.StatusOK, data)
+	return nil
 }
 
 func (r *RedisClient) ConnectRedis() *redis.Client {
