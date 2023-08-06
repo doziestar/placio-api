@@ -2,9 +2,11 @@ package controller
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	_ "placio-app/Dto"
+	"placio-app/ent"
 	_ "placio-app/ent"
 	"placio-app/models"
 	"placio-app/service"
@@ -17,10 +19,11 @@ import (
 
 type UserController struct {
 	userService service.UserService
+	cache       utility.RedisClient
 }
 
-func NewUserController(userService service.UserService) *UserController {
-	return &UserController{userService: userService}
+func NewUserController(userService service.UserService, cache utility.RedisClient) *UserController {
+	return &UserController{userService: userService, cache: cache}
 }
 
 func (uc *UserController) RegisterRoutes(router *gin.RouterGroup) {
@@ -438,13 +441,8 @@ func (uc *UserController) GetUser(ctx *gin.Context) error {
 		return errors.New("user Auth0 ID required")
 	}
 
-	user, err := uc.userService.GetUser(ctx, auth0ID)
-	if err != nil {
-		return err
-	}
+	return utility.GetDataFromCache[*ent.User](ctx, &uc.cache, uc.userService.GetUser, auth0ID, fmt.Sprintf("user:%s", auth0ID))
 
-	ctx.JSON(http.StatusOK, user)
-	return nil
 }
 
 // UpdateUser updates a user's details.

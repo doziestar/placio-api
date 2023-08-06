@@ -41,7 +41,7 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 
 		// user
 		userService := service.NewUserService(client, redisClient, searchService)
-		userController := controller.NewUserController(userService)
+		userController := controller.NewUserController(userService, *redisClient)
 		userController.RegisterRoutes(routerGroupV1)
 
 		// media
