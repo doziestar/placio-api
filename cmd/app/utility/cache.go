@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/getsentry/sentry-go"
 	"github.com/gin-gonic/gin"
 	"log"
@@ -47,6 +48,10 @@ func GetDataFromCache[T any](ctx *gin.Context, cache *RedisClient, service func(
 			sentry.CaptureException(err)
 			return err
 		}
+		if fmt.Sprintf("%T", data) == "[]*ent.Business" {
+			ctx.JSON(http.StatusOK, gin.H{"businessAccounts": data})
+			return nil
+		}
 		ctx.JSON(http.StatusOK, data)
 		return nil
 	}
@@ -59,6 +64,11 @@ func GetDataFromCache[T any](ctx *gin.Context, cache *RedisClient, service func(
 
 	// Cache the data before returning
 	cache.SetCache(ctx, cacheKey, data)
+
+	if fmt.Sprintf("%T", data) == "[]*ent.Business" {
+		ctx.JSON(http.StatusOK, gin.H{"businessAccounts": data})
+		return nil
+	}
 
 	ctx.JSON(http.StatusOK, data)
 	return nil
