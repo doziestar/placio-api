@@ -90,7 +90,6 @@ func Initialize(app *gin.Engine) {
 	case <-ctx.Done():
 		log.Println("timeout of 5 seconds.")
 	}
-	log.Println("Server exiting")
 	// Flush buffered events before the program terminates.
 	defer sentry.Flush(2 * time.Second)
 }
