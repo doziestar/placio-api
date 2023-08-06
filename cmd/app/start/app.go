@@ -55,7 +55,7 @@ func Initialize(app *gin.Engine) {
 	go func() {
 		// service connections
 		log.Println("Listening on port " + os.Getenv("PORT"))
-		if err := srv.ListenAndServeTLS("./cert/server.pem", "./cert/server.key"); err != nil && err != http.ErrServerClosed {
+		if err := srv.ListenAndServeTLS("/app/cert/server.pem", "/app/cert/server.key"); err != nil && err != http.ErrServerClosed {
 			sentry.CaptureEvent(&sentry.Event{
 				Level:   sentry.LevelError,
 				Message: "Server Listen",
