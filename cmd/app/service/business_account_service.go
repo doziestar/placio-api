@@ -21,7 +21,7 @@ import (
 type BusinessAccountService interface {
 	CreateBusinessAccount(ctx context.Context, businessData *Dto.BusinessDto) (*ent.Business, error)
 	GetBusinessAccount(ctx context.Context, businessAccountID string) (*ent.Business, error)
-	GetUserBusinessAccounts(ctx context.Context) ([]*ent.Business, error)
+	GetUserBusinessAccounts(ctx context.Context, userId string) ([]*ent.Business, error)
 	AssociateUserWithBusinessAccount(ctx context.Context, adminUser, userID, businessAccountID, role string) error
 	GetBusinessAccountsForUser(ctx context.Context, userID string) ([]*ent.UserBusiness, error)
 	ListBusinessAccounts(ctx context.Context, page, pageSize int, sortBy string, filters ...predicate.Business) ([]*ent.Business, error)
@@ -507,10 +507,9 @@ func (s *BusinessAccountServiceImpl) GetUsersForBusinessAccount(ctx context.Cont
 }
 
 // GetUserBusinessAccounts retrieves all business accounts associated with a specific user.
-func (s *BusinessAccountServiceImpl) GetUserBusinessAccounts(ctx context.Context) ([]*ent.Business, error) {
+func (s *BusinessAccountServiceImpl) GetUserBusinessAccounts(ctx context.Context, userId string) ([]*ent.Business, error) {
 	// Find the user with the provided ID.
-	log.Println("user id, getting business accounts", ctx.Value("user").(string))
-	user, err := s.client.User.Get(ctx, ctx.Value("user").(string))
+	user, err := s.client.User.Get(ctx, userId)
 	if err != nil {
 		return nil, fmt.Errorf("failed querying user: %w", err)
 	}

@@ -102,7 +102,7 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 
 		// business
 		businessService := service.NewBusinessAccountService(client, searchService, redisClient, placeService)
-		businessController := controller.NewBusinessAccountController(businessService)
+		businessController := controller.NewBusinessAccountController(businessService, *redisClient)
 		businessController.RegisterRoutes(routerGroupV1)
 
 		// posts
