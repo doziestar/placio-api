@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/getsentry/sentry-go"
 	"github.com/google/uuid"
 	"log"
 	"placio-app/Dto"
@@ -509,17 +510,19 @@ func (s *BusinessAccountServiceImpl) GetUsersForBusinessAccount(ctx context.Cont
 // GetUserBusinessAccounts retrieves all business accounts associated with a specific user.
 func (s *BusinessAccountServiceImpl) GetUserBusinessAccounts(ctx context.Context, userId string) ([]*ent.Business, error) {
 	// Find the user with the provided ID.
-	user, err := s.client.User.Get(ctx, userId)
-	if err != nil {
-		return nil, fmt.Errorf("failed querying user: %w", err)
-	}
-
-	// Query the associated businesses.
-	businesses, err := user.QueryUserBusinesses().
+	businesses, err := s.client.User.Query().
+		Where(user.IDEQ(userId)).
+		QueryUserBusinesses().
 		QueryBusiness().
+		WithFollowedBusinesses().
+		WithFollowerUsers().
+		WithFollowedUsers().
+		WithFollowerBusinesses().
 		All(ctx)
+
 	if err != nil {
-		return nil, fmt.Errorf("failed querying user's businesses: %w", err)
+		sentry.CaptureException(err)
+		return nil, err
 	}
 
 	return businesses, nil
