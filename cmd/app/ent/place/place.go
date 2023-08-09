@@ -93,6 +93,8 @@ const (
 	EdgeAmenities = "amenities"
 	// EdgeMenus holds the string denoting the menus edge name in mutations.
 	EdgeMenus = "menus"
+	// EdgeMedias holds the string denoting the medias edge name in mutations.
+	EdgeMedias = "medias"
 	// EdgeRooms holds the string denoting the rooms edge name in mutations.
 	EdgeRooms = "rooms"
 	// EdgeReservations holds the string denoting the reservations edge name in mutations.
@@ -151,6 +153,11 @@ const (
 	MenusInverseTable = "menus"
 	// MenusColumn is the table column denoting the menus relation/edge.
 	MenusColumn = "place_menus"
+	// MediasTable is the table that holds the medias relation/edge. The primary key declared below.
+	MediasTable = "place_medias"
+	// MediasInverseTable is the table name for the Media entity.
+	// It exists in this package in order to avoid circular dependency with the "media" package.
+	MediasInverseTable = "media"
 	// RoomsTable is the table that holds the rooms relation/edge.
 	RoomsTable = "rooms"
 	// RoomsInverseTable is the table name for the Room entity.
@@ -267,6 +274,9 @@ var (
 	// AmenitiesPrimaryKey and AmenitiesColumn2 are the table columns denoting the
 	// primary key for the amenities relation (M2M).
 	AmenitiesPrimaryKey = []string{"amenity_id", "place_id"}
+	// MediasPrimaryKey and MediasColumn2 are the table columns denoting the
+	// primary key for the medias relation (M2M).
+	MediasPrimaryKey = []string{"place_id", "media_id"}
 	// FaqsPrimaryKey and FaqsColumn2 are the table columns denoting the
 	// primary key for the faqs relation (M2M).
 	FaqsPrimaryKey = []string{"faq_id", "place_id"}
@@ -517,6 +527,20 @@ func ByMenus(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	}
 }
 
+// ByMediasCount orders the results by medias count.
+func ByMediasCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newMediasStep(), opts...)
+	}
+}
+
+// ByMedias orders the results by medias terms.
+func ByMedias(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newMediasStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
 // ByRoomsCount orders the results by rooms count.
 func ByRoomsCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -682,6 +706,13 @@ func newMenusStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(MenusInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, MenusTable, MenusColumn),
+	)
+}
+func newMediasStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(MediasInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, false, MediasTable, MediasPrimaryKey...),
 	)
 }
 func newRoomsStep() *sqlgraph.Step {

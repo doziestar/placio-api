@@ -1,4 +1,4 @@
-package controller
+package users
 
 import (
 	"errors"
@@ -9,7 +9,6 @@ import (
 	"placio-app/ent"
 	_ "placio-app/ent"
 	"placio-app/models"
-	"placio-app/service"
 	"placio-app/utility"
 	"strconv"
 
@@ -18,11 +17,11 @@ import (
 )
 
 type UserController struct {
-	userService service.UserService
+	userService UserService
 	cache       utility.RedisClient
 }
 
-func NewUserController(userService service.UserService, cache utility.RedisClient) *UserController {
+func NewUserController(userService UserService, cache utility.RedisClient) *UserController {
 	return &UserController{userService: userService, cache: cache}
 }
 

@@ -1,4 +1,4 @@
-package Dto
+package categories
 
 import "mime/multipart"
 

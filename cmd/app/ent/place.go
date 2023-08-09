@@ -108,6 +108,8 @@ type PlaceEdges struct {
 	Amenities []*Amenity `json:"amenities,omitempty"`
 	// Menus holds the value of the menus edge.
 	Menus []*Menu `json:"menus,omitempty"`
+	// Medias holds the value of the medias edge.
+	Medias []*Media `json:"medias,omitempty"`
 	// Rooms holds the value of the rooms edge.
 	Rooms []*Room `json:"rooms,omitempty"`
 	// Reservations holds the value of the reservations edge.
@@ -128,7 +130,7 @@ type PlaceEdges struct {
 	Ratings []*Rating `json:"ratings,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [15]bool
+	loadedTypes [16]bool
 }
 
 // BusinessOrErr returns the Business value or an error if the edge
@@ -189,10 +191,19 @@ func (e PlaceEdges) MenusOrErr() ([]*Menu, error) {
 	return nil, &NotLoadedError{edge: "menus"}
 }
 
+// MediasOrErr returns the Medias value or an error if the edge
+// was not loaded in eager-loading.
+func (e PlaceEdges) MediasOrErr() ([]*Media, error) {
+	if e.loadedTypes[6] {
+		return e.Medias, nil
+	}
+	return nil, &NotLoadedError{edge: "medias"}
+}
+
 // RoomsOrErr returns the Rooms value or an error if the edge
 // was not loaded in eager-loading.
 func (e PlaceEdges) RoomsOrErr() ([]*Room, error) {
-	if e.loadedTypes[6] {
+	if e.loadedTypes[7] {
 		return e.Rooms, nil
 	}
 	return nil, &NotLoadedError{edge: "rooms"}
@@ -201,7 +212,7 @@ func (e PlaceEdges) RoomsOrErr() ([]*Room, error) {
 // ReservationsOrErr returns the Reservations value or an error if the edge
 // was not loaded in eager-loading.
 func (e PlaceEdges) ReservationsOrErr() ([]*Reservation, error) {
-	if e.loadedTypes[7] {
+	if e.loadedTypes[8] {
 		return e.Reservations, nil
 	}
 	return nil, &NotLoadedError{edge: "reservations"}
@@ -210,7 +221,7 @@ func (e PlaceEdges) ReservationsOrErr() ([]*Reservation, error) {
 // BookingsOrErr returns the Bookings value or an error if the edge
 // was not loaded in eager-loading.
 func (e PlaceEdges) BookingsOrErr() ([]*Booking, error) {
-	if e.loadedTypes[8] {
+	if e.loadedTypes[9] {
 		return e.Bookings, nil
 	}
 	return nil, &NotLoadedError{edge: "bookings"}
@@ -219,7 +230,7 @@ func (e PlaceEdges) BookingsOrErr() ([]*Booking, error) {
 // CategoriesOrErr returns the Categories value or an error if the edge
 // was not loaded in eager-loading.
 func (e PlaceEdges) CategoriesOrErr() ([]*Category, error) {
-	if e.loadedTypes[9] {
+	if e.loadedTypes[10] {
 		return e.Categories, nil
 	}
 	return nil, &NotLoadedError{edge: "categories"}
@@ -228,7 +239,7 @@ func (e PlaceEdges) CategoriesOrErr() ([]*Category, error) {
 // CategoryAssignmentsOrErr returns the CategoryAssignments value or an error if the edge
 // was not loaded in eager-loading.
 func (e PlaceEdges) CategoryAssignmentsOrErr() ([]*CategoryAssignment, error) {
-	if e.loadedTypes[10] {
+	if e.loadedTypes[11] {
 		return e.CategoryAssignments, nil
 	}
 	return nil, &NotLoadedError{edge: "categoryAssignments"}
@@ -237,7 +248,7 @@ func (e PlaceEdges) CategoryAssignmentsOrErr() ([]*CategoryAssignment, error) {
 // FaqsOrErr returns the Faqs value or an error if the edge
 // was not loaded in eager-loading.
 func (e PlaceEdges) FaqsOrErr() ([]*FAQ, error) {
-	if e.loadedTypes[11] {
+	if e.loadedTypes[12] {
 		return e.Faqs, nil
 	}
 	return nil, &NotLoadedError{edge: "faqs"}
@@ -246,7 +257,7 @@ func (e PlaceEdges) FaqsOrErr() ([]*FAQ, error) {
 // LikedByUsersOrErr returns the LikedByUsers value or an error if the edge
 // was not loaded in eager-loading.
 func (e PlaceEdges) LikedByUsersOrErr() ([]*UserLikePlace, error) {
-	if e.loadedTypes[12] {
+	if e.loadedTypes[13] {
 		return e.LikedByUsers, nil
 	}
 	return nil, &NotLoadedError{edge: "likedByUsers"}
@@ -255,7 +266,7 @@ func (e PlaceEdges) LikedByUsersOrErr() ([]*UserLikePlace, error) {
 // FollowerUsersOrErr returns the FollowerUsers value or an error if the edge
 // was not loaded in eager-loading.
 func (e PlaceEdges) FollowerUsersOrErr() ([]*UserFollowPlace, error) {
-	if e.loadedTypes[13] {
+	if e.loadedTypes[14] {
 		return e.FollowerUsers, nil
 	}
 	return nil, &NotLoadedError{edge: "followerUsers"}
@@ -264,7 +275,7 @@ func (e PlaceEdges) FollowerUsersOrErr() ([]*UserFollowPlace, error) {
 // RatingsOrErr returns the Ratings value or an error if the edge
 // was not loaded in eager-loading.
 func (e PlaceEdges) RatingsOrErr() ([]*Rating, error) {
-	if e.loadedTypes[14] {
+	if e.loadedTypes[15] {
 		return e.Ratings, nil
 	}
 	return nil, &NotLoadedError{edge: "ratings"}
@@ -589,6 +600,11 @@ func (pl *Place) QueryAmenities() *AmenityQuery {
 // QueryMenus queries the "menus" edge of the Place entity.
 func (pl *Place) QueryMenus() *MenuQuery {
 	return NewPlaceClient(pl.config).QueryMenus(pl)
+}
+
+// QueryMedias queries the "medias" edge of the Place entity.
+func (pl *Place) QueryMedias() *MediaQuery {
+	return NewPlaceClient(pl.config).QueryMedias(pl)
 }
 
 // QueryRooms queries the "rooms" edge of the Place entity.

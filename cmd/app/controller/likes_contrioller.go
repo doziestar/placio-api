@@ -4,17 +4,17 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	_ "placio-app/Dto"
+	"placio-app/domains/like"
 	_ "placio-app/ent"
-	"placio-app/service"
 	"placio-app/utility"
 )
 
 type LikeController struct {
-	likeService     service.LikeService
-	userPlacesLikes service.UserLikePlaceService
+	likeService     like.LikeService
+	userPlacesLikes like.UserLikePlaceService
 }
 
-func NewLikeController(likeService service.LikeService, userPlacesLikes service.UserLikePlaceService) *LikeController {
+func NewLikeController(likeService like.LikeService, userPlacesLikes like.UserLikePlaceService) *LikeController {
 	return &LikeController{likeService: likeService, userPlacesLikes: userPlacesLikes}
 }
 

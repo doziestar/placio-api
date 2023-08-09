@@ -1,4 +1,4 @@
-package Dto
+package search
 
 import "placio-app/ent"
 

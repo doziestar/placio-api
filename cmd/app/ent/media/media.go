@@ -32,6 +32,8 @@ const (
 	EdgeReview = "review"
 	// EdgeCategories holds the string denoting the categories edge name in mutations.
 	EdgeCategories = "categories"
+	// EdgePlace holds the string denoting the place edge name in mutations.
+	EdgePlace = "place"
 	// Table holds the table name of the media in the database.
 	Table = "media"
 	// PostTable is the table that holds the post relation/edge.
@@ -55,6 +57,11 @@ const (
 	CategoriesInverseTable = "categories"
 	// CategoriesColumn is the table column denoting the categories relation/edge.
 	CategoriesColumn = "media_categories"
+	// PlaceTable is the table that holds the place relation/edge. The primary key declared below.
+	PlaceTable = "place_medias"
+	// PlaceInverseTable is the table name for the Place entity.
+	// It exists in this package in order to avoid circular dependency with the "place" package.
+	PlaceInverseTable = "places"
 )
 
 // Columns holds all SQL columns for media fields.
@@ -74,6 +81,12 @@ var ForeignKeys = []string{
 	"post_medias",
 	"review_medias",
 }
+
+var (
+	// PlacePrimaryKey and PlaceColumn2 are the table columns denoting the
+	// primary key for the place relation (M2M).
+	PlacePrimaryKey = []string{"place_id", "media_id"}
+)
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
@@ -170,6 +183,20 @@ func ByCategories(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newCategoriesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByPlaceCount orders the results by place count.
+func ByPlaceCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newPlaceStep(), opts...)
+	}
+}
+
+// ByPlace orders the results by place terms.
+func ByPlace(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newPlaceStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newPostStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -189,5 +216,12 @@ func newCategoriesStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CategoriesInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, CategoriesTable, CategoriesColumn),
+	)
+}
+func newPlaceStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(PlaceInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, true, PlaceTable, PlacePrimaryKey...),
 	)
 }

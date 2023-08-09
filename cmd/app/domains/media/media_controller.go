@@ -1,4 +1,4 @@
-package controller
+package media
 
 import (
 	"fmt"
@@ -6,15 +6,14 @@ import (
 	"net/http"
 	_ "placio-app/Dto"
 	_ "placio-app/ent"
-	"placio-app/service"
 	"placio-app/utility"
 )
 
 type MediaController struct {
-	mediaService service.MediaService
+	mediaService MediaService
 }
 
-func NewMediaController(mediaService service.MediaService) *MediaController {
+func NewMediaController(mediaService MediaService) *MediaController {
 	return &MediaController{mediaService: mediaService}
 }
 

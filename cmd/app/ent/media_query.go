@@ -9,6 +9,7 @@ import (
 	"math"
 	"placio-app/ent/category"
 	"placio-app/ent/media"
+	"placio-app/ent/place"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
 	"placio-app/ent/review"
@@ -28,6 +29,7 @@ type MediaQuery struct {
 	withPost       *PostQuery
 	withReview     *ReviewQuery
 	withCategories *CategoryQuery
+	withPlace      *PlaceQuery
 	withFKs        bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -124,6 +126,28 @@ func (mq *MediaQuery) QueryCategories() *CategoryQuery {
 			sqlgraph.From(media.Table, media.FieldID, selector),
 			sqlgraph.To(category.Table, category.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, media.CategoriesTable, media.CategoriesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryPlace chains the current query on the "place" edge.
+func (mq *MediaQuery) QueryPlace() *PlaceQuery {
+	query := (&PlaceClient{config: mq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := mq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := mq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(media.Table, media.FieldID, selector),
+			sqlgraph.To(place.Table, place.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, media.PlaceTable, media.PlacePrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
 		return fromU, nil
@@ -326,6 +350,7 @@ func (mq *MediaQuery) Clone() *MediaQuery {
 		withPost:       mq.withPost.Clone(),
 		withReview:     mq.withReview.Clone(),
 		withCategories: mq.withCategories.Clone(),
+		withPlace:      mq.withPlace.Clone(),
 		// clone intermediate query.
 		sql:  mq.sql.Clone(),
 		path: mq.path,
@@ -362,6 +387,17 @@ func (mq *MediaQuery) WithCategories(opts ...func(*CategoryQuery)) *MediaQuery {
 		opt(query)
 	}
 	mq.withCategories = query
+	return mq
+}
+
+// WithPlace tells the query-builder to eager-load the nodes that are connected to
+// the "place" edge. The optional arguments are used to configure the query builder of the edge.
+func (mq *MediaQuery) WithPlace(opts ...func(*PlaceQuery)) *MediaQuery {
+	query := (&PlaceClient{config: mq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	mq.withPlace = query
 	return mq
 }
 
@@ -444,10 +480,11 @@ func (mq *MediaQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Media,
 		nodes       = []*Media{}
 		withFKs     = mq.withFKs
 		_spec       = mq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [4]bool{
 			mq.withPost != nil,
 			mq.withReview != nil,
 			mq.withCategories != nil,
+			mq.withPlace != nil,
 		}
 	)
 	if mq.withPost != nil || mq.withReview != nil {
@@ -490,6 +527,13 @@ func (mq *MediaQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Media,
 		if err := mq.loadCategories(ctx, query, nodes,
 			func(n *Media) { n.Edges.Categories = []*Category{} },
 			func(n *Media, e *Category) { n.Edges.Categories = append(n.Edges.Categories, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := mq.withPlace; query != nil {
+		if err := mq.loadPlace(ctx, query, nodes,
+			func(n *Media) { n.Edges.Place = []*Place{} },
+			func(n *Media, e *Place) { n.Edges.Place = append(n.Edges.Place, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -588,6 +632,67 @@ func (mq *MediaQuery) loadCategories(ctx context.Context, query *CategoryQuery, 
 			return fmt.Errorf(`unexpected referenced foreign-key "media_categories" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
+	}
+	return nil
+}
+func (mq *MediaQuery) loadPlace(ctx context.Context, query *PlaceQuery, nodes []*Media, init func(*Media), assign func(*Media, *Place)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[string]*Media)
+	nids := make(map[string]map[*Media]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(media.PlaceTable)
+		s.Join(joinT).On(s.C(place.FieldID), joinT.C(media.PlacePrimaryKey[0]))
+		s.Where(sql.InValues(joinT.C(media.PlacePrimaryKey[1]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(media.PlacePrimaryKey[1]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(sql.NullString)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := values[0].(*sql.NullString).String
+				inValue := values[1].(*sql.NullString).String
+				if nids[inValue] == nil {
+					nids[inValue] = map[*Media]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*Place](ctx, query, qr, query.inters)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "place" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
+		}
 	}
 	return nil
 }

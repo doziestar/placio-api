@@ -1,4 +1,4 @@
-package service
+package media
 
 import (
 	"context"
@@ -10,7 +10,6 @@ import (
 	"log"
 	"mime/multipart"
 	"placio-app/ent"
-	"sync"
 )
 
 type MediaService interface {
@@ -112,28 +111,29 @@ func (s *MediaServiceImpl) GetMedia(ctx context.Context, mediaID string) (*ent.M
 }
 
 func (s *MediaServiceImpl) UploadAndCreateMedia(ctx context.Context, files []*multipart.FileHeader) ([]*ent.Media, error) {
-	mediaInfos, err := s.UploadFiles(ctx, files)
+	// Upload files
+	uploadedFiles, err := s.UploadFiles(ctx, files)
 	if err != nil {
 		return nil, fmt.Errorf("failed uploading files: %w", err)
 	}
 
-	wg := sync.WaitGroup{}
+	// Prepare media creations
+	mediaCreations := make([]*ent.MediaCreate, len(uploadedFiles))
 
-	// Create media
-	mediaList := make([]*ent.Media, 0, len(mediaInfos))
-	for _, info := range mediaInfos {
-		wg.Add(1)
-		go func(info MediaInfo) {
-			defer wg.Done()
-			media, err := s.CreateMedia(ctx, info.URL, info.MediaType)
-			if err != nil {
-				log.Println("Error creating media", err)
-				return
-			}
-			mediaList = append(mediaList, media)
-		}(info)
+	for i, file := range uploadedFiles {
+		mediaID := uuid.New().String()
+		mediaCreations[i] = s.client.Media.
+			Create().
+			SetID(mediaID).
+			SetMediaType(file.MediaType).
+			SetURL(file.URL)
 	}
-	wg.Wait()
+
+	// Bulk create media
+	mediaList, err := s.client.Media.CreateBulk(mediaCreations...).Save(ctx)
+	if err != nil {
+		return nil, err
+	}
 
 	return mediaList, nil
 }

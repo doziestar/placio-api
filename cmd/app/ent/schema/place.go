@@ -70,6 +70,7 @@ func (Place) Edges() []ent.Edge {
 		edge.From("amenities", Amenity.Type).
 			Ref("places"),
 		edge.To("menus", Menu.Type),
+		edge.To("medias", Media.Type),
 		edge.To("rooms", Room.Type),
 		edge.To("reservations", Reservation.Type),
 		edge.To("bookings", Booking.Type),

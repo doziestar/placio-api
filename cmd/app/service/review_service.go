@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 	"log"
 	"mime/multipart"
+	"placio-app/domains/media"
 	"placio-app/ent"
 	"placio-app/ent/business"
 	"placio-app/ent/event"
@@ -70,10 +71,10 @@ func (rb ReviewableBusiness) GetID() string {
 
 type ReviewServiceImpl struct {
 	client       *ent.Client
-	mediaService MediaService
+	mediaService media.MediaService
 }
 
-func NewReviewService(client *ent.Client, mediaService MediaService) ReviewService {
+func NewReviewService(client *ent.Client, mediaService media.MediaService) ReviewService {
 	return &ReviewServiceImpl{client: client, mediaService: mediaService}
 }
 

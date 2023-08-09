@@ -1,10 +1,11 @@
-package service
+package categories
 
 import (
 	"context"
 	"github.com/google/uuid"
 	"log"
 	"mime/multipart"
+	media2 "placio-app/domains/media"
 	"placio-app/ent"
 	"placio-app/ent/category"
 	"placio-app/ent/categoryassignment"
@@ -44,10 +45,10 @@ type EntityQueryFunc func(*ent.Query) *ent.Query
 
 type CategoryServiceImpl struct {
 	client       *ent.Client
-	mediaService MediaService
+	mediaService media2.MediaService
 }
 
-func NewCategoryService(client *ent.Client, mediaService MediaService) CategoryService {
+func NewCategoryService(client *ent.Client, mediaService media2.MediaService) CategoryService {
 	return &CategoryServiceImpl{client: client, mediaService: mediaService}
 }
 

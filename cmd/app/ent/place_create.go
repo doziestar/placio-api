@@ -13,6 +13,7 @@ import (
 	"placio-app/ent/categoryassignment"
 	"placio-app/ent/event"
 	"placio-app/ent/faq"
+	"placio-app/ent/media"
 	"placio-app/ent/menu"
 	"placio-app/ent/place"
 	"placio-app/ent/rating"
@@ -522,6 +523,21 @@ func (pc *PlaceCreate) AddMenus(m ...*Menu) *PlaceCreate {
 	return pc.AddMenuIDs(ids...)
 }
 
+// AddMediaIDs adds the "medias" edge to the Media entity by IDs.
+func (pc *PlaceCreate) AddMediaIDs(ids ...string) *PlaceCreate {
+	pc.mutation.AddMediaIDs(ids...)
+	return pc
+}
+
+// AddMedias adds the "medias" edges to the Media entity.
+func (pc *PlaceCreate) AddMedias(m ...*Media) *PlaceCreate {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return pc.AddMediaIDs(ids...)
+}
+
 // AddRoomIDs adds the "rooms" edge to the Room entity by IDs.
 func (pc *PlaceCreate) AddRoomIDs(ids ...string) *PlaceCreate {
 	pc.mutation.AddRoomIDs(ids...)
@@ -1014,6 +1030,22 @@ func (pc *PlaceCreate) createSpec() (*Place, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.MediasIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.MediasTable,
+			Columns: place.MediasPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

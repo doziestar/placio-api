@@ -1832,6 +1832,29 @@ func HasMenusWith(preds ...predicate.Menu) predicate.Place {
 	})
 }
 
+// HasMedias applies the HasEdge predicate on the "medias" edge.
+func HasMedias() predicate.Place {
+	return predicate.Place(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, MediasTable, MediasPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasMediasWith applies the HasEdge predicate on the "medias" edge with a given conditions (other predicates).
+func HasMediasWith(preds ...predicate.Media) predicate.Place {
+	return predicate.Place(func(s *sql.Selector) {
+		step := newMediasStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasRooms applies the HasEdge predicate on the "rooms" edge.
 func HasRooms() predicate.Place {
 	return predicate.Place(func(s *sql.Selector) {

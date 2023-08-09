@@ -4,18 +4,18 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	_ "placio-app/Dto"
+	"placio-app/domains/categories"
 	_ "placio-app/ent"
 	"placio-app/errors"
-	"placio-app/service"
 	"placio-app/utility"
 	"strconv"
 )
 
 type CategoryController struct {
-	categoryService service.CategoryService
+	categoryService categories.CategoryService
 }
 
-func NewCategoryController(categoryService service.CategoryService) *CategoryController {
+func NewCategoryController(categoryService categories.CategoryService) *CategoryController {
 	return &CategoryController{categoryService: categoryService}
 }
 

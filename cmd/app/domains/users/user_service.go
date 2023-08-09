@@ -1,4 +1,4 @@
-package service
+package users
 
 import (
 	"bytes"
@@ -11,6 +11,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"placio-app/domains/search"
 	"placio-app/ent"
 	"placio-app/ent/business"
 	"placio-app/ent/like"
@@ -63,7 +64,7 @@ type UserService interface {
 type UserServiceImpl struct {
 	client        *ent.Client
 	cache         *utility.RedisClient
-	searchService SearchService
+	searchService search.SearchService
 }
 
 type auth0TokenResponse struct {
@@ -72,7 +73,7 @@ type auth0TokenResponse struct {
 	ExpiresIn   int    `json:"expires_in"`
 }
 
-func NewUserService(client *ent.Client, cache *utility.RedisClient, searchService SearchService) *UserServiceImpl {
+func NewUserService(client *ent.Client, cache *utility.RedisClient, searchService search.SearchService) *UserServiceImpl {
 	return &UserServiceImpl{client: client, cache: cache, searchService: searchService}
 }
 

@@ -1,4 +1,4 @@
-package service
+package places
 
 import (
 	"context"
@@ -6,10 +6,14 @@ import (
 	"github.com/getsentry/sentry-go"
 	"github.com/google/uuid"
 	"log"
-	"placio-app/Dto"
+	"mime/multipart"
+	"placio-app/domains/like"
+	"placio-app/domains/media"
+	"placio-app/domains/search"
 	"placio-app/ent"
 	"placio-app/ent/business"
 	"placio-app/ent/place"
+	"placio-app/service"
 	"placio-app/utility"
 	"sync"
 )
@@ -30,8 +34,9 @@ type PlaceFilter struct {
 
 type PlaceService interface {
 	GetPlace(ctx context.Context, placeID string) (*ent.Place, error)
-	CreatePlace(ctx context.Context, placeData Dto.CreatePlaceDTO) (*ent.Place, error)
-	UpdatePlace(ctx context.Context, placeID string, placeData Dto.UpdatePlaceDTO) (*ent.Place, error)
+	CreatePlace(ctx context.Context, placeData CreatePlaceDTO) (*ent.Place, error)
+	UpdatePlace(ctx context.Context, placeID string, placeData UpdatePlaceDTO) (*ent.Place, error)
+	AddMediaToPlace(ctx context.Context, placeID string, files []*multipart.FileHeader) error
 	DeletePlace(ctx context.Context, placeID string) error
 	GetPlacesAssociatedWithBusinessAccount(c context.Context, businessId string) ([]*ent.Place, error)
 	GetPlaces(ctx context.Context, filter *PlaceFilter, lastId string, limit int) ([]*ent.Place, string, error)
@@ -41,14 +46,15 @@ type PlaceService interface {
 
 type PlaceServiceImpl struct {
 	client        *ent.Client
-	searchService SearchService
-	userLikes     UserLikePlaceService
-	followService FollowService
+	searchService search.SearchService
+	userLikes     like.UserLikePlaceService
+	followService service.FollowService
 	cache         utility.RedisClient
+	mediaService  media.MediaService
 }
 
-func NewPlaceService(client *ent.Client, searchService SearchService, userLikes UserLikePlaceService, followService FollowService, cache utility.RedisClient) *PlaceServiceImpl {
-	return &PlaceServiceImpl{client: client, searchService: searchService, userLikes: userLikes, followService: followService, cache: cache}
+func NewPlaceService(client *ent.Client, searchService search.SearchService, userLikes like.UserLikePlaceService, followService service.FollowService, cache utility.RedisClient, mediaService media.MediaService) *PlaceServiceImpl {
+	return &PlaceServiceImpl{client: client, searchService: searchService, userLikes: userLikes, followService: followService, cache: cache, mediaService: mediaService}
 }
 
 func (s *PlaceServiceImpl) GetPlacesAssociatedWithBusinessAccount(c context.Context, businessId string) ([]*ent.Place, error) {
@@ -202,7 +208,7 @@ func (s *PlaceServiceImpl) checkUserInteraction(ctx context.Context, userID, pla
 	return nil
 }
 
-func (s *PlaceServiceImpl) CreatePlace(ctx context.Context, placeData Dto.CreatePlaceDTO) (*ent.Place, error) {
+func (s *PlaceServiceImpl) CreatePlace(ctx context.Context, placeData CreatePlaceDTO) (*ent.Place, error) {
 	// get the user from the context
 	user := ctx.Value("user").(string)
 	// get user from database
@@ -340,6 +346,36 @@ func (s *PlaceServiceImpl) addPlaceToCacheAndSearchIndex(ctx context.Context, pl
 	return nil
 }
 
+func (s *PlaceServiceImpl) AddMediaToPlace(ctx context.Context, placeID string, files []*multipart.FileHeader) error {
+	// Fetch place
+	place, err := s.client.Place.Get(ctx, placeID)
+	if err != nil {
+		return err
+	}
+
+	// Upload files to cloudinary
+	uploadedFiles, err := s.mediaService.UploadAndCreateMedia(ctx, files)
+	if err != nil {
+		return err
+	}
+
+	mediaIDs := make([]string, len(uploadedFiles))
+
+	for _, file := range uploadedFiles {
+		mediaIDs = append(mediaIDs, file.ID)
+	}
+
+	_, err = s.client.Place.UpdateOneID(placeID).AddMediaIDs(mediaIDs...).Save(ctx)
+	if err != nil {
+		return err
+	}
+
+	// Add the updated place to the search index and cache
+	go s.addPlaceToCacheAndSearchIndex(ctx, place)
+
+	return nil
+}
+
 func (s *PlaceServiceImpl) AddAmenitiesToPlace(ctx context.Context, placeID string, amenityIDs []string) error {
 	// Fetch place
 	place, err := s.client.Place.Get(ctx, placeID)
@@ -377,7 +413,7 @@ func (s *PlaceServiceImpl) AddAmenitiesToPlace(ctx context.Context, placeID stri
 	return nil
 }
 
-func (s *PlaceServiceImpl) UpdatePlace(ctx context.Context, placeID string, placeData Dto.UpdatePlaceDTO) (*ent.Place, error) {
+func (s *PlaceServiceImpl) UpdatePlace(ctx context.Context, placeID string, placeData UpdatePlaceDTO) (*ent.Place, error) {
 
 	place, err := s.client.Place.
 		UpdateOneID(placeID).

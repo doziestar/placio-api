@@ -4,6 +4,15 @@ import (
 	"github.com/cloudinary/cloudinary-go/v2"
 	_ "placio-api/docs/app"
 	"placio-app/controller"
+	"placio-app/domains/amenities"
+	"placio-app/domains/business"
+	"placio-app/domains/categories"
+	"placio-app/domains/events_management"
+	"placio-app/domains/like"
+	"placio-app/domains/media"
+	"placio-app/domains/places"
+	"placio-app/domains/search"
+	"placio-app/domains/users"
 	"placio-app/ent"
 	"placio-app/middleware"
 	"placio-app/service"
@@ -32,21 +41,21 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 
 		cld, _ := cloudinary.NewFromParams("placio", "312498583624125", "k4XSQwWuhi3Vy7QAw7Qn0mUaW0s")
 
-		searchService, _ := service.NewSearchService(client)
-		searchController := controller.NewSearchController(searchService)
+		searchService, _ := search.NewSearchService(client)
+		searchController := search.NewSearchController(searchService)
 		searchController.RegisterRoutes(routerGroupV1)
 
 		routerGroupV1.Use(middleware.EnsureValidToken())
 		routerGroupV1WithoutAuth.Use(middleware.EnsureValidTokenButAllowAccess())
 
 		// user
-		userService := service.NewUserService(client, redisClient, searchService)
-		userController := controller.NewUserController(userService, *redisClient)
+		userService := users.NewUserService(client, redisClient, searchService)
+		userController := users.NewUserController(userService, *redisClient)
 		userController.RegisterRoutes(routerGroupV1)
 
 		// media
-		mediaService := service.NewMediaService(client, cld)
-		mediaController := controller.NewMediaController(mediaService)
+		mediaService := media.NewMediaService(client, cld)
+		mediaController := media.NewMediaController(mediaService)
 		mediaController.RegisterRoutes(routerGroupV1WithoutAuth)
 
 		// comments
@@ -55,8 +64,8 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		commentController.RegisterRoutes(routerGroupV1)
 
 		// likes
-		likeService := service.NewLikeService(client, redisClient)
-		userPlacesLikesService := service.NewUserLikePlaceService(client, redisClient)
+		likeService := like.NewLikeService(client, redisClient)
+		userPlacesLikesService := like.NewUserLikePlaceService(client, redisClient)
 		likeController := controller.NewLikeController(likeService, userPlacesLikesService)
 		likeController.RegisterRoutes(routerGroupV1)
 
@@ -66,8 +75,8 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		followController.RegisterRoutes(routerGroupV1)
 
 		// places
-		placeService := service.NewPlaceService(client, searchService, userPlacesLikesService, *followService, *redisClient)
-		placeController := controller.NewPlaceController(placeService, *redisClient)
+		placeService := places.NewPlaceService(client, searchService, userPlacesLikesService, *followService, *redisClient, mediaService)
+		placeController := places.NewPlaceController(placeService, *redisClient)
 		placeController.RegisterRoutes(routerGroupV1, routerGroupV1WithoutAuth)
 
 		// reservations
@@ -96,12 +105,12 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		helpController.RegisterRoutes(routerGroupV1)
 
 		// category
-		categoryService := service.NewCategoryService(client, mediaService)
+		categoryService := categories.NewCategoryService(client, mediaService)
 		categoryController := controller.NewCategoryController(categoryService)
 		categoryController.RegisterRoutes(routerGroupV1)
 
 		// business
-		businessService := service.NewBusinessAccountService(client, searchService, redisClient, placeService)
+		businessService := business.NewBusinessAccountService(client, searchService, redisClient, placeService)
 		businessController := controller.NewBusinessAccountController(businessService, *redisClient)
 		businessController.RegisterRoutes(routerGroupV1)
 
@@ -111,12 +120,12 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		postController.RegisterRoutes(routerGroupV1)
 
 		// events
-		eventService := service.NewEventService(client, searchService)
+		eventService := events_management.NewEventService(client, searchService)
 		eventController := controller.NewEventController(eventService, utility.NewUtility())
 		eventController.RegisterRoutes(routerGroupV1)
 
 		// amenities
-		amenityService := service.NewAmenityService(client)
+		amenityService := amenities.NewAmenityService(client)
 		amenityController := controller.NewAmenityController(amenityService, redisClient)
 		amenityController.RegisterRoutes(routerGroupV1)
 

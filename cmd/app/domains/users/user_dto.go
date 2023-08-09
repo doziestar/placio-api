@@ -1,7 +1,8 @@
-package Dto
+package users
 
 import (
 	"encoding/json"
+	"placio-app/Dto"
 	"time"
 )
 
@@ -54,9 +55,9 @@ type User struct {
 	Disabled             bool            `json:"Disabled"`
 	HasPassword          bool            `json:"HasPassword"`
 	Onboarded            bool            `json:"Onboarded"`
-	Account              []Account       `json:"Account"`
+	Account              []Dto.Account   `json:"Account"`
 	Permission           string          `json:"Permission"`
-	CurrentActiveAccount Account         `json:"CurrentActiveAccount"`
+	CurrentActiveAccount Dto.Account     `json:"CurrentActiveAccount"`
 	GeneralSettings      GeneralSettings `json:"GeneralSettings"`
 }
 

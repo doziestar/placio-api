@@ -1,4 +1,4 @@
-package service
+package business
 
 import (
 	"context"
@@ -7,7 +7,9 @@ import (
 	"github.com/getsentry/sentry-go"
 	"github.com/google/uuid"
 	"log"
-	"placio-app/Dto"
+	"placio-app/domains/events_management"
+	"placio-app/domains/places"
+	"placio-app/domains/search"
 	"placio-app/ent"
 	"placio-app/ent/business"
 	"placio-app/ent/businessfollowbusiness"
@@ -20,7 +22,7 @@ import (
 )
 
 type BusinessAccountService interface {
-	CreateBusinessAccount(ctx context.Context, businessData *Dto.BusinessDto) (*ent.Business, error)
+	CreateBusinessAccount(ctx context.Context, businessData *BusinessDto) (*ent.Business, error)
 	GetBusinessAccount(ctx context.Context, businessAccountID string) (*ent.Business, error)
 	GetUserBusinessAccounts(ctx context.Context, userId string) ([]*ent.Business, error)
 	AssociateUserWithBusinessAccount(ctx context.Context, adminUser, userID, businessAccountID, role string) error
@@ -34,7 +36,7 @@ type BusinessAccountService interface {
 	UnfollowUser(ctx context.Context, businessID string, userID string) error
 	UnfollowBusiness(ctx context.Context, followerID string, followedID string) error
 	GetFollowedContents(ctx context.Context, businessID string) ([]*ent.Post, error)
-	GetPlacesAndEventsAssociatedWithBusinessAccount(c context.Context, relatedType string, businessId string) (Dto.BusinessAccountPlacesAndEvents, error)
+	GetPlacesAndEventsAssociatedWithBusinessAccount(c context.Context, relatedType string, businessId string) (BusinessAccountPlacesAndEvents, error)
 	AddTeamMember(ctx context.Context, adminUser, userID, businessAccountID, role, permissions string) error
 	ListTeamMembers(ctx context.Context, businessAccountID string) ([]*ent.UserBusiness, error)
 	EditTeamMember(ctx context.Context, userID, businessAccountID, newRole, newPermissions string) error
@@ -46,13 +48,13 @@ type BusinessAccountService interface {
 type BusinessAccountServiceImpl struct {
 	store         *ent.Business
 	client        *ent.Client
-	searchService SearchService
+	searchService search.SearchService
 	cacheService  *utility.RedisClient
-	placesService PlaceService
-	eventService  IEventService
+	placesService places.PlaceService
+	eventService  events_management.IEventService
 }
 
-func NewBusinessAccountService(client *ent.Client, searchService SearchService, cache *utility.RedisClient, service PlaceService) BusinessAccountService {
+func NewBusinessAccountService(client *ent.Client, searchService search.SearchService, cache *utility.RedisClient, service places.PlaceService) BusinessAccountService {
 	return &BusinessAccountServiceImpl{client: client, store: &ent.Business{}, searchService: searchService, cacheService: cache, placesService: service}
 }
 
@@ -65,12 +67,12 @@ func (s *BusinessAccountServiceImpl) FollowUser(ctx context.Context, businessID 
 	return err
 }
 
-func (s *BusinessAccountServiceImpl) GetPlacesAndEventsAssociatedWithBusinessAccount(c context.Context, relatedType string, businessId string) (Dto.BusinessAccountPlacesAndEvents, error) {
+func (s *BusinessAccountServiceImpl) GetPlacesAndEventsAssociatedWithBusinessAccount(c context.Context, relatedType string, businessId string) (BusinessAccountPlacesAndEvents, error) {
 	if relatedType == "" {
 		relatedType = "all"
 	}
 
-	var businessAccountPlacesAndEvents Dto.BusinessAccountPlacesAndEvents
+	var businessAccountPlacesAndEvents BusinessAccountPlacesAndEvents
 	businessAccount, err := s.GetBusinessAccount(c, businessId)
 	if err != nil {
 		return businessAccountPlacesAndEvents, err
@@ -174,7 +176,7 @@ func (s *BusinessAccountServiceImpl) GetFollowedContents(ctx context.Context, bu
 }
 
 // CreateBusinessAccount creates a new Business Account and associates it with a user.
-func (s *BusinessAccountServiceImpl) CreateBusinessAccount(ctx context.Context, businessData *Dto.BusinessDto) (*ent.Business, error) {
+func (s *BusinessAccountServiceImpl) CreateBusinessAccount(ctx context.Context, businessData *BusinessDto) (*ent.Business, error) {
 	// Validate inputs
 	// grab the user id from the context
 	userID := ctx.Value("user").(string)
@@ -267,7 +269,7 @@ func (s *BusinessAccountServiceImpl) CreateBusinessAccount(ctx context.Context, 
 	return businessAccount, nil
 }
 
-func (s *UserServiceImpl) CanPerformAction(ctx context.Context, userID, businessAccountID, action string) (bool, error) {
+func (s *BusinessAccountServiceImpl) CanPerformAction(ctx context.Context, userID, businessAccountID, action string) (bool, error) {
 	relationship, err := s.client.UserBusiness.Query().Where(userbusiness.HasUserWith(user.ID(userID)), userbusiness.HasBusinessWith(business.ID(businessAccountID))).Only(ctx)
 	if err != nil {
 		return false, err

@@ -1,4 +1,4 @@
-package Dto
+package business
 
 import "placio-app/ent"
 

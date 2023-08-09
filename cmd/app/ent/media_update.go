@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"placio-app/ent/category"
 	"placio-app/ent/media"
+	"placio-app/ent/place"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
 	"placio-app/ent/review"
@@ -144,6 +145,21 @@ func (mu *MediaUpdate) AddCategories(c ...*Category) *MediaUpdate {
 	return mu.AddCategoryIDs(ids...)
 }
 
+// AddPlaceIDs adds the "place" edge to the Place entity by IDs.
+func (mu *MediaUpdate) AddPlaceIDs(ids ...string) *MediaUpdate {
+	mu.mutation.AddPlaceIDs(ids...)
+	return mu
+}
+
+// AddPlace adds the "place" edges to the Place entity.
+func (mu *MediaUpdate) AddPlace(p ...*Place) *MediaUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return mu.AddPlaceIDs(ids...)
+}
+
 // Mutation returns the MediaMutation object of the builder.
 func (mu *MediaUpdate) Mutation() *MediaMutation {
 	return mu.mutation
@@ -180,6 +196,27 @@ func (mu *MediaUpdate) RemoveCategories(c ...*Category) *MediaUpdate {
 		ids[i] = c[i].ID
 	}
 	return mu.RemoveCategoryIDs(ids...)
+}
+
+// ClearPlace clears all "place" edges to the Place entity.
+func (mu *MediaUpdate) ClearPlace() *MediaUpdate {
+	mu.mutation.ClearPlace()
+	return mu
+}
+
+// RemovePlaceIDs removes the "place" edge to Place entities by IDs.
+func (mu *MediaUpdate) RemovePlaceIDs(ids ...string) *MediaUpdate {
+	mu.mutation.RemovePlaceIDs(ids...)
+	return mu
+}
+
+// RemovePlace removes "place" edges to Place entities.
+func (mu *MediaUpdate) RemovePlace(p ...*Place) *MediaUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return mu.RemovePlaceIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -351,6 +388,51 @@ func (mu *MediaUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if mu.mutation.PlaceCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   media.PlaceTable,
+			Columns: media.PlacePrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.RemovedPlaceIDs(); len(nodes) > 0 && !mu.mutation.PlaceCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   media.PlaceTable,
+			Columns: media.PlacePrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.PlaceIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   media.PlaceTable,
+			Columns: media.PlacePrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, mu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{media.Label}
@@ -484,6 +566,21 @@ func (muo *MediaUpdateOne) AddCategories(c ...*Category) *MediaUpdateOne {
 	return muo.AddCategoryIDs(ids...)
 }
 
+// AddPlaceIDs adds the "place" edge to the Place entity by IDs.
+func (muo *MediaUpdateOne) AddPlaceIDs(ids ...string) *MediaUpdateOne {
+	muo.mutation.AddPlaceIDs(ids...)
+	return muo
+}
+
+// AddPlace adds the "place" edges to the Place entity.
+func (muo *MediaUpdateOne) AddPlace(p ...*Place) *MediaUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return muo.AddPlaceIDs(ids...)
+}
+
 // Mutation returns the MediaMutation object of the builder.
 func (muo *MediaUpdateOne) Mutation() *MediaMutation {
 	return muo.mutation
@@ -520,6 +617,27 @@ func (muo *MediaUpdateOne) RemoveCategories(c ...*Category) *MediaUpdateOne {
 		ids[i] = c[i].ID
 	}
 	return muo.RemoveCategoryIDs(ids...)
+}
+
+// ClearPlace clears all "place" edges to the Place entity.
+func (muo *MediaUpdateOne) ClearPlace() *MediaUpdateOne {
+	muo.mutation.ClearPlace()
+	return muo
+}
+
+// RemovePlaceIDs removes the "place" edge to Place entities by IDs.
+func (muo *MediaUpdateOne) RemovePlaceIDs(ids ...string) *MediaUpdateOne {
+	muo.mutation.RemovePlaceIDs(ids...)
+	return muo
+}
+
+// RemovePlace removes "place" edges to Place entities.
+func (muo *MediaUpdateOne) RemovePlace(p ...*Place) *MediaUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return muo.RemovePlaceIDs(ids...)
 }
 
 // Where appends a list predicates to the MediaUpdate builder.
@@ -714,6 +832,51 @@ func (muo *MediaUpdateOne) sqlSave(ctx context.Context) (_node *Media, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if muo.mutation.PlaceCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   media.PlaceTable,
+			Columns: media.PlacePrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.RemovedPlaceIDs(); len(nodes) > 0 && !muo.mutation.PlaceCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   media.PlaceTable,
+			Columns: media.PlacePrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.PlaceIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   media.PlaceTable,
+			Columns: media.PlacePrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

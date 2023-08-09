@@ -5,16 +5,17 @@ import (
 	"net/http"
 	"placio-app/Dto"
 	_ "placio-app/Dto"
+	"placio-app/domains/users"
 	"placio-app/service"
 	"placio-app/utility"
 )
 
 type CommentController struct {
 	commentService service.CommentService
-	userService    service.UserService
+	userService    users.UserService
 }
 
-func NewCommentController(commentService service.CommentService, userService service.UserService) *CommentController {
+func NewCommentController(commentService service.CommentService, userService users.UserService) *CommentController {
 	return &CommentController{commentService: commentService, userService: userService}
 }
 

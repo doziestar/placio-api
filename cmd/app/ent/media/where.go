@@ -454,6 +454,29 @@ func HasCategoriesWith(preds ...predicate.Category) predicate.Media {
 	})
 }
 
+// HasPlace applies the HasEdge predicate on the "place" edge.
+func HasPlace() predicate.Media {
+	return predicate.Media(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, PlaceTable, PlacePrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasPlaceWith applies the HasEdge predicate on the "place" edge with a given conditions (other predicates).
+func HasPlaceWith(preds ...predicate.Place) predicate.Media {
+	return predicate.Media(func(s *sql.Selector) {
+		step := newPlaceStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Media) predicate.Media {
 	return predicate.Media(func(s *sql.Selector) {

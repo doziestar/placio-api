@@ -13,6 +13,7 @@ import (
 	"placio-app/ent/categoryassignment"
 	"placio-app/ent/event"
 	"placio-app/ent/faq"
+	"placio-app/ent/media"
 	"placio-app/ent/menu"
 	"placio-app/ent/place"
 	"placio-app/ent/predicate"
@@ -733,6 +734,21 @@ func (pu *PlaceUpdate) AddMenus(m ...*Menu) *PlaceUpdate {
 	return pu.AddMenuIDs(ids...)
 }
 
+// AddMediaIDs adds the "medias" edge to the Media entity by IDs.
+func (pu *PlaceUpdate) AddMediaIDs(ids ...string) *PlaceUpdate {
+	pu.mutation.AddMediaIDs(ids...)
+	return pu
+}
+
+// AddMedias adds the "medias" edges to the Media entity.
+func (pu *PlaceUpdate) AddMedias(m ...*Media) *PlaceUpdate {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return pu.AddMediaIDs(ids...)
+}
+
 // AddRoomIDs adds the "rooms" edge to the Room entity by IDs.
 func (pu *PlaceUpdate) AddRoomIDs(ids ...string) *PlaceUpdate {
 	pu.mutation.AddRoomIDs(ids...)
@@ -982,6 +998,27 @@ func (pu *PlaceUpdate) RemoveMenus(m ...*Menu) *PlaceUpdate {
 		ids[i] = m[i].ID
 	}
 	return pu.RemoveMenuIDs(ids...)
+}
+
+// ClearMedias clears all "medias" edges to the Media entity.
+func (pu *PlaceUpdate) ClearMedias() *PlaceUpdate {
+	pu.mutation.ClearMedias()
+	return pu
+}
+
+// RemoveMediaIDs removes the "medias" edge to Media entities by IDs.
+func (pu *PlaceUpdate) RemoveMediaIDs(ids ...string) *PlaceUpdate {
+	pu.mutation.RemoveMediaIDs(ids...)
+	return pu
+}
+
+// RemoveMedias removes "medias" edges to Media entities.
+func (pu *PlaceUpdate) RemoveMedias(m ...*Media) *PlaceUpdate {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return pu.RemoveMediaIDs(ids...)
 }
 
 // ClearRooms clears all "rooms" edges to the Room entity.
@@ -1666,6 +1703,51 @@ func (pu *PlaceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if pu.mutation.MediasCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.MediasTable,
+			Columns: place.MediasPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.RemovedMediasIDs(); len(nodes) > 0 && !pu.mutation.MediasCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.MediasTable,
+			Columns: place.MediasPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.MediasIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.MediasTable,
+			Columns: place.MediasPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -2788,6 +2870,21 @@ func (puo *PlaceUpdateOne) AddMenus(m ...*Menu) *PlaceUpdateOne {
 	return puo.AddMenuIDs(ids...)
 }
 
+// AddMediaIDs adds the "medias" edge to the Media entity by IDs.
+func (puo *PlaceUpdateOne) AddMediaIDs(ids ...string) *PlaceUpdateOne {
+	puo.mutation.AddMediaIDs(ids...)
+	return puo
+}
+
+// AddMedias adds the "medias" edges to the Media entity.
+func (puo *PlaceUpdateOne) AddMedias(m ...*Media) *PlaceUpdateOne {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return puo.AddMediaIDs(ids...)
+}
+
 // AddRoomIDs adds the "rooms" edge to the Room entity by IDs.
 func (puo *PlaceUpdateOne) AddRoomIDs(ids ...string) *PlaceUpdateOne {
 	puo.mutation.AddRoomIDs(ids...)
@@ -3037,6 +3134,27 @@ func (puo *PlaceUpdateOne) RemoveMenus(m ...*Menu) *PlaceUpdateOne {
 		ids[i] = m[i].ID
 	}
 	return puo.RemoveMenuIDs(ids...)
+}
+
+// ClearMedias clears all "medias" edges to the Media entity.
+func (puo *PlaceUpdateOne) ClearMedias() *PlaceUpdateOne {
+	puo.mutation.ClearMedias()
+	return puo
+}
+
+// RemoveMediaIDs removes the "medias" edge to Media entities by IDs.
+func (puo *PlaceUpdateOne) RemoveMediaIDs(ids ...string) *PlaceUpdateOne {
+	puo.mutation.RemoveMediaIDs(ids...)
+	return puo
+}
+
+// RemoveMedias removes "medias" edges to Media entities.
+func (puo *PlaceUpdateOne) RemoveMedias(m ...*Media) *PlaceUpdateOne {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return puo.RemoveMediaIDs(ids...)
 }
 
 // ClearRooms clears all "rooms" edges to the Room entity.
@@ -3751,6 +3869,51 @@ func (puo *PlaceUpdateOne) sqlSave(ctx context.Context) (_node *Place, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if puo.mutation.MediasCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.MediasTable,
+			Columns: place.MediasPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.RemovedMediasIDs(); len(nodes) > 0 && !puo.mutation.MediasCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.MediasTable,
+			Columns: place.MediasPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.MediasIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.MediasTable,
+			Columns: place.MediasPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

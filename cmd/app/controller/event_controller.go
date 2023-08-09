@@ -7,18 +7,18 @@ import (
 	"net/http"
 	"placio-app/Dto"
 	_ "placio-app/Dto"
+	"placio-app/domains/events_management"
 	_ "placio-app/ent"
-	"placio-app/service"
 	"placio-app/utility"
 	"strconv"
 )
 
 type EventController struct {
-	service service.IEventService
+	service events_management.IEventService
 	utility utility.IUtility
 }
 
-func NewEventController(service service.IEventService, utility utility.IUtility) *EventController {
+func NewEventController(service events_management.IEventService, utility utility.IUtility) *EventController {
 	return &EventController{service: service, utility: utility}
 }
 
@@ -113,7 +113,7 @@ func (c *EventController) updateEvent(ctx *gin.Context) error {
 // @Failure 500 {object} Dto.ErrorDTO
 // @Router /events [get]
 func (c *EventController) getEventsByFilters(ctx *gin.Context) error {
-	var filter service.EventFilter
+	var filter events_management.EventFilter
 	if err := ctx.ShouldBindQuery(&filter); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return err

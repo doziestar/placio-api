@@ -6,21 +6,22 @@ import (
 	"log"
 	"net/http"
 	"placio-app/Dto"
+	"placio-app/domains/business"
+	"placio-app/domains/events_management"
 	"placio-app/ent"
 	_ "placio-app/ent"
-	"placio-app/service"
 	"placio-app/utility"
 
 	"github.com/gin-gonic/gin"
 )
 
 type BusinessAccountController struct {
-	service      service.BusinessAccountService
-	eventService service.EventService
+	service      business.BusinessAccountService
+	eventService events_management.EventService
 	cache        utility.RedisClient
 }
 
-func NewBusinessAccountController(service service.BusinessAccountService, cache utility.RedisClient) *BusinessAccountController {
+func NewBusinessAccountController(service business.BusinessAccountService, cache utility.RedisClient) *BusinessAccountController {
 	return &BusinessAccountController{service: service, cache: cache}
 }
 
@@ -78,7 +79,7 @@ func (bc *BusinessAccountController) addTeamMember(c *gin.Context) error {
 	adminUser := c.MustGet("user").(string)
 
 	// role and permissions are sent in the request body
-	var teamMember Dto.TeamMember
+	var teamMember business.TeamMember
 	if err := c.ShouldBindJSON(&teamMember); err != nil {
 		return err
 	}
@@ -137,7 +138,7 @@ func (bc *BusinessAccountController) editTeamMember(c *gin.Context) error {
 	businessAccountID := c.Param("businessAccountID")
 	userID := c.Param("userID")
 
-	var teamMember Dto.TeamMember
+	var teamMember business.TeamMember
 	if err := c.ShouldBindJSON(&teamMember); err != nil {
 
 		return err
@@ -405,7 +406,7 @@ func (bc *BusinessAccountController) getFollowedContents(c *gin.Context) error {
 // @Failure 500 {object} Dto.ErrorDto
 // @Router /business/ [post]
 func (bc *BusinessAccountController) createBusinessAccount(c *gin.Context) error {
-	var businessData Dto.BusinessDto
+	var businessData business.BusinessDto
 	if err := c.ShouldBindJSON(&businessData); err != nil {
 
 		return err

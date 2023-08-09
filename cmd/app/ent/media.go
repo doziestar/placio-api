@@ -47,9 +47,11 @@ type MediaEdges struct {
 	Review *Review `json:"review,omitempty"`
 	// Categories holds the value of the categories edge.
 	Categories []*Category `json:"categories,omitempty"`
+	// Place holds the value of the place edge.
+	Place []*Place `json:"place,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 }
 
 // PostOrErr returns the Post value or an error if the edge
@@ -85,6 +87,15 @@ func (e MediaEdges) CategoriesOrErr() ([]*Category, error) {
 		return e.Categories, nil
 	}
 	return nil, &NotLoadedError{edge: "categories"}
+}
+
+// PlaceOrErr returns the Place value or an error if the edge
+// was not loaded in eager-loading.
+func (e MediaEdges) PlaceOrErr() ([]*Place, error) {
+	if e.loadedTypes[3] {
+		return e.Place, nil
+	}
+	return nil, &NotLoadedError{edge: "place"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -199,6 +210,11 @@ func (m *Media) QueryReview() *ReviewQuery {
 // QueryCategories queries the "categories" edge of the Media entity.
 func (m *Media) QueryCategories() *CategoryQuery {
 	return NewMediaClient(m.config).QueryCategories(m)
+}
+
+// QueryPlace queries the "place" edge of the Media entity.
+func (m *Media) QueryPlace() *PlaceQuery {
+	return NewMediaClient(m.config).QueryPlace(m)
 }
 
 // Update returns a builder for updating this Media.

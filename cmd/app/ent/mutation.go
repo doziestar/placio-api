@@ -15430,6 +15430,9 @@ type MediaMutation struct {
 	categories        map[string]struct{}
 	removedcategories map[string]struct{}
 	clearedcategories bool
+	place             map[string]struct{}
+	removedplace      map[string]struct{}
+	clearedplace      bool
 	done              bool
 	oldValue          func(context.Context) (*Media, error)
 	predicates        []predicate.Media
@@ -15927,6 +15930,60 @@ func (m *MediaMutation) ResetCategories() {
 	m.removedcategories = nil
 }
 
+// AddPlaceIDs adds the "place" edge to the Place entity by ids.
+func (m *MediaMutation) AddPlaceIDs(ids ...string) {
+	if m.place == nil {
+		m.place = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.place[ids[i]] = struct{}{}
+	}
+}
+
+// ClearPlace clears the "place" edge to the Place entity.
+func (m *MediaMutation) ClearPlace() {
+	m.clearedplace = true
+}
+
+// PlaceCleared reports if the "place" edge to the Place entity was cleared.
+func (m *MediaMutation) PlaceCleared() bool {
+	return m.clearedplace
+}
+
+// RemovePlaceIDs removes the "place" edge to the Place entity by IDs.
+func (m *MediaMutation) RemovePlaceIDs(ids ...string) {
+	if m.removedplace == nil {
+		m.removedplace = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.place, ids[i])
+		m.removedplace[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedPlace returns the removed IDs of the "place" edge to the Place entity.
+func (m *MediaMutation) RemovedPlaceIDs() (ids []string) {
+	for id := range m.removedplace {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// PlaceIDs returns the "place" edge IDs in the mutation.
+func (m *MediaMutation) PlaceIDs() (ids []string) {
+	for id := range m.place {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetPlace resets all changes to the "place" edge.
+func (m *MediaMutation) ResetPlace() {
+	m.place = nil
+	m.clearedplace = false
+	m.removedplace = nil
+}
+
 // Where appends a list predicates to the MediaMutation builder.
 func (m *MediaMutation) Where(ps ...predicate.Media) {
 	m.predicates = append(m.predicates, ps...)
@@ -16172,7 +16229,7 @@ func (m *MediaMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *MediaMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.post != nil {
 		edges = append(edges, media.EdgePost)
 	}
@@ -16181,6 +16238,9 @@ func (m *MediaMutation) AddedEdges() []string {
 	}
 	if m.categories != nil {
 		edges = append(edges, media.EdgeCategories)
+	}
+	if m.place != nil {
+		edges = append(edges, media.EdgePlace)
 	}
 	return edges
 }
@@ -16203,15 +16263,24 @@ func (m *MediaMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case media.EdgePlace:
+		ids := make([]ent.Value, 0, len(m.place))
+		for id := range m.place {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *MediaMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.removedcategories != nil {
 		edges = append(edges, media.EdgeCategories)
+	}
+	if m.removedplace != nil {
+		edges = append(edges, media.EdgePlace)
 	}
 	return edges
 }
@@ -16226,13 +16295,19 @@ func (m *MediaMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case media.EdgePlace:
+		ids := make([]ent.Value, 0, len(m.removedplace))
+		for id := range m.removedplace {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *MediaMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.clearedpost {
 		edges = append(edges, media.EdgePost)
 	}
@@ -16241,6 +16316,9 @@ func (m *MediaMutation) ClearedEdges() []string {
 	}
 	if m.clearedcategories {
 		edges = append(edges, media.EdgeCategories)
+	}
+	if m.clearedplace {
+		edges = append(edges, media.EdgePlace)
 	}
 	return edges
 }
@@ -16255,6 +16333,8 @@ func (m *MediaMutation) EdgeCleared(name string) bool {
 		return m.clearedreview
 	case media.EdgeCategories:
 		return m.clearedcategories
+	case media.EdgePlace:
+		return m.clearedplace
 	}
 	return false
 }
@@ -16285,6 +16365,9 @@ func (m *MediaMutation) ResetEdge(name string) error {
 		return nil
 	case media.EdgeCategories:
 		m.ResetCategories()
+		return nil
+	case media.EdgePlace:
+		m.ResetPlace()
 		return nil
 	}
 	return fmt.Errorf("unknown Media edge %s", name)
@@ -17305,6 +17388,9 @@ type PlaceMutation struct {
 	menus                      map[string]struct{}
 	removedmenus               map[string]struct{}
 	clearedmenus               bool
+	medias                     map[string]struct{}
+	removedmedias              map[string]struct{}
+	clearedmedias              bool
 	rooms                      map[string]struct{}
 	removedrooms               map[string]struct{}
 	clearedrooms               bool
@@ -19455,6 +19541,60 @@ func (m *PlaceMutation) ResetMenus() {
 	m.removedmenus = nil
 }
 
+// AddMediaIDs adds the "medias" edge to the Media entity by ids.
+func (m *PlaceMutation) AddMediaIDs(ids ...string) {
+	if m.medias == nil {
+		m.medias = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.medias[ids[i]] = struct{}{}
+	}
+}
+
+// ClearMedias clears the "medias" edge to the Media entity.
+func (m *PlaceMutation) ClearMedias() {
+	m.clearedmedias = true
+}
+
+// MediasCleared reports if the "medias" edge to the Media entity was cleared.
+func (m *PlaceMutation) MediasCleared() bool {
+	return m.clearedmedias
+}
+
+// RemoveMediaIDs removes the "medias" edge to the Media entity by IDs.
+func (m *PlaceMutation) RemoveMediaIDs(ids ...string) {
+	if m.removedmedias == nil {
+		m.removedmedias = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.medias, ids[i])
+		m.removedmedias[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedMedias returns the removed IDs of the "medias" edge to the Media entity.
+func (m *PlaceMutation) RemovedMediasIDs() (ids []string) {
+	for id := range m.removedmedias {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// MediasIDs returns the "medias" edge IDs in the mutation.
+func (m *PlaceMutation) MediasIDs() (ids []string) {
+	for id := range m.medias {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetMedias resets all changes to the "medias" edge.
+func (m *PlaceMutation) ResetMedias() {
+	m.medias = nil
+	m.clearedmedias = false
+	m.removedmedias = nil
+}
+
 // AddRoomIDs adds the "rooms" edge to the Room entity by ids.
 func (m *PlaceMutation) AddRoomIDs(ids ...string) {
 	if m.rooms == nil {
@@ -20851,7 +20991,7 @@ func (m *PlaceMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PlaceMutation) AddedEdges() []string {
-	edges := make([]string, 0, 15)
+	edges := make([]string, 0, 16)
 	if m.business != nil {
 		edges = append(edges, place.EdgeBusiness)
 	}
@@ -20869,6 +21009,9 @@ func (m *PlaceMutation) AddedEdges() []string {
 	}
 	if m.menus != nil {
 		edges = append(edges, place.EdgeMenus)
+	}
+	if m.medias != nil {
+		edges = append(edges, place.EdgeMedias)
 	}
 	if m.rooms != nil {
 		edges = append(edges, place.EdgeRooms)
@@ -20938,6 +21081,12 @@ func (m *PlaceMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case place.EdgeMedias:
+		ids := make([]ent.Value, 0, len(m.medias))
+		for id := range m.medias {
+			ids = append(ids, id)
+		}
+		return ids
 	case place.EdgeRooms:
 		ids := make([]ent.Value, 0, len(m.rooms))
 		for id := range m.rooms {
@@ -20998,7 +21147,7 @@ func (m *PlaceMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PlaceMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 15)
+	edges := make([]string, 0, 16)
 	if m.removedusers != nil {
 		edges = append(edges, place.EdgeUsers)
 	}
@@ -21013,6 +21162,9 @@ func (m *PlaceMutation) RemovedEdges() []string {
 	}
 	if m.removedmenus != nil {
 		edges = append(edges, place.EdgeMenus)
+	}
+	if m.removedmedias != nil {
+		edges = append(edges, place.EdgeMedias)
 	}
 	if m.removedrooms != nil {
 		edges = append(edges, place.EdgeRooms)
@@ -21078,6 +21230,12 @@ func (m *PlaceMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case place.EdgeMedias:
+		ids := make([]ent.Value, 0, len(m.removedmedias))
+		for id := range m.removedmedias {
+			ids = append(ids, id)
+		}
+		return ids
 	case place.EdgeRooms:
 		ids := make([]ent.Value, 0, len(m.removedrooms))
 		for id := range m.removedrooms {
@@ -21138,7 +21296,7 @@ func (m *PlaceMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PlaceMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 15)
+	edges := make([]string, 0, 16)
 	if m.clearedbusiness {
 		edges = append(edges, place.EdgeBusiness)
 	}
@@ -21156,6 +21314,9 @@ func (m *PlaceMutation) ClearedEdges() []string {
 	}
 	if m.clearedmenus {
 		edges = append(edges, place.EdgeMenus)
+	}
+	if m.clearedmedias {
+		edges = append(edges, place.EdgeMedias)
 	}
 	if m.clearedrooms {
 		edges = append(edges, place.EdgeRooms)
@@ -21203,6 +21364,8 @@ func (m *PlaceMutation) EdgeCleared(name string) bool {
 		return m.clearedamenities
 	case place.EdgeMenus:
 		return m.clearedmenus
+	case place.EdgeMedias:
+		return m.clearedmedias
 	case place.EdgeRooms:
 		return m.clearedrooms
 	case place.EdgeReservations:
@@ -21257,6 +21420,9 @@ func (m *PlaceMutation) ResetEdge(name string) error {
 		return nil
 	case place.EdgeMenus:
 		m.ResetMenus()
+		return nil
+	case place.EdgeMedias:
+		m.ResetMedias()
 		return nil
 	case place.EdgeRooms:
 		m.ResetRooms()

@@ -3202,6 +3202,22 @@ func (c *MediaClient) QueryCategories(m *Media) *CategoryQuery {
 	return query
 }
 
+// QueryPlace queries the place edge of a Media.
+func (c *MediaClient) QueryPlace(m *Media) *PlaceQuery {
+	query := (&PlaceClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(media.Table, media.FieldID, id),
+			sqlgraph.To(place.Table, place.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, media.PlaceTable, media.PlacePrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *MediaClient) Hooks() []Hook {
 	return c.hooks.Media
@@ -3795,6 +3811,22 @@ func (c *PlaceClient) QueryMenus(pl *Place) *MenuQuery {
 			sqlgraph.From(place.Table, place.FieldID, id),
 			sqlgraph.To(menu.Table, menu.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, place.MenusTable, place.MenusColumn),
+		)
+		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryMedias queries the medias edge of a Place.
+func (c *PlaceClient) QueryMedias(pl *Place) *MediaQuery {
+	query := (&MediaClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pl.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(place.Table, place.FieldID, id),
+			sqlgraph.To(media.Table, media.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, place.MediasTable, place.MediasPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
 		return fromV, nil

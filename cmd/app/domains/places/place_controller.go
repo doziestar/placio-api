@@ -1,24 +1,24 @@
-package controller
+package places
 
 import (
+	"github.com/getsentry/sentry-go"
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"placio-app/Dto"
 	_ "placio-app/Dto"
+	"placio-app/domains/amenities"
 	"placio-app/ent"
 	_ "placio-app/ent"
 	"placio-app/errors"
-	"placio-app/service"
 	"placio-app/utility"
 	"strconv"
 )
 
 type PlaceController struct {
-	placeService service.PlaceService
+	placeService PlaceService
 	cache        utility.RedisClient
 }
 
-func NewPlaceController(placeService service.PlaceService, cache utility.RedisClient) *PlaceController {
+func NewPlaceController(placeService PlaceService, cache utility.RedisClient) *PlaceController {
 	return &PlaceController{placeService: placeService, cache: cache}
 }
 
@@ -32,6 +32,7 @@ func (c *PlaceController) RegisterRoutes(router, routerWithoutAuth *gin.RouterGr
 		placeRouter.PATCH("/:id", utility.Use(c.updatePlace))
 		placeRouter.DELETE("/:id", utility.Use(c.deletePlace))
 		placeRouter.POST("/:id/amenities", utility.Use(c.addAmenitiesToPlace))
+		placeRouter.PATCH("/:id/media", utility.Use(c.addMediaToAPlace))
 		placeRouterWithoutAuth.GET("/all", utility.Use(c.getAllPlaces))
 	}
 }
@@ -70,7 +71,7 @@ func (c *PlaceController) getPlace(ctx *gin.Context) error {
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/places/ [post]
 func (c *PlaceController) createPlace(ctx *gin.Context) error {
-	var placeData Dto.CreatePlaceDTO
+	var placeData CreatePlaceDTO
 	if err := ctx.ShouldBindJSON(&placeData); err != nil {
 
 		return err
@@ -134,7 +135,7 @@ func (c *PlaceController) getAllPlaces(ctx *gin.Context) error {
 func (c *PlaceController) addAmenitiesToPlace(ctx *gin.Context) error {
 	id := ctx.Param("id")
 
-	var amenityDTO Dto.AmenityAdditionDTO
+	var amenityDTO amenities.AmenityAdditionDTO
 	if err := ctx.ShouldBindJSON(&amenityDTO); err != nil {
 
 		return err
@@ -147,6 +148,40 @@ func (c *PlaceController) addAmenitiesToPlace(ctx *gin.Context) error {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Amenities added successfully",
+	})
+	return nil
+}
+
+// @Summary Add Media to a place
+// @Description Add media to a place by ID
+// @Tags Place
+// @Accept multi
+// @Produce json
+// @Param id path string true "ID of the place to add amenities to"
+// @Param amenity body Dto.AmenityAdditionDTO true "Amenities to add"
+// @Param Authorization header string true "Bearer token"
+// @Success 200 {object} ent.Place "Successfully added amenities to place"
+// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
+// @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
+// @Router /api/v1/places/{id}/amenities [post]
+func (c *PlaceController) addMediaToAPlace(ctx *gin.Context) error {
+	id := ctx.Param("id")
+
+	var amenityDTO amenities.AmenityAdditionDTO
+	if err := ctx.ShouldBindJSON(&amenityDTO); err != nil {
+
+		return err
+	}
+
+	go func() {
+		if err := c.placeService.AddAmenitiesToPlace(ctx, id, amenityDTO.AmenityIDs); err != nil {
+			sentry.CaptureException(err)
+		}
+	}()
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Media added successfully",
 	})
 	return nil
 }
@@ -166,7 +201,7 @@ func (c *PlaceController) addAmenitiesToPlace(ctx *gin.Context) error {
 // @Router /api/v1/places/{id} [patch]
 func (c *PlaceController) updatePlace(ctx *gin.Context) error {
 	id := ctx.Param("id")
-	var placeData Dto.UpdatePlaceDTO
+	var placeData UpdatePlaceDTO
 	if err := ctx.ShouldBindJSON(&placeData); err != nil {
 
 		return err
@@ -226,7 +261,7 @@ func (c *PlaceController) deletePlace(ctx *gin.Context) error {
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /places [get]
 func (c *PlaceController) getPlacesByFilters(ctx *gin.Context) error {
-	var filter service.PlaceFilter
+	var filter PlaceFilter
 	if err := ctx.ShouldBindQuery(&filter); err != nil {
 
 		return err

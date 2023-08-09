@@ -1221,6 +1221,31 @@ var (
 			},
 		},
 	}
+	// PlaceMediasColumns holds the columns for the "place_medias" table.
+	PlaceMediasColumns = []*schema.Column{
+		{Name: "place_id", Type: field.TypeString, Size: 36},
+		{Name: "media_id", Type: field.TypeString, Size: 36},
+	}
+	// PlaceMediasTable holds the schema information for the "place_medias" table.
+	PlaceMediasTable = &schema.Table{
+		Name:       "place_medias",
+		Columns:    PlaceMediasColumns,
+		PrimaryKey: []*schema.Column{PlaceMediasColumns[0], PlaceMediasColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "place_medias_place_id",
+				Columns:    []*schema.Column{PlaceMediasColumns[0]},
+				RefColumns: []*schema.Column{PlacesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "place_medias_media_id",
+				Columns:    []*schema.Column{PlaceMediasColumns[1]},
+				RefColumns: []*schema.Column{MediaColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// UserPlacesColumns holds the columns for the "user_places" table.
 	UserPlacesColumns = []*schema.Column{
 		{Name: "user_id", Type: field.TypeString, Size: 36},
@@ -1287,6 +1312,7 @@ var (
 		AmenityPlacesTable,
 		FaqPlaceTable,
 		FaqEventTable,
+		PlaceMediasTable,
 		UserPlacesTable,
 	}
 )
@@ -1372,6 +1398,8 @@ func init() {
 	FaqPlaceTable.ForeignKeys[1].RefTable = PlacesTable
 	FaqEventTable.ForeignKeys[0].RefTable = FaQsTable
 	FaqEventTable.ForeignKeys[1].RefTable = EventsTable
+	PlaceMediasTable.ForeignKeys[0].RefTable = PlacesTable
+	PlaceMediasTable.ForeignKeys[1].RefTable = MediaTable
 	UserPlacesTable.ForeignKeys[0].RefTable = UsersTable
 	UserPlacesTable.ForeignKeys[1].RefTable = PlacesTable
 }

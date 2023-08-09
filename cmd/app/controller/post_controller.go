@@ -6,6 +6,9 @@ import (
 	"net/http"
 	"placio-app/Dto"
 	_ "placio-app/Dto"
+	"placio-app/domains/business"
+	"placio-app/domains/media"
+	"placio-app/domains/users"
 	"placio-app/ent"
 	_ "placio-app/ent"
 	"placio-app/ent/post"
@@ -16,12 +19,12 @@ import (
 
 type PostController struct {
 	postService            service.PostService
-	userService            service.UserService
-	businessAccountService service.BusinessAccountService
-	mediaService           service.MediaService
+	userService            users.UserService
+	businessAccountService business.BusinessAccountService
+	mediaService           media.MediaService
 }
 
-func NewPostController(postService service.PostService, userService service.UserService, businessAccountService service.BusinessAccountService, mediaService service.MediaService) *PostController {
+func NewPostController(postService service.PostService, userService users.UserService, businessAccountService business.BusinessAccountService, mediaService media.MediaService) *PostController {
 	return &PostController{postService: postService, userService: userService, businessAccountService: businessAccountService, mediaService: mediaService}
 }
 

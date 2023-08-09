@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"placio-app/domains/media"
 	"placio-app/ent"
 	_ "placio-app/ent"
 	appErr "placio-app/errors"
@@ -16,10 +17,10 @@ import (
 
 type ReviewController struct {
 	reviewService service.ReviewService
-	mediaService  service.MediaService
+	mediaService  media.MediaService
 }
 
-func NewReviewController(reviewService service.ReviewService, mediaService service.MediaService) *ReviewController {
+func NewReviewController(reviewService service.ReviewService, mediaService media.MediaService) *ReviewController {
 	return &ReviewController{reviewService: reviewService, mediaService: mediaService}
 }
 

@@ -5,19 +5,19 @@ import (
 	"github.com/gin-gonic/gin"
 	"mime/multipart"
 	"net/http"
-	"placio-app/Dto"
+	"placio-app/domains/amenities"
+	"placio-app/domains/media"
 	_ "placio-app/ent"
-	"placio-app/service"
 	"placio-app/utility"
 )
 
 type AmenityController struct {
-	service      service.AmenityService
-	mediaService service.MediaService
+	service      amenities.AmenityService
+	mediaService media.MediaService
 	cache        *utility.RedisClient
 }
 
-func NewAmenityController(s service.AmenityService, cache *utility.RedisClient) *AmenityController {
+func NewAmenityController(s amenities.AmenityService, cache *utility.RedisClient) *AmenityController {
 	return &AmenityController{service: s, cache: cache}
 }
 
@@ -44,7 +44,7 @@ func (c *AmenityController) RegisterRoutes(r *gin.RouterGroup) {
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/amenities [post]
 func (c *AmenityController) createAmenity(ctx *gin.Context) error {
-	var input Dto.CreateAmenityInput
+	var input amenities.CreateAmenityInput
 	if err := ctx.ShouldBindJSON(&input); err != nil {
 
 		return err
@@ -101,7 +101,7 @@ func (c *AmenityController) getAmenity(ctx *gin.Context) error {
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/amenities/{id} [put]
 func (c *AmenityController) updateAmenity(ctx *gin.Context) error {
-	var input Dto.UpdateAmenityInput
+	var input amenities.UpdateAmenityInput
 	if err := ctx.ShouldBindJSON(&input); err != nil {
 
 		return err

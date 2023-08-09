@@ -6,9 +6,9 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"placio-app/controller"
 	"placio-app/database"
-	"placio-app/service"
+	"placio-app/domains/search"
+	"placio-app/domains/users"
 	"placio-app/utility"
 	"testing"
 
@@ -20,10 +20,10 @@ func TestUserController(t *testing.T) {
 	client := database.EntClient(context.Background())
 	redisClient := utility.NewRedisClient("redis://default:a3677c1a7b84402eb34efd55ad3cf059@golden-colt-33790.upstash.io:33790", 0, utility.CacheDuration)
 	_ = redisClient.ConnectRedis()
-	searchService, _ := service.NewSearchService()
+	searchService, _ := search.NewSearchService()
 
-	userService := service.NewUserService(client, redisClient, searchService)
-	userController := controller.NewUserController(userService)
+	userService := users.NewUserService(client, redisClient, searchService)
+	userController := users.NewUserController(userService)
 
 	gin.SetMode(gin.TestMode)
 

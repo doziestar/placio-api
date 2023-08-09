@@ -1,4 +1,4 @@
-package Dto
+package amenities
 
 type CreateAmenityInput struct {
 	Name string

@@ -1,4 +1,4 @@
-package service
+package events_management
 
 import (
 	"context"
@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"placio-app/Dto"
+	"placio-app/domains/search"
 	"placio-app/ent"
 	"placio-app/ent/event"
 	"strings"
@@ -57,12 +58,12 @@ type IEventService interface {
 
 type EventService struct {
 	client        *ent.Client
-	searchService SearchService
+	searchService search.SearchService
 
 	// account *models.Account
 }
 
-func NewEventService(client *ent.Client, searchService SearchService) *EventService {
+func NewEventService(client *ent.Client, searchService search.SearchService) *EventService {
 	return &EventService{client: client, searchService: searchService}
 }
 

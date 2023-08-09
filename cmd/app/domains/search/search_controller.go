@@ -1,21 +1,20 @@
-package controller
+package search
 
 import (
 	"net/http"
 	_ "placio-app/Dto"
 	"placio-app/ent"
 	_ "placio-app/ent"
-	"placio-app/service"
 	"placio-app/utility"
 
 	"github.com/gin-gonic/gin"
 )
 
 type SearchController struct {
-	searchService service.SearchService
+	searchService SearchService
 }
 
-func NewSearchController(service service.SearchService) SearchController {
+func NewSearchController(service SearchService) SearchController {
 	return SearchController{searchService: service}
 }
 

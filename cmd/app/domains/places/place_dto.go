@@ -1,4 +1,4 @@
-package Dto
+package places
 
 type CreatePlaceDTO struct {
 	ID                  string                 `json:"id"`
