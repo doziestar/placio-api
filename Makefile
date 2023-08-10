@@ -27,7 +27,7 @@ cert: ## [HTTP] Generate self signed certificate
 	openssl req -new -x509 -sha256 -key server.key -out server.pem -days 3650
 
 dev: ## [HTTP] Run server in dev mode
-	docker-compose up --build
+	docker-compose -f compose/docker-compose.yml up --build
 
 scale-dev: ## [HTTP] Scale server
 	docker-compose up --build --scale app=2 --scale server=2

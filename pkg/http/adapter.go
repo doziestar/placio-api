@@ -18,7 +18,7 @@ func NewAdapter(httpServer *http.Server) *Adapter {
 	}
 }
 
-// Start start http application adapter
+// Start cmd http application adapter
 func (adapter *Adapter) Start(ctx context.Context) error {
 	adapter.httpServer.BaseContext = func(_ net.Listener) context.Context { return ctx }
 

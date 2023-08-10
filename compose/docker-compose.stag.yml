@@ -1,0 +1,133 @@
+version: "3.3"
+volumes:
+  prometheus_data:
+  grafana_data:
+
+
+services:
+  placio-proxy:
+    image: traefik:latest
+    ports:
+      - "80:80"
+      - "8090:8080"
+      - "443:443"
+    env_file:
+      - ../.envs/.stag
+
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /opt/traefik/traefik.yml:/traefik.yml
+      - /opt/traefik/acme.json:/acme.json
+      - /opt/traefik/configurations:/configurations
+    command:
+      - --accesslog
+      # Enable the Traefik log, for configurations and errors
+      - --log
+      # Enable the Dashboard and API
+      - --api
+      # Enable the Dashboard and API in insecure mode for local development
+      - --api.insecure=true
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=default"
+      - "traefik.http.routers.traefik-secure.entrypoints=websecure"
+      - "traefik.http.routers.traefik-secure.rule=Host(`traefik.palnight.com`)"
+      # - 'traefik.http.routers.traefik-secure.middlewares=user-auth@file'
+      - "traefik.http.routers.traefik-secure.service=api@internal"
+
+  placio-backend:
+    ports:
+      - "7070:7070"
+    env_file:
+      - ../.envs/.stag
+    restart: always
+    volumes:
+      - ./:/app
+      - ./app:/app
+      - ./config:/app/config
+    build:
+      context: ..
+      dockerfile: ./app/stag.dockerfile
+    networks:
+      - default
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=default
+      - "traefik.http.routers.backend-secure.entrypoints=websecure"
+      - "traefik.http.routers.backend-secure.rule=Host(`api.palnight.com`)"
+      - "traefik.http.routers.backend-secure.middlewares=cors"
+      - "traefik.http.routers.backend-secure.service=backend"
+      - "traefik.http.services.backend.loadbalancer.server.port=7070"
+      - "traefik.http.middlewares.cors.headers.accesscontrolallowmethods=GET,POST,PUT,DELETE,OPTIONS,PATCH"
+      - "traefik.http.middlewares.cors.headers.accesscontrolalloworiginlist=https://placio.io,http://localhost:3000,https://www.placio.io"
+      - "traefik.http.middlewares.cors.headers.accesscontrolallowcredentials=true"
+      - "traefik.http.middlewares.cors.headers.accesscontrolallowheaders=Content-Type,Authorization"
+      - "traefik.http.middlewares.cors.headers.accesscontrolmaxage=100"
+      - "traefik.http.middlewares.cors.headers.addvaryheader=true"
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prod.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    ports:
+      - "9090:9090"
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=default
+      - "traefik.http.routers.prometheus-secure.entrypoints=websecure"
+      - "traefik.http.routers.prometheus-secure.rule=Host(`prometheus.palnight.com`)"
+      - "traefik.http.routers.prometheus-secure.service=prometheus"
+      - traefik.http.services.prometheus.loadbalancer.server.port=9090
+
+  grafana:
+    image: grafana/grafana:latest
+    volumes:
+      - grafana_data:/var/lib/grafana
+    ports:
+      - "3000:3000"
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=default
+      - "traefik.http.routers.grafana-secure.entrypoints=websecure"
+      - "traefik.http.routers.grafana-secure.rule=Host(`grafana.palnight.com`)"
+      - "traefik.http.routers.grafana-secure.service=grafana"
+      - traefik.http.services.grafana.loadbalancer.server.port=3000
+
+  node_exporter:
+    image: quay.io/prometheus/node-exporter:v1.5.0
+    container_name: node_exporter
+    command: "--path.rootfs=/host"
+    pid: host
+    restart: unless-stopped
+    volumes:
+      - /:/host:ro,rslave
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.47.0
+    container_name: cadvisor
+    ports:
+      - "8081:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    devices:
+      - /dev/kmsg
+    privileged: true
+    restart: unless-stopped
+
+
+
+networks:
+  default:
+    external:
+      name: traefik-public

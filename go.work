@@ -1,5 +1,5 @@
 use (
-	./cmd/app
+	./app
 	./pkg
 	.
 )
