@@ -4,9 +4,6 @@ FROM golang:${GOLANG_VERSION}-alpine3.17 AS builder
 
 WORKDIR /app
 
-RUN #echo "Listing /app"x
-RUN #ls -la /app
-
 COPY go.mod .
 COPY go.sum .
 COPY ./pkg/go.mod ./pkg/
@@ -18,6 +15,7 @@ COPY ./app/go.sum ./app/
 # Download dependencies
 RUN go mod download
 RUN go install github.com/cespare/reflex@latest
+RUN #go install github.com/cosmtrek/air@latest
 
 # Copy the rest of the application source code
 COPY ./app/ ./app
