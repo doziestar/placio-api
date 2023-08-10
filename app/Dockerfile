@@ -27,5 +27,4 @@ ENV PORT=7070
 EXPOSE 7070
 
 # Run the binary
-#CMD ["./app/auth"]
-CMD ["reflex", "-r", "\\.go$", "-s", "--", "go", "run", "./cmd/app/main.go"]
+CMD ["reflex", "-r", "\\.go$", "-s", "--", "go", "run", "./app/main.go"]
