@@ -43,6 +43,7 @@ type PlaceService interface {
 	GetPlaces(ctx context.Context, filter *PlaceFilter, lastId string, limit int) ([]*ent.Place, string, error)
 	AddAmenitiesToPlace(ctx context.Context, placeID string, amenities []amenities.CreateAmenityInput) error
 	GetAllPlaces(ctx context.Context, nextPageToken string, limit int) ([]*ent.Place, string, error)
+	RemoveAmenitiesFromPlace(ctx context.Context, placeID string, amenityIDs []string) error
 }
 
 type PlaceServiceImpl struct {
@@ -362,6 +363,22 @@ func (s *PlaceServiceImpl) addPlaceToCacheAndSearchIndex(ctx context.Context, pl
 			return
 		}
 	}()
+
+	return nil
+}
+
+func (s *PlaceServiceImpl) RemoveAmenitiesFromPlace(ctx context.Context, placeID string, amenityIDs []string) error {
+	placeData, err := s.client.Place.
+		UpdateOneID(placeID).
+		RemoveAmenityIDs(amenityIDs...).
+		Save(ctx)
+
+	if err != nil {
+		sentry.CaptureException(err)
+		return err
+	}
+
+	go s.addPlaceToCacheAndSearchIndex(ctx, placeData)
 
 	return nil
 }
