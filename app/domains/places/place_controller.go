@@ -263,7 +263,6 @@ func (c *PlaceController) deletePlace(ctx *gin.Context) error {
 func (c *PlaceController) getPlacesByFilters(ctx *gin.Context) error {
 	var filter PlaceFilter
 	if err := ctx.ShouldBindQuery(&filter); err != nil {
-
 		return err
 	}
 

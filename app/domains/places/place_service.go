@@ -19,17 +19,14 @@ import (
 )
 
 type PlaceFilter struct {
-	IDs      []string
-	Name     []string
-	Type     []string
-	Country  []string
-	City     []string
-	State    []string
-	Tags     []string
-	Features []string
-	Email    []string
-	Phone    []string
-	Website  []string
+	Name     string
+	Type     string
+	Country  string
+	City     string
+	State    string
+	Tags     string
+	Features string
+	Website  string
 }
 
 type PlaceService interface {
@@ -507,25 +504,21 @@ func (s *PlaceServiceImpl) GetPlaces(ctx context.Context, filter *PlaceFilter, l
 		Limit(limit + 1)
 
 	// Apply filters
-	if len(filter.IDs) > 0 {
-		query = query.Where(place.IDIn(filter.IDs...))
+	if filter.Name != "" {
+		query = query.Where(place.Name(filter.Name))
 	}
-	if len(filter.Name) > 0 {
-		query = query.Where(place.NameIn(filter.Name...))
+	if filter.Type != "" {
+		query = query.Where(place.Type(filter.Type))
 	}
-	if len(filter.Type) > 0 {
-		query = query.Where(place.TypeIn(filter.Type...))
+	if filter.Country != "" {
+		query = query.Where(place.Country(filter.Country))
 	}
-	if len(filter.Country) > 0 {
-		query = query.Where(place.CountryIn(filter.Country...))
+	if filter.City != "" {
+		query = query.Where(place.City(filter.City))
 	}
-	if len(filter.City) > 0 {
-		query = query.Where(place.CityIn(filter.City...))
+	if filter.State != "" {
+		query = query.Where(place.State(filter.State))
 	}
-	if len(filter.State) > 0 {
-		query = query.Where(place.StateIn(filter.State...))
-	}
-	// ...
 
 	if lastId != "" {
 		// If lastId is provided, we fetch records after it
@@ -573,14 +566,14 @@ func (s *PlaceServiceImpl) GetPlaces(ctx context.Context, filter *PlaceFilter, l
 	}
 
 	// Filter places by tags and features at the application level
-	filteredPlaces := []*ent.Place{}
+	var filteredPlaces []*ent.Place
 	for _, p := range places {
-		// Check if place tags include all tags from the filter
-		if len(filter.Tags) > 0 && !containsAll(p.Tags, filter.Tags) {
+		// Check if place tags include the tag from the filter
+		if filter.Tags != "" && !contains(p.Tags, filter.Tags) {
 			continue
 		}
-		// Check if place features include all features from the filter
-		if len(filter.Features) > 0 && !containsAll(p.Features, filter.Features) {
+		// Check if place features include the feature from the filter
+		if filter.Features != "" && !contains(p.Features, filter.Features) {
 			continue
 		}
 		filteredPlaces = append(filteredPlaces, p)
@@ -589,6 +582,16 @@ func (s *PlaceServiceImpl) GetPlaces(ctx context.Context, filter *PlaceFilter, l
 	places = filteredPlaces
 
 	return places, nextId, nil
+}
+
+// contains checks if the set contains the element
+func contains(set []string, element string) bool {
+	for _, s := range set {
+		if s == element {
+			return true
+		}
+	}
+	return false
 }
 
 // containsAll checks if all elements of subset are in the set
