@@ -251,7 +251,7 @@ func (c *PlaceController) deletePlace(ctx *gin.Context) error {
 // @Tags Place
 // @Accept  json
 // @Produce  json
-// @Param filter query service.PlaceFilter false "Filter"
+// @Param filter query places.PlaceFilter false "Filter"
 // @Param page query int false "Page Number"
 // @Param pageSize query int false "Page Size"
 // @Param Authorization header string true "Bearer Token"
