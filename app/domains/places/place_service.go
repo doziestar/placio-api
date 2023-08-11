@@ -15,6 +15,7 @@ import (
 	"placio-app/ent/business"
 	"placio-app/ent/place"
 	"placio-app/utility"
+	"placio-pkg/errors"
 	"sync"
 )
 
@@ -34,6 +35,7 @@ type PlaceService interface {
 	CreatePlace(ctx context.Context, placeData CreatePlaceDTO) (*ent.Place, error)
 	UpdatePlace(ctx context.Context, placeID string, placeData UpdatePlaceDTO) (*ent.Place, error)
 	AddMediaToPlace(ctx context.Context, placeID string, files []*multipart.FileHeader) error
+	RemoveMediaToPlace(ctx context.Context, placeID string, mediaID []string) error
 	DeletePlace(ctx context.Context, placeID string) error
 	GetPlacesAssociatedWithBusinessAccount(c context.Context, businessId string) ([]*ent.Place, error)
 	GetPlaces(ctx context.Context, filter *PlaceFilter, lastId string, limit int) ([]*ent.Place, string, error)
@@ -371,6 +373,49 @@ func (s *PlaceServiceImpl) AddMediaToPlace(ctx context.Context, placeID string, 
 	}
 
 	// Add the updated place to the search index and cache
+	go s.addPlaceToCacheAndSearchIndex(ctx, place)
+
+	return nil
+}
+
+func (s *PlaceServiceImpl) RemoveMediaToPlace(ctx context.Context, placeID string, mediaIDs []string) error {
+	// Fetch place
+	place, err := s.client.Place.Get(ctx, placeID)
+	if err != nil {
+		sentry.CaptureException(err)
+		return err
+	}
+
+	// Create a map to quickly lookup media IDs
+	mediaLookup := make(map[string]bool)
+	for _, mID := range mediaIDs {
+		mediaLookup[mID] = true
+	}
+
+	// Check if the mediaIDs are associated with the place
+	var associatedMediaIDs []string
+	for _, associatedMedia := range place.Edges.Medias {
+		if mediaLookup[associatedMedia.ID] {
+			associatedMediaIDs = append(associatedMediaIDs, associatedMedia.ID)
+		}
+	}
+
+	if len(associatedMediaIDs) == 0 {
+		// None of the provided media IDs are associated with the place
+		return errors.IDMissing
+	}
+
+	// Remove media from the place
+	_, err = s.client.Place.UpdateOneID(placeID).RemoveMediaIDs(associatedMediaIDs...).Save(ctx)
+	if err != nil {
+		sentry.CaptureException(err)
+		return err
+	}
+
+	// TODO: Check if the media is no longer associated with any other places.
+	// If not, then remove the media from Cloudinary or your media hosting service.
+
+	// Update the place in cache and search index
 	go s.addPlaceToCacheAndSearchIndex(ctx, place)
 
 	return nil

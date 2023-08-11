@@ -33,6 +33,7 @@ func (c *PlaceController) RegisterRoutes(router, routerWithoutAuth *gin.RouterGr
 		placeRouter.DELETE("/:id", utility.Use(c.deletePlace))
 		placeRouter.POST("/:id/amenities", utility.Use(c.addAmenitiesToPlace))
 		placeRouter.PATCH("/:id/media", utility.Use(c.addMediaToAPlace))
+		placeRouter.DELETE("/:id/media", utility.Use(c.removeMediaToAPlace))
 		placeRouterWithoutAuth.GET("/all", utility.Use(c.getAllPlaces))
 	}
 }
@@ -164,7 +165,7 @@ func (c *PlaceController) addAmenitiesToPlace(ctx *gin.Context) error {
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
-// @Router /api/v1/places/{id}/amenities [post]
+// @Router /api/v1/places/{id}/media [post]
 func (c *PlaceController) addMediaToAPlace(ctx *gin.Context) error {
 	id := ctx.Param("id")
 
@@ -188,6 +189,47 @@ func (c *PlaceController) addMediaToAPlace(ctx *gin.Context) error {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Media added successfully",
+	})
+	return nil
+}
+
+// @Summary Remove Media to a place
+// @Description Add media to a place by ID
+// @Tags Place
+// @Accept json
+// @Produce json
+// @Param id path string true "ID of the place to add amenities to"
+// @Param amenity body  true ent.Media "Media to add"
+// @Param Authorization header string true "Bearer token"
+// @Success 200 {object} ent.Place "Successfully added amenities to place"
+// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
+// @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
+// @Router /api/v1/places/{id}/media [post]
+func (c *PlaceController) removeMediaToAPlace(ctx *gin.Context) error {
+	type requestBody struct {
+		MediaIDs []string `json:"media_ids"`
+	}
+
+	var body requestBody
+	if err := ctx.BindJSON(&body); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid request body",
+		})
+		return err
+	}
+
+	// The place ID can be a path parameter, as before
+	placeID := ctx.Param("id")
+
+	go func() {
+		if err := c.placeService.RemoveMediaToPlace(ctx, placeID, body.MediaIDs); err != nil {
+			sentry.CaptureException(err)
+		}
+	}()
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Media removed successfully",
 	})
 	return nil
 }
