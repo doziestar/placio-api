@@ -155,10 +155,10 @@ func (c *PlaceController) addAmenitiesToPlace(ctx *gin.Context) error {
 // @Summary Add Media to a place
 // @Description Add media to a place by ID
 // @Tags Place
-// @Accept multi
+// @Accept json
 // @Produce json
 // @Param id path string true "ID of the place to add amenities to"
-// @Param amenity body Dto.AmenityAdditionDTO true "Amenities to add"
+// @Param amenity body  true ent.Media "Media to add"
 // @Param Authorization header string true "Bearer token"
 // @Success 200 {object} ent.Place "Successfully added amenities to place"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
@@ -168,14 +168,20 @@ func (c *PlaceController) addAmenitiesToPlace(ctx *gin.Context) error {
 func (c *PlaceController) addMediaToAPlace(ctx *gin.Context) error {
 	id := ctx.Param("id")
 
-	var amenityDTO amenities.AmenityAdditionDTO
-	if err := ctx.ShouldBindJSON(&amenityDTO); err != nil {
+	forms, err := ctx.MultipartForm()
+	if err != err {
+		sentry.CaptureException(err)
+		return err
+	}
 
+	files, ok := forms.File["files"]
+	if !ok {
+		sentry.CaptureException(errors.New("files could not be extracted from the places form"))
 		return err
 	}
 
 	go func() {
-		if err := c.placeService.AddAmenitiesToPlace(ctx, id, amenityDTO.AmenityIDs); err != nil {
+		if err := c.placeService.AddMediaToPlace(ctx, id, files); err != nil {
 			sentry.CaptureException(err)
 		}
 	}()

@@ -347,12 +347,14 @@ func (s *PlaceServiceImpl) AddMediaToPlace(ctx context.Context, placeID string, 
 	// Fetch place
 	place, err := s.client.Place.Get(ctx, placeID)
 	if err != nil {
+		sentry.CaptureException(err)
 		return err
 	}
 
 	// Upload files to cloudinary
 	uploadedFiles, err := s.mediaService.UploadAndCreateMedia(ctx, files)
 	if err != nil {
+		sentry.CaptureException(err)
 		return err
 	}
 
@@ -364,6 +366,7 @@ func (s *PlaceServiceImpl) AddMediaToPlace(ctx context.Context, placeID string, 
 
 	_, err = s.client.Place.UpdateOneID(placeID).AddMediaIDs(mediaIDs...).Save(ctx)
 	if err != nil {
+		sentry.CaptureException(err)
 		return err
 	}
 
@@ -445,53 +448,6 @@ func (s *PlaceServiceImpl) DeletePlace(ctx context.Context, placeID string) erro
 		DeleteOneID(placeID).
 		Exec(ctx)
 }
-
-//func (s *PlaceServiceImpl) GetPlaces(ctx context.Context, filter *PlaceFilter, page int, pageSize int) ([]*ent.Place, error) {
-//	query := s.client.Place.
-//		Query().
-//		WithBusiness().
-//		WithUsers()
-//
-//	// Apply filters
-//	if len(filter.IDs) > 0 {
-//		query = query.Where(place.IDIn(filter.IDs...))
-//	}
-//	if len(filter.Name) > 0 {
-//		query = query.Where(place.NameIn(filter.Name...))
-//	}
-//	if len(filter.Type) > 0 {
-//		query = query.Where(place.TypeIn(filter.Type...))
-//	}
-//	if len(filter.Country) > 0 {
-//		query = query.Where(place.CountryIn(filter.Country...))
-//	}
-//	if len(filter.City) > 0 {
-//		query = query.Where(place.CityIn(filter.City...))
-//	}
-//	if len(filter.State) > 0 {
-//		query = query.Where(place.StateIn(filter.State...))
-//	}
-//	if len(filter.Tags) > 0 {
-//		// To use Tags, Features, etc you may need additional handling as these fields are stored as JSON
-//		// This is just a sample, it might not work as is
-//		query = query.Where(place.HasTagsWith(filter.Tags...))
-//	}
-//	if len(filter.Features) > 0 {
-//		// Similarly to Tags
-//		query = query.Where(place.HasFeaturesWith(filter.Features...))
-//	}
-//
-//	// Apply pagination
-//	query = query.Offset((page - 1) * pageSize).Limit(pageSize)
-//
-//	// Execute query
-//	places, err := query.All(ctx)
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	return places, nil
-//}
 
 func (s *PlaceServiceImpl) GetPlaces(ctx context.Context, filter *PlaceFilter, lastId string, limit int) ([]*ent.Place, string, error) {
 	if limit == 0 {
