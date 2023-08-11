@@ -2,13 +2,12 @@ package reviews
 
 import (
 	"context"
-	"placio-app/Dto"
 	"placio-app/ent"
 	"placio-app/ent/rating"
 )
 
 type RatingService interface {
-	CreateRating(ctx context.Context, ratingDTO *Dto.RatingDTO) (*ent.Rating, error)
+	CreateRating(ctx context.Context, ratingDTO *RatingDTO) (*ent.Rating, error)
 	UpdateRating(ctx context.Context, ratingID string, newRating int) (*ent.Rating, error)
 	GetRating(ctx context.Context, ratingID string) (*ent.Rating, error)
 	ListRatings(ctx context.Context) ([]*ent.Rating, error)
@@ -23,7 +22,7 @@ func NewRatingService(client *ent.Client) RatingService {
 	return &RatingServiceImpl{client: client}
 }
 
-func (rs *RatingServiceImpl) CreateRating(ctx context.Context, r *Dto.RatingDTO) (*ent.Rating, error) {
+func (rs *RatingServiceImpl) CreateRating(ctx context.Context, r *RatingDTO) (*ent.Rating, error) {
 	rating, err := rs.client.Rating.
 		Create().
 		SetUser(r.User).

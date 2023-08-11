@@ -3,7 +3,6 @@ package reviews
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"placio-app/Dto"
 	"placio-app/ent"
 	"placio-app/utility"
 )
@@ -40,7 +39,7 @@ func (rc *RatingController) RegisterRoutes(router *gin.RouterGroup) {
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/ratings/ [post]
 func (rc *RatingController) createRating(ctx *gin.Context) error {
-	data := new(Dto.RatingDTO)
+	data := new(RatingDTO)
 	if err := ctx.BindJSON(data); err != nil {
 
 		return err
