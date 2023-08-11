@@ -7,11 +7,13 @@ import (
 	"github.com/google/uuid"
 	"log"
 	"mime/multipart"
+	"placio-app/domains/amenities"
 	"placio-app/domains/follow"
 	"placio-app/domains/like"
 	"placio-app/domains/media"
 	"placio-app/domains/search"
 	"placio-app/ent"
+	"placio-app/ent/amenity"
 	"placio-app/ent/business"
 	"placio-app/ent/place"
 	"placio-app/utility"
@@ -39,7 +41,7 @@ type PlaceService interface {
 	DeletePlace(ctx context.Context, placeID string) error
 	GetPlacesAssociatedWithBusinessAccount(c context.Context, businessId string) ([]*ent.Place, error)
 	GetPlaces(ctx context.Context, filter *PlaceFilter, lastId string, limit int) ([]*ent.Place, string, error)
-	AddAmenitiesToPlace(ctx context.Context, placeID string, amenityIDs []string) error
+	AddAmenitiesToPlace(ctx context.Context, placeID string, amenities []amenities.CreateAmenityInput) error
 	GetAllPlaces(ctx context.Context, nextPageToken string, limit int) ([]*ent.Place, string, error)
 }
 
@@ -325,10 +327,29 @@ func (s *PlaceServiceImpl) CreatePlace(ctx context.Context, placeData CreatePlac
 	return place, nil
 }
 
-func (s *PlaceServiceImpl) addPlaceToCacheAndSearchIndex(ctx context.Context, place *ent.Place, other ...string) error {
+func (s *PlaceServiceImpl) addPlaceToCacheAndSearchIndex(ctx context.Context, placeData *ent.Place, other ...string) error {
+	fullPlace, err := s.client.Place.
+		Query().
+		Where(place.IDEQ(placeData.ID)).
+		WithBusiness().
+		WithUsers().
+		WithFaqs().
+		WithCategories().
+		WithRooms().
+		WithMedias().
+		WithRatings().
+		WithAmenities().
+		WithReviews().
+		WithReviews().
+		Only(ctx)
+
+	if err != nil {
+		sentry.CaptureException(err)
+		return err
+	}
 	// Add the new place to the search index.
 	go func() {
-		if err := s.searchService.CreateOrUpdatePlace(ctx, place); err != nil {
+		if err := s.searchService.CreateOrUpdatePlace(ctx, fullPlace); err != nil {
 			sentry.CaptureException(err)
 		}
 	}()
@@ -336,7 +357,7 @@ func (s *PlaceServiceImpl) addPlaceToCacheAndSearchIndex(ctx context.Context, pl
 	// add the new place to cache
 	go func() {
 		cacheKey := fmt.Sprintf("place:%s", place.ID)
-		if err := s.cache.SetCache(ctx, cacheKey, place); err != nil {
+		if err := s.cache.SetCache(ctx, cacheKey, fullPlace); err != nil {
 			sentry.CaptureException(err)
 			return
 		}
@@ -374,6 +395,82 @@ func (s *PlaceServiceImpl) AddMediaToPlace(ctx context.Context, placeID string, 
 
 	// Add the updated place to the search index and cache
 	go s.addPlaceToCacheAndSearchIndex(ctx, place)
+
+	return nil
+}
+
+func (s *PlaceServiceImpl) AddAmenitiesToPlace(ctx context.Context, placeID string, amenities []amenities.CreateAmenityInput) error {
+	// Step 1: Fetch the existing amenities for the place.
+	existingAmenities, err := s.client.Place.
+		Query().
+		Where(place.ID(placeID)).
+		QueryAmenities().
+		All(ctx)
+
+	if err != nil {
+		sentry.CaptureException(err)
+		return err
+	}
+
+	existingAmenityNames := make(map[string]struct{})
+	for _, amenity := range existingAmenities {
+		existingAmenityNames[amenity.Name] = struct{}{}
+	}
+
+	// Step 2: Initialize a slice to hold amenity references.
+	var amenityList []*ent.Amenity
+
+	// Step 3: Iterate over each amenity in the input.
+	for _, amenityInput := range amenities {
+		// If the amenity already exists for the place, skip.
+		if _, exists := existingAmenityNames[amenityInput.Name]; exists {
+			continue
+		}
+
+		// Check if the amenity with the provided name exists globally.
+		amenity, err := s.client.Amenity.
+			Query().
+			Where(amenity.NameEQ(amenityInput.Name)).
+			Only(ctx)
+
+		if err != nil && !ent.IsNotFound(err) {
+			sentry.CaptureException(err)
+			return err
+		}
+
+		if amenity != nil {
+			amenityList = append(amenityList, amenity)
+		} else {
+			// Create the amenity.
+			newAmenity, err := s.client.Amenity.
+				Create().
+				SetName(amenityInput.Name).
+				SetIcon(amenityInput.Icon).
+				Save(ctx)
+
+			if err != nil {
+				sentry.CaptureException(err)
+				return err
+			}
+
+			amenityList = append(amenityList, newAmenity)
+		}
+	}
+
+	// Step 4: Associate the new amenities with the place.
+	if len(amenityList) > 0 {
+		placeData, err := s.client.Place.
+			UpdateOneID(placeID).
+			AddAmenities(amenityList...).
+			Save(ctx)
+
+		if err != nil {
+			sentry.CaptureException(err)
+			return err
+		}
+
+		go s.addPlaceToCacheAndSearchIndex(ctx, placeData)
+	}
 
 	return nil
 }
@@ -421,42 +518,42 @@ func (s *PlaceServiceImpl) RemoveMediaToPlace(ctx context.Context, placeID strin
 	return nil
 }
 
-func (s *PlaceServiceImpl) AddAmenitiesToPlace(ctx context.Context, placeID string, amenityIDs []string) error {
-	// Fetch place
-	place, err := s.client.Place.Get(ctx, placeID)
-	if err != nil {
-		return err
-	}
-
-	// Fetch amenities
-	wg := sync.WaitGroup{}
-	wg.Add(len(amenityIDs))
-	amenities := make([]*ent.Amenity, len(amenityIDs))
-	for i, amenityID := range amenityIDs {
-		go func(i int, amenityID string) {
-			defer wg.Done()
-			amenities[i], err = s.client.Amenity.Get(ctx, amenityID)
-			if err != nil {
-				sentry.CaptureException(err)
-				return
-			}
-		}(i, amenityID)
-		wg.Wait()
-
-	}
-
-	// Update place with new amenities
-	placeData, err := place.Update().AddAmenities(amenities...).Save(ctx)
-	if err != nil {
-		sentry.CaptureException(err)
-		return err
-	}
-
-	// Add the new place to the search index and cache
-	go s.addPlaceToCacheAndSearchIndex(ctx, placeData)
-
-	return nil
-}
+//func (s *PlaceServiceImpl) AddAmenitiesToPlace(ctx context.Context, placeID string, amenityIDs []string) error {
+//	// Fetch place
+//	place, err := s.client.Place.Get(ctx, placeID)
+//	if err != nil {
+//		return err
+//	}
+//
+//	// Fetch amenities
+//	wg := sync.WaitGroup{}
+//	wg.Add(len(amenityIDs))
+//	amenities := make([]*ent.Amenity, len(amenityIDs))
+//	for i, amenityID := range amenityIDs {
+//		go func(i int, amenityID string) {
+//			defer wg.Done()
+//			amenities[i], err = s.client.Amenity.Get(ctx, amenityID)
+//			if err != nil {
+//				sentry.CaptureException(err)
+//				return
+//			}
+//		}(i, amenityID)
+//		wg.Wait()
+//
+//	}
+//
+//	// Update place with new amenities
+//	placeData, err := place.Update().AddAmenities(amenities...).Save(ctx)
+//	if err != nil {
+//		sentry.CaptureException(err)
+//		return err
+//	}
+//
+//	// Add the new place to the search index and cache
+//	go s.addPlaceToCacheAndSearchIndex(ctx, placeData)
+//
+//	return nil
+//}
 
 func (s *PlaceServiceImpl) UpdatePlace(ctx context.Context, placeID string, placeData UpdatePlaceDTO) (*ent.Place, error) {
 
