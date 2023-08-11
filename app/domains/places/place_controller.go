@@ -253,7 +253,7 @@ func (c *PlaceController) deletePlace(ctx *gin.Context) error {
 // @Produce  json
 // @Param filter query places.PlaceFilter false "Filter"
 // @Param page query int false "Page Number"
-// @Param pageSize query int false "Page Size"
+// @Param pageSize query int false "limit"
 // @Param Authorization header string true "Bearer Token"
 // @Success 200 {array} ent.Place
 // @Failure 400 {object} Dto.ErrorDTO "Invalid inputs"
@@ -268,13 +268,13 @@ func (c *PlaceController) getPlacesByFilters(ctx *gin.Context) error {
 
 	page := ctx.Query("nextPageToken")
 
-	pageSize, err := strconv.Atoi(ctx.DefaultQuery("pageSize", "10"))
+	limit, err := strconv.Atoi(ctx.DefaultQuery("limit", "10"))
 	if err != nil {
 
 		return err
 	}
 
-	places, nextPageToken, err := c.placeService.GetPlaces(ctx, &filter, page, pageSize)
+	places, nextPageToken, err := c.placeService.GetPlaces(ctx, &filter, page, limit)
 	if err != nil {
 
 		return err
