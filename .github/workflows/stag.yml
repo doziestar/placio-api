@@ -38,12 +38,6 @@ jobs:
 #          restore-keys: |
 #            ${{ runner.os }}-buildx-
 
-      - name: Remove old application stack
-        run: |
-          echo ${{ secrets.VPS_PASSWORD }} | sudo -S rm -rf /home/placio/placio-api/_work/placio-api/placio-api/backend
-          echo ${{ secrets.VPS_PASSWORD }} | sudo -S rm -rf /home/placio/placio-api/_work/placio-api/placio-api/portainer
-          echo ${{ secrets.VPS_PASSWORD }} | sudo -S rm -rf /home/placio/placio-api/_work/placio-api/placio-api/traefik
-
       - name: Build and Start Docker Containers
         run: |
           echo "Starting containers"

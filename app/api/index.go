@@ -1,0 +1,170 @@
+package api
+
+import (
+	"github.com/cloudinary/cloudinary-go/v2"
+	_ "placio-api/docs/app"
+	"placio-app/domains/amenities"
+	"placio-app/domains/booking"
+	"placio-app/domains/business"
+	"placio-app/domains/categories"
+	"placio-app/domains/comments"
+	"placio-app/domains/events_management"
+	"placio-app/domains/faq"
+	"placio-app/domains/feedback"
+	"placio-app/domains/follow"
+	"placio-app/domains/inventory"
+	"placio-app/domains/like"
+	"placio-app/domains/media"
+	"placio-app/domains/places"
+	"placio-app/domains/posts"
+	"placio-app/domains/reviews"
+	"placio-app/domains/search"
+	"placio-app/domains/users"
+	"placio-app/ent"
+	"placio-app/middleware"
+	"placio-app/utility"
+
+	"github.com/gin-gonic/gin"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+)
+
+func InitializeRoutes(app *gin.Engine, client *ent.Client) {
+	routerGroupV1 := app.Group("/api/v1")
+	routerGroupV1WithoutAuth := app.Group("/api/v1")
+	{
+		routerGroupV1.GET("/docs/*files", ginSwagger.WrapHandler(swaggerfiles.Handler))
+
+		routerGroupV1.GET("/ready", func(c *gin.Context) {
+			c.JSON(200, gin.H{
+				"message": "ready",
+			})
+		})
+
+		//redisClient := utility.NewRedisClient(os.Getenv("REDIS_URL"), 0, utility.CacheDuration)
+		redisClient := utility.NewRedisClient("redis://default:a3677c1a7b84402eb34efd55ad3cf059@golden-colt-33790.upstash.io:33790", 0)
+		_ = redisClient.ConnectRedis()
+
+		cld, _ := cloudinary.NewFromParams("placio", "312498583624125", "k4XSQwWuhi3Vy7QAw7Qn0mUaW0s")
+
+		searchService, _ := search.NewSearchService(client)
+		searchController := search.NewSearchController(searchService)
+		searchController.RegisterRoutes(routerGroupV1)
+
+		routerGroupV1.Use(middleware.EnsureValidToken())
+		routerGroupV1WithoutAuth.Use(middleware.EnsureValidTokenButAllowAccess())
+
+		// user
+		userService := users.NewUserService(client, redisClient, searchService)
+		userController := users.NewUserController(userService, *redisClient)
+		userController.RegisterRoutes(routerGroupV1)
+
+		// media
+		mediaService := media.NewMediaService(client, cld)
+		mediaController := media.NewMediaController(mediaService)
+		mediaController.RegisterRoutes(routerGroupV1WithoutAuth)
+
+		// comments
+		commentService := comments.NewCommentService(client)
+		commentController := comments.NewCommentController(commentService, userService)
+		commentController.RegisterRoutes(routerGroupV1)
+
+		// likes
+		likeService := like.NewLikeService(client, redisClient)
+		userPlacesLikesService := like.NewUserLikePlaceService(client, redisClient)
+		likeController := like.NewLikeController(likeService, userPlacesLikesService)
+		likeController.RegisterRoutes(routerGroupV1)
+
+		// follow
+		followService := follow.NewFollowService(client)
+		followController := follow.NewFollowController(followService)
+		followController.RegisterRoutes(routerGroupV1)
+
+		// places
+		placeService := places.NewPlaceService(client, searchService, userPlacesLikesService, *followService, *redisClient, mediaService)
+		placeController := places.NewPlaceController(placeService, *redisClient)
+		placeController.RegisterRoutes(routerGroupV1, routerGroupV1WithoutAuth)
+
+		// reservations
+		reservationService := booking.NewReservationService(client)
+		reservationController := booking.NewReservationController(reservationService)
+		reservationController.RegisterRoutes(routerGroupV1)
+
+		// room
+		roomService := inventory.NewRoomService(client)
+		roomController := inventory.NewRoomController(roomService)
+		roomController.RegisterRoutes(routerGroupV1)
+
+		// menu
+		menuService := inventory.NewMenuService(client)
+		menuController := inventory.NewMenuController(menuService)
+		menuController.RegisterRoutes(routerGroupV1)
+
+		//booking
+		bookingService := booking.NewBookingService(client)
+		bookingController := booking.NewBookingController(bookingService)
+		bookingController.RegisterRoutes(routerGroupV1)
+
+		// feedback
+		helpService := feedback.NewHelpService(client)
+		helpController := feedback.NewHelpController(helpService)
+		helpController.RegisterRoutes(routerGroupV1)
+
+		// category
+		categoryService := categories.NewCategoryService(client, mediaService)
+		categoryController := categories.NewCategoryController(categoryService)
+		categoryController.RegisterRoutes(routerGroupV1)
+
+		// business
+		businessService := business.NewBusinessAccountService(client, searchService, redisClient, placeService)
+		businessController := business.NewBusinessAccountController(businessService, *redisClient)
+		businessController.RegisterRoutes(routerGroupV1)
+
+		// posts
+		postService := posts.NewPostService(client, redisClient)
+		postController := posts.NewPostController(postService, userService, businessService, mediaService)
+		postController.RegisterRoutes(routerGroupV1)
+
+		// events
+		eventService := events_management.NewEventService(client, searchService)
+		eventController := events_management.NewEventController(eventService, utility.NewUtility())
+		eventController.RegisterRoutes(routerGroupV1)
+
+		// amenities
+		amenityService := amenities.NewAmenityService(client)
+		amenityController := amenities.NewAmenityController(amenityService, redisClient)
+		amenityController.RegisterRoutes(routerGroupV1)
+
+		// faq
+		faqService := faq.NewFAQService(client, redisClient)
+		faqController := faq.NewFAQController(faqService)
+		faqController.RegisterRoutes(routerGroupV1, routerGroupV1WithoutAuth)
+
+		// Review
+		reviewService := reviews.NewReviewService(client, mediaService)
+		reviewController := reviews.NewReviewController(reviewService, mediaService)
+		reviewController.RegisterRoutes(routerGroupV1, routerGroupV1WithoutAuth)
+
+		// ratings
+		//ratingService := service.NewRatingService(client)
+		//ratingController := controller.NewRatingController(ratingService)
+		//ratingController.RegisterRoutes(routerGroupV1)
+
+		//// tickets
+		//ticketService := service.NewTicketService(db)
+		//ticketController := controller.NewTicketController(ticketService)
+		//ticketController.RegisterRoutes(routerGroupV1)
+		//
+		//// attendee
+		//attendeeService := service.NewAttendeeService(db)
+		//attendeeController := controller.NewAttendeeController(attendeeService)
+		//attendeeController.RegisterRoutes(routerGroupV1)
+		//
+		//// ticketOption
+		//ticketOptionService := service.NewTicketOptionService(db)
+		//ticketOptionController := controller.NewTicketOptionController(ticketOptionService)
+		//ticketOptionController.RegisterRoutes(routerGroupV1)
+
+	}
+
+}

@@ -6,7 +6,7 @@ services:
   #    ports:
   #      - "4242:4242"
   #    environment:
-  #      # This points Unleash to its backing database (defined in the `db` section below)
+  #      # This points Unleash to its backing db (defined in the `db` section below)
   #      DATABASE_URL: "postgres://dozie:918273645dozie@postgres-db/postgres"
   #      DATABASE_SSL: "false"
   #      LOG_LEVEL: "warn"
@@ -29,16 +29,16 @@ services:
   app:
     build:
       context: .
-      dockerfile: ./cmd/app/Dockerfile
+      dockerfile: ./app/Dockerfile
     restart: always
     ports:
       - "7070:7070"
     volumes:
       - ./:/app
-      - ./cmd/app:/app/cmd/app
+      - ./app:/app/app
       - ./config:/app/config
     env_file:
-      - ./.envs/.local
+      - .envs/.local
 
 
 

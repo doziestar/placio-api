@@ -12,7 +12,7 @@ services:
       - "8090:8080"
       - "443:443"
     env_file:
-      - ./.envs/.stag
+      - .envs/.stag
 
     volumes:
       - /etc/localtime:/etc/localtime:ro
@@ -40,15 +40,15 @@ services:
     ports:
       - "7070:7070"
     env_file:
-      - ./.envs/.stag
+      - .envs/.stag
     restart: always
-    volumes:
-      - ./:/app
-      - ./cmd/app:/app/cmd/app
-      - ./config:/app/config
+#    volumes:
+#      - ./:/app
+#      - ./app:/app/app
+#      - ./config:/app/config
     build:
       context: .
-      dockerfile: ./cmd/app/stag.dockerfile
+      dockerfile: ./app/stag.dockerfile
     networks:
       - default
     labels:
