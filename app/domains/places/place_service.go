@@ -499,25 +499,30 @@ func (s *PlaceServiceImpl) GetPlaces(ctx context.Context, filter *PlaceFilter, l
 	}
 	query := s.client.Place.
 		Query().
+		Order(ent.Asc(place.FieldID)).
 		WithBusiness().
 		WithUsers().
 		Limit(limit + 1)
 
 	// Apply filters
 	if filter.Name != "" {
-		query = query.Where(place.Name(filter.Name))
+		query = query.Where(place.Or(place.NameEQ(filter.Name), place.NameContains(filter.Name), place.Name(filter.Name)))
 	}
+
 	if filter.Type != "" {
-		query = query.Where(place.Type(filter.Type))
+		query = query.Where(place.Or(place.TypeEQ(filter.Type), place.TypeContains(filter.Type), place.Type(filter.Type)))
 	}
+
 	if filter.Country != "" {
-		query = query.Where(place.Country(filter.Country))
+		query = query.Where(place.Or(place.CountryEQ(filter.Country), place.CountryContains(filter.Country), place.Country(filter.Country)))
 	}
+
 	if filter.City != "" {
-		query = query.Where(place.City(filter.City))
+		query = query.Where(place.Or(place.CityEQ(filter.City), place.CityContains(filter.City), place.City(filter.City)))
 	}
+
 	if filter.State != "" {
-		query = query.Where(place.State(filter.State))
+		query = query.Where(place.Or(place.StateEQ(filter.State), place.StateContains(filter.State), place.State(filter.State)))
 	}
 
 	if lastId != "" {
