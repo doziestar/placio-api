@@ -358,7 +358,7 @@ func (s *PlaceServiceImpl) addPlaceToCacheAndSearchIndex(ctx context.Context, pl
 
 	// add the new place to cache
 	go func() {
-		cacheKey := fmt.Sprintf("place:%s", place.ID)
+		cacheKey := fmt.Sprintf("place:%s", fullPlace.ID)
 		if err := s.cache.SetCache(ctx, cacheKey, fullPlace); err != nil {
 			sentry.CaptureException(err)
 			return
