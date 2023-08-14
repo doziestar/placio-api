@@ -1,4 +1,4 @@
-package api
+package cmd
 
 import (
 	"github.com/cloudinary/cloudinary-go/v2"
@@ -21,8 +21,8 @@ import (
 	"placio-app/domains/search"
 	"placio-app/domains/users"
 	"placio-app/ent"
-	"placio-app/middleware"
 	"placio-app/utility"
+	"placio-pkg/middleware"
 
 	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"

@@ -13,14 +13,11 @@ import (
 )
 
 type EventFilter struct {
-	IDs       []string
-	Name      []string
-	EventType []string
-	Status    []string
-	Location  []string
-	URL       []string
-	Title     []string
-	TimeZone  []string
+	EventType string
+	Status    string
+	Location  string
+	Title     string
+	TimeZone  string
 	StartDate struct {
 		From string
 		To   string
@@ -278,65 +275,64 @@ func (s *EventService) GetEvents(ctx context.Context, filter *EventFilter, page 
 		WithOwnerUser().
 		WithOwnerBusiness()
 
-	// Apply filters
-	if len(filter.IDs) > 0 {
-		query = query.Where(event.IDIn(filter.IDs...))
-	}
-	if len(filter.Name) > 0 {
-		query = query.Where(event.NameIn(filter.Name...))
-	}
-	if len(filter.EventType) > 0 {
-		// use parseEventType to convert string to enum
-		eventTypeEnumArr := make([]event.EventType, len(filter.EventType))
-		for i, v := range filter.EventType {
-			eventTypeEnum, err := parseEventType(v)
-			if err != nil {
-				return nil, err
-			}
-			eventTypeEnumArr[i] = eventTypeEnum
-		}
-		query = query.Where(event.EventTypeIn(eventTypeEnumArr...))
-	}
-	if len(filter.Status) > 0 {
-		query = query.Where(event.StatusIn(filter.Status...))
-	}
-	if len(filter.Location) > 0 {
-		query = query.Where(event.LocationIn(filter.Location...))
-	}
-	if len(filter.URL) > 0 {
-		query = query.Where(event.URLIn(filter.URL...))
-	}
-
-	// Apply date ranges
-	if filter.StartDate.From != "" && filter.StartDate.To != "" {
-		from, err1 := time.Parse("2006-01-02", filter.StartDate.From)
-		to, err2 := time.Parse("2006-01-02", filter.StartDate.To)
-		// convert to string
-		fromStr := from.Format("2006-01-02")
-		toStr := to.Format("2006-01-02")
-		if err1 == nil && err2 == nil {
-			query = query.Where(event.StartDateGTE(fromStr), event.StartDateLTE(toStr))
-		}
-	}
-
-	if filter.EndDate.From != "" && filter.EndDate.To != "" {
-		from, err1 := time.Parse("2006-01-02", filter.EndDate.From)
-		to, err2 := time.Parse("2006-01-02", filter.EndDate.To)
-		// convert to string
-		fromStr := from.Format("2006-01-02")
-		toStr := to.Format("2006-01-02")
-		if err1 == nil && err2 == nil {
-			query = query.Where(event.EndDateGTE(fromStr), event.EndDateLTE(toStr))
-		}
-
-	}
+	//// Apply filters
+	//if filter.EventType != "" {
+	//	eventTypeEnum, err := parseEventType(filter.EventType)
+	//	if err != nil {
+	//		return nil, err
+	//	}
+	//	query = query.Where(event.HasEventTypeWith(event.EventTypeEqual(eventTypeEnum)))
+	//}
+	//if filter.Status != "" {
+	//	query = query.Where(event.StatusEqual(filter.Status))
+	//}
+	//if filter.Location != "" {
+	//	query = query.Where(event.LocationEqual(filter.Location))
+	//}
+	//if filter.Title != "" {
+	//	query = query.Where(event.TitleEqual(filter.Title))
+	//}
+	//// ... You can add similar checks for other string fields ...
+	//
+	//// Apply date ranges
+	//if filter.StartDate.From != "" {
+	//	from, err := time.Parse("2006-01-02", filter.StartDate.From)
+	//	if err == nil {
+	//		query = query.Where(event.StartDateGTE(from))
+	//	}
+	//}
+	//if filter.StartDate.To != "" {
+	//	to, err := time.Parse("2006-01-02", filter.StartDate.To)
+	//	if err == nil {
+	//		query = query.Where(event.StartDateLTE(to))
+	//	}
+	//}
+	//
+	//if filter.EndDate.From != "" {
+	//	from, err := time.Parse("2006-01-02", filter.EndDate.From)
+	//	if err == nil {
+	//		query = query.Where(event.EndDateGTE(from))
+	//	}
+	//}
+	//if filter.EndDate.To != "" {
+	//	to, err := time.Parse("2006-01-02", filter.EndDate.To)
+	//	if err == nil {
+	//		query = query.Where(event.EndDateLTE(to))
+	//	}
+	//}
 
 	// Apply time ranges
-	if !filter.StartTime.From.IsZero() && !filter.StartTime.To.IsZero() {
-		query = query.Where(event.StartTimeGTE(filter.StartTime.From), event.StartTimeLTE(filter.StartTime.To))
+	if !filter.StartTime.From.IsZero() {
+		query = query.Where(event.StartTimeGTE(filter.StartTime.From))
 	}
-	if !filter.EndTime.From.IsZero() && !filter.EndTime.To.IsZero() {
-		query = query.Where(event.EndTimeGTE(filter.EndTime.From), event.EndTimeLTE(filter.EndTime.To))
+	if !filter.StartTime.To.IsZero() {
+		query = query.Where(event.StartTimeLTE(filter.StartTime.To))
+	}
+	if !filter.EndTime.From.IsZero() {
+		query = query.Where(event.EndTimeGTE(filter.EndTime.From))
+	}
+	if !filter.EndTime.To.IsZero() {
+		query = query.Where(event.EndTimeLTE(filter.EndTime.To))
 	}
 
 	// Apply pagination

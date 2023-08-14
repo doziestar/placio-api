@@ -79,7 +79,7 @@ docs: ## Generate documentation
 
 generate: ## Run Go generate
 	export GOWORK=off
-	go run entgo.io/ent/cmd/ent generate  --idtype string ./cmd/app/ent/schema
+	go run entgo.io/ent/cmd/ent generate  --idtype string ./app/ent/schema
 
 migrate: ## Run database migration. Pass migration name as a parameter, eg: make migrate migration_name=init_schema
 	atlas migrate diff $(migration_name) \

@@ -1,6 +1,7 @@
 package places
 
 import (
+	"encoding/json"
 	"github.com/getsentry/sentry-go"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -54,10 +55,38 @@ func (c *PlaceController) RegisterRoutes(router, routerWithoutAuth *gin.RouterGr
 // @Router /api/v1/places/{id} [get]
 func (c *PlaceController) getPlace(ctx *gin.Context) error {
 	id := ctx.Param("id")
-
 	// get place from cache
 	cacheKey := "place:" + id
-	return utility.GetDataFromCache[*ent.Place](ctx, &c.cache, c.placeService.GetPlace, id, cacheKey)
+
+	bytes, err := c.cache.GetCache(ctx, cacheKey)
+	if err != nil {
+		// if the error is redis: nil, just ignore it and fetch from the db
+		if err.Error() != "redis: nil" {
+			sentry.CaptureException(err)
+			return err
+		}
+	}
+
+	if bytes != nil {
+		var data *ent.Place
+		err = json.Unmarshal(bytes, &data)
+		if err != nil {
+			sentry.CaptureException(err)
+			return err
+		}
+		ctx.JSON(http.StatusOK, data)
+		return nil
+	}
+
+	data, err := c.placeService.GetPlace(ctx, id)
+	if err != nil {
+		sentry.CaptureException(err)
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, data)
+	return nil
+
 }
 
 // @Summary Create a place
