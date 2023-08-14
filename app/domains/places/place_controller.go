@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/getsentry/sentry-go"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	_ "placio-app/Dto"
 	"placio-app/domains/amenities"
@@ -245,6 +246,7 @@ func (c *PlaceController) addMediaToAPlace(ctx *gin.Context) error {
 
 	go func() {
 		if err := c.placeService.AddMediaToPlace(ctx, id, files); err != nil {
+			log.Print(err)
 			sentry.CaptureException(err)
 		}
 	}()

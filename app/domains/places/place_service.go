@@ -329,6 +329,7 @@ func (s *PlaceServiceImpl) CreatePlace(ctx context.Context, placeData CreatePlac
 }
 
 func (s *PlaceServiceImpl) addPlaceToCacheAndSearchIndex(ctx context.Context, placeData *ent.Place, other ...string) error {
+	log.Println("adding place to cache")
 	fullPlace, err := s.client.Place.
 		Query().
 		Where(place.IDEQ(placeData.ID)).
@@ -384,6 +385,8 @@ func (s *PlaceServiceImpl) RemoveAmenitiesFromPlace(ctx context.Context, placeID
 }
 
 func (s *PlaceServiceImpl) AddMediaToPlace(ctx context.Context, placeID string, files []*multipart.FileHeader) error {
+	log.Println("add media to place")
+
 	// Fetch place
 	place, err := s.client.Place.Get(ctx, placeID)
 	if err != nil {
@@ -398,13 +401,8 @@ func (s *PlaceServiceImpl) AddMediaToPlace(ctx context.Context, placeID string, 
 		return err
 	}
 
-	mediaIDs := make([]string, len(uploadedFiles))
-
-	for _, file := range uploadedFiles {
-		mediaIDs = append(mediaIDs, file.ID)
-	}
-
-	_, err = s.client.Place.UpdateOneID(placeID).AddMediaIDs(mediaIDs...).Save(ctx)
+	log.Println("upadting place")
+	_, err = s.client.Place.UpdateOneID(placeID).AddMedias(uploadedFiles...).Save(ctx)
 	if err != nil {
 		sentry.CaptureException(err)
 		return err

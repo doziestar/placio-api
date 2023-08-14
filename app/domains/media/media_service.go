@@ -114,6 +114,7 @@ func (s *MediaServiceImpl) UploadAndCreateMedia(ctx context.Context, files []*mu
 	// Upload files
 	uploadedFiles, err := s.UploadFiles(ctx, files)
 	if err != nil {
+		log.Println(err)
 		return nil, fmt.Errorf("failed uploading files: %w", err)
 	}
 
@@ -132,8 +133,11 @@ func (s *MediaServiceImpl) UploadAndCreateMedia(ctx context.Context, files []*mu
 	// Bulk create media
 	mediaList, err := s.client.Media.CreateBulk(mediaCreations...).Save(ctx)
 	if err != nil {
+		log.Println(err)
 		return nil, err
 	}
+
+	log.Println("upload complete")
 
 	return mediaList, nil
 }
