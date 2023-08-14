@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/getsentry/sentry-go"
 	"io"
 	"log"
 	"net"
@@ -436,7 +437,7 @@ func (s *UserServiceImpl) updateAuth0Data(userID string, mergedUserData map[stri
 
 func (s *UserServiceImpl) UpdateUser(ctx context.Context, userID string, userData map[string]interface{}) (*ent.User, error) {
 	// Check if user exists
-	user, err := s.client.User.Get(ctx, userID)
+	userToUpdate, err := s.client.User.Get(ctx, userID)
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return nil, fmt.Errorf("user does not exist")
@@ -445,7 +446,7 @@ func (s *UserServiceImpl) UpdateUser(ctx context.Context, userID string, userDat
 	}
 
 	// Get a updater for the user
-	upd := s.client.User.UpdateOne(user)
+	upd := s.client.User.UpdateOne(userToUpdate)
 
 	// Update fields
 	if v, ok := userData["name"]; ok {
@@ -474,7 +475,7 @@ func (s *UserServiceImpl) UpdateUser(ctx context.Context, userID string, userDat
 	if v, ok := userData["app_settings"]; ok {
 		// Merge existing and new settings
 		newSettings := v.(map[string]interface{})
-		for k, value := range user.AppSettings {
+		for k, value := range userToUpdate.AppSettings {
 			if _, exists := newSettings[k]; !exists {
 				newSettings[k] = value
 			}
@@ -486,7 +487,7 @@ func (s *UserServiceImpl) UpdateUser(ctx context.Context, userID string, userDat
 	if v, ok := userData["user_settings"]; ok {
 		// Merge existing and new settings
 		newSettings := v.(map[string]interface{})
-		for k, value := range user.UserSettings {
+		for k, value := range userToUpdate.UserSettings {
 			if _, exists := newSettings[k]; !exists {
 				newSettings[k] = value
 			}
@@ -495,17 +496,29 @@ func (s *UserServiceImpl) UpdateUser(ctx context.Context, userID string, userDat
 	}
 
 	// Save the updates
-	user, err = upd.Save(ctx)
+	userToUpdate, err = upd.Save(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed updating user: %w", err)
 	}
 
 	// update elasticsearch
-	if err := s.searchService.CreateOrUpdateUser(ctx, user); err != nil {
+	if err := s.searchService.CreateOrUpdateUser(ctx, userToUpdate); err != nil {
 		return nil, fmt.Errorf("failed updating user in elasticsearch: %w", err)
 	}
 
-	return user, nil
+	go func() {
+		cacheKey := "user:" + userToUpdate.ID
+		userToCache, _ := s.client.User.Query().
+			Where(user.ID(userToUpdate.ID)).
+			WithFollowedUsers().
+			WithFollowerUsers().WithReviews().First(ctx)
+		if err := s.cache.SetCache(ctx, cacheKey, userToCache); err != nil {
+			sentry.CaptureException(err)
+			return
+		}
+	}()
+
+	return userToUpdate, nil
 }
 
 // GetAuth0UserData retrieves the current user data from Auth0.

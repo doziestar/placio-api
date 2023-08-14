@@ -385,7 +385,6 @@ func (s *PlaceServiceImpl) RemoveAmenitiesFromPlace(ctx context.Context, placeID
 }
 
 func (s *PlaceServiceImpl) AddMediaToPlace(ctx context.Context, placeID string, files []*multipart.FileHeader) error {
-	log.Println("add media to place")
 
 	// Fetch place
 	place, err := s.client.Place.Get(ctx, placeID)
@@ -401,7 +400,6 @@ func (s *PlaceServiceImpl) AddMediaToPlace(ctx context.Context, placeID string, 
 		return err
 	}
 
-	log.Println("upadting place")
 	_, err = s.client.Place.UpdateOneID(placeID).AddMedias(uploadedFiles...).Save(ctx)
 	if err != nil {
 		sentry.CaptureException(err)
