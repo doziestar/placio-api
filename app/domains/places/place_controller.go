@@ -34,7 +34,7 @@ func (c *PlaceController) RegisterRoutes(router, routerWithoutAuth *gin.RouterGr
 		placeRouter.PATCH("/:id", utility.Use(c.updatePlace))
 		placeRouter.DELETE("/:id", utility.Use(c.deletePlace))
 		placeRouter.POST("/:id/amenities", utility.Use(c.addAmenitiesToPlace))
-		placeRouter.PATCH("/:id/media", utility.Use(c.addMediaToAPlace))
+		placeRouter.POST("/:id/media", utility.Use(c.addMediaToAPlace))
 		placeRouter.DELETE("/:id/media", utility.Use(c.removeMediaToAPlace))
 		placeRouterWithoutAuth.GET("/all", utility.Use(c.getAllPlaces))
 		placeRouter.POST("/:id/remove_amenities", utility.Use(c.removeAmenitiesFromPlace))
