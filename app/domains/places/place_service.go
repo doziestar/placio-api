@@ -577,6 +577,7 @@ func (s *PlaceServiceImpl) UpdatePlace(ctx context.Context, placeID string, plac
 	place, err := s.client.Place.
 		UpdateOneID(placeID).
 		SetDescription(placeData.Description).
+		SetName(placeData.Name).
 		SetPicture(placeData.Picture).
 		SetCoverImage(placeData.CoverImage).
 		SetWebsite(placeData.Website).

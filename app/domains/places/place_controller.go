@@ -240,7 +240,7 @@ func (c *PlaceController) addMediaToAPlace(ctx *gin.Context) error {
 	log.Println("form gotten", forms)
 
 	files, ok := forms.File["files"]
-	if !ok {
+	if !ok || len(files) == 0 {
 		sentry.CaptureException(errors.New("files could not be extracted from the places form"))
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"Error": "files could not be extracted from the places form",
