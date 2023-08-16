@@ -247,14 +247,12 @@ func (c *PlaceController) addMediaToAPlace(ctx *gin.Context) error {
 		return err
 	}
 
-	go func() {
-		log.Println("calling AddMediaToPlace")
-		if err := c.placeService.AddMediaToPlace(ctx, id, files); err != nil {
-			log.Print(err)
-			sentry.CaptureException(err)
-		}
-		log.Println("upload complete")
-	}()
+	log.Println("calling AddMediaToPlace")
+	if err := c.placeService.AddMediaToPlace(ctx, id, files); err != nil {
+		log.Print(err)
+		sentry.CaptureException(err)
+	}
+	log.Println("upload complete")
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Media added successfully",
