@@ -225,6 +225,7 @@ func (rs *ReviewServiceImpl) UpdateReviewContent(reviewID, userID, newContent st
 	//if review.Edges.User.ID != userID {
 	//	return errors.New("user does not have permission to update this review")
 	//}
+	log.Println("updating review", review, newContent)
 	_, err = rs.client.Review.UpdateOne(review).SetContent(newContent).Save(context.Background())
 	return err
 }
