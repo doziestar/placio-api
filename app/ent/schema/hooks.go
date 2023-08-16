@@ -36,8 +36,12 @@ func ProcessLocation(mutation interface{}, oldLocation string) error {
 	default:
 		return nil
 	}
+	//
+	//if oldLocation != "" && location == oldLocation || location == "" || location == "<string>" {
+	//	return nil
+	//}
 
-	if oldLocation != "" && location == oldLocation || location == "" || location == "<string>" {
+	if location == oldLocation || location == "" || location == "<string>" {
 		return nil
 	}
 
