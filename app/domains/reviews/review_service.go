@@ -3,6 +3,7 @@ package reviews
 import (
 	"context"
 	"fmt"
+	"github.com/getsentry/sentry-go"
 	"github.com/google/uuid"
 	"log"
 	"mime/multipart"
@@ -201,12 +202,13 @@ func (rs *ReviewServiceImpl) GetReviewByIDTypeID(typeId, typeToReview, lastId st
 func (rs *ReviewServiceImpl) RemoveReview(reviewID, userID string) error {
 	review, err := rs.client.Review.Get(context.Background(), reviewID)
 	if err != nil {
+		sentry.CaptureException(err)
 		return err
 	}
-	if review.Edges.User.ID != userID {
-		return errors.New("user does not have permission to delete this review")
-	}
-	return rs.client.Review.DeleteOneID(reviewID).Exec(context.Background())
+	//if review.Edges.User.ID != userID {
+	//	return errors.New("user does not have permission to delete this review")
+	//}
+	return rs.client.Review.DeleteOne(review).Exec(context.Background())
 }
 
 // GetReviewByID retrieves a review by its ID.
@@ -220,10 +222,11 @@ func (rs *ReviewServiceImpl) UpdateReviewContent(reviewID, userID, newContent st
 	if err != nil {
 		return err
 	}
-	if review.Edges.User.ID != userID {
-		return errors.New("user does not have permission to update this review")
-	}
-	_, err = rs.client.Review.UpdateOneID(reviewID).SetContent(newContent).Save(context.Background())
+	//if review.Edges.User.ID != userID {
+	//	return errors.New("user does not have permission to update this review")
+	//}
+	log.Println("updating review", review, newContent)
+	_, err = rs.client.Review.UpdateOne(review).SetContent(newContent).Save(context.Background())
 	return err
 }
 

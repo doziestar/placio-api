@@ -31,7 +31,7 @@ func (rc *ReviewController) RegisterRoutes(router, routerWithoutAuth *gin.Router
 		reviewRouter.DELETE("/:reviewID", utility.Use(rc.removeReview))
 		reviewRouterWithoutAuth.GET("/:reviewID", utility.Use(rc.getReviewByID))
 		reviewRouterWithoutAuth.GET("/:reviewID/by-type", utility.Use(rc.getReviewByTypeId))
-		reviewRouter.PUT("/:reviewID", utility.Use(rc.updateReviewContent))
+		reviewRouter.PATCH("/:reviewID", utility.Use(rc.updateReviewContent))
 		reviewRouter.POST("/:reviewID/addMedia", utility.Use(rc.addMediaToReview))
 		reviewRouterWithoutAuth.GET("/", utility.Use(rc.getReviewsByQuery))
 		reviewRouter.POST("/:reviewID/like", utility.Use(rc.likeReview))
@@ -129,7 +129,7 @@ func (rc *ReviewController) removeReview(ctx *gin.Context) error {
 
 	err := rc.reviewService.RemoveReview(reviewID, userID)
 	if err != nil {
-
+		ctx.JSON(http.StatusBadRequest, gin.H{"Error": err})
 		return err
 	}
 
@@ -215,6 +215,8 @@ func (rc *ReviewController) updateReviewContent(ctx *gin.Context) error {
 	reviewID := ctx.Param("reviewID")
 	userID := ctx.MustGet("user").(string) // query parameter: userID
 	content := ctx.PostForm("content")
+
+	log.Println("content", content)
 
 	err := rc.reviewService.UpdateReviewContent(reviewID, userID, content)
 	if err != nil {

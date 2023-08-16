@@ -5,7 +5,6 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"placio-app/api"
 	"placio-app/cmd"
 	"placio-app/db"
 	_ "placio-app/ent/runtime"
@@ -61,7 +60,7 @@ func main() {
 	client := db.EntClient(context.Background())
 
 	// initialize routes
-	api.InitializeRoutes(app, client)
+	cmd.InitializeRoutes(app, client)
 
 	// set port
 	cmd.Initialize(app)

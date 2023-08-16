@@ -100,6 +100,8 @@ func (s *PlaceServiceImpl) GetPlace(ctx context.Context, placeID string) (*ent.P
 		}
 	}
 
+	go s.addPlaceToCacheAndSearchIndex(ctx, placeData)
+
 	return placeData, nil
 }
 
@@ -329,6 +331,7 @@ func (s *PlaceServiceImpl) CreatePlace(ctx context.Context, placeData CreatePlac
 }
 
 func (s *PlaceServiceImpl) addPlaceToCacheAndSearchIndex(ctx context.Context, placeData *ent.Place, other ...string) error {
+	log.Println("adding place to cache")
 	fullPlace, err := s.client.Place.
 		Query().
 		Where(place.IDEQ(placeData.ID)).
@@ -357,7 +360,7 @@ func (s *PlaceServiceImpl) addPlaceToCacheAndSearchIndex(ctx context.Context, pl
 
 	// add the new place to cache
 	go func() {
-		cacheKey := fmt.Sprintf("place:%s", place.ID)
+		cacheKey := fmt.Sprintf("place:%s", fullPlace.ID)
 		if err := s.cache.SetCache(ctx, cacheKey, fullPlace); err != nil {
 			sentry.CaptureException(err)
 			return
@@ -384,6 +387,7 @@ func (s *PlaceServiceImpl) RemoveAmenitiesFromPlace(ctx context.Context, placeID
 }
 
 func (s *PlaceServiceImpl) AddMediaToPlace(ctx context.Context, placeID string, files []*multipart.FileHeader) error {
+
 	// Fetch place
 	place, err := s.client.Place.Get(ctx, placeID)
 	if err != nil {
@@ -398,17 +402,13 @@ func (s *PlaceServiceImpl) AddMediaToPlace(ctx context.Context, placeID string, 
 		return err
 	}
 
-	mediaIDs := make([]string, len(uploadedFiles))
-
-	for _, file := range uploadedFiles {
-		mediaIDs = append(mediaIDs, file.ID)
-	}
-
-	_, err = s.client.Place.UpdateOneID(placeID).AddMediaIDs(mediaIDs...).Save(ctx)
+	log.Println("media uploaded", uploadedFiles)
+	_, err = s.client.Place.UpdateOneID(placeID).AddMedias(uploadedFiles...).Save(ctx)
 	if err != nil {
 		sentry.CaptureException(err)
 		return err
 	}
+	log.Println("data saved successfully")
 
 	// Add the updated place to the search index and cache
 	go s.addPlaceToCacheAndSearchIndex(ctx, place)
@@ -577,11 +577,15 @@ func (s *PlaceServiceImpl) UpdatePlace(ctx context.Context, placeID string, plac
 	place, err := s.client.Place.
 		UpdateOneID(placeID).
 		SetDescription(placeData.Description).
+		SetName(placeData.Name).
 		SetPicture(placeData.Picture).
 		SetCoverImage(placeData.CoverImage).
 		SetWebsite(placeData.Website).
 		SetEmail(placeData.Email).
 		SetPhone(placeData.Phone).
+		SetPlaceSettings(placeData.PlaceSettings).
+		SetOpeningHours(placeData.OpeningHours).
+		SetSocialMedia(placeData.SocialMedia).
 		SetAvailability(placeData.Availability).
 		SetImages(placeData.Images).
 		SetFeatures(placeData.Features).
