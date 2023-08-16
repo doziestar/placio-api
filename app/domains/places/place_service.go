@@ -402,11 +402,13 @@ func (s *PlaceServiceImpl) AddMediaToPlace(ctx context.Context, placeID string, 
 		return err
 	}
 
+	log.Println("media uploaded", uploadedFiles)
 	_, err = s.client.Place.UpdateOneID(placeID).AddMedias(uploadedFiles...).Save(ctx)
 	if err != nil {
 		sentry.CaptureException(err)
 		return err
 	}
+	log.Println("data saved successfully")
 
 	// Add the updated place to the search index and cache
 	go s.addPlaceToCacheAndSearchIndex(ctx, place)

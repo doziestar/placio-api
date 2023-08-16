@@ -10,6 +10,7 @@ import (
 	"log"
 	"mime/multipart"
 	"placio-app/ent"
+	"sync"
 )
 
 type MediaService interface {
@@ -38,11 +39,21 @@ func NewMediaService(client *ent.Client, cloud *cloudinary.Cloudinary) MediaServ
 }
 
 func (s *MediaServiceImpl) UploadFiles(ctx context.Context, files []*multipart.FileHeader) ([]MediaInfo, error) {
+	const maxWorkers = 5 // adjust this to a suitable number
+
 	ch := make(chan MediaInfo)
-	errCh := make(chan error)
+	errCh := make(chan error, len(files)) // buffer this channel to prevent goroutine leaks
+	wg := sync.WaitGroup{}
+	sem := make(chan struct{}, maxWorkers)
 
 	for _, file := range files {
+		wg.Add(1)
 		go func(file *multipart.FileHeader) {
+			defer wg.Done()
+
+			sem <- struct{}{}
+			defer func() { <-sem }()
+
 			openedFile, err := file.Open() // Open the file to get a stream
 			if err != nil {
 				log.Println("Error opening file", err)
@@ -65,16 +76,33 @@ func (s *MediaServiceImpl) UploadFiles(ctx context.Context, files []*multipart.F
 		}(file)
 	}
 
+	// Close the channels after all goroutines complete
+	go func() {
+		wg.Wait()
+		close(ch)
+		close(errCh)
+	}()
+
 	mediaInfos := make([]MediaInfo, 0, len(files))
-	for range files {
+	var firstError error
+	for i := 0; i < len(files); i++ {
 		select {
-		case info := <-ch:
-			mediaInfos = append(mediaInfos, info)
-		case err := <-errCh:
-			return nil, err
+		case info, ok := <-ch:
+			if ok {
+				mediaInfos = append(mediaInfos, info)
+			}
+		case err, ok := <-errCh:
+			if ok && firstError == nil {
+				firstError = err
+			}
 		}
 	}
 
+	if firstError != nil {
+		return nil, firstError
+	}
+
+	log.Println("uploaded media info: ", mediaInfos)
 	return mediaInfos, nil
 }
 
