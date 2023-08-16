@@ -179,6 +179,8 @@ func (rc *ReviewController) getReviewByTypeId(ctx *gin.Context) error {
 	nextPageToken := ctx.Query("nextPageToken")
 	limit := ctx.Query("limit")
 
+	log.Println("get review by type", reviewID)
+
 	if itemType != "place" && itemType != "event" && itemType != "business" {
 		sentry.CaptureException(appErr.InvalidItemType)
 		return appErr.InvalidItemType
@@ -196,13 +198,15 @@ func (rc *ReviewController) getReviewByTypeId(ctx *gin.Context) error {
 		return err
 	}
 
+	log.Println("got reviews")
+
 	type resp struct {
-		reviews []*ent.Review
-		stats   ReviewStats
+		Reviews []*ent.Review `json:"reviews"`
+		Stats   ReviewStats   `json:"stats"`
 	}
 
 	ctx.JSON(http.StatusOK, utility.ProcessResponse(resp{
-		reviews: reviews, stats: reviewStat,
+		Reviews: reviews, Stats: reviewStat,
 	}, "success", "Successfully retrieved reviews", nextPageToken))
 	return nil
 }

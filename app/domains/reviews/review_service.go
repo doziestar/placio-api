@@ -20,8 +20,8 @@ import (
 )
 
 type ReviewStats struct {
-	ScoreCounts map[float64]int
-	Total       int
+	ScoreCounts map[string]int `json:"score_counts"`
+	Total       int            `json:"total"`
 }
 
 // ReviewService represents the contract for your review related operations.
@@ -151,90 +151,70 @@ func (rs *ReviewServiceImpl) RatePlace(placeID, userID string, score float64, co
 }
 
 func (rs *ReviewServiceImpl) GetReviewByIDTypeID(typeId, typeToReview, lastId string, limit int) ([]*ent.Review, string, ReviewStats, error) {
-	var reviews []*ent.Review
-	var err error
 
-	// Channels for concurrent fetching and aggregation
-	reviewCh := make(chan []*ent.Review)
-	errCh := make(chan error)
-	statsCh := make(chan ReviewStats)
-
-	baseQuery := rs.client.Review.Query().Limit(limit + 1)
-
-	if lastId != "" {
-		baseQuery = baseQuery.Where(review.IDGT(lastId))
+	// Define a struct to hold all data
+	type result struct {
+		Reviews []*ent.Review
+		Stats   ReviewStats
+		NextID  string
+		Err     error
 	}
 
+	resultCh := make(chan result)
+
 	go func() {
+		var r result
+
+		r.Stats.ScoreCounts = make(map[string]int)
+
+		baseQuery := rs.client.Review.Query().Limit(limit + 1)
+		if lastId != "" {
+			baseQuery = baseQuery.Where(review.IDGT(lastId))
+		}
+
 		switch typeToReview {
 		case "place":
-			reviews, err = baseQuery.
+			r.Reviews, r.Err = baseQuery.
 				Where(review.HasPlaceWith(place.ID(typeId))).
 				WithLikes().
 				WithMedias().
 				WithUser().
 				All(context.Background())
 		case "event":
-			reviews, err = baseQuery.
+			r.Reviews, r.Err = baseQuery.
 				Where(review.HasEventWith(event.ID(typeId))).
 				WithLikes().
 				WithMedias().
 				WithUser().
 				All(context.Background())
 		case "business":
-			reviews, err = baseQuery.
+			r.Reviews, r.Err = baseQuery.
 				Where(review.HasBusinessWith(business.ID(typeId))).
 				WithLikes().
 				WithMedias().
 				WithUser().
 				All(context.Background())
 		default:
-			err = errors.New("invalid typeToReview")
+			r.Err = errors.New("invalid typeToReview")
 		}
-		if err != nil {
-			errCh <- err
-		} else {
-			reviewCh <- reviews
+
+		if r.Err == nil && len(r.Reviews) == limit+1 {
+			r.NextID = r.Reviews[len(r.Reviews)-1].ID
+			r.Reviews = r.Reviews[:limit]
 		}
+
+		for _, review := range r.Reviews {
+			scoreStr := fmt.Sprintf("%f", review.Score)
+			r.Stats.ScoreCounts[scoreStr]++
+		}
+		r.Stats.Total = len(r.Reviews)
+
+		resultCh <- r
 	}()
 
-	go func() {
-		var reviewsForScores []*ent.Review
-		reviewsForScores, err = baseQuery.All(context.Background())
-		if err != nil {
-			errCh <- err
-			return
-		}
+	r := <-resultCh
 
-		scoreCounts := make(map[float64]int)
-
-		for _, review := range reviewsForScores {
-			score := review.Score
-			scoreCounts[score]++
-		}
-
-		statsCh <- ReviewStats{
-			ScoreCounts: scoreCounts,
-			Total:       len(reviewsForScores),
-		}
-	}()
-
-	reviews = <-reviewCh
-	stats := <-statsCh
-	close(reviewCh)
-	close(statsCh)
-
-	if errVal, ok := <-errCh; ok {
-		return nil, "", ReviewStats{}, errVal
-	}
-
-	var nextId string
-	if len(reviews) == limit+1 {
-		nextId = reviews[len(reviews)-1].ID
-		reviews = reviews[:limit]
-	}
-
-	return reviews, nextId, stats, nil
+	return r.Reviews, r.NextID, r.Stats, r.Err
 }
 
 // RemoveReview allows a user to remove a review.
