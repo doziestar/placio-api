@@ -215,10 +215,11 @@ func (rc *ReviewController) updateReviewContent(ctx *gin.Context) error {
 	reviewID := ctx.Param("reviewID")
 	userID := ctx.MustGet("user").(string) // query parameter: userID
 	content := ctx.PostForm("content")
+	score := ctx.PostForm("score")
 
 	log.Println("content", content)
 
-	err := rc.reviewService.UpdateReviewContent(reviewID, userID, content)
+	err := rc.reviewService.UpdateReviewContent(reviewID, userID, content, score)
 	if err != nil {
 
 		return err

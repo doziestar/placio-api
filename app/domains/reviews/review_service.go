@@ -15,6 +15,7 @@ import (
 	"placio-app/ent/review"
 	"placio-app/ent/user"
 	"placio-pkg/errors"
+	"strconv"
 	"time"
 )
 
@@ -33,7 +34,7 @@ type ReviewService interface {
 	GetReviewsInDateRange(startDate, endDate time.Time) ([]*ent.Review, error)
 	LikeReview(reviewID, userID string) error
 	DislikeReview(reviewID, userID string) error
-	UpdateReviewContent(reviewID, userID, newContent string) error
+	UpdateReviewContent(reviewID, userID, newContent, score string) error
 	AddMediaToReview(reviewID string, media []*ent.Media) error
 	// GetReviewsByLikeCount FlagReview(reviewID, userID string) error
 	//AddResponseToReview(reviewID, userID, response string) error
@@ -217,7 +218,7 @@ func (rs *ReviewServiceImpl) GetReviewByID(reviewID string) (*ent.Review, error)
 }
 
 // UpdateReviewContent allows a user to update the content of their review.
-func (rs *ReviewServiceImpl) UpdateReviewContent(reviewID, userID, newContent string) error {
+func (rs *ReviewServiceImpl) UpdateReviewContent(reviewID, userID, newContent, score string) error {
 	review, err := rs.client.Review.Get(context.Background(), reviewID)
 	if err != nil {
 		return err
@@ -225,8 +226,13 @@ func (rs *ReviewServiceImpl) UpdateReviewContent(reviewID, userID, newContent st
 	//if review.Edges.User.ID != userID {
 	//	return errors.New("user does not have permission to update this review")
 	//}
+	scoreToUpdate, _ := strconv.ParseFloat(score, 64)
 	log.Println("updating review", review, newContent)
-	_, err = rs.client.Review.UpdateOne(review).SetContent(newContent).Save(context.Background())
+	_, err = rs.client.Review.
+		UpdateOne(review).
+		SetContent(newContent).
+		SetScore(scoreToUpdate).
+		Save(context.Background())
 	return err
 }
 
