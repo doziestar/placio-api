@@ -19,6 +19,11 @@ import (
 	"time"
 )
 
+type ReviewStats struct {
+	ScoreCounts map[float64]int
+	Total       int
+}
+
 // ReviewService represents the contract for your review related operations.
 type ReviewService interface {
 	RatePlace(placeID, userID string, score float64, content string, files []*multipart.FileHeader) (*ent.Review, error)
@@ -40,7 +45,7 @@ type ReviewService interface {
 	//AddResponseToReview(reviewID, userID, response string) error
 	GetReviewsByLikeCount() ([]*ent.Review, error)
 	GetReviewsByDislikeCount() ([]*ent.Review, error)
-	GetReviewByIDTypeID(typeId, typeToReview, lastId string, limit int) ([]*ent.Review, string, error)
+	GetReviewByIDTypeID(typeId, typeToReview, lastId string, limit int) ([]*ent.Review, string, ReviewStats, error)
 }
 
 type Reviewable interface {
@@ -145,58 +150,91 @@ func (rs *ReviewServiceImpl) RatePlace(placeID, userID string, score float64, co
 	return rs.rateItem(ReviewablePlace{place}, userID, score, content, files)
 }
 
-func (rs *ReviewServiceImpl) GetReviewByIDTypeID(typeId, typeToReview, lastId string, limit int) ([]*ent.Review, string, error) {
+func (rs *ReviewServiceImpl) GetReviewByIDTypeID(typeId, typeToReview, lastId string, limit int) ([]*ent.Review, string, ReviewStats, error) {
 	var reviews []*ent.Review
 	var err error
 
-	query := rs.client.Review.Query().Limit(limit + 1) // We retrieve one extra record to determine if there are more pages
+	// Channels for concurrent fetching and aggregation
+	reviewCh := make(chan []*ent.Review)
+	errCh := make(chan error)
+	statsCh := make(chan ReviewStats)
+
+	baseQuery := rs.client.Review.Query().Limit(limit + 1)
 
 	if lastId != "" {
-		// If lastId is provided, we fetch records after it
-		query = query.Where(review.IDGT(lastId))
+		baseQuery = baseQuery.Where(review.IDGT(lastId))
 	}
 
-	switch typeToReview {
-	case "place":
-		reviews, err = query.
-			Where(review.HasPlaceWith(place.ID(typeId))).
-			WithLikes().
-			WithMedias().
-			WithUser().
-			All(context.Background())
-	case "event":
-		reviews, err = query.
-			Where(review.HasEventWith(event.ID(typeId))).
-			WithLikes().
-			WithMedias().
-			WithUser().
-			All(context.Background())
-	case "business":
-		reviews, err = query.
-			Where(review.HasBusinessWith(business.ID(typeId))).
-			WithLikes().
-			WithMedias().
-			WithUser().
-			All(context.Background())
-	default:
-		return nil, "", errors.New("invalid typeToReview")
-	}
+	go func() {
+		switch typeToReview {
+		case "place":
+			reviews, err = baseQuery.
+				Where(review.HasPlaceWith(place.ID(typeId))).
+				WithLikes().
+				WithMedias().
+				WithUser().
+				All(context.Background())
+		case "event":
+			reviews, err = baseQuery.
+				Where(review.HasEventWith(event.ID(typeId))).
+				WithLikes().
+				WithMedias().
+				WithUser().
+				All(context.Background())
+		case "business":
+			reviews, err = baseQuery.
+				Where(review.HasBusinessWith(business.ID(typeId))).
+				WithLikes().
+				WithMedias().
+				WithUser().
+				All(context.Background())
+		default:
+			err = errors.New("invalid typeToReview")
+		}
+		if err != nil {
+			errCh <- err
+		} else {
+			reviewCh <- reviews
+		}
+	}()
 
-	if err != nil {
-		log.Println("GetReviewByIDTypeID error", err.Error())
-		return nil, "", err
+	go func() {
+		var reviewsForScores []*ent.Review
+		reviewsForScores, err = baseQuery.All(context.Background())
+		if err != nil {
+			errCh <- err
+			return
+		}
+
+		scoreCounts := make(map[float64]int)
+
+		for _, review := range reviewsForScores {
+			score := review.Score
+			scoreCounts[score]++
+		}
+
+		statsCh <- ReviewStats{
+			ScoreCounts: scoreCounts,
+			Total:       len(reviewsForScores),
+		}
+	}()
+
+	reviews = <-reviewCh
+	stats := <-statsCh
+	close(reviewCh)
+	close(statsCh)
+
+	if errVal, ok := <-errCh; ok {
+		return nil, "", ReviewStats{}, errVal
 	}
 
 	var nextId string
 	if len(reviews) == limit+1 {
-		// We have an extra record, that means there is a next page.
-		// We take the ID of the last item as the cursor for the next page.
-		// Also we remove the extra item from the list that we return.
 		nextId = reviews[len(reviews)-1].ID
 		reviews = reviews[:limit]
 	}
 
-	return reviews, nextId, nil
+	return reviews, nextId, stats, nil
 }
 
 // RemoveReview allows a user to remove a review.

@@ -190,13 +190,20 @@ func (rc *ReviewController) getReviewByTypeId(ctx *gin.Context) error {
 
 	limitInt, err := strconv.Atoi(limit)
 
-	reviews, nextPageToken, err := rc.reviewService.GetReviewByIDTypeID(reviewID, itemType, nextPageToken, limitInt)
+	reviews, nextPageToken, reviewStat, err := rc.reviewService.GetReviewByIDTypeID(reviewID, itemType, nextPageToken, limitInt)
 	if err != nil {
 		sentry.CaptureException(err)
 		return err
 	}
 
-	ctx.JSON(http.StatusOK, utility.ProcessResponse(reviews, "success", "Successfully retrieved reviews", nextPageToken))
+	type resp struct {
+		reviews []*ent.Review
+		stats   ReviewStats
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(resp{
+		reviews: reviews, stats: reviewStat,
+	}, "success", "Successfully retrieved reviews", nextPageToken))
 	return nil
 }
 
