@@ -580,6 +580,9 @@ func (s *PlaceServiceImpl) UpdatePlace(ctx context.Context, placeID string, plac
 		SetWebsite(placeData.Website).
 		SetEmail(placeData.Email).
 		SetPhone(placeData.Phone).
+		SetPlaceSettings(placeData.PlaceSettings).
+		SetOpeningHours(placeData.OpeningHours).
+		SetSocialMedia(placeData.SocialMedia).
 		SetAvailability(placeData.Availability).
 		SetImages(placeData.Images).
 		SetFeatures(placeData.Features).
