@@ -129,7 +129,7 @@ func (rc *ReviewController) removeReview(ctx *gin.Context) error {
 
 	err := rc.reviewService.RemoveReview(reviewID, userID)
 	if err != nil {
-
+		ctx.JSON(http.StatusBadRequest, gin.H{"Error": err})
 		return err
 	}
 
