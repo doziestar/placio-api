@@ -237,6 +237,7 @@ func (c *PlaceController) addMediaToAPlace(ctx *gin.Context) error {
 		sentry.CaptureException(err)
 		return err
 	}
+	log.Println("form gotten", forms)
 
 	files, ok := forms.File["files"]
 	if !ok {
@@ -247,7 +248,7 @@ func (c *PlaceController) addMediaToAPlace(ctx *gin.Context) error {
 		return err
 	}
 
-	log.Println("calling AddMediaToPlace")
+	log.Println("calling AddMediaToPlace", files)
 	if err := c.placeService.AddMediaToPlace(ctx, id, files); err != nil {
 		log.Print(err)
 		sentry.CaptureException(err)
