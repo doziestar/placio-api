@@ -241,15 +241,20 @@ func (c *PlaceController) addMediaToAPlace(ctx *gin.Context) error {
 	files, ok := forms.File["files"]
 	if !ok {
 		sentry.CaptureException(errors.New("files could not be extracted from the places form"))
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"Error": "files could not be extracted from the places form",
+		})
 		return err
 	}
 
-	//go func() {
-	if err := c.placeService.AddMediaToPlace(ctx, id, files); err != nil {
-		log.Print(err)
-		sentry.CaptureException(err)
-	}
-	//}()
+	go func() {
+		log.Println("calling AddMediaToPlace")
+		if err := c.placeService.AddMediaToPlace(ctx, id, files); err != nil {
+			log.Print(err)
+			sentry.CaptureException(err)
+		}
+		log.Println("upload complete")
+	}()
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Media added successfully",
