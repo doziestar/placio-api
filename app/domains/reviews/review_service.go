@@ -232,7 +232,20 @@ func (rs *ReviewServiceImpl) RemoveReview(reviewID, userID string) error {
 
 // GetReviewByID retrieves a review by its ID.
 func (rs *ReviewServiceImpl) GetReviewByID(reviewID string) (*ent.Review, error) {
-	return rs.client.Review.Get(context.Background(), reviewID)
+	reviews, err := rs.client.Review.
+		Query().
+		Where(review.ID(reviewID)).
+		WithUser().
+		WithLikes().
+		WithMedias().
+		WithPlace().
+		First(context.Background())
+	if err != nil {
+		sentry.CaptureException(err)
+		return nil, err
+	}
+
+	return reviews, nil
 }
 
 // UpdateReviewContent allows a user to update the content of their review.
