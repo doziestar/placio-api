@@ -424,7 +424,7 @@ func (s *PlaceServiceImpl) AddMediaToPlace(ctx context.Context, placeID string, 
 	// Add the updated place to the search index and cache
 	go s.addPlaceToCacheAndSearchIndex(ctx, placeData)
 
-	return nil, nil
+	return placeData, nil
 }
 
 func (s *PlaceServiceImpl) RemoveMediaFromPlace(ctx context.Context, placeID string, mediaID string) error {
