@@ -23,7 +23,7 @@ func (rc *ReactionCreate) Mutation() *ReactionMutation {
 	return rc.mutation
 }
 
-// Save creates the Reaction in the db.
+// Save creates the Reaction in the database.
 func (rc *ReactionCreate) Save(ctx context.Context) (*Reaction, error) {
 	return withHooks(ctx, rc.sqlSave, rc.mutation, rc.hooks)
 }
@@ -92,7 +92,7 @@ type ReactionCreateBulk struct {
 	builders []*ReactionCreate
 }
 
-// Save creates the Reaction entities in the db.
+// Save creates the Reaction entities in the database.
 func (rcb *ReactionCreateBulk) Save(ctx context.Context) ([]*Reaction, error) {
 	specs := make([]*sqlgraph.CreateSpec, len(rcb.builders))
 	nodes := make([]*Reaction, len(rcb.builders))

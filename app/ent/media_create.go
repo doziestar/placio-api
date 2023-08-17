@@ -9,6 +9,7 @@ import (
 	"placio-app/ent/category"
 	"placio-app/ent/media"
 	"placio-app/ent/place"
+	"placio-app/ent/placeinventory"
 	"placio-app/ent/post"
 	"placio-app/ent/review"
 	"time"
@@ -166,12 +167,27 @@ func (mc *MediaCreate) AddPlace(p ...*Place) *MediaCreate {
 	return mc.AddPlaceIDs(ids...)
 }
 
+// AddPlaceInventoryIDs adds the "place_inventory" edge to the PlaceInventory entity by IDs.
+func (mc *MediaCreate) AddPlaceInventoryIDs(ids ...string) *MediaCreate {
+	mc.mutation.AddPlaceInventoryIDs(ids...)
+	return mc
+}
+
+// AddPlaceInventory adds the "place_inventory" edges to the PlaceInventory entity.
+func (mc *MediaCreate) AddPlaceInventory(p ...*PlaceInventory) *MediaCreate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return mc.AddPlaceInventoryIDs(ids...)
+}
+
 // Mutation returns the MediaMutation object of the builder.
 func (mc *MediaCreate) Mutation() *MediaMutation {
 	return mc.mutation
 }
 
-// Save creates the Media in the db.
+// Save creates the Media in the database.
 func (mc *MediaCreate) Save(ctx context.Context) (*Media, error) {
 	mc.defaults()
 	return withHooks(ctx, mc.sqlSave, mc.mutation, mc.hooks)
@@ -369,6 +385,22 @@ func (mc *MediaCreate) createSpec() (*Media, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := mc.mutation.PlaceInventoryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   media.PlaceInventoryTable,
+			Columns: media.PlaceInventoryPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placeinventory.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	return _node, _spec
 }
 
@@ -378,7 +410,7 @@ type MediaCreateBulk struct {
 	builders []*MediaCreate
 }
 
-// Save creates the Media entities in the db.
+// Save creates the Media entities in the database.
 func (mcb *MediaCreateBulk) Save(ctx context.Context) ([]*Media, error) {
 	specs := make([]*sqlgraph.CreateSpec, len(mcb.builders))
 	nodes := make([]*Media, len(mcb.builders))

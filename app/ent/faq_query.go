@@ -46,7 +46,7 @@ func (fq *FAQQuery) Limit(limit int) *FAQQuery {
 	return fq
 }
 
-// Offset to cmd from.
+// Offset to start from.
 func (fq *FAQQuery) Offset(offset int) *FAQQuery {
 	fq.ctx.Offset = &offset
 	return fq
@@ -723,7 +723,7 @@ func (fq *FAQQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		p(selector)
 	}
 	if offset := fq.ctx.Offset; offset != nil {
-		// limit is mandatory for offset clause. We cmd
+		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}

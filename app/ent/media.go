@@ -49,9 +49,11 @@ type MediaEdges struct {
 	Categories []*Category `json:"categories,omitempty"`
 	// Place holds the value of the place edge.
 	Place []*Place `json:"place,omitempty"`
+	// PlaceInventory holds the value of the place_inventory edge.
+	PlaceInventory []*PlaceInventory `json:"place_inventory,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [5]bool
 }
 
 // PostOrErr returns the Post value or an error if the edge
@@ -96,6 +98,15 @@ func (e MediaEdges) PlaceOrErr() ([]*Place, error) {
 		return e.Place, nil
 	}
 	return nil, &NotLoadedError{edge: "place"}
+}
+
+// PlaceInventoryOrErr returns the PlaceInventory value or an error if the edge
+// was not loaded in eager-loading.
+func (e MediaEdges) PlaceInventoryOrErr() ([]*PlaceInventory, error) {
+	if e.loadedTypes[4] {
+		return e.PlaceInventory, nil
+	}
+	return nil, &NotLoadedError{edge: "place_inventory"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -215,6 +226,11 @@ func (m *Media) QueryCategories() *CategoryQuery {
 // QueryPlace queries the "place" edge of the Media entity.
 func (m *Media) QueryPlace() *PlaceQuery {
 	return NewMediaClient(m.config).QueryPlace(m)
+}
+
+// QueryPlaceInventory queries the "place_inventory" edge of the Media entity.
+func (m *Media) QueryPlaceInventory() *PlaceInventoryQuery {
+	return NewMediaClient(m.config).QueryPlaceInventory(m)
 }
 
 // Update returns a builder for updating this Media.

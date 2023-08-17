@@ -24,21 +24,27 @@ import (
 	"placio-app/ent/event"
 	"placio-app/ent/faq"
 	"placio-app/ent/help"
+	"placio-app/ent/inventoryattribute"
+	"placio-app/ent/inventorytype"
 	"placio-app/ent/like"
 	"placio-app/ent/media"
 	"placio-app/ent/menu"
 	"placio-app/ent/order"
 	"placio-app/ent/payment"
 	"placio-app/ent/place"
+	"placio-app/ent/placeinventory"
+	"placio-app/ent/placeinventoryattribute"
 	"placio-app/ent/post"
 	"placio-app/ent/rating"
 	"placio-app/ent/reaction"
 	"placio-app/ent/reservation"
+	"placio-app/ent/reservationblock"
 	"placio-app/ent/resourse"
 	"placio-app/ent/review"
 	"placio-app/ent/room"
 	"placio-app/ent/ticket"
 	"placio-app/ent/ticketoption"
+	"placio-app/ent/transactionhistory"
 	"placio-app/ent/user"
 	"placio-app/ent/userbusiness"
 	"placio-app/ent/userfollowbusiness"
@@ -86,6 +92,10 @@ type Client struct {
 	FAQ *FAQClient
 	// Help is the client for interacting with the Help builders.
 	Help *HelpClient
+	// InventoryAttribute is the client for interacting with the InventoryAttribute builders.
+	InventoryAttribute *InventoryAttributeClient
+	// InventoryType is the client for interacting with the InventoryType builders.
+	InventoryType *InventoryTypeClient
 	// Like is the client for interacting with the Like builders.
 	Like *LikeClient
 	// Media is the client for interacting with the Media builders.
@@ -98,6 +108,10 @@ type Client struct {
 	Payment *PaymentClient
 	// Place is the client for interacting with the Place builders.
 	Place *PlaceClient
+	// PlaceInventory is the client for interacting with the PlaceInventory builders.
+	PlaceInventory *PlaceInventoryClient
+	// PlaceInventoryAttribute is the client for interacting with the PlaceInventoryAttribute builders.
+	PlaceInventoryAttribute *PlaceInventoryAttributeClient
 	// Post is the client for interacting with the Post builders.
 	Post *PostClient
 	// Rating is the client for interacting with the Rating builders.
@@ -106,6 +120,8 @@ type Client struct {
 	Reaction *ReactionClient
 	// Reservation is the client for interacting with the Reservation builders.
 	Reservation *ReservationClient
+	// ReservationBlock is the client for interacting with the ReservationBlock builders.
+	ReservationBlock *ReservationBlockClient
 	// Resourse is the client for interacting with the Resourse builders.
 	Resourse *ResourseClient
 	// Review is the client for interacting with the Review builders.
@@ -116,6 +132,8 @@ type Client struct {
 	Ticket *TicketClient
 	// TicketOption is the client for interacting with the TicketOption builders.
 	TicketOption *TicketOptionClient
+	// TransactionHistory is the client for interacting with the TransactionHistory builders.
+	TransactionHistory *TransactionHistoryClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 	// UserBusiness is the client for interacting with the UserBusiness builders.
@@ -157,21 +175,27 @@ func (c *Client) init() {
 	c.Event = NewEventClient(c.config)
 	c.FAQ = NewFAQClient(c.config)
 	c.Help = NewHelpClient(c.config)
+	c.InventoryAttribute = NewInventoryAttributeClient(c.config)
+	c.InventoryType = NewInventoryTypeClient(c.config)
 	c.Like = NewLikeClient(c.config)
 	c.Media = NewMediaClient(c.config)
 	c.Menu = NewMenuClient(c.config)
 	c.Order = NewOrderClient(c.config)
 	c.Payment = NewPaymentClient(c.config)
 	c.Place = NewPlaceClient(c.config)
+	c.PlaceInventory = NewPlaceInventoryClient(c.config)
+	c.PlaceInventoryAttribute = NewPlaceInventoryAttributeClient(c.config)
 	c.Post = NewPostClient(c.config)
 	c.Rating = NewRatingClient(c.config)
 	c.Reaction = NewReactionClient(c.config)
 	c.Reservation = NewReservationClient(c.config)
+	c.ReservationBlock = NewReservationBlockClient(c.config)
 	c.Resourse = NewResourseClient(c.config)
 	c.Review = NewReviewClient(c.config)
 	c.Room = NewRoomClient(c.config)
 	c.Ticket = NewTicketClient(c.config)
 	c.TicketOption = NewTicketOptionClient(c.config)
+	c.TransactionHistory = NewTransactionHistoryClient(c.config)
 	c.User = NewUserClient(c.config)
 	c.UserBusiness = NewUserBusinessClient(c.config)
 	c.UserFollowBusiness = NewUserFollowBusinessClient(c.config)
@@ -184,7 +208,7 @@ func (c *Client) init() {
 type (
 	// config is the configuration for the client and its builder.
 	config struct {
-		// driver used for executing db requests.
+		// driver used for executing database requests.
 		driver dialect.Driver
 		// debug enable a debug logging.
 		debug bool
@@ -230,7 +254,7 @@ func Driver(driver dialect.Driver) Option {
 	}
 }
 
-// Open opens a db/sql.DB specified by the driver name and
+// Open opens a database/sql.DB specified by the driver name and
 // the data source name, and returns a new client attached to it.
 // Optional parameters can be added for configuring the client.
 func Open(driverName, dataSourceName string, options ...Option) (*Client, error) {
@@ -250,7 +274,7 @@ func Open(driverName, dataSourceName string, options ...Option) (*Client, error)
 // is used until the transaction is committed or rolled back.
 func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	if _, ok := c.driver.(*txDriver); ok {
-		return nil, errors.New("ent: cannot cmd a transaction within a transaction")
+		return nil, errors.New("ent: cannot start a transaction within a transaction")
 	}
 	tx, err := newTx(ctx, c.driver)
 	if err != nil {
@@ -259,51 +283,57 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:                    ctx,
-		config:                 cfg,
-		AccountSettings:        NewAccountSettingsClient(cfg),
-		Amenity:                NewAmenityClient(cfg),
-		Booking:                NewBookingClient(cfg),
-		Business:               NewBusinessClient(cfg),
-		BusinessFollowBusiness: NewBusinessFollowBusinessClient(cfg),
-		BusinessFollowEvent:    NewBusinessFollowEventClient(cfg),
-		BusinessFollowUser:     NewBusinessFollowUserClient(cfg),
-		Category:               NewCategoryClient(cfg),
-		CategoryAssignment:     NewCategoryAssignmentClient(cfg),
-		Chat:                   NewChatClient(cfg),
-		Comment:                NewCommentClient(cfg),
-		Event:                  NewEventClient(cfg),
-		FAQ:                    NewFAQClient(cfg),
-		Help:                   NewHelpClient(cfg),
-		Like:                   NewLikeClient(cfg),
-		Media:                  NewMediaClient(cfg),
-		Menu:                   NewMenuClient(cfg),
-		Order:                  NewOrderClient(cfg),
-		Payment:                NewPaymentClient(cfg),
-		Place:                  NewPlaceClient(cfg),
-		Post:                   NewPostClient(cfg),
-		Rating:                 NewRatingClient(cfg),
-		Reaction:               NewReactionClient(cfg),
-		Reservation:            NewReservationClient(cfg),
-		Resourse:               NewResourseClient(cfg),
-		Review:                 NewReviewClient(cfg),
-		Room:                   NewRoomClient(cfg),
-		Ticket:                 NewTicketClient(cfg),
-		TicketOption:           NewTicketOptionClient(cfg),
-		User:                   NewUserClient(cfg),
-		UserBusiness:           NewUserBusinessClient(cfg),
-		UserFollowBusiness:     NewUserFollowBusinessClient(cfg),
-		UserFollowEvent:        NewUserFollowEventClient(cfg),
-		UserFollowPlace:        NewUserFollowPlaceClient(cfg),
-		UserFollowUser:         NewUserFollowUserClient(cfg),
-		UserLikePlace:          NewUserLikePlaceClient(cfg),
+		ctx:                     ctx,
+		config:                  cfg,
+		AccountSettings:         NewAccountSettingsClient(cfg),
+		Amenity:                 NewAmenityClient(cfg),
+		Booking:                 NewBookingClient(cfg),
+		Business:                NewBusinessClient(cfg),
+		BusinessFollowBusiness:  NewBusinessFollowBusinessClient(cfg),
+		BusinessFollowEvent:     NewBusinessFollowEventClient(cfg),
+		BusinessFollowUser:      NewBusinessFollowUserClient(cfg),
+		Category:                NewCategoryClient(cfg),
+		CategoryAssignment:      NewCategoryAssignmentClient(cfg),
+		Chat:                    NewChatClient(cfg),
+		Comment:                 NewCommentClient(cfg),
+		Event:                   NewEventClient(cfg),
+		FAQ:                     NewFAQClient(cfg),
+		Help:                    NewHelpClient(cfg),
+		InventoryAttribute:      NewInventoryAttributeClient(cfg),
+		InventoryType:           NewInventoryTypeClient(cfg),
+		Like:                    NewLikeClient(cfg),
+		Media:                   NewMediaClient(cfg),
+		Menu:                    NewMenuClient(cfg),
+		Order:                   NewOrderClient(cfg),
+		Payment:                 NewPaymentClient(cfg),
+		Place:                   NewPlaceClient(cfg),
+		PlaceInventory:          NewPlaceInventoryClient(cfg),
+		PlaceInventoryAttribute: NewPlaceInventoryAttributeClient(cfg),
+		Post:                    NewPostClient(cfg),
+		Rating:                  NewRatingClient(cfg),
+		Reaction:                NewReactionClient(cfg),
+		Reservation:             NewReservationClient(cfg),
+		ReservationBlock:        NewReservationBlockClient(cfg),
+		Resourse:                NewResourseClient(cfg),
+		Review:                  NewReviewClient(cfg),
+		Room:                    NewRoomClient(cfg),
+		Ticket:                  NewTicketClient(cfg),
+		TicketOption:            NewTicketOptionClient(cfg),
+		TransactionHistory:      NewTransactionHistoryClient(cfg),
+		User:                    NewUserClient(cfg),
+		UserBusiness:            NewUserBusinessClient(cfg),
+		UserFollowBusiness:      NewUserFollowBusinessClient(cfg),
+		UserFollowEvent:         NewUserFollowEventClient(cfg),
+		UserFollowPlace:         NewUserFollowPlaceClient(cfg),
+		UserFollowUser:          NewUserFollowUserClient(cfg),
+		UserLikePlace:           NewUserLikePlaceClient(cfg),
 	}, nil
 }
 
 // BeginTx returns a transactional client with specified options.
 func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) {
 	if _, ok := c.driver.(*txDriver); ok {
-		return nil, errors.New("ent: cannot cmd a transaction within a transaction")
+		return nil, errors.New("ent: cannot start a transaction within a transaction")
 	}
 	tx, err := c.driver.(interface {
 		BeginTx(context.Context, *sql.TxOptions) (dialect.Tx, error)
@@ -314,44 +344,50 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:                    ctx,
-		config:                 cfg,
-		AccountSettings:        NewAccountSettingsClient(cfg),
-		Amenity:                NewAmenityClient(cfg),
-		Booking:                NewBookingClient(cfg),
-		Business:               NewBusinessClient(cfg),
-		BusinessFollowBusiness: NewBusinessFollowBusinessClient(cfg),
-		BusinessFollowEvent:    NewBusinessFollowEventClient(cfg),
-		BusinessFollowUser:     NewBusinessFollowUserClient(cfg),
-		Category:               NewCategoryClient(cfg),
-		CategoryAssignment:     NewCategoryAssignmentClient(cfg),
-		Chat:                   NewChatClient(cfg),
-		Comment:                NewCommentClient(cfg),
-		Event:                  NewEventClient(cfg),
-		FAQ:                    NewFAQClient(cfg),
-		Help:                   NewHelpClient(cfg),
-		Like:                   NewLikeClient(cfg),
-		Media:                  NewMediaClient(cfg),
-		Menu:                   NewMenuClient(cfg),
-		Order:                  NewOrderClient(cfg),
-		Payment:                NewPaymentClient(cfg),
-		Place:                  NewPlaceClient(cfg),
-		Post:                   NewPostClient(cfg),
-		Rating:                 NewRatingClient(cfg),
-		Reaction:               NewReactionClient(cfg),
-		Reservation:            NewReservationClient(cfg),
-		Resourse:               NewResourseClient(cfg),
-		Review:                 NewReviewClient(cfg),
-		Room:                   NewRoomClient(cfg),
-		Ticket:                 NewTicketClient(cfg),
-		TicketOption:           NewTicketOptionClient(cfg),
-		User:                   NewUserClient(cfg),
-		UserBusiness:           NewUserBusinessClient(cfg),
-		UserFollowBusiness:     NewUserFollowBusinessClient(cfg),
-		UserFollowEvent:        NewUserFollowEventClient(cfg),
-		UserFollowPlace:        NewUserFollowPlaceClient(cfg),
-		UserFollowUser:         NewUserFollowUserClient(cfg),
-		UserLikePlace:          NewUserLikePlaceClient(cfg),
+		ctx:                     ctx,
+		config:                  cfg,
+		AccountSettings:         NewAccountSettingsClient(cfg),
+		Amenity:                 NewAmenityClient(cfg),
+		Booking:                 NewBookingClient(cfg),
+		Business:                NewBusinessClient(cfg),
+		BusinessFollowBusiness:  NewBusinessFollowBusinessClient(cfg),
+		BusinessFollowEvent:     NewBusinessFollowEventClient(cfg),
+		BusinessFollowUser:      NewBusinessFollowUserClient(cfg),
+		Category:                NewCategoryClient(cfg),
+		CategoryAssignment:      NewCategoryAssignmentClient(cfg),
+		Chat:                    NewChatClient(cfg),
+		Comment:                 NewCommentClient(cfg),
+		Event:                   NewEventClient(cfg),
+		FAQ:                     NewFAQClient(cfg),
+		Help:                    NewHelpClient(cfg),
+		InventoryAttribute:      NewInventoryAttributeClient(cfg),
+		InventoryType:           NewInventoryTypeClient(cfg),
+		Like:                    NewLikeClient(cfg),
+		Media:                   NewMediaClient(cfg),
+		Menu:                    NewMenuClient(cfg),
+		Order:                   NewOrderClient(cfg),
+		Payment:                 NewPaymentClient(cfg),
+		Place:                   NewPlaceClient(cfg),
+		PlaceInventory:          NewPlaceInventoryClient(cfg),
+		PlaceInventoryAttribute: NewPlaceInventoryAttributeClient(cfg),
+		Post:                    NewPostClient(cfg),
+		Rating:                  NewRatingClient(cfg),
+		Reaction:                NewReactionClient(cfg),
+		Reservation:             NewReservationClient(cfg),
+		ReservationBlock:        NewReservationBlockClient(cfg),
+		Resourse:                NewResourseClient(cfg),
+		Review:                  NewReviewClient(cfg),
+		Room:                    NewRoomClient(cfg),
+		Ticket:                  NewTicketClient(cfg),
+		TicketOption:            NewTicketOptionClient(cfg),
+		TransactionHistory:      NewTransactionHistoryClient(cfg),
+		User:                    NewUserClient(cfg),
+		UserBusiness:            NewUserBusinessClient(cfg),
+		UserFollowBusiness:      NewUserFollowBusinessClient(cfg),
+		UserFollowEvent:         NewUserFollowEventClient(cfg),
+		UserFollowPlace:         NewUserFollowPlaceClient(cfg),
+		UserFollowUser:          NewUserFollowUserClient(cfg),
+		UserLikePlace:           NewUserLikePlaceClient(cfg),
 	}, nil
 }
 
@@ -372,7 +408,7 @@ func (c *Client) Debug() *Client {
 	return client
 }
 
-// Close closes the db connection and prevents new queries from starting.
+// Close closes the database connection and prevents new queries from starting.
 func (c *Client) Close() error {
 	return c.driver.Close()
 }
@@ -383,9 +419,11 @@ func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.AccountSettings, c.Amenity, c.Booking, c.Business, c.BusinessFollowBusiness,
 		c.BusinessFollowEvent, c.BusinessFollowUser, c.Category, c.CategoryAssignment,
-		c.Chat, c.Comment, c.Event, c.FAQ, c.Help, c.Like, c.Media, c.Menu, c.Order,
-		c.Payment, c.Place, c.Post, c.Rating, c.Reaction, c.Reservation, c.Resourse,
-		c.Review, c.Room, c.Ticket, c.TicketOption, c.User, c.UserBusiness,
+		c.Chat, c.Comment, c.Event, c.FAQ, c.Help, c.InventoryAttribute,
+		c.InventoryType, c.Like, c.Media, c.Menu, c.Order, c.Payment, c.Place,
+		c.PlaceInventory, c.PlaceInventoryAttribute, c.Post, c.Rating, c.Reaction,
+		c.Reservation, c.ReservationBlock, c.Resourse, c.Review, c.Room, c.Ticket,
+		c.TicketOption, c.TransactionHistory, c.User, c.UserBusiness,
 		c.UserFollowBusiness, c.UserFollowEvent, c.UserFollowPlace, c.UserFollowUser,
 		c.UserLikePlace,
 	} {
@@ -399,9 +437,11 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.AccountSettings, c.Amenity, c.Booking, c.Business, c.BusinessFollowBusiness,
 		c.BusinessFollowEvent, c.BusinessFollowUser, c.Category, c.CategoryAssignment,
-		c.Chat, c.Comment, c.Event, c.FAQ, c.Help, c.Like, c.Media, c.Menu, c.Order,
-		c.Payment, c.Place, c.Post, c.Rating, c.Reaction, c.Reservation, c.Resourse,
-		c.Review, c.Room, c.Ticket, c.TicketOption, c.User, c.UserBusiness,
+		c.Chat, c.Comment, c.Event, c.FAQ, c.Help, c.InventoryAttribute,
+		c.InventoryType, c.Like, c.Media, c.Menu, c.Order, c.Payment, c.Place,
+		c.PlaceInventory, c.PlaceInventoryAttribute, c.Post, c.Rating, c.Reaction,
+		c.Reservation, c.ReservationBlock, c.Resourse, c.Review, c.Room, c.Ticket,
+		c.TicketOption, c.TransactionHistory, c.User, c.UserBusiness,
 		c.UserFollowBusiness, c.UserFollowEvent, c.UserFollowPlace, c.UserFollowUser,
 		c.UserLikePlace,
 	} {
@@ -440,6 +480,10 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.FAQ.mutate(ctx, m)
 	case *HelpMutation:
 		return c.Help.mutate(ctx, m)
+	case *InventoryAttributeMutation:
+		return c.InventoryAttribute.mutate(ctx, m)
+	case *InventoryTypeMutation:
+		return c.InventoryType.mutate(ctx, m)
 	case *LikeMutation:
 		return c.Like.mutate(ctx, m)
 	case *MediaMutation:
@@ -452,6 +496,10 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Payment.mutate(ctx, m)
 	case *PlaceMutation:
 		return c.Place.mutate(ctx, m)
+	case *PlaceInventoryMutation:
+		return c.PlaceInventory.mutate(ctx, m)
+	case *PlaceInventoryAttributeMutation:
+		return c.PlaceInventoryAttribute.mutate(ctx, m)
 	case *PostMutation:
 		return c.Post.mutate(ctx, m)
 	case *RatingMutation:
@@ -460,6 +508,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Reaction.mutate(ctx, m)
 	case *ReservationMutation:
 		return c.Reservation.mutate(ctx, m)
+	case *ReservationBlockMutation:
+		return c.ReservationBlock.mutate(ctx, m)
 	case *ResourseMutation:
 		return c.Resourse.mutate(ctx, m)
 	case *ReviewMutation:
@@ -470,6 +520,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Ticket.mutate(ctx, m)
 	case *TicketOptionMutation:
 		return c.TicketOption.mutate(ctx, m)
+	case *TransactionHistoryMutation:
+		return c.TransactionHistory.mutate(ctx, m)
 	case *UserMutation:
 		return c.User.mutate(ctx, m)
 	case *UserBusinessMutation:
@@ -2879,6 +2931,306 @@ func (c *HelpClient) mutate(ctx context.Context, m *HelpMutation) (Value, error)
 	}
 }
 
+// InventoryAttributeClient is a client for the InventoryAttribute schema.
+type InventoryAttributeClient struct {
+	config
+}
+
+// NewInventoryAttributeClient returns a client for the InventoryAttribute from the given config.
+func NewInventoryAttributeClient(c config) *InventoryAttributeClient {
+	return &InventoryAttributeClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `inventoryattribute.Hooks(f(g(h())))`.
+func (c *InventoryAttributeClient) Use(hooks ...Hook) {
+	c.hooks.InventoryAttribute = append(c.hooks.InventoryAttribute, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `inventoryattribute.Intercept(f(g(h())))`.
+func (c *InventoryAttributeClient) Intercept(interceptors ...Interceptor) {
+	c.inters.InventoryAttribute = append(c.inters.InventoryAttribute, interceptors...)
+}
+
+// Create returns a builder for creating a InventoryAttribute entity.
+func (c *InventoryAttributeClient) Create() *InventoryAttributeCreate {
+	mutation := newInventoryAttributeMutation(c.config, OpCreate)
+	return &InventoryAttributeCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of InventoryAttribute entities.
+func (c *InventoryAttributeClient) CreateBulk(builders ...*InventoryAttributeCreate) *InventoryAttributeCreateBulk {
+	return &InventoryAttributeCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for InventoryAttribute.
+func (c *InventoryAttributeClient) Update() *InventoryAttributeUpdate {
+	mutation := newInventoryAttributeMutation(c.config, OpUpdate)
+	return &InventoryAttributeUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *InventoryAttributeClient) UpdateOne(ia *InventoryAttribute) *InventoryAttributeUpdateOne {
+	mutation := newInventoryAttributeMutation(c.config, OpUpdateOne, withInventoryAttribute(ia))
+	return &InventoryAttributeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *InventoryAttributeClient) UpdateOneID(id string) *InventoryAttributeUpdateOne {
+	mutation := newInventoryAttributeMutation(c.config, OpUpdateOne, withInventoryAttributeID(id))
+	return &InventoryAttributeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for InventoryAttribute.
+func (c *InventoryAttributeClient) Delete() *InventoryAttributeDelete {
+	mutation := newInventoryAttributeMutation(c.config, OpDelete)
+	return &InventoryAttributeDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *InventoryAttributeClient) DeleteOne(ia *InventoryAttribute) *InventoryAttributeDeleteOne {
+	return c.DeleteOneID(ia.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *InventoryAttributeClient) DeleteOneID(id string) *InventoryAttributeDeleteOne {
+	builder := c.Delete().Where(inventoryattribute.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &InventoryAttributeDeleteOne{builder}
+}
+
+// Query returns a query builder for InventoryAttribute.
+func (c *InventoryAttributeClient) Query() *InventoryAttributeQuery {
+	return &InventoryAttributeQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeInventoryAttribute},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a InventoryAttribute entity by its id.
+func (c *InventoryAttributeClient) Get(ctx context.Context, id string) (*InventoryAttribute, error) {
+	return c.Query().Where(inventoryattribute.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *InventoryAttributeClient) GetX(ctx context.Context, id string) *InventoryAttribute {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryInventoryType queries the inventory_type edge of a InventoryAttribute.
+func (c *InventoryAttributeClient) QueryInventoryType(ia *InventoryAttribute) *InventoryTypeQuery {
+	query := (&InventoryTypeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ia.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(inventoryattribute.Table, inventoryattribute.FieldID, id),
+			sqlgraph.To(inventorytype.Table, inventorytype.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, inventoryattribute.InventoryTypeTable, inventoryattribute.InventoryTypeColumn),
+		)
+		fromV = sqlgraph.Neighbors(ia.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPlaceInventoryAttributes queries the place_inventory_attributes edge of a InventoryAttribute.
+func (c *InventoryAttributeClient) QueryPlaceInventoryAttributes(ia *InventoryAttribute) *PlaceInventoryAttributeQuery {
+	query := (&PlaceInventoryAttributeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ia.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(inventoryattribute.Table, inventoryattribute.FieldID, id),
+			sqlgraph.To(placeinventoryattribute.Table, placeinventoryattribute.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, inventoryattribute.PlaceInventoryAttributesTable, inventoryattribute.PlaceInventoryAttributesColumn),
+		)
+		fromV = sqlgraph.Neighbors(ia.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *InventoryAttributeClient) Hooks() []Hook {
+	return c.hooks.InventoryAttribute
+}
+
+// Interceptors returns the client interceptors.
+func (c *InventoryAttributeClient) Interceptors() []Interceptor {
+	return c.inters.InventoryAttribute
+}
+
+func (c *InventoryAttributeClient) mutate(ctx context.Context, m *InventoryAttributeMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&InventoryAttributeCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&InventoryAttributeUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&InventoryAttributeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&InventoryAttributeDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown InventoryAttribute mutation op: %q", m.Op())
+	}
+}
+
+// InventoryTypeClient is a client for the InventoryType schema.
+type InventoryTypeClient struct {
+	config
+}
+
+// NewInventoryTypeClient returns a client for the InventoryType from the given config.
+func NewInventoryTypeClient(c config) *InventoryTypeClient {
+	return &InventoryTypeClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `inventorytype.Hooks(f(g(h())))`.
+func (c *InventoryTypeClient) Use(hooks ...Hook) {
+	c.hooks.InventoryType = append(c.hooks.InventoryType, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `inventorytype.Intercept(f(g(h())))`.
+func (c *InventoryTypeClient) Intercept(interceptors ...Interceptor) {
+	c.inters.InventoryType = append(c.inters.InventoryType, interceptors...)
+}
+
+// Create returns a builder for creating a InventoryType entity.
+func (c *InventoryTypeClient) Create() *InventoryTypeCreate {
+	mutation := newInventoryTypeMutation(c.config, OpCreate)
+	return &InventoryTypeCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of InventoryType entities.
+func (c *InventoryTypeClient) CreateBulk(builders ...*InventoryTypeCreate) *InventoryTypeCreateBulk {
+	return &InventoryTypeCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for InventoryType.
+func (c *InventoryTypeClient) Update() *InventoryTypeUpdate {
+	mutation := newInventoryTypeMutation(c.config, OpUpdate)
+	return &InventoryTypeUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *InventoryTypeClient) UpdateOne(it *InventoryType) *InventoryTypeUpdateOne {
+	mutation := newInventoryTypeMutation(c.config, OpUpdateOne, withInventoryType(it))
+	return &InventoryTypeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *InventoryTypeClient) UpdateOneID(id string) *InventoryTypeUpdateOne {
+	mutation := newInventoryTypeMutation(c.config, OpUpdateOne, withInventoryTypeID(id))
+	return &InventoryTypeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for InventoryType.
+func (c *InventoryTypeClient) Delete() *InventoryTypeDelete {
+	mutation := newInventoryTypeMutation(c.config, OpDelete)
+	return &InventoryTypeDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *InventoryTypeClient) DeleteOne(it *InventoryType) *InventoryTypeDeleteOne {
+	return c.DeleteOneID(it.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *InventoryTypeClient) DeleteOneID(id string) *InventoryTypeDeleteOne {
+	builder := c.Delete().Where(inventorytype.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &InventoryTypeDeleteOne{builder}
+}
+
+// Query returns a query builder for InventoryType.
+func (c *InventoryTypeClient) Query() *InventoryTypeQuery {
+	return &InventoryTypeQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeInventoryType},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a InventoryType entity by its id.
+func (c *InventoryTypeClient) Get(ctx context.Context, id string) (*InventoryType, error) {
+	return c.Query().Where(inventorytype.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *InventoryTypeClient) GetX(ctx context.Context, id string) *InventoryType {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryAttributes queries the attributes edge of a InventoryType.
+func (c *InventoryTypeClient) QueryAttributes(it *InventoryType) *InventoryAttributeQuery {
+	query := (&InventoryAttributeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := it.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(inventorytype.Table, inventorytype.FieldID, id),
+			sqlgraph.To(inventoryattribute.Table, inventoryattribute.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, inventorytype.AttributesTable, inventorytype.AttributesColumn),
+		)
+		fromV = sqlgraph.Neighbors(it.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPlaceInventories queries the place_inventories edge of a InventoryType.
+func (c *InventoryTypeClient) QueryPlaceInventories(it *InventoryType) *PlaceInventoryQuery {
+	query := (&PlaceInventoryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := it.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(inventorytype.Table, inventorytype.FieldID, id),
+			sqlgraph.To(placeinventory.Table, placeinventory.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, inventorytype.PlaceInventoriesTable, inventorytype.PlaceInventoriesColumn),
+		)
+		fromV = sqlgraph.Neighbors(it.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *InventoryTypeClient) Hooks() []Hook {
+	return c.hooks.InventoryType
+}
+
+// Interceptors returns the client interceptors.
+func (c *InventoryTypeClient) Interceptors() []Interceptor {
+	return c.inters.InventoryType
+}
+
+func (c *InventoryTypeClient) mutate(ctx context.Context, m *InventoryTypeMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&InventoryTypeCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&InventoryTypeUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&InventoryTypeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&InventoryTypeDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown InventoryType mutation op: %q", m.Op())
+	}
+}
+
 // LikeClient is a client for the Like schema.
 type LikeClient struct {
 	config
@@ -3211,6 +3563,22 @@ func (c *MediaClient) QueryPlace(m *Media) *PlaceQuery {
 			sqlgraph.From(media.Table, media.FieldID, id),
 			sqlgraph.To(place.Table, place.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, true, media.PlaceTable, media.PlacePrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPlaceInventory queries the place_inventory edge of a Media.
+func (c *MediaClient) QueryPlaceInventory(m *Media) *PlaceInventoryQuery {
+	query := (&PlaceInventoryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(media.Table, media.FieldID, id),
+			sqlgraph.To(placeinventory.Table, placeinventory.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, media.PlaceInventoryTable, media.PlaceInventoryPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(m.driver.Dialect(), step)
 		return fromV, nil
@@ -3978,6 +4346,22 @@ func (c *PlaceClient) QueryRatings(pl *Place) *RatingQuery {
 	return query
 }
 
+// QueryInventories queries the inventories edge of a Place.
+func (c *PlaceClient) QueryInventories(pl *Place) *PlaceInventoryQuery {
+	query := (&PlaceInventoryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pl.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(place.Table, place.FieldID, id),
+			sqlgraph.To(placeinventory.Table, placeinventory.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, place.InventoriesTable, place.InventoriesColumn),
+		)
+		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *PlaceClient) Hooks() []Hook {
 	hooks := c.hooks.Place
@@ -4001,6 +4385,370 @@ func (c *PlaceClient) mutate(ctx context.Context, m *PlaceMutation) (Value, erro
 		return (&PlaceDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Place mutation op: %q", m.Op())
+	}
+}
+
+// PlaceInventoryClient is a client for the PlaceInventory schema.
+type PlaceInventoryClient struct {
+	config
+}
+
+// NewPlaceInventoryClient returns a client for the PlaceInventory from the given config.
+func NewPlaceInventoryClient(c config) *PlaceInventoryClient {
+	return &PlaceInventoryClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `placeinventory.Hooks(f(g(h())))`.
+func (c *PlaceInventoryClient) Use(hooks ...Hook) {
+	c.hooks.PlaceInventory = append(c.hooks.PlaceInventory, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `placeinventory.Intercept(f(g(h())))`.
+func (c *PlaceInventoryClient) Intercept(interceptors ...Interceptor) {
+	c.inters.PlaceInventory = append(c.inters.PlaceInventory, interceptors...)
+}
+
+// Create returns a builder for creating a PlaceInventory entity.
+func (c *PlaceInventoryClient) Create() *PlaceInventoryCreate {
+	mutation := newPlaceInventoryMutation(c.config, OpCreate)
+	return &PlaceInventoryCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of PlaceInventory entities.
+func (c *PlaceInventoryClient) CreateBulk(builders ...*PlaceInventoryCreate) *PlaceInventoryCreateBulk {
+	return &PlaceInventoryCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for PlaceInventory.
+func (c *PlaceInventoryClient) Update() *PlaceInventoryUpdate {
+	mutation := newPlaceInventoryMutation(c.config, OpUpdate)
+	return &PlaceInventoryUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *PlaceInventoryClient) UpdateOne(pi *PlaceInventory) *PlaceInventoryUpdateOne {
+	mutation := newPlaceInventoryMutation(c.config, OpUpdateOne, withPlaceInventory(pi))
+	return &PlaceInventoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *PlaceInventoryClient) UpdateOneID(id string) *PlaceInventoryUpdateOne {
+	mutation := newPlaceInventoryMutation(c.config, OpUpdateOne, withPlaceInventoryID(id))
+	return &PlaceInventoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for PlaceInventory.
+func (c *PlaceInventoryClient) Delete() *PlaceInventoryDelete {
+	mutation := newPlaceInventoryMutation(c.config, OpDelete)
+	return &PlaceInventoryDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *PlaceInventoryClient) DeleteOne(pi *PlaceInventory) *PlaceInventoryDeleteOne {
+	return c.DeleteOneID(pi.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *PlaceInventoryClient) DeleteOneID(id string) *PlaceInventoryDeleteOne {
+	builder := c.Delete().Where(placeinventory.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &PlaceInventoryDeleteOne{builder}
+}
+
+// Query returns a query builder for PlaceInventory.
+func (c *PlaceInventoryClient) Query() *PlaceInventoryQuery {
+	return &PlaceInventoryQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypePlaceInventory},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a PlaceInventory entity by its id.
+func (c *PlaceInventoryClient) Get(ctx context.Context, id string) (*PlaceInventory, error) {
+	return c.Query().Where(placeinventory.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *PlaceInventoryClient) GetX(ctx context.Context, id string) *PlaceInventory {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryPlace queries the place edge of a PlaceInventory.
+func (c *PlaceInventoryClient) QueryPlace(pi *PlaceInventory) *PlaceQuery {
+	query := (&PlaceClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pi.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(placeinventory.Table, placeinventory.FieldID, id),
+			sqlgraph.To(place.Table, place.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, placeinventory.PlaceTable, placeinventory.PlaceColumn),
+		)
+		fromV = sqlgraph.Neighbors(pi.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryInventoryType queries the inventory_type edge of a PlaceInventory.
+func (c *PlaceInventoryClient) QueryInventoryType(pi *PlaceInventory) *InventoryTypeQuery {
+	query := (&InventoryTypeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pi.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(placeinventory.Table, placeinventory.FieldID, id),
+			sqlgraph.To(inventorytype.Table, inventorytype.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, placeinventory.InventoryTypeTable, placeinventory.InventoryTypeColumn),
+		)
+		fromV = sqlgraph.Neighbors(pi.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryAttributes queries the attributes edge of a PlaceInventory.
+func (c *PlaceInventoryClient) QueryAttributes(pi *PlaceInventory) *PlaceInventoryAttributeQuery {
+	query := (&PlaceInventoryAttributeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pi.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(placeinventory.Table, placeinventory.FieldID, id),
+			sqlgraph.To(placeinventoryattribute.Table, placeinventoryattribute.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, placeinventory.AttributesTable, placeinventory.AttributesColumn),
+		)
+		fromV = sqlgraph.Neighbors(pi.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryMedia queries the media edge of a PlaceInventory.
+func (c *PlaceInventoryClient) QueryMedia(pi *PlaceInventory) *MediaQuery {
+	query := (&MediaClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pi.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(placeinventory.Table, placeinventory.FieldID, id),
+			sqlgraph.To(media.Table, media.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, placeinventory.MediaTable, placeinventory.MediaPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(pi.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTransactionHistories queries the transaction_histories edge of a PlaceInventory.
+func (c *PlaceInventoryClient) QueryTransactionHistories(pi *PlaceInventory) *TransactionHistoryQuery {
+	query := (&TransactionHistoryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pi.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(placeinventory.Table, placeinventory.FieldID, id),
+			sqlgraph.To(transactionhistory.Table, transactionhistory.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, placeinventory.TransactionHistoriesTable, placeinventory.TransactionHistoriesColumn),
+		)
+		fromV = sqlgraph.Neighbors(pi.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryReservationBlocks queries the reservation_blocks edge of a PlaceInventory.
+func (c *PlaceInventoryClient) QueryReservationBlocks(pi *PlaceInventory) *ReservationBlockQuery {
+	query := (&ReservationBlockClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pi.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(placeinventory.Table, placeinventory.FieldID, id),
+			sqlgraph.To(reservationblock.Table, reservationblock.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, placeinventory.ReservationBlocksTable, placeinventory.ReservationBlocksColumn),
+		)
+		fromV = sqlgraph.Neighbors(pi.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *PlaceInventoryClient) Hooks() []Hook {
+	return c.hooks.PlaceInventory
+}
+
+// Interceptors returns the client interceptors.
+func (c *PlaceInventoryClient) Interceptors() []Interceptor {
+	return c.inters.PlaceInventory
+}
+
+func (c *PlaceInventoryClient) mutate(ctx context.Context, m *PlaceInventoryMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&PlaceInventoryCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&PlaceInventoryUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&PlaceInventoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&PlaceInventoryDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown PlaceInventory mutation op: %q", m.Op())
+	}
+}
+
+// PlaceInventoryAttributeClient is a client for the PlaceInventoryAttribute schema.
+type PlaceInventoryAttributeClient struct {
+	config
+}
+
+// NewPlaceInventoryAttributeClient returns a client for the PlaceInventoryAttribute from the given config.
+func NewPlaceInventoryAttributeClient(c config) *PlaceInventoryAttributeClient {
+	return &PlaceInventoryAttributeClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `placeinventoryattribute.Hooks(f(g(h())))`.
+func (c *PlaceInventoryAttributeClient) Use(hooks ...Hook) {
+	c.hooks.PlaceInventoryAttribute = append(c.hooks.PlaceInventoryAttribute, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `placeinventoryattribute.Intercept(f(g(h())))`.
+func (c *PlaceInventoryAttributeClient) Intercept(interceptors ...Interceptor) {
+	c.inters.PlaceInventoryAttribute = append(c.inters.PlaceInventoryAttribute, interceptors...)
+}
+
+// Create returns a builder for creating a PlaceInventoryAttribute entity.
+func (c *PlaceInventoryAttributeClient) Create() *PlaceInventoryAttributeCreate {
+	mutation := newPlaceInventoryAttributeMutation(c.config, OpCreate)
+	return &PlaceInventoryAttributeCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of PlaceInventoryAttribute entities.
+func (c *PlaceInventoryAttributeClient) CreateBulk(builders ...*PlaceInventoryAttributeCreate) *PlaceInventoryAttributeCreateBulk {
+	return &PlaceInventoryAttributeCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for PlaceInventoryAttribute.
+func (c *PlaceInventoryAttributeClient) Update() *PlaceInventoryAttributeUpdate {
+	mutation := newPlaceInventoryAttributeMutation(c.config, OpUpdate)
+	return &PlaceInventoryAttributeUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *PlaceInventoryAttributeClient) UpdateOne(pia *PlaceInventoryAttribute) *PlaceInventoryAttributeUpdateOne {
+	mutation := newPlaceInventoryAttributeMutation(c.config, OpUpdateOne, withPlaceInventoryAttribute(pia))
+	return &PlaceInventoryAttributeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *PlaceInventoryAttributeClient) UpdateOneID(id string) *PlaceInventoryAttributeUpdateOne {
+	mutation := newPlaceInventoryAttributeMutation(c.config, OpUpdateOne, withPlaceInventoryAttributeID(id))
+	return &PlaceInventoryAttributeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for PlaceInventoryAttribute.
+func (c *PlaceInventoryAttributeClient) Delete() *PlaceInventoryAttributeDelete {
+	mutation := newPlaceInventoryAttributeMutation(c.config, OpDelete)
+	return &PlaceInventoryAttributeDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *PlaceInventoryAttributeClient) DeleteOne(pia *PlaceInventoryAttribute) *PlaceInventoryAttributeDeleteOne {
+	return c.DeleteOneID(pia.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *PlaceInventoryAttributeClient) DeleteOneID(id string) *PlaceInventoryAttributeDeleteOne {
+	builder := c.Delete().Where(placeinventoryattribute.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &PlaceInventoryAttributeDeleteOne{builder}
+}
+
+// Query returns a query builder for PlaceInventoryAttribute.
+func (c *PlaceInventoryAttributeClient) Query() *PlaceInventoryAttributeQuery {
+	return &PlaceInventoryAttributeQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypePlaceInventoryAttribute},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a PlaceInventoryAttribute entity by its id.
+func (c *PlaceInventoryAttributeClient) Get(ctx context.Context, id string) (*PlaceInventoryAttribute, error) {
+	return c.Query().Where(placeinventoryattribute.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *PlaceInventoryAttributeClient) GetX(ctx context.Context, id string) *PlaceInventoryAttribute {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryInventory queries the inventory edge of a PlaceInventoryAttribute.
+func (c *PlaceInventoryAttributeClient) QueryInventory(pia *PlaceInventoryAttribute) *PlaceInventoryQuery {
+	query := (&PlaceInventoryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pia.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(placeinventoryattribute.Table, placeinventoryattribute.FieldID, id),
+			sqlgraph.To(placeinventory.Table, placeinventory.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, placeinventoryattribute.InventoryTable, placeinventoryattribute.InventoryColumn),
+		)
+		fromV = sqlgraph.Neighbors(pia.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryAttributeType queries the attribute_type edge of a PlaceInventoryAttribute.
+func (c *PlaceInventoryAttributeClient) QueryAttributeType(pia *PlaceInventoryAttribute) *InventoryAttributeQuery {
+	query := (&InventoryAttributeClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pia.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(placeinventoryattribute.Table, placeinventoryattribute.FieldID, id),
+			sqlgraph.To(inventoryattribute.Table, inventoryattribute.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, placeinventoryattribute.AttributeTypeTable, placeinventoryattribute.AttributeTypeColumn),
+		)
+		fromV = sqlgraph.Neighbors(pia.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *PlaceInventoryAttributeClient) Hooks() []Hook {
+	return c.hooks.PlaceInventoryAttribute
+}
+
+// Interceptors returns the client interceptors.
+func (c *PlaceInventoryAttributeClient) Interceptors() []Interceptor {
+	return c.inters.PlaceInventoryAttribute
+}
+
+func (c *PlaceInventoryAttributeClient) mutate(ctx context.Context, m *PlaceInventoryAttributeMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&PlaceInventoryAttributeCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&PlaceInventoryAttributeUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&PlaceInventoryAttributeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&PlaceInventoryAttributeDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown PlaceInventoryAttribute mutation op: %q", m.Op())
 	}
 }
 
@@ -4666,6 +5414,156 @@ func (c *ReservationClient) mutate(ctx context.Context, m *ReservationMutation) 
 		return (&ReservationDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Reservation mutation op: %q", m.Op())
+	}
+}
+
+// ReservationBlockClient is a client for the ReservationBlock schema.
+type ReservationBlockClient struct {
+	config
+}
+
+// NewReservationBlockClient returns a client for the ReservationBlock from the given config.
+func NewReservationBlockClient(c config) *ReservationBlockClient {
+	return &ReservationBlockClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `reservationblock.Hooks(f(g(h())))`.
+func (c *ReservationBlockClient) Use(hooks ...Hook) {
+	c.hooks.ReservationBlock = append(c.hooks.ReservationBlock, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `reservationblock.Intercept(f(g(h())))`.
+func (c *ReservationBlockClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ReservationBlock = append(c.inters.ReservationBlock, interceptors...)
+}
+
+// Create returns a builder for creating a ReservationBlock entity.
+func (c *ReservationBlockClient) Create() *ReservationBlockCreate {
+	mutation := newReservationBlockMutation(c.config, OpCreate)
+	return &ReservationBlockCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ReservationBlock entities.
+func (c *ReservationBlockClient) CreateBulk(builders ...*ReservationBlockCreate) *ReservationBlockCreateBulk {
+	return &ReservationBlockCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ReservationBlock.
+func (c *ReservationBlockClient) Update() *ReservationBlockUpdate {
+	mutation := newReservationBlockMutation(c.config, OpUpdate)
+	return &ReservationBlockUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ReservationBlockClient) UpdateOne(rb *ReservationBlock) *ReservationBlockUpdateOne {
+	mutation := newReservationBlockMutation(c.config, OpUpdateOne, withReservationBlock(rb))
+	return &ReservationBlockUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ReservationBlockClient) UpdateOneID(id string) *ReservationBlockUpdateOne {
+	mutation := newReservationBlockMutation(c.config, OpUpdateOne, withReservationBlockID(id))
+	return &ReservationBlockUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ReservationBlock.
+func (c *ReservationBlockClient) Delete() *ReservationBlockDelete {
+	mutation := newReservationBlockMutation(c.config, OpDelete)
+	return &ReservationBlockDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ReservationBlockClient) DeleteOne(rb *ReservationBlock) *ReservationBlockDeleteOne {
+	return c.DeleteOneID(rb.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ReservationBlockClient) DeleteOneID(id string) *ReservationBlockDeleteOne {
+	builder := c.Delete().Where(reservationblock.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ReservationBlockDeleteOne{builder}
+}
+
+// Query returns a query builder for ReservationBlock.
+func (c *ReservationBlockClient) Query() *ReservationBlockQuery {
+	return &ReservationBlockQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeReservationBlock},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a ReservationBlock entity by its id.
+func (c *ReservationBlockClient) Get(ctx context.Context, id string) (*ReservationBlock, error) {
+	return c.Query().Where(reservationblock.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ReservationBlockClient) GetX(ctx context.Context, id string) *ReservationBlock {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryPlaceInventory queries the place_inventory edge of a ReservationBlock.
+func (c *ReservationBlockClient) QueryPlaceInventory(rb *ReservationBlock) *PlaceInventoryQuery {
+	query := (&PlaceInventoryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := rb.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(reservationblock.Table, reservationblock.FieldID, id),
+			sqlgraph.To(placeinventory.Table, placeinventory.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, reservationblock.PlaceInventoryTable, reservationblock.PlaceInventoryColumn),
+		)
+		fromV = sqlgraph.Neighbors(rb.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryUser queries the user edge of a ReservationBlock.
+func (c *ReservationBlockClient) QueryUser(rb *ReservationBlock) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := rb.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(reservationblock.Table, reservationblock.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, reservationblock.UserTable, reservationblock.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(rb.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *ReservationBlockClient) Hooks() []Hook {
+	return c.hooks.ReservationBlock
+}
+
+// Interceptors returns the client interceptors.
+func (c *ReservationBlockClient) Interceptors() []Interceptor {
+	return c.inters.ReservationBlock
+}
+
+func (c *ReservationBlockClient) mutate(ctx context.Context, m *ReservationBlockMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ReservationBlockCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ReservationBlockUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ReservationBlockUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ReservationBlockDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ReservationBlock mutation op: %q", m.Op())
 	}
 }
 
@@ -5452,6 +6350,156 @@ func (c *TicketOptionClient) mutate(ctx context.Context, m *TicketOptionMutation
 	}
 }
 
+// TransactionHistoryClient is a client for the TransactionHistory schema.
+type TransactionHistoryClient struct {
+	config
+}
+
+// NewTransactionHistoryClient returns a client for the TransactionHistory from the given config.
+func NewTransactionHistoryClient(c config) *TransactionHistoryClient {
+	return &TransactionHistoryClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `transactionhistory.Hooks(f(g(h())))`.
+func (c *TransactionHistoryClient) Use(hooks ...Hook) {
+	c.hooks.TransactionHistory = append(c.hooks.TransactionHistory, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `transactionhistory.Intercept(f(g(h())))`.
+func (c *TransactionHistoryClient) Intercept(interceptors ...Interceptor) {
+	c.inters.TransactionHistory = append(c.inters.TransactionHistory, interceptors...)
+}
+
+// Create returns a builder for creating a TransactionHistory entity.
+func (c *TransactionHistoryClient) Create() *TransactionHistoryCreate {
+	mutation := newTransactionHistoryMutation(c.config, OpCreate)
+	return &TransactionHistoryCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of TransactionHistory entities.
+func (c *TransactionHistoryClient) CreateBulk(builders ...*TransactionHistoryCreate) *TransactionHistoryCreateBulk {
+	return &TransactionHistoryCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for TransactionHistory.
+func (c *TransactionHistoryClient) Update() *TransactionHistoryUpdate {
+	mutation := newTransactionHistoryMutation(c.config, OpUpdate)
+	return &TransactionHistoryUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TransactionHistoryClient) UpdateOne(th *TransactionHistory) *TransactionHistoryUpdateOne {
+	mutation := newTransactionHistoryMutation(c.config, OpUpdateOne, withTransactionHistory(th))
+	return &TransactionHistoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TransactionHistoryClient) UpdateOneID(id string) *TransactionHistoryUpdateOne {
+	mutation := newTransactionHistoryMutation(c.config, OpUpdateOne, withTransactionHistoryID(id))
+	return &TransactionHistoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for TransactionHistory.
+func (c *TransactionHistoryClient) Delete() *TransactionHistoryDelete {
+	mutation := newTransactionHistoryMutation(c.config, OpDelete)
+	return &TransactionHistoryDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *TransactionHistoryClient) DeleteOne(th *TransactionHistory) *TransactionHistoryDeleteOne {
+	return c.DeleteOneID(th.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *TransactionHistoryClient) DeleteOneID(id string) *TransactionHistoryDeleteOne {
+	builder := c.Delete().Where(transactionhistory.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TransactionHistoryDeleteOne{builder}
+}
+
+// Query returns a query builder for TransactionHistory.
+func (c *TransactionHistoryClient) Query() *TransactionHistoryQuery {
+	return &TransactionHistoryQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeTransactionHistory},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a TransactionHistory entity by its id.
+func (c *TransactionHistoryClient) Get(ctx context.Context, id string) (*TransactionHistory, error) {
+	return c.Query().Where(transactionhistory.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TransactionHistoryClient) GetX(ctx context.Context, id string) *TransactionHistory {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryPlaceInventory queries the place_inventory edge of a TransactionHistory.
+func (c *TransactionHistoryClient) QueryPlaceInventory(th *TransactionHistory) *PlaceInventoryQuery {
+	query := (&PlaceInventoryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := th.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(transactionhistory.Table, transactionhistory.FieldID, id),
+			sqlgraph.To(placeinventory.Table, placeinventory.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, transactionhistory.PlaceInventoryTable, transactionhistory.PlaceInventoryColumn),
+		)
+		fromV = sqlgraph.Neighbors(th.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryUser queries the user edge of a TransactionHistory.
+func (c *TransactionHistoryClient) QueryUser(th *TransactionHistory) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := th.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(transactionhistory.Table, transactionhistory.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, transactionhistory.UserTable, transactionhistory.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(th.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *TransactionHistoryClient) Hooks() []Hook {
+	return c.hooks.TransactionHistory
+}
+
+// Interceptors returns the client interceptors.
+func (c *TransactionHistoryClient) Interceptors() []Interceptor {
+	return c.inters.TransactionHistory
+}
+
+func (c *TransactionHistoryClient) mutate(ctx context.Context, m *TransactionHistoryMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&TransactionHistoryCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&TransactionHistoryUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&TransactionHistoryUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&TransactionHistoryDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown TransactionHistory mutation op: %q", m.Op())
+	}
+}
+
 // UserClient is a client for the User schema.
 type UserClient struct {
 	config
@@ -5858,6 +6906,38 @@ func (c *UserClient) QueryRatings(u *User) *RatingQuery {
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(rating.Table, rating.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.RatingsTable, user.RatingsColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTransactionHistories queries the transaction_histories edge of a User.
+func (c *UserClient) QueryTransactionHistories(u *User) *TransactionHistoryQuery {
+	query := (&TransactionHistoryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(transactionhistory.Table, transactionhistory.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.TransactionHistoriesTable, user.TransactionHistoriesColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryReservationBlocks queries the reservation_blocks edge of a User.
+func (c *UserClient) QueryReservationBlocks(u *User) *ReservationBlockQuery {
+	query := (&ReservationBlockClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(reservationblock.Table, reservationblock.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.ReservationBlocksTable, user.ReservationBlocksColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil
@@ -6796,17 +7876,21 @@ type (
 	hooks struct {
 		AccountSettings, Amenity, Booking, Business, BusinessFollowBusiness,
 		BusinessFollowEvent, BusinessFollowUser, Category, CategoryAssignment, Chat,
-		Comment, Event, FAQ, Help, Like, Media, Menu, Order, Payment, Place, Post,
-		Rating, Reaction, Reservation, Resourse, Review, Room, Ticket, TicketOption,
-		User, UserBusiness, UserFollowBusiness, UserFollowEvent, UserFollowPlace,
-		UserFollowUser, UserLikePlace []ent.Hook
+		Comment, Event, FAQ, Help, InventoryAttribute, InventoryType, Like, Media,
+		Menu, Order, Payment, Place, PlaceInventory, PlaceInventoryAttribute, Post,
+		Rating, Reaction, Reservation, ReservationBlock, Resourse, Review, Room,
+		Ticket, TicketOption, TransactionHistory, User, UserBusiness,
+		UserFollowBusiness, UserFollowEvent, UserFollowPlace, UserFollowUser,
+		UserLikePlace []ent.Hook
 	}
 	inters struct {
 		AccountSettings, Amenity, Booking, Business, BusinessFollowBusiness,
 		BusinessFollowEvent, BusinessFollowUser, Category, CategoryAssignment, Chat,
-		Comment, Event, FAQ, Help, Like, Media, Menu, Order, Payment, Place, Post,
-		Rating, Reaction, Reservation, Resourse, Review, Room, Ticket, TicketOption,
-		User, UserBusiness, UserFollowBusiness, UserFollowEvent, UserFollowPlace,
-		UserFollowUser, UserLikePlace []ent.Interceptor
+		Comment, Event, FAQ, Help, InventoryAttribute, InventoryType, Like, Media,
+		Menu, Order, Payment, Place, PlaceInventory, PlaceInventoryAttribute, Post,
+		Rating, Reaction, Reservation, ReservationBlock, Resourse, Review, Room,
+		Ticket, TicketOption, TransactionHistory, User, UserBusiness,
+		UserFollowBusiness, UserFollowEvent, UserFollowPlace, UserFollowUser,
+		UserLikePlace []ent.Interceptor
 	}
 )

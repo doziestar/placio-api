@@ -9,77 +9,77 @@ import (
 )
 
 const (
-	// Label holds the string label denoting the place type in the db.
+	// Label holds the string label denoting the place type in the database.
 	Label = "place"
-	// FieldID holds the string denoting the id field in the db.
+	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldName holds the string denoting the name field in the db.
+	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
-	// FieldType holds the string denoting the type field in the db.
+	// FieldType holds the string denoting the type field in the database.
 	FieldType = "type"
-	// FieldDescription holds the string denoting the description field in the db.
+	// FieldDescription holds the string denoting the description field in the database.
 	FieldDescription = "description"
-	// FieldLocation holds the string denoting the location field in the db.
+	// FieldLocation holds the string denoting the location field in the database.
 	FieldLocation = "location"
-	// FieldEmail holds the string denoting the email field in the db.
+	// FieldEmail holds the string denoting the email field in the database.
 	FieldEmail = "email"
-	// FieldPhone holds the string denoting the phone field in the db.
+	// FieldPhone holds the string denoting the phone field in the database.
 	FieldPhone = "phone"
-	// FieldWebsite holds the string denoting the website field in the db.
+	// FieldWebsite holds the string denoting the website field in the database.
 	FieldWebsite = "website"
-	// FieldCoverImage holds the string denoting the cover_image field in the db.
+	// FieldCoverImage holds the string denoting the cover_image field in the database.
 	FieldCoverImage = "cover_image"
-	// FieldPicture holds the string denoting the picture field in the db.
+	// FieldPicture holds the string denoting the picture field in the database.
 	FieldPicture = "picture"
-	// FieldCountry holds the string denoting the country field in the db.
+	// FieldCountry holds the string denoting the country field in the database.
 	FieldCountry = "country"
-	// FieldCity holds the string denoting the city field in the db.
+	// FieldCity holds the string denoting the city field in the database.
 	FieldCity = "city"
-	// FieldState holds the string denoting the state field in the db.
+	// FieldState holds the string denoting the state field in the database.
 	FieldState = "state"
-	// FieldPlaceSettings holds the string denoting the place_settings field in the db.
+	// FieldPlaceSettings holds the string denoting the place_settings field in the database.
 	FieldPlaceSettings = "place_settings"
-	// FieldOpeningHours holds the string denoting the opening_hours field in the db.
+	// FieldOpeningHours holds the string denoting the opening_hours field in the database.
 	FieldOpeningHours = "opening_hours"
-	// FieldSocialMedia holds the string denoting the social_media field in the db.
+	// FieldSocialMedia holds the string denoting the social_media field in the database.
 	FieldSocialMedia = "social_media"
-	// FieldPaymentOptions holds the string denoting the payment_options field in the db.
+	// FieldPaymentOptions holds the string denoting the payment_options field in the database.
 	FieldPaymentOptions = "payment_options"
-	// FieldTags holds the string denoting the tags field in the db.
+	// FieldTags holds the string denoting the tags field in the database.
 	FieldTags = "tags"
-	// FieldFeatures holds the string denoting the features field in the db.
+	// FieldFeatures holds the string denoting the features field in the database.
 	FieldFeatures = "features"
-	// FieldAdditionalInfo holds the string denoting the additional_info field in the db.
+	// FieldAdditionalInfo holds the string denoting the additional_info field in the database.
 	FieldAdditionalInfo = "additional_info"
-	// FieldImages holds the string denoting the images field in the db.
+	// FieldImages holds the string denoting the images field in the database.
 	FieldImages = "images"
-	// FieldAvailability holds the string denoting the availability field in the db.
+	// FieldAvailability holds the string denoting the availability field in the database.
 	FieldAvailability = "availability"
-	// FieldSpecialOffers holds the string denoting the special_offers field in the db.
+	// FieldSpecialOffers holds the string denoting the special_offers field in the database.
 	FieldSpecialOffers = "special_offers"
-	// FieldSustainabilityScore holds the string denoting the sustainability_score field in the db.
+	// FieldSustainabilityScore holds the string denoting the sustainability_score field in the database.
 	FieldSustainabilityScore = "sustainability_score"
-	// FieldMapCoordinates holds the string denoting the map_coordinates field in the db.
+	// FieldMapCoordinates holds the string denoting the map_coordinates field in the database.
 	FieldMapCoordinates = "map_coordinates"
-	// FieldLongitude holds the string denoting the longitude field in the db.
+	// FieldLongitude holds the string denoting the longitude field in the database.
 	FieldLongitude = "longitude"
-	// FieldLatitude holds the string denoting the latitude field in the db.
+	// FieldLatitude holds the string denoting the latitude field in the database.
 	FieldLatitude = "latitude"
-	// FieldSearchText holds the string denoting the search_text field in the db.
+	// FieldSearchText holds the string denoting the search_text field in the database.
 	FieldSearchText = "search_text"
-	// FieldRelevanceScore holds the string denoting the relevance_score field in the db.
+	// FieldRelevanceScore holds the string denoting the relevance_score field in the database.
 	FieldRelevanceScore = "relevance_score"
-	// FieldFollowerCount holds the string denoting the follower_count field in the db.
+	// FieldFollowerCount holds the string denoting the follower_count field in the database.
 	FieldFollowerCount = "follower_count"
-	// FieldFollowingCount holds the string denoting the following_count field in the db.
+	// FieldFollowingCount holds the string denoting the following_count field in the database.
 	FieldFollowingCount = "following_count"
-	// FieldIsPremium holds the string denoting the is_premium field in the db.
+	// FieldIsPremium holds the string denoting the is_premium field in the database.
 	FieldIsPremium = "is_premium"
-	// FieldIsPublished holds the string denoting the is_published field in the db.
+	// FieldIsPublished holds the string denoting the is_published field in the database.
 	FieldIsPublished = "is_published"
-	// FieldLikedByCurrentUser holds the string denoting the likedbycurrentuser field in the db.
+	// FieldLikedByCurrentUser holds the string denoting the likedbycurrentuser field in the database.
 	FieldLikedByCurrentUser = "liked_by_current_user"
-	// FieldFollowedByCurrentUser holds the string denoting the followedbycurrentuser field in the db.
+	// FieldFollowedByCurrentUser holds the string denoting the followedbycurrentuser field in the database.
 	FieldFollowedByCurrentUser = "followed_by_current_user"
 	// EdgeBusiness holds the string denoting the business edge name in mutations.
 	EdgeBusiness = "business"
@@ -113,7 +113,9 @@ const (
 	EdgeFollowerUsers = "followerUsers"
 	// EdgeRatings holds the string denoting the ratings edge name in mutations.
 	EdgeRatings = "ratings"
-	// Table holds the table name of the place in the db.
+	// EdgeInventories holds the string denoting the inventories edge name in mutations.
+	EdgeInventories = "inventories"
+	// Table holds the table name of the place in the database.
 	Table = "places"
 	// BusinessTable is the table that holds the business relation/edge.
 	BusinessTable = "places"
@@ -219,6 +221,13 @@ const (
 	RatingsInverseTable = "ratings"
 	// RatingsColumn is the table column denoting the ratings relation/edge.
 	RatingsColumn = "place_ratings"
+	// InventoriesTable is the table that holds the inventories relation/edge.
+	InventoriesTable = "place_inventories"
+	// InventoriesInverseTable is the table name for the PlaceInventory entity.
+	// It exists in this package in order to avoid circular dependency with the "placeinventory" package.
+	InventoriesInverseTable = "place_inventories"
+	// InventoriesColumn is the table column denoting the inventories relation/edge.
+	InventoriesColumn = "place_inventories"
 )
 
 // Columns holds all SQL columns for place fields.
@@ -666,6 +675,20 @@ func ByRatings(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newRatingsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByInventoriesCount orders the results by inventories count.
+func ByInventoriesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newInventoriesStep(), opts...)
+	}
+}
+
+// ByInventories orders the results by inventories terms.
+func ByInventories(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newInventoriesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newBusinessStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -776,5 +799,12 @@ func newRatingsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(RatingsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, RatingsTable, RatingsColumn),
+	)
+}
+func newInventoriesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(InventoriesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, InventoriesTable, InventoriesColumn),
 	)
 }

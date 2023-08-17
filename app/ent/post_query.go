@@ -52,7 +52,7 @@ func (pq *PostQuery) Limit(limit int) *PostQuery {
 	return pq
 }
 
-// Offset to cmd from.
+// Offset to start from.
 func (pq *PostQuery) Offset(offset int) *PostQuery {
 	pq.ctx.Offset = &offset
 	return pq
@@ -888,7 +888,7 @@ func (pq *PostQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		p(selector)
 	}
 	if offset := pq.ctx.Offset; offset != nil {
-		// limit is mandatory for offset clause. We cmd
+		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}

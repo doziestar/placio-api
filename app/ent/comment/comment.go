@@ -10,21 +10,21 @@ import (
 )
 
 const (
-	// Label holds the string label denoting the comment type in the db.
+	// Label holds the string label denoting the comment type in the database.
 	Label = "comment"
-	// FieldID holds the string denoting the id field in the db.
+	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldContent holds the string denoting the content field in the db.
+	// FieldContent holds the string denoting the content field in the database.
 	FieldContent = "content"
-	// FieldCreatedAt holds the string denoting the createdat field in the db.
+	// FieldCreatedAt holds the string denoting the createdat field in the database.
 	FieldCreatedAt = "created_at"
-	// FieldUpdatedAt holds the string denoting the updatedat field in the db.
+	// FieldUpdatedAt holds the string denoting the updatedat field in the database.
 	FieldUpdatedAt = "updated_at"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
 	// EdgePost holds the string denoting the post edge name in mutations.
 	EdgePost = "post"
-	// Table holds the table name of the comment in the db.
+	// Table holds the table name of the comment in the database.
 	Table = "comments"
 	// UserTable is the table that holds the user relation/edge.
 	UserTable = "comments"

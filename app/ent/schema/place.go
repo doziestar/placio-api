@@ -80,6 +80,7 @@ func (Place) Edges() []ent.Edge {
 		edge.From("likedByUsers", UserLikePlace.Type).Ref("place"),
 		edge.To("followerUsers", UserFollowPlace.Type),
 		edge.To("ratings", Rating.Type),
+		edge.To("inventories", PlaceInventory.Type),
 	}
 }
 

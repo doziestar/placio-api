@@ -95,7 +95,7 @@ func (rc *ReservationCreate) Mutation() *ReservationMutation {
 	return rc.mutation
 }
 
-// Save creates the Reservation in the db.
+// Save creates the Reservation in the database.
 func (rc *ReservationCreate) Save(ctx context.Context) (*Reservation, error) {
 	return withHooks(ctx, rc.sqlSave, rc.mutation, rc.hooks)
 }
@@ -235,7 +235,7 @@ type ReservationCreateBulk struct {
 	builders []*ReservationCreate
 }
 
-// Save creates the Reservation entities in the db.
+// Save creates the Reservation entities in the database.
 func (rcb *ReservationCreateBulk) Save(ctx context.Context) ([]*Reservation, error) {
 	specs := make([]*sqlgraph.CreateSpec, len(rcb.builders))
 	nodes := make([]*Reservation, len(rcb.builders))

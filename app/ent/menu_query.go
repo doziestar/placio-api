@@ -44,7 +44,7 @@ func (mq *MenuQuery) Limit(limit int) *MenuQuery {
 	return mq
 }
 
-// Offset to cmd from.
+// Offset to start from.
 func (mq *MenuQuery) Offset(offset int) *MenuQuery {
 	mq.ctx.Offset = &offset
 	return mq
@@ -566,7 +566,7 @@ func (mq *MenuQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		p(selector)
 	}
 	if offset := mq.ctx.Offset; offset != nil {
-		// limit is mandatory for offset clause. We cmd
+		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}

@@ -23,7 +23,7 @@ func (pc *PaymentCreate) Mutation() *PaymentMutation {
 	return pc.mutation
 }
 
-// Save creates the Payment in the db.
+// Save creates the Payment in the database.
 func (pc *PaymentCreate) Save(ctx context.Context) (*Payment, error) {
 	return withHooks(ctx, pc.sqlSave, pc.mutation, pc.hooks)
 }
@@ -92,7 +92,7 @@ type PaymentCreateBulk struct {
 	builders []*PaymentCreate
 }
 
-// Save creates the Payment entities in the db.
+// Save creates the Payment entities in the database.
 func (pcb *PaymentCreateBulk) Save(ctx context.Context) ([]*Payment, error) {
 	specs := make([]*sqlgraph.CreateSpec, len(pcb.builders))
 	nodes := make([]*Payment, len(pcb.builders))

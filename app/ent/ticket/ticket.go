@@ -10,19 +10,19 @@ import (
 )
 
 const (
-	// Label holds the string label denoting the ticket type in the db.
+	// Label holds the string label denoting the ticket type in the database.
 	Label = "ticket"
-	// FieldID holds the string denoting the id field in the db.
+	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldCreatedAt holds the string denoting the createdat field in the db.
+	// FieldCreatedAt holds the string denoting the createdat field in the database.
 	FieldCreatedAt = "created_at"
-	// FieldUpdatedAt holds the string denoting the updatedat field in the db.
+	// FieldUpdatedAt holds the string denoting the updatedat field in the database.
 	FieldUpdatedAt = "updated_at"
 	// EdgeEvent holds the string denoting the event edge name in mutations.
 	EdgeEvent = "event"
 	// EdgeTicketOptions holds the string denoting the ticket_options edge name in mutations.
 	EdgeTicketOptions = "ticket_options"
-	// Table holds the table name of the ticket in the db.
+	// Table holds the table name of the ticket in the database.
 	Table = "tickets"
 	// EventTable is the table that holds the event relation/edge.
 	EventTable = "tickets"

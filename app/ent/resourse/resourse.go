@@ -7,11 +7,11 @@ import (
 )
 
 const (
-	// Label holds the string label denoting the resourse type in the db.
+	// Label holds the string label denoting the resourse type in the database.
 	Label = "resourse"
-	// FieldID holds the string denoting the id field in the db.
+	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// Table holds the table name of the resourse in the db.
+	// Table holds the table name of the resourse in the database.
 	Table = "resourses"
 )
 

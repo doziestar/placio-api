@@ -9,6 +9,7 @@ import (
 	"placio-app/ent/category"
 	"placio-app/ent/media"
 	"placio-app/ent/place"
+	"placio-app/ent/placeinventory"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
 	"placio-app/ent/review"
@@ -160,6 +161,21 @@ func (mu *MediaUpdate) AddPlace(p ...*Place) *MediaUpdate {
 	return mu.AddPlaceIDs(ids...)
 }
 
+// AddPlaceInventoryIDs adds the "place_inventory" edge to the PlaceInventory entity by IDs.
+func (mu *MediaUpdate) AddPlaceInventoryIDs(ids ...string) *MediaUpdate {
+	mu.mutation.AddPlaceInventoryIDs(ids...)
+	return mu
+}
+
+// AddPlaceInventory adds the "place_inventory" edges to the PlaceInventory entity.
+func (mu *MediaUpdate) AddPlaceInventory(p ...*PlaceInventory) *MediaUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return mu.AddPlaceInventoryIDs(ids...)
+}
+
 // Mutation returns the MediaMutation object of the builder.
 func (mu *MediaUpdate) Mutation() *MediaMutation {
 	return mu.mutation
@@ -217,6 +233,27 @@ func (mu *MediaUpdate) RemovePlace(p ...*Place) *MediaUpdate {
 		ids[i] = p[i].ID
 	}
 	return mu.RemovePlaceIDs(ids...)
+}
+
+// ClearPlaceInventory clears all "place_inventory" edges to the PlaceInventory entity.
+func (mu *MediaUpdate) ClearPlaceInventory() *MediaUpdate {
+	mu.mutation.ClearPlaceInventory()
+	return mu
+}
+
+// RemovePlaceInventoryIDs removes the "place_inventory" edge to PlaceInventory entities by IDs.
+func (mu *MediaUpdate) RemovePlaceInventoryIDs(ids ...string) *MediaUpdate {
+	mu.mutation.RemovePlaceInventoryIDs(ids...)
+	return mu
+}
+
+// RemovePlaceInventory removes "place_inventory" edges to PlaceInventory entities.
+func (mu *MediaUpdate) RemovePlaceInventory(p ...*PlaceInventory) *MediaUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return mu.RemovePlaceInventoryIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -433,6 +470,51 @@ func (mu *MediaUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if mu.mutation.PlaceInventoryCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   media.PlaceInventoryTable,
+			Columns: media.PlaceInventoryPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placeinventory.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.RemovedPlaceInventoryIDs(); len(nodes) > 0 && !mu.mutation.PlaceInventoryCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   media.PlaceInventoryTable,
+			Columns: media.PlaceInventoryPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placeinventory.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.PlaceInventoryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   media.PlaceInventoryTable,
+			Columns: media.PlaceInventoryPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placeinventory.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, mu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{media.Label}
@@ -581,6 +663,21 @@ func (muo *MediaUpdateOne) AddPlace(p ...*Place) *MediaUpdateOne {
 	return muo.AddPlaceIDs(ids...)
 }
 
+// AddPlaceInventoryIDs adds the "place_inventory" edge to the PlaceInventory entity by IDs.
+func (muo *MediaUpdateOne) AddPlaceInventoryIDs(ids ...string) *MediaUpdateOne {
+	muo.mutation.AddPlaceInventoryIDs(ids...)
+	return muo
+}
+
+// AddPlaceInventory adds the "place_inventory" edges to the PlaceInventory entity.
+func (muo *MediaUpdateOne) AddPlaceInventory(p ...*PlaceInventory) *MediaUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return muo.AddPlaceInventoryIDs(ids...)
+}
+
 // Mutation returns the MediaMutation object of the builder.
 func (muo *MediaUpdateOne) Mutation() *MediaMutation {
 	return muo.mutation
@@ -638,6 +735,27 @@ func (muo *MediaUpdateOne) RemovePlace(p ...*Place) *MediaUpdateOne {
 		ids[i] = p[i].ID
 	}
 	return muo.RemovePlaceIDs(ids...)
+}
+
+// ClearPlaceInventory clears all "place_inventory" edges to the PlaceInventory entity.
+func (muo *MediaUpdateOne) ClearPlaceInventory() *MediaUpdateOne {
+	muo.mutation.ClearPlaceInventory()
+	return muo
+}
+
+// RemovePlaceInventoryIDs removes the "place_inventory" edge to PlaceInventory entities by IDs.
+func (muo *MediaUpdateOne) RemovePlaceInventoryIDs(ids ...string) *MediaUpdateOne {
+	muo.mutation.RemovePlaceInventoryIDs(ids...)
+	return muo
+}
+
+// RemovePlaceInventory removes "place_inventory" edges to PlaceInventory entities.
+func (muo *MediaUpdateOne) RemovePlaceInventory(p ...*PlaceInventory) *MediaUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return muo.RemovePlaceInventoryIDs(ids...)
 }
 
 // Where appends a list predicates to the MediaUpdate builder.
@@ -877,6 +995,51 @@ func (muo *MediaUpdateOne) sqlSave(ctx context.Context) (_node *Media, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if muo.mutation.PlaceInventoryCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   media.PlaceInventoryTable,
+			Columns: media.PlaceInventoryPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placeinventory.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.RemovedPlaceInventoryIDs(); len(nodes) > 0 && !muo.mutation.PlaceInventoryCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   media.PlaceInventoryTable,
+			Columns: media.PlaceInventoryPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placeinventory.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.PlaceInventoryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   media.PlaceInventoryTable,
+			Columns: media.PlaceInventoryPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placeinventory.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

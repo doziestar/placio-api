@@ -60,7 +60,7 @@ func (asc *AccountSettingsCreate) Mutation() *AccountSettingsMutation {
 	return asc.mutation
 }
 
-// Save creates the AccountSettings in the db.
+// Save creates the AccountSettings in the database.
 func (asc *AccountSettingsCreate) Save(ctx context.Context) (*AccountSettings, error) {
 	return withHooks(ctx, asc.sqlSave, asc.mutation, asc.hooks)
 }
@@ -179,7 +179,7 @@ type AccountSettingsCreateBulk struct {
 	builders []*AccountSettingsCreate
 }
 
-// Save creates the AccountSettings entities in the db.
+// Save creates the AccountSettings entities in the database.
 func (ascb *AccountSettingsCreateBulk) Save(ctx context.Context) ([]*AccountSettings, error) {
 	specs := make([]*sqlgraph.CreateSpec, len(ascb.builders))
 	nodes := make([]*AccountSettings, len(ascb.builders))

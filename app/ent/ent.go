@@ -20,21 +20,27 @@ import (
 	"placio-app/ent/event"
 	"placio-app/ent/faq"
 	"placio-app/ent/help"
+	"placio-app/ent/inventoryattribute"
+	"placio-app/ent/inventorytype"
 	"placio-app/ent/like"
 	"placio-app/ent/media"
 	"placio-app/ent/menu"
 	"placio-app/ent/order"
 	"placio-app/ent/payment"
 	"placio-app/ent/place"
+	"placio-app/ent/placeinventory"
+	"placio-app/ent/placeinventoryattribute"
 	"placio-app/ent/post"
 	"placio-app/ent/rating"
 	"placio-app/ent/reaction"
 	"placio-app/ent/reservation"
+	"placio-app/ent/reservationblock"
 	"placio-app/ent/resourse"
 	"placio-app/ent/review"
 	"placio-app/ent/room"
 	"placio-app/ent/ticket"
 	"placio-app/ent/ticketoption"
+	"placio-app/ent/transactionhistory"
 	"placio-app/ent/user"
 	"placio-app/ent/userbusiness"
 	"placio-app/ent/userfollowbusiness"
@@ -108,42 +114,48 @@ var (
 func checkColumn(table, column string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
-			accountsettings.Table:        accountsettings.ValidColumn,
-			amenity.Table:                amenity.ValidColumn,
-			booking.Table:                booking.ValidColumn,
-			business.Table:               business.ValidColumn,
-			businessfollowbusiness.Table: businessfollowbusiness.ValidColumn,
-			businessfollowevent.Table:    businessfollowevent.ValidColumn,
-			businessfollowuser.Table:     businessfollowuser.ValidColumn,
-			category.Table:               category.ValidColumn,
-			categoryassignment.Table:     categoryassignment.ValidColumn,
-			chat.Table:                   chat.ValidColumn,
-			comment.Table:                comment.ValidColumn,
-			event.Table:                  event.ValidColumn,
-			faq.Table:                    faq.ValidColumn,
-			help.Table:                   help.ValidColumn,
-			like.Table:                   like.ValidColumn,
-			media.Table:                  media.ValidColumn,
-			menu.Table:                   menu.ValidColumn,
-			order.Table:                  order.ValidColumn,
-			payment.Table:                payment.ValidColumn,
-			place.Table:                  place.ValidColumn,
-			post.Table:                   post.ValidColumn,
-			rating.Table:                 rating.ValidColumn,
-			reaction.Table:               reaction.ValidColumn,
-			reservation.Table:            reservation.ValidColumn,
-			resourse.Table:               resourse.ValidColumn,
-			review.Table:                 review.ValidColumn,
-			room.Table:                   room.ValidColumn,
-			ticket.Table:                 ticket.ValidColumn,
-			ticketoption.Table:           ticketoption.ValidColumn,
-			user.Table:                   user.ValidColumn,
-			userbusiness.Table:           userbusiness.ValidColumn,
-			userfollowbusiness.Table:     userfollowbusiness.ValidColumn,
-			userfollowevent.Table:        userfollowevent.ValidColumn,
-			userfollowplace.Table:        userfollowplace.ValidColumn,
-			userfollowuser.Table:         userfollowuser.ValidColumn,
-			userlikeplace.Table:          userlikeplace.ValidColumn,
+			accountsettings.Table:         accountsettings.ValidColumn,
+			amenity.Table:                 amenity.ValidColumn,
+			booking.Table:                 booking.ValidColumn,
+			business.Table:                business.ValidColumn,
+			businessfollowbusiness.Table:  businessfollowbusiness.ValidColumn,
+			businessfollowevent.Table:     businessfollowevent.ValidColumn,
+			businessfollowuser.Table:      businessfollowuser.ValidColumn,
+			category.Table:                category.ValidColumn,
+			categoryassignment.Table:      categoryassignment.ValidColumn,
+			chat.Table:                    chat.ValidColumn,
+			comment.Table:                 comment.ValidColumn,
+			event.Table:                   event.ValidColumn,
+			faq.Table:                     faq.ValidColumn,
+			help.Table:                    help.ValidColumn,
+			inventoryattribute.Table:      inventoryattribute.ValidColumn,
+			inventorytype.Table:           inventorytype.ValidColumn,
+			like.Table:                    like.ValidColumn,
+			media.Table:                   media.ValidColumn,
+			menu.Table:                    menu.ValidColumn,
+			order.Table:                   order.ValidColumn,
+			payment.Table:                 payment.ValidColumn,
+			place.Table:                   place.ValidColumn,
+			placeinventory.Table:          placeinventory.ValidColumn,
+			placeinventoryattribute.Table: placeinventoryattribute.ValidColumn,
+			post.Table:                    post.ValidColumn,
+			rating.Table:                  rating.ValidColumn,
+			reaction.Table:                reaction.ValidColumn,
+			reservation.Table:             reservation.ValidColumn,
+			reservationblock.Table:        reservationblock.ValidColumn,
+			resourse.Table:                resourse.ValidColumn,
+			review.Table:                  review.ValidColumn,
+			room.Table:                    room.ValidColumn,
+			ticket.Table:                  ticket.ValidColumn,
+			ticketoption.Table:            ticketoption.ValidColumn,
+			transactionhistory.Table:      transactionhistory.ValidColumn,
+			user.Table:                    user.ValidColumn,
+			userbusiness.Table:            userbusiness.ValidColumn,
+			userfollowbusiness.Table:      userfollowbusiness.ValidColumn,
+			userfollowevent.Table:         userfollowevent.ValidColumn,
+			userfollowplace.Table:         userfollowplace.ValidColumn,
+			userfollowuser.Table:          userfollowuser.ValidColumn,
+			userlikeplace.Table:           userlikeplace.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)
@@ -263,7 +275,7 @@ func IsValidationError(err error) bool {
 	return errors.As(err, &e)
 }
 
-// NotFoundError returns when trying to fetch a specific entity and it was not found in the db.
+// NotFoundError returns when trying to fetch a specific entity and it was not found in the database.
 type NotFoundError struct {
 	label string
 }
@@ -290,7 +302,7 @@ func MaskNotFound(err error) error {
 	return err
 }
 
-// NotSingularError returns when trying to fetch a singular entity and more then one was found in the db.
+// NotSingularError returns when trying to fetch a singular entity and more then one was found in the database.
 type NotSingularError struct {
 	label string
 }

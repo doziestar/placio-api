@@ -54,7 +54,7 @@ func Create(ctx context.Context, s *Schema, tables []*schema.Table, opts ...sche
 	return migrate.Create(ctx, tables...)
 }
 
-// WriteTo writes the schema changes to w instead of running them against the db.
+// WriteTo writes the schema changes to w instead of running them against the database.
 //
 //	if err := client.Schema.WriteTo(context.Background(), os.Stdout); err != nil {
 //		log.Fatal(err)

@@ -47,7 +47,7 @@ func (caq *CategoryAssignmentQuery) Limit(limit int) *CategoryAssignmentQuery {
 	return caq
 }
 
-// Offset to cmd from.
+// Offset to start from.
 func (caq *CategoryAssignmentQuery) Offset(offset int) *CategoryAssignmentQuery {
 	caq.ctx.Offset = &offset
 	return caq
@@ -734,7 +734,7 @@ func (caq *CategoryAssignmentQuery) sqlQuery(ctx context.Context) *sql.Selector 
 		p(selector)
 	}
 	if offset := caq.ctx.Offset; offset != nil {
-		// limit is mandatory for offset clause. We cmd
+		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}

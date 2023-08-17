@@ -97,7 +97,7 @@ func (cc *CommentCreate) Mutation() *CommentMutation {
 	return cc.mutation
 }
 
-// Save creates the Comment in the db.
+// Save creates the Comment in the database.
 func (cc *CommentCreate) Save(ctx context.Context) (*Comment, error) {
 	cc.defaults()
 	return withHooks(ctx, cc.sqlSave, cc.mutation, cc.hooks)
@@ -244,7 +244,7 @@ type CommentCreateBulk struct {
 	builders []*CommentCreate
 }
 
-// Save creates the Comment entities in the db.
+// Save creates the Comment entities in the database.
 func (ccb *CommentCreateBulk) Save(ctx context.Context) ([]*Comment, error) {
 	specs := make([]*sqlgraph.CreateSpec, len(ccb.builders))
 	nodes := make([]*Comment, len(ccb.builders))

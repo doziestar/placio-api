@@ -219,7 +219,7 @@ func (rc *ReviewCreate) Mutation() *ReviewMutation {
 	return rc.mutation
 }
 
-// Save creates the Review in the db.
+// Save creates the Review in the database.
 func (rc *ReviewCreate) Save(ctx context.Context) (*Review, error) {
 	if err := rc.defaults(); err != nil {
 		return nil, err
@@ -485,7 +485,7 @@ type ReviewCreateBulk struct {
 	builders []*ReviewCreate
 }
 
-// Save creates the Review entities in the db.
+// Save creates the Review entities in the database.
 func (rcb *ReviewCreateBulk) Save(ctx context.Context) ([]*Review, error) {
 	specs := make([]*sqlgraph.CreateSpec, len(rcb.builders))
 	nodes := make([]*Review, len(rcb.builders))

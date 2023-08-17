@@ -18,7 +18,9 @@ import (
 	"placio-app/ent/predicate"
 	"placio-app/ent/rating"
 	"placio-app/ent/reservation"
+	"placio-app/ent/reservationblock"
 	"placio-app/ent/review"
+	"placio-app/ent/transactionhistory"
 	"placio-app/ent/user"
 	"placio-app/ent/userbusiness"
 	"placio-app/ent/userfollowbusiness"
@@ -644,6 +646,36 @@ func (uu *UserUpdate) AddRatings(r ...*Rating) *UserUpdate {
 	return uu.AddRatingIDs(ids...)
 }
 
+// AddTransactionHistoryIDs adds the "transaction_histories" edge to the TransactionHistory entity by IDs.
+func (uu *UserUpdate) AddTransactionHistoryIDs(ids ...string) *UserUpdate {
+	uu.mutation.AddTransactionHistoryIDs(ids...)
+	return uu
+}
+
+// AddTransactionHistories adds the "transaction_histories" edges to the TransactionHistory entity.
+func (uu *UserUpdate) AddTransactionHistories(t ...*TransactionHistory) *UserUpdate {
+	ids := make([]string, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return uu.AddTransactionHistoryIDs(ids...)
+}
+
+// AddReservationBlockIDs adds the "reservation_blocks" edge to the ReservationBlock entity by IDs.
+func (uu *UserUpdate) AddReservationBlockIDs(ids ...string) *UserUpdate {
+	uu.mutation.AddReservationBlockIDs(ids...)
+	return uu
+}
+
+// AddReservationBlocks adds the "reservation_blocks" edges to the ReservationBlock entity.
+func (uu *UserUpdate) AddReservationBlocks(r ...*ReservationBlock) *UserUpdate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return uu.AddReservationBlockIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -1031,6 +1063,48 @@ func (uu *UserUpdate) RemoveRatings(r ...*Rating) *UserUpdate {
 		ids[i] = r[i].ID
 	}
 	return uu.RemoveRatingIDs(ids...)
+}
+
+// ClearTransactionHistories clears all "transaction_histories" edges to the TransactionHistory entity.
+func (uu *UserUpdate) ClearTransactionHistories() *UserUpdate {
+	uu.mutation.ClearTransactionHistories()
+	return uu
+}
+
+// RemoveTransactionHistoryIDs removes the "transaction_histories" edge to TransactionHistory entities by IDs.
+func (uu *UserUpdate) RemoveTransactionHistoryIDs(ids ...string) *UserUpdate {
+	uu.mutation.RemoveTransactionHistoryIDs(ids...)
+	return uu
+}
+
+// RemoveTransactionHistories removes "transaction_histories" edges to TransactionHistory entities.
+func (uu *UserUpdate) RemoveTransactionHistories(t ...*TransactionHistory) *UserUpdate {
+	ids := make([]string, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return uu.RemoveTransactionHistoryIDs(ids...)
+}
+
+// ClearReservationBlocks clears all "reservation_blocks" edges to the ReservationBlock entity.
+func (uu *UserUpdate) ClearReservationBlocks() *UserUpdate {
+	uu.mutation.ClearReservationBlocks()
+	return uu
+}
+
+// RemoveReservationBlockIDs removes the "reservation_blocks" edge to ReservationBlock entities by IDs.
+func (uu *UserUpdate) RemoveReservationBlockIDs(ids ...string) *UserUpdate {
+	uu.mutation.RemoveReservationBlockIDs(ids...)
+	return uu
+}
+
+// RemoveReservationBlocks removes "reservation_blocks" edges to ReservationBlock entities.
+func (uu *UserUpdate) RemoveReservationBlocks(r ...*ReservationBlock) *UserUpdate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return uu.RemoveReservationBlockIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -2013,6 +2087,96 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if uu.mutation.TransactionHistoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TransactionHistoriesTable,
+			Columns: []string{user.TransactionHistoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(transactionhistory.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedTransactionHistoriesIDs(); len(nodes) > 0 && !uu.mutation.TransactionHistoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TransactionHistoriesTable,
+			Columns: []string{user.TransactionHistoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(transactionhistory.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.TransactionHistoriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TransactionHistoriesTable,
+			Columns: []string{user.TransactionHistoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(transactionhistory.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uu.mutation.ReservationBlocksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReservationBlocksTable,
+			Columns: []string{user.ReservationBlocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(reservationblock.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedReservationBlocksIDs(); len(nodes) > 0 && !uu.mutation.ReservationBlocksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReservationBlocksTable,
+			Columns: []string{user.ReservationBlocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(reservationblock.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.ReservationBlocksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReservationBlocksTable,
+			Columns: []string{user.ReservationBlocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(reservationblock.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -2631,6 +2795,36 @@ func (uuo *UserUpdateOne) AddRatings(r ...*Rating) *UserUpdateOne {
 	return uuo.AddRatingIDs(ids...)
 }
 
+// AddTransactionHistoryIDs adds the "transaction_histories" edge to the TransactionHistory entity by IDs.
+func (uuo *UserUpdateOne) AddTransactionHistoryIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.AddTransactionHistoryIDs(ids...)
+	return uuo
+}
+
+// AddTransactionHistories adds the "transaction_histories" edges to the TransactionHistory entity.
+func (uuo *UserUpdateOne) AddTransactionHistories(t ...*TransactionHistory) *UserUpdateOne {
+	ids := make([]string, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return uuo.AddTransactionHistoryIDs(ids...)
+}
+
+// AddReservationBlockIDs adds the "reservation_blocks" edge to the ReservationBlock entity by IDs.
+func (uuo *UserUpdateOne) AddReservationBlockIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.AddReservationBlockIDs(ids...)
+	return uuo
+}
+
+// AddReservationBlocks adds the "reservation_blocks" edges to the ReservationBlock entity.
+func (uuo *UserUpdateOne) AddReservationBlocks(r ...*ReservationBlock) *UserUpdateOne {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return uuo.AddReservationBlockIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
@@ -3018,6 +3212,48 @@ func (uuo *UserUpdateOne) RemoveRatings(r ...*Rating) *UserUpdateOne {
 		ids[i] = r[i].ID
 	}
 	return uuo.RemoveRatingIDs(ids...)
+}
+
+// ClearTransactionHistories clears all "transaction_histories" edges to the TransactionHistory entity.
+func (uuo *UserUpdateOne) ClearTransactionHistories() *UserUpdateOne {
+	uuo.mutation.ClearTransactionHistories()
+	return uuo
+}
+
+// RemoveTransactionHistoryIDs removes the "transaction_histories" edge to TransactionHistory entities by IDs.
+func (uuo *UserUpdateOne) RemoveTransactionHistoryIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.RemoveTransactionHistoryIDs(ids...)
+	return uuo
+}
+
+// RemoveTransactionHistories removes "transaction_histories" edges to TransactionHistory entities.
+func (uuo *UserUpdateOne) RemoveTransactionHistories(t ...*TransactionHistory) *UserUpdateOne {
+	ids := make([]string, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return uuo.RemoveTransactionHistoryIDs(ids...)
+}
+
+// ClearReservationBlocks clears all "reservation_blocks" edges to the ReservationBlock entity.
+func (uuo *UserUpdateOne) ClearReservationBlocks() *UserUpdateOne {
+	uuo.mutation.ClearReservationBlocks()
+	return uuo
+}
+
+// RemoveReservationBlockIDs removes the "reservation_blocks" edge to ReservationBlock entities by IDs.
+func (uuo *UserUpdateOne) RemoveReservationBlockIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.RemoveReservationBlockIDs(ids...)
+	return uuo
+}
+
+// RemoveReservationBlocks removes "reservation_blocks" edges to ReservationBlock entities.
+func (uuo *UserUpdateOne) RemoveReservationBlocks(r ...*ReservationBlock) *UserUpdateOne {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return uuo.RemoveReservationBlockIDs(ids...)
 }
 
 // Where appends a list predicates to the UserUpdate builder.
@@ -4023,6 +4259,96 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(rating.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.TransactionHistoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TransactionHistoriesTable,
+			Columns: []string{user.TransactionHistoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(transactionhistory.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedTransactionHistoriesIDs(); len(nodes) > 0 && !uuo.mutation.TransactionHistoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TransactionHistoriesTable,
+			Columns: []string{user.TransactionHistoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(transactionhistory.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.TransactionHistoriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TransactionHistoriesTable,
+			Columns: []string{user.TransactionHistoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(transactionhistory.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.ReservationBlocksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReservationBlocksTable,
+			Columns: []string{user.ReservationBlocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(reservationblock.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedReservationBlocksIDs(); len(nodes) > 0 && !uuo.mutation.ReservationBlocksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReservationBlocksTable,
+			Columns: []string{user.ReservationBlocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(reservationblock.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.ReservationBlocksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReservationBlocksTable,
+			Columns: []string{user.ReservationBlocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(reservationblock.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

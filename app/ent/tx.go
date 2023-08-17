@@ -40,6 +40,10 @@ type Tx struct {
 	FAQ *FAQClient
 	// Help is the client for interacting with the Help builders.
 	Help *HelpClient
+	// InventoryAttribute is the client for interacting with the InventoryAttribute builders.
+	InventoryAttribute *InventoryAttributeClient
+	// InventoryType is the client for interacting with the InventoryType builders.
+	InventoryType *InventoryTypeClient
 	// Like is the client for interacting with the Like builders.
 	Like *LikeClient
 	// Media is the client for interacting with the Media builders.
@@ -52,6 +56,10 @@ type Tx struct {
 	Payment *PaymentClient
 	// Place is the client for interacting with the Place builders.
 	Place *PlaceClient
+	// PlaceInventory is the client for interacting with the PlaceInventory builders.
+	PlaceInventory *PlaceInventoryClient
+	// PlaceInventoryAttribute is the client for interacting with the PlaceInventoryAttribute builders.
+	PlaceInventoryAttribute *PlaceInventoryAttributeClient
 	// Post is the client for interacting with the Post builders.
 	Post *PostClient
 	// Rating is the client for interacting with the Rating builders.
@@ -60,6 +68,8 @@ type Tx struct {
 	Reaction *ReactionClient
 	// Reservation is the client for interacting with the Reservation builders.
 	Reservation *ReservationClient
+	// ReservationBlock is the client for interacting with the ReservationBlock builders.
+	ReservationBlock *ReservationBlockClient
 	// Resourse is the client for interacting with the Resourse builders.
 	Resourse *ResourseClient
 	// Review is the client for interacting with the Review builders.
@@ -70,6 +80,8 @@ type Tx struct {
 	Ticket *TicketClient
 	// TicketOption is the client for interacting with the TicketOption builders.
 	TicketOption *TicketOptionClient
+	// TransactionHistory is the client for interacting with the TransactionHistory builders.
+	TransactionHistory *TransactionHistoryClient
 	// User is the client for interacting with the User builders.
 	User *UserClient
 	// UserBusiness is the client for interacting with the UserBusiness builders.
@@ -229,21 +241,27 @@ func (tx *Tx) init() {
 	tx.Event = NewEventClient(tx.config)
 	tx.FAQ = NewFAQClient(tx.config)
 	tx.Help = NewHelpClient(tx.config)
+	tx.InventoryAttribute = NewInventoryAttributeClient(tx.config)
+	tx.InventoryType = NewInventoryTypeClient(tx.config)
 	tx.Like = NewLikeClient(tx.config)
 	tx.Media = NewMediaClient(tx.config)
 	tx.Menu = NewMenuClient(tx.config)
 	tx.Order = NewOrderClient(tx.config)
 	tx.Payment = NewPaymentClient(tx.config)
 	tx.Place = NewPlaceClient(tx.config)
+	tx.PlaceInventory = NewPlaceInventoryClient(tx.config)
+	tx.PlaceInventoryAttribute = NewPlaceInventoryAttributeClient(tx.config)
 	tx.Post = NewPostClient(tx.config)
 	tx.Rating = NewRatingClient(tx.config)
 	tx.Reaction = NewReactionClient(tx.config)
 	tx.Reservation = NewReservationClient(tx.config)
+	tx.ReservationBlock = NewReservationBlockClient(tx.config)
 	tx.Resourse = NewResourseClient(tx.config)
 	tx.Review = NewReviewClient(tx.config)
 	tx.Room = NewRoomClient(tx.config)
 	tx.Ticket = NewTicketClient(tx.config)
 	tx.TicketOption = NewTicketOptionClient(tx.config)
+	tx.TransactionHistory = NewTransactionHistoryClient(tx.config)
 	tx.User = NewUserClient(tx.config)
 	tx.UserBusiness = NewUserBusinessClient(tx.config)
 	tx.UserFollowBusiness = NewUserFollowBusinessClient(tx.config)

@@ -9,43 +9,43 @@ import (
 )
 
 const (
-	// Label holds the string label denoting the business type in the db.
+	// Label holds the string label denoting the business type in the database.
 	Label = "business"
-	// FieldID holds the string denoting the id field in the db.
+	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldName holds the string denoting the name field in the db.
+	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
-	// FieldDescription holds the string denoting the description field in the db.
+	// FieldDescription holds the string denoting the description field in the database.
 	FieldDescription = "description"
-	// FieldPicture holds the string denoting the picture field in the db.
+	// FieldPicture holds the string denoting the picture field in the database.
 	FieldPicture = "picture"
-	// FieldCoverImage holds the string denoting the cover_image field in the db.
+	// FieldCoverImage holds the string denoting the cover_image field in the database.
 	FieldCoverImage = "cover_image"
-	// FieldWebsite holds the string denoting the website field in the db.
+	// FieldWebsite holds the string denoting the website field in the database.
 	FieldWebsite = "website"
-	// FieldLocation holds the string denoting the location field in the db.
+	// FieldLocation holds the string denoting the location field in the database.
 	FieldLocation = "location"
-	// FieldLongitude holds the string denoting the longitude field in the db.
+	// FieldLongitude holds the string denoting the longitude field in the database.
 	FieldLongitude = "longitude"
-	// FieldMapCoordinates holds the string denoting the map_coordinates field in the db.
+	// FieldMapCoordinates holds the string denoting the map_coordinates field in the database.
 	FieldMapCoordinates = "map_coordinates"
-	// FieldLatitude holds the string denoting the latitude field in the db.
+	// FieldLatitude holds the string denoting the latitude field in the database.
 	FieldLatitude = "latitude"
-	// FieldEmail holds the string denoting the email field in the db.
+	// FieldEmail holds the string denoting the email field in the database.
 	FieldEmail = "email"
-	// FieldPhone holds the string denoting the phone field in the db.
+	// FieldPhone holds the string denoting the phone field in the database.
 	FieldPhone = "phone"
-	// FieldBusinessSettings holds the string denoting the business_settings field in the db.
+	// FieldBusinessSettings holds the string denoting the business_settings field in the database.
 	FieldBusinessSettings = "business_settings"
-	// FieldURL holds the string denoting the url field in the db.
+	// FieldURL holds the string denoting the url field in the database.
 	FieldURL = "url"
-	// FieldSearchText holds the string denoting the search_text field in the db.
+	// FieldSearchText holds the string denoting the search_text field in the database.
 	FieldSearchText = "search_text"
-	// FieldRelevanceScore holds the string denoting the relevance_score field in the db.
+	// FieldRelevanceScore holds the string denoting the relevance_score field in the database.
 	FieldRelevanceScore = "relevance_score"
-	// FieldFollowerCount holds the string denoting the follower_count field in the db.
+	// FieldFollowerCount holds the string denoting the follower_count field in the database.
 	FieldFollowerCount = "follower_count"
-	// FieldFollowingCount holds the string denoting the following_count field in the db.
+	// FieldFollowingCount holds the string denoting the following_count field in the database.
 	FieldFollowingCount = "following_count"
 	// EdgeUserBusinesses holds the string denoting the userbusinesses edge name in mutations.
 	EdgeUserBusinesses = "userBusinesses"
@@ -75,7 +75,7 @@ const (
 	EdgeFaqs = "faqs"
 	// EdgeRatings holds the string denoting the ratings edge name in mutations.
 	EdgeRatings = "ratings"
-	// Table holds the table name of the business in the db.
+	// Table holds the table name of the business in the database.
 	Table = "businesses"
 	// UserBusinessesTable is the table that holds the userBusinesses relation/edge.
 	UserBusinessesTable = "user_businesses"

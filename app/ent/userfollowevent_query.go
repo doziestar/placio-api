@@ -43,7 +43,7 @@ func (ufeq *UserFollowEventQuery) Limit(limit int) *UserFollowEventQuery {
 	return ufeq
 }
 
-// Offset to cmd from.
+// Offset to start from.
 func (ufeq *UserFollowEventQuery) Offset(offset int) *UserFollowEventQuery {
 	ufeq.ctx.Offset = &offset
 	return ufeq
@@ -587,7 +587,7 @@ func (ufeq *UserFollowEventQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		p(selector)
 	}
 	if offset := ufeq.ctx.Offset; offset != nil {
-		// limit is mandatory for offset clause. We cmd
+		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}

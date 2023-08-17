@@ -91,7 +91,7 @@ func (bfuc *BusinessFollowUserCreate) Mutation() *BusinessFollowUserMutation {
 	return bfuc.mutation
 }
 
-// Save creates the BusinessFollowUser in the db.
+// Save creates the BusinessFollowUser in the database.
 func (bfuc *BusinessFollowUserCreate) Save(ctx context.Context) (*BusinessFollowUser, error) {
 	bfuc.defaults()
 	return withHooks(ctx, bfuc.sqlSave, bfuc.mutation, bfuc.hooks)
@@ -221,7 +221,7 @@ type BusinessFollowUserCreateBulk struct {
 	builders []*BusinessFollowUserCreate
 }
 
-// Save creates the BusinessFollowUser entities in the db.
+// Save creates the BusinessFollowUser entities in the database.
 func (bfucb *BusinessFollowUserCreateBulk) Save(ctx context.Context) ([]*BusinessFollowUser, error) {
 	specs := make([]*sqlgraph.CreateSpec, len(bfucb.builders))
 	nodes := make([]*BusinessFollowUser, len(bfucb.builders))

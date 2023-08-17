@@ -137,7 +137,7 @@ func (lc *LikeCreate) Mutation() *LikeMutation {
 	return lc.mutation
 }
 
-// Save creates the Like in the db.
+// Save creates the Like in the database.
 func (lc *LikeCreate) Save(ctx context.Context) (*Like, error) {
 	lc.defaults()
 	return withHooks(ctx, lc.sqlSave, lc.mutation, lc.hooks)
@@ -313,7 +313,7 @@ type LikeCreateBulk struct {
 	builders []*LikeCreate
 }
 
-// Save creates the Like entities in the db.
+// Save creates the Like entities in the database.
 func (lcb *LikeCreateBulk) Save(ctx context.Context) ([]*Like, error) {
 	specs := make([]*sqlgraph.CreateSpec, len(lcb.builders))
 	nodes := make([]*Like, len(lcb.builders))

@@ -471,7 +471,7 @@ func (bc *BusinessCreate) Mutation() *BusinessMutation {
 	return bc.mutation
 }
 
-// Save creates the Business in the db.
+// Save creates the Business in the database.
 func (bc *BusinessCreate) Save(ctx context.Context) (*Business, error) {
 	if err := bc.defaults(); err != nil {
 		return nil, err
@@ -870,7 +870,7 @@ type BusinessCreateBulk struct {
 	builders []*BusinessCreate
 }
 
-// Save creates the Business entities in the db.
+// Save creates the Business entities in the database.
 func (bcb *BusinessCreateBulk) Save(ctx context.Context) ([]*Business, error) {
 	specs := make([]*sqlgraph.CreateSpec, len(bcb.builders))
 	nodes := make([]*Business, len(bcb.builders))

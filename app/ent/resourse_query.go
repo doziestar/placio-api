@@ -38,7 +38,7 @@ func (rq *ResourseQuery) Limit(limit int) *ResourseQuery {
 	return rq
 }
 
-// Offset to cmd from.
+// Offset to start from.
 func (rq *ResourseQuery) Offset(offset int) *ResourseQuery {
 	rq.ctx.Offset = &offset
 	return rq
@@ -403,7 +403,7 @@ func (rq *ResourseQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		p(selector)
 	}
 	if offset := rq.ctx.Offset; offset != nil {
-		// limit is mandatory for offset clause. We cmd
+		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}

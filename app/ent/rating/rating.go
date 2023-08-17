@@ -11,15 +11,15 @@ import (
 )
 
 const (
-	// Label holds the string label denoting the rating type in the db.
+	// Label holds the string label denoting the rating type in the database.
 	Label = "rating"
-	// FieldID holds the string denoting the id field in the db.
+	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldScore holds the string denoting the score field in the db.
+	// FieldScore holds the string denoting the score field in the database.
 	FieldScore = "score"
-	// FieldReview holds the string denoting the review field in the db.
+	// FieldReview holds the string denoting the review field in the database.
 	FieldReview = "review"
-	// FieldRatedAt holds the string denoting the ratedat field in the db.
+	// FieldRatedAt holds the string denoting the ratedat field in the database.
 	FieldRatedAt = "rated_at"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
@@ -29,7 +29,7 @@ const (
 	EdgePlace = "place"
 	// EdgeEvent holds the string denoting the event edge name in mutations.
 	EdgeEvent = "event"
-	// Table holds the table name of the rating in the db.
+	// Table holds the table name of the rating in the database.
 	Table = "ratings"
 	// UserTable is the table that holds the user relation/edge.
 	UserTable = "ratings"

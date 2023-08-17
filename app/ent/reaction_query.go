@@ -38,7 +38,7 @@ func (rq *ReactionQuery) Limit(limit int) *ReactionQuery {
 	return rq
 }
 
-// Offset to cmd from.
+// Offset to start from.
 func (rq *ReactionQuery) Offset(offset int) *ReactionQuery {
 	rq.ctx.Offset = &offset
 	return rq
@@ -403,7 +403,7 @@ func (rq *ReactionQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		p(selector)
 	}
 	if offset := rq.ctx.Offset; offset != nil {
-		// limit is mandatory for offset clause. We cmd
+		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}

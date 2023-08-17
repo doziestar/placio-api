@@ -8,13 +8,13 @@ import (
 )
 
 const (
-	// Label holds the string label denoting the faq type in the db.
+	// Label holds the string label denoting the faq type in the database.
 	Label = "faq"
-	// FieldID holds the string denoting the id field in the db.
+	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldQuestion holds the string denoting the question field in the db.
+	// FieldQuestion holds the string denoting the question field in the database.
 	FieldQuestion = "question"
-	// FieldAnswer holds the string denoting the answer field in the db.
+	// FieldAnswer holds the string denoting the answer field in the database.
 	FieldAnswer = "answer"
 	// EdgeBusiness holds the string denoting the business edge name in mutations.
 	EdgeBusiness = "business"
@@ -22,7 +22,7 @@ const (
 	EdgePlace = "place"
 	// EdgeEvent holds the string denoting the event edge name in mutations.
 	EdgeEvent = "event"
-	// Table holds the table name of the faq in the db.
+	// Table holds the table name of the faq in the database.
 	Table = "fa_qs"
 	// BusinessTable is the table that holds the business relation/edge.
 	BusinessTable = "fa_qs"

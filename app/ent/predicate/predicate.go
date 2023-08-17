@@ -48,6 +48,12 @@ type FAQ func(*sql.Selector)
 // Help is the predicate function for help builders.
 type Help func(*sql.Selector)
 
+// InventoryAttribute is the predicate function for inventoryattribute builders.
+type InventoryAttribute func(*sql.Selector)
+
+// InventoryType is the predicate function for inventorytype builders.
+type InventoryType func(*sql.Selector)
+
 // Like is the predicate function for like builders.
 type Like func(*sql.Selector)
 
@@ -66,6 +72,12 @@ type Payment func(*sql.Selector)
 // Place is the predicate function for place builders.
 type Place func(*sql.Selector)
 
+// PlaceInventory is the predicate function for placeinventory builders.
+type PlaceInventory func(*sql.Selector)
+
+// PlaceInventoryAttribute is the predicate function for placeinventoryattribute builders.
+type PlaceInventoryAttribute func(*sql.Selector)
+
 // Post is the predicate function for post builders.
 type Post func(*sql.Selector)
 
@@ -77,6 +89,9 @@ type Reaction func(*sql.Selector)
 
 // Reservation is the predicate function for reservation builders.
 type Reservation func(*sql.Selector)
+
+// ReservationBlock is the predicate function for reservationblock builders.
+type ReservationBlock func(*sql.Selector)
 
 // Resourse is the predicate function for resourse builders.
 type Resourse func(*sql.Selector)
@@ -92,6 +107,9 @@ type Ticket func(*sql.Selector)
 
 // TicketOption is the predicate function for ticketoption builders.
 type TicketOption func(*sql.Selector)
+
+// TransactionHistory is the predicate function for transactionhistory builders.
+type TransactionHistory func(*sql.Selector)
 
 // User is the predicate function for user builders.
 type User func(*sql.Selector)

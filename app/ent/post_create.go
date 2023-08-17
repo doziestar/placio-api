@@ -175,7 +175,7 @@ func (pc *PostCreate) Mutation() *PostMutation {
 	return pc.mutation
 }
 
-// Save creates the Post in the db.
+// Save creates the Post in the database.
 func (pc *PostCreate) Save(ctx context.Context) (*Post, error) {
 	pc.defaults()
 	return withHooks(ctx, pc.sqlSave, pc.mutation, pc.hooks)
@@ -402,7 +402,7 @@ type PostCreateBulk struct {
 	builders []*PostCreate
 }
 
-// Save creates the Post entities in the db.
+// Save creates the Post entities in the database.
 func (pcb *PostCreateBulk) Save(ctx context.Context) ([]*Post, error) {
 	specs := make([]*sqlgraph.CreateSpec, len(pcb.builders))
 	nodes := make([]*Post, len(pcb.builders))

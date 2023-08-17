@@ -16,6 +16,7 @@ import (
 	"placio-app/ent/media"
 	"placio-app/ent/menu"
 	"placio-app/ent/place"
+	"placio-app/ent/placeinventory"
 	"placio-app/ent/rating"
 	"placio-app/ent/reservation"
 	"placio-app/ent/review"
@@ -673,12 +674,27 @@ func (pc *PlaceCreate) AddRatings(r ...*Rating) *PlaceCreate {
 	return pc.AddRatingIDs(ids...)
 }
 
+// AddInventoryIDs adds the "inventories" edge to the PlaceInventory entity by IDs.
+func (pc *PlaceCreate) AddInventoryIDs(ids ...string) *PlaceCreate {
+	pc.mutation.AddInventoryIDs(ids...)
+	return pc
+}
+
+// AddInventories adds the "inventories" edges to the PlaceInventory entity.
+func (pc *PlaceCreate) AddInventories(p ...*PlaceInventory) *PlaceCreate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pc.AddInventoryIDs(ids...)
+}
+
 // Mutation returns the PlaceMutation object of the builder.
 func (pc *PlaceCreate) Mutation() *PlaceMutation {
 	return pc.mutation
 }
 
-// Save creates the Place in the db.
+// Save creates the Place in the database.
 func (pc *PlaceCreate) Save(ctx context.Context) (*Place, error) {
 	if err := pc.defaults(); err != nil {
 		return nil, err
@@ -1197,6 +1213,22 @@ func (pc *PlaceCreate) createSpec() (*Place, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := pc.mutation.InventoriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   place.InventoriesTable,
+			Columns: []string{place.InventoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placeinventory.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	return _node, _spec
 }
 
@@ -1206,7 +1238,7 @@ type PlaceCreateBulk struct {
 	builders []*PlaceCreate
 }
 
-// Save creates the Place entities in the db.
+// Save creates the Place entities in the database.
 func (pcb *PlaceCreateBulk) Save(ctx context.Context) ([]*Place, error) {
 	specs := make([]*sqlgraph.CreateSpec, len(pcb.builders))
 	nodes := make([]*Place, len(pcb.builders))

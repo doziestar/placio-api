@@ -10,19 +10,19 @@ import (
 )
 
 const (
-	// Label holds the string label denoting the businessfollowuser type in the db.
+	// Label holds the string label denoting the businessfollowuser type in the database.
 	Label = "business_follow_user"
-	// FieldID holds the string denoting the id field in the db.
+	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldCreatedAt holds the string denoting the createdat field in the db.
+	// FieldCreatedAt holds the string denoting the createdat field in the database.
 	FieldCreatedAt = "created_at"
-	// FieldUpdatedAt holds the string denoting the updatedat field in the db.
+	// FieldUpdatedAt holds the string denoting the updatedat field in the database.
 	FieldUpdatedAt = "updated_at"
 	// EdgeBusiness holds the string denoting the business edge name in mutations.
 	EdgeBusiness = "business"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
-	// Table holds the table name of the businessfollowuser in the db.
+	// Table holds the table name of the businessfollowuser in the database.
 	Table = "business_follow_users"
 	// BusinessTable is the table that holds the business relation/edge.
 	BusinessTable = "business_follow_users"

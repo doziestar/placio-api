@@ -83,7 +83,7 @@ func (ufec *UserFollowEventCreate) Mutation() *UserFollowEventMutation {
 	return ufec.mutation
 }
 
-// Save creates the UserFollowEvent in the db.
+// Save creates the UserFollowEvent in the database.
 func (ufec *UserFollowEventCreate) Save(ctx context.Context) (*UserFollowEvent, error) {
 	ufec.defaults()
 	return withHooks(ctx, ufec.sqlSave, ufec.mutation, ufec.hooks)
@@ -223,7 +223,7 @@ type UserFollowEventCreateBulk struct {
 	builders []*UserFollowEventCreate
 }
 
-// Save creates the UserFollowEvent entities in the db.
+// Save creates the UserFollowEvent entities in the database.
 func (ufecb *UserFollowEventCreateBulk) Save(ctx context.Context) ([]*UserFollowEvent, error) {
 	specs := make([]*sqlgraph.CreateSpec, len(ufecb.builders))
 	nodes := make([]*UserFollowEvent, len(ufecb.builders))

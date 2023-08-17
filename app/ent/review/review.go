@@ -11,21 +11,21 @@ import (
 )
 
 const (
-	// Label holds the string label denoting the review type in the db.
+	// Label holds the string label denoting the review type in the database.
 	Label = "review"
-	// FieldID holds the string denoting the id field in the db.
+	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldScore holds the string denoting the score field in the db.
+	// FieldScore holds the string denoting the score field in the database.
 	FieldScore = "score"
-	// FieldContent holds the string denoting the content field in the db.
+	// FieldContent holds the string denoting the content field in the database.
 	FieldContent = "content"
-	// FieldCreatedAt holds the string denoting the createdat field in the db.
+	// FieldCreatedAt holds the string denoting the createdat field in the database.
 	FieldCreatedAt = "created_at"
-	// FieldLikeCount holds the string denoting the likecount field in the db.
+	// FieldLikeCount holds the string denoting the likecount field in the database.
 	FieldLikeCount = "like_count"
-	// FieldDislikeCount holds the string denoting the dislikecount field in the db.
+	// FieldDislikeCount holds the string denoting the dislikecount field in the database.
 	FieldDislikeCount = "dislike_count"
-	// FieldFlag holds the string denoting the flag field in the db.
+	// FieldFlag holds the string denoting the flag field in the database.
 	FieldFlag = "flag"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
@@ -41,7 +41,7 @@ const (
 	EdgeComments = "comments"
 	// EdgeLikes holds the string denoting the likes edge name in mutations.
 	EdgeLikes = "likes"
-	// Table holds the table name of the review in the db.
+	// Table holds the table name of the review in the database.
 	Table = "reviews"
 	// UserTable is the table that holds the user relation/edge.
 	UserTable = "reviews"

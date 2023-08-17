@@ -43,7 +43,7 @@ func (ulpq *UserLikePlaceQuery) Limit(limit int) *UserLikePlaceQuery {
 	return ulpq
 }
 
-// Offset to cmd from.
+// Offset to start from.
 func (ulpq *UserLikePlaceQuery) Offset(offset int) *UserLikePlaceQuery {
 	ulpq.ctx.Offset = &offset
 	return ulpq
@@ -587,7 +587,7 @@ func (ulpq *UserLikePlaceQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		p(selector)
 	}
 	if offset := ulpq.ctx.Offset; offset != nil {
-		// limit is mandatory for offset clause. We cmd
+		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}

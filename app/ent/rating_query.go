@@ -47,7 +47,7 @@ func (rq *RatingQuery) Limit(limit int) *RatingQuery {
 	return rq
 }
 
-// Offset to cmd from.
+// Offset to start from.
 func (rq *RatingQuery) Offset(offset int) *RatingQuery {
 	rq.ctx.Offset = &offset
 	return rq
@@ -737,7 +737,7 @@ func (rq *RatingQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		p(selector)
 	}
 	if offset := rq.ctx.Offset; offset != nil {
-		// limit is mandatory for offset clause. We cmd
+		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}

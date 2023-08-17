@@ -10,15 +10,15 @@ import (
 )
 
 const (
-	// Label holds the string label denoting the like type in the db.
+	// Label holds the string label denoting the like type in the database.
 	Label = "like"
-	// FieldID holds the string denoting the id field in the db.
+	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldCreatedAt holds the string denoting the createdat field in the db.
+	// FieldCreatedAt holds the string denoting the createdat field in the database.
 	FieldCreatedAt = "created_at"
-	// FieldUpdatedAt holds the string denoting the updatedat field in the db.
+	// FieldUpdatedAt holds the string denoting the updatedat field in the database.
 	FieldUpdatedAt = "updated_at"
-	// FieldLike holds the string denoting the like field in the db.
+	// FieldLike holds the string denoting the like field in the database.
 	FieldLike = "like"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
@@ -28,7 +28,7 @@ const (
 	EdgeMedia = "media"
 	// EdgePost holds the string denoting the post edge name in mutations.
 	EdgePost = "post"
-	// Table holds the table name of the like in the db.
+	// Table holds the table name of the like in the database.
 	Table = "likes"
 	// UserTable is the table that holds the user relation/edge.
 	UserTable = "likes"

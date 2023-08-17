@@ -44,7 +44,7 @@ func (tq *TicketQuery) Limit(limit int) *TicketQuery {
 	return tq
 }
 
-// Offset to cmd from.
+// Offset to start from.
 func (tq *TicketQuery) Offset(offset int) *TicketQuery {
 	tq.ctx.Offset = &offset
 	return tq
@@ -588,7 +588,7 @@ func (tq *TicketQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		p(selector)
 	}
 	if offset := tq.ctx.Offset; offset != nil {
-		// limit is mandatory for offset clause. We cmd
+		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}

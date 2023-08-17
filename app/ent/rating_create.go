@@ -137,7 +137,7 @@ func (rc *RatingCreate) Mutation() *RatingMutation {
 	return rc.mutation
 }
 
-// Save creates the Rating in the db.
+// Save creates the Rating in the database.
 func (rc *RatingCreate) Save(ctx context.Context) (*Rating, error) {
 	if err := rc.defaults(); err != nil {
 		return nil, err
@@ -319,7 +319,7 @@ type RatingCreateBulk struct {
 	builders []*RatingCreate
 }
 
-// Save creates the Rating entities in the db.
+// Save creates the Rating entities in the database.
 func (rcb *RatingCreateBulk) Save(ctx context.Context) ([]*Rating, error) {
 	specs := make([]*sqlgraph.CreateSpec, len(rcb.builders))
 	nodes := make([]*Rating, len(rcb.builders))

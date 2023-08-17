@@ -8,17 +8,17 @@ import (
 )
 
 const (
-	// Label holds the string label denoting the amenity type in the db.
+	// Label holds the string label denoting the amenity type in the database.
 	Label = "amenity"
-	// FieldID holds the string denoting the id field in the db.
+	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldName holds the string denoting the name field in the db.
+	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
-	// FieldIcon holds the string denoting the icon field in the db.
+	// FieldIcon holds the string denoting the icon field in the database.
 	FieldIcon = "icon"
 	// EdgePlaces holds the string denoting the places edge name in mutations.
 	EdgePlaces = "places"
-	// Table holds the table name of the amenity in the db.
+	// Table holds the table name of the amenity in the database.
 	Table = "amenities"
 	// PlacesTable is the table that holds the places relation/edge. The primary key declared below.
 	PlacesTable = "amenity_places"

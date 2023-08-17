@@ -65,7 +65,7 @@ func (mc *MenuCreate) Mutation() *MenuMutation {
 	return mc.mutation
 }
 
-// Save creates the Menu in the db.
+// Save creates the Menu in the database.
 func (mc *MenuCreate) Save(ctx context.Context) (*Menu, error) {
 	return withHooks(ctx, mc.sqlSave, mc.mutation, mc.hooks)
 }
@@ -176,7 +176,7 @@ type MenuCreateBulk struct {
 	builders []*MenuCreate
 }
 
-// Save creates the Menu entities in the db.
+// Save creates the Menu entities in the database.
 func (mcb *MenuCreateBulk) Save(ctx context.Context) ([]*Menu, error) {
 	specs := make([]*sqlgraph.CreateSpec, len(mcb.builders))
 	nodes := make([]*Menu, len(mcb.builders))

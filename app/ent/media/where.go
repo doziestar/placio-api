@@ -477,6 +477,29 @@ func HasPlaceWith(preds ...predicate.Place) predicate.Media {
 	})
 }
 
+// HasPlaceInventory applies the HasEdge predicate on the "place_inventory" edge.
+func HasPlaceInventory() predicate.Media {
+	return predicate.Media(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, PlaceInventoryTable, PlaceInventoryPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasPlaceInventoryWith applies the HasEdge predicate on the "place_inventory" edge with a given conditions (other predicates).
+func HasPlaceInventoryWith(preds ...predicate.PlaceInventory) predicate.Media {
+	return predicate.Media(func(s *sql.Selector) {
+		step := newPlaceInventoryStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Media) predicate.Media {
 	return predicate.Media(func(s *sql.Selector) {

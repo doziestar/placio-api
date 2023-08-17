@@ -484,6 +484,41 @@ var (
 			},
 		},
 	}
+	// InventoryAttributesColumns holds the columns for the "inventory_attributes" table.
+	InventoryAttributesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
+		{Name: "name", Type: field.TypeString},
+		{Name: "is_mandatory", Type: field.TypeBool, Default: false},
+		{Name: "data_type", Type: field.TypeEnum, Nullable: true, Enums: []string{"string", "number", "boolean", "date", "enum"}},
+		{Name: "inventory_type_attributes", Type: field.TypeString, Nullable: true, Size: 36},
+	}
+	// InventoryAttributesTable holds the schema information for the "inventory_attributes" table.
+	InventoryAttributesTable = &schema.Table{
+		Name:       "inventory_attributes",
+		Columns:    InventoryAttributesColumns,
+		PrimaryKey: []*schema.Column{InventoryAttributesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "inventory_attributes_inventory_types_attributes",
+				Columns:    []*schema.Column{InventoryAttributesColumns[4]},
+				RefColumns: []*schema.Column{InventoryTypesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
+	// InventoryTypesColumns holds the columns for the "inventory_types" table.
+	InventoryTypesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
+		{Name: "name", Type: field.TypeString, Unique: true},
+		{Name: "industry_type", Type: field.TypeEnum, Enums: []string{"hotel", "restaurant", "bar", "club", "gym"}},
+		{Name: "measurement_unit", Type: field.TypeString, Nullable: true},
+	}
+	// InventoryTypesTable holds the schema information for the "inventory_types" table.
+	InventoryTypesTable = &schema.Table{
+		Name:       "inventory_types",
+		Columns:    InventoryTypesColumns,
+		PrimaryKey: []*schema.Column{InventoryTypesColumns[0]},
+	}
 	// LikesColumns holds the columns for the "likes" table.
 	LikesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
@@ -672,6 +707,71 @@ var (
 			},
 		},
 	}
+	// PlaceInventoriesColumns holds the columns for the "place_inventories" table.
+	PlaceInventoriesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
+		{Name: "name", Type: field.TypeString},
+		{Name: "price", Type: field.TypeFloat64},
+		{Name: "stock_quantity", Type: field.TypeInt},
+		{Name: "min_stock_threshold", Type: field.TypeInt, Nullable: true},
+		{Name: "sku", Type: field.TypeString, Nullable: true},
+		{Name: "expiry_date", Type: field.TypeTime, Nullable: true},
+		{Name: "size", Type: field.TypeString, Nullable: true},
+		{Name: "color", Type: field.TypeString, Nullable: true},
+		{Name: "brand", Type: field.TypeString, Nullable: true},
+		{Name: "purchase_date", Type: field.TypeTime, Nullable: true},
+		{Name: "last_updated", Type: field.TypeTime},
+		{Name: "inventory_type_place_inventories", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "place_inventories", Type: field.TypeString, Nullable: true, Size: 36},
+	}
+	// PlaceInventoriesTable holds the schema information for the "place_inventories" table.
+	PlaceInventoriesTable = &schema.Table{
+		Name:       "place_inventories",
+		Columns:    PlaceInventoriesColumns,
+		PrimaryKey: []*schema.Column{PlaceInventoriesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "place_inventories_inventory_types_place_inventories",
+				Columns:    []*schema.Column{PlaceInventoriesColumns[12]},
+				RefColumns: []*schema.Column{InventoryTypesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "place_inventories_places_inventories",
+				Columns:    []*schema.Column{PlaceInventoriesColumns[13]},
+				RefColumns: []*schema.Column{PlacesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
+	// PlaceInventoryAttributesColumns holds the columns for the "place_inventory_attributes" table.
+	PlaceInventoryAttributesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
+		{Name: "value", Type: field.TypeString},
+		{Name: "category_specific_value", Type: field.TypeJSON, Nullable: true},
+		{Name: "inventory_attribute_place_inventory_attributes", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "place_inventory_attributes", Type: field.TypeString, Nullable: true, Size: 36},
+	}
+	// PlaceInventoryAttributesTable holds the schema information for the "place_inventory_attributes" table.
+	PlaceInventoryAttributesTable = &schema.Table{
+		Name:       "place_inventory_attributes",
+		Columns:    PlaceInventoryAttributesColumns,
+		PrimaryKey: []*schema.Column{PlaceInventoryAttributesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "place_inventory_attributes_inventory_attributes_place_inventory_attributes",
+				Columns:    []*schema.Column{PlaceInventoryAttributesColumns[3]},
+				RefColumns: []*schema.Column{InventoryAttributesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "place_inventory_attributes_place_inventories_attributes",
+				Columns:    []*schema.Column{PlaceInventoryAttributesColumns[4]},
+				RefColumns: []*schema.Column{PlaceInventoriesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// PostsColumns holds the columns for the "posts" table.
 	PostsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
@@ -801,6 +901,35 @@ var (
 			{
 				Symbol:     "reservations_users_reservations",
 				Columns:    []*schema.Column{ReservationsColumns[6]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
+	// ReservationBlocksColumns holds the columns for the "reservation_blocks" table.
+	ReservationBlocksColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "start_time", Type: field.TypeTime},
+		{Name: "end_time", Type: field.TypeTime},
+		{Name: "status", Type: field.TypeEnum, Enums: []string{"confirmed", "pending", "canceled"}},
+		{Name: "place_inventory_reservation_blocks", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "user_reservation_blocks", Type: field.TypeString, Nullable: true, Size: 36},
+	}
+	// ReservationBlocksTable holds the schema information for the "reservation_blocks" table.
+	ReservationBlocksTable = &schema.Table{
+		Name:       "reservation_blocks",
+		Columns:    ReservationBlocksColumns,
+		PrimaryKey: []*schema.Column{ReservationBlocksColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "reservation_blocks_place_inventories_reservation_blocks",
+				Columns:    []*schema.Column{ReservationBlocksColumns[4]},
+				RefColumns: []*schema.Column{PlaceInventoriesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "reservation_blocks_users_reservation_blocks",
+				Columns:    []*schema.Column{ReservationBlocksColumns[5]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -939,6 +1068,35 @@ var (
 				Symbol:     "ticket_options_tickets_ticket_options",
 				Columns:    []*schema.Column{TicketOptionsColumns[4]},
 				RefColumns: []*schema.Column{TicketsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
+	// TransactionHistoriesColumns holds the columns for the "transaction_histories" table.
+	TransactionHistoriesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "transaction_type", Type: field.TypeEnum, Enums: []string{"purchase", "sale", "return", "usage"}},
+		{Name: "quantity", Type: field.TypeInt},
+		{Name: "date", Type: field.TypeTime},
+		{Name: "place_inventory_transaction_histories", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "user_transaction_histories", Type: field.TypeString, Nullable: true, Size: 36},
+	}
+	// TransactionHistoriesTable holds the schema information for the "transaction_histories" table.
+	TransactionHistoriesTable = &schema.Table{
+		Name:       "transaction_histories",
+		Columns:    TransactionHistoriesColumns,
+		PrimaryKey: []*schema.Column{TransactionHistoriesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "transaction_histories_place_inventories_transaction_histories",
+				Columns:    []*schema.Column{TransactionHistoriesColumns[4]},
+				RefColumns: []*schema.Column{PlaceInventoriesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "transaction_histories_users_transaction_histories",
+				Columns:    []*schema.Column{TransactionHistoriesColumns[5]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -1246,6 +1404,31 @@ var (
 			},
 		},
 	}
+	// PlaceInventoryMediaColumns holds the columns for the "place_inventory_media" table.
+	PlaceInventoryMediaColumns = []*schema.Column{
+		{Name: "place_inventory_id", Type: field.TypeString, Size: 36},
+		{Name: "media_id", Type: field.TypeString, Size: 36},
+	}
+	// PlaceInventoryMediaTable holds the schema information for the "place_inventory_media" table.
+	PlaceInventoryMediaTable = &schema.Table{
+		Name:       "place_inventory_media",
+		Columns:    PlaceInventoryMediaColumns,
+		PrimaryKey: []*schema.Column{PlaceInventoryMediaColumns[0], PlaceInventoryMediaColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "place_inventory_media_place_inventory_id",
+				Columns:    []*schema.Column{PlaceInventoryMediaColumns[0]},
+				RefColumns: []*schema.Column{PlaceInventoriesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "place_inventory_media_media_id",
+				Columns:    []*schema.Column{PlaceInventoryMediaColumns[1]},
+				RefColumns: []*schema.Column{MediaColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// UserPlacesColumns holds the columns for the "user_places" table.
 	UserPlacesColumns = []*schema.Column{
 		{Name: "user_id", Type: field.TypeString, Size: 36},
@@ -1287,21 +1470,27 @@ var (
 		EventsTable,
 		FaQsTable,
 		HelpsTable,
+		InventoryAttributesTable,
+		InventoryTypesTable,
 		LikesTable,
 		MediaTable,
 		MenusTable,
 		OrdersTable,
 		PaymentsTable,
 		PlacesTable,
+		PlaceInventoriesTable,
+		PlaceInventoryAttributesTable,
 		PostsTable,
 		RatingsTable,
 		ReactionsTable,
 		ReservationsTable,
+		ReservationBlocksTable,
 		ResoursesTable,
 		ReviewsTable,
 		RoomsTable,
 		TicketsTable,
 		TicketOptionsTable,
+		TransactionHistoriesTable,
 		UsersTable,
 		UserBusinessesTable,
 		UserFollowBusinessesTable,
@@ -1313,6 +1502,7 @@ var (
 		FaqPlaceTable,
 		FaqEventTable,
 		PlaceMediasTable,
+		PlaceInventoryMediaTable,
 		UserPlacesTable,
 	}
 )
@@ -1348,6 +1538,7 @@ func init() {
 	EventsTable.ForeignKeys[2].RefTable = UsersTable
 	FaQsTable.ForeignKeys[0].RefTable = BusinessesTable
 	HelpsTable.ForeignKeys[0].RefTable = UsersTable
+	InventoryAttributesTable.ForeignKeys[0].RefTable = InventoryTypesTable
 	LikesTable.ForeignKeys[0].RefTable = ReviewsTable
 	LikesTable.ForeignKeys[1].RefTable = MediaTable
 	LikesTable.ForeignKeys[2].RefTable = PostsTable
@@ -1359,6 +1550,10 @@ func init() {
 	MenusTable.ForeignKeys[0].RefTable = PlacesTable
 	PlacesTable.ForeignKeys[0].RefTable = BusinessesTable
 	PlacesTable.ForeignKeys[1].RefTable = EventsTable
+	PlaceInventoriesTable.ForeignKeys[0].RefTable = InventoryTypesTable
+	PlaceInventoriesTable.ForeignKeys[1].RefTable = PlacesTable
+	PlaceInventoryAttributesTable.ForeignKeys[0].RefTable = InventoryAttributesTable
+	PlaceInventoryAttributesTable.ForeignKeys[1].RefTable = PlaceInventoriesTable
 	PostsTable.ForeignKeys[0].RefTable = BusinessesTable
 	PostsTable.ForeignKeys[1].RefTable = UsersTable
 	RatingsTable.ForeignKeys[0].RefTable = BusinessesTable
@@ -1370,6 +1565,8 @@ func init() {
 	RatingsTable.ForeignKeys[6].RefTable = UsersTable
 	ReservationsTable.ForeignKeys[0].RefTable = PlacesTable
 	ReservationsTable.ForeignKeys[1].RefTable = UsersTable
+	ReservationBlocksTable.ForeignKeys[0].RefTable = PlaceInventoriesTable
+	ReservationBlocksTable.ForeignKeys[1].RefTable = UsersTable
 	ReviewsTable.ForeignKeys[0].RefTable = PlacesTable
 	ReviewsTable.ForeignKeys[1].RefTable = BusinessesTable
 	ReviewsTable.ForeignKeys[2].RefTable = PlacesTable
@@ -1379,6 +1576,8 @@ func init() {
 	TicketsTable.ForeignKeys[0].RefTable = EventsTable
 	TicketOptionsTable.ForeignKeys[0].RefTable = EventsTable
 	TicketOptionsTable.ForeignKeys[1].RefTable = TicketsTable
+	TransactionHistoriesTable.ForeignKeys[0].RefTable = PlaceInventoriesTable
+	TransactionHistoriesTable.ForeignKeys[1].RefTable = UsersTable
 	UserBusinessesTable.ForeignKeys[0].RefTable = BusinessesTable
 	UserBusinessesTable.ForeignKeys[1].RefTable = UsersTable
 	UserFollowBusinessesTable.ForeignKeys[0].RefTable = BusinessesTable
@@ -1400,6 +1599,8 @@ func init() {
 	FaqEventTable.ForeignKeys[1].RefTable = EventsTable
 	PlaceMediasTable.ForeignKeys[0].RefTable = PlacesTable
 	PlaceMediasTable.ForeignKeys[1].RefTable = MediaTable
+	PlaceInventoryMediaTable.ForeignKeys[0].RefTable = PlaceInventoriesTable
+	PlaceInventoryMediaTable.ForeignKeys[1].RefTable = MediaTable
 	UserPlacesTable.ForeignKeys[0].RefTable = UsersTable
 	UserPlacesTable.ForeignKeys[1].RefTable = PlacesTable
 }

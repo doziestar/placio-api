@@ -955,7 +955,7 @@ func (ec *EventCreate) Mutation() *EventMutation {
 	return ec.mutation
 }
 
-// Save creates the Event in the db.
+// Save creates the Event in the database.
 func (ec *EventCreate) Save(ctx context.Context) (*Event, error) {
 	if err := ec.defaults(); err != nil {
 		return nil, err
@@ -1574,7 +1574,7 @@ type EventCreateBulk struct {
 	builders []*EventCreate
 }
 
-// Save creates the Event entities in the db.
+// Save creates the Event entities in the database.
 func (ecb *EventCreateBulk) Save(ctx context.Context) ([]*Event, error) {
 	specs := make([]*sqlgraph.CreateSpec, len(ecb.builders))
 	nodes := make([]*Event, len(ecb.builders))

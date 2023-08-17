@@ -83,7 +83,7 @@ func (bfec *BusinessFollowEventCreate) Mutation() *BusinessFollowEventMutation {
 	return bfec.mutation
 }
 
-// Save creates the BusinessFollowEvent in the db.
+// Save creates the BusinessFollowEvent in the database.
 func (bfec *BusinessFollowEventCreate) Save(ctx context.Context) (*BusinessFollowEvent, error) {
 	bfec.defaults()
 	return withHooks(ctx, bfec.sqlSave, bfec.mutation, bfec.hooks)
@@ -223,7 +223,7 @@ type BusinessFollowEventCreateBulk struct {
 	builders []*BusinessFollowEventCreate
 }
 
-// Save creates the BusinessFollowEvent entities in the db.
+// Save creates the BusinessFollowEvent entities in the database.
 func (bfecb *BusinessFollowEventCreateBulk) Save(ctx context.Context) ([]*BusinessFollowEvent, error) {
 	specs := make([]*sqlgraph.CreateSpec, len(bfecb.builders))
 	nodes := make([]*BusinessFollowEvent, len(bfecb.builders))

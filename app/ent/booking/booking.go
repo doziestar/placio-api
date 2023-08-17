@@ -8,23 +8,23 @@ import (
 )
 
 const (
-	// Label holds the string label denoting the booking type in the db.
+	// Label holds the string label denoting the booking type in the database.
 	Label = "booking"
-	// FieldID holds the string denoting the id field in the db.
+	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldStartDate holds the string denoting the startdate field in the db.
+	// FieldStartDate holds the string denoting the startdate field in the database.
 	FieldStartDate = "start_date"
-	// FieldEndDate holds the string denoting the enddate field in the db.
+	// FieldEndDate holds the string denoting the enddate field in the database.
 	FieldEndDate = "end_date"
-	// FieldStatus holds the string denoting the status field in the db.
+	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
-	// FieldBookingDate holds the string denoting the bookingdate field in the db.
+	// FieldBookingDate holds the string denoting the bookingdate field in the database.
 	FieldBookingDate = "booking_date"
 	// EdgeRoom holds the string denoting the room edge name in mutations.
 	EdgeRoom = "room"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
-	// Table holds the table name of the booking in the db.
+	// Table holds the table name of the booking in the database.
 	Table = "bookings"
 	// RoomTable is the table that holds the room relation/edge.
 	RoomTable = "bookings"

@@ -8,25 +8,25 @@ import (
 )
 
 const (
-	// Label holds the string label denoting the help type in the db.
+	// Label holds the string label denoting the help type in the database.
 	Label = "help"
-	// FieldID holds the string denoting the id field in the db.
+	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldCategory holds the string denoting the category field in the db.
+	// FieldCategory holds the string denoting the category field in the database.
 	FieldCategory = "category"
-	// FieldSubject holds the string denoting the subject field in the db.
+	// FieldSubject holds the string denoting the subject field in the database.
 	FieldSubject = "subject"
-	// FieldBody holds the string denoting the body field in the db.
+	// FieldBody holds the string denoting the body field in the database.
 	FieldBody = "body"
-	// FieldMedia holds the string denoting the media field in the db.
+	// FieldMedia holds the string denoting the media field in the database.
 	FieldMedia = "media"
-	// FieldStatus holds the string denoting the status field in the db.
+	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
-	// FieldUserID holds the string denoting the user_id field in the db.
+	// FieldUserID holds the string denoting the user_id field in the database.
 	FieldUserID = "user_id"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
-	// Table holds the table name of the help in the db.
+	// Table holds the table name of the help in the database.
 	Table = "helps"
 	// UserTable is the table that holds the user relation/edge.
 	UserTable = "helps"
