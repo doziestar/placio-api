@@ -36,7 +36,7 @@ type PlaceService interface {
 	GetPlace(ctx context.Context, placeID string) (*ent.Place, error)
 	CreatePlace(ctx context.Context, placeData CreatePlaceDTO) (*ent.Place, error)
 	UpdatePlace(ctx context.Context, placeID string, placeData UpdatePlaceDTO) (*ent.Place, error)
-	AddMediaToPlace(ctx context.Context, placeID string, files []*multipart.FileHeader) error
+	AddMediaToPlace(ctx context.Context, placeID string, files []*multipart.FileHeader) (*ent.Place, error)
 	RemoveMediaToPlace(ctx context.Context, placeID string, mediaID []string) error
 	DeletePlace(ctx context.Context, placeID string) error
 	GetPlacesAssociatedWithBusinessAccount(c context.Context, businessId string) ([]*ent.Place, error)
@@ -387,34 +387,44 @@ func (s *PlaceServiceImpl) RemoveAmenitiesFromPlace(ctx context.Context, placeID
 	return nil
 }
 
-func (s *PlaceServiceImpl) AddMediaToPlace(ctx context.Context, placeID string, files []*multipart.FileHeader) error {
+func (s *PlaceServiceImpl) AddMediaToPlace(ctx context.Context, placeID string, files []*multipart.FileHeader) (*ent.Place, error) {
 
 	// Fetch place
-	place, err := s.client.Place.Get(ctx, placeID)
+	placeData, err := s.client.Place.Get(ctx, placeID)
 	if err != nil {
 		sentry.CaptureException(err)
-		return err
+		return nil, err
 	}
 
 	// Upload files to cloudinary
 	uploadedFiles, err := s.mediaService.UploadAndCreateMedia(ctx, files)
 	if err != nil {
 		sentry.CaptureException(err)
-		return err
+		return nil, err
 	}
 
 	log.Println("media uploaded", uploadedFiles)
-	_, err = s.client.Place.UpdateOneID(placeID).AddMedias(uploadedFiles...).Save(ctx)
+	placeData, err = s.client.Place.UpdateOneID(placeID).AddMedias(uploadedFiles...).Save(ctx)
 	if err != nil {
 		sentry.CaptureException(err)
-		return err
+		return nil, err
 	}
 	log.Println("data saved successfully")
 
-	// Add the updated place to the search index and cache
-	go s.addPlaceToCacheAndSearchIndex(ctx, place)
+	placeData, err = s.client.Place.Query().
+		Where(place.ID(placeID)).
+		WithMedias().
+		WithReviews().
+		WithFaqs().
+		WithBusiness().
+		WithUsers().
+		WithAmenities().
+		First(ctx)
 
-	return nil
+	// Add the updated place to the search index and cache
+	go s.addPlaceToCacheAndSearchIndex(ctx, placeData)
+
+	return nil, nil
 }
 
 func (s *PlaceServiceImpl) RemoveMediaFromPlace(ctx context.Context, placeID string, mediaID string) error {
