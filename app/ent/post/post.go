@@ -11,17 +11,17 @@ import (
 )
 
 const (
-	// Label holds the string label denoting the post type in the db.
+	// Label holds the string label denoting the post type in the database.
 	Label = "post"
-	// FieldID holds the string denoting the id field in the db.
+	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldContent holds the string denoting the content field in the db.
+	// FieldContent holds the string denoting the content field in the database.
 	FieldContent = "content"
-	// FieldCreatedAt holds the string denoting the createdat field in the db.
+	// FieldCreatedAt holds the string denoting the createdat field in the database.
 	FieldCreatedAt = "created_at"
-	// FieldUpdatedAt holds the string denoting the updatedat field in the db.
+	// FieldUpdatedAt holds the string denoting the updatedat field in the database.
 	FieldUpdatedAt = "updated_at"
-	// FieldPrivacy holds the string denoting the privacy field in the db.
+	// FieldPrivacy holds the string denoting the privacy field in the database.
 	FieldPrivacy = "privacy"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
@@ -35,7 +35,7 @@ const (
 	EdgeLikes = "likes"
 	// EdgeCategories holds the string denoting the categories edge name in mutations.
 	EdgeCategories = "categories"
-	// Table holds the table name of the post in the db.
+	// Table holds the table name of the post in the database.
 	Table = "posts"
 	// UserTable is the table that holds the user relation/edge.
 	UserTable = "posts"

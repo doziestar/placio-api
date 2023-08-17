@@ -95,7 +95,7 @@ func (bc *BookingCreate) Mutation() *BookingMutation {
 	return bc.mutation
 }
 
-// Save creates the Booking in the db.
+// Save creates the Booking in the database.
 func (bc *BookingCreate) Save(ctx context.Context) (*Booking, error) {
 	return withHooks(ctx, bc.sqlSave, bc.mutation, bc.hooks)
 }
@@ -235,7 +235,7 @@ type BookingCreateBulk struct {
 	builders []*BookingCreate
 }
 
-// Save creates the Booking entities in the db.
+// Save creates the Booking entities in the database.
 func (bcb *BookingCreateBulk) Save(ctx context.Context) ([]*Booking, error) {
 	specs := make([]*sqlgraph.CreateSpec, len(bcb.builders))
 	nodes := make([]*Booking, len(bcb.builders))

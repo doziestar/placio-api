@@ -90,7 +90,7 @@ func (bfbc *BusinessFollowBusinessCreate) Mutation() *BusinessFollowBusinessMuta
 	return bfbc.mutation
 }
 
-// Save creates the BusinessFollowBusiness in the db.
+// Save creates the BusinessFollowBusiness in the database.
 func (bfbc *BusinessFollowBusinessCreate) Save(ctx context.Context) (*BusinessFollowBusiness, error) {
 	bfbc.defaults()
 	return withHooks(ctx, bfbc.sqlSave, bfbc.mutation, bfbc.hooks)
@@ -220,7 +220,7 @@ type BusinessFollowBusinessCreateBulk struct {
 	builders []*BusinessFollowBusinessCreate
 }
 
-// Save creates the BusinessFollowBusiness entities in the db.
+// Save creates the BusinessFollowBusiness entities in the database.
 func (bfbcb *BusinessFollowBusinessCreateBulk) Save(ctx context.Context) ([]*BusinessFollowBusiness, error) {
 	specs := make([]*sqlgraph.CreateSpec, len(bfbcb.builders))
 	nodes := make([]*BusinessFollowBusiness, len(bfbcb.builders))

@@ -118,7 +118,7 @@ func (rc *RoomCreate) Mutation() *RoomMutation {
 	return rc.mutation
 }
 
-// Save creates the Room in the db.
+// Save creates the Room in the database.
 func (rc *RoomCreate) Save(ctx context.Context) (*Room, error) {
 	return withHooks(ctx, rc.sqlSave, rc.mutation, rc.hooks)
 }
@@ -265,7 +265,7 @@ type RoomCreateBulk struct {
 	builders []*RoomCreate
 }
 
-// Save creates the Room entities in the db.
+// Save creates the Room entities in the database.
 func (rcb *RoomCreateBulk) Save(ctx context.Context) ([]*Room, error) {
 	specs := make([]*sqlgraph.CreateSpec, len(rcb.builders))
 	nodes := make([]*Room, len(rcb.builders))

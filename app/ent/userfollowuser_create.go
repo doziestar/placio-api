@@ -90,7 +90,7 @@ func (ufuc *UserFollowUserCreate) Mutation() *UserFollowUserMutation {
 	return ufuc.mutation
 }
 
-// Save creates the UserFollowUser in the db.
+// Save creates the UserFollowUser in the database.
 func (ufuc *UserFollowUserCreate) Save(ctx context.Context) (*UserFollowUser, error) {
 	ufuc.defaults()
 	return withHooks(ctx, ufuc.sqlSave, ufuc.mutation, ufuc.hooks)
@@ -225,7 +225,7 @@ type UserFollowUserCreateBulk struct {
 	builders []*UserFollowUserCreate
 }
 
-// Save creates the UserFollowUser entities in the db.
+// Save creates the UserFollowUser entities in the database.
 func (ufucb *UserFollowUserCreateBulk) Save(ctx context.Context) ([]*UserFollowUser, error) {
 	specs := make([]*sqlgraph.CreateSpec, len(ufucb.builders))
 	nodes := make([]*UserFollowUser, len(ufucb.builders))

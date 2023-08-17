@@ -8,15 +8,15 @@ import (
 )
 
 const (
-	// Label holds the string label denoting the categoryassignment type in the db.
+	// Label holds the string label denoting the categoryassignment type in the database.
 	Label = "category_assignment"
-	// FieldID holds the string denoting the id field in the db.
+	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldEntityID holds the string denoting the entity_id field in the db.
+	// FieldEntityID holds the string denoting the entity_id field in the database.
 	FieldEntityID = "entity_id"
-	// FieldEntityType holds the string denoting the entity_type field in the db.
+	// FieldEntityType holds the string denoting the entity_type field in the database.
 	FieldEntityType = "entity_type"
-	// FieldCategoryID holds the string denoting the category_id field in the db.
+	// FieldCategoryID holds the string denoting the category_id field in the database.
 	FieldCategoryID = "category_id"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
@@ -26,7 +26,7 @@ const (
 	EdgePlace = "place"
 	// EdgeCategory holds the string denoting the category edge name in mutations.
 	EdgeCategory = "category"
-	// Table holds the table name of the categoryassignment in the db.
+	// Table holds the table name of the categoryassignment in the database.
 	Table = "category_assignments"
 	// UserTable is the table that holds the user relation/edge.
 	UserTable = "category_assignments"

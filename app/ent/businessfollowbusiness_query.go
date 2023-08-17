@@ -42,7 +42,7 @@ func (bfbq *BusinessFollowBusinessQuery) Limit(limit int) *BusinessFollowBusines
 	return bfbq
 }
 
-// Offset to cmd from.
+// Offset to start from.
 func (bfbq *BusinessFollowBusinessQuery) Offset(offset int) *BusinessFollowBusinessQuery {
 	bfbq.ctx.Offset = &offset
 	return bfbq
@@ -586,7 +586,7 @@ func (bfbq *BusinessFollowBusinessQuery) sqlQuery(ctx context.Context) *sql.Sele
 		p(selector)
 	}
 	if offset := bfbq.ctx.Offset; offset != nil {
-		// limit is mandatory for offset clause. We cmd
+		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}

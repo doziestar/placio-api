@@ -128,9 +128,11 @@ type PlaceEdges struct {
 	FollowerUsers []*UserFollowPlace `json:"followerUsers,omitempty"`
 	// Ratings holds the value of the ratings edge.
 	Ratings []*Rating `json:"ratings,omitempty"`
+	// Inventories holds the value of the inventories edge.
+	Inventories []*PlaceInventory `json:"inventories,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [16]bool
+	loadedTypes [17]bool
 }
 
 // BusinessOrErr returns the Business value or an error if the edge
@@ -279,6 +281,15 @@ func (e PlaceEdges) RatingsOrErr() ([]*Rating, error) {
 		return e.Ratings, nil
 	}
 	return nil, &NotLoadedError{edge: "ratings"}
+}
+
+// InventoriesOrErr returns the Inventories value or an error if the edge
+// was not loaded in eager-loading.
+func (e PlaceEdges) InventoriesOrErr() ([]*PlaceInventory, error) {
+	if e.loadedTypes[16] {
+		return e.Inventories, nil
+	}
+	return nil, &NotLoadedError{edge: "inventories"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -650,6 +661,11 @@ func (pl *Place) QueryFollowerUsers() *UserFollowPlaceQuery {
 // QueryRatings queries the "ratings" edge of the Place entity.
 func (pl *Place) QueryRatings() *RatingQuery {
 	return NewPlaceClient(pl.config).QueryRatings(pl)
+}
+
+// QueryInventories queries the "inventories" edge of the Place entity.
+func (pl *Place) QueryInventories() *PlaceInventoryQuery {
+	return NewPlaceClient(pl.config).QueryInventories(pl)
 }
 
 // Update returns a builder for updating this Place.

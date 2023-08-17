@@ -41,7 +41,7 @@ func (aq *AmenityQuery) Limit(limit int) *AmenityQuery {
 	return aq
 }
 
-// Offset to cmd from.
+// Offset to start from.
 func (aq *AmenityQuery) Offset(offset int) *AmenityQuery {
 	aq.ctx.Offset = &offset
 	return aq
@@ -535,7 +535,7 @@ func (aq *AmenityQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		p(selector)
 	}
 	if offset := aq.ctx.Offset; offset != nil {
-		// limit is mandatory for offset clause. We cmd
+		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}

@@ -79,7 +79,7 @@ func (toc *TicketOptionCreate) Mutation() *TicketOptionMutation {
 	return toc.mutation
 }
 
-// Save creates the TicketOption in the db.
+// Save creates the TicketOption in the database.
 func (toc *TicketOptionCreate) Save(ctx context.Context) (*TicketOption, error) {
 	toc.defaults()
 	return withHooks(ctx, toc.sqlSave, toc.mutation, toc.hooks)
@@ -196,7 +196,7 @@ type TicketOptionCreateBulk struct {
 	builders []*TicketOptionCreate
 }
 
-// Save creates the TicketOption entities in the db.
+// Save creates the TicketOption entities in the database.
 func (tocb *TicketOptionCreateBulk) Save(ctx context.Context) ([]*TicketOption, error) {
 	specs := make([]*sqlgraph.CreateSpec, len(tocb.builders))
 	nodes := make([]*TicketOption, len(tocb.builders))

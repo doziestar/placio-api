@@ -18,7 +18,9 @@ import (
 	"placio-app/ent/post"
 	"placio-app/ent/rating"
 	"placio-app/ent/reservation"
+	"placio-app/ent/reservationblock"
 	"placio-app/ent/review"
+	"placio-app/ent/transactionhistory"
 	"placio-app/ent/user"
 	"placio-app/ent/userbusiness"
 	"placio-app/ent/userfollowbusiness"
@@ -553,12 +555,42 @@ func (uc *UserCreate) AddRatings(r ...*Rating) *UserCreate {
 	return uc.AddRatingIDs(ids...)
 }
 
+// AddTransactionHistoryIDs adds the "transaction_histories" edge to the TransactionHistory entity by IDs.
+func (uc *UserCreate) AddTransactionHistoryIDs(ids ...string) *UserCreate {
+	uc.mutation.AddTransactionHistoryIDs(ids...)
+	return uc
+}
+
+// AddTransactionHistories adds the "transaction_histories" edges to the TransactionHistory entity.
+func (uc *UserCreate) AddTransactionHistories(t ...*TransactionHistory) *UserCreate {
+	ids := make([]string, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return uc.AddTransactionHistoryIDs(ids...)
+}
+
+// AddReservationBlockIDs adds the "reservation_blocks" edge to the ReservationBlock entity by IDs.
+func (uc *UserCreate) AddReservationBlockIDs(ids ...string) *UserCreate {
+	uc.mutation.AddReservationBlockIDs(ids...)
+	return uc
+}
+
+// AddReservationBlocks adds the "reservation_blocks" edges to the ReservationBlock entity.
+func (uc *UserCreate) AddReservationBlocks(r ...*ReservationBlock) *UserCreate {
+	ids := make([]string, len(r))
+	for i := range r {
+		ids[i] = r[i].ID
+	}
+	return uc.AddReservationBlockIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uc *UserCreate) Mutation() *UserMutation {
 	return uc.mutation
 }
 
-// Save creates the User in the db.
+// Save creates the User in the database.
 func (uc *UserCreate) Save(ctx context.Context) (*User, error) {
 	if err := uc.defaults(); err != nil {
 		return nil, err
@@ -1055,6 +1087,38 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := uc.mutation.TransactionHistoriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TransactionHistoriesTable,
+			Columns: []string{user.TransactionHistoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(transactionhistory.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.ReservationBlocksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.ReservationBlocksTable,
+			Columns: []string{user.ReservationBlocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(reservationblock.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	return _node, _spec
 }
 
@@ -1064,7 +1128,7 @@ type UserCreateBulk struct {
 	builders []*UserCreate
 }
 
-// Save creates the User entities in the db.
+// Save creates the User entities in the database.
 func (ucb *UserCreateBulk) Save(ctx context.Context) ([]*User, error) {
 	specs := make([]*sqlgraph.CreateSpec, len(ucb.builders))
 	nodes := make([]*User, len(ucb.builders))

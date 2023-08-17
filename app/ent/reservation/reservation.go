@@ -8,23 +8,23 @@ import (
 )
 
 const (
-	// Label holds the string label denoting the reservation type in the db.
+	// Label holds the string label denoting the reservation type in the database.
 	Label = "reservation"
-	// FieldID holds the string denoting the id field in the db.
+	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldDate holds the string denoting the date field in the db.
+	// FieldDate holds the string denoting the date field in the database.
 	FieldDate = "date"
-	// FieldTime holds the string denoting the time field in the db.
+	// FieldTime holds the string denoting the time field in the database.
 	FieldTime = "time"
-	// FieldNumberOfPeople holds the string denoting the numberofpeople field in the db.
+	// FieldNumberOfPeople holds the string denoting the numberofpeople field in the database.
 	FieldNumberOfPeople = "number_of_people"
-	// FieldStatus holds the string denoting the status field in the db.
+	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
 	// EdgePlace holds the string denoting the place edge name in mutations.
 	EdgePlace = "place"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
-	// Table holds the table name of the reservation in the db.
+	// Table holds the table name of the reservation in the database.
 	Table = "reservations"
 	// PlaceTable is the table that holds the place relation/edge.
 	PlaceTable = "reservations"

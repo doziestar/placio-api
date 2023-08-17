@@ -23,7 +23,7 @@ func (rc *ResourseCreate) Mutation() *ResourseMutation {
 	return rc.mutation
 }
 
-// Save creates the Resourse in the db.
+// Save creates the Resourse in the database.
 func (rc *ResourseCreate) Save(ctx context.Context) (*Resourse, error) {
 	return withHooks(ctx, rc.sqlSave, rc.mutation, rc.hooks)
 }
@@ -92,7 +92,7 @@ type ResourseCreateBulk struct {
 	builders []*ResourseCreate
 }
 
-// Save creates the Resourse entities in the db.
+// Save creates the Resourse entities in the database.
 func (rcb *ResourseCreateBulk) Save(ctx context.Context) ([]*Resourse, error) {
 	specs := make([]*sqlgraph.CreateSpec, len(rcb.builders))
 	nodes := make([]*Resourse, len(rcb.builders))

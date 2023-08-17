@@ -9,45 +9,45 @@ import (
 )
 
 const (
-	// Label holds the string label denoting the user type in the db.
+	// Label holds the string label denoting the user type in the database.
 	Label = "user"
-	// FieldID holds the string denoting the id field in the db.
+	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldAuth0ID holds the string denoting the auth0_id field in the db.
+	// FieldAuth0ID holds the string denoting the auth0_id field in the database.
 	FieldAuth0ID = "auth0_id"
-	// FieldName holds the string denoting the name field in the db.
+	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
-	// FieldPicture holds the string denoting the picture field in the db.
+	// FieldPicture holds the string denoting the picture field in the database.
 	FieldPicture = "picture"
-	// FieldCoverImage holds the string denoting the cover_image field in the db.
+	// FieldCoverImage holds the string denoting the cover_image field in the database.
 	FieldCoverImage = "cover_image"
-	// FieldUsername holds the string denoting the username field in the db.
+	// FieldUsername holds the string denoting the username field in the database.
 	FieldUsername = "username"
-	// FieldWebsite holds the string denoting the website field in the db.
+	// FieldWebsite holds the string denoting the website field in the database.
 	FieldWebsite = "website"
-	// FieldLocation holds the string denoting the location field in the db.
+	// FieldLocation holds the string denoting the location field in the database.
 	FieldLocation = "location"
-	// FieldMapCoordinates holds the string denoting the map_coordinates field in the db.
+	// FieldMapCoordinates holds the string denoting the map_coordinates field in the database.
 	FieldMapCoordinates = "map_coordinates"
-	// FieldLongitude holds the string denoting the longitude field in the db.
+	// FieldLongitude holds the string denoting the longitude field in the database.
 	FieldLongitude = "longitude"
-	// FieldLatitude holds the string denoting the latitude field in the db.
+	// FieldLatitude holds the string denoting the latitude field in the database.
 	FieldLatitude = "latitude"
-	// FieldBio holds the string denoting the bio field in the db.
+	// FieldBio holds the string denoting the bio field in the database.
 	FieldBio = "bio"
-	// FieldAuth0Data holds the string denoting the auth0_data field in the db.
+	// FieldAuth0Data holds the string denoting the auth0_data field in the database.
 	FieldAuth0Data = "auth0_data"
-	// FieldAppSettings holds the string denoting the app_settings field in the db.
+	// FieldAppSettings holds the string denoting the app_settings field in the database.
 	FieldAppSettings = "app_settings"
-	// FieldUserSettings holds the string denoting the user_settings field in the db.
+	// FieldUserSettings holds the string denoting the user_settings field in the database.
 	FieldUserSettings = "user_settings"
-	// FieldSearchText holds the string denoting the search_text field in the db.
+	// FieldSearchText holds the string denoting the search_text field in the database.
 	FieldSearchText = "search_text"
-	// FieldRelevanceScore holds the string denoting the relevance_score field in the db.
+	// FieldRelevanceScore holds the string denoting the relevance_score field in the database.
 	FieldRelevanceScore = "relevance_score"
-	// FieldFollowerCount holds the string denoting the follower_count field in the db.
+	// FieldFollowerCount holds the string denoting the follower_count field in the database.
 	FieldFollowerCount = "follower_count"
-	// FieldFollowingCount holds the string denoting the following_count field in the db.
+	// FieldFollowingCount holds the string denoting the following_count field in the database.
 	FieldFollowingCount = "following_count"
 	// EdgeUserBusinesses holds the string denoting the userbusinesses edge name in mutations.
 	EdgeUserBusinesses = "userBusinesses"
@@ -89,7 +89,11 @@ const (
 	EdgeLikedPlaces = "likedPlaces"
 	// EdgeRatings holds the string denoting the ratings edge name in mutations.
 	EdgeRatings = "ratings"
-	// Table holds the table name of the user in the db.
+	// EdgeTransactionHistories holds the string denoting the transaction_histories edge name in mutations.
+	EdgeTransactionHistories = "transaction_histories"
+	// EdgeReservationBlocks holds the string denoting the reservation_blocks edge name in mutations.
+	EdgeReservationBlocks = "reservation_blocks"
+	// Table holds the table name of the user in the database.
 	Table = "users"
 	// UserBusinessesTable is the table that holds the userBusinesses relation/edge.
 	UserBusinessesTable = "user_businesses"
@@ -229,6 +233,20 @@ const (
 	RatingsInverseTable = "ratings"
 	// RatingsColumn is the table column denoting the ratings relation/edge.
 	RatingsColumn = "user_ratings"
+	// TransactionHistoriesTable is the table that holds the transaction_histories relation/edge.
+	TransactionHistoriesTable = "transaction_histories"
+	// TransactionHistoriesInverseTable is the table name for the TransactionHistory entity.
+	// It exists in this package in order to avoid circular dependency with the "transactionhistory" package.
+	TransactionHistoriesInverseTable = "transaction_histories"
+	// TransactionHistoriesColumn is the table column denoting the transaction_histories relation/edge.
+	TransactionHistoriesColumn = "user_transaction_histories"
+	// ReservationBlocksTable is the table that holds the reservation_blocks relation/edge.
+	ReservationBlocksTable = "reservation_blocks"
+	// ReservationBlocksInverseTable is the table name for the ReservationBlock entity.
+	// It exists in this package in order to avoid circular dependency with the "reservationblock" package.
+	ReservationBlocksInverseTable = "reservation_blocks"
+	// ReservationBlocksColumn is the table column denoting the reservation_blocks relation/edge.
+	ReservationBlocksColumn = "user_reservation_blocks"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -639,6 +657,34 @@ func ByRatings(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newRatingsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByTransactionHistoriesCount orders the results by transaction_histories count.
+func ByTransactionHistoriesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newTransactionHistoriesStep(), opts...)
+	}
+}
+
+// ByTransactionHistories orders the results by transaction_histories terms.
+func ByTransactionHistories(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newTransactionHistoriesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByReservationBlocksCount orders the results by reservation_blocks count.
+func ByReservationBlocksCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newReservationBlocksStep(), opts...)
+	}
+}
+
+// ByReservationBlocks orders the results by reservation_blocks terms.
+func ByReservationBlocks(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newReservationBlocksStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newUserBusinessesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -777,5 +823,19 @@ func newRatingsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(RatingsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, RatingsTable, RatingsColumn),
+	)
+}
+func newTransactionHistoriesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(TransactionHistoriesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, TransactionHistoriesTable, TransactionHistoriesColumn),
+	)
+}
+func newReservationBlocksStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ReservationBlocksInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, ReservationBlocksTable, ReservationBlocksColumn),
 	)
 }

@@ -103,9 +103,13 @@ type UserEdges struct {
 	LikedPlaces []*UserLikePlace `json:"likedPlaces,omitempty"`
 	// Ratings holds the value of the ratings edge.
 	Ratings []*Rating `json:"ratings,omitempty"`
+	// TransactionHistories holds the value of the transaction_histories edge.
+	TransactionHistories []*TransactionHistory `json:"transaction_histories,omitempty"`
+	// ReservationBlocks holds the value of the reservation_blocks edge.
+	ReservationBlocks []*ReservationBlock `json:"reservation_blocks,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [20]bool
+	loadedTypes [22]bool
 }
 
 // UserBusinessesOrErr returns the UserBusinesses value or an error if the edge
@@ -290,6 +294,24 @@ func (e UserEdges) RatingsOrErr() ([]*Rating, error) {
 		return e.Ratings, nil
 	}
 	return nil, &NotLoadedError{edge: "ratings"}
+}
+
+// TransactionHistoriesOrErr returns the TransactionHistories value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) TransactionHistoriesOrErr() ([]*TransactionHistory, error) {
+	if e.loadedTypes[20] {
+		return e.TransactionHistories, nil
+	}
+	return nil, &NotLoadedError{edge: "transaction_histories"}
+}
+
+// ReservationBlocksOrErr returns the ReservationBlocks value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) ReservationBlocksOrErr() ([]*ReservationBlock, error) {
+	if e.loadedTypes[21] {
+		return e.ReservationBlocks, nil
+	}
+	return nil, &NotLoadedError{edge: "reservation_blocks"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -553,6 +575,16 @@ func (u *User) QueryLikedPlaces() *UserLikePlaceQuery {
 // QueryRatings queries the "ratings" edge of the User entity.
 func (u *User) QueryRatings() *RatingQuery {
 	return NewUserClient(u.config).QueryRatings(u)
+}
+
+// QueryTransactionHistories queries the "transaction_histories" edge of the User entity.
+func (u *User) QueryTransactionHistories() *TransactionHistoryQuery {
+	return NewUserClient(u.config).QueryTransactionHistories(u)
+}
+
+// QueryReservationBlocks queries the "reservation_blocks" edge of the User entity.
+func (u *User) QueryReservationBlocks() *ReservationBlockQuery {
+	return NewUserClient(u.config).QueryReservationBlocks(u)
 }
 
 // Update returns a builder for updating this User.

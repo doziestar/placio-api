@@ -7,11 +7,11 @@ import (
 )
 
 const (
-	// Label holds the string label denoting the reaction type in the db.
+	// Label holds the string label denoting the reaction type in the database.
 	Label = "reaction"
-	// FieldID holds the string denoting the id field in the db.
+	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// Table holds the table name of the reaction in the db.
+	// Table holds the table name of the reaction in the database.
 	Table = "reactions"
 )
 

@@ -179,6 +179,8 @@ func (rc *ReviewController) getReviewByTypeId(ctx *gin.Context) error {
 	nextPageToken := ctx.Query("nextPageToken")
 	limit := ctx.Query("limit")
 
+	log.Println("get review by type", reviewID)
+
 	if itemType != "place" && itemType != "event" && itemType != "business" {
 		sentry.CaptureException(appErr.InvalidItemType)
 		return appErr.InvalidItemType
@@ -190,13 +192,22 @@ func (rc *ReviewController) getReviewByTypeId(ctx *gin.Context) error {
 
 	limitInt, err := strconv.Atoi(limit)
 
-	reviews, nextPageToken, err := rc.reviewService.GetReviewByIDTypeID(reviewID, itemType, nextPageToken, limitInt)
+	reviews, nextPageToken, reviewStat, err := rc.reviewService.GetReviewByIDTypeID(reviewID, itemType, nextPageToken, limitInt)
 	if err != nil {
 		sentry.CaptureException(err)
 		return err
 	}
 
-	ctx.JSON(http.StatusOK, utility.ProcessResponse(reviews, "success", "Successfully retrieved reviews", nextPageToken))
+	log.Println("got reviews")
+
+	type resp struct {
+		Reviews []*ent.Review `json:"reviews"`
+		Stats   ReviewStats   `json:"stats"`
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(resp{
+		Reviews: reviews, Stats: reviewStat,
+	}, "success", "Successfully retrieved reviews", nextPageToken))
 	return nil
 }
 
@@ -215,10 +226,11 @@ func (rc *ReviewController) updateReviewContent(ctx *gin.Context) error {
 	reviewID := ctx.Param("reviewID")
 	userID := ctx.MustGet("user").(string) // query parameter: userID
 	content := ctx.PostForm("content")
+	score := ctx.PostForm("score")
 
 	log.Println("content", content)
 
-	err := rc.reviewService.UpdateReviewContent(reviewID, userID, content)
+	err := rc.reviewService.UpdateReviewContent(reviewID, userID, content, score)
 	if err != nil {
 
 		return err

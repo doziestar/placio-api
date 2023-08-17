@@ -20,7 +20,9 @@ import (
 	"placio-app/ent/predicate"
 	"placio-app/ent/rating"
 	"placio-app/ent/reservation"
+	"placio-app/ent/reservationblock"
 	"placio-app/ent/review"
+	"placio-app/ent/transactionhistory"
 	"placio-app/ent/user"
 	"placio-app/ent/userbusiness"
 	"placio-app/ent/userfollowbusiness"
@@ -37,30 +39,32 @@ import (
 // UserQuery is the builder for querying User entities.
 type UserQuery struct {
 	config
-	ctx                     *QueryContext
-	order                   []user.OrderOption
-	inters                  []Interceptor
-	predicates              []predicate.User
-	withUserBusinesses      *UserBusinessQuery
-	withComments            *CommentQuery
-	withLikes               *LikeQuery
-	withPosts               *PostQuery
-	withFollowedUsers       *UserFollowUserQuery
-	withFollowerUsers       *UserFollowUserQuery
-	withFollowedBusinesses  *UserFollowBusinessQuery
-	withFollowerBusinesses  *BusinessFollowUserQuery
-	withReviews             *ReviewQuery
-	withBookings            *BookingQuery
-	withReservations        *ReservationQuery
-	withHelps               *HelpQuery
-	withCategories          *CategoryQuery
-	withPlaces              *PlaceQuery
-	withCategoryAssignments *CategoryAssignmentQuery
-	withOwnedEvents         *EventQuery
-	withUserFollowEvents    *UserFollowEventQuery
-	withFollowedPlaces      *UserFollowPlaceQuery
-	withLikedPlaces         *UserLikePlaceQuery
-	withRatings             *RatingQuery
+	ctx                      *QueryContext
+	order                    []user.OrderOption
+	inters                   []Interceptor
+	predicates               []predicate.User
+	withUserBusinesses       *UserBusinessQuery
+	withComments             *CommentQuery
+	withLikes                *LikeQuery
+	withPosts                *PostQuery
+	withFollowedUsers        *UserFollowUserQuery
+	withFollowerUsers        *UserFollowUserQuery
+	withFollowedBusinesses   *UserFollowBusinessQuery
+	withFollowerBusinesses   *BusinessFollowUserQuery
+	withReviews              *ReviewQuery
+	withBookings             *BookingQuery
+	withReservations         *ReservationQuery
+	withHelps                *HelpQuery
+	withCategories           *CategoryQuery
+	withPlaces               *PlaceQuery
+	withCategoryAssignments  *CategoryAssignmentQuery
+	withOwnedEvents          *EventQuery
+	withUserFollowEvents     *UserFollowEventQuery
+	withFollowedPlaces       *UserFollowPlaceQuery
+	withLikedPlaces          *UserLikePlaceQuery
+	withRatings              *RatingQuery
+	withTransactionHistories *TransactionHistoryQuery
+	withReservationBlocks    *ReservationBlockQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -78,7 +82,7 @@ func (uq *UserQuery) Limit(limit int) *UserQuery {
 	return uq
 }
 
-// Offset to cmd from.
+// Offset to start from.
 func (uq *UserQuery) Offset(offset int) *UserQuery {
 	uq.ctx.Offset = &offset
 	return uq
@@ -537,6 +541,50 @@ func (uq *UserQuery) QueryRatings() *RatingQuery {
 	return query
 }
 
+// QueryTransactionHistories chains the current query on the "transaction_histories" edge.
+func (uq *UserQuery) QueryTransactionHistories() *TransactionHistoryQuery {
+	query := (&TransactionHistoryClient{config: uq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(transactionhistory.Table, transactionhistory.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.TransactionHistoriesTable, user.TransactionHistoriesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryReservationBlocks chains the current query on the "reservation_blocks" edge.
+func (uq *UserQuery) QueryReservationBlocks() *ReservationBlockQuery {
+	query := (&ReservationBlockClient{config: uq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(reservationblock.Table, reservationblock.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.ReservationBlocksTable, user.ReservationBlocksColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first User entity from the query.
 // Returns a *NotFoundError when no User was found.
 func (uq *UserQuery) First(ctx context.Context) (*User, error) {
@@ -724,31 +772,33 @@ func (uq *UserQuery) Clone() *UserQuery {
 		return nil
 	}
 	return &UserQuery{
-		config:                  uq.config,
-		ctx:                     uq.ctx.Clone(),
-		order:                   append([]user.OrderOption{}, uq.order...),
-		inters:                  append([]Interceptor{}, uq.inters...),
-		predicates:              append([]predicate.User{}, uq.predicates...),
-		withUserBusinesses:      uq.withUserBusinesses.Clone(),
-		withComments:            uq.withComments.Clone(),
-		withLikes:               uq.withLikes.Clone(),
-		withPosts:               uq.withPosts.Clone(),
-		withFollowedUsers:       uq.withFollowedUsers.Clone(),
-		withFollowerUsers:       uq.withFollowerUsers.Clone(),
-		withFollowedBusinesses:  uq.withFollowedBusinesses.Clone(),
-		withFollowerBusinesses:  uq.withFollowerBusinesses.Clone(),
-		withReviews:             uq.withReviews.Clone(),
-		withBookings:            uq.withBookings.Clone(),
-		withReservations:        uq.withReservations.Clone(),
-		withHelps:               uq.withHelps.Clone(),
-		withCategories:          uq.withCategories.Clone(),
-		withPlaces:              uq.withPlaces.Clone(),
-		withCategoryAssignments: uq.withCategoryAssignments.Clone(),
-		withOwnedEvents:         uq.withOwnedEvents.Clone(),
-		withUserFollowEvents:    uq.withUserFollowEvents.Clone(),
-		withFollowedPlaces:      uq.withFollowedPlaces.Clone(),
-		withLikedPlaces:         uq.withLikedPlaces.Clone(),
-		withRatings:             uq.withRatings.Clone(),
+		config:                   uq.config,
+		ctx:                      uq.ctx.Clone(),
+		order:                    append([]user.OrderOption{}, uq.order...),
+		inters:                   append([]Interceptor{}, uq.inters...),
+		predicates:               append([]predicate.User{}, uq.predicates...),
+		withUserBusinesses:       uq.withUserBusinesses.Clone(),
+		withComments:             uq.withComments.Clone(),
+		withLikes:                uq.withLikes.Clone(),
+		withPosts:                uq.withPosts.Clone(),
+		withFollowedUsers:        uq.withFollowedUsers.Clone(),
+		withFollowerUsers:        uq.withFollowerUsers.Clone(),
+		withFollowedBusinesses:   uq.withFollowedBusinesses.Clone(),
+		withFollowerBusinesses:   uq.withFollowerBusinesses.Clone(),
+		withReviews:              uq.withReviews.Clone(),
+		withBookings:             uq.withBookings.Clone(),
+		withReservations:         uq.withReservations.Clone(),
+		withHelps:                uq.withHelps.Clone(),
+		withCategories:           uq.withCategories.Clone(),
+		withPlaces:               uq.withPlaces.Clone(),
+		withCategoryAssignments:  uq.withCategoryAssignments.Clone(),
+		withOwnedEvents:          uq.withOwnedEvents.Clone(),
+		withUserFollowEvents:     uq.withUserFollowEvents.Clone(),
+		withFollowedPlaces:       uq.withFollowedPlaces.Clone(),
+		withLikedPlaces:          uq.withLikedPlaces.Clone(),
+		withRatings:              uq.withRatings.Clone(),
+		withTransactionHistories: uq.withTransactionHistories.Clone(),
+		withReservationBlocks:    uq.withReservationBlocks.Clone(),
 		// clone intermediate query.
 		sql:  uq.sql.Clone(),
 		path: uq.path,
@@ -975,6 +1025,28 @@ func (uq *UserQuery) WithRatings(opts ...func(*RatingQuery)) *UserQuery {
 	return uq
 }
 
+// WithTransactionHistories tells the query-builder to eager-load the nodes that are connected to
+// the "transaction_histories" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithTransactionHistories(opts ...func(*TransactionHistoryQuery)) *UserQuery {
+	query := (&TransactionHistoryClient{config: uq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	uq.withTransactionHistories = query
+	return uq
+}
+
+// WithReservationBlocks tells the query-builder to eager-load the nodes that are connected to
+// the "reservation_blocks" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithReservationBlocks(opts ...func(*ReservationBlockQuery)) *UserQuery {
+	query := (&ReservationBlockClient{config: uq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	uq.withReservationBlocks = query
+	return uq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -1053,7 +1125,7 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	var (
 		nodes       = []*User{}
 		_spec       = uq.querySpec()
-		loadedTypes = [20]bool{
+		loadedTypes = [22]bool{
 			uq.withUserBusinesses != nil,
 			uq.withComments != nil,
 			uq.withLikes != nil,
@@ -1074,6 +1146,8 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 			uq.withFollowedPlaces != nil,
 			uq.withLikedPlaces != nil,
 			uq.withRatings != nil,
+			uq.withTransactionHistories != nil,
+			uq.withReservationBlocks != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -1236,6 +1310,22 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 		if err := uq.loadRatings(ctx, query, nodes,
 			func(n *User) { n.Edges.Ratings = []*Rating{} },
 			func(n *User, e *Rating) { n.Edges.Ratings = append(n.Edges.Ratings, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := uq.withTransactionHistories; query != nil {
+		if err := uq.loadTransactionHistories(ctx, query, nodes,
+			func(n *User) { n.Edges.TransactionHistories = []*TransactionHistory{} },
+			func(n *User, e *TransactionHistory) {
+				n.Edges.TransactionHistories = append(n.Edges.TransactionHistories, e)
+			}); err != nil {
+			return nil, err
+		}
+	}
+	if query := uq.withReservationBlocks; query != nil {
+		if err := uq.loadReservationBlocks(ctx, query, nodes,
+			func(n *User) { n.Edges.ReservationBlocks = []*ReservationBlock{} },
+			func(n *User, e *ReservationBlock) { n.Edges.ReservationBlocks = append(n.Edges.ReservationBlocks, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -1888,6 +1978,68 @@ func (uq *UserQuery) loadRatings(ctx context.Context, query *RatingQuery, nodes 
 	}
 	return nil
 }
+func (uq *UserQuery) loadTransactionHistories(ctx context.Context, query *TransactionHistoryQuery, nodes []*User, init func(*User), assign func(*User, *TransactionHistory)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.TransactionHistory(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.TransactionHistoriesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.user_transaction_histories
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "user_transaction_histories" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "user_transaction_histories" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (uq *UserQuery) loadReservationBlocks(ctx context.Context, query *ReservationBlockQuery, nodes []*User, init func(*User), assign func(*User, *ReservationBlock)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.ReservationBlock(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.ReservationBlocksColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.user_reservation_blocks
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "user_reservation_blocks" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "user_reservation_blocks" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
 
 func (uq *UserQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := uq.querySpec()
@@ -1960,7 +2112,7 @@ func (uq *UserQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		p(selector)
 	}
 	if offset := uq.ctx.Offset; offset != nil {
-		// limit is mandatory for offset clause. We cmd
+		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}

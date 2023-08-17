@@ -10,6 +10,7 @@ import (
 	"placio-app/ent/category"
 	"placio-app/ent/media"
 	"placio-app/ent/place"
+	"placio-app/ent/placeinventory"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
 	"placio-app/ent/review"
@@ -22,15 +23,16 @@ import (
 // MediaQuery is the builder for querying Media entities.
 type MediaQuery struct {
 	config
-	ctx            *QueryContext
-	order          []media.OrderOption
-	inters         []Interceptor
-	predicates     []predicate.Media
-	withPost       *PostQuery
-	withReview     *ReviewQuery
-	withCategories *CategoryQuery
-	withPlace      *PlaceQuery
-	withFKs        bool
+	ctx                *QueryContext
+	order              []media.OrderOption
+	inters             []Interceptor
+	predicates         []predicate.Media
+	withPost           *PostQuery
+	withReview         *ReviewQuery
+	withCategories     *CategoryQuery
+	withPlace          *PlaceQuery
+	withPlaceInventory *PlaceInventoryQuery
+	withFKs            bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -48,7 +50,7 @@ func (mq *MediaQuery) Limit(limit int) *MediaQuery {
 	return mq
 }
 
-// Offset to cmd from.
+// Offset to start from.
 func (mq *MediaQuery) Offset(offset int) *MediaQuery {
 	mq.ctx.Offset = &offset
 	return mq
@@ -148,6 +150,28 @@ func (mq *MediaQuery) QueryPlace() *PlaceQuery {
 			sqlgraph.From(media.Table, media.FieldID, selector),
 			sqlgraph.To(place.Table, place.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, true, media.PlaceTable, media.PlacePrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryPlaceInventory chains the current query on the "place_inventory" edge.
+func (mq *MediaQuery) QueryPlaceInventory() *PlaceInventoryQuery {
+	query := (&PlaceInventoryClient{config: mq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := mq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := mq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(media.Table, media.FieldID, selector),
+			sqlgraph.To(placeinventory.Table, placeinventory.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, media.PlaceInventoryTable, media.PlaceInventoryPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
 		return fromU, nil
@@ -342,15 +366,16 @@ func (mq *MediaQuery) Clone() *MediaQuery {
 		return nil
 	}
 	return &MediaQuery{
-		config:         mq.config,
-		ctx:            mq.ctx.Clone(),
-		order:          append([]media.OrderOption{}, mq.order...),
-		inters:         append([]Interceptor{}, mq.inters...),
-		predicates:     append([]predicate.Media{}, mq.predicates...),
-		withPost:       mq.withPost.Clone(),
-		withReview:     mq.withReview.Clone(),
-		withCategories: mq.withCategories.Clone(),
-		withPlace:      mq.withPlace.Clone(),
+		config:             mq.config,
+		ctx:                mq.ctx.Clone(),
+		order:              append([]media.OrderOption{}, mq.order...),
+		inters:             append([]Interceptor{}, mq.inters...),
+		predicates:         append([]predicate.Media{}, mq.predicates...),
+		withPost:           mq.withPost.Clone(),
+		withReview:         mq.withReview.Clone(),
+		withCategories:     mq.withCategories.Clone(),
+		withPlace:          mq.withPlace.Clone(),
+		withPlaceInventory: mq.withPlaceInventory.Clone(),
 		// clone intermediate query.
 		sql:  mq.sql.Clone(),
 		path: mq.path,
@@ -398,6 +423,17 @@ func (mq *MediaQuery) WithPlace(opts ...func(*PlaceQuery)) *MediaQuery {
 		opt(query)
 	}
 	mq.withPlace = query
+	return mq
+}
+
+// WithPlaceInventory tells the query-builder to eager-load the nodes that are connected to
+// the "place_inventory" edge. The optional arguments are used to configure the query builder of the edge.
+func (mq *MediaQuery) WithPlaceInventory(opts ...func(*PlaceInventoryQuery)) *MediaQuery {
+	query := (&PlaceInventoryClient{config: mq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	mq.withPlaceInventory = query
 	return mq
 }
 
@@ -480,11 +516,12 @@ func (mq *MediaQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Media,
 		nodes       = []*Media{}
 		withFKs     = mq.withFKs
 		_spec       = mq.querySpec()
-		loadedTypes = [4]bool{
+		loadedTypes = [5]bool{
 			mq.withPost != nil,
 			mq.withReview != nil,
 			mq.withCategories != nil,
 			mq.withPlace != nil,
+			mq.withPlaceInventory != nil,
 		}
 	)
 	if mq.withPost != nil || mq.withReview != nil {
@@ -534,6 +571,13 @@ func (mq *MediaQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Media,
 		if err := mq.loadPlace(ctx, query, nodes,
 			func(n *Media) { n.Edges.Place = []*Place{} },
 			func(n *Media, e *Place) { n.Edges.Place = append(n.Edges.Place, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := mq.withPlaceInventory; query != nil {
+		if err := mq.loadPlaceInventory(ctx, query, nodes,
+			func(n *Media) { n.Edges.PlaceInventory = []*PlaceInventory{} },
+			func(n *Media, e *PlaceInventory) { n.Edges.PlaceInventory = append(n.Edges.PlaceInventory, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -696,6 +740,67 @@ func (mq *MediaQuery) loadPlace(ctx context.Context, query *PlaceQuery, nodes []
 	}
 	return nil
 }
+func (mq *MediaQuery) loadPlaceInventory(ctx context.Context, query *PlaceInventoryQuery, nodes []*Media, init func(*Media), assign func(*Media, *PlaceInventory)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[string]*Media)
+	nids := make(map[string]map[*Media]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(media.PlaceInventoryTable)
+		s.Join(joinT).On(s.C(placeinventory.FieldID), joinT.C(media.PlaceInventoryPrimaryKey[0]))
+		s.Where(sql.InValues(joinT.C(media.PlaceInventoryPrimaryKey[1]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(media.PlaceInventoryPrimaryKey[1]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(sql.NullString)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := values[0].(*sql.NullString).String
+				inValue := values[1].(*sql.NullString).String
+				if nids[inValue] == nil {
+					nids[inValue] = map[*Media]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*PlaceInventory](ctx, query, qr, query.inters)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "place_inventory" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
+		}
+	}
+	return nil
+}
 
 func (mq *MediaQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := mq.querySpec()
@@ -768,7 +873,7 @@ func (mq *MediaQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		p(selector)
 	}
 	if offset := mq.ctx.Offset; offset != nil {
-		// limit is mandatory for offset clause. We cmd
+		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}

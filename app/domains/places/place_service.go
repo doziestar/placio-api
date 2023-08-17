@@ -44,6 +44,7 @@ type PlaceService interface {
 	AddAmenitiesToPlace(ctx context.Context, placeID string, amenities []amenities.CreateAmenityInput) error
 	GetAllPlaces(ctx context.Context, nextPageToken string, limit int) ([]*ent.Place, string, error)
 	RemoveAmenitiesFromPlace(ctx context.Context, placeID string, amenityIDs []string) error
+	RemoveMediaFromPlace(ctx context.Context, placeID string, mediaID string) error
 }
 
 type PlaceServiceImpl struct {
@@ -412,6 +413,29 @@ func (s *PlaceServiceImpl) AddMediaToPlace(ctx context.Context, placeID string, 
 
 	// Add the updated place to the search index and cache
 	go s.addPlaceToCacheAndSearchIndex(ctx, place)
+
+	return nil
+}
+
+func (s *PlaceServiceImpl) RemoveMediaFromPlace(ctx context.Context, placeID string, mediaID string) error {
+	// Fetch the place
+	placeData, err := s.client.Place.Get(ctx, placeID)
+	if err != nil {
+		sentry.CaptureException(err)
+		return err
+	}
+
+	// Remove the media from the place
+	_, err = s.client.Place.UpdateOneID(placeID).RemoveMediaIDs(mediaID).Save(ctx)
+	if err != nil {
+		sentry.CaptureException(err)
+		return err
+	}
+
+	go s.addPlaceToCacheAndSearchIndex(ctx, placeData)
+
+	// Ideally, we'd also want to delete the media from wherever it's stored,
+	// but for now, we're just removing the association.
 
 	return nil
 }

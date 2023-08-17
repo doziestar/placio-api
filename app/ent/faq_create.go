@@ -94,7 +94,7 @@ func (fc *FAQCreate) Mutation() *FAQMutation {
 	return fc.mutation
 }
 
-// Save creates the FAQ in the db.
+// Save creates the FAQ in the database.
 func (fc *FAQCreate) Save(ctx context.Context) (*FAQ, error) {
 	return withHooks(ctx, fc.sqlSave, fc.mutation, fc.hooks)
 }
@@ -230,7 +230,7 @@ type FAQCreateBulk struct {
 	builders []*FAQCreate
 }
 
-// Save creates the FAQ entities in the db.
+// Save creates the FAQ entities in the database.
 func (fcb *FAQCreateBulk) Save(ctx context.Context) ([]*FAQ, error) {
 	specs := make([]*sqlgraph.CreateSpec, len(fcb.builders))
 	nodes := make([]*FAQ, len(fcb.builders))

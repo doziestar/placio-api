@@ -8,27 +8,27 @@ import (
 )
 
 const (
-	// Label holds the string label denoting the room type in the db.
+	// Label holds the string label denoting the room type in the database.
 	Label = "room"
-	// FieldID holds the string denoting the id field in the db.
+	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldNumber holds the string denoting the number field in the db.
+	// FieldNumber holds the string denoting the number field in the database.
 	FieldNumber = "number"
-	// FieldType holds the string denoting the type field in the db.
+	// FieldType holds the string denoting the type field in the database.
 	FieldType = "type"
-	// FieldPrice holds the string denoting the price field in the db.
+	// FieldPrice holds the string denoting the price field in the database.
 	FieldPrice = "price"
-	// FieldDescription holds the string denoting the description field in the db.
+	// FieldDescription holds the string denoting the description field in the database.
 	FieldDescription = "description"
-	// FieldAvailability holds the string denoting the availability field in the db.
+	// FieldAvailability holds the string denoting the availability field in the database.
 	FieldAvailability = "availability"
-	// FieldImage holds the string denoting the image field in the db.
+	// FieldImage holds the string denoting the image field in the database.
 	FieldImage = "image"
 	// EdgePlace holds the string denoting the place edge name in mutations.
 	EdgePlace = "place"
 	// EdgeBookings holds the string denoting the bookings edge name in mutations.
 	EdgeBookings = "bookings"
-	// Table holds the table name of the room in the db.
+	// Table holds the table name of the room in the database.
 	Table = "rooms"
 	// PlaceTable is the table that holds the place relation/edge.
 	PlaceTable = "rooms"

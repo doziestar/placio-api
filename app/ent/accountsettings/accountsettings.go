@@ -8,19 +8,19 @@ import (
 )
 
 const (
-	// Label holds the string label denoting the accountsettings type in the db.
+	// Label holds the string label denoting the accountsettings type in the database.
 	Label = "account_settings"
-	// FieldID holds the string denoting the id field in the db.
+	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldTwoFactorAuthentication holds the string denoting the twofactorauthentication field in the db.
+	// FieldTwoFactorAuthentication holds the string denoting the twofactorauthentication field in the database.
 	FieldTwoFactorAuthentication = "two_factor_authentication"
-	// FieldBlockedUsers holds the string denoting the blockedusers field in the db.
+	// FieldBlockedUsers holds the string denoting the blockedusers field in the database.
 	FieldBlockedUsers = "blocked_users"
-	// FieldMutedUsers holds the string denoting the mutedusers field in the db.
+	// FieldMutedUsers holds the string denoting the mutedusers field in the database.
 	FieldMutedUsers = "muted_users"
 	// EdgeBusinessAccount holds the string denoting the business_account edge name in mutations.
 	EdgeBusinessAccount = "business_account"
-	// Table holds the table name of the accountsettings in the db.
+	// Table holds the table name of the accountsettings in the database.
 	Table = "account_settings"
 	// BusinessAccountTable is the table that holds the business_account relation/edge.
 	BusinessAccountTable = "account_settings"

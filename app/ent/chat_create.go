@@ -23,7 +23,7 @@ func (cc *ChatCreate) Mutation() *ChatMutation {
 	return cc.mutation
 }
 
-// Save creates the Chat in the db.
+// Save creates the Chat in the database.
 func (cc *ChatCreate) Save(ctx context.Context) (*Chat, error) {
 	return withHooks(ctx, cc.sqlSave, cc.mutation, cc.hooks)
 }
@@ -92,7 +92,7 @@ type ChatCreateBulk struct {
 	builders []*ChatCreate
 }
 
-// Save creates the Chat entities in the db.
+// Save creates the Chat entities in the database.
 func (ccb *ChatCreateBulk) Save(ctx context.Context) ([]*Chat, error) {
 	specs := make([]*sqlgraph.CreateSpec, len(ccb.builders))
 	nodes := make([]*Chat, len(ccb.builders))

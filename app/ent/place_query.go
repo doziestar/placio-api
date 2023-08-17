@@ -17,6 +17,7 @@ import (
 	"placio-app/ent/media"
 	"placio-app/ent/menu"
 	"placio-app/ent/place"
+	"placio-app/ent/placeinventory"
 	"placio-app/ent/predicate"
 	"placio-app/ent/rating"
 	"placio-app/ent/reservation"
@@ -54,6 +55,7 @@ type PlaceQuery struct {
 	withLikedByUsers        *UserLikePlaceQuery
 	withFollowerUsers       *UserFollowPlaceQuery
 	withRatings             *RatingQuery
+	withInventories         *PlaceInventoryQuery
 	withFKs                 bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -72,7 +74,7 @@ func (pq *PlaceQuery) Limit(limit int) *PlaceQuery {
 	return pq
 }
 
-// Offset to cmd from.
+// Offset to start from.
 func (pq *PlaceQuery) Offset(offset int) *PlaceQuery {
 	pq.ctx.Offset = &offset
 	return pq
@@ -443,6 +445,28 @@ func (pq *PlaceQuery) QueryRatings() *RatingQuery {
 	return query
 }
 
+// QueryInventories chains the current query on the "inventories" edge.
+func (pq *PlaceQuery) QueryInventories() *PlaceInventoryQuery {
+	query := (&PlaceInventoryClient{config: pq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(place.Table, place.FieldID, selector),
+			sqlgraph.To(placeinventory.Table, placeinventory.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, place.InventoriesTable, place.InventoriesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Place entity from the query.
 // Returns a *NotFoundError when no Place was found.
 func (pq *PlaceQuery) First(ctx context.Context) (*Place, error) {
@@ -651,6 +675,7 @@ func (pq *PlaceQuery) Clone() *PlaceQuery {
 		withLikedByUsers:        pq.withLikedByUsers.Clone(),
 		withFollowerUsers:       pq.withFollowerUsers.Clone(),
 		withRatings:             pq.withRatings.Clone(),
+		withInventories:         pq.withInventories.Clone(),
 		// clone intermediate query.
 		sql:  pq.sql.Clone(),
 		path: pq.path,
@@ -833,6 +858,17 @@ func (pq *PlaceQuery) WithRatings(opts ...func(*RatingQuery)) *PlaceQuery {
 	return pq
 }
 
+// WithInventories tells the query-builder to eager-load the nodes that are connected to
+// the "inventories" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *PlaceQuery) WithInventories(opts ...func(*PlaceInventoryQuery)) *PlaceQuery {
+	query := (&PlaceInventoryClient{config: pq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withInventories = query
+	return pq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -912,7 +948,7 @@ func (pq *PlaceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Place,
 		nodes       = []*Place{}
 		withFKs     = pq.withFKs
 		_spec       = pq.querySpec()
-		loadedTypes = [16]bool{
+		loadedTypes = [17]bool{
 			pq.withBusiness != nil,
 			pq.withUsers != nil,
 			pq.withReviews != nil,
@@ -929,6 +965,7 @@ func (pq *PlaceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Place,
 			pq.withLikedByUsers != nil,
 			pq.withFollowerUsers != nil,
 			pq.withRatings != nil,
+			pq.withInventories != nil,
 		}
 	)
 	if pq.withBusiness != nil {
@@ -1065,6 +1102,13 @@ func (pq *PlaceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Place,
 		if err := pq.loadRatings(ctx, query, nodes,
 			func(n *Place) { n.Edges.Ratings = []*Rating{} },
 			func(n *Place, e *Rating) { n.Edges.Ratings = append(n.Edges.Ratings, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := pq.withInventories; query != nil {
+		if err := pq.loadInventories(ctx, query, nodes,
+			func(n *Place) { n.Edges.Inventories = []*PlaceInventory{} },
+			func(n *Place, e *PlaceInventory) { n.Edges.Inventories = append(n.Edges.Inventories, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -1688,6 +1732,37 @@ func (pq *PlaceQuery) loadRatings(ctx context.Context, query *RatingQuery, nodes
 	}
 	return nil
 }
+func (pq *PlaceQuery) loadInventories(ctx context.Context, query *PlaceInventoryQuery, nodes []*Place, init func(*Place), assign func(*Place, *PlaceInventory)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Place)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.PlaceInventory(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(place.InventoriesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.place_inventories
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "place_inventories" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "place_inventories" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
 
 func (pq *PlaceQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := pq.querySpec()
@@ -1760,7 +1835,7 @@ func (pq *PlaceQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		p(selector)
 	}
 	if offset := pq.ctx.Offset; offset != nil {
-		// limit is mandatory for offset clause. We cmd
+		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}

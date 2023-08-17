@@ -8,19 +8,19 @@ import (
 )
 
 const (
-	// Label holds the string label denoting the userbusiness type in the db.
+	// Label holds the string label denoting the userbusiness type in the database.
 	Label = "user_business"
-	// FieldID holds the string denoting the id field in the db.
+	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldRole holds the string denoting the role field in the db.
+	// FieldRole holds the string denoting the role field in the database.
 	FieldRole = "role"
-	// FieldPermissions holds the string denoting the permissions field in the db.
+	// FieldPermissions holds the string denoting the permissions field in the database.
 	FieldPermissions = "permissions"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
 	// EdgeBusiness holds the string denoting the business edge name in mutations.
 	EdgeBusiness = "business"
-	// Table holds the table name of the userbusiness in the db.
+	// Table holds the table name of the userbusiness in the database.
 	Table = "user_businesses"
 	// UserTable is the table that holds the user relation/edge.
 	UserTable = "user_businesses"

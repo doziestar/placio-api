@@ -7,11 +7,11 @@ import (
 )
 
 const (
-	// Label holds the string label denoting the payment type in the db.
+	// Label holds the string label denoting the payment type in the database.
 	Label = "payment"
-	// FieldID holds the string denoting the id field in the db.
+	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// Table holds the table name of the payment in the db.
+	// Table holds the table name of the payment in the database.
 	Table = "payments"
 )
 

@@ -68,6 +68,8 @@ func (User) Edges() []ent.Edge {
 		edge.To("followedPlaces", UserFollowPlace.Type),
 		edge.To("likedPlaces", UserLikePlace.Type),
 		edge.To("ratings", Rating.Type),
+		edge.To("transaction_histories", TransactionHistory.Type),
+		edge.To("reservation_blocks", ReservationBlock.Type),
 	}
 }
 

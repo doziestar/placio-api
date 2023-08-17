@@ -131,7 +131,7 @@ func (cac *CategoryAssignmentCreate) Mutation() *CategoryAssignmentMutation {
 	return cac.mutation
 }
 
-// Save creates the CategoryAssignment in the db.
+// Save creates the CategoryAssignment in the database.
 func (cac *CategoryAssignmentCreate) Save(ctx context.Context) (*CategoryAssignment, error) {
 	return withHooks(ctx, cac.sqlSave, cac.mutation, cac.hooks)
 }
@@ -272,7 +272,7 @@ type CategoryAssignmentCreateBulk struct {
 	builders []*CategoryAssignmentCreate
 }
 
-// Save creates the CategoryAssignment entities in the db.
+// Save creates the CategoryAssignment entities in the database.
 func (cacb *CategoryAssignmentCreateBulk) Save(ctx context.Context) ([]*CategoryAssignment, error) {
 	specs := make([]*sqlgraph.CreateSpec, len(cacb.builders))
 	nodes := make([]*CategoryAssignment, len(cacb.builders))

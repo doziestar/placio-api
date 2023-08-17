@@ -38,7 +38,7 @@ func (cq *ChatQuery) Limit(limit int) *ChatQuery {
 	return cq
 }
 
-// Offset to cmd from.
+// Offset to start from.
 func (cq *ChatQuery) Offset(offset int) *ChatQuery {
 	cq.ctx.Offset = &offset
 	return cq
@@ -403,7 +403,7 @@ func (cq *ChatQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		p(selector)
 	}
 	if offset := cq.ctx.Offset; offset != nil {
-		// limit is mandatory for offset clause. We cmd
+		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}

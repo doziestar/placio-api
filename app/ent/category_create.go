@@ -164,7 +164,7 @@ func (cc *CategoryCreate) Mutation() *CategoryMutation {
 	return cc.mutation
 }
 
-// Save creates the Category in the db.
+// Save creates the Category in the database.
 func (cc *CategoryCreate) Save(ctx context.Context) (*Category, error) {
 	return withHooks(ctx, cc.sqlSave, cc.mutation, cc.hooks)
 }
@@ -297,7 +297,7 @@ type CategoryCreateBulk struct {
 	builders []*CategoryCreate
 }
 
-// Save creates the Category entities in the db.
+// Save creates the Category entities in the database.
 func (ccb *CategoryCreateBulk) Save(ctx context.Context) ([]*Category, error) {
 	specs := make([]*sqlgraph.CreateSpec, len(ccb.builders))
 	nodes := make([]*Category, len(ccb.builders))

@@ -58,7 +58,7 @@ func (ac *AmenityCreate) Mutation() *AmenityMutation {
 	return ac.mutation
 }
 
-// Save creates the Amenity in the db.
+// Save creates the Amenity in the database.
 func (ac *AmenityCreate) Save(ctx context.Context) (*Amenity, error) {
 	return withHooks(ctx, ac.sqlSave, ac.mutation, ac.hooks)
 }
@@ -166,7 +166,7 @@ type AmenityCreateBulk struct {
 	builders []*AmenityCreate
 }
 
-// Save creates the Amenity entities in the db.
+// Save creates the Amenity entities in the database.
 func (acb *AmenityCreateBulk) Save(ctx context.Context) ([]*Amenity, error) {
 	specs := make([]*sqlgraph.CreateSpec, len(acb.builders))
 	nodes := make([]*Amenity, len(acb.builders))

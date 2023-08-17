@@ -91,7 +91,7 @@ func (ufbc *UserFollowBusinessCreate) Mutation() *UserFollowBusinessMutation {
 	return ufbc.mutation
 }
 
-// Save creates the UserFollowBusiness in the db.
+// Save creates the UserFollowBusiness in the database.
 func (ufbc *UserFollowBusinessCreate) Save(ctx context.Context) (*UserFollowBusiness, error) {
 	ufbc.defaults()
 	return withHooks(ctx, ufbc.sqlSave, ufbc.mutation, ufbc.hooks)
@@ -221,7 +221,7 @@ type UserFollowBusinessCreateBulk struct {
 	builders []*UserFollowBusinessCreate
 }
 
-// Save creates the UserFollowBusiness entities in the db.
+// Save creates the UserFollowBusiness entities in the database.
 func (ufbcb *UserFollowBusinessCreateBulk) Save(ctx context.Context) ([]*UserFollowBusiness, error) {
 	specs := make([]*sqlgraph.CreateSpec, len(ufbcb.builders))
 	nodes := make([]*UserFollowBusiness, len(ufbcb.builders))

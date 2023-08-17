@@ -23,7 +23,7 @@ func (oc *OrderCreate) Mutation() *OrderMutation {
 	return oc.mutation
 }
 
-// Save creates the Order in the db.
+// Save creates the Order in the database.
 func (oc *OrderCreate) Save(ctx context.Context) (*Order, error) {
 	return withHooks(ctx, oc.sqlSave, oc.mutation, oc.hooks)
 }
@@ -92,7 +92,7 @@ type OrderCreateBulk struct {
 	builders []*OrderCreate
 }
 
-// Save creates the Order entities in the db.
+// Save creates the Order entities in the database.
 func (ocb *OrderCreateBulk) Save(ctx context.Context) ([]*Order, error) {
 	specs := make([]*sqlgraph.CreateSpec, len(ocb.builders))
 	nodes := make([]*Order, len(ocb.builders))

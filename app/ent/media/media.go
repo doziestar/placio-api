@@ -10,21 +10,21 @@ import (
 )
 
 const (
-	// Label holds the string label denoting the media type in the db.
+	// Label holds the string label denoting the media type in the database.
 	Label = "media"
-	// FieldID holds the string denoting the id field in the db.
+	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldURL holds the string denoting the url field in the db.
+	// FieldURL holds the string denoting the url field in the database.
 	FieldURL = "url"
-	// FieldMediaType holds the string denoting the mediatype field in the db.
+	// FieldMediaType holds the string denoting the mediatype field in the database.
 	FieldMediaType = "media_type"
-	// FieldCreatedAt holds the string denoting the createdat field in the db.
+	// FieldCreatedAt holds the string denoting the createdat field in the database.
 	FieldCreatedAt = "created_at"
-	// FieldUpdatedAt holds the string denoting the updatedat field in the db.
+	// FieldUpdatedAt holds the string denoting the updatedat field in the database.
 	FieldUpdatedAt = "updated_at"
-	// FieldLikeCount holds the string denoting the likecount field in the db.
+	// FieldLikeCount holds the string denoting the likecount field in the database.
 	FieldLikeCount = "like_count"
-	// FieldDislikeCount holds the string denoting the dislikecount field in the db.
+	// FieldDislikeCount holds the string denoting the dislikecount field in the database.
 	FieldDislikeCount = "dislike_count"
 	// EdgePost holds the string denoting the post edge name in mutations.
 	EdgePost = "post"
@@ -34,7 +34,9 @@ const (
 	EdgeCategories = "categories"
 	// EdgePlace holds the string denoting the place edge name in mutations.
 	EdgePlace = "place"
-	// Table holds the table name of the media in the db.
+	// EdgePlaceInventory holds the string denoting the place_inventory edge name in mutations.
+	EdgePlaceInventory = "place_inventory"
+	// Table holds the table name of the media in the database.
 	Table = "media"
 	// PostTable is the table that holds the post relation/edge.
 	PostTable = "media"
@@ -62,6 +64,11 @@ const (
 	// PlaceInverseTable is the table name for the Place entity.
 	// It exists in this package in order to avoid circular dependency with the "place" package.
 	PlaceInverseTable = "places"
+	// PlaceInventoryTable is the table that holds the place_inventory relation/edge. The primary key declared below.
+	PlaceInventoryTable = "place_inventory_media"
+	// PlaceInventoryInverseTable is the table name for the PlaceInventory entity.
+	// It exists in this package in order to avoid circular dependency with the "placeinventory" package.
+	PlaceInventoryInverseTable = "place_inventories"
 )
 
 // Columns holds all SQL columns for media fields.
@@ -86,6 +93,9 @@ var (
 	// PlacePrimaryKey and PlaceColumn2 are the table columns denoting the
 	// primary key for the place relation (M2M).
 	PlacePrimaryKey = []string{"place_id", "media_id"}
+	// PlaceInventoryPrimaryKey and PlaceInventoryColumn2 are the table columns denoting the
+	// primary key for the place_inventory relation (M2M).
+	PlaceInventoryPrimaryKey = []string{"place_inventory_id", "media_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -197,6 +207,20 @@ func ByPlace(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newPlaceStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByPlaceInventoryCount orders the results by place_inventory count.
+func ByPlaceInventoryCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newPlaceInventoryStep(), opts...)
+	}
+}
+
+// ByPlaceInventory orders the results by place_inventory terms.
+func ByPlaceInventory(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newPlaceInventoryStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newPostStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -223,5 +247,12 @@ func newPlaceStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(PlaceInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2M, true, PlaceTable, PlacePrimaryKey...),
+	)
+}
+func newPlaceInventoryStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(PlaceInventoryInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, true, PlaceInventoryTable, PlaceInventoryPrimaryKey...),
 	)
 }

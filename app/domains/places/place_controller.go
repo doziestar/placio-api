@@ -38,6 +38,7 @@ func (c *PlaceController) RegisterRoutes(router, routerWithoutAuth *gin.RouterGr
 		placeRouter.DELETE("/:id/media", utility.Use(c.removeMediaToAPlace))
 		placeRouterWithoutAuth.GET("/all", utility.Use(c.getAllPlaces))
 		placeRouter.POST("/:id/remove_amenities", utility.Use(c.removeAmenitiesFromPlace))
+		placeRouter.DELETE("/:id/media/:mediaID", utility.Use(c.removeSingleMediaFromPlace))
 
 	}
 }
@@ -257,6 +258,37 @@ func (c *PlaceController) addMediaToAPlace(ctx *gin.Context) error {
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Media added successfully",
+	})
+	return nil
+}
+
+// @Summary Remove media from a place
+// @Description remove media to a place by ID
+// @Tags Place
+// @Accept json
+// @Produce json
+// @Param id path string true "ID of the place to add amenities to"
+// @Param Authorization header string true "Bearer token"
+// @Success 200 {object} ent.Place "Successfully added amenities to place"
+// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
+// @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
+// @Router /api/v1/places/{id}/media [post]
+func (c *PlaceController) removeSingleMediaFromPlace(ctx *gin.Context) error {
+	placeID := ctx.Param("id")
+	mediaID := ctx.Param("mediaID")
+
+	if err := c.placeService.RemoveMediaFromPlace(ctx, placeID, mediaID); err != nil {
+		log.Print(err)
+		sentry.CaptureException(err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Failed to remove media",
+		})
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Media removed successfully",
 	})
 	return nil
 }

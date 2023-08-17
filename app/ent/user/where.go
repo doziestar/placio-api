@@ -1569,6 +1569,52 @@ func HasRatingsWith(preds ...predicate.Rating) predicate.User {
 	})
 }
 
+// HasTransactionHistories applies the HasEdge predicate on the "transaction_histories" edge.
+func HasTransactionHistories() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, TransactionHistoriesTable, TransactionHistoriesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasTransactionHistoriesWith applies the HasEdge predicate on the "transaction_histories" edge with a given conditions (other predicates).
+func HasTransactionHistoriesWith(preds ...predicate.TransactionHistory) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newTransactionHistoriesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasReservationBlocks applies the HasEdge predicate on the "reservation_blocks" edge.
+func HasReservationBlocks() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ReservationBlocksTable, ReservationBlocksColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasReservationBlocksWith applies the HasEdge predicate on the "reservation_blocks" edge with a given conditions (other predicates).
+func HasReservationBlocksWith(preds ...predicate.ReservationBlock) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newReservationBlocksStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.User) predicate.User {
 	return predicate.User(func(s *sql.Selector) {

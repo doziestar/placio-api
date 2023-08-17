@@ -8,31 +8,31 @@ import (
 )
 
 const (
-	// Label holds the string label denoting the category type in the db.
+	// Label holds the string label denoting the category type in the database.
 	Label = "category"
-	// FieldID holds the string denoting the id field in the db.
+	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldName holds the string denoting the name field in the db.
+	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
-	// FieldImage holds the string denoting the image field in the db.
+	// FieldImage holds the string denoting the image field in the database.
 	FieldImage = "image"
-	// FieldDescription holds the string denoting the description field in the db.
+	// FieldDescription holds the string denoting the description field in the database.
 	FieldDescription = "description"
-	// FieldIcon holds the string denoting the icon field in the db.
+	// FieldIcon holds the string denoting the icon field in the database.
 	FieldIcon = "icon"
-	// FieldType holds the string denoting the type field in the db.
+	// FieldType holds the string denoting the type field in the database.
 	FieldType = "type"
-	// FieldParentID holds the string denoting the parent_id field in the db.
+	// FieldParentID holds the string denoting the parent_id field in the database.
 	FieldParentID = "parent_id"
-	// FieldParentName holds the string denoting the parent_name field in the db.
+	// FieldParentName holds the string denoting the parent_name field in the database.
 	FieldParentName = "parent_name"
-	// FieldParentImage holds the string denoting the parent_image field in the db.
+	// FieldParentImage holds the string denoting the parent_image field in the database.
 	FieldParentImage = "parent_image"
-	// FieldParentDescription holds the string denoting the parent_description field in the db.
+	// FieldParentDescription holds the string denoting the parent_description field in the database.
 	FieldParentDescription = "parent_description"
 	// EdgeCategoryAssignments holds the string denoting the categoryassignments edge name in mutations.
 	EdgeCategoryAssignments = "categoryAssignments"
-	// Table holds the table name of the category in the db.
+	// Table holds the table name of the category in the database.
 	Table = "categories"
 	// CategoryAssignmentsTable is the table that holds the categoryAssignments relation/edge.
 	CategoryAssignmentsTable = "category_assignments"

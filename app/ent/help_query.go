@@ -40,7 +40,7 @@ func (hq *HelpQuery) Limit(limit int) *HelpQuery {
 	return hq
 }
 
-// Offset to cmd from.
+// Offset to start from.
 func (hq *HelpQuery) Offset(offset int) *HelpQuery {
 	hq.ctx.Offset = &offset
 	return hq
@@ -504,7 +504,7 @@ func (hq *HelpQuery) sqlQuery(ctx context.Context) *sql.Selector {
 		p(selector)
 	}
 	if offset := hq.ctx.Offset; offset != nil {
-		// limit is mandatory for offset clause. We cmd
+		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}

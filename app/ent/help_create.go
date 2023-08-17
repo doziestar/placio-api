@@ -88,7 +88,7 @@ func (hc *HelpCreate) Mutation() *HelpMutation {
 	return hc.mutation
 }
 
-// Save creates the Help in the db.
+// Save creates the Help in the database.
 func (hc *HelpCreate) Save(ctx context.Context) (*Help, error) {
 	hc.defaults()
 	return withHooks(ctx, hc.sqlSave, hc.mutation, hc.hooks)
@@ -230,7 +230,7 @@ type HelpCreateBulk struct {
 	builders []*HelpCreate
 }
 
-// Save creates the Help entities in the db.
+// Save creates the Help entities in the database.
 func (hcb *HelpCreateBulk) Save(ctx context.Context) ([]*Help, error) {
 	specs := make([]*sqlgraph.CreateSpec, len(hcb.builders))
 	nodes := make([]*Help, len(hcb.builders))

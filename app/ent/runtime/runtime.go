@@ -14,10 +14,14 @@ import (
 	"placio-app/ent/comment"
 	"placio-app/ent/event"
 	"placio-app/ent/help"
+	"placio-app/ent/inventoryattribute"
+	"placio-app/ent/inventorytype"
 	"placio-app/ent/like"
 	"placio-app/ent/media"
 	"placio-app/ent/menu"
 	"placio-app/ent/place"
+	"placio-app/ent/placeinventory"
+	"placio-app/ent/placeinventoryattribute"
 	"placio-app/ent/post"
 	"placio-app/ent/rating"
 	"placio-app/ent/reservation"
@@ -26,6 +30,7 @@ import (
 	"placio-app/ent/schema"
 	"placio-app/ent/ticket"
 	"placio-app/ent/ticketoption"
+	"placio-app/ent/transactionhistory"
 	"placio-app/ent/user"
 	"placio-app/ent/userbusiness"
 	"placio-app/ent/userfollowbusiness"
@@ -222,6 +227,22 @@ func init() {
 	helpDescUserID := helpFields[6].Descriptor()
 	// help.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
 	help.UserIDValidator = helpDescUserID.Validators[0].(func(string) error)
+	inventoryattributeFields := schema.InventoryAttribute{}.Fields()
+	_ = inventoryattributeFields
+	// inventoryattributeDescIsMandatory is the schema descriptor for is_mandatory field.
+	inventoryattributeDescIsMandatory := inventoryattributeFields[2].Descriptor()
+	// inventoryattribute.DefaultIsMandatory holds the default value on creation for the is_mandatory field.
+	inventoryattribute.DefaultIsMandatory = inventoryattributeDescIsMandatory.Default.(bool)
+	// inventoryattributeDescID is the schema descriptor for id field.
+	inventoryattributeDescID := inventoryattributeFields[0].Descriptor()
+	// inventoryattribute.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	inventoryattribute.IDValidator = inventoryattributeDescID.Validators[0].(func(string) error)
+	inventorytypeFields := schema.InventoryType{}.Fields()
+	_ = inventorytypeFields
+	// inventorytypeDescID is the schema descriptor for id field.
+	inventorytypeDescID := inventorytypeFields[0].Descriptor()
+	// inventorytype.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	inventorytype.IDValidator = inventorytypeDescID.Validators[0].(func(string) error)
 	likeFields := schema.Like{}.Fields()
 	_ = likeFields
 	// likeDescCreatedAt is the schema descriptor for createdAt field.
@@ -302,6 +323,22 @@ func init() {
 	placeDescID := placeFields[0].Descriptor()
 	// place.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	place.IDValidator = placeDescID.Validators[0].(func(string) error)
+	placeinventoryFields := schema.PlaceInventory{}.Fields()
+	_ = placeinventoryFields
+	// placeinventoryDescLastUpdated is the schema descriptor for last_updated field.
+	placeinventoryDescLastUpdated := placeinventoryFields[11].Descriptor()
+	// placeinventory.DefaultLastUpdated holds the default value on creation for the last_updated field.
+	placeinventory.DefaultLastUpdated = placeinventoryDescLastUpdated.Default.(func() time.Time)
+	// placeinventoryDescID is the schema descriptor for id field.
+	placeinventoryDescID := placeinventoryFields[0].Descriptor()
+	// placeinventory.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	placeinventory.IDValidator = placeinventoryDescID.Validators[0].(func(string) error)
+	placeinventoryattributeFields := schema.PlaceInventoryAttribute{}.Fields()
+	_ = placeinventoryattributeFields
+	// placeinventoryattributeDescID is the schema descriptor for id field.
+	placeinventoryattributeDescID := placeinventoryattributeFields[0].Descriptor()
+	// placeinventoryattribute.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	placeinventoryattribute.IDValidator = placeinventoryattributeDescID.Validators[0].(func(string) error)
 	postFields := schema.Post{}.Fields()
 	_ = postFields
 	// postDescContent is the schema descriptor for Content field.
@@ -420,6 +457,12 @@ func init() {
 	ticketoption.DefaultUpdatedAt = ticketoptionDescUpdatedAt.Default.(func() time.Time)
 	// ticketoption.UpdateDefaultUpdatedAt holds the default value on update for the updatedAt field.
 	ticketoption.UpdateDefaultUpdatedAt = ticketoptionDescUpdatedAt.UpdateDefault.(func() time.Time)
+	transactionhistoryFields := schema.TransactionHistory{}.Fields()
+	_ = transactionhistoryFields
+	// transactionhistoryDescDate is the schema descriptor for date field.
+	transactionhistoryDescDate := transactionhistoryFields[2].Descriptor()
+	// transactionhistory.DefaultDate holds the default value on creation for the date field.
+	transactionhistory.DefaultDate = transactionhistoryDescDate.Default.(func() time.Time)
 	userHooks := schema.User{}.Hooks()
 	user.Hooks[0] = userHooks[0]
 	userFields := schema.User{}.Fields()

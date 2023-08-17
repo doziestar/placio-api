@@ -10,19 +10,19 @@ import (
 )
 
 const (
-	// Label holds the string label denoting the userfollowuser type in the db.
+	// Label holds the string label denoting the userfollowuser type in the database.
 	Label = "user_follow_user"
-	// FieldID holds the string denoting the id field in the db.
+	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldCreatedAt holds the string denoting the createdat field in the db.
+	// FieldCreatedAt holds the string denoting the createdat field in the database.
 	FieldCreatedAt = "created_at"
-	// FieldUpdatedAt holds the string denoting the updatedat field in the db.
+	// FieldUpdatedAt holds the string denoting the updatedat field in the database.
 	FieldUpdatedAt = "updated_at"
 	// EdgeFollower holds the string denoting the follower edge name in mutations.
 	EdgeFollower = "follower"
 	// EdgeFollowed holds the string denoting the followed edge name in mutations.
 	EdgeFollowed = "followed"
-	// Table holds the table name of the userfollowuser in the db.
+	// Table holds the table name of the userfollowuser in the database.
 	Table = "user_follow_users"
 	// FollowerTable is the table that holds the follower relation/edge.
 	FollowerTable = "user_follow_users"

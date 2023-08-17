@@ -176,6 +176,30 @@ func (f HelpFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error)
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.HelpMutation", m)
 }
 
+// The InventoryAttributeFunc type is an adapter to allow the use of ordinary
+// function as InventoryAttribute mutator.
+type InventoryAttributeFunc func(context.Context, *ent.InventoryAttributeMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f InventoryAttributeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.InventoryAttributeMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.InventoryAttributeMutation", m)
+}
+
+// The InventoryTypeFunc type is an adapter to allow the use of ordinary
+// function as InventoryType mutator.
+type InventoryTypeFunc func(context.Context, *ent.InventoryTypeMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f InventoryTypeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.InventoryTypeMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.InventoryTypeMutation", m)
+}
+
 // The LikeFunc type is an adapter to allow the use of ordinary
 // function as Like mutator.
 type LikeFunc func(context.Context, *ent.LikeMutation) (ent.Value, error)
@@ -248,6 +272,30 @@ func (f PlaceFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PlaceMutation", m)
 }
 
+// The PlaceInventoryFunc type is an adapter to allow the use of ordinary
+// function as PlaceInventory mutator.
+type PlaceInventoryFunc func(context.Context, *ent.PlaceInventoryMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PlaceInventoryFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.PlaceInventoryMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PlaceInventoryMutation", m)
+}
+
+// The PlaceInventoryAttributeFunc type is an adapter to allow the use of ordinary
+// function as PlaceInventoryAttribute mutator.
+type PlaceInventoryAttributeFunc func(context.Context, *ent.PlaceInventoryAttributeMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PlaceInventoryAttributeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.PlaceInventoryAttributeMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PlaceInventoryAttributeMutation", m)
+}
+
 // The PostFunc type is an adapter to allow the use of ordinary
 // function as Post mutator.
 type PostFunc func(context.Context, *ent.PostMutation) (ent.Value, error)
@@ -294,6 +342,18 @@ func (f ReservationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value,
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ReservationMutation", m)
+}
+
+// The ReservationBlockFunc type is an adapter to allow the use of ordinary
+// function as ReservationBlock mutator.
+type ReservationBlockFunc func(context.Context, *ent.ReservationBlockMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ReservationBlockFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ReservationBlockMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ReservationBlockMutation", m)
 }
 
 // The ResourseFunc type is an adapter to allow the use of ordinary
@@ -354,6 +414,18 @@ func (f TicketOptionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TicketOptionMutation", m)
+}
+
+// The TransactionHistoryFunc type is an adapter to allow the use of ordinary
+// function as TransactionHistory mutator.
+type TransactionHistoryFunc func(context.Context, *ent.TransactionHistoryMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f TransactionHistoryFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.TransactionHistoryMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TransactionHistoryMutation", m)
 }
 
 // The UserFunc type is an adapter to allow the use of ordinary

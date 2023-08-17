@@ -12,117 +12,117 @@ import (
 )
 
 const (
-	// Label holds the string label denoting the event type in the db.
+	// Label holds the string label denoting the event type in the database.
 	Label = "event"
-	// FieldID holds the string denoting the id field in the db.
+	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldName holds the string denoting the name field in the db.
+	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
-	// FieldEventType holds the string denoting the eventtype field in the db.
+	// FieldEventType holds the string denoting the eventtype field in the database.
 	FieldEventType = "event_type"
-	// FieldStatus holds the string denoting the status field in the db.
+	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
-	// FieldLocation holds the string denoting the location field in the db.
+	// FieldLocation holds the string denoting the location field in the database.
 	FieldLocation = "location"
-	// FieldURL holds the string denoting the url field in the db.
+	// FieldURL holds the string denoting the url field in the database.
 	FieldURL = "url"
-	// FieldTitle holds the string denoting the title field in the db.
+	// FieldTitle holds the string denoting the title field in the database.
 	FieldTitle = "title"
-	// FieldTimeZone holds the string denoting the time_zone field in the db.
+	// FieldTimeZone holds the string denoting the time_zone field in the database.
 	FieldTimeZone = "time_zone"
-	// FieldStartTime holds the string denoting the start_time field in the db.
+	// FieldStartTime holds the string denoting the start_time field in the database.
 	FieldStartTime = "start_time"
-	// FieldEndTime holds the string denoting the end_time field in the db.
+	// FieldEndTime holds the string denoting the end_time field in the database.
 	FieldEndTime = "end_time"
-	// FieldStartDate holds the string denoting the start_date field in the db.
+	// FieldStartDate holds the string denoting the start_date field in the database.
 	FieldStartDate = "start_date"
-	// FieldEndDate holds the string denoting the end_date field in the db.
+	// FieldEndDate holds the string denoting the end_date field in the database.
 	FieldEndDate = "end_date"
-	// FieldFrequency holds the string denoting the frequency field in the db.
+	// FieldFrequency holds the string denoting the frequency field in the database.
 	FieldFrequency = "frequency"
-	// FieldFrequencyInterval holds the string denoting the frequency_interval field in the db.
+	// FieldFrequencyInterval holds the string denoting the frequency_interval field in the database.
 	FieldFrequencyInterval = "frequency_interval"
-	// FieldFrequencyDayOfWeek holds the string denoting the frequency_day_of_week field in the db.
+	// FieldFrequencyDayOfWeek holds the string denoting the frequency_day_of_week field in the database.
 	FieldFrequencyDayOfWeek = "frequency_day_of_week"
-	// FieldFrequencyDayOfMonth holds the string denoting the frequency_day_of_month field in the db.
+	// FieldFrequencyDayOfMonth holds the string denoting the frequency_day_of_month field in the database.
 	FieldFrequencyDayOfMonth = "frequency_day_of_month"
-	// FieldFrequencyMonthOfYear holds the string denoting the frequency_month_of_year field in the db.
+	// FieldFrequencyMonthOfYear holds the string denoting the frequency_month_of_year field in the database.
 	FieldFrequencyMonthOfYear = "frequency_month_of_year"
-	// FieldVenueType holds the string denoting the venue_type field in the db.
+	// FieldVenueType holds the string denoting the venue_type field in the database.
 	FieldVenueType = "venue_type"
-	// FieldVenueName holds the string denoting the venue_name field in the db.
+	// FieldVenueName holds the string denoting the venue_name field in the database.
 	FieldVenueName = "venue_name"
-	// FieldVenueAddress holds the string denoting the venue_address field in the db.
+	// FieldVenueAddress holds the string denoting the venue_address field in the database.
 	FieldVenueAddress = "venue_address"
-	// FieldVenueCity holds the string denoting the venue_city field in the db.
+	// FieldVenueCity holds the string denoting the venue_city field in the database.
 	FieldVenueCity = "venue_city"
-	// FieldVenueState holds the string denoting the venue_state field in the db.
+	// FieldVenueState holds the string denoting the venue_state field in the database.
 	FieldVenueState = "venue_state"
-	// FieldVenueCountry holds the string denoting the venue_country field in the db.
+	// FieldVenueCountry holds the string denoting the venue_country field in the database.
 	FieldVenueCountry = "venue_country"
-	// FieldVenueZip holds the string denoting the venue_zip field in the db.
+	// FieldVenueZip holds the string denoting the venue_zip field in the database.
 	FieldVenueZip = "venue_zip"
-	// FieldVenueLat holds the string denoting the venue_lat field in the db.
+	// FieldVenueLat holds the string denoting the venue_lat field in the database.
 	FieldVenueLat = "venue_lat"
-	// FieldVenueLon holds the string denoting the venue_lon field in the db.
+	// FieldVenueLon holds the string denoting the venue_lon field in the database.
 	FieldVenueLon = "venue_lon"
-	// FieldVenueURL holds the string denoting the venue_url field in the db.
+	// FieldVenueURL holds the string denoting the venue_url field in the database.
 	FieldVenueURL = "venue_url"
-	// FieldVenuePhone holds the string denoting the venue_phone field in the db.
+	// FieldVenuePhone holds the string denoting the venue_phone field in the database.
 	FieldVenuePhone = "venue_phone"
-	// FieldVenueEmail holds the string denoting the venue_email field in the db.
+	// FieldVenueEmail holds the string denoting the venue_email field in the database.
 	FieldVenueEmail = "venue_email"
-	// FieldTags holds the string denoting the tags field in the db.
+	// FieldTags holds the string denoting the tags field in the database.
 	FieldTags = "tags"
-	// FieldDescription holds the string denoting the description field in the db.
+	// FieldDescription holds the string denoting the description field in the database.
 	FieldDescription = "description"
-	// FieldEventSettings holds the string denoting the event_settings field in the db.
+	// FieldEventSettings holds the string denoting the event_settings field in the database.
 	FieldEventSettings = "event_settings"
-	// FieldCoverImage holds the string denoting the cover_image field in the db.
+	// FieldCoverImage holds the string denoting the cover_image field in the database.
 	FieldCoverImage = "cover_image"
-	// FieldCreatedAt holds the string denoting the createdat field in the db.
+	// FieldCreatedAt holds the string denoting the createdat field in the database.
 	FieldCreatedAt = "created_at"
-	// FieldUpdatedAt holds the string denoting the updatedat field in the db.
+	// FieldUpdatedAt holds the string denoting the updatedat field in the database.
 	FieldUpdatedAt = "updated_at"
-	// FieldMapCoordinates holds the string denoting the map_coordinates field in the db.
+	// FieldMapCoordinates holds the string denoting the map_coordinates field in the database.
 	FieldMapCoordinates = "map_coordinates"
-	// FieldLongitude holds the string denoting the longitude field in the db.
+	// FieldLongitude holds the string denoting the longitude field in the database.
 	FieldLongitude = "longitude"
-	// FieldLatitude holds the string denoting the latitude field in the db.
+	// FieldLatitude holds the string denoting the latitude field in the database.
 	FieldLatitude = "latitude"
-	// FieldSearchText holds the string denoting the search_text field in the db.
+	// FieldSearchText holds the string denoting the search_text field in the database.
 	FieldSearchText = "search_text"
-	// FieldRelevanceScore holds the string denoting the relevance_score field in the db.
+	// FieldRelevanceScore holds the string denoting the relevance_score field in the database.
 	FieldRelevanceScore = "relevance_score"
-	// FieldFollowerCount holds the string denoting the follower_count field in the db.
+	// FieldFollowerCount holds the string denoting the follower_count field in the database.
 	FieldFollowerCount = "follower_count"
-	// FieldFollowingCount holds the string denoting the following_count field in the db.
+	// FieldFollowingCount holds the string denoting the following_count field in the database.
 	FieldFollowingCount = "following_count"
-	// FieldIsPremium holds the string denoting the is_premium field in the db.
+	// FieldIsPremium holds the string denoting the is_premium field in the database.
 	FieldIsPremium = "is_premium"
-	// FieldIsPublished holds the string denoting the is_published field in the db.
+	// FieldIsPublished holds the string denoting the is_published field in the database.
 	FieldIsPublished = "is_published"
-	// FieldIsOnline holds the string denoting the is_online field in the db.
+	// FieldIsOnline holds the string denoting the is_online field in the database.
 	FieldIsOnline = "is_online"
-	// FieldIsFree holds the string denoting the is_free field in the db.
+	// FieldIsFree holds the string denoting the is_free field in the database.
 	FieldIsFree = "is_free"
-	// FieldIsPaid holds the string denoting the is_paid field in the db.
+	// FieldIsPaid holds the string denoting the is_paid field in the database.
 	FieldIsPaid = "is_paid"
-	// FieldIsOnlineOnly holds the string denoting the is_online_only field in the db.
+	// FieldIsOnlineOnly holds the string denoting the is_online_only field in the database.
 	FieldIsOnlineOnly = "is_online_only"
-	// FieldIsInPersonOnly holds the string denoting the is_in_person_only field in the db.
+	// FieldIsInPersonOnly holds the string denoting the is_in_person_only field in the database.
 	FieldIsInPersonOnly = "is_in_person_only"
-	// FieldIsHybrid holds the string denoting the is_hybrid field in the db.
+	// FieldIsHybrid holds the string denoting the is_hybrid field in the database.
 	FieldIsHybrid = "is_hybrid"
-	// FieldIsOnlineAndInPerson holds the string denoting the is_online_and_in_person field in the db.
+	// FieldIsOnlineAndInPerson holds the string denoting the is_online_and_in_person field in the database.
 	FieldIsOnlineAndInPerson = "is_online_and_in_person"
-	// FieldIsOnlineAndInPersonOnly holds the string denoting the is_online_and_in_person_only field in the db.
+	// FieldIsOnlineAndInPersonOnly holds the string denoting the is_online_and_in_person_only field in the database.
 	FieldIsOnlineAndInPersonOnly = "is_online_and_in_person_only"
-	// FieldIsOnlineAndInPersonOrHybrid holds the string denoting the is_online_and_in_person_or_hybrid field in the db.
+	// FieldIsOnlineAndInPersonOrHybrid holds the string denoting the is_online_and_in_person_or_hybrid field in the database.
 	FieldIsOnlineAndInPersonOrHybrid = "is_online_and_in_person_or_hybrid"
-	// FieldLikedByCurrentUser holds the string denoting the likedbycurrentuser field in the db.
+	// FieldLikedByCurrentUser holds the string denoting the likedbycurrentuser field in the database.
 	FieldLikedByCurrentUser = "liked_by_current_user"
-	// FieldFollowedByCurrentUser holds the string denoting the followedbycurrentuser field in the db.
+	// FieldFollowedByCurrentUser holds the string denoting the followedbycurrentuser field in the database.
 	FieldFollowedByCurrentUser = "followed_by_current_user"
 	// EdgeTickets holds the string denoting the tickets edge name in mutations.
 	EdgeTickets = "tickets"
@@ -146,7 +146,7 @@ const (
 	EdgeFaqs = "faqs"
 	// EdgeRatings holds the string denoting the ratings edge name in mutations.
 	EdgeRatings = "ratings"
-	// Table holds the table name of the event in the db.
+	// Table holds the table name of the event in the database.
 	Table = "events"
 	// TicketsTable is the table that holds the tickets relation/edge.
 	TicketsTable = "tickets"

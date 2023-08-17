@@ -44,5 +44,7 @@ func (Media) Edges() []ent.Edge {
 		edge.To("categories", Category.Type),
 		edge.From("place", Place.Type).
 			Ref("medias"),
+		edge.From("place_inventory", PlaceInventory.Type).
+			Ref("media"),
 	}
 }

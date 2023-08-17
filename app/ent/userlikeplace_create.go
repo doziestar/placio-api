@@ -91,7 +91,7 @@ func (ulpc *UserLikePlaceCreate) Mutation() *UserLikePlaceMutation {
 	return ulpc.mutation
 }
 
-// Save creates the UserLikePlace in the db.
+// Save creates the UserLikePlace in the database.
 func (ulpc *UserLikePlaceCreate) Save(ctx context.Context) (*UserLikePlace, error) {
 	ulpc.defaults()
 	return withHooks(ctx, ulpc.sqlSave, ulpc.mutation, ulpc.hooks)
@@ -221,7 +221,7 @@ type UserLikePlaceCreateBulk struct {
 	builders []*UserLikePlaceCreate
 }
 
-// Save creates the UserLikePlace entities in the db.
+// Save creates the UserLikePlace entities in the database.
 func (ulpcb *UserLikePlaceCreateBulk) Save(ctx context.Context) ([]*UserLikePlace, error) {
 	specs := make([]*sqlgraph.CreateSpec, len(ulpcb.builders))
 	nodes := make([]*UserLikePlace, len(ulpcb.builders))

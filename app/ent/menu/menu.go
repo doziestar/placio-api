@@ -8,15 +8,15 @@ import (
 )
 
 const (
-	// Label holds the string label denoting the menu type in the db.
+	// Label holds the string label denoting the menu type in the database.
 	Label = "menu"
-	// FieldID holds the string denoting the id field in the db.
+	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
 	// EdgePlace holds the string denoting the place edge name in mutations.
 	EdgePlace = "place"
 	// EdgeCategories holds the string denoting the categories edge name in mutations.
 	EdgeCategories = "categories"
-	// Table holds the table name of the menu in the db.
+	// Table holds the table name of the menu in the database.
 	Table = "menus"
 	// PlaceTable is the table that holds the place relation/edge.
 	PlaceTable = "menus"

@@ -91,7 +91,7 @@ func (ufpc *UserFollowPlaceCreate) Mutation() *UserFollowPlaceMutation {
 	return ufpc.mutation
 }
 
-// Save creates the UserFollowPlace in the db.
+// Save creates the UserFollowPlace in the database.
 func (ufpc *UserFollowPlaceCreate) Save(ctx context.Context) (*UserFollowPlace, error) {
 	ufpc.defaults()
 	return withHooks(ctx, ufpc.sqlSave, ufpc.mutation, ufpc.hooks)
@@ -221,7 +221,7 @@ type UserFollowPlaceCreateBulk struct {
 	builders []*UserFollowPlaceCreate
 }
 
-// Save creates the UserFollowPlace entities in the db.
+// Save creates the UserFollowPlace entities in the database.
 func (ufpcb *UserFollowPlaceCreateBulk) Save(ctx context.Context) ([]*UserFollowPlace, error) {
 	specs := make([]*sqlgraph.CreateSpec, len(ufpcb.builders))
 	nodes := make([]*UserFollowPlace, len(ufpcb.builders))
