@@ -721,6 +721,7 @@ var (
 		{Name: "brand", Type: field.TypeString, Nullable: true},
 		{Name: "purchase_date", Type: field.TypeTime, Nullable: true},
 		{Name: "last_updated", Type: field.TypeTime},
+		{Name: "business_place_inventories", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "inventory_type_place_inventories", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "place_inventories", Type: field.TypeString, Nullable: true, Size: 36},
 	}
@@ -731,14 +732,20 @@ var (
 		PrimaryKey: []*schema.Column{PlaceInventoriesColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "place_inventories_inventory_types_place_inventories",
+				Symbol:     "place_inventories_businesses_place_inventories",
 				Columns:    []*schema.Column{PlaceInventoriesColumns[12]},
+				RefColumns: []*schema.Column{BusinessesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "place_inventories_inventory_types_place_inventories",
+				Columns:    []*schema.Column{PlaceInventoriesColumns[13]},
 				RefColumns: []*schema.Column{InventoryTypesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "place_inventories_places_inventories",
-				Columns:    []*schema.Column{PlaceInventoriesColumns[13]},
+				Columns:    []*schema.Column{PlaceInventoriesColumns[14]},
 				RefColumns: []*schema.Column{PlacesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -1550,8 +1557,9 @@ func init() {
 	MenusTable.ForeignKeys[0].RefTable = PlacesTable
 	PlacesTable.ForeignKeys[0].RefTable = BusinessesTable
 	PlacesTable.ForeignKeys[1].RefTable = EventsTable
-	PlaceInventoriesTable.ForeignKeys[0].RefTable = InventoryTypesTable
-	PlaceInventoriesTable.ForeignKeys[1].RefTable = PlacesTable
+	PlaceInventoriesTable.ForeignKeys[0].RefTable = BusinessesTable
+	PlaceInventoriesTable.ForeignKeys[1].RefTable = InventoryTypesTable
+	PlaceInventoriesTable.ForeignKeys[2].RefTable = PlacesTable
 	PlaceInventoryAttributesTable.ForeignKeys[0].RefTable = InventoryAttributesTable
 	PlaceInventoryAttributesTable.ForeignKeys[1].RefTable = PlaceInventoriesTable
 	PostsTable.ForeignKeys[0].RefTable = BusinessesTable

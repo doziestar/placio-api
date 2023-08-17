@@ -1811,6 +1811,9 @@ type BusinessMutation struct {
 	ratings                          map[string]struct{}
 	removedratings                   map[string]struct{}
 	clearedratings                   bool
+	place_inventories                map[string]struct{}
+	removedplace_inventories         map[string]struct{}
+	clearedplace_inventories         bool
 	done                             bool
 	oldValue                         func(context.Context) (*Business, error)
 	predicates                       []predicate.Business
@@ -3516,6 +3519,60 @@ func (m *BusinessMutation) ResetRatings() {
 	m.removedratings = nil
 }
 
+// AddPlaceInventoryIDs adds the "place_inventories" edge to the PlaceInventory entity by ids.
+func (m *BusinessMutation) AddPlaceInventoryIDs(ids ...string) {
+	if m.place_inventories == nil {
+		m.place_inventories = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.place_inventories[ids[i]] = struct{}{}
+	}
+}
+
+// ClearPlaceInventories clears the "place_inventories" edge to the PlaceInventory entity.
+func (m *BusinessMutation) ClearPlaceInventories() {
+	m.clearedplace_inventories = true
+}
+
+// PlaceInventoriesCleared reports if the "place_inventories" edge to the PlaceInventory entity was cleared.
+func (m *BusinessMutation) PlaceInventoriesCleared() bool {
+	return m.clearedplace_inventories
+}
+
+// RemovePlaceInventoryIDs removes the "place_inventories" edge to the PlaceInventory entity by IDs.
+func (m *BusinessMutation) RemovePlaceInventoryIDs(ids ...string) {
+	if m.removedplace_inventories == nil {
+		m.removedplace_inventories = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.place_inventories, ids[i])
+		m.removedplace_inventories[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedPlaceInventories returns the removed IDs of the "place_inventories" edge to the PlaceInventory entity.
+func (m *BusinessMutation) RemovedPlaceInventoriesIDs() (ids []string) {
+	for id := range m.removedplace_inventories {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// PlaceInventoriesIDs returns the "place_inventories" edge IDs in the mutation.
+func (m *BusinessMutation) PlaceInventoriesIDs() (ids []string) {
+	for id := range m.place_inventories {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetPlaceInventories resets all changes to the "place_inventories" edge.
+func (m *BusinessMutation) ResetPlaceInventories() {
+	m.place_inventories = nil
+	m.clearedplace_inventories = false
+	m.removedplace_inventories = nil
+}
+
 // Where appends a list predicates to the BusinessMutation builder.
 func (m *BusinessMutation) Where(ps ...predicate.Business) {
 	m.predicates = append(m.predicates, ps...)
@@ -4047,7 +4104,7 @@ func (m *BusinessMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *BusinessMutation) AddedEdges() []string {
-	edges := make([]string, 0, 14)
+	edges := make([]string, 0, 15)
 	if m.userBusinesses != nil {
 		edges = append(edges, business.EdgeUserBusinesses)
 	}
@@ -4089,6 +4146,9 @@ func (m *BusinessMutation) AddedEdges() []string {
 	}
 	if m.ratings != nil {
 		edges = append(edges, business.EdgeRatings)
+	}
+	if m.place_inventories != nil {
+		edges = append(edges, business.EdgePlaceInventories)
 	}
 	return edges
 }
@@ -4179,13 +4239,19 @@ func (m *BusinessMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case business.EdgePlaceInventories:
+		ids := make([]ent.Value, 0, len(m.place_inventories))
+		for id := range m.place_inventories {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *BusinessMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 14)
+	edges := make([]string, 0, 15)
 	if m.removeduserBusinesses != nil {
 		edges = append(edges, business.EdgeUserBusinesses)
 	}
@@ -4224,6 +4290,9 @@ func (m *BusinessMutation) RemovedEdges() []string {
 	}
 	if m.removedratings != nil {
 		edges = append(edges, business.EdgeRatings)
+	}
+	if m.removedplace_inventories != nil {
+		edges = append(edges, business.EdgePlaceInventories)
 	}
 	return edges
 }
@@ -4310,13 +4379,19 @@ func (m *BusinessMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case business.EdgePlaceInventories:
+		ids := make([]ent.Value, 0, len(m.removedplace_inventories))
+		for id := range m.removedplace_inventories {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *BusinessMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 14)
+	edges := make([]string, 0, 15)
 	if m.cleareduserBusinesses {
 		edges = append(edges, business.EdgeUserBusinesses)
 	}
@@ -4359,6 +4434,9 @@ func (m *BusinessMutation) ClearedEdges() []string {
 	if m.clearedratings {
 		edges = append(edges, business.EdgeRatings)
 	}
+	if m.clearedplace_inventories {
+		edges = append(edges, business.EdgePlaceInventories)
+	}
 	return edges
 }
 
@@ -4394,6 +4472,8 @@ func (m *BusinessMutation) EdgeCleared(name string) bool {
 		return m.clearedfaqs
 	case business.EdgeRatings:
 		return m.clearedratings
+	case business.EdgePlaceInventories:
+		return m.clearedplace_inventories
 	}
 	return false
 }
@@ -4454,6 +4534,9 @@ func (m *BusinessMutation) ResetEdge(name string) error {
 		return nil
 	case business.EdgeRatings:
 		m.ResetRatings()
+		return nil
+	case business.EdgePlaceInventories:
+		m.ResetPlaceInventories()
 		return nil
 	}
 	return fmt.Errorf("unknown Business edge %s", name)
@@ -22922,6 +23005,8 @@ type PlaceInventoryMutation struct {
 	reservation_blocks           map[string]struct{}
 	removedreservation_blocks    map[string]struct{}
 	clearedreservation_blocks    bool
+	business                     *string
+	clearedbusiness              bool
 	done                         bool
 	oldValue                     func(context.Context) (*PlaceInventory, error)
 	predicates                   []predicate.PlaceInventory
@@ -23873,6 +23958,45 @@ func (m *PlaceInventoryMutation) ResetReservationBlocks() {
 	m.removedreservation_blocks = nil
 }
 
+// SetBusinessID sets the "business" edge to the Business entity by id.
+func (m *PlaceInventoryMutation) SetBusinessID(id string) {
+	m.business = &id
+}
+
+// ClearBusiness clears the "business" edge to the Business entity.
+func (m *PlaceInventoryMutation) ClearBusiness() {
+	m.clearedbusiness = true
+}
+
+// BusinessCleared reports if the "business" edge to the Business entity was cleared.
+func (m *PlaceInventoryMutation) BusinessCleared() bool {
+	return m.clearedbusiness
+}
+
+// BusinessID returns the "business" edge ID in the mutation.
+func (m *PlaceInventoryMutation) BusinessID() (id string, exists bool) {
+	if m.business != nil {
+		return *m.business, true
+	}
+	return
+}
+
+// BusinessIDs returns the "business" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// BusinessID instead. It exists only for internal usage by the builders.
+func (m *PlaceInventoryMutation) BusinessIDs() (ids []string) {
+	if id := m.business; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetBusiness resets all changes to the "business" edge.
+func (m *PlaceInventoryMutation) ResetBusiness() {
+	m.business = nil
+	m.clearedbusiness = false
+}
+
 // Where appends a list predicates to the PlaceInventoryMutation builder.
 func (m *PlaceInventoryMutation) Where(ps ...predicate.PlaceInventory) {
 	m.predicates = append(m.predicates, ps...)
@@ -24260,7 +24384,7 @@ func (m *PlaceInventoryMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PlaceInventoryMutation) AddedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 7)
 	if m.place != nil {
 		edges = append(edges, placeinventory.EdgePlace)
 	}
@@ -24278,6 +24402,9 @@ func (m *PlaceInventoryMutation) AddedEdges() []string {
 	}
 	if m.reservation_blocks != nil {
 		edges = append(edges, placeinventory.EdgeReservationBlocks)
+	}
+	if m.business != nil {
+		edges = append(edges, placeinventory.EdgeBusiness)
 	}
 	return edges
 }
@@ -24318,13 +24445,17 @@ func (m *PlaceInventoryMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case placeinventory.EdgeBusiness:
+		if id := m.business; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PlaceInventoryMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 7)
 	if m.removedattributes != nil {
 		edges = append(edges, placeinventory.EdgeAttributes)
 	}
@@ -24374,7 +24505,7 @@ func (m *PlaceInventoryMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PlaceInventoryMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 7)
 	if m.clearedplace {
 		edges = append(edges, placeinventory.EdgePlace)
 	}
@@ -24392,6 +24523,9 @@ func (m *PlaceInventoryMutation) ClearedEdges() []string {
 	}
 	if m.clearedreservation_blocks {
 		edges = append(edges, placeinventory.EdgeReservationBlocks)
+	}
+	if m.clearedbusiness {
+		edges = append(edges, placeinventory.EdgeBusiness)
 	}
 	return edges
 }
@@ -24412,6 +24546,8 @@ func (m *PlaceInventoryMutation) EdgeCleared(name string) bool {
 		return m.clearedtransaction_histories
 	case placeinventory.EdgeReservationBlocks:
 		return m.clearedreservation_blocks
+	case placeinventory.EdgeBusiness:
+		return m.clearedbusiness
 	}
 	return false
 }
@@ -24425,6 +24561,9 @@ func (m *PlaceInventoryMutation) ClearEdge(name string) error {
 		return nil
 	case placeinventory.EdgeInventoryType:
 		m.ClearInventoryType()
+		return nil
+	case placeinventory.EdgeBusiness:
+		m.ClearBusiness()
 		return nil
 	}
 	return fmt.Errorf("unknown PlaceInventory unique edge %s", name)
@@ -24451,6 +24590,9 @@ func (m *PlaceInventoryMutation) ResetEdge(name string) error {
 		return nil
 	case placeinventory.EdgeReservationBlocks:
 		m.ResetReservationBlocks()
+		return nil
+	case placeinventory.EdgeBusiness:
+		m.ResetBusiness()
 		return nil
 	}
 	return fmt.Errorf("unknown PlaceInventory edge %s", name)

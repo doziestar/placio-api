@@ -1501,6 +1501,29 @@ func HasRatingsWith(preds ...predicate.Rating) predicate.Business {
 	})
 }
 
+// HasPlaceInventories applies the HasEdge predicate on the "place_inventories" edge.
+func HasPlaceInventories() predicate.Business {
+	return predicate.Business(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, PlaceInventoriesTable, PlaceInventoriesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasPlaceInventoriesWith applies the HasEdge predicate on the "place_inventories" edge with a given conditions (other predicates).
+func HasPlaceInventoriesWith(preds ...predicate.PlaceInventory) predicate.Business {
+	return predicate.Business(func(s *sql.Selector) {
+		step := newPlaceInventoriesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Business) predicate.Business {
 	return predicate.Business(func(s *sql.Selector) {

@@ -4,6 +4,7 @@ package ent
 
 import (
 	"fmt"
+	"placio-app/ent/business"
 	"placio-app/ent/inventorytype"
 	"placio-app/ent/place"
 	"placio-app/ent/placeinventory"
@@ -44,6 +45,7 @@ type PlaceInventory struct {
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PlaceInventoryQuery when eager-loading is set.
 	Edges                            PlaceInventoryEdges `json:"edges"`
+	business_place_inventories       *string
 	inventory_type_place_inventories *string
 	place_inventories                *string
 	selectValues                     sql.SelectValues
@@ -63,9 +65,11 @@ type PlaceInventoryEdges struct {
 	TransactionHistories []*TransactionHistory `json:"transaction_histories,omitempty"`
 	// ReservationBlocks holds the value of the reservation_blocks edge.
 	ReservationBlocks []*ReservationBlock `json:"reservation_blocks,omitempty"`
+	// Business holds the value of the business edge.
+	Business *Business `json:"business,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [6]bool
+	loadedTypes [7]bool
 }
 
 // PlaceOrErr returns the Place value or an error if the edge
@@ -130,6 +134,19 @@ func (e PlaceInventoryEdges) ReservationBlocksOrErr() ([]*ReservationBlock, erro
 	return nil, &NotLoadedError{edge: "reservation_blocks"}
 }
 
+// BusinessOrErr returns the Business value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e PlaceInventoryEdges) BusinessOrErr() (*Business, error) {
+	if e.loadedTypes[6] {
+		if e.Business == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: business.Label}
+		}
+		return e.Business, nil
+	}
+	return nil, &NotLoadedError{edge: "business"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*PlaceInventory) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -143,9 +160,11 @@ func (*PlaceInventory) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case placeinventory.FieldExpiryDate, placeinventory.FieldPurchaseDate, placeinventory.FieldLastUpdated:
 			values[i] = new(sql.NullTime)
-		case placeinventory.ForeignKeys[0]: // inventory_type_place_inventories
+		case placeinventory.ForeignKeys[0]: // business_place_inventories
 			values[i] = new(sql.NullString)
-		case placeinventory.ForeignKeys[1]: // place_inventories
+		case placeinventory.ForeignKeys[1]: // inventory_type_place_inventories
+			values[i] = new(sql.NullString)
+		case placeinventory.ForeignKeys[2]: // place_inventories
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -236,12 +255,19 @@ func (pi *PlaceInventory) assignValues(columns []string, values []any) error {
 			}
 		case placeinventory.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field business_place_inventories", values[i])
+			} else if value.Valid {
+				pi.business_place_inventories = new(string)
+				*pi.business_place_inventories = value.String
+			}
+		case placeinventory.ForeignKeys[1]:
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field inventory_type_place_inventories", values[i])
 			} else if value.Valid {
 				pi.inventory_type_place_inventories = new(string)
 				*pi.inventory_type_place_inventories = value.String
 			}
-		case placeinventory.ForeignKeys[1]:
+		case placeinventory.ForeignKeys[2]:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field place_inventories", values[i])
 			} else if value.Valid {
@@ -289,6 +315,11 @@ func (pi *PlaceInventory) QueryTransactionHistories() *TransactionHistoryQuery {
 // QueryReservationBlocks queries the "reservation_blocks" edge of the PlaceInventory entity.
 func (pi *PlaceInventory) QueryReservationBlocks() *ReservationBlockQuery {
 	return NewPlaceInventoryClient(pi.config).QueryReservationBlocks(pi)
+}
+
+// QueryBusiness queries the "business" edge of the PlaceInventory entity.
+func (pi *PlaceInventory) QueryBusiness() *BusinessQuery {
+	return NewPlaceInventoryClient(pi.config).QueryBusiness(pi)
 }
 
 // Update returns a builder for updating this PlaceInventory.

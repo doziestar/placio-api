@@ -88,9 +88,11 @@ type BusinessEdges struct {
 	Faqs []*FAQ `json:"faqs,omitempty"`
 	// Ratings holds the value of the ratings edge.
 	Ratings []*Rating `json:"ratings,omitempty"`
+	// PlaceInventories holds the value of the place_inventories edge.
+	PlaceInventories []*PlaceInventory `json:"place_inventories,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [14]bool
+	loadedTypes [15]bool
 }
 
 // UserBusinessesOrErr returns the UserBusinesses value or an error if the edge
@@ -221,6 +223,15 @@ func (e BusinessEdges) RatingsOrErr() ([]*Rating, error) {
 		return e.Ratings, nil
 	}
 	return nil, &NotLoadedError{edge: "ratings"}
+}
+
+// PlaceInventoriesOrErr returns the PlaceInventories value or an error if the edge
+// was not loaded in eager-loading.
+func (e BusinessEdges) PlaceInventoriesOrErr() ([]*PlaceInventory, error) {
+	if e.loadedTypes[14] {
+		return e.PlaceInventories, nil
+	}
+	return nil, &NotLoadedError{edge: "place_inventories"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -444,6 +455,11 @@ func (b *Business) QueryFaqs() *FAQQuery {
 // QueryRatings queries the "ratings" edge of the Business entity.
 func (b *Business) QueryRatings() *RatingQuery {
 	return NewBusinessClient(b.config).QueryRatings(b)
+}
+
+// QueryPlaceInventories queries the "place_inventories" edge of the Business entity.
+func (b *Business) QueryPlaceInventories() *PlaceInventoryQuery {
+	return NewBusinessClient(b.config).QueryPlaceInventories(b)
 }
 
 // Update returns a builder for updating this Business.

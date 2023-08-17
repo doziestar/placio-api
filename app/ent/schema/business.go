@@ -60,6 +60,7 @@ func (Business) Edges() []ent.Edge {
 		edge.To("businessFollowEvents", BusinessFollowEvent.Type),
 		edge.To("faqs", FAQ.Type),
 		edge.To("ratings", Rating.Type),
+		edge.To("place_inventories", PlaceInventory.Type),
 	}
 }
 

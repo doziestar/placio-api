@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"placio-app/ent/business"
 	"placio-app/ent/inventorytype"
 	"placio-app/ent/media"
 	"placio-app/ent/place"
@@ -325,6 +326,25 @@ func (piu *PlaceInventoryUpdate) AddReservationBlocks(r ...*ReservationBlock) *P
 	return piu.AddReservationBlockIDs(ids...)
 }
 
+// SetBusinessID sets the "business" edge to the Business entity by ID.
+func (piu *PlaceInventoryUpdate) SetBusinessID(id string) *PlaceInventoryUpdate {
+	piu.mutation.SetBusinessID(id)
+	return piu
+}
+
+// SetNillableBusinessID sets the "business" edge to the Business entity by ID if the given value is not nil.
+func (piu *PlaceInventoryUpdate) SetNillableBusinessID(id *string) *PlaceInventoryUpdate {
+	if id != nil {
+		piu = piu.SetBusinessID(*id)
+	}
+	return piu
+}
+
+// SetBusiness sets the "business" edge to the Business entity.
+func (piu *PlaceInventoryUpdate) SetBusiness(b *Business) *PlaceInventoryUpdate {
+	return piu.SetBusinessID(b.ID)
+}
+
 // Mutation returns the PlaceInventoryMutation object of the builder.
 func (piu *PlaceInventoryUpdate) Mutation() *PlaceInventoryMutation {
 	return piu.mutation
@@ -424,6 +444,12 @@ func (piu *PlaceInventoryUpdate) RemoveReservationBlocks(r ...*ReservationBlock)
 		ids[i] = r[i].ID
 	}
 	return piu.RemoveReservationBlockIDs(ids...)
+}
+
+// ClearBusiness clears the "business" edge to the Business entity.
+func (piu *PlaceInventoryUpdate) ClearBusiness() *PlaceInventoryUpdate {
+	piu.mutation.ClearBusiness()
+	return piu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -763,6 +789,35 @@ func (piu *PlaceInventoryUpdate) sqlSave(ctx context.Context) (n int, err error)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if piu.mutation.BusinessCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   placeinventory.BusinessTable,
+			Columns: []string{placeinventory.BusinessColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(business.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := piu.mutation.BusinessIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   placeinventory.BusinessTable,
+			Columns: []string{placeinventory.BusinessColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(business.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, piu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{placeinventory.Label}
@@ -1074,6 +1129,25 @@ func (piuo *PlaceInventoryUpdateOne) AddReservationBlocks(r ...*ReservationBlock
 	return piuo.AddReservationBlockIDs(ids...)
 }
 
+// SetBusinessID sets the "business" edge to the Business entity by ID.
+func (piuo *PlaceInventoryUpdateOne) SetBusinessID(id string) *PlaceInventoryUpdateOne {
+	piuo.mutation.SetBusinessID(id)
+	return piuo
+}
+
+// SetNillableBusinessID sets the "business" edge to the Business entity by ID if the given value is not nil.
+func (piuo *PlaceInventoryUpdateOne) SetNillableBusinessID(id *string) *PlaceInventoryUpdateOne {
+	if id != nil {
+		piuo = piuo.SetBusinessID(*id)
+	}
+	return piuo
+}
+
+// SetBusiness sets the "business" edge to the Business entity.
+func (piuo *PlaceInventoryUpdateOne) SetBusiness(b *Business) *PlaceInventoryUpdateOne {
+	return piuo.SetBusinessID(b.ID)
+}
+
 // Mutation returns the PlaceInventoryMutation object of the builder.
 func (piuo *PlaceInventoryUpdateOne) Mutation() *PlaceInventoryMutation {
 	return piuo.mutation
@@ -1173,6 +1247,12 @@ func (piuo *PlaceInventoryUpdateOne) RemoveReservationBlocks(r ...*ReservationBl
 		ids[i] = r[i].ID
 	}
 	return piuo.RemoveReservationBlockIDs(ids...)
+}
+
+// ClearBusiness clears the "business" edge to the Business entity.
+func (piuo *PlaceInventoryUpdateOne) ClearBusiness() *PlaceInventoryUpdateOne {
+	piuo.mutation.ClearBusiness()
+	return piuo
 }
 
 // Where appends a list predicates to the PlaceInventoryUpdate builder.
@@ -1535,6 +1615,35 @@ func (piuo *PlaceInventoryUpdateOne) sqlSave(ctx context.Context) (_node *PlaceI
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(reservationblock.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if piuo.mutation.BusinessCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   placeinventory.BusinessTable,
+			Columns: []string{placeinventory.BusinessColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(business.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := piuo.mutation.BusinessIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   placeinventory.BusinessTable,
+			Columns: []string{placeinventory.BusinessColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(business.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
