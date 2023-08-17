@@ -1,8 +1,8 @@
 package amenities
 
 type CreateAmenityInput struct {
-	Name string
-	Icon string
+	Name string `json:"name"`
+	Icon string `json:"icon"`
 }
 
 type UpdateAmenityInput struct {
