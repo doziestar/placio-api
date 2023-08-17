@@ -453,6 +453,8 @@ func (s *PlaceServiceImpl) AddAmenitiesToPlace(ctx context.Context, placeID stri
 		return err
 	}
 
+	log.Println("creating amenities", existingAmenities, amenities)
+
 	existingAmenityNames := make(map[string]struct{})
 	for _, amenity := range existingAmenities {
 		existingAmenityNames[amenity.Name] = struct{}{}
@@ -497,6 +499,8 @@ func (s *PlaceServiceImpl) AddAmenitiesToPlace(ctx context.Context, placeID stri
 			amenityList = append(amenityList, newAmenity)
 		}
 	}
+
+	log.Println(" complete creating amenities", amenityList)
 
 	// Step 4: Associate the new amenities with the place.
 	if len(amenityList) > 0 {
