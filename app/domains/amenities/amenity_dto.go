@@ -5,6 +5,10 @@ type CreateAmenityInput struct {
 	Icon string `json:"icon"`
 }
 
+type Amenity struct {
+	Amenities []CreateAmenityInput `json:"amenities"`
+}
+
 type UpdateAmenityInput struct {
 	Name *string
 	Icon *string

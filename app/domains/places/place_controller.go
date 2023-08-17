@@ -169,12 +169,12 @@ func (c *PlaceController) getAllPlaces(ctx *gin.Context) error {
 func (c *PlaceController) addAmenitiesToPlace(ctx *gin.Context) error {
 	id := ctx.Param("id")
 
-	var amenityDTO []amenities.CreateAmenityInput
+	var amenityDTO amenities.Amenity
 	if err := ctx.ShouldBindJSON(&amenityDTO); err != nil {
 		return err
 	}
 
-	if err := c.placeService.AddAmenitiesToPlace(ctx, id, amenityDTO); err != nil {
+	if err := c.placeService.AddAmenitiesToPlace(ctx, id, amenityDTO.Amenities); err != nil {
 
 		return err
 	}
