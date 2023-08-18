@@ -3,6 +3,7 @@ package follow
 import (
 	"context"
 	"github.com/google/uuid"
+	"placio-app/domains/cache"
 	"placio-app/ent"
 	"placio-app/ent/business"
 	"placio-app/ent/event"
@@ -39,11 +40,12 @@ type IFollowService interface {
 }
 
 type FollowService struct {
-	client *ent.Client
+	client       *ent.Client
+	cacheService cache.ICacheService
 }
 
-func NewFollowService(client *ent.Client) *FollowService {
-	return &FollowService{client: client}
+func NewFollowService(client *ent.Client, cacheService cache.ICacheService) *FollowService {
+	return &FollowService{client: client, cacheService: cacheService}
 }
 
 // FollowUserToBusiness User-Business methods
@@ -136,6 +138,7 @@ func (s *FollowService) FollowUserToPlace(ctx context.Context, userID, placeID s
 		return err
 	}
 
+	go s.cacheService.AddPlaceToCacheAndSearchIndex(ctx, placeToUpdate)
 	return nil
 }
 
