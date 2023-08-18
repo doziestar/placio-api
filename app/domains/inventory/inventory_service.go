@@ -1,80 +1,35 @@
 package inventory
 
 //type InventoryService interface {
-//	CreateInventory(ctx context.Context, input CreateInventoryDTO) (*ent.PlaceInventory, error)
-//	FetchInventoriesByPlace(ctx context.Context, placeID string) ([]*ent.PlaceInventory, error)
-//	EditInventory(ctx context.Context, inventoryID string, input EditInventoryDTO) (*ent.PlaceInventory, error)
-//	DeleteInventory(ctx context.Context, inventoryID string) error
-//}
+//	// Inventory Type
+//	CreateInventoryType(ctx context.Context, data *InventoryTypeData) (*ent.InventoryType, error)
+//	GetInventoryType(ctx context.Context, inventoryTypeID string) (*ent.InventoryType, error)
+//	UpdateInventoryType(ctx context.Context, inventoryTypeID string, data *InventoryTypeData) (*ent.InventoryType, error)
+//	DeleteInventoryType(ctx context.Context, inventoryTypeID string) error
+//	ListInventoryTypes(ctx context.Context, limit, offset int) ([]*ent.InventoryType, error)
+//	SearchInventoryTypes(ctx context.Context, query string, limit, offset int) ([]*ent.InventoryType, error)
 //
-//type InventoryServiceImpl struct {
-//	client       *ent.Client
-//	mediaService media.MediaService // Assuming you have a media service for media operations
-//}
+//	// Inventory Attribute
+//	CreateInventoryAttribute(ctx context.Context, data *InventoryAttributeData) (*ent.InventoryAttribute, error)
+//	GetInventoryAttribute(ctx context.Context, inventoryAttributeID string) (*ent.InventoryAttribute, error)
+//	UpdateInventoryAttribute(ctx context.Context, inventoryAttributeID string, data *InventoryAttributeData) (*ent.InventoryAttribute, error)
+//	DeleteInventoryAttribute(ctx context.Context, inventoryAttributeID string) error
+//	ListInventoryAttributes(ctx context.Context, limit, offset int) ([]*ent.InventoryAttribute, error)
+//	SearchInventoryAttributes(ctx context.Context, query string, limit, offset int) ([]*ent.InventoryAttribute, error)
 //
-//func NewInventoryService(client *ent.Client, mediaService media.MediaService) *InventoryServiceImpl {
-//	return &InventoryServiceImpl{
-//		client:       client,
-//		mediaService: mediaService,
-//	}
-//}
+//	// Place Inventory
+//	CreatePlaceInventory(ctx context.Context, placeID string, data *PlaceInventoryData) (*ent.PlaceInventory, error)
+//	GetPlaceInventory(ctx context.Context, placeInventoryID string) (*ent.PlaceInventory, error)
+//	UpdatePlaceInventory(ctx context.Context, placeInventoryID string, data *PlaceInventoryData) (*ent.PlaceInventory, error)
+//	DeletePlaceInventory(ctx context.Context, placeInventoryID string) error
+//	ListPlaceInventories(ctx context.Context, placeID string, limit, offset int) ([]*ent.PlaceInventory, error)
+//	SearchPlaceInventories(ctx context.Context, query string, limit, offset int) ([]*ent.PlaceInventory, error)
 //
-//// CreateInventory creates an inventory including media, custom fields, and categorizations.
-//func (s *InventoryServiceImpl) CreateInventory(ctx context.Context, input CreateInventoryDTO) (*ent.Inventory, error) {
-//	// Create media
-//	media, err := s.mediaService.CreateMedia(ctx, input.Media)
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	// Create inventory with associated media and other data
-//	inventory, err := s.client.Inventory.
-//		Create().
-//		SetMedia(media).
-//		// Set other fields...
-//		Save(ctx)
-//
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	return inventory, nil
-//}
-//
-//// FetchInventoriesByPlace fetches all inventory items attached to a place.
-//func (s *InventoryServiceImpl) FetchInventoriesByPlace(ctx context.Context, placeID string) ([]*ent.Inventory, error) {
-//	inventories, err := s.client.Inventory.
-//		Query().
-//		Where(inventory.HasPlaceWith(place.ID(placeID))).
-//		All(ctx)
-//
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	return inventories, nil
-//}
-//
-//// EditInventory edits a single inventory.
-//func (s *InventoryServiceImpl) EditInventory(ctx context.Context, inventoryID string, input EditInventoryDTO) (*ent.Inventory, error) {
-//	// Edit inventory. Handle media, custom fields, and categorizations similar to creation.
-//	inventory, err := s.client.Inventory.
-//		UpdateOneID(inventoryID).
-//		// Set updated fields...
-//		Save(ctx)
-//
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	return inventory, nil
-//}
-//
-//// DeleteInventory deletes a single inventory.
-//func (s *InventoryServiceImpl) DeleteInventory(ctx context.Context, inventoryID string) error {
-//	err := s.client.Inventory.
-//		DeleteOneID(inventoryID).
-//		Exec(ctx)
-//
-//	return err
+//	// Place Inventory Attribute
+//	CreatePlaceInventoryAttribute(ctx context.Context, placeInventoryID string, data *PlaceInventoryAttributeData) (*ent.PlaceInventoryAttribute, error)
+//	GetPlaceInventoryAttribute(ctx context.Context, placeInventoryAttributeID string) (*ent.PlaceInventoryAttribute, error)
+//	UpdatePlaceInventoryAttribute(ctx context.Context, placeInventoryAttributeID string, data *PlaceInventoryAttributeData) (*ent.PlaceInventoryAttribute, error)
+//	DeletePlaceInventoryAttribute(ctx context.Context, placeInventoryAttributeID string) error
+//	ListPlaceInventoryAttributes(ctx context.Context, placeInventoryID string, limit, offset int) ([]*ent.PlaceInventoryAttribute, error)
+//	SearchPlaceInventoryAttributes(ctx context.Context, query string, limit, offset int) ([]*ent.PlaceInventoryAttribute, error)
 //}

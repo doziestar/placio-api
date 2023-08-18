@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"placio-app/ent/business"
 	"placio-app/ent/inventorytype"
 	"placio-app/ent/media"
 	"placio-app/ent/place"
@@ -260,6 +261,25 @@ func (pic *PlaceInventoryCreate) AddReservationBlocks(r ...*ReservationBlock) *P
 	return pic.AddReservationBlockIDs(ids...)
 }
 
+// SetBusinessID sets the "business" edge to the Business entity by ID.
+func (pic *PlaceInventoryCreate) SetBusinessID(id string) *PlaceInventoryCreate {
+	pic.mutation.SetBusinessID(id)
+	return pic
+}
+
+// SetNillableBusinessID sets the "business" edge to the Business entity by ID if the given value is not nil.
+func (pic *PlaceInventoryCreate) SetNillableBusinessID(id *string) *PlaceInventoryCreate {
+	if id != nil {
+		pic = pic.SetBusinessID(*id)
+	}
+	return pic
+}
+
+// SetBusiness sets the "business" edge to the Business entity.
+func (pic *PlaceInventoryCreate) SetBusiness(b *Business) *PlaceInventoryCreate {
+	return pic.SetBusinessID(b.ID)
+}
+
 // Mutation returns the PlaceInventoryMutation object of the builder.
 func (pic *PlaceInventoryCreate) Mutation() *PlaceInventoryMutation {
 	return pic.mutation
@@ -495,6 +515,23 @@ func (pic *PlaceInventoryCreate) createSpec() (*PlaceInventory, *sqlgraph.Create
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pic.mutation.BusinessIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   placeinventory.BusinessTable,
+			Columns: []string{placeinventory.BusinessColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(business.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.business_place_inventories = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

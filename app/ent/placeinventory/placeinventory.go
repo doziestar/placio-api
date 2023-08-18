@@ -48,6 +48,8 @@ const (
 	EdgeTransactionHistories = "transaction_histories"
 	// EdgeReservationBlocks holds the string denoting the reservation_blocks edge name in mutations.
 	EdgeReservationBlocks = "reservation_blocks"
+	// EdgeBusiness holds the string denoting the business edge name in mutations.
+	EdgeBusiness = "business"
 	// Table holds the table name of the placeinventory in the database.
 	Table = "place_inventories"
 	// PlaceTable is the table that holds the place relation/edge.
@@ -90,6 +92,13 @@ const (
 	ReservationBlocksInverseTable = "reservation_blocks"
 	// ReservationBlocksColumn is the table column denoting the reservation_blocks relation/edge.
 	ReservationBlocksColumn = "place_inventory_reservation_blocks"
+	// BusinessTable is the table that holds the business relation/edge.
+	BusinessTable = "place_inventories"
+	// BusinessInverseTable is the table name for the Business entity.
+	// It exists in this package in order to avoid circular dependency with the "business" package.
+	BusinessInverseTable = "businesses"
+	// BusinessColumn is the table column denoting the business relation/edge.
+	BusinessColumn = "business_place_inventories"
 )
 
 // Columns holds all SQL columns for placeinventory fields.
@@ -111,6 +120,7 @@ var Columns = []string{
 // ForeignKeys holds the SQL foreign-keys that are owned by the "place_inventories"
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
+	"business_place_inventories",
 	"inventory_type_place_inventories",
 	"place_inventories",
 }
@@ -275,6 +285,13 @@ func ByReservationBlocks(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption
 		sqlgraph.OrderByNeighborTerms(s, newReservationBlocksStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByBusinessField orders the results by business field.
+func ByBusinessField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newBusinessStep(), sql.OrderByField(field, opts...))
+	}
+}
 func newPlaceStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -315,5 +332,12 @@ func newReservationBlocksStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(ReservationBlocksInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, ReservationBlocksTable, ReservationBlocksColumn),
+	)
+}
+func newBusinessStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(BusinessInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, BusinessTable, BusinessColumn),
 	)
 }

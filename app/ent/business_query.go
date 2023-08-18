@@ -17,6 +17,7 @@ import (
 	"placio-app/ent/event"
 	"placio-app/ent/faq"
 	"placio-app/ent/place"
+	"placio-app/ent/placeinventory"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
 	"placio-app/ent/rating"
@@ -49,6 +50,7 @@ type BusinessQuery struct {
 	withBusinessFollowEvents    *BusinessFollowEventQuery
 	withFaqs                    *FAQQuery
 	withRatings                 *RatingQuery
+	withPlaceInventories        *PlaceInventoryQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -393,6 +395,28 @@ func (bq *BusinessQuery) QueryRatings() *RatingQuery {
 	return query
 }
 
+// QueryPlaceInventories chains the current query on the "place_inventories" edge.
+func (bq *BusinessQuery) QueryPlaceInventories() *PlaceInventoryQuery {
+	query := (&PlaceInventoryClient{config: bq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := bq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := bq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(business.Table, business.FieldID, selector),
+			sqlgraph.To(placeinventory.Table, placeinventory.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, business.PlaceInventoriesTable, business.PlaceInventoriesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(bq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Business entity from the query.
 // Returns a *NotFoundError when no Business was found.
 func (bq *BusinessQuery) First(ctx context.Context) (*Business, error) {
@@ -599,6 +623,7 @@ func (bq *BusinessQuery) Clone() *BusinessQuery {
 		withBusinessFollowEvents:    bq.withBusinessFollowEvents.Clone(),
 		withFaqs:                    bq.withFaqs.Clone(),
 		withRatings:                 bq.withRatings.Clone(),
+		withPlaceInventories:        bq.withPlaceInventories.Clone(),
 		// clone intermediate query.
 		sql:  bq.sql.Clone(),
 		path: bq.path,
@@ -759,6 +784,17 @@ func (bq *BusinessQuery) WithRatings(opts ...func(*RatingQuery)) *BusinessQuery 
 	return bq
 }
 
+// WithPlaceInventories tells the query-builder to eager-load the nodes that are connected to
+// the "place_inventories" edge. The optional arguments are used to configure the query builder of the edge.
+func (bq *BusinessQuery) WithPlaceInventories(opts ...func(*PlaceInventoryQuery)) *BusinessQuery {
+	query := (&PlaceInventoryClient{config: bq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	bq.withPlaceInventories = query
+	return bq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -837,7 +873,7 @@ func (bq *BusinessQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Bus
 	var (
 		nodes       = []*Business{}
 		_spec       = bq.querySpec()
-		loadedTypes = [14]bool{
+		loadedTypes = [15]bool{
 			bq.withUserBusinesses != nil,
 			bq.withBusinessAccountSettings != nil,
 			bq.withPosts != nil,
@@ -852,6 +888,7 @@ func (bq *BusinessQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Bus
 			bq.withBusinessFollowEvents != nil,
 			bq.withFaqs != nil,
 			bq.withRatings != nil,
+			bq.withPlaceInventories != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -974,6 +1011,13 @@ func (bq *BusinessQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Bus
 		if err := bq.loadRatings(ctx, query, nodes,
 			func(n *Business) { n.Edges.Ratings = []*Rating{} },
 			func(n *Business, e *Rating) { n.Edges.Ratings = append(n.Edges.Ratings, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := bq.withPlaceInventories; query != nil {
+		if err := bq.loadPlaceInventories(ctx, query, nodes,
+			func(n *Business) { n.Edges.PlaceInventories = []*PlaceInventory{} },
+			func(n *Business, e *PlaceInventory) { n.Edges.PlaceInventories = append(n.Edges.PlaceInventories, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -1406,6 +1450,37 @@ func (bq *BusinessQuery) loadRatings(ctx context.Context, query *RatingQuery, no
 		node, ok := nodeids[*fk]
 		if !ok {
 			return fmt.Errorf(`unexpected referenced foreign-key "business_ratings" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (bq *BusinessQuery) loadPlaceInventories(ctx context.Context, query *PlaceInventoryQuery, nodes []*Business, init func(*Business), assign func(*Business, *PlaceInventory)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Business)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.PlaceInventory(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(business.PlaceInventoriesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.business_place_inventories
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "business_place_inventories" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "business_place_inventories" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

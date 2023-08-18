@@ -43,6 +43,7 @@ func (PlaceInventory) Edges() []ent.Edge {
 		edge.To("media", Media.Type),
 		edge.To("transaction_histories", TransactionHistory.Type),
 		edge.To("reservation_blocks", ReservationBlock.Type),
+		edge.From("business", Business.Type).Ref("place_inventories").Unique(),
 	}
 }
 

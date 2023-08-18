@@ -169,13 +169,12 @@ func (c *PlaceController) getAllPlaces(ctx *gin.Context) error {
 func (c *PlaceController) addAmenitiesToPlace(ctx *gin.Context) error {
 	id := ctx.Param("id")
 
-	var amenityDTO []amenities.CreateAmenityInput
+	var amenityDTO amenities.Amenity
 	if err := ctx.ShouldBindJSON(&amenityDTO); err != nil {
-
 		return err
 	}
 
-	if err := c.placeService.AddAmenitiesToPlace(ctx, id, amenityDTO); err != nil {
+	if err := c.placeService.AddAmenitiesToPlace(ctx, id, amenityDTO.Amenities); err != nil {
 
 		return err
 	}
@@ -250,15 +249,14 @@ func (c *PlaceController) addMediaToAPlace(ctx *gin.Context) error {
 	}
 
 	log.Println("calling AddMediaToPlace", files)
-	if err := c.placeService.AddMediaToPlace(ctx, id, files); err != nil {
+	place, err := c.placeService.AddMediaToPlace(ctx, id, files)
+	if err != nil {
 		log.Print(err)
 		sentry.CaptureException(err)
 	}
 	log.Println("upload complete")
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Media added successfully",
-	})
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(place, "success", "media added successfully", ""))
 	return nil
 }
 

@@ -5,6 +5,8 @@ import (
 	"errors"
 	"github.com/google/uuid"
 	"log"
+	"placio-app/domains/cache"
+	"placio-app/domains/search"
 	"placio-app/ent"
 	"placio-app/ent/like"
 	"placio-app/ent/place"
@@ -40,12 +42,14 @@ type UserLikePlaceService interface {
 }
 
 type UserLikePlaceServiceImpl struct {
-	client *ent.Client
-	cache  *utility.RedisClient
+	client        *ent.Client
+	cache         *utility.RedisClient
+	searchService search.SearchService
+	cacheService  cache.ICacheService
 }
 
-func NewUserLikePlaceService(client *ent.Client, cache *utility.RedisClient) *UserLikePlaceServiceImpl {
-	return &UserLikePlaceServiceImpl{client: client, cache: cache}
+func NewUserLikePlaceService(client *ent.Client, cache *utility.RedisClient, searchService search.SearchService, cacheService cache.ICacheService) *UserLikePlaceServiceImpl {
+	return &UserLikePlaceServiceImpl{client: client, cache: cache, searchService: searchService, cacheService: cacheService}
 }
 
 func (s *UserLikePlaceServiceImpl) CheckIfUserLikesPlace(ctx context.Context, userID, placeID string) (bool, error) {
@@ -163,6 +167,8 @@ func (s *UserLikePlaceServiceImpl) LikePlace(ctx context.Context, userID string,
 		log.Println("Failed to create UserLikePlace:", err)
 		return nil, err
 	}
+
+	go s.cacheService.AddPlaceToCacheAndSearchIndex(ctx, placeData)
 
 	log.Println("Successfully created UserLikePlace for user and place:", userID, placeID)
 	return userLike, nil

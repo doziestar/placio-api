@@ -6,6 +6,7 @@ import (
 	"placio-app/domains/amenities"
 	"placio-app/domains/booking"
 	"placio-app/domains/business"
+	"placio-app/domains/cache"
 	"placio-app/domains/categories"
 	"placio-app/domains/comments"
 	"placio-app/domains/events_management"
@@ -54,6 +55,8 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		routerGroupV1.Use(middleware.EnsureValidToken())
 		routerGroupV1WithoutAuth.Use(middleware.EnsureValidTokenButAllowAccess())
 
+		cacheService := cache.NewCacheService(client, *redisClient, searchService)
+
 		// user
 		userService := users.NewUserService(client, redisClient, searchService)
 		userController := users.NewUserController(userService, *redisClient)
@@ -71,12 +74,12 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 
 		// likes
 		likeService := like.NewLikeService(client, redisClient)
-		userPlacesLikesService := like.NewUserLikePlaceService(client, redisClient)
+		userPlacesLikesService := like.NewUserLikePlaceService(client, redisClient, searchService, cacheService)
 		likeController := like.NewLikeController(likeService, userPlacesLikesService)
 		likeController.RegisterRoutes(routerGroupV1)
 
 		// follow
-		followService := follow.NewFollowService(client)
+		followService := follow.NewFollowService(client, cacheService)
 		followController := follow.NewFollowController(followService)
 		followController.RegisterRoutes(routerGroupV1)
 

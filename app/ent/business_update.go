@@ -16,6 +16,7 @@ import (
 	"placio-app/ent/event"
 	"placio-app/ent/faq"
 	"placio-app/ent/place"
+	"placio-app/ent/placeinventory"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
 	"placio-app/ent/rating"
@@ -573,6 +574,21 @@ func (bu *BusinessUpdate) AddRatings(r ...*Rating) *BusinessUpdate {
 	return bu.AddRatingIDs(ids...)
 }
 
+// AddPlaceInventoryIDs adds the "place_inventories" edge to the PlaceInventory entity by IDs.
+func (bu *BusinessUpdate) AddPlaceInventoryIDs(ids ...string) *BusinessUpdate {
+	bu.mutation.AddPlaceInventoryIDs(ids...)
+	return bu
+}
+
+// AddPlaceInventories adds the "place_inventories" edges to the PlaceInventory entity.
+func (bu *BusinessUpdate) AddPlaceInventories(p ...*PlaceInventory) *BusinessUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return bu.AddPlaceInventoryIDs(ids...)
+}
+
 // Mutation returns the BusinessMutation object of the builder.
 func (bu *BusinessUpdate) Mutation() *BusinessMutation {
 	return bu.mutation
@@ -855,6 +871,27 @@ func (bu *BusinessUpdate) RemoveRatings(r ...*Rating) *BusinessUpdate {
 		ids[i] = r[i].ID
 	}
 	return bu.RemoveRatingIDs(ids...)
+}
+
+// ClearPlaceInventories clears all "place_inventories" edges to the PlaceInventory entity.
+func (bu *BusinessUpdate) ClearPlaceInventories() *BusinessUpdate {
+	bu.mutation.ClearPlaceInventories()
+	return bu
+}
+
+// RemovePlaceInventoryIDs removes the "place_inventories" edge to PlaceInventory entities by IDs.
+func (bu *BusinessUpdate) RemovePlaceInventoryIDs(ids ...string) *BusinessUpdate {
+	bu.mutation.RemovePlaceInventoryIDs(ids...)
+	return bu
+}
+
+// RemovePlaceInventories removes "place_inventories" edges to PlaceInventory entities.
+func (bu *BusinessUpdate) RemovePlaceInventories(p ...*PlaceInventory) *BusinessUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return bu.RemovePlaceInventoryIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1609,6 +1646,51 @@ func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if bu.mutation.PlaceInventoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.PlaceInventoriesTable,
+			Columns: []string{business.PlaceInventoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placeinventory.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.RemovedPlaceInventoriesIDs(); len(nodes) > 0 && !bu.mutation.PlaceInventoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.PlaceInventoriesTable,
+			Columns: []string{business.PlaceInventoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placeinventory.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.PlaceInventoriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.PlaceInventoriesTable,
+			Columns: []string{business.PlaceInventoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placeinventory.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, bu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{business.Label}
@@ -2162,6 +2244,21 @@ func (buo *BusinessUpdateOne) AddRatings(r ...*Rating) *BusinessUpdateOne {
 	return buo.AddRatingIDs(ids...)
 }
 
+// AddPlaceInventoryIDs adds the "place_inventories" edge to the PlaceInventory entity by IDs.
+func (buo *BusinessUpdateOne) AddPlaceInventoryIDs(ids ...string) *BusinessUpdateOne {
+	buo.mutation.AddPlaceInventoryIDs(ids...)
+	return buo
+}
+
+// AddPlaceInventories adds the "place_inventories" edges to the PlaceInventory entity.
+func (buo *BusinessUpdateOne) AddPlaceInventories(p ...*PlaceInventory) *BusinessUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return buo.AddPlaceInventoryIDs(ids...)
+}
+
 // Mutation returns the BusinessMutation object of the builder.
 func (buo *BusinessUpdateOne) Mutation() *BusinessMutation {
 	return buo.mutation
@@ -2444,6 +2541,27 @@ func (buo *BusinessUpdateOne) RemoveRatings(r ...*Rating) *BusinessUpdateOne {
 		ids[i] = r[i].ID
 	}
 	return buo.RemoveRatingIDs(ids...)
+}
+
+// ClearPlaceInventories clears all "place_inventories" edges to the PlaceInventory entity.
+func (buo *BusinessUpdateOne) ClearPlaceInventories() *BusinessUpdateOne {
+	buo.mutation.ClearPlaceInventories()
+	return buo
+}
+
+// RemovePlaceInventoryIDs removes the "place_inventories" edge to PlaceInventory entities by IDs.
+func (buo *BusinessUpdateOne) RemovePlaceInventoryIDs(ids ...string) *BusinessUpdateOne {
+	buo.mutation.RemovePlaceInventoryIDs(ids...)
+	return buo
+}
+
+// RemovePlaceInventories removes "place_inventories" edges to PlaceInventory entities.
+func (buo *BusinessUpdateOne) RemovePlaceInventories(p ...*PlaceInventory) *BusinessUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return buo.RemovePlaceInventoryIDs(ids...)
 }
 
 // Where appends a list predicates to the BusinessUpdate builder.
@@ -3221,6 +3339,51 @@ func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(rating.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if buo.mutation.PlaceInventoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.PlaceInventoriesTable,
+			Columns: []string{business.PlaceInventoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placeinventory.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.RemovedPlaceInventoriesIDs(); len(nodes) > 0 && !buo.mutation.PlaceInventoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.PlaceInventoriesTable,
+			Columns: []string{business.PlaceInventoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placeinventory.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.PlaceInventoriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   business.PlaceInventoriesTable,
+			Columns: []string{business.PlaceInventoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placeinventory.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

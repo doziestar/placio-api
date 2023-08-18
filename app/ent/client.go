@@ -1276,6 +1276,22 @@ func (c *BusinessClient) QueryRatings(b *Business) *RatingQuery {
 	return query
 }
 
+// QueryPlaceInventories queries the place_inventories edge of a Business.
+func (c *BusinessClient) QueryPlaceInventories(b *Business) *PlaceInventoryQuery {
+	query := (&PlaceInventoryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(business.Table, business.FieldID, id),
+			sqlgraph.To(placeinventory.Table, placeinventory.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, business.PlaceInventoriesTable, business.PlaceInventoriesColumn),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *BusinessClient) Hooks() []Hook {
 	hooks := c.hooks.Business
@@ -4570,6 +4586,22 @@ func (c *PlaceInventoryClient) QueryReservationBlocks(pi *PlaceInventory) *Reser
 			sqlgraph.From(placeinventory.Table, placeinventory.FieldID, id),
 			sqlgraph.To(reservationblock.Table, reservationblock.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, placeinventory.ReservationBlocksTable, placeinventory.ReservationBlocksColumn),
+		)
+		fromV = sqlgraph.Neighbors(pi.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryBusiness queries the business edge of a PlaceInventory.
+func (c *PlaceInventoryClient) QueryBusiness(pi *PlaceInventory) *BusinessQuery {
+	query := (&BusinessClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pi.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(placeinventory.Table, placeinventory.FieldID, id),
+			sqlgraph.To(business.Table, business.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, placeinventory.BusinessTable, placeinventory.BusinessColumn),
 		)
 		fromV = sqlgraph.Neighbors(pi.driver.Dialect(), step)
 		return fromV, nil

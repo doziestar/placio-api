@@ -1,8 +1,12 @@
 package amenities
 
 type CreateAmenityInput struct {
-	Name string
-	Icon string
+	Name string `json:"name"`
+	Icon string `json:"icon"`
+}
+
+type Amenity struct {
+	Amenities []CreateAmenityInput `json:"amenities"`
 }
 
 type UpdateAmenityInput struct {

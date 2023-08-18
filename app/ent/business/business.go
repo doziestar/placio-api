@@ -75,6 +75,8 @@ const (
 	EdgeFaqs = "faqs"
 	// EdgeRatings holds the string denoting the ratings edge name in mutations.
 	EdgeRatings = "ratings"
+	// EdgePlaceInventories holds the string denoting the place_inventories edge name in mutations.
+	EdgePlaceInventories = "place_inventories"
 	// Table holds the table name of the business in the database.
 	Table = "businesses"
 	// UserBusinessesTable is the table that holds the userBusinesses relation/edge.
@@ -175,6 +177,13 @@ const (
 	RatingsInverseTable = "ratings"
 	// RatingsColumn is the table column denoting the ratings relation/edge.
 	RatingsColumn = "business_ratings"
+	// PlaceInventoriesTable is the table that holds the place_inventories relation/edge.
+	PlaceInventoriesTable = "place_inventories"
+	// PlaceInventoriesInverseTable is the table name for the PlaceInventory entity.
+	// It exists in this package in order to avoid circular dependency with the "placeinventory" package.
+	PlaceInventoriesInverseTable = "place_inventories"
+	// PlaceInventoriesColumn is the table column denoting the place_inventories relation/edge.
+	PlaceInventoriesColumn = "business_place_inventories"
 )
 
 // Columns holds all SQL columns for business fields.
@@ -497,6 +506,20 @@ func ByRatings(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newRatingsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByPlaceInventoriesCount orders the results by place_inventories count.
+func ByPlaceInventoriesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newPlaceInventoriesStep(), opts...)
+	}
+}
+
+// ByPlaceInventories orders the results by place_inventories terms.
+func ByPlaceInventories(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newPlaceInventoriesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newUserBusinessesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -593,5 +616,12 @@ func newRatingsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(RatingsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, RatingsTable, RatingsColumn),
+	)
+}
+func newPlaceInventoriesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(PlaceInventoriesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, PlaceInventoriesTable, PlaceInventoriesColumn),
 	)
 }
