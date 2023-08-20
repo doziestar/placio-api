@@ -18,6 +18,8 @@ type InventoryType struct {
 	ID string `json:"id,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
+	// Description holds the value of the "description" field.
+	Description string `json:"description,omitempty"`
 	// IndustryType holds the value of the "industry_type" field.
 	IndustryType inventorytype.IndustryType `json:"industry_type,omitempty"`
 	// MeasurementUnit holds the value of the "measurement_unit" field.
@@ -62,7 +64,7 @@ func (*InventoryType) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case inventorytype.FieldID, inventorytype.FieldName, inventorytype.FieldIndustryType, inventorytype.FieldMeasurementUnit:
+		case inventorytype.FieldID, inventorytype.FieldName, inventorytype.FieldDescription, inventorytype.FieldIndustryType, inventorytype.FieldMeasurementUnit:
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -90,6 +92,12 @@ func (it *InventoryType) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
 				it.Name = value.String
+			}
+		case inventorytype.FieldDescription:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field description", values[i])
+			} else if value.Valid {
+				it.Description = value.String
 			}
 		case inventorytype.FieldIndustryType:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -151,6 +159,9 @@ func (it *InventoryType) String() string {
 	builder.WriteString(fmt.Sprintf("id=%v, ", it.ID))
 	builder.WriteString("name=")
 	builder.WriteString(it.Name)
+	builder.WriteString(", ")
+	builder.WriteString("description=")
+	builder.WriteString(it.Description)
 	builder.WriteString(", ")
 	builder.WriteString("industry_type=")
 	builder.WriteString(fmt.Sprintf("%v", it.IndustryType))

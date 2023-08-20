@@ -35,6 +35,26 @@ func (itu *InventoryTypeUpdate) SetName(s string) *InventoryTypeUpdate {
 	return itu
 }
 
+// SetDescription sets the "description" field.
+func (itu *InventoryTypeUpdate) SetDescription(s string) *InventoryTypeUpdate {
+	itu.mutation.SetDescription(s)
+	return itu
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (itu *InventoryTypeUpdate) SetNillableDescription(s *string) *InventoryTypeUpdate {
+	if s != nil {
+		itu.SetDescription(*s)
+	}
+	return itu
+}
+
+// ClearDescription clears the value of the "description" field.
+func (itu *InventoryTypeUpdate) ClearDescription() *InventoryTypeUpdate {
+	itu.mutation.ClearDescription()
+	return itu
+}
+
 // SetIndustryType sets the "industry_type" field.
 func (itu *InventoryTypeUpdate) SetIndustryType(it inventorytype.IndustryType) *InventoryTypeUpdate {
 	itu.mutation.SetIndustryType(it)
@@ -204,6 +224,12 @@ func (itu *InventoryTypeUpdate) sqlSave(ctx context.Context) (n int, err error) 
 	if value, ok := itu.mutation.Name(); ok {
 		_spec.SetField(inventorytype.FieldName, field.TypeString, value)
 	}
+	if value, ok := itu.mutation.Description(); ok {
+		_spec.SetField(inventorytype.FieldDescription, field.TypeString, value)
+	}
+	if itu.mutation.DescriptionCleared() {
+		_spec.ClearField(inventorytype.FieldDescription, field.TypeString)
+	}
 	if value, ok := itu.mutation.IndustryType(); ok {
 		_spec.SetField(inventorytype.FieldIndustryType, field.TypeEnum, value)
 	}
@@ -329,6 +355,26 @@ type InventoryTypeUpdateOne struct {
 // SetName sets the "name" field.
 func (ituo *InventoryTypeUpdateOne) SetName(s string) *InventoryTypeUpdateOne {
 	ituo.mutation.SetName(s)
+	return ituo
+}
+
+// SetDescription sets the "description" field.
+func (ituo *InventoryTypeUpdateOne) SetDescription(s string) *InventoryTypeUpdateOne {
+	ituo.mutation.SetDescription(s)
+	return ituo
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (ituo *InventoryTypeUpdateOne) SetNillableDescription(s *string) *InventoryTypeUpdateOne {
+	if s != nil {
+		ituo.SetDescription(*s)
+	}
+	return ituo
+}
+
+// ClearDescription clears the value of the "description" field.
+func (ituo *InventoryTypeUpdateOne) ClearDescription() *InventoryTypeUpdateOne {
+	ituo.mutation.ClearDescription()
 	return ituo
 }
 
@@ -530,6 +576,12 @@ func (ituo *InventoryTypeUpdateOne) sqlSave(ctx context.Context) (_node *Invento
 	}
 	if value, ok := ituo.mutation.Name(); ok {
 		_spec.SetField(inventorytype.FieldName, field.TypeString, value)
+	}
+	if value, ok := ituo.mutation.Description(); ok {
+		_spec.SetField(inventorytype.FieldDescription, field.TypeString, value)
+	}
+	if ituo.mutation.DescriptionCleared() {
+		_spec.ClearField(inventorytype.FieldDescription, field.TypeString)
 	}
 	if value, ok := ituo.mutation.IndustryType(); ok {
 		_spec.SetField(inventorytype.FieldIndustryType, field.TypeEnum, value)

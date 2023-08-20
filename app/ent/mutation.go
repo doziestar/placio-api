@@ -15440,6 +15440,7 @@ type InventoryTypeMutation struct {
 	typ                      string
 	id                       *string
 	name                     *string
+	description              *string
 	industry_type            *inventorytype.IndustryType
 	measurement_unit         *string
 	clearedFields            map[string]struct{}
@@ -15592,6 +15593,55 @@ func (m *InventoryTypeMutation) OldName(ctx context.Context) (v string, err erro
 // ResetName resets all changes to the "name" field.
 func (m *InventoryTypeMutation) ResetName() {
 	m.name = nil
+}
+
+// SetDescription sets the "description" field.
+func (m *InventoryTypeMutation) SetDescription(s string) {
+	m.description = &s
+}
+
+// Description returns the value of the "description" field in the mutation.
+func (m *InventoryTypeMutation) Description() (r string, exists bool) {
+	v := m.description
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDescription returns the old "description" field's value of the InventoryType entity.
+// If the InventoryType object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *InventoryTypeMutation) OldDescription(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDescription is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDescription requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDescription: %w", err)
+	}
+	return oldValue.Description, nil
+}
+
+// ClearDescription clears the value of the "description" field.
+func (m *InventoryTypeMutation) ClearDescription() {
+	m.description = nil
+	m.clearedFields[inventorytype.FieldDescription] = struct{}{}
+}
+
+// DescriptionCleared returns if the "description" field was cleared in this mutation.
+func (m *InventoryTypeMutation) DescriptionCleared() bool {
+	_, ok := m.clearedFields[inventorytype.FieldDescription]
+	return ok
+}
+
+// ResetDescription resets all changes to the "description" field.
+func (m *InventoryTypeMutation) ResetDescription() {
+	m.description = nil
+	delete(m.clearedFields, inventorytype.FieldDescription)
 }
 
 // SetIndustryType sets the "industry_type" field.
@@ -15834,9 +15884,12 @@ func (m *InventoryTypeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *InventoryTypeMutation) Fields() []string {
-	fields := make([]string, 0, 3)
+	fields := make([]string, 0, 4)
 	if m.name != nil {
 		fields = append(fields, inventorytype.FieldName)
+	}
+	if m.description != nil {
+		fields = append(fields, inventorytype.FieldDescription)
 	}
 	if m.industry_type != nil {
 		fields = append(fields, inventorytype.FieldIndustryType)
@@ -15854,6 +15907,8 @@ func (m *InventoryTypeMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case inventorytype.FieldName:
 		return m.Name()
+	case inventorytype.FieldDescription:
+		return m.Description()
 	case inventorytype.FieldIndustryType:
 		return m.IndustryType()
 	case inventorytype.FieldMeasurementUnit:
@@ -15869,6 +15924,8 @@ func (m *InventoryTypeMutation) OldField(ctx context.Context, name string) (ent.
 	switch name {
 	case inventorytype.FieldName:
 		return m.OldName(ctx)
+	case inventorytype.FieldDescription:
+		return m.OldDescription(ctx)
 	case inventorytype.FieldIndustryType:
 		return m.OldIndustryType(ctx)
 	case inventorytype.FieldMeasurementUnit:
@@ -15888,6 +15945,13 @@ func (m *InventoryTypeMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetName(v)
+		return nil
+	case inventorytype.FieldDescription:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDescription(v)
 		return nil
 	case inventorytype.FieldIndustryType:
 		v, ok := value.(inventorytype.IndustryType)
@@ -15933,6 +15997,9 @@ func (m *InventoryTypeMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *InventoryTypeMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(inventorytype.FieldDescription) {
+		fields = append(fields, inventorytype.FieldDescription)
+	}
 	if m.FieldCleared(inventorytype.FieldIndustryType) {
 		fields = append(fields, inventorytype.FieldIndustryType)
 	}
@@ -15953,6 +16020,9 @@ func (m *InventoryTypeMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *InventoryTypeMutation) ClearField(name string) error {
 	switch name {
+	case inventorytype.FieldDescription:
+		m.ClearDescription()
+		return nil
 	case inventorytype.FieldIndustryType:
 		m.ClearIndustryType()
 		return nil
@@ -15969,6 +16039,9 @@ func (m *InventoryTypeMutation) ResetField(name string) error {
 	switch name {
 	case inventorytype.FieldName:
 		m.ResetName()
+		return nil
+	case inventorytype.FieldDescription:
+		m.ResetDescription()
 		return nil
 	case inventorytype.FieldIndustryType:
 		m.ResetIndustryType()
