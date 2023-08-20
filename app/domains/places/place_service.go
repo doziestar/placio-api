@@ -46,6 +46,8 @@ type PlaceService interface {
 	RemoveAmenitiesFromPlace(ctx context.Context, placeID string, amenityIDs []string) error
 	RemoveMediaFromPlace(ctx context.Context, placeID string, mediaID string) error
 	AddPlaceToCacheAndSearchIndex(ctx context.Context, placeData *ent.Place, other ...string) error
+	PublishPlace(ctx context.Context, placeID string) error
+	UnpublishPlace(ctx context.Context, placeID string) error
 }
 
 type PlaceServiceImpl struct {
@@ -61,6 +63,35 @@ func NewPlaceService(client *ent.Client, searchService search.SearchService, use
 	return &PlaceServiceImpl{client: client, searchService: searchService, userLikes: userLikes, followService: followService, cache: cache, mediaService: mediaService}
 }
 
+func (s *PlaceServiceImpl) PublishPlace(ctx context.Context, placeID string) error {
+	placeData, err := s.client.Place.Get(ctx, placeID)
+	if err != nil {
+		sentry.CaptureException(err)
+		return err
+	}
+	placeData.IsPublished = true
+	_, err = s.client.Place.UpdateOne(placeData).Save(ctx)
+	if err != nil {
+		sentry.CaptureException(err)
+		return err
+	}
+	return nil
+}
+
+func (s *PlaceServiceImpl) UnpublishPlace(ctx context.Context, placeID string) error {
+	placeData, err := s.client.Place.Get(ctx, placeID)
+	if err != nil {
+		sentry.CaptureException(err)
+		return err
+	}
+	placeData.IsPublished = false
+	_, err = s.client.Place.UpdateOne(placeData).Save(ctx)
+	if err != nil {
+		sentry.CaptureException(err)
+		return err
+	}
+	return nil
+}
 func (s *PlaceServiceImpl) GetPlacesAssociatedWithBusinessAccount(c context.Context, businessId string) ([]*ent.Place, error) {
 	places, err := s.client.Place.
 		Query().

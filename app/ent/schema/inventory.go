@@ -19,7 +19,8 @@ func (InventoryType) Fields() []ent.Field {
 			Immutable(),
 		field.String("name").
 			Unique(),
-		field.Enum("industry_type").Values("hotel", "restaurant", "bar", "club", "gym"),
+		field.String("description").Optional(),
+		field.Enum("industry_type").Values("hotel", "restaurant", "bar", "club", "gym", "events", "retail", "other").Optional(),
 		field.String("measurement_unit").Optional(),
 	}
 }
@@ -28,6 +29,8 @@ func (InventoryType) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("attributes", InventoryAttribute.Type),
 		edge.To("place_inventories", PlaceInventory.Type),
+		//edge.From("business", Business.Type).Ref("inventory_types").Unique(),
+		//edge.From("category", Category.Type).Ref("inventory_types").Unique(),
 		// ... other edges
 	}
 }

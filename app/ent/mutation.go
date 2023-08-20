@@ -15625,9 +15625,22 @@ func (m *InventoryTypeMutation) OldIndustryType(ctx context.Context) (v inventor
 	return oldValue.IndustryType, nil
 }
 
+// ClearIndustryType clears the value of the "industry_type" field.
+func (m *InventoryTypeMutation) ClearIndustryType() {
+	m.industry_type = nil
+	m.clearedFields[inventorytype.FieldIndustryType] = struct{}{}
+}
+
+// IndustryTypeCleared returns if the "industry_type" field was cleared in this mutation.
+func (m *InventoryTypeMutation) IndustryTypeCleared() bool {
+	_, ok := m.clearedFields[inventorytype.FieldIndustryType]
+	return ok
+}
+
 // ResetIndustryType resets all changes to the "industry_type" field.
 func (m *InventoryTypeMutation) ResetIndustryType() {
 	m.industry_type = nil
+	delete(m.clearedFields, inventorytype.FieldIndustryType)
 }
 
 // SetMeasurementUnit sets the "measurement_unit" field.
@@ -15920,6 +15933,9 @@ func (m *InventoryTypeMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *InventoryTypeMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(inventorytype.FieldIndustryType) {
+		fields = append(fields, inventorytype.FieldIndustryType)
+	}
 	if m.FieldCleared(inventorytype.FieldMeasurementUnit) {
 		fields = append(fields, inventorytype.FieldMeasurementUnit)
 	}
@@ -15937,6 +15953,9 @@ func (m *InventoryTypeMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *InventoryTypeMutation) ClearField(name string) error {
 	switch name {
+	case inventorytype.FieldIndustryType:
+		m.ClearIndustryType()
+		return nil
 	case inventorytype.FieldMeasurementUnit:
 		m.ClearMeasurementUnit()
 		return nil

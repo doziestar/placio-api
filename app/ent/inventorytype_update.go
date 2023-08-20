@@ -41,6 +41,20 @@ func (itu *InventoryTypeUpdate) SetIndustryType(it inventorytype.IndustryType) *
 	return itu
 }
 
+// SetNillableIndustryType sets the "industry_type" field if the given value is not nil.
+func (itu *InventoryTypeUpdate) SetNillableIndustryType(it *inventorytype.IndustryType) *InventoryTypeUpdate {
+	if it != nil {
+		itu.SetIndustryType(*it)
+	}
+	return itu
+}
+
+// ClearIndustryType clears the value of the "industry_type" field.
+func (itu *InventoryTypeUpdate) ClearIndustryType() *InventoryTypeUpdate {
+	itu.mutation.ClearIndustryType()
+	return itu
+}
+
 // SetMeasurementUnit sets the "measurement_unit" field.
 func (itu *InventoryTypeUpdate) SetMeasurementUnit(s string) *InventoryTypeUpdate {
 	itu.mutation.SetMeasurementUnit(s)
@@ -193,6 +207,9 @@ func (itu *InventoryTypeUpdate) sqlSave(ctx context.Context) (n int, err error) 
 	if value, ok := itu.mutation.IndustryType(); ok {
 		_spec.SetField(inventorytype.FieldIndustryType, field.TypeEnum, value)
 	}
+	if itu.mutation.IndustryTypeCleared() {
+		_spec.ClearField(inventorytype.FieldIndustryType, field.TypeEnum)
+	}
 	if value, ok := itu.mutation.MeasurementUnit(); ok {
 		_spec.SetField(inventorytype.FieldMeasurementUnit, field.TypeString, value)
 	}
@@ -318,6 +335,20 @@ func (ituo *InventoryTypeUpdateOne) SetName(s string) *InventoryTypeUpdateOne {
 // SetIndustryType sets the "industry_type" field.
 func (ituo *InventoryTypeUpdateOne) SetIndustryType(it inventorytype.IndustryType) *InventoryTypeUpdateOne {
 	ituo.mutation.SetIndustryType(it)
+	return ituo
+}
+
+// SetNillableIndustryType sets the "industry_type" field if the given value is not nil.
+func (ituo *InventoryTypeUpdateOne) SetNillableIndustryType(it *inventorytype.IndustryType) *InventoryTypeUpdateOne {
+	if it != nil {
+		ituo.SetIndustryType(*it)
+	}
+	return ituo
+}
+
+// ClearIndustryType clears the value of the "industry_type" field.
+func (ituo *InventoryTypeUpdateOne) ClearIndustryType() *InventoryTypeUpdateOne {
+	ituo.mutation.ClearIndustryType()
 	return ituo
 }
 
@@ -502,6 +533,9 @@ func (ituo *InventoryTypeUpdateOne) sqlSave(ctx context.Context) (_node *Invento
 	}
 	if value, ok := ituo.mutation.IndustryType(); ok {
 		_spec.SetField(inventorytype.FieldIndustryType, field.TypeEnum, value)
+	}
+	if ituo.mutation.IndustryTypeCleared() {
+		_spec.ClearField(inventorytype.FieldIndustryType, field.TypeEnum)
 	}
 	if value, ok := ituo.mutation.MeasurementUnit(); ok {
 		_spec.SetField(inventorytype.FieldMeasurementUnit, field.TypeString, value)

@@ -159,6 +159,16 @@ func IndustryTypeNotIn(vs ...IndustryType) predicate.InventoryType {
 	return predicate.InventoryType(sql.FieldNotIn(FieldIndustryType, vs...))
 }
 
+// IndustryTypeIsNil applies the IsNil predicate on the "industry_type" field.
+func IndustryTypeIsNil() predicate.InventoryType {
+	return predicate.InventoryType(sql.FieldIsNull(FieldIndustryType))
+}
+
+// IndustryTypeNotNil applies the NotNil predicate on the "industry_type" field.
+func IndustryTypeNotNil() predicate.InventoryType {
+	return predicate.InventoryType(sql.FieldNotNull(FieldIndustryType))
+}
+
 // MeasurementUnitEQ applies the EQ predicate on the "measurement_unit" field.
 func MeasurementUnitEQ(v string) predicate.InventoryType {
 	return predicate.InventoryType(sql.FieldEQ(FieldMeasurementUnit, v))

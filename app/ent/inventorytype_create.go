@@ -33,6 +33,14 @@ func (itc *InventoryTypeCreate) SetIndustryType(it inventorytype.IndustryType) *
 	return itc
 }
 
+// SetNillableIndustryType sets the "industry_type" field if the given value is not nil.
+func (itc *InventoryTypeCreate) SetNillableIndustryType(it *inventorytype.IndustryType) *InventoryTypeCreate {
+	if it != nil {
+		itc.SetIndustryType(*it)
+	}
+	return itc
+}
+
 // SetMeasurementUnit sets the "measurement_unit" field.
 func (itc *InventoryTypeCreate) SetMeasurementUnit(s string) *InventoryTypeCreate {
 	itc.mutation.SetMeasurementUnit(s)
@@ -119,9 +127,6 @@ func (itc *InventoryTypeCreate) ExecX(ctx context.Context) {
 func (itc *InventoryTypeCreate) check() error {
 	if _, ok := itc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "InventoryType.name"`)}
-	}
-	if _, ok := itc.mutation.IndustryType(); !ok {
-		return &ValidationError{Name: "industry_type", err: errors.New(`ent: missing required field "InventoryType.industry_type"`)}
 	}
 	if v, ok := itc.mutation.IndustryType(); ok {
 		if err := inventorytype.IndustryTypeValidator(v); err != nil {

@@ -75,6 +75,9 @@ const (
 	IndustryTypeBar        IndustryType = "bar"
 	IndustryTypeClub       IndustryType = "club"
 	IndustryTypeGym        IndustryType = "gym"
+	IndustryTypeEvents     IndustryType = "events"
+	IndustryTypeRetail     IndustryType = "retail"
+	IndustryTypeOther      IndustryType = "other"
 )
 
 func (it IndustryType) String() string {
@@ -84,7 +87,7 @@ func (it IndustryType) String() string {
 // IndustryTypeValidator is a validator for the "industry_type" field enum values. It is called by the builders before save.
 func IndustryTypeValidator(it IndustryType) error {
 	switch it {
-	case IndustryTypeHotel, IndustryTypeRestaurant, IndustryTypeBar, IndustryTypeClub, IndustryTypeGym:
+	case IndustryTypeHotel, IndustryTypeRestaurant, IndustryTypeBar, IndustryTypeClub, IndustryTypeGym, IndustryTypeEvents, IndustryTypeRetail, IndustryTypeOther:
 		return nil
 	default:
 		return fmt.Errorf("inventorytype: invalid enum value for industry_type field: %q", it)
