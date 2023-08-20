@@ -148,6 +148,11 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		reviewController := reviews.NewReviewController(reviewService, mediaService)
 		reviewController.RegisterRoutes(routerGroupV1, routerGroupV1WithoutAuth)
 
+		// inventory
+		inventoryService := inventory.NewInventoryService(client, cacheService, &mediaService, placeService, &businessService)
+		inventoryController := inventory.NewInventoryController(inventoryService, *redisClient)
+		inventoryController.RegisterRoutes(routerGroupV1)
+
 		// ratings
 		//ratingService := service.NewRatingService(client)
 		//ratingController := controller.NewRatingController(ratingService)

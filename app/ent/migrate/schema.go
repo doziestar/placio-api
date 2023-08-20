@@ -510,7 +510,8 @@ var (
 	InventoryTypesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
 		{Name: "name", Type: field.TypeString, Unique: true},
-		{Name: "industry_type", Type: field.TypeEnum, Enums: []string{"hotel", "restaurant", "bar", "club", "gym"}},
+		{Name: "description", Type: field.TypeString, Nullable: true},
+		{Name: "industry_type", Type: field.TypeEnum, Nullable: true, Enums: []string{"hotel", "restaurant", "bar", "club", "gym", "events", "retail", "other"}},
 		{Name: "measurement_unit", Type: field.TypeString, Nullable: true},
 	}
 	// InventoryTypesTable holds the schema information for the "inventory_types" table.

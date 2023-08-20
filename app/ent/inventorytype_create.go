@@ -27,9 +27,31 @@ func (itc *InventoryTypeCreate) SetName(s string) *InventoryTypeCreate {
 	return itc
 }
 
+// SetDescription sets the "description" field.
+func (itc *InventoryTypeCreate) SetDescription(s string) *InventoryTypeCreate {
+	itc.mutation.SetDescription(s)
+	return itc
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (itc *InventoryTypeCreate) SetNillableDescription(s *string) *InventoryTypeCreate {
+	if s != nil {
+		itc.SetDescription(*s)
+	}
+	return itc
+}
+
 // SetIndustryType sets the "industry_type" field.
 func (itc *InventoryTypeCreate) SetIndustryType(it inventorytype.IndustryType) *InventoryTypeCreate {
 	itc.mutation.SetIndustryType(it)
+	return itc
+}
+
+// SetNillableIndustryType sets the "industry_type" field if the given value is not nil.
+func (itc *InventoryTypeCreate) SetNillableIndustryType(it *inventorytype.IndustryType) *InventoryTypeCreate {
+	if it != nil {
+		itc.SetIndustryType(*it)
+	}
 	return itc
 }
 
@@ -120,9 +142,6 @@ func (itc *InventoryTypeCreate) check() error {
 	if _, ok := itc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "InventoryType.name"`)}
 	}
-	if _, ok := itc.mutation.IndustryType(); !ok {
-		return &ValidationError{Name: "industry_type", err: errors.New(`ent: missing required field "InventoryType.industry_type"`)}
-	}
 	if v, ok := itc.mutation.IndustryType(); ok {
 		if err := inventorytype.IndustryTypeValidator(v); err != nil {
 			return &ValidationError{Name: "industry_type", err: fmt.Errorf(`ent: validator failed for field "InventoryType.industry_type": %w`, err)}
@@ -171,6 +190,10 @@ func (itc *InventoryTypeCreate) createSpec() (*InventoryType, *sqlgraph.CreateSp
 	if value, ok := itc.mutation.Name(); ok {
 		_spec.SetField(inventorytype.FieldName, field.TypeString, value)
 		_node.Name = value
+	}
+	if value, ok := itc.mutation.Description(); ok {
+		_spec.SetField(inventorytype.FieldDescription, field.TypeString, value)
+		_node.Description = value
 	}
 	if value, ok := itc.mutation.IndustryType(); ok {
 		_spec.SetField(inventorytype.FieldIndustryType, field.TypeEnum, value)

@@ -221,12 +221,27 @@ func MergeMaps(map1, map2 map[string]interface{}) map[string]interface{} {
 }
 
 // ProcessResponse processes the response from a service.
-func ProcessResponse(data interface{}, status string, message, nextPageToken string) gin.H {
+func ProcessResponse(data interface{}, others ...string) gin.H {
 	return gin.H{
-		"data":          data,
-		"status":        status,
-		"message":       message,
-		"nextPageToken": nextPageToken,
+		"data": data,
+		"status": func() string {
+			if others[0] == "success" {
+				return "success"
+			}
+			return "error"
+		}(),
+		"message": func() string {
+			if others[1] != "" {
+				return others[1]
+			}
+			return "Success"
+		}(),
+		"nextPageToken": func() string {
+			if others[2] != "" {
+				return others[2]
+			}
+			return ""
+		}(),
 	}
 }
 

@@ -69,6 +69,11 @@ func Name(v string) predicate.InventoryType {
 	return predicate.InventoryType(sql.FieldEQ(FieldName, v))
 }
 
+// Description applies equality check predicate on the "description" field. It's identical to DescriptionEQ.
+func Description(v string) predicate.InventoryType {
+	return predicate.InventoryType(sql.FieldEQ(FieldDescription, v))
+}
+
 // MeasurementUnit applies equality check predicate on the "measurement_unit" field. It's identical to MeasurementUnitEQ.
 func MeasurementUnit(v string) predicate.InventoryType {
 	return predicate.InventoryType(sql.FieldEQ(FieldMeasurementUnit, v))
@@ -139,6 +144,81 @@ func NameContainsFold(v string) predicate.InventoryType {
 	return predicate.InventoryType(sql.FieldContainsFold(FieldName, v))
 }
 
+// DescriptionEQ applies the EQ predicate on the "description" field.
+func DescriptionEQ(v string) predicate.InventoryType {
+	return predicate.InventoryType(sql.FieldEQ(FieldDescription, v))
+}
+
+// DescriptionNEQ applies the NEQ predicate on the "description" field.
+func DescriptionNEQ(v string) predicate.InventoryType {
+	return predicate.InventoryType(sql.FieldNEQ(FieldDescription, v))
+}
+
+// DescriptionIn applies the In predicate on the "description" field.
+func DescriptionIn(vs ...string) predicate.InventoryType {
+	return predicate.InventoryType(sql.FieldIn(FieldDescription, vs...))
+}
+
+// DescriptionNotIn applies the NotIn predicate on the "description" field.
+func DescriptionNotIn(vs ...string) predicate.InventoryType {
+	return predicate.InventoryType(sql.FieldNotIn(FieldDescription, vs...))
+}
+
+// DescriptionGT applies the GT predicate on the "description" field.
+func DescriptionGT(v string) predicate.InventoryType {
+	return predicate.InventoryType(sql.FieldGT(FieldDescription, v))
+}
+
+// DescriptionGTE applies the GTE predicate on the "description" field.
+func DescriptionGTE(v string) predicate.InventoryType {
+	return predicate.InventoryType(sql.FieldGTE(FieldDescription, v))
+}
+
+// DescriptionLT applies the LT predicate on the "description" field.
+func DescriptionLT(v string) predicate.InventoryType {
+	return predicate.InventoryType(sql.FieldLT(FieldDescription, v))
+}
+
+// DescriptionLTE applies the LTE predicate on the "description" field.
+func DescriptionLTE(v string) predicate.InventoryType {
+	return predicate.InventoryType(sql.FieldLTE(FieldDescription, v))
+}
+
+// DescriptionContains applies the Contains predicate on the "description" field.
+func DescriptionContains(v string) predicate.InventoryType {
+	return predicate.InventoryType(sql.FieldContains(FieldDescription, v))
+}
+
+// DescriptionHasPrefix applies the HasPrefix predicate on the "description" field.
+func DescriptionHasPrefix(v string) predicate.InventoryType {
+	return predicate.InventoryType(sql.FieldHasPrefix(FieldDescription, v))
+}
+
+// DescriptionHasSuffix applies the HasSuffix predicate on the "description" field.
+func DescriptionHasSuffix(v string) predicate.InventoryType {
+	return predicate.InventoryType(sql.FieldHasSuffix(FieldDescription, v))
+}
+
+// DescriptionIsNil applies the IsNil predicate on the "description" field.
+func DescriptionIsNil() predicate.InventoryType {
+	return predicate.InventoryType(sql.FieldIsNull(FieldDescription))
+}
+
+// DescriptionNotNil applies the NotNil predicate on the "description" field.
+func DescriptionNotNil() predicate.InventoryType {
+	return predicate.InventoryType(sql.FieldNotNull(FieldDescription))
+}
+
+// DescriptionEqualFold applies the EqualFold predicate on the "description" field.
+func DescriptionEqualFold(v string) predicate.InventoryType {
+	return predicate.InventoryType(sql.FieldEqualFold(FieldDescription, v))
+}
+
+// DescriptionContainsFold applies the ContainsFold predicate on the "description" field.
+func DescriptionContainsFold(v string) predicate.InventoryType {
+	return predicate.InventoryType(sql.FieldContainsFold(FieldDescription, v))
+}
+
 // IndustryTypeEQ applies the EQ predicate on the "industry_type" field.
 func IndustryTypeEQ(v IndustryType) predicate.InventoryType {
 	return predicate.InventoryType(sql.FieldEQ(FieldIndustryType, v))
@@ -157,6 +237,16 @@ func IndustryTypeIn(vs ...IndustryType) predicate.InventoryType {
 // IndustryTypeNotIn applies the NotIn predicate on the "industry_type" field.
 func IndustryTypeNotIn(vs ...IndustryType) predicate.InventoryType {
 	return predicate.InventoryType(sql.FieldNotIn(FieldIndustryType, vs...))
+}
+
+// IndustryTypeIsNil applies the IsNil predicate on the "industry_type" field.
+func IndustryTypeIsNil() predicate.InventoryType {
+	return predicate.InventoryType(sql.FieldIsNull(FieldIndustryType))
+}
+
+// IndustryTypeNotNil applies the NotNil predicate on the "industry_type" field.
+func IndustryTypeNotNil() predicate.InventoryType {
+	return predicate.InventoryType(sql.FieldNotNull(FieldIndustryType))
 }
 
 // MeasurementUnitEQ applies the EQ predicate on the "measurement_unit" field.

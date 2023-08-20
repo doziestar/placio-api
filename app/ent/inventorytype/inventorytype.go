@@ -16,6 +16,8 @@ const (
 	FieldID = "id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
+	// FieldDescription holds the string denoting the description field in the database.
+	FieldDescription = "description"
 	// FieldIndustryType holds the string denoting the industry_type field in the database.
 	FieldIndustryType = "industry_type"
 	// FieldMeasurementUnit holds the string denoting the measurement_unit field in the database.
@@ -46,6 +48,7 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldName,
+	FieldDescription,
 	FieldIndustryType,
 	FieldMeasurementUnit,
 }
@@ -75,6 +78,9 @@ const (
 	IndustryTypeBar        IndustryType = "bar"
 	IndustryTypeClub       IndustryType = "club"
 	IndustryTypeGym        IndustryType = "gym"
+	IndustryTypeEvents     IndustryType = "events"
+	IndustryTypeRetail     IndustryType = "retail"
+	IndustryTypeOther      IndustryType = "other"
 )
 
 func (it IndustryType) String() string {
@@ -84,7 +90,7 @@ func (it IndustryType) String() string {
 // IndustryTypeValidator is a validator for the "industry_type" field enum values. It is called by the builders before save.
 func IndustryTypeValidator(it IndustryType) error {
 	switch it {
-	case IndustryTypeHotel, IndustryTypeRestaurant, IndustryTypeBar, IndustryTypeClub, IndustryTypeGym:
+	case IndustryTypeHotel, IndustryTypeRestaurant, IndustryTypeBar, IndustryTypeClub, IndustryTypeGym, IndustryTypeEvents, IndustryTypeRetail, IndustryTypeOther:
 		return nil
 	default:
 		return fmt.Errorf("inventorytype: invalid enum value for industry_type field: %q", it)
@@ -102,6 +108,11 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 // ByName orders the results by the name field.
 func ByName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldName, opts...).ToFunc()
+}
+
+// ByDescription orders the results by the description field.
+func ByDescription(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDescription, opts...).ToFunc()
 }
 
 // ByIndustryType orders the results by the industry_type field.
