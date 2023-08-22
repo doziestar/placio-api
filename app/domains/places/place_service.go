@@ -492,6 +492,7 @@ func (s *PlaceServiceImpl) AddAmenitiesToPlace(ctx context.Context, placeID stri
 		All(ctx)
 
 	if err != nil {
+		log.Println("error fetching existing amenities", err)
 		sentry.CaptureException(err)
 		return err
 	}
@@ -518,6 +519,7 @@ func (s *PlaceServiceImpl) AddAmenitiesToPlace(ctx context.Context, placeID stri
 			Only(ctx)
 
 		if err != nil && !ent.IsNotFound(err) {
+			log.Println("error fetching amenity", err)
 			sentry.CaptureException(err)
 			return err
 		}
@@ -534,6 +536,7 @@ func (s *PlaceServiceImpl) AddAmenitiesToPlace(ctx context.Context, placeID stri
 				Save(ctx)
 
 			if err != nil {
+				log.Println("error creating amenity", err)
 				sentry.CaptureException(err)
 				return err
 			}
@@ -541,8 +544,6 @@ func (s *PlaceServiceImpl) AddAmenitiesToPlace(ctx context.Context, placeID stri
 			amenityList = append(amenityList, newAmenity)
 		}
 	}
-
-	log.Println(" complete creating amenities", amenityList)
 
 	// Step 4: Associate the new amenities with the place.
 	if len(amenityList) > 0 {

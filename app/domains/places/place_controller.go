@@ -171,6 +171,7 @@ func (c *PlaceController) addAmenitiesToPlace(ctx *gin.Context) error {
 
 	var amenityDTO amenities.Amenity
 	if err := ctx.ShouldBindJSON(&amenityDTO); err != nil {
+		log.Println("err", err)
 		return err
 	}
 
