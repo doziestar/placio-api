@@ -496,8 +496,6 @@ func (s *PlaceServiceImpl) AddAmenitiesToPlace(ctx context.Context, placeID stri
 		return err
 	}
 
-	log.Println("creating amenities", existingAmenities, amenities)
-
 	existingAmenityNames := make(map[string]struct{})
 	for _, amenity := range existingAmenities {
 		existingAmenityNames[amenity.Name] = struct{}{}
@@ -530,6 +528,7 @@ func (s *PlaceServiceImpl) AddAmenitiesToPlace(ctx context.Context, placeID stri
 			// Create the amenity.
 			newAmenity, err := s.client.Amenity.
 				Create().
+				SetID(uuid.New().String()).
 				SetName(amenityInput.Name).
 				SetIcon(amenityInput.Icon).
 				Save(ctx)

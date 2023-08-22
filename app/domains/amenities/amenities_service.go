@@ -3,6 +3,7 @@ package amenities
 import (
 	"context"
 	"github.com/google/uuid"
+	"log"
 	"placio-app/ent"
 )
 
@@ -23,12 +24,19 @@ func NewAmenityService(client *ent.Client) AmenityService {
 }
 
 func (s *amenityServiceImpl) CreateAmenity(input CreateAmenityInput) (*ent.Amenity, error) {
+	log.Println("Creating amenity:", input)
+
 	a, err := s.client.Amenity.
 		Create().
 		SetID(uuid.New().String()).
 		SetName(input.Name).
 		SetIcon(input.Icon).
 		Save(context.Background())
+
+	if err != nil {
+		log.Println("Failed to create amenity:", err)
+		return nil, err
+	}
 
 	return a, err
 }
