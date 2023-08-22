@@ -18,6 +18,7 @@ import (
 	"placio-app/ent/comment"
 	"placio-app/ent/event"
 	"placio-app/ent/faq"
+	"placio-app/ent/featurerelease"
 	"placio-app/ent/help"
 	"placio-app/ent/inventoryattribute"
 	"placio-app/ent/inventorytype"
@@ -74,6 +75,7 @@ const (
 	TypeComment                 = "Comment"
 	TypeEvent                   = "Event"
 	TypeFAQ                     = "FAQ"
+	TypeFeatureRelease          = "FeatureRelease"
 	TypeHelp                    = "Help"
 	TypeInventoryAttribute      = "InventoryAttribute"
 	TypeInventoryType           = "InventoryType"
@@ -6097,6 +6099,12 @@ type CategoryMutation struct {
 	categoryAssignments        map[string]struct{}
 	removedcategoryAssignments map[string]struct{}
 	clearedcategoryAssignments bool
+	place_inventories          map[string]struct{}
+	removedplace_inventories   map[string]struct{}
+	clearedplace_inventories   bool
+	media                      map[string]struct{}
+	removedmedia               map[string]struct{}
+	clearedmedia               bool
 	done                       bool
 	oldValue                   func(context.Context) (*Category, error)
 	predicates                 []predicate.Category
@@ -6688,6 +6696,114 @@ func (m *CategoryMutation) ResetCategoryAssignments() {
 	m.removedcategoryAssignments = nil
 }
 
+// AddPlaceInventoryIDs adds the "place_inventories" edge to the PlaceInventory entity by ids.
+func (m *CategoryMutation) AddPlaceInventoryIDs(ids ...string) {
+	if m.place_inventories == nil {
+		m.place_inventories = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.place_inventories[ids[i]] = struct{}{}
+	}
+}
+
+// ClearPlaceInventories clears the "place_inventories" edge to the PlaceInventory entity.
+func (m *CategoryMutation) ClearPlaceInventories() {
+	m.clearedplace_inventories = true
+}
+
+// PlaceInventoriesCleared reports if the "place_inventories" edge to the PlaceInventory entity was cleared.
+func (m *CategoryMutation) PlaceInventoriesCleared() bool {
+	return m.clearedplace_inventories
+}
+
+// RemovePlaceInventoryIDs removes the "place_inventories" edge to the PlaceInventory entity by IDs.
+func (m *CategoryMutation) RemovePlaceInventoryIDs(ids ...string) {
+	if m.removedplace_inventories == nil {
+		m.removedplace_inventories = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.place_inventories, ids[i])
+		m.removedplace_inventories[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedPlaceInventories returns the removed IDs of the "place_inventories" edge to the PlaceInventory entity.
+func (m *CategoryMutation) RemovedPlaceInventoriesIDs() (ids []string) {
+	for id := range m.removedplace_inventories {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// PlaceInventoriesIDs returns the "place_inventories" edge IDs in the mutation.
+func (m *CategoryMutation) PlaceInventoriesIDs() (ids []string) {
+	for id := range m.place_inventories {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetPlaceInventories resets all changes to the "place_inventories" edge.
+func (m *CategoryMutation) ResetPlaceInventories() {
+	m.place_inventories = nil
+	m.clearedplace_inventories = false
+	m.removedplace_inventories = nil
+}
+
+// AddMediumIDs adds the "media" edge to the Media entity by ids.
+func (m *CategoryMutation) AddMediumIDs(ids ...string) {
+	if m.media == nil {
+		m.media = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.media[ids[i]] = struct{}{}
+	}
+}
+
+// ClearMedia clears the "media" edge to the Media entity.
+func (m *CategoryMutation) ClearMedia() {
+	m.clearedmedia = true
+}
+
+// MediaCleared reports if the "media" edge to the Media entity was cleared.
+func (m *CategoryMutation) MediaCleared() bool {
+	return m.clearedmedia
+}
+
+// RemoveMediumIDs removes the "media" edge to the Media entity by IDs.
+func (m *CategoryMutation) RemoveMediumIDs(ids ...string) {
+	if m.removedmedia == nil {
+		m.removedmedia = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.media, ids[i])
+		m.removedmedia[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedMedia returns the removed IDs of the "media" edge to the Media entity.
+func (m *CategoryMutation) RemovedMediaIDs() (ids []string) {
+	for id := range m.removedmedia {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// MediaIDs returns the "media" edge IDs in the mutation.
+func (m *CategoryMutation) MediaIDs() (ids []string) {
+	for id := range m.media {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetMedia resets all changes to the "media" edge.
+func (m *CategoryMutation) ResetMedia() {
+	m.media = nil
+	m.clearedmedia = false
+	m.removedmedia = nil
+}
+
 // Where appends a list predicates to the CategoryMutation builder.
 func (m *CategoryMutation) Where(ps ...predicate.Category) {
 	m.predicates = append(m.predicates, ps...)
@@ -7008,9 +7124,15 @@ func (m *CategoryMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *CategoryMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 3)
 	if m.categoryAssignments != nil {
 		edges = append(edges, category.EdgeCategoryAssignments)
+	}
+	if m.place_inventories != nil {
+		edges = append(edges, category.EdgePlaceInventories)
+	}
+	if m.media != nil {
+		edges = append(edges, category.EdgeMedia)
 	}
 	return edges
 }
@@ -7025,15 +7147,33 @@ func (m *CategoryMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case category.EdgePlaceInventories:
+		ids := make([]ent.Value, 0, len(m.place_inventories))
+		for id := range m.place_inventories {
+			ids = append(ids, id)
+		}
+		return ids
+	case category.EdgeMedia:
+		ids := make([]ent.Value, 0, len(m.media))
+		for id := range m.media {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *CategoryMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 3)
 	if m.removedcategoryAssignments != nil {
 		edges = append(edges, category.EdgeCategoryAssignments)
+	}
+	if m.removedplace_inventories != nil {
+		edges = append(edges, category.EdgePlaceInventories)
+	}
+	if m.removedmedia != nil {
+		edges = append(edges, category.EdgeMedia)
 	}
 	return edges
 }
@@ -7048,15 +7188,33 @@ func (m *CategoryMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case category.EdgePlaceInventories:
+		ids := make([]ent.Value, 0, len(m.removedplace_inventories))
+		for id := range m.removedplace_inventories {
+			ids = append(ids, id)
+		}
+		return ids
+	case category.EdgeMedia:
+		ids := make([]ent.Value, 0, len(m.removedmedia))
+		for id := range m.removedmedia {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *CategoryMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 3)
 	if m.clearedcategoryAssignments {
 		edges = append(edges, category.EdgeCategoryAssignments)
+	}
+	if m.clearedplace_inventories {
+		edges = append(edges, category.EdgePlaceInventories)
+	}
+	if m.clearedmedia {
+		edges = append(edges, category.EdgeMedia)
 	}
 	return edges
 }
@@ -7067,6 +7225,10 @@ func (m *CategoryMutation) EdgeCleared(name string) bool {
 	switch name {
 	case category.EdgeCategoryAssignments:
 		return m.clearedcategoryAssignments
+	case category.EdgePlaceInventories:
+		return m.clearedplace_inventories
+	case category.EdgeMedia:
+		return m.clearedmedia
 	}
 	return false
 }
@@ -7085,6 +7247,12 @@ func (m *CategoryMutation) ResetEdge(name string) error {
 	switch name {
 	case category.EdgeCategoryAssignments:
 		m.ResetCategoryAssignments()
+		return nil
+	case category.EdgePlaceInventories:
+		m.ResetPlaceInventories()
+		return nil
+	case category.EdgeMedia:
+		m.ResetMedia()
 		return nil
 	}
 	return fmt.Errorf("unknown Category edge %s", name)
@@ -14140,6 +14308,789 @@ func (m *FAQMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown FAQ edge %s", name)
+}
+
+// FeatureReleaseMutation represents an operation that mutates the FeatureRelease nodes in the graph.
+type FeatureReleaseMutation struct {
+	config
+	op                 Op
+	typ                string
+	id                 *string
+	feature_id         *string
+	feature_name       *string
+	description        *string
+	state              *featurerelease.State
+	release_date       *time.Time
+	eligibility_rules  *map[string]interface{}
+	documentation_link *string
+	metadata           *map[string]interface{}
+	clearedFields      map[string]struct{}
+	done               bool
+	oldValue           func(context.Context) (*FeatureRelease, error)
+	predicates         []predicate.FeatureRelease
+}
+
+var _ ent.Mutation = (*FeatureReleaseMutation)(nil)
+
+// featurereleaseOption allows management of the mutation configuration using functional options.
+type featurereleaseOption func(*FeatureReleaseMutation)
+
+// newFeatureReleaseMutation creates new mutation for the FeatureRelease entity.
+func newFeatureReleaseMutation(c config, op Op, opts ...featurereleaseOption) *FeatureReleaseMutation {
+	m := &FeatureReleaseMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeFeatureRelease,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withFeatureReleaseID sets the ID field of the mutation.
+func withFeatureReleaseID(id string) featurereleaseOption {
+	return func(m *FeatureReleaseMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *FeatureRelease
+		)
+		m.oldValue = func(ctx context.Context) (*FeatureRelease, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().FeatureRelease.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withFeatureRelease sets the old FeatureRelease of the mutation.
+func withFeatureRelease(node *FeatureRelease) featurereleaseOption {
+	return func(m *FeatureReleaseMutation) {
+		m.oldValue = func(context.Context) (*FeatureRelease, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m FeatureReleaseMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m FeatureReleaseMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *FeatureReleaseMutation) ID() (id string, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *FeatureReleaseMutation) IDs(ctx context.Context) ([]string, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []string{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().FeatureRelease.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetFeatureID sets the "feature_id" field.
+func (m *FeatureReleaseMutation) SetFeatureID(s string) {
+	m.feature_id = &s
+}
+
+// FeatureID returns the value of the "feature_id" field in the mutation.
+func (m *FeatureReleaseMutation) FeatureID() (r string, exists bool) {
+	v := m.feature_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFeatureID returns the old "feature_id" field's value of the FeatureRelease entity.
+// If the FeatureRelease object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FeatureReleaseMutation) OldFeatureID(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFeatureID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFeatureID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFeatureID: %w", err)
+	}
+	return oldValue.FeatureID, nil
+}
+
+// ResetFeatureID resets all changes to the "feature_id" field.
+func (m *FeatureReleaseMutation) ResetFeatureID() {
+	m.feature_id = nil
+}
+
+// SetFeatureName sets the "feature_name" field.
+func (m *FeatureReleaseMutation) SetFeatureName(s string) {
+	m.feature_name = &s
+}
+
+// FeatureName returns the value of the "feature_name" field in the mutation.
+func (m *FeatureReleaseMutation) FeatureName() (r string, exists bool) {
+	v := m.feature_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFeatureName returns the old "feature_name" field's value of the FeatureRelease entity.
+// If the FeatureRelease object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FeatureReleaseMutation) OldFeatureName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFeatureName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFeatureName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFeatureName: %w", err)
+	}
+	return oldValue.FeatureName, nil
+}
+
+// ResetFeatureName resets all changes to the "feature_name" field.
+func (m *FeatureReleaseMutation) ResetFeatureName() {
+	m.feature_name = nil
+}
+
+// SetDescription sets the "description" field.
+func (m *FeatureReleaseMutation) SetDescription(s string) {
+	m.description = &s
+}
+
+// Description returns the value of the "description" field in the mutation.
+func (m *FeatureReleaseMutation) Description() (r string, exists bool) {
+	v := m.description
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDescription returns the old "description" field's value of the FeatureRelease entity.
+// If the FeatureRelease object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FeatureReleaseMutation) OldDescription(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDescription is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDescription requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDescription: %w", err)
+	}
+	return oldValue.Description, nil
+}
+
+// ClearDescription clears the value of the "description" field.
+func (m *FeatureReleaseMutation) ClearDescription() {
+	m.description = nil
+	m.clearedFields[featurerelease.FieldDescription] = struct{}{}
+}
+
+// DescriptionCleared returns if the "description" field was cleared in this mutation.
+func (m *FeatureReleaseMutation) DescriptionCleared() bool {
+	_, ok := m.clearedFields[featurerelease.FieldDescription]
+	return ok
+}
+
+// ResetDescription resets all changes to the "description" field.
+func (m *FeatureReleaseMutation) ResetDescription() {
+	m.description = nil
+	delete(m.clearedFields, featurerelease.FieldDescription)
+}
+
+// SetState sets the "state" field.
+func (m *FeatureReleaseMutation) SetState(f featurerelease.State) {
+	m.state = &f
+}
+
+// State returns the value of the "state" field in the mutation.
+func (m *FeatureReleaseMutation) State() (r featurerelease.State, exists bool) {
+	v := m.state
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldState returns the old "state" field's value of the FeatureRelease entity.
+// If the FeatureRelease object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FeatureReleaseMutation) OldState(ctx context.Context) (v featurerelease.State, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldState is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldState requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldState: %w", err)
+	}
+	return oldValue.State, nil
+}
+
+// ResetState resets all changes to the "state" field.
+func (m *FeatureReleaseMutation) ResetState() {
+	m.state = nil
+}
+
+// SetReleaseDate sets the "release_date" field.
+func (m *FeatureReleaseMutation) SetReleaseDate(t time.Time) {
+	m.release_date = &t
+}
+
+// ReleaseDate returns the value of the "release_date" field in the mutation.
+func (m *FeatureReleaseMutation) ReleaseDate() (r time.Time, exists bool) {
+	v := m.release_date
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldReleaseDate returns the old "release_date" field's value of the FeatureRelease entity.
+// If the FeatureRelease object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FeatureReleaseMutation) OldReleaseDate(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldReleaseDate is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldReleaseDate requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldReleaseDate: %w", err)
+	}
+	return oldValue.ReleaseDate, nil
+}
+
+// ResetReleaseDate resets all changes to the "release_date" field.
+func (m *FeatureReleaseMutation) ResetReleaseDate() {
+	m.release_date = nil
+}
+
+// SetEligibilityRules sets the "eligibility_rules" field.
+func (m *FeatureReleaseMutation) SetEligibilityRules(value map[string]interface{}) {
+	m.eligibility_rules = &value
+}
+
+// EligibilityRules returns the value of the "eligibility_rules" field in the mutation.
+func (m *FeatureReleaseMutation) EligibilityRules() (r map[string]interface{}, exists bool) {
+	v := m.eligibility_rules
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEligibilityRules returns the old "eligibility_rules" field's value of the FeatureRelease entity.
+// If the FeatureRelease object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FeatureReleaseMutation) OldEligibilityRules(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEligibilityRules is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEligibilityRules requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEligibilityRules: %w", err)
+	}
+	return oldValue.EligibilityRules, nil
+}
+
+// ClearEligibilityRules clears the value of the "eligibility_rules" field.
+func (m *FeatureReleaseMutation) ClearEligibilityRules() {
+	m.eligibility_rules = nil
+	m.clearedFields[featurerelease.FieldEligibilityRules] = struct{}{}
+}
+
+// EligibilityRulesCleared returns if the "eligibility_rules" field was cleared in this mutation.
+func (m *FeatureReleaseMutation) EligibilityRulesCleared() bool {
+	_, ok := m.clearedFields[featurerelease.FieldEligibilityRules]
+	return ok
+}
+
+// ResetEligibilityRules resets all changes to the "eligibility_rules" field.
+func (m *FeatureReleaseMutation) ResetEligibilityRules() {
+	m.eligibility_rules = nil
+	delete(m.clearedFields, featurerelease.FieldEligibilityRules)
+}
+
+// SetDocumentationLink sets the "documentation_link" field.
+func (m *FeatureReleaseMutation) SetDocumentationLink(s string) {
+	m.documentation_link = &s
+}
+
+// DocumentationLink returns the value of the "documentation_link" field in the mutation.
+func (m *FeatureReleaseMutation) DocumentationLink() (r string, exists bool) {
+	v := m.documentation_link
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDocumentationLink returns the old "documentation_link" field's value of the FeatureRelease entity.
+// If the FeatureRelease object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FeatureReleaseMutation) OldDocumentationLink(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDocumentationLink is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDocumentationLink requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDocumentationLink: %w", err)
+	}
+	return oldValue.DocumentationLink, nil
+}
+
+// ClearDocumentationLink clears the value of the "documentation_link" field.
+func (m *FeatureReleaseMutation) ClearDocumentationLink() {
+	m.documentation_link = nil
+	m.clearedFields[featurerelease.FieldDocumentationLink] = struct{}{}
+}
+
+// DocumentationLinkCleared returns if the "documentation_link" field was cleared in this mutation.
+func (m *FeatureReleaseMutation) DocumentationLinkCleared() bool {
+	_, ok := m.clearedFields[featurerelease.FieldDocumentationLink]
+	return ok
+}
+
+// ResetDocumentationLink resets all changes to the "documentation_link" field.
+func (m *FeatureReleaseMutation) ResetDocumentationLink() {
+	m.documentation_link = nil
+	delete(m.clearedFields, featurerelease.FieldDocumentationLink)
+}
+
+// SetMetadata sets the "metadata" field.
+func (m *FeatureReleaseMutation) SetMetadata(value map[string]interface{}) {
+	m.metadata = &value
+}
+
+// Metadata returns the value of the "metadata" field in the mutation.
+func (m *FeatureReleaseMutation) Metadata() (r map[string]interface{}, exists bool) {
+	v := m.metadata
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMetadata returns the old "metadata" field's value of the FeatureRelease entity.
+// If the FeatureRelease object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FeatureReleaseMutation) OldMetadata(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMetadata is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMetadata requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMetadata: %w", err)
+	}
+	return oldValue.Metadata, nil
+}
+
+// ClearMetadata clears the value of the "metadata" field.
+func (m *FeatureReleaseMutation) ClearMetadata() {
+	m.metadata = nil
+	m.clearedFields[featurerelease.FieldMetadata] = struct{}{}
+}
+
+// MetadataCleared returns if the "metadata" field was cleared in this mutation.
+func (m *FeatureReleaseMutation) MetadataCleared() bool {
+	_, ok := m.clearedFields[featurerelease.FieldMetadata]
+	return ok
+}
+
+// ResetMetadata resets all changes to the "metadata" field.
+func (m *FeatureReleaseMutation) ResetMetadata() {
+	m.metadata = nil
+	delete(m.clearedFields, featurerelease.FieldMetadata)
+}
+
+// Where appends a list predicates to the FeatureReleaseMutation builder.
+func (m *FeatureReleaseMutation) Where(ps ...predicate.FeatureRelease) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the FeatureReleaseMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *FeatureReleaseMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.FeatureRelease, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *FeatureReleaseMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *FeatureReleaseMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (FeatureRelease).
+func (m *FeatureReleaseMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *FeatureReleaseMutation) Fields() []string {
+	fields := make([]string, 0, 8)
+	if m.feature_id != nil {
+		fields = append(fields, featurerelease.FieldFeatureID)
+	}
+	if m.feature_name != nil {
+		fields = append(fields, featurerelease.FieldFeatureName)
+	}
+	if m.description != nil {
+		fields = append(fields, featurerelease.FieldDescription)
+	}
+	if m.state != nil {
+		fields = append(fields, featurerelease.FieldState)
+	}
+	if m.release_date != nil {
+		fields = append(fields, featurerelease.FieldReleaseDate)
+	}
+	if m.eligibility_rules != nil {
+		fields = append(fields, featurerelease.FieldEligibilityRules)
+	}
+	if m.documentation_link != nil {
+		fields = append(fields, featurerelease.FieldDocumentationLink)
+	}
+	if m.metadata != nil {
+		fields = append(fields, featurerelease.FieldMetadata)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *FeatureReleaseMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case featurerelease.FieldFeatureID:
+		return m.FeatureID()
+	case featurerelease.FieldFeatureName:
+		return m.FeatureName()
+	case featurerelease.FieldDescription:
+		return m.Description()
+	case featurerelease.FieldState:
+		return m.State()
+	case featurerelease.FieldReleaseDate:
+		return m.ReleaseDate()
+	case featurerelease.FieldEligibilityRules:
+		return m.EligibilityRules()
+	case featurerelease.FieldDocumentationLink:
+		return m.DocumentationLink()
+	case featurerelease.FieldMetadata:
+		return m.Metadata()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *FeatureReleaseMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case featurerelease.FieldFeatureID:
+		return m.OldFeatureID(ctx)
+	case featurerelease.FieldFeatureName:
+		return m.OldFeatureName(ctx)
+	case featurerelease.FieldDescription:
+		return m.OldDescription(ctx)
+	case featurerelease.FieldState:
+		return m.OldState(ctx)
+	case featurerelease.FieldReleaseDate:
+		return m.OldReleaseDate(ctx)
+	case featurerelease.FieldEligibilityRules:
+		return m.OldEligibilityRules(ctx)
+	case featurerelease.FieldDocumentationLink:
+		return m.OldDocumentationLink(ctx)
+	case featurerelease.FieldMetadata:
+		return m.OldMetadata(ctx)
+	}
+	return nil, fmt.Errorf("unknown FeatureRelease field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *FeatureReleaseMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case featurerelease.FieldFeatureID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFeatureID(v)
+		return nil
+	case featurerelease.FieldFeatureName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFeatureName(v)
+		return nil
+	case featurerelease.FieldDescription:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDescription(v)
+		return nil
+	case featurerelease.FieldState:
+		v, ok := value.(featurerelease.State)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetState(v)
+		return nil
+	case featurerelease.FieldReleaseDate:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetReleaseDate(v)
+		return nil
+	case featurerelease.FieldEligibilityRules:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEligibilityRules(v)
+		return nil
+	case featurerelease.FieldDocumentationLink:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDocumentationLink(v)
+		return nil
+	case featurerelease.FieldMetadata:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMetadata(v)
+		return nil
+	}
+	return fmt.Errorf("unknown FeatureRelease field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *FeatureReleaseMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *FeatureReleaseMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *FeatureReleaseMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown FeatureRelease numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *FeatureReleaseMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(featurerelease.FieldDescription) {
+		fields = append(fields, featurerelease.FieldDescription)
+	}
+	if m.FieldCleared(featurerelease.FieldEligibilityRules) {
+		fields = append(fields, featurerelease.FieldEligibilityRules)
+	}
+	if m.FieldCleared(featurerelease.FieldDocumentationLink) {
+		fields = append(fields, featurerelease.FieldDocumentationLink)
+	}
+	if m.FieldCleared(featurerelease.FieldMetadata) {
+		fields = append(fields, featurerelease.FieldMetadata)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *FeatureReleaseMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *FeatureReleaseMutation) ClearField(name string) error {
+	switch name {
+	case featurerelease.FieldDescription:
+		m.ClearDescription()
+		return nil
+	case featurerelease.FieldEligibilityRules:
+		m.ClearEligibilityRules()
+		return nil
+	case featurerelease.FieldDocumentationLink:
+		m.ClearDocumentationLink()
+		return nil
+	case featurerelease.FieldMetadata:
+		m.ClearMetadata()
+		return nil
+	}
+	return fmt.Errorf("unknown FeatureRelease nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *FeatureReleaseMutation) ResetField(name string) error {
+	switch name {
+	case featurerelease.FieldFeatureID:
+		m.ResetFeatureID()
+		return nil
+	case featurerelease.FieldFeatureName:
+		m.ResetFeatureName()
+		return nil
+	case featurerelease.FieldDescription:
+		m.ResetDescription()
+		return nil
+	case featurerelease.FieldState:
+		m.ResetState()
+		return nil
+	case featurerelease.FieldReleaseDate:
+		m.ResetReleaseDate()
+		return nil
+	case featurerelease.FieldEligibilityRules:
+		m.ResetEligibilityRules()
+		return nil
+	case featurerelease.FieldDocumentationLink:
+		m.ResetDocumentationLink()
+		return nil
+	case featurerelease.FieldMetadata:
+		m.ResetMetadata()
+		return nil
+	}
+	return fmt.Errorf("unknown FeatureRelease field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *FeatureReleaseMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *FeatureReleaseMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *FeatureReleaseMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *FeatureReleaseMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *FeatureReleaseMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *FeatureReleaseMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *FeatureReleaseMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown FeatureRelease unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *FeatureReleaseMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown FeatureRelease edge %s", name)
 }
 
 // HelpMutation represents an operation that mutates the Help nodes in the graph.
@@ -23099,6 +24050,8 @@ type PlaceInventoryMutation struct {
 	clearedreservation_blocks    bool
 	business                     *string
 	clearedbusiness              bool
+	category                     *string
+	clearedcategory              bool
 	done                         bool
 	oldValue                     func(context.Context) (*PlaceInventory, error)
 	predicates                   []predicate.PlaceInventory
@@ -24089,6 +25042,45 @@ func (m *PlaceInventoryMutation) ResetBusiness() {
 	m.clearedbusiness = false
 }
 
+// SetCategoryID sets the "category" edge to the Category entity by id.
+func (m *PlaceInventoryMutation) SetCategoryID(id string) {
+	m.category = &id
+}
+
+// ClearCategory clears the "category" edge to the Category entity.
+func (m *PlaceInventoryMutation) ClearCategory() {
+	m.clearedcategory = true
+}
+
+// CategoryCleared reports if the "category" edge to the Category entity was cleared.
+func (m *PlaceInventoryMutation) CategoryCleared() bool {
+	return m.clearedcategory
+}
+
+// CategoryID returns the "category" edge ID in the mutation.
+func (m *PlaceInventoryMutation) CategoryID() (id string, exists bool) {
+	if m.category != nil {
+		return *m.category, true
+	}
+	return
+}
+
+// CategoryIDs returns the "category" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// CategoryID instead. It exists only for internal usage by the builders.
+func (m *PlaceInventoryMutation) CategoryIDs() (ids []string) {
+	if id := m.category; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCategory resets all changes to the "category" edge.
+func (m *PlaceInventoryMutation) ResetCategory() {
+	m.category = nil
+	m.clearedcategory = false
+}
+
 // Where appends a list predicates to the PlaceInventoryMutation builder.
 func (m *PlaceInventoryMutation) Where(ps ...predicate.PlaceInventory) {
 	m.predicates = append(m.predicates, ps...)
@@ -24476,7 +25468,7 @@ func (m *PlaceInventoryMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PlaceInventoryMutation) AddedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 8)
 	if m.place != nil {
 		edges = append(edges, placeinventory.EdgePlace)
 	}
@@ -24497,6 +25489,9 @@ func (m *PlaceInventoryMutation) AddedEdges() []string {
 	}
 	if m.business != nil {
 		edges = append(edges, placeinventory.EdgeBusiness)
+	}
+	if m.category != nil {
+		edges = append(edges, placeinventory.EdgeCategory)
 	}
 	return edges
 }
@@ -24541,13 +25536,17 @@ func (m *PlaceInventoryMutation) AddedIDs(name string) []ent.Value {
 		if id := m.business; id != nil {
 			return []ent.Value{*id}
 		}
+	case placeinventory.EdgeCategory:
+		if id := m.category; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PlaceInventoryMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 8)
 	if m.removedattributes != nil {
 		edges = append(edges, placeinventory.EdgeAttributes)
 	}
@@ -24597,7 +25596,7 @@ func (m *PlaceInventoryMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PlaceInventoryMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 8)
 	if m.clearedplace {
 		edges = append(edges, placeinventory.EdgePlace)
 	}
@@ -24618,6 +25617,9 @@ func (m *PlaceInventoryMutation) ClearedEdges() []string {
 	}
 	if m.clearedbusiness {
 		edges = append(edges, placeinventory.EdgeBusiness)
+	}
+	if m.clearedcategory {
+		edges = append(edges, placeinventory.EdgeCategory)
 	}
 	return edges
 }
@@ -24640,6 +25642,8 @@ func (m *PlaceInventoryMutation) EdgeCleared(name string) bool {
 		return m.clearedreservation_blocks
 	case placeinventory.EdgeBusiness:
 		return m.clearedbusiness
+	case placeinventory.EdgeCategory:
+		return m.clearedcategory
 	}
 	return false
 }
@@ -24656,6 +25660,9 @@ func (m *PlaceInventoryMutation) ClearEdge(name string) error {
 		return nil
 	case placeinventory.EdgeBusiness:
 		m.ClearBusiness()
+		return nil
+	case placeinventory.EdgeCategory:
+		m.ClearCategory()
 		return nil
 	}
 	return fmt.Errorf("unknown PlaceInventory unique edge %s", name)
@@ -24685,6 +25692,9 @@ func (m *PlaceInventoryMutation) ResetEdge(name string) error {
 		return nil
 	case placeinventory.EdgeBusiness:
 		m.ResetBusiness()
+		return nil
+	case placeinventory.EdgeCategory:
+		m.ResetCategory()
 		return nil
 	}
 	return fmt.Errorf("unknown PlaceInventory edge %s", name)

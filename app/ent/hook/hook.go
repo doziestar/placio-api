@@ -164,6 +164,18 @@ func (f FAQFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) 
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.FAQMutation", m)
 }
 
+// The FeatureReleaseFunc type is an adapter to allow the use of ordinary
+// function as FeatureRelease mutator.
+type FeatureReleaseFunc func(context.Context, *ent.FeatureReleaseMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f FeatureReleaseFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.FeatureReleaseMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.FeatureReleaseMutation", m)
+}
+
 // The HelpFunc type is an adapter to allow the use of ordinary
 // function as Help mutator.
 type HelpFunc func(context.Context, *ent.HelpMutation) (ent.Value, error)

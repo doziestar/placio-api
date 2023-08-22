@@ -148,6 +148,7 @@ func (s *PlaceServiceImpl) GetAllPlaces(ctx context.Context, lastId string, limi
 		WithBusiness().
 		WithCategories().
 		WithEvents().
+		WithMedias().
 		WithAmenities().
 		WithReviews().
 		WithMenus().

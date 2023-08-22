@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"placio-app/ent/business"
+	"placio-app/ent/category"
 	"placio-app/ent/inventorytype"
 	"placio-app/ent/media"
 	"placio-app/ent/place"
@@ -345,6 +346,25 @@ func (piu *PlaceInventoryUpdate) SetBusiness(b *Business) *PlaceInventoryUpdate 
 	return piu.SetBusinessID(b.ID)
 }
 
+// SetCategoryID sets the "category" edge to the Category entity by ID.
+func (piu *PlaceInventoryUpdate) SetCategoryID(id string) *PlaceInventoryUpdate {
+	piu.mutation.SetCategoryID(id)
+	return piu
+}
+
+// SetNillableCategoryID sets the "category" edge to the Category entity by ID if the given value is not nil.
+func (piu *PlaceInventoryUpdate) SetNillableCategoryID(id *string) *PlaceInventoryUpdate {
+	if id != nil {
+		piu = piu.SetCategoryID(*id)
+	}
+	return piu
+}
+
+// SetCategory sets the "category" edge to the Category entity.
+func (piu *PlaceInventoryUpdate) SetCategory(c *Category) *PlaceInventoryUpdate {
+	return piu.SetCategoryID(c.ID)
+}
+
 // Mutation returns the PlaceInventoryMutation object of the builder.
 func (piu *PlaceInventoryUpdate) Mutation() *PlaceInventoryMutation {
 	return piu.mutation
@@ -449,6 +469,12 @@ func (piu *PlaceInventoryUpdate) RemoveReservationBlocks(r ...*ReservationBlock)
 // ClearBusiness clears the "business" edge to the Business entity.
 func (piu *PlaceInventoryUpdate) ClearBusiness() *PlaceInventoryUpdate {
 	piu.mutation.ClearBusiness()
+	return piu
+}
+
+// ClearCategory clears the "category" edge to the Category entity.
+func (piu *PlaceInventoryUpdate) ClearCategory() *PlaceInventoryUpdate {
+	piu.mutation.ClearCategory()
 	return piu
 }
 
@@ -818,6 +844,35 @@ func (piu *PlaceInventoryUpdate) sqlSave(ctx context.Context) (n int, err error)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if piu.mutation.CategoryCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   placeinventory.CategoryTable,
+			Columns: []string{placeinventory.CategoryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := piu.mutation.CategoryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   placeinventory.CategoryTable,
+			Columns: []string{placeinventory.CategoryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, piu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{placeinventory.Label}
@@ -1148,6 +1203,25 @@ func (piuo *PlaceInventoryUpdateOne) SetBusiness(b *Business) *PlaceInventoryUpd
 	return piuo.SetBusinessID(b.ID)
 }
 
+// SetCategoryID sets the "category" edge to the Category entity by ID.
+func (piuo *PlaceInventoryUpdateOne) SetCategoryID(id string) *PlaceInventoryUpdateOne {
+	piuo.mutation.SetCategoryID(id)
+	return piuo
+}
+
+// SetNillableCategoryID sets the "category" edge to the Category entity by ID if the given value is not nil.
+func (piuo *PlaceInventoryUpdateOne) SetNillableCategoryID(id *string) *PlaceInventoryUpdateOne {
+	if id != nil {
+		piuo = piuo.SetCategoryID(*id)
+	}
+	return piuo
+}
+
+// SetCategory sets the "category" edge to the Category entity.
+func (piuo *PlaceInventoryUpdateOne) SetCategory(c *Category) *PlaceInventoryUpdateOne {
+	return piuo.SetCategoryID(c.ID)
+}
+
 // Mutation returns the PlaceInventoryMutation object of the builder.
 func (piuo *PlaceInventoryUpdateOne) Mutation() *PlaceInventoryMutation {
 	return piuo.mutation
@@ -1252,6 +1326,12 @@ func (piuo *PlaceInventoryUpdateOne) RemoveReservationBlocks(r ...*ReservationBl
 // ClearBusiness clears the "business" edge to the Business entity.
 func (piuo *PlaceInventoryUpdateOne) ClearBusiness() *PlaceInventoryUpdateOne {
 	piuo.mutation.ClearBusiness()
+	return piuo
+}
+
+// ClearCategory clears the "category" edge to the Category entity.
+func (piuo *PlaceInventoryUpdateOne) ClearCategory() *PlaceInventoryUpdateOne {
+	piuo.mutation.ClearCategory()
 	return piuo
 }
 
@@ -1644,6 +1724,35 @@ func (piuo *PlaceInventoryUpdateOne) sqlSave(ctx context.Context) (_node *PlaceI
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(business.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if piuo.mutation.CategoryCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   placeinventory.CategoryTable,
+			Columns: []string{placeinventory.CategoryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := piuo.mutation.CategoryIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   placeinventory.CategoryTable,
+			Columns: []string{placeinventory.CategoryColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

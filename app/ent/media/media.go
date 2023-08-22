@@ -52,13 +52,11 @@ const (
 	ReviewInverseTable = "reviews"
 	// ReviewColumn is the table column denoting the review relation/edge.
 	ReviewColumn = "review_medias"
-	// CategoriesTable is the table that holds the categories relation/edge.
-	CategoriesTable = "categories"
+	// CategoriesTable is the table that holds the categories relation/edge. The primary key declared below.
+	CategoriesTable = "category_media"
 	// CategoriesInverseTable is the table name for the Category entity.
 	// It exists in this package in order to avoid circular dependency with the "category" package.
 	CategoriesInverseTable = "categories"
-	// CategoriesColumn is the table column denoting the categories relation/edge.
-	CategoriesColumn = "media_categories"
 	// PlaceTable is the table that holds the place relation/edge. The primary key declared below.
 	PlaceTable = "place_medias"
 	// PlaceInverseTable is the table name for the Place entity.
@@ -90,6 +88,9 @@ var ForeignKeys = []string{
 }
 
 var (
+	// CategoriesPrimaryKey and CategoriesColumn2 are the table columns denoting the
+	// primary key for the categories relation (M2M).
+	CategoriesPrimaryKey = []string{"category_id", "media_id"}
 	// PlacePrimaryKey and PlaceColumn2 are the table columns denoting the
 	// primary key for the place relation (M2M).
 	PlacePrimaryKey = []string{"place_id", "media_id"}
@@ -239,7 +240,7 @@ func newCategoriesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CategoriesInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, CategoriesTable, CategoriesColumn),
+		sqlgraph.Edge(sqlgraph.M2M, true, CategoriesTable, CategoriesPrimaryKey...),
 	)
 }
 func newPlaceStep() *sqlgraph.Step {

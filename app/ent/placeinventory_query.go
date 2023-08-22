@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math"
 	"placio-app/ent/business"
+	"placio-app/ent/category"
 	"placio-app/ent/inventorytype"
 	"placio-app/ent/media"
 	"placio-app/ent/place"
@@ -36,6 +37,7 @@ type PlaceInventoryQuery struct {
 	withTransactionHistories *TransactionHistoryQuery
 	withReservationBlocks    *ReservationBlockQuery
 	withBusiness             *BusinessQuery
+	withCategory             *CategoryQuery
 	withFKs                  bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -220,6 +222,28 @@ func (piq *PlaceInventoryQuery) QueryBusiness() *BusinessQuery {
 			sqlgraph.From(placeinventory.Table, placeinventory.FieldID, selector),
 			sqlgraph.To(business.Table, business.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, placeinventory.BusinessTable, placeinventory.BusinessColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(piq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryCategory chains the current query on the "category" edge.
+func (piq *PlaceInventoryQuery) QueryCategory() *CategoryQuery {
+	query := (&CategoryClient{config: piq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := piq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := piq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(placeinventory.Table, placeinventory.FieldID, selector),
+			sqlgraph.To(category.Table, category.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, placeinventory.CategoryTable, placeinventory.CategoryColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(piq.driver.Dialect(), step)
 		return fromU, nil
@@ -426,6 +450,7 @@ func (piq *PlaceInventoryQuery) Clone() *PlaceInventoryQuery {
 		withTransactionHistories: piq.withTransactionHistories.Clone(),
 		withReservationBlocks:    piq.withReservationBlocks.Clone(),
 		withBusiness:             piq.withBusiness.Clone(),
+		withCategory:             piq.withCategory.Clone(),
 		// clone intermediate query.
 		sql:  piq.sql.Clone(),
 		path: piq.path,
@@ -509,6 +534,17 @@ func (piq *PlaceInventoryQuery) WithBusiness(opts ...func(*BusinessQuery)) *Plac
 	return piq
 }
 
+// WithCategory tells the query-builder to eager-load the nodes that are connected to
+// the "category" edge. The optional arguments are used to configure the query builder of the edge.
+func (piq *PlaceInventoryQuery) WithCategory(opts ...func(*CategoryQuery)) *PlaceInventoryQuery {
+	query := (&CategoryClient{config: piq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	piq.withCategory = query
+	return piq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -588,7 +624,7 @@ func (piq *PlaceInventoryQuery) sqlAll(ctx context.Context, hooks ...queryHook) 
 		nodes       = []*PlaceInventory{}
 		withFKs     = piq.withFKs
 		_spec       = piq.querySpec()
-		loadedTypes = [7]bool{
+		loadedTypes = [8]bool{
 			piq.withPlace != nil,
 			piq.withInventoryType != nil,
 			piq.withAttributes != nil,
@@ -596,9 +632,10 @@ func (piq *PlaceInventoryQuery) sqlAll(ctx context.Context, hooks ...queryHook) 
 			piq.withTransactionHistories != nil,
 			piq.withReservationBlocks != nil,
 			piq.withBusiness != nil,
+			piq.withCategory != nil,
 		}
 	)
-	if piq.withPlace != nil || piq.withInventoryType != nil || piq.withBusiness != nil {
+	if piq.withPlace != nil || piq.withInventoryType != nil || piq.withBusiness != nil || piq.withCategory != nil {
 		withFKs = true
 	}
 	if withFKs {
@@ -671,6 +708,12 @@ func (piq *PlaceInventoryQuery) sqlAll(ctx context.Context, hooks ...queryHook) 
 	if query := piq.withBusiness; query != nil {
 		if err := piq.loadBusiness(ctx, query, nodes, nil,
 			func(n *PlaceInventory, e *Business) { n.Edges.Business = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := piq.withCategory; query != nil {
+		if err := piq.loadCategory(ctx, query, nodes, nil,
+			func(n *PlaceInventory, e *Category) { n.Edges.Category = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -920,6 +963,38 @@ func (piq *PlaceInventoryQuery) loadBusiness(ctx context.Context, query *Busines
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "business_place_inventories" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (piq *PlaceInventoryQuery) loadCategory(ctx context.Context, query *CategoryQuery, nodes []*PlaceInventory, init func(*PlaceInventory), assign func(*PlaceInventory, *Category)) error {
+	ids := make([]string, 0, len(nodes))
+	nodeids := make(map[string][]*PlaceInventory)
+	for i := range nodes {
+		if nodes[i].category_place_inventories == nil {
+			continue
+		}
+		fk := *nodes[i].category_place_inventories
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(category.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "category_place_inventories" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)

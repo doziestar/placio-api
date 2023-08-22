@@ -436,7 +436,7 @@ func HasCategories() predicate.Media {
 	return predicate.Media(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, CategoriesTable, CategoriesColumn),
+			sqlgraph.Edge(sqlgraph.M2M, true, CategoriesTable, CategoriesPrimaryKey...),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})

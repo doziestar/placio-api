@@ -797,6 +797,52 @@ func HasCategoryAssignmentsWith(preds ...predicate.CategoryAssignment) predicate
 	})
 }
 
+// HasPlaceInventories applies the HasEdge predicate on the "place_inventories" edge.
+func HasPlaceInventories() predicate.Category {
+	return predicate.Category(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, PlaceInventoriesTable, PlaceInventoriesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasPlaceInventoriesWith applies the HasEdge predicate on the "place_inventories" edge with a given conditions (other predicates).
+func HasPlaceInventoriesWith(preds ...predicate.PlaceInventory) predicate.Category {
+	return predicate.Category(func(s *sql.Selector) {
+		step := newPlaceInventoriesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasMedia applies the HasEdge predicate on the "media" edge.
+func HasMedia() predicate.Category {
+	return predicate.Category(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, MediaTable, MediaPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasMediaWith applies the HasEdge predicate on the "media" edge with a given conditions (other predicates).
+func HasMediaWith(preds ...predicate.Media) predicate.Category {
+	return predicate.Category(func(s *sql.Selector) {
+		step := newMediaStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Category) predicate.Category {
 	return predicate.Category(func(s *sql.Selector) {

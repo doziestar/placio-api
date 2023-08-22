@@ -5,6 +5,7 @@ package ent
 import (
 	"fmt"
 	"placio-app/ent/business"
+	"placio-app/ent/category"
 	"placio-app/ent/inventorytype"
 	"placio-app/ent/place"
 	"placio-app/ent/placeinventory"
@@ -46,6 +47,7 @@ type PlaceInventory struct {
 	// The values are being populated by the PlaceInventoryQuery when eager-loading is set.
 	Edges                            PlaceInventoryEdges `json:"edges"`
 	business_place_inventories       *string
+	category_place_inventories       *string
 	inventory_type_place_inventories *string
 	place_inventories                *string
 	selectValues                     sql.SelectValues
@@ -67,9 +69,11 @@ type PlaceInventoryEdges struct {
 	ReservationBlocks []*ReservationBlock `json:"reservation_blocks,omitempty"`
 	// Business holds the value of the business edge.
 	Business *Business `json:"business,omitempty"`
+	// Category holds the value of the category edge.
+	Category *Category `json:"category,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [7]bool
+	loadedTypes [8]bool
 }
 
 // PlaceOrErr returns the Place value or an error if the edge
@@ -147,6 +151,19 @@ func (e PlaceInventoryEdges) BusinessOrErr() (*Business, error) {
 	return nil, &NotLoadedError{edge: "business"}
 }
 
+// CategoryOrErr returns the Category value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e PlaceInventoryEdges) CategoryOrErr() (*Category, error) {
+	if e.loadedTypes[7] {
+		if e.Category == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: category.Label}
+		}
+		return e.Category, nil
+	}
+	return nil, &NotLoadedError{edge: "category"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*PlaceInventory) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -162,9 +179,11 @@ func (*PlaceInventory) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullTime)
 		case placeinventory.ForeignKeys[0]: // business_place_inventories
 			values[i] = new(sql.NullString)
-		case placeinventory.ForeignKeys[1]: // inventory_type_place_inventories
+		case placeinventory.ForeignKeys[1]: // category_place_inventories
 			values[i] = new(sql.NullString)
-		case placeinventory.ForeignKeys[2]: // place_inventories
+		case placeinventory.ForeignKeys[2]: // inventory_type_place_inventories
+			values[i] = new(sql.NullString)
+		case placeinventory.ForeignKeys[3]: // place_inventories
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -262,12 +281,19 @@ func (pi *PlaceInventory) assignValues(columns []string, values []any) error {
 			}
 		case placeinventory.ForeignKeys[1]:
 			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field category_place_inventories", values[i])
+			} else if value.Valid {
+				pi.category_place_inventories = new(string)
+				*pi.category_place_inventories = value.String
+			}
+		case placeinventory.ForeignKeys[2]:
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field inventory_type_place_inventories", values[i])
 			} else if value.Valid {
 				pi.inventory_type_place_inventories = new(string)
 				*pi.inventory_type_place_inventories = value.String
 			}
-		case placeinventory.ForeignKeys[2]:
+		case placeinventory.ForeignKeys[3]:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field place_inventories", values[i])
 			} else if value.Valid {
@@ -320,6 +346,11 @@ func (pi *PlaceInventory) QueryReservationBlocks() *ReservationBlockQuery {
 // QueryBusiness queries the "business" edge of the PlaceInventory entity.
 func (pi *PlaceInventory) QueryBusiness() *BusinessQuery {
 	return NewPlaceInventoryClient(pi.config).QueryBusiness(pi)
+}
+
+// QueryCategory queries the "category" edge of the PlaceInventory entity.
+func (pi *PlaceInventory) QueryCategory() *CategoryQuery {
+	return NewPlaceInventoryClient(pi.config).QueryCategory(pi)
 }
 
 // Update returns a builder for updating this PlaceInventory.

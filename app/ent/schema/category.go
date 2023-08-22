@@ -33,6 +33,8 @@ func (Category) Fields() []ent.Field {
 func (Category) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("categoryAssignments", CategoryAssignment.Type),
+		edge.To("place_inventories", PlaceInventory.Type),
+		edge.To("media", Media.Type),
 	}
 }
 

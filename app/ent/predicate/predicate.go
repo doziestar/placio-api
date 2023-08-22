@@ -45,6 +45,9 @@ type Event func(*sql.Selector)
 // FAQ is the predicate function for faq builders.
 type FAQ func(*sql.Selector)
 
+// FeatureRelease is the predicate function for featurerelease builders.
+type FeatureRelease func(*sql.Selector)
+
 // Help is the predicate function for help builders.
 type Help func(*sql.Selector)
 

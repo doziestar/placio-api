@@ -41,7 +41,7 @@ func (Media) Edges() []ent.Edge {
 		edge.From("review", Review.Type).
 			Ref("medias").
 			Unique(),
-		edge.To("categories", Category.Type),
+		edge.From("categories", Category.Type).Ref("media"),
 		edge.From("place", Place.Type).
 			Ref("medias"),
 		edge.From("place_inventory", PlaceInventory.Type).

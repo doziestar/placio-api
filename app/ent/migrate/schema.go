@@ -204,7 +204,6 @@ var (
 		{Name: "parent_description", Type: field.TypeString, Nullable: true},
 		{Name: "business_categories", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "event_event_categories", Type: field.TypeString, Nullable: true},
-		{Name: "media_categories", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "menu_categories", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "place_categories", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "post_categories", Type: field.TypeString, Nullable: true, Size: 36},
@@ -229,32 +228,26 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "categories_media_categories",
-				Columns:    []*schema.Column{CategoriesColumns[12]},
-				RefColumns: []*schema.Column{MediaColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
 				Symbol:     "categories_menus_categories",
-				Columns:    []*schema.Column{CategoriesColumns[13]},
+				Columns:    []*schema.Column{CategoriesColumns[12]},
 				RefColumns: []*schema.Column{MenusColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "categories_places_categories",
-				Columns:    []*schema.Column{CategoriesColumns[14]},
+				Columns:    []*schema.Column{CategoriesColumns[13]},
 				RefColumns: []*schema.Column{PlacesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "categories_posts_categories",
-				Columns:    []*schema.Column{CategoriesColumns[15]},
+				Columns:    []*schema.Column{CategoriesColumns[14]},
 				RefColumns: []*schema.Column{PostsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "categories_users_categories",
-				Columns:    []*schema.Column{CategoriesColumns[16]},
+				Columns:    []*schema.Column{CategoriesColumns[15]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -459,6 +452,24 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 		},
+	}
+	// FeatureReleasesColumns holds the columns for the "feature_releases" table.
+	FeatureReleasesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "feature_id", Type: field.TypeString, Unique: true, Size: 36},
+		{Name: "feature_name", Type: field.TypeString},
+		{Name: "description", Type: field.TypeString, Nullable: true},
+		{Name: "state", Type: field.TypeEnum, Enums: []string{"testing", "staging", "live", "deprecated"}},
+		{Name: "release_date", Type: field.TypeTime},
+		{Name: "eligibility_rules", Type: field.TypeJSON, Nullable: true},
+		{Name: "documentation_link", Type: field.TypeString, Nullable: true},
+		{Name: "metadata", Type: field.TypeJSON, Nullable: true},
+	}
+	// FeatureReleasesTable holds the schema information for the "feature_releases" table.
+	FeatureReleasesTable = &schema.Table{
+		Name:       "feature_releases",
+		Columns:    FeatureReleasesColumns,
+		PrimaryKey: []*schema.Column{FeatureReleasesColumns[0]},
 	}
 	// HelpsColumns holds the columns for the "helps" table.
 	HelpsColumns = []*schema.Column{
@@ -723,6 +734,7 @@ var (
 		{Name: "purchase_date", Type: field.TypeTime, Nullable: true},
 		{Name: "last_updated", Type: field.TypeTime},
 		{Name: "business_place_inventories", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "category_place_inventories", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "inventory_type_place_inventories", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "place_inventories", Type: field.TypeString, Nullable: true, Size: 36},
 	}
@@ -739,14 +751,20 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "place_inventories_inventory_types_place_inventories",
+				Symbol:     "place_inventories_categories_place_inventories",
 				Columns:    []*schema.Column{PlaceInventoriesColumns[13]},
+				RefColumns: []*schema.Column{CategoriesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "place_inventories_inventory_types_place_inventories",
+				Columns:    []*schema.Column{PlaceInventoriesColumns[14]},
 				RefColumns: []*schema.Column{InventoryTypesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "place_inventories_places_inventories",
-				Columns:    []*schema.Column{PlaceInventoriesColumns[14]},
+				Columns:    []*schema.Column{PlaceInventoriesColumns[15]},
 				RefColumns: []*schema.Column{PlacesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -1337,6 +1355,31 @@ var (
 			},
 		},
 	}
+	// CategoryMediaColumns holds the columns for the "category_media" table.
+	CategoryMediaColumns = []*schema.Column{
+		{Name: "category_id", Type: field.TypeString, Size: 36},
+		{Name: "media_id", Type: field.TypeString, Size: 36},
+	}
+	// CategoryMediaTable holds the schema information for the "category_media" table.
+	CategoryMediaTable = &schema.Table{
+		Name:       "category_media",
+		Columns:    CategoryMediaColumns,
+		PrimaryKey: []*schema.Column{CategoryMediaColumns[0], CategoryMediaColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "category_media_category_id",
+				Columns:    []*schema.Column{CategoryMediaColumns[0]},
+				RefColumns: []*schema.Column{CategoriesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "category_media_media_id",
+				Columns:    []*schema.Column{CategoryMediaColumns[1]},
+				RefColumns: []*schema.Column{MediaColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// FaqPlaceColumns holds the columns for the "faq_place" table.
 	FaqPlaceColumns = []*schema.Column{
 		{Name: "faq_id", Type: field.TypeString},
@@ -1477,6 +1520,7 @@ var (
 		CommentsTable,
 		EventsTable,
 		FaQsTable,
+		FeatureReleasesTable,
 		HelpsTable,
 		InventoryAttributesTable,
 		InventoryTypesTable,
@@ -1507,6 +1551,7 @@ var (
 		UserFollowUsersTable,
 		UserLikePlacesTable,
 		AmenityPlacesTable,
+		CategoryMediaTable,
 		FaqPlaceTable,
 		FaqEventTable,
 		PlaceMediasTable,
@@ -1528,11 +1573,10 @@ func init() {
 	BusinessFollowUsersTable.ForeignKeys[1].RefTable = UsersTable
 	CategoriesTable.ForeignKeys[0].RefTable = BusinessesTable
 	CategoriesTable.ForeignKeys[1].RefTable = EventsTable
-	CategoriesTable.ForeignKeys[2].RefTable = MediaTable
-	CategoriesTable.ForeignKeys[3].RefTable = MenusTable
-	CategoriesTable.ForeignKeys[4].RefTable = PlacesTable
-	CategoriesTable.ForeignKeys[5].RefTable = PostsTable
-	CategoriesTable.ForeignKeys[6].RefTable = UsersTable
+	CategoriesTable.ForeignKeys[2].RefTable = MenusTable
+	CategoriesTable.ForeignKeys[3].RefTable = PlacesTable
+	CategoriesTable.ForeignKeys[4].RefTable = PostsTable
+	CategoriesTable.ForeignKeys[5].RefTable = UsersTable
 	CategoryAssignmentsTable.ForeignKeys[0].RefTable = BusinessesTable
 	CategoryAssignmentsTable.ForeignKeys[1].RefTable = CategoriesTable
 	CategoryAssignmentsTable.ForeignKeys[2].RefTable = EventsTable
@@ -1559,8 +1603,9 @@ func init() {
 	PlacesTable.ForeignKeys[0].RefTable = BusinessesTable
 	PlacesTable.ForeignKeys[1].RefTable = EventsTable
 	PlaceInventoriesTable.ForeignKeys[0].RefTable = BusinessesTable
-	PlaceInventoriesTable.ForeignKeys[1].RefTable = InventoryTypesTable
-	PlaceInventoriesTable.ForeignKeys[2].RefTable = PlacesTable
+	PlaceInventoriesTable.ForeignKeys[1].RefTable = CategoriesTable
+	PlaceInventoriesTable.ForeignKeys[2].RefTable = InventoryTypesTable
+	PlaceInventoriesTable.ForeignKeys[3].RefTable = PlacesTable
 	PlaceInventoryAttributesTable.ForeignKeys[0].RefTable = InventoryAttributesTable
 	PlaceInventoryAttributesTable.ForeignKeys[1].RefTable = PlaceInventoriesTable
 	PostsTable.ForeignKeys[0].RefTable = BusinessesTable
@@ -1602,6 +1647,8 @@ func init() {
 	UserLikePlacesTable.ForeignKeys[1].RefTable = PlacesTable
 	AmenityPlacesTable.ForeignKeys[0].RefTable = AmenitiesTable
 	AmenityPlacesTable.ForeignKeys[1].RefTable = PlacesTable
+	CategoryMediaTable.ForeignKeys[0].RefTable = CategoriesTable
+	CategoryMediaTable.ForeignKeys[1].RefTable = MediaTable
 	FaqPlaceTable.ForeignKeys[0].RefTable = FaQsTable
 	FaqPlaceTable.ForeignKeys[1].RefTable = PlacesTable
 	FaqEventTable.ForeignKeys[0].RefTable = FaQsTable

@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"placio-app/ent/category"
 	"placio-app/ent/categoryassignment"
+	"placio-app/ent/media"
+	"placio-app/ent/placeinventory"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -159,6 +161,36 @@ func (cc *CategoryCreate) AddCategoryAssignments(c ...*CategoryAssignment) *Cate
 	return cc.AddCategoryAssignmentIDs(ids...)
 }
 
+// AddPlaceInventoryIDs adds the "place_inventories" edge to the PlaceInventory entity by IDs.
+func (cc *CategoryCreate) AddPlaceInventoryIDs(ids ...string) *CategoryCreate {
+	cc.mutation.AddPlaceInventoryIDs(ids...)
+	return cc
+}
+
+// AddPlaceInventories adds the "place_inventories" edges to the PlaceInventory entity.
+func (cc *CategoryCreate) AddPlaceInventories(p ...*PlaceInventory) *CategoryCreate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return cc.AddPlaceInventoryIDs(ids...)
+}
+
+// AddMediumIDs adds the "media" edge to the Media entity by IDs.
+func (cc *CategoryCreate) AddMediumIDs(ids ...string) *CategoryCreate {
+	cc.mutation.AddMediumIDs(ids...)
+	return cc
+}
+
+// AddMedia adds the "media" edges to the Media entity.
+func (cc *CategoryCreate) AddMedia(m ...*Media) *CategoryCreate {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return cc.AddMediumIDs(ids...)
+}
+
 // Mutation returns the CategoryMutation object of the builder.
 func (cc *CategoryCreate) Mutation() *CategoryMutation {
 	return cc.mutation
@@ -281,6 +313,38 @@ func (cc *CategoryCreate) createSpec() (*Category, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(categoryassignment.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := cc.mutation.PlaceInventoriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   category.PlaceInventoriesTable,
+			Columns: []string{category.PlaceInventoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placeinventory.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := cc.mutation.MediaIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   category.MediaTable,
+			Columns: category.MediaPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

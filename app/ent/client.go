@@ -23,6 +23,7 @@ import (
 	"placio-app/ent/comment"
 	"placio-app/ent/event"
 	"placio-app/ent/faq"
+	"placio-app/ent/featurerelease"
 	"placio-app/ent/help"
 	"placio-app/ent/inventoryattribute"
 	"placio-app/ent/inventorytype"
@@ -90,6 +91,8 @@ type Client struct {
 	Event *EventClient
 	// FAQ is the client for interacting with the FAQ builders.
 	FAQ *FAQClient
+	// FeatureRelease is the client for interacting with the FeatureRelease builders.
+	FeatureRelease *FeatureReleaseClient
 	// Help is the client for interacting with the Help builders.
 	Help *HelpClient
 	// InventoryAttribute is the client for interacting with the InventoryAttribute builders.
@@ -174,6 +177,7 @@ func (c *Client) init() {
 	c.Comment = NewCommentClient(c.config)
 	c.Event = NewEventClient(c.config)
 	c.FAQ = NewFAQClient(c.config)
+	c.FeatureRelease = NewFeatureReleaseClient(c.config)
 	c.Help = NewHelpClient(c.config)
 	c.InventoryAttribute = NewInventoryAttributeClient(c.config)
 	c.InventoryType = NewInventoryTypeClient(c.config)
@@ -298,6 +302,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Comment:                 NewCommentClient(cfg),
 		Event:                   NewEventClient(cfg),
 		FAQ:                     NewFAQClient(cfg),
+		FeatureRelease:          NewFeatureReleaseClient(cfg),
 		Help:                    NewHelpClient(cfg),
 		InventoryAttribute:      NewInventoryAttributeClient(cfg),
 		InventoryType:           NewInventoryTypeClient(cfg),
@@ -359,6 +364,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Comment:                 NewCommentClient(cfg),
 		Event:                   NewEventClient(cfg),
 		FAQ:                     NewFAQClient(cfg),
+		FeatureRelease:          NewFeatureReleaseClient(cfg),
 		Help:                    NewHelpClient(cfg),
 		InventoryAttribute:      NewInventoryAttributeClient(cfg),
 		InventoryType:           NewInventoryTypeClient(cfg),
@@ -419,11 +425,11 @@ func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.AccountSettings, c.Amenity, c.Booking, c.Business, c.BusinessFollowBusiness,
 		c.BusinessFollowEvent, c.BusinessFollowUser, c.Category, c.CategoryAssignment,
-		c.Chat, c.Comment, c.Event, c.FAQ, c.Help, c.InventoryAttribute,
-		c.InventoryType, c.Like, c.Media, c.Menu, c.Order, c.Payment, c.Place,
-		c.PlaceInventory, c.PlaceInventoryAttribute, c.Post, c.Rating, c.Reaction,
-		c.Reservation, c.ReservationBlock, c.Resourse, c.Review, c.Room, c.Ticket,
-		c.TicketOption, c.TransactionHistory, c.User, c.UserBusiness,
+		c.Chat, c.Comment, c.Event, c.FAQ, c.FeatureRelease, c.Help,
+		c.InventoryAttribute, c.InventoryType, c.Like, c.Media, c.Menu, c.Order,
+		c.Payment, c.Place, c.PlaceInventory, c.PlaceInventoryAttribute, c.Post,
+		c.Rating, c.Reaction, c.Reservation, c.ReservationBlock, c.Resourse, c.Review,
+		c.Room, c.Ticket, c.TicketOption, c.TransactionHistory, c.User, c.UserBusiness,
 		c.UserFollowBusiness, c.UserFollowEvent, c.UserFollowPlace, c.UserFollowUser,
 		c.UserLikePlace,
 	} {
@@ -437,11 +443,11 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.AccountSettings, c.Amenity, c.Booking, c.Business, c.BusinessFollowBusiness,
 		c.BusinessFollowEvent, c.BusinessFollowUser, c.Category, c.CategoryAssignment,
-		c.Chat, c.Comment, c.Event, c.FAQ, c.Help, c.InventoryAttribute,
-		c.InventoryType, c.Like, c.Media, c.Menu, c.Order, c.Payment, c.Place,
-		c.PlaceInventory, c.PlaceInventoryAttribute, c.Post, c.Rating, c.Reaction,
-		c.Reservation, c.ReservationBlock, c.Resourse, c.Review, c.Room, c.Ticket,
-		c.TicketOption, c.TransactionHistory, c.User, c.UserBusiness,
+		c.Chat, c.Comment, c.Event, c.FAQ, c.FeatureRelease, c.Help,
+		c.InventoryAttribute, c.InventoryType, c.Like, c.Media, c.Menu, c.Order,
+		c.Payment, c.Place, c.PlaceInventory, c.PlaceInventoryAttribute, c.Post,
+		c.Rating, c.Reaction, c.Reservation, c.ReservationBlock, c.Resourse, c.Review,
+		c.Room, c.Ticket, c.TicketOption, c.TransactionHistory, c.User, c.UserBusiness,
 		c.UserFollowBusiness, c.UserFollowEvent, c.UserFollowPlace, c.UserFollowUser,
 		c.UserLikePlace,
 	} {
@@ -478,6 +484,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Event.mutate(ctx, m)
 	case *FAQMutation:
 		return c.FAQ.mutate(ctx, m)
+	case *FeatureReleaseMutation:
+		return c.FeatureRelease.mutate(ctx, m)
 	case *HelpMutation:
 		return c.Help.mutate(ctx, m)
 	case *InventoryAttributeMutation:
@@ -1877,6 +1885,38 @@ func (c *CategoryClient) QueryCategoryAssignments(ca *Category) *CategoryAssignm
 	return query
 }
 
+// QueryPlaceInventories queries the place_inventories edge of a Category.
+func (c *CategoryClient) QueryPlaceInventories(ca *Category) *PlaceInventoryQuery {
+	query := (&PlaceInventoryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ca.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(category.Table, category.FieldID, id),
+			sqlgraph.To(placeinventory.Table, placeinventory.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, category.PlaceInventoriesTable, category.PlaceInventoriesColumn),
+		)
+		fromV = sqlgraph.Neighbors(ca.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryMedia queries the media edge of a Category.
+func (c *CategoryClient) QueryMedia(ca *Category) *MediaQuery {
+	query := (&MediaClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ca.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(category.Table, category.FieldID, id),
+			sqlgraph.To(media.Table, media.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, category.MediaTable, category.MediaPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(ca.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *CategoryClient) Hooks() []Hook {
 	return c.hooks.Category
@@ -2813,6 +2853,124 @@ func (c *FAQClient) mutate(ctx context.Context, m *FAQMutation) (Value, error) {
 	}
 }
 
+// FeatureReleaseClient is a client for the FeatureRelease schema.
+type FeatureReleaseClient struct {
+	config
+}
+
+// NewFeatureReleaseClient returns a client for the FeatureRelease from the given config.
+func NewFeatureReleaseClient(c config) *FeatureReleaseClient {
+	return &FeatureReleaseClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `featurerelease.Hooks(f(g(h())))`.
+func (c *FeatureReleaseClient) Use(hooks ...Hook) {
+	c.hooks.FeatureRelease = append(c.hooks.FeatureRelease, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `featurerelease.Intercept(f(g(h())))`.
+func (c *FeatureReleaseClient) Intercept(interceptors ...Interceptor) {
+	c.inters.FeatureRelease = append(c.inters.FeatureRelease, interceptors...)
+}
+
+// Create returns a builder for creating a FeatureRelease entity.
+func (c *FeatureReleaseClient) Create() *FeatureReleaseCreate {
+	mutation := newFeatureReleaseMutation(c.config, OpCreate)
+	return &FeatureReleaseCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of FeatureRelease entities.
+func (c *FeatureReleaseClient) CreateBulk(builders ...*FeatureReleaseCreate) *FeatureReleaseCreateBulk {
+	return &FeatureReleaseCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for FeatureRelease.
+func (c *FeatureReleaseClient) Update() *FeatureReleaseUpdate {
+	mutation := newFeatureReleaseMutation(c.config, OpUpdate)
+	return &FeatureReleaseUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *FeatureReleaseClient) UpdateOne(fr *FeatureRelease) *FeatureReleaseUpdateOne {
+	mutation := newFeatureReleaseMutation(c.config, OpUpdateOne, withFeatureRelease(fr))
+	return &FeatureReleaseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *FeatureReleaseClient) UpdateOneID(id string) *FeatureReleaseUpdateOne {
+	mutation := newFeatureReleaseMutation(c.config, OpUpdateOne, withFeatureReleaseID(id))
+	return &FeatureReleaseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for FeatureRelease.
+func (c *FeatureReleaseClient) Delete() *FeatureReleaseDelete {
+	mutation := newFeatureReleaseMutation(c.config, OpDelete)
+	return &FeatureReleaseDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *FeatureReleaseClient) DeleteOne(fr *FeatureRelease) *FeatureReleaseDeleteOne {
+	return c.DeleteOneID(fr.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *FeatureReleaseClient) DeleteOneID(id string) *FeatureReleaseDeleteOne {
+	builder := c.Delete().Where(featurerelease.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &FeatureReleaseDeleteOne{builder}
+}
+
+// Query returns a query builder for FeatureRelease.
+func (c *FeatureReleaseClient) Query() *FeatureReleaseQuery {
+	return &FeatureReleaseQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeFeatureRelease},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a FeatureRelease entity by its id.
+func (c *FeatureReleaseClient) Get(ctx context.Context, id string) (*FeatureRelease, error) {
+	return c.Query().Where(featurerelease.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *FeatureReleaseClient) GetX(ctx context.Context, id string) *FeatureRelease {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *FeatureReleaseClient) Hooks() []Hook {
+	return c.hooks.FeatureRelease
+}
+
+// Interceptors returns the client interceptors.
+func (c *FeatureReleaseClient) Interceptors() []Interceptor {
+	return c.inters.FeatureRelease
+}
+
+func (c *FeatureReleaseClient) mutate(ctx context.Context, m *FeatureReleaseMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&FeatureReleaseCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&FeatureReleaseUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&FeatureReleaseUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&FeatureReleaseDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown FeatureRelease mutation op: %q", m.Op())
+	}
+}
+
 // HelpClient is a client for the Help schema.
 type HelpClient struct {
 	config
@@ -3562,7 +3720,7 @@ func (c *MediaClient) QueryCategories(m *Media) *CategoryQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(media.Table, media.FieldID, id),
 			sqlgraph.To(category.Table, category.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, media.CategoriesTable, media.CategoriesColumn),
+			sqlgraph.Edge(sqlgraph.M2M, true, media.CategoriesTable, media.CategoriesPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(m.driver.Dialect(), step)
 		return fromV, nil
@@ -4602,6 +4760,22 @@ func (c *PlaceInventoryClient) QueryBusiness(pi *PlaceInventory) *BusinessQuery 
 			sqlgraph.From(placeinventory.Table, placeinventory.FieldID, id),
 			sqlgraph.To(business.Table, business.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, placeinventory.BusinessTable, placeinventory.BusinessColumn),
+		)
+		fromV = sqlgraph.Neighbors(pi.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCategory queries the category edge of a PlaceInventory.
+func (c *PlaceInventoryClient) QueryCategory(pi *PlaceInventory) *CategoryQuery {
+	query := (&CategoryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pi.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(placeinventory.Table, placeinventory.FieldID, id),
+			sqlgraph.To(category.Table, category.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, placeinventory.CategoryTable, placeinventory.CategoryColumn),
 		)
 		fromV = sqlgraph.Neighbors(pi.driver.Dialect(), step)
 		return fromV, nil
@@ -7908,21 +8082,21 @@ type (
 	hooks struct {
 		AccountSettings, Amenity, Booking, Business, BusinessFollowBusiness,
 		BusinessFollowEvent, BusinessFollowUser, Category, CategoryAssignment, Chat,
-		Comment, Event, FAQ, Help, InventoryAttribute, InventoryType, Like, Media,
-		Menu, Order, Payment, Place, PlaceInventory, PlaceInventoryAttribute, Post,
-		Rating, Reaction, Reservation, ReservationBlock, Resourse, Review, Room,
-		Ticket, TicketOption, TransactionHistory, User, UserBusiness,
-		UserFollowBusiness, UserFollowEvent, UserFollowPlace, UserFollowUser,
-		UserLikePlace []ent.Hook
+		Comment, Event, FAQ, FeatureRelease, Help, InventoryAttribute, InventoryType,
+		Like, Media, Menu, Order, Payment, Place, PlaceInventory,
+		PlaceInventoryAttribute, Post, Rating, Reaction, Reservation, ReservationBlock,
+		Resourse, Review, Room, Ticket, TicketOption, TransactionHistory, User,
+		UserBusiness, UserFollowBusiness, UserFollowEvent, UserFollowPlace,
+		UserFollowUser, UserLikePlace []ent.Hook
 	}
 	inters struct {
 		AccountSettings, Amenity, Booking, Business, BusinessFollowBusiness,
 		BusinessFollowEvent, BusinessFollowUser, Category, CategoryAssignment, Chat,
-		Comment, Event, FAQ, Help, InventoryAttribute, InventoryType, Like, Media,
-		Menu, Order, Payment, Place, PlaceInventory, PlaceInventoryAttribute, Post,
-		Rating, Reaction, Reservation, ReservationBlock, Resourse, Review, Room,
-		Ticket, TicketOption, TransactionHistory, User, UserBusiness,
-		UserFollowBusiness, UserFollowEvent, UserFollowPlace, UserFollowUser,
-		UserLikePlace []ent.Interceptor
+		Comment, Event, FAQ, FeatureRelease, Help, InventoryAttribute, InventoryType,
+		Like, Media, Menu, Order, Payment, Place, PlaceInventory,
+		PlaceInventoryAttribute, Post, Rating, Reaction, Reservation, ReservationBlock,
+		Resourse, Review, Room, Ticket, TicketOption, TransactionHistory, User,
+		UserBusiness, UserFollowBusiness, UserFollowEvent, UserFollowPlace,
+		UserFollowUser, UserLikePlace []ent.Interceptor
 	}
 )
