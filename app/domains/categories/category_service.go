@@ -31,6 +31,7 @@ type CategoryService interface {
 	GetPlacesByCategory(ctx context.Context, categoryID, lastId string, limit int) ([]*ent.Place, string, error)
 	CreateCategoryAssignment(ctx context.Context, entityID string, entityType string, categoryID string) (*ent.CategoryAssignment, error)
 	GetBusinessesByCategory(ctx context.Context, categoryID, lastId string, limit int) ([]*ent.Business, string, error)
+	SearchByCategory(ctx context.Context, name string) ([]*ent.Category, error)
 }
 
 type EntityType int
@@ -85,6 +86,7 @@ func (cs *CategoryServiceImpl) CreateCategory(ctx context.Context, icon string, 
 
 			_, err = cs.client.Category.
 				UpdateOneID(category.ID).
+				AddMedia(media[0]).
 				SetImage(media[0].URL).
 				Save(ctx)
 
@@ -115,6 +117,8 @@ func (cs *CategoryServiceImpl) DeleteCategory(ctx context.Context, id string) er
 func (cs *CategoryServiceImpl) GetAllCategories(ctx context.Context) ([]*ent.Category, error) {
 	return cs.client.Category.
 		Query().
+		WithMedia().
+		WithCategoryAssignments().
 		All(ctx)
 }
 
@@ -123,8 +127,8 @@ func (cs *CategoryServiceImpl) GetCategory(ctx context.Context, id string) (*ent
 		Get(ctx, id)
 }
 
-func (cs *CategoryServiceImpl) SearchByCategory(ctx context.Context, name string) {
-	cs.client.Category.
+func (cs *CategoryServiceImpl) SearchByCategory(ctx context.Context, name string) ([]*ent.Category, error) {
+	return cs.client.Category.
 		Query().
 		Where(category.Name(name)).
 		All(ctx)

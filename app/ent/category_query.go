@@ -9,6 +9,8 @@ import (
 	"math"
 	"placio-app/ent/category"
 	"placio-app/ent/categoryassignment"
+	"placio-app/ent/media"
+	"placio-app/ent/placeinventory"
 	"placio-app/ent/predicate"
 
 	"entgo.io/ent/dialect/sql"
@@ -24,6 +26,8 @@ type CategoryQuery struct {
 	inters                  []Interceptor
 	predicates              []predicate.Category
 	withCategoryAssignments *CategoryAssignmentQuery
+	withPlaceInventories    *PlaceInventoryQuery
+	withMedia               *MediaQuery
 	withFKs                 bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -76,6 +80,50 @@ func (cq *CategoryQuery) QueryCategoryAssignments() *CategoryAssignmentQuery {
 			sqlgraph.From(category.Table, category.FieldID, selector),
 			sqlgraph.To(categoryassignment.Table, categoryassignment.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, category.CategoryAssignmentsTable, category.CategoryAssignmentsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryPlaceInventories chains the current query on the "place_inventories" edge.
+func (cq *CategoryQuery) QueryPlaceInventories() *PlaceInventoryQuery {
+	query := (&PlaceInventoryClient{config: cq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(category.Table, category.FieldID, selector),
+			sqlgraph.To(placeinventory.Table, placeinventory.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, category.PlaceInventoriesTable, category.PlaceInventoriesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryMedia chains the current query on the "media" edge.
+func (cq *CategoryQuery) QueryMedia() *MediaQuery {
+	query := (&MediaClient{config: cq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(category.Table, category.FieldID, selector),
+			sqlgraph.To(media.Table, media.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, category.MediaTable, category.MediaPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -276,6 +324,8 @@ func (cq *CategoryQuery) Clone() *CategoryQuery {
 		inters:                  append([]Interceptor{}, cq.inters...),
 		predicates:              append([]predicate.Category{}, cq.predicates...),
 		withCategoryAssignments: cq.withCategoryAssignments.Clone(),
+		withPlaceInventories:    cq.withPlaceInventories.Clone(),
+		withMedia:               cq.withMedia.Clone(),
 		// clone intermediate query.
 		sql:  cq.sql.Clone(),
 		path: cq.path,
@@ -290,6 +340,28 @@ func (cq *CategoryQuery) WithCategoryAssignments(opts ...func(*CategoryAssignmen
 		opt(query)
 	}
 	cq.withCategoryAssignments = query
+	return cq
+}
+
+// WithPlaceInventories tells the query-builder to eager-load the nodes that are connected to
+// the "place_inventories" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *CategoryQuery) WithPlaceInventories(opts ...func(*PlaceInventoryQuery)) *CategoryQuery {
+	query := (&PlaceInventoryClient{config: cq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withPlaceInventories = query
+	return cq
+}
+
+// WithMedia tells the query-builder to eager-load the nodes that are connected to
+// the "media" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *CategoryQuery) WithMedia(opts ...func(*MediaQuery)) *CategoryQuery {
+	query := (&MediaClient{config: cq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withMedia = query
 	return cq
 }
 
@@ -372,8 +444,10 @@ func (cq *CategoryQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cat
 		nodes       = []*Category{}
 		withFKs     = cq.withFKs
 		_spec       = cq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [3]bool{
 			cq.withCategoryAssignments != nil,
+			cq.withPlaceInventories != nil,
+			cq.withMedia != nil,
 		}
 	)
 	if withFKs {
@@ -403,6 +477,20 @@ func (cq *CategoryQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cat
 			func(n *Category, e *CategoryAssignment) {
 				n.Edges.CategoryAssignments = append(n.Edges.CategoryAssignments, e)
 			}); err != nil {
+			return nil, err
+		}
+	}
+	if query := cq.withPlaceInventories; query != nil {
+		if err := cq.loadPlaceInventories(ctx, query, nodes,
+			func(n *Category) { n.Edges.PlaceInventories = []*PlaceInventory{} },
+			func(n *Category, e *PlaceInventory) { n.Edges.PlaceInventories = append(n.Edges.PlaceInventories, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := cq.withMedia; query != nil {
+		if err := cq.loadMedia(ctx, query, nodes,
+			func(n *Category) { n.Edges.Media = []*Media{} },
+			func(n *Category, e *Media) { n.Edges.Media = append(n.Edges.Media, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -437,6 +525,98 @@ func (cq *CategoryQuery) loadCategoryAssignments(ctx context.Context, query *Cat
 			return fmt.Errorf(`unexpected referenced foreign-key "category_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
+	}
+	return nil
+}
+func (cq *CategoryQuery) loadPlaceInventories(ctx context.Context, query *PlaceInventoryQuery, nodes []*Category, init func(*Category), assign func(*Category, *PlaceInventory)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Category)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.PlaceInventory(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(category.PlaceInventoriesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.category_place_inventories
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "category_place_inventories" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "category_place_inventories" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (cq *CategoryQuery) loadMedia(ctx context.Context, query *MediaQuery, nodes []*Category, init func(*Category), assign func(*Category, *Media)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[string]*Category)
+	nids := make(map[string]map[*Category]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(category.MediaTable)
+		s.Join(joinT).On(s.C(media.FieldID), joinT.C(category.MediaPrimaryKey[1]))
+		s.Where(sql.InValues(joinT.C(category.MediaPrimaryKey[0]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(category.MediaPrimaryKey[0]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(sql.NullString)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := values[0].(*sql.NullString).String
+				inValue := values[1].(*sql.NullString).String
+				if nids[inValue] == nil {
+					nids[inValue] = map[*Category]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*Media](ctx, query, qr, query.inters)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "media" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
+		}
 	}
 	return nil
 }

@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"placio-app/ent/category"
 	"placio-app/ent/categoryassignment"
+	"placio-app/ent/media"
+	"placio-app/ent/placeinventory"
 	"placio-app/ent/predicate"
 
 	"entgo.io/ent/dialect/sql"
@@ -209,6 +211,36 @@ func (cu *CategoryUpdate) AddCategoryAssignments(c ...*CategoryAssignment) *Cate
 	return cu.AddCategoryAssignmentIDs(ids...)
 }
 
+// AddPlaceInventoryIDs adds the "place_inventories" edge to the PlaceInventory entity by IDs.
+func (cu *CategoryUpdate) AddPlaceInventoryIDs(ids ...string) *CategoryUpdate {
+	cu.mutation.AddPlaceInventoryIDs(ids...)
+	return cu
+}
+
+// AddPlaceInventories adds the "place_inventories" edges to the PlaceInventory entity.
+func (cu *CategoryUpdate) AddPlaceInventories(p ...*PlaceInventory) *CategoryUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return cu.AddPlaceInventoryIDs(ids...)
+}
+
+// AddMediumIDs adds the "media" edge to the Media entity by IDs.
+func (cu *CategoryUpdate) AddMediumIDs(ids ...string) *CategoryUpdate {
+	cu.mutation.AddMediumIDs(ids...)
+	return cu
+}
+
+// AddMedia adds the "media" edges to the Media entity.
+func (cu *CategoryUpdate) AddMedia(m ...*Media) *CategoryUpdate {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return cu.AddMediumIDs(ids...)
+}
+
 // Mutation returns the CategoryMutation object of the builder.
 func (cu *CategoryUpdate) Mutation() *CategoryMutation {
 	return cu.mutation
@@ -233,6 +265,48 @@ func (cu *CategoryUpdate) RemoveCategoryAssignments(c ...*CategoryAssignment) *C
 		ids[i] = c[i].ID
 	}
 	return cu.RemoveCategoryAssignmentIDs(ids...)
+}
+
+// ClearPlaceInventories clears all "place_inventories" edges to the PlaceInventory entity.
+func (cu *CategoryUpdate) ClearPlaceInventories() *CategoryUpdate {
+	cu.mutation.ClearPlaceInventories()
+	return cu
+}
+
+// RemovePlaceInventoryIDs removes the "place_inventories" edge to PlaceInventory entities by IDs.
+func (cu *CategoryUpdate) RemovePlaceInventoryIDs(ids ...string) *CategoryUpdate {
+	cu.mutation.RemovePlaceInventoryIDs(ids...)
+	return cu
+}
+
+// RemovePlaceInventories removes "place_inventories" edges to PlaceInventory entities.
+func (cu *CategoryUpdate) RemovePlaceInventories(p ...*PlaceInventory) *CategoryUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return cu.RemovePlaceInventoryIDs(ids...)
+}
+
+// ClearMedia clears all "media" edges to the Media entity.
+func (cu *CategoryUpdate) ClearMedia() *CategoryUpdate {
+	cu.mutation.ClearMedia()
+	return cu
+}
+
+// RemoveMediumIDs removes the "media" edge to Media entities by IDs.
+func (cu *CategoryUpdate) RemoveMediumIDs(ids ...string) *CategoryUpdate {
+	cu.mutation.RemoveMediumIDs(ids...)
+	return cu
+}
+
+// RemoveMedia removes "media" edges to Media entities.
+func (cu *CategoryUpdate) RemoveMedia(m ...*Media) *CategoryUpdate {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return cu.RemoveMediumIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -360,6 +434,96 @@ func (cu *CategoryUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(categoryassignment.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cu.mutation.PlaceInventoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   category.PlaceInventoriesTable,
+			Columns: []string{category.PlaceInventoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placeinventory.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.RemovedPlaceInventoriesIDs(); len(nodes) > 0 && !cu.mutation.PlaceInventoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   category.PlaceInventoriesTable,
+			Columns: []string{category.PlaceInventoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placeinventory.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.PlaceInventoriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   category.PlaceInventoriesTable,
+			Columns: []string{category.PlaceInventoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placeinventory.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cu.mutation.MediaCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   category.MediaTable,
+			Columns: category.MediaPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.RemovedMediaIDs(); len(nodes) > 0 && !cu.mutation.MediaCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   category.MediaTable,
+			Columns: category.MediaPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.MediaIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   category.MediaTable,
+			Columns: category.MediaPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -568,6 +732,36 @@ func (cuo *CategoryUpdateOne) AddCategoryAssignments(c ...*CategoryAssignment) *
 	return cuo.AddCategoryAssignmentIDs(ids...)
 }
 
+// AddPlaceInventoryIDs adds the "place_inventories" edge to the PlaceInventory entity by IDs.
+func (cuo *CategoryUpdateOne) AddPlaceInventoryIDs(ids ...string) *CategoryUpdateOne {
+	cuo.mutation.AddPlaceInventoryIDs(ids...)
+	return cuo
+}
+
+// AddPlaceInventories adds the "place_inventories" edges to the PlaceInventory entity.
+func (cuo *CategoryUpdateOne) AddPlaceInventories(p ...*PlaceInventory) *CategoryUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return cuo.AddPlaceInventoryIDs(ids...)
+}
+
+// AddMediumIDs adds the "media" edge to the Media entity by IDs.
+func (cuo *CategoryUpdateOne) AddMediumIDs(ids ...string) *CategoryUpdateOne {
+	cuo.mutation.AddMediumIDs(ids...)
+	return cuo
+}
+
+// AddMedia adds the "media" edges to the Media entity.
+func (cuo *CategoryUpdateOne) AddMedia(m ...*Media) *CategoryUpdateOne {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return cuo.AddMediumIDs(ids...)
+}
+
 // Mutation returns the CategoryMutation object of the builder.
 func (cuo *CategoryUpdateOne) Mutation() *CategoryMutation {
 	return cuo.mutation
@@ -592,6 +786,48 @@ func (cuo *CategoryUpdateOne) RemoveCategoryAssignments(c ...*CategoryAssignment
 		ids[i] = c[i].ID
 	}
 	return cuo.RemoveCategoryAssignmentIDs(ids...)
+}
+
+// ClearPlaceInventories clears all "place_inventories" edges to the PlaceInventory entity.
+func (cuo *CategoryUpdateOne) ClearPlaceInventories() *CategoryUpdateOne {
+	cuo.mutation.ClearPlaceInventories()
+	return cuo
+}
+
+// RemovePlaceInventoryIDs removes the "place_inventories" edge to PlaceInventory entities by IDs.
+func (cuo *CategoryUpdateOne) RemovePlaceInventoryIDs(ids ...string) *CategoryUpdateOne {
+	cuo.mutation.RemovePlaceInventoryIDs(ids...)
+	return cuo
+}
+
+// RemovePlaceInventories removes "place_inventories" edges to PlaceInventory entities.
+func (cuo *CategoryUpdateOne) RemovePlaceInventories(p ...*PlaceInventory) *CategoryUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return cuo.RemovePlaceInventoryIDs(ids...)
+}
+
+// ClearMedia clears all "media" edges to the Media entity.
+func (cuo *CategoryUpdateOne) ClearMedia() *CategoryUpdateOne {
+	cuo.mutation.ClearMedia()
+	return cuo
+}
+
+// RemoveMediumIDs removes the "media" edge to Media entities by IDs.
+func (cuo *CategoryUpdateOne) RemoveMediumIDs(ids ...string) *CategoryUpdateOne {
+	cuo.mutation.RemoveMediumIDs(ids...)
+	return cuo
+}
+
+// RemoveMedia removes "media" edges to Media entities.
+func (cuo *CategoryUpdateOne) RemoveMedia(m ...*Media) *CategoryUpdateOne {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return cuo.RemoveMediumIDs(ids...)
 }
 
 // Where appends a list predicates to the CategoryUpdate builder.
@@ -749,6 +985,96 @@ func (cuo *CategoryUpdateOne) sqlSave(ctx context.Context) (_node *Category, err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(categoryassignment.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cuo.mutation.PlaceInventoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   category.PlaceInventoriesTable,
+			Columns: []string{category.PlaceInventoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placeinventory.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.RemovedPlaceInventoriesIDs(); len(nodes) > 0 && !cuo.mutation.PlaceInventoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   category.PlaceInventoriesTable,
+			Columns: []string{category.PlaceInventoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placeinventory.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.PlaceInventoriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   category.PlaceInventoriesTable,
+			Columns: []string{category.PlaceInventoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placeinventory.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cuo.mutation.MediaCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   category.MediaTable,
+			Columns: category.MediaPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.RemovedMediaIDs(); len(nodes) > 0 && !cuo.mutation.MediaCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   category.MediaTable,
+			Columns: category.MediaPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.MediaIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   category.MediaTable,
+			Columns: category.MediaPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

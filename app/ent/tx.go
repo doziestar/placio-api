@@ -38,6 +38,8 @@ type Tx struct {
 	Event *EventClient
 	// FAQ is the client for interacting with the FAQ builders.
 	FAQ *FAQClient
+	// FeatureRelease is the client for interacting with the FeatureRelease builders.
+	FeatureRelease *FeatureReleaseClient
 	// Help is the client for interacting with the Help builders.
 	Help *HelpClient
 	// InventoryAttribute is the client for interacting with the InventoryAttribute builders.
@@ -240,6 +242,7 @@ func (tx *Tx) init() {
 	tx.Comment = NewCommentClient(tx.config)
 	tx.Event = NewEventClient(tx.config)
 	tx.FAQ = NewFAQClient(tx.config)
+	tx.FeatureRelease = NewFeatureReleaseClient(tx.config)
 	tx.Help = NewHelpClient(tx.config)
 	tx.InventoryAttribute = NewInventoryAttributeClient(tx.config)
 	tx.InventoryType = NewInventoryTypeClient(tx.config)

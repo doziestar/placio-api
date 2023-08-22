@@ -19,6 +19,7 @@ import (
 	"placio-app/ent/comment"
 	"placio-app/ent/event"
 	"placio-app/ent/faq"
+	"placio-app/ent/featurerelease"
 	"placio-app/ent/help"
 	"placio-app/ent/inventoryattribute"
 	"placio-app/ent/inventorytype"
@@ -127,6 +128,7 @@ func checkColumn(table, column string) error {
 			comment.Table:                 comment.ValidColumn,
 			event.Table:                   event.ValidColumn,
 			faq.Table:                     faq.ValidColumn,
+			featurerelease.Table:          featurerelease.ValidColumn,
 			help.Table:                    help.ValidColumn,
 			inventoryattribute.Table:      inventoryattribute.ValidColumn,
 			inventorytype.Table:           inventorytype.ValidColumn,

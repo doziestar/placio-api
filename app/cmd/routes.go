@@ -11,6 +11,7 @@ import (
 	"placio-app/domains/comments"
 	"placio-app/domains/events_management"
 	"placio-app/domains/faq"
+	"placio-app/domains/feature_releases"
 	"placio-app/domains/feedback"
 	"placio-app/domains/follow"
 	"placio-app/domains/inventory"
@@ -152,6 +153,11 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		inventoryService := inventory.NewInventoryService(client, cacheService, &mediaService, placeService, &businessService)
 		inventoryController := inventory.NewInventoryController(inventoryService, *redisClient)
 		inventoryController.RegisterRoutes(routerGroupV1)
+
+		// Feature Releases
+		featureReleaseService := feature_releases.NewFeatureReleaseService(client, *redisClient)
+		featureReleaseController := feature_releases.NewFeatureReleaseController(featureReleaseService, *redisClient)
+		featureReleaseController.RegisterRoutes(routerGroupV1, routerGroupV1WithoutAuth)
 
 		// ratings
 		//ratingService := service.NewRatingService(client)

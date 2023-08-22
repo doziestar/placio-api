@@ -32,6 +32,10 @@ const (
 	FieldParentDescription = "parent_description"
 	// EdgeCategoryAssignments holds the string denoting the categoryassignments edge name in mutations.
 	EdgeCategoryAssignments = "categoryAssignments"
+	// EdgePlaceInventories holds the string denoting the place_inventories edge name in mutations.
+	EdgePlaceInventories = "place_inventories"
+	// EdgeMedia holds the string denoting the media edge name in mutations.
+	EdgeMedia = "media"
 	// Table holds the table name of the category in the database.
 	Table = "categories"
 	// CategoryAssignmentsTable is the table that holds the categoryAssignments relation/edge.
@@ -41,6 +45,18 @@ const (
 	CategoryAssignmentsInverseTable = "category_assignments"
 	// CategoryAssignmentsColumn is the table column denoting the categoryAssignments relation/edge.
 	CategoryAssignmentsColumn = "category_id"
+	// PlaceInventoriesTable is the table that holds the place_inventories relation/edge.
+	PlaceInventoriesTable = "place_inventories"
+	// PlaceInventoriesInverseTable is the table name for the PlaceInventory entity.
+	// It exists in this package in order to avoid circular dependency with the "placeinventory" package.
+	PlaceInventoriesInverseTable = "place_inventories"
+	// PlaceInventoriesColumn is the table column denoting the place_inventories relation/edge.
+	PlaceInventoriesColumn = "category_place_inventories"
+	// MediaTable is the table that holds the media relation/edge. The primary key declared below.
+	MediaTable = "category_media"
+	// MediaInverseTable is the table name for the Media entity.
+	// It exists in this package in order to avoid circular dependency with the "media" package.
+	MediaInverseTable = "media"
 )
 
 // Columns holds all SQL columns for category fields.
@@ -62,12 +78,17 @@ var Columns = []string{
 var ForeignKeys = []string{
 	"business_categories",
 	"event_event_categories",
-	"media_categories",
 	"menu_categories",
 	"place_categories",
 	"post_categories",
 	"user_categories",
 }
+
+var (
+	// MediaPrimaryKey and MediaColumn2 are the table columns denoting the
+	// primary key for the media relation (M2M).
+	MediaPrimaryKey = []string{"category_id", "media_id"}
+)
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
@@ -155,10 +176,52 @@ func ByCategoryAssignments(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOpti
 		sqlgraph.OrderByNeighborTerms(s, newCategoryAssignmentsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByPlaceInventoriesCount orders the results by place_inventories count.
+func ByPlaceInventoriesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newPlaceInventoriesStep(), opts...)
+	}
+}
+
+// ByPlaceInventories orders the results by place_inventories terms.
+func ByPlaceInventories(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newPlaceInventoriesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByMediaCount orders the results by media count.
+func ByMediaCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newMediaStep(), opts...)
+	}
+}
+
+// ByMedia orders the results by media terms.
+func ByMedia(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newMediaStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newCategoryAssignmentsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CategoryAssignmentsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, CategoryAssignmentsTable, CategoryAssignmentsColumn),
+	)
+}
+func newPlaceInventoriesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(PlaceInventoriesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, PlaceInventoriesTable, PlaceInventoriesColumn),
+	)
+}
+func newMediaStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(MediaInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, false, MediaTable, MediaPrimaryKey...),
 	)
 }
