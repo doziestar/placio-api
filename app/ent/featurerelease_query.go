@@ -261,12 +261,12 @@ func (frq *FeatureReleaseQuery) Clone() *FeatureReleaseQuery {
 // Example:
 //
 //	var v []struct {
-//		FeatureID string `json:"feature_id,omitempty"`
+//		FeatureName string `json:"feature_name,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.FeatureRelease.Query().
-//		GroupBy(featurerelease.FieldFeatureID).
+//		GroupBy(featurerelease.FieldFeatureName).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (frq *FeatureReleaseQuery) GroupBy(field string, fields ...string) *FeatureReleaseGroupBy {
@@ -284,11 +284,11 @@ func (frq *FeatureReleaseQuery) GroupBy(field string, fields ...string) *Feature
 // Example:
 //
 //	var v []struct {
-//		FeatureID string `json:"feature_id,omitempty"`
+//		FeatureName string `json:"feature_name,omitempty"`
 //	}
 //
 //	client.FeatureRelease.Query().
-//		Select(featurerelease.FieldFeatureID).
+//		Select(featurerelease.FieldFeatureName).
 //		Scan(ctx, &v)
 func (frq *FeatureReleaseQuery) Select(fields ...string) *FeatureReleaseSelect {
 	frq.ctx.Fields = append(frq.ctx.Fields, fields...)

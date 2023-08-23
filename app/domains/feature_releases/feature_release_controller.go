@@ -91,7 +91,7 @@ func (c *FeatureReleaseController) createFeature(ctx *gin.Context) error {
 	newFeature, err := c.featureService.CreateFeature(ctx, featureData)
 	if err != nil {
 		sentry.CaptureException(err)
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create feature."})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return nil
 	}
 

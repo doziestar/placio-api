@@ -64,11 +64,6 @@ func IDContainsFold(id string) predicate.FeatureRelease {
 	return predicate.FeatureRelease(sql.FieldContainsFold(FieldID, id))
 }
 
-// FeatureID applies equality check predicate on the "feature_id" field. It's identical to FeatureIDEQ.
-func FeatureID(v string) predicate.FeatureRelease {
-	return predicate.FeatureRelease(sql.FieldEQ(FieldFeatureID, v))
-}
-
 // FeatureName applies equality check predicate on the "feature_name" field. It's identical to FeatureNameEQ.
 func FeatureName(v string) predicate.FeatureRelease {
 	return predicate.FeatureRelease(sql.FieldEQ(FieldFeatureName, v))
@@ -87,71 +82,6 @@ func ReleaseDate(v time.Time) predicate.FeatureRelease {
 // DocumentationLink applies equality check predicate on the "documentation_link" field. It's identical to DocumentationLinkEQ.
 func DocumentationLink(v string) predicate.FeatureRelease {
 	return predicate.FeatureRelease(sql.FieldEQ(FieldDocumentationLink, v))
-}
-
-// FeatureIDEQ applies the EQ predicate on the "feature_id" field.
-func FeatureIDEQ(v string) predicate.FeatureRelease {
-	return predicate.FeatureRelease(sql.FieldEQ(FieldFeatureID, v))
-}
-
-// FeatureIDNEQ applies the NEQ predicate on the "feature_id" field.
-func FeatureIDNEQ(v string) predicate.FeatureRelease {
-	return predicate.FeatureRelease(sql.FieldNEQ(FieldFeatureID, v))
-}
-
-// FeatureIDIn applies the In predicate on the "feature_id" field.
-func FeatureIDIn(vs ...string) predicate.FeatureRelease {
-	return predicate.FeatureRelease(sql.FieldIn(FieldFeatureID, vs...))
-}
-
-// FeatureIDNotIn applies the NotIn predicate on the "feature_id" field.
-func FeatureIDNotIn(vs ...string) predicate.FeatureRelease {
-	return predicate.FeatureRelease(sql.FieldNotIn(FieldFeatureID, vs...))
-}
-
-// FeatureIDGT applies the GT predicate on the "feature_id" field.
-func FeatureIDGT(v string) predicate.FeatureRelease {
-	return predicate.FeatureRelease(sql.FieldGT(FieldFeatureID, v))
-}
-
-// FeatureIDGTE applies the GTE predicate on the "feature_id" field.
-func FeatureIDGTE(v string) predicate.FeatureRelease {
-	return predicate.FeatureRelease(sql.FieldGTE(FieldFeatureID, v))
-}
-
-// FeatureIDLT applies the LT predicate on the "feature_id" field.
-func FeatureIDLT(v string) predicate.FeatureRelease {
-	return predicate.FeatureRelease(sql.FieldLT(FieldFeatureID, v))
-}
-
-// FeatureIDLTE applies the LTE predicate on the "feature_id" field.
-func FeatureIDLTE(v string) predicate.FeatureRelease {
-	return predicate.FeatureRelease(sql.FieldLTE(FieldFeatureID, v))
-}
-
-// FeatureIDContains applies the Contains predicate on the "feature_id" field.
-func FeatureIDContains(v string) predicate.FeatureRelease {
-	return predicate.FeatureRelease(sql.FieldContains(FieldFeatureID, v))
-}
-
-// FeatureIDHasPrefix applies the HasPrefix predicate on the "feature_id" field.
-func FeatureIDHasPrefix(v string) predicate.FeatureRelease {
-	return predicate.FeatureRelease(sql.FieldHasPrefix(FieldFeatureID, v))
-}
-
-// FeatureIDHasSuffix applies the HasSuffix predicate on the "feature_id" field.
-func FeatureIDHasSuffix(v string) predicate.FeatureRelease {
-	return predicate.FeatureRelease(sql.FieldHasSuffix(FieldFeatureID, v))
-}
-
-// FeatureIDEqualFold applies the EqualFold predicate on the "feature_id" field.
-func FeatureIDEqualFold(v string) predicate.FeatureRelease {
-	return predicate.FeatureRelease(sql.FieldEqualFold(FieldFeatureID, v))
-}
-
-// FeatureIDContainsFold applies the ContainsFold predicate on the "feature_id" field.
-func FeatureIDContainsFold(v string) predicate.FeatureRelease {
-	return predicate.FeatureRelease(sql.FieldContainsFold(FieldFeatureID, v))
 }
 
 // FeatureNameEQ applies the EQ predicate on the "feature_name" field.

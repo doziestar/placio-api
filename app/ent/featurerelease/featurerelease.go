@@ -14,8 +14,6 @@ const (
 	Label = "feature_release"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldFeatureID holds the string denoting the feature_id field in the database.
-	FieldFeatureID = "feature_id"
 	// FieldFeatureName holds the string denoting the feature_name field in the database.
 	FieldFeatureName = "feature_name"
 	// FieldDescription holds the string denoting the description field in the database.
@@ -37,7 +35,6 @@ const (
 // Columns holds all SQL columns for featurerelease fields.
 var Columns = []string{
 	FieldID,
-	FieldFeatureID,
 	FieldFeatureName,
 	FieldDescription,
 	FieldState,
@@ -58,10 +55,10 @@ func ValidColumn(column string) bool {
 }
 
 var (
-	// FeatureIDValidator is a validator for the "feature_id" field. It is called by the builders before save.
-	FeatureIDValidator func(string) error
 	// DefaultReleaseDate holds the default value on creation for the "release_date" field.
 	DefaultReleaseDate func() time.Time
+	// IDValidator is a validator for the "id" field. It is called by the builders before save.
+	IDValidator func(string) error
 )
 
 // State defines the type for the "state" enum field.
@@ -95,11 +92,6 @@ type OrderOption func(*sql.Selector)
 // ByID orders the results by the id field.
 func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
-}
-
-// ByFeatureID orders the results by the feature_id field.
-func ByFeatureID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldFeatureID, opts...).ToFunc()
 }
 
 // ByFeatureName orders the results by the feature_name field.

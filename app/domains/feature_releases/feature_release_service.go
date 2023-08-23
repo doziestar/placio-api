@@ -63,7 +63,7 @@ func (s *FeatureReleaseServiceImpl) CreateFeature(ctx context.Context, featureDa
 	}
 
 	createdFeature, err := s.client.FeatureRelease.Create().
-		SetFeatureID(uuid.New().String()).
+		SetID(uuid.New().String()).
 		SetFeatureName(featureData.FeatureName).
 		SetDescription(featureData.Description).
 		SetState(featurerelease.State(featureData.State)).
@@ -72,6 +72,13 @@ func (s *FeatureReleaseServiceImpl) CreateFeature(ctx context.Context, featureDa
 		SetDocumentationLink(featureData.DocumentationLink).
 		SetMetadata(featureData.Metadata).
 		Save(ctx)
+
+	if err != nil {
+		log.Println("Failed to create feature:", err)
+		return nil, err
+	}
+
+	log.Println("Created feature:", createdFeature)
 	return createdFeature, err
 }
 
