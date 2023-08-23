@@ -50,7 +50,7 @@ func (cc *CategoryController) createCategory(ctx *gin.Context) error {
 		return err
 	}
 	name := form.Value["name"][0]
-	image := form.File["image"]
+	image := form.File["files"]
 	icon := form.Value["icon"][0]
 
 	category, err := cc.categoryService.CreateCategory(ctx, icon, name, image)
