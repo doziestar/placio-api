@@ -61,6 +61,7 @@ func (s *InventoryServiceImpl) CreateInventoryType(ctx context.Context, data *in
 	}
 
 	return s.client.InventoryType.Create().
+		SetID(uuid.New().String()).
 		SetName(data.Name).
 		SetDescription(data.Description).
 		SetMeasurementUnit(data.MeasurementUnit).
