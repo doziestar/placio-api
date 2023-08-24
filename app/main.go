@@ -30,7 +30,7 @@ func main() {
 	app := gin.New()
 
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000", "https://placio.io", "https://www.placio.io"},
+		AllowOrigins:     []string{"http://localhost:3000", "https://placio.io", "https://www.placio.io", "https://control.placio.io"},
 		AllowMethods:     []string{"*"},
 		AllowHeaders:     []string{"*"},
 		ExposeHeaders:    []string{"Content-Length,Content-Type,Authorization,X-CSRF-Token"},

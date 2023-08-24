@@ -20,12 +20,6 @@ type FeatureReleaseCreate struct {
 	hooks    []Hook
 }
 
-// SetFeatureID sets the "feature_id" field.
-func (frc *FeatureReleaseCreate) SetFeatureID(s string) *FeatureReleaseCreate {
-	frc.mutation.SetFeatureID(s)
-	return frc
-}
-
 // SetFeatureName sets the "feature_name" field.
 func (frc *FeatureReleaseCreate) SetFeatureName(s string) *FeatureReleaseCreate {
 	frc.mutation.SetFeatureName(s)
@@ -92,6 +86,12 @@ func (frc *FeatureReleaseCreate) SetMetadata(m map[string]interface{}) *FeatureR
 	return frc
 }
 
+// SetID sets the "id" field.
+func (frc *FeatureReleaseCreate) SetID(s string) *FeatureReleaseCreate {
+	frc.mutation.SetID(s)
+	return frc
+}
+
 // Mutation returns the FeatureReleaseMutation object of the builder.
 func (frc *FeatureReleaseCreate) Mutation() *FeatureReleaseMutation {
 	return frc.mutation
@@ -135,14 +135,6 @@ func (frc *FeatureReleaseCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (frc *FeatureReleaseCreate) check() error {
-	if _, ok := frc.mutation.FeatureID(); !ok {
-		return &ValidationError{Name: "feature_id", err: errors.New(`ent: missing required field "FeatureRelease.feature_id"`)}
-	}
-	if v, ok := frc.mutation.FeatureID(); ok {
-		if err := featurerelease.FeatureIDValidator(v); err != nil {
-			return &ValidationError{Name: "feature_id", err: fmt.Errorf(`ent: validator failed for field "FeatureRelease.feature_id": %w`, err)}
-		}
-	}
 	if _, ok := frc.mutation.FeatureName(); !ok {
 		return &ValidationError{Name: "feature_name", err: errors.New(`ent: missing required field "FeatureRelease.feature_name"`)}
 	}
@@ -156,6 +148,11 @@ func (frc *FeatureReleaseCreate) check() error {
 	}
 	if _, ok := frc.mutation.ReleaseDate(); !ok {
 		return &ValidationError{Name: "release_date", err: errors.New(`ent: missing required field "FeatureRelease.release_date"`)}
+	}
+	if v, ok := frc.mutation.ID(); ok {
+		if err := featurerelease.IDValidator(v); err != nil {
+			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "FeatureRelease.id": %w`, err)}
+		}
 	}
 	return nil
 }
@@ -188,9 +185,9 @@ func (frc *FeatureReleaseCreate) createSpec() (*FeatureRelease, *sqlgraph.Create
 		_node = &FeatureRelease{config: frc.config}
 		_spec = sqlgraph.NewCreateSpec(featurerelease.Table, sqlgraph.NewFieldSpec(featurerelease.FieldID, field.TypeString))
 	)
-	if value, ok := frc.mutation.FeatureID(); ok {
-		_spec.SetField(featurerelease.FieldFeatureID, field.TypeString, value)
-		_node.FeatureID = value
+	if id, ok := frc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
 	}
 	if value, ok := frc.mutation.FeatureName(); ok {
 		_spec.SetField(featurerelease.FieldFeatureName, field.TypeString, value)

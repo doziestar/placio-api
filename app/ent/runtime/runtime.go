@@ -220,14 +220,14 @@ func init() {
 	event.DefaultFollowedByCurrentUser = eventDescFollowedByCurrentUser.Default.(bool)
 	featurereleaseFields := schema.FeatureRelease{}.Fields()
 	_ = featurereleaseFields
-	// featurereleaseDescFeatureID is the schema descriptor for feature_id field.
-	featurereleaseDescFeatureID := featurereleaseFields[0].Descriptor()
-	// featurerelease.FeatureIDValidator is a validator for the "feature_id" field. It is called by the builders before save.
-	featurerelease.FeatureIDValidator = featurereleaseDescFeatureID.Validators[0].(func(string) error)
 	// featurereleaseDescReleaseDate is the schema descriptor for release_date field.
 	featurereleaseDescReleaseDate := featurereleaseFields[4].Descriptor()
 	// featurerelease.DefaultReleaseDate holds the default value on creation for the release_date field.
 	featurerelease.DefaultReleaseDate = featurereleaseDescReleaseDate.Default.(func() time.Time)
+	// featurereleaseDescID is the schema descriptor for id field.
+	featurereleaseDescID := featurereleaseFields[0].Descriptor()
+	// featurerelease.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	featurerelease.IDValidator = featurereleaseDescID.Validators[0].(func(string) error)
 	helpFields := schema.Help{}.Fields()
 	_ = helpFields
 	// helpDescStatus is the schema descriptor for status field.

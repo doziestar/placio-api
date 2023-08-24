@@ -455,8 +455,7 @@ var (
 	}
 	// FeatureReleasesColumns holds the columns for the "feature_releases" table.
 	FeatureReleasesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString},
-		{Name: "feature_id", Type: field.TypeString, Unique: true, Size: 36},
+		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
 		{Name: "feature_name", Type: field.TypeString},
 		{Name: "description", Type: field.TypeString, Nullable: true},
 		{Name: "state", Type: field.TypeEnum, Enums: []string{"testing", "staging", "live", "deprecated"}},

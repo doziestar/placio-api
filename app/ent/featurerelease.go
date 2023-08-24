@@ -18,8 +18,6 @@ type FeatureRelease struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID string `json:"id,omitempty"`
-	// FeatureID holds the value of the "feature_id" field.
-	FeatureID string `json:"feature_id,omitempty"`
 	// FeatureName holds the value of the "feature_name" field.
 	FeatureName string `json:"feature_name,omitempty"`
 	// Description holds the value of the "description" field.
@@ -44,7 +42,7 @@ func (*FeatureRelease) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case featurerelease.FieldEligibilityRules, featurerelease.FieldMetadata:
 			values[i] = new([]byte)
-		case featurerelease.FieldID, featurerelease.FieldFeatureID, featurerelease.FieldFeatureName, featurerelease.FieldDescription, featurerelease.FieldState, featurerelease.FieldDocumentationLink:
+		case featurerelease.FieldID, featurerelease.FieldFeatureName, featurerelease.FieldDescription, featurerelease.FieldState, featurerelease.FieldDocumentationLink:
 			values[i] = new(sql.NullString)
 		case featurerelease.FieldReleaseDate:
 			values[i] = new(sql.NullTime)
@@ -68,12 +66,6 @@ func (fr *FeatureRelease) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value.Valid {
 				fr.ID = value.String
-			}
-		case featurerelease.FieldFeatureID:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field feature_id", values[i])
-			} else if value.Valid {
-				fr.FeatureID = value.String
 			}
 		case featurerelease.FieldFeatureName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -157,9 +149,6 @@ func (fr *FeatureRelease) String() string {
 	var builder strings.Builder
 	builder.WriteString("FeatureRelease(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", fr.ID))
-	builder.WriteString("feature_id=")
-	builder.WriteString(fr.FeatureID)
-	builder.WriteString(", ")
 	builder.WriteString("feature_name=")
 	builder.WriteString(fr.FeatureName)
 	builder.WriteString(", ")

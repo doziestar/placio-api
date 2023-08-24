@@ -56,11 +56,12 @@ func NewInventoryService(client *ent.Client, cache *cache.CacheService, mediaSer
 
 func (s *InventoryServiceImpl) CreateInventoryType(ctx context.Context, data *inventoryTypeData) (*ent.InventoryType, error) {
 
-	if !IsValidIndustryType(IndustryType(data.IndustryType)) {
+	if !IsValidIndustryType(data.IndustryType) {
 		return nil, errors.ErrUnprocessable
 	}
 
 	return s.client.InventoryType.Create().
+		SetID(uuid.New().String()).
 		SetName(data.Name).
 		SetDescription(data.Description).
 		SetMeasurementUnit(data.MeasurementUnit).
@@ -70,7 +71,7 @@ func (s *InventoryServiceImpl) CreateInventoryType(ctx context.Context, data *in
 
 func (s *InventoryServiceImpl) UpdateInventoryType(ctx context.Context, inventoryTypeID string, data *inventoryTypeData) (*ent.InventoryType, error) {
 
-	if !IsValidIndustryType(IndustryType(data.IndustryType)) {
+	if !IsValidIndustryType(data.IndustryType) {
 		return nil, errors.ErrUnprocessable
 	}
 

@@ -55,9 +55,9 @@ func (c *AmenityController) createAmenity(ctx *gin.Context) error {
 		return err
 	}
 
-	amenityJSON, _ := json.Marshal(amenity)
-	c.cache.SetCache(ctx, amenity.ID, string(amenityJSON))
-	c.cache.DeleteCache(ctx, "all_amenities")
+	//amenityJSON, _ := json.Marshal(amenity)
+	//c.cache.SetCache(ctx, amenity.ID, string(amenityJSON))
+	//c.cache.DeleteCache(ctx, "all_amenities")
 
 	ctx.JSON(http.StatusOK, amenity)
 	return nil

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"placio-app/ent"
 	"placio-app/utility"
+	"placio-pkg/middleware"
 	"strconv"
 )
 
@@ -23,12 +24,12 @@ func (c *FeatureReleaseController) RegisterRoutes(router, routerWithoutAuth *gin
 	featureRouter := router.Group("/features")
 	featureRouterWithoutAuth := routerWithoutAuth.Group("/features")
 	{
-		featureRouter.GET("/:id", utility.Use(c.getFeature))
-		featureRouter.POST("/", utility.Use(c.createFeature))
-		featureRouterWithoutAuth.GET("/", utility.Use(c.listFeatures))
-		featureRouter.PATCH("/:id", utility.Use(c.updateFeature))
-		featureRouter.DELETE("/:id", utility.Use(c.deleteFeature))
-		featureRouter.PATCH("/:id/state", utility.Use(c.setFeatureState))
+		featureRouter.GET("/:id", middleware.ErrorMiddleware(c.getFeature))
+		featureRouter.POST("/", middleware.ErrorMiddleware(c.createFeature))
+		featureRouterWithoutAuth.GET("/", middleware.ErrorMiddleware(c.listFeatures))
+		featureRouter.PATCH("/:id", middleware.ErrorMiddleware(c.updateFeature))
+		featureRouter.DELETE("/:id", middleware.ErrorMiddleware(c.deleteFeature))
+		featureRouter.PATCH("/:id/state", middleware.ErrorMiddleware(c.setFeatureState))
 	}
 }
 
@@ -91,7 +92,7 @@ func (c *FeatureReleaseController) createFeature(ctx *gin.Context) error {
 	newFeature, err := c.featureService.CreateFeature(ctx, featureData)
 	if err != nil {
 		sentry.CaptureException(err)
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create feature."})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return nil
 	}
 

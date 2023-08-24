@@ -14316,7 +14316,6 @@ type FeatureReleaseMutation struct {
 	op                 Op
 	typ                string
 	id                 *string
-	feature_id         *string
 	feature_name       *string
 	description        *string
 	state              *featurerelease.State
@@ -14400,6 +14399,12 @@ func (m FeatureReleaseMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of FeatureRelease entities.
+func (m *FeatureReleaseMutation) SetID(id string) {
+	m.id = &id
+}
+
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
 func (m *FeatureReleaseMutation) ID() (id string, exists bool) {
@@ -14426,42 +14431,6 @@ func (m *FeatureReleaseMutation) IDs(ctx context.Context) ([]string, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
-}
-
-// SetFeatureID sets the "feature_id" field.
-func (m *FeatureReleaseMutation) SetFeatureID(s string) {
-	m.feature_id = &s
-}
-
-// FeatureID returns the value of the "feature_id" field in the mutation.
-func (m *FeatureReleaseMutation) FeatureID() (r string, exists bool) {
-	v := m.feature_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldFeatureID returns the old "feature_id" field's value of the FeatureRelease entity.
-// If the FeatureRelease object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *FeatureReleaseMutation) OldFeatureID(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldFeatureID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldFeatureID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldFeatureID: %w", err)
-	}
-	return oldValue.FeatureID, nil
-}
-
-// ResetFeatureID resets all changes to the "feature_id" field.
-func (m *FeatureReleaseMutation) ResetFeatureID() {
-	m.feature_id = nil
 }
 
 // SetFeatureName sets the "feature_name" field.
@@ -14802,10 +14771,7 @@ func (m *FeatureReleaseMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *FeatureReleaseMutation) Fields() []string {
-	fields := make([]string, 0, 8)
-	if m.feature_id != nil {
-		fields = append(fields, featurerelease.FieldFeatureID)
-	}
+	fields := make([]string, 0, 7)
 	if m.feature_name != nil {
 		fields = append(fields, featurerelease.FieldFeatureName)
 	}
@@ -14835,8 +14801,6 @@ func (m *FeatureReleaseMutation) Fields() []string {
 // schema.
 func (m *FeatureReleaseMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case featurerelease.FieldFeatureID:
-		return m.FeatureID()
 	case featurerelease.FieldFeatureName:
 		return m.FeatureName()
 	case featurerelease.FieldDescription:
@@ -14860,8 +14824,6 @@ func (m *FeatureReleaseMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *FeatureReleaseMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case featurerelease.FieldFeatureID:
-		return m.OldFeatureID(ctx)
 	case featurerelease.FieldFeatureName:
 		return m.OldFeatureName(ctx)
 	case featurerelease.FieldDescription:
@@ -14885,13 +14847,6 @@ func (m *FeatureReleaseMutation) OldField(ctx context.Context, name string) (ent
 // type.
 func (m *FeatureReleaseMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case featurerelease.FieldFeatureID:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetFeatureID(v)
-		return nil
 	case featurerelease.FieldFeatureName:
 		v, ok := value.(string)
 		if !ok {
@@ -15017,9 +14972,6 @@ func (m *FeatureReleaseMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *FeatureReleaseMutation) ResetField(name string) error {
 	switch name {
-	case featurerelease.FieldFeatureID:
-		m.ResetFeatureID()
-		return nil
 	case featurerelease.FieldFeatureName:
 		m.ResetFeatureName()
 		return nil

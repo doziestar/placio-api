@@ -13,7 +13,7 @@ type FeatureRelease struct {
 // Fields of the FeatureRelease.
 func (FeatureRelease) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("feature_id").
+		field.String("id").
 			MaxLen(36).
 			Unique().
 			Immutable(),
