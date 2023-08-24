@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"placio-app/utility"
+	"placio-pkg/middleware"
 	"strconv"
 )
 
@@ -19,32 +20,32 @@ func NewInventoryController(inventoryService InventoryService, cache utility.Red
 func (ic *InventoryController) RegisterRoutes(router *gin.RouterGroup) {
 	inventoryRouter := router.Group("/inventory")
 	{
-		inventoryRouter.POST("/types", utility.Use(ic.createInventoryType))
-		inventoryRouter.PUT("/types/:id", utility.Use(ic.updateInventoryType))
-		inventoryRouter.DELETE("/types/:id", utility.Use(ic.deleteInventoryType))
-		inventoryRouter.GET("/types", utility.Use(ic.listInventoryTypes))
+		inventoryRouter.POST("/types", middleware.ErrorMiddleware(ic.createInventoryType))
+		inventoryRouter.PUT("/types/:id", middleware.ErrorMiddleware(ic.updateInventoryType))
+		inventoryRouter.DELETE("/types/:id", middleware.ErrorMiddleware(ic.deleteInventoryType))
+		inventoryRouter.GET("/types", middleware.ErrorMiddleware(ic.listInventoryTypes))
 
-		inventoryRouter.POST("/attributes", utility.Use(ic.createInventoryAttribute))
-		inventoryRouter.PUT("/attributes/:id", utility.Use(ic.updateInventoryAttribute))
-		inventoryRouter.DELETE("/attributes/:id", utility.Use(ic.deleteInventoryAttribute))
-		inventoryRouter.GET("/attributes", utility.Use(ic.listInventoryAttributes))
-		inventoryRouter.GET("/attributes/search", utility.Use(ic.searchInventoryAttributes))
+		inventoryRouter.POST("/attributes", middleware.ErrorMiddleware(ic.createInventoryAttribute))
+		inventoryRouter.PUT("/attributes/:id", middleware.ErrorMiddleware(ic.updateInventoryAttribute))
+		inventoryRouter.DELETE("/attributes/:id", middleware.ErrorMiddleware(ic.deleteInventoryAttribute))
+		inventoryRouter.GET("/attributes", middleware.ErrorMiddleware(ic.listInventoryAttributes))
+		inventoryRouter.GET("/attributes/search", middleware.ErrorMiddleware(ic.searchInventoryAttributes))
 
 		// Group for "places"
 		placesRouter := inventoryRouter.Group("/places")
 		{
-			placesRouter.POST("/:placeID", utility.Use(ic.createPlaceInventory))
-			placesRouter.GET("/:placeID", utility.Use(ic.getPlaceInventory))
-			placesRouter.PUT("/:placeID", utility.Use(ic.updatePlaceInventory))
-			placesRouter.DELETE("/:placeID", utility.Use(ic.deletePlaceInventory))
-			placesRouter.GET("", utility.Use(ic.listPlaceInventories))
+			placesRouter.POST("/:placeID", middleware.ErrorMiddleware(ic.createPlaceInventory))
+			placesRouter.GET("/:placeID", middleware.ErrorMiddleware(ic.getPlaceInventory))
+			placesRouter.PUT("/:placeID", middleware.ErrorMiddleware(ic.updatePlaceInventory))
+			placesRouter.DELETE("/:placeID", middleware.ErrorMiddleware(ic.deletePlaceInventory))
+			placesRouter.GET("", middleware.ErrorMiddleware(ic.listPlaceInventories))
 
 			// Nested group for "attributes" within "places"
 			attributesRouter := placesRouter.Group("/:placeID/attributes")
 			{
-				attributesRouter.POST("", utility.Use(ic.createPlaceInventoryAttribute))
-				attributesRouter.PUT("/:id", utility.Use(ic.updatePlaceInventoryAttribute))
-				attributesRouter.DELETE("/:id", utility.Use(ic.deletePlaceInventoryAttribute))
+				attributesRouter.POST("", middleware.ErrorMiddleware(ic.createPlaceInventoryAttribute))
+				attributesRouter.PUT("/:id", middleware.ErrorMiddleware(ic.updatePlaceInventoryAttribute))
+				attributesRouter.DELETE("/:id", middleware.ErrorMiddleware(ic.deletePlaceInventoryAttribute))
 			}
 		}
 	}

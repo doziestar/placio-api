@@ -7,6 +7,7 @@ import (
 	_ "placio-app/ent"
 	"placio-app/utility"
 	"placio-pkg/errors"
+	"placio-pkg/middleware"
 	"strconv"
 )
 
@@ -21,19 +22,19 @@ func NewCategoryController(categoryService CategoryService) *CategoryController 
 func (cc *CategoryController) RegisterRoutes(router *gin.RouterGroup) {
 	categoryRouter := router.Group("/categories")
 	{
-		categoryRouter.POST("/", utility.Use(cc.createCategory))
-		categoryRouter.PATCH("/:id", utility.Use(cc.updateCategory))
-		categoryRouter.DELETE("/:id", utility.Use(cc.deleteCategory))
-		categoryRouter.GET("/search", utility.Use(cc.searchByCategory))
-		categoryRouter.GET("/", utility.Use(cc.getAllCategories))
+		categoryRouter.POST("/", middleware.ErrorMiddleware(cc.createCategory))
+		categoryRouter.PATCH("/:id", middleware.ErrorMiddleware(cc.updateCategory))
+		categoryRouter.DELETE("/:id", middleware.ErrorMiddleware(cc.deleteCategory))
+		categoryRouter.GET("/search", middleware.ErrorMiddleware(cc.searchByCategory))
+		categoryRouter.GET("/", middleware.ErrorMiddleware(cc.getAllCategories))
 
 		// New routes for User, Business, and Place
-		categoryRouter.POST("/:categoryID/users/:userID", utility.Use(cc.assignUserToCategory))
-		categoryRouter.GET("/:categoryID/users", utility.Use(cc.getUsersByCategory))
-		categoryRouter.POST("/:categoryID/businesses/:businessID", utility.Use(cc.assignBusinessToCategory))
-		categoryRouter.GET("/:categoryID/businesses", utility.Use(cc.getBusinessesByCategory))
-		categoryRouter.POST("/:categoryID/places/:placeID", utility.Use(cc.assignPlaceToCategory))
-		categoryRouter.GET("/:categoryID/places", utility.Use(cc.getPlacesByCategory))
+		categoryRouter.POST("/:categoryID/users/:userID", middleware.ErrorMiddleware(cc.assignUserToCategory))
+		categoryRouter.GET("/:categoryID/users", middleware.ErrorMiddleware(cc.getUsersByCategory))
+		categoryRouter.POST("/:categoryID/businesses/:businessID", middleware.ErrorMiddleware(cc.assignBusinessToCategory))
+		categoryRouter.GET("/:categoryID/businesses", middleware.ErrorMiddleware(cc.getBusinessesByCategory))
+		categoryRouter.POST("/:categoryID/places/:placeID", middleware.ErrorMiddleware(cc.assignPlaceToCategory))
+		categoryRouter.GET("/:categoryID/places", middleware.ErrorMiddleware(cc.getPlacesByCategory))
 	}
 }
 

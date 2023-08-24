@@ -40,7 +40,7 @@ func TestUse(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			r := gin.Default()
-			r.GET("/", Use(tt.mockFn))
+			r.GET("/", ErrorMiddleware(tt.mockFn))
 
 			w := performRequest(r, "GET", "/")
 

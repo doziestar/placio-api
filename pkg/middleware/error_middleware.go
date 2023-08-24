@@ -9,7 +9,7 @@ import (
 	appErrors "placio-pkg/errors"
 )
 
-func Use(fn func(*gin.Context) error) gin.HandlerFunc {
+func ErrorMiddleware(fn func(*gin.Context) error) gin.HandlerFunc {
 	errorMappings := map[error]func(appError *appErrors.AppError, c *gin.Context){
 		appErrors.ErrInvalid:           respondBadRequest,
 		appErrors.ErrUnauthorized:      respondUnauthorized,

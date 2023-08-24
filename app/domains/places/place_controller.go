@@ -12,6 +12,7 @@ import (
 	_ "placio-app/ent"
 	"placio-app/utility"
 	"placio-pkg/errors"
+	"placio-pkg/middleware"
 	"strconv"
 )
 
@@ -28,17 +29,17 @@ func (c *PlaceController) RegisterRoutes(router, routerWithoutAuth *gin.RouterGr
 	placeRouter := router.Group("/places")
 	placeRouterWithoutAuth := routerWithoutAuth.Group("/places")
 	{
-		placeRouterWithoutAuth.GET("/:id", utility.Use(c.getPlace))
-		placeRouter.POST("/", utility.Use(c.createPlace))
-		placeRouterWithoutAuth.GET("/", utility.Use(c.getPlacesByFilters))
-		placeRouter.PATCH("/:id", utility.Use(c.updatePlace))
-		placeRouter.DELETE("/:id", utility.Use(c.deletePlace))
-		placeRouter.POST("/:id/amenities", utility.Use(c.addAmenitiesToPlace))
-		placeRouter.POST("/:id/media", utility.Use(c.addMediaToAPlace))
-		placeRouter.DELETE("/:id/media", utility.Use(c.removeMediaToAPlace))
-		placeRouterWithoutAuth.GET("/all", utility.Use(c.getAllPlaces))
-		placeRouter.POST("/:id/remove_amenities", utility.Use(c.removeAmenitiesFromPlace))
-		placeRouter.DELETE("/:id/media/:mediaID", utility.Use(c.removeSingleMediaFromPlace))
+		placeRouterWithoutAuth.GET("/:id", middleware.ErrorMiddleware(c.getPlace))
+		placeRouter.POST("/", middleware.ErrorMiddleware(c.createPlace))
+		placeRouterWithoutAuth.GET("/", middleware.ErrorMiddleware(c.getPlacesByFilters))
+		placeRouter.PATCH("/:id", middleware.ErrorMiddleware(c.updatePlace))
+		placeRouter.DELETE("/:id", middleware.ErrorMiddleware(c.deletePlace))
+		placeRouter.POST("/:id/amenities", middleware.ErrorMiddleware(c.addAmenitiesToPlace))
+		placeRouter.POST("/:id/media", middleware.ErrorMiddleware(c.addMediaToAPlace))
+		placeRouter.DELETE("/:id/media", middleware.ErrorMiddleware(c.removeMediaToAPlace))
+		placeRouterWithoutAuth.GET("/all", middleware.ErrorMiddleware(c.getAllPlaces))
+		placeRouter.POST("/:id/remove_amenities", middleware.ErrorMiddleware(c.removeAmenitiesFromPlace))
+		placeRouter.DELETE("/:id/media/:mediaID", middleware.ErrorMiddleware(c.removeSingleMediaFromPlace))
 
 	}
 }
