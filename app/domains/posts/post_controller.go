@@ -34,6 +34,7 @@ func (pc *PostController) RegisterRoutes(router *gin.RouterGroup) {
 		postRouter.PUT("/:id", utility.Use(pc.updatePost))
 		postRouter.DELETE("/:id", utility.Use(pc.deletePost))
 		postRouter.GET("/:id/comments", utility.Use(pc.getCommentsByPost))
+		postRouter.GET("/", utility.Use(pc.getPostFeeds))
 		//postRouter.GET("/:id/user", utility.Use(pc.getPostsByUser))
 
 		//postRouter.PUT("/:id", utility.Use(pc.updatePost))
@@ -149,6 +150,34 @@ func (pc *PostController) createPost(ctx *gin.Context) error {
 	}
 
 	ctx.JSON(http.StatusCreated, response)
+	return nil
+}
+
+// GetPostFeeds retrieves all posts for the authenticated user.
+// @Summary Get post feeds
+// @Description Retrieve all posts for the authenticated user
+// @Tags Post
+// @Accept json
+// @Produce json
+// @Param businessId query string false "Business ID"
+// @Param limit query string false "Limit"
+// @Param offset query string false "Offset"
+// @Success 200 {object} []Dto.PostResponseDto
+// @Failure 400 {object} Dto.ErrorDTO
+// @Failure 401 {object} Dto.ErrorDTO
+// @Failure 500 {object} Dto.ErrorDTO
+// @Router /api/v1/posts/ [get]
+func (pc *PostController) getPostFeeds(ctx *gin.Context) error {
+	// Extract the user from the context
+
+	// Get the posts
+	posts, err := pc.postService.GetPostFeeds(ctx)
+	if err != nil {
+
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(posts, "success"))
 	return nil
 }
 

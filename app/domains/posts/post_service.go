@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/getsentry/sentry-go"
 	"log"
 	"placio-app/ent"
 	"placio-app/ent/comment"
@@ -19,6 +20,7 @@ type PostService interface {
 	UpdatePost(ctx context.Context, updatedPost *ent.Post) (*ent.Post, error)
 	DeletePost(ctx context.Context, postID string) error
 	ListPosts(ctx context.Context, page, pageSize int, sortBy []string, filters ...predicate.Post) ([]*ent.Post, error)
+	GetPostFeeds(ctx context.Context) ([]*ent.Post, error)
 
 	GetCommentsByPost(ctx context.Context, postID string) ([]*ent.Comment, error)
 	GetComments(ctx context.Context, postID string) ([]*ent.Comment, error)
@@ -41,6 +43,24 @@ type PostServiceImpl struct {
 
 func NewPostService(client *ent.Client, cache *utility.RedisClient) PostService {
 	return &PostServiceImpl{client: client, cache: cache, user: &ent.User{}, post: &ent.Post{}, comment: &ent.Comment{}, like: &ent.Like{}, business: &ent.Business{}}
+}
+
+func (ps *PostServiceImpl) GetPostFeeds(ctx context.Context) ([]*ent.Post, error) {
+	//Get All Posts
+	posts, err := ps.client.Post.
+		Query().
+		WithComments().
+		WithLikes().
+		WithUser().
+		All(ctx)
+
+	if err != nil {
+		sentry.CaptureException(err)
+		return nil, fmt.Errorf("failed getting posts: %w", err)
+	}
+
+	// Return the posts
+	return posts, nil
 }
 
 func (ps *PostServiceImpl) CreatePost(ctx context.Context, newPost *ent.Post, userID string, businessID *string) (*ent.Post, error) {
