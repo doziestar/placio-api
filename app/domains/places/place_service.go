@@ -684,6 +684,7 @@ func (s *PlaceServiceImpl) DeletePlace(ctx context.Context, placeID string) erro
 }
 
 func (s *PlaceServiceImpl) GetPlaces(ctx context.Context, filter *PlaceFilter, lastId string, limit int) ([]*ent.Place, string, error) {
+	log.Println("getting places")
 	if limit == 0 {
 		limit = 10
 	}
@@ -722,8 +723,11 @@ func (s *PlaceServiceImpl) GetPlaces(ctx context.Context, filter *PlaceFilter, l
 
 	places, err := query.All(ctx)
 	if err != nil {
+		log.Println("error fetching places", err)
 		return nil, "", err
 	}
+
+	log.Println("places fetched", places)
 
 	var nextId string
 	if len(places) == limit+1 {
@@ -731,7 +735,9 @@ func (s *PlaceServiceImpl) GetPlaces(ctx context.Context, filter *PlaceFilter, l
 		places = places[:limit]
 	}
 
+	log.Println("checking if the user likes and follows the place")
 	userID, ok := ctx.Value("user").(string)
+	log.Println("checking if the user likes and follows the place", userID)
 	if !ok {
 		return places, nextId, nil
 	}
