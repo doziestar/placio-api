@@ -72,7 +72,7 @@ func (pc *PostController) createPost(ctx *gin.Context) error {
 	}
 
 	// Extract the BusinessAccountID from the query parameters, if it exists
-	var businessID *string
+	var businessID string
 	var businessAccount *ent.Business
 	businessAccountId := ctx.Query("businessAccountId")
 	if businessAccountId != "" {
@@ -82,7 +82,7 @@ func (pc *PostController) createPost(ctx *gin.Context) error {
 
 			return err
 		}
-		businessID = &businessAccount.ID
+		businessID = businessAccount.ID
 	}
 
 	// Bind the incoming JSON to a new PostDto instance
