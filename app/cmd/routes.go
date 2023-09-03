@@ -125,7 +125,7 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		businessController.RegisterRoutes(routerGroupV1)
 
 		// posts
-		postService := posts.NewPostService(client, redisClient)
+		postService := posts.NewPostService(client, redisClient, mediaService)
 		postController := posts.NewPostController(postService, userService, businessService, mediaService)
 		postController.RegisterRoutes(routerGroupV1)
 

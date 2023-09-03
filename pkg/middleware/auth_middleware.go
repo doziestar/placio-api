@@ -93,6 +93,64 @@ func EnsureValidToken() gin.HandlerFunc {
 	}
 }
 
+func EnsureValidWebSocketToken(w http.ResponseWriter, r *http.Request) error {
+	issuerURL, err := url.Parse(os.Getenv("AUTH0_DOMAIN") + "/")
+	if err != nil {
+		sentry.CaptureException(err)
+		log.Fatalf("Failed to parse the issuer url: %v", err)
+	}
+
+	provider := jwks.NewCachingProvider(issuerURL, 5*time.Minute)
+
+	jwtValidator, err := validator.New(
+		provider.KeyFunc,
+		validator.RS256,
+		issuerURL.String(),
+		[]string{os.Getenv("AUTH0_AUDIENCE"), "KpDGogGXqWeuGQfZ4Wu30neiHS79hGiU", "Gv4QCgbya8fTxZACFpMdrElFhkARloMl", "Pc9rBo6nByen9tRV0n8Okk9dDXwWx80l"},
+		validator.WithCustomClaims(
+			func() validator.CustomClaims {
+				return &CustomClaims{}
+			},
+		),
+		validator.WithAllowedClockSkew(time.Minute),
+	)
+	if err != nil {
+		sentry.CaptureException(err)
+		log.Fatalf("Failed to set up the jwt validator")
+	}
+
+	tokenString := r.Header.Get("Authorization")
+
+	if tokenString == "" {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write([]byte(`{"message": "Authorization header is missing"}`))
+		return errors.New("Authorization header is missing")
+	}
+
+	// remove the Bearer prefix
+	tokenString = tokenString[7:]
+	tokenInterface, err := jwtValidator.ValidateToken(context.Background(), tokenString)
+	if err != nil {
+		log.Printf("Encountered error while validating JWT: %v", err)
+		sentry.CaptureException(err)
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write([]byte(`{"message": "Failed to validate JWT."}`))
+		return errors.New("Failed to validate JWT.")
+	}
+
+	if validatedClaims, ok := tokenInterface.(*validator.ValidatedClaims); ok {
+		// Store the user and auth0_id in the request context
+		ctx := context.WithValue(r.Context(), "user", strings.Split(validatedClaims.RegisteredClaims.Subject, "|")[1])
+		ctx = context.WithValue(ctx, "auth0_id", validatedClaims.RegisteredClaims.Subject)
+		*r = *r.WithContext(ctx)
+	} else {
+		sentry.CaptureException(err)
+		return errors.New("Failed to assert token claims")
+	}
+
+	return nil
+}
+
 func EnsureValidTokenButAllowAccess() gin.HandlerFunc {
 	issuerURL, err := url.Parse(os.Getenv("AUTH0_DOMAIN") + "/")
 	if err != nil {
