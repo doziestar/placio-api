@@ -13,6 +13,7 @@ import (
 	"placio-app/utility"
 	"time"
 
+	"github.com/asaskevich/EventBus"
 	"github.com/getsentry/sentry-go"
 )
 
@@ -37,10 +38,11 @@ type PostServiceImpl struct {
 	client       *ent.Client
 	cache        *utility.RedisClient
 	mediaService media.MediaService
+	eventBus     EventBus.Bus
 }
 
-func NewPostService(client *ent.Client, cache *utility.RedisClient, mediaService media.MediaService) PostService {
-	return &PostServiceImpl{client: client, cache: cache, mediaService: mediaService}
+func NewPostService(client *ent.Client, cache *utility.RedisClient, mediaService media.MediaService, eventBus EventBus.Bus) PostService {
+	return &PostServiceImpl{client: client, cache: cache, mediaService: mediaService, eventBus: eventBus}
 }
 
 func (ps *PostServiceImpl) GetPostFeeds(ctx context.Context) ([]*ent.Post, error) {
@@ -110,6 +112,10 @@ func (ps *PostServiceImpl) CreatePost(ctx context.Context, newPost *ent.Post, us
 	}
 
 	fmt.Println("saved post", post)
+	fmt.Println("saved post", post)
+
+	// Publish post created event
+	ps.eventBus.Publish("post:created", postToReturn)
 
 	return postToReturn, nil
 }

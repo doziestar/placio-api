@@ -29,13 +29,15 @@ type WebSocketServer struct {
 	clientsMu   sync.Mutex
 	upgrader    websocket.Upgrader
 	postService posts.PostService
+	homefeeds   homefeeds.IHomeFeedsHandler
 }
 
-func NewWebSocketServer(upgrader websocket.Upgrader, postService posts.PostService) *WebSocketServer {
+func NewWebSocketServer(upgrader websocket.Upgrader, postService posts.PostService, homefeeds homefeeds.IHomeFeedsHandler) *WebSocketServer {
 	return &WebSocketServer{
 		clients:     make(map[*websocket.Conn]bool),
 		upgrader:    upgrader,
 		postService: postService,
+		homefeeds:   homefeeds,
 	}
 }
 
@@ -60,7 +62,7 @@ func (s *WebSocketServer) HandleConnections(w http.ResponseWriter, r *http.Reque
 	case "/chat":
 		chats.HandleChat(ws)
 	case "/home-feeds":
-		homefeeds.HandleHomeFeeds(ws, s.postService)
+		s.homefeeds.HandleHomeFeeds(ws)
 	default:
 		log.Printf("Unknown path: %s", r.URL.Path)
 	}
