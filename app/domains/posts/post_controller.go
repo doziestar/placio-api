@@ -1,8 +1,6 @@
 package posts
 
 import (
-	"errors"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	_ "placio-app/Dto"
 	"placio-app/domains/business"
@@ -13,6 +11,9 @@ import (
 	"placio-app/ent/post"
 	"placio-app/models"
 	"placio-app/utility"
+	appErr "placio-pkg/errors"
+
+	"github.com/gin-gonic/gin"
 )
 
 type PostController struct {
@@ -101,55 +102,13 @@ func (pc *PostController) createPost(ctx *gin.Context) error {
 	}
 
 	// Create the post
-	newPost, err := pc.postService.CreatePost(ctx, post, user.ID, businessID)
+	newPost, err := pc.postService.CreatePost(ctx, post, user.ID, businessID, data.Medias)
 	if err != nil {
 
 		return err
 	}
 
-	// Handle media files, if any were provided
-	medias := make([]*ent.Media, len(data.Medias))
-	for i, mediaDto := range data.Medias {
-		//media := &ent.Media{
-		//	ID:        utility.GenerateID(),
-		//	URL:       mediaDto.URL,
-		//	MediaType: mediaDto.Type,
-		//}
-		// Save the media in the db
-		createdMedia, err := pc.mediaService.CreateMedia(ctx, mediaDto.URL, mediaDto.Type)
-		if err != nil {
-
-			return err
-		}
-
-		// Add the media to the post
-		err = pc.postService.AddMediaToPost(ctx, newPost, createdMedia)
-		if err != nil {
-
-			return err
-		}
-
-		medias[i] = createdMedia
-	}
-
-	// Create a response struct
-	response := PostResponseDto{
-		ID:        newPost.ID,
-		Content:   newPost.Content,
-		User:      user,
-		Business:  businessAccount,
-		CreatedAt: newPost.CreatedAt,
-		Medias:    make([]MediaDto, len(medias)),
-	}
-
-	for i, media := range medias {
-		response.Medias[i] = MediaDto{
-			Type: media.MediaType,
-			URL:  media.URL,
-		}
-	}
-
-	ctx.JSON(http.StatusCreated, response)
+	ctx.JSON(http.StatusCreated, utility.ProcessResponse(newPost, "success", "Post created successfully"))
 	return nil
 }
 
@@ -206,7 +165,7 @@ func (pc *PostController) getPost(ctx *gin.Context) error {
 		return nil
 	}
 
-	ctx.JSON(http.StatusOK, post)
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(post, "success", "Post retrieved successfully"))
 	return nil
 }
 
@@ -247,14 +206,13 @@ func (pc *PostController) updatePost(ctx *gin.Context) error {
 	}
 
 	if postData.Edges.User.ID != user.ID {
+		return appErr.ErrUnauthorized
 
-		return errors.New("unauthorized")
 	}
 
 	// Bind the incoming JSON to a new PostDto instance
 	data := new(PostDto)
 	if err := ctx.BindJSON(data); err != nil || data.Content == "" {
-
 		return err
 	}
 
@@ -274,15 +232,7 @@ func (pc *PostController) updatePost(ctx *gin.Context) error {
 		return err
 	}
 
-	// Create a response struct
-	response := PostResponseDto{
-		ID:        updatedPost.ID,
-		Content:   updatedPost.Content,
-		User:      user,
-		CreatedAt: updatedPost.CreatedAt,
-	}
-
-	ctx.JSON(http.StatusOK, response)
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(updatedPost, "success", "Post updated successfully"))
 	return nil
 }
 
@@ -312,7 +262,7 @@ func (pc *PostController) deletePost(ctx *gin.Context) error {
 		return err
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "Post deleted successfully"})
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(nil, "success", "Post deleted successfully"))
 	return nil
 }
 
