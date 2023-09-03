@@ -1,11 +1,13 @@
 package feeds
 
 import (
+	"github.com/asaskevich/EventBus"
 	"github.com/getsentry/sentry-go"
 	"log"
 	"net/http"
 	"placio-app/domains/feeds/chats"
 	"placio-app/domains/feeds/homefeeds"
+	"placio-app/domains/places"
 	"placio-app/domains/posts"
 	"placio-pkg/middleware"
 	"sync"
@@ -25,19 +27,22 @@ type IWebSocketServer interface {
 }
 
 type WebSocketServer struct {
-	clients     map[*websocket.Conn]bool
-	clientsMu   sync.Mutex
-	upgrader    websocket.Upgrader
-	postService posts.PostService
-	homefeeds   homefeeds.IHomeFeedsHandler
+	clients   map[*websocket.Conn]bool
+	eventBus  EventBus.Bus
+	clientsMu sync.Mutex
+	upgrader  websocket.Upgrader
+	homefeeds homefeeds.IHomeFeedsHandler
 }
 
-func NewWebSocketServer(upgrader websocket.Upgrader, postService posts.PostService, homefeeds homefeeds.IHomeFeedsHandler) *WebSocketServer {
+func NewWebSocketServer(eventBus EventBus.Bus, postService posts.PostService, placeService places.PlaceService) *WebSocketServer {
 	return &WebSocketServer{
-		clients:     make(map[*websocket.Conn]bool),
-		upgrader:    upgrader,
-		postService: postService,
-		homefeeds:   homefeeds,
+		clients: make(map[*websocket.Conn]bool),
+		upgrader: websocket.Upgrader{
+			ReadBufferSize:  1024,
+			WriteBufferSize: 1024,
+			CheckOrigin:     func(r *http.Request) bool { return true },
+		},
+		homefeeds: homefeeds.NewHomeFeedsHandler(postService, eventBus, placeService),
 	}
 }
 

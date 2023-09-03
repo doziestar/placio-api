@@ -63,16 +63,31 @@ func (s *HomeFeedsHandler) HandleHomeFeeds(ctx context.Context, ws *websocket.Co
 		return
 	}
 
-	//log.Println("Fetching all places", ctx.Value("user"))
-	//places, _, err := s.placeService.GetPlaces(ctx, nil, "", 10)
+	type Error struct {
+		Message string `json:"message"`
+	}
+
+	log.Println("Fetching all places", ctx.Value("user"))
+	//placeData, _, err := s.placeService.GetPlaces(ctx, nil, "", 10)
 	//if err != nil {
 	//	log.Printf("error fetching places: %v", err)
+	//	errMessage := Error{Message: "error writing to websocket: " + err.Error()}
+	//
+	//	// Convert the Error instance to JSON
+	//	jsonError, jsonErr := json.Marshal(errMessage)
+	//	if jsonErr != nil {
+	//		log.Printf("error converting error message to JSON: %v", jsonErr)
+	//		return
+	//	}
+	//
+	//	// Send the JSON error message to the client
+	//	ws.WriteMessage(websocket.TextMessage, jsonError)
 	//	return
 	//}
 
 	message := Message{
 		Post: posts,
-		//Place: places,
+		//Place: placeData,
 	}
 	log.Println("Fetched all posts")
 
@@ -85,11 +100,22 @@ func (s *HomeFeedsHandler) HandleHomeFeeds(ctx context.Context, ws *websocket.Co
 	log.Println("Converted posts to JSON")
 
 	// Send posts to the connected client
-	// Send posts to the connected client
 	log.Println("Sending posts to the connected client")
 	err = ws.WriteMessage(websocket.TextMessage, jsonPosts)
 	if err != nil {
-		log.Printf("error writing to websocket: %v", err)
+		// Create an Error instance
+		errMessage := Error{Message: "error writing to websocket: " + err.Error()}
+
+		// Convert the Error instance to JSON
+		jsonError, jsonErr := json.Marshal(errMessage)
+		if jsonErr != nil {
+			log.Printf("error converting error message to JSON: %v", jsonErr)
+			return
+		}
+
+		// Send the JSON error message to the client
+		ws.WriteMessage(websocket.TextMessage, jsonError)
+
 		return
 	}
 	log.Println("Sent posts to the connected client")
