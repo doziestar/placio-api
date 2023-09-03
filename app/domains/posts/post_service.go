@@ -5,20 +5,24 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"placio-app/domains/media"
 	"placio-app/ent"
 	"placio-app/ent/comment"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
 	"placio-app/utility"
 	"time"
+
+	"github.com/getsentry/sentry-go"
 )
 
 type PostService interface {
-	CreatePost(ctx context.Context, newPost *ent.Post, userID string, businessID *string) (*ent.Post, error)
+	CreatePost(ctx context.Context, newPost *ent.Post, userID string, businessID string, media []MediaDto) (*ent.Post, error)
 	GetPost(ctx context.Context, postID string) (*ent.Post, error)
 	UpdatePost(ctx context.Context, updatedPost *ent.Post) (*ent.Post, error)
 	DeletePost(ctx context.Context, postID string) error
 	ListPosts(ctx context.Context, page, pageSize int, sortBy []string, filters ...predicate.Post) ([]*ent.Post, error)
+	GetPostFeeds(ctx context.Context) ([]*ent.Post, error)
 
 	GetCommentsByPost(ctx context.Context, postID string) ([]*ent.Comment, error)
 	GetComments(ctx context.Context, postID string) ([]*ent.Comment, error)
@@ -30,20 +34,34 @@ type PostService interface {
 }
 
 type PostServiceImpl struct {
-	client   *ent.Client
-	user     *ent.User
-	post     *ent.Post
-	comment  *ent.Comment
-	like     *ent.Like
-	business *ent.Business
-	cache    *utility.RedisClient
+	client       *ent.Client
+	cache        *utility.RedisClient
+	mediaService media.MediaService
 }
 
-func NewPostService(client *ent.Client, cache *utility.RedisClient) PostService {
-	return &PostServiceImpl{client: client, cache: cache, user: &ent.User{}, post: &ent.Post{}, comment: &ent.Comment{}, like: &ent.Like{}, business: &ent.Business{}}
+func NewPostService(client *ent.Client, cache *utility.RedisClient, mediaService media.MediaService) PostService {
+	return &PostServiceImpl{client: client, cache: cache, mediaService: mediaService}
 }
 
-func (ps *PostServiceImpl) CreatePost(ctx context.Context, newPost *ent.Post, userID string, businessID *string) (*ent.Post, error) {
+func (ps *PostServiceImpl) GetPostFeeds(ctx context.Context) ([]*ent.Post, error) {
+	//Get All Posts
+	posts, err := ps.client.Post.
+		Query().
+		WithComments().
+		WithLikes().
+		WithUser().
+		All(ctx)
+
+	if err != nil {
+		sentry.CaptureException(err)
+		return nil, fmt.Errorf("failed getting posts: %w", err)
+	}
+
+	// Return the posts
+	return posts, nil
+}
+
+func (ps *PostServiceImpl) CreatePost(ctx context.Context, newPost *ent.Post, userID string, businessID string, medias []MediaDto) (*ent.Post, error) {
 	if newPost == nil {
 		return nil, errors.New("post cannot be nil")
 	}
@@ -57,8 +75,8 @@ func (ps *PostServiceImpl) CreatePost(ctx context.Context, newPost *ent.Post, us
 	// Associate with user
 	postBuilder = postBuilder.SetUserID(userID)
 	// Associate with business, if business ID is provided
-	if businessID != nil {
-		postBuilder = postBuilder.SetBusinessAccountID(*businessID)
+	if businessID != "" {
+		postBuilder = postBuilder.SetBusinessAccountID(businessID)
 	}
 
 	fmt.Println("saving post postBuilder", postBuilder)
@@ -70,10 +88,27 @@ func (ps *PostServiceImpl) CreatePost(ctx context.Context, newPost *ent.Post, us
 		fmt.Errorf("failed creating post: %w", err)
 		return nil, fmt.Errorf("failed creating post: %w", err)
 	}
+
+	for _, mediaDto := range medias {
+		createdMedia, err := ps.mediaService.CreateMedia(ctx, mediaDto.URL, mediaDto.Type)
+		if err != nil {
+
+			return nil, fmt.Errorf("failed creating media: %w", err)
+		}
+
+		err = ps.AddMediaToPost(ctx, newPost, createdMedia)
+		if err != nil {
+
+			return nil, fmt.Errorf("failed adding media to post: %w", err)
+		}
+
+	}
+
 	postToReturn, err := ps.GetPost(ctx, post.ID)
 	if err != nil {
 		return nil, fmt.Errorf("failed getting post: %w", err)
 	}
+
 	fmt.Println("saved post", post)
 
 	return postToReturn, nil
@@ -125,12 +160,17 @@ func (ps *PostServiceImpl) UpdatePost(ctx context.Context, updatedPost *ent.Post
 		SetContent(updatedPost.Content).
 		Save(ctx)
 
+	postData, err := ps.GetPost(ctx, post.ID)
+	if err != nil {
+		return nil, fmt.Errorf("failed getting post: %w", err)
+	}
+
 	if err != nil {
 		log.Println(err)
 		return nil, fmt.Errorf("failed updating post: %w", err)
 	}
 
-	return post, nil
+	return postData, nil
 }
 
 func (ps *PostServiceImpl) DeletePost(ctx context.Context, postID string) error {
