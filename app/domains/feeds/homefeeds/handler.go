@@ -134,10 +134,86 @@ func (s *HomeFeedsHandler) HandleHomeFeeds(ctx context.Context, ws *websocket.Co
 		}
 
 		log.Printf("Received: %s", msg)
+		type messageReceived struct {
+			Refresh bool `json:"refresh"`
+		}
+
+		var messageReceivedData messageReceived
+		err = json.Unmarshal(msg, &messageReceivedData)
+		if err != nil {
+			log.Printf("error unmarshalling message: %v", err)
+			break
+		}
+
+		if messageReceivedData.Refresh {
+			// Fetch all posts
+			log.Println("Fetching all posts")
+			posts, err := s.postService.GetPostFeeds(ctx)
+			if err != nil {
+				log.Printf("error fetching posts: %v", err)
+				return
+			}
+
+			type Error struct {
+				Message string `json:"message"`
+			}
+
+			log.Println("Fetching all places", ctx.Value("user"))
+			//placeData, _, err := s.placeService.GetPlaces(ctx, nil, "", 10)
+			//if err != nil {
+			//	log.Printf("error fetching places: %v", err)
+			//	errMessage := Error{Message: "error writing to websocket: " + err.Error()}
+			//
+			//	// Convert the Error instance to JSON
+			//	jsonError, jsonErr := json.Marshal(errMessage)
+			//	if jsonErr != nil {
+			//		log.Printf("error converting error message to JSON: %v", jsonErr)
+			//		return
+			//	}
+			//
+			//	// Send the JSON error message to the client
+			//	ws.WriteMessage(websocket.TextMessage, jsonError)
+			//	return
+			//}
+
+			message := Message{
+				Post: posts,
+				//Place: placeData,
+			}
+			log.Println("Fetched all posts")
+
+			// Convert posts to JSON
+			jsonPosts, err := json.Marshal(message)
+			if err != nil {
+				log.Printf("error converting posts to JSON: %v", err)
+				return
+			}
+			log.Println("Converted posts to JSON")
+
+			// Send posts to the connected client
+			log.Println("Sending posts to the connected client")
+			err = ws.WriteMessage(websocket.TextMessage, jsonPosts)
+			if err != nil {
+				// Create an Error instance
+				errMessage := Error{Message: "error writing to websocket: " + err.Error()}
+
+				// Convert the Error instance to JSON
+				jsonError, jsonErr := json.Marshal(errMessage)
+				if jsonErr != nil {
+					log.Printf("error converting error message to JSON: %v", jsonErr)
+					return
+				}
+
+				// Send the JSON error message to the client
+				ws.WriteMessage(websocket.TextMessage, jsonError)
+
+				return
+			}
+		}
 
 		// Broadcast message to all connected clients
 		log.Println("Broadcasting message to all connected clients")
-		s.BroadcastMessage(msg)
+		//s.BroadcastMessage(msg)
 	}
 }
 
