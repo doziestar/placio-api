@@ -191,8 +191,7 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 			CheckOrigin:     func(r *http.Request) bool { return true },
 		}
 
-		homefeeds := homefeeds.NewHomeFeedsHandler(postService, eventBus)
-		wsServer := feeds.NewWebSocketServer(upgrader, postService, homefeeds)
+		wsServer := feeds.NewWebSocketServer(upgrader, postService, homefeeds.NewHomeFeedsHandler(postService, eventBus, placeService))
 
 		// Register WebSocket routes
 		app.GET("/chat", gin.WrapF(wsServer.HandleConnections))

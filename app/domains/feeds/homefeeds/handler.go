@@ -6,6 +6,7 @@ import (
 	"github.com/asaskevich/EventBus"
 	"github.com/gorilla/websocket"
 	"log"
+	"placio-app/domains/places"
 	"placio-app/domains/posts"
 	"placio-app/ent"
 )
@@ -13,22 +14,29 @@ import (
 var clients = make(map[*websocket.Conn]bool)
 
 type IHomeFeedsHandler interface {
-	HandleHomeFeeds(ws *websocket.Conn)
+	HandleHomeFeeds(ctx context.Context, ws *websocket.Conn)
 	BroadcastMessage(msg []byte)
 }
 
 type HomeFeedsHandler struct {
-	postService posts.PostService
-	eventBus    EventBus.Bus
+	postService  posts.PostService
+	placeService places.PlaceService
+	eventBus     EventBus.Bus
 }
 
-func NewHomeFeedsHandler(postService posts.PostService, eventBus EventBus.Bus) *HomeFeedsHandler {
-	return &HomeFeedsHandler{postService: postService, eventBus: eventBus}
+func NewHomeFeedsHandler(postService posts.PostService, eventBus EventBus.Bus, placeService places.PlaceService) *HomeFeedsHandler {
+	return &HomeFeedsHandler{postService: postService, placeService: placeService, eventBus: eventBus}
 }
 
-func (s *HomeFeedsHandler) HandleHomeFeeds(ws *websocket.Conn) {
-	log.Println("Handling Home Feeds")
+func (s *HomeFeedsHandler) HandleHomeFeeds(ctx context.Context, ws *websocket.Conn) {
+	log.Println("Handling Home Feeds", ctx.Value("user"))
 	clients[ws] = true
+
+	type Message struct {
+		Post           []*ent.Post           `json:"post"`
+		Place          []*ent.Place          `json:"place"`
+		PlaceInventory []*ent.PlaceInventory `json:"place_inventory"`
+	}
 
 	// Subscribe to post:created event
 	log.Println("Subscribing to post:created event")
@@ -49,16 +57,27 @@ func (s *HomeFeedsHandler) HandleHomeFeeds(ws *websocket.Conn) {
 
 	// Fetch all posts
 	log.Println("Fetching all posts")
-	ctx := context.Background()
 	posts, err := s.postService.GetPostFeeds(ctx)
 	if err != nil {
 		log.Printf("error fetching posts: %v", err)
 		return
 	}
+
+	//log.Println("Fetching all places", ctx.Value("user"))
+	//places, _, err := s.placeService.GetPlaces(ctx, nil, "", 10)
+	//if err != nil {
+	//	log.Printf("error fetching places: %v", err)
+	//	return
+	//}
+
+	message := Message{
+		Post: posts,
+		//Place: places,
+	}
 	log.Println("Fetched all posts")
 
 	// Convert posts to JSON
-	jsonPosts, err := json.Marshal(posts)
+	jsonPosts, err := json.Marshal(message)
 	if err != nil {
 		log.Printf("error converting posts to JSON: %v", err)
 		return
