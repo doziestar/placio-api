@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/getsentry/sentry-go"
 	"log"
 	"placio-app/ent"
 	"placio-app/ent/comment"
@@ -12,6 +11,8 @@ import (
 	"placio-app/ent/predicate"
 	"placio-app/utility"
 	"time"
+
+	"github.com/getsentry/sentry-go"
 )
 
 type PostService interface {
@@ -32,17 +33,12 @@ type PostService interface {
 }
 
 type PostServiceImpl struct {
-	client   *ent.Client
-	user     *ent.User
-	post     *ent.Post
-	comment  *ent.Comment
-	like     *ent.Like
-	business *ent.Business
-	cache    *utility.RedisClient
+	client *ent.Client
+	cache  *utility.RedisClient
 }
 
 func NewPostService(client *ent.Client, cache *utility.RedisClient) PostService {
-	return &PostServiceImpl{client: client, cache: cache, user: &ent.User{}, post: &ent.Post{}, comment: &ent.Comment{}, like: &ent.Like{}, business: &ent.Business{}}
+	return &PostServiceImpl{client: client, cache: cache}
 }
 
 func (ps *PostServiceImpl) GetPostFeeds(ctx context.Context) ([]*ent.Post, error) {

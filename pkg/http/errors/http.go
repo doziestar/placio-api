@@ -5,7 +5,7 @@ import (
 	"errors"
 	"net/http"
 
-	apperrors "pkg/errors"
+	apperrors "placio-pkg/errors"
 
 	mtd "placio-pkg/metadata"
 )
