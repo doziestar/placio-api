@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"placio-app/domains/feeds/chats"
 	"placio-app/domains/feeds/homefeeds"
+	"placio-app/domains/posts"
 	"placio-pkg/middleware"
 	"sync"
 
@@ -24,15 +25,17 @@ type IWebSocketServer interface {
 }
 
 type WebSocketServer struct {
-	clients   map[*websocket.Conn]bool
-	clientsMu sync.Mutex
-	upgrader  websocket.Upgrader
+	clients     map[*websocket.Conn]bool
+	clientsMu   sync.Mutex
+	upgrader    websocket.Upgrader
+	postService posts.PostService
 }
 
-func NewWebSocketServer(upgrader websocket.Upgrader) *WebSocketServer {
+func NewWebSocketServer(upgrader websocket.Upgrader, postService posts.PostService) *WebSocketServer {
 	return &WebSocketServer{
-		clients:  make(map[*websocket.Conn]bool),
-		upgrader: upgrader,
+		clients:     make(map[*websocket.Conn]bool),
+		upgrader:    upgrader,
+		postService: postService,
 	}
 }
 
@@ -56,8 +59,8 @@ func (s *WebSocketServer) HandleConnections(w http.ResponseWriter, r *http.Reque
 	switch r.URL.Path {
 	case "/chat":
 		chats.HandleChat(ws)
-	case "/homefeeds":
-		homefeeds.HandleHomeFeeds(ws)
+	case "/home-feeds":
+		homefeeds.HandleHomeFeeds(ws, s.postService)
 	default:
 		log.Printf("Unknown path: %s", r.URL.Path)
 	}

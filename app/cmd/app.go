@@ -3,12 +3,10 @@ package cmd
 import (
 	"context"
 	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
-	"placio-app/domains/feeds"
 	"syscall"
 	"time"
 
@@ -43,18 +41,6 @@ func Initialize(app *gin.Engine) {
 	if err != nil {
 		log.Fatalf("sentry.Init: %s", err)
 	}
-
-	var upgrader = websocket.Upgrader{
-		ReadBufferSize:  1024,
-		WriteBufferSize: 1024,
-		CheckOrigin:     func(r *http.Request) bool { return true },
-	}
-
-	wsServer := feeds.NewWebSocketServer(upgrader)
-
-	// Register WebSocket routes
-	app.GET("/chat", gin.WrapF(wsServer.HandleConnections))
-	app.GET("/home-feeds", gin.WrapF(wsServer.HandleConnections))
 
 	//go wsServer.RUN(":7000")
 	srv := &http.Server{

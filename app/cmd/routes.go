@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"github.com/cloudinary/cloudinary-go/v2"
+	"github.com/gorilla/websocket"
+	"net/http"
 	_ "placio-api/docs/app"
 	"placio-app/domains/amenities"
 	"placio-app/domains/booking"
@@ -13,6 +15,7 @@ import (
 	"placio-app/domains/faq"
 	"placio-app/domains/feature_releases"
 	"placio-app/domains/feedback"
+	"placio-app/domains/feeds"
 	"placio-app/domains/follow"
 	"placio-app/domains/inventory"
 	"placio-app/domains/like"
@@ -178,6 +181,18 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		//ticketOptionService := service.NewTicketOptionService(db)
 		//ticketOptionController := controller.NewTicketOptionController(ticketOptionService)
 		//ticketOptionController.RegisterRoutes(routerGroupV1)
+
+		var upgrader = websocket.Upgrader{
+			ReadBufferSize:  1024,
+			WriteBufferSize: 1024,
+			CheckOrigin:     func(r *http.Request) bool { return true },
+		}
+
+		wsServer := feeds.NewWebSocketServer(upgrader, postService)
+
+		// Register WebSocket routes
+		app.GET("/chat", gin.WrapF(wsServer.HandleConnections))
+		app.GET("/home-feeds", gin.WrapF(wsServer.HandleConnections))
 
 	}
 
