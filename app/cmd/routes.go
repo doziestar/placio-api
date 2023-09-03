@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/asaskevich/EventBus"
 	"github.com/cloudinary/cloudinary-go/v2"
 	"github.com/gorilla/websocket"
 	"net/http"
@@ -16,6 +17,7 @@ import (
 	"placio-app/domains/feature_releases"
 	"placio-app/domains/feedback"
 	"placio-app/domains/feeds"
+	"placio-app/domains/feeds/homefeeds"
 	"placio-app/domains/follow"
 	"placio-app/domains/inventory"
 	"placio-app/domains/like"
@@ -51,6 +53,7 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		_ = redisClient.ConnectRedis()
 
 		cld, _ := cloudinary.NewFromParams("placio", "312498583624125", "k4XSQwWuhi3Vy7QAw7Qn0mUaW0s")
+		eventBus := EventBus.New()
 
 		searchService, _ := search.NewSearchService(client)
 		searchController := search.NewSearchController(searchService)
@@ -128,7 +131,7 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		businessController.RegisterRoutes(routerGroupV1)
 
 		// posts
-		postService := posts.NewPostService(client, redisClient, mediaService)
+		postService := posts.NewPostService(client, redisClient, mediaService, eventBus)
 		postController := posts.NewPostController(postService, userService, businessService, mediaService)
 		postController.RegisterRoutes(routerGroupV1)
 
@@ -188,7 +191,8 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 			CheckOrigin:     func(r *http.Request) bool { return true },
 		}
 
-		wsServer := feeds.NewWebSocketServer(upgrader, postService)
+		homefeeds := homefeeds.NewHomeFeedsHandler(postService, eventBus)
+		wsServer := feeds.NewWebSocketServer(upgrader, postService, homefeeds)
 
 		// Register WebSocket routes
 		app.GET("/chat", gin.WrapF(wsServer.HandleConnections))
