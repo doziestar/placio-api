@@ -4,22 +4,20 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/asaskevich/EventBus"
+	"github.com/gorilla/websocket"
 	"log"
 	"placio-app/domains/posts"
 	"placio-app/ent"
-
-	"github.com/gorilla/websocket"
 )
 
 var clients = make(map[*websocket.Conn]bool)
 
 type IHomeFeedsHandler interface {
-	HandleHomeFeeds()
+	HandleHomeFeeds(ws *websocket.Conn)
 	BroadcastMessage(msg []byte)
 }
 
 type HomeFeedsHandler struct {
-	ws          *websocket.Conn
 	postService posts.PostService
 	eventBus    EventBus.Bus
 }
@@ -28,22 +26,22 @@ func NewHomeFeedsHandler(postService posts.PostService, eventBus EventBus.Bus) *
 	return &HomeFeedsHandler{postService: postService, eventBus: eventBus}
 }
 
-func (s *HomeFeedsHandler) HandleHomeFeeds() {
+func (s *HomeFeedsHandler) HandleHomeFeeds(ws *websocket.Conn) {
 	log.Println("Handling Home Feeds")
-	clients[s.ws] = true
+	clients[ws] = true
 
 	// Subscribe to post:created event
 	log.Println("Subscribing to post:created event")
 	subscription := s.eventBus.Subscribe("post:created", func(post *ent.Post) {
-		err := s.ws.WriteJSON(post)
+		err := ws.WriteJSON(post)
 		if err != nil {
 			log.Printf("error writing to websocket: %v", err)
 		}
 	})
 
 	defer func() {
-		s.ws.Close()
-		delete(clients, s.ws)
+		ws.Close()
+		delete(clients, ws)
 		s.eventBus.Unsubscribe("post:created", subscription)
 	}()
 
@@ -68,8 +66,9 @@ func (s *HomeFeedsHandler) HandleHomeFeeds() {
 	log.Println("Converted posts to JSON")
 
 	// Send posts to the connected client
+	// Send posts to the connected client
 	log.Println("Sending posts to the connected client")
-	err = s.ws.WriteJSON(jsonPosts)
+	err = ws.WriteMessage(websocket.TextMessage, jsonPosts)
 	if err != nil {
 		log.Printf("error writing to websocket: %v", err)
 		return
@@ -78,7 +77,7 @@ func (s *HomeFeedsHandler) HandleHomeFeeds() {
 
 	for {
 		// Read message from browser
-		mt, msg, err := s.ws.ReadMessage()
+		mt, msg, err := ws.ReadMessage()
 		if err != nil {
 			log.Printf("error reading websocket message: %v", err)
 			break
