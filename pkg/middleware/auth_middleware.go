@@ -119,12 +119,20 @@ func EnsureValidWebSocketToken(w http.ResponseWriter, r *http.Request) error {
 		log.Fatalf("Failed to set up the jwt validator")
 	}
 
-	tokenString := r.Header.Get("Authorization")
+	tokenString := r.URL.Query().Get("token")
+
+	if tokenString == "" {
+		tokenString = r.Header.Get("Authorization")
+
+		if strings.HasPrefix(tokenString, "Bearer ") {
+			tokenString = tokenString[7:]
+		}
+	}
 
 	if tokenString == "" {
 		w.WriteHeader(http.StatusUnauthorized)
-		w.Write([]byte(`{"message": "Authorization header is missing"}`))
-		return errors.New("Authorization header is missing")
+		w.Write([]byte(`{"message": "Token is missing"}`))
+		return errors.New("Token is missing")
 	}
 
 	// remove the Bearer prefix
