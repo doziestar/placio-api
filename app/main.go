@@ -29,8 +29,9 @@ func main() {
 	// initialize gin app
 	app := gin.New()
 
+	//AllowOrigins:     []string{"http://localhost:3000", "https://placio.io", "https://www.placio.io", "https://control.placio.io"},
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000", "https://placio.io", "https://www.placio.io", "https://control.placio.io"},
+		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"*"},
 		AllowHeaders:     []string{"*"},
 		ExposeHeaders:    []string{"Content-Length,Content-Type,Authorization,X-CSRF-Token"},
@@ -42,10 +43,10 @@ func main() {
 		c.Header("Strict-Transport-Security", "max-age=63072000; includeSubDomains")
 		c.Header("Content-Security-Policy", "default-src 'self'")
 		c.Header("X-Content-Type-Options", "nosniff")
-		c.Header("X-Frame-Options", "SAMEORIGIN")
 		c.Next()
 	})
 
+	//c.Header("X-Frame-Options", "SAMEORIGIN")
 	// apply gin middleware
 	app.Use(gin.Logger())
 	app.Use(gin.Recovery())
