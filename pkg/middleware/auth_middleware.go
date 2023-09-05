@@ -94,6 +94,8 @@ func EnsureValidToken() gin.HandlerFunc {
 }
 
 func EnsureValidWebSocketToken(w http.ResponseWriter, r *http.Request) error {
+	// log origin header
+	log.Println("Origin header: ", r.Header.Get("Origin"))
 	issuerURL, err := url.Parse(os.Getenv("AUTH0_DOMAIN") + "/")
 	if err != nil {
 		sentry.CaptureException(err)
