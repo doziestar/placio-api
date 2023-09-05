@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-var upgrader = websocket.Upgrader{
+var Upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool {
 		return true // Modify this to set up your CORS restrictions
 	},
@@ -27,7 +27,7 @@ func (c *Connection) Reader() {
 		if err != nil {
 			break
 		}
-		c.hub.broadcast <- message
+		c.hub.Broadcast <- message
 	}
 	c.ws.Close()
 }

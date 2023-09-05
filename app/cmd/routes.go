@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"github.com/asaskevich/EventBus"
-	"github.com/cloudinary/cloudinary-go/v2"
 	_ "placio-api/docs/app"
 	"placio-app/domains/amenities"
 	"placio-app/domains/booking"
@@ -27,6 +25,9 @@ import (
 	"placio-app/ent"
 	"placio-app/utility"
 	"placio-pkg/middleware"
+
+	"github.com/asaskevich/EventBus"
+	"github.com/cloudinary/cloudinary-go/v2"
 
 	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"
@@ -186,7 +187,7 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 
 		// Register WebSocket routes
 		app.GET("/chat", gin.WrapF(wsServer.HandleConnections))
-		app.GET("/home-feeds", gin.WrapF(wsServer.HandleConnections))
+		app.GET("/home-realtime_server", gin.WrapF(wsServer.HandleConnections))
 
 	}
 

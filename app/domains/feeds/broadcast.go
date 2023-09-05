@@ -66,7 +66,7 @@ func (s *WebSocketServer) HandleConnections(w http.ResponseWriter, r *http.Reque
 	switch r.URL.Path {
 	case "/chat":
 		chats.HandleChat(ws)
-	case "/home-feeds":
+	case "/home-realtime_server":
 		s.homefeeds.HandleHomeFeeds(r.Context(), ws)
 	default:
 		log.Printf("Unknown path: %s", r.URL.Path)

@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/resendlabs/resend-go"
 	"io/ioutil"
 	"path/filepath"
 	"runtime"
 	"text/template"
+
+	"github.com/resendlabs/resend-go"
 )
 
 type EmailType string
