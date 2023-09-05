@@ -94,8 +94,6 @@ func EnsureValidToken() gin.HandlerFunc {
 }
 
 func EnsureValidWebSocketToken(w http.ResponseWriter, r *http.Request) error {
-	// log origin header
-	log.Println("Origin header: ", r.Header.Get("Origin"))
 	issuerURL, err := url.Parse(os.Getenv("AUTH0_DOMAIN") + "/")
 	if err != nil {
 		sentry.CaptureException(err)
@@ -121,20 +119,19 @@ func EnsureValidWebSocketToken(w http.ResponseWriter, r *http.Request) error {
 		log.Fatalf("Failed to set up the jwt validator")
 	}
 
-	tokenString := r.URL.Query().Get("token")
+	// log origin header
+	log.Println("Origin header", r.Header.Get("Origin"))
 
+	// Get token from token query param
+	tokenString := r.URL.Query().Get("token")
 	if tokenString == "" {
 		tokenString = r.Header.Get("Authorization")
-
-		if strings.HasPrefix(tokenString, "Bearer ") {
-			tokenString = tokenString[7:]
-		}
 	}
 
 	if tokenString == "" {
 		w.WriteHeader(http.StatusUnauthorized)
-		w.Write([]byte(`{"message": "Token is missing"}`))
-		return errors.New("Token is missing")
+		w.Write([]byte(`{"message": "Authorization header is missing"}`))
+		return errors.New("Authorization header is missing")
 	}
 
 	// remove the Bearer prefix
