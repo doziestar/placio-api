@@ -82,8 +82,8 @@ generate: ## Run Go generate
 	go run entgo.io/ent/cmd/ent generate  --idtype string ./app/ent/schema
 
 grpc: ## Run Go generate
-	protoc -I. --go_out=paths=source_relative:. ./app/grpc/proto/*/*.proto
-	#protoc -I. --go_grpc_out=paths=source_relative:. ./app/grpc/proto/*/*.proto
+	 protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative ./app/grpc/proto/*/*.proto
+
 
 migrate: ## Run database migration. Pass migration name as a parameter, eg: make migrate migration_name=init_schema
 	atlas migrate diff $(migration_name) \

@@ -39,6 +39,7 @@ services:
   placio-backend:
     ports:
       - "7070:7070"
+      - "50051:50051"
     env_file:
       - .envs/.stag
     restart: always
@@ -73,6 +74,8 @@ services:
       dockerfile: ./realtime_server/stag.dockerfile
     networks:
       - default
+    depends_on:
+      - placio-backend
     labels:
       - traefik.enable=true
       - traefik.docker.network=default

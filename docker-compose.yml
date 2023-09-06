@@ -26,13 +26,14 @@ services:
   ##      interval: 1s
   ##      timeout: 1m
   ##      retries: 5
-  app:
+  placio-backend:
     build:
       context: .
       dockerfile: ./app/Dockerfile
     restart: always
     ports:
       - "7070:7070"
+      - "50051:50051"
     volumes:
       # - ./:/app
       - ./app:/app/app
@@ -46,6 +47,8 @@ services:
       context: .
       dockerfile: ./realtime_server/Dockerfile
     restart: always
+    depends_on:
+      - placio-backend
     ports:
       - "7080:7080"
     volumes:
