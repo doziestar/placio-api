@@ -19,24 +19,22 @@ func NewHub() *Hub {
 }
 
 func (h *Hub) Run() {
+	log.Println("Hub Run")
 	for {
-		log.Println("---------------------------")
-		log.Println("Hub Run: Port 7080")
-		log.Println("---------------------------")
 		select {
 		case conn := <-h.Register:
 			h.Connections[conn] = true
 		case conn := <-h.Unregister:
 			if _, ok := h.Connections[conn]; ok {
 				delete(h.Connections, conn)
-				close(conn.send)
+				close(conn.Send)
 			}
 		case message := <-h.Broadcast:
 			for conn := range h.Connections {
 				select {
-				case conn.send <- message:
+				case conn.Send <- message:
 				default:
-					close(conn.send)
+					close(conn.Send)
 					delete(h.Connections, conn)
 				}
 			}

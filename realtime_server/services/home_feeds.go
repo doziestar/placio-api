@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"log"
 	"placio-api/grpc/proto"
 )
 
@@ -20,6 +21,7 @@ func NewPostService(service proto.PostServiceClient) PostService {
 }
 
 func (p *postService) GetPostFeeds(ctx context.Context) (*proto.GetPostFeedsResponse, error) {
+	log.Println("GetPostFeeds")
 	return p.service.GetPostFeeds(ctx, &proto.GetPostFeedsRequest{})
 }
 

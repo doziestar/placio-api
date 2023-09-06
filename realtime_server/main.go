@@ -33,5 +33,9 @@ func main() {
 	go hub.Run()
 
 	http.Handle("/", r)
+
+	log.Println("---------------------------")
+	log.Println("Hub Run: Port 7080")
+	log.Println("---------------------------")
 	log.Fatal(http.ListenAndServe(":7080", nil))
 }

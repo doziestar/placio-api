@@ -18,6 +18,15 @@ func ServeWs(postService services.PostService, hub *socket.Hub, w http.ResponseW
 	}
 	connection := socket.NewConnection(conn, hub)
 	hub.Register <- connection
+
+	response, err := postService.GetPostFeeds(r.Context())
+	if err != nil {
+		log.Printf("Error getting post feeds: %v", err)
+	} else {
+		responseMsg, _ := json.Marshal(response)
+		connection.Send <- responseMsg
+	}
+
 	go connection.Writer()
 	go connection.Reader(postService)
 }
