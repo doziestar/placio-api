@@ -172,6 +172,10 @@ func ServeGRPC(client *ent.Client) {
 		}
 	}()
 
+	eventBus.Subscribe("post:created", func(post *ent.Post) {
+		log.Println("Post created event triggered!")
+	})
+
 	// Graceful shutdown
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
