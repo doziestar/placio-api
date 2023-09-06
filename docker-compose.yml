@@ -34,11 +34,24 @@ services:
     ports:
       - "7070:7070"
     volumes:
-      - ./:/app
+      # - ./:/app
       - ./app:/app/app
+      - ./pkg:/app/pkg
       - ./config:/app/config
     env_file:
       - .envs/.local
 
-
-
+  ws:
+    build:
+      context: .
+      dockerfile: ./realtime_server/Dockerfile
+    restart: always
+    ports:
+      - "7071:7071"
+    volumes:
+      # - ./:/app
+      - ./realtime_server:/work/realtime_server
+      - ./pkg:/work/pkg
+      # - ./config:/app/config
+    env_file:
+      - .envs/.local

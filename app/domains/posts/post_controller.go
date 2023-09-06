@@ -113,7 +113,7 @@ func (pc *PostController) createPost(ctx *gin.Context) error {
 }
 
 // GetPostFeeds retrieves all posts for the authenticated user.
-// @Summary Get post feeds
+// @Summary Get post realtime_server
 // @Description Retrieve all posts for the authenticated user
 // @Tags Post
 // @Accept json
