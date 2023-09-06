@@ -115,7 +115,9 @@ func (ps *PostServiceImpl) CreatePost(ctx context.Context, newPost *ent.Post, us
 	fmt.Println("saved post", post)
 
 	// Publish post created event
+	log.Println("publishing post:created event")
 	ps.eventBus.Publish("post:created", postToReturn)
+	log.Println("published post:created event")
 
 	return postToReturn, nil
 }
