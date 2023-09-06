@@ -42,10 +42,6 @@ services:
     env_file:
       - .envs/.stag
     restart: always
-#    volumes:
-#      - ./:/app
-#      - ./app:/app/app
-#      - ./config:/app/config
     build:
       context: .
       dockerfile: ./app/stag.dockerfile
@@ -65,6 +61,25 @@ services:
       - "traefik.http.middlewares.cors.headers.accesscontrolallowheaders=Content-Type,Authorization"
       - "traefik.http.middlewares.cors.headers.accesscontrolmaxage=100"
       - "traefik.http.middlewares.cors.headers.addvaryheader=true"
+
+  placio-realtime:
+    ports:
+      - "7080:7080"
+    env_file:
+      - .envs/.stag
+    restart: always
+    build:
+      context: .
+      dockerfile: ./realtime_server/stag.dockerfile
+    networks:
+      - default
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=default
+      - "traefik.http.routers.realtime-secure.entrypoints=websecure"
+      - "traefik.http.routers.realtime-secure.rule=Host(`feeds.palnight.com`)"
+      - "traefik.http.routers.realtime-secure.service=realtime"
+      - "traefik.http.services.realtime.loadbalancer.server.port=7080"
 
   prometheus:
     image: prom/prometheus:latest

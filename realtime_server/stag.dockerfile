@@ -16,7 +16,7 @@ RUN go mod download
 # Copy the entire project directory inside the container
 COPY . .
 
-ENV PORT=7070
+ENV PORT=7080
 # Build the Go app for a smaller binary size
 # -v: print the names of packages as they are compiled.
 # -o: name of the binary.
@@ -38,7 +38,7 @@ COPY --from=builder /app/main .
 
 # Expose port on the Docker host, so we can access it
 # from the outside.
-EXPOSE 7071
+EXPOSE 7080
 
 # Command to run the executable
 CMD ["./main"]

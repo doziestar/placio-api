@@ -20,9 +20,9 @@ RUN #go install github.com/cosmtrek/air@latest
 # Copy the rest of the application source code
 COPY . .
 
-ENV PORT=7071
+ENV PORT=7080
 
-EXPOSE 7071
+EXPOSE 7080
 
 # Run the binary
 CMD ["reflex", "-r", "\\.go$", "-s", "--", "go", "run", "./realtime_server/main.go"]
