@@ -1,15 +1,50 @@
 package main
 
 import (
+	"context"
+	"encoding/json"
 	"github.com/gorilla/mux"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/status"
+	"io"
 	"log"
 	"net/http"
 	"placio-api/grpc/proto"
 	"placio-realtime/api"
 	"placio-realtime/pkg/websocket"
 	"placio-realtime/services"
+	"time"
 )
+
+func watchPostsStream(postService services.PostService, hub *websocket.Hub) {
+	for {
+		stream, err := postService.WatchPosts(context.Background())
+		if err != nil {
+			if grpcErr, ok := status.FromError(err); ok {
+				log.Printf("Error watching posts: %s, Code: %s. Retrying in 3 seconds...", grpcErr.Message(), grpcErr.Code())
+			} else {
+				log.Printf("Error watching posts: %v. Retrying in 3 seconds...", err)
+			}
+
+			time.Sleep(3 * time.Second)
+			continue
+		}
+
+		for {
+			response, err := stream.Recv()
+			if err == io.EOF {
+				log.Println("Stream ended from server side.")
+				break
+			}
+			if err != nil {
+				log.Printf("Failed to receive a post: %v", err)
+				break // break out to outer loop to retry the connection
+			}
+			responseMsg, _ := json.Marshal(response)
+			hub.Broadcast <- responseMsg
+		}
+	}
+}
 
 func main() {
 	r := mux.NewRouter()
@@ -31,6 +66,8 @@ func main() {
 	})
 
 	go hub.Run()
+
+	go watchPostsStream(postService, hub)
 
 	http.Handle("/", r)
 

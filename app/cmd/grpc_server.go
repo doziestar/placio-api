@@ -2,11 +2,13 @@ package cmd
 
 import (
 	"context"
+	"google.golang.org/grpc/keepalive"
 	"log"
 	"net"
 	"os"
 	"os/signal"
 	"placio-api/grpc/proto"
+	"time"
 
 	"placio-app/domains/media"
 	"placio-app/domains/posts"
@@ -20,7 +22,12 @@ import (
 
 type server struct {
 	proto.UnimplementedPostServiceServer
+	eventBus    EventBus.Bus
 	postService posts.PostService
+}
+
+func NewServer(postService posts.PostService, eventBus EventBus.Bus) proto.PostServiceServer {
+	return &server{postService: postService, eventBus: eventBus}
 }
 
 func (s *server) RefreshPost(ctx context.Context, req *proto.RefreshPostRequest) (*proto.GetPostFeedsResponse, error) {
@@ -91,6 +98,45 @@ func (s *server) GetPostFeeds(ctx context.Context, req *proto.GetPostFeedsReques
 	return &proto.GetPostFeedsResponse{Posts: pbPosts}, nil
 }
 
+func (s *server) WatchPosts(stream proto.PostService_WatchPostsServer) error {
+	postsUpdated := make(chan bool, 100)
+
+	// Subscription to listen for new posts
+	subscription := s.eventBus.Subscribe("post:created", func(post *ent.Post) {
+		postsUpdated <- true
+	})
+	defer s.eventBus.Unsubscribe("post:created", subscription)
+
+	for {
+		select {
+		case <-postsUpdated:
+			posts, err := s.postService.GetPostFeeds(stream.Context())
+			if err != nil {
+				return err
+			}
+
+			var pbPosts []*proto.Post
+			for _, p := range posts {
+				pbPosts = append(pbPosts, &proto.Post{
+					Id:        p.ID,
+					Content:   p.Content,
+					CreatedAt: p.CreatedAt.String(),
+					UpdatedAt: p.UpdatedAt.String(),
+					// Other fields...
+				})
+			}
+
+			if err := stream.Send(&proto.GetPostFeedsResponse{Posts: pbPosts}); err != nil {
+				return err
+			}
+
+		case <-stream.Context().Done():
+			log.Println("Client disconnected from WatchPosts stream.")
+			return stream.Context().Err()
+		}
+	}
+}
+
 func ServeGRPC(client *ent.Client) {
 	lis, err := net.Listen("tcp", ":50051")
 	if err != nil {
@@ -105,9 +151,14 @@ func ServeGRPC(client *ent.Client) {
 
 	mediaService := media.NewMediaService(client, cld)
 
-	s := grpc.NewServer()
+	ka := keepalive.ServerParameters{
+		Time:    10 * time.Hour,
+		Timeout: 5 * time.Hour,
+	}
+	s := grpc.NewServer(grpc.KeepaliveParams(ka))
+
 	postSvc := posts.NewPostService(client, redisClient, mediaService, eventBus)
-	proto.RegisterPostServiceServer(s, &server{postService: postSvc})
+	proto.RegisterPostServiceServer(s, &server{postService: postSvc, eventBus: eventBus})
 
 	log.Println("gRPC server started on :50051")
 	go func() {
