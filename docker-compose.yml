@@ -47,7 +47,7 @@ services:
       dockerfile: ./realtime_server/Dockerfile
     restart: always
     ports:
-      - "7071:7071"
+      - "7080:7080"
     volumes:
       # - ./:/app
       - ./realtime_server:/work/realtime_server

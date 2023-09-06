@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package postservice;
+
+message GetPostFeedsRequest {}
+message GetPostFeedsResponse {
+  repeated Post posts = 1;
+}
+
+message RefreshPostRequest {
+  bool refresh = 1;
+}
+
+message Post {
+  string id = 1;
+  string Content = 2;
+  string CreatedAt = 3;
+  string UpdatedAt = 4;
+  PrivacyType Privacy = 5;
+  Edge edges = 6;
+
+  enum PrivacyType {
+    UNKNOWN = 0;
+    PUBLIC = 1;
+    PRIVATE = 2; // Only me
+  }
+
+  message Edge {
+    User user = 1;
+    repeated Comment comments = 2;
+  }
+
+  message User {
+    string id = 1;
+    string auth0_id = 2;
+    string name = 3;
+    string picture = 4;
+    string cover_image = 5;
+    string username = 6;
+    string bio = 7;
+  }
+
+  message Comment {
+    string id = 1;
+    string Content = 2;
+    string CreatedAt = 3;
+    string UpdatedAt = 4;
+  }
+}
+
+// Services
+service PostService {
+  rpc GetPostFeeds (GetPostFeedsRequest) returns (GetPostFeedsResponse);
+  rpc RefreshPost (RefreshPostRequest) returns (GetPostFeedsResponse);
+}
