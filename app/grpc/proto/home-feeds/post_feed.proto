@@ -1,6 +1,8 @@
 syntax = "proto3";
 
-package postservice;
+option go_package = "github.com/doziestar/placio/placio-api/app/grpc/proto/home-feeds";
+
+package feeds;
 
 message GetPostFeedsRequest {}
 message GetPostFeedsResponse {
