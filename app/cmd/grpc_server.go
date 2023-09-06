@@ -6,7 +6,7 @@ import (
 	"net"
 	"os"
 	"os/signal"
-	"placio-app/grpc/proto/home-feeds"
+	"placio-api/grpc/proto"
 
 	"placio-app/domains/media"
 	"placio-app/domains/posts"

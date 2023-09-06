@@ -5,8 +5,8 @@ import (
 	"google.golang.org/grpc"
 	"log"
 	"net/http"
+	"placio-api/grpc/proto"
 	"placio-realtime/api"
-	"placio-realtime/grpc/proto"
 	"placio-realtime/pkg/websocket"
 	"placio-realtime/services"
 )

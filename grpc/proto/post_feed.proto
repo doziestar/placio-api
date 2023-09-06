@@ -55,4 +55,5 @@ message Post {
 service PostService {
   rpc GetPostFeeds (GetPostFeedsRequest) returns (GetPostFeedsResponse);
   rpc RefreshPost (RefreshPostRequest) returns (GetPostFeedsResponse);
+  rpc WatchPosts(stream GetPostFeedsRequest) returns (stream GetPostFeedsResponse);
 }
