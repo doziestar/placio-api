@@ -15,7 +15,7 @@ func main() {
 	r := mux.NewRouter()
 	hub := websocket.NewHub()
 
-	conn, err := grpc.Dial("localhost:50051", grpc.WithInsecure())
+	conn, err := grpc.Dial("placio-backend:50051", grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("Did not connect: %v", err)
 	}

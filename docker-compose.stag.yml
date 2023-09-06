@@ -74,6 +74,8 @@ services:
       dockerfile: ./realtime_server/stag.dockerfile
     networks:
       - default
+    depends_on:
+      - placio-backend
     labels:
       - traefik.enable=true
       - traefik.docker.network=default
