@@ -1,5 +1,7 @@
 package websocket
 
+import "log"
+
 type Hub struct {
 	Connections map[*Connection]bool
 	Broadcast   chan []byte
@@ -18,6 +20,9 @@ func NewHub() *Hub {
 
 func (h *Hub) Run() {
 	for {
+		log.Println("---------------------------")
+		log.Println("Hub Run: Port 7071")
+		log.Println("---------------------------")
 		select {
 		case conn := <-h.Register:
 			h.Connections[conn] = true
