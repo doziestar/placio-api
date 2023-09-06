@@ -39,6 +39,7 @@ services:
   placio-backend:
     ports:
       - "7070:7070"
+      - "50051:50051"
     env_file:
       - .envs/.stag
     restart: always

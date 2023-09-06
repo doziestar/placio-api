@@ -5,9 +5,10 @@ import (
 	"log"
 	"net/http"
 	socket "placio-realtime/pkg/websocket"
+	"placio-realtime/services"
 )
 
-func ServeWs(hub *socket.Hub, w http.ResponseWriter, r *http.Request) {
+func ServeWs(postService services.PostService, hub *socket.Hub, w http.ResponseWriter, r *http.Request) {
 	conn, err := socket.Upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
@@ -18,5 +19,5 @@ func ServeWs(hub *socket.Hub, w http.ResponseWriter, r *http.Request) {
 	connection := socket.NewConnection(conn, hub)
 	hub.Register <- connection
 	go connection.Writer()
-	go connection.Reader()
+	go connection.Reader(postService)
 }

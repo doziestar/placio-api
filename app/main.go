@@ -62,6 +62,8 @@ func main() {
 	// initialize routes
 	cmd.InitializeRoutes(app, client)
 
+	// initialize grpc server
+	go cmd.ServeGRPC(client)
 	// set port
 	cmd.Initialize(app)
 
