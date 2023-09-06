@@ -69,7 +69,7 @@ func main() {
 
 	go hub.Run()
 
-	go watchPostsStream(postService, hub)
+	//go watchPostsStream(postService, hub)
 
 	http.Handle("/", r)
 

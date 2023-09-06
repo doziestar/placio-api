@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"placio-api/events/kafka"
 	socket "placio-realtime/pkg/websocket"
 	"placio-realtime/services"
 )
@@ -26,6 +27,32 @@ func ServeWs(postService services.PostService, hub *socket.Hub, w http.ResponseW
 		responseMsg, _ := json.Marshal(response)
 		connection.Send <- responseMsg
 	}
+
+	brokers := []string{"glad-ocelot-13748-eu2-kafka.upstash.io:9092"}
+	topic := "post_created"
+	username := "Z2xhZC1vY2Vsb3QtMTM3NDgkiJbJsYDFiX7WFPdq0E1rXMVgyy2z-P46ix43a8g"
+	password := "MmI0ZmY0MTAtZTU1OS00MjQ0LTkyMmItYjM1MjdhNWY4OThl"
+
+	consumer := kafka.NewKafkaConsumer(brokers, topic, "placio", username, password)
+
+	go func() {
+		err := consumer.Start(func(messageValue []byte) error {
+			// Process the Kafka message here
+			response, err := postService.GetPostFeeds(r.Context())
+			if err != nil {
+				log.Printf("Error getting post feeds: %v", err)
+				return err
+			}
+
+			responseMsg, _ := json.Marshal(response)
+			connection.Send <- responseMsg
+			return nil
+		})
+
+		if err != nil {
+			log.Printf("Error reading Kafka message: %v", err)
+		}
+	}()
 
 	go connection.Writer()
 	go connection.Reader(postService)

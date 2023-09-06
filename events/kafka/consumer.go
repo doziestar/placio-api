@@ -26,8 +26,8 @@ func NewKafkaConsumer(brokers []string, topic, groupID, username, password strin
 	}
 
 	reader := kafka.NewReader(kafka.ReaderConfig{
-		Brokers:  brokers,
-		GroupID:  groupID,
+		Brokers: brokers,
+		//GroupID:  groupID,
 		Topic:    topic,
 		Dialer:   dialer,
 		MinBytes: 10e3, // 10KB
@@ -39,16 +39,21 @@ func NewKafkaConsumer(brokers []string, topic, groupID, username, password strin
 	}
 }
 
-func (kc *KafkaConsumer) Start(postsUpdated chan<- bool) {
+func (kc *KafkaConsumer) Start(callback func([]byte) error) error {
 	fmt.Println("Consumer started. Waiting for messages...")
 	for {
 		m, err := kc.reader.ReadMessage(context.Background())
 		if err != nil {
 			log.Printf("Error reading message: %v\n", err)
-			break
+			return err
 		}
-		fmt.Printf("Received message from %s: %s\n", m.Topic, string(m.Value))
-		postsUpdated <- true
+
+		// Call the callback to process the message
+		if err := callback(m.Value); err != nil {
+			log.Printf("Error processing message: %v", err)
+			// decide if you want to continue or exit
+			continue
+		}
 	}
 }
 

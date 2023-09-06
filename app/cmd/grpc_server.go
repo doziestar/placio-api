@@ -105,7 +105,7 @@ func (s *server) WatchPosts(stream proto.PostService_WatchPostsServer) error {
 	log.Println("Client connected to WatchPosts stream.")
 
 	// Start the Kafka consumer
-	go s.consumer.Start(postsUpdated)
+	//go s.consumer.Start(postsUpdated)
 
 	defer s.consumer.Close()
 
