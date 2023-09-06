@@ -1,10 +1,10 @@
 package feeds
 
 import (
-	"github.com/asaskevich/EventBus"
 	"github.com/getsentry/sentry-go"
 	"log"
 	"net/http"
+	"placio-api/events/kafka"
 	"placio-app/domains/feeds/chats"
 	"placio-app/domains/feeds/homefeeds"
 	"placio-app/domains/places"
@@ -28,13 +28,14 @@ type IWebSocketServer interface {
 
 type WebSocketServer struct {
 	clients   map[*websocket.Conn]bool
-	eventBus  EventBus.Bus
+	producer  *kafka.Producer
+	consumer  *kafka.KafkaConsumer
 	clientsMu sync.Mutex
 	upgrader  websocket.Upgrader
 	homefeeds homefeeds.IHomeFeedsHandler
 }
 
-func NewWebSocketServer(eventBus EventBus.Bus, postService posts.PostService, placeService places.PlaceService) *WebSocketServer {
+func NewWebSocketServer(producer *kafka.Producer, consumer *kafka.KafkaConsumer, postService posts.PostService, placeService places.PlaceService) *WebSocketServer {
 	return &WebSocketServer{
 		clients: make(map[*websocket.Conn]bool),
 		upgrader: websocket.Upgrader{
@@ -42,7 +43,7 @@ func NewWebSocketServer(eventBus EventBus.Bus, postService posts.PostService, pl
 			WriteBufferSize: 1024,
 			CheckOrigin:     func(r *http.Request) bool { return true },
 		},
-		homefeeds: homefeeds.NewHomeFeedsHandler(postService, eventBus, placeService),
+		homefeeds: homefeeds.NewHomeFeedsHandler(postService, producer, consumer, placeService),
 	}
 }
 

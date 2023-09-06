@@ -20,18 +20,18 @@ type WsMessage struct {
 }
 
 type Connection struct {
-	ws   *websocket.Conn
-	send chan []byte
-	hub  *Hub
+	Ws   *websocket.Conn
+	Send chan []byte
+	Hub  *Hub
 }
 
 func NewConnection(ws *websocket.Conn, hub *Hub) *Connection {
-	return &Connection{ws: ws, send: make(chan []byte), hub: hub}
+	return &Connection{Ws: ws, Send: make(chan []byte, 100), Hub: hub}
 }
 
 func (c *Connection) Reader(postService services.PostService) {
 	for {
-		_, p, err := c.ws.ReadMessage()
+		_, p, err := c.Ws.ReadMessage()
 		if err != nil {
 			break
 		}
@@ -64,18 +64,18 @@ func (c *Connection) Reader(postService services.PostService) {
 		}
 
 		if responseMsg != nil {
-			c.hub.Broadcast <- responseMsg
+			c.Hub.Broadcast <- responseMsg
 		}
 	}
-	c.ws.Close()
+	c.Ws.Close()
 }
 
 func (c *Connection) Writer() {
-	for message := range c.send {
-		err := c.ws.WriteMessage(websocket.TextMessage, message)
+	for message := range c.Send {
+		err := c.Ws.WriteMessage(websocket.TextMessage, message)
 		if err != nil {
 			break
 		}
 	}
-	c.ws.Close()
+	c.Ws.Close()
 }

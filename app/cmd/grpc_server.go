@@ -2,25 +2,33 @@ package cmd
 
 import (
 	"context"
+	"google.golang.org/grpc/keepalive"
 	"log"
 	"net"
 	"os"
 	"os/signal"
-	"placio-app/grpc/proto/home-feeds"
+	"placio-api/events/kafka"
+	"placio-api/grpc/proto"
+	"time"
 
 	"placio-app/domains/media"
 	"placio-app/domains/posts"
 	"placio-app/ent"
 	"placio-app/utility"
 
-	"github.com/asaskevich/EventBus"
 	"github.com/cloudinary/cloudinary-go/v2"
 	"google.golang.org/grpc"
 )
 
 type server struct {
 	proto.UnimplementedPostServiceServer
+	producer    *kafka.Producer
+	consumer    *kafka.KafkaConsumer
 	postService posts.PostService
+}
+
+func NewServer(postService posts.PostService, producer *kafka.Producer, consumer *kafka.KafkaConsumer) proto.PostServiceServer {
+	return &server{postService: postService, producer: producer, consumer: consumer}
 }
 
 func (s *server) RefreshPost(ctx context.Context, req *proto.RefreshPostRequest) (*proto.GetPostFeedsResponse, error) {
@@ -91,6 +99,47 @@ func (s *server) GetPostFeeds(ctx context.Context, req *proto.GetPostFeedsReques
 	return &proto.GetPostFeedsResponse{Posts: pbPosts}, nil
 }
 
+func (s *server) WatchPosts(stream proto.PostService_WatchPostsServer) error {
+	postsUpdated := make(chan bool, 100)
+
+	log.Println("Client connected to WatchPosts stream.")
+
+	// Start the Kafka consumer
+	//go s.consumer.Start(postsUpdated)
+
+	defer s.consumer.Close()
+
+	for {
+		select {
+		case <-postsUpdated:
+			log.Println("Sending new posts to client...")
+			posts, err := s.postService.GetPostFeeds(stream.Context())
+			if err != nil {
+				return err
+			}
+
+			var pbPosts []*proto.Post
+			for _, p := range posts {
+				pbPosts = append(pbPosts, &proto.Post{
+					Id:        p.ID,
+					Content:   p.Content,
+					CreatedAt: p.CreatedAt.String(),
+					UpdatedAt: p.UpdatedAt.String(),
+					// Other fields...
+				})
+			}
+
+			if err := stream.Send(&proto.GetPostFeedsResponse{Posts: pbPosts}); err != nil {
+				return err
+			}
+
+		case <-stream.Context().Done():
+			log.Println("Client disconnected from WatchPosts stream.")
+			return stream.Context().Err()
+		}
+	}
+}
+
 func ServeGRPC(client *ent.Client) {
 	lis, err := net.Listen("tcp", ":50051")
 	if err != nil {
@@ -101,13 +150,25 @@ func ServeGRPC(client *ent.Client) {
 	_ = redisClient.ConnectRedis()
 
 	cld, _ := cloudinary.NewFromParams("placio", "312498583624125", "k4XSQwWuhi3Vy7QAw7Qn0mUaW0s")
-	eventBus := EventBus.New()
 
 	mediaService := media.NewMediaService(client, cld)
 
-	s := grpc.NewServer()
-	postSvc := posts.NewPostService(client, redisClient, mediaService, eventBus)
-	proto.RegisterPostServiceServer(s, &server{postService: postSvc})
+	ka := keepalive.ServerParameters{
+		Time:    10 * time.Hour,
+		Timeout: 5 * time.Hour,
+	}
+	s := grpc.NewServer(grpc.KeepaliveParams(ka))
+
+	brokers := []string{"glad-ocelot-13748-eu2-kafka.upstash.io:9092"}
+	topic := "post_created"
+	username := "Z2xhZC1vY2Vsb3QtMTM3NDgkiJbJsYDFiX7WFPdq0E1rXMVgyy2z-P46ix43a8g"
+	password := "MmI0ZmY0MTAtZTU1OS00MjQ0LTkyMmItYjM1MjdhNWY4OThl"
+
+	producer := kafka.NewProducer(brokers, topic, username, password)
+	consumer := kafka.NewKafkaConsumer(brokers, topic, "placio", username, password)
+
+	postSvc := posts.NewPostService(client, redisClient, mediaService, producer)
+	proto.RegisterPostServiceServer(s, &server{postService: postSvc, producer: producer, consumer: consumer})
 
 	log.Println("gRPC server started on :50051")
 	go func() {
@@ -115,6 +176,10 @@ func ServeGRPC(client *ent.Client) {
 			log.Fatalf("failed to serve: %v", err)
 		}
 	}()
+
+	if err != nil {
+		log.Fatalf("failed to subscribe to event: %v", err)
+	}
 
 	// Graceful shutdown
 	c := make(chan os.Signal, 1)

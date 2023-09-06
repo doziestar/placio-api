@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion7
 const (
 	PostService_GetPostFeeds_FullMethodName = "/feeds.PostService/GetPostFeeds"
 	PostService_RefreshPost_FullMethodName  = "/feeds.PostService/RefreshPost"
+	PostService_WatchPosts_FullMethodName   = "/feeds.PostService/WatchPosts"
 )
 
 // PostServiceClient is the client API for PostService service.
@@ -29,6 +30,7 @@ const (
 type PostServiceClient interface {
 	GetPostFeeds(ctx context.Context, in *GetPostFeedsRequest, opts ...grpc.CallOption) (*GetPostFeedsResponse, error)
 	RefreshPost(ctx context.Context, in *RefreshPostRequest, opts ...grpc.CallOption) (*GetPostFeedsResponse, error)
+	WatchPosts(ctx context.Context, opts ...grpc.CallOption) (PostService_WatchPostsClient, error)
 }
 
 type postServiceClient struct {
@@ -57,12 +59,44 @@ func (c *postServiceClient) RefreshPost(ctx context.Context, in *RefreshPostRequ
 	return out, nil
 }
 
+func (c *postServiceClient) WatchPosts(ctx context.Context, opts ...grpc.CallOption) (PostService_WatchPostsClient, error) {
+	stream, err := c.cc.NewStream(ctx, &PostService_ServiceDesc.Streams[0], PostService_WatchPosts_FullMethodName, opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &postServiceWatchPostsClient{stream}
+	return x, nil
+}
+
+type PostService_WatchPostsClient interface {
+	Send(*GetPostFeedsRequest) error
+	Recv() (*GetPostFeedsResponse, error)
+	grpc.ClientStream
+}
+
+type postServiceWatchPostsClient struct {
+	grpc.ClientStream
+}
+
+func (x *postServiceWatchPostsClient) Send(m *GetPostFeedsRequest) error {
+	return x.ClientStream.SendMsg(m)
+}
+
+func (x *postServiceWatchPostsClient) Recv() (*GetPostFeedsResponse, error) {
+	m := new(GetPostFeedsResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // PostServiceServer is the server API for PostService service.
 // All implementations must embed UnimplementedPostServiceServer
 // for forward compatibility
 type PostServiceServer interface {
 	GetPostFeeds(context.Context, *GetPostFeedsRequest) (*GetPostFeedsResponse, error)
 	RefreshPost(context.Context, *RefreshPostRequest) (*GetPostFeedsResponse, error)
+	WatchPosts(PostService_WatchPostsServer) error
 	mustEmbedUnimplementedPostServiceServer()
 }
 
@@ -75,6 +109,9 @@ func (UnimplementedPostServiceServer) GetPostFeeds(context.Context, *GetPostFeed
 }
 func (UnimplementedPostServiceServer) RefreshPost(context.Context, *RefreshPostRequest) (*GetPostFeedsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RefreshPost not implemented")
+}
+func (UnimplementedPostServiceServer) WatchPosts(PostService_WatchPostsServer) error {
+	return status.Errorf(codes.Unimplemented, "method WatchPosts not implemented")
 }
 func (UnimplementedPostServiceServer) mustEmbedUnimplementedPostServiceServer() {}
 
@@ -125,6 +162,32 @@ func _PostService_RefreshPost_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PostService_WatchPosts_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(PostServiceServer).WatchPosts(&postServiceWatchPostsServer{stream})
+}
+
+type PostService_WatchPostsServer interface {
+	Send(*GetPostFeedsResponse) error
+	Recv() (*GetPostFeedsRequest, error)
+	grpc.ServerStream
+}
+
+type postServiceWatchPostsServer struct {
+	grpc.ServerStream
+}
+
+func (x *postServiceWatchPostsServer) Send(m *GetPostFeedsResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func (x *postServiceWatchPostsServer) Recv() (*GetPostFeedsRequest, error) {
+	m := new(GetPostFeedsRequest)
+	if err := x.ServerStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // PostService_ServiceDesc is the grpc.ServiceDesc for PostService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -141,6 +204,13 @@ var PostService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _PostService_RefreshPost_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "WatchPosts",
+			Handler:       _PostService_WatchPosts_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
+		},
+	},
 	Metadata: "app/grpc/proto/home-feeds/post_feed.proto",
 }

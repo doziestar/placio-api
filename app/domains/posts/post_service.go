@@ -2,9 +2,11 @@ package posts
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
+	"placio-api/events/kafka"
 	"placio-app/domains/media"
 	"placio-app/ent"
 	"placio-app/ent/comment"
@@ -13,7 +15,6 @@ import (
 	"placio-app/utility"
 	"time"
 
-	"github.com/asaskevich/EventBus"
 	"github.com/getsentry/sentry-go"
 )
 
@@ -38,11 +39,11 @@ type PostServiceImpl struct {
 	client       *ent.Client
 	cache        *utility.RedisClient
 	mediaService media.MediaService
-	eventBus     EventBus.Bus
+	producer     *kafka.Producer
 }
 
-func NewPostService(client *ent.Client, cache *utility.RedisClient, mediaService media.MediaService, eventBus EventBus.Bus) PostService {
-	return &PostServiceImpl{client: client, cache: cache, mediaService: mediaService, eventBus: eventBus}
+func NewPostService(client *ent.Client, cache *utility.RedisClient, mediaService media.MediaService, producer *kafka.Producer) PostService {
+	return &PostServiceImpl{client: client, cache: cache, mediaService: mediaService, producer: producer}
 }
 
 func (ps *PostServiceImpl) GetPostFeeds(ctx context.Context) ([]*ent.Post, error) {
@@ -115,7 +116,19 @@ func (ps *PostServiceImpl) CreatePost(ctx context.Context, newPost *ent.Post, us
 	fmt.Println("saved post", post)
 
 	// Publish post created event
-	ps.eventBus.Publish("post:created", postToReturn)
+	log.Println("publishing post:created event")
+	postBytes, err := json.Marshal(postToReturn)
+	if err != nil {
+		log.Println("error serializing post:", err)
+	} else {
+		err = ps.producer.PublishMessage(ctx, []byte(postToReturn.ID), postBytes)
+		if err != nil {
+			log.Println("error sending post to Kafka:", err)
+		} else {
+			log.Println("published post:created event to Kafka")
+		}
+	}
+	log.Println("published post:created event")
 
 	return postToReturn, nil
 }

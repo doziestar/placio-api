@@ -3,9 +3,9 @@ package homefeeds
 import (
 	"context"
 	"encoding/json"
-	"github.com/asaskevich/EventBus"
 	"github.com/gorilla/websocket"
 	"log"
+	"placio-api/events/kafka"
 	"placio-app/domains/places"
 	"placio-app/domains/posts"
 	"placio-app/ent"
@@ -21,11 +21,12 @@ type IHomeFeedsHandler interface {
 type HomeFeedsHandler struct {
 	postService  posts.PostService
 	placeService places.PlaceService
-	eventBus     EventBus.Bus
+	producer     *kafka.Producer
+	consumer     *kafka.KafkaConsumer
 }
 
-func NewHomeFeedsHandler(postService posts.PostService, eventBus EventBus.Bus, placeService places.PlaceService) *HomeFeedsHandler {
-	return &HomeFeedsHandler{postService: postService, placeService: placeService, eventBus: eventBus}
+func NewHomeFeedsHandler(postService posts.PostService, producer *kafka.Producer, consumer *kafka.KafkaConsumer, placeService places.PlaceService) *HomeFeedsHandler {
+	return &HomeFeedsHandler{postService: postService, placeService: placeService, producer: producer, consumer: consumer}
 }
 
 func (s *HomeFeedsHandler) HandleHomeFeeds(ctx context.Context, ws *websocket.Conn) {
@@ -38,19 +39,21 @@ func (s *HomeFeedsHandler) HandleHomeFeeds(ctx context.Context, ws *websocket.Co
 		PlaceInventory []*ent.PlaceInventory `json:"place_inventory"`
 	}
 
-	// Subscribe to post:created event
-	log.Println("Subscribing to post:created event")
-	subscription := s.eventBus.Subscribe("post:created", func(post *ent.Post) {
-		err := ws.WriteJSON(post)
-		if err != nil {
-			log.Printf("error writing to websocket: %v", err)
-		}
-	})
+	//// Subscribe to post:created event
+	//log.Println("Subscribing to post:created event")
+	//subscription := s.eventBus.Subscribe("post:created", func(post *ent.Post) {
+	//	err := ws.WriteJSON(post)
+	//	if err != nil {
+	//		log.Printf("error writing to websocket: %v", err)
+	//	}
+	//})
+	//
+	//s.consumer.Start()
 
 	defer func() {
 		ws.Close()
 		delete(clients, ws)
-		s.eventBus.Unsubscribe("post:created", subscription)
+		//s.eventBus.Unsubscribe("post:created", subscription)
 	}()
 
 	log.Println("Subscribed to post:created event")

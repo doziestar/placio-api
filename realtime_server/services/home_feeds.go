@@ -2,12 +2,13 @@ package services
 
 import (
 	"context"
-	"placio-realtime/grpc/proto"
+	"placio-api/grpc/proto"
 )
 
 type PostService interface {
 	GetPostFeeds(ctx context.Context) (*proto.GetPostFeedsResponse, error)
 	RefreshPostFeeds(ctx context.Context) (*proto.GetPostFeedsResponse, error)
+	WatchPosts(ctx context.Context) (proto.PostService_WatchPostsClient, error)
 }
 
 type postService struct {
@@ -24,4 +25,8 @@ func (p *postService) GetPostFeeds(ctx context.Context) (*proto.GetPostFeedsResp
 
 func (p *postService) RefreshPostFeeds(ctx context.Context) (*proto.GetPostFeedsResponse, error) {
 	return p.service.RefreshPost(ctx, &proto.RefreshPostRequest{})
+}
+
+func (p *postService) WatchPosts(ctx context.Context) (proto.PostService_WatchPostsClient, error) {
+	return p.service.WatchPosts(ctx)
 }

@@ -2,6 +2,7 @@ package cmd
 
 import (
 	_ "placio-api/docs/app"
+	"placio-api/events/kafka"
 	"placio-app/domains/amenities"
 	"placio-app/domains/booking"
 	"placio-app/domains/business"
@@ -26,7 +27,6 @@ import (
 	"placio-app/utility"
 	"placio-pkg/middleware"
 
-	"github.com/asaskevich/EventBus"
 	"github.com/cloudinary/cloudinary-go/v2"
 
 	"github.com/gin-gonic/gin"
@@ -51,7 +51,13 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		_ = redisClient.ConnectRedis()
 
 		cld, _ := cloudinary.NewFromParams("placio", "312498583624125", "k4XSQwWuhi3Vy7QAw7Qn0mUaW0s")
-		eventBus := EventBus.New()
+		brokers := []string{"glad-ocelot-13748-eu2-kafka.upstash.io:9092"}
+		topic := "post_created"
+		username := "Z2xhZC1vY2Vsb3QtMTM3NDgkiJbJsYDFiX7WFPdq0E1rXMVgyy2z-P46ix43a8g"
+		password := "MmI0ZmY0MTAtZTU1OS00MjQ0LTkyMmItYjM1MjdhNWY4OThl"
+
+		producer := kafka.NewProducer(brokers, topic, username, password)
+		consumer := kafka.NewKafkaConsumer(brokers, topic, "placio", username, password)
 
 		searchService, _ := search.NewSearchService(client)
 		searchController := search.NewSearchController(searchService)
@@ -129,7 +135,7 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		businessController.RegisterRoutes(routerGroupV1)
 
 		// posts
-		postService := posts.NewPostService(client, redisClient, mediaService, eventBus)
+		postService := posts.NewPostService(client, redisClient, mediaService, producer)
 		postController := posts.NewPostController(postService, userService, businessService, mediaService)
 		postController.RegisterRoutes(routerGroupV1)
 
@@ -183,7 +189,7 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		//ticketOptionController := controller.NewTicketOptionController(ticketOptionService)
 		//ticketOptionController.RegisterRoutes(routerGroupV1)
 
-		wsServer := feeds.NewWebSocketServer(eventBus, postService, placeService)
+		wsServer := feeds.NewWebSocketServer(producer, consumer, postService, placeService)
 
 		// Register WebSocket routes
 		app.GET("/chat", gin.WrapF(wsServer.HandleConnections))
