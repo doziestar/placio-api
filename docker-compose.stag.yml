@@ -64,7 +64,7 @@ services:
 
   placio-realtime:
     ports:
-      - "7071:7071"
+      - "7080:7080"
     env_file:
       - .envs/.stag
     restart: always
@@ -79,7 +79,7 @@ services:
       - "traefik.http.routers.realtime-secure.entrypoints=websecure"
       - "traefik.http.routers.realtime-secure.rule=Host(`feeds.palnight.com`)"
       - "traefik.http.routers.realtime-secure.service=realtime"
-      - "traefik.http.services.realtime.loadbalancer.server.port=7071"
+      - "traefik.http.services.realtime.loadbalancer.server.port=7080"
 
   prometheus:
     image: prom/prometheus:latest

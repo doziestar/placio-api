@@ -21,7 +21,7 @@ func NewHub() *Hub {
 func (h *Hub) Run() {
 	for {
 		log.Println("---------------------------")
-		log.Println("Hub Run: Port 7071")
+		log.Println("Hub Run: Port 7080")
 		log.Println("---------------------------")
 		select {
 		case conn := <-h.Register:
