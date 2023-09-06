@@ -113,7 +113,9 @@ func (s *server) WatchPosts(stream proto.PostService_WatchPostsServer) error {
 	for {
 		select {
 		case <-postsUpdated:
+			log.Println("Sending new posts to client...")
 			posts, err := s.postService.GetPostFeeds(stream.Context())
+			log.Println("posts: ", posts)
 			if err != nil {
 				return err
 			}

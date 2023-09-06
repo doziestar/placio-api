@@ -32,6 +32,7 @@ func watchPostsStream(postService services.PostService, hub *websocket.Hub) {
 
 		for {
 			response, err := stream.Recv()
+			log.Println("Received a post")
 			if err == io.EOF {
 				log.Println("Stream ended from server side.")
 				break
@@ -41,6 +42,7 @@ func watchPostsStream(postService services.PostService, hub *websocket.Hub) {
 				break // break out to outer loop to retry the connection
 			}
 			responseMsg, _ := json.Marshal(response)
+			log.Println("Broadcasting a post")
 			hub.Broadcast <- responseMsg
 		}
 	}
