@@ -7,6 +7,7 @@ import (
 	"net"
 	"os"
 	"os/signal"
+	"placio-api/events/kafka"
 	"placio-api/grpc/proto"
 	"time"
 
@@ -15,19 +16,19 @@ import (
 	"placio-app/ent"
 	"placio-app/utility"
 
-	"github.com/asaskevich/EventBus"
 	"github.com/cloudinary/cloudinary-go/v2"
 	"google.golang.org/grpc"
 )
 
 type server struct {
 	proto.UnimplementedPostServiceServer
-	eventBus    EventBus.Bus
+	producer    *kafka.Producer
+	consumer    *kafka.KafkaConsumer
 	postService posts.PostService
 }
 
-func NewServer(postService posts.PostService, eventBus EventBus.Bus) proto.PostServiceServer {
-	return &server{postService: postService, eventBus: eventBus}
+func NewServer(postService posts.PostService, producer *kafka.Producer, consumer *kafka.KafkaConsumer) proto.PostServiceServer {
+	return &server{postService: postService, producer: producer, consumer: consumer}
 }
 
 func (s *server) RefreshPost(ctx context.Context, req *proto.RefreshPostRequest) (*proto.GetPostFeedsResponse, error) {
@@ -101,28 +102,18 @@ func (s *server) GetPostFeeds(ctx context.Context, req *proto.GetPostFeedsReques
 func (s *server) WatchPosts(stream proto.PostService_WatchPostsServer) error {
 	postsUpdated := make(chan bool, 100)
 
-	// Subscription to listen for new posts
 	log.Println("Client connected to WatchPosts stream.")
-	err := s.eventBus.Subscribe("post:created", func(post *ent.Post) {
-		log.Println("New post created. Broadcasting to clients...")
-		postsUpdated <- true
-	})
-	log.Println("Subscribed to post:created event.")
 
-	if err != nil {
-		log.Fatalf("failed to subscribe to event: %v", err)
-	}
+	// Start the Kafka consumer
+	go s.consumer.Start(postsUpdated)
 
-	defer s.eventBus.Unsubscribe("post:created", func(post *ent.Post) {
-		log.Println("Unsubscribed from post:created event.")
-	})
+	defer s.consumer.Close()
 
 	for {
 		select {
 		case <-postsUpdated:
 			log.Println("Sending new posts to client...")
 			posts, err := s.postService.GetPostFeeds(stream.Context())
-			log.Println("posts: ", posts)
 			if err != nil {
 				return err
 			}
@@ -159,7 +150,6 @@ func ServeGRPC(client *ent.Client) {
 	_ = redisClient.ConnectRedis()
 
 	cld, _ := cloudinary.NewFromParams("placio", "312498583624125", "k4XSQwWuhi3Vy7QAw7Qn0mUaW0s")
-	eventBus := EventBus.New()
 
 	mediaService := media.NewMediaService(client, cld)
 
@@ -169,8 +159,16 @@ func ServeGRPC(client *ent.Client) {
 	}
 	s := grpc.NewServer(grpc.KeepaliveParams(ka))
 
-	postSvc := posts.NewPostService(client, redisClient, mediaService, eventBus)
-	proto.RegisterPostServiceServer(s, &server{postService: postSvc, eventBus: eventBus})
+	brokers := []string{"glad-ocelot-13748-eu2-kafka.upstash.io:9092"}
+	topic := "post_created"
+	username := "Z2xhZC1vY2Vsb3QtMTM3NDgkiJbJsYDFiX7WFPdq0E1rXMVgyy2z-P46ix43a8g"
+	password := "MmI0ZmY0MTAtZTU1OS00MjQ0LTkyMmItYjM1MjdhNWY4OThl"
+
+	producer := kafka.NewProducer(brokers, topic, username, password)
+	consumer := kafka.NewKafkaConsumer(brokers, topic, "placio", username, password)
+
+	postSvc := posts.NewPostService(client, redisClient, mediaService, producer)
+	proto.RegisterPostServiceServer(s, &server{postService: postSvc, producer: producer, consumer: consumer})
 
 	log.Println("gRPC server started on :50051")
 	go func() {
@@ -178,10 +176,6 @@ func ServeGRPC(client *ent.Client) {
 			log.Fatalf("failed to serve: %v", err)
 		}
 	}()
-
-	err = eventBus.Subscribe("post:created", func(post *ent.Post) {
-		log.Println("Post created event triggered!")
-	})
 
 	if err != nil {
 		log.Fatalf("failed to subscribe to event: %v", err)
