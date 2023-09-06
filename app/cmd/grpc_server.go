@@ -103,12 +103,19 @@ func (s *server) WatchPosts(stream proto.PostService_WatchPostsServer) error {
 
 	// Subscription to listen for new posts
 	log.Println("Client connected to WatchPosts stream.")
-	subscription := s.eventBus.Subscribe("post:created", func(post *ent.Post) {
+	err := s.eventBus.Subscribe("post:created", func(post *ent.Post) {
 		log.Println("New post created. Broadcasting to clients...")
 		postsUpdated <- true
 	})
 	log.Println("Subscribed to post:created event.")
-	defer s.eventBus.Unsubscribe("post:created", subscription)
+
+	if err != nil {
+		log.Fatalf("failed to subscribe to event: %v", err)
+	}
+
+	defer s.eventBus.Unsubscribe("post:created", func(post *ent.Post) {
+		log.Println("Unsubscribed from post:created event.")
+	})
 
 	for {
 		select {
@@ -172,9 +179,13 @@ func ServeGRPC(client *ent.Client) {
 		}
 	}()
 
-	eventBus.Subscribe("post:created", func(post *ent.Post) {
+	err = eventBus.Subscribe("post:created", func(post *ent.Post) {
 		log.Println("Post created event triggered!")
 	})
+
+	if err != nil {
+		log.Fatalf("failed to subscribe to event: %v", err)
+	}
 
 	// Graceful shutdown
 	c := make(chan os.Signal, 1)
