@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -20,7 +21,7 @@ func ServeWs(postService services.PostService, hub *socket.Hub, w http.ResponseW
 	connection := socket.NewConnection(conn, hub)
 	hub.Register <- connection
 
-	response, err := postService.GetPostFeeds(r.Context())
+	response, err := postService.GetPostFeeds(context.Background())
 	if err != nil {
 		log.Printf("Error getting post feeds: %v", err)
 	} else {
@@ -38,7 +39,7 @@ func ServeWs(postService services.PostService, hub *socket.Hub, w http.ResponseW
 	go func() {
 		err := consumer.Start(func(messageValue []byte) error {
 			// Process the Kafka message here
-			response, err := postService.GetPostFeeds(r.Context())
+			response, err := postService.GetPostFeeds(context.Background())
 			if err != nil {
 				log.Printf("Error getting post feeds: %v", err)
 				return err
