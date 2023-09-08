@@ -8,6 +8,8 @@ import (
 	"placio-api/events/kafka"
 	socket "placio-realtime/pkg/websocket"
 	"placio-realtime/services"
+
+	"github.com/google/uuid"
 )
 
 func ServeWs(postService services.PostService, hub *socket.Hub, w http.ResponseWriter, r *http.Request) {
@@ -34,7 +36,7 @@ func ServeWs(postService services.PostService, hub *socket.Hub, w http.ResponseW
 	username := "Z2xhZC1vY2Vsb3QtMTM3NDgkiJbJsYDFiX7WFPdq0E1rXMVgyy2z-P46ix43a8g"
 	password := "MmI0ZmY0MTAtZTU1OS00MjQ0LTkyMmItYjM1MjdhNWY4OThl"
 
-	consumer := kafka.NewKafkaConsumer(brokers, topic, "placio", username, password)
+	consumer := kafka.NewKafkaConsumer(brokers, topic, uuid.New().String(), username, password)
 
 	go func() {
 		err := consumer.Start(func(messageValue []byte) error {
