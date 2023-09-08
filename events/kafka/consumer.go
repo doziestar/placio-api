@@ -27,11 +27,12 @@ func NewKafkaConsumer(brokers []string, topic, groupID, username, password strin
 
 	reader := kafka.NewReader(kafka.ReaderConfig{
 		Brokers: brokers,
-		//GroupID:  groupID,
+		GroupID:  groupID,
 		Topic:    topic,
 		Dialer:   dialer,
 		MinBytes: 10e3, // 10KB
 		MaxBytes: 10e6, // 10MB
+		StartOffset: kafka.LastOffset,
 	})
 
 	return &KafkaConsumer{
