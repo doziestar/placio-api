@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"context"
-	"google.golang.org/grpc/keepalive"
 	"log"
 	"net"
 	"os"
@@ -10,6 +9,8 @@ import (
 	"placio-api/events/kafka"
 	"placio-api/grpc/proto"
 	"time"
+
+	"google.golang.org/grpc/keepalive"
 
 	"placio-app/domains/media"
 	"placio-app/domains/posts"
@@ -57,7 +58,7 @@ func (s *server) RefreshPost(ctx context.Context, req *proto.RefreshPostRequest)
 			}(),
 			// Edges: &pb.Post_Edge{
 			// 	Comments: func () []*pb.Comment {
-			// },
+			// },}
 		},
 		)
 	}
