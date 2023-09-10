@@ -9,10 +9,6 @@ on:
     branches:
       - master
 
-  pull_request_target:
-    branches:
-      - master
-
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -20,9 +16,6 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v3
-
-      - name: Wait for server
-        run: sleep 30
 
       - name: Run tests
         run: go test -v ./...
