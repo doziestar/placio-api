@@ -29,55 +29,56 @@ func NewServer(postService posts.PostService, producer *kafka.Producer, consumer
 
 func convertToPbPost(p *ent.Post) *proto.Post {
 	return &proto.Post{
-			Id:        p.ID,
-			Content:   p.Content,
-			CreatedAt: p.CreatedAt.String(), // Convert time to string or google.protobuf.Timestamp
-			UpdatedAt: p.UpdatedAt.String(),
-			Privacy: func() proto.Post_PrivacyType {
-				switch p.Privacy {
-				case "PUBLIC":
-					return *proto.Post_PRIVATE.Enum()
-				case "PRIVATE":
-					return *proto.Post_PUBLIC.Enum()
-				default:
-					return *proto.Post_UNKNOWN.Enum()
-				}
-			}(),
-			Edges: &proto.Post_Edge{
-				User: &proto.Post_User{
-					Id: 	  p.Edges.User.ID,
-					Username: p.Edges.User.Username,
-					Name: 	  p.Edges.User.Name,
-					Picture: p.Edges.User.Picture,
-				},
-				Comments: func() []*proto.Post_Comment {
-					var pbComments []*proto.Post_Comment
-					for _, c := range p.Edges.Comments {
-						pbComments = append(pbComments, &proto.Post_Comment{
-							Id:        c.ID,
-							Content:   c.Content,
-							CreatedAt: c.CreatedAt.String(),
-							UpdatedAt: c.UpdatedAt.String(),
-							Edges: &proto.Post_CommentEdge{
-								User: &proto.Post_User{
-									Id: 	  c.Edges.User.ID,
-									Username: c.Edges.User.Username,
-									Name: 	  c.Edges.User.Name,
-									Picture:  c.Edges.User.Picture,
-								},
-							},
-						})
-					}
-
-					return pbComments
-				}(),
+		Id:        p.ID,
+		Content:   p.Content,
+		CreatedAt: p.CreatedAt.String(), // Convert time to string or google.protobuf.Timestamp
+		UpdatedAt: p.UpdatedAt.String(),
+		Privacy: func() proto.Post_PrivacyType {
+			switch p.Privacy {
+			case "PUBLIC":
+				return *proto.Post_PRIVATE.Enum()
+			case "PRIVATE":
+				return *proto.Post_PUBLIC.Enum()
+			default:
+				return *proto.Post_UNKNOWN.Enum()
+			}
+		}(),
+		Edges: &proto.Post_Edge{
+			User: &proto.Post_User{
+				Id:       p.Edges.User.ID,
+				Username: p.Edges.User.Username,
+				Name:     p.Edges.User.Name,
+				Picture:  p.Edges.User.Picture,
 			},
-		}
+			Comments: func() []*proto.Post_Comment {
+				var pbComments []*proto.Post_Comment
+				for _, c := range p.Edges.Comments {
+					pbComments = append(pbComments, &proto.Post_Comment{
+						Id:        c.ID,
+						Content:   c.Content,
+						CreatedAt: c.CreatedAt.String(),
+						UpdatedAt: c.UpdatedAt.String(),
+						Edges: &proto.Post_CommentEdge{
+							User: &proto.Post_User{
+								Id:       c.Edges.User.ID,
+								Username: c.Edges.User.Username,
+								Name:     c.Edges.User.Name,
+								Picture:  c.Edges.User.Picture,
+							},
+						},
+					})
+				}
+
+				return pbComments
+			}(),
+		},
+	}
 }
 
 func (s *Server) RefreshPost(ctx context.Context, req *proto.RefreshPostRequest) (*proto.GetPostFeedsResponse, error) {
 	posts, err := s.PostService.GetPostFeeds(ctx)
 	if err != nil {
+		log.Printf("Error getting post feeds: %v", err)
 		return nil, err
 	}
 
@@ -100,6 +101,7 @@ func (s *Server) RefreshPost(ctx context.Context, req *proto.RefreshPostRequest)
 func (s *Server) GetPostFeeds(ctx context.Context, req *proto.GetPostFeedsRequest) (*proto.GetPostFeedsResponse, error) {
 	feedPosts, err := s.PostService.GetPostFeeds(ctx)
 	if err != nil {
+		log.Printf("Error getting post feeds: %v", err)
 		return nil, err
 	}
 

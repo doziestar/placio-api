@@ -47,6 +47,7 @@ func NewPostService(client *ent.Client, cache *utility.RedisClient, mediaService
 }
 
 func (ps *PostServiceImpl) GetPostFeeds(ctx context.Context) ([]*ent.Post, error) {
+	log.Println("Getting post feeds from DB...")
 	//Get All Posts
 	posts, err := ps.client.Post.
 		Query().

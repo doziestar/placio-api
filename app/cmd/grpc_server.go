@@ -21,7 +21,6 @@ import (
 	"google.golang.org/grpc"
 )
 
-
 func ServeGRPC(client *ent.Client) {
 	lis, err := net.Listen("tcp", ":50051")
 	if err != nil {
@@ -50,7 +49,8 @@ func ServeGRPC(client *ent.Client) {
 	consumer := kafka.NewKafkaConsumer(brokers, topic, "placio", username, password)
 
 	postSvc := posts.NewPostService(client, redisClient, mediaService, producer)
-	proto.RegisterPostServiceServer(s, &services.Server{PostService: postSvc, Producer: producer, Consumer: consumer})
+	server := services.NewServer(postSvc, producer, consumer)
+	proto.RegisterPostServiceServer(s, server)
 
 	log.Println("gRPC server started on :50051")
 	go func() {
