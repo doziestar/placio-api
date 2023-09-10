@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"placio-api/grpc/proto"
+	"placio-pkg/grpc/proto"
 	"placio-realtime/api"
 	"placio-realtime/pkg/websocket"
 	"placio-realtime/services"

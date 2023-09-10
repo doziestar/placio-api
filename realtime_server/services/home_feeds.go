@@ -2,7 +2,7 @@ package services
 
 import (
 	"context"
-	"placio-api/grpc/proto"
+	"placio-pkg/grpc/proto"
 )
 
 type PostService interface {
