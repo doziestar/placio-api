@@ -54,6 +54,7 @@ func (ps *PostServiceImpl) GetPostFeeds(ctx context.Context) ([]*ent.Post, error
 		WithComments(func(query *ent.CommentQuery) {
 			query.WithUser()
 		}).
+		WithMedias().
 		WithLikes().
 		WithUser().
 		All(ctx)
