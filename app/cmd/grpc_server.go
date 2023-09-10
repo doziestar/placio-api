@@ -6,8 +6,8 @@ import (
 	"net"
 	"os"
 	"os/signal"
+	"placio-pkg/grpc/proto"
 	"placio-pkg/kafka"
-	"placio-api/grpc/proto"
 	"time"
 
 	"google.golang.org/grpc/keepalive"
