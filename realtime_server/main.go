@@ -2,79 +2,94 @@ package main
 
 import (
 	"context"
-	"encoding/json"
-	"github.com/gorilla/mux"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/status"
-	"io"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
 	"placio-api/grpc/proto"
 	"placio-realtime/api"
 	"placio-realtime/pkg/websocket"
 	"placio-realtime/services"
+	"syscall"
 	"time"
+
+	"github.com/gorilla/mux"
+	"google.golang.org/grpc"
 )
 
-func watchPostsStream(postService services.PostService, hub *websocket.Hub) {
-	for {
-		stream, err := postService.WatchPosts(context.Background())
-		if err != nil {
-			if grpcErr, ok := status.FromError(err); ok {
-				log.Printf("Error watching posts: %s, Code: %s. Retrying in 3 seconds...", grpcErr.Message(), grpcErr.Code())
-			} else {
-				log.Printf("Error watching posts: %v. Retrying in 3 seconds...", err)
-			}
-
-			time.Sleep(3 * time.Second)
-			continue
-		}
-
-		for {
-			response, err := stream.Recv()
-			log.Println("Received a post")
-			if err == io.EOF {
-				log.Println("Stream ended from server side.")
-				break
-			}
-			if err != nil {
-				log.Printf("Failed to receive a post: %v", err)
-				break // break out to outer loop to retry the connection
-			}
-			responseMsg, _ := json.Marshal(response)
-			log.Println("Broadcasting a post")
-			hub.Broadcast <- responseMsg
-		}
-	}
-}
+const (
+	serverAddress = "placio-backend:50051"
+	serverPort    = ":7080"
+	shutdownDelay = 5 * time.Second
+)
 
 func main() {
+	r := setupRouter()
+	startHub(r)
+	startServer(r)
+}
+
+func setupRouter() *mux.Router {
 	r := mux.NewRouter()
-	hub := websocket.NewHub()
+	postServiceClient := createPostServiceClient()
+	r.HandleFunc("/home-feeds", func(w http.ResponseWriter, r *http.Request) {
+		hub := websocket.NewHub()
+		api.ServeWs(postServiceClient, hub, w, r)
+	})
+	return r
+}
 
-	conn, err := grpc.Dial("placio-backend:50051", grpc.WithInsecure())
+func createPostServiceClient() services.PostService {
+	conn, err := grpc.Dial(serverAddress, grpc.WithInsecure())
 	if err != nil {
-		log.Fatalf("Did not connect: %v", err)
+		log.Fatalf("Failed to connect to gRPC server: %v", err)
 	}
-
 	defer conn.Close()
 
 	c := proto.NewPostServiceClient(conn)
 
-	postService := services.NewPostService(c)
+	return services.NewPostService(c)
+}
 
-	r.HandleFunc("/home-feeds", func(w http.ResponseWriter, r *http.Request) {
-		api.ServeWs(postService, hub, w, r)
-	})
-
+func startHub(r *mux.Router) {
+	hub := websocket.NewHub()
 	go hub.Run()
-
 	//go watchPostsStream(postService, hub)
+}
 
+func startServer(r *mux.Router) {
 	http.Handle("/", r)
 
-	log.Println("---------------------------")
-	log.Println("Hub Run: Port 7080")
-	log.Println("---------------------------")
-	log.Fatal(http.ListenAndServe(":7080", nil))
+	srv := &http.Server{
+		Addr:    serverPort,
+		Handler: r,
+	}
+
+	// Create channel to listen for interrupt or terminate signal from OS
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
+
+	go func() {
+		log.Println("-------------------------------------------------")
+		log.Printf("Websocket Hub started on port %s\n", serverPort)
+		log.Println("-------------------------------------------------")
+
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("Could not start server: %v\n", err)
+		}
+	}()
+
+	<-stop
+
+	// Graceful Shutdown
+	log.Println("Shutting down the server...")
+
+	ctx, cancel := context.WithTimeout(context.Background(), shutdownDelay)
+	defer cancel()
+
+	if err := srv.Shutdown(ctx); err != nil {
+		log.Fatalf("Server forced to shutdown: %v\n", err)
+	}
+
+	log.Println("Server gracefully stopped.")
 }

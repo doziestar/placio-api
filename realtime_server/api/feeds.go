@@ -68,3 +68,35 @@ func UserHomeFeedHandler(hub *websocket.Hub, w http.ResponseWriter, r *http.Requ
 // 	go connection.ReadPump()
 // 	go connection.WritePump()
 // }
+
+// func watchPostsStream(postService services.PostService, hub *websocket.Hub) {
+// 	for {
+// 		stream, err := postService.WatchPosts(context.Background())
+// 		if err != nil {
+// 			if grpcErr, ok := status.FromError(err); ok {
+// 				log.Printf("Error watching posts: %s, Code: %s. Retrying in 3 seconds...", grpcErr.Message(), grpcErr.Code())
+// 			} else {
+// 				log.Printf("Error watching posts: %v. Retrying in 3 seconds...", err)
+// 			}
+
+// 			time.Sleep(3 * time.Second)
+// 			continue
+// 		}
+
+// 		for {
+// 			response, err := stream.Recv()
+// 			log.Println("Received a post")
+// 			if err == io.EOF {
+// 				log.Println("Stream ended from server side.")
+// 				break
+// 			}
+// 			if err != nil {
+// 				log.Printf("Failed to receive a post: %v", err)
+// 				break // break out to outer loop to retry the connection
+// 			}
+// 			responseMsg, _ := json.Marshal(response)
+// 			log.Println("Broadcasting a post")
+// 			hub.Broadcast <- responseMsg
+// 		}
+// 	}
+// }

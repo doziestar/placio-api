@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "github.com/doziestar/placio/placio-api/app/grpc/proto/home-feeds";
+option go_package = "github.com/doziestar/placio/placio-api/app/grpc/proto";
 
 package feeds;
 
@@ -33,6 +33,10 @@ message Post {
     repeated Comment comments = 2;
   }
 
+  message CommentEdge {
+    User user = 1;
+  }
+
   message User {
     string id = 1;
     string auth0_id = 2;
@@ -48,6 +52,7 @@ message Post {
     string Content = 2;
     string CreatedAt = 3;
     string UpdatedAt = 4;
+    CommentEdge edges = 5; 
   }
 }
 

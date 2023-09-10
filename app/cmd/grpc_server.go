@@ -56,9 +56,36 @@ func (s *server) RefreshPost(ctx context.Context, req *proto.RefreshPostRequest)
 					return *proto.Post_UNKNOWN.Enum()
 				}
 			}(),
-			// Edges: &pb.Post_Edge{
-			// 	Comments: func () []*pb.Comment {
-			// },}
+			Edges: &proto.Post_Edge{
+				User: &proto.Post_User{
+					Id: 	  p.Edges.User.ID,
+					Username: p.Edges.User.Username,
+					Name: 	  p.Edges.User.Name,
+					Picture: p.Edges.User.Picture,
+				},
+				Comments: func() []*proto.Post_Comment {
+					var pbComments []*proto.Post_Comment
+					for _, c := range p.Edges.Comments {
+						pbComments = append(pbComments, &proto.Post_Comment{
+							Id:        c.ID,
+							Content:   c.Content,
+							CreatedAt: c.CreatedAt.String(),
+							UpdatedAt: c.UpdatedAt.String(),
+							
+							// Edges: &proto.Post_Comment_Edge{
+							// 	User: &proto.Post_Comment_User{
+							// 		Id:       c.Edges.User.ID,
+							// 		Username: c.Edges.User.Username,
+							// 		Name:     c.Edges.User.Name,
+							// 		Picture:  c.Edges.User.Picture,
+							// 	},
+							// },
+						})
+					}
+
+					return pbComments
+				}(),
+			},
 		},
 		)
 	}
