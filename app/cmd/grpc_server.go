@@ -71,15 +71,14 @@ func (s *server) RefreshPost(ctx context.Context, req *proto.RefreshPostRequest)
 							Content:   c.Content,
 							CreatedAt: c.CreatedAt.String(),
 							UpdatedAt: c.UpdatedAt.String(),
-							
-							// Edges: &proto.Post_Comment_Edge{
-							// 	User: &proto.Post_Comment_User{
-							// 		Id:       c.Edges.User.ID,
-							// 		Username: c.Edges.User.Username,
-							// 		Name:     c.Edges.User.Name,
-							// 		Picture:  c.Edges.User.Picture,
-							// 	},
-							// },
+							Edges: &proto.Post_CommentEdge{
+								User: &proto.Post_User{
+									Id: 	  c.Edges.User.ID,
+									Username: c.Edges.User.Username,
+									Name: 	  c.Edges.User.Name,
+									Picture:  c.Edges.User.Picture,
+								},
+							},
 						})
 					}
 
