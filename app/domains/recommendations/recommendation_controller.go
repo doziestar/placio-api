@@ -22,6 +22,7 @@ func (rc *RecommendationController) RegisterRoutes(router *gin.RouterGroup) {
 		recommendationRouter.GET("/restaurants", middleware.ErrorMiddleware(rc.getRestaurantsRecommendations))
 		recommendationRouter.GET("/hotels", middleware.ErrorMiddleware(rc.getHotelsRecommendations))
 		recommendationRouter.GET("/inventory", middleware.ErrorMiddleware(rc.getInventoryRecommendations))
+		recommendationRouter.GET("/users", middleware.ErrorMiddleware(rc.getUsersRecommendations))
 	}
 }
 
@@ -90,5 +91,22 @@ func (rc *RecommendationController) getInventoryRecommendations(c *gin.Context) 
 		return err
 	}
 	c.JSON(http.StatusOK, utility.ProcessResponse(inventory))
+	return nil
+}
+
+// GetUsersRecommendations returns a list of users recommendations.
+// @Summary Get users recommendations
+// @Description Get users recommendations for the authenticated user
+// @Tags Recommendation
+// @Accept json
+// @Produce json
+// @Success 200 {object} []UserResponseDto "Successfully retrieved users recommendations"
+// @Failure 400 {object} ErrorDTO "Bad Request"
+func (rc *RecommendationController) getUsersRecommendations(c *gin.Context) error {
+	users, err := rc.recommendationService.GetUsersRecommendations(c)
+	if err != nil {
+		return err
+	}
+	c.JSON(http.StatusOK, utility.ProcessResponse(users))
 	return nil
 }

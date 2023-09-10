@@ -12,6 +12,7 @@ type IRecommendations interface {
 	GetRestaurantsRecommendations(ctx context.Context) ([]*ent.Place, error)
 	GetHotelsRecommendations(ctx context.Context) ([]*ent.Place, error)
 	GetInventoryRecommendations(ctx context.Context) ([]*ent.PlaceInventory, error)
+	GetUsersRecommendations(ctx context.Context) ([]*ent.User, error)
 }
 
 type RecommendationService struct {
@@ -41,5 +42,9 @@ func (r *RecommendationService) GetHotelsRecommendations(ctx context.Context) ([
 }
 
 func (r *RecommendationService) GetInventoryRecommendations(ctx context.Context) ([]*ent.PlaceInventory, error) {
+	return nil, nil
+}
+
+func (r *RecommendationService) GetUsersRecommendations(ctx context.Context) ([]*ent.User, error) {
 	return nil, nil
 }
