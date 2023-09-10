@@ -51,7 +51,9 @@ func (ps *PostServiceImpl) GetPostFeeds(ctx context.Context) ([]*ent.Post, error
 	//Get All Posts
 	posts, err := ps.client.Post.
 		Query().
-		WithComments().
+		WithComments(func(query *ent.CommentQuery) {
+			query.WithUser()
+		}).
 		WithLikes().
 		WithUser().
 		All(ctx)

@@ -28,10 +28,44 @@ func NewServer(postService posts.PostService, producer *kafka.Producer, consumer
 }
 
 func convertToPbPost(p *ent.Post) *proto.Post {
+
+	if p == nil {
+		return nil
+	}
+	var user *proto.Post_User
+	if p.Edges.User != nil {
+		user = &proto.Post_User{
+			Id:       p.Edges.User.ID,
+			Username: p.Edges.User.Username,
+			Name:     p.Edges.User.Name,
+			Picture:  p.Edges.User.Picture,
+		}
+	}
+
+	var pbComments []*proto.Post_Comment
+	for _, c := range p.Edges.Comments {
+		if c != nil {
+			pbComments = append(pbComments, &proto.Post_Comment{
+				Id:        c.ID,
+				Content:   c.Content,
+				CreatedAt: c.CreatedAt.String(),
+				UpdatedAt: c.UpdatedAt.String(),
+				Edges: &proto.Post_CommentEdge{
+					User: &proto.Post_User{
+						Id:       c.Edges.User.ID,
+						Username: c.Edges.User.Username,
+						Name:     c.Edges.User.Name,
+						Picture:  c.Edges.User.Picture,
+					},
+				},
+			})
+		}
+	}
+
 	return &proto.Post{
 		Id:        p.ID,
 		Content:   p.Content,
-		CreatedAt: p.CreatedAt.String(), // Convert time to string or google.protobuf.Timestamp
+		CreatedAt: p.CreatedAt.String(),
 		UpdatedAt: p.UpdatedAt.String(),
 		Privacy: func() proto.Post_PrivacyType {
 			switch p.Privacy {
@@ -44,33 +78,8 @@ func convertToPbPost(p *ent.Post) *proto.Post {
 			}
 		}(),
 		Edges: &proto.Post_Edge{
-			User: &proto.Post_User{
-				Id:       p.Edges.User.ID,
-				Username: p.Edges.User.Username,
-				Name:     p.Edges.User.Name,
-				Picture:  p.Edges.User.Picture,
-			},
-			Comments: func() []*proto.Post_Comment {
-				var pbComments []*proto.Post_Comment
-				for _, c := range p.Edges.Comments {
-					pbComments = append(pbComments, &proto.Post_Comment{
-						Id:        c.ID,
-						Content:   c.Content,
-						CreatedAt: c.CreatedAt.String(),
-						UpdatedAt: c.UpdatedAt.String(),
-						Edges: &proto.Post_CommentEdge{
-							User: &proto.Post_User{
-								Id:       c.Edges.User.ID,
-								Username: c.Edges.User.Username,
-								Name:     c.Edges.User.Name,
-								Picture:  c.Edges.User.Picture,
-							},
-						},
-					})
-				}
-
-				return pbComments
-			}(),
+			User:     user,
+			Comments: pbComments,
 		},
 	}
 }
