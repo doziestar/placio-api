@@ -30,6 +30,7 @@ func main() {
 }
 
 func setupRouter() *mux.Router {
+	log.Println("Setting up router...")
 	r := mux.NewRouter()
 	postServiceClient := createPostServiceClient()
 	r.HandleFunc("/home-feeds", func(w http.ResponseWriter, r *http.Request) {
@@ -40,6 +41,7 @@ func setupRouter() *mux.Router {
 }
 
 func createPostServiceClient() services.PostService {
+	log.Println("Creating post service client...")
 	conn, err := grpc.Dial(serverAddress, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("Failed to connect to gRPC server: %v", err)
@@ -52,12 +54,14 @@ func createPostServiceClient() services.PostService {
 }
 
 func startHub(r *mux.Router) {
+	log.Println("Starting websocket hub...")
 	hub := websocket.NewHub()
 	go hub.Run()
 	//go watchPostsStream(postService, hub)
 }
 
 func startServer(r *mux.Router) {
+	log.Println("Starting server...")
 	http.Handle("/", r)
 
 	srv := &http.Server{
