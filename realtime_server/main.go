@@ -30,21 +30,13 @@ func main() {
 }
 
 func setupRouter() *mux.Router {
+	log.Println("Setting up router...")
 	r := mux.NewRouter()
-	postServiceClient := createPostServiceClient()
-	r.HandleFunc("/home-feeds", func(w http.ResponseWriter, r *http.Request) {
-		hub := websocket.NewHub()
-		api.ServeWs(postServiceClient, hub, w, r)
-	})
 	return r
 }
 
-func createPostServiceClient() services.PostService {
-	conn, err := grpc.Dial(serverAddress, grpc.WithInsecure())
-	if err != nil {
-		log.Fatalf("Failed to connect to gRPC server: %v", err)
-	}
-	defer conn.Close()
+func createPostServiceClient(conn *grpc.ClientConn) services.PostService {
+	log.Println("Creating post service client...")
 
 	c := proto.NewPostServiceClient(conn)
 
@@ -52,18 +44,32 @@ func createPostServiceClient() services.PostService {
 }
 
 func startHub(r *mux.Router) {
+	log.Println("Starting websocket hub...")
 	hub := websocket.NewHub()
 	go hub.Run()
 	//go watchPostsStream(postService, hub)
 }
 
 func startServer(r *mux.Router) {
+	log.Println("Starting server...")
 	http.Handle("/", r)
 
 	srv := &http.Server{
 		Addr:    serverPort,
 		Handler: r,
 	}
+
+	// Create connection to gRPC server
+	conn, err := grpc.Dial(serverAddress, grpc.WithInsecure())
+	if err != nil {
+		log.Fatalf("Failed to connect to gRPC server: %v", err)
+	}
+	defer conn.Close() // Close connection when main() exits
+	postServiceClient := createPostServiceClient(conn)
+	r.HandleFunc("/home-feeds", func(w http.ResponseWriter, r *http.Request) {
+		hub := websocket.NewHub()
+		api.ServeWs(postServiceClient, hub, w, r)
+	})
 
 	// Create channel to listen for interrupt or terminate signal from OS
 	stop := make(chan os.Signal, 1)

@@ -26,6 +26,8 @@ func ServeWs(postService services.PostService, hub *socket.Hub, w http.ResponseW
 	response, err := postService.GetPostFeeds(context.Background())
 	if err != nil {
 		log.Printf("Error getting post feeds: %v", err)
+		responseMsg, _ := json.Marshal(ErrorResponse{Message: "Failed to get post feeds.", Status: http.StatusInternalServerError})
+		connection.Send <- responseMsg
 	} else {
 		responseMsg, _ := json.Marshal(response)
 		connection.Send <- responseMsg

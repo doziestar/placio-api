@@ -8,6 +8,7 @@ import (
 
 type ErrorResponse struct {
 	Message string `json:"message"`
+	Status  int    `json:"status"`
 }
 
 // This can be a mock function for user authentication for now.
