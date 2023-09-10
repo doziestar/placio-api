@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"placio-api/events/kafka"
+	"placio-pkg/kafka"
 	socket "placio-realtime/pkg/websocket"
 	"placio-realtime/services"
 

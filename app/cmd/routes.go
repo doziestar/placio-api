@@ -2,7 +2,6 @@ package cmd
 
 import (
 	_ "placio-api/docs/app"
-	"placio-api/events/kafka"
 	"placio-app/domains/amenities"
 	"placio-app/domains/booking"
 	"placio-app/domains/business"
@@ -13,7 +12,6 @@ import (
 	"placio-app/domains/faq"
 	"placio-app/domains/feature_releases"
 	"placio-app/domains/feedback"
-	"placio-app/domains/feeds"
 	"placio-app/domains/follow"
 	"placio-app/domains/inventory"
 	"placio-app/domains/like"
@@ -25,6 +23,7 @@ import (
 	"placio-app/domains/users"
 	"placio-app/ent"
 	"placio-app/utility"
+	"placio-pkg/kafka"
 	"placio-pkg/middleware"
 
 	"github.com/cloudinary/cloudinary-go/v2"
@@ -57,7 +56,6 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		password := "MmI0ZmY0MTAtZTU1OS00MjQ0LTkyMmItYjM1MjdhNWY4OThl"
 
 		producer := kafka.NewProducer(brokers, topic, username, password)
-		consumer := kafka.NewKafkaConsumer(brokers, topic, "placio", username, password)
 
 		searchService, _ := search.NewSearchService(client)
 		searchController := search.NewSearchController(searchService)
@@ -188,12 +186,6 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		//ticketOptionService := service.NewTicketOptionService(db)
 		//ticketOptionController := controller.NewTicketOptionController(ticketOptionService)
 		//ticketOptionController.RegisterRoutes(routerGroupV1)
-
-		wsServer := feeds.NewWebSocketServer(producer, consumer, postService, placeService)
-
-		// Register WebSocket routes
-		app.GET("/chat", gin.WrapF(wsServer.HandleConnections))
-		app.GET("/home-feeds", gin.WrapF(wsServer.HandleConnections))
 
 	}
 

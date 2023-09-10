@@ -6,7 +6,7 @@ import (
 	"net"
 	"os"
 	"os/signal"
-	"placio-api/events/kafka"
+	"placio-pkg/kafka"
 	"placio-api/grpc/proto"
 	"time"
 
