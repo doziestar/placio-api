@@ -39,6 +39,7 @@ import (
 	"placio-app/ent/userfollowplace"
 	"placio-app/ent/userfollowuser"
 	"placio-app/ent/userlikeplace"
+	"placio-app/ent/website"
 	"time"
 )
 
@@ -608,6 +609,16 @@ func init() {
 	userlikeplaceDescUpdatedAt := userlikeplaceFields[2].Descriptor()
 	// userlikeplace.UpdateDefaultUpdatedAt holds the default value on update for the UpdatedAt field.
 	userlikeplace.UpdateDefaultUpdatedAt = userlikeplaceDescUpdatedAt.UpdateDefault.(func() time.Time)
+	websiteFields := schema.Website{}.Fields()
+	_ = websiteFields
+	// websiteDescCreationDate is the schema descriptor for creationDate field.
+	websiteDescCreationDate := websiteFields[1].Descriptor()
+	// website.DefaultCreationDate holds the default value on creation for the creationDate field.
+	website.DefaultCreationDate = websiteDescCreationDate.Default.(func() time.Time)
+	// websiteDescLastUpdated is the schema descriptor for lastUpdated field.
+	websiteDescLastUpdated := websiteFields[2].Descriptor()
+	// website.UpdateDefaultLastUpdated holds the default value on update for the lastUpdated field.
+	website.UpdateDefaultLastUpdated = websiteDescLastUpdated.UpdateDefault.(func() time.Time)
 }
 
 const (

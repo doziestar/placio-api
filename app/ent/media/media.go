@@ -85,6 +85,7 @@ var Columns = []string{
 var ForeignKeys = []string{
 	"post_medias",
 	"review_medias",
+	"website_assets",
 }
 
 var (

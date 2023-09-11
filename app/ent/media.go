@@ -33,10 +33,11 @@ type Media struct {
 	DislikeCount int `json:"dislikeCount,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the MediaQuery when eager-loading is set.
-	Edges         MediaEdges `json:"edges"`
-	post_medias   *string
-	review_medias *string
-	selectValues  sql.SelectValues
+	Edges          MediaEdges `json:"edges"`
+	post_medias    *string
+	review_medias  *string
+	website_assets *string
+	selectValues   sql.SelectValues
 }
 
 // MediaEdges holds the relations/edges for other nodes in the graph.
@@ -124,6 +125,8 @@ func (*Media) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case media.ForeignKeys[1]: // review_medias
 			values[i] = new(sql.NullString)
+		case media.ForeignKeys[2]: // website_assets
+			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -194,6 +197,13 @@ func (m *Media) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				m.review_medias = new(string)
 				*m.review_medias = value.String
+			}
+		case media.ForeignKeys[2]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field website_assets", value)
+			} else if value.Valid {
+				m.website_assets = new(string)
+				*m.website_assets = string(value.Int64)
 			}
 		default:
 			m.selectValues.Set(columns[i], values[i])

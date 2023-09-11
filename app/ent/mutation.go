@@ -16,6 +16,7 @@ import (
 	"placio-app/ent/category"
 	"placio-app/ent/categoryassignment"
 	"placio-app/ent/comment"
+	"placio-app/ent/customblock"
 	"placio-app/ent/event"
 	"placio-app/ent/faq"
 	"placio-app/ent/featurerelease"
@@ -35,6 +36,7 @@ import (
 	"placio-app/ent/reservationblock"
 	"placio-app/ent/review"
 	"placio-app/ent/room"
+	"placio-app/ent/template"
 	"placio-app/ent/ticket"
 	"placio-app/ent/ticketoption"
 	"placio-app/ent/transactionhistory"
@@ -45,6 +47,7 @@ import (
 	"placio-app/ent/userfollowplace"
 	"placio-app/ent/userfollowuser"
 	"placio-app/ent/userlikeplace"
+	"placio-app/ent/website"
 	"sync"
 	"time"
 
@@ -73,6 +76,7 @@ const (
 	TypeCategoryAssignment      = "CategoryAssignment"
 	TypeChat                    = "Chat"
 	TypeComment                 = "Comment"
+	TypeCustomBlock             = "CustomBlock"
 	TypeEvent                   = "Event"
 	TypeFAQ                     = "FAQ"
 	TypeFeatureRelease          = "FeatureRelease"
@@ -95,6 +99,7 @@ const (
 	TypeResourse                = "Resourse"
 	TypeReview                  = "Review"
 	TypeRoom                    = "Room"
+	TypeTemplate                = "Template"
 	TypeTicket                  = "Ticket"
 	TypeTicketOption            = "TicketOption"
 	TypeTransactionHistory      = "TransactionHistory"
@@ -105,6 +110,7 @@ const (
 	TypeUserFollowPlace         = "UserFollowPlace"
 	TypeUserFollowUser          = "UserFollowUser"
 	TypeUserLikePlace           = "UserLikePlace"
+	TypeWebsite                 = "Website"
 )
 
 // AccountSettingsMutation represents an operation that mutates the AccountSettings nodes in the graph.
@@ -1816,6 +1822,8 @@ type BusinessMutation struct {
 	place_inventories                map[string]struct{}
 	removedplace_inventories         map[string]struct{}
 	clearedplace_inventories         bool
+	websites                         *string
+	clearedwebsites                  bool
 	done                             bool
 	oldValue                         func(context.Context) (*Business, error)
 	predicates                       []predicate.Business
@@ -3575,6 +3583,45 @@ func (m *BusinessMutation) ResetPlaceInventories() {
 	m.removedplace_inventories = nil
 }
 
+// SetWebsitesID sets the "websites" edge to the Website entity by id.
+func (m *BusinessMutation) SetWebsitesID(id string) {
+	m.websites = &id
+}
+
+// ClearWebsites clears the "websites" edge to the Website entity.
+func (m *BusinessMutation) ClearWebsites() {
+	m.clearedwebsites = true
+}
+
+// WebsitesCleared reports if the "websites" edge to the Website entity was cleared.
+func (m *BusinessMutation) WebsitesCleared() bool {
+	return m.clearedwebsites
+}
+
+// WebsitesID returns the "websites" edge ID in the mutation.
+func (m *BusinessMutation) WebsitesID() (id string, exists bool) {
+	if m.websites != nil {
+		return *m.websites, true
+	}
+	return
+}
+
+// WebsitesIDs returns the "websites" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// WebsitesID instead. It exists only for internal usage by the builders.
+func (m *BusinessMutation) WebsitesIDs() (ids []string) {
+	if id := m.websites; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetWebsites resets all changes to the "websites" edge.
+func (m *BusinessMutation) ResetWebsites() {
+	m.websites = nil
+	m.clearedwebsites = false
+}
+
 // Where appends a list predicates to the BusinessMutation builder.
 func (m *BusinessMutation) Where(ps ...predicate.Business) {
 	m.predicates = append(m.predicates, ps...)
@@ -4106,7 +4153,7 @@ func (m *BusinessMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *BusinessMutation) AddedEdges() []string {
-	edges := make([]string, 0, 15)
+	edges := make([]string, 0, 16)
 	if m.userBusinesses != nil {
 		edges = append(edges, business.EdgeUserBusinesses)
 	}
@@ -4151,6 +4198,9 @@ func (m *BusinessMutation) AddedEdges() []string {
 	}
 	if m.place_inventories != nil {
 		edges = append(edges, business.EdgePlaceInventories)
+	}
+	if m.websites != nil {
+		edges = append(edges, business.EdgeWebsites)
 	}
 	return edges
 }
@@ -4247,13 +4297,17 @@ func (m *BusinessMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case business.EdgeWebsites:
+		if id := m.websites; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *BusinessMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 15)
+	edges := make([]string, 0, 16)
 	if m.removeduserBusinesses != nil {
 		edges = append(edges, business.EdgeUserBusinesses)
 	}
@@ -4393,7 +4447,7 @@ func (m *BusinessMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *BusinessMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 15)
+	edges := make([]string, 0, 16)
 	if m.cleareduserBusinesses {
 		edges = append(edges, business.EdgeUserBusinesses)
 	}
@@ -4439,6 +4493,9 @@ func (m *BusinessMutation) ClearedEdges() []string {
 	if m.clearedplace_inventories {
 		edges = append(edges, business.EdgePlaceInventories)
 	}
+	if m.clearedwebsites {
+		edges = append(edges, business.EdgeWebsites)
+	}
 	return edges
 }
 
@@ -4476,6 +4533,8 @@ func (m *BusinessMutation) EdgeCleared(name string) bool {
 		return m.clearedratings
 	case business.EdgePlaceInventories:
 		return m.clearedplace_inventories
+	case business.EdgeWebsites:
+		return m.clearedwebsites
 	}
 	return false
 }
@@ -4486,6 +4545,9 @@ func (m *BusinessMutation) ClearEdge(name string) error {
 	switch name {
 	case business.EdgeBusinessAccountSettings:
 		m.ClearBusinessAccountSettings()
+		return nil
+	case business.EdgeWebsites:
+		m.ClearWebsites()
 		return nil
 	}
 	return fmt.Errorf("unknown Business unique edge %s", name)
@@ -4539,6 +4601,9 @@ func (m *BusinessMutation) ResetEdge(name string) error {
 		return nil
 	case business.EdgePlaceInventories:
 		m.ResetPlaceInventories()
+		return nil
+	case business.EdgeWebsites:
+		m.ResetWebsites()
 		return nil
 	}
 	return fmt.Errorf("unknown Business edge %s", name)
@@ -8809,6 +8874,399 @@ func (m *CommentMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown Comment edge %s", name)
+}
+
+// CustomBlockMutation represents an operation that mutates the CustomBlock nodes in the graph.
+type CustomBlockMutation struct {
+	config
+	op             Op
+	typ            string
+	id             *string
+	content        *string
+	clearedFields  map[string]struct{}
+	website        *string
+	clearedwebsite bool
+	done           bool
+	oldValue       func(context.Context) (*CustomBlock, error)
+	predicates     []predicate.CustomBlock
+}
+
+var _ ent.Mutation = (*CustomBlockMutation)(nil)
+
+// customblockOption allows management of the mutation configuration using functional options.
+type customblockOption func(*CustomBlockMutation)
+
+// newCustomBlockMutation creates new mutation for the CustomBlock entity.
+func newCustomBlockMutation(c config, op Op, opts ...customblockOption) *CustomBlockMutation {
+	m := &CustomBlockMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeCustomBlock,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withCustomBlockID sets the ID field of the mutation.
+func withCustomBlockID(id string) customblockOption {
+	return func(m *CustomBlockMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *CustomBlock
+		)
+		m.oldValue = func(ctx context.Context) (*CustomBlock, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().CustomBlock.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withCustomBlock sets the old CustomBlock of the mutation.
+func withCustomBlock(node *CustomBlock) customblockOption {
+	return func(m *CustomBlockMutation) {
+		m.oldValue = func(context.Context) (*CustomBlock, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m CustomBlockMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m CustomBlockMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *CustomBlockMutation) ID() (id string, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *CustomBlockMutation) IDs(ctx context.Context) ([]string, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []string{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().CustomBlock.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetContent sets the "content" field.
+func (m *CustomBlockMutation) SetContent(s string) {
+	m.content = &s
+}
+
+// Content returns the value of the "content" field in the mutation.
+func (m *CustomBlockMutation) Content() (r string, exists bool) {
+	v := m.content
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldContent returns the old "content" field's value of the CustomBlock entity.
+// If the CustomBlock object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CustomBlockMutation) OldContent(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldContent is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldContent requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldContent: %w", err)
+	}
+	return oldValue.Content, nil
+}
+
+// ResetContent resets all changes to the "content" field.
+func (m *CustomBlockMutation) ResetContent() {
+	m.content = nil
+}
+
+// SetWebsiteID sets the "website" edge to the Website entity by id.
+func (m *CustomBlockMutation) SetWebsiteID(id string) {
+	m.website = &id
+}
+
+// ClearWebsite clears the "website" edge to the Website entity.
+func (m *CustomBlockMutation) ClearWebsite() {
+	m.clearedwebsite = true
+}
+
+// WebsiteCleared reports if the "website" edge to the Website entity was cleared.
+func (m *CustomBlockMutation) WebsiteCleared() bool {
+	return m.clearedwebsite
+}
+
+// WebsiteID returns the "website" edge ID in the mutation.
+func (m *CustomBlockMutation) WebsiteID() (id string, exists bool) {
+	if m.website != nil {
+		return *m.website, true
+	}
+	return
+}
+
+// WebsiteIDs returns the "website" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// WebsiteID instead. It exists only for internal usage by the builders.
+func (m *CustomBlockMutation) WebsiteIDs() (ids []string) {
+	if id := m.website; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetWebsite resets all changes to the "website" edge.
+func (m *CustomBlockMutation) ResetWebsite() {
+	m.website = nil
+	m.clearedwebsite = false
+}
+
+// Where appends a list predicates to the CustomBlockMutation builder.
+func (m *CustomBlockMutation) Where(ps ...predicate.CustomBlock) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the CustomBlockMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *CustomBlockMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.CustomBlock, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *CustomBlockMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *CustomBlockMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (CustomBlock).
+func (m *CustomBlockMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *CustomBlockMutation) Fields() []string {
+	fields := make([]string, 0, 1)
+	if m.content != nil {
+		fields = append(fields, customblock.FieldContent)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *CustomBlockMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case customblock.FieldContent:
+		return m.Content()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *CustomBlockMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case customblock.FieldContent:
+		return m.OldContent(ctx)
+	}
+	return nil, fmt.Errorf("unknown CustomBlock field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CustomBlockMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case customblock.FieldContent:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetContent(v)
+		return nil
+	}
+	return fmt.Errorf("unknown CustomBlock field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *CustomBlockMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *CustomBlockMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CustomBlockMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown CustomBlock numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *CustomBlockMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *CustomBlockMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *CustomBlockMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown CustomBlock nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *CustomBlockMutation) ResetField(name string) error {
+	switch name {
+	case customblock.FieldContent:
+		m.ResetContent()
+		return nil
+	}
+	return fmt.Errorf("unknown CustomBlock field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *CustomBlockMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.website != nil {
+		edges = append(edges, customblock.EdgeWebsite)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *CustomBlockMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case customblock.EdgeWebsite:
+		if id := m.website; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *CustomBlockMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *CustomBlockMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *CustomBlockMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedwebsite {
+		edges = append(edges, customblock.EdgeWebsite)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *CustomBlockMutation) EdgeCleared(name string) bool {
+	switch name {
+	case customblock.EdgeWebsite:
+		return m.clearedwebsite
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *CustomBlockMutation) ClearEdge(name string) error {
+	switch name {
+	case customblock.EdgeWebsite:
+		m.ClearWebsite()
+		return nil
+	}
+	return fmt.Errorf("unknown CustomBlock unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *CustomBlockMutation) ResetEdge(name string) error {
+	switch name {
+	case customblock.EdgeWebsite:
+		m.ResetWebsite()
+		return nil
+	}
+	return fmt.Errorf("unknown CustomBlock edge %s", name)
 }
 
 // EventMutation represents an operation that mutates the Event nodes in the graph.
@@ -32494,6 +32952,533 @@ func (m *RoomMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Room edge %s", name)
 }
 
+// TemplateMutation represents an operation that mutates the Template nodes in the graph.
+type TemplateMutation struct {
+	config
+	op              Op
+	typ             string
+	id              *string
+	name            *string
+	defaultHTML     *string
+	defaultCSS      *string
+	clearedFields   map[string]struct{}
+	websites        map[string]struct{}
+	removedwebsites map[string]struct{}
+	clearedwebsites bool
+	done            bool
+	oldValue        func(context.Context) (*Template, error)
+	predicates      []predicate.Template
+}
+
+var _ ent.Mutation = (*TemplateMutation)(nil)
+
+// templateOption allows management of the mutation configuration using functional options.
+type templateOption func(*TemplateMutation)
+
+// newTemplateMutation creates new mutation for the Template entity.
+func newTemplateMutation(c config, op Op, opts ...templateOption) *TemplateMutation {
+	m := &TemplateMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeTemplate,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withTemplateID sets the ID field of the mutation.
+func withTemplateID(id string) templateOption {
+	return func(m *TemplateMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Template
+		)
+		m.oldValue = func(ctx context.Context) (*Template, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Template.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withTemplate sets the old Template of the mutation.
+func withTemplate(node *Template) templateOption {
+	return func(m *TemplateMutation) {
+		m.oldValue = func(context.Context) (*Template, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m TemplateMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m TemplateMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *TemplateMutation) ID() (id string, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *TemplateMutation) IDs(ctx context.Context) ([]string, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []string{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Template.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetName sets the "name" field.
+func (m *TemplateMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *TemplateMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the Template entity.
+// If the Template object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TemplateMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *TemplateMutation) ResetName() {
+	m.name = nil
+}
+
+// SetDefaultHTML sets the "defaultHTML" field.
+func (m *TemplateMutation) SetDefaultHTML(s string) {
+	m.defaultHTML = &s
+}
+
+// DefaultHTML returns the value of the "defaultHTML" field in the mutation.
+func (m *TemplateMutation) DefaultHTML() (r string, exists bool) {
+	v := m.defaultHTML
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDefaultHTML returns the old "defaultHTML" field's value of the Template entity.
+// If the Template object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TemplateMutation) OldDefaultHTML(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDefaultHTML is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDefaultHTML requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDefaultHTML: %w", err)
+	}
+	return oldValue.DefaultHTML, nil
+}
+
+// ResetDefaultHTML resets all changes to the "defaultHTML" field.
+func (m *TemplateMutation) ResetDefaultHTML() {
+	m.defaultHTML = nil
+}
+
+// SetDefaultCSS sets the "defaultCSS" field.
+func (m *TemplateMutation) SetDefaultCSS(s string) {
+	m.defaultCSS = &s
+}
+
+// DefaultCSS returns the value of the "defaultCSS" field in the mutation.
+func (m *TemplateMutation) DefaultCSS() (r string, exists bool) {
+	v := m.defaultCSS
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDefaultCSS returns the old "defaultCSS" field's value of the Template entity.
+// If the Template object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TemplateMutation) OldDefaultCSS(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDefaultCSS is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDefaultCSS requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDefaultCSS: %w", err)
+	}
+	return oldValue.DefaultCSS, nil
+}
+
+// ResetDefaultCSS resets all changes to the "defaultCSS" field.
+func (m *TemplateMutation) ResetDefaultCSS() {
+	m.defaultCSS = nil
+}
+
+// AddWebsiteIDs adds the "websites" edge to the Website entity by ids.
+func (m *TemplateMutation) AddWebsiteIDs(ids ...string) {
+	if m.websites == nil {
+		m.websites = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.websites[ids[i]] = struct{}{}
+	}
+}
+
+// ClearWebsites clears the "websites" edge to the Website entity.
+func (m *TemplateMutation) ClearWebsites() {
+	m.clearedwebsites = true
+}
+
+// WebsitesCleared reports if the "websites" edge to the Website entity was cleared.
+func (m *TemplateMutation) WebsitesCleared() bool {
+	return m.clearedwebsites
+}
+
+// RemoveWebsiteIDs removes the "websites" edge to the Website entity by IDs.
+func (m *TemplateMutation) RemoveWebsiteIDs(ids ...string) {
+	if m.removedwebsites == nil {
+		m.removedwebsites = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.websites, ids[i])
+		m.removedwebsites[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedWebsites returns the removed IDs of the "websites" edge to the Website entity.
+func (m *TemplateMutation) RemovedWebsitesIDs() (ids []string) {
+	for id := range m.removedwebsites {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// WebsitesIDs returns the "websites" edge IDs in the mutation.
+func (m *TemplateMutation) WebsitesIDs() (ids []string) {
+	for id := range m.websites {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetWebsites resets all changes to the "websites" edge.
+func (m *TemplateMutation) ResetWebsites() {
+	m.websites = nil
+	m.clearedwebsites = false
+	m.removedwebsites = nil
+}
+
+// Where appends a list predicates to the TemplateMutation builder.
+func (m *TemplateMutation) Where(ps ...predicate.Template) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the TemplateMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *TemplateMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Template, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *TemplateMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *TemplateMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (Template).
+func (m *TemplateMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *TemplateMutation) Fields() []string {
+	fields := make([]string, 0, 3)
+	if m.name != nil {
+		fields = append(fields, template.FieldName)
+	}
+	if m.defaultHTML != nil {
+		fields = append(fields, template.FieldDefaultHTML)
+	}
+	if m.defaultCSS != nil {
+		fields = append(fields, template.FieldDefaultCSS)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *TemplateMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case template.FieldName:
+		return m.Name()
+	case template.FieldDefaultHTML:
+		return m.DefaultHTML()
+	case template.FieldDefaultCSS:
+		return m.DefaultCSS()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *TemplateMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case template.FieldName:
+		return m.OldName(ctx)
+	case template.FieldDefaultHTML:
+		return m.OldDefaultHTML(ctx)
+	case template.FieldDefaultCSS:
+		return m.OldDefaultCSS(ctx)
+	}
+	return nil, fmt.Errorf("unknown Template field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TemplateMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case template.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	case template.FieldDefaultHTML:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDefaultHTML(v)
+		return nil
+	case template.FieldDefaultCSS:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDefaultCSS(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Template field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *TemplateMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *TemplateMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TemplateMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Template numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *TemplateMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *TemplateMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *TemplateMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Template nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *TemplateMutation) ResetField(name string) error {
+	switch name {
+	case template.FieldName:
+		m.ResetName()
+		return nil
+	case template.FieldDefaultHTML:
+		m.ResetDefaultHTML()
+		return nil
+	case template.FieldDefaultCSS:
+		m.ResetDefaultCSS()
+		return nil
+	}
+	return fmt.Errorf("unknown Template field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *TemplateMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.websites != nil {
+		edges = append(edges, template.EdgeWebsites)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *TemplateMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case template.EdgeWebsites:
+		ids := make([]ent.Value, 0, len(m.websites))
+		for id := range m.websites {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *TemplateMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.removedwebsites != nil {
+		edges = append(edges, template.EdgeWebsites)
+	}
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *TemplateMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case template.EdgeWebsites:
+		ids := make([]ent.Value, 0, len(m.removedwebsites))
+		for id := range m.removedwebsites {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *TemplateMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedwebsites {
+		edges = append(edges, template.EdgeWebsites)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *TemplateMutation) EdgeCleared(name string) bool {
+	switch name {
+	case template.EdgeWebsites:
+		return m.clearedwebsites
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *TemplateMutation) ClearEdge(name string) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Template unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *TemplateMutation) ResetEdge(name string) error {
+	switch name {
+	case template.EdgeWebsites:
+		m.ResetWebsites()
+		return nil
+	}
+	return fmt.Errorf("unknown Template edge %s", name)
+}
+
 // TicketMutation represents an operation that mutates the Ticket nodes in the graph.
 type TicketMutation struct {
 	config
@@ -40607,4 +41592,1974 @@ func (m *UserLikePlaceMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown UserLikePlace edge %s", name)
+}
+
+// WebsiteMutation represents an operation that mutates the Website nodes in the graph.
+type WebsiteMutation struct {
+	config
+	op                  Op
+	typ                 string
+	id                  *string
+	domainName          *string
+	creationDate        *time.Time
+	lastUpdated         *time.Time
+	title               *string
+	description         *string
+	keywords            *string
+	language            *string
+	logo                *string
+	favicon             *string
+	facebook            *string
+	twitter             *string
+	instagram           *string
+	youtube             *string
+	linkedin            *string
+	pinterest           *string
+	mapCoordinates      *map[string]interface{}
+	longitude           *string
+	latitude            *string
+	address             *string
+	city                *string
+	state               *string
+	country             *string
+	zipCode             *string
+	phoneNumber         *string
+	email               *string
+	metaTags            *map[string]interface{}
+	clearedFields       map[string]struct{}
+	business            *string
+	clearedbusiness     bool
+	template            *string
+	clearedtemplate     bool
+	customBlocks        map[string]struct{}
+	removedcustomBlocks map[string]struct{}
+	clearedcustomBlocks bool
+	assets              map[string]struct{}
+	removedassets       map[string]struct{}
+	clearedassets       bool
+	done                bool
+	oldValue            func(context.Context) (*Website, error)
+	predicates          []predicate.Website
+}
+
+var _ ent.Mutation = (*WebsiteMutation)(nil)
+
+// websiteOption allows management of the mutation configuration using functional options.
+type websiteOption func(*WebsiteMutation)
+
+// newWebsiteMutation creates new mutation for the Website entity.
+func newWebsiteMutation(c config, op Op, opts ...websiteOption) *WebsiteMutation {
+	m := &WebsiteMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeWebsite,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withWebsiteID sets the ID field of the mutation.
+func withWebsiteID(id string) websiteOption {
+	return func(m *WebsiteMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Website
+		)
+		m.oldValue = func(ctx context.Context) (*Website, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Website.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withWebsite sets the old Website of the mutation.
+func withWebsite(node *Website) websiteOption {
+	return func(m *WebsiteMutation) {
+		m.oldValue = func(context.Context) (*Website, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m WebsiteMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m WebsiteMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *WebsiteMutation) ID() (id string, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *WebsiteMutation) IDs(ctx context.Context) ([]string, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []string{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Website.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetDomainName sets the "domainName" field.
+func (m *WebsiteMutation) SetDomainName(s string) {
+	m.domainName = &s
+}
+
+// DomainName returns the value of the "domainName" field in the mutation.
+func (m *WebsiteMutation) DomainName() (r string, exists bool) {
+	v := m.domainName
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDomainName returns the old "domainName" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldDomainName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDomainName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDomainName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDomainName: %w", err)
+	}
+	return oldValue.DomainName, nil
+}
+
+// ResetDomainName resets all changes to the "domainName" field.
+func (m *WebsiteMutation) ResetDomainName() {
+	m.domainName = nil
+}
+
+// SetCreationDate sets the "creationDate" field.
+func (m *WebsiteMutation) SetCreationDate(t time.Time) {
+	m.creationDate = &t
+}
+
+// CreationDate returns the value of the "creationDate" field in the mutation.
+func (m *WebsiteMutation) CreationDate() (r time.Time, exists bool) {
+	v := m.creationDate
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreationDate returns the old "creationDate" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldCreationDate(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreationDate is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreationDate requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreationDate: %w", err)
+	}
+	return oldValue.CreationDate, nil
+}
+
+// ResetCreationDate resets all changes to the "creationDate" field.
+func (m *WebsiteMutation) ResetCreationDate() {
+	m.creationDate = nil
+}
+
+// SetLastUpdated sets the "lastUpdated" field.
+func (m *WebsiteMutation) SetLastUpdated(t time.Time) {
+	m.lastUpdated = &t
+}
+
+// LastUpdated returns the value of the "lastUpdated" field in the mutation.
+func (m *WebsiteMutation) LastUpdated() (r time.Time, exists bool) {
+	v := m.lastUpdated
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastUpdated returns the old "lastUpdated" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldLastUpdated(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastUpdated is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastUpdated requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastUpdated: %w", err)
+	}
+	return oldValue.LastUpdated, nil
+}
+
+// ResetLastUpdated resets all changes to the "lastUpdated" field.
+func (m *WebsiteMutation) ResetLastUpdated() {
+	m.lastUpdated = nil
+}
+
+// SetTitle sets the "title" field.
+func (m *WebsiteMutation) SetTitle(s string) {
+	m.title = &s
+}
+
+// Title returns the value of the "title" field in the mutation.
+func (m *WebsiteMutation) Title() (r string, exists bool) {
+	v := m.title
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTitle returns the old "title" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldTitle(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTitle is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTitle requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTitle: %w", err)
+	}
+	return oldValue.Title, nil
+}
+
+// ResetTitle resets all changes to the "title" field.
+func (m *WebsiteMutation) ResetTitle() {
+	m.title = nil
+}
+
+// SetDescription sets the "description" field.
+func (m *WebsiteMutation) SetDescription(s string) {
+	m.description = &s
+}
+
+// Description returns the value of the "description" field in the mutation.
+func (m *WebsiteMutation) Description() (r string, exists bool) {
+	v := m.description
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDescription returns the old "description" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldDescription(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDescription is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDescription requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDescription: %w", err)
+	}
+	return oldValue.Description, nil
+}
+
+// ResetDescription resets all changes to the "description" field.
+func (m *WebsiteMutation) ResetDescription() {
+	m.description = nil
+}
+
+// SetKeywords sets the "keywords" field.
+func (m *WebsiteMutation) SetKeywords(s string) {
+	m.keywords = &s
+}
+
+// Keywords returns the value of the "keywords" field in the mutation.
+func (m *WebsiteMutation) Keywords() (r string, exists bool) {
+	v := m.keywords
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldKeywords returns the old "keywords" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldKeywords(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldKeywords is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldKeywords requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldKeywords: %w", err)
+	}
+	return oldValue.Keywords, nil
+}
+
+// ResetKeywords resets all changes to the "keywords" field.
+func (m *WebsiteMutation) ResetKeywords() {
+	m.keywords = nil
+}
+
+// SetLanguage sets the "language" field.
+func (m *WebsiteMutation) SetLanguage(s string) {
+	m.language = &s
+}
+
+// Language returns the value of the "language" field in the mutation.
+func (m *WebsiteMutation) Language() (r string, exists bool) {
+	v := m.language
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLanguage returns the old "language" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldLanguage(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLanguage is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLanguage requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLanguage: %w", err)
+	}
+	return oldValue.Language, nil
+}
+
+// ResetLanguage resets all changes to the "language" field.
+func (m *WebsiteMutation) ResetLanguage() {
+	m.language = nil
+}
+
+// SetLogo sets the "logo" field.
+func (m *WebsiteMutation) SetLogo(s string) {
+	m.logo = &s
+}
+
+// Logo returns the value of the "logo" field in the mutation.
+func (m *WebsiteMutation) Logo() (r string, exists bool) {
+	v := m.logo
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLogo returns the old "logo" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldLogo(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLogo is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLogo requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLogo: %w", err)
+	}
+	return oldValue.Logo, nil
+}
+
+// ResetLogo resets all changes to the "logo" field.
+func (m *WebsiteMutation) ResetLogo() {
+	m.logo = nil
+}
+
+// SetFavicon sets the "favicon" field.
+func (m *WebsiteMutation) SetFavicon(s string) {
+	m.favicon = &s
+}
+
+// Favicon returns the value of the "favicon" field in the mutation.
+func (m *WebsiteMutation) Favicon() (r string, exists bool) {
+	v := m.favicon
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFavicon returns the old "favicon" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldFavicon(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFavicon is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFavicon requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFavicon: %w", err)
+	}
+	return oldValue.Favicon, nil
+}
+
+// ResetFavicon resets all changes to the "favicon" field.
+func (m *WebsiteMutation) ResetFavicon() {
+	m.favicon = nil
+}
+
+// SetFacebook sets the "facebook" field.
+func (m *WebsiteMutation) SetFacebook(s string) {
+	m.facebook = &s
+}
+
+// Facebook returns the value of the "facebook" field in the mutation.
+func (m *WebsiteMutation) Facebook() (r string, exists bool) {
+	v := m.facebook
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFacebook returns the old "facebook" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldFacebook(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFacebook is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFacebook requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFacebook: %w", err)
+	}
+	return oldValue.Facebook, nil
+}
+
+// ResetFacebook resets all changes to the "facebook" field.
+func (m *WebsiteMutation) ResetFacebook() {
+	m.facebook = nil
+}
+
+// SetTwitter sets the "twitter" field.
+func (m *WebsiteMutation) SetTwitter(s string) {
+	m.twitter = &s
+}
+
+// Twitter returns the value of the "twitter" field in the mutation.
+func (m *WebsiteMutation) Twitter() (r string, exists bool) {
+	v := m.twitter
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTwitter returns the old "twitter" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldTwitter(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTwitter is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTwitter requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTwitter: %w", err)
+	}
+	return oldValue.Twitter, nil
+}
+
+// ResetTwitter resets all changes to the "twitter" field.
+func (m *WebsiteMutation) ResetTwitter() {
+	m.twitter = nil
+}
+
+// SetInstagram sets the "instagram" field.
+func (m *WebsiteMutation) SetInstagram(s string) {
+	m.instagram = &s
+}
+
+// Instagram returns the value of the "instagram" field in the mutation.
+func (m *WebsiteMutation) Instagram() (r string, exists bool) {
+	v := m.instagram
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldInstagram returns the old "instagram" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldInstagram(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldInstagram is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldInstagram requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldInstagram: %w", err)
+	}
+	return oldValue.Instagram, nil
+}
+
+// ResetInstagram resets all changes to the "instagram" field.
+func (m *WebsiteMutation) ResetInstagram() {
+	m.instagram = nil
+}
+
+// SetYoutube sets the "youtube" field.
+func (m *WebsiteMutation) SetYoutube(s string) {
+	m.youtube = &s
+}
+
+// Youtube returns the value of the "youtube" field in the mutation.
+func (m *WebsiteMutation) Youtube() (r string, exists bool) {
+	v := m.youtube
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldYoutube returns the old "youtube" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldYoutube(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldYoutube is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldYoutube requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldYoutube: %w", err)
+	}
+	return oldValue.Youtube, nil
+}
+
+// ResetYoutube resets all changes to the "youtube" field.
+func (m *WebsiteMutation) ResetYoutube() {
+	m.youtube = nil
+}
+
+// SetLinkedin sets the "linkedin" field.
+func (m *WebsiteMutation) SetLinkedin(s string) {
+	m.linkedin = &s
+}
+
+// Linkedin returns the value of the "linkedin" field in the mutation.
+func (m *WebsiteMutation) Linkedin() (r string, exists bool) {
+	v := m.linkedin
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLinkedin returns the old "linkedin" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldLinkedin(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLinkedin is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLinkedin requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLinkedin: %w", err)
+	}
+	return oldValue.Linkedin, nil
+}
+
+// ResetLinkedin resets all changes to the "linkedin" field.
+func (m *WebsiteMutation) ResetLinkedin() {
+	m.linkedin = nil
+}
+
+// SetPinterest sets the "pinterest" field.
+func (m *WebsiteMutation) SetPinterest(s string) {
+	m.pinterest = &s
+}
+
+// Pinterest returns the value of the "pinterest" field in the mutation.
+func (m *WebsiteMutation) Pinterest() (r string, exists bool) {
+	v := m.pinterest
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPinterest returns the old "pinterest" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldPinterest(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPinterest is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPinterest requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPinterest: %w", err)
+	}
+	return oldValue.Pinterest, nil
+}
+
+// ResetPinterest resets all changes to the "pinterest" field.
+func (m *WebsiteMutation) ResetPinterest() {
+	m.pinterest = nil
+}
+
+// SetMapCoordinates sets the "mapCoordinates" field.
+func (m *WebsiteMutation) SetMapCoordinates(value map[string]interface{}) {
+	m.mapCoordinates = &value
+}
+
+// MapCoordinates returns the value of the "mapCoordinates" field in the mutation.
+func (m *WebsiteMutation) MapCoordinates() (r map[string]interface{}, exists bool) {
+	v := m.mapCoordinates
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMapCoordinates returns the old "mapCoordinates" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldMapCoordinates(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMapCoordinates is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMapCoordinates requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMapCoordinates: %w", err)
+	}
+	return oldValue.MapCoordinates, nil
+}
+
+// ResetMapCoordinates resets all changes to the "mapCoordinates" field.
+func (m *WebsiteMutation) ResetMapCoordinates() {
+	m.mapCoordinates = nil
+}
+
+// SetLongitude sets the "longitude" field.
+func (m *WebsiteMutation) SetLongitude(s string) {
+	m.longitude = &s
+}
+
+// Longitude returns the value of the "longitude" field in the mutation.
+func (m *WebsiteMutation) Longitude() (r string, exists bool) {
+	v := m.longitude
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLongitude returns the old "longitude" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldLongitude(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLongitude is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLongitude requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLongitude: %w", err)
+	}
+	return oldValue.Longitude, nil
+}
+
+// ResetLongitude resets all changes to the "longitude" field.
+func (m *WebsiteMutation) ResetLongitude() {
+	m.longitude = nil
+}
+
+// SetLatitude sets the "latitude" field.
+func (m *WebsiteMutation) SetLatitude(s string) {
+	m.latitude = &s
+}
+
+// Latitude returns the value of the "latitude" field in the mutation.
+func (m *WebsiteMutation) Latitude() (r string, exists bool) {
+	v := m.latitude
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLatitude returns the old "latitude" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldLatitude(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLatitude is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLatitude requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLatitude: %w", err)
+	}
+	return oldValue.Latitude, nil
+}
+
+// ResetLatitude resets all changes to the "latitude" field.
+func (m *WebsiteMutation) ResetLatitude() {
+	m.latitude = nil
+}
+
+// SetAddress sets the "address" field.
+func (m *WebsiteMutation) SetAddress(s string) {
+	m.address = &s
+}
+
+// Address returns the value of the "address" field in the mutation.
+func (m *WebsiteMutation) Address() (r string, exists bool) {
+	v := m.address
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAddress returns the old "address" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldAddress(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAddress is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAddress requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAddress: %w", err)
+	}
+	return oldValue.Address, nil
+}
+
+// ResetAddress resets all changes to the "address" field.
+func (m *WebsiteMutation) ResetAddress() {
+	m.address = nil
+}
+
+// SetCity sets the "city" field.
+func (m *WebsiteMutation) SetCity(s string) {
+	m.city = &s
+}
+
+// City returns the value of the "city" field in the mutation.
+func (m *WebsiteMutation) City() (r string, exists bool) {
+	v := m.city
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCity returns the old "city" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldCity(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCity is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCity requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCity: %w", err)
+	}
+	return oldValue.City, nil
+}
+
+// ResetCity resets all changes to the "city" field.
+func (m *WebsiteMutation) ResetCity() {
+	m.city = nil
+}
+
+// SetState sets the "state" field.
+func (m *WebsiteMutation) SetState(s string) {
+	m.state = &s
+}
+
+// State returns the value of the "state" field in the mutation.
+func (m *WebsiteMutation) State() (r string, exists bool) {
+	v := m.state
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldState returns the old "state" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldState(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldState is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldState requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldState: %w", err)
+	}
+	return oldValue.State, nil
+}
+
+// ResetState resets all changes to the "state" field.
+func (m *WebsiteMutation) ResetState() {
+	m.state = nil
+}
+
+// SetCountry sets the "country" field.
+func (m *WebsiteMutation) SetCountry(s string) {
+	m.country = &s
+}
+
+// Country returns the value of the "country" field in the mutation.
+func (m *WebsiteMutation) Country() (r string, exists bool) {
+	v := m.country
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCountry returns the old "country" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldCountry(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCountry is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCountry requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCountry: %w", err)
+	}
+	return oldValue.Country, nil
+}
+
+// ResetCountry resets all changes to the "country" field.
+func (m *WebsiteMutation) ResetCountry() {
+	m.country = nil
+}
+
+// SetZipCode sets the "zipCode" field.
+func (m *WebsiteMutation) SetZipCode(s string) {
+	m.zipCode = &s
+}
+
+// ZipCode returns the value of the "zipCode" field in the mutation.
+func (m *WebsiteMutation) ZipCode() (r string, exists bool) {
+	v := m.zipCode
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldZipCode returns the old "zipCode" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldZipCode(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldZipCode is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldZipCode requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldZipCode: %w", err)
+	}
+	return oldValue.ZipCode, nil
+}
+
+// ResetZipCode resets all changes to the "zipCode" field.
+func (m *WebsiteMutation) ResetZipCode() {
+	m.zipCode = nil
+}
+
+// SetPhoneNumber sets the "phoneNumber" field.
+func (m *WebsiteMutation) SetPhoneNumber(s string) {
+	m.phoneNumber = &s
+}
+
+// PhoneNumber returns the value of the "phoneNumber" field in the mutation.
+func (m *WebsiteMutation) PhoneNumber() (r string, exists bool) {
+	v := m.phoneNumber
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPhoneNumber returns the old "phoneNumber" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldPhoneNumber(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPhoneNumber is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPhoneNumber requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPhoneNumber: %w", err)
+	}
+	return oldValue.PhoneNumber, nil
+}
+
+// ResetPhoneNumber resets all changes to the "phoneNumber" field.
+func (m *WebsiteMutation) ResetPhoneNumber() {
+	m.phoneNumber = nil
+}
+
+// SetEmail sets the "email" field.
+func (m *WebsiteMutation) SetEmail(s string) {
+	m.email = &s
+}
+
+// Email returns the value of the "email" field in the mutation.
+func (m *WebsiteMutation) Email() (r string, exists bool) {
+	v := m.email
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEmail returns the old "email" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldEmail(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEmail is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEmail requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEmail: %w", err)
+	}
+	return oldValue.Email, nil
+}
+
+// ResetEmail resets all changes to the "email" field.
+func (m *WebsiteMutation) ResetEmail() {
+	m.email = nil
+}
+
+// SetMetaTags sets the "metaTags" field.
+func (m *WebsiteMutation) SetMetaTags(value map[string]interface{}) {
+	m.metaTags = &value
+}
+
+// MetaTags returns the value of the "metaTags" field in the mutation.
+func (m *WebsiteMutation) MetaTags() (r map[string]interface{}, exists bool) {
+	v := m.metaTags
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMetaTags returns the old "metaTags" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldMetaTags(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMetaTags is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMetaTags requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMetaTags: %w", err)
+	}
+	return oldValue.MetaTags, nil
+}
+
+// ResetMetaTags resets all changes to the "metaTags" field.
+func (m *WebsiteMutation) ResetMetaTags() {
+	m.metaTags = nil
+}
+
+// SetBusinessID sets the "business" edge to the Business entity by id.
+func (m *WebsiteMutation) SetBusinessID(id string) {
+	m.business = &id
+}
+
+// ClearBusiness clears the "business" edge to the Business entity.
+func (m *WebsiteMutation) ClearBusiness() {
+	m.clearedbusiness = true
+}
+
+// BusinessCleared reports if the "business" edge to the Business entity was cleared.
+func (m *WebsiteMutation) BusinessCleared() bool {
+	return m.clearedbusiness
+}
+
+// BusinessID returns the "business" edge ID in the mutation.
+func (m *WebsiteMutation) BusinessID() (id string, exists bool) {
+	if m.business != nil {
+		return *m.business, true
+	}
+	return
+}
+
+// BusinessIDs returns the "business" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// BusinessID instead. It exists only for internal usage by the builders.
+func (m *WebsiteMutation) BusinessIDs() (ids []string) {
+	if id := m.business; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetBusiness resets all changes to the "business" edge.
+func (m *WebsiteMutation) ResetBusiness() {
+	m.business = nil
+	m.clearedbusiness = false
+}
+
+// SetTemplateID sets the "template" edge to the Template entity by id.
+func (m *WebsiteMutation) SetTemplateID(id string) {
+	m.template = &id
+}
+
+// ClearTemplate clears the "template" edge to the Template entity.
+func (m *WebsiteMutation) ClearTemplate() {
+	m.clearedtemplate = true
+}
+
+// TemplateCleared reports if the "template" edge to the Template entity was cleared.
+func (m *WebsiteMutation) TemplateCleared() bool {
+	return m.clearedtemplate
+}
+
+// TemplateID returns the "template" edge ID in the mutation.
+func (m *WebsiteMutation) TemplateID() (id string, exists bool) {
+	if m.template != nil {
+		return *m.template, true
+	}
+	return
+}
+
+// TemplateIDs returns the "template" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// TemplateID instead. It exists only for internal usage by the builders.
+func (m *WebsiteMutation) TemplateIDs() (ids []string) {
+	if id := m.template; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetTemplate resets all changes to the "template" edge.
+func (m *WebsiteMutation) ResetTemplate() {
+	m.template = nil
+	m.clearedtemplate = false
+}
+
+// AddCustomBlockIDs adds the "customBlocks" edge to the CustomBlock entity by ids.
+func (m *WebsiteMutation) AddCustomBlockIDs(ids ...string) {
+	if m.customBlocks == nil {
+		m.customBlocks = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.customBlocks[ids[i]] = struct{}{}
+	}
+}
+
+// ClearCustomBlocks clears the "customBlocks" edge to the CustomBlock entity.
+func (m *WebsiteMutation) ClearCustomBlocks() {
+	m.clearedcustomBlocks = true
+}
+
+// CustomBlocksCleared reports if the "customBlocks" edge to the CustomBlock entity was cleared.
+func (m *WebsiteMutation) CustomBlocksCleared() bool {
+	return m.clearedcustomBlocks
+}
+
+// RemoveCustomBlockIDs removes the "customBlocks" edge to the CustomBlock entity by IDs.
+func (m *WebsiteMutation) RemoveCustomBlockIDs(ids ...string) {
+	if m.removedcustomBlocks == nil {
+		m.removedcustomBlocks = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.customBlocks, ids[i])
+		m.removedcustomBlocks[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedCustomBlocks returns the removed IDs of the "customBlocks" edge to the CustomBlock entity.
+func (m *WebsiteMutation) RemovedCustomBlocksIDs() (ids []string) {
+	for id := range m.removedcustomBlocks {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// CustomBlocksIDs returns the "customBlocks" edge IDs in the mutation.
+func (m *WebsiteMutation) CustomBlocksIDs() (ids []string) {
+	for id := range m.customBlocks {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetCustomBlocks resets all changes to the "customBlocks" edge.
+func (m *WebsiteMutation) ResetCustomBlocks() {
+	m.customBlocks = nil
+	m.clearedcustomBlocks = false
+	m.removedcustomBlocks = nil
+}
+
+// AddAssetIDs adds the "assets" edge to the Media entity by ids.
+func (m *WebsiteMutation) AddAssetIDs(ids ...string) {
+	if m.assets == nil {
+		m.assets = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.assets[ids[i]] = struct{}{}
+	}
+}
+
+// ClearAssets clears the "assets" edge to the Media entity.
+func (m *WebsiteMutation) ClearAssets() {
+	m.clearedassets = true
+}
+
+// AssetsCleared reports if the "assets" edge to the Media entity was cleared.
+func (m *WebsiteMutation) AssetsCleared() bool {
+	return m.clearedassets
+}
+
+// RemoveAssetIDs removes the "assets" edge to the Media entity by IDs.
+func (m *WebsiteMutation) RemoveAssetIDs(ids ...string) {
+	if m.removedassets == nil {
+		m.removedassets = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.assets, ids[i])
+		m.removedassets[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedAssets returns the removed IDs of the "assets" edge to the Media entity.
+func (m *WebsiteMutation) RemovedAssetsIDs() (ids []string) {
+	for id := range m.removedassets {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// AssetsIDs returns the "assets" edge IDs in the mutation.
+func (m *WebsiteMutation) AssetsIDs() (ids []string) {
+	for id := range m.assets {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetAssets resets all changes to the "assets" edge.
+func (m *WebsiteMutation) ResetAssets() {
+	m.assets = nil
+	m.clearedassets = false
+	m.removedassets = nil
+}
+
+// Where appends a list predicates to the WebsiteMutation builder.
+func (m *WebsiteMutation) Where(ps ...predicate.Website) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the WebsiteMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *WebsiteMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Website, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *WebsiteMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *WebsiteMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (Website).
+func (m *WebsiteMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *WebsiteMutation) Fields() []string {
+	fields := make([]string, 0, 26)
+	if m.domainName != nil {
+		fields = append(fields, website.FieldDomainName)
+	}
+	if m.creationDate != nil {
+		fields = append(fields, website.FieldCreationDate)
+	}
+	if m.lastUpdated != nil {
+		fields = append(fields, website.FieldLastUpdated)
+	}
+	if m.title != nil {
+		fields = append(fields, website.FieldTitle)
+	}
+	if m.description != nil {
+		fields = append(fields, website.FieldDescription)
+	}
+	if m.keywords != nil {
+		fields = append(fields, website.FieldKeywords)
+	}
+	if m.language != nil {
+		fields = append(fields, website.FieldLanguage)
+	}
+	if m.logo != nil {
+		fields = append(fields, website.FieldLogo)
+	}
+	if m.favicon != nil {
+		fields = append(fields, website.FieldFavicon)
+	}
+	if m.facebook != nil {
+		fields = append(fields, website.FieldFacebook)
+	}
+	if m.twitter != nil {
+		fields = append(fields, website.FieldTwitter)
+	}
+	if m.instagram != nil {
+		fields = append(fields, website.FieldInstagram)
+	}
+	if m.youtube != nil {
+		fields = append(fields, website.FieldYoutube)
+	}
+	if m.linkedin != nil {
+		fields = append(fields, website.FieldLinkedin)
+	}
+	if m.pinterest != nil {
+		fields = append(fields, website.FieldPinterest)
+	}
+	if m.mapCoordinates != nil {
+		fields = append(fields, website.FieldMapCoordinates)
+	}
+	if m.longitude != nil {
+		fields = append(fields, website.FieldLongitude)
+	}
+	if m.latitude != nil {
+		fields = append(fields, website.FieldLatitude)
+	}
+	if m.address != nil {
+		fields = append(fields, website.FieldAddress)
+	}
+	if m.city != nil {
+		fields = append(fields, website.FieldCity)
+	}
+	if m.state != nil {
+		fields = append(fields, website.FieldState)
+	}
+	if m.country != nil {
+		fields = append(fields, website.FieldCountry)
+	}
+	if m.zipCode != nil {
+		fields = append(fields, website.FieldZipCode)
+	}
+	if m.phoneNumber != nil {
+		fields = append(fields, website.FieldPhoneNumber)
+	}
+	if m.email != nil {
+		fields = append(fields, website.FieldEmail)
+	}
+	if m.metaTags != nil {
+		fields = append(fields, website.FieldMetaTags)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *WebsiteMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case website.FieldDomainName:
+		return m.DomainName()
+	case website.FieldCreationDate:
+		return m.CreationDate()
+	case website.FieldLastUpdated:
+		return m.LastUpdated()
+	case website.FieldTitle:
+		return m.Title()
+	case website.FieldDescription:
+		return m.Description()
+	case website.FieldKeywords:
+		return m.Keywords()
+	case website.FieldLanguage:
+		return m.Language()
+	case website.FieldLogo:
+		return m.Logo()
+	case website.FieldFavicon:
+		return m.Favicon()
+	case website.FieldFacebook:
+		return m.Facebook()
+	case website.FieldTwitter:
+		return m.Twitter()
+	case website.FieldInstagram:
+		return m.Instagram()
+	case website.FieldYoutube:
+		return m.Youtube()
+	case website.FieldLinkedin:
+		return m.Linkedin()
+	case website.FieldPinterest:
+		return m.Pinterest()
+	case website.FieldMapCoordinates:
+		return m.MapCoordinates()
+	case website.FieldLongitude:
+		return m.Longitude()
+	case website.FieldLatitude:
+		return m.Latitude()
+	case website.FieldAddress:
+		return m.Address()
+	case website.FieldCity:
+		return m.City()
+	case website.FieldState:
+		return m.State()
+	case website.FieldCountry:
+		return m.Country()
+	case website.FieldZipCode:
+		return m.ZipCode()
+	case website.FieldPhoneNumber:
+		return m.PhoneNumber()
+	case website.FieldEmail:
+		return m.Email()
+	case website.FieldMetaTags:
+		return m.MetaTags()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *WebsiteMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case website.FieldDomainName:
+		return m.OldDomainName(ctx)
+	case website.FieldCreationDate:
+		return m.OldCreationDate(ctx)
+	case website.FieldLastUpdated:
+		return m.OldLastUpdated(ctx)
+	case website.FieldTitle:
+		return m.OldTitle(ctx)
+	case website.FieldDescription:
+		return m.OldDescription(ctx)
+	case website.FieldKeywords:
+		return m.OldKeywords(ctx)
+	case website.FieldLanguage:
+		return m.OldLanguage(ctx)
+	case website.FieldLogo:
+		return m.OldLogo(ctx)
+	case website.FieldFavicon:
+		return m.OldFavicon(ctx)
+	case website.FieldFacebook:
+		return m.OldFacebook(ctx)
+	case website.FieldTwitter:
+		return m.OldTwitter(ctx)
+	case website.FieldInstagram:
+		return m.OldInstagram(ctx)
+	case website.FieldYoutube:
+		return m.OldYoutube(ctx)
+	case website.FieldLinkedin:
+		return m.OldLinkedin(ctx)
+	case website.FieldPinterest:
+		return m.OldPinterest(ctx)
+	case website.FieldMapCoordinates:
+		return m.OldMapCoordinates(ctx)
+	case website.FieldLongitude:
+		return m.OldLongitude(ctx)
+	case website.FieldLatitude:
+		return m.OldLatitude(ctx)
+	case website.FieldAddress:
+		return m.OldAddress(ctx)
+	case website.FieldCity:
+		return m.OldCity(ctx)
+	case website.FieldState:
+		return m.OldState(ctx)
+	case website.FieldCountry:
+		return m.OldCountry(ctx)
+	case website.FieldZipCode:
+		return m.OldZipCode(ctx)
+	case website.FieldPhoneNumber:
+		return m.OldPhoneNumber(ctx)
+	case website.FieldEmail:
+		return m.OldEmail(ctx)
+	case website.FieldMetaTags:
+		return m.OldMetaTags(ctx)
+	}
+	return nil, fmt.Errorf("unknown Website field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *WebsiteMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case website.FieldDomainName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDomainName(v)
+		return nil
+	case website.FieldCreationDate:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreationDate(v)
+		return nil
+	case website.FieldLastUpdated:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastUpdated(v)
+		return nil
+	case website.FieldTitle:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTitle(v)
+		return nil
+	case website.FieldDescription:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDescription(v)
+		return nil
+	case website.FieldKeywords:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetKeywords(v)
+		return nil
+	case website.FieldLanguage:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLanguage(v)
+		return nil
+	case website.FieldLogo:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLogo(v)
+		return nil
+	case website.FieldFavicon:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFavicon(v)
+		return nil
+	case website.FieldFacebook:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFacebook(v)
+		return nil
+	case website.FieldTwitter:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTwitter(v)
+		return nil
+	case website.FieldInstagram:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetInstagram(v)
+		return nil
+	case website.FieldYoutube:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetYoutube(v)
+		return nil
+	case website.FieldLinkedin:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLinkedin(v)
+		return nil
+	case website.FieldPinterest:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPinterest(v)
+		return nil
+	case website.FieldMapCoordinates:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMapCoordinates(v)
+		return nil
+	case website.FieldLongitude:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLongitude(v)
+		return nil
+	case website.FieldLatitude:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLatitude(v)
+		return nil
+	case website.FieldAddress:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAddress(v)
+		return nil
+	case website.FieldCity:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCity(v)
+		return nil
+	case website.FieldState:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetState(v)
+		return nil
+	case website.FieldCountry:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCountry(v)
+		return nil
+	case website.FieldZipCode:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetZipCode(v)
+		return nil
+	case website.FieldPhoneNumber:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPhoneNumber(v)
+		return nil
+	case website.FieldEmail:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEmail(v)
+		return nil
+	case website.FieldMetaTags:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMetaTags(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Website field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *WebsiteMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *WebsiteMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *WebsiteMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Website numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *WebsiteMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *WebsiteMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *WebsiteMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Website nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *WebsiteMutation) ResetField(name string) error {
+	switch name {
+	case website.FieldDomainName:
+		m.ResetDomainName()
+		return nil
+	case website.FieldCreationDate:
+		m.ResetCreationDate()
+		return nil
+	case website.FieldLastUpdated:
+		m.ResetLastUpdated()
+		return nil
+	case website.FieldTitle:
+		m.ResetTitle()
+		return nil
+	case website.FieldDescription:
+		m.ResetDescription()
+		return nil
+	case website.FieldKeywords:
+		m.ResetKeywords()
+		return nil
+	case website.FieldLanguage:
+		m.ResetLanguage()
+		return nil
+	case website.FieldLogo:
+		m.ResetLogo()
+		return nil
+	case website.FieldFavicon:
+		m.ResetFavicon()
+		return nil
+	case website.FieldFacebook:
+		m.ResetFacebook()
+		return nil
+	case website.FieldTwitter:
+		m.ResetTwitter()
+		return nil
+	case website.FieldInstagram:
+		m.ResetInstagram()
+		return nil
+	case website.FieldYoutube:
+		m.ResetYoutube()
+		return nil
+	case website.FieldLinkedin:
+		m.ResetLinkedin()
+		return nil
+	case website.FieldPinterest:
+		m.ResetPinterest()
+		return nil
+	case website.FieldMapCoordinates:
+		m.ResetMapCoordinates()
+		return nil
+	case website.FieldLongitude:
+		m.ResetLongitude()
+		return nil
+	case website.FieldLatitude:
+		m.ResetLatitude()
+		return nil
+	case website.FieldAddress:
+		m.ResetAddress()
+		return nil
+	case website.FieldCity:
+		m.ResetCity()
+		return nil
+	case website.FieldState:
+		m.ResetState()
+		return nil
+	case website.FieldCountry:
+		m.ResetCountry()
+		return nil
+	case website.FieldZipCode:
+		m.ResetZipCode()
+		return nil
+	case website.FieldPhoneNumber:
+		m.ResetPhoneNumber()
+		return nil
+	case website.FieldEmail:
+		m.ResetEmail()
+		return nil
+	case website.FieldMetaTags:
+		m.ResetMetaTags()
+		return nil
+	}
+	return fmt.Errorf("unknown Website field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *WebsiteMutation) AddedEdges() []string {
+	edges := make([]string, 0, 4)
+	if m.business != nil {
+		edges = append(edges, website.EdgeBusiness)
+	}
+	if m.template != nil {
+		edges = append(edges, website.EdgeTemplate)
+	}
+	if m.customBlocks != nil {
+		edges = append(edges, website.EdgeCustomBlocks)
+	}
+	if m.assets != nil {
+		edges = append(edges, website.EdgeAssets)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *WebsiteMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case website.EdgeBusiness:
+		if id := m.business; id != nil {
+			return []ent.Value{*id}
+		}
+	case website.EdgeTemplate:
+		if id := m.template; id != nil {
+			return []ent.Value{*id}
+		}
+	case website.EdgeCustomBlocks:
+		ids := make([]ent.Value, 0, len(m.customBlocks))
+		for id := range m.customBlocks {
+			ids = append(ids, id)
+		}
+		return ids
+	case website.EdgeAssets:
+		ids := make([]ent.Value, 0, len(m.assets))
+		for id := range m.assets {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *WebsiteMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 4)
+	if m.removedcustomBlocks != nil {
+		edges = append(edges, website.EdgeCustomBlocks)
+	}
+	if m.removedassets != nil {
+		edges = append(edges, website.EdgeAssets)
+	}
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *WebsiteMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case website.EdgeCustomBlocks:
+		ids := make([]ent.Value, 0, len(m.removedcustomBlocks))
+		for id := range m.removedcustomBlocks {
+			ids = append(ids, id)
+		}
+		return ids
+	case website.EdgeAssets:
+		ids := make([]ent.Value, 0, len(m.removedassets))
+		for id := range m.removedassets {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *WebsiteMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 4)
+	if m.clearedbusiness {
+		edges = append(edges, website.EdgeBusiness)
+	}
+	if m.clearedtemplate {
+		edges = append(edges, website.EdgeTemplate)
+	}
+	if m.clearedcustomBlocks {
+		edges = append(edges, website.EdgeCustomBlocks)
+	}
+	if m.clearedassets {
+		edges = append(edges, website.EdgeAssets)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *WebsiteMutation) EdgeCleared(name string) bool {
+	switch name {
+	case website.EdgeBusiness:
+		return m.clearedbusiness
+	case website.EdgeTemplate:
+		return m.clearedtemplate
+	case website.EdgeCustomBlocks:
+		return m.clearedcustomBlocks
+	case website.EdgeAssets:
+		return m.clearedassets
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *WebsiteMutation) ClearEdge(name string) error {
+	switch name {
+	case website.EdgeBusiness:
+		m.ClearBusiness()
+		return nil
+	case website.EdgeTemplate:
+		m.ClearTemplate()
+		return nil
+	}
+	return fmt.Errorf("unknown Website unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *WebsiteMutation) ResetEdge(name string) error {
+	switch name {
+	case website.EdgeBusiness:
+		m.ResetBusiness()
+		return nil
+	case website.EdgeTemplate:
+		m.ResetTemplate()
+		return nil
+	case website.EdgeCustomBlocks:
+		m.ResetCustomBlocks()
+		return nil
+	case website.EdgeAssets:
+		m.ResetAssets()
+		return nil
+	}
+	return fmt.Errorf("unknown Website edge %s", name)
 }

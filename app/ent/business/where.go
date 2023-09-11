@@ -1524,6 +1524,29 @@ func HasPlaceInventoriesWith(preds ...predicate.PlaceInventory) predicate.Busine
 	})
 }
 
+// HasWebsites applies the HasEdge predicate on the "websites" edge.
+func HasWebsites() predicate.Business {
+	return predicate.Business(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, WebsitesTable, WebsitesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasWebsitesWith applies the HasEdge predicate on the "websites" edge with a given conditions (other predicates).
+func HasWebsitesWith(preds ...predicate.Website) predicate.Business {
+	return predicate.Business(func(s *sql.Selector) {
+		step := newWebsitesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Business) predicate.Business {
 	return predicate.Business(func(s *sql.Selector) {

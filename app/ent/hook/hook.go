@@ -140,6 +140,18 @@ func (f CommentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, err
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CommentMutation", m)
 }
 
+// The CustomBlockFunc type is an adapter to allow the use of ordinary
+// function as CustomBlock mutator.
+type CustomBlockFunc func(context.Context, *ent.CustomBlockMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CustomBlockFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.CustomBlockMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CustomBlockMutation", m)
+}
+
 // The EventFunc type is an adapter to allow the use of ordinary
 // function as Event mutator.
 type EventFunc func(context.Context, *ent.EventMutation) (ent.Value, error)
@@ -404,6 +416,18 @@ func (f RoomFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error)
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.RoomMutation", m)
 }
 
+// The TemplateFunc type is an adapter to allow the use of ordinary
+// function as Template mutator.
+type TemplateFunc func(context.Context, *ent.TemplateMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f TemplateFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.TemplateMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TemplateMutation", m)
+}
+
 // The TicketFunc type is an adapter to allow the use of ordinary
 // function as Ticket mutator.
 type TicketFunc func(context.Context, *ent.TicketMutation) (ent.Value, error)
@@ -522,6 +546,18 @@ func (f UserLikePlaceFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Valu
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserLikePlaceMutation", m)
+}
+
+// The WebsiteFunc type is an adapter to allow the use of ordinary
+// function as Website mutator.
+type WebsiteFunc func(context.Context, *ent.WebsiteMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f WebsiteFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.WebsiteMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.WebsiteMutation", m)
 }
 
 // Condition is a hook condition function.

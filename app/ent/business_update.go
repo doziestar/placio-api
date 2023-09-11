@@ -22,6 +22,7 @@ import (
 	"placio-app/ent/rating"
 	"placio-app/ent/userbusiness"
 	"placio-app/ent/userfollowbusiness"
+	"placio-app/ent/website"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -589,6 +590,25 @@ func (bu *BusinessUpdate) AddPlaceInventories(p ...*PlaceInventory) *BusinessUpd
 	return bu.AddPlaceInventoryIDs(ids...)
 }
 
+// SetWebsitesID sets the "websites" edge to the Website entity by ID.
+func (bu *BusinessUpdate) SetWebsitesID(id string) *BusinessUpdate {
+	bu.mutation.SetWebsitesID(id)
+	return bu
+}
+
+// SetNillableWebsitesID sets the "websites" edge to the Website entity by ID if the given value is not nil.
+func (bu *BusinessUpdate) SetNillableWebsitesID(id *string) *BusinessUpdate {
+	if id != nil {
+		bu = bu.SetWebsitesID(*id)
+	}
+	return bu
+}
+
+// SetWebsites sets the "websites" edge to the Website entity.
+func (bu *BusinessUpdate) SetWebsites(w *Website) *BusinessUpdate {
+	return bu.SetWebsitesID(w.ID)
+}
+
 // Mutation returns the BusinessMutation object of the builder.
 func (bu *BusinessUpdate) Mutation() *BusinessMutation {
 	return bu.mutation
@@ -892,6 +912,12 @@ func (bu *BusinessUpdate) RemovePlaceInventories(p ...*PlaceInventory) *Business
 		ids[i] = p[i].ID
 	}
 	return bu.RemovePlaceInventoryIDs(ids...)
+}
+
+// ClearWebsites clears the "websites" edge to the Website entity.
+func (bu *BusinessUpdate) ClearWebsites() *BusinessUpdate {
+	bu.mutation.ClearWebsites()
+	return bu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1691,6 +1717,35 @@ func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if bu.mutation.WebsitesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   business.WebsitesTable,
+			Columns: []string{business.WebsitesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(website.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.WebsitesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   business.WebsitesTable,
+			Columns: []string{business.WebsitesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(website.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, bu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{business.Label}
@@ -2259,6 +2314,25 @@ func (buo *BusinessUpdateOne) AddPlaceInventories(p ...*PlaceInventory) *Busines
 	return buo.AddPlaceInventoryIDs(ids...)
 }
 
+// SetWebsitesID sets the "websites" edge to the Website entity by ID.
+func (buo *BusinessUpdateOne) SetWebsitesID(id string) *BusinessUpdateOne {
+	buo.mutation.SetWebsitesID(id)
+	return buo
+}
+
+// SetNillableWebsitesID sets the "websites" edge to the Website entity by ID if the given value is not nil.
+func (buo *BusinessUpdateOne) SetNillableWebsitesID(id *string) *BusinessUpdateOne {
+	if id != nil {
+		buo = buo.SetWebsitesID(*id)
+	}
+	return buo
+}
+
+// SetWebsites sets the "websites" edge to the Website entity.
+func (buo *BusinessUpdateOne) SetWebsites(w *Website) *BusinessUpdateOne {
+	return buo.SetWebsitesID(w.ID)
+}
+
 // Mutation returns the BusinessMutation object of the builder.
 func (buo *BusinessUpdateOne) Mutation() *BusinessMutation {
 	return buo.mutation
@@ -2562,6 +2636,12 @@ func (buo *BusinessUpdateOne) RemovePlaceInventories(p ...*PlaceInventory) *Busi
 		ids[i] = p[i].ID
 	}
 	return buo.RemovePlaceInventoryIDs(ids...)
+}
+
+// ClearWebsites clears the "websites" edge to the Website entity.
+func (buo *BusinessUpdateOne) ClearWebsites() *BusinessUpdateOne {
+	buo.mutation.ClearWebsites()
+	return buo
 }
 
 // Where appends a list predicates to the BusinessUpdate builder.
@@ -3384,6 +3464,35 @@ func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(placeinventory.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if buo.mutation.WebsitesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   business.WebsitesTable,
+			Columns: []string{business.WebsitesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(website.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.WebsitesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   business.WebsitesTable,
+			Columns: []string{business.WebsitesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(website.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

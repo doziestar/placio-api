@@ -21,6 +21,7 @@ import (
 	"placio-app/ent/categoryassignment"
 	"placio-app/ent/chat"
 	"placio-app/ent/comment"
+	"placio-app/ent/customblock"
 	"placio-app/ent/event"
 	"placio-app/ent/faq"
 	"placio-app/ent/featurerelease"
@@ -43,6 +44,7 @@ import (
 	"placio-app/ent/resourse"
 	"placio-app/ent/review"
 	"placio-app/ent/room"
+	"placio-app/ent/template"
 	"placio-app/ent/ticket"
 	"placio-app/ent/ticketoption"
 	"placio-app/ent/transactionhistory"
@@ -53,6 +55,7 @@ import (
 	"placio-app/ent/userfollowplace"
 	"placio-app/ent/userfollowuser"
 	"placio-app/ent/userlikeplace"
+	"placio-app/ent/website"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
@@ -87,6 +90,8 @@ type Client struct {
 	Chat *ChatClient
 	// Comment is the client for interacting with the Comment builders.
 	Comment *CommentClient
+	// CustomBlock is the client for interacting with the CustomBlock builders.
+	CustomBlock *CustomBlockClient
 	// Event is the client for interacting with the Event builders.
 	Event *EventClient
 	// FAQ is the client for interacting with the FAQ builders.
@@ -131,6 +136,8 @@ type Client struct {
 	Review *ReviewClient
 	// Room is the client for interacting with the Room builders.
 	Room *RoomClient
+	// Template is the client for interacting with the Template builders.
+	Template *TemplateClient
 	// Ticket is the client for interacting with the Ticket builders.
 	Ticket *TicketClient
 	// TicketOption is the client for interacting with the TicketOption builders.
@@ -151,6 +158,8 @@ type Client struct {
 	UserFollowUser *UserFollowUserClient
 	// UserLikePlace is the client for interacting with the UserLikePlace builders.
 	UserLikePlace *UserLikePlaceClient
+	// Website is the client for interacting with the Website builders.
+	Website *WebsiteClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -175,6 +184,7 @@ func (c *Client) init() {
 	c.CategoryAssignment = NewCategoryAssignmentClient(c.config)
 	c.Chat = NewChatClient(c.config)
 	c.Comment = NewCommentClient(c.config)
+	c.CustomBlock = NewCustomBlockClient(c.config)
 	c.Event = NewEventClient(c.config)
 	c.FAQ = NewFAQClient(c.config)
 	c.FeatureRelease = NewFeatureReleaseClient(c.config)
@@ -197,6 +207,7 @@ func (c *Client) init() {
 	c.Resourse = NewResourseClient(c.config)
 	c.Review = NewReviewClient(c.config)
 	c.Room = NewRoomClient(c.config)
+	c.Template = NewTemplateClient(c.config)
 	c.Ticket = NewTicketClient(c.config)
 	c.TicketOption = NewTicketOptionClient(c.config)
 	c.TransactionHistory = NewTransactionHistoryClient(c.config)
@@ -207,6 +218,7 @@ func (c *Client) init() {
 	c.UserFollowPlace = NewUserFollowPlaceClient(c.config)
 	c.UserFollowUser = NewUserFollowUserClient(c.config)
 	c.UserLikePlace = NewUserLikePlaceClient(c.config)
+	c.Website = NewWebsiteClient(c.config)
 }
 
 type (
@@ -300,6 +312,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		CategoryAssignment:      NewCategoryAssignmentClient(cfg),
 		Chat:                    NewChatClient(cfg),
 		Comment:                 NewCommentClient(cfg),
+		CustomBlock:             NewCustomBlockClient(cfg),
 		Event:                   NewEventClient(cfg),
 		FAQ:                     NewFAQClient(cfg),
 		FeatureRelease:          NewFeatureReleaseClient(cfg),
@@ -322,6 +335,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Resourse:                NewResourseClient(cfg),
 		Review:                  NewReviewClient(cfg),
 		Room:                    NewRoomClient(cfg),
+		Template:                NewTemplateClient(cfg),
 		Ticket:                  NewTicketClient(cfg),
 		TicketOption:            NewTicketOptionClient(cfg),
 		TransactionHistory:      NewTransactionHistoryClient(cfg),
@@ -332,6 +346,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		UserFollowPlace:         NewUserFollowPlaceClient(cfg),
 		UserFollowUser:          NewUserFollowUserClient(cfg),
 		UserLikePlace:           NewUserLikePlaceClient(cfg),
+		Website:                 NewWebsiteClient(cfg),
 	}, nil
 }
 
@@ -362,6 +377,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		CategoryAssignment:      NewCategoryAssignmentClient(cfg),
 		Chat:                    NewChatClient(cfg),
 		Comment:                 NewCommentClient(cfg),
+		CustomBlock:             NewCustomBlockClient(cfg),
 		Event:                   NewEventClient(cfg),
 		FAQ:                     NewFAQClient(cfg),
 		FeatureRelease:          NewFeatureReleaseClient(cfg),
@@ -384,6 +400,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Resourse:                NewResourseClient(cfg),
 		Review:                  NewReviewClient(cfg),
 		Room:                    NewRoomClient(cfg),
+		Template:                NewTemplateClient(cfg),
 		Ticket:                  NewTicketClient(cfg),
 		TicketOption:            NewTicketOptionClient(cfg),
 		TransactionHistory:      NewTransactionHistoryClient(cfg),
@@ -394,6 +411,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		UserFollowPlace:         NewUserFollowPlaceClient(cfg),
 		UserFollowUser:          NewUserFollowUserClient(cfg),
 		UserLikePlace:           NewUserLikePlaceClient(cfg),
+		Website:                 NewWebsiteClient(cfg),
 	}, nil
 }
 
@@ -425,13 +443,13 @@ func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.AccountSettings, c.Amenity, c.Booking, c.Business, c.BusinessFollowBusiness,
 		c.BusinessFollowEvent, c.BusinessFollowUser, c.Category, c.CategoryAssignment,
-		c.Chat, c.Comment, c.Event, c.FAQ, c.FeatureRelease, c.Help,
+		c.Chat, c.Comment, c.CustomBlock, c.Event, c.FAQ, c.FeatureRelease, c.Help,
 		c.InventoryAttribute, c.InventoryType, c.Like, c.Media, c.Menu, c.Order,
 		c.Payment, c.Place, c.PlaceInventory, c.PlaceInventoryAttribute, c.Post,
 		c.Rating, c.Reaction, c.Reservation, c.ReservationBlock, c.Resourse, c.Review,
-		c.Room, c.Ticket, c.TicketOption, c.TransactionHistory, c.User, c.UserBusiness,
-		c.UserFollowBusiness, c.UserFollowEvent, c.UserFollowPlace, c.UserFollowUser,
-		c.UserLikePlace,
+		c.Room, c.Template, c.Ticket, c.TicketOption, c.TransactionHistory, c.User,
+		c.UserBusiness, c.UserFollowBusiness, c.UserFollowEvent, c.UserFollowPlace,
+		c.UserFollowUser, c.UserLikePlace, c.Website,
 	} {
 		n.Use(hooks...)
 	}
@@ -443,13 +461,13 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.AccountSettings, c.Amenity, c.Booking, c.Business, c.BusinessFollowBusiness,
 		c.BusinessFollowEvent, c.BusinessFollowUser, c.Category, c.CategoryAssignment,
-		c.Chat, c.Comment, c.Event, c.FAQ, c.FeatureRelease, c.Help,
+		c.Chat, c.Comment, c.CustomBlock, c.Event, c.FAQ, c.FeatureRelease, c.Help,
 		c.InventoryAttribute, c.InventoryType, c.Like, c.Media, c.Menu, c.Order,
 		c.Payment, c.Place, c.PlaceInventory, c.PlaceInventoryAttribute, c.Post,
 		c.Rating, c.Reaction, c.Reservation, c.ReservationBlock, c.Resourse, c.Review,
-		c.Room, c.Ticket, c.TicketOption, c.TransactionHistory, c.User, c.UserBusiness,
-		c.UserFollowBusiness, c.UserFollowEvent, c.UserFollowPlace, c.UserFollowUser,
-		c.UserLikePlace,
+		c.Room, c.Template, c.Ticket, c.TicketOption, c.TransactionHistory, c.User,
+		c.UserBusiness, c.UserFollowBusiness, c.UserFollowEvent, c.UserFollowPlace,
+		c.UserFollowUser, c.UserLikePlace, c.Website,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -480,6 +498,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Chat.mutate(ctx, m)
 	case *CommentMutation:
 		return c.Comment.mutate(ctx, m)
+	case *CustomBlockMutation:
+		return c.CustomBlock.mutate(ctx, m)
 	case *EventMutation:
 		return c.Event.mutate(ctx, m)
 	case *FAQMutation:
@@ -524,6 +544,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Review.mutate(ctx, m)
 	case *RoomMutation:
 		return c.Room.mutate(ctx, m)
+	case *TemplateMutation:
+		return c.Template.mutate(ctx, m)
 	case *TicketMutation:
 		return c.Ticket.mutate(ctx, m)
 	case *TicketOptionMutation:
@@ -544,6 +566,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.UserFollowUser.mutate(ctx, m)
 	case *UserLikePlaceMutation:
 		return c.UserLikePlace.mutate(ctx, m)
+	case *WebsiteMutation:
+		return c.Website.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
 	}
@@ -1293,6 +1317,22 @@ func (c *BusinessClient) QueryPlaceInventories(b *Business) *PlaceInventoryQuery
 			sqlgraph.From(business.Table, business.FieldID, id),
 			sqlgraph.To(placeinventory.Table, placeinventory.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, business.PlaceInventoriesTable, business.PlaceInventoriesColumn),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryWebsites queries the websites edge of a Business.
+func (c *BusinessClient) QueryWebsites(b *Business) *WebsiteQuery {
+	query := (&WebsiteClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(business.Table, business.FieldID, id),
+			sqlgraph.To(website.Table, website.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, business.WebsitesTable, business.WebsitesColumn),
 		)
 		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
 		return fromV, nil
@@ -2389,6 +2429,140 @@ func (c *CommentClient) mutate(ctx context.Context, m *CommentMutation) (Value, 
 		return (&CommentDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Comment mutation op: %q", m.Op())
+	}
+}
+
+// CustomBlockClient is a client for the CustomBlock schema.
+type CustomBlockClient struct {
+	config
+}
+
+// NewCustomBlockClient returns a client for the CustomBlock from the given config.
+func NewCustomBlockClient(c config) *CustomBlockClient {
+	return &CustomBlockClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `customblock.Hooks(f(g(h())))`.
+func (c *CustomBlockClient) Use(hooks ...Hook) {
+	c.hooks.CustomBlock = append(c.hooks.CustomBlock, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `customblock.Intercept(f(g(h())))`.
+func (c *CustomBlockClient) Intercept(interceptors ...Interceptor) {
+	c.inters.CustomBlock = append(c.inters.CustomBlock, interceptors...)
+}
+
+// Create returns a builder for creating a CustomBlock entity.
+func (c *CustomBlockClient) Create() *CustomBlockCreate {
+	mutation := newCustomBlockMutation(c.config, OpCreate)
+	return &CustomBlockCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of CustomBlock entities.
+func (c *CustomBlockClient) CreateBulk(builders ...*CustomBlockCreate) *CustomBlockCreateBulk {
+	return &CustomBlockCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for CustomBlock.
+func (c *CustomBlockClient) Update() *CustomBlockUpdate {
+	mutation := newCustomBlockMutation(c.config, OpUpdate)
+	return &CustomBlockUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CustomBlockClient) UpdateOne(cb *CustomBlock) *CustomBlockUpdateOne {
+	mutation := newCustomBlockMutation(c.config, OpUpdateOne, withCustomBlock(cb))
+	return &CustomBlockUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CustomBlockClient) UpdateOneID(id string) *CustomBlockUpdateOne {
+	mutation := newCustomBlockMutation(c.config, OpUpdateOne, withCustomBlockID(id))
+	return &CustomBlockUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for CustomBlock.
+func (c *CustomBlockClient) Delete() *CustomBlockDelete {
+	mutation := newCustomBlockMutation(c.config, OpDelete)
+	return &CustomBlockDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CustomBlockClient) DeleteOne(cb *CustomBlock) *CustomBlockDeleteOne {
+	return c.DeleteOneID(cb.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CustomBlockClient) DeleteOneID(id string) *CustomBlockDeleteOne {
+	builder := c.Delete().Where(customblock.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CustomBlockDeleteOne{builder}
+}
+
+// Query returns a query builder for CustomBlock.
+func (c *CustomBlockClient) Query() *CustomBlockQuery {
+	return &CustomBlockQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCustomBlock},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a CustomBlock entity by its id.
+func (c *CustomBlockClient) Get(ctx context.Context, id string) (*CustomBlock, error) {
+	return c.Query().Where(customblock.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CustomBlockClient) GetX(ctx context.Context, id string) *CustomBlock {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryWebsite queries the website edge of a CustomBlock.
+func (c *CustomBlockClient) QueryWebsite(cb *CustomBlock) *WebsiteQuery {
+	query := (&WebsiteClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := cb.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(customblock.Table, customblock.FieldID, id),
+			sqlgraph.To(website.Table, website.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, customblock.WebsiteTable, customblock.WebsiteColumn),
+		)
+		fromV = sqlgraph.Neighbors(cb.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *CustomBlockClient) Hooks() []Hook {
+	return c.hooks.CustomBlock
+}
+
+// Interceptors returns the client interceptors.
+func (c *CustomBlockClient) Interceptors() []Interceptor {
+	return c.inters.CustomBlock
+}
+
+func (c *CustomBlockClient) mutate(ctx context.Context, m *CustomBlockMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CustomBlockCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CustomBlockUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CustomBlockUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CustomBlockDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown CustomBlock mutation op: %q", m.Op())
 	}
 }
 
@@ -6272,6 +6446,140 @@ func (c *RoomClient) mutate(ctx context.Context, m *RoomMutation) (Value, error)
 	}
 }
 
+// TemplateClient is a client for the Template schema.
+type TemplateClient struct {
+	config
+}
+
+// NewTemplateClient returns a client for the Template from the given config.
+func NewTemplateClient(c config) *TemplateClient {
+	return &TemplateClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `template.Hooks(f(g(h())))`.
+func (c *TemplateClient) Use(hooks ...Hook) {
+	c.hooks.Template = append(c.hooks.Template, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `template.Intercept(f(g(h())))`.
+func (c *TemplateClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Template = append(c.inters.Template, interceptors...)
+}
+
+// Create returns a builder for creating a Template entity.
+func (c *TemplateClient) Create() *TemplateCreate {
+	mutation := newTemplateMutation(c.config, OpCreate)
+	return &TemplateCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Template entities.
+func (c *TemplateClient) CreateBulk(builders ...*TemplateCreate) *TemplateCreateBulk {
+	return &TemplateCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Template.
+func (c *TemplateClient) Update() *TemplateUpdate {
+	mutation := newTemplateMutation(c.config, OpUpdate)
+	return &TemplateUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TemplateClient) UpdateOne(t *Template) *TemplateUpdateOne {
+	mutation := newTemplateMutation(c.config, OpUpdateOne, withTemplate(t))
+	return &TemplateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TemplateClient) UpdateOneID(id string) *TemplateUpdateOne {
+	mutation := newTemplateMutation(c.config, OpUpdateOne, withTemplateID(id))
+	return &TemplateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Template.
+func (c *TemplateClient) Delete() *TemplateDelete {
+	mutation := newTemplateMutation(c.config, OpDelete)
+	return &TemplateDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *TemplateClient) DeleteOne(t *Template) *TemplateDeleteOne {
+	return c.DeleteOneID(t.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *TemplateClient) DeleteOneID(id string) *TemplateDeleteOne {
+	builder := c.Delete().Where(template.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TemplateDeleteOne{builder}
+}
+
+// Query returns a query builder for Template.
+func (c *TemplateClient) Query() *TemplateQuery {
+	return &TemplateQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeTemplate},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Template entity by its id.
+func (c *TemplateClient) Get(ctx context.Context, id string) (*Template, error) {
+	return c.Query().Where(template.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TemplateClient) GetX(ctx context.Context, id string) *Template {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryWebsites queries the websites edge of a Template.
+func (c *TemplateClient) QueryWebsites(t *Template) *WebsiteQuery {
+	query := (&WebsiteClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(template.Table, template.FieldID, id),
+			sqlgraph.To(website.Table, website.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, template.WebsitesTable, template.WebsitesColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *TemplateClient) Hooks() []Hook {
+	return c.hooks.Template
+}
+
+// Interceptors returns the client interceptors.
+func (c *TemplateClient) Interceptors() []Interceptor {
+	return c.inters.Template
+}
+
+func (c *TemplateClient) mutate(ctx context.Context, m *TemplateMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&TemplateCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&TemplateUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&TemplateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&TemplateDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Template mutation op: %q", m.Op())
+	}
+}
+
 // TicketClient is a client for the Ticket schema.
 type TicketClient struct {
 	config
@@ -8077,26 +8385,208 @@ func (c *UserLikePlaceClient) mutate(ctx context.Context, m *UserLikePlaceMutati
 	}
 }
 
+// WebsiteClient is a client for the Website schema.
+type WebsiteClient struct {
+	config
+}
+
+// NewWebsiteClient returns a client for the Website from the given config.
+func NewWebsiteClient(c config) *WebsiteClient {
+	return &WebsiteClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `website.Hooks(f(g(h())))`.
+func (c *WebsiteClient) Use(hooks ...Hook) {
+	c.hooks.Website = append(c.hooks.Website, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `website.Intercept(f(g(h())))`.
+func (c *WebsiteClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Website = append(c.inters.Website, interceptors...)
+}
+
+// Create returns a builder for creating a Website entity.
+func (c *WebsiteClient) Create() *WebsiteCreate {
+	mutation := newWebsiteMutation(c.config, OpCreate)
+	return &WebsiteCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Website entities.
+func (c *WebsiteClient) CreateBulk(builders ...*WebsiteCreate) *WebsiteCreateBulk {
+	return &WebsiteCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Website.
+func (c *WebsiteClient) Update() *WebsiteUpdate {
+	mutation := newWebsiteMutation(c.config, OpUpdate)
+	return &WebsiteUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *WebsiteClient) UpdateOne(w *Website) *WebsiteUpdateOne {
+	mutation := newWebsiteMutation(c.config, OpUpdateOne, withWebsite(w))
+	return &WebsiteUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *WebsiteClient) UpdateOneID(id string) *WebsiteUpdateOne {
+	mutation := newWebsiteMutation(c.config, OpUpdateOne, withWebsiteID(id))
+	return &WebsiteUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Website.
+func (c *WebsiteClient) Delete() *WebsiteDelete {
+	mutation := newWebsiteMutation(c.config, OpDelete)
+	return &WebsiteDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *WebsiteClient) DeleteOne(w *Website) *WebsiteDeleteOne {
+	return c.DeleteOneID(w.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *WebsiteClient) DeleteOneID(id string) *WebsiteDeleteOne {
+	builder := c.Delete().Where(website.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &WebsiteDeleteOne{builder}
+}
+
+// Query returns a query builder for Website.
+func (c *WebsiteClient) Query() *WebsiteQuery {
+	return &WebsiteQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeWebsite},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Website entity by its id.
+func (c *WebsiteClient) Get(ctx context.Context, id string) (*Website, error) {
+	return c.Query().Where(website.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *WebsiteClient) GetX(ctx context.Context, id string) *Website {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryBusiness queries the business edge of a Website.
+func (c *WebsiteClient) QueryBusiness(w *Website) *BusinessQuery {
+	query := (&BusinessClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := w.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(website.Table, website.FieldID, id),
+			sqlgraph.To(business.Table, business.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, website.BusinessTable, website.BusinessColumn),
+		)
+		fromV = sqlgraph.Neighbors(w.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTemplate queries the template edge of a Website.
+func (c *WebsiteClient) QueryTemplate(w *Website) *TemplateQuery {
+	query := (&TemplateClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := w.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(website.Table, website.FieldID, id),
+			sqlgraph.To(template.Table, template.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, website.TemplateTable, website.TemplateColumn),
+		)
+		fromV = sqlgraph.Neighbors(w.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCustomBlocks queries the customBlocks edge of a Website.
+func (c *WebsiteClient) QueryCustomBlocks(w *Website) *CustomBlockQuery {
+	query := (&CustomBlockClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := w.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(website.Table, website.FieldID, id),
+			sqlgraph.To(customblock.Table, customblock.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, website.CustomBlocksTable, website.CustomBlocksColumn),
+		)
+		fromV = sqlgraph.Neighbors(w.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryAssets queries the assets edge of a Website.
+func (c *WebsiteClient) QueryAssets(w *Website) *MediaQuery {
+	query := (&MediaClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := w.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(website.Table, website.FieldID, id),
+			sqlgraph.To(media.Table, media.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, website.AssetsTable, website.AssetsColumn),
+		)
+		fromV = sqlgraph.Neighbors(w.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *WebsiteClient) Hooks() []Hook {
+	return c.hooks.Website
+}
+
+// Interceptors returns the client interceptors.
+func (c *WebsiteClient) Interceptors() []Interceptor {
+	return c.inters.Website
+}
+
+func (c *WebsiteClient) mutate(ctx context.Context, m *WebsiteMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&WebsiteCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&WebsiteUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&WebsiteUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&WebsiteDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Website mutation op: %q", m.Op())
+	}
+}
+
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
 		AccountSettings, Amenity, Booking, Business, BusinessFollowBusiness,
 		BusinessFollowEvent, BusinessFollowUser, Category, CategoryAssignment, Chat,
-		Comment, Event, FAQ, FeatureRelease, Help, InventoryAttribute, InventoryType,
-		Like, Media, Menu, Order, Payment, Place, PlaceInventory,
+		Comment, CustomBlock, Event, FAQ, FeatureRelease, Help, InventoryAttribute,
+		InventoryType, Like, Media, Menu, Order, Payment, Place, PlaceInventory,
 		PlaceInventoryAttribute, Post, Rating, Reaction, Reservation, ReservationBlock,
-		Resourse, Review, Room, Ticket, TicketOption, TransactionHistory, User,
-		UserBusiness, UserFollowBusiness, UserFollowEvent, UserFollowPlace,
-		UserFollowUser, UserLikePlace []ent.Hook
+		Resourse, Review, Room, Template, Ticket, TicketOption, TransactionHistory,
+		User, UserBusiness, UserFollowBusiness, UserFollowEvent, UserFollowPlace,
+		UserFollowUser, UserLikePlace, Website []ent.Hook
 	}
 	inters struct {
 		AccountSettings, Amenity, Booking, Business, BusinessFollowBusiness,
 		BusinessFollowEvent, BusinessFollowUser, Category, CategoryAssignment, Chat,
-		Comment, Event, FAQ, FeatureRelease, Help, InventoryAttribute, InventoryType,
-		Like, Media, Menu, Order, Payment, Place, PlaceInventory,
+		Comment, CustomBlock, Event, FAQ, FeatureRelease, Help, InventoryAttribute,
+		InventoryType, Like, Media, Menu, Order, Payment, Place, PlaceInventory,
 		PlaceInventoryAttribute, Post, Rating, Reaction, Reservation, ReservationBlock,
-		Resourse, Review, Room, Ticket, TicketOption, TransactionHistory, User,
-		UserBusiness, UserFollowBusiness, UserFollowEvent, UserFollowPlace,
-		UserFollowUser, UserLikePlace []ent.Interceptor
+		Resourse, Review, Room, Template, Ticket, TicketOption, TransactionHistory,
+		User, UserBusiness, UserFollowBusiness, UserFollowEvent, UserFollowPlace,
+		UserFollowUser, UserLikePlace, Website []ent.Interceptor
 	}
 )

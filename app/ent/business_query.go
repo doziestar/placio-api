@@ -23,6 +23,7 @@ import (
 	"placio-app/ent/rating"
 	"placio-app/ent/userbusiness"
 	"placio-app/ent/userfollowbusiness"
+	"placio-app/ent/website"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -51,6 +52,7 @@ type BusinessQuery struct {
 	withFaqs                    *FAQQuery
 	withRatings                 *RatingQuery
 	withPlaceInventories        *PlaceInventoryQuery
+	withWebsites                *WebsiteQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -417,6 +419,28 @@ func (bq *BusinessQuery) QueryPlaceInventories() *PlaceInventoryQuery {
 	return query
 }
 
+// QueryWebsites chains the current query on the "websites" edge.
+func (bq *BusinessQuery) QueryWebsites() *WebsiteQuery {
+	query := (&WebsiteClient{config: bq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := bq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := bq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(business.Table, business.FieldID, selector),
+			sqlgraph.To(website.Table, website.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, business.WebsitesTable, business.WebsitesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(bq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Business entity from the query.
 // Returns a *NotFoundError when no Business was found.
 func (bq *BusinessQuery) First(ctx context.Context) (*Business, error) {
@@ -624,6 +648,7 @@ func (bq *BusinessQuery) Clone() *BusinessQuery {
 		withFaqs:                    bq.withFaqs.Clone(),
 		withRatings:                 bq.withRatings.Clone(),
 		withPlaceInventories:        bq.withPlaceInventories.Clone(),
+		withWebsites:                bq.withWebsites.Clone(),
 		// clone intermediate query.
 		sql:  bq.sql.Clone(),
 		path: bq.path,
@@ -795,6 +820,17 @@ func (bq *BusinessQuery) WithPlaceInventories(opts ...func(*PlaceInventoryQuery)
 	return bq
 }
 
+// WithWebsites tells the query-builder to eager-load the nodes that are connected to
+// the "websites" edge. The optional arguments are used to configure the query builder of the edge.
+func (bq *BusinessQuery) WithWebsites(opts ...func(*WebsiteQuery)) *BusinessQuery {
+	query := (&WebsiteClient{config: bq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	bq.withWebsites = query
+	return bq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -873,7 +909,7 @@ func (bq *BusinessQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Bus
 	var (
 		nodes       = []*Business{}
 		_spec       = bq.querySpec()
-		loadedTypes = [15]bool{
+		loadedTypes = [16]bool{
 			bq.withUserBusinesses != nil,
 			bq.withBusinessAccountSettings != nil,
 			bq.withPosts != nil,
@@ -889,6 +925,7 @@ func (bq *BusinessQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Bus
 			bq.withFaqs != nil,
 			bq.withRatings != nil,
 			bq.withPlaceInventories != nil,
+			bq.withWebsites != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -1018,6 +1055,12 @@ func (bq *BusinessQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Bus
 		if err := bq.loadPlaceInventories(ctx, query, nodes,
 			func(n *Business) { n.Edges.PlaceInventories = []*PlaceInventory{} },
 			func(n *Business, e *PlaceInventory) { n.Edges.PlaceInventories = append(n.Edges.PlaceInventories, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := bq.withWebsites; query != nil {
+		if err := bq.loadWebsites(ctx, query, nodes, nil,
+			func(n *Business, e *Website) { n.Edges.Websites = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -1481,6 +1524,34 @@ func (bq *BusinessQuery) loadPlaceInventories(ctx context.Context, query *PlaceI
 		node, ok := nodeids[*fk]
 		if !ok {
 			return fmt.Errorf(`unexpected referenced foreign-key "business_place_inventories" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (bq *BusinessQuery) loadWebsites(ctx context.Context, query *WebsiteQuery, nodes []*Business, init func(*Business), assign func(*Business, *Website)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Business)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+	}
+	query.withFKs = true
+	query.Where(predicate.Website(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(business.WebsitesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.business_websites
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "business_websites" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "business_websites" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

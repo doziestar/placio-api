@@ -345,6 +345,26 @@ var (
 			},
 		},
 	}
+	// CustomBlocksColumns holds the columns for the "custom_blocks" table.
+	CustomBlocksColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "content", Type: field.TypeString},
+		{Name: "website_custom_blocks", Type: field.TypeString},
+	}
+	// CustomBlocksTable holds the schema information for the "custom_blocks" table.
+	CustomBlocksTable = &schema.Table{
+		Name:       "custom_blocks",
+		Columns:    CustomBlocksColumns,
+		PrimaryKey: []*schema.Column{CustomBlocksColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "custom_blocks_websites_customBlocks",
+				Columns:    []*schema.Column{CustomBlocksColumns[2]},
+				RefColumns: []*schema.Column{WebsitesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// EventsColumns holds the columns for the "events" table.
 	EventsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true},
@@ -598,6 +618,7 @@ var (
 		{Name: "dislike_count", Type: field.TypeInt, Default: 0},
 		{Name: "post_medias", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "review_medias", Type: field.TypeString, Nullable: true},
+		{Name: "website_assets", Type: field.TypeString, Nullable: true},
 	}
 	// MediaTable holds the schema information for the "media" table.
 	MediaTable = &schema.Table{
@@ -615,6 +636,12 @@ var (
 				Symbol:     "media_reviews_medias",
 				Columns:    []*schema.Column{MediaColumns[8]},
 				RefColumns: []*schema.Column{ReviewsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "media_websites_assets",
+				Columns:    []*schema.Column{MediaColumns[9]},
+				RefColumns: []*schema.Column{WebsitesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -1060,6 +1087,19 @@ var (
 			},
 		},
 	}
+	// TemplatesColumns holds the columns for the "templates" table.
+	TemplatesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "name", Type: field.TypeString},
+		{Name: "default_html", Type: field.TypeString},
+		{Name: "default_css", Type: field.TypeString},
+	}
+	// TemplatesTable holds the schema information for the "templates" table.
+	TemplatesTable = &schema.Table{
+		Name:       "templates",
+		Columns:    TemplatesColumns,
+		PrimaryKey: []*schema.Column{TemplatesColumns[0]},
+	}
 	// TicketsColumns holds the columns for the "tickets" table.
 	TicketsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true},
@@ -1341,6 +1381,58 @@ var (
 			},
 		},
 	}
+	// WebsitesColumns holds the columns for the "websites" table.
+	WebsitesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "domain_name", Type: field.TypeString, Unique: true},
+		{Name: "creation_date", Type: field.TypeTime},
+		{Name: "last_updated", Type: field.TypeTime},
+		{Name: "title", Type: field.TypeString},
+		{Name: "description", Type: field.TypeString},
+		{Name: "keywords", Type: field.TypeString},
+		{Name: "language", Type: field.TypeString},
+		{Name: "logo", Type: field.TypeString},
+		{Name: "favicon", Type: field.TypeString},
+		{Name: "facebook", Type: field.TypeString},
+		{Name: "twitter", Type: field.TypeString},
+		{Name: "instagram", Type: field.TypeString},
+		{Name: "youtube", Type: field.TypeString},
+		{Name: "linkedin", Type: field.TypeString},
+		{Name: "pinterest", Type: field.TypeString},
+		{Name: "map_coordinates", Type: field.TypeJSON},
+		{Name: "longitude", Type: field.TypeString},
+		{Name: "latitude", Type: field.TypeString},
+		{Name: "address", Type: field.TypeString},
+		{Name: "city", Type: field.TypeString},
+		{Name: "state", Type: field.TypeString},
+		{Name: "country", Type: field.TypeString},
+		{Name: "zip_code", Type: field.TypeString},
+		{Name: "phone_number", Type: field.TypeString},
+		{Name: "email", Type: field.TypeString},
+		{Name: "meta_tags", Type: field.TypeJSON},
+		{Name: "business_websites", Type: field.TypeString, Unique: true, Size: 36},
+		{Name: "template_websites", Type: field.TypeString},
+	}
+	// WebsitesTable holds the schema information for the "websites" table.
+	WebsitesTable = &schema.Table{
+		Name:       "websites",
+		Columns:    WebsitesColumns,
+		PrimaryKey: []*schema.Column{WebsitesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "websites_businesses_websites",
+				Columns:    []*schema.Column{WebsitesColumns[27]},
+				RefColumns: []*schema.Column{BusinessesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "websites_templates_websites",
+				Columns:    []*schema.Column{WebsitesColumns[28]},
+				RefColumns: []*schema.Column{TemplatesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// AmenityPlacesColumns holds the columns for the "amenity_places" table.
 	AmenityPlacesColumns = []*schema.Column{
 		{Name: "amenity_id", Type: field.TypeString, Size: 36},
@@ -1529,6 +1621,7 @@ var (
 		CategoryAssignmentsTable,
 		ChatsTable,
 		CommentsTable,
+		CustomBlocksTable,
 		EventsTable,
 		FaQsTable,
 		FeatureReleasesTable,
@@ -1551,6 +1644,7 @@ var (
 		ResoursesTable,
 		ReviewsTable,
 		RoomsTable,
+		TemplatesTable,
 		TicketsTable,
 		TicketOptionsTable,
 		TransactionHistoriesTable,
@@ -1561,6 +1655,7 @@ var (
 		UserFollowPlacesTable,
 		UserFollowUsersTable,
 		UserLikePlacesTable,
+		WebsitesTable,
 		AmenityPlacesTable,
 		CategoryMediaTable,
 		FaqPlaceTable,
@@ -1596,6 +1691,7 @@ func init() {
 	CommentsTable.ForeignKeys[0].RefTable = PostsTable
 	CommentsTable.ForeignKeys[1].RefTable = ReviewsTable
 	CommentsTable.ForeignKeys[2].RefTable = UsersTable
+	CustomBlocksTable.ForeignKeys[0].RefTable = WebsitesTable
 	EventsTable.ForeignKeys[0].RefTable = BusinessesTable
 	EventsTable.ForeignKeys[1].RefTable = PlacesTable
 	EventsTable.ForeignKeys[2].RefTable = UsersTable
@@ -1610,6 +1706,7 @@ func init() {
 	LikesTable.ForeignKeys[5].RefTable = UsersTable
 	MediaTable.ForeignKeys[0].RefTable = PostsTable
 	MediaTable.ForeignKeys[1].RefTable = ReviewsTable
+	MediaTable.ForeignKeys[2].RefTable = WebsitesTable
 	MenusTable.ForeignKeys[0].RefTable = PlacesTable
 	PlacesTable.ForeignKeys[0].RefTable = BusinessesTable
 	PlacesTable.ForeignKeys[1].RefTable = EventsTable
@@ -1656,6 +1753,8 @@ func init() {
 	UserFollowUsersTable.ForeignKeys[1].RefTable = UsersTable
 	UserLikePlacesTable.ForeignKeys[0].RefTable = UsersTable
 	UserLikePlacesTable.ForeignKeys[1].RefTable = PlacesTable
+	WebsitesTable.ForeignKeys[0].RefTable = BusinessesTable
+	WebsitesTable.ForeignKeys[1].RefTable = TemplatesTable
 	AmenityPlacesTable.ForeignKeys[0].RefTable = AmenitiesTable
 	AmenityPlacesTable.ForeignKeys[1].RefTable = PlacesTable
 	CategoryMediaTable.ForeignKeys[0].RefTable = CategoriesTable

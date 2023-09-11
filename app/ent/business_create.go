@@ -21,6 +21,7 @@ import (
 	"placio-app/ent/rating"
 	"placio-app/ent/userbusiness"
 	"placio-app/ent/userfollowbusiness"
+	"placio-app/ent/website"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -482,6 +483,25 @@ func (bc *BusinessCreate) AddPlaceInventories(p ...*PlaceInventory) *BusinessCre
 	return bc.AddPlaceInventoryIDs(ids...)
 }
 
+// SetWebsitesID sets the "websites" edge to the Website entity by ID.
+func (bc *BusinessCreate) SetWebsitesID(id string) *BusinessCreate {
+	bc.mutation.SetWebsitesID(id)
+	return bc
+}
+
+// SetNillableWebsitesID sets the "websites" edge to the Website entity by ID if the given value is not nil.
+func (bc *BusinessCreate) SetNillableWebsitesID(id *string) *BusinessCreate {
+	if id != nil {
+		bc = bc.SetWebsitesID(*id)
+	}
+	return bc
+}
+
+// SetWebsites sets the "websites" edge to the Website entity.
+func (bc *BusinessCreate) SetWebsites(w *Website) *BusinessCreate {
+	return bc.SetWebsitesID(w.ID)
+}
+
 // Mutation returns the BusinessMutation object of the builder.
 func (bc *BusinessCreate) Mutation() *BusinessMutation {
 	return bc.mutation
@@ -886,6 +906,22 @@ func (bc *BusinessCreate) createSpec() (*Business, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(placeinventory.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := bc.mutation.WebsitesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   business.WebsitesTable,
+			Columns: []string{business.WebsitesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(website.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
