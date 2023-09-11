@@ -159,6 +159,16 @@ func FollowerCount(v int) predicate.Place {
 	return predicate.Place(sql.FieldEQ(FieldFollowerCount, v))
 }
 
+// LikeCount applies equality check predicate on the "like_count" field. It's identical to LikeCountEQ.
+func LikeCount(v int) predicate.Place {
+	return predicate.Place(sql.FieldEQ(FieldLikeCount, v))
+}
+
+// ReviewCount applies equality check predicate on the "review_count" field. It's identical to ReviewCountEQ.
+func ReviewCount(v int) predicate.Place {
+	return predicate.Place(sql.FieldEQ(FieldReviewCount, v))
+}
+
 // FollowingCount applies equality check predicate on the "following_count" field. It's identical to FollowingCountEQ.
 func FollowingCount(v int) predicate.Place {
 	return predicate.Place(sql.FieldEQ(FieldFollowingCount, v))
@@ -1612,6 +1622,86 @@ func FollowerCountLT(v int) predicate.Place {
 // FollowerCountLTE applies the LTE predicate on the "follower_count" field.
 func FollowerCountLTE(v int) predicate.Place {
 	return predicate.Place(sql.FieldLTE(FieldFollowerCount, v))
+}
+
+// LikeCountEQ applies the EQ predicate on the "like_count" field.
+func LikeCountEQ(v int) predicate.Place {
+	return predicate.Place(sql.FieldEQ(FieldLikeCount, v))
+}
+
+// LikeCountNEQ applies the NEQ predicate on the "like_count" field.
+func LikeCountNEQ(v int) predicate.Place {
+	return predicate.Place(sql.FieldNEQ(FieldLikeCount, v))
+}
+
+// LikeCountIn applies the In predicate on the "like_count" field.
+func LikeCountIn(vs ...int) predicate.Place {
+	return predicate.Place(sql.FieldIn(FieldLikeCount, vs...))
+}
+
+// LikeCountNotIn applies the NotIn predicate on the "like_count" field.
+func LikeCountNotIn(vs ...int) predicate.Place {
+	return predicate.Place(sql.FieldNotIn(FieldLikeCount, vs...))
+}
+
+// LikeCountGT applies the GT predicate on the "like_count" field.
+func LikeCountGT(v int) predicate.Place {
+	return predicate.Place(sql.FieldGT(FieldLikeCount, v))
+}
+
+// LikeCountGTE applies the GTE predicate on the "like_count" field.
+func LikeCountGTE(v int) predicate.Place {
+	return predicate.Place(sql.FieldGTE(FieldLikeCount, v))
+}
+
+// LikeCountLT applies the LT predicate on the "like_count" field.
+func LikeCountLT(v int) predicate.Place {
+	return predicate.Place(sql.FieldLT(FieldLikeCount, v))
+}
+
+// LikeCountLTE applies the LTE predicate on the "like_count" field.
+func LikeCountLTE(v int) predicate.Place {
+	return predicate.Place(sql.FieldLTE(FieldLikeCount, v))
+}
+
+// ReviewCountEQ applies the EQ predicate on the "review_count" field.
+func ReviewCountEQ(v int) predicate.Place {
+	return predicate.Place(sql.FieldEQ(FieldReviewCount, v))
+}
+
+// ReviewCountNEQ applies the NEQ predicate on the "review_count" field.
+func ReviewCountNEQ(v int) predicate.Place {
+	return predicate.Place(sql.FieldNEQ(FieldReviewCount, v))
+}
+
+// ReviewCountIn applies the In predicate on the "review_count" field.
+func ReviewCountIn(vs ...int) predicate.Place {
+	return predicate.Place(sql.FieldIn(FieldReviewCount, vs...))
+}
+
+// ReviewCountNotIn applies the NotIn predicate on the "review_count" field.
+func ReviewCountNotIn(vs ...int) predicate.Place {
+	return predicate.Place(sql.FieldNotIn(FieldReviewCount, vs...))
+}
+
+// ReviewCountGT applies the GT predicate on the "review_count" field.
+func ReviewCountGT(v int) predicate.Place {
+	return predicate.Place(sql.FieldGT(FieldReviewCount, v))
+}
+
+// ReviewCountGTE applies the GTE predicate on the "review_count" field.
+func ReviewCountGTE(v int) predicate.Place {
+	return predicate.Place(sql.FieldGTE(FieldReviewCount, v))
+}
+
+// ReviewCountLT applies the LT predicate on the "review_count" field.
+func ReviewCountLT(v int) predicate.Place {
+	return predicate.Place(sql.FieldLT(FieldReviewCount, v))
+}
+
+// ReviewCountLTE applies the LTE predicate on the "review_count" field.
+func ReviewCountLTE(v int) predicate.Place {
+	return predicate.Place(sql.FieldLTE(FieldReviewCount, v))
 }
 
 // FollowingCountEQ applies the EQ predicate on the "following_count" field.

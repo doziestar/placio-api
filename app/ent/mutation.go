@@ -20247,6 +20247,10 @@ type PlaceMutation struct {
 	addrelevance_score         *float64
 	follower_count             *int
 	addfollower_count          *int
+	like_count                 *int
+	addlike_count              *int
+	review_count               *int
+	addreview_count            *int
 	following_count            *int
 	addfollowing_count         *int
 	is_Premium                 *bool
@@ -21918,6 +21922,118 @@ func (m *PlaceMutation) ResetFollowerCount() {
 	m.addfollower_count = nil
 }
 
+// SetLikeCount sets the "like_count" field.
+func (m *PlaceMutation) SetLikeCount(i int) {
+	m.like_count = &i
+	m.addlike_count = nil
+}
+
+// LikeCount returns the value of the "like_count" field in the mutation.
+func (m *PlaceMutation) LikeCount() (r int, exists bool) {
+	v := m.like_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLikeCount returns the old "like_count" field's value of the Place entity.
+// If the Place object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceMutation) OldLikeCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLikeCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLikeCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLikeCount: %w", err)
+	}
+	return oldValue.LikeCount, nil
+}
+
+// AddLikeCount adds i to the "like_count" field.
+func (m *PlaceMutation) AddLikeCount(i int) {
+	if m.addlike_count != nil {
+		*m.addlike_count += i
+	} else {
+		m.addlike_count = &i
+	}
+}
+
+// AddedLikeCount returns the value that was added to the "like_count" field in this mutation.
+func (m *PlaceMutation) AddedLikeCount() (r int, exists bool) {
+	v := m.addlike_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetLikeCount resets all changes to the "like_count" field.
+func (m *PlaceMutation) ResetLikeCount() {
+	m.like_count = nil
+	m.addlike_count = nil
+}
+
+// SetReviewCount sets the "review_count" field.
+func (m *PlaceMutation) SetReviewCount(i int) {
+	m.review_count = &i
+	m.addreview_count = nil
+}
+
+// ReviewCount returns the value of the "review_count" field in the mutation.
+func (m *PlaceMutation) ReviewCount() (r int, exists bool) {
+	v := m.review_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldReviewCount returns the old "review_count" field's value of the Place entity.
+// If the Place object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceMutation) OldReviewCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldReviewCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldReviewCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldReviewCount: %w", err)
+	}
+	return oldValue.ReviewCount, nil
+}
+
+// AddReviewCount adds i to the "review_count" field.
+func (m *PlaceMutation) AddReviewCount(i int) {
+	if m.addreview_count != nil {
+		*m.addreview_count += i
+	} else {
+		m.addreview_count = &i
+	}
+}
+
+// AddedReviewCount returns the value that was added to the "review_count" field in this mutation.
+func (m *PlaceMutation) AddedReviewCount() (r int, exists bool) {
+	v := m.addreview_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetReviewCount resets all changes to the "review_count" field.
+func (m *PlaceMutation) ResetReviewCount() {
+	m.review_count = nil
+	m.addreview_count = nil
+}
+
 // SetFollowingCount sets the "following_count" field.
 func (m *PlaceMutation) SetFollowingCount(i int) {
 	m.following_count = &i
@@ -23055,7 +23171,7 @@ func (m *PlaceMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PlaceMutation) Fields() []string {
-	fields := make([]string, 0, 34)
+	fields := make([]string, 0, 36)
 	if m.name != nil {
 		fields = append(fields, place.FieldName)
 	}
@@ -23143,6 +23259,12 @@ func (m *PlaceMutation) Fields() []string {
 	if m.follower_count != nil {
 		fields = append(fields, place.FieldFollowerCount)
 	}
+	if m.like_count != nil {
+		fields = append(fields, place.FieldLikeCount)
+	}
+	if m.review_count != nil {
+		fields = append(fields, place.FieldReviewCount)
+	}
 	if m.following_count != nil {
 		fields = append(fields, place.FieldFollowingCount)
 	}
@@ -23224,6 +23346,10 @@ func (m *PlaceMutation) Field(name string) (ent.Value, bool) {
 		return m.RelevanceScore()
 	case place.FieldFollowerCount:
 		return m.FollowerCount()
+	case place.FieldLikeCount:
+		return m.LikeCount()
+	case place.FieldReviewCount:
+		return m.ReviewCount()
 	case place.FieldFollowingCount:
 		return m.FollowingCount()
 	case place.FieldIsPremium:
@@ -23301,6 +23427,10 @@ func (m *PlaceMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldRelevanceScore(ctx)
 	case place.FieldFollowerCount:
 		return m.OldFollowerCount(ctx)
+	case place.FieldLikeCount:
+		return m.OldLikeCount(ctx)
+	case place.FieldReviewCount:
+		return m.OldReviewCount(ctx)
 	case place.FieldFollowingCount:
 		return m.OldFollowingCount(ctx)
 	case place.FieldIsPremium:
@@ -23523,6 +23653,20 @@ func (m *PlaceMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetFollowerCount(v)
 		return nil
+	case place.FieldLikeCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLikeCount(v)
+		return nil
+	case place.FieldReviewCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetReviewCount(v)
+		return nil
 	case place.FieldFollowingCount:
 		v, ok := value.(int)
 		if !ok {
@@ -23575,6 +23719,12 @@ func (m *PlaceMutation) AddedFields() []string {
 	if m.addfollower_count != nil {
 		fields = append(fields, place.FieldFollowerCount)
 	}
+	if m.addlike_count != nil {
+		fields = append(fields, place.FieldLikeCount)
+	}
+	if m.addreview_count != nil {
+		fields = append(fields, place.FieldReviewCount)
+	}
 	if m.addfollowing_count != nil {
 		fields = append(fields, place.FieldFollowingCount)
 	}
@@ -23592,6 +23742,10 @@ func (m *PlaceMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedRelevanceScore()
 	case place.FieldFollowerCount:
 		return m.AddedFollowerCount()
+	case place.FieldLikeCount:
+		return m.AddedLikeCount()
+	case place.FieldReviewCount:
+		return m.AddedReviewCount()
 	case place.FieldFollowingCount:
 		return m.AddedFollowingCount()
 	}
@@ -23623,6 +23777,20 @@ func (m *PlaceMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddFollowerCount(v)
+		return nil
+	case place.FieldLikeCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddLikeCount(v)
+		return nil
+	case place.FieldReviewCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddReviewCount(v)
 		return nil
 	case place.FieldFollowingCount:
 		v, ok := value.(int)
@@ -23909,6 +24077,12 @@ func (m *PlaceMutation) ResetField(name string) error {
 		return nil
 	case place.FieldFollowerCount:
 		m.ResetFollowerCount()
+		return nil
+	case place.FieldLikeCount:
+		m.ResetLikeCount()
+		return nil
+	case place.FieldReviewCount:
+		m.ResetReviewCount()
 		return nil
 	case place.FieldFollowingCount:
 		m.ResetFollowingCount()

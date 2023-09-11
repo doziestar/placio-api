@@ -71,6 +71,10 @@ const (
 	FieldRelevanceScore = "relevance_score"
 	// FieldFollowerCount holds the string denoting the follower_count field in the database.
 	FieldFollowerCount = "follower_count"
+	// FieldLikeCount holds the string denoting the like_count field in the database.
+	FieldLikeCount = "like_count"
+	// FieldReviewCount holds the string denoting the review_count field in the database.
+	FieldReviewCount = "review_count"
 	// FieldFollowingCount holds the string denoting the following_count field in the database.
 	FieldFollowingCount = "following_count"
 	// FieldIsPremium holds the string denoting the is_premium field in the database.
@@ -262,6 +266,8 @@ var Columns = []string{
 	FieldSearchText,
 	FieldRelevanceScore,
 	FieldFollowerCount,
+	FieldLikeCount,
+	FieldReviewCount,
 	FieldFollowingCount,
 	FieldIsPremium,
 	FieldIsPublished,
@@ -317,6 +323,10 @@ var (
 	DefaultCoverImage string
 	// DefaultFollowerCount holds the default value on creation for the "follower_count" field.
 	DefaultFollowerCount int
+	// DefaultLikeCount holds the default value on creation for the "like_count" field.
+	DefaultLikeCount int
+	// DefaultReviewCount holds the default value on creation for the "review_count" field.
+	DefaultReviewCount int
 	// DefaultFollowingCount holds the default value on creation for the "following_count" field.
 	DefaultFollowingCount int
 	// DefaultIsPremium holds the default value on creation for the "is_Premium" field.
@@ -432,6 +442,16 @@ func ByRelevanceScore(opts ...sql.OrderTermOption) OrderOption {
 // ByFollowerCount orders the results by the follower_count field.
 func ByFollowerCount(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldFollowerCount, opts...).ToFunc()
+}
+
+// ByLikeCount orders the results by the like_count field.
+func ByLikeCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLikeCount, opts...).ToFunc()
+}
+
+// ByReviewCount orders the results by the review_count field.
+func ByReviewCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldReviewCount, opts...).ToFunc()
 }
 
 // ByFollowingCount orders the results by the following_count field.

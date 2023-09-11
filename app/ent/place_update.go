@@ -564,6 +564,48 @@ func (pu *PlaceUpdate) AddFollowerCount(i int) *PlaceUpdate {
 	return pu
 }
 
+// SetLikeCount sets the "like_count" field.
+func (pu *PlaceUpdate) SetLikeCount(i int) *PlaceUpdate {
+	pu.mutation.ResetLikeCount()
+	pu.mutation.SetLikeCount(i)
+	return pu
+}
+
+// SetNillableLikeCount sets the "like_count" field if the given value is not nil.
+func (pu *PlaceUpdate) SetNillableLikeCount(i *int) *PlaceUpdate {
+	if i != nil {
+		pu.SetLikeCount(*i)
+	}
+	return pu
+}
+
+// AddLikeCount adds i to the "like_count" field.
+func (pu *PlaceUpdate) AddLikeCount(i int) *PlaceUpdate {
+	pu.mutation.AddLikeCount(i)
+	return pu
+}
+
+// SetReviewCount sets the "review_count" field.
+func (pu *PlaceUpdate) SetReviewCount(i int) *PlaceUpdate {
+	pu.mutation.ResetReviewCount()
+	pu.mutation.SetReviewCount(i)
+	return pu
+}
+
+// SetNillableReviewCount sets the "review_count" field if the given value is not nil.
+func (pu *PlaceUpdate) SetNillableReviewCount(i *int) *PlaceUpdate {
+	if i != nil {
+		pu.SetReviewCount(*i)
+	}
+	return pu
+}
+
+// AddReviewCount adds i to the "review_count" field.
+func (pu *PlaceUpdate) AddReviewCount(i int) *PlaceUpdate {
+	pu.mutation.AddReviewCount(i)
+	return pu
+}
+
 // SetFollowingCount sets the "following_count" field.
 func (pu *PlaceUpdate) SetFollowingCount(i int) *PlaceUpdate {
 	pu.mutation.ResetFollowingCount()
@@ -1474,6 +1516,18 @@ func (pu *PlaceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := pu.mutation.AddedFollowerCount(); ok {
 		_spec.AddField(place.FieldFollowerCount, field.TypeInt, value)
+	}
+	if value, ok := pu.mutation.LikeCount(); ok {
+		_spec.SetField(place.FieldLikeCount, field.TypeInt, value)
+	}
+	if value, ok := pu.mutation.AddedLikeCount(); ok {
+		_spec.AddField(place.FieldLikeCount, field.TypeInt, value)
+	}
+	if value, ok := pu.mutation.ReviewCount(); ok {
+		_spec.SetField(place.FieldReviewCount, field.TypeInt, value)
+	}
+	if value, ok := pu.mutation.AddedReviewCount(); ok {
+		_spec.AddField(place.FieldReviewCount, field.TypeInt, value)
 	}
 	if value, ok := pu.mutation.FollowingCount(); ok {
 		_spec.SetField(place.FieldFollowingCount, field.TypeInt, value)
@@ -2781,6 +2835,48 @@ func (puo *PlaceUpdateOne) AddFollowerCount(i int) *PlaceUpdateOne {
 	return puo
 }
 
+// SetLikeCount sets the "like_count" field.
+func (puo *PlaceUpdateOne) SetLikeCount(i int) *PlaceUpdateOne {
+	puo.mutation.ResetLikeCount()
+	puo.mutation.SetLikeCount(i)
+	return puo
+}
+
+// SetNillableLikeCount sets the "like_count" field if the given value is not nil.
+func (puo *PlaceUpdateOne) SetNillableLikeCount(i *int) *PlaceUpdateOne {
+	if i != nil {
+		puo.SetLikeCount(*i)
+	}
+	return puo
+}
+
+// AddLikeCount adds i to the "like_count" field.
+func (puo *PlaceUpdateOne) AddLikeCount(i int) *PlaceUpdateOne {
+	puo.mutation.AddLikeCount(i)
+	return puo
+}
+
+// SetReviewCount sets the "review_count" field.
+func (puo *PlaceUpdateOne) SetReviewCount(i int) *PlaceUpdateOne {
+	puo.mutation.ResetReviewCount()
+	puo.mutation.SetReviewCount(i)
+	return puo
+}
+
+// SetNillableReviewCount sets the "review_count" field if the given value is not nil.
+func (puo *PlaceUpdateOne) SetNillableReviewCount(i *int) *PlaceUpdateOne {
+	if i != nil {
+		puo.SetReviewCount(*i)
+	}
+	return puo
+}
+
+// AddReviewCount adds i to the "review_count" field.
+func (puo *PlaceUpdateOne) AddReviewCount(i int) *PlaceUpdateOne {
+	puo.mutation.AddReviewCount(i)
+	return puo
+}
+
 // SetFollowingCount sets the "following_count" field.
 func (puo *PlaceUpdateOne) SetFollowingCount(i int) *PlaceUpdateOne {
 	puo.mutation.ResetFollowingCount()
@@ -3721,6 +3817,18 @@ func (puo *PlaceUpdateOne) sqlSave(ctx context.Context) (_node *Place, err error
 	}
 	if value, ok := puo.mutation.AddedFollowerCount(); ok {
 		_spec.AddField(place.FieldFollowerCount, field.TypeInt, value)
+	}
+	if value, ok := puo.mutation.LikeCount(); ok {
+		_spec.SetField(place.FieldLikeCount, field.TypeInt, value)
+	}
+	if value, ok := puo.mutation.AddedLikeCount(); ok {
+		_spec.AddField(place.FieldLikeCount, field.TypeInt, value)
+	}
+	if value, ok := puo.mutation.ReviewCount(); ok {
+		_spec.SetField(place.FieldReviewCount, field.TypeInt, value)
+	}
+	if value, ok := puo.mutation.AddedReviewCount(); ok {
+		_spec.AddField(place.FieldReviewCount, field.TypeInt, value)
 	}
 	if value, ok := puo.mutation.FollowingCount(); ok {
 		_spec.SetField(place.FieldFollowingCount, field.TypeInt, value)

@@ -717,6 +717,8 @@ var (
 		{Name: "search_text", Type: field.TypeString, Nullable: true},
 		{Name: "relevance_score", Type: field.TypeFloat64, Nullable: true},
 		{Name: "follower_count", Type: field.TypeInt, Default: 0},
+		{Name: "like_count", Type: field.TypeInt, Default: 0},
+		{Name: "review_count", Type: field.TypeInt, Default: 0},
 		{Name: "following_count", Type: field.TypeInt, Default: 0},
 		{Name: "is_premium", Type: field.TypeBool, Default: false},
 		{Name: "is_published", Type: field.TypeBool, Default: false},
@@ -733,13 +735,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "places_businesses_places",
-				Columns:    []*schema.Column{PlacesColumns[35]},
+				Columns:    []*schema.Column{PlacesColumns[37]},
 				RefColumns: []*schema.Column{BusinessesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "places_events_place",
-				Columns:    []*schema.Column{PlacesColumns[36]},
+				Columns:    []*schema.Column{PlacesColumns[38]},
 				RefColumns: []*schema.Column{EventsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},

@@ -43,7 +43,7 @@ type PlaceService interface {
 	DeletePlace(ctx context.Context, placeID string) error
 	GetPlacesAssociatedWithBusinessAccount(c context.Context, businessId string) ([]*ent.Place, error)
 	GetPlaces(ctx context.Context, filter *PlaceFilter, lastId string, limit int) ([]*ent.Place, string, error)
-	AddAmenitiesToPlace(ctx context.Context, placeID string, amenities []amenities.CreateAmenityInput) error
+	AddAmenitiesToPlace(ctx context.Context, placeID string, amenities []amenities.CreateAmenityInput) (*ent.Place, error)
 	GetAllPlaces(ctx context.Context, nextPageToken string, limit int) ([]*ent.Place, string, error)
 	RemoveAmenitiesFromPlace(ctx context.Context, placeID string, amenityIDs []string) error
 	RemoveMediaFromPlace(ctx context.Context, placeID string, mediaID string) error
@@ -378,13 +378,23 @@ func (s *PlaceServiceImpl) AddPlaceToCacheAndSearchIndex(ctx context.Context, pl
 		WithUsers().
 		WithFaqs().
 		WithCategories().
-		WithRooms().
 		WithMedias().
-		WithRatings().
+		WithFollowerUsers(func(query *ent.UserFollowPlaceQuery) {
+			query.WithUser()
+
+		}).
+		WithLikedByUsers(func(query *ent.UserLikePlaceQuery) {
+			query.WithUser()
+
+		}).
 		WithAmenities().
-		WithReviews().
-		WithReviews().
+		WithReviews(func(query *ent.ReviewQuery) {
+			query.WithUser()
+		}).
 		Only(ctx)
+
+	fullPlace.LikeCount = len(fullPlace.Edges.LikedByUsers)
+	fullPlace.FollowerCount = len(fullPlace.Edges.FollowerUsers)
 
 	if err != nil {
 		sentry.CaptureException(err)
@@ -410,7 +420,7 @@ func (s *PlaceServiceImpl) AddPlaceToCacheAndSearchIndex(ctx context.Context, pl
 }
 
 func (s *PlaceServiceImpl) RemoveAmenitiesFromPlace(ctx context.Context, placeID string, amenityIDs []string) error {
-	placeData, err := s.client.Place.
+	_, err := s.client.Place.
 		UpdateOneID(placeID).
 		RemoveAmenityIDs(amenityIDs...).
 		Save(ctx)
@@ -420,7 +430,7 @@ func (s *PlaceServiceImpl) RemoveAmenitiesFromPlace(ctx context.Context, placeID
 		return err
 	}
 
-	go s.AddPlaceToCacheAndSearchIndex(ctx, placeData)
+	//go s.AddPlaceToCacheAndSearchIndex(ctx, placeData)
 
 	return nil
 }
@@ -460,14 +470,14 @@ func (s *PlaceServiceImpl) AddMediaToPlace(ctx context.Context, placeID string, 
 		First(ctx)
 
 	// Add the updated place to the search index and cache
-	go s.AddPlaceToCacheAndSearchIndex(ctx, placeData)
+	//go s.AddPlaceToCacheAndSearchIndex(ctx, placeData)
 
 	return placeData, nil
 }
 
 func (s *PlaceServiceImpl) RemoveMediaFromPlace(ctx context.Context, placeID string, mediaID string) error {
 	// Fetch the place
-	placeData, err := s.client.Place.Get(ctx, placeID)
+	_, err := s.client.Place.Get(ctx, placeID)
 	if err != nil {
 		sentry.CaptureException(err)
 		return err
@@ -480,7 +490,7 @@ func (s *PlaceServiceImpl) RemoveMediaFromPlace(ctx context.Context, placeID str
 		return err
 	}
 
-	go s.AddPlaceToCacheAndSearchIndex(ctx, placeData)
+	//go s.AddPlaceToCacheAndSearchIndex(ctx, placeData)
 
 	// Ideally, we'd also want to delete the media from wherever it's stored,
 	// but for now, we're just removing the association.
@@ -488,7 +498,7 @@ func (s *PlaceServiceImpl) RemoveMediaFromPlace(ctx context.Context, placeID str
 	return nil
 }
 
-func (s *PlaceServiceImpl) AddAmenitiesToPlace(ctx context.Context, placeID string, amenities []amenities.CreateAmenityInput) error {
+func (s *PlaceServiceImpl) AddAmenitiesToPlace(ctx context.Context, placeID string, amenities []amenities.CreateAmenityInput) (*ent.Place, error) {
 	// Step 1: Fetch the existing amenities for the place.
 	existingAmenities, err := s.client.Place.
 		Query().
@@ -499,7 +509,7 @@ func (s *PlaceServiceImpl) AddAmenitiesToPlace(ctx context.Context, placeID stri
 	if err != nil {
 		log.Println("error fetching existing amenities", err)
 		sentry.CaptureException(err)
-		return err
+		return nil, err
 	}
 
 	existingAmenityNames := make(map[string]struct{})
@@ -526,7 +536,7 @@ func (s *PlaceServiceImpl) AddAmenitiesToPlace(ctx context.Context, placeID stri
 		if err != nil && !ent.IsNotFound(err) {
 			log.Println("error fetching amenity", err)
 			sentry.CaptureException(err)
-			return err
+			return nil, err
 		}
 
 		if amenity != nil {
@@ -543,29 +553,30 @@ func (s *PlaceServiceImpl) AddAmenitiesToPlace(ctx context.Context, placeID stri
 			if err != nil {
 				log.Println("error creating amenity", err)
 				sentry.CaptureException(err)
-				return err
+				return nil, err
 			}
 
 			amenityList = append(amenityList, newAmenity)
 		}
 	}
 
-	// Step 4: Associate the new amenities with the place.
+	var placeData *ent.Place
+
 	if len(amenityList) > 0 {
-		placeData, err := s.client.Place.
+		placeData, err = s.client.Place.
 			UpdateOneID(placeID).
 			AddAmenities(amenityList...).
 			Save(ctx)
 
 		if err != nil {
 			sentry.CaptureException(err)
-			return err
+			return nil, err
 		}
 
-		go s.AddPlaceToCacheAndSearchIndex(ctx, placeData)
+		//go s.AddPlaceToCacheAndSearchIndex(ctx, placeData)
 	}
 
-	return nil
+	return placeData, nil
 }
 
 func (s *PlaceServiceImpl) RemoveMediaToPlace(ctx context.Context, placeID string, mediaIDs []string) error {
@@ -606,7 +617,7 @@ func (s *PlaceServiceImpl) RemoveMediaToPlace(ctx context.Context, placeID strin
 	// If not, then remove the media from Cloudinary or your media hosting service.
 
 	// Update the place in cache and search index
-	go s.AddPlaceToCacheAndSearchIndex(ctx, place)
+	//go s.AddPlaceToCacheAndSearchIndex(ctx, place)
 
 	return nil
 }
@@ -677,7 +688,7 @@ func (s *PlaceServiceImpl) UpdatePlace(ctx context.Context, placeID string, plac
 	}
 
 	// Update the place in the search index.
-	go s.AddPlaceToCacheAndSearchIndex(ctx, place)
+	//go s.AddPlaceToCacheAndSearchIndex(ctx, place)
 
 	return place, nil
 }

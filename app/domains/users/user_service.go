@@ -156,6 +156,34 @@ func (s *UserServiceImpl) GetUser(ctx context.Context, auth0ID string) (*ent.Use
 	u, err := s.client.User.
 		Query().
 		Where(user.Auth0IDEQ(auth0ID)).
+		WithLikes(func(query *ent.LikeQuery) {
+			query.WithPost()
+		}).
+		WithFollowedUsers(func(query *ent.UserFollowUserQuery) {
+			query.WithFollowed()
+
+		}).
+		WithFollowerUsers(func(query *ent.UserFollowUserQuery) {
+			query.WithFollower()
+		}).
+		WithReviews(func(query *ent.ReviewQuery) {
+			query.WithBusiness()
+		}).
+		WithFollowedBusinesses(func(query *ent.UserFollowBusinessQuery) {
+			query.WithBusiness()
+		}).
+		WithFollowedPlaces(func(query *ent.UserFollowPlaceQuery) {
+			query.WithPlace()
+		}).
+		WithPosts(func(query *ent.PostQuery) {
+			query.WithMedias()
+		}).
+		WithComments(func(query *ent.CommentQuery) {
+			query.WithUser()
+		}).
+		WithLikedPlaces(func(query *ent.UserLikePlaceQuery) {
+			query.WithPlace()
+		}).
 		First(ctx)
 
 	if err != nil {
@@ -197,14 +225,14 @@ func (s *UserServiceImpl) GetUser(ctx context.Context, auth0ID string) (*ent.Use
 		return newUser, nil
 	}
 
-	auth0Data, err := s.getAuth0UserDataWithRetry(auth0ID, 3, 1*time.Second)
-	if err != nil {
-		return nil, err
-	}
+	//auth0Data, err := s.getAuth0UserDataWithRetry(auth0ID, 3, 1*time.Second)
+	//if err != nil {
+	//	return nil, err
+	//}
 
 	//u.AppSettings = *auth0Data.AppMetadata
 	//u.UserSettings = *auth0Data.UserMetadata
-	u.Auth0Data = auth0Data
+	//u.Auth0Data = auth0Data
 
 	return u, nil
 }

@@ -73,9 +73,14 @@ func (cc *CategoryController) createCategory(ctx *gin.Context) error {
 // @Router /categories/{id} [patch]
 func (cc *CategoryController) updateCategory(ctx *gin.Context) error {
 	categoryID := ctx.Param("id")
-	name := ctx.GetString("name")
-	image := ctx.GetString("image")
-	category, err := cc.categoryService.UpdateCategory(ctx, categoryID, name, image)
+	form, err := ctx.MultipartForm()
+	if err != nil {
+		return err
+	}
+	name := form.Value["name"][0]
+	image := form.File["files"]
+	icon := form.Value["icon"][0]
+	category, err := cc.categoryService.UpdateCategory(ctx, categoryID, name, image, icon)
 	if err != nil {
 		return errors.LogAndReturnError(err)
 	}

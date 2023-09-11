@@ -168,7 +168,7 @@ func (s *UserLikePlaceServiceImpl) LikePlace(ctx context.Context, userID string,
 		return nil, err
 	}
 
-	go s.cacheService.AddPlaceToCacheAndSearchIndex(ctx, placeData)
+	//go s.cacheService.AddPlaceToCacheAndSearchIndex(ctx, placeData)
 
 	log.Println("Successfully created UserLikePlace for user and place:", userID, placeID)
 	return userLike, nil

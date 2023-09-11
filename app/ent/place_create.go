@@ -354,6 +354,34 @@ func (pc *PlaceCreate) SetNillableFollowerCount(i *int) *PlaceCreate {
 	return pc
 }
 
+// SetLikeCount sets the "like_count" field.
+func (pc *PlaceCreate) SetLikeCount(i int) *PlaceCreate {
+	pc.mutation.SetLikeCount(i)
+	return pc
+}
+
+// SetNillableLikeCount sets the "like_count" field if the given value is not nil.
+func (pc *PlaceCreate) SetNillableLikeCount(i *int) *PlaceCreate {
+	if i != nil {
+		pc.SetLikeCount(*i)
+	}
+	return pc
+}
+
+// SetReviewCount sets the "review_count" field.
+func (pc *PlaceCreate) SetReviewCount(i int) *PlaceCreate {
+	pc.mutation.SetReviewCount(i)
+	return pc
+}
+
+// SetNillableReviewCount sets the "review_count" field if the given value is not nil.
+func (pc *PlaceCreate) SetNillableReviewCount(i *int) *PlaceCreate {
+	if i != nil {
+		pc.SetReviewCount(*i)
+	}
+	return pc
+}
+
 // SetFollowingCount sets the "following_count" field.
 func (pc *PlaceCreate) SetFollowingCount(i int) *PlaceCreate {
 	pc.mutation.SetFollowingCount(i)
@@ -734,6 +762,14 @@ func (pc *PlaceCreate) defaults() error {
 		v := place.DefaultFollowerCount
 		pc.mutation.SetFollowerCount(v)
 	}
+	if _, ok := pc.mutation.LikeCount(); !ok {
+		v := place.DefaultLikeCount
+		pc.mutation.SetLikeCount(v)
+	}
+	if _, ok := pc.mutation.ReviewCount(); !ok {
+		v := place.DefaultReviewCount
+		pc.mutation.SetReviewCount(v)
+	}
 	if _, ok := pc.mutation.FollowingCount(); !ok {
 		v := place.DefaultFollowingCount
 		pc.mutation.SetFollowingCount(v)
@@ -764,6 +800,12 @@ func (pc *PlaceCreate) check() error {
 	}
 	if _, ok := pc.mutation.FollowerCount(); !ok {
 		return &ValidationError{Name: "follower_count", err: errors.New(`ent: missing required field "Place.follower_count"`)}
+	}
+	if _, ok := pc.mutation.LikeCount(); !ok {
+		return &ValidationError{Name: "like_count", err: errors.New(`ent: missing required field "Place.like_count"`)}
+	}
+	if _, ok := pc.mutation.ReviewCount(); !ok {
+		return &ValidationError{Name: "review_count", err: errors.New(`ent: missing required field "Place.review_count"`)}
 	}
 	if _, ok := pc.mutation.FollowingCount(); !ok {
 		return &ValidationError{Name: "following_count", err: errors.New(`ent: missing required field "Place.following_count"`)}
@@ -935,6 +977,14 @@ func (pc *PlaceCreate) createSpec() (*Place, *sqlgraph.CreateSpec) {
 	if value, ok := pc.mutation.FollowerCount(); ok {
 		_spec.SetField(place.FieldFollowerCount, field.TypeInt, value)
 		_node.FollowerCount = value
+	}
+	if value, ok := pc.mutation.LikeCount(); ok {
+		_spec.SetField(place.FieldLikeCount, field.TypeInt, value)
+		_node.LikeCount = value
+	}
+	if value, ok := pc.mutation.ReviewCount(); ok {
+		_spec.SetField(place.FieldReviewCount, field.TypeInt, value)
+		_node.ReviewCount = value
 	}
 	if value, ok := pc.mutation.FollowingCount(); ok {
 		_spec.SetField(place.FieldFollowingCount, field.TypeInt, value)

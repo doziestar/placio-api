@@ -311,24 +311,32 @@ func init() {
 	placeDescFollowerCount := placeFields[29].Descriptor()
 	// place.DefaultFollowerCount holds the default value on creation for the follower_count field.
 	place.DefaultFollowerCount = placeDescFollowerCount.Default.(int)
+	// placeDescLikeCount is the schema descriptor for like_count field.
+	placeDescLikeCount := placeFields[30].Descriptor()
+	// place.DefaultLikeCount holds the default value on creation for the like_count field.
+	place.DefaultLikeCount = placeDescLikeCount.Default.(int)
+	// placeDescReviewCount is the schema descriptor for review_count field.
+	placeDescReviewCount := placeFields[31].Descriptor()
+	// place.DefaultReviewCount holds the default value on creation for the review_count field.
+	place.DefaultReviewCount = placeDescReviewCount.Default.(int)
 	// placeDescFollowingCount is the schema descriptor for following_count field.
-	placeDescFollowingCount := placeFields[30].Descriptor()
+	placeDescFollowingCount := placeFields[32].Descriptor()
 	// place.DefaultFollowingCount holds the default value on creation for the following_count field.
 	place.DefaultFollowingCount = placeDescFollowingCount.Default.(int)
 	// placeDescIsPremium is the schema descriptor for is_Premium field.
-	placeDescIsPremium := placeFields[31].Descriptor()
+	placeDescIsPremium := placeFields[33].Descriptor()
 	// place.DefaultIsPremium holds the default value on creation for the is_Premium field.
 	place.DefaultIsPremium = placeDescIsPremium.Default.(bool)
 	// placeDescIsPublished is the schema descriptor for is_published field.
-	placeDescIsPublished := placeFields[32].Descriptor()
+	placeDescIsPublished := placeFields[34].Descriptor()
 	// place.DefaultIsPublished holds the default value on creation for the is_published field.
 	place.DefaultIsPublished = placeDescIsPublished.Default.(bool)
 	// placeDescLikedByCurrentUser is the schema descriptor for likedByCurrentUser field.
-	placeDescLikedByCurrentUser := placeFields[33].Descriptor()
+	placeDescLikedByCurrentUser := placeFields[35].Descriptor()
 	// place.DefaultLikedByCurrentUser holds the default value on creation for the likedByCurrentUser field.
 	place.DefaultLikedByCurrentUser = placeDescLikedByCurrentUser.Default.(bool)
 	// placeDescFollowedByCurrentUser is the schema descriptor for followedByCurrentUser field.
-	placeDescFollowedByCurrentUser := placeFields[34].Descriptor()
+	placeDescFollowedByCurrentUser := placeFields[36].Descriptor()
 	// place.DefaultFollowedByCurrentUser holds the default value on creation for the followedByCurrentUser field.
 	place.DefaultFollowedByCurrentUser = placeDescFollowedByCurrentUser.Default.(bool)
 	// placeDescID is the schema descriptor for id field.
