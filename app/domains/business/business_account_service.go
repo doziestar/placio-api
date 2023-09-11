@@ -550,6 +550,12 @@ func (s *BusinessAccountServiceImpl) GetUserBusinessAccounts(ctx context.Context
 		WithFollowerUsers().
 		WithFollowedUsers().
 		WithFollowerBusinesses().
+		WithPlaces(func(query *ent.PlaceQuery) {
+			query.WithMedias()
+			query.WithLikedByUsers()
+			query.WithUsers()
+		}).
+		WithPlaceInventories().
 		All(ctx)
 
 	if err != nil {
