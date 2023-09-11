@@ -77,6 +77,8 @@ const (
 	EdgeRatings = "ratings"
 	// EdgePlaceInventories holds the string denoting the place_inventories edge name in mutations.
 	EdgePlaceInventories = "place_inventories"
+	// EdgeWebsites holds the string denoting the websites edge name in mutations.
+	EdgeWebsites = "websites"
 	// Table holds the table name of the business in the database.
 	Table = "businesses"
 	// UserBusinessesTable is the table that holds the userBusinesses relation/edge.
@@ -184,6 +186,13 @@ const (
 	PlaceInventoriesInverseTable = "place_inventories"
 	// PlaceInventoriesColumn is the table column denoting the place_inventories relation/edge.
 	PlaceInventoriesColumn = "business_place_inventories"
+	// WebsitesTable is the table that holds the websites relation/edge.
+	WebsitesTable = "websites"
+	// WebsitesInverseTable is the table name for the Website entity.
+	// It exists in this package in order to avoid circular dependency with the "website" package.
+	WebsitesInverseTable = "websites"
+	// WebsitesColumn is the table column denoting the websites relation/edge.
+	WebsitesColumn = "business_websites"
 )
 
 // Columns holds all SQL columns for business fields.
@@ -520,6 +529,13 @@ func ByPlaceInventories(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption 
 		sqlgraph.OrderByNeighborTerms(s, newPlaceInventoriesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByWebsitesField orders the results by websites field.
+func ByWebsitesField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newWebsitesStep(), sql.OrderByField(field, opts...))
+	}
+}
 func newUserBusinessesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -623,5 +639,12 @@ func newPlaceInventoriesStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(PlaceInventoriesInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, PlaceInventoriesTable, PlaceInventoriesColumn),
+	)
+}
+func newWebsitesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(WebsitesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2O, false, WebsitesTable, WebsitesColumn),
 	)
 }

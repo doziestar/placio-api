@@ -17,7 +17,7 @@ import (
 type CategoryService interface {
 	GetUsersByCategory(ctx context.Context, name string) ([]*ent.User, error)
 	CreateCategory(ctx context.Context, icon string, name string, image []*multipart.FileHeader) (*ent.Category, error)
-	UpdateCategory(ctx context.Context, id string, name string, image string) (*ent.Category, error)
+	UpdateCategory(ctx context.Context, id string, name string, image []*multipart.FileHeader, icon string) (*ent.Category, error)
 	DeleteCategory(ctx context.Context, id string) error
 	GetAllCategories(ctx context.Context) ([]*ent.Category, error)
 	GetCategory(ctx context.Context, id string) (*ent.Category, error)
@@ -100,12 +100,39 @@ func (cs *CategoryServiceImpl) CreateCategory(ctx context.Context, icon string, 
 	return category, nil
 }
 
-func (cs *CategoryServiceImpl) UpdateCategory(ctx context.Context, id string, name string, image string) (*ent.Category, error) {
-	return cs.client.Category.
+func (cs *CategoryServiceImpl) UpdateCategory(ctx context.Context, id string, name string, image []*multipart.FileHeader, icon string) (*ent.Category, error) {
+	category, err := cs.client.Category.
 		UpdateOneID(id).
 		SetName(name).
-		SetImage(image).
+		SetIcon(icon).
 		Save(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if len(image) > 0 {
+		go func() {
+			media, err := cs.mediaService.UploadAndCreateMedia(ctx, image)
+			if err != nil {
+				log.Println("error uploading image", err.Error())
+				return
+			}
+
+			_, err = cs.client.Category.
+				UpdateOneID(category.ID).
+				AddMedia(media[0]).
+				SetImage(media[0].URL).
+				Save(ctx)
+
+			if err != nil {
+				log.Println("error adding image to category", err.Error())
+				return
+			}
+		}()
+	}
+
+	return category, nil
 }
 
 func (cs *CategoryServiceImpl) DeleteCategory(ctx context.Context, id string) error {

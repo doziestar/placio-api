@@ -27,6 +27,30 @@ type Post struct {
 	UpdatedAt time.Time `json:"UpdatedAt,omitempty"`
 	// Privacy holds the value of the "Privacy" field.
 	Privacy post.Privacy `json:"Privacy,omitempty"`
+	// LikedByMe holds the value of the "LikedByMe" field.
+	LikedByMe bool `json:"LikedByMe,omitempty"`
+	// LikeCount holds the value of the "LikeCount" field.
+	LikeCount int `json:"LikeCount,omitempty"`
+	// CommentCount holds the value of the "CommentCount" field.
+	CommentCount int `json:"CommentCount,omitempty"`
+	// ShareCount holds the value of the "ShareCount" field.
+	ShareCount int `json:"ShareCount,omitempty"`
+	// ViewCount holds the value of the "ViewCount" field.
+	ViewCount int `json:"ViewCount,omitempty"`
+	// IsSponsored holds the value of the "IsSponsored" field.
+	IsSponsored bool `json:"IsSponsored,omitempty"`
+	// IsPromoted holds the value of the "IsPromoted" field.
+	IsPromoted bool `json:"IsPromoted,omitempty"`
+	// IsBoosted holds the value of the "IsBoosted" field.
+	IsBoosted bool `json:"IsBoosted,omitempty"`
+	// IsPinned holds the value of the "IsPinned" field.
+	IsPinned bool `json:"IsPinned,omitempty"`
+	// IsHidden holds the value of the "IsHidden" field.
+	IsHidden bool `json:"IsHidden,omitempty"`
+	// RelevanceScore holds the value of the "RelevanceScore" field.
+	RelevanceScore int `json:"RelevanceScore,omitempty"`
+	// SearchText holds the value of the "SearchText" field.
+	SearchText string `json:"SearchText,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PostQuery when eager-loading is set.
 	Edges          PostEdges `json:"edges"`
@@ -121,7 +145,11 @@ func (*Post) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case post.FieldID, post.FieldContent, post.FieldPrivacy:
+		case post.FieldLikedByMe, post.FieldIsSponsored, post.FieldIsPromoted, post.FieldIsBoosted, post.FieldIsPinned, post.FieldIsHidden:
+			values[i] = new(sql.NullBool)
+		case post.FieldLikeCount, post.FieldCommentCount, post.FieldShareCount, post.FieldViewCount, post.FieldRelevanceScore:
+			values[i] = new(sql.NullInt64)
+		case post.FieldID, post.FieldContent, post.FieldPrivacy, post.FieldSearchText:
 			values[i] = new(sql.NullString)
 		case post.FieldCreatedAt, post.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -173,6 +201,78 @@ func (po *Post) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field Privacy", values[i])
 			} else if value.Valid {
 				po.Privacy = post.Privacy(value.String)
+			}
+		case post.FieldLikedByMe:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field LikedByMe", values[i])
+			} else if value.Valid {
+				po.LikedByMe = value.Bool
+			}
+		case post.FieldLikeCount:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field LikeCount", values[i])
+			} else if value.Valid {
+				po.LikeCount = int(value.Int64)
+			}
+		case post.FieldCommentCount:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field CommentCount", values[i])
+			} else if value.Valid {
+				po.CommentCount = int(value.Int64)
+			}
+		case post.FieldShareCount:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field ShareCount", values[i])
+			} else if value.Valid {
+				po.ShareCount = int(value.Int64)
+			}
+		case post.FieldViewCount:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field ViewCount", values[i])
+			} else if value.Valid {
+				po.ViewCount = int(value.Int64)
+			}
+		case post.FieldIsSponsored:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field IsSponsored", values[i])
+			} else if value.Valid {
+				po.IsSponsored = value.Bool
+			}
+		case post.FieldIsPromoted:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field IsPromoted", values[i])
+			} else if value.Valid {
+				po.IsPromoted = value.Bool
+			}
+		case post.FieldIsBoosted:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field IsBoosted", values[i])
+			} else if value.Valid {
+				po.IsBoosted = value.Bool
+			}
+		case post.FieldIsPinned:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field IsPinned", values[i])
+			} else if value.Valid {
+				po.IsPinned = value.Bool
+			}
+		case post.FieldIsHidden:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field IsHidden", values[i])
+			} else if value.Valid {
+				po.IsHidden = value.Bool
+			}
+		case post.FieldRelevanceScore:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field RelevanceScore", values[i])
+			} else if value.Valid {
+				po.RelevanceScore = int(value.Int64)
+			}
+		case post.FieldSearchText:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field SearchText", values[i])
+			} else if value.Valid {
+				po.SearchText = value.String
 			}
 		case post.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -265,6 +365,42 @@ func (po *Post) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("Privacy=")
 	builder.WriteString(fmt.Sprintf("%v", po.Privacy))
+	builder.WriteString(", ")
+	builder.WriteString("LikedByMe=")
+	builder.WriteString(fmt.Sprintf("%v", po.LikedByMe))
+	builder.WriteString(", ")
+	builder.WriteString("LikeCount=")
+	builder.WriteString(fmt.Sprintf("%v", po.LikeCount))
+	builder.WriteString(", ")
+	builder.WriteString("CommentCount=")
+	builder.WriteString(fmt.Sprintf("%v", po.CommentCount))
+	builder.WriteString(", ")
+	builder.WriteString("ShareCount=")
+	builder.WriteString(fmt.Sprintf("%v", po.ShareCount))
+	builder.WriteString(", ")
+	builder.WriteString("ViewCount=")
+	builder.WriteString(fmt.Sprintf("%v", po.ViewCount))
+	builder.WriteString(", ")
+	builder.WriteString("IsSponsored=")
+	builder.WriteString(fmt.Sprintf("%v", po.IsSponsored))
+	builder.WriteString(", ")
+	builder.WriteString("IsPromoted=")
+	builder.WriteString(fmt.Sprintf("%v", po.IsPromoted))
+	builder.WriteString(", ")
+	builder.WriteString("IsBoosted=")
+	builder.WriteString(fmt.Sprintf("%v", po.IsBoosted))
+	builder.WriteString(", ")
+	builder.WriteString("IsPinned=")
+	builder.WriteString(fmt.Sprintf("%v", po.IsPinned))
+	builder.WriteString(", ")
+	builder.WriteString("IsHidden=")
+	builder.WriteString(fmt.Sprintf("%v", po.IsHidden))
+	builder.WriteString(", ")
+	builder.WriteString("RelevanceScore=")
+	builder.WriteString(fmt.Sprintf("%v", po.RelevanceScore))
+	builder.WriteString(", ")
+	builder.WriteString("SearchText=")
+	builder.WriteString(po.SearchText)
 	builder.WriteByte(')')
 	return builder.String()
 }

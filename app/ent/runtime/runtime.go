@@ -39,6 +39,7 @@ import (
 	"placio-app/ent/userfollowplace"
 	"placio-app/ent/userfollowuser"
 	"placio-app/ent/userlikeplace"
+	"placio-app/ent/website"
 	"time"
 )
 
@@ -310,24 +311,32 @@ func init() {
 	placeDescFollowerCount := placeFields[29].Descriptor()
 	// place.DefaultFollowerCount holds the default value on creation for the follower_count field.
 	place.DefaultFollowerCount = placeDescFollowerCount.Default.(int)
+	// placeDescLikeCount is the schema descriptor for like_count field.
+	placeDescLikeCount := placeFields[30].Descriptor()
+	// place.DefaultLikeCount holds the default value on creation for the like_count field.
+	place.DefaultLikeCount = placeDescLikeCount.Default.(int)
+	// placeDescReviewCount is the schema descriptor for review_count field.
+	placeDescReviewCount := placeFields[31].Descriptor()
+	// place.DefaultReviewCount holds the default value on creation for the review_count field.
+	place.DefaultReviewCount = placeDescReviewCount.Default.(int)
 	// placeDescFollowingCount is the schema descriptor for following_count field.
-	placeDescFollowingCount := placeFields[30].Descriptor()
+	placeDescFollowingCount := placeFields[32].Descriptor()
 	// place.DefaultFollowingCount holds the default value on creation for the following_count field.
 	place.DefaultFollowingCount = placeDescFollowingCount.Default.(int)
 	// placeDescIsPremium is the schema descriptor for is_Premium field.
-	placeDescIsPremium := placeFields[31].Descriptor()
+	placeDescIsPremium := placeFields[33].Descriptor()
 	// place.DefaultIsPremium holds the default value on creation for the is_Premium field.
 	place.DefaultIsPremium = placeDescIsPremium.Default.(bool)
 	// placeDescIsPublished is the schema descriptor for is_published field.
-	placeDescIsPublished := placeFields[32].Descriptor()
+	placeDescIsPublished := placeFields[34].Descriptor()
 	// place.DefaultIsPublished holds the default value on creation for the is_published field.
 	place.DefaultIsPublished = placeDescIsPublished.Default.(bool)
 	// placeDescLikedByCurrentUser is the schema descriptor for likedByCurrentUser field.
-	placeDescLikedByCurrentUser := placeFields[33].Descriptor()
+	placeDescLikedByCurrentUser := placeFields[35].Descriptor()
 	// place.DefaultLikedByCurrentUser holds the default value on creation for the likedByCurrentUser field.
 	place.DefaultLikedByCurrentUser = placeDescLikedByCurrentUser.Default.(bool)
 	// placeDescFollowedByCurrentUser is the schema descriptor for followedByCurrentUser field.
-	placeDescFollowedByCurrentUser := placeFields[34].Descriptor()
+	placeDescFollowedByCurrentUser := placeFields[36].Descriptor()
 	// place.DefaultFollowedByCurrentUser holds the default value on creation for the followedByCurrentUser field.
 	place.DefaultFollowedByCurrentUser = placeDescFollowedByCurrentUser.Default.(bool)
 	// placeDescID is the schema descriptor for id field.
@@ -364,6 +373,50 @@ func init() {
 	postDescUpdatedAt := postFields[3].Descriptor()
 	// post.UpdateDefaultUpdatedAt holds the default value on update for the UpdatedAt field.
 	post.UpdateDefaultUpdatedAt = postDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// postDescLikedByMe is the schema descriptor for LikedByMe field.
+	postDescLikedByMe := postFields[5].Descriptor()
+	// post.DefaultLikedByMe holds the default value on creation for the LikedByMe field.
+	post.DefaultLikedByMe = postDescLikedByMe.Default.(bool)
+	// postDescLikeCount is the schema descriptor for LikeCount field.
+	postDescLikeCount := postFields[6].Descriptor()
+	// post.DefaultLikeCount holds the default value on creation for the LikeCount field.
+	post.DefaultLikeCount = postDescLikeCount.Default.(int)
+	// postDescCommentCount is the schema descriptor for CommentCount field.
+	postDescCommentCount := postFields[7].Descriptor()
+	// post.DefaultCommentCount holds the default value on creation for the CommentCount field.
+	post.DefaultCommentCount = postDescCommentCount.Default.(int)
+	// postDescShareCount is the schema descriptor for ShareCount field.
+	postDescShareCount := postFields[8].Descriptor()
+	// post.DefaultShareCount holds the default value on creation for the ShareCount field.
+	post.DefaultShareCount = postDescShareCount.Default.(int)
+	// postDescViewCount is the schema descriptor for ViewCount field.
+	postDescViewCount := postFields[9].Descriptor()
+	// post.DefaultViewCount holds the default value on creation for the ViewCount field.
+	post.DefaultViewCount = postDescViewCount.Default.(int)
+	// postDescIsSponsored is the schema descriptor for IsSponsored field.
+	postDescIsSponsored := postFields[10].Descriptor()
+	// post.DefaultIsSponsored holds the default value on creation for the IsSponsored field.
+	post.DefaultIsSponsored = postDescIsSponsored.Default.(bool)
+	// postDescIsPromoted is the schema descriptor for IsPromoted field.
+	postDescIsPromoted := postFields[11].Descriptor()
+	// post.DefaultIsPromoted holds the default value on creation for the IsPromoted field.
+	post.DefaultIsPromoted = postDescIsPromoted.Default.(bool)
+	// postDescIsBoosted is the schema descriptor for IsBoosted field.
+	postDescIsBoosted := postFields[12].Descriptor()
+	// post.DefaultIsBoosted holds the default value on creation for the IsBoosted field.
+	post.DefaultIsBoosted = postDescIsBoosted.Default.(bool)
+	// postDescIsPinned is the schema descriptor for IsPinned field.
+	postDescIsPinned := postFields[13].Descriptor()
+	// post.DefaultIsPinned holds the default value on creation for the IsPinned field.
+	post.DefaultIsPinned = postDescIsPinned.Default.(bool)
+	// postDescIsHidden is the schema descriptor for IsHidden field.
+	postDescIsHidden := postFields[14].Descriptor()
+	// post.DefaultIsHidden holds the default value on creation for the IsHidden field.
+	post.DefaultIsHidden = postDescIsHidden.Default.(bool)
+	// postDescRelevanceScore is the schema descriptor for RelevanceScore field.
+	postDescRelevanceScore := postFields[15].Descriptor()
+	// post.DefaultRelevanceScore holds the default value on creation for the RelevanceScore field.
+	post.DefaultRelevanceScore = postDescRelevanceScore.Default.(int)
 	// postDescID is the schema descriptor for id field.
 	postDescID := postFields[0].Descriptor()
 	// post.IDValidator is a validator for the "id" field. It is called by the builders before save.
@@ -564,6 +617,16 @@ func init() {
 	userlikeplaceDescUpdatedAt := userlikeplaceFields[2].Descriptor()
 	// userlikeplace.UpdateDefaultUpdatedAt holds the default value on update for the UpdatedAt field.
 	userlikeplace.UpdateDefaultUpdatedAt = userlikeplaceDescUpdatedAt.UpdateDefault.(func() time.Time)
+	websiteFields := schema.Website{}.Fields()
+	_ = websiteFields
+	// websiteDescCreationDate is the schema descriptor for creationDate field.
+	websiteDescCreationDate := websiteFields[1].Descriptor()
+	// website.DefaultCreationDate holds the default value on creation for the creationDate field.
+	website.DefaultCreationDate = websiteDescCreationDate.Default.(func() time.Time)
+	// websiteDescLastUpdated is the schema descriptor for lastUpdated field.
+	websiteDescLastUpdated := websiteFields[2].Descriptor()
+	// website.UpdateDefaultLastUpdated holds the default value on update for the lastUpdated field.
+	website.UpdateDefaultLastUpdated = websiteDescLastUpdated.UpdateDefault.(func() time.Time)
 }
 
 const (

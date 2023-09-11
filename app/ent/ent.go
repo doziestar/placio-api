@@ -17,6 +17,7 @@ import (
 	"placio-app/ent/categoryassignment"
 	"placio-app/ent/chat"
 	"placio-app/ent/comment"
+	"placio-app/ent/customblock"
 	"placio-app/ent/event"
 	"placio-app/ent/faq"
 	"placio-app/ent/featurerelease"
@@ -39,6 +40,7 @@ import (
 	"placio-app/ent/resourse"
 	"placio-app/ent/review"
 	"placio-app/ent/room"
+	"placio-app/ent/template"
 	"placio-app/ent/ticket"
 	"placio-app/ent/ticketoption"
 	"placio-app/ent/transactionhistory"
@@ -49,6 +51,7 @@ import (
 	"placio-app/ent/userfollowplace"
 	"placio-app/ent/userfollowuser"
 	"placio-app/ent/userlikeplace"
+	"placio-app/ent/website"
 	"reflect"
 	"sync"
 
@@ -126,6 +129,7 @@ func checkColumn(table, column string) error {
 			categoryassignment.Table:      categoryassignment.ValidColumn,
 			chat.Table:                    chat.ValidColumn,
 			comment.Table:                 comment.ValidColumn,
+			customblock.Table:             customblock.ValidColumn,
 			event.Table:                   event.ValidColumn,
 			faq.Table:                     faq.ValidColumn,
 			featurerelease.Table:          featurerelease.ValidColumn,
@@ -148,6 +152,7 @@ func checkColumn(table, column string) error {
 			resourse.Table:                resourse.ValidColumn,
 			review.Table:                  review.ValidColumn,
 			room.Table:                    room.ValidColumn,
+			template.Table:                template.ValidColumn,
 			ticket.Table:                  ticket.ValidColumn,
 			ticketoption.Table:            ticketoption.ValidColumn,
 			transactionhistory.Table:      transactionhistory.ValidColumn,
@@ -158,6 +163,7 @@ func checkColumn(table, column string) error {
 			userfollowplace.Table:         userfollowplace.ValidColumn,
 			userfollowuser.Table:          userfollowuser.ValidColumn,
 			userlikeplace.Table:           userlikeplace.ValidColumn,
+			website.Table:                 website.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)

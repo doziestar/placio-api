@@ -39,6 +39,9 @@ type Chat func(*sql.Selector)
 // Comment is the predicate function for comment builders.
 type Comment func(*sql.Selector)
 
+// CustomBlock is the predicate function for customblock builders.
+type CustomBlock func(*sql.Selector)
+
 // Event is the predicate function for event builders.
 type Event func(*sql.Selector)
 
@@ -105,6 +108,9 @@ type Review func(*sql.Selector)
 // Room is the predicate function for room builders.
 type Room func(*sql.Selector)
 
+// Template is the predicate function for template builders.
+type Template func(*sql.Selector)
+
 // Ticket is the predicate function for ticket builders.
 type Ticket func(*sql.Selector)
 
@@ -134,3 +140,6 @@ type UserFollowUser func(*sql.Selector)
 
 // UserLikePlace is the predicate function for userlikeplace builders.
 type UserLikePlace func(*sql.Selector)
+
+// Website is the predicate function for website builders.
+type Website func(*sql.Selector)

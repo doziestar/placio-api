@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"placio-app/ent/accountsettings"
 	"placio-app/ent/business"
+	"placio-app/ent/website"
 	"strings"
 
 	"entgo.io/ent"
@@ -90,9 +91,11 @@ type BusinessEdges struct {
 	Ratings []*Rating `json:"ratings,omitempty"`
 	// PlaceInventories holds the value of the place_inventories edge.
 	PlaceInventories []*PlaceInventory `json:"place_inventories,omitempty"`
+	// Websites holds the value of the websites edge.
+	Websites *Website `json:"websites,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [15]bool
+	loadedTypes [16]bool
 }
 
 // UserBusinessesOrErr returns the UserBusinesses value or an error if the edge
@@ -232,6 +235,19 @@ func (e BusinessEdges) PlaceInventoriesOrErr() ([]*PlaceInventory, error) {
 		return e.PlaceInventories, nil
 	}
 	return nil, &NotLoadedError{edge: "place_inventories"}
+}
+
+// WebsitesOrErr returns the Websites value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e BusinessEdges) WebsitesOrErr() (*Website, error) {
+	if e.loadedTypes[15] {
+		if e.Websites == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: website.Label}
+		}
+		return e.Websites, nil
+	}
+	return nil, &NotLoadedError{edge: "websites"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -460,6 +476,11 @@ func (b *Business) QueryRatings() *RatingQuery {
 // QueryPlaceInventories queries the "place_inventories" edge of the Business entity.
 func (b *Business) QueryPlaceInventories() *PlaceInventoryQuery {
 	return NewBusinessClient(b.config).QueryPlaceInventories(b)
+}
+
+// QueryWebsites queries the "websites" edge of the Business entity.
+func (b *Business) QueryWebsites() *WebsiteQuery {
+	return NewBusinessClient(b.config).QueryWebsites(b)
 }
 
 // Update returns a builder for updating this Business.

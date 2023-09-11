@@ -176,14 +176,12 @@ func (c *PlaceController) addAmenitiesToPlace(ctx *gin.Context) error {
 		return err
 	}
 
-	if err := c.placeService.AddAmenitiesToPlace(ctx, id, amenityDTO.Amenities); err != nil {
+	if _, err := c.placeService.AddAmenitiesToPlace(ctx, id, amenityDTO.Amenities); err != nil {
 
 		return err
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Amenities added successfully",
-	})
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(nil, "success", "amenities added successfully", ""))
 	return nil
 }
 

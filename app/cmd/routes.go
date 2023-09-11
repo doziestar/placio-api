@@ -18,6 +18,7 @@ import (
 	"placio-app/domains/media"
 	"placio-app/domains/places"
 	"placio-app/domains/posts"
+	"placio-app/domains/recommendations"
 	"placio-app/domains/reviews"
 	"placio-app/domains/search"
 	"placio-app/domains/users"
@@ -167,25 +168,10 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		featureReleaseController := feature_releases.NewFeatureReleaseController(featureReleaseService, *redisClient)
 		featureReleaseController.RegisterRoutes(routerGroupV1, routerGroupV1WithoutAuth)
 
-		// ratings
-		//ratingService := service.NewRatingService(client)
-		//ratingController := controller.NewRatingController(ratingService)
-		//ratingController.RegisterRoutes(routerGroupV1)
-
-		//// tickets
-		//ticketService := service.NewTicketService(db)
-		//ticketController := controller.NewTicketController(ticketService)
-		//ticketController.RegisterRoutes(routerGroupV1)
-		//
-		//// attendee
-		//attendeeService := service.NewAttendeeService(db)
-		//attendeeController := controller.NewAttendeeController(attendeeService)
-		//attendeeController.RegisterRoutes(routerGroupV1)
-		//
-		//// ticketOption
-		//ticketOptionService := service.NewTicketOptionService(db)
-		//ticketOptionController := controller.NewTicketOptionController(ticketOptionService)
-		//ticketOptionController.RegisterRoutes(routerGroupV1)
+		// recommendations
+		recommendationService := recommendations.NewRecommendations(client, userService, placeService)
+		recommendationController := recommendations.NewRecommendationController(*recommendationService)
+		recommendationController.RegisterRoutes(routerGroupV1)
 
 	}
 

@@ -76,6 +76,10 @@ type Place struct {
 	RelevanceScore float64 `json:"relevance_score,omitempty"`
 	// FollowerCount holds the value of the "follower_count" field.
 	FollowerCount int `json:"follower_count,omitempty"`
+	// LikeCount holds the value of the "like_count" field.
+	LikeCount int `json:"like_count,omitempty"`
+	// ReviewCount holds the value of the "review_count" field.
+	ReviewCount int `json:"review_count,omitempty"`
 	// FollowingCount holds the value of the "following_count" field.
 	FollowingCount int `json:"following_count,omitempty"`
 	// IsPremium holds the value of the "is_Premium" field.
@@ -303,7 +307,7 @@ func (*Place) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case place.FieldSustainabilityScore, place.FieldRelevanceScore:
 			values[i] = new(sql.NullFloat64)
-		case place.FieldFollowerCount, place.FieldFollowingCount:
+		case place.FieldFollowerCount, place.FieldLikeCount, place.FieldReviewCount, place.FieldFollowingCount:
 			values[i] = new(sql.NullInt64)
 		case place.FieldID, place.FieldName, place.FieldType, place.FieldDescription, place.FieldLocation, place.FieldEmail, place.FieldPhone, place.FieldWebsite, place.FieldCoverImage, place.FieldPicture, place.FieldCountry, place.FieldCity, place.FieldState, place.FieldSpecialOffers, place.FieldLongitude, place.FieldLatitude, place.FieldSearchText:
 			values[i] = new(sql.NullString)
@@ -525,6 +529,18 @@ func (pl *Place) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field follower_count", values[i])
 			} else if value.Valid {
 				pl.FollowerCount = int(value.Int64)
+			}
+		case place.FieldLikeCount:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field like_count", values[i])
+			} else if value.Valid {
+				pl.LikeCount = int(value.Int64)
+			}
+		case place.FieldReviewCount:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field review_count", values[i])
+			} else if value.Valid {
+				pl.ReviewCount = int(value.Int64)
 			}
 		case place.FieldFollowingCount:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -777,6 +793,12 @@ func (pl *Place) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("follower_count=")
 	builder.WriteString(fmt.Sprintf("%v", pl.FollowerCount))
+	builder.WriteString(", ")
+	builder.WriteString("like_count=")
+	builder.WriteString(fmt.Sprintf("%v", pl.LikeCount))
+	builder.WriteString(", ")
+	builder.WriteString("review_count=")
+	builder.WriteString(fmt.Sprintf("%v", pl.ReviewCount))
 	builder.WriteString(", ")
 	builder.WriteString("following_count=")
 	builder.WriteString(fmt.Sprintf("%v", pl.FollowingCount))

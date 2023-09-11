@@ -138,7 +138,7 @@ func (s *FollowService) FollowUserToPlace(ctx context.Context, userID, placeID s
 		return err
 	}
 
-	go s.cacheService.AddPlaceToCacheAndSearchIndex(ctx, placeToUpdate)
+	//go s.cacheService.AddPlaceToCacheAndSearchIndex(ctx, placeToUpdate)
 	return nil
 }
 

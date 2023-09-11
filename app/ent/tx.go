@@ -34,6 +34,8 @@ type Tx struct {
 	Chat *ChatClient
 	// Comment is the client for interacting with the Comment builders.
 	Comment *CommentClient
+	// CustomBlock is the client for interacting with the CustomBlock builders.
+	CustomBlock *CustomBlockClient
 	// Event is the client for interacting with the Event builders.
 	Event *EventClient
 	// FAQ is the client for interacting with the FAQ builders.
@@ -78,6 +80,8 @@ type Tx struct {
 	Review *ReviewClient
 	// Room is the client for interacting with the Room builders.
 	Room *RoomClient
+	// Template is the client for interacting with the Template builders.
+	Template *TemplateClient
 	// Ticket is the client for interacting with the Ticket builders.
 	Ticket *TicketClient
 	// TicketOption is the client for interacting with the TicketOption builders.
@@ -98,6 +102,8 @@ type Tx struct {
 	UserFollowUser *UserFollowUserClient
 	// UserLikePlace is the client for interacting with the UserLikePlace builders.
 	UserLikePlace *UserLikePlaceClient
+	// Website is the client for interacting with the Website builders.
+	Website *WebsiteClient
 
 	// lazily loaded.
 	client     *Client
@@ -240,6 +246,7 @@ func (tx *Tx) init() {
 	tx.CategoryAssignment = NewCategoryAssignmentClient(tx.config)
 	tx.Chat = NewChatClient(tx.config)
 	tx.Comment = NewCommentClient(tx.config)
+	tx.CustomBlock = NewCustomBlockClient(tx.config)
 	tx.Event = NewEventClient(tx.config)
 	tx.FAQ = NewFAQClient(tx.config)
 	tx.FeatureRelease = NewFeatureReleaseClient(tx.config)
@@ -262,6 +269,7 @@ func (tx *Tx) init() {
 	tx.Resourse = NewResourseClient(tx.config)
 	tx.Review = NewReviewClient(tx.config)
 	tx.Room = NewRoomClient(tx.config)
+	tx.Template = NewTemplateClient(tx.config)
 	tx.Ticket = NewTicketClient(tx.config)
 	tx.TicketOption = NewTicketOptionClient(tx.config)
 	tx.TransactionHistory = NewTransactionHistoryClient(tx.config)
@@ -272,6 +280,7 @@ func (tx *Tx) init() {
 	tx.UserFollowPlace = NewUserFollowPlaceClient(tx.config)
 	tx.UserFollowUser = NewUserFollowUserClient(tx.config)
 	tx.UserLikePlace = NewUserLikePlaceClient(tx.config)
+	tx.Website = NewWebsiteClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.

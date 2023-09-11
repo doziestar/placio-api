@@ -289,7 +289,37 @@ func (s *BusinessAccountServiceImpl) GetBusinessAccount(ctx context.Context, bus
 		return nil, errors.New("businessAccountID cannot be nil")
 	}
 
-	businessAccount, err := s.client.Business.Get(ctx, businessAccountID)
+	businessAccount, err := s.client.Business.
+		Query().
+		Where(business.IDEQ(businessAccountID)).
+		WithFollowerUsers().
+		WithFollowedUsers().
+		WithFollowerBusinesses(func(query *ent.BusinessFollowBusinessQuery) {
+			query.WithFollower()
+
+		}).
+		WithFollowedBusinesses(func(query *ent.BusinessFollowBusinessQuery) {
+			query.WithFollowed()
+
+		}).
+		WithEvents(func(query *ent.EventQuery) {
+		}).
+		WithPlaces(func(query *ent.PlaceQuery) {
+			query.WithMedias()
+		}).
+		WithUserBusinesses().
+		WithPosts(func(query *ent.PostQuery) {
+			query.WithUser()
+			query.WithBusinessAccount()
+			query.WithMedias()
+			query.WithLikes(func(query *ent.LikeQuery) {
+				query.WithUser()
+			})
+			query.WithComments(func(query *ent.CommentQuery) {
+				query.WithUser()
+			})
+		}).
+		Only(ctx)
 	if err != nil {
 		return nil, err
 	}

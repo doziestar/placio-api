@@ -20,7 +20,7 @@ func NewLikeController(likeService LikeService, userPlacesLikes UserLikePlaceSer
 func (likesController *LikeController) RegisterRoutes(router *gin.RouterGroup) {
 	likeRouter := router.Group("/likes")
 	{
-		likeRouter.POST("/user/:userID/post/:postID", likesController.likePost)
+		likeRouter.POST("/post/:postID", likesController.likePost)
 		likeRouter.DELETE("/:likeID", likesController.unlikePost)
 		likeRouter.GET("/user/:userID", likesController.getUserLikes)
 		likeRouter.GET("/post/:postID", likesController.getPostLikes)
@@ -75,7 +75,7 @@ func (likesController *LikeController) checkUserLikesPlace(ctx *gin.Context) err
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/likes/user/{userID}/post/{postID} [post]
 func (likesController *LikeController) likePost(ctx *gin.Context) {
-	userID := ctx.Param("userID")
+	userID := ctx.MustGet("user").(string)
 	postID := ctx.Param("postID")
 
 	like, err := likesController.likeService.LikePost(ctx, userID, postID)
@@ -84,7 +84,7 @@ func (likesController *LikeController) likePost(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, like)
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(like, "success", "Successfully liked post", ""))
 }
 
 // @Summary Unlike a post

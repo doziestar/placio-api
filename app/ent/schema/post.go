@@ -19,10 +19,22 @@ func (Post) Fields() []ent.Field {
 			MaxLen(36).
 			Unique().
 			Immutable(),
-		field.String("Content").MaxLen(2147483647), // equivalent to TEXT in SQL
+		field.String("Content").MaxLen(2147483647),
 		field.Time("CreatedAt").Default(time.Now),
 		field.Time("UpdatedAt").UpdateDefault(time.Now),
 		field.Enum("Privacy").Values("Public", "FollowersOnly", "OnlyMe").Default("Public"),
+		field.Bool("LikedByMe").Default(false),
+		field.Int("LikeCount").Default(0),
+		field.Int("CommentCount").Default(0),
+		field.Int("ShareCount").Default(0),
+		field.Int("ViewCount").Default(0),
+		field.Bool("IsSponsored").Default(false),
+		field.Bool("IsPromoted").Default(false),
+		field.Bool("IsBoosted").Default(false),
+		field.Bool("IsPinned").Default(false),
+		field.Bool("IsHidden").Default(false),
+		field.Int("RelevanceScore").Default(0),
+		field.String("SearchText").Optional(),
 	}
 }
 

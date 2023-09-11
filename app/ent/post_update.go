@@ -74,6 +74,215 @@ func (pu *PostUpdate) SetNillablePrivacy(po *post.Privacy) *PostUpdate {
 	return pu
 }
 
+// SetLikedByMe sets the "LikedByMe" field.
+func (pu *PostUpdate) SetLikedByMe(b bool) *PostUpdate {
+	pu.mutation.SetLikedByMe(b)
+	return pu
+}
+
+// SetNillableLikedByMe sets the "LikedByMe" field if the given value is not nil.
+func (pu *PostUpdate) SetNillableLikedByMe(b *bool) *PostUpdate {
+	if b != nil {
+		pu.SetLikedByMe(*b)
+	}
+	return pu
+}
+
+// SetLikeCount sets the "LikeCount" field.
+func (pu *PostUpdate) SetLikeCount(i int) *PostUpdate {
+	pu.mutation.ResetLikeCount()
+	pu.mutation.SetLikeCount(i)
+	return pu
+}
+
+// SetNillableLikeCount sets the "LikeCount" field if the given value is not nil.
+func (pu *PostUpdate) SetNillableLikeCount(i *int) *PostUpdate {
+	if i != nil {
+		pu.SetLikeCount(*i)
+	}
+	return pu
+}
+
+// AddLikeCount adds i to the "LikeCount" field.
+func (pu *PostUpdate) AddLikeCount(i int) *PostUpdate {
+	pu.mutation.AddLikeCount(i)
+	return pu
+}
+
+// SetCommentCount sets the "CommentCount" field.
+func (pu *PostUpdate) SetCommentCount(i int) *PostUpdate {
+	pu.mutation.ResetCommentCount()
+	pu.mutation.SetCommentCount(i)
+	return pu
+}
+
+// SetNillableCommentCount sets the "CommentCount" field if the given value is not nil.
+func (pu *PostUpdate) SetNillableCommentCount(i *int) *PostUpdate {
+	if i != nil {
+		pu.SetCommentCount(*i)
+	}
+	return pu
+}
+
+// AddCommentCount adds i to the "CommentCount" field.
+func (pu *PostUpdate) AddCommentCount(i int) *PostUpdate {
+	pu.mutation.AddCommentCount(i)
+	return pu
+}
+
+// SetShareCount sets the "ShareCount" field.
+func (pu *PostUpdate) SetShareCount(i int) *PostUpdate {
+	pu.mutation.ResetShareCount()
+	pu.mutation.SetShareCount(i)
+	return pu
+}
+
+// SetNillableShareCount sets the "ShareCount" field if the given value is not nil.
+func (pu *PostUpdate) SetNillableShareCount(i *int) *PostUpdate {
+	if i != nil {
+		pu.SetShareCount(*i)
+	}
+	return pu
+}
+
+// AddShareCount adds i to the "ShareCount" field.
+func (pu *PostUpdate) AddShareCount(i int) *PostUpdate {
+	pu.mutation.AddShareCount(i)
+	return pu
+}
+
+// SetViewCount sets the "ViewCount" field.
+func (pu *PostUpdate) SetViewCount(i int) *PostUpdate {
+	pu.mutation.ResetViewCount()
+	pu.mutation.SetViewCount(i)
+	return pu
+}
+
+// SetNillableViewCount sets the "ViewCount" field if the given value is not nil.
+func (pu *PostUpdate) SetNillableViewCount(i *int) *PostUpdate {
+	if i != nil {
+		pu.SetViewCount(*i)
+	}
+	return pu
+}
+
+// AddViewCount adds i to the "ViewCount" field.
+func (pu *PostUpdate) AddViewCount(i int) *PostUpdate {
+	pu.mutation.AddViewCount(i)
+	return pu
+}
+
+// SetIsSponsored sets the "IsSponsored" field.
+func (pu *PostUpdate) SetIsSponsored(b bool) *PostUpdate {
+	pu.mutation.SetIsSponsored(b)
+	return pu
+}
+
+// SetNillableIsSponsored sets the "IsSponsored" field if the given value is not nil.
+func (pu *PostUpdate) SetNillableIsSponsored(b *bool) *PostUpdate {
+	if b != nil {
+		pu.SetIsSponsored(*b)
+	}
+	return pu
+}
+
+// SetIsPromoted sets the "IsPromoted" field.
+func (pu *PostUpdate) SetIsPromoted(b bool) *PostUpdate {
+	pu.mutation.SetIsPromoted(b)
+	return pu
+}
+
+// SetNillableIsPromoted sets the "IsPromoted" field if the given value is not nil.
+func (pu *PostUpdate) SetNillableIsPromoted(b *bool) *PostUpdate {
+	if b != nil {
+		pu.SetIsPromoted(*b)
+	}
+	return pu
+}
+
+// SetIsBoosted sets the "IsBoosted" field.
+func (pu *PostUpdate) SetIsBoosted(b bool) *PostUpdate {
+	pu.mutation.SetIsBoosted(b)
+	return pu
+}
+
+// SetNillableIsBoosted sets the "IsBoosted" field if the given value is not nil.
+func (pu *PostUpdate) SetNillableIsBoosted(b *bool) *PostUpdate {
+	if b != nil {
+		pu.SetIsBoosted(*b)
+	}
+	return pu
+}
+
+// SetIsPinned sets the "IsPinned" field.
+func (pu *PostUpdate) SetIsPinned(b bool) *PostUpdate {
+	pu.mutation.SetIsPinned(b)
+	return pu
+}
+
+// SetNillableIsPinned sets the "IsPinned" field if the given value is not nil.
+func (pu *PostUpdate) SetNillableIsPinned(b *bool) *PostUpdate {
+	if b != nil {
+		pu.SetIsPinned(*b)
+	}
+	return pu
+}
+
+// SetIsHidden sets the "IsHidden" field.
+func (pu *PostUpdate) SetIsHidden(b bool) *PostUpdate {
+	pu.mutation.SetIsHidden(b)
+	return pu
+}
+
+// SetNillableIsHidden sets the "IsHidden" field if the given value is not nil.
+func (pu *PostUpdate) SetNillableIsHidden(b *bool) *PostUpdate {
+	if b != nil {
+		pu.SetIsHidden(*b)
+	}
+	return pu
+}
+
+// SetRelevanceScore sets the "RelevanceScore" field.
+func (pu *PostUpdate) SetRelevanceScore(i int) *PostUpdate {
+	pu.mutation.ResetRelevanceScore()
+	pu.mutation.SetRelevanceScore(i)
+	return pu
+}
+
+// SetNillableRelevanceScore sets the "RelevanceScore" field if the given value is not nil.
+func (pu *PostUpdate) SetNillableRelevanceScore(i *int) *PostUpdate {
+	if i != nil {
+		pu.SetRelevanceScore(*i)
+	}
+	return pu
+}
+
+// AddRelevanceScore adds i to the "RelevanceScore" field.
+func (pu *PostUpdate) AddRelevanceScore(i int) *PostUpdate {
+	pu.mutation.AddRelevanceScore(i)
+	return pu
+}
+
+// SetSearchText sets the "SearchText" field.
+func (pu *PostUpdate) SetSearchText(s string) *PostUpdate {
+	pu.mutation.SetSearchText(s)
+	return pu
+}
+
+// SetNillableSearchText sets the "SearchText" field if the given value is not nil.
+func (pu *PostUpdate) SetNillableSearchText(s *string) *PostUpdate {
+	if s != nil {
+		pu.SetSearchText(*s)
+	}
+	return pu
+}
+
+// ClearSearchText clears the value of the "SearchText" field.
+func (pu *PostUpdate) ClearSearchText() *PostUpdate {
+	pu.mutation.ClearSearchText()
+	return pu
+}
+
 // SetUserID sets the "user" edge to the User entity by ID.
 func (pu *PostUpdate) SetUserID(id string) *PostUpdate {
 	pu.mutation.SetUserID(id)
@@ -347,6 +556,60 @@ func (pu *PostUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := pu.mutation.Privacy(); ok {
 		_spec.SetField(post.FieldPrivacy, field.TypeEnum, value)
+	}
+	if value, ok := pu.mutation.LikedByMe(); ok {
+		_spec.SetField(post.FieldLikedByMe, field.TypeBool, value)
+	}
+	if value, ok := pu.mutation.LikeCount(); ok {
+		_spec.SetField(post.FieldLikeCount, field.TypeInt, value)
+	}
+	if value, ok := pu.mutation.AddedLikeCount(); ok {
+		_spec.AddField(post.FieldLikeCount, field.TypeInt, value)
+	}
+	if value, ok := pu.mutation.CommentCount(); ok {
+		_spec.SetField(post.FieldCommentCount, field.TypeInt, value)
+	}
+	if value, ok := pu.mutation.AddedCommentCount(); ok {
+		_spec.AddField(post.FieldCommentCount, field.TypeInt, value)
+	}
+	if value, ok := pu.mutation.ShareCount(); ok {
+		_spec.SetField(post.FieldShareCount, field.TypeInt, value)
+	}
+	if value, ok := pu.mutation.AddedShareCount(); ok {
+		_spec.AddField(post.FieldShareCount, field.TypeInt, value)
+	}
+	if value, ok := pu.mutation.ViewCount(); ok {
+		_spec.SetField(post.FieldViewCount, field.TypeInt, value)
+	}
+	if value, ok := pu.mutation.AddedViewCount(); ok {
+		_spec.AddField(post.FieldViewCount, field.TypeInt, value)
+	}
+	if value, ok := pu.mutation.IsSponsored(); ok {
+		_spec.SetField(post.FieldIsSponsored, field.TypeBool, value)
+	}
+	if value, ok := pu.mutation.IsPromoted(); ok {
+		_spec.SetField(post.FieldIsPromoted, field.TypeBool, value)
+	}
+	if value, ok := pu.mutation.IsBoosted(); ok {
+		_spec.SetField(post.FieldIsBoosted, field.TypeBool, value)
+	}
+	if value, ok := pu.mutation.IsPinned(); ok {
+		_spec.SetField(post.FieldIsPinned, field.TypeBool, value)
+	}
+	if value, ok := pu.mutation.IsHidden(); ok {
+		_spec.SetField(post.FieldIsHidden, field.TypeBool, value)
+	}
+	if value, ok := pu.mutation.RelevanceScore(); ok {
+		_spec.SetField(post.FieldRelevanceScore, field.TypeInt, value)
+	}
+	if value, ok := pu.mutation.AddedRelevanceScore(); ok {
+		_spec.AddField(post.FieldRelevanceScore, field.TypeInt, value)
+	}
+	if value, ok := pu.mutation.SearchText(); ok {
+		_spec.SetField(post.FieldSearchText, field.TypeString, value)
+	}
+	if pu.mutation.SearchTextCleared() {
+		_spec.ClearField(post.FieldSearchText, field.TypeString)
 	}
 	if pu.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -643,6 +906,215 @@ func (puo *PostUpdateOne) SetNillablePrivacy(po *post.Privacy) *PostUpdateOne {
 	if po != nil {
 		puo.SetPrivacy(*po)
 	}
+	return puo
+}
+
+// SetLikedByMe sets the "LikedByMe" field.
+func (puo *PostUpdateOne) SetLikedByMe(b bool) *PostUpdateOne {
+	puo.mutation.SetLikedByMe(b)
+	return puo
+}
+
+// SetNillableLikedByMe sets the "LikedByMe" field if the given value is not nil.
+func (puo *PostUpdateOne) SetNillableLikedByMe(b *bool) *PostUpdateOne {
+	if b != nil {
+		puo.SetLikedByMe(*b)
+	}
+	return puo
+}
+
+// SetLikeCount sets the "LikeCount" field.
+func (puo *PostUpdateOne) SetLikeCount(i int) *PostUpdateOne {
+	puo.mutation.ResetLikeCount()
+	puo.mutation.SetLikeCount(i)
+	return puo
+}
+
+// SetNillableLikeCount sets the "LikeCount" field if the given value is not nil.
+func (puo *PostUpdateOne) SetNillableLikeCount(i *int) *PostUpdateOne {
+	if i != nil {
+		puo.SetLikeCount(*i)
+	}
+	return puo
+}
+
+// AddLikeCount adds i to the "LikeCount" field.
+func (puo *PostUpdateOne) AddLikeCount(i int) *PostUpdateOne {
+	puo.mutation.AddLikeCount(i)
+	return puo
+}
+
+// SetCommentCount sets the "CommentCount" field.
+func (puo *PostUpdateOne) SetCommentCount(i int) *PostUpdateOne {
+	puo.mutation.ResetCommentCount()
+	puo.mutation.SetCommentCount(i)
+	return puo
+}
+
+// SetNillableCommentCount sets the "CommentCount" field if the given value is not nil.
+func (puo *PostUpdateOne) SetNillableCommentCount(i *int) *PostUpdateOne {
+	if i != nil {
+		puo.SetCommentCount(*i)
+	}
+	return puo
+}
+
+// AddCommentCount adds i to the "CommentCount" field.
+func (puo *PostUpdateOne) AddCommentCount(i int) *PostUpdateOne {
+	puo.mutation.AddCommentCount(i)
+	return puo
+}
+
+// SetShareCount sets the "ShareCount" field.
+func (puo *PostUpdateOne) SetShareCount(i int) *PostUpdateOne {
+	puo.mutation.ResetShareCount()
+	puo.mutation.SetShareCount(i)
+	return puo
+}
+
+// SetNillableShareCount sets the "ShareCount" field if the given value is not nil.
+func (puo *PostUpdateOne) SetNillableShareCount(i *int) *PostUpdateOne {
+	if i != nil {
+		puo.SetShareCount(*i)
+	}
+	return puo
+}
+
+// AddShareCount adds i to the "ShareCount" field.
+func (puo *PostUpdateOne) AddShareCount(i int) *PostUpdateOne {
+	puo.mutation.AddShareCount(i)
+	return puo
+}
+
+// SetViewCount sets the "ViewCount" field.
+func (puo *PostUpdateOne) SetViewCount(i int) *PostUpdateOne {
+	puo.mutation.ResetViewCount()
+	puo.mutation.SetViewCount(i)
+	return puo
+}
+
+// SetNillableViewCount sets the "ViewCount" field if the given value is not nil.
+func (puo *PostUpdateOne) SetNillableViewCount(i *int) *PostUpdateOne {
+	if i != nil {
+		puo.SetViewCount(*i)
+	}
+	return puo
+}
+
+// AddViewCount adds i to the "ViewCount" field.
+func (puo *PostUpdateOne) AddViewCount(i int) *PostUpdateOne {
+	puo.mutation.AddViewCount(i)
+	return puo
+}
+
+// SetIsSponsored sets the "IsSponsored" field.
+func (puo *PostUpdateOne) SetIsSponsored(b bool) *PostUpdateOne {
+	puo.mutation.SetIsSponsored(b)
+	return puo
+}
+
+// SetNillableIsSponsored sets the "IsSponsored" field if the given value is not nil.
+func (puo *PostUpdateOne) SetNillableIsSponsored(b *bool) *PostUpdateOne {
+	if b != nil {
+		puo.SetIsSponsored(*b)
+	}
+	return puo
+}
+
+// SetIsPromoted sets the "IsPromoted" field.
+func (puo *PostUpdateOne) SetIsPromoted(b bool) *PostUpdateOne {
+	puo.mutation.SetIsPromoted(b)
+	return puo
+}
+
+// SetNillableIsPromoted sets the "IsPromoted" field if the given value is not nil.
+func (puo *PostUpdateOne) SetNillableIsPromoted(b *bool) *PostUpdateOne {
+	if b != nil {
+		puo.SetIsPromoted(*b)
+	}
+	return puo
+}
+
+// SetIsBoosted sets the "IsBoosted" field.
+func (puo *PostUpdateOne) SetIsBoosted(b bool) *PostUpdateOne {
+	puo.mutation.SetIsBoosted(b)
+	return puo
+}
+
+// SetNillableIsBoosted sets the "IsBoosted" field if the given value is not nil.
+func (puo *PostUpdateOne) SetNillableIsBoosted(b *bool) *PostUpdateOne {
+	if b != nil {
+		puo.SetIsBoosted(*b)
+	}
+	return puo
+}
+
+// SetIsPinned sets the "IsPinned" field.
+func (puo *PostUpdateOne) SetIsPinned(b bool) *PostUpdateOne {
+	puo.mutation.SetIsPinned(b)
+	return puo
+}
+
+// SetNillableIsPinned sets the "IsPinned" field if the given value is not nil.
+func (puo *PostUpdateOne) SetNillableIsPinned(b *bool) *PostUpdateOne {
+	if b != nil {
+		puo.SetIsPinned(*b)
+	}
+	return puo
+}
+
+// SetIsHidden sets the "IsHidden" field.
+func (puo *PostUpdateOne) SetIsHidden(b bool) *PostUpdateOne {
+	puo.mutation.SetIsHidden(b)
+	return puo
+}
+
+// SetNillableIsHidden sets the "IsHidden" field if the given value is not nil.
+func (puo *PostUpdateOne) SetNillableIsHidden(b *bool) *PostUpdateOne {
+	if b != nil {
+		puo.SetIsHidden(*b)
+	}
+	return puo
+}
+
+// SetRelevanceScore sets the "RelevanceScore" field.
+func (puo *PostUpdateOne) SetRelevanceScore(i int) *PostUpdateOne {
+	puo.mutation.ResetRelevanceScore()
+	puo.mutation.SetRelevanceScore(i)
+	return puo
+}
+
+// SetNillableRelevanceScore sets the "RelevanceScore" field if the given value is not nil.
+func (puo *PostUpdateOne) SetNillableRelevanceScore(i *int) *PostUpdateOne {
+	if i != nil {
+		puo.SetRelevanceScore(*i)
+	}
+	return puo
+}
+
+// AddRelevanceScore adds i to the "RelevanceScore" field.
+func (puo *PostUpdateOne) AddRelevanceScore(i int) *PostUpdateOne {
+	puo.mutation.AddRelevanceScore(i)
+	return puo
+}
+
+// SetSearchText sets the "SearchText" field.
+func (puo *PostUpdateOne) SetSearchText(s string) *PostUpdateOne {
+	puo.mutation.SetSearchText(s)
+	return puo
+}
+
+// SetNillableSearchText sets the "SearchText" field if the given value is not nil.
+func (puo *PostUpdateOne) SetNillableSearchText(s *string) *PostUpdateOne {
+	if s != nil {
+		puo.SetSearchText(*s)
+	}
+	return puo
+}
+
+// ClearSearchText clears the value of the "SearchText" field.
+func (puo *PostUpdateOne) ClearSearchText() *PostUpdateOne {
+	puo.mutation.ClearSearchText()
 	return puo
 }
 
@@ -949,6 +1421,60 @@ func (puo *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) 
 	}
 	if value, ok := puo.mutation.Privacy(); ok {
 		_spec.SetField(post.FieldPrivacy, field.TypeEnum, value)
+	}
+	if value, ok := puo.mutation.LikedByMe(); ok {
+		_spec.SetField(post.FieldLikedByMe, field.TypeBool, value)
+	}
+	if value, ok := puo.mutation.LikeCount(); ok {
+		_spec.SetField(post.FieldLikeCount, field.TypeInt, value)
+	}
+	if value, ok := puo.mutation.AddedLikeCount(); ok {
+		_spec.AddField(post.FieldLikeCount, field.TypeInt, value)
+	}
+	if value, ok := puo.mutation.CommentCount(); ok {
+		_spec.SetField(post.FieldCommentCount, field.TypeInt, value)
+	}
+	if value, ok := puo.mutation.AddedCommentCount(); ok {
+		_spec.AddField(post.FieldCommentCount, field.TypeInt, value)
+	}
+	if value, ok := puo.mutation.ShareCount(); ok {
+		_spec.SetField(post.FieldShareCount, field.TypeInt, value)
+	}
+	if value, ok := puo.mutation.AddedShareCount(); ok {
+		_spec.AddField(post.FieldShareCount, field.TypeInt, value)
+	}
+	if value, ok := puo.mutation.ViewCount(); ok {
+		_spec.SetField(post.FieldViewCount, field.TypeInt, value)
+	}
+	if value, ok := puo.mutation.AddedViewCount(); ok {
+		_spec.AddField(post.FieldViewCount, field.TypeInt, value)
+	}
+	if value, ok := puo.mutation.IsSponsored(); ok {
+		_spec.SetField(post.FieldIsSponsored, field.TypeBool, value)
+	}
+	if value, ok := puo.mutation.IsPromoted(); ok {
+		_spec.SetField(post.FieldIsPromoted, field.TypeBool, value)
+	}
+	if value, ok := puo.mutation.IsBoosted(); ok {
+		_spec.SetField(post.FieldIsBoosted, field.TypeBool, value)
+	}
+	if value, ok := puo.mutation.IsPinned(); ok {
+		_spec.SetField(post.FieldIsPinned, field.TypeBool, value)
+	}
+	if value, ok := puo.mutation.IsHidden(); ok {
+		_spec.SetField(post.FieldIsHidden, field.TypeBool, value)
+	}
+	if value, ok := puo.mutation.RelevanceScore(); ok {
+		_spec.SetField(post.FieldRelevanceScore, field.TypeInt, value)
+	}
+	if value, ok := puo.mutation.AddedRelevanceScore(); ok {
+		_spec.AddField(post.FieldRelevanceScore, field.TypeInt, value)
+	}
+	if value, ok := puo.mutation.SearchText(); ok {
+		_spec.SetField(post.FieldSearchText, field.TypeString, value)
+	}
+	if puo.mutation.SearchTextCleared() {
+		_spec.ClearField(post.FieldSearchText, field.TypeString)
 	}
 	if puo.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
