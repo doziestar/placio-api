@@ -364,6 +364,50 @@ func init() {
 	postDescUpdatedAt := postFields[3].Descriptor()
 	// post.UpdateDefaultUpdatedAt holds the default value on update for the UpdatedAt field.
 	post.UpdateDefaultUpdatedAt = postDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// postDescLikedByMe is the schema descriptor for LikedByMe field.
+	postDescLikedByMe := postFields[5].Descriptor()
+	// post.DefaultLikedByMe holds the default value on creation for the LikedByMe field.
+	post.DefaultLikedByMe = postDescLikedByMe.Default.(bool)
+	// postDescLikeCount is the schema descriptor for LikeCount field.
+	postDescLikeCount := postFields[6].Descriptor()
+	// post.DefaultLikeCount holds the default value on creation for the LikeCount field.
+	post.DefaultLikeCount = postDescLikeCount.Default.(int)
+	// postDescCommentCount is the schema descriptor for CommentCount field.
+	postDescCommentCount := postFields[7].Descriptor()
+	// post.DefaultCommentCount holds the default value on creation for the CommentCount field.
+	post.DefaultCommentCount = postDescCommentCount.Default.(int)
+	// postDescShareCount is the schema descriptor for ShareCount field.
+	postDescShareCount := postFields[8].Descriptor()
+	// post.DefaultShareCount holds the default value on creation for the ShareCount field.
+	post.DefaultShareCount = postDescShareCount.Default.(int)
+	// postDescViewCount is the schema descriptor for ViewCount field.
+	postDescViewCount := postFields[9].Descriptor()
+	// post.DefaultViewCount holds the default value on creation for the ViewCount field.
+	post.DefaultViewCount = postDescViewCount.Default.(int)
+	// postDescIsSponsored is the schema descriptor for IsSponsored field.
+	postDescIsSponsored := postFields[10].Descriptor()
+	// post.DefaultIsSponsored holds the default value on creation for the IsSponsored field.
+	post.DefaultIsSponsored = postDescIsSponsored.Default.(bool)
+	// postDescIsPromoted is the schema descriptor for IsPromoted field.
+	postDescIsPromoted := postFields[11].Descriptor()
+	// post.DefaultIsPromoted holds the default value on creation for the IsPromoted field.
+	post.DefaultIsPromoted = postDescIsPromoted.Default.(bool)
+	// postDescIsBoosted is the schema descriptor for IsBoosted field.
+	postDescIsBoosted := postFields[12].Descriptor()
+	// post.DefaultIsBoosted holds the default value on creation for the IsBoosted field.
+	post.DefaultIsBoosted = postDescIsBoosted.Default.(bool)
+	// postDescIsPinned is the schema descriptor for IsPinned field.
+	postDescIsPinned := postFields[13].Descriptor()
+	// post.DefaultIsPinned holds the default value on creation for the IsPinned field.
+	post.DefaultIsPinned = postDescIsPinned.Default.(bool)
+	// postDescIsHidden is the schema descriptor for IsHidden field.
+	postDescIsHidden := postFields[14].Descriptor()
+	// post.DefaultIsHidden holds the default value on creation for the IsHidden field.
+	post.DefaultIsHidden = postDescIsHidden.Default.(bool)
+	// postDescRelevanceScore is the schema descriptor for RelevanceScore field.
+	postDescRelevanceScore := postFields[15].Descriptor()
+	// post.DefaultRelevanceScore holds the default value on creation for the RelevanceScore field.
+	post.DefaultRelevanceScore = postDescRelevanceScore.Default.(int)
 	// postDescID is the schema descriptor for id field.
 	postDescID := postFields[0].Descriptor()
 	// post.IDValidator is a validator for the "id" field. It is called by the builders before save.

@@ -66,6 +66,174 @@ func (pc *PostCreate) SetNillablePrivacy(po *post.Privacy) *PostCreate {
 	return pc
 }
 
+// SetLikedByMe sets the "LikedByMe" field.
+func (pc *PostCreate) SetLikedByMe(b bool) *PostCreate {
+	pc.mutation.SetLikedByMe(b)
+	return pc
+}
+
+// SetNillableLikedByMe sets the "LikedByMe" field if the given value is not nil.
+func (pc *PostCreate) SetNillableLikedByMe(b *bool) *PostCreate {
+	if b != nil {
+		pc.SetLikedByMe(*b)
+	}
+	return pc
+}
+
+// SetLikeCount sets the "LikeCount" field.
+func (pc *PostCreate) SetLikeCount(i int) *PostCreate {
+	pc.mutation.SetLikeCount(i)
+	return pc
+}
+
+// SetNillableLikeCount sets the "LikeCount" field if the given value is not nil.
+func (pc *PostCreate) SetNillableLikeCount(i *int) *PostCreate {
+	if i != nil {
+		pc.SetLikeCount(*i)
+	}
+	return pc
+}
+
+// SetCommentCount sets the "CommentCount" field.
+func (pc *PostCreate) SetCommentCount(i int) *PostCreate {
+	pc.mutation.SetCommentCount(i)
+	return pc
+}
+
+// SetNillableCommentCount sets the "CommentCount" field if the given value is not nil.
+func (pc *PostCreate) SetNillableCommentCount(i *int) *PostCreate {
+	if i != nil {
+		pc.SetCommentCount(*i)
+	}
+	return pc
+}
+
+// SetShareCount sets the "ShareCount" field.
+func (pc *PostCreate) SetShareCount(i int) *PostCreate {
+	pc.mutation.SetShareCount(i)
+	return pc
+}
+
+// SetNillableShareCount sets the "ShareCount" field if the given value is not nil.
+func (pc *PostCreate) SetNillableShareCount(i *int) *PostCreate {
+	if i != nil {
+		pc.SetShareCount(*i)
+	}
+	return pc
+}
+
+// SetViewCount sets the "ViewCount" field.
+func (pc *PostCreate) SetViewCount(i int) *PostCreate {
+	pc.mutation.SetViewCount(i)
+	return pc
+}
+
+// SetNillableViewCount sets the "ViewCount" field if the given value is not nil.
+func (pc *PostCreate) SetNillableViewCount(i *int) *PostCreate {
+	if i != nil {
+		pc.SetViewCount(*i)
+	}
+	return pc
+}
+
+// SetIsSponsored sets the "IsSponsored" field.
+func (pc *PostCreate) SetIsSponsored(b bool) *PostCreate {
+	pc.mutation.SetIsSponsored(b)
+	return pc
+}
+
+// SetNillableIsSponsored sets the "IsSponsored" field if the given value is not nil.
+func (pc *PostCreate) SetNillableIsSponsored(b *bool) *PostCreate {
+	if b != nil {
+		pc.SetIsSponsored(*b)
+	}
+	return pc
+}
+
+// SetIsPromoted sets the "IsPromoted" field.
+func (pc *PostCreate) SetIsPromoted(b bool) *PostCreate {
+	pc.mutation.SetIsPromoted(b)
+	return pc
+}
+
+// SetNillableIsPromoted sets the "IsPromoted" field if the given value is not nil.
+func (pc *PostCreate) SetNillableIsPromoted(b *bool) *PostCreate {
+	if b != nil {
+		pc.SetIsPromoted(*b)
+	}
+	return pc
+}
+
+// SetIsBoosted sets the "IsBoosted" field.
+func (pc *PostCreate) SetIsBoosted(b bool) *PostCreate {
+	pc.mutation.SetIsBoosted(b)
+	return pc
+}
+
+// SetNillableIsBoosted sets the "IsBoosted" field if the given value is not nil.
+func (pc *PostCreate) SetNillableIsBoosted(b *bool) *PostCreate {
+	if b != nil {
+		pc.SetIsBoosted(*b)
+	}
+	return pc
+}
+
+// SetIsPinned sets the "IsPinned" field.
+func (pc *PostCreate) SetIsPinned(b bool) *PostCreate {
+	pc.mutation.SetIsPinned(b)
+	return pc
+}
+
+// SetNillableIsPinned sets the "IsPinned" field if the given value is not nil.
+func (pc *PostCreate) SetNillableIsPinned(b *bool) *PostCreate {
+	if b != nil {
+		pc.SetIsPinned(*b)
+	}
+	return pc
+}
+
+// SetIsHidden sets the "IsHidden" field.
+func (pc *PostCreate) SetIsHidden(b bool) *PostCreate {
+	pc.mutation.SetIsHidden(b)
+	return pc
+}
+
+// SetNillableIsHidden sets the "IsHidden" field if the given value is not nil.
+func (pc *PostCreate) SetNillableIsHidden(b *bool) *PostCreate {
+	if b != nil {
+		pc.SetIsHidden(*b)
+	}
+	return pc
+}
+
+// SetRelevanceScore sets the "RelevanceScore" field.
+func (pc *PostCreate) SetRelevanceScore(i int) *PostCreate {
+	pc.mutation.SetRelevanceScore(i)
+	return pc
+}
+
+// SetNillableRelevanceScore sets the "RelevanceScore" field if the given value is not nil.
+func (pc *PostCreate) SetNillableRelevanceScore(i *int) *PostCreate {
+	if i != nil {
+		pc.SetRelevanceScore(*i)
+	}
+	return pc
+}
+
+// SetSearchText sets the "SearchText" field.
+func (pc *PostCreate) SetSearchText(s string) *PostCreate {
+	pc.mutation.SetSearchText(s)
+	return pc
+}
+
+// SetNillableSearchText sets the "SearchText" field if the given value is not nil.
+func (pc *PostCreate) SetNillableSearchText(s *string) *PostCreate {
+	if s != nil {
+		pc.SetSearchText(*s)
+	}
+	return pc
+}
+
 // SetID sets the "id" field.
 func (pc *PostCreate) SetID(s string) *PostCreate {
 	pc.mutation.SetID(s)
@@ -213,6 +381,50 @@ func (pc *PostCreate) defaults() {
 		v := post.DefaultPrivacy
 		pc.mutation.SetPrivacy(v)
 	}
+	if _, ok := pc.mutation.LikedByMe(); !ok {
+		v := post.DefaultLikedByMe
+		pc.mutation.SetLikedByMe(v)
+	}
+	if _, ok := pc.mutation.LikeCount(); !ok {
+		v := post.DefaultLikeCount
+		pc.mutation.SetLikeCount(v)
+	}
+	if _, ok := pc.mutation.CommentCount(); !ok {
+		v := post.DefaultCommentCount
+		pc.mutation.SetCommentCount(v)
+	}
+	if _, ok := pc.mutation.ShareCount(); !ok {
+		v := post.DefaultShareCount
+		pc.mutation.SetShareCount(v)
+	}
+	if _, ok := pc.mutation.ViewCount(); !ok {
+		v := post.DefaultViewCount
+		pc.mutation.SetViewCount(v)
+	}
+	if _, ok := pc.mutation.IsSponsored(); !ok {
+		v := post.DefaultIsSponsored
+		pc.mutation.SetIsSponsored(v)
+	}
+	if _, ok := pc.mutation.IsPromoted(); !ok {
+		v := post.DefaultIsPromoted
+		pc.mutation.SetIsPromoted(v)
+	}
+	if _, ok := pc.mutation.IsBoosted(); !ok {
+		v := post.DefaultIsBoosted
+		pc.mutation.SetIsBoosted(v)
+	}
+	if _, ok := pc.mutation.IsPinned(); !ok {
+		v := post.DefaultIsPinned
+		pc.mutation.SetIsPinned(v)
+	}
+	if _, ok := pc.mutation.IsHidden(); !ok {
+		v := post.DefaultIsHidden
+		pc.mutation.SetIsHidden(v)
+	}
+	if _, ok := pc.mutation.RelevanceScore(); !ok {
+		v := post.DefaultRelevanceScore
+		pc.mutation.SetRelevanceScore(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -238,6 +450,39 @@ func (pc *PostCreate) check() error {
 		if err := post.PrivacyValidator(v); err != nil {
 			return &ValidationError{Name: "Privacy", err: fmt.Errorf(`ent: validator failed for field "Post.Privacy": %w`, err)}
 		}
+	}
+	if _, ok := pc.mutation.LikedByMe(); !ok {
+		return &ValidationError{Name: "LikedByMe", err: errors.New(`ent: missing required field "Post.LikedByMe"`)}
+	}
+	if _, ok := pc.mutation.LikeCount(); !ok {
+		return &ValidationError{Name: "LikeCount", err: errors.New(`ent: missing required field "Post.LikeCount"`)}
+	}
+	if _, ok := pc.mutation.CommentCount(); !ok {
+		return &ValidationError{Name: "CommentCount", err: errors.New(`ent: missing required field "Post.CommentCount"`)}
+	}
+	if _, ok := pc.mutation.ShareCount(); !ok {
+		return &ValidationError{Name: "ShareCount", err: errors.New(`ent: missing required field "Post.ShareCount"`)}
+	}
+	if _, ok := pc.mutation.ViewCount(); !ok {
+		return &ValidationError{Name: "ViewCount", err: errors.New(`ent: missing required field "Post.ViewCount"`)}
+	}
+	if _, ok := pc.mutation.IsSponsored(); !ok {
+		return &ValidationError{Name: "IsSponsored", err: errors.New(`ent: missing required field "Post.IsSponsored"`)}
+	}
+	if _, ok := pc.mutation.IsPromoted(); !ok {
+		return &ValidationError{Name: "IsPromoted", err: errors.New(`ent: missing required field "Post.IsPromoted"`)}
+	}
+	if _, ok := pc.mutation.IsBoosted(); !ok {
+		return &ValidationError{Name: "IsBoosted", err: errors.New(`ent: missing required field "Post.IsBoosted"`)}
+	}
+	if _, ok := pc.mutation.IsPinned(); !ok {
+		return &ValidationError{Name: "IsPinned", err: errors.New(`ent: missing required field "Post.IsPinned"`)}
+	}
+	if _, ok := pc.mutation.IsHidden(); !ok {
+		return &ValidationError{Name: "IsHidden", err: errors.New(`ent: missing required field "Post.IsHidden"`)}
+	}
+	if _, ok := pc.mutation.RelevanceScore(); !ok {
+		return &ValidationError{Name: "RelevanceScore", err: errors.New(`ent: missing required field "Post.RelevanceScore"`)}
 	}
 	if v, ok := pc.mutation.ID(); ok {
 		if err := post.IDValidator(v); err != nil {
@@ -294,6 +539,54 @@ func (pc *PostCreate) createSpec() (*Post, *sqlgraph.CreateSpec) {
 	if value, ok := pc.mutation.Privacy(); ok {
 		_spec.SetField(post.FieldPrivacy, field.TypeEnum, value)
 		_node.Privacy = value
+	}
+	if value, ok := pc.mutation.LikedByMe(); ok {
+		_spec.SetField(post.FieldLikedByMe, field.TypeBool, value)
+		_node.LikedByMe = value
+	}
+	if value, ok := pc.mutation.LikeCount(); ok {
+		_spec.SetField(post.FieldLikeCount, field.TypeInt, value)
+		_node.LikeCount = value
+	}
+	if value, ok := pc.mutation.CommentCount(); ok {
+		_spec.SetField(post.FieldCommentCount, field.TypeInt, value)
+		_node.CommentCount = value
+	}
+	if value, ok := pc.mutation.ShareCount(); ok {
+		_spec.SetField(post.FieldShareCount, field.TypeInt, value)
+		_node.ShareCount = value
+	}
+	if value, ok := pc.mutation.ViewCount(); ok {
+		_spec.SetField(post.FieldViewCount, field.TypeInt, value)
+		_node.ViewCount = value
+	}
+	if value, ok := pc.mutation.IsSponsored(); ok {
+		_spec.SetField(post.FieldIsSponsored, field.TypeBool, value)
+		_node.IsSponsored = value
+	}
+	if value, ok := pc.mutation.IsPromoted(); ok {
+		_spec.SetField(post.FieldIsPromoted, field.TypeBool, value)
+		_node.IsPromoted = value
+	}
+	if value, ok := pc.mutation.IsBoosted(); ok {
+		_spec.SetField(post.FieldIsBoosted, field.TypeBool, value)
+		_node.IsBoosted = value
+	}
+	if value, ok := pc.mutation.IsPinned(); ok {
+		_spec.SetField(post.FieldIsPinned, field.TypeBool, value)
+		_node.IsPinned = value
+	}
+	if value, ok := pc.mutation.IsHidden(); ok {
+		_spec.SetField(post.FieldIsHidden, field.TypeBool, value)
+		_node.IsHidden = value
+	}
+	if value, ok := pc.mutation.RelevanceScore(); ok {
+		_spec.SetField(post.FieldRelevanceScore, field.TypeInt, value)
+		_node.RelevanceScore = value
+	}
+	if value, ok := pc.mutation.SearchText(); ok {
+		_spec.SetField(post.FieldSearchText, field.TypeString, value)
+		_node.SearchText = value
 	}
 	if nodes := pc.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

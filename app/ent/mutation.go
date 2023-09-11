@@ -26196,6 +26196,23 @@ type PostMutation struct {
 	_CreatedAt              *time.Time
 	_UpdatedAt              *time.Time
 	_Privacy                *post.Privacy
+	_LikedByMe              *bool
+	_LikeCount              *int
+	add_LikeCount           *int
+	_CommentCount           *int
+	add_CommentCount        *int
+	_ShareCount             *int
+	add_ShareCount          *int
+	_ViewCount              *int
+	add_ViewCount           *int
+	_IsSponsored            *bool
+	_IsPromoted             *bool
+	_IsBoosted              *bool
+	_IsPinned               *bool
+	_IsHidden               *bool
+	_RelevanceScore         *int
+	add_RelevanceScore      *int
+	_SearchText             *string
 	clearedFields           map[string]struct{}
 	user                    *string
 	cleareduser             bool
@@ -26464,6 +26481,551 @@ func (m *PostMutation) OldPrivacy(ctx context.Context) (v post.Privacy, err erro
 // ResetPrivacy resets all changes to the "Privacy" field.
 func (m *PostMutation) ResetPrivacy() {
 	m._Privacy = nil
+}
+
+// SetLikedByMe sets the "LikedByMe" field.
+func (m *PostMutation) SetLikedByMe(b bool) {
+	m._LikedByMe = &b
+}
+
+// LikedByMe returns the value of the "LikedByMe" field in the mutation.
+func (m *PostMutation) LikedByMe() (r bool, exists bool) {
+	v := m._LikedByMe
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLikedByMe returns the old "LikedByMe" field's value of the Post entity.
+// If the Post object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PostMutation) OldLikedByMe(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLikedByMe is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLikedByMe requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLikedByMe: %w", err)
+	}
+	return oldValue.LikedByMe, nil
+}
+
+// ResetLikedByMe resets all changes to the "LikedByMe" field.
+func (m *PostMutation) ResetLikedByMe() {
+	m._LikedByMe = nil
+}
+
+// SetLikeCount sets the "LikeCount" field.
+func (m *PostMutation) SetLikeCount(i int) {
+	m._LikeCount = &i
+	m.add_LikeCount = nil
+}
+
+// LikeCount returns the value of the "LikeCount" field in the mutation.
+func (m *PostMutation) LikeCount() (r int, exists bool) {
+	v := m._LikeCount
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLikeCount returns the old "LikeCount" field's value of the Post entity.
+// If the Post object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PostMutation) OldLikeCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLikeCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLikeCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLikeCount: %w", err)
+	}
+	return oldValue.LikeCount, nil
+}
+
+// AddLikeCount adds i to the "LikeCount" field.
+func (m *PostMutation) AddLikeCount(i int) {
+	if m.add_LikeCount != nil {
+		*m.add_LikeCount += i
+	} else {
+		m.add_LikeCount = &i
+	}
+}
+
+// AddedLikeCount returns the value that was added to the "LikeCount" field in this mutation.
+func (m *PostMutation) AddedLikeCount() (r int, exists bool) {
+	v := m.add_LikeCount
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetLikeCount resets all changes to the "LikeCount" field.
+func (m *PostMutation) ResetLikeCount() {
+	m._LikeCount = nil
+	m.add_LikeCount = nil
+}
+
+// SetCommentCount sets the "CommentCount" field.
+func (m *PostMutation) SetCommentCount(i int) {
+	m._CommentCount = &i
+	m.add_CommentCount = nil
+}
+
+// CommentCount returns the value of the "CommentCount" field in the mutation.
+func (m *PostMutation) CommentCount() (r int, exists bool) {
+	v := m._CommentCount
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCommentCount returns the old "CommentCount" field's value of the Post entity.
+// If the Post object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PostMutation) OldCommentCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCommentCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCommentCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCommentCount: %w", err)
+	}
+	return oldValue.CommentCount, nil
+}
+
+// AddCommentCount adds i to the "CommentCount" field.
+func (m *PostMutation) AddCommentCount(i int) {
+	if m.add_CommentCount != nil {
+		*m.add_CommentCount += i
+	} else {
+		m.add_CommentCount = &i
+	}
+}
+
+// AddedCommentCount returns the value that was added to the "CommentCount" field in this mutation.
+func (m *PostMutation) AddedCommentCount() (r int, exists bool) {
+	v := m.add_CommentCount
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetCommentCount resets all changes to the "CommentCount" field.
+func (m *PostMutation) ResetCommentCount() {
+	m._CommentCount = nil
+	m.add_CommentCount = nil
+}
+
+// SetShareCount sets the "ShareCount" field.
+func (m *PostMutation) SetShareCount(i int) {
+	m._ShareCount = &i
+	m.add_ShareCount = nil
+}
+
+// ShareCount returns the value of the "ShareCount" field in the mutation.
+func (m *PostMutation) ShareCount() (r int, exists bool) {
+	v := m._ShareCount
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldShareCount returns the old "ShareCount" field's value of the Post entity.
+// If the Post object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PostMutation) OldShareCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldShareCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldShareCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldShareCount: %w", err)
+	}
+	return oldValue.ShareCount, nil
+}
+
+// AddShareCount adds i to the "ShareCount" field.
+func (m *PostMutation) AddShareCount(i int) {
+	if m.add_ShareCount != nil {
+		*m.add_ShareCount += i
+	} else {
+		m.add_ShareCount = &i
+	}
+}
+
+// AddedShareCount returns the value that was added to the "ShareCount" field in this mutation.
+func (m *PostMutation) AddedShareCount() (r int, exists bool) {
+	v := m.add_ShareCount
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetShareCount resets all changes to the "ShareCount" field.
+func (m *PostMutation) ResetShareCount() {
+	m._ShareCount = nil
+	m.add_ShareCount = nil
+}
+
+// SetViewCount sets the "ViewCount" field.
+func (m *PostMutation) SetViewCount(i int) {
+	m._ViewCount = &i
+	m.add_ViewCount = nil
+}
+
+// ViewCount returns the value of the "ViewCount" field in the mutation.
+func (m *PostMutation) ViewCount() (r int, exists bool) {
+	v := m._ViewCount
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldViewCount returns the old "ViewCount" field's value of the Post entity.
+// If the Post object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PostMutation) OldViewCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldViewCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldViewCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldViewCount: %w", err)
+	}
+	return oldValue.ViewCount, nil
+}
+
+// AddViewCount adds i to the "ViewCount" field.
+func (m *PostMutation) AddViewCount(i int) {
+	if m.add_ViewCount != nil {
+		*m.add_ViewCount += i
+	} else {
+		m.add_ViewCount = &i
+	}
+}
+
+// AddedViewCount returns the value that was added to the "ViewCount" field in this mutation.
+func (m *PostMutation) AddedViewCount() (r int, exists bool) {
+	v := m.add_ViewCount
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetViewCount resets all changes to the "ViewCount" field.
+func (m *PostMutation) ResetViewCount() {
+	m._ViewCount = nil
+	m.add_ViewCount = nil
+}
+
+// SetIsSponsored sets the "IsSponsored" field.
+func (m *PostMutation) SetIsSponsored(b bool) {
+	m._IsSponsored = &b
+}
+
+// IsSponsored returns the value of the "IsSponsored" field in the mutation.
+func (m *PostMutation) IsSponsored() (r bool, exists bool) {
+	v := m._IsSponsored
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsSponsored returns the old "IsSponsored" field's value of the Post entity.
+// If the Post object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PostMutation) OldIsSponsored(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsSponsored is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsSponsored requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsSponsored: %w", err)
+	}
+	return oldValue.IsSponsored, nil
+}
+
+// ResetIsSponsored resets all changes to the "IsSponsored" field.
+func (m *PostMutation) ResetIsSponsored() {
+	m._IsSponsored = nil
+}
+
+// SetIsPromoted sets the "IsPromoted" field.
+func (m *PostMutation) SetIsPromoted(b bool) {
+	m._IsPromoted = &b
+}
+
+// IsPromoted returns the value of the "IsPromoted" field in the mutation.
+func (m *PostMutation) IsPromoted() (r bool, exists bool) {
+	v := m._IsPromoted
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsPromoted returns the old "IsPromoted" field's value of the Post entity.
+// If the Post object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PostMutation) OldIsPromoted(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsPromoted is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsPromoted requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsPromoted: %w", err)
+	}
+	return oldValue.IsPromoted, nil
+}
+
+// ResetIsPromoted resets all changes to the "IsPromoted" field.
+func (m *PostMutation) ResetIsPromoted() {
+	m._IsPromoted = nil
+}
+
+// SetIsBoosted sets the "IsBoosted" field.
+func (m *PostMutation) SetIsBoosted(b bool) {
+	m._IsBoosted = &b
+}
+
+// IsBoosted returns the value of the "IsBoosted" field in the mutation.
+func (m *PostMutation) IsBoosted() (r bool, exists bool) {
+	v := m._IsBoosted
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsBoosted returns the old "IsBoosted" field's value of the Post entity.
+// If the Post object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PostMutation) OldIsBoosted(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsBoosted is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsBoosted requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsBoosted: %w", err)
+	}
+	return oldValue.IsBoosted, nil
+}
+
+// ResetIsBoosted resets all changes to the "IsBoosted" field.
+func (m *PostMutation) ResetIsBoosted() {
+	m._IsBoosted = nil
+}
+
+// SetIsPinned sets the "IsPinned" field.
+func (m *PostMutation) SetIsPinned(b bool) {
+	m._IsPinned = &b
+}
+
+// IsPinned returns the value of the "IsPinned" field in the mutation.
+func (m *PostMutation) IsPinned() (r bool, exists bool) {
+	v := m._IsPinned
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsPinned returns the old "IsPinned" field's value of the Post entity.
+// If the Post object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PostMutation) OldIsPinned(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsPinned is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsPinned requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsPinned: %w", err)
+	}
+	return oldValue.IsPinned, nil
+}
+
+// ResetIsPinned resets all changes to the "IsPinned" field.
+func (m *PostMutation) ResetIsPinned() {
+	m._IsPinned = nil
+}
+
+// SetIsHidden sets the "IsHidden" field.
+func (m *PostMutation) SetIsHidden(b bool) {
+	m._IsHidden = &b
+}
+
+// IsHidden returns the value of the "IsHidden" field in the mutation.
+func (m *PostMutation) IsHidden() (r bool, exists bool) {
+	v := m._IsHidden
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsHidden returns the old "IsHidden" field's value of the Post entity.
+// If the Post object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PostMutation) OldIsHidden(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsHidden is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsHidden requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsHidden: %w", err)
+	}
+	return oldValue.IsHidden, nil
+}
+
+// ResetIsHidden resets all changes to the "IsHidden" field.
+func (m *PostMutation) ResetIsHidden() {
+	m._IsHidden = nil
+}
+
+// SetRelevanceScore sets the "RelevanceScore" field.
+func (m *PostMutation) SetRelevanceScore(i int) {
+	m._RelevanceScore = &i
+	m.add_RelevanceScore = nil
+}
+
+// RelevanceScore returns the value of the "RelevanceScore" field in the mutation.
+func (m *PostMutation) RelevanceScore() (r int, exists bool) {
+	v := m._RelevanceScore
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRelevanceScore returns the old "RelevanceScore" field's value of the Post entity.
+// If the Post object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PostMutation) OldRelevanceScore(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRelevanceScore is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRelevanceScore requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRelevanceScore: %w", err)
+	}
+	return oldValue.RelevanceScore, nil
+}
+
+// AddRelevanceScore adds i to the "RelevanceScore" field.
+func (m *PostMutation) AddRelevanceScore(i int) {
+	if m.add_RelevanceScore != nil {
+		*m.add_RelevanceScore += i
+	} else {
+		m.add_RelevanceScore = &i
+	}
+}
+
+// AddedRelevanceScore returns the value that was added to the "RelevanceScore" field in this mutation.
+func (m *PostMutation) AddedRelevanceScore() (r int, exists bool) {
+	v := m.add_RelevanceScore
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetRelevanceScore resets all changes to the "RelevanceScore" field.
+func (m *PostMutation) ResetRelevanceScore() {
+	m._RelevanceScore = nil
+	m.add_RelevanceScore = nil
+}
+
+// SetSearchText sets the "SearchText" field.
+func (m *PostMutation) SetSearchText(s string) {
+	m._SearchText = &s
+}
+
+// SearchText returns the value of the "SearchText" field in the mutation.
+func (m *PostMutation) SearchText() (r string, exists bool) {
+	v := m._SearchText
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSearchText returns the old "SearchText" field's value of the Post entity.
+// If the Post object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PostMutation) OldSearchText(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSearchText is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSearchText requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSearchText: %w", err)
+	}
+	return oldValue.SearchText, nil
+}
+
+// ClearSearchText clears the value of the "SearchText" field.
+func (m *PostMutation) ClearSearchText() {
+	m._SearchText = nil
+	m.clearedFields[post.FieldSearchText] = struct{}{}
+}
+
+// SearchTextCleared returns if the "SearchText" field was cleared in this mutation.
+func (m *PostMutation) SearchTextCleared() bool {
+	_, ok := m.clearedFields[post.FieldSearchText]
+	return ok
+}
+
+// ResetSearchText resets all changes to the "SearchText" field.
+func (m *PostMutation) ResetSearchText() {
+	m._SearchText = nil
+	delete(m.clearedFields, post.FieldSearchText)
 }
 
 // SetUserID sets the "user" edge to the User entity by id.
@@ -26794,7 +27356,7 @@ func (m *PostMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PostMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 16)
 	if m._Content != nil {
 		fields = append(fields, post.FieldContent)
 	}
@@ -26806,6 +27368,42 @@ func (m *PostMutation) Fields() []string {
 	}
 	if m._Privacy != nil {
 		fields = append(fields, post.FieldPrivacy)
+	}
+	if m._LikedByMe != nil {
+		fields = append(fields, post.FieldLikedByMe)
+	}
+	if m._LikeCount != nil {
+		fields = append(fields, post.FieldLikeCount)
+	}
+	if m._CommentCount != nil {
+		fields = append(fields, post.FieldCommentCount)
+	}
+	if m._ShareCount != nil {
+		fields = append(fields, post.FieldShareCount)
+	}
+	if m._ViewCount != nil {
+		fields = append(fields, post.FieldViewCount)
+	}
+	if m._IsSponsored != nil {
+		fields = append(fields, post.FieldIsSponsored)
+	}
+	if m._IsPromoted != nil {
+		fields = append(fields, post.FieldIsPromoted)
+	}
+	if m._IsBoosted != nil {
+		fields = append(fields, post.FieldIsBoosted)
+	}
+	if m._IsPinned != nil {
+		fields = append(fields, post.FieldIsPinned)
+	}
+	if m._IsHidden != nil {
+		fields = append(fields, post.FieldIsHidden)
+	}
+	if m._RelevanceScore != nil {
+		fields = append(fields, post.FieldRelevanceScore)
+	}
+	if m._SearchText != nil {
+		fields = append(fields, post.FieldSearchText)
 	}
 	return fields
 }
@@ -26823,6 +27421,30 @@ func (m *PostMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case post.FieldPrivacy:
 		return m.Privacy()
+	case post.FieldLikedByMe:
+		return m.LikedByMe()
+	case post.FieldLikeCount:
+		return m.LikeCount()
+	case post.FieldCommentCount:
+		return m.CommentCount()
+	case post.FieldShareCount:
+		return m.ShareCount()
+	case post.FieldViewCount:
+		return m.ViewCount()
+	case post.FieldIsSponsored:
+		return m.IsSponsored()
+	case post.FieldIsPromoted:
+		return m.IsPromoted()
+	case post.FieldIsBoosted:
+		return m.IsBoosted()
+	case post.FieldIsPinned:
+		return m.IsPinned()
+	case post.FieldIsHidden:
+		return m.IsHidden()
+	case post.FieldRelevanceScore:
+		return m.RelevanceScore()
+	case post.FieldSearchText:
+		return m.SearchText()
 	}
 	return nil, false
 }
@@ -26840,6 +27462,30 @@ func (m *PostMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldUpdatedAt(ctx)
 	case post.FieldPrivacy:
 		return m.OldPrivacy(ctx)
+	case post.FieldLikedByMe:
+		return m.OldLikedByMe(ctx)
+	case post.FieldLikeCount:
+		return m.OldLikeCount(ctx)
+	case post.FieldCommentCount:
+		return m.OldCommentCount(ctx)
+	case post.FieldShareCount:
+		return m.OldShareCount(ctx)
+	case post.FieldViewCount:
+		return m.OldViewCount(ctx)
+	case post.FieldIsSponsored:
+		return m.OldIsSponsored(ctx)
+	case post.FieldIsPromoted:
+		return m.OldIsPromoted(ctx)
+	case post.FieldIsBoosted:
+		return m.OldIsBoosted(ctx)
+	case post.FieldIsPinned:
+		return m.OldIsPinned(ctx)
+	case post.FieldIsHidden:
+		return m.OldIsHidden(ctx)
+	case post.FieldRelevanceScore:
+		return m.OldRelevanceScore(ctx)
+	case post.FieldSearchText:
+		return m.OldSearchText(ctx)
 	}
 	return nil, fmt.Errorf("unknown Post field %s", name)
 }
@@ -26877,6 +27523,90 @@ func (m *PostMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetPrivacy(v)
 		return nil
+	case post.FieldLikedByMe:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLikedByMe(v)
+		return nil
+	case post.FieldLikeCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLikeCount(v)
+		return nil
+	case post.FieldCommentCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCommentCount(v)
+		return nil
+	case post.FieldShareCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetShareCount(v)
+		return nil
+	case post.FieldViewCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetViewCount(v)
+		return nil
+	case post.FieldIsSponsored:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsSponsored(v)
+		return nil
+	case post.FieldIsPromoted:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsPromoted(v)
+		return nil
+	case post.FieldIsBoosted:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsBoosted(v)
+		return nil
+	case post.FieldIsPinned:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsPinned(v)
+		return nil
+	case post.FieldIsHidden:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsHidden(v)
+		return nil
+	case post.FieldRelevanceScore:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRelevanceScore(v)
+		return nil
+	case post.FieldSearchText:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSearchText(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Post field %s", name)
 }
@@ -26884,13 +27614,41 @@ func (m *PostMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *PostMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	if m.add_LikeCount != nil {
+		fields = append(fields, post.FieldLikeCount)
+	}
+	if m.add_CommentCount != nil {
+		fields = append(fields, post.FieldCommentCount)
+	}
+	if m.add_ShareCount != nil {
+		fields = append(fields, post.FieldShareCount)
+	}
+	if m.add_ViewCount != nil {
+		fields = append(fields, post.FieldViewCount)
+	}
+	if m.add_RelevanceScore != nil {
+		fields = append(fields, post.FieldRelevanceScore)
+	}
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *PostMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case post.FieldLikeCount:
+		return m.AddedLikeCount()
+	case post.FieldCommentCount:
+		return m.AddedCommentCount()
+	case post.FieldShareCount:
+		return m.AddedShareCount()
+	case post.FieldViewCount:
+		return m.AddedViewCount()
+	case post.FieldRelevanceScore:
+		return m.AddedRelevanceScore()
+	}
 	return nil, false
 }
 
@@ -26899,6 +27657,41 @@ func (m *PostMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *PostMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case post.FieldLikeCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddLikeCount(v)
+		return nil
+	case post.FieldCommentCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCommentCount(v)
+		return nil
+	case post.FieldShareCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddShareCount(v)
+		return nil
+	case post.FieldViewCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddViewCount(v)
+		return nil
+	case post.FieldRelevanceScore:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddRelevanceScore(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Post numeric field %s", name)
 }
@@ -26906,7 +27699,11 @@ func (m *PostMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *PostMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(post.FieldSearchText) {
+		fields = append(fields, post.FieldSearchText)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -26919,6 +27716,11 @@ func (m *PostMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *PostMutation) ClearField(name string) error {
+	switch name {
+	case post.FieldSearchText:
+		m.ClearSearchText()
+		return nil
+	}
 	return fmt.Errorf("unknown Post nullable field %s", name)
 }
 
@@ -26937,6 +27739,42 @@ func (m *PostMutation) ResetField(name string) error {
 		return nil
 	case post.FieldPrivacy:
 		m.ResetPrivacy()
+		return nil
+	case post.FieldLikedByMe:
+		m.ResetLikedByMe()
+		return nil
+	case post.FieldLikeCount:
+		m.ResetLikeCount()
+		return nil
+	case post.FieldCommentCount:
+		m.ResetCommentCount()
+		return nil
+	case post.FieldShareCount:
+		m.ResetShareCount()
+		return nil
+	case post.FieldViewCount:
+		m.ResetViewCount()
+		return nil
+	case post.FieldIsSponsored:
+		m.ResetIsSponsored()
+		return nil
+	case post.FieldIsPromoted:
+		m.ResetIsPromoted()
+		return nil
+	case post.FieldIsBoosted:
+		m.ResetIsBoosted()
+		return nil
+	case post.FieldIsPinned:
+		m.ResetIsPinned()
+		return nil
+	case post.FieldIsHidden:
+		m.ResetIsHidden()
+		return nil
+	case post.FieldRelevanceScore:
+		m.ResetRelevanceScore()
+		return nil
+	case post.FieldSearchText:
+		m.ResetSearchText()
 		return nil
 	}
 	return fmt.Errorf("unknown Post field %s", name)

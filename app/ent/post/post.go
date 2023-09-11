@@ -23,6 +23,30 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldPrivacy holds the string denoting the privacy field in the database.
 	FieldPrivacy = "privacy"
+	// FieldLikedByMe holds the string denoting the likedbyme field in the database.
+	FieldLikedByMe = "liked_by_me"
+	// FieldLikeCount holds the string denoting the likecount field in the database.
+	FieldLikeCount = "like_count"
+	// FieldCommentCount holds the string denoting the commentcount field in the database.
+	FieldCommentCount = "comment_count"
+	// FieldShareCount holds the string denoting the sharecount field in the database.
+	FieldShareCount = "share_count"
+	// FieldViewCount holds the string denoting the viewcount field in the database.
+	FieldViewCount = "view_count"
+	// FieldIsSponsored holds the string denoting the issponsored field in the database.
+	FieldIsSponsored = "is_sponsored"
+	// FieldIsPromoted holds the string denoting the ispromoted field in the database.
+	FieldIsPromoted = "is_promoted"
+	// FieldIsBoosted holds the string denoting the isboosted field in the database.
+	FieldIsBoosted = "is_boosted"
+	// FieldIsPinned holds the string denoting the ispinned field in the database.
+	FieldIsPinned = "is_pinned"
+	// FieldIsHidden holds the string denoting the ishidden field in the database.
+	FieldIsHidden = "is_hidden"
+	// FieldRelevanceScore holds the string denoting the relevancescore field in the database.
+	FieldRelevanceScore = "relevance_score"
+	// FieldSearchText holds the string denoting the searchtext field in the database.
+	FieldSearchText = "search_text"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
 	// EdgeBusinessAccount holds the string denoting the business_account edge name in mutations.
@@ -88,6 +112,18 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldPrivacy,
+	FieldLikedByMe,
+	FieldLikeCount,
+	FieldCommentCount,
+	FieldShareCount,
+	FieldViewCount,
+	FieldIsSponsored,
+	FieldIsPromoted,
+	FieldIsBoosted,
+	FieldIsPinned,
+	FieldIsHidden,
+	FieldRelevanceScore,
+	FieldSearchText,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "posts"
@@ -119,6 +155,28 @@ var (
 	DefaultCreatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "UpdatedAt" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultLikedByMe holds the default value on creation for the "LikedByMe" field.
+	DefaultLikedByMe bool
+	// DefaultLikeCount holds the default value on creation for the "LikeCount" field.
+	DefaultLikeCount int
+	// DefaultCommentCount holds the default value on creation for the "CommentCount" field.
+	DefaultCommentCount int
+	// DefaultShareCount holds the default value on creation for the "ShareCount" field.
+	DefaultShareCount int
+	// DefaultViewCount holds the default value on creation for the "ViewCount" field.
+	DefaultViewCount int
+	// DefaultIsSponsored holds the default value on creation for the "IsSponsored" field.
+	DefaultIsSponsored bool
+	// DefaultIsPromoted holds the default value on creation for the "IsPromoted" field.
+	DefaultIsPromoted bool
+	// DefaultIsBoosted holds the default value on creation for the "IsBoosted" field.
+	DefaultIsBoosted bool
+	// DefaultIsPinned holds the default value on creation for the "IsPinned" field.
+	DefaultIsPinned bool
+	// DefaultIsHidden holds the default value on creation for the "IsHidden" field.
+	DefaultIsHidden bool
+	// DefaultRelevanceScore holds the default value on creation for the "RelevanceScore" field.
+	DefaultRelevanceScore int
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(string) error
 )
@@ -176,6 +234,66 @@ func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 // ByPrivacy orders the results by the Privacy field.
 func ByPrivacy(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPrivacy, opts...).ToFunc()
+}
+
+// ByLikedByMe orders the results by the LikedByMe field.
+func ByLikedByMe(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLikedByMe, opts...).ToFunc()
+}
+
+// ByLikeCount orders the results by the LikeCount field.
+func ByLikeCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLikeCount, opts...).ToFunc()
+}
+
+// ByCommentCount orders the results by the CommentCount field.
+func ByCommentCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCommentCount, opts...).ToFunc()
+}
+
+// ByShareCount orders the results by the ShareCount field.
+func ByShareCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldShareCount, opts...).ToFunc()
+}
+
+// ByViewCount orders the results by the ViewCount field.
+func ByViewCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldViewCount, opts...).ToFunc()
+}
+
+// ByIsSponsored orders the results by the IsSponsored field.
+func ByIsSponsored(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsSponsored, opts...).ToFunc()
+}
+
+// ByIsPromoted orders the results by the IsPromoted field.
+func ByIsPromoted(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsPromoted, opts...).ToFunc()
+}
+
+// ByIsBoosted orders the results by the IsBoosted field.
+func ByIsBoosted(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsBoosted, opts...).ToFunc()
+}
+
+// ByIsPinned orders the results by the IsPinned field.
+func ByIsPinned(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsPinned, opts...).ToFunc()
+}
+
+// ByIsHidden orders the results by the IsHidden field.
+func ByIsHidden(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsHidden, opts...).ToFunc()
+}
+
+// ByRelevanceScore orders the results by the RelevanceScore field.
+func ByRelevanceScore(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRelevanceScore, opts...).ToFunc()
+}
+
+// BySearchText orders the results by the SearchText field.
+func BySearchText(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSearchText, opts...).ToFunc()
 }
 
 // ByUserField orders the results by user field.

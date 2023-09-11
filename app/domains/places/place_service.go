@@ -15,6 +15,7 @@ import (
 	"placio-app/ent"
 	"placio-app/ent/amenity"
 	"placio-app/ent/business"
+	"placio-app/ent/category"
 	"placio-app/ent/place"
 	"placio-app/utility"
 	"placio-pkg/errors"
@@ -30,6 +31,7 @@ type PlaceFilter struct {
 	Tags     string
 	Features string
 	Website  string
+	Category string
 }
 
 type PlaceService interface {
@@ -47,7 +49,7 @@ type PlaceService interface {
 	RemoveMediaFromPlace(ctx context.Context, placeID string, mediaID string) error
 	AddPlaceToCacheAndSearchIndex(ctx context.Context, placeData *ent.Place, other ...string) error
 	PublishPlace(ctx context.Context, placeID string) error
-	UnpublishPlace(ctx context.Context, placeID string) error
+	UnPublishPlace(ctx context.Context, placeID string) error
 }
 
 type PlaceServiceImpl struct {
@@ -78,7 +80,7 @@ func (s *PlaceServiceImpl) PublishPlace(ctx context.Context, placeID string) err
 	return nil
 }
 
-func (s *PlaceServiceImpl) UnpublishPlace(ctx context.Context, placeID string) error {
+func (s *PlaceServiceImpl) UnPublishPlace(ctx context.Context, placeID string) error {
 	placeData, err := s.client.Place.Get(ctx, placeID)
 	if err != nil {
 		sentry.CaptureException(err)
@@ -133,7 +135,7 @@ func (s *PlaceServiceImpl) GetPlace(ctx context.Context, placeID string) (*ent.P
 		}
 	}
 
-	go s.AddPlaceToCacheAndSearchIndex(ctx, placeData)
+	//go s.AddPlaceToCacheAndSearchIndex(ctx, placeData)
 
 	return placeData, nil
 }
@@ -153,7 +155,7 @@ func (s *PlaceServiceImpl) GetAllPlaces(ctx context.Context, lastId string, limi
 		WithReviews().
 		WithMenus().
 		WithFaqs().
-		Limit(limit + 1) // We retrieve one extra record to determine if there are more pages
+		Limit(limit + 1)
 
 	if lastId != "" {
 		// If lastId is provided, we fetch records after it
@@ -286,14 +288,17 @@ func (s *PlaceServiceImpl) CreatePlace(ctx context.Context, placeData CreatePlac
 	if len(placeData.Categories) != 0 {
 		wg.Add(len(placeData.Categories))
 		categories = make([]*ent.Category, len(placeData.Categories))
-		for i, categoryID := range placeData.Categories {
-			go func(i int, categoryID string) {
+		for i, categoryName := range placeData.Categories {
+			go func(i int, categoryName string) {
 				defer wg.Done()
-				categories[i], err = s.client.Category.Get(ctx, categoryID)
+				categories[i], err = s.client.Category.
+					Query().
+					Where(category.NameEQ(categoryName)).
+					Only(ctx)
 				if err != nil {
 					return
 				}
-			}(i, categoryID)
+			}(i, categoryName)
 			wg.Wait()
 		}
 	}
@@ -359,7 +364,7 @@ func (s *PlaceServiceImpl) CreatePlace(ctx context.Context, placeData CreatePlac
 	}
 
 	// Add the new place to the search index and cache
-	go s.AddPlaceToCacheAndSearchIndex(ctx, place)
+	//go s.AddPlaceToCacheAndSearchIndex(ctx, place)
 
 	return place, nil
 }
@@ -692,6 +697,11 @@ func (s *PlaceServiceImpl) GetPlaces(ctx context.Context, filter *PlaceFilter, l
 		Query().
 		Order(ent.Asc(place.FieldID)).
 		WithBusiness().
+		WithMedias().
+		WithReviews().
+		WithFaqs().
+		WithInventories().
+		WithAmenities().
 		WithUsers().
 		Limit(limit + 1)
 
@@ -714,6 +724,10 @@ func (s *PlaceServiceImpl) GetPlaces(ctx context.Context, filter *PlaceFilter, l
 
 	if filter.State != "" {
 		query = query.Where(place.Or(place.StateEQ(filter.State), place.StateContains(filter.State), place.State(filter.State)))
+	}
+
+	if filter.Category != "" {
+		query = query.Where(place.HasCategoriesWith(category.NameEQ(filter.Category)))
 	}
 
 	if lastId != "" {
