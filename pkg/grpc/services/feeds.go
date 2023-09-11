@@ -42,6 +42,17 @@ func convertToPbPost(p *ent.Post) *proto.Post {
 		}
 	}
 
+	var media []*proto.Post_Media
+	for _, m := range p.Edges.Medias {
+		if m != nil {
+			media = append(media, &proto.Post_Media{
+				Id:        m.ID,
+				URL:       m.URL,
+				MediaType: m.MediaType,
+			})
+		}
+	}
+
 	var pbComments []*proto.Post_Comment
 	for _, c := range p.Edges.Comments {
 		if c != nil {
@@ -80,6 +91,7 @@ func convertToPbPost(p *ent.Post) *proto.Post {
 		Edges: &proto.Post_Edge{
 			User:     user,
 			Comments: pbComments,
+			Media:    media,
 		},
 	}
 }
