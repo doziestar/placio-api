@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/signal"
 	"placio-pkg/grpc/proto"
+	"placio-pkg/middleware"
 	"placio-realtime/api"
 	"placio-realtime/pkg/websocket"
 	"placio-realtime/services"
@@ -66,10 +67,10 @@ func startServer(r *mux.Router) {
 	}
 	defer conn.Close() // Close connection when main() exits
 	postServiceClient := createPostServiceClient(conn)
-	r.HandleFunc("/home-feeds", func(w http.ResponseWriter, r *http.Request) {
+	r.HandleFunc("/home-feeds", middleware.EnsureValidWebSocketToken(func(w http.ResponseWriter, r *http.Request) {
 		hub := websocket.NewHub()
 		api.ServeWs(postServiceClient, hub, w, r)
-	})
+	}))
 
 	// Create channel to listen for interrupt or terminate signal from OS
 	stop := make(chan os.Signal, 1)

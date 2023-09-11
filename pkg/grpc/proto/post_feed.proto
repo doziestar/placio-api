@@ -19,8 +19,11 @@ message Post {
   string Content = 2;
   string CreatedAt = 3;
   string UpdatedAt = 4;
-  PrivacyType Privacy = 5;
-  Edge edges = 6;
+  int64 LikeCount = 5;
+  int64 CommentCount = 6;
+  bool LikedByMe = 7;
+  PrivacyType Privacy = 8;
+  Edge edges = 9;
 
   enum PrivacyType {
     UNKNOWN = 0;

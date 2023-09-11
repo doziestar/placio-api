@@ -74,10 +74,13 @@ func convertToPbPost(p *ent.Post) *proto.Post {
 	}
 
 	return &proto.Post{
-		Id:        p.ID,
-		Content:   p.Content,
-		CreatedAt: p.CreatedAt.String(),
-		UpdatedAt: p.UpdatedAt.String(),
+		Id:           p.ID,
+		Content:      p.Content,
+		CreatedAt:    p.CreatedAt.String(),
+		UpdatedAt:    p.UpdatedAt.String(),
+		LikeCount:    int64(p.LikeCount),
+		CommentCount: int64(p.CommentCount),
+		LikedByMe:    p.LikedByMe,
 		Privacy: func() proto.Post_PrivacyType {
 			switch p.Privacy {
 			case "PUBLIC":
