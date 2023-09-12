@@ -54,7 +54,7 @@ message Post {
   message Media {
     string id = 1;
     string URL = 2;
-    string media_type = 3;
+    string MediaType = 3;
   }
 
   message Comment {
