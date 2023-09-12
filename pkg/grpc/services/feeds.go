@@ -94,7 +94,7 @@ func convertToPbPost(p *ent.Post) *proto.Post {
 		Edges: &proto.Post_Edge{
 			User:     user,
 			Comments: pbComments,
-			Media:    media,
+			Medias:   media,
 		},
 	}
 }

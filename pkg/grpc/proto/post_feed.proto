@@ -34,7 +34,7 @@ message Post {
   message Edge {
     User user = 1;
     repeated Comment comments = 2;
-    repeated Media media = 3;
+    repeated Media medias = 3;
   }
 
   message CommentEdge {
