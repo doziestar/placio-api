@@ -70,6 +70,7 @@ func (User) Edges() []ent.Edge {
 		edge.To("ratings", Rating.Type),
 		edge.To("transaction_histories", TransactionHistory.Type),
 		edge.To("reservation_blocks", ReservationBlock.Type),
+		edge.To("notifications", Notification.Type),
 	}
 }
 

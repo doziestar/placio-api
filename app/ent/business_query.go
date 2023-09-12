@@ -16,6 +16,7 @@ import (
 	"placio-app/ent/categoryassignment"
 	"placio-app/ent/event"
 	"placio-app/ent/faq"
+	"placio-app/ent/notification"
 	"placio-app/ent/place"
 	"placio-app/ent/placeinventory"
 	"placio-app/ent/post"
@@ -53,6 +54,7 @@ type BusinessQuery struct {
 	withRatings                 *RatingQuery
 	withPlaceInventories        *PlaceInventoryQuery
 	withWebsites                *WebsiteQuery
+	withNotifications           *NotificationQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -441,6 +443,28 @@ func (bq *BusinessQuery) QueryWebsites() *WebsiteQuery {
 	return query
 }
 
+// QueryNotifications chains the current query on the "notifications" edge.
+func (bq *BusinessQuery) QueryNotifications() *NotificationQuery {
+	query := (&NotificationClient{config: bq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := bq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := bq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(business.Table, business.FieldID, selector),
+			sqlgraph.To(notification.Table, notification.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, business.NotificationsTable, business.NotificationsPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(bq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Business entity from the query.
 // Returns a *NotFoundError when no Business was found.
 func (bq *BusinessQuery) First(ctx context.Context) (*Business, error) {
@@ -649,6 +673,7 @@ func (bq *BusinessQuery) Clone() *BusinessQuery {
 		withRatings:                 bq.withRatings.Clone(),
 		withPlaceInventories:        bq.withPlaceInventories.Clone(),
 		withWebsites:                bq.withWebsites.Clone(),
+		withNotifications:           bq.withNotifications.Clone(),
 		// clone intermediate query.
 		sql:  bq.sql.Clone(),
 		path: bq.path,
@@ -831,6 +856,17 @@ func (bq *BusinessQuery) WithWebsites(opts ...func(*WebsiteQuery)) *BusinessQuer
 	return bq
 }
 
+// WithNotifications tells the query-builder to eager-load the nodes that are connected to
+// the "notifications" edge. The optional arguments are used to configure the query builder of the edge.
+func (bq *BusinessQuery) WithNotifications(opts ...func(*NotificationQuery)) *BusinessQuery {
+	query := (&NotificationClient{config: bq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	bq.withNotifications = query
+	return bq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -909,7 +945,7 @@ func (bq *BusinessQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Bus
 	var (
 		nodes       = []*Business{}
 		_spec       = bq.querySpec()
-		loadedTypes = [16]bool{
+		loadedTypes = [17]bool{
 			bq.withUserBusinesses != nil,
 			bq.withBusinessAccountSettings != nil,
 			bq.withPosts != nil,
@@ -926,6 +962,7 @@ func (bq *BusinessQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Bus
 			bq.withRatings != nil,
 			bq.withPlaceInventories != nil,
 			bq.withWebsites != nil,
+			bq.withNotifications != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -1061,6 +1098,13 @@ func (bq *BusinessQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Bus
 	if query := bq.withWebsites; query != nil {
 		if err := bq.loadWebsites(ctx, query, nodes, nil,
 			func(n *Business, e *Website) { n.Edges.Websites = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := bq.withNotifications; query != nil {
+		if err := bq.loadNotifications(ctx, query, nodes,
+			func(n *Business) { n.Edges.Notifications = []*Notification{} },
+			func(n *Business, e *Notification) { n.Edges.Notifications = append(n.Edges.Notifications, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -1554,6 +1598,67 @@ func (bq *BusinessQuery) loadWebsites(ctx context.Context, query *WebsiteQuery, 
 			return fmt.Errorf(`unexpected referenced foreign-key "business_websites" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
+	}
+	return nil
+}
+func (bq *BusinessQuery) loadNotifications(ctx context.Context, query *NotificationQuery, nodes []*Business, init func(*Business), assign func(*Business, *Notification)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[string]*Business)
+	nids := make(map[string]map[*Business]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(business.NotificationsTable)
+		s.Join(joinT).On(s.C(notification.FieldID), joinT.C(business.NotificationsPrimaryKey[1]))
+		s.Where(sql.InValues(joinT.C(business.NotificationsPrimaryKey[0]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(business.NotificationsPrimaryKey[0]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(sql.NullString)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := values[0].(*sql.NullString).String
+				inValue := values[1].(*sql.NullString).String
+				if nids[inValue] == nil {
+					nids[inValue] = map[*Business]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*Notification](ctx, query, qr, query.inters)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "notifications" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
+		}
 	}
 	return nil
 }

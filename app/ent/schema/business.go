@@ -62,6 +62,7 @@ func (Business) Edges() []ent.Edge {
 		edge.To("ratings", Rating.Type),
 		edge.To("place_inventories", PlaceInventory.Type),
 		edge.To("websites", Website.Type).Unique(),
+		edge.To("notifications", Notification.Type),
 	}
 }
 

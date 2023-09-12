@@ -14,6 +14,7 @@ import (
 	"placio-app/ent/event"
 	"placio-app/ent/help"
 	"placio-app/ent/like"
+	"placio-app/ent/notification"
 	"placio-app/ent/place"
 	"placio-app/ent/post"
 	"placio-app/ent/rating"
@@ -585,6 +586,21 @@ func (uc *UserCreate) AddReservationBlocks(r ...*ReservationBlock) *UserCreate {
 	return uc.AddReservationBlockIDs(ids...)
 }
 
+// AddNotificationIDs adds the "notifications" edge to the Notification entity by IDs.
+func (uc *UserCreate) AddNotificationIDs(ids ...string) *UserCreate {
+	uc.mutation.AddNotificationIDs(ids...)
+	return uc
+}
+
+// AddNotifications adds the "notifications" edges to the Notification entity.
+func (uc *UserCreate) AddNotifications(n ...*Notification) *UserCreate {
+	ids := make([]string, len(n))
+	for i := range n {
+		ids[i] = n[i].ID
+	}
+	return uc.AddNotificationIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uc *UserCreate) Mutation() *UserMutation {
 	return uc.mutation
@@ -1112,6 +1128,22 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(reservationblock.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.NotificationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   user.NotificationsTable,
+			Columns: user.NotificationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(notification.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

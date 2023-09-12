@@ -15,6 +15,7 @@ import (
 	"placio-app/ent/categoryassignment"
 	"placio-app/ent/event"
 	"placio-app/ent/faq"
+	"placio-app/ent/notification"
 	"placio-app/ent/place"
 	"placio-app/ent/placeinventory"
 	"placio-app/ent/post"
@@ -502,6 +503,21 @@ func (bc *BusinessCreate) SetWebsites(w *Website) *BusinessCreate {
 	return bc.SetWebsitesID(w.ID)
 }
 
+// AddNotificationIDs adds the "notifications" edge to the Notification entity by IDs.
+func (bc *BusinessCreate) AddNotificationIDs(ids ...string) *BusinessCreate {
+	bc.mutation.AddNotificationIDs(ids...)
+	return bc
+}
+
+// AddNotifications adds the "notifications" edges to the Notification entity.
+func (bc *BusinessCreate) AddNotifications(n ...*Notification) *BusinessCreate {
+	ids := make([]string, len(n))
+	for i := range n {
+		ids[i] = n[i].ID
+	}
+	return bc.AddNotificationIDs(ids...)
+}
+
 // Mutation returns the BusinessMutation object of the builder.
 func (bc *BusinessCreate) Mutation() *BusinessMutation {
 	return bc.mutation
@@ -922,6 +938,22 @@ func (bc *BusinessCreate) createSpec() (*Business, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(website.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := bc.mutation.NotificationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   business.NotificationsTable,
+			Columns: business.NotificationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(notification.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

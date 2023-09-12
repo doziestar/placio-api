@@ -15,6 +15,7 @@ import (
 	"placio-app/ent/categoryassignment"
 	"placio-app/ent/event"
 	"placio-app/ent/faq"
+	"placio-app/ent/notification"
 	"placio-app/ent/place"
 	"placio-app/ent/placeinventory"
 	"placio-app/ent/post"
@@ -609,6 +610,21 @@ func (bu *BusinessUpdate) SetWebsites(w *Website) *BusinessUpdate {
 	return bu.SetWebsitesID(w.ID)
 }
 
+// AddNotificationIDs adds the "notifications" edge to the Notification entity by IDs.
+func (bu *BusinessUpdate) AddNotificationIDs(ids ...string) *BusinessUpdate {
+	bu.mutation.AddNotificationIDs(ids...)
+	return bu
+}
+
+// AddNotifications adds the "notifications" edges to the Notification entity.
+func (bu *BusinessUpdate) AddNotifications(n ...*Notification) *BusinessUpdate {
+	ids := make([]string, len(n))
+	for i := range n {
+		ids[i] = n[i].ID
+	}
+	return bu.AddNotificationIDs(ids...)
+}
+
 // Mutation returns the BusinessMutation object of the builder.
 func (bu *BusinessUpdate) Mutation() *BusinessMutation {
 	return bu.mutation
@@ -918,6 +934,27 @@ func (bu *BusinessUpdate) RemovePlaceInventories(p ...*PlaceInventory) *Business
 func (bu *BusinessUpdate) ClearWebsites() *BusinessUpdate {
 	bu.mutation.ClearWebsites()
 	return bu
+}
+
+// ClearNotifications clears all "notifications" edges to the Notification entity.
+func (bu *BusinessUpdate) ClearNotifications() *BusinessUpdate {
+	bu.mutation.ClearNotifications()
+	return bu
+}
+
+// RemoveNotificationIDs removes the "notifications" edge to Notification entities by IDs.
+func (bu *BusinessUpdate) RemoveNotificationIDs(ids ...string) *BusinessUpdate {
+	bu.mutation.RemoveNotificationIDs(ids...)
+	return bu
+}
+
+// RemoveNotifications removes "notifications" edges to Notification entities.
+func (bu *BusinessUpdate) RemoveNotifications(n ...*Notification) *BusinessUpdate {
+	ids := make([]string, len(n))
+	for i := range n {
+		ids[i] = n[i].ID
+	}
+	return bu.RemoveNotificationIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1746,6 +1783,51 @@ func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if bu.mutation.NotificationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   business.NotificationsTable,
+			Columns: business.NotificationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(notification.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.RemovedNotificationsIDs(); len(nodes) > 0 && !bu.mutation.NotificationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   business.NotificationsTable,
+			Columns: business.NotificationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(notification.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.NotificationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   business.NotificationsTable,
+			Columns: business.NotificationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(notification.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, bu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{business.Label}
@@ -2333,6 +2415,21 @@ func (buo *BusinessUpdateOne) SetWebsites(w *Website) *BusinessUpdateOne {
 	return buo.SetWebsitesID(w.ID)
 }
 
+// AddNotificationIDs adds the "notifications" edge to the Notification entity by IDs.
+func (buo *BusinessUpdateOne) AddNotificationIDs(ids ...string) *BusinessUpdateOne {
+	buo.mutation.AddNotificationIDs(ids...)
+	return buo
+}
+
+// AddNotifications adds the "notifications" edges to the Notification entity.
+func (buo *BusinessUpdateOne) AddNotifications(n ...*Notification) *BusinessUpdateOne {
+	ids := make([]string, len(n))
+	for i := range n {
+		ids[i] = n[i].ID
+	}
+	return buo.AddNotificationIDs(ids...)
+}
+
 // Mutation returns the BusinessMutation object of the builder.
 func (buo *BusinessUpdateOne) Mutation() *BusinessMutation {
 	return buo.mutation
@@ -2642,6 +2739,27 @@ func (buo *BusinessUpdateOne) RemovePlaceInventories(p ...*PlaceInventory) *Busi
 func (buo *BusinessUpdateOne) ClearWebsites() *BusinessUpdateOne {
 	buo.mutation.ClearWebsites()
 	return buo
+}
+
+// ClearNotifications clears all "notifications" edges to the Notification entity.
+func (buo *BusinessUpdateOne) ClearNotifications() *BusinessUpdateOne {
+	buo.mutation.ClearNotifications()
+	return buo
+}
+
+// RemoveNotificationIDs removes the "notifications" edge to Notification entities by IDs.
+func (buo *BusinessUpdateOne) RemoveNotificationIDs(ids ...string) *BusinessUpdateOne {
+	buo.mutation.RemoveNotificationIDs(ids...)
+	return buo
+}
+
+// RemoveNotifications removes "notifications" edges to Notification entities.
+func (buo *BusinessUpdateOne) RemoveNotifications(n ...*Notification) *BusinessUpdateOne {
+	ids := make([]string, len(n))
+	for i := range n {
+		ids[i] = n[i].ID
+	}
+	return buo.RemoveNotificationIDs(ids...)
 }
 
 // Where appends a list predicates to the BusinessUpdate builder.
@@ -3493,6 +3611,51 @@ func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(website.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if buo.mutation.NotificationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   business.NotificationsTable,
+			Columns: business.NotificationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(notification.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.RemovedNotificationsIDs(); len(nodes) > 0 && !buo.mutation.NotificationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   business.NotificationsTable,
+			Columns: business.NotificationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(notification.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.NotificationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   business.NotificationsTable,
+			Columns: business.NotificationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(notification.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

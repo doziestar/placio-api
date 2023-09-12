@@ -19,8 +19,11 @@ message Post {
   string Content = 2;
   string CreatedAt = 3;
   string UpdatedAt = 4;
-  PrivacyType Privacy = 5;
-  Edge edges = 6;
+  int64 LikeCount = 5;
+  int64 CommentCount = 6;
+  bool LikedByMe = 7;
+  PrivacyType Privacy = 8;
+  Edge edges = 9;
 
   enum PrivacyType {
     UNKNOWN = 0;
@@ -31,6 +34,7 @@ message Post {
   message Edge {
     User user = 1;
     repeated Comment comments = 2;
+    repeated Media medias = 3;
   }
 
   message CommentEdge {
@@ -47,12 +51,18 @@ message Post {
     string bio = 7;
   }
 
+  message Media {
+    string id = 1;
+    string URL = 2;
+    string MediaType = 3;
+  }
+
   message Comment {
     string id = 1;
     string Content = 2;
     string CreatedAt = 3;
     string UpdatedAt = 4;
-    CommentEdge edges = 5; 
+    CommentEdge edges = 5;
   }
 }
 

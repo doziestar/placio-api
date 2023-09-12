@@ -20,6 +20,7 @@ import (
 	"placio-app/ent/like"
 	"placio-app/ent/media"
 	"placio-app/ent/menu"
+	"placio-app/ent/notification"
 	"placio-app/ent/place"
 	"placio-app/ent/placeinventory"
 	"placio-app/ent/placeinventoryattribute"
@@ -299,6 +300,48 @@ func init() {
 	menuDescID := menuFields[0].Descriptor()
 	// menu.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	menu.IDValidator = menuDescID.Validators[0].(func(string) error)
+	notificationFields := schema.Notification{}.Fields()
+	_ = notificationFields
+	// notificationDescTitle is the schema descriptor for title field.
+	notificationDescTitle := notificationFields[1].Descriptor()
+	// notification.TitleValidator is a validator for the "title" field. It is called by the builders before save.
+	notification.TitleValidator = notificationDescTitle.Validators[0].(func(string) error)
+	// notificationDescMessage is the schema descriptor for message field.
+	notificationDescMessage := notificationFields[2].Descriptor()
+	// notification.MessageValidator is a validator for the "message" field. It is called by the builders before save.
+	notification.MessageValidator = notificationDescMessage.Validators[0].(func(string) error)
+	// notificationDescLink is the schema descriptor for link field.
+	notificationDescLink := notificationFields[3].Descriptor()
+	// notification.LinkValidator is a validator for the "link" field. It is called by the builders before save.
+	notification.LinkValidator = notificationDescLink.Validators[0].(func(string) error)
+	// notificationDescIsRead is the schema descriptor for is_read field.
+	notificationDescIsRead := notificationFields[4].Descriptor()
+	// notification.DefaultIsRead holds the default value on creation for the is_read field.
+	notification.DefaultIsRead = notificationDescIsRead.Default.(bool)
+	// notificationDescType is the schema descriptor for type field.
+	notificationDescType := notificationFields[5].Descriptor()
+	// notification.DefaultType holds the default value on creation for the type field.
+	notification.DefaultType = notificationDescType.Default.(int)
+	// notificationDescNotifiableType is the schema descriptor for notifiable_type field.
+	notificationDescNotifiableType := notificationFields[8].Descriptor()
+	// notification.NotifiableTypeValidator is a validator for the "notifiable_type" field. It is called by the builders before save.
+	notification.NotifiableTypeValidator = notificationDescNotifiableType.Validators[0].(func(string) error)
+	// notificationDescNotifiableID is the schema descriptor for notifiable_id field.
+	notificationDescNotifiableID := notificationFields[9].Descriptor()
+	// notification.NotifiableIDValidator is a validator for the "notifiable_id" field. It is called by the builders before save.
+	notification.NotifiableIDValidator = notificationDescNotifiableID.Validators[0].(func(string) error)
+	// notificationDescTriggeredBy is the schema descriptor for triggered_by field.
+	notificationDescTriggeredBy := notificationFields[10].Descriptor()
+	// notification.TriggeredByValidator is a validator for the "triggered_by" field. It is called by the builders before save.
+	notification.TriggeredByValidator = notificationDescTriggeredBy.Validators[0].(func(string) error)
+	// notificationDescTriggeredTo is the schema descriptor for triggered_to field.
+	notificationDescTriggeredTo := notificationFields[11].Descriptor()
+	// notification.TriggeredToValidator is a validator for the "triggered_to" field. It is called by the builders before save.
+	notification.TriggeredToValidator = notificationDescTriggeredTo.Validators[0].(func(string) error)
+	// notificationDescID is the schema descriptor for id field.
+	notificationDescID := notificationFields[0].Descriptor()
+	// notification.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	notification.IDValidator = notificationDescID.Validators[0].(func(string) error)
 	placeHooks := schema.Place{}.Hooks()
 	place.Hooks[0] = placeHooks[0]
 	placeFields := schema.Place{}.Fields()

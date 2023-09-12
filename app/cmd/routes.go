@@ -16,6 +16,7 @@ import (
 	"placio-app/domains/inventory"
 	"placio-app/domains/like"
 	"placio-app/domains/media"
+	"placio-app/domains/notifications"
 	"placio-app/domains/places"
 	"placio-app/domains/posts"
 	"placio-app/domains/recommendations"
@@ -172,6 +173,11 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		recommendationService := recommendations.NewRecommendations(client, userService, placeService)
 		recommendationController := recommendations.NewRecommendationController(*recommendationService)
 		recommendationController.RegisterRoutes(routerGroupV1)
+
+		// notifications
+		notificationService := notifications.NewNotificationService(client)
+		notificationController := notifications.NewNotificationController(notificationService)
+		notificationController.RegisterRoutes(routerGroupV1)
 
 	}
 

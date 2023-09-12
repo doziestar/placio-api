@@ -5,6 +5,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 	"log"
 	"placio-app/domains/media"
 	"placio-app/ent"
@@ -48,7 +51,14 @@ func NewPostService(client *ent.Client, cache *utility.RedisClient, mediaService
 }
 
 func (ps *PostServiceImpl) GetPostFeeds(ctx context.Context) ([]*ent.Post, error) {
-	log.Println("Getting post feeds from DB...")
+	log.Println("Getting post feeds from DB...", ctx.Value("user"))
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return nil, status.Errorf(codes.Internal, "Failed to retrieve metadata from context")
+	}
+
+	userId := md.Get("user")[0]
+
 	//Get All Posts
 	posts, err := ps.client.Post.
 		Query().
@@ -62,16 +72,14 @@ func (ps *PostServiceImpl) GetPostFeeds(ctx context.Context) ([]*ent.Post, error
 		WithUser().
 		All(ctx)
 
-	//userId := ctx.Value("user").(string)
-
 	var wg sync.WaitGroup
 
 	for _, post := range posts {
-		//for _, like := range post.Edges.Likes {
-		//	if like.Edges.User.ID == userId {
-		//		post.LikedByMe = true
-		//	}
-		//}
+		for _, like := range post.Edges.Likes {
+			if like.Edges.User.ID == userId {
+				post.LikedByMe = true
+			}
+		}
 		wg.Add(1)
 		go func(post *ent.Post) {
 			defer wg.Done()

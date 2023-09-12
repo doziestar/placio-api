@@ -27,6 +27,7 @@ import (
 	"placio-app/ent/like"
 	"placio-app/ent/media"
 	"placio-app/ent/menu"
+	"placio-app/ent/notification"
 	"placio-app/ent/order"
 	"placio-app/ent/payment"
 	"placio-app/ent/place"
@@ -139,6 +140,7 @@ func checkColumn(table, column string) error {
 			like.Table:                    like.ValidColumn,
 			media.Table:                   media.ValidColumn,
 			menu.Table:                    menu.ValidColumn,
+			notification.Table:            notification.ValidColumn,
 			order.Table:                   order.ValidColumn,
 			payment.Table:                 payment.ValidColumn,
 			place.Table:                   place.ValidColumn,

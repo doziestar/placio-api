@@ -15,6 +15,7 @@ import (
 	"placio-app/ent/event"
 	"placio-app/ent/help"
 	"placio-app/ent/like"
+	"placio-app/ent/notification"
 	"placio-app/ent/place"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
@@ -65,6 +66,7 @@ type UserQuery struct {
 	withRatings              *RatingQuery
 	withTransactionHistories *TransactionHistoryQuery
 	withReservationBlocks    *ReservationBlockQuery
+	withNotifications        *NotificationQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -585,6 +587,28 @@ func (uq *UserQuery) QueryReservationBlocks() *ReservationBlockQuery {
 	return query
 }
 
+// QueryNotifications chains the current query on the "notifications" edge.
+func (uq *UserQuery) QueryNotifications() *NotificationQuery {
+	query := (&NotificationClient{config: uq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(notification.Table, notification.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, user.NotificationsTable, user.NotificationsPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first User entity from the query.
 // Returns a *NotFoundError when no User was found.
 func (uq *UserQuery) First(ctx context.Context) (*User, error) {
@@ -799,6 +823,7 @@ func (uq *UserQuery) Clone() *UserQuery {
 		withRatings:              uq.withRatings.Clone(),
 		withTransactionHistories: uq.withTransactionHistories.Clone(),
 		withReservationBlocks:    uq.withReservationBlocks.Clone(),
+		withNotifications:        uq.withNotifications.Clone(),
 		// clone intermediate query.
 		sql:  uq.sql.Clone(),
 		path: uq.path,
@@ -1047,6 +1072,17 @@ func (uq *UserQuery) WithReservationBlocks(opts ...func(*ReservationBlockQuery))
 	return uq
 }
 
+// WithNotifications tells the query-builder to eager-load the nodes that are connected to
+// the "notifications" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithNotifications(opts ...func(*NotificationQuery)) *UserQuery {
+	query := (&NotificationClient{config: uq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	uq.withNotifications = query
+	return uq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -1125,7 +1161,7 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	var (
 		nodes       = []*User{}
 		_spec       = uq.querySpec()
-		loadedTypes = [22]bool{
+		loadedTypes = [23]bool{
 			uq.withUserBusinesses != nil,
 			uq.withComments != nil,
 			uq.withLikes != nil,
@@ -1148,6 +1184,7 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 			uq.withRatings != nil,
 			uq.withTransactionHistories != nil,
 			uq.withReservationBlocks != nil,
+			uq.withNotifications != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -1326,6 +1363,13 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 		if err := uq.loadReservationBlocks(ctx, query, nodes,
 			func(n *User) { n.Edges.ReservationBlocks = []*ReservationBlock{} },
 			func(n *User, e *ReservationBlock) { n.Edges.ReservationBlocks = append(n.Edges.ReservationBlocks, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := uq.withNotifications; query != nil {
+		if err := uq.loadNotifications(ctx, query, nodes,
+			func(n *User) { n.Edges.Notifications = []*Notification{} },
+			func(n *User, e *Notification) { n.Edges.Notifications = append(n.Edges.Notifications, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -2037,6 +2081,67 @@ func (uq *UserQuery) loadReservationBlocks(ctx context.Context, query *Reservati
 			return fmt.Errorf(`unexpected referenced foreign-key "user_reservation_blocks" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
+	}
+	return nil
+}
+func (uq *UserQuery) loadNotifications(ctx context.Context, query *NotificationQuery, nodes []*User, init func(*User), assign func(*User, *Notification)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[string]*User)
+	nids := make(map[string]map[*User]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(user.NotificationsTable)
+		s.Join(joinT).On(s.C(notification.FieldID), joinT.C(user.NotificationsPrimaryKey[1]))
+		s.Where(sql.InValues(joinT.C(user.NotificationsPrimaryKey[0]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(user.NotificationsPrimaryKey[0]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(sql.NullString)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := values[0].(*sql.NullString).String
+				inValue := values[1].(*sql.NullString).String
+				if nids[inValue] == nil {
+					nids[inValue] = map[*User]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*Notification](ctx, query, qr, query.inters)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "notifications" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
+		}
 	}
 	return nil
 }

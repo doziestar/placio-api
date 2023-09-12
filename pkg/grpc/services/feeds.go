@@ -42,6 +42,17 @@ func convertToPbPost(p *ent.Post) *proto.Post {
 		}
 	}
 
+	var media []*proto.Post_Media
+	for _, m := range p.Edges.Medias {
+		if m != nil {
+			media = append(media, &proto.Post_Media{
+				Id:        m.ID,
+				URL:       m.URL,
+				MediaType: m.MediaType,
+			})
+		}
+	}
+
 	var pbComments []*proto.Post_Comment
 	for _, c := range p.Edges.Comments {
 		if c != nil {
@@ -63,10 +74,13 @@ func convertToPbPost(p *ent.Post) *proto.Post {
 	}
 
 	return &proto.Post{
-		Id:        p.ID,
-		Content:   p.Content,
-		CreatedAt: p.CreatedAt.String(),
-		UpdatedAt: p.UpdatedAt.String(),
+		Id:           p.ID,
+		Content:      p.Content,
+		CreatedAt:    p.CreatedAt.String(),
+		UpdatedAt:    p.UpdatedAt.String(),
+		LikeCount:    int64(p.LikeCount),
+		CommentCount: int64(p.CommentCount),
+		LikedByMe:    p.LikedByMe,
 		Privacy: func() proto.Post_PrivacyType {
 			switch p.Privacy {
 			case "PUBLIC":
@@ -80,6 +94,7 @@ func convertToPbPost(p *ent.Post) *proto.Post {
 		Edges: &proto.Post_Edge{
 			User:     user,
 			Comments: pbComments,
+			Medias:   media,
 		},
 	}
 }

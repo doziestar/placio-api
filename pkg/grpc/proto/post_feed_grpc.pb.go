@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v3.21.12
-// source: grpc/proto/post_feed.proto
+// source: pkg/grpc/proto/post_feed.proto
 
 package proto
 
@@ -212,5 +212,5 @@ var PostService_ServiceDesc = grpc.ServiceDesc{
 			ClientStreams: true,
 		},
 	},
-	Metadata: "grpc/proto/post_feed.proto",
+	Metadata: "pkg/grpc/proto/post_feed.proto",
 }
