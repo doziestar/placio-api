@@ -18,7 +18,7 @@ func NewNotificationController(notificationService INotification) *NotificationC
 	}
 }
 
-func (n *NotificationController) RegisterRoutes(router *gin.Engine) {
+func (n *NotificationController) RegisterRoutes(router *gin.RouterGroup) {
 	router.GET("/notification/:notificationID", middleware.ErrorMiddleware(n.GetNotification))
 	router.GET("/notifications", middleware.ErrorMiddleware(n.GetNotifications))
 	router.GET("/notifications/unread", middleware.ErrorMiddleware(n.GetUnreadNotifications))
