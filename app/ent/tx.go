@@ -54,6 +54,8 @@ type Tx struct {
 	Media *MediaClient
 	// Menu is the client for interacting with the Menu builders.
 	Menu *MenuClient
+	// Notification is the client for interacting with the Notification builders.
+	Notification *NotificationClient
 	// Order is the client for interacting with the Order builders.
 	Order *OrderClient
 	// Payment is the client for interacting with the Payment builders.
@@ -256,6 +258,7 @@ func (tx *Tx) init() {
 	tx.Like = NewLikeClient(tx.config)
 	tx.Media = NewMediaClient(tx.config)
 	tx.Menu = NewMenuClient(tx.config)
+	tx.Notification = NewNotificationClient(tx.config)
 	tx.Order = NewOrderClient(tx.config)
 	tx.Payment = NewPaymentClient(tx.config)
 	tx.Place = NewPlaceClient(tx.config)

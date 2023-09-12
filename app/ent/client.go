@@ -31,6 +31,7 @@ import (
 	"placio-app/ent/like"
 	"placio-app/ent/media"
 	"placio-app/ent/menu"
+	"placio-app/ent/notification"
 	"placio-app/ent/order"
 	"placio-app/ent/payment"
 	"placio-app/ent/place"
@@ -110,6 +111,8 @@ type Client struct {
 	Media *MediaClient
 	// Menu is the client for interacting with the Menu builders.
 	Menu *MenuClient
+	// Notification is the client for interacting with the Notification builders.
+	Notification *NotificationClient
 	// Order is the client for interacting with the Order builders.
 	Order *OrderClient
 	// Payment is the client for interacting with the Payment builders.
@@ -194,6 +197,7 @@ func (c *Client) init() {
 	c.Like = NewLikeClient(c.config)
 	c.Media = NewMediaClient(c.config)
 	c.Menu = NewMenuClient(c.config)
+	c.Notification = NewNotificationClient(c.config)
 	c.Order = NewOrderClient(c.config)
 	c.Payment = NewPaymentClient(c.config)
 	c.Place = NewPlaceClient(c.config)
@@ -322,6 +326,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Like:                    NewLikeClient(cfg),
 		Media:                   NewMediaClient(cfg),
 		Menu:                    NewMenuClient(cfg),
+		Notification:            NewNotificationClient(cfg),
 		Order:                   NewOrderClient(cfg),
 		Payment:                 NewPaymentClient(cfg),
 		Place:                   NewPlaceClient(cfg),
@@ -387,6 +392,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Like:                    NewLikeClient(cfg),
 		Media:                   NewMediaClient(cfg),
 		Menu:                    NewMenuClient(cfg),
+		Notification:            NewNotificationClient(cfg),
 		Order:                   NewOrderClient(cfg),
 		Payment:                 NewPaymentClient(cfg),
 		Place:                   NewPlaceClient(cfg),
@@ -444,12 +450,12 @@ func (c *Client) Use(hooks ...Hook) {
 		c.AccountSettings, c.Amenity, c.Booking, c.Business, c.BusinessFollowBusiness,
 		c.BusinessFollowEvent, c.BusinessFollowUser, c.Category, c.CategoryAssignment,
 		c.Chat, c.Comment, c.CustomBlock, c.Event, c.FAQ, c.FeatureRelease, c.Help,
-		c.InventoryAttribute, c.InventoryType, c.Like, c.Media, c.Menu, c.Order,
-		c.Payment, c.Place, c.PlaceInventory, c.PlaceInventoryAttribute, c.Post,
-		c.Rating, c.Reaction, c.Reservation, c.ReservationBlock, c.Resourse, c.Review,
-		c.Room, c.Template, c.Ticket, c.TicketOption, c.TransactionHistory, c.User,
-		c.UserBusiness, c.UserFollowBusiness, c.UserFollowEvent, c.UserFollowPlace,
-		c.UserFollowUser, c.UserLikePlace, c.Website,
+		c.InventoryAttribute, c.InventoryType, c.Like, c.Media, c.Menu, c.Notification,
+		c.Order, c.Payment, c.Place, c.PlaceInventory, c.PlaceInventoryAttribute,
+		c.Post, c.Rating, c.Reaction, c.Reservation, c.ReservationBlock, c.Resourse,
+		c.Review, c.Room, c.Template, c.Ticket, c.TicketOption, c.TransactionHistory,
+		c.User, c.UserBusiness, c.UserFollowBusiness, c.UserFollowEvent,
+		c.UserFollowPlace, c.UserFollowUser, c.UserLikePlace, c.Website,
 	} {
 		n.Use(hooks...)
 	}
@@ -462,12 +468,12 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.AccountSettings, c.Amenity, c.Booking, c.Business, c.BusinessFollowBusiness,
 		c.BusinessFollowEvent, c.BusinessFollowUser, c.Category, c.CategoryAssignment,
 		c.Chat, c.Comment, c.CustomBlock, c.Event, c.FAQ, c.FeatureRelease, c.Help,
-		c.InventoryAttribute, c.InventoryType, c.Like, c.Media, c.Menu, c.Order,
-		c.Payment, c.Place, c.PlaceInventory, c.PlaceInventoryAttribute, c.Post,
-		c.Rating, c.Reaction, c.Reservation, c.ReservationBlock, c.Resourse, c.Review,
-		c.Room, c.Template, c.Ticket, c.TicketOption, c.TransactionHistory, c.User,
-		c.UserBusiness, c.UserFollowBusiness, c.UserFollowEvent, c.UserFollowPlace,
-		c.UserFollowUser, c.UserLikePlace, c.Website,
+		c.InventoryAttribute, c.InventoryType, c.Like, c.Media, c.Menu, c.Notification,
+		c.Order, c.Payment, c.Place, c.PlaceInventory, c.PlaceInventoryAttribute,
+		c.Post, c.Rating, c.Reaction, c.Reservation, c.ReservationBlock, c.Resourse,
+		c.Review, c.Room, c.Template, c.Ticket, c.TicketOption, c.TransactionHistory,
+		c.User, c.UserBusiness, c.UserFollowBusiness, c.UserFollowEvent,
+		c.UserFollowPlace, c.UserFollowUser, c.UserLikePlace, c.Website,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -518,6 +524,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Media.mutate(ctx, m)
 	case *MenuMutation:
 		return c.Menu.mutate(ctx, m)
+	case *NotificationMutation:
+		return c.Notification.mutate(ctx, m)
 	case *OrderMutation:
 		return c.Order.mutate(ctx, m)
 	case *PaymentMutation:
@@ -1333,6 +1341,22 @@ func (c *BusinessClient) QueryWebsites(b *Business) *WebsiteQuery {
 			sqlgraph.From(business.Table, business.FieldID, id),
 			sqlgraph.To(website.Table, website.FieldID),
 			sqlgraph.Edge(sqlgraph.O2O, false, business.WebsitesTable, business.WebsitesColumn),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryNotifications queries the notifications edge of a Business.
+func (c *BusinessClient) QueryNotifications(b *Business) *NotificationQuery {
+	query := (&NotificationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(business.Table, business.FieldID, id),
+			sqlgraph.To(notification.Table, notification.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, business.NotificationsTable, business.NotificationsPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
 		return fromV, nil
@@ -4106,6 +4130,156 @@ func (c *MenuClient) mutate(ctx context.Context, m *MenuMutation) (Value, error)
 		return (&MenuDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Menu mutation op: %q", m.Op())
+	}
+}
+
+// NotificationClient is a client for the Notification schema.
+type NotificationClient struct {
+	config
+}
+
+// NewNotificationClient returns a client for the Notification from the given config.
+func NewNotificationClient(c config) *NotificationClient {
+	return &NotificationClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `notification.Hooks(f(g(h())))`.
+func (c *NotificationClient) Use(hooks ...Hook) {
+	c.hooks.Notification = append(c.hooks.Notification, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `notification.Intercept(f(g(h())))`.
+func (c *NotificationClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Notification = append(c.inters.Notification, interceptors...)
+}
+
+// Create returns a builder for creating a Notification entity.
+func (c *NotificationClient) Create() *NotificationCreate {
+	mutation := newNotificationMutation(c.config, OpCreate)
+	return &NotificationCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Notification entities.
+func (c *NotificationClient) CreateBulk(builders ...*NotificationCreate) *NotificationCreateBulk {
+	return &NotificationCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Notification.
+func (c *NotificationClient) Update() *NotificationUpdate {
+	mutation := newNotificationMutation(c.config, OpUpdate)
+	return &NotificationUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *NotificationClient) UpdateOne(n *Notification) *NotificationUpdateOne {
+	mutation := newNotificationMutation(c.config, OpUpdateOne, withNotification(n))
+	return &NotificationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *NotificationClient) UpdateOneID(id string) *NotificationUpdateOne {
+	mutation := newNotificationMutation(c.config, OpUpdateOne, withNotificationID(id))
+	return &NotificationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Notification.
+func (c *NotificationClient) Delete() *NotificationDelete {
+	mutation := newNotificationMutation(c.config, OpDelete)
+	return &NotificationDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *NotificationClient) DeleteOne(n *Notification) *NotificationDeleteOne {
+	return c.DeleteOneID(n.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *NotificationClient) DeleteOneID(id string) *NotificationDeleteOne {
+	builder := c.Delete().Where(notification.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &NotificationDeleteOne{builder}
+}
+
+// Query returns a query builder for Notification.
+func (c *NotificationClient) Query() *NotificationQuery {
+	return &NotificationQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeNotification},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Notification entity by its id.
+func (c *NotificationClient) Get(ctx context.Context, id string) (*Notification, error) {
+	return c.Query().Where(notification.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *NotificationClient) GetX(ctx context.Context, id string) *Notification {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryUser queries the user edge of a Notification.
+func (c *NotificationClient) QueryUser(n *Notification) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := n.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(notification.Table, notification.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, notification.UserTable, notification.UserPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(n.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryBusinessAccount queries the business_account edge of a Notification.
+func (c *NotificationClient) QueryBusinessAccount(n *Notification) *BusinessQuery {
+	query := (&BusinessClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := n.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(notification.Table, notification.FieldID, id),
+			sqlgraph.To(business.Table, business.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, notification.BusinessAccountTable, notification.BusinessAccountPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(n.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *NotificationClient) Hooks() []Hook {
+	return c.hooks.Notification
+}
+
+// Interceptors returns the client interceptors.
+func (c *NotificationClient) Interceptors() []Interceptor {
+	return c.inters.Notification
+}
+
+func (c *NotificationClient) mutate(ctx context.Context, m *NotificationMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&NotificationCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&NotificationUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&NotificationUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&NotificationDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Notification mutation op: %q", m.Op())
 	}
 }
 
@@ -7459,6 +7633,22 @@ func (c *UserClient) QueryReservationBlocks(u *User) *ReservationBlockQuery {
 	return query
 }
 
+// QueryNotifications queries the notifications edge of a User.
+func (c *UserClient) QueryNotifications(u *User) *NotificationQuery {
+	query := (&NotificationClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(notification.Table, notification.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, user.NotificationsTable, user.NotificationsPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *UserClient) Hooks() []Hook {
 	hooks := c.hooks.User
@@ -8573,20 +8763,20 @@ type (
 		AccountSettings, Amenity, Booking, Business, BusinessFollowBusiness,
 		BusinessFollowEvent, BusinessFollowUser, Category, CategoryAssignment, Chat,
 		Comment, CustomBlock, Event, FAQ, FeatureRelease, Help, InventoryAttribute,
-		InventoryType, Like, Media, Menu, Order, Payment, Place, PlaceInventory,
-		PlaceInventoryAttribute, Post, Rating, Reaction, Reservation, ReservationBlock,
-		Resourse, Review, Room, Template, Ticket, TicketOption, TransactionHistory,
-		User, UserBusiness, UserFollowBusiness, UserFollowEvent, UserFollowPlace,
-		UserFollowUser, UserLikePlace, Website []ent.Hook
+		InventoryType, Like, Media, Menu, Notification, Order, Payment, Place,
+		PlaceInventory, PlaceInventoryAttribute, Post, Rating, Reaction, Reservation,
+		ReservationBlock, Resourse, Review, Room, Template, Ticket, TicketOption,
+		TransactionHistory, User, UserBusiness, UserFollowBusiness, UserFollowEvent,
+		UserFollowPlace, UserFollowUser, UserLikePlace, Website []ent.Hook
 	}
 	inters struct {
 		AccountSettings, Amenity, Booking, Business, BusinessFollowBusiness,
 		BusinessFollowEvent, BusinessFollowUser, Category, CategoryAssignment, Chat,
 		Comment, CustomBlock, Event, FAQ, FeatureRelease, Help, InventoryAttribute,
-		InventoryType, Like, Media, Menu, Order, Payment, Place, PlaceInventory,
-		PlaceInventoryAttribute, Post, Rating, Reaction, Reservation, ReservationBlock,
-		Resourse, Review, Room, Template, Ticket, TicketOption, TransactionHistory,
-		User, UserBusiness, UserFollowBusiness, UserFollowEvent, UserFollowPlace,
-		UserFollowUser, UserLikePlace, Website []ent.Interceptor
+		InventoryType, Like, Media, Menu, Notification, Order, Payment, Place,
+		PlaceInventory, PlaceInventoryAttribute, Post, Rating, Reaction, Reservation,
+		ReservationBlock, Resourse, Review, Room, Template, Ticket, TicketOption,
+		TransactionHistory, User, UserBusiness, UserFollowBusiness, UserFollowEvent,
+		UserFollowPlace, UserFollowUser, UserLikePlace, Website []ent.Interceptor
 	}
 )

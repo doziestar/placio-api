@@ -107,9 +107,11 @@ type UserEdges struct {
 	TransactionHistories []*TransactionHistory `json:"transaction_histories,omitempty"`
 	// ReservationBlocks holds the value of the reservation_blocks edge.
 	ReservationBlocks []*ReservationBlock `json:"reservation_blocks,omitempty"`
+	// Notifications holds the value of the notifications edge.
+	Notifications []*Notification `json:"notifications,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [22]bool
+	loadedTypes [23]bool
 }
 
 // UserBusinessesOrErr returns the UserBusinesses value or an error if the edge
@@ -312,6 +314,15 @@ func (e UserEdges) ReservationBlocksOrErr() ([]*ReservationBlock, error) {
 		return e.ReservationBlocks, nil
 	}
 	return nil, &NotLoadedError{edge: "reservation_blocks"}
+}
+
+// NotificationsOrErr returns the Notifications value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) NotificationsOrErr() ([]*Notification, error) {
+	if e.loadedTypes[22] {
+		return e.Notifications, nil
+	}
+	return nil, &NotLoadedError{edge: "notifications"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -585,6 +596,11 @@ func (u *User) QueryTransactionHistories() *TransactionHistoryQuery {
 // QueryReservationBlocks queries the "reservation_blocks" edge of the User entity.
 func (u *User) QueryReservationBlocks() *ReservationBlockQuery {
 	return NewUserClient(u.config).QueryReservationBlocks(u)
+}
+
+// QueryNotifications queries the "notifications" edge of the User entity.
+func (u *User) QueryNotifications() *NotificationQuery {
+	return NewUserClient(u.config).QueryNotifications(u)
 }
 
 // Update returns a builder for updating this User.

@@ -93,9 +93,11 @@ type BusinessEdges struct {
 	PlaceInventories []*PlaceInventory `json:"place_inventories,omitempty"`
 	// Websites holds the value of the websites edge.
 	Websites *Website `json:"websites,omitempty"`
+	// Notifications holds the value of the notifications edge.
+	Notifications []*Notification `json:"notifications,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [16]bool
+	loadedTypes [17]bool
 }
 
 // UserBusinessesOrErr returns the UserBusinesses value or an error if the edge
@@ -248,6 +250,15 @@ func (e BusinessEdges) WebsitesOrErr() (*Website, error) {
 		return e.Websites, nil
 	}
 	return nil, &NotLoadedError{edge: "websites"}
+}
+
+// NotificationsOrErr returns the Notifications value or an error if the edge
+// was not loaded in eager-loading.
+func (e BusinessEdges) NotificationsOrErr() ([]*Notification, error) {
+	if e.loadedTypes[16] {
+		return e.Notifications, nil
+	}
+	return nil, &NotLoadedError{edge: "notifications"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -481,6 +492,11 @@ func (b *Business) QueryPlaceInventories() *PlaceInventoryQuery {
 // QueryWebsites queries the "websites" edge of the Business entity.
 func (b *Business) QueryWebsites() *WebsiteQuery {
 	return NewBusinessClient(b.config).QueryWebsites(b)
+}
+
+// QueryNotifications queries the "notifications" edge of the Business entity.
+func (b *Business) QueryNotifications() *NotificationQuery {
+	return NewBusinessClient(b.config).QueryNotifications(b)
 }
 
 // Update returns a builder for updating this Business.
