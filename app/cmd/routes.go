@@ -23,6 +23,7 @@ import (
 	"placio-app/domains/reviews"
 	"placio-app/domains/search"
 	"placio-app/domains/users"
+	"placio-app/domains/websites"
 	"placio-app/ent"
 	"placio-app/utility"
 	"placio-pkg/kafka"
@@ -169,6 +170,8 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		featureReleaseController := feature_releases.NewFeatureReleaseController(featureReleaseService, *redisClient)
 		featureReleaseController.RegisterRoutes(routerGroupV1, routerGroupV1WithoutAuth)
 
+		// TODO: Below are the routes that need to be implemented
+
 		// recommendations
 		recommendationService := recommendations.NewRecommendations(client, userService, placeService)
 		recommendationController := recommendations.NewRecommendationController(*recommendationService)
@@ -178,6 +181,11 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		notificationService := notifications.NewNotificationService(client)
 		notificationController := notifications.NewNotificationController(notificationService)
 		notificationController.RegisterRoutes(routerGroupV1)
+
+		// website
+		websiteService := websites.NewWebsiteService(client, businessService, userService, mediaService)
+		websiteController := websites.NewWebsiteController(websiteService)
+		websiteController.RegisterRoutes(routerGroupV1)
 
 	}
 
