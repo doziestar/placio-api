@@ -25,7 +25,7 @@ func (cc *CommentController) RegisterRoutes(router *gin.RouterGroup) {
 		commentRouter.POST("/:postId", utility.Use(cc.createComment))
 		commentRouter.PUT("/:id", utility.Use(cc.updateComment))
 		commentRouter.DELETE("/:id", utility.Use(cc.deleteComment))
-		commentRouter.POST("/:id", utility.Use(cc.createReply))
+		commentRouter.POST("/reply/:commentId", utility.Use(cc.createReply))
 	}
 }
 
@@ -157,7 +157,7 @@ func (cc *CommentController) deleteComment(ctx *gin.Context) error {
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/comments/{id} [post]
 func (cc *CommentController) createReply(ctx *gin.Context) error {
-	parentCommentId := ctx.Param("id")
+	parentCommentId := ctx.Param("commentId")
 	user := ctx.MustGet("user").(string)
 
 	// Bind the incoming JSON to a new CommentDto instance
