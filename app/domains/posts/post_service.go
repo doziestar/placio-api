@@ -64,6 +64,9 @@ func (ps *PostServiceImpl) GetPostFeeds(ctx context.Context) ([]*ent.Post, error
 		Query().
 		WithComments(func(query *ent.CommentQuery) {
 			query.WithUser()
+			query.WithReplies(func(query *ent.CommentQuery) {
+				query.WithUser()
+			})
 		}).
 		WithMedias().
 		WithLikes(func(query *ent.LikeQuery) {
@@ -285,6 +288,11 @@ func (ps *PostServiceImpl) GetComments(ctx context.Context, postID string) ([]*e
 		Where(post.ID(postID)).
 		QueryComments().
 		WithUser().
+		WithReplies(func(query *ent.CommentQuery) {
+			query.WithUser()
+		}).WithParentComment(func(query *ent.CommentQuery) {
+		query.WithUser()
+	}).
 		All(ctx)
 
 	if err != nil {
@@ -312,6 +320,11 @@ func (ps *PostServiceImpl) GetCommentsByPost(ctx context.Context, postID string)
 				WithMedias().
 				WithLikes()
 		}).
+		WithReplies(func(query *ent.CommentQuery) {
+			query.WithUser()
+		}).WithParentComment(func(query *ent.CommentQuery) {
+		query.WithUser()
+	}).
 		All(ctx)
 
 	if err != nil {

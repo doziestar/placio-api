@@ -25,6 +25,7 @@ func (cc *CommentController) RegisterRoutes(router *gin.RouterGroup) {
 		commentRouter.POST("/:postId", utility.Use(cc.createComment))
 		commentRouter.PUT("/:id", utility.Use(cc.updateComment))
 		commentRouter.DELETE("/:id", utility.Use(cc.deleteComment))
+		commentRouter.POST("/:id", utility.Use(cc.createReply))
 	}
 }
 
@@ -43,13 +44,8 @@ func (cc *CommentController) RegisterRoutes(router *gin.RouterGroup) {
 // @Router /api/v1/comments/:postId [post]
 func (cc *CommentController) createComment(ctx *gin.Context) error {
 	// Extract the user from the context
-	authOID := ctx.MustGet("auth0_id").(string)
 	postId := ctx.Param("postId")
-	user, err := cc.userService.GetUser(ctx, authOID)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
-		return err
-	}
+	user := ctx.MustGet("user").(string)
 
 	// Bind the incoming JSON to a new CommentDto instance
 	data := new(CommentDto)
@@ -59,7 +55,7 @@ func (cc *CommentController) createComment(ctx *gin.Context) error {
 	}
 
 	// Create a new Comment instance
-	newComment, err := cc.commentService.CreateComment(ctx, user.ID, postId, data.Content)
+	newComment, err := cc.commentService.CreateComment(ctx, user, postId, data.Content)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 		return err
@@ -86,13 +82,7 @@ func (cc *CommentController) createComment(ctx *gin.Context) error {
 // @Router /api/v1/comments/{id} [put]
 func (cc *CommentController) updateComment(ctx *gin.Context) error {
 	// Extract the user from the context
-	authOID := ctx.MustGet("auth0_id").(string)
-	user, err := cc.userService.GetUser(ctx, authOID)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, utility.ProcessError(err))
-		return err
-	}
-
+	user := ctx.MustGet("user").(string)
 	// Extract the commentID from the path
 	commentID := ctx.Param("id")
 
@@ -104,7 +94,7 @@ func (cc *CommentController) updateComment(ctx *gin.Context) error {
 	}
 
 	// Update the Comment instance
-	updatedComment, err := cc.commentService.UpdateComment(ctx, user.ID, commentID, data.Content)
+	updatedComment, err := cc.commentService.UpdateComment(ctx, user, commentID, data.Content)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, utility.ProcessError(err))
 		return err
@@ -138,18 +128,12 @@ func (cc *CommentController) updateComment(ctx *gin.Context) error {
 // @Router /api/v1/comments/{id} [delete]
 func (cc *CommentController) deleteComment(ctx *gin.Context) error {
 	// Extract the user from the context
-	authOID := ctx.MustGet("auth0_id").(string)
-	user, err := cc.userService.GetUser(ctx, authOID)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
-		return err
-	}
-
+	user := ctx.MustGet("user").(string)
 	// Extract the commentID from the path
 	commentID := ctx.Param("id")
 
 	// Delete the Comment
-	err = cc.commentService.DeleteComment(ctx, user.ID, commentID)
+	err := cc.commentService.DeleteComment(ctx, user, commentID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
 		return err
@@ -157,4 +141,39 @@ func (cc *CommentController) deleteComment(ctx *gin.Context) error {
 
 	ctx.JSON(http.StatusNoContent, utility.ProcessResponse(nil, "Success", "Successfully deleted comment", ""))
 	return nil
+}
+
+// CreateReply creates a new reply for a comment.
+// @Summary Create a new reply for a comment
+// @Description Create a new reply for a comment by the authenticated user
+// @Tags Comment
+// @Accept json
+// @Produce json
+// @Param id path string true "Comment ID"
+// @Param CreateCommentDto body Dto.CommentDto true "Comment Data"
+// @Success 201 {object} Dto.CommentResponseDto "Successfully created reply"
+// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
+// @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
+// @Router /api/v1/comments/{id} [post]
+func (cc *CommentController) createReply(ctx *gin.Context) error {
+	parentCommentId := ctx.Param("id")
+	user := ctx.MustGet("user").(string)
+
+	// Bind the incoming JSON to a new CommentDto instance
+	data := new(CommentDto)
+	if err := ctx.BindJSON(data); err != nil {
+		ctx.JSON(http.StatusBadRequest, utility.ProcessError(err))
+		return err
+	}
+
+	// Create a new Comment instance
+	newComment, err := cc.commentService.CreateReply(ctx, user, parentCommentId, data.Content)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusCreated, utility.ProcessResponse(newComment, "Success", "Successfully created reply", ""))
+	return nil
+
 }

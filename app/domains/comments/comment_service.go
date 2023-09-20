@@ -14,6 +14,7 @@ type CommentService interface {
 	CreateComment(ctx context.Context, userID string, postID string, content string) (*ent.Comment, error)
 	UpdateComment(ctx context.Context, userID string, commentID string, newContent string) (*ent.Comment, error)
 	DeleteComment(ctx context.Context, userID string, commentID string) error
+	CreateReply(ctx context.Context, userID string, parentCommentID string, content string) (*ent.Comment, error)
 }
 
 type CommentServiceImpl struct {
@@ -106,4 +107,37 @@ func (cs *CommentServiceImpl) DeleteComment(ctx context.Context, userID string, 
 	}
 
 	return nil
+}
+
+func (cs *CommentServiceImpl) CreateReply(ctx context.Context, userID string, parentCommentID string, content string) (*ent.Comment, error) {
+	parentComment, err := cs.client.Comment.Get(ctx, parentCommentID)
+	if ent.IsNotFound(err) {
+		return nil, fmt.Errorf("parent comment does not exist: %w", err)
+	} else if err != nil {
+		return nil, fmt.Errorf("failed retrieving parent comment: %w", err)
+	}
+
+	user, err := cs.client.User.Get(ctx, userID)
+	if ent.IsNotFound(err) {
+		return nil, fmt.Errorf("user does not exist: %w", err)
+	} else if err != nil {
+		return nil, fmt.Errorf("failed retrieving user: %w", err)
+	}
+
+	reply, err := cs.client.Comment.
+		Create().
+		SetID(uuid.New().String()).
+		SetContent(content).
+		SetUser(user).
+		SetUpdatedAt(time.Now()).
+		SetParentComment(parentComment).
+		SetParentCommentID(parentCommentID).
+		Save(ctx)
+
+	if err != nil {
+		log.Println("Failed to add comment", err)
+		return nil, fmt.Errorf("failed adding comment: %w", err)
+	}
+
+	return reply, nil
 }

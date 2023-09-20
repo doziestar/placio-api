@@ -48,6 +48,20 @@ func (cc *CommentCreate) SetUpdatedAt(t time.Time) *CommentCreate {
 	return cc
 }
 
+// SetParentCommentID sets the "parentCommentID" field.
+func (cc *CommentCreate) SetParentCommentID(s string) *CommentCreate {
+	cc.mutation.SetParentCommentID(s)
+	return cc
+}
+
+// SetNillableParentCommentID sets the "parentCommentID" field if the given value is not nil.
+func (cc *CommentCreate) SetNillableParentCommentID(s *string) *CommentCreate {
+	if s != nil {
+		cc.SetParentCommentID(*s)
+	}
+	return cc
+}
+
 // SetID sets the "id" field.
 func (cc *CommentCreate) SetID(s string) *CommentCreate {
 	cc.mutation.SetID(s)
@@ -90,6 +104,26 @@ func (cc *CommentCreate) SetNillablePostID(id *string) *CommentCreate {
 // SetPost sets the "post" edge to the Post entity.
 func (cc *CommentCreate) SetPost(p *Post) *CommentCreate {
 	return cc.SetPostID(p.ID)
+}
+
+// SetParentComment sets the "parentComment" edge to the Comment entity.
+func (cc *CommentCreate) SetParentComment(c *Comment) *CommentCreate {
+	return cc.SetParentCommentID(c.ID)
+}
+
+// AddReplyIDs adds the "replies" edge to the Comment entity by IDs.
+func (cc *CommentCreate) AddReplyIDs(ids ...string) *CommentCreate {
+	cc.mutation.AddReplyIDs(ids...)
+	return cc
+}
+
+// AddReplies adds the "replies" edges to the Comment entity.
+func (cc *CommentCreate) AddReplies(c ...*Comment) *CommentCreate {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return cc.AddReplyIDs(ids...)
 }
 
 // Mutation returns the CommentMutation object of the builder.
@@ -233,6 +267,39 @@ func (cc *CommentCreate) createSpec() (*Comment, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.post_comments = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := cc.mutation.ParentCommentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   comment.ParentCommentTable,
+			Columns: []string{comment.ParentCommentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(comment.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.ParentCommentID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := cc.mutation.RepliesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   comment.RepliesTable,
+			Columns: []string{comment.RepliesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(comment.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

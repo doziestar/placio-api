@@ -25,6 +25,8 @@ type Comment struct {
 	CreatedAt time.Time `json:"CreatedAt,omitempty"`
 	// UpdatedAt holds the value of the "UpdatedAt" field.
 	UpdatedAt time.Time `json:"UpdatedAt,omitempty"`
+	// ParentCommentID holds the value of the "parentCommentID" field.
+	ParentCommentID *string `json:"parentCommentID,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CommentQuery when eager-loading is set.
 	Edges           CommentEdges `json:"edges"`
@@ -40,9 +42,13 @@ type CommentEdges struct {
 	User *User `json:"user,omitempty"`
 	// Post holds the value of the post edge.
 	Post *Post `json:"post,omitempty"`
+	// ParentComment holds the value of the parentComment edge.
+	ParentComment *Comment `json:"parentComment,omitempty"`
+	// Replies holds the value of the replies edge.
+	Replies []*Comment `json:"replies,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [4]bool
 }
 
 // UserOrErr returns the User value or an error if the edge
@@ -71,12 +77,34 @@ func (e CommentEdges) PostOrErr() (*Post, error) {
 	return nil, &NotLoadedError{edge: "post"}
 }
 
+// ParentCommentOrErr returns the ParentComment value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e CommentEdges) ParentCommentOrErr() (*Comment, error) {
+	if e.loadedTypes[2] {
+		if e.ParentComment == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: comment.Label}
+		}
+		return e.ParentComment, nil
+	}
+	return nil, &NotLoadedError{edge: "parentComment"}
+}
+
+// RepliesOrErr returns the Replies value or an error if the edge
+// was not loaded in eager-loading.
+func (e CommentEdges) RepliesOrErr() ([]*Comment, error) {
+	if e.loadedTypes[3] {
+		return e.Replies, nil
+	}
+	return nil, &NotLoadedError{edge: "replies"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Comment) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case comment.FieldID, comment.FieldContent:
+		case comment.FieldID, comment.FieldContent, comment.FieldParentCommentID:
 			values[i] = new(sql.NullString)
 		case comment.FieldCreatedAt, comment.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -125,6 +153,13 @@ func (c *Comment) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				c.UpdatedAt = value.Time
 			}
+		case comment.FieldParentCommentID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field parentCommentID", values[i])
+			} else if value.Valid {
+				c.ParentCommentID = new(string)
+				*c.ParentCommentID = value.String
+			}
 		case comment.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field post_comments", values[i])
@@ -169,6 +204,16 @@ func (c *Comment) QueryPost() *PostQuery {
 	return NewCommentClient(c.config).QueryPost(c)
 }
 
+// QueryParentComment queries the "parentComment" edge of the Comment entity.
+func (c *Comment) QueryParentComment() *CommentQuery {
+	return NewCommentClient(c.config).QueryParentComment(c)
+}
+
+// QueryReplies queries the "replies" edge of the Comment entity.
+func (c *Comment) QueryReplies() *CommentQuery {
+	return NewCommentClient(c.config).QueryReplies(c)
+}
+
 // Update returns a builder for updating this Comment.
 // Note that you need to call Comment.Unwrap() before calling this method if this Comment
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -200,6 +245,11 @@ func (c *Comment) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("UpdatedAt=")
 	builder.WriteString(c.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	if v := c.ParentCommentID; v != nil {
+		builder.WriteString("parentCommentID=")
+		builder.WriteString(*v)
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

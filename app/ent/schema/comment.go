@@ -22,6 +22,9 @@ func (Comment) Fields() []ent.Field {
 		field.String("Content").MaxLen(2147483647),
 		field.Time("CreatedAt").Default(time.Now),
 		field.Time("UpdatedAt").UpdateDefault(time.Now),
+		field.String("parentCommentID").
+			Optional().
+			Nillable(),
 	}
 }
 
@@ -33,6 +36,10 @@ func (Comment) Edges() []ent.Edge {
 			Unique(),
 		edge.From("post", Post.Type).
 			Ref("comments").
+			Unique(),
+		edge.To("replies", Comment.Type).
+			From("parentComment").
+			Field("parentCommentID").
 			Unique(),
 	}
 }
