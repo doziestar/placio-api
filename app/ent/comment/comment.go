@@ -20,10 +20,16 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updatedat field in the database.
 	FieldUpdatedAt = "updated_at"
+	// FieldParentCommentID holds the string denoting the parentcommentid field in the database.
+	FieldParentCommentID = "parent_comment_id"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
 	// EdgePost holds the string denoting the post edge name in mutations.
 	EdgePost = "post"
+	// EdgeParentComment holds the string denoting the parentcomment edge name in mutations.
+	EdgeParentComment = "parentComment"
+	// EdgeReplies holds the string denoting the replies edge name in mutations.
+	EdgeReplies = "replies"
 	// Table holds the table name of the comment in the database.
 	Table = "comments"
 	// UserTable is the table that holds the user relation/edge.
@@ -40,6 +46,14 @@ const (
 	PostInverseTable = "posts"
 	// PostColumn is the table column denoting the post relation/edge.
 	PostColumn = "post_comments"
+	// ParentCommentTable is the table that holds the parentComment relation/edge.
+	ParentCommentTable = "comments"
+	// ParentCommentColumn is the table column denoting the parentComment relation/edge.
+	ParentCommentColumn = "parent_comment_id"
+	// RepliesTable is the table that holds the replies relation/edge.
+	RepliesTable = "comments"
+	// RepliesColumn is the table column denoting the replies relation/edge.
+	RepliesColumn = "parent_comment_id"
 )
 
 // Columns holds all SQL columns for comment fields.
@@ -48,6 +62,7 @@ var Columns = []string{
 	FieldContent,
 	FieldCreatedAt,
 	FieldUpdatedAt,
+	FieldParentCommentID,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "comments"
@@ -107,6 +122,11 @@ func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
 }
 
+// ByParentCommentID orders the results by the parentCommentID field.
+func ByParentCommentID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldParentCommentID, opts...).ToFunc()
+}
+
 // ByUserField orders the results by user field.
 func ByUserField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -118,6 +138,27 @@ func ByUserField(field string, opts ...sql.OrderTermOption) OrderOption {
 func ByPostField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newPostStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByParentCommentField orders the results by parentComment field.
+func ByParentCommentField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newParentCommentStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByRepliesCount orders the results by replies count.
+func ByRepliesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newRepliesStep(), opts...)
+	}
+}
+
+// ByReplies orders the results by replies terms.
+func ByReplies(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRepliesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 func newUserStep() *sqlgraph.Step {
@@ -132,5 +173,19 @@ func newPostStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(PostInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, true, PostTable, PostColumn),
+	)
+}
+func newParentCommentStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(Table, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, ParentCommentTable, ParentCommentColumn),
+	)
+}
+func newRepliesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(Table, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, RepliesTable, RepliesColumn),
 	)
 }

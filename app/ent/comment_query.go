@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"fmt"
 	"math"
 	"placio-app/ent/comment"
@@ -19,13 +20,15 @@ import (
 // CommentQuery is the builder for querying Comment entities.
 type CommentQuery struct {
 	config
-	ctx        *QueryContext
-	order      []comment.OrderOption
-	inters     []Interceptor
-	predicates []predicate.Comment
-	withUser   *UserQuery
-	withPost   *PostQuery
-	withFKs    bool
+	ctx               *QueryContext
+	order             []comment.OrderOption
+	inters            []Interceptor
+	predicates        []predicate.Comment
+	withUser          *UserQuery
+	withPost          *PostQuery
+	withParentComment *CommentQuery
+	withReplies       *CommentQuery
+	withFKs           bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -99,6 +102,50 @@ func (cq *CommentQuery) QueryPost() *PostQuery {
 			sqlgraph.From(comment.Table, comment.FieldID, selector),
 			sqlgraph.To(post.Table, post.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, comment.PostTable, comment.PostColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryParentComment chains the current query on the "parentComment" edge.
+func (cq *CommentQuery) QueryParentComment() *CommentQuery {
+	query := (&CommentClient{config: cq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(comment.Table, comment.FieldID, selector),
+			sqlgraph.To(comment.Table, comment.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, comment.ParentCommentTable, comment.ParentCommentColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryReplies chains the current query on the "replies" edge.
+func (cq *CommentQuery) QueryReplies() *CommentQuery {
+	query := (&CommentClient{config: cq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(comment.Table, comment.FieldID, selector),
+			sqlgraph.To(comment.Table, comment.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, comment.RepliesTable, comment.RepliesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -293,13 +340,15 @@ func (cq *CommentQuery) Clone() *CommentQuery {
 		return nil
 	}
 	return &CommentQuery{
-		config:     cq.config,
-		ctx:        cq.ctx.Clone(),
-		order:      append([]comment.OrderOption{}, cq.order...),
-		inters:     append([]Interceptor{}, cq.inters...),
-		predicates: append([]predicate.Comment{}, cq.predicates...),
-		withUser:   cq.withUser.Clone(),
-		withPost:   cq.withPost.Clone(),
+		config:            cq.config,
+		ctx:               cq.ctx.Clone(),
+		order:             append([]comment.OrderOption{}, cq.order...),
+		inters:            append([]Interceptor{}, cq.inters...),
+		predicates:        append([]predicate.Comment{}, cq.predicates...),
+		withUser:          cq.withUser.Clone(),
+		withPost:          cq.withPost.Clone(),
+		withParentComment: cq.withParentComment.Clone(),
+		withReplies:       cq.withReplies.Clone(),
 		// clone intermediate query.
 		sql:  cq.sql.Clone(),
 		path: cq.path,
@@ -325,6 +374,28 @@ func (cq *CommentQuery) WithPost(opts ...func(*PostQuery)) *CommentQuery {
 		opt(query)
 	}
 	cq.withPost = query
+	return cq
+}
+
+// WithParentComment tells the query-builder to eager-load the nodes that are connected to
+// the "parentComment" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *CommentQuery) WithParentComment(opts ...func(*CommentQuery)) *CommentQuery {
+	query := (&CommentClient{config: cq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withParentComment = query
+	return cq
+}
+
+// WithReplies tells the query-builder to eager-load the nodes that are connected to
+// the "replies" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *CommentQuery) WithReplies(opts ...func(*CommentQuery)) *CommentQuery {
+	query := (&CommentClient{config: cq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withReplies = query
 	return cq
 }
 
@@ -407,9 +478,11 @@ func (cq *CommentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Comm
 		nodes       = []*Comment{}
 		withFKs     = cq.withFKs
 		_spec       = cq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [4]bool{
 			cq.withUser != nil,
 			cq.withPost != nil,
+			cq.withParentComment != nil,
+			cq.withReplies != nil,
 		}
 	)
 	if cq.withUser != nil || cq.withPost != nil {
@@ -445,6 +518,19 @@ func (cq *CommentQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Comm
 	if query := cq.withPost; query != nil {
 		if err := cq.loadPost(ctx, query, nodes, nil,
 			func(n *Comment, e *Post) { n.Edges.Post = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := cq.withParentComment; query != nil {
+		if err := cq.loadParentComment(ctx, query, nodes, nil,
+			func(n *Comment, e *Comment) { n.Edges.ParentComment = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := cq.withReplies; query != nil {
+		if err := cq.loadReplies(ctx, query, nodes,
+			func(n *Comment) { n.Edges.Replies = []*Comment{} },
+			func(n *Comment, e *Comment) { n.Edges.Replies = append(n.Edges.Replies, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -515,6 +601,72 @@ func (cq *CommentQuery) loadPost(ctx context.Context, query *PostQuery, nodes []
 	}
 	return nil
 }
+func (cq *CommentQuery) loadParentComment(ctx context.Context, query *CommentQuery, nodes []*Comment, init func(*Comment), assign func(*Comment, *Comment)) error {
+	ids := make([]string, 0, len(nodes))
+	nodeids := make(map[string][]*Comment)
+	for i := range nodes {
+		if nodes[i].ParentCommentID == nil {
+			continue
+		}
+		fk := *nodes[i].ParentCommentID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(comment.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "parentCommentID" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (cq *CommentQuery) loadReplies(ctx context.Context, query *CommentQuery, nodes []*Comment, init func(*Comment), assign func(*Comment, *Comment)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Comment)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(comment.FieldParentCommentID)
+	}
+	query.Where(predicate.Comment(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(comment.RepliesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.ParentCommentID
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "parentCommentID" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "parentCommentID" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
 
 func (cq *CommentQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := cq.querySpec()
@@ -540,6 +692,9 @@ func (cq *CommentQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != comment.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if cq.withParentComment != nil {
+			_spec.Node.AddColumnOnce(comment.FieldParentCommentID)
 		}
 	}
 	if ps := cq.predicates; len(ps) > 0 {
