@@ -2,6 +2,7 @@ package recommendations
 
 import (
 	"context"
+	"log"
 	"placio-app/domains/places"
 	"placio-app/domains/users"
 	"placio-app/ent"
@@ -30,6 +31,13 @@ func NewRecommendations(client *ent.Client, userService users.UserService, place
 }
 
 func (r *RecommendationService) GetPlacesRecommendations(ctx context.Context) ([]*ent.Place, error) {
+	user := ctx.Value("user").(string)
+	userData, err := r.userService.GetUser(ctx, user)
+	if err != nil {
+		return nil, err
+	}
+	log.Println("recommendations for user", userData.Username)
+	//places, err := r.client.Place.Query().WithBusinessAccount().WithMedias().Only(ctx)
 	return nil, nil
 }
 

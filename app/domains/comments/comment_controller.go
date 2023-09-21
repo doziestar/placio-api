@@ -36,7 +36,6 @@ func (cc *CommentController) RegisterRoutes(router *gin.RouterGroup) {
 // @Accept json
 // @Produce json
 // @Param CreateCommentDto body Dto.CommentDto true "Comment Data"
-
 // @Success 201 {object} Dto.CommentResponseDto "Successfully created comment"
 // @Failure 400 {object} Dto.ErrorDTO "Bad Request"
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
