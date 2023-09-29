@@ -28,7 +28,6 @@ const (
 	TriggerComment = "Comment"
 	TriggerOrder   = "Order"
 	TriggerLike    = "Like"
-	// ... add more as needed
 )
 
 type NotificationService struct {
@@ -45,7 +44,7 @@ func (n *NotificationService) SendNotification(ctx context.Context, notification
 	return nil
 }
 
-func (n *NotificationService) CreateNotification(ctx context.Context, triggeredBy string, businessId string, notification *Notification) (*ent.Notification, error) {
+func (n *NotificationService) CreateNotification(ctx context.Context, notification *Notification) (*ent.Notification, error) {
 	var notificationData *ent.Notification
 	//userId := ctx.Value("user").(string)
 

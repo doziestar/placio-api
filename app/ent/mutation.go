@@ -43229,49 +43229,69 @@ func (m *UserLikePlaceMutation) ResetEdge(name string) error {
 // WebsiteMutation represents an operation that mutates the Website nodes in the graph.
 type WebsiteMutation struct {
 	config
-	op                  Op
-	typ                 string
-	id                  *string
-	domainName          *string
-	creationDate        *time.Time
-	lastUpdated         *time.Time
-	title               *string
-	description         *string
-	keywords            *string
-	language            *string
-	logo                *string
-	favicon             *string
-	facebook            *string
-	twitter             *string
-	instagram           *string
-	youtube             *string
-	linkedin            *string
-	pinterest           *string
-	mapCoordinates      *map[string]interface{}
-	longitude           *string
-	latitude            *string
-	address             *string
-	city                *string
-	state               *string
-	country             *string
-	zipCode             *string
-	phoneNumber         *string
-	email               *string
-	metaTags            *map[string]interface{}
-	clearedFields       map[string]struct{}
-	business            *string
-	clearedbusiness     bool
-	template            *string
-	clearedtemplate     bool
-	customBlocks        map[string]struct{}
-	removedcustomBlocks map[string]struct{}
-	clearedcustomBlocks bool
-	assets              map[string]struct{}
-	removedassets       map[string]struct{}
-	clearedassets       bool
-	done                bool
-	oldValue            func(context.Context) (*Website, error)
-	predicates          []predicate.Website
+	op                                   Op
+	typ                                  string
+	id                                   *string
+	domainName                           *string
+	heading_text                         *string
+	business_logo                        *string
+	business_name                        *string
+	banner_section_background_image      *string
+	banner_section_background_color      *string
+	banner_section_text                  *string
+	three_items_section_heading_text     *string
+	three_items_section_details_text     *string
+	three_items_section_item_one_text    *string
+	three_items_section_item_two_text    *string
+	three_items_section_item_three_text  *string
+	banner_two_section_background_image  *string
+	banner_two_section_background_color  *string
+	banner_two_left_section_heading_text *string
+	banner_two_left_section_details_text *string
+	banner_two_left_section_button_text  *string
+	banner_two_left_section_button_link  *string
+	banner_two_right_side_image          *string
+	achievements_section                 *map[string]interface{}
+	_Inventory_section_heading_text      *string
+	creationDate                         *time.Time
+	lastUpdated                          *time.Time
+	title                                *string
+	description                          *string
+	keywords                             *string
+	language                             *string
+	logo                                 *string
+	favicon                              *string
+	facebook                             *string
+	twitter                              *string
+	instagram                            *string
+	youtube                              *string
+	linkedin                             *string
+	pinterest                            *string
+	mapCoordinates                       *map[string]interface{}
+	longitude                            *string
+	latitude                             *string
+	address                              *string
+	city                                 *string
+	state                                *string
+	country                              *string
+	zipCode                              *string
+	phoneNumber                          *string
+	email                                *string
+	metaTags                             *map[string]interface{}
+	clearedFields                        map[string]struct{}
+	business                             *string
+	clearedbusiness                      bool
+	template                             *string
+	clearedtemplate                      bool
+	customBlocks                         map[string]struct{}
+	removedcustomBlocks                  map[string]struct{}
+	clearedcustomBlocks                  bool
+	assets                               map[string]struct{}
+	removedassets                        map[string]struct{}
+	clearedassets                        bool
+	done                                 bool
+	oldValue                             func(context.Context) (*Website, error)
+	predicates                           []predicate.Website
 }
 
 var _ ent.Mutation = (*WebsiteMutation)(nil)
@@ -43344,6 +43364,12 @@ func (m WebsiteMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Website entities.
+func (m *WebsiteMutation) SetID(id string) {
+	m.id = &id
+}
+
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
 func (m *WebsiteMutation) ID() (id string, exists bool) {
@@ -43406,6 +43432,726 @@ func (m *WebsiteMutation) OldDomainName(ctx context.Context) (v string, err erro
 // ResetDomainName resets all changes to the "domainName" field.
 func (m *WebsiteMutation) ResetDomainName() {
 	m.domainName = nil
+}
+
+// SetHeadingText sets the "heading_text" field.
+func (m *WebsiteMutation) SetHeadingText(s string) {
+	m.heading_text = &s
+}
+
+// HeadingText returns the value of the "heading_text" field in the mutation.
+func (m *WebsiteMutation) HeadingText() (r string, exists bool) {
+	v := m.heading_text
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHeadingText returns the old "heading_text" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldHeadingText(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldHeadingText is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldHeadingText requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHeadingText: %w", err)
+	}
+	return oldValue.HeadingText, nil
+}
+
+// ResetHeadingText resets all changes to the "heading_text" field.
+func (m *WebsiteMutation) ResetHeadingText() {
+	m.heading_text = nil
+}
+
+// SetBusinessLogo sets the "business_logo" field.
+func (m *WebsiteMutation) SetBusinessLogo(s string) {
+	m.business_logo = &s
+}
+
+// BusinessLogo returns the value of the "business_logo" field in the mutation.
+func (m *WebsiteMutation) BusinessLogo() (r string, exists bool) {
+	v := m.business_logo
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBusinessLogo returns the old "business_logo" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldBusinessLogo(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBusinessLogo is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBusinessLogo requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBusinessLogo: %w", err)
+	}
+	return oldValue.BusinessLogo, nil
+}
+
+// ResetBusinessLogo resets all changes to the "business_logo" field.
+func (m *WebsiteMutation) ResetBusinessLogo() {
+	m.business_logo = nil
+}
+
+// SetBusinessName sets the "business_name" field.
+func (m *WebsiteMutation) SetBusinessName(s string) {
+	m.business_name = &s
+}
+
+// BusinessName returns the value of the "business_name" field in the mutation.
+func (m *WebsiteMutation) BusinessName() (r string, exists bool) {
+	v := m.business_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBusinessName returns the old "business_name" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldBusinessName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBusinessName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBusinessName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBusinessName: %w", err)
+	}
+	return oldValue.BusinessName, nil
+}
+
+// ResetBusinessName resets all changes to the "business_name" field.
+func (m *WebsiteMutation) ResetBusinessName() {
+	m.business_name = nil
+}
+
+// SetBannerSectionBackgroundImage sets the "banner_section_background_image" field.
+func (m *WebsiteMutation) SetBannerSectionBackgroundImage(s string) {
+	m.banner_section_background_image = &s
+}
+
+// BannerSectionBackgroundImage returns the value of the "banner_section_background_image" field in the mutation.
+func (m *WebsiteMutation) BannerSectionBackgroundImage() (r string, exists bool) {
+	v := m.banner_section_background_image
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBannerSectionBackgroundImage returns the old "banner_section_background_image" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldBannerSectionBackgroundImage(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBannerSectionBackgroundImage is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBannerSectionBackgroundImage requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBannerSectionBackgroundImage: %w", err)
+	}
+	return oldValue.BannerSectionBackgroundImage, nil
+}
+
+// ResetBannerSectionBackgroundImage resets all changes to the "banner_section_background_image" field.
+func (m *WebsiteMutation) ResetBannerSectionBackgroundImage() {
+	m.banner_section_background_image = nil
+}
+
+// SetBannerSectionBackgroundColor sets the "banner_section_background_color" field.
+func (m *WebsiteMutation) SetBannerSectionBackgroundColor(s string) {
+	m.banner_section_background_color = &s
+}
+
+// BannerSectionBackgroundColor returns the value of the "banner_section_background_color" field in the mutation.
+func (m *WebsiteMutation) BannerSectionBackgroundColor() (r string, exists bool) {
+	v := m.banner_section_background_color
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBannerSectionBackgroundColor returns the old "banner_section_background_color" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldBannerSectionBackgroundColor(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBannerSectionBackgroundColor is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBannerSectionBackgroundColor requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBannerSectionBackgroundColor: %w", err)
+	}
+	return oldValue.BannerSectionBackgroundColor, nil
+}
+
+// ResetBannerSectionBackgroundColor resets all changes to the "banner_section_background_color" field.
+func (m *WebsiteMutation) ResetBannerSectionBackgroundColor() {
+	m.banner_section_background_color = nil
+}
+
+// SetBannerSectionText sets the "banner_section_text" field.
+func (m *WebsiteMutation) SetBannerSectionText(s string) {
+	m.banner_section_text = &s
+}
+
+// BannerSectionText returns the value of the "banner_section_text" field in the mutation.
+func (m *WebsiteMutation) BannerSectionText() (r string, exists bool) {
+	v := m.banner_section_text
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBannerSectionText returns the old "banner_section_text" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldBannerSectionText(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBannerSectionText is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBannerSectionText requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBannerSectionText: %w", err)
+	}
+	return oldValue.BannerSectionText, nil
+}
+
+// ResetBannerSectionText resets all changes to the "banner_section_text" field.
+func (m *WebsiteMutation) ResetBannerSectionText() {
+	m.banner_section_text = nil
+}
+
+// SetThreeItemsSectionHeadingText sets the "three_items_section_heading_text" field.
+func (m *WebsiteMutation) SetThreeItemsSectionHeadingText(s string) {
+	m.three_items_section_heading_text = &s
+}
+
+// ThreeItemsSectionHeadingText returns the value of the "three_items_section_heading_text" field in the mutation.
+func (m *WebsiteMutation) ThreeItemsSectionHeadingText() (r string, exists bool) {
+	v := m.three_items_section_heading_text
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldThreeItemsSectionHeadingText returns the old "three_items_section_heading_text" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldThreeItemsSectionHeadingText(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldThreeItemsSectionHeadingText is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldThreeItemsSectionHeadingText requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldThreeItemsSectionHeadingText: %w", err)
+	}
+	return oldValue.ThreeItemsSectionHeadingText, nil
+}
+
+// ResetThreeItemsSectionHeadingText resets all changes to the "three_items_section_heading_text" field.
+func (m *WebsiteMutation) ResetThreeItemsSectionHeadingText() {
+	m.three_items_section_heading_text = nil
+}
+
+// SetThreeItemsSectionDetailsText sets the "three_items_section_details_text" field.
+func (m *WebsiteMutation) SetThreeItemsSectionDetailsText(s string) {
+	m.three_items_section_details_text = &s
+}
+
+// ThreeItemsSectionDetailsText returns the value of the "three_items_section_details_text" field in the mutation.
+func (m *WebsiteMutation) ThreeItemsSectionDetailsText() (r string, exists bool) {
+	v := m.three_items_section_details_text
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldThreeItemsSectionDetailsText returns the old "three_items_section_details_text" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldThreeItemsSectionDetailsText(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldThreeItemsSectionDetailsText is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldThreeItemsSectionDetailsText requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldThreeItemsSectionDetailsText: %w", err)
+	}
+	return oldValue.ThreeItemsSectionDetailsText, nil
+}
+
+// ResetThreeItemsSectionDetailsText resets all changes to the "three_items_section_details_text" field.
+func (m *WebsiteMutation) ResetThreeItemsSectionDetailsText() {
+	m.three_items_section_details_text = nil
+}
+
+// SetThreeItemsSectionItemOneText sets the "three_items_section_item_one_text" field.
+func (m *WebsiteMutation) SetThreeItemsSectionItemOneText(s string) {
+	m.three_items_section_item_one_text = &s
+}
+
+// ThreeItemsSectionItemOneText returns the value of the "three_items_section_item_one_text" field in the mutation.
+func (m *WebsiteMutation) ThreeItemsSectionItemOneText() (r string, exists bool) {
+	v := m.three_items_section_item_one_text
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldThreeItemsSectionItemOneText returns the old "three_items_section_item_one_text" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldThreeItemsSectionItemOneText(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldThreeItemsSectionItemOneText is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldThreeItemsSectionItemOneText requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldThreeItemsSectionItemOneText: %w", err)
+	}
+	return oldValue.ThreeItemsSectionItemOneText, nil
+}
+
+// ResetThreeItemsSectionItemOneText resets all changes to the "three_items_section_item_one_text" field.
+func (m *WebsiteMutation) ResetThreeItemsSectionItemOneText() {
+	m.three_items_section_item_one_text = nil
+}
+
+// SetThreeItemsSectionItemTwoText sets the "three_items_section_item_two_text" field.
+func (m *WebsiteMutation) SetThreeItemsSectionItemTwoText(s string) {
+	m.three_items_section_item_two_text = &s
+}
+
+// ThreeItemsSectionItemTwoText returns the value of the "three_items_section_item_two_text" field in the mutation.
+func (m *WebsiteMutation) ThreeItemsSectionItemTwoText() (r string, exists bool) {
+	v := m.three_items_section_item_two_text
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldThreeItemsSectionItemTwoText returns the old "three_items_section_item_two_text" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldThreeItemsSectionItemTwoText(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldThreeItemsSectionItemTwoText is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldThreeItemsSectionItemTwoText requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldThreeItemsSectionItemTwoText: %w", err)
+	}
+	return oldValue.ThreeItemsSectionItemTwoText, nil
+}
+
+// ResetThreeItemsSectionItemTwoText resets all changes to the "three_items_section_item_two_text" field.
+func (m *WebsiteMutation) ResetThreeItemsSectionItemTwoText() {
+	m.three_items_section_item_two_text = nil
+}
+
+// SetThreeItemsSectionItemThreeText sets the "three_items_section_item_three_text" field.
+func (m *WebsiteMutation) SetThreeItemsSectionItemThreeText(s string) {
+	m.three_items_section_item_three_text = &s
+}
+
+// ThreeItemsSectionItemThreeText returns the value of the "three_items_section_item_three_text" field in the mutation.
+func (m *WebsiteMutation) ThreeItemsSectionItemThreeText() (r string, exists bool) {
+	v := m.three_items_section_item_three_text
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldThreeItemsSectionItemThreeText returns the old "three_items_section_item_three_text" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldThreeItemsSectionItemThreeText(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldThreeItemsSectionItemThreeText is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldThreeItemsSectionItemThreeText requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldThreeItemsSectionItemThreeText: %w", err)
+	}
+	return oldValue.ThreeItemsSectionItemThreeText, nil
+}
+
+// ResetThreeItemsSectionItemThreeText resets all changes to the "three_items_section_item_three_text" field.
+func (m *WebsiteMutation) ResetThreeItemsSectionItemThreeText() {
+	m.three_items_section_item_three_text = nil
+}
+
+// SetBannerTwoSectionBackgroundImage sets the "banner_two_section_background_image" field.
+func (m *WebsiteMutation) SetBannerTwoSectionBackgroundImage(s string) {
+	m.banner_two_section_background_image = &s
+}
+
+// BannerTwoSectionBackgroundImage returns the value of the "banner_two_section_background_image" field in the mutation.
+func (m *WebsiteMutation) BannerTwoSectionBackgroundImage() (r string, exists bool) {
+	v := m.banner_two_section_background_image
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBannerTwoSectionBackgroundImage returns the old "banner_two_section_background_image" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldBannerTwoSectionBackgroundImage(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBannerTwoSectionBackgroundImage is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBannerTwoSectionBackgroundImage requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBannerTwoSectionBackgroundImage: %w", err)
+	}
+	return oldValue.BannerTwoSectionBackgroundImage, nil
+}
+
+// ResetBannerTwoSectionBackgroundImage resets all changes to the "banner_two_section_background_image" field.
+func (m *WebsiteMutation) ResetBannerTwoSectionBackgroundImage() {
+	m.banner_two_section_background_image = nil
+}
+
+// SetBannerTwoSectionBackgroundColor sets the "banner_two_section_background_color" field.
+func (m *WebsiteMutation) SetBannerTwoSectionBackgroundColor(s string) {
+	m.banner_two_section_background_color = &s
+}
+
+// BannerTwoSectionBackgroundColor returns the value of the "banner_two_section_background_color" field in the mutation.
+func (m *WebsiteMutation) BannerTwoSectionBackgroundColor() (r string, exists bool) {
+	v := m.banner_two_section_background_color
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBannerTwoSectionBackgroundColor returns the old "banner_two_section_background_color" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldBannerTwoSectionBackgroundColor(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBannerTwoSectionBackgroundColor is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBannerTwoSectionBackgroundColor requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBannerTwoSectionBackgroundColor: %w", err)
+	}
+	return oldValue.BannerTwoSectionBackgroundColor, nil
+}
+
+// ResetBannerTwoSectionBackgroundColor resets all changes to the "banner_two_section_background_color" field.
+func (m *WebsiteMutation) ResetBannerTwoSectionBackgroundColor() {
+	m.banner_two_section_background_color = nil
+}
+
+// SetBannerTwoLeftSectionHeadingText sets the "banner_two_left_section_heading_text" field.
+func (m *WebsiteMutation) SetBannerTwoLeftSectionHeadingText(s string) {
+	m.banner_two_left_section_heading_text = &s
+}
+
+// BannerTwoLeftSectionHeadingText returns the value of the "banner_two_left_section_heading_text" field in the mutation.
+func (m *WebsiteMutation) BannerTwoLeftSectionHeadingText() (r string, exists bool) {
+	v := m.banner_two_left_section_heading_text
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBannerTwoLeftSectionHeadingText returns the old "banner_two_left_section_heading_text" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldBannerTwoLeftSectionHeadingText(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBannerTwoLeftSectionHeadingText is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBannerTwoLeftSectionHeadingText requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBannerTwoLeftSectionHeadingText: %w", err)
+	}
+	return oldValue.BannerTwoLeftSectionHeadingText, nil
+}
+
+// ResetBannerTwoLeftSectionHeadingText resets all changes to the "banner_two_left_section_heading_text" field.
+func (m *WebsiteMutation) ResetBannerTwoLeftSectionHeadingText() {
+	m.banner_two_left_section_heading_text = nil
+}
+
+// SetBannerTwoLeftSectionDetailsText sets the "banner_two_left_section_details_text" field.
+func (m *WebsiteMutation) SetBannerTwoLeftSectionDetailsText(s string) {
+	m.banner_two_left_section_details_text = &s
+}
+
+// BannerTwoLeftSectionDetailsText returns the value of the "banner_two_left_section_details_text" field in the mutation.
+func (m *WebsiteMutation) BannerTwoLeftSectionDetailsText() (r string, exists bool) {
+	v := m.banner_two_left_section_details_text
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBannerTwoLeftSectionDetailsText returns the old "banner_two_left_section_details_text" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldBannerTwoLeftSectionDetailsText(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBannerTwoLeftSectionDetailsText is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBannerTwoLeftSectionDetailsText requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBannerTwoLeftSectionDetailsText: %w", err)
+	}
+	return oldValue.BannerTwoLeftSectionDetailsText, nil
+}
+
+// ResetBannerTwoLeftSectionDetailsText resets all changes to the "banner_two_left_section_details_text" field.
+func (m *WebsiteMutation) ResetBannerTwoLeftSectionDetailsText() {
+	m.banner_two_left_section_details_text = nil
+}
+
+// SetBannerTwoLeftSectionButtonText sets the "banner_two_left_section_button_text" field.
+func (m *WebsiteMutation) SetBannerTwoLeftSectionButtonText(s string) {
+	m.banner_two_left_section_button_text = &s
+}
+
+// BannerTwoLeftSectionButtonText returns the value of the "banner_two_left_section_button_text" field in the mutation.
+func (m *WebsiteMutation) BannerTwoLeftSectionButtonText() (r string, exists bool) {
+	v := m.banner_two_left_section_button_text
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBannerTwoLeftSectionButtonText returns the old "banner_two_left_section_button_text" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldBannerTwoLeftSectionButtonText(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBannerTwoLeftSectionButtonText is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBannerTwoLeftSectionButtonText requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBannerTwoLeftSectionButtonText: %w", err)
+	}
+	return oldValue.BannerTwoLeftSectionButtonText, nil
+}
+
+// ResetBannerTwoLeftSectionButtonText resets all changes to the "banner_two_left_section_button_text" field.
+func (m *WebsiteMutation) ResetBannerTwoLeftSectionButtonText() {
+	m.banner_two_left_section_button_text = nil
+}
+
+// SetBannerTwoLeftSectionButtonLink sets the "banner_two_left_section_button_link" field.
+func (m *WebsiteMutation) SetBannerTwoLeftSectionButtonLink(s string) {
+	m.banner_two_left_section_button_link = &s
+}
+
+// BannerTwoLeftSectionButtonLink returns the value of the "banner_two_left_section_button_link" field in the mutation.
+func (m *WebsiteMutation) BannerTwoLeftSectionButtonLink() (r string, exists bool) {
+	v := m.banner_two_left_section_button_link
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBannerTwoLeftSectionButtonLink returns the old "banner_two_left_section_button_link" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldBannerTwoLeftSectionButtonLink(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBannerTwoLeftSectionButtonLink is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBannerTwoLeftSectionButtonLink requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBannerTwoLeftSectionButtonLink: %w", err)
+	}
+	return oldValue.BannerTwoLeftSectionButtonLink, nil
+}
+
+// ResetBannerTwoLeftSectionButtonLink resets all changes to the "banner_two_left_section_button_link" field.
+func (m *WebsiteMutation) ResetBannerTwoLeftSectionButtonLink() {
+	m.banner_two_left_section_button_link = nil
+}
+
+// SetBannerTwoRightSideImage sets the "banner_two_right_side_image" field.
+func (m *WebsiteMutation) SetBannerTwoRightSideImage(s string) {
+	m.banner_two_right_side_image = &s
+}
+
+// BannerTwoRightSideImage returns the value of the "banner_two_right_side_image" field in the mutation.
+func (m *WebsiteMutation) BannerTwoRightSideImage() (r string, exists bool) {
+	v := m.banner_two_right_side_image
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBannerTwoRightSideImage returns the old "banner_two_right_side_image" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldBannerTwoRightSideImage(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBannerTwoRightSideImage is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBannerTwoRightSideImage requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBannerTwoRightSideImage: %w", err)
+	}
+	return oldValue.BannerTwoRightSideImage, nil
+}
+
+// ResetBannerTwoRightSideImage resets all changes to the "banner_two_right_side_image" field.
+func (m *WebsiteMutation) ResetBannerTwoRightSideImage() {
+	m.banner_two_right_side_image = nil
+}
+
+// SetAchievementsSection sets the "achievements_section" field.
+func (m *WebsiteMutation) SetAchievementsSection(value map[string]interface{}) {
+	m.achievements_section = &value
+}
+
+// AchievementsSection returns the value of the "achievements_section" field in the mutation.
+func (m *WebsiteMutation) AchievementsSection() (r map[string]interface{}, exists bool) {
+	v := m.achievements_section
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAchievementsSection returns the old "achievements_section" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldAchievementsSection(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAchievementsSection is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAchievementsSection requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAchievementsSection: %w", err)
+	}
+	return oldValue.AchievementsSection, nil
+}
+
+// ResetAchievementsSection resets all changes to the "achievements_section" field.
+func (m *WebsiteMutation) ResetAchievementsSection() {
+	m.achievements_section = nil
+}
+
+// SetInventorySectionHeadingText sets the "Inventory_section_heading_text" field.
+func (m *WebsiteMutation) SetInventorySectionHeadingText(s string) {
+	m._Inventory_section_heading_text = &s
+}
+
+// InventorySectionHeadingText returns the value of the "Inventory_section_heading_text" field in the mutation.
+func (m *WebsiteMutation) InventorySectionHeadingText() (r string, exists bool) {
+	v := m._Inventory_section_heading_text
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldInventorySectionHeadingText returns the old "Inventory_section_heading_text" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldInventorySectionHeadingText(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldInventorySectionHeadingText is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldInventorySectionHeadingText requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldInventorySectionHeadingText: %w", err)
+	}
+	return oldValue.InventorySectionHeadingText, nil
+}
+
+// ResetInventorySectionHeadingText resets all changes to the "Inventory_section_heading_text" field.
+func (m *WebsiteMutation) ResetInventorySectionHeadingText() {
+	m._Inventory_section_heading_text = nil
 }
 
 // SetCreationDate sets the "creationDate" field.
@@ -44528,9 +45274,69 @@ func (m *WebsiteMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *WebsiteMutation) Fields() []string {
-	fields := make([]string, 0, 26)
+	fields := make([]string, 0, 46)
 	if m.domainName != nil {
 		fields = append(fields, website.FieldDomainName)
+	}
+	if m.heading_text != nil {
+		fields = append(fields, website.FieldHeadingText)
+	}
+	if m.business_logo != nil {
+		fields = append(fields, website.FieldBusinessLogo)
+	}
+	if m.business_name != nil {
+		fields = append(fields, website.FieldBusinessName)
+	}
+	if m.banner_section_background_image != nil {
+		fields = append(fields, website.FieldBannerSectionBackgroundImage)
+	}
+	if m.banner_section_background_color != nil {
+		fields = append(fields, website.FieldBannerSectionBackgroundColor)
+	}
+	if m.banner_section_text != nil {
+		fields = append(fields, website.FieldBannerSectionText)
+	}
+	if m.three_items_section_heading_text != nil {
+		fields = append(fields, website.FieldThreeItemsSectionHeadingText)
+	}
+	if m.three_items_section_details_text != nil {
+		fields = append(fields, website.FieldThreeItemsSectionDetailsText)
+	}
+	if m.three_items_section_item_one_text != nil {
+		fields = append(fields, website.FieldThreeItemsSectionItemOneText)
+	}
+	if m.three_items_section_item_two_text != nil {
+		fields = append(fields, website.FieldThreeItemsSectionItemTwoText)
+	}
+	if m.three_items_section_item_three_text != nil {
+		fields = append(fields, website.FieldThreeItemsSectionItemThreeText)
+	}
+	if m.banner_two_section_background_image != nil {
+		fields = append(fields, website.FieldBannerTwoSectionBackgroundImage)
+	}
+	if m.banner_two_section_background_color != nil {
+		fields = append(fields, website.FieldBannerTwoSectionBackgroundColor)
+	}
+	if m.banner_two_left_section_heading_text != nil {
+		fields = append(fields, website.FieldBannerTwoLeftSectionHeadingText)
+	}
+	if m.banner_two_left_section_details_text != nil {
+		fields = append(fields, website.FieldBannerTwoLeftSectionDetailsText)
+	}
+	if m.banner_two_left_section_button_text != nil {
+		fields = append(fields, website.FieldBannerTwoLeftSectionButtonText)
+	}
+	if m.banner_two_left_section_button_link != nil {
+		fields = append(fields, website.FieldBannerTwoLeftSectionButtonLink)
+	}
+	if m.banner_two_right_side_image != nil {
+		fields = append(fields, website.FieldBannerTwoRightSideImage)
+	}
+	if m.achievements_section != nil {
+		fields = append(fields, website.FieldAchievementsSection)
+	}
+	if m._Inventory_section_heading_text != nil {
+		fields = append(fields, website.FieldInventorySectionHeadingText)
 	}
 	if m.creationDate != nil {
 		fields = append(fields, website.FieldCreationDate)
@@ -44617,6 +45423,46 @@ func (m *WebsiteMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case website.FieldDomainName:
 		return m.DomainName()
+	case website.FieldHeadingText:
+		return m.HeadingText()
+	case website.FieldBusinessLogo:
+		return m.BusinessLogo()
+	case website.FieldBusinessName:
+		return m.BusinessName()
+	case website.FieldBannerSectionBackgroundImage:
+		return m.BannerSectionBackgroundImage()
+	case website.FieldBannerSectionBackgroundColor:
+		return m.BannerSectionBackgroundColor()
+	case website.FieldBannerSectionText:
+		return m.BannerSectionText()
+	case website.FieldThreeItemsSectionHeadingText:
+		return m.ThreeItemsSectionHeadingText()
+	case website.FieldThreeItemsSectionDetailsText:
+		return m.ThreeItemsSectionDetailsText()
+	case website.FieldThreeItemsSectionItemOneText:
+		return m.ThreeItemsSectionItemOneText()
+	case website.FieldThreeItemsSectionItemTwoText:
+		return m.ThreeItemsSectionItemTwoText()
+	case website.FieldThreeItemsSectionItemThreeText:
+		return m.ThreeItemsSectionItemThreeText()
+	case website.FieldBannerTwoSectionBackgroundImage:
+		return m.BannerTwoSectionBackgroundImage()
+	case website.FieldBannerTwoSectionBackgroundColor:
+		return m.BannerTwoSectionBackgroundColor()
+	case website.FieldBannerTwoLeftSectionHeadingText:
+		return m.BannerTwoLeftSectionHeadingText()
+	case website.FieldBannerTwoLeftSectionDetailsText:
+		return m.BannerTwoLeftSectionDetailsText()
+	case website.FieldBannerTwoLeftSectionButtonText:
+		return m.BannerTwoLeftSectionButtonText()
+	case website.FieldBannerTwoLeftSectionButtonLink:
+		return m.BannerTwoLeftSectionButtonLink()
+	case website.FieldBannerTwoRightSideImage:
+		return m.BannerTwoRightSideImage()
+	case website.FieldAchievementsSection:
+		return m.AchievementsSection()
+	case website.FieldInventorySectionHeadingText:
+		return m.InventorySectionHeadingText()
 	case website.FieldCreationDate:
 		return m.CreationDate()
 	case website.FieldLastUpdated:
@@ -44678,6 +45524,46 @@ func (m *WebsiteMutation) OldField(ctx context.Context, name string) (ent.Value,
 	switch name {
 	case website.FieldDomainName:
 		return m.OldDomainName(ctx)
+	case website.FieldHeadingText:
+		return m.OldHeadingText(ctx)
+	case website.FieldBusinessLogo:
+		return m.OldBusinessLogo(ctx)
+	case website.FieldBusinessName:
+		return m.OldBusinessName(ctx)
+	case website.FieldBannerSectionBackgroundImage:
+		return m.OldBannerSectionBackgroundImage(ctx)
+	case website.FieldBannerSectionBackgroundColor:
+		return m.OldBannerSectionBackgroundColor(ctx)
+	case website.FieldBannerSectionText:
+		return m.OldBannerSectionText(ctx)
+	case website.FieldThreeItemsSectionHeadingText:
+		return m.OldThreeItemsSectionHeadingText(ctx)
+	case website.FieldThreeItemsSectionDetailsText:
+		return m.OldThreeItemsSectionDetailsText(ctx)
+	case website.FieldThreeItemsSectionItemOneText:
+		return m.OldThreeItemsSectionItemOneText(ctx)
+	case website.FieldThreeItemsSectionItemTwoText:
+		return m.OldThreeItemsSectionItemTwoText(ctx)
+	case website.FieldThreeItemsSectionItemThreeText:
+		return m.OldThreeItemsSectionItemThreeText(ctx)
+	case website.FieldBannerTwoSectionBackgroundImage:
+		return m.OldBannerTwoSectionBackgroundImage(ctx)
+	case website.FieldBannerTwoSectionBackgroundColor:
+		return m.OldBannerTwoSectionBackgroundColor(ctx)
+	case website.FieldBannerTwoLeftSectionHeadingText:
+		return m.OldBannerTwoLeftSectionHeadingText(ctx)
+	case website.FieldBannerTwoLeftSectionDetailsText:
+		return m.OldBannerTwoLeftSectionDetailsText(ctx)
+	case website.FieldBannerTwoLeftSectionButtonText:
+		return m.OldBannerTwoLeftSectionButtonText(ctx)
+	case website.FieldBannerTwoLeftSectionButtonLink:
+		return m.OldBannerTwoLeftSectionButtonLink(ctx)
+	case website.FieldBannerTwoRightSideImage:
+		return m.OldBannerTwoRightSideImage(ctx)
+	case website.FieldAchievementsSection:
+		return m.OldAchievementsSection(ctx)
+	case website.FieldInventorySectionHeadingText:
+		return m.OldInventorySectionHeadingText(ctx)
 	case website.FieldCreationDate:
 		return m.OldCreationDate(ctx)
 	case website.FieldLastUpdated:
@@ -44743,6 +45629,146 @@ func (m *WebsiteMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDomainName(v)
+		return nil
+	case website.FieldHeadingText:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHeadingText(v)
+		return nil
+	case website.FieldBusinessLogo:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBusinessLogo(v)
+		return nil
+	case website.FieldBusinessName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBusinessName(v)
+		return nil
+	case website.FieldBannerSectionBackgroundImage:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBannerSectionBackgroundImage(v)
+		return nil
+	case website.FieldBannerSectionBackgroundColor:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBannerSectionBackgroundColor(v)
+		return nil
+	case website.FieldBannerSectionText:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBannerSectionText(v)
+		return nil
+	case website.FieldThreeItemsSectionHeadingText:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetThreeItemsSectionHeadingText(v)
+		return nil
+	case website.FieldThreeItemsSectionDetailsText:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetThreeItemsSectionDetailsText(v)
+		return nil
+	case website.FieldThreeItemsSectionItemOneText:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetThreeItemsSectionItemOneText(v)
+		return nil
+	case website.FieldThreeItemsSectionItemTwoText:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetThreeItemsSectionItemTwoText(v)
+		return nil
+	case website.FieldThreeItemsSectionItemThreeText:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetThreeItemsSectionItemThreeText(v)
+		return nil
+	case website.FieldBannerTwoSectionBackgroundImage:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBannerTwoSectionBackgroundImage(v)
+		return nil
+	case website.FieldBannerTwoSectionBackgroundColor:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBannerTwoSectionBackgroundColor(v)
+		return nil
+	case website.FieldBannerTwoLeftSectionHeadingText:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBannerTwoLeftSectionHeadingText(v)
+		return nil
+	case website.FieldBannerTwoLeftSectionDetailsText:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBannerTwoLeftSectionDetailsText(v)
+		return nil
+	case website.FieldBannerTwoLeftSectionButtonText:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBannerTwoLeftSectionButtonText(v)
+		return nil
+	case website.FieldBannerTwoLeftSectionButtonLink:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBannerTwoLeftSectionButtonLink(v)
+		return nil
+	case website.FieldBannerTwoRightSideImage:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBannerTwoRightSideImage(v)
+		return nil
+	case website.FieldAchievementsSection:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAchievementsSection(v)
+		return nil
+	case website.FieldInventorySectionHeadingText:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetInventorySectionHeadingText(v)
 		return nil
 	case website.FieldCreationDate:
 		v, ok := value.(time.Time)
@@ -44970,6 +45996,66 @@ func (m *WebsiteMutation) ResetField(name string) error {
 	switch name {
 	case website.FieldDomainName:
 		m.ResetDomainName()
+		return nil
+	case website.FieldHeadingText:
+		m.ResetHeadingText()
+		return nil
+	case website.FieldBusinessLogo:
+		m.ResetBusinessLogo()
+		return nil
+	case website.FieldBusinessName:
+		m.ResetBusinessName()
+		return nil
+	case website.FieldBannerSectionBackgroundImage:
+		m.ResetBannerSectionBackgroundImage()
+		return nil
+	case website.FieldBannerSectionBackgroundColor:
+		m.ResetBannerSectionBackgroundColor()
+		return nil
+	case website.FieldBannerSectionText:
+		m.ResetBannerSectionText()
+		return nil
+	case website.FieldThreeItemsSectionHeadingText:
+		m.ResetThreeItemsSectionHeadingText()
+		return nil
+	case website.FieldThreeItemsSectionDetailsText:
+		m.ResetThreeItemsSectionDetailsText()
+		return nil
+	case website.FieldThreeItemsSectionItemOneText:
+		m.ResetThreeItemsSectionItemOneText()
+		return nil
+	case website.FieldThreeItemsSectionItemTwoText:
+		m.ResetThreeItemsSectionItemTwoText()
+		return nil
+	case website.FieldThreeItemsSectionItemThreeText:
+		m.ResetThreeItemsSectionItemThreeText()
+		return nil
+	case website.FieldBannerTwoSectionBackgroundImage:
+		m.ResetBannerTwoSectionBackgroundImage()
+		return nil
+	case website.FieldBannerTwoSectionBackgroundColor:
+		m.ResetBannerTwoSectionBackgroundColor()
+		return nil
+	case website.FieldBannerTwoLeftSectionHeadingText:
+		m.ResetBannerTwoLeftSectionHeadingText()
+		return nil
+	case website.FieldBannerTwoLeftSectionDetailsText:
+		m.ResetBannerTwoLeftSectionDetailsText()
+		return nil
+	case website.FieldBannerTwoLeftSectionButtonText:
+		m.ResetBannerTwoLeftSectionButtonText()
+		return nil
+	case website.FieldBannerTwoLeftSectionButtonLink:
+		m.ResetBannerTwoLeftSectionButtonLink()
+		return nil
+	case website.FieldBannerTwoRightSideImage:
+		m.ResetBannerTwoRightSideImage()
+		return nil
+	case website.FieldAchievementsSection:
+		m.ResetAchievementsSection()
+		return nil
+	case website.FieldInventorySectionHeadingText:
+		m.ResetInventorySectionHeadingText()
 		return nil
 	case website.FieldCreationDate:
 		m.ResetCreationDate()

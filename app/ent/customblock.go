@@ -56,7 +56,7 @@ func (*CustomBlock) scanValues(columns []string) ([]any, error) {
 		case customblock.FieldID, customblock.FieldContent:
 			values[i] = new(sql.NullString)
 		case customblock.ForeignKeys[0]: // website_custom_blocks
-			values[i] = new(sql.NullInt64)
+			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -85,11 +85,11 @@ func (cb *CustomBlock) assignValues(columns []string, values []any) error {
 				cb.Content = value.String
 			}
 		case customblock.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field website_custom_blocks", value)
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field website_custom_blocks", values[i])
 			} else if value.Valid {
 				cb.website_custom_blocks = new(string)
-				*cb.website_custom_blocks = string(value.Int64)
+				*cb.website_custom_blocks = value.String
 			}
 		default:
 			cb.selectValues.Set(columns[i], values[i])

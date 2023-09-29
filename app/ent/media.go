@@ -126,7 +126,7 @@ func (*Media) scanValues(columns []string) ([]any, error) {
 		case media.ForeignKeys[1]: // review_medias
 			values[i] = new(sql.NullString)
 		case media.ForeignKeys[2]: // website_assets
-			values[i] = new(sql.NullInt64)
+			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -199,11 +199,11 @@ func (m *Media) assignValues(columns []string, values []any) error {
 				*m.review_medias = value.String
 			}
 		case media.ForeignKeys[2]:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field website_assets", value)
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field website_assets", values[i])
 			} else if value.Valid {
 				m.website_assets = new(string)
-				*m.website_assets = string(value.Int64)
+				*m.website_assets = value.String
 			}
 		default:
 			m.selectValues.Set(columns[i], values[i])

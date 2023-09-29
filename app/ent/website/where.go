@@ -70,6 +70,101 @@ func DomainName(v string) predicate.Website {
 	return predicate.Website(sql.FieldEQ(FieldDomainName, v))
 }
 
+// HeadingText applies equality check predicate on the "heading_text" field. It's identical to HeadingTextEQ.
+func HeadingText(v string) predicate.Website {
+	return predicate.Website(sql.FieldEQ(FieldHeadingText, v))
+}
+
+// BusinessLogo applies equality check predicate on the "business_logo" field. It's identical to BusinessLogoEQ.
+func BusinessLogo(v string) predicate.Website {
+	return predicate.Website(sql.FieldEQ(FieldBusinessLogo, v))
+}
+
+// BusinessName applies equality check predicate on the "business_name" field. It's identical to BusinessNameEQ.
+func BusinessName(v string) predicate.Website {
+	return predicate.Website(sql.FieldEQ(FieldBusinessName, v))
+}
+
+// BannerSectionBackgroundImage applies equality check predicate on the "banner_section_background_image" field. It's identical to BannerSectionBackgroundImageEQ.
+func BannerSectionBackgroundImage(v string) predicate.Website {
+	return predicate.Website(sql.FieldEQ(FieldBannerSectionBackgroundImage, v))
+}
+
+// BannerSectionBackgroundColor applies equality check predicate on the "banner_section_background_color" field. It's identical to BannerSectionBackgroundColorEQ.
+func BannerSectionBackgroundColor(v string) predicate.Website {
+	return predicate.Website(sql.FieldEQ(FieldBannerSectionBackgroundColor, v))
+}
+
+// BannerSectionText applies equality check predicate on the "banner_section_text" field. It's identical to BannerSectionTextEQ.
+func BannerSectionText(v string) predicate.Website {
+	return predicate.Website(sql.FieldEQ(FieldBannerSectionText, v))
+}
+
+// ThreeItemsSectionHeadingText applies equality check predicate on the "three_items_section_heading_text" field. It's identical to ThreeItemsSectionHeadingTextEQ.
+func ThreeItemsSectionHeadingText(v string) predicate.Website {
+	return predicate.Website(sql.FieldEQ(FieldThreeItemsSectionHeadingText, v))
+}
+
+// ThreeItemsSectionDetailsText applies equality check predicate on the "three_items_section_details_text" field. It's identical to ThreeItemsSectionDetailsTextEQ.
+func ThreeItemsSectionDetailsText(v string) predicate.Website {
+	return predicate.Website(sql.FieldEQ(FieldThreeItemsSectionDetailsText, v))
+}
+
+// ThreeItemsSectionItemOneText applies equality check predicate on the "three_items_section_item_one_text" field. It's identical to ThreeItemsSectionItemOneTextEQ.
+func ThreeItemsSectionItemOneText(v string) predicate.Website {
+	return predicate.Website(sql.FieldEQ(FieldThreeItemsSectionItemOneText, v))
+}
+
+// ThreeItemsSectionItemTwoText applies equality check predicate on the "three_items_section_item_two_text" field. It's identical to ThreeItemsSectionItemTwoTextEQ.
+func ThreeItemsSectionItemTwoText(v string) predicate.Website {
+	return predicate.Website(sql.FieldEQ(FieldThreeItemsSectionItemTwoText, v))
+}
+
+// ThreeItemsSectionItemThreeText applies equality check predicate on the "three_items_section_item_three_text" field. It's identical to ThreeItemsSectionItemThreeTextEQ.
+func ThreeItemsSectionItemThreeText(v string) predicate.Website {
+	return predicate.Website(sql.FieldEQ(FieldThreeItemsSectionItemThreeText, v))
+}
+
+// BannerTwoSectionBackgroundImage applies equality check predicate on the "banner_two_section_background_image" field. It's identical to BannerTwoSectionBackgroundImageEQ.
+func BannerTwoSectionBackgroundImage(v string) predicate.Website {
+	return predicate.Website(sql.FieldEQ(FieldBannerTwoSectionBackgroundImage, v))
+}
+
+// BannerTwoSectionBackgroundColor applies equality check predicate on the "banner_two_section_background_color" field. It's identical to BannerTwoSectionBackgroundColorEQ.
+func BannerTwoSectionBackgroundColor(v string) predicate.Website {
+	return predicate.Website(sql.FieldEQ(FieldBannerTwoSectionBackgroundColor, v))
+}
+
+// BannerTwoLeftSectionHeadingText applies equality check predicate on the "banner_two_left_section_heading_text" field. It's identical to BannerTwoLeftSectionHeadingTextEQ.
+func BannerTwoLeftSectionHeadingText(v string) predicate.Website {
+	return predicate.Website(sql.FieldEQ(FieldBannerTwoLeftSectionHeadingText, v))
+}
+
+// BannerTwoLeftSectionDetailsText applies equality check predicate on the "banner_two_left_section_details_text" field. It's identical to BannerTwoLeftSectionDetailsTextEQ.
+func BannerTwoLeftSectionDetailsText(v string) predicate.Website {
+	return predicate.Website(sql.FieldEQ(FieldBannerTwoLeftSectionDetailsText, v))
+}
+
+// BannerTwoLeftSectionButtonText applies equality check predicate on the "banner_two_left_section_button_text" field. It's identical to BannerTwoLeftSectionButtonTextEQ.
+func BannerTwoLeftSectionButtonText(v string) predicate.Website {
+	return predicate.Website(sql.FieldEQ(FieldBannerTwoLeftSectionButtonText, v))
+}
+
+// BannerTwoLeftSectionButtonLink applies equality check predicate on the "banner_two_left_section_button_link" field. It's identical to BannerTwoLeftSectionButtonLinkEQ.
+func BannerTwoLeftSectionButtonLink(v string) predicate.Website {
+	return predicate.Website(sql.FieldEQ(FieldBannerTwoLeftSectionButtonLink, v))
+}
+
+// BannerTwoRightSideImage applies equality check predicate on the "banner_two_right_side_image" field. It's identical to BannerTwoRightSideImageEQ.
+func BannerTwoRightSideImage(v string) predicate.Website {
+	return predicate.Website(sql.FieldEQ(FieldBannerTwoRightSideImage, v))
+}
+
+// InventorySectionHeadingText applies equality check predicate on the "Inventory_section_heading_text" field. It's identical to InventorySectionHeadingTextEQ.
+func InventorySectionHeadingText(v string) predicate.Website {
+	return predicate.Website(sql.FieldEQ(FieldInventorySectionHeadingText, v))
+}
+
 // CreationDate applies equality check predicate on the "creationDate" field. It's identical to CreationDateEQ.
 func CreationDate(v time.Time) predicate.Website {
 	return predicate.Website(sql.FieldEQ(FieldCreationDate, v))
@@ -248,6 +343,1241 @@ func DomainNameEqualFold(v string) predicate.Website {
 // DomainNameContainsFold applies the ContainsFold predicate on the "domainName" field.
 func DomainNameContainsFold(v string) predicate.Website {
 	return predicate.Website(sql.FieldContainsFold(FieldDomainName, v))
+}
+
+// HeadingTextEQ applies the EQ predicate on the "heading_text" field.
+func HeadingTextEQ(v string) predicate.Website {
+	return predicate.Website(sql.FieldEQ(FieldHeadingText, v))
+}
+
+// HeadingTextNEQ applies the NEQ predicate on the "heading_text" field.
+func HeadingTextNEQ(v string) predicate.Website {
+	return predicate.Website(sql.FieldNEQ(FieldHeadingText, v))
+}
+
+// HeadingTextIn applies the In predicate on the "heading_text" field.
+func HeadingTextIn(vs ...string) predicate.Website {
+	return predicate.Website(sql.FieldIn(FieldHeadingText, vs...))
+}
+
+// HeadingTextNotIn applies the NotIn predicate on the "heading_text" field.
+func HeadingTextNotIn(vs ...string) predicate.Website {
+	return predicate.Website(sql.FieldNotIn(FieldHeadingText, vs...))
+}
+
+// HeadingTextGT applies the GT predicate on the "heading_text" field.
+func HeadingTextGT(v string) predicate.Website {
+	return predicate.Website(sql.FieldGT(FieldHeadingText, v))
+}
+
+// HeadingTextGTE applies the GTE predicate on the "heading_text" field.
+func HeadingTextGTE(v string) predicate.Website {
+	return predicate.Website(sql.FieldGTE(FieldHeadingText, v))
+}
+
+// HeadingTextLT applies the LT predicate on the "heading_text" field.
+func HeadingTextLT(v string) predicate.Website {
+	return predicate.Website(sql.FieldLT(FieldHeadingText, v))
+}
+
+// HeadingTextLTE applies the LTE predicate on the "heading_text" field.
+func HeadingTextLTE(v string) predicate.Website {
+	return predicate.Website(sql.FieldLTE(FieldHeadingText, v))
+}
+
+// HeadingTextContains applies the Contains predicate on the "heading_text" field.
+func HeadingTextContains(v string) predicate.Website {
+	return predicate.Website(sql.FieldContains(FieldHeadingText, v))
+}
+
+// HeadingTextHasPrefix applies the HasPrefix predicate on the "heading_text" field.
+func HeadingTextHasPrefix(v string) predicate.Website {
+	return predicate.Website(sql.FieldHasPrefix(FieldHeadingText, v))
+}
+
+// HeadingTextHasSuffix applies the HasSuffix predicate on the "heading_text" field.
+func HeadingTextHasSuffix(v string) predicate.Website {
+	return predicate.Website(sql.FieldHasSuffix(FieldHeadingText, v))
+}
+
+// HeadingTextEqualFold applies the EqualFold predicate on the "heading_text" field.
+func HeadingTextEqualFold(v string) predicate.Website {
+	return predicate.Website(sql.FieldEqualFold(FieldHeadingText, v))
+}
+
+// HeadingTextContainsFold applies the ContainsFold predicate on the "heading_text" field.
+func HeadingTextContainsFold(v string) predicate.Website {
+	return predicate.Website(sql.FieldContainsFold(FieldHeadingText, v))
+}
+
+// BusinessLogoEQ applies the EQ predicate on the "business_logo" field.
+func BusinessLogoEQ(v string) predicate.Website {
+	return predicate.Website(sql.FieldEQ(FieldBusinessLogo, v))
+}
+
+// BusinessLogoNEQ applies the NEQ predicate on the "business_logo" field.
+func BusinessLogoNEQ(v string) predicate.Website {
+	return predicate.Website(sql.FieldNEQ(FieldBusinessLogo, v))
+}
+
+// BusinessLogoIn applies the In predicate on the "business_logo" field.
+func BusinessLogoIn(vs ...string) predicate.Website {
+	return predicate.Website(sql.FieldIn(FieldBusinessLogo, vs...))
+}
+
+// BusinessLogoNotIn applies the NotIn predicate on the "business_logo" field.
+func BusinessLogoNotIn(vs ...string) predicate.Website {
+	return predicate.Website(sql.FieldNotIn(FieldBusinessLogo, vs...))
+}
+
+// BusinessLogoGT applies the GT predicate on the "business_logo" field.
+func BusinessLogoGT(v string) predicate.Website {
+	return predicate.Website(sql.FieldGT(FieldBusinessLogo, v))
+}
+
+// BusinessLogoGTE applies the GTE predicate on the "business_logo" field.
+func BusinessLogoGTE(v string) predicate.Website {
+	return predicate.Website(sql.FieldGTE(FieldBusinessLogo, v))
+}
+
+// BusinessLogoLT applies the LT predicate on the "business_logo" field.
+func BusinessLogoLT(v string) predicate.Website {
+	return predicate.Website(sql.FieldLT(FieldBusinessLogo, v))
+}
+
+// BusinessLogoLTE applies the LTE predicate on the "business_logo" field.
+func BusinessLogoLTE(v string) predicate.Website {
+	return predicate.Website(sql.FieldLTE(FieldBusinessLogo, v))
+}
+
+// BusinessLogoContains applies the Contains predicate on the "business_logo" field.
+func BusinessLogoContains(v string) predicate.Website {
+	return predicate.Website(sql.FieldContains(FieldBusinessLogo, v))
+}
+
+// BusinessLogoHasPrefix applies the HasPrefix predicate on the "business_logo" field.
+func BusinessLogoHasPrefix(v string) predicate.Website {
+	return predicate.Website(sql.FieldHasPrefix(FieldBusinessLogo, v))
+}
+
+// BusinessLogoHasSuffix applies the HasSuffix predicate on the "business_logo" field.
+func BusinessLogoHasSuffix(v string) predicate.Website {
+	return predicate.Website(sql.FieldHasSuffix(FieldBusinessLogo, v))
+}
+
+// BusinessLogoEqualFold applies the EqualFold predicate on the "business_logo" field.
+func BusinessLogoEqualFold(v string) predicate.Website {
+	return predicate.Website(sql.FieldEqualFold(FieldBusinessLogo, v))
+}
+
+// BusinessLogoContainsFold applies the ContainsFold predicate on the "business_logo" field.
+func BusinessLogoContainsFold(v string) predicate.Website {
+	return predicate.Website(sql.FieldContainsFold(FieldBusinessLogo, v))
+}
+
+// BusinessNameEQ applies the EQ predicate on the "business_name" field.
+func BusinessNameEQ(v string) predicate.Website {
+	return predicate.Website(sql.FieldEQ(FieldBusinessName, v))
+}
+
+// BusinessNameNEQ applies the NEQ predicate on the "business_name" field.
+func BusinessNameNEQ(v string) predicate.Website {
+	return predicate.Website(sql.FieldNEQ(FieldBusinessName, v))
+}
+
+// BusinessNameIn applies the In predicate on the "business_name" field.
+func BusinessNameIn(vs ...string) predicate.Website {
+	return predicate.Website(sql.FieldIn(FieldBusinessName, vs...))
+}
+
+// BusinessNameNotIn applies the NotIn predicate on the "business_name" field.
+func BusinessNameNotIn(vs ...string) predicate.Website {
+	return predicate.Website(sql.FieldNotIn(FieldBusinessName, vs...))
+}
+
+// BusinessNameGT applies the GT predicate on the "business_name" field.
+func BusinessNameGT(v string) predicate.Website {
+	return predicate.Website(sql.FieldGT(FieldBusinessName, v))
+}
+
+// BusinessNameGTE applies the GTE predicate on the "business_name" field.
+func BusinessNameGTE(v string) predicate.Website {
+	return predicate.Website(sql.FieldGTE(FieldBusinessName, v))
+}
+
+// BusinessNameLT applies the LT predicate on the "business_name" field.
+func BusinessNameLT(v string) predicate.Website {
+	return predicate.Website(sql.FieldLT(FieldBusinessName, v))
+}
+
+// BusinessNameLTE applies the LTE predicate on the "business_name" field.
+func BusinessNameLTE(v string) predicate.Website {
+	return predicate.Website(sql.FieldLTE(FieldBusinessName, v))
+}
+
+// BusinessNameContains applies the Contains predicate on the "business_name" field.
+func BusinessNameContains(v string) predicate.Website {
+	return predicate.Website(sql.FieldContains(FieldBusinessName, v))
+}
+
+// BusinessNameHasPrefix applies the HasPrefix predicate on the "business_name" field.
+func BusinessNameHasPrefix(v string) predicate.Website {
+	return predicate.Website(sql.FieldHasPrefix(FieldBusinessName, v))
+}
+
+// BusinessNameHasSuffix applies the HasSuffix predicate on the "business_name" field.
+func BusinessNameHasSuffix(v string) predicate.Website {
+	return predicate.Website(sql.FieldHasSuffix(FieldBusinessName, v))
+}
+
+// BusinessNameEqualFold applies the EqualFold predicate on the "business_name" field.
+func BusinessNameEqualFold(v string) predicate.Website {
+	return predicate.Website(sql.FieldEqualFold(FieldBusinessName, v))
+}
+
+// BusinessNameContainsFold applies the ContainsFold predicate on the "business_name" field.
+func BusinessNameContainsFold(v string) predicate.Website {
+	return predicate.Website(sql.FieldContainsFold(FieldBusinessName, v))
+}
+
+// BannerSectionBackgroundImageEQ applies the EQ predicate on the "banner_section_background_image" field.
+func BannerSectionBackgroundImageEQ(v string) predicate.Website {
+	return predicate.Website(sql.FieldEQ(FieldBannerSectionBackgroundImage, v))
+}
+
+// BannerSectionBackgroundImageNEQ applies the NEQ predicate on the "banner_section_background_image" field.
+func BannerSectionBackgroundImageNEQ(v string) predicate.Website {
+	return predicate.Website(sql.FieldNEQ(FieldBannerSectionBackgroundImage, v))
+}
+
+// BannerSectionBackgroundImageIn applies the In predicate on the "banner_section_background_image" field.
+func BannerSectionBackgroundImageIn(vs ...string) predicate.Website {
+	return predicate.Website(sql.FieldIn(FieldBannerSectionBackgroundImage, vs...))
+}
+
+// BannerSectionBackgroundImageNotIn applies the NotIn predicate on the "banner_section_background_image" field.
+func BannerSectionBackgroundImageNotIn(vs ...string) predicate.Website {
+	return predicate.Website(sql.FieldNotIn(FieldBannerSectionBackgroundImage, vs...))
+}
+
+// BannerSectionBackgroundImageGT applies the GT predicate on the "banner_section_background_image" field.
+func BannerSectionBackgroundImageGT(v string) predicate.Website {
+	return predicate.Website(sql.FieldGT(FieldBannerSectionBackgroundImage, v))
+}
+
+// BannerSectionBackgroundImageGTE applies the GTE predicate on the "banner_section_background_image" field.
+func BannerSectionBackgroundImageGTE(v string) predicate.Website {
+	return predicate.Website(sql.FieldGTE(FieldBannerSectionBackgroundImage, v))
+}
+
+// BannerSectionBackgroundImageLT applies the LT predicate on the "banner_section_background_image" field.
+func BannerSectionBackgroundImageLT(v string) predicate.Website {
+	return predicate.Website(sql.FieldLT(FieldBannerSectionBackgroundImage, v))
+}
+
+// BannerSectionBackgroundImageLTE applies the LTE predicate on the "banner_section_background_image" field.
+func BannerSectionBackgroundImageLTE(v string) predicate.Website {
+	return predicate.Website(sql.FieldLTE(FieldBannerSectionBackgroundImage, v))
+}
+
+// BannerSectionBackgroundImageContains applies the Contains predicate on the "banner_section_background_image" field.
+func BannerSectionBackgroundImageContains(v string) predicate.Website {
+	return predicate.Website(sql.FieldContains(FieldBannerSectionBackgroundImage, v))
+}
+
+// BannerSectionBackgroundImageHasPrefix applies the HasPrefix predicate on the "banner_section_background_image" field.
+func BannerSectionBackgroundImageHasPrefix(v string) predicate.Website {
+	return predicate.Website(sql.FieldHasPrefix(FieldBannerSectionBackgroundImage, v))
+}
+
+// BannerSectionBackgroundImageHasSuffix applies the HasSuffix predicate on the "banner_section_background_image" field.
+func BannerSectionBackgroundImageHasSuffix(v string) predicate.Website {
+	return predicate.Website(sql.FieldHasSuffix(FieldBannerSectionBackgroundImage, v))
+}
+
+// BannerSectionBackgroundImageEqualFold applies the EqualFold predicate on the "banner_section_background_image" field.
+func BannerSectionBackgroundImageEqualFold(v string) predicate.Website {
+	return predicate.Website(sql.FieldEqualFold(FieldBannerSectionBackgroundImage, v))
+}
+
+// BannerSectionBackgroundImageContainsFold applies the ContainsFold predicate on the "banner_section_background_image" field.
+func BannerSectionBackgroundImageContainsFold(v string) predicate.Website {
+	return predicate.Website(sql.FieldContainsFold(FieldBannerSectionBackgroundImage, v))
+}
+
+// BannerSectionBackgroundColorEQ applies the EQ predicate on the "banner_section_background_color" field.
+func BannerSectionBackgroundColorEQ(v string) predicate.Website {
+	return predicate.Website(sql.FieldEQ(FieldBannerSectionBackgroundColor, v))
+}
+
+// BannerSectionBackgroundColorNEQ applies the NEQ predicate on the "banner_section_background_color" field.
+func BannerSectionBackgroundColorNEQ(v string) predicate.Website {
+	return predicate.Website(sql.FieldNEQ(FieldBannerSectionBackgroundColor, v))
+}
+
+// BannerSectionBackgroundColorIn applies the In predicate on the "banner_section_background_color" field.
+func BannerSectionBackgroundColorIn(vs ...string) predicate.Website {
+	return predicate.Website(sql.FieldIn(FieldBannerSectionBackgroundColor, vs...))
+}
+
+// BannerSectionBackgroundColorNotIn applies the NotIn predicate on the "banner_section_background_color" field.
+func BannerSectionBackgroundColorNotIn(vs ...string) predicate.Website {
+	return predicate.Website(sql.FieldNotIn(FieldBannerSectionBackgroundColor, vs...))
+}
+
+// BannerSectionBackgroundColorGT applies the GT predicate on the "banner_section_background_color" field.
+func BannerSectionBackgroundColorGT(v string) predicate.Website {
+	return predicate.Website(sql.FieldGT(FieldBannerSectionBackgroundColor, v))
+}
+
+// BannerSectionBackgroundColorGTE applies the GTE predicate on the "banner_section_background_color" field.
+func BannerSectionBackgroundColorGTE(v string) predicate.Website {
+	return predicate.Website(sql.FieldGTE(FieldBannerSectionBackgroundColor, v))
+}
+
+// BannerSectionBackgroundColorLT applies the LT predicate on the "banner_section_background_color" field.
+func BannerSectionBackgroundColorLT(v string) predicate.Website {
+	return predicate.Website(sql.FieldLT(FieldBannerSectionBackgroundColor, v))
+}
+
+// BannerSectionBackgroundColorLTE applies the LTE predicate on the "banner_section_background_color" field.
+func BannerSectionBackgroundColorLTE(v string) predicate.Website {
+	return predicate.Website(sql.FieldLTE(FieldBannerSectionBackgroundColor, v))
+}
+
+// BannerSectionBackgroundColorContains applies the Contains predicate on the "banner_section_background_color" field.
+func BannerSectionBackgroundColorContains(v string) predicate.Website {
+	return predicate.Website(sql.FieldContains(FieldBannerSectionBackgroundColor, v))
+}
+
+// BannerSectionBackgroundColorHasPrefix applies the HasPrefix predicate on the "banner_section_background_color" field.
+func BannerSectionBackgroundColorHasPrefix(v string) predicate.Website {
+	return predicate.Website(sql.FieldHasPrefix(FieldBannerSectionBackgroundColor, v))
+}
+
+// BannerSectionBackgroundColorHasSuffix applies the HasSuffix predicate on the "banner_section_background_color" field.
+func BannerSectionBackgroundColorHasSuffix(v string) predicate.Website {
+	return predicate.Website(sql.FieldHasSuffix(FieldBannerSectionBackgroundColor, v))
+}
+
+// BannerSectionBackgroundColorEqualFold applies the EqualFold predicate on the "banner_section_background_color" field.
+func BannerSectionBackgroundColorEqualFold(v string) predicate.Website {
+	return predicate.Website(sql.FieldEqualFold(FieldBannerSectionBackgroundColor, v))
+}
+
+// BannerSectionBackgroundColorContainsFold applies the ContainsFold predicate on the "banner_section_background_color" field.
+func BannerSectionBackgroundColorContainsFold(v string) predicate.Website {
+	return predicate.Website(sql.FieldContainsFold(FieldBannerSectionBackgroundColor, v))
+}
+
+// BannerSectionTextEQ applies the EQ predicate on the "banner_section_text" field.
+func BannerSectionTextEQ(v string) predicate.Website {
+	return predicate.Website(sql.FieldEQ(FieldBannerSectionText, v))
+}
+
+// BannerSectionTextNEQ applies the NEQ predicate on the "banner_section_text" field.
+func BannerSectionTextNEQ(v string) predicate.Website {
+	return predicate.Website(sql.FieldNEQ(FieldBannerSectionText, v))
+}
+
+// BannerSectionTextIn applies the In predicate on the "banner_section_text" field.
+func BannerSectionTextIn(vs ...string) predicate.Website {
+	return predicate.Website(sql.FieldIn(FieldBannerSectionText, vs...))
+}
+
+// BannerSectionTextNotIn applies the NotIn predicate on the "banner_section_text" field.
+func BannerSectionTextNotIn(vs ...string) predicate.Website {
+	return predicate.Website(sql.FieldNotIn(FieldBannerSectionText, vs...))
+}
+
+// BannerSectionTextGT applies the GT predicate on the "banner_section_text" field.
+func BannerSectionTextGT(v string) predicate.Website {
+	return predicate.Website(sql.FieldGT(FieldBannerSectionText, v))
+}
+
+// BannerSectionTextGTE applies the GTE predicate on the "banner_section_text" field.
+func BannerSectionTextGTE(v string) predicate.Website {
+	return predicate.Website(sql.FieldGTE(FieldBannerSectionText, v))
+}
+
+// BannerSectionTextLT applies the LT predicate on the "banner_section_text" field.
+func BannerSectionTextLT(v string) predicate.Website {
+	return predicate.Website(sql.FieldLT(FieldBannerSectionText, v))
+}
+
+// BannerSectionTextLTE applies the LTE predicate on the "banner_section_text" field.
+func BannerSectionTextLTE(v string) predicate.Website {
+	return predicate.Website(sql.FieldLTE(FieldBannerSectionText, v))
+}
+
+// BannerSectionTextContains applies the Contains predicate on the "banner_section_text" field.
+func BannerSectionTextContains(v string) predicate.Website {
+	return predicate.Website(sql.FieldContains(FieldBannerSectionText, v))
+}
+
+// BannerSectionTextHasPrefix applies the HasPrefix predicate on the "banner_section_text" field.
+func BannerSectionTextHasPrefix(v string) predicate.Website {
+	return predicate.Website(sql.FieldHasPrefix(FieldBannerSectionText, v))
+}
+
+// BannerSectionTextHasSuffix applies the HasSuffix predicate on the "banner_section_text" field.
+func BannerSectionTextHasSuffix(v string) predicate.Website {
+	return predicate.Website(sql.FieldHasSuffix(FieldBannerSectionText, v))
+}
+
+// BannerSectionTextEqualFold applies the EqualFold predicate on the "banner_section_text" field.
+func BannerSectionTextEqualFold(v string) predicate.Website {
+	return predicate.Website(sql.FieldEqualFold(FieldBannerSectionText, v))
+}
+
+// BannerSectionTextContainsFold applies the ContainsFold predicate on the "banner_section_text" field.
+func BannerSectionTextContainsFold(v string) predicate.Website {
+	return predicate.Website(sql.FieldContainsFold(FieldBannerSectionText, v))
+}
+
+// ThreeItemsSectionHeadingTextEQ applies the EQ predicate on the "three_items_section_heading_text" field.
+func ThreeItemsSectionHeadingTextEQ(v string) predicate.Website {
+	return predicate.Website(sql.FieldEQ(FieldThreeItemsSectionHeadingText, v))
+}
+
+// ThreeItemsSectionHeadingTextNEQ applies the NEQ predicate on the "three_items_section_heading_text" field.
+func ThreeItemsSectionHeadingTextNEQ(v string) predicate.Website {
+	return predicate.Website(sql.FieldNEQ(FieldThreeItemsSectionHeadingText, v))
+}
+
+// ThreeItemsSectionHeadingTextIn applies the In predicate on the "three_items_section_heading_text" field.
+func ThreeItemsSectionHeadingTextIn(vs ...string) predicate.Website {
+	return predicate.Website(sql.FieldIn(FieldThreeItemsSectionHeadingText, vs...))
+}
+
+// ThreeItemsSectionHeadingTextNotIn applies the NotIn predicate on the "three_items_section_heading_text" field.
+func ThreeItemsSectionHeadingTextNotIn(vs ...string) predicate.Website {
+	return predicate.Website(sql.FieldNotIn(FieldThreeItemsSectionHeadingText, vs...))
+}
+
+// ThreeItemsSectionHeadingTextGT applies the GT predicate on the "three_items_section_heading_text" field.
+func ThreeItemsSectionHeadingTextGT(v string) predicate.Website {
+	return predicate.Website(sql.FieldGT(FieldThreeItemsSectionHeadingText, v))
+}
+
+// ThreeItemsSectionHeadingTextGTE applies the GTE predicate on the "three_items_section_heading_text" field.
+func ThreeItemsSectionHeadingTextGTE(v string) predicate.Website {
+	return predicate.Website(sql.FieldGTE(FieldThreeItemsSectionHeadingText, v))
+}
+
+// ThreeItemsSectionHeadingTextLT applies the LT predicate on the "three_items_section_heading_text" field.
+func ThreeItemsSectionHeadingTextLT(v string) predicate.Website {
+	return predicate.Website(sql.FieldLT(FieldThreeItemsSectionHeadingText, v))
+}
+
+// ThreeItemsSectionHeadingTextLTE applies the LTE predicate on the "three_items_section_heading_text" field.
+func ThreeItemsSectionHeadingTextLTE(v string) predicate.Website {
+	return predicate.Website(sql.FieldLTE(FieldThreeItemsSectionHeadingText, v))
+}
+
+// ThreeItemsSectionHeadingTextContains applies the Contains predicate on the "three_items_section_heading_text" field.
+func ThreeItemsSectionHeadingTextContains(v string) predicate.Website {
+	return predicate.Website(sql.FieldContains(FieldThreeItemsSectionHeadingText, v))
+}
+
+// ThreeItemsSectionHeadingTextHasPrefix applies the HasPrefix predicate on the "three_items_section_heading_text" field.
+func ThreeItemsSectionHeadingTextHasPrefix(v string) predicate.Website {
+	return predicate.Website(sql.FieldHasPrefix(FieldThreeItemsSectionHeadingText, v))
+}
+
+// ThreeItemsSectionHeadingTextHasSuffix applies the HasSuffix predicate on the "three_items_section_heading_text" field.
+func ThreeItemsSectionHeadingTextHasSuffix(v string) predicate.Website {
+	return predicate.Website(sql.FieldHasSuffix(FieldThreeItemsSectionHeadingText, v))
+}
+
+// ThreeItemsSectionHeadingTextEqualFold applies the EqualFold predicate on the "three_items_section_heading_text" field.
+func ThreeItemsSectionHeadingTextEqualFold(v string) predicate.Website {
+	return predicate.Website(sql.FieldEqualFold(FieldThreeItemsSectionHeadingText, v))
+}
+
+// ThreeItemsSectionHeadingTextContainsFold applies the ContainsFold predicate on the "three_items_section_heading_text" field.
+func ThreeItemsSectionHeadingTextContainsFold(v string) predicate.Website {
+	return predicate.Website(sql.FieldContainsFold(FieldThreeItemsSectionHeadingText, v))
+}
+
+// ThreeItemsSectionDetailsTextEQ applies the EQ predicate on the "three_items_section_details_text" field.
+func ThreeItemsSectionDetailsTextEQ(v string) predicate.Website {
+	return predicate.Website(sql.FieldEQ(FieldThreeItemsSectionDetailsText, v))
+}
+
+// ThreeItemsSectionDetailsTextNEQ applies the NEQ predicate on the "three_items_section_details_text" field.
+func ThreeItemsSectionDetailsTextNEQ(v string) predicate.Website {
+	return predicate.Website(sql.FieldNEQ(FieldThreeItemsSectionDetailsText, v))
+}
+
+// ThreeItemsSectionDetailsTextIn applies the In predicate on the "three_items_section_details_text" field.
+func ThreeItemsSectionDetailsTextIn(vs ...string) predicate.Website {
+	return predicate.Website(sql.FieldIn(FieldThreeItemsSectionDetailsText, vs...))
+}
+
+// ThreeItemsSectionDetailsTextNotIn applies the NotIn predicate on the "three_items_section_details_text" field.
+func ThreeItemsSectionDetailsTextNotIn(vs ...string) predicate.Website {
+	return predicate.Website(sql.FieldNotIn(FieldThreeItemsSectionDetailsText, vs...))
+}
+
+// ThreeItemsSectionDetailsTextGT applies the GT predicate on the "three_items_section_details_text" field.
+func ThreeItemsSectionDetailsTextGT(v string) predicate.Website {
+	return predicate.Website(sql.FieldGT(FieldThreeItemsSectionDetailsText, v))
+}
+
+// ThreeItemsSectionDetailsTextGTE applies the GTE predicate on the "three_items_section_details_text" field.
+func ThreeItemsSectionDetailsTextGTE(v string) predicate.Website {
+	return predicate.Website(sql.FieldGTE(FieldThreeItemsSectionDetailsText, v))
+}
+
+// ThreeItemsSectionDetailsTextLT applies the LT predicate on the "three_items_section_details_text" field.
+func ThreeItemsSectionDetailsTextLT(v string) predicate.Website {
+	return predicate.Website(sql.FieldLT(FieldThreeItemsSectionDetailsText, v))
+}
+
+// ThreeItemsSectionDetailsTextLTE applies the LTE predicate on the "three_items_section_details_text" field.
+func ThreeItemsSectionDetailsTextLTE(v string) predicate.Website {
+	return predicate.Website(sql.FieldLTE(FieldThreeItemsSectionDetailsText, v))
+}
+
+// ThreeItemsSectionDetailsTextContains applies the Contains predicate on the "three_items_section_details_text" field.
+func ThreeItemsSectionDetailsTextContains(v string) predicate.Website {
+	return predicate.Website(sql.FieldContains(FieldThreeItemsSectionDetailsText, v))
+}
+
+// ThreeItemsSectionDetailsTextHasPrefix applies the HasPrefix predicate on the "three_items_section_details_text" field.
+func ThreeItemsSectionDetailsTextHasPrefix(v string) predicate.Website {
+	return predicate.Website(sql.FieldHasPrefix(FieldThreeItemsSectionDetailsText, v))
+}
+
+// ThreeItemsSectionDetailsTextHasSuffix applies the HasSuffix predicate on the "three_items_section_details_text" field.
+func ThreeItemsSectionDetailsTextHasSuffix(v string) predicate.Website {
+	return predicate.Website(sql.FieldHasSuffix(FieldThreeItemsSectionDetailsText, v))
+}
+
+// ThreeItemsSectionDetailsTextEqualFold applies the EqualFold predicate on the "three_items_section_details_text" field.
+func ThreeItemsSectionDetailsTextEqualFold(v string) predicate.Website {
+	return predicate.Website(sql.FieldEqualFold(FieldThreeItemsSectionDetailsText, v))
+}
+
+// ThreeItemsSectionDetailsTextContainsFold applies the ContainsFold predicate on the "three_items_section_details_text" field.
+func ThreeItemsSectionDetailsTextContainsFold(v string) predicate.Website {
+	return predicate.Website(sql.FieldContainsFold(FieldThreeItemsSectionDetailsText, v))
+}
+
+// ThreeItemsSectionItemOneTextEQ applies the EQ predicate on the "three_items_section_item_one_text" field.
+func ThreeItemsSectionItemOneTextEQ(v string) predicate.Website {
+	return predicate.Website(sql.FieldEQ(FieldThreeItemsSectionItemOneText, v))
+}
+
+// ThreeItemsSectionItemOneTextNEQ applies the NEQ predicate on the "three_items_section_item_one_text" field.
+func ThreeItemsSectionItemOneTextNEQ(v string) predicate.Website {
+	return predicate.Website(sql.FieldNEQ(FieldThreeItemsSectionItemOneText, v))
+}
+
+// ThreeItemsSectionItemOneTextIn applies the In predicate on the "three_items_section_item_one_text" field.
+func ThreeItemsSectionItemOneTextIn(vs ...string) predicate.Website {
+	return predicate.Website(sql.FieldIn(FieldThreeItemsSectionItemOneText, vs...))
+}
+
+// ThreeItemsSectionItemOneTextNotIn applies the NotIn predicate on the "three_items_section_item_one_text" field.
+func ThreeItemsSectionItemOneTextNotIn(vs ...string) predicate.Website {
+	return predicate.Website(sql.FieldNotIn(FieldThreeItemsSectionItemOneText, vs...))
+}
+
+// ThreeItemsSectionItemOneTextGT applies the GT predicate on the "three_items_section_item_one_text" field.
+func ThreeItemsSectionItemOneTextGT(v string) predicate.Website {
+	return predicate.Website(sql.FieldGT(FieldThreeItemsSectionItemOneText, v))
+}
+
+// ThreeItemsSectionItemOneTextGTE applies the GTE predicate on the "three_items_section_item_one_text" field.
+func ThreeItemsSectionItemOneTextGTE(v string) predicate.Website {
+	return predicate.Website(sql.FieldGTE(FieldThreeItemsSectionItemOneText, v))
+}
+
+// ThreeItemsSectionItemOneTextLT applies the LT predicate on the "three_items_section_item_one_text" field.
+func ThreeItemsSectionItemOneTextLT(v string) predicate.Website {
+	return predicate.Website(sql.FieldLT(FieldThreeItemsSectionItemOneText, v))
+}
+
+// ThreeItemsSectionItemOneTextLTE applies the LTE predicate on the "three_items_section_item_one_text" field.
+func ThreeItemsSectionItemOneTextLTE(v string) predicate.Website {
+	return predicate.Website(sql.FieldLTE(FieldThreeItemsSectionItemOneText, v))
+}
+
+// ThreeItemsSectionItemOneTextContains applies the Contains predicate on the "three_items_section_item_one_text" field.
+func ThreeItemsSectionItemOneTextContains(v string) predicate.Website {
+	return predicate.Website(sql.FieldContains(FieldThreeItemsSectionItemOneText, v))
+}
+
+// ThreeItemsSectionItemOneTextHasPrefix applies the HasPrefix predicate on the "three_items_section_item_one_text" field.
+func ThreeItemsSectionItemOneTextHasPrefix(v string) predicate.Website {
+	return predicate.Website(sql.FieldHasPrefix(FieldThreeItemsSectionItemOneText, v))
+}
+
+// ThreeItemsSectionItemOneTextHasSuffix applies the HasSuffix predicate on the "three_items_section_item_one_text" field.
+func ThreeItemsSectionItemOneTextHasSuffix(v string) predicate.Website {
+	return predicate.Website(sql.FieldHasSuffix(FieldThreeItemsSectionItemOneText, v))
+}
+
+// ThreeItemsSectionItemOneTextEqualFold applies the EqualFold predicate on the "three_items_section_item_one_text" field.
+func ThreeItemsSectionItemOneTextEqualFold(v string) predicate.Website {
+	return predicate.Website(sql.FieldEqualFold(FieldThreeItemsSectionItemOneText, v))
+}
+
+// ThreeItemsSectionItemOneTextContainsFold applies the ContainsFold predicate on the "three_items_section_item_one_text" field.
+func ThreeItemsSectionItemOneTextContainsFold(v string) predicate.Website {
+	return predicate.Website(sql.FieldContainsFold(FieldThreeItemsSectionItemOneText, v))
+}
+
+// ThreeItemsSectionItemTwoTextEQ applies the EQ predicate on the "three_items_section_item_two_text" field.
+func ThreeItemsSectionItemTwoTextEQ(v string) predicate.Website {
+	return predicate.Website(sql.FieldEQ(FieldThreeItemsSectionItemTwoText, v))
+}
+
+// ThreeItemsSectionItemTwoTextNEQ applies the NEQ predicate on the "three_items_section_item_two_text" field.
+func ThreeItemsSectionItemTwoTextNEQ(v string) predicate.Website {
+	return predicate.Website(sql.FieldNEQ(FieldThreeItemsSectionItemTwoText, v))
+}
+
+// ThreeItemsSectionItemTwoTextIn applies the In predicate on the "three_items_section_item_two_text" field.
+func ThreeItemsSectionItemTwoTextIn(vs ...string) predicate.Website {
+	return predicate.Website(sql.FieldIn(FieldThreeItemsSectionItemTwoText, vs...))
+}
+
+// ThreeItemsSectionItemTwoTextNotIn applies the NotIn predicate on the "three_items_section_item_two_text" field.
+func ThreeItemsSectionItemTwoTextNotIn(vs ...string) predicate.Website {
+	return predicate.Website(sql.FieldNotIn(FieldThreeItemsSectionItemTwoText, vs...))
+}
+
+// ThreeItemsSectionItemTwoTextGT applies the GT predicate on the "three_items_section_item_two_text" field.
+func ThreeItemsSectionItemTwoTextGT(v string) predicate.Website {
+	return predicate.Website(sql.FieldGT(FieldThreeItemsSectionItemTwoText, v))
+}
+
+// ThreeItemsSectionItemTwoTextGTE applies the GTE predicate on the "three_items_section_item_two_text" field.
+func ThreeItemsSectionItemTwoTextGTE(v string) predicate.Website {
+	return predicate.Website(sql.FieldGTE(FieldThreeItemsSectionItemTwoText, v))
+}
+
+// ThreeItemsSectionItemTwoTextLT applies the LT predicate on the "three_items_section_item_two_text" field.
+func ThreeItemsSectionItemTwoTextLT(v string) predicate.Website {
+	return predicate.Website(sql.FieldLT(FieldThreeItemsSectionItemTwoText, v))
+}
+
+// ThreeItemsSectionItemTwoTextLTE applies the LTE predicate on the "three_items_section_item_two_text" field.
+func ThreeItemsSectionItemTwoTextLTE(v string) predicate.Website {
+	return predicate.Website(sql.FieldLTE(FieldThreeItemsSectionItemTwoText, v))
+}
+
+// ThreeItemsSectionItemTwoTextContains applies the Contains predicate on the "three_items_section_item_two_text" field.
+func ThreeItemsSectionItemTwoTextContains(v string) predicate.Website {
+	return predicate.Website(sql.FieldContains(FieldThreeItemsSectionItemTwoText, v))
+}
+
+// ThreeItemsSectionItemTwoTextHasPrefix applies the HasPrefix predicate on the "three_items_section_item_two_text" field.
+func ThreeItemsSectionItemTwoTextHasPrefix(v string) predicate.Website {
+	return predicate.Website(sql.FieldHasPrefix(FieldThreeItemsSectionItemTwoText, v))
+}
+
+// ThreeItemsSectionItemTwoTextHasSuffix applies the HasSuffix predicate on the "three_items_section_item_two_text" field.
+func ThreeItemsSectionItemTwoTextHasSuffix(v string) predicate.Website {
+	return predicate.Website(sql.FieldHasSuffix(FieldThreeItemsSectionItemTwoText, v))
+}
+
+// ThreeItemsSectionItemTwoTextEqualFold applies the EqualFold predicate on the "three_items_section_item_two_text" field.
+func ThreeItemsSectionItemTwoTextEqualFold(v string) predicate.Website {
+	return predicate.Website(sql.FieldEqualFold(FieldThreeItemsSectionItemTwoText, v))
+}
+
+// ThreeItemsSectionItemTwoTextContainsFold applies the ContainsFold predicate on the "three_items_section_item_two_text" field.
+func ThreeItemsSectionItemTwoTextContainsFold(v string) predicate.Website {
+	return predicate.Website(sql.FieldContainsFold(FieldThreeItemsSectionItemTwoText, v))
+}
+
+// ThreeItemsSectionItemThreeTextEQ applies the EQ predicate on the "three_items_section_item_three_text" field.
+func ThreeItemsSectionItemThreeTextEQ(v string) predicate.Website {
+	return predicate.Website(sql.FieldEQ(FieldThreeItemsSectionItemThreeText, v))
+}
+
+// ThreeItemsSectionItemThreeTextNEQ applies the NEQ predicate on the "three_items_section_item_three_text" field.
+func ThreeItemsSectionItemThreeTextNEQ(v string) predicate.Website {
+	return predicate.Website(sql.FieldNEQ(FieldThreeItemsSectionItemThreeText, v))
+}
+
+// ThreeItemsSectionItemThreeTextIn applies the In predicate on the "three_items_section_item_three_text" field.
+func ThreeItemsSectionItemThreeTextIn(vs ...string) predicate.Website {
+	return predicate.Website(sql.FieldIn(FieldThreeItemsSectionItemThreeText, vs...))
+}
+
+// ThreeItemsSectionItemThreeTextNotIn applies the NotIn predicate on the "three_items_section_item_three_text" field.
+func ThreeItemsSectionItemThreeTextNotIn(vs ...string) predicate.Website {
+	return predicate.Website(sql.FieldNotIn(FieldThreeItemsSectionItemThreeText, vs...))
+}
+
+// ThreeItemsSectionItemThreeTextGT applies the GT predicate on the "three_items_section_item_three_text" field.
+func ThreeItemsSectionItemThreeTextGT(v string) predicate.Website {
+	return predicate.Website(sql.FieldGT(FieldThreeItemsSectionItemThreeText, v))
+}
+
+// ThreeItemsSectionItemThreeTextGTE applies the GTE predicate on the "three_items_section_item_three_text" field.
+func ThreeItemsSectionItemThreeTextGTE(v string) predicate.Website {
+	return predicate.Website(sql.FieldGTE(FieldThreeItemsSectionItemThreeText, v))
+}
+
+// ThreeItemsSectionItemThreeTextLT applies the LT predicate on the "three_items_section_item_three_text" field.
+func ThreeItemsSectionItemThreeTextLT(v string) predicate.Website {
+	return predicate.Website(sql.FieldLT(FieldThreeItemsSectionItemThreeText, v))
+}
+
+// ThreeItemsSectionItemThreeTextLTE applies the LTE predicate on the "three_items_section_item_three_text" field.
+func ThreeItemsSectionItemThreeTextLTE(v string) predicate.Website {
+	return predicate.Website(sql.FieldLTE(FieldThreeItemsSectionItemThreeText, v))
+}
+
+// ThreeItemsSectionItemThreeTextContains applies the Contains predicate on the "three_items_section_item_three_text" field.
+func ThreeItemsSectionItemThreeTextContains(v string) predicate.Website {
+	return predicate.Website(sql.FieldContains(FieldThreeItemsSectionItemThreeText, v))
+}
+
+// ThreeItemsSectionItemThreeTextHasPrefix applies the HasPrefix predicate on the "three_items_section_item_three_text" field.
+func ThreeItemsSectionItemThreeTextHasPrefix(v string) predicate.Website {
+	return predicate.Website(sql.FieldHasPrefix(FieldThreeItemsSectionItemThreeText, v))
+}
+
+// ThreeItemsSectionItemThreeTextHasSuffix applies the HasSuffix predicate on the "three_items_section_item_three_text" field.
+func ThreeItemsSectionItemThreeTextHasSuffix(v string) predicate.Website {
+	return predicate.Website(sql.FieldHasSuffix(FieldThreeItemsSectionItemThreeText, v))
+}
+
+// ThreeItemsSectionItemThreeTextEqualFold applies the EqualFold predicate on the "three_items_section_item_three_text" field.
+func ThreeItemsSectionItemThreeTextEqualFold(v string) predicate.Website {
+	return predicate.Website(sql.FieldEqualFold(FieldThreeItemsSectionItemThreeText, v))
+}
+
+// ThreeItemsSectionItemThreeTextContainsFold applies the ContainsFold predicate on the "three_items_section_item_three_text" field.
+func ThreeItemsSectionItemThreeTextContainsFold(v string) predicate.Website {
+	return predicate.Website(sql.FieldContainsFold(FieldThreeItemsSectionItemThreeText, v))
+}
+
+// BannerTwoSectionBackgroundImageEQ applies the EQ predicate on the "banner_two_section_background_image" field.
+func BannerTwoSectionBackgroundImageEQ(v string) predicate.Website {
+	return predicate.Website(sql.FieldEQ(FieldBannerTwoSectionBackgroundImage, v))
+}
+
+// BannerTwoSectionBackgroundImageNEQ applies the NEQ predicate on the "banner_two_section_background_image" field.
+func BannerTwoSectionBackgroundImageNEQ(v string) predicate.Website {
+	return predicate.Website(sql.FieldNEQ(FieldBannerTwoSectionBackgroundImage, v))
+}
+
+// BannerTwoSectionBackgroundImageIn applies the In predicate on the "banner_two_section_background_image" field.
+func BannerTwoSectionBackgroundImageIn(vs ...string) predicate.Website {
+	return predicate.Website(sql.FieldIn(FieldBannerTwoSectionBackgroundImage, vs...))
+}
+
+// BannerTwoSectionBackgroundImageNotIn applies the NotIn predicate on the "banner_two_section_background_image" field.
+func BannerTwoSectionBackgroundImageNotIn(vs ...string) predicate.Website {
+	return predicate.Website(sql.FieldNotIn(FieldBannerTwoSectionBackgroundImage, vs...))
+}
+
+// BannerTwoSectionBackgroundImageGT applies the GT predicate on the "banner_two_section_background_image" field.
+func BannerTwoSectionBackgroundImageGT(v string) predicate.Website {
+	return predicate.Website(sql.FieldGT(FieldBannerTwoSectionBackgroundImage, v))
+}
+
+// BannerTwoSectionBackgroundImageGTE applies the GTE predicate on the "banner_two_section_background_image" field.
+func BannerTwoSectionBackgroundImageGTE(v string) predicate.Website {
+	return predicate.Website(sql.FieldGTE(FieldBannerTwoSectionBackgroundImage, v))
+}
+
+// BannerTwoSectionBackgroundImageLT applies the LT predicate on the "banner_two_section_background_image" field.
+func BannerTwoSectionBackgroundImageLT(v string) predicate.Website {
+	return predicate.Website(sql.FieldLT(FieldBannerTwoSectionBackgroundImage, v))
+}
+
+// BannerTwoSectionBackgroundImageLTE applies the LTE predicate on the "banner_two_section_background_image" field.
+func BannerTwoSectionBackgroundImageLTE(v string) predicate.Website {
+	return predicate.Website(sql.FieldLTE(FieldBannerTwoSectionBackgroundImage, v))
+}
+
+// BannerTwoSectionBackgroundImageContains applies the Contains predicate on the "banner_two_section_background_image" field.
+func BannerTwoSectionBackgroundImageContains(v string) predicate.Website {
+	return predicate.Website(sql.FieldContains(FieldBannerTwoSectionBackgroundImage, v))
+}
+
+// BannerTwoSectionBackgroundImageHasPrefix applies the HasPrefix predicate on the "banner_two_section_background_image" field.
+func BannerTwoSectionBackgroundImageHasPrefix(v string) predicate.Website {
+	return predicate.Website(sql.FieldHasPrefix(FieldBannerTwoSectionBackgroundImage, v))
+}
+
+// BannerTwoSectionBackgroundImageHasSuffix applies the HasSuffix predicate on the "banner_two_section_background_image" field.
+func BannerTwoSectionBackgroundImageHasSuffix(v string) predicate.Website {
+	return predicate.Website(sql.FieldHasSuffix(FieldBannerTwoSectionBackgroundImage, v))
+}
+
+// BannerTwoSectionBackgroundImageEqualFold applies the EqualFold predicate on the "banner_two_section_background_image" field.
+func BannerTwoSectionBackgroundImageEqualFold(v string) predicate.Website {
+	return predicate.Website(sql.FieldEqualFold(FieldBannerTwoSectionBackgroundImage, v))
+}
+
+// BannerTwoSectionBackgroundImageContainsFold applies the ContainsFold predicate on the "banner_two_section_background_image" field.
+func BannerTwoSectionBackgroundImageContainsFold(v string) predicate.Website {
+	return predicate.Website(sql.FieldContainsFold(FieldBannerTwoSectionBackgroundImage, v))
+}
+
+// BannerTwoSectionBackgroundColorEQ applies the EQ predicate on the "banner_two_section_background_color" field.
+func BannerTwoSectionBackgroundColorEQ(v string) predicate.Website {
+	return predicate.Website(sql.FieldEQ(FieldBannerTwoSectionBackgroundColor, v))
+}
+
+// BannerTwoSectionBackgroundColorNEQ applies the NEQ predicate on the "banner_two_section_background_color" field.
+func BannerTwoSectionBackgroundColorNEQ(v string) predicate.Website {
+	return predicate.Website(sql.FieldNEQ(FieldBannerTwoSectionBackgroundColor, v))
+}
+
+// BannerTwoSectionBackgroundColorIn applies the In predicate on the "banner_two_section_background_color" field.
+func BannerTwoSectionBackgroundColorIn(vs ...string) predicate.Website {
+	return predicate.Website(sql.FieldIn(FieldBannerTwoSectionBackgroundColor, vs...))
+}
+
+// BannerTwoSectionBackgroundColorNotIn applies the NotIn predicate on the "banner_two_section_background_color" field.
+func BannerTwoSectionBackgroundColorNotIn(vs ...string) predicate.Website {
+	return predicate.Website(sql.FieldNotIn(FieldBannerTwoSectionBackgroundColor, vs...))
+}
+
+// BannerTwoSectionBackgroundColorGT applies the GT predicate on the "banner_two_section_background_color" field.
+func BannerTwoSectionBackgroundColorGT(v string) predicate.Website {
+	return predicate.Website(sql.FieldGT(FieldBannerTwoSectionBackgroundColor, v))
+}
+
+// BannerTwoSectionBackgroundColorGTE applies the GTE predicate on the "banner_two_section_background_color" field.
+func BannerTwoSectionBackgroundColorGTE(v string) predicate.Website {
+	return predicate.Website(sql.FieldGTE(FieldBannerTwoSectionBackgroundColor, v))
+}
+
+// BannerTwoSectionBackgroundColorLT applies the LT predicate on the "banner_two_section_background_color" field.
+func BannerTwoSectionBackgroundColorLT(v string) predicate.Website {
+	return predicate.Website(sql.FieldLT(FieldBannerTwoSectionBackgroundColor, v))
+}
+
+// BannerTwoSectionBackgroundColorLTE applies the LTE predicate on the "banner_two_section_background_color" field.
+func BannerTwoSectionBackgroundColorLTE(v string) predicate.Website {
+	return predicate.Website(sql.FieldLTE(FieldBannerTwoSectionBackgroundColor, v))
+}
+
+// BannerTwoSectionBackgroundColorContains applies the Contains predicate on the "banner_two_section_background_color" field.
+func BannerTwoSectionBackgroundColorContains(v string) predicate.Website {
+	return predicate.Website(sql.FieldContains(FieldBannerTwoSectionBackgroundColor, v))
+}
+
+// BannerTwoSectionBackgroundColorHasPrefix applies the HasPrefix predicate on the "banner_two_section_background_color" field.
+func BannerTwoSectionBackgroundColorHasPrefix(v string) predicate.Website {
+	return predicate.Website(sql.FieldHasPrefix(FieldBannerTwoSectionBackgroundColor, v))
+}
+
+// BannerTwoSectionBackgroundColorHasSuffix applies the HasSuffix predicate on the "banner_two_section_background_color" field.
+func BannerTwoSectionBackgroundColorHasSuffix(v string) predicate.Website {
+	return predicate.Website(sql.FieldHasSuffix(FieldBannerTwoSectionBackgroundColor, v))
+}
+
+// BannerTwoSectionBackgroundColorEqualFold applies the EqualFold predicate on the "banner_two_section_background_color" field.
+func BannerTwoSectionBackgroundColorEqualFold(v string) predicate.Website {
+	return predicate.Website(sql.FieldEqualFold(FieldBannerTwoSectionBackgroundColor, v))
+}
+
+// BannerTwoSectionBackgroundColorContainsFold applies the ContainsFold predicate on the "banner_two_section_background_color" field.
+func BannerTwoSectionBackgroundColorContainsFold(v string) predicate.Website {
+	return predicate.Website(sql.FieldContainsFold(FieldBannerTwoSectionBackgroundColor, v))
+}
+
+// BannerTwoLeftSectionHeadingTextEQ applies the EQ predicate on the "banner_two_left_section_heading_text" field.
+func BannerTwoLeftSectionHeadingTextEQ(v string) predicate.Website {
+	return predicate.Website(sql.FieldEQ(FieldBannerTwoLeftSectionHeadingText, v))
+}
+
+// BannerTwoLeftSectionHeadingTextNEQ applies the NEQ predicate on the "banner_two_left_section_heading_text" field.
+func BannerTwoLeftSectionHeadingTextNEQ(v string) predicate.Website {
+	return predicate.Website(sql.FieldNEQ(FieldBannerTwoLeftSectionHeadingText, v))
+}
+
+// BannerTwoLeftSectionHeadingTextIn applies the In predicate on the "banner_two_left_section_heading_text" field.
+func BannerTwoLeftSectionHeadingTextIn(vs ...string) predicate.Website {
+	return predicate.Website(sql.FieldIn(FieldBannerTwoLeftSectionHeadingText, vs...))
+}
+
+// BannerTwoLeftSectionHeadingTextNotIn applies the NotIn predicate on the "banner_two_left_section_heading_text" field.
+func BannerTwoLeftSectionHeadingTextNotIn(vs ...string) predicate.Website {
+	return predicate.Website(sql.FieldNotIn(FieldBannerTwoLeftSectionHeadingText, vs...))
+}
+
+// BannerTwoLeftSectionHeadingTextGT applies the GT predicate on the "banner_two_left_section_heading_text" field.
+func BannerTwoLeftSectionHeadingTextGT(v string) predicate.Website {
+	return predicate.Website(sql.FieldGT(FieldBannerTwoLeftSectionHeadingText, v))
+}
+
+// BannerTwoLeftSectionHeadingTextGTE applies the GTE predicate on the "banner_two_left_section_heading_text" field.
+func BannerTwoLeftSectionHeadingTextGTE(v string) predicate.Website {
+	return predicate.Website(sql.FieldGTE(FieldBannerTwoLeftSectionHeadingText, v))
+}
+
+// BannerTwoLeftSectionHeadingTextLT applies the LT predicate on the "banner_two_left_section_heading_text" field.
+func BannerTwoLeftSectionHeadingTextLT(v string) predicate.Website {
+	return predicate.Website(sql.FieldLT(FieldBannerTwoLeftSectionHeadingText, v))
+}
+
+// BannerTwoLeftSectionHeadingTextLTE applies the LTE predicate on the "banner_two_left_section_heading_text" field.
+func BannerTwoLeftSectionHeadingTextLTE(v string) predicate.Website {
+	return predicate.Website(sql.FieldLTE(FieldBannerTwoLeftSectionHeadingText, v))
+}
+
+// BannerTwoLeftSectionHeadingTextContains applies the Contains predicate on the "banner_two_left_section_heading_text" field.
+func BannerTwoLeftSectionHeadingTextContains(v string) predicate.Website {
+	return predicate.Website(sql.FieldContains(FieldBannerTwoLeftSectionHeadingText, v))
+}
+
+// BannerTwoLeftSectionHeadingTextHasPrefix applies the HasPrefix predicate on the "banner_two_left_section_heading_text" field.
+func BannerTwoLeftSectionHeadingTextHasPrefix(v string) predicate.Website {
+	return predicate.Website(sql.FieldHasPrefix(FieldBannerTwoLeftSectionHeadingText, v))
+}
+
+// BannerTwoLeftSectionHeadingTextHasSuffix applies the HasSuffix predicate on the "banner_two_left_section_heading_text" field.
+func BannerTwoLeftSectionHeadingTextHasSuffix(v string) predicate.Website {
+	return predicate.Website(sql.FieldHasSuffix(FieldBannerTwoLeftSectionHeadingText, v))
+}
+
+// BannerTwoLeftSectionHeadingTextEqualFold applies the EqualFold predicate on the "banner_two_left_section_heading_text" field.
+func BannerTwoLeftSectionHeadingTextEqualFold(v string) predicate.Website {
+	return predicate.Website(sql.FieldEqualFold(FieldBannerTwoLeftSectionHeadingText, v))
+}
+
+// BannerTwoLeftSectionHeadingTextContainsFold applies the ContainsFold predicate on the "banner_two_left_section_heading_text" field.
+func BannerTwoLeftSectionHeadingTextContainsFold(v string) predicate.Website {
+	return predicate.Website(sql.FieldContainsFold(FieldBannerTwoLeftSectionHeadingText, v))
+}
+
+// BannerTwoLeftSectionDetailsTextEQ applies the EQ predicate on the "banner_two_left_section_details_text" field.
+func BannerTwoLeftSectionDetailsTextEQ(v string) predicate.Website {
+	return predicate.Website(sql.FieldEQ(FieldBannerTwoLeftSectionDetailsText, v))
+}
+
+// BannerTwoLeftSectionDetailsTextNEQ applies the NEQ predicate on the "banner_two_left_section_details_text" field.
+func BannerTwoLeftSectionDetailsTextNEQ(v string) predicate.Website {
+	return predicate.Website(sql.FieldNEQ(FieldBannerTwoLeftSectionDetailsText, v))
+}
+
+// BannerTwoLeftSectionDetailsTextIn applies the In predicate on the "banner_two_left_section_details_text" field.
+func BannerTwoLeftSectionDetailsTextIn(vs ...string) predicate.Website {
+	return predicate.Website(sql.FieldIn(FieldBannerTwoLeftSectionDetailsText, vs...))
+}
+
+// BannerTwoLeftSectionDetailsTextNotIn applies the NotIn predicate on the "banner_two_left_section_details_text" field.
+func BannerTwoLeftSectionDetailsTextNotIn(vs ...string) predicate.Website {
+	return predicate.Website(sql.FieldNotIn(FieldBannerTwoLeftSectionDetailsText, vs...))
+}
+
+// BannerTwoLeftSectionDetailsTextGT applies the GT predicate on the "banner_two_left_section_details_text" field.
+func BannerTwoLeftSectionDetailsTextGT(v string) predicate.Website {
+	return predicate.Website(sql.FieldGT(FieldBannerTwoLeftSectionDetailsText, v))
+}
+
+// BannerTwoLeftSectionDetailsTextGTE applies the GTE predicate on the "banner_two_left_section_details_text" field.
+func BannerTwoLeftSectionDetailsTextGTE(v string) predicate.Website {
+	return predicate.Website(sql.FieldGTE(FieldBannerTwoLeftSectionDetailsText, v))
+}
+
+// BannerTwoLeftSectionDetailsTextLT applies the LT predicate on the "banner_two_left_section_details_text" field.
+func BannerTwoLeftSectionDetailsTextLT(v string) predicate.Website {
+	return predicate.Website(sql.FieldLT(FieldBannerTwoLeftSectionDetailsText, v))
+}
+
+// BannerTwoLeftSectionDetailsTextLTE applies the LTE predicate on the "banner_two_left_section_details_text" field.
+func BannerTwoLeftSectionDetailsTextLTE(v string) predicate.Website {
+	return predicate.Website(sql.FieldLTE(FieldBannerTwoLeftSectionDetailsText, v))
+}
+
+// BannerTwoLeftSectionDetailsTextContains applies the Contains predicate on the "banner_two_left_section_details_text" field.
+func BannerTwoLeftSectionDetailsTextContains(v string) predicate.Website {
+	return predicate.Website(sql.FieldContains(FieldBannerTwoLeftSectionDetailsText, v))
+}
+
+// BannerTwoLeftSectionDetailsTextHasPrefix applies the HasPrefix predicate on the "banner_two_left_section_details_text" field.
+func BannerTwoLeftSectionDetailsTextHasPrefix(v string) predicate.Website {
+	return predicate.Website(sql.FieldHasPrefix(FieldBannerTwoLeftSectionDetailsText, v))
+}
+
+// BannerTwoLeftSectionDetailsTextHasSuffix applies the HasSuffix predicate on the "banner_two_left_section_details_text" field.
+func BannerTwoLeftSectionDetailsTextHasSuffix(v string) predicate.Website {
+	return predicate.Website(sql.FieldHasSuffix(FieldBannerTwoLeftSectionDetailsText, v))
+}
+
+// BannerTwoLeftSectionDetailsTextEqualFold applies the EqualFold predicate on the "banner_two_left_section_details_text" field.
+func BannerTwoLeftSectionDetailsTextEqualFold(v string) predicate.Website {
+	return predicate.Website(sql.FieldEqualFold(FieldBannerTwoLeftSectionDetailsText, v))
+}
+
+// BannerTwoLeftSectionDetailsTextContainsFold applies the ContainsFold predicate on the "banner_two_left_section_details_text" field.
+func BannerTwoLeftSectionDetailsTextContainsFold(v string) predicate.Website {
+	return predicate.Website(sql.FieldContainsFold(FieldBannerTwoLeftSectionDetailsText, v))
+}
+
+// BannerTwoLeftSectionButtonTextEQ applies the EQ predicate on the "banner_two_left_section_button_text" field.
+func BannerTwoLeftSectionButtonTextEQ(v string) predicate.Website {
+	return predicate.Website(sql.FieldEQ(FieldBannerTwoLeftSectionButtonText, v))
+}
+
+// BannerTwoLeftSectionButtonTextNEQ applies the NEQ predicate on the "banner_two_left_section_button_text" field.
+func BannerTwoLeftSectionButtonTextNEQ(v string) predicate.Website {
+	return predicate.Website(sql.FieldNEQ(FieldBannerTwoLeftSectionButtonText, v))
+}
+
+// BannerTwoLeftSectionButtonTextIn applies the In predicate on the "banner_two_left_section_button_text" field.
+func BannerTwoLeftSectionButtonTextIn(vs ...string) predicate.Website {
+	return predicate.Website(sql.FieldIn(FieldBannerTwoLeftSectionButtonText, vs...))
+}
+
+// BannerTwoLeftSectionButtonTextNotIn applies the NotIn predicate on the "banner_two_left_section_button_text" field.
+func BannerTwoLeftSectionButtonTextNotIn(vs ...string) predicate.Website {
+	return predicate.Website(sql.FieldNotIn(FieldBannerTwoLeftSectionButtonText, vs...))
+}
+
+// BannerTwoLeftSectionButtonTextGT applies the GT predicate on the "banner_two_left_section_button_text" field.
+func BannerTwoLeftSectionButtonTextGT(v string) predicate.Website {
+	return predicate.Website(sql.FieldGT(FieldBannerTwoLeftSectionButtonText, v))
+}
+
+// BannerTwoLeftSectionButtonTextGTE applies the GTE predicate on the "banner_two_left_section_button_text" field.
+func BannerTwoLeftSectionButtonTextGTE(v string) predicate.Website {
+	return predicate.Website(sql.FieldGTE(FieldBannerTwoLeftSectionButtonText, v))
+}
+
+// BannerTwoLeftSectionButtonTextLT applies the LT predicate on the "banner_two_left_section_button_text" field.
+func BannerTwoLeftSectionButtonTextLT(v string) predicate.Website {
+	return predicate.Website(sql.FieldLT(FieldBannerTwoLeftSectionButtonText, v))
+}
+
+// BannerTwoLeftSectionButtonTextLTE applies the LTE predicate on the "banner_two_left_section_button_text" field.
+func BannerTwoLeftSectionButtonTextLTE(v string) predicate.Website {
+	return predicate.Website(sql.FieldLTE(FieldBannerTwoLeftSectionButtonText, v))
+}
+
+// BannerTwoLeftSectionButtonTextContains applies the Contains predicate on the "banner_two_left_section_button_text" field.
+func BannerTwoLeftSectionButtonTextContains(v string) predicate.Website {
+	return predicate.Website(sql.FieldContains(FieldBannerTwoLeftSectionButtonText, v))
+}
+
+// BannerTwoLeftSectionButtonTextHasPrefix applies the HasPrefix predicate on the "banner_two_left_section_button_text" field.
+func BannerTwoLeftSectionButtonTextHasPrefix(v string) predicate.Website {
+	return predicate.Website(sql.FieldHasPrefix(FieldBannerTwoLeftSectionButtonText, v))
+}
+
+// BannerTwoLeftSectionButtonTextHasSuffix applies the HasSuffix predicate on the "banner_two_left_section_button_text" field.
+func BannerTwoLeftSectionButtonTextHasSuffix(v string) predicate.Website {
+	return predicate.Website(sql.FieldHasSuffix(FieldBannerTwoLeftSectionButtonText, v))
+}
+
+// BannerTwoLeftSectionButtonTextEqualFold applies the EqualFold predicate on the "banner_two_left_section_button_text" field.
+func BannerTwoLeftSectionButtonTextEqualFold(v string) predicate.Website {
+	return predicate.Website(sql.FieldEqualFold(FieldBannerTwoLeftSectionButtonText, v))
+}
+
+// BannerTwoLeftSectionButtonTextContainsFold applies the ContainsFold predicate on the "banner_two_left_section_button_text" field.
+func BannerTwoLeftSectionButtonTextContainsFold(v string) predicate.Website {
+	return predicate.Website(sql.FieldContainsFold(FieldBannerTwoLeftSectionButtonText, v))
+}
+
+// BannerTwoLeftSectionButtonLinkEQ applies the EQ predicate on the "banner_two_left_section_button_link" field.
+func BannerTwoLeftSectionButtonLinkEQ(v string) predicate.Website {
+	return predicate.Website(sql.FieldEQ(FieldBannerTwoLeftSectionButtonLink, v))
+}
+
+// BannerTwoLeftSectionButtonLinkNEQ applies the NEQ predicate on the "banner_two_left_section_button_link" field.
+func BannerTwoLeftSectionButtonLinkNEQ(v string) predicate.Website {
+	return predicate.Website(sql.FieldNEQ(FieldBannerTwoLeftSectionButtonLink, v))
+}
+
+// BannerTwoLeftSectionButtonLinkIn applies the In predicate on the "banner_two_left_section_button_link" field.
+func BannerTwoLeftSectionButtonLinkIn(vs ...string) predicate.Website {
+	return predicate.Website(sql.FieldIn(FieldBannerTwoLeftSectionButtonLink, vs...))
+}
+
+// BannerTwoLeftSectionButtonLinkNotIn applies the NotIn predicate on the "banner_two_left_section_button_link" field.
+func BannerTwoLeftSectionButtonLinkNotIn(vs ...string) predicate.Website {
+	return predicate.Website(sql.FieldNotIn(FieldBannerTwoLeftSectionButtonLink, vs...))
+}
+
+// BannerTwoLeftSectionButtonLinkGT applies the GT predicate on the "banner_two_left_section_button_link" field.
+func BannerTwoLeftSectionButtonLinkGT(v string) predicate.Website {
+	return predicate.Website(sql.FieldGT(FieldBannerTwoLeftSectionButtonLink, v))
+}
+
+// BannerTwoLeftSectionButtonLinkGTE applies the GTE predicate on the "banner_two_left_section_button_link" field.
+func BannerTwoLeftSectionButtonLinkGTE(v string) predicate.Website {
+	return predicate.Website(sql.FieldGTE(FieldBannerTwoLeftSectionButtonLink, v))
+}
+
+// BannerTwoLeftSectionButtonLinkLT applies the LT predicate on the "banner_two_left_section_button_link" field.
+func BannerTwoLeftSectionButtonLinkLT(v string) predicate.Website {
+	return predicate.Website(sql.FieldLT(FieldBannerTwoLeftSectionButtonLink, v))
+}
+
+// BannerTwoLeftSectionButtonLinkLTE applies the LTE predicate on the "banner_two_left_section_button_link" field.
+func BannerTwoLeftSectionButtonLinkLTE(v string) predicate.Website {
+	return predicate.Website(sql.FieldLTE(FieldBannerTwoLeftSectionButtonLink, v))
+}
+
+// BannerTwoLeftSectionButtonLinkContains applies the Contains predicate on the "banner_two_left_section_button_link" field.
+func BannerTwoLeftSectionButtonLinkContains(v string) predicate.Website {
+	return predicate.Website(sql.FieldContains(FieldBannerTwoLeftSectionButtonLink, v))
+}
+
+// BannerTwoLeftSectionButtonLinkHasPrefix applies the HasPrefix predicate on the "banner_two_left_section_button_link" field.
+func BannerTwoLeftSectionButtonLinkHasPrefix(v string) predicate.Website {
+	return predicate.Website(sql.FieldHasPrefix(FieldBannerTwoLeftSectionButtonLink, v))
+}
+
+// BannerTwoLeftSectionButtonLinkHasSuffix applies the HasSuffix predicate on the "banner_two_left_section_button_link" field.
+func BannerTwoLeftSectionButtonLinkHasSuffix(v string) predicate.Website {
+	return predicate.Website(sql.FieldHasSuffix(FieldBannerTwoLeftSectionButtonLink, v))
+}
+
+// BannerTwoLeftSectionButtonLinkEqualFold applies the EqualFold predicate on the "banner_two_left_section_button_link" field.
+func BannerTwoLeftSectionButtonLinkEqualFold(v string) predicate.Website {
+	return predicate.Website(sql.FieldEqualFold(FieldBannerTwoLeftSectionButtonLink, v))
+}
+
+// BannerTwoLeftSectionButtonLinkContainsFold applies the ContainsFold predicate on the "banner_two_left_section_button_link" field.
+func BannerTwoLeftSectionButtonLinkContainsFold(v string) predicate.Website {
+	return predicate.Website(sql.FieldContainsFold(FieldBannerTwoLeftSectionButtonLink, v))
+}
+
+// BannerTwoRightSideImageEQ applies the EQ predicate on the "banner_two_right_side_image" field.
+func BannerTwoRightSideImageEQ(v string) predicate.Website {
+	return predicate.Website(sql.FieldEQ(FieldBannerTwoRightSideImage, v))
+}
+
+// BannerTwoRightSideImageNEQ applies the NEQ predicate on the "banner_two_right_side_image" field.
+func BannerTwoRightSideImageNEQ(v string) predicate.Website {
+	return predicate.Website(sql.FieldNEQ(FieldBannerTwoRightSideImage, v))
+}
+
+// BannerTwoRightSideImageIn applies the In predicate on the "banner_two_right_side_image" field.
+func BannerTwoRightSideImageIn(vs ...string) predicate.Website {
+	return predicate.Website(sql.FieldIn(FieldBannerTwoRightSideImage, vs...))
+}
+
+// BannerTwoRightSideImageNotIn applies the NotIn predicate on the "banner_two_right_side_image" field.
+func BannerTwoRightSideImageNotIn(vs ...string) predicate.Website {
+	return predicate.Website(sql.FieldNotIn(FieldBannerTwoRightSideImage, vs...))
+}
+
+// BannerTwoRightSideImageGT applies the GT predicate on the "banner_two_right_side_image" field.
+func BannerTwoRightSideImageGT(v string) predicate.Website {
+	return predicate.Website(sql.FieldGT(FieldBannerTwoRightSideImage, v))
+}
+
+// BannerTwoRightSideImageGTE applies the GTE predicate on the "banner_two_right_side_image" field.
+func BannerTwoRightSideImageGTE(v string) predicate.Website {
+	return predicate.Website(sql.FieldGTE(FieldBannerTwoRightSideImage, v))
+}
+
+// BannerTwoRightSideImageLT applies the LT predicate on the "banner_two_right_side_image" field.
+func BannerTwoRightSideImageLT(v string) predicate.Website {
+	return predicate.Website(sql.FieldLT(FieldBannerTwoRightSideImage, v))
+}
+
+// BannerTwoRightSideImageLTE applies the LTE predicate on the "banner_two_right_side_image" field.
+func BannerTwoRightSideImageLTE(v string) predicate.Website {
+	return predicate.Website(sql.FieldLTE(FieldBannerTwoRightSideImage, v))
+}
+
+// BannerTwoRightSideImageContains applies the Contains predicate on the "banner_two_right_side_image" field.
+func BannerTwoRightSideImageContains(v string) predicate.Website {
+	return predicate.Website(sql.FieldContains(FieldBannerTwoRightSideImage, v))
+}
+
+// BannerTwoRightSideImageHasPrefix applies the HasPrefix predicate on the "banner_two_right_side_image" field.
+func BannerTwoRightSideImageHasPrefix(v string) predicate.Website {
+	return predicate.Website(sql.FieldHasPrefix(FieldBannerTwoRightSideImage, v))
+}
+
+// BannerTwoRightSideImageHasSuffix applies the HasSuffix predicate on the "banner_two_right_side_image" field.
+func BannerTwoRightSideImageHasSuffix(v string) predicate.Website {
+	return predicate.Website(sql.FieldHasSuffix(FieldBannerTwoRightSideImage, v))
+}
+
+// BannerTwoRightSideImageEqualFold applies the EqualFold predicate on the "banner_two_right_side_image" field.
+func BannerTwoRightSideImageEqualFold(v string) predicate.Website {
+	return predicate.Website(sql.FieldEqualFold(FieldBannerTwoRightSideImage, v))
+}
+
+// BannerTwoRightSideImageContainsFold applies the ContainsFold predicate on the "banner_two_right_side_image" field.
+func BannerTwoRightSideImageContainsFold(v string) predicate.Website {
+	return predicate.Website(sql.FieldContainsFold(FieldBannerTwoRightSideImage, v))
+}
+
+// InventorySectionHeadingTextEQ applies the EQ predicate on the "Inventory_section_heading_text" field.
+func InventorySectionHeadingTextEQ(v string) predicate.Website {
+	return predicate.Website(sql.FieldEQ(FieldInventorySectionHeadingText, v))
+}
+
+// InventorySectionHeadingTextNEQ applies the NEQ predicate on the "Inventory_section_heading_text" field.
+func InventorySectionHeadingTextNEQ(v string) predicate.Website {
+	return predicate.Website(sql.FieldNEQ(FieldInventorySectionHeadingText, v))
+}
+
+// InventorySectionHeadingTextIn applies the In predicate on the "Inventory_section_heading_text" field.
+func InventorySectionHeadingTextIn(vs ...string) predicate.Website {
+	return predicate.Website(sql.FieldIn(FieldInventorySectionHeadingText, vs...))
+}
+
+// InventorySectionHeadingTextNotIn applies the NotIn predicate on the "Inventory_section_heading_text" field.
+func InventorySectionHeadingTextNotIn(vs ...string) predicate.Website {
+	return predicate.Website(sql.FieldNotIn(FieldInventorySectionHeadingText, vs...))
+}
+
+// InventorySectionHeadingTextGT applies the GT predicate on the "Inventory_section_heading_text" field.
+func InventorySectionHeadingTextGT(v string) predicate.Website {
+	return predicate.Website(sql.FieldGT(FieldInventorySectionHeadingText, v))
+}
+
+// InventorySectionHeadingTextGTE applies the GTE predicate on the "Inventory_section_heading_text" field.
+func InventorySectionHeadingTextGTE(v string) predicate.Website {
+	return predicate.Website(sql.FieldGTE(FieldInventorySectionHeadingText, v))
+}
+
+// InventorySectionHeadingTextLT applies the LT predicate on the "Inventory_section_heading_text" field.
+func InventorySectionHeadingTextLT(v string) predicate.Website {
+	return predicate.Website(sql.FieldLT(FieldInventorySectionHeadingText, v))
+}
+
+// InventorySectionHeadingTextLTE applies the LTE predicate on the "Inventory_section_heading_text" field.
+func InventorySectionHeadingTextLTE(v string) predicate.Website {
+	return predicate.Website(sql.FieldLTE(FieldInventorySectionHeadingText, v))
+}
+
+// InventorySectionHeadingTextContains applies the Contains predicate on the "Inventory_section_heading_text" field.
+func InventorySectionHeadingTextContains(v string) predicate.Website {
+	return predicate.Website(sql.FieldContains(FieldInventorySectionHeadingText, v))
+}
+
+// InventorySectionHeadingTextHasPrefix applies the HasPrefix predicate on the "Inventory_section_heading_text" field.
+func InventorySectionHeadingTextHasPrefix(v string) predicate.Website {
+	return predicate.Website(sql.FieldHasPrefix(FieldInventorySectionHeadingText, v))
+}
+
+// InventorySectionHeadingTextHasSuffix applies the HasSuffix predicate on the "Inventory_section_heading_text" field.
+func InventorySectionHeadingTextHasSuffix(v string) predicate.Website {
+	return predicate.Website(sql.FieldHasSuffix(FieldInventorySectionHeadingText, v))
+}
+
+// InventorySectionHeadingTextEqualFold applies the EqualFold predicate on the "Inventory_section_heading_text" field.
+func InventorySectionHeadingTextEqualFold(v string) predicate.Website {
+	return predicate.Website(sql.FieldEqualFold(FieldInventorySectionHeadingText, v))
+}
+
+// InventorySectionHeadingTextContainsFold applies the ContainsFold predicate on the "Inventory_section_heading_text" field.
+func InventorySectionHeadingTextContainsFold(v string) predicate.Website {
+	return predicate.Website(sql.FieldContainsFold(FieldInventorySectionHeadingText, v))
 }
 
 // CreationDateEQ applies the EQ predicate on the "creationDate" field.

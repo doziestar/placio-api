@@ -38,6 +38,126 @@ func (wu *WebsiteUpdate) SetDomainName(s string) *WebsiteUpdate {
 	return wu
 }
 
+// SetHeadingText sets the "heading_text" field.
+func (wu *WebsiteUpdate) SetHeadingText(s string) *WebsiteUpdate {
+	wu.mutation.SetHeadingText(s)
+	return wu
+}
+
+// SetBusinessLogo sets the "business_logo" field.
+func (wu *WebsiteUpdate) SetBusinessLogo(s string) *WebsiteUpdate {
+	wu.mutation.SetBusinessLogo(s)
+	return wu
+}
+
+// SetBusinessName sets the "business_name" field.
+func (wu *WebsiteUpdate) SetBusinessName(s string) *WebsiteUpdate {
+	wu.mutation.SetBusinessName(s)
+	return wu
+}
+
+// SetBannerSectionBackgroundImage sets the "banner_section_background_image" field.
+func (wu *WebsiteUpdate) SetBannerSectionBackgroundImage(s string) *WebsiteUpdate {
+	wu.mutation.SetBannerSectionBackgroundImage(s)
+	return wu
+}
+
+// SetBannerSectionBackgroundColor sets the "banner_section_background_color" field.
+func (wu *WebsiteUpdate) SetBannerSectionBackgroundColor(s string) *WebsiteUpdate {
+	wu.mutation.SetBannerSectionBackgroundColor(s)
+	return wu
+}
+
+// SetBannerSectionText sets the "banner_section_text" field.
+func (wu *WebsiteUpdate) SetBannerSectionText(s string) *WebsiteUpdate {
+	wu.mutation.SetBannerSectionText(s)
+	return wu
+}
+
+// SetThreeItemsSectionHeadingText sets the "three_items_section_heading_text" field.
+func (wu *WebsiteUpdate) SetThreeItemsSectionHeadingText(s string) *WebsiteUpdate {
+	wu.mutation.SetThreeItemsSectionHeadingText(s)
+	return wu
+}
+
+// SetThreeItemsSectionDetailsText sets the "three_items_section_details_text" field.
+func (wu *WebsiteUpdate) SetThreeItemsSectionDetailsText(s string) *WebsiteUpdate {
+	wu.mutation.SetThreeItemsSectionDetailsText(s)
+	return wu
+}
+
+// SetThreeItemsSectionItemOneText sets the "three_items_section_item_one_text" field.
+func (wu *WebsiteUpdate) SetThreeItemsSectionItemOneText(s string) *WebsiteUpdate {
+	wu.mutation.SetThreeItemsSectionItemOneText(s)
+	return wu
+}
+
+// SetThreeItemsSectionItemTwoText sets the "three_items_section_item_two_text" field.
+func (wu *WebsiteUpdate) SetThreeItemsSectionItemTwoText(s string) *WebsiteUpdate {
+	wu.mutation.SetThreeItemsSectionItemTwoText(s)
+	return wu
+}
+
+// SetThreeItemsSectionItemThreeText sets the "three_items_section_item_three_text" field.
+func (wu *WebsiteUpdate) SetThreeItemsSectionItemThreeText(s string) *WebsiteUpdate {
+	wu.mutation.SetThreeItemsSectionItemThreeText(s)
+	return wu
+}
+
+// SetBannerTwoSectionBackgroundImage sets the "banner_two_section_background_image" field.
+func (wu *WebsiteUpdate) SetBannerTwoSectionBackgroundImage(s string) *WebsiteUpdate {
+	wu.mutation.SetBannerTwoSectionBackgroundImage(s)
+	return wu
+}
+
+// SetBannerTwoSectionBackgroundColor sets the "banner_two_section_background_color" field.
+func (wu *WebsiteUpdate) SetBannerTwoSectionBackgroundColor(s string) *WebsiteUpdate {
+	wu.mutation.SetBannerTwoSectionBackgroundColor(s)
+	return wu
+}
+
+// SetBannerTwoLeftSectionHeadingText sets the "banner_two_left_section_heading_text" field.
+func (wu *WebsiteUpdate) SetBannerTwoLeftSectionHeadingText(s string) *WebsiteUpdate {
+	wu.mutation.SetBannerTwoLeftSectionHeadingText(s)
+	return wu
+}
+
+// SetBannerTwoLeftSectionDetailsText sets the "banner_two_left_section_details_text" field.
+func (wu *WebsiteUpdate) SetBannerTwoLeftSectionDetailsText(s string) *WebsiteUpdate {
+	wu.mutation.SetBannerTwoLeftSectionDetailsText(s)
+	return wu
+}
+
+// SetBannerTwoLeftSectionButtonText sets the "banner_two_left_section_button_text" field.
+func (wu *WebsiteUpdate) SetBannerTwoLeftSectionButtonText(s string) *WebsiteUpdate {
+	wu.mutation.SetBannerTwoLeftSectionButtonText(s)
+	return wu
+}
+
+// SetBannerTwoLeftSectionButtonLink sets the "banner_two_left_section_button_link" field.
+func (wu *WebsiteUpdate) SetBannerTwoLeftSectionButtonLink(s string) *WebsiteUpdate {
+	wu.mutation.SetBannerTwoLeftSectionButtonLink(s)
+	return wu
+}
+
+// SetBannerTwoRightSideImage sets the "banner_two_right_side_image" field.
+func (wu *WebsiteUpdate) SetBannerTwoRightSideImage(s string) *WebsiteUpdate {
+	wu.mutation.SetBannerTwoRightSideImage(s)
+	return wu
+}
+
+// SetAchievementsSection sets the "achievements_section" field.
+func (wu *WebsiteUpdate) SetAchievementsSection(m map[string]interface{}) *WebsiteUpdate {
+	wu.mutation.SetAchievementsSection(m)
+	return wu
+}
+
+// SetInventorySectionHeadingText sets the "Inventory_section_heading_text" field.
+func (wu *WebsiteUpdate) SetInventorySectionHeadingText(s string) *WebsiteUpdate {
+	wu.mutation.SetInventorySectionHeadingText(s)
+	return wu
+}
+
 // SetCreationDate sets the "creationDate" field.
 func (wu *WebsiteUpdate) SetCreationDate(t time.Time) *WebsiteUpdate {
 	wu.mutation.SetCreationDate(t)
@@ -369,6 +489,66 @@ func (wu *WebsiteUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := wu.mutation.DomainName(); ok {
 		_spec.SetField(website.FieldDomainName, field.TypeString, value)
 	}
+	if value, ok := wu.mutation.HeadingText(); ok {
+		_spec.SetField(website.FieldHeadingText, field.TypeString, value)
+	}
+	if value, ok := wu.mutation.BusinessLogo(); ok {
+		_spec.SetField(website.FieldBusinessLogo, field.TypeString, value)
+	}
+	if value, ok := wu.mutation.BusinessName(); ok {
+		_spec.SetField(website.FieldBusinessName, field.TypeString, value)
+	}
+	if value, ok := wu.mutation.BannerSectionBackgroundImage(); ok {
+		_spec.SetField(website.FieldBannerSectionBackgroundImage, field.TypeString, value)
+	}
+	if value, ok := wu.mutation.BannerSectionBackgroundColor(); ok {
+		_spec.SetField(website.FieldBannerSectionBackgroundColor, field.TypeString, value)
+	}
+	if value, ok := wu.mutation.BannerSectionText(); ok {
+		_spec.SetField(website.FieldBannerSectionText, field.TypeString, value)
+	}
+	if value, ok := wu.mutation.ThreeItemsSectionHeadingText(); ok {
+		_spec.SetField(website.FieldThreeItemsSectionHeadingText, field.TypeString, value)
+	}
+	if value, ok := wu.mutation.ThreeItemsSectionDetailsText(); ok {
+		_spec.SetField(website.FieldThreeItemsSectionDetailsText, field.TypeString, value)
+	}
+	if value, ok := wu.mutation.ThreeItemsSectionItemOneText(); ok {
+		_spec.SetField(website.FieldThreeItemsSectionItemOneText, field.TypeString, value)
+	}
+	if value, ok := wu.mutation.ThreeItemsSectionItemTwoText(); ok {
+		_spec.SetField(website.FieldThreeItemsSectionItemTwoText, field.TypeString, value)
+	}
+	if value, ok := wu.mutation.ThreeItemsSectionItemThreeText(); ok {
+		_spec.SetField(website.FieldThreeItemsSectionItemThreeText, field.TypeString, value)
+	}
+	if value, ok := wu.mutation.BannerTwoSectionBackgroundImage(); ok {
+		_spec.SetField(website.FieldBannerTwoSectionBackgroundImage, field.TypeString, value)
+	}
+	if value, ok := wu.mutation.BannerTwoSectionBackgroundColor(); ok {
+		_spec.SetField(website.FieldBannerTwoSectionBackgroundColor, field.TypeString, value)
+	}
+	if value, ok := wu.mutation.BannerTwoLeftSectionHeadingText(); ok {
+		_spec.SetField(website.FieldBannerTwoLeftSectionHeadingText, field.TypeString, value)
+	}
+	if value, ok := wu.mutation.BannerTwoLeftSectionDetailsText(); ok {
+		_spec.SetField(website.FieldBannerTwoLeftSectionDetailsText, field.TypeString, value)
+	}
+	if value, ok := wu.mutation.BannerTwoLeftSectionButtonText(); ok {
+		_spec.SetField(website.FieldBannerTwoLeftSectionButtonText, field.TypeString, value)
+	}
+	if value, ok := wu.mutation.BannerTwoLeftSectionButtonLink(); ok {
+		_spec.SetField(website.FieldBannerTwoLeftSectionButtonLink, field.TypeString, value)
+	}
+	if value, ok := wu.mutation.BannerTwoRightSideImage(); ok {
+		_spec.SetField(website.FieldBannerTwoRightSideImage, field.TypeString, value)
+	}
+	if value, ok := wu.mutation.AchievementsSection(); ok {
+		_spec.SetField(website.FieldAchievementsSection, field.TypeJSON, value)
+	}
+	if value, ok := wu.mutation.InventorySectionHeadingText(); ok {
+		_spec.SetField(website.FieldInventorySectionHeadingText, field.TypeString, value)
+	}
 	if value, ok := wu.mutation.CreationDate(); ok {
 		_spec.SetField(website.FieldCreationDate, field.TypeTime, value)
 	}
@@ -615,6 +795,126 @@ type WebsiteUpdateOne struct {
 // SetDomainName sets the "domainName" field.
 func (wuo *WebsiteUpdateOne) SetDomainName(s string) *WebsiteUpdateOne {
 	wuo.mutation.SetDomainName(s)
+	return wuo
+}
+
+// SetHeadingText sets the "heading_text" field.
+func (wuo *WebsiteUpdateOne) SetHeadingText(s string) *WebsiteUpdateOne {
+	wuo.mutation.SetHeadingText(s)
+	return wuo
+}
+
+// SetBusinessLogo sets the "business_logo" field.
+func (wuo *WebsiteUpdateOne) SetBusinessLogo(s string) *WebsiteUpdateOne {
+	wuo.mutation.SetBusinessLogo(s)
+	return wuo
+}
+
+// SetBusinessName sets the "business_name" field.
+func (wuo *WebsiteUpdateOne) SetBusinessName(s string) *WebsiteUpdateOne {
+	wuo.mutation.SetBusinessName(s)
+	return wuo
+}
+
+// SetBannerSectionBackgroundImage sets the "banner_section_background_image" field.
+func (wuo *WebsiteUpdateOne) SetBannerSectionBackgroundImage(s string) *WebsiteUpdateOne {
+	wuo.mutation.SetBannerSectionBackgroundImage(s)
+	return wuo
+}
+
+// SetBannerSectionBackgroundColor sets the "banner_section_background_color" field.
+func (wuo *WebsiteUpdateOne) SetBannerSectionBackgroundColor(s string) *WebsiteUpdateOne {
+	wuo.mutation.SetBannerSectionBackgroundColor(s)
+	return wuo
+}
+
+// SetBannerSectionText sets the "banner_section_text" field.
+func (wuo *WebsiteUpdateOne) SetBannerSectionText(s string) *WebsiteUpdateOne {
+	wuo.mutation.SetBannerSectionText(s)
+	return wuo
+}
+
+// SetThreeItemsSectionHeadingText sets the "three_items_section_heading_text" field.
+func (wuo *WebsiteUpdateOne) SetThreeItemsSectionHeadingText(s string) *WebsiteUpdateOne {
+	wuo.mutation.SetThreeItemsSectionHeadingText(s)
+	return wuo
+}
+
+// SetThreeItemsSectionDetailsText sets the "three_items_section_details_text" field.
+func (wuo *WebsiteUpdateOne) SetThreeItemsSectionDetailsText(s string) *WebsiteUpdateOne {
+	wuo.mutation.SetThreeItemsSectionDetailsText(s)
+	return wuo
+}
+
+// SetThreeItemsSectionItemOneText sets the "three_items_section_item_one_text" field.
+func (wuo *WebsiteUpdateOne) SetThreeItemsSectionItemOneText(s string) *WebsiteUpdateOne {
+	wuo.mutation.SetThreeItemsSectionItemOneText(s)
+	return wuo
+}
+
+// SetThreeItemsSectionItemTwoText sets the "three_items_section_item_two_text" field.
+func (wuo *WebsiteUpdateOne) SetThreeItemsSectionItemTwoText(s string) *WebsiteUpdateOne {
+	wuo.mutation.SetThreeItemsSectionItemTwoText(s)
+	return wuo
+}
+
+// SetThreeItemsSectionItemThreeText sets the "three_items_section_item_three_text" field.
+func (wuo *WebsiteUpdateOne) SetThreeItemsSectionItemThreeText(s string) *WebsiteUpdateOne {
+	wuo.mutation.SetThreeItemsSectionItemThreeText(s)
+	return wuo
+}
+
+// SetBannerTwoSectionBackgroundImage sets the "banner_two_section_background_image" field.
+func (wuo *WebsiteUpdateOne) SetBannerTwoSectionBackgroundImage(s string) *WebsiteUpdateOne {
+	wuo.mutation.SetBannerTwoSectionBackgroundImage(s)
+	return wuo
+}
+
+// SetBannerTwoSectionBackgroundColor sets the "banner_two_section_background_color" field.
+func (wuo *WebsiteUpdateOne) SetBannerTwoSectionBackgroundColor(s string) *WebsiteUpdateOne {
+	wuo.mutation.SetBannerTwoSectionBackgroundColor(s)
+	return wuo
+}
+
+// SetBannerTwoLeftSectionHeadingText sets the "banner_two_left_section_heading_text" field.
+func (wuo *WebsiteUpdateOne) SetBannerTwoLeftSectionHeadingText(s string) *WebsiteUpdateOne {
+	wuo.mutation.SetBannerTwoLeftSectionHeadingText(s)
+	return wuo
+}
+
+// SetBannerTwoLeftSectionDetailsText sets the "banner_two_left_section_details_text" field.
+func (wuo *WebsiteUpdateOne) SetBannerTwoLeftSectionDetailsText(s string) *WebsiteUpdateOne {
+	wuo.mutation.SetBannerTwoLeftSectionDetailsText(s)
+	return wuo
+}
+
+// SetBannerTwoLeftSectionButtonText sets the "banner_two_left_section_button_text" field.
+func (wuo *WebsiteUpdateOne) SetBannerTwoLeftSectionButtonText(s string) *WebsiteUpdateOne {
+	wuo.mutation.SetBannerTwoLeftSectionButtonText(s)
+	return wuo
+}
+
+// SetBannerTwoLeftSectionButtonLink sets the "banner_two_left_section_button_link" field.
+func (wuo *WebsiteUpdateOne) SetBannerTwoLeftSectionButtonLink(s string) *WebsiteUpdateOne {
+	wuo.mutation.SetBannerTwoLeftSectionButtonLink(s)
+	return wuo
+}
+
+// SetBannerTwoRightSideImage sets the "banner_two_right_side_image" field.
+func (wuo *WebsiteUpdateOne) SetBannerTwoRightSideImage(s string) *WebsiteUpdateOne {
+	wuo.mutation.SetBannerTwoRightSideImage(s)
+	return wuo
+}
+
+// SetAchievementsSection sets the "achievements_section" field.
+func (wuo *WebsiteUpdateOne) SetAchievementsSection(m map[string]interface{}) *WebsiteUpdateOne {
+	wuo.mutation.SetAchievementsSection(m)
+	return wuo
+}
+
+// SetInventorySectionHeadingText sets the "Inventory_section_heading_text" field.
+func (wuo *WebsiteUpdateOne) SetInventorySectionHeadingText(s string) *WebsiteUpdateOne {
+	wuo.mutation.SetInventorySectionHeadingText(s)
 	return wuo
 }
 
@@ -978,6 +1278,66 @@ func (wuo *WebsiteUpdateOne) sqlSave(ctx context.Context) (_node *Website, err e
 	}
 	if value, ok := wuo.mutation.DomainName(); ok {
 		_spec.SetField(website.FieldDomainName, field.TypeString, value)
+	}
+	if value, ok := wuo.mutation.HeadingText(); ok {
+		_spec.SetField(website.FieldHeadingText, field.TypeString, value)
+	}
+	if value, ok := wuo.mutation.BusinessLogo(); ok {
+		_spec.SetField(website.FieldBusinessLogo, field.TypeString, value)
+	}
+	if value, ok := wuo.mutation.BusinessName(); ok {
+		_spec.SetField(website.FieldBusinessName, field.TypeString, value)
+	}
+	if value, ok := wuo.mutation.BannerSectionBackgroundImage(); ok {
+		_spec.SetField(website.FieldBannerSectionBackgroundImage, field.TypeString, value)
+	}
+	if value, ok := wuo.mutation.BannerSectionBackgroundColor(); ok {
+		_spec.SetField(website.FieldBannerSectionBackgroundColor, field.TypeString, value)
+	}
+	if value, ok := wuo.mutation.BannerSectionText(); ok {
+		_spec.SetField(website.FieldBannerSectionText, field.TypeString, value)
+	}
+	if value, ok := wuo.mutation.ThreeItemsSectionHeadingText(); ok {
+		_spec.SetField(website.FieldThreeItemsSectionHeadingText, field.TypeString, value)
+	}
+	if value, ok := wuo.mutation.ThreeItemsSectionDetailsText(); ok {
+		_spec.SetField(website.FieldThreeItemsSectionDetailsText, field.TypeString, value)
+	}
+	if value, ok := wuo.mutation.ThreeItemsSectionItemOneText(); ok {
+		_spec.SetField(website.FieldThreeItemsSectionItemOneText, field.TypeString, value)
+	}
+	if value, ok := wuo.mutation.ThreeItemsSectionItemTwoText(); ok {
+		_spec.SetField(website.FieldThreeItemsSectionItemTwoText, field.TypeString, value)
+	}
+	if value, ok := wuo.mutation.ThreeItemsSectionItemThreeText(); ok {
+		_spec.SetField(website.FieldThreeItemsSectionItemThreeText, field.TypeString, value)
+	}
+	if value, ok := wuo.mutation.BannerTwoSectionBackgroundImage(); ok {
+		_spec.SetField(website.FieldBannerTwoSectionBackgroundImage, field.TypeString, value)
+	}
+	if value, ok := wuo.mutation.BannerTwoSectionBackgroundColor(); ok {
+		_spec.SetField(website.FieldBannerTwoSectionBackgroundColor, field.TypeString, value)
+	}
+	if value, ok := wuo.mutation.BannerTwoLeftSectionHeadingText(); ok {
+		_spec.SetField(website.FieldBannerTwoLeftSectionHeadingText, field.TypeString, value)
+	}
+	if value, ok := wuo.mutation.BannerTwoLeftSectionDetailsText(); ok {
+		_spec.SetField(website.FieldBannerTwoLeftSectionDetailsText, field.TypeString, value)
+	}
+	if value, ok := wuo.mutation.BannerTwoLeftSectionButtonText(); ok {
+		_spec.SetField(website.FieldBannerTwoLeftSectionButtonText, field.TypeString, value)
+	}
+	if value, ok := wuo.mutation.BannerTwoLeftSectionButtonLink(); ok {
+		_spec.SetField(website.FieldBannerTwoLeftSectionButtonLink, field.TypeString, value)
+	}
+	if value, ok := wuo.mutation.BannerTwoRightSideImage(); ok {
+		_spec.SetField(website.FieldBannerTwoRightSideImage, field.TypeString, value)
+	}
+	if value, ok := wuo.mutation.AchievementsSection(); ok {
+		_spec.SetField(website.FieldAchievementsSection, field.TypeJSON, value)
+	}
+	if value, ok := wuo.mutation.InventorySectionHeadingText(); ok {
+		_spec.SetField(website.FieldInventorySectionHeadingText, field.TypeString, value)
 	}
 	if value, ok := wuo.mutation.CreationDate(); ok {
 		_spec.SetField(website.FieldCreationDate, field.TypeTime, value)

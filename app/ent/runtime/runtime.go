@@ -663,11 +663,11 @@ func init() {
 	websiteFields := schema.Website{}.Fields()
 	_ = websiteFields
 	// websiteDescCreationDate is the schema descriptor for creationDate field.
-	websiteDescCreationDate := websiteFields[1].Descriptor()
+	websiteDescCreationDate := websiteFields[22].Descriptor()
 	// website.DefaultCreationDate holds the default value on creation for the creationDate field.
 	website.DefaultCreationDate = websiteDescCreationDate.Default.(func() time.Time)
 	// websiteDescLastUpdated is the schema descriptor for lastUpdated field.
-	websiteDescLastUpdated := websiteFields[2].Descriptor()
+	websiteDescLastUpdated := websiteFields[23].Descriptor()
 	// website.UpdateDefaultLastUpdated holds the default value on update for the lastUpdated field.
 	website.UpdateDefaultLastUpdated = websiteDescLastUpdated.UpdateDefault.(func() time.Time)
 }

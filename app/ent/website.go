@@ -22,6 +22,46 @@ type Website struct {
 	ID string `json:"id,omitempty"`
 	// DomainName holds the value of the "domainName" field.
 	DomainName string `json:"domainName,omitempty"`
+	// HeadingText holds the value of the "heading_text" field.
+	HeadingText string `json:"heading_text,omitempty"`
+	// BusinessLogo holds the value of the "business_logo" field.
+	BusinessLogo string `json:"business_logo,omitempty"`
+	// BusinessName holds the value of the "business_name" field.
+	BusinessName string `json:"business_name,omitempty"`
+	// BannerSectionBackgroundImage holds the value of the "banner_section_background_image" field.
+	BannerSectionBackgroundImage string `json:"banner_section_background_image,omitempty"`
+	// BannerSectionBackgroundColor holds the value of the "banner_section_background_color" field.
+	BannerSectionBackgroundColor string `json:"banner_section_background_color,omitempty"`
+	// BannerSectionText holds the value of the "banner_section_text" field.
+	BannerSectionText string `json:"banner_section_text,omitempty"`
+	// ThreeItemsSectionHeadingText holds the value of the "three_items_section_heading_text" field.
+	ThreeItemsSectionHeadingText string `json:"three_items_section_heading_text,omitempty"`
+	// ThreeItemsSectionDetailsText holds the value of the "three_items_section_details_text" field.
+	ThreeItemsSectionDetailsText string `json:"three_items_section_details_text,omitempty"`
+	// ThreeItemsSectionItemOneText holds the value of the "three_items_section_item_one_text" field.
+	ThreeItemsSectionItemOneText string `json:"three_items_section_item_one_text,omitempty"`
+	// ThreeItemsSectionItemTwoText holds the value of the "three_items_section_item_two_text" field.
+	ThreeItemsSectionItemTwoText string `json:"three_items_section_item_two_text,omitempty"`
+	// ThreeItemsSectionItemThreeText holds the value of the "three_items_section_item_three_text" field.
+	ThreeItemsSectionItemThreeText string `json:"three_items_section_item_three_text,omitempty"`
+	// BannerTwoSectionBackgroundImage holds the value of the "banner_two_section_background_image" field.
+	BannerTwoSectionBackgroundImage string `json:"banner_two_section_background_image,omitempty"`
+	// BannerTwoSectionBackgroundColor holds the value of the "banner_two_section_background_color" field.
+	BannerTwoSectionBackgroundColor string `json:"banner_two_section_background_color,omitempty"`
+	// BannerTwoLeftSectionHeadingText holds the value of the "banner_two_left_section_heading_text" field.
+	BannerTwoLeftSectionHeadingText string `json:"banner_two_left_section_heading_text,omitempty"`
+	// BannerTwoLeftSectionDetailsText holds the value of the "banner_two_left_section_details_text" field.
+	BannerTwoLeftSectionDetailsText string `json:"banner_two_left_section_details_text,omitempty"`
+	// BannerTwoLeftSectionButtonText holds the value of the "banner_two_left_section_button_text" field.
+	BannerTwoLeftSectionButtonText string `json:"banner_two_left_section_button_text,omitempty"`
+	// BannerTwoLeftSectionButtonLink holds the value of the "banner_two_left_section_button_link" field.
+	BannerTwoLeftSectionButtonLink string `json:"banner_two_left_section_button_link,omitempty"`
+	// BannerTwoRightSideImage holds the value of the "banner_two_right_side_image" field.
+	BannerTwoRightSideImage string `json:"banner_two_right_side_image,omitempty"`
+	// AchievementsSection holds the value of the "achievements_section" field.
+	AchievementsSection map[string]interface{} `json:"achievements_section,omitempty"`
+	// InventorySectionHeadingText holds the value of the "Inventory_section_heading_text" field.
+	InventorySectionHeadingText string `json:"Inventory_section_heading_text,omitempty"`
 	// CreationDate holds the value of the "creationDate" field.
 	CreationDate time.Time `json:"creationDate,omitempty"`
 	// LastUpdated holds the value of the "lastUpdated" field.
@@ -144,9 +184,9 @@ func (*Website) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case website.FieldMapCoordinates, website.FieldMetaTags:
+		case website.FieldAchievementsSection, website.FieldMapCoordinates, website.FieldMetaTags:
 			values[i] = new([]byte)
-		case website.FieldID, website.FieldDomainName, website.FieldTitle, website.FieldDescription, website.FieldKeywords, website.FieldLanguage, website.FieldLogo, website.FieldFavicon, website.FieldFacebook, website.FieldTwitter, website.FieldInstagram, website.FieldYoutube, website.FieldLinkedin, website.FieldPinterest, website.FieldLongitude, website.FieldLatitude, website.FieldAddress, website.FieldCity, website.FieldState, website.FieldCountry, website.FieldZipCode, website.FieldPhoneNumber, website.FieldEmail:
+		case website.FieldID, website.FieldDomainName, website.FieldHeadingText, website.FieldBusinessLogo, website.FieldBusinessName, website.FieldBannerSectionBackgroundImage, website.FieldBannerSectionBackgroundColor, website.FieldBannerSectionText, website.FieldThreeItemsSectionHeadingText, website.FieldThreeItemsSectionDetailsText, website.FieldThreeItemsSectionItemOneText, website.FieldThreeItemsSectionItemTwoText, website.FieldThreeItemsSectionItemThreeText, website.FieldBannerTwoSectionBackgroundImage, website.FieldBannerTwoSectionBackgroundColor, website.FieldBannerTwoLeftSectionHeadingText, website.FieldBannerTwoLeftSectionDetailsText, website.FieldBannerTwoLeftSectionButtonText, website.FieldBannerTwoLeftSectionButtonLink, website.FieldBannerTwoRightSideImage, website.FieldInventorySectionHeadingText, website.FieldTitle, website.FieldDescription, website.FieldKeywords, website.FieldLanguage, website.FieldLogo, website.FieldFavicon, website.FieldFacebook, website.FieldTwitter, website.FieldInstagram, website.FieldYoutube, website.FieldLinkedin, website.FieldPinterest, website.FieldLongitude, website.FieldLatitude, website.FieldAddress, website.FieldCity, website.FieldState, website.FieldCountry, website.FieldZipCode, website.FieldPhoneNumber, website.FieldEmail:
 			values[i] = new(sql.NullString)
 		case website.FieldCreationDate, website.FieldLastUpdated:
 			values[i] = new(sql.NullTime)
@@ -180,6 +220,128 @@ func (w *Website) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field domainName", values[i])
 			} else if value.Valid {
 				w.DomainName = value.String
+			}
+		case website.FieldHeadingText:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field heading_text", values[i])
+			} else if value.Valid {
+				w.HeadingText = value.String
+			}
+		case website.FieldBusinessLogo:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field business_logo", values[i])
+			} else if value.Valid {
+				w.BusinessLogo = value.String
+			}
+		case website.FieldBusinessName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field business_name", values[i])
+			} else if value.Valid {
+				w.BusinessName = value.String
+			}
+		case website.FieldBannerSectionBackgroundImage:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field banner_section_background_image", values[i])
+			} else if value.Valid {
+				w.BannerSectionBackgroundImage = value.String
+			}
+		case website.FieldBannerSectionBackgroundColor:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field banner_section_background_color", values[i])
+			} else if value.Valid {
+				w.BannerSectionBackgroundColor = value.String
+			}
+		case website.FieldBannerSectionText:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field banner_section_text", values[i])
+			} else if value.Valid {
+				w.BannerSectionText = value.String
+			}
+		case website.FieldThreeItemsSectionHeadingText:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field three_items_section_heading_text", values[i])
+			} else if value.Valid {
+				w.ThreeItemsSectionHeadingText = value.String
+			}
+		case website.FieldThreeItemsSectionDetailsText:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field three_items_section_details_text", values[i])
+			} else if value.Valid {
+				w.ThreeItemsSectionDetailsText = value.String
+			}
+		case website.FieldThreeItemsSectionItemOneText:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field three_items_section_item_one_text", values[i])
+			} else if value.Valid {
+				w.ThreeItemsSectionItemOneText = value.String
+			}
+		case website.FieldThreeItemsSectionItemTwoText:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field three_items_section_item_two_text", values[i])
+			} else if value.Valid {
+				w.ThreeItemsSectionItemTwoText = value.String
+			}
+		case website.FieldThreeItemsSectionItemThreeText:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field three_items_section_item_three_text", values[i])
+			} else if value.Valid {
+				w.ThreeItemsSectionItemThreeText = value.String
+			}
+		case website.FieldBannerTwoSectionBackgroundImage:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field banner_two_section_background_image", values[i])
+			} else if value.Valid {
+				w.BannerTwoSectionBackgroundImage = value.String
+			}
+		case website.FieldBannerTwoSectionBackgroundColor:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field banner_two_section_background_color", values[i])
+			} else if value.Valid {
+				w.BannerTwoSectionBackgroundColor = value.String
+			}
+		case website.FieldBannerTwoLeftSectionHeadingText:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field banner_two_left_section_heading_text", values[i])
+			} else if value.Valid {
+				w.BannerTwoLeftSectionHeadingText = value.String
+			}
+		case website.FieldBannerTwoLeftSectionDetailsText:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field banner_two_left_section_details_text", values[i])
+			} else if value.Valid {
+				w.BannerTwoLeftSectionDetailsText = value.String
+			}
+		case website.FieldBannerTwoLeftSectionButtonText:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field banner_two_left_section_button_text", values[i])
+			} else if value.Valid {
+				w.BannerTwoLeftSectionButtonText = value.String
+			}
+		case website.FieldBannerTwoLeftSectionButtonLink:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field banner_two_left_section_button_link", values[i])
+			} else if value.Valid {
+				w.BannerTwoLeftSectionButtonLink = value.String
+			}
+		case website.FieldBannerTwoRightSideImage:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field banner_two_right_side_image", values[i])
+			} else if value.Valid {
+				w.BannerTwoRightSideImage = value.String
+			}
+		case website.FieldAchievementsSection:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field achievements_section", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &w.AchievementsSection); err != nil {
+					return fmt.Errorf("unmarshal field achievements_section: %w", err)
+				}
+			}
+		case website.FieldInventorySectionHeadingText:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field Inventory_section_heading_text", values[i])
+			} else if value.Valid {
+				w.InventorySectionHeadingText = value.String
 			}
 		case website.FieldCreationDate:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -407,6 +569,66 @@ func (w *Website) String() string {
 	builder.WriteString(fmt.Sprintf("id=%v, ", w.ID))
 	builder.WriteString("domainName=")
 	builder.WriteString(w.DomainName)
+	builder.WriteString(", ")
+	builder.WriteString("heading_text=")
+	builder.WriteString(w.HeadingText)
+	builder.WriteString(", ")
+	builder.WriteString("business_logo=")
+	builder.WriteString(w.BusinessLogo)
+	builder.WriteString(", ")
+	builder.WriteString("business_name=")
+	builder.WriteString(w.BusinessName)
+	builder.WriteString(", ")
+	builder.WriteString("banner_section_background_image=")
+	builder.WriteString(w.BannerSectionBackgroundImage)
+	builder.WriteString(", ")
+	builder.WriteString("banner_section_background_color=")
+	builder.WriteString(w.BannerSectionBackgroundColor)
+	builder.WriteString(", ")
+	builder.WriteString("banner_section_text=")
+	builder.WriteString(w.BannerSectionText)
+	builder.WriteString(", ")
+	builder.WriteString("three_items_section_heading_text=")
+	builder.WriteString(w.ThreeItemsSectionHeadingText)
+	builder.WriteString(", ")
+	builder.WriteString("three_items_section_details_text=")
+	builder.WriteString(w.ThreeItemsSectionDetailsText)
+	builder.WriteString(", ")
+	builder.WriteString("three_items_section_item_one_text=")
+	builder.WriteString(w.ThreeItemsSectionItemOneText)
+	builder.WriteString(", ")
+	builder.WriteString("three_items_section_item_two_text=")
+	builder.WriteString(w.ThreeItemsSectionItemTwoText)
+	builder.WriteString(", ")
+	builder.WriteString("three_items_section_item_three_text=")
+	builder.WriteString(w.ThreeItemsSectionItemThreeText)
+	builder.WriteString(", ")
+	builder.WriteString("banner_two_section_background_image=")
+	builder.WriteString(w.BannerTwoSectionBackgroundImage)
+	builder.WriteString(", ")
+	builder.WriteString("banner_two_section_background_color=")
+	builder.WriteString(w.BannerTwoSectionBackgroundColor)
+	builder.WriteString(", ")
+	builder.WriteString("banner_two_left_section_heading_text=")
+	builder.WriteString(w.BannerTwoLeftSectionHeadingText)
+	builder.WriteString(", ")
+	builder.WriteString("banner_two_left_section_details_text=")
+	builder.WriteString(w.BannerTwoLeftSectionDetailsText)
+	builder.WriteString(", ")
+	builder.WriteString("banner_two_left_section_button_text=")
+	builder.WriteString(w.BannerTwoLeftSectionButtonText)
+	builder.WriteString(", ")
+	builder.WriteString("banner_two_left_section_button_link=")
+	builder.WriteString(w.BannerTwoLeftSectionButtonLink)
+	builder.WriteString(", ")
+	builder.WriteString("banner_two_right_side_image=")
+	builder.WriteString(w.BannerTwoRightSideImage)
+	builder.WriteString(", ")
+	builder.WriteString("achievements_section=")
+	builder.WriteString(fmt.Sprintf("%v", w.AchievementsSection))
+	builder.WriteString(", ")
+	builder.WriteString("Inventory_section_heading_text=")
+	builder.WriteString(w.InventorySectionHeadingText)
 	builder.WriteString(", ")
 	builder.WriteString("creationDate=")
 	builder.WriteString(w.CreationDate.Format(time.ANSIC))
