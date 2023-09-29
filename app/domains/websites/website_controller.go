@@ -3,6 +3,7 @@ package websites
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"placio-app/ent"
 	"placio-app/utility"
 	"placio-pkg/middleware"
 )
@@ -42,8 +43,13 @@ func (w *WebsiteController) getBusinessWebsite(c *gin.Context) error {
 func (w *WebsiteController) createBusinessWebsite(c *gin.Context) error {
 	// get the business id
 	businessID := c.Param("businessID")
+	var websiteData *ent.Website
+
+	if err := c.ShouldBind(&websiteData); err != nil {
+		return err
+	}
 	// get the website
-	website, err := w.websiteService.CreateBusinessWebsite(c, businessID)
+	website, err := w.websiteService.CreateBusinessWebsite(c, businessID, websiteData)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(err))
 		return err
@@ -56,8 +62,13 @@ func (w *WebsiteController) createBusinessWebsite(c *gin.Context) error {
 func (w *WebsiteController) updateBusinessWebsite(c *gin.Context) error {
 	// get the business id
 	businessID := c.Param("businessID")
+	var websiteData *ent.Website
+
+	if err := c.ShouldBind(&websiteData); err != nil {
+		return err
+	}
 	// get the website
-	website, err := w.websiteService.UpdateBusinessWebsite(c, businessID)
+	website, err := w.websiteService.UpdateBusinessWebsite(c, businessID, websiteData)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(err))
 		return err

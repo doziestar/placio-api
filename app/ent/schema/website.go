@@ -69,6 +69,7 @@ func (Website) Edges() []ent.Edge {
 		edge.From("template", Template.Type).Unique().Required().Ref("websites"),
 		edge.To("customBlocks", CustomBlock.Type),
 		edge.To("assets", Media.Type),
+		//edge.From("users", User.Type).Ref("websites"),
 	}
 }
 
