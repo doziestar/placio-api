@@ -1,9 +1,14 @@
 package schema
 
 import (
+	"context"
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"github.com/google/uuid"
+	gen "placio-app/ent"
+	"placio-app/ent/hook"
+
 	//"github.com/google/uuid"
 	//gen "placio-app/ent/ent"
 	//"placio-app/ent/ent/hook"
@@ -63,20 +68,20 @@ func (Review) Edges() []ent.Edge {
 	}
 }
 
-//func (Review) Hooks() []ent.Hook {
-//	return []ent.Hook{
-//		hook.On(func(next ent.Mutator) ent.Mutator {
-//			return hook.ReviewFunc(func(ctx context.Context, m *gen.ReviewMutation) (ent.Value, error) {
-//				// check if the operation is not update
-//				if !m.Op().Is(ent.OpUpdateOne) {
-//					// check if the id is not provided
-//					id, ok := m.ID()
-//					if !ok || id == "" {
-//						m.SetID(uuid.New().String())
-//					}
-//				}
-//				return next.Mutate(ctx, m)
-//			})
-//		}, ent.OpCreate),
-//	}
-//}
+func (Review) Hooks() []ent.Hook {
+	return []ent.Hook{
+		hook.On(func(next ent.Mutator) ent.Mutator {
+			return hook.ReviewFunc(func(ctx context.Context, m *gen.ReviewMutation) (ent.Value, error) {
+				// check if the operation is not update
+				if !m.Op().Is(ent.OpUpdateOne) {
+					// check if the id is not provided
+					id, ok := m.ID()
+					if !ok || id == "" {
+						m.SetID(uuid.New().String())
+					}
+				}
+				return next.Mutate(ctx, m)
+			})
+		}, ent.OpCreate),
+	}
+}

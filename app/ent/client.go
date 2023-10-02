@@ -1621,7 +1621,8 @@ func (c *BusinessClient) QueryWallet(b *Business) *AccountWalletQuery {
 
 // Hooks returns the client hooks.
 func (c *BusinessClient) Hooks() []Hook {
-	return c.hooks.Business
+	hooks := c.hooks.Business
+	return append(hooks[:len(hooks):len(hooks)], business.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -3282,7 +3283,8 @@ func (c *EventClient) QueryRatings(e *Event) *RatingQuery {
 
 // Hooks returns the client hooks.
 func (c *EventClient) Hooks() []Hook {
-	return c.hooks.Event
+	hooks := c.hooks.Event
+	return append(hooks[:len(hooks):len(hooks)], event.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -5486,7 +5488,8 @@ func (c *PlaceClient) QueryInventories(pl *Place) *PlaceInventoryQuery {
 
 // Hooks returns the client hooks.
 func (c *PlaceClient) Hooks() []Hook {
-	return c.hooks.Place
+	hooks := c.hooks.Place
+	return append(hooks[:len(hooks):len(hooks)], place.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -6338,7 +6341,8 @@ func (c *RatingClient) QueryEvent(r *Rating) *EventQuery {
 
 // Hooks returns the client hooks.
 func (c *RatingClient) Hooks() []Hook {
-	return c.hooks.Rating
+	hooks := c.hooks.Rating
+	return append(hooks[:len(hooks):len(hooks)], rating.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -7179,7 +7183,8 @@ func (c *ReviewClient) QueryLikes(r *Review) *LikeQuery {
 
 // Hooks returns the client hooks.
 func (c *ReviewClient) Hooks() []Hook {
-	return c.hooks.Review
+	hooks := c.hooks.Review
+	return append(hooks[:len(hooks):len(hooks)], review.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -8489,7 +8494,8 @@ func (c *UserClient) QueryWallet(u *User) *AccountWalletQuery {
 
 // Hooks returns the client hooks.
 func (c *UserClient) Hooks() []Hook {
-	return c.hooks.User
+	hooks := c.hooks.User
+	return append(hooks[:len(hooks):len(hooks)], user.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.

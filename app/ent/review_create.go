@@ -221,7 +221,9 @@ func (rc *ReviewCreate) Mutation() *ReviewMutation {
 
 // Save creates the Review in the database.
 func (rc *ReviewCreate) Save(ctx context.Context) (*Review, error) {
-	rc.defaults()
+	if err := rc.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, rc.sqlSave, rc.mutation, rc.hooks)
 }
 
@@ -248,8 +250,11 @@ func (rc *ReviewCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (rc *ReviewCreate) defaults() {
+func (rc *ReviewCreate) defaults() error {
 	if _, ok := rc.mutation.CreatedAt(); !ok {
+		if review.DefaultCreatedAt == nil {
+			return fmt.Errorf("ent: uninitialized review.DefaultCreatedAt (forgotten import ent/runtime?)")
+		}
 		v := review.DefaultCreatedAt()
 		rc.mutation.SetCreatedAt(v)
 	}
@@ -265,6 +270,7 @@ func (rc *ReviewCreate) defaults() {
 		v := review.DefaultFlag
 		rc.mutation.SetFlag(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

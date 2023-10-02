@@ -139,7 +139,9 @@ func (rc *RatingCreate) Mutation() *RatingMutation {
 
 // Save creates the Rating in the database.
 func (rc *RatingCreate) Save(ctx context.Context) (*Rating, error) {
-	rc.defaults()
+	if err := rc.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, rc.sqlSave, rc.mutation, rc.hooks)
 }
 
@@ -166,11 +168,15 @@ func (rc *RatingCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (rc *RatingCreate) defaults() {
+func (rc *RatingCreate) defaults() error {
 	if _, ok := rc.mutation.RatedAt(); !ok {
+		if rating.DefaultRatedAt == nil {
+			return fmt.Errorf("ent: uninitialized rating.DefaultRatedAt (forgotten import ent/runtime?)")
+		}
 		v := rating.DefaultRatedAt()
 		rc.mutation.SetRatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

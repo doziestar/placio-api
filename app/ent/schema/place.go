@@ -1,9 +1,13 @@
 package schema
 
 import (
+	"context"
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"github.com/getsentry/sentry-go"
+	gen "placio-app/ent"
+	"placio-app/ent/hook"
 	//"github.com/getsentry/sentry-go"
 	//gen "placio-app/ent/ent"
 	//"placio-app/ent/ent/hook"
@@ -85,27 +89,27 @@ func (Place) Edges() []ent.Edge {
 	}
 }
 
-//func (Place) Hooks() []ent.Hook {
-//	return []ent.Hook{
-//		hook.On(
-//			func(next ent.Mutator) ent.Mutator {
-//				return hook.PlaceFunc(func(ctx context.Context, m *gen.PlaceMutation) (ent.Value, error) {
-//					oldLocation, _ := m.OldLocation(ctx)
-//					err := ProcessLocation(m, oldLocation)
-//					if err != nil {
-//						sentry.CaptureEvent(&sentry.Event{
-//							Message: "Failed to process location",
-//							Level:   sentry.LevelError,
-//							Extra: map[string]interface{}{
-//								"error": err,
-//								"ctx":   ctx,
-//							},
-//						})
-//					}
-//					return next.Mutate(ctx, m)
-//				})
-//			},
-//			ent.OpCreate|ent.OpUpdate,
-//		),
-//	}
-//}
+func (Place) Hooks() []ent.Hook {
+	return []ent.Hook{
+		hook.On(
+			func(next ent.Mutator) ent.Mutator {
+				return hook.PlaceFunc(func(ctx context.Context, m *gen.PlaceMutation) (ent.Value, error) {
+					oldLocation, _ := m.OldLocation(ctx)
+					err := ProcessLocation(m, oldLocation)
+					if err != nil {
+						sentry.CaptureEvent(&sentry.Event{
+							Message: "Failed to process location",
+							Level:   sentry.LevelError,
+							Extra: map[string]interface{}{
+								"error": err,
+								"ctx":   ctx,
+							},
+						})
+					}
+					return next.Mutate(ctx, m)
+				})
+			},
+			ent.OpCreate|ent.OpUpdate,
+		),
+	}
+}

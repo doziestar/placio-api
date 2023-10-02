@@ -724,7 +724,9 @@ func (pc *PlaceCreate) Mutation() *PlaceMutation {
 
 // Save creates the Place in the database.
 func (pc *PlaceCreate) Save(ctx context.Context) (*Place, error) {
-	pc.defaults()
+	if err := pc.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, pc.sqlSave, pc.mutation, pc.hooks)
 }
 
@@ -751,7 +753,7 @@ func (pc *PlaceCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (pc *PlaceCreate) defaults() {
+func (pc *PlaceCreate) defaults() error {
 	if _, ok := pc.mutation.CoverImage(); !ok {
 		v := place.DefaultCoverImage
 		pc.mutation.SetCoverImage(v)
@@ -788,6 +790,7 @@ func (pc *PlaceCreate) defaults() {
 		v := place.DefaultFollowedByCurrentUser
 		pc.mutation.SetFollowedByCurrentUser(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

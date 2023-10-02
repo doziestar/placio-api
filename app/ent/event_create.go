@@ -957,7 +957,9 @@ func (ec *EventCreate) Mutation() *EventMutation {
 
 // Save creates the Event in the database.
 func (ec *EventCreate) Save(ctx context.Context) (*Event, error) {
-	ec.defaults()
+	if err := ec.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, ec.sqlSave, ec.mutation, ec.hooks)
 }
 
@@ -984,16 +986,22 @@ func (ec *EventCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (ec *EventCreate) defaults() {
+func (ec *EventCreate) defaults() error {
 	if _, ok := ec.mutation.CoverImage(); !ok {
 		v := event.DefaultCoverImage
 		ec.mutation.SetCoverImage(v)
 	}
 	if _, ok := ec.mutation.CreatedAt(); !ok {
+		if event.DefaultCreatedAt == nil {
+			return fmt.Errorf("ent: uninitialized event.DefaultCreatedAt (forgotten import ent/runtime?)")
+		}
 		v := event.DefaultCreatedAt()
 		ec.mutation.SetCreatedAt(v)
 	}
 	if _, ok := ec.mutation.UpdatedAt(); !ok {
+		if event.DefaultUpdatedAt == nil {
+			return fmt.Errorf("ent: uninitialized event.DefaultUpdatedAt (forgotten import ent/runtime?)")
+		}
 		v := event.DefaultUpdatedAt()
 		ec.mutation.SetUpdatedAt(v)
 	}
@@ -1057,6 +1065,7 @@ func (ec *EventCreate) defaults() {
 		v := event.DefaultFollowedByCurrentUser
 		ec.mutation.SetFollowedByCurrentUser(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

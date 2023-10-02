@@ -3,6 +3,7 @@
 package place
 
 import (
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 )
@@ -311,7 +312,13 @@ func ValidColumn(column string) bool {
 	return false
 }
 
+// Note that the variables below are initialized by the runtime
+// package on the initialization of the application. Therefore,
+// it should be imported in the main as follows:
+//
+//	import _ "placio-app/ent/runtime"
 var (
+	Hooks [1]ent.Hook
 	// DefaultCoverImage holds the default value on creation for the "cover_image" field.
 	DefaultCoverImage string
 	// DefaultFollowerCount holds the default value on creation for the "follower_count" field.
