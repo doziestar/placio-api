@@ -41,6 +41,20 @@ func (itc *InventoryTypeCreate) SetNillableDescription(s *string) *InventoryType
 	return itc
 }
 
+// SetIndustryType sets the "industry_type" field.
+func (itc *InventoryTypeCreate) SetIndustryType(it inventorytype.IndustryType) *InventoryTypeCreate {
+	itc.mutation.SetIndustryType(it)
+	return itc
+}
+
+// SetNillableIndustryType sets the "industry_type" field if the given value is not nil.
+func (itc *InventoryTypeCreate) SetNillableIndustryType(it *inventorytype.IndustryType) *InventoryTypeCreate {
+	if it != nil {
+		itc.SetIndustryType(*it)
+	}
+	return itc
+}
+
 // SetMeasurementUnit sets the "measurement_unit" field.
 func (itc *InventoryTypeCreate) SetMeasurementUnit(s string) *InventoryTypeCreate {
 	itc.mutation.SetMeasurementUnit(s)
@@ -128,6 +142,11 @@ func (itc *InventoryTypeCreate) check() error {
 	if _, ok := itc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "InventoryType.name"`)}
 	}
+	if v, ok := itc.mutation.IndustryType(); ok {
+		if err := inventorytype.IndustryTypeValidator(v); err != nil {
+			return &ValidationError{Name: "industry_type", err: fmt.Errorf(`ent: validator failed for field "InventoryType.industry_type": %w`, err)}
+		}
+	}
 	if v, ok := itc.mutation.ID(); ok {
 		if err := inventorytype.IDValidator(v); err != nil {
 			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "InventoryType.id": %w`, err)}
@@ -175,6 +194,10 @@ func (itc *InventoryTypeCreate) createSpec() (*InventoryType, *sqlgraph.CreateSp
 	if value, ok := itc.mutation.Description(); ok {
 		_spec.SetField(inventorytype.FieldDescription, field.TypeString, value)
 		_node.Description = value
+	}
+	if value, ok := itc.mutation.IndustryType(); ok {
+		_spec.SetField(inventorytype.FieldIndustryType, field.TypeEnum, value)
+		_node.IndustryType = value
 	}
 	if value, ok := itc.mutation.MeasurementUnit(); ok {
 		_spec.SetField(inventorytype.FieldMeasurementUnit, field.TypeString, value)

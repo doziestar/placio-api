@@ -18,10 +18,6 @@ type AccountWallet struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID string `json:"id,omitempty"`
-	// UserID holds the value of the "user_id" field.
-	UserID string `json:"user_id,omitempty"`
-	// BusinessID holds the value of the "business_id" field.
-	BusinessID string `json:"business_id,omitempty"`
 	// Balance holds the value of the "balance" field.
 	Balance float64 `json:"balance,omitempty"`
 	// TotalDeposited holds the value of the "total_deposited" field.
@@ -100,7 +96,7 @@ func (*AccountWallet) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case accountwallet.FieldBalance, accountwallet.FieldTotalDeposited, accountwallet.FieldTotalWithdrawn, accountwallet.FieldTotalEarned, accountwallet.FieldTotalSpent, accountwallet.FieldTotalRefunded, accountwallet.FieldTotalFees, accountwallet.FieldTotalTax, accountwallet.FieldTotalDiscount, accountwallet.FieldTotalRevenue, accountwallet.FieldTotalExpenses, accountwallet.FieldTotalProfit, accountwallet.FieldTotalLoss:
 			values[i] = new(sql.NullFloat64)
-		case accountwallet.FieldID, accountwallet.FieldUserID, accountwallet.FieldBusinessID:
+		case accountwallet.FieldID:
 			values[i] = new(sql.NullString)
 		case accountwallet.ForeignKeys[0]: // business_wallet
 			values[i] = new(sql.NullString)
@@ -126,18 +122,6 @@ func (aw *AccountWallet) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value.Valid {
 				aw.ID = value.String
-			}
-		case accountwallet.FieldUserID:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field user_id", values[i])
-			} else if value.Valid {
-				aw.UserID = value.String
-			}
-		case accountwallet.FieldBusinessID:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field business_id", values[i])
-			} else if value.Valid {
-				aw.BusinessID = value.String
 			}
 		case accountwallet.FieldBalance:
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
@@ -277,12 +261,6 @@ func (aw *AccountWallet) String() string {
 	var builder strings.Builder
 	builder.WriteString("AccountWallet(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", aw.ID))
-	builder.WriteString("user_id=")
-	builder.WriteString(aw.UserID)
-	builder.WriteString(", ")
-	builder.WriteString("business_id=")
-	builder.WriteString(aw.BusinessID)
-	builder.WriteString(", ")
 	builder.WriteString("balance=")
 	builder.WriteString(fmt.Sprintf("%v", aw.Balance))
 	builder.WriteString(", ")

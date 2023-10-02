@@ -29,18 +29,6 @@ func (awu *AccountWalletUpdate) Where(ps ...predicate.AccountWallet) *AccountWal
 	return awu
 }
 
-// SetUserID sets the "user_id" field.
-func (awu *AccountWalletUpdate) SetUserID(s string) *AccountWalletUpdate {
-	awu.mutation.SetUserID(s)
-	return awu
-}
-
-// SetBusinessID sets the "business_id" field.
-func (awu *AccountWalletUpdate) SetBusinessID(s string) *AccountWalletUpdate {
-	awu.mutation.SetBusinessID(s)
-	return awu
-}
-
 // SetBalance sets the "balance" field.
 func (awu *AccountWalletUpdate) SetBalance(f float64) *AccountWalletUpdate {
 	awu.mutation.ResetBalance()
@@ -405,12 +393,6 @@ func (awu *AccountWalletUpdate) sqlSave(ctx context.Context) (n int, err error) 
 			}
 		}
 	}
-	if value, ok := awu.mutation.UserID(); ok {
-		_spec.SetField(accountwallet.FieldUserID, field.TypeString, value)
-	}
-	if value, ok := awu.mutation.BusinessID(); ok {
-		_spec.SetField(accountwallet.FieldBusinessID, field.TypeString, value)
-	}
 	if value, ok := awu.mutation.Balance(); ok {
 		_spec.SetField(accountwallet.FieldBalance, field.TypeFloat64, value)
 	}
@@ -565,18 +547,6 @@ type AccountWalletUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *AccountWalletMutation
-}
-
-// SetUserID sets the "user_id" field.
-func (awuo *AccountWalletUpdateOne) SetUserID(s string) *AccountWalletUpdateOne {
-	awuo.mutation.SetUserID(s)
-	return awuo
-}
-
-// SetBusinessID sets the "business_id" field.
-func (awuo *AccountWalletUpdateOne) SetBusinessID(s string) *AccountWalletUpdateOne {
-	awuo.mutation.SetBusinessID(s)
-	return awuo
 }
 
 // SetBalance sets the "balance" field.
@@ -972,12 +942,6 @@ func (awuo *AccountWalletUpdateOne) sqlSave(ctx context.Context) (_node *Account
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := awuo.mutation.UserID(); ok {
-		_spec.SetField(accountwallet.FieldUserID, field.TypeString, value)
-	}
-	if value, ok := awuo.mutation.BusinessID(); ok {
-		_spec.SetField(accountwallet.FieldBusinessID, field.TypeString, value)
 	}
 	if value, ok := awuo.mutation.Balance(); ok {
 		_spec.SetField(accountwallet.FieldBalance, field.TypeFloat64, value)

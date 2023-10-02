@@ -21,18 +21,6 @@ type AccountWalletCreate struct {
 	hooks    []Hook
 }
 
-// SetUserID sets the "user_id" field.
-func (awc *AccountWalletCreate) SetUserID(s string) *AccountWalletCreate {
-	awc.mutation.SetUserID(s)
-	return awc
-}
-
-// SetBusinessID sets the "business_id" field.
-func (awc *AccountWalletCreate) SetBusinessID(s string) *AccountWalletCreate {
-	awc.mutation.SetBusinessID(s)
-	return awc
-}
-
 // SetBalance sets the "balance" field.
 func (awc *AccountWalletCreate) SetBalance(f float64) *AccountWalletCreate {
 	awc.mutation.SetBalance(f)
@@ -350,12 +338,6 @@ func (awc *AccountWalletCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (awc *AccountWalletCreate) check() error {
-	if _, ok := awc.mutation.UserID(); !ok {
-		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "AccountWallet.user_id"`)}
-	}
-	if _, ok := awc.mutation.BusinessID(); !ok {
-		return &ValidationError{Name: "business_id", err: errors.New(`ent: missing required field "AccountWallet.business_id"`)}
-	}
 	if _, ok := awc.mutation.Balance(); !ok {
 		return &ValidationError{Name: "balance", err: errors.New(`ent: missing required field "AccountWallet.balance"`)}
 	}
@@ -429,14 +411,6 @@ func (awc *AccountWalletCreate) createSpec() (*AccountWallet, *sqlgraph.CreateSp
 	if id, ok := awc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
-	}
-	if value, ok := awc.mutation.UserID(); ok {
-		_spec.SetField(accountwallet.FieldUserID, field.TypeString, value)
-		_node.UserID = value
-	}
-	if value, ok := awc.mutation.BusinessID(); ok {
-		_spec.SetField(accountwallet.FieldBusinessID, field.TypeString, value)
-		_node.BusinessID = value
 	}
 	if value, ok := awc.mutation.Balance(); ok {
 		_spec.SetField(accountwallet.FieldBalance, field.TypeFloat64, value)

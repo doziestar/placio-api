@@ -661,8 +661,6 @@ type AccountWalletMutation struct {
 	op                 Op
 	typ                string
 	id                 *string
-	user_id            *string
-	business_id        *string
 	balance            *float64
 	addbalance         *float64
 	total_deposited    *float64
@@ -801,78 +799,6 @@ func (m *AccountWalletMutation) IDs(ctx context.Context) ([]string, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
-}
-
-// SetUserID sets the "user_id" field.
-func (m *AccountWalletMutation) SetUserID(s string) {
-	m.user_id = &s
-}
-
-// UserID returns the value of the "user_id" field in the mutation.
-func (m *AccountWalletMutation) UserID() (r string, exists bool) {
-	v := m.user_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUserID returns the old "user_id" field's value of the AccountWallet entity.
-// If the AccountWallet object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AccountWalletMutation) OldUserID(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUserID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
-	}
-	return oldValue.UserID, nil
-}
-
-// ResetUserID resets all changes to the "user_id" field.
-func (m *AccountWalletMutation) ResetUserID() {
-	m.user_id = nil
-}
-
-// SetBusinessID sets the "business_id" field.
-func (m *AccountWalletMutation) SetBusinessID(s string) {
-	m.business_id = &s
-}
-
-// BusinessID returns the value of the "business_id" field in the mutation.
-func (m *AccountWalletMutation) BusinessID() (r string, exists bool) {
-	v := m.business_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldBusinessID returns the old "business_id" field's value of the AccountWallet entity.
-// If the AccountWallet object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AccountWalletMutation) OldBusinessID(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldBusinessID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldBusinessID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldBusinessID: %w", err)
-	}
-	return oldValue.BusinessID, nil
-}
-
-// ResetBusinessID resets all changes to the "business_id" field.
-func (m *AccountWalletMutation) ResetBusinessID() {
-	m.business_id = nil
 }
 
 // SetBalance sets the "balance" field.
@@ -1715,13 +1641,7 @@ func (m *AccountWalletMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AccountWalletMutation) Fields() []string {
-	fields := make([]string, 0, 15)
-	if m.user_id != nil {
-		fields = append(fields, accountwallet.FieldUserID)
-	}
-	if m.business_id != nil {
-		fields = append(fields, accountwallet.FieldBusinessID)
-	}
+	fields := make([]string, 0, 13)
 	if m.balance != nil {
 		fields = append(fields, accountwallet.FieldBalance)
 	}
@@ -1769,10 +1689,6 @@ func (m *AccountWalletMutation) Fields() []string {
 // schema.
 func (m *AccountWalletMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case accountwallet.FieldUserID:
-		return m.UserID()
-	case accountwallet.FieldBusinessID:
-		return m.BusinessID()
 	case accountwallet.FieldBalance:
 		return m.Balance()
 	case accountwallet.FieldTotalDeposited:
@@ -1808,10 +1724,6 @@ func (m *AccountWalletMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *AccountWalletMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case accountwallet.FieldUserID:
-		return m.OldUserID(ctx)
-	case accountwallet.FieldBusinessID:
-		return m.OldBusinessID(ctx)
 	case accountwallet.FieldBalance:
 		return m.OldBalance(ctx)
 	case accountwallet.FieldTotalDeposited:
@@ -1847,20 +1759,6 @@ func (m *AccountWalletMutation) OldField(ctx context.Context, name string) (ent.
 // type.
 func (m *AccountWalletMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case accountwallet.FieldUserID:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUserID(v)
-		return nil
-	case accountwallet.FieldBusinessID:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetBusinessID(v)
-		return nil
 	case accountwallet.FieldBalance:
 		v, ok := value.(float64)
 		if !ok {
@@ -2160,12 +2058,6 @@ func (m *AccountWalletMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *AccountWalletMutation) ResetField(name string) error {
 	switch name {
-	case accountwallet.FieldUserID:
-		m.ResetUserID()
-		return nil
-	case accountwallet.FieldBusinessID:
-		m.ResetBusinessID()
-		return nil
 	case accountwallet.FieldBalance:
 		m.ResetBalance()
 		return nil
@@ -18805,6 +18697,7 @@ type InventoryTypeMutation struct {
 	id                       *string
 	name                     *string
 	description              *string
+	industry_type            *inventorytype.IndustryType
 	measurement_unit         *string
 	clearedFields            map[string]struct{}
 	attributes               map[string]struct{}
@@ -19007,6 +18900,55 @@ func (m *InventoryTypeMutation) ResetDescription() {
 	delete(m.clearedFields, inventorytype.FieldDescription)
 }
 
+// SetIndustryType sets the "industry_type" field.
+func (m *InventoryTypeMutation) SetIndustryType(it inventorytype.IndustryType) {
+	m.industry_type = &it
+}
+
+// IndustryType returns the value of the "industry_type" field in the mutation.
+func (m *InventoryTypeMutation) IndustryType() (r inventorytype.IndustryType, exists bool) {
+	v := m.industry_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIndustryType returns the old "industry_type" field's value of the InventoryType entity.
+// If the InventoryType object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *InventoryTypeMutation) OldIndustryType(ctx context.Context) (v inventorytype.IndustryType, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIndustryType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIndustryType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIndustryType: %w", err)
+	}
+	return oldValue.IndustryType, nil
+}
+
+// ClearIndustryType clears the value of the "industry_type" field.
+func (m *InventoryTypeMutation) ClearIndustryType() {
+	m.industry_type = nil
+	m.clearedFields[inventorytype.FieldIndustryType] = struct{}{}
+}
+
+// IndustryTypeCleared returns if the "industry_type" field was cleared in this mutation.
+func (m *InventoryTypeMutation) IndustryTypeCleared() bool {
+	_, ok := m.clearedFields[inventorytype.FieldIndustryType]
+	return ok
+}
+
+// ResetIndustryType resets all changes to the "industry_type" field.
+func (m *InventoryTypeMutation) ResetIndustryType() {
+	m.industry_type = nil
+	delete(m.clearedFields, inventorytype.FieldIndustryType)
+}
+
 // SetMeasurementUnit sets the "measurement_unit" field.
 func (m *InventoryTypeMutation) SetMeasurementUnit(s string) {
 	m.measurement_unit = &s
@@ -19198,12 +19140,15 @@ func (m *InventoryTypeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *InventoryTypeMutation) Fields() []string {
-	fields := make([]string, 0, 3)
+	fields := make([]string, 0, 4)
 	if m.name != nil {
 		fields = append(fields, inventorytype.FieldName)
 	}
 	if m.description != nil {
 		fields = append(fields, inventorytype.FieldDescription)
+	}
+	if m.industry_type != nil {
+		fields = append(fields, inventorytype.FieldIndustryType)
 	}
 	if m.measurement_unit != nil {
 		fields = append(fields, inventorytype.FieldMeasurementUnit)
@@ -19220,6 +19165,8 @@ func (m *InventoryTypeMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case inventorytype.FieldDescription:
 		return m.Description()
+	case inventorytype.FieldIndustryType:
+		return m.IndustryType()
 	case inventorytype.FieldMeasurementUnit:
 		return m.MeasurementUnit()
 	}
@@ -19235,6 +19182,8 @@ func (m *InventoryTypeMutation) OldField(ctx context.Context, name string) (ent.
 		return m.OldName(ctx)
 	case inventorytype.FieldDescription:
 		return m.OldDescription(ctx)
+	case inventorytype.FieldIndustryType:
+		return m.OldIndustryType(ctx)
 	case inventorytype.FieldMeasurementUnit:
 		return m.OldMeasurementUnit(ctx)
 	}
@@ -19259,6 +19208,13 @@ func (m *InventoryTypeMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDescription(v)
+		return nil
+	case inventorytype.FieldIndustryType:
+		v, ok := value.(inventorytype.IndustryType)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIndustryType(v)
 		return nil
 	case inventorytype.FieldMeasurementUnit:
 		v, ok := value.(string)
@@ -19300,6 +19256,9 @@ func (m *InventoryTypeMutation) ClearedFields() []string {
 	if m.FieldCleared(inventorytype.FieldDescription) {
 		fields = append(fields, inventorytype.FieldDescription)
 	}
+	if m.FieldCleared(inventorytype.FieldIndustryType) {
+		fields = append(fields, inventorytype.FieldIndustryType)
+	}
 	if m.FieldCleared(inventorytype.FieldMeasurementUnit) {
 		fields = append(fields, inventorytype.FieldMeasurementUnit)
 	}
@@ -19320,6 +19279,9 @@ func (m *InventoryTypeMutation) ClearField(name string) error {
 	case inventorytype.FieldDescription:
 		m.ClearDescription()
 		return nil
+	case inventorytype.FieldIndustryType:
+		m.ClearIndustryType()
+		return nil
 	case inventorytype.FieldMeasurementUnit:
 		m.ClearMeasurementUnit()
 		return nil
@@ -19336,6 +19298,9 @@ func (m *InventoryTypeMutation) ResetField(name string) error {
 		return nil
 	case inventorytype.FieldDescription:
 		m.ResetDescription()
+		return nil
+	case inventorytype.FieldIndustryType:
+		m.ResetIndustryType()
 		return nil
 	case inventorytype.FieldMeasurementUnit:
 		m.ResetMeasurementUnit()

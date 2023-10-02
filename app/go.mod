@@ -4,7 +4,6 @@ go 1.21.0
 
 require (
 	github.com/algolia/algoliasearch-client-go/v3 v3.30.0
-	github.com/asaskevich/EventBus v0.0.0-20200907212545-49d423059eef
 	github.com/auth0/go-auth0 v0.17.2
 	github.com/axiaoxin-com/logging v1.2.16
 	github.com/didip/tollbooth v4.0.2+incompatible
@@ -17,7 +16,6 @@ require (
 	github.com/go-oauth2/oauth2/v4 v4.5.2
 	github.com/gofiber/fiber/v2 v2.43.0
 	github.com/google/uuid v1.3.0
-	github.com/gorilla/websocket v1.5.0
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.6
 	github.com/swaggo/files v1.0.1
@@ -63,7 +61,6 @@ require (
 	github.com/bytedance/sonic v1.8.0 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
-	github.com/cloudinary/cloudinary-go v1.7.0
 	github.com/cloudinary/cloudinary-go/v2 v2.2.0
 	github.com/deckarep/golang-set v1.8.0 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect

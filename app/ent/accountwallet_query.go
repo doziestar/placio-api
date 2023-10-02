@@ -334,12 +334,12 @@ func (awq *AccountWalletQuery) WithBusiness(opts ...func(*BusinessQuery)) *Accou
 // Example:
 //
 //	var v []struct {
-//		UserID string `json:"user_id,omitempty"`
+//		Balance float64 `json:"balance,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.AccountWallet.Query().
-//		GroupBy(accountwallet.FieldUserID).
+//		GroupBy(accountwallet.FieldBalance).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (awq *AccountWalletQuery) GroupBy(field string, fields ...string) *AccountWalletGroupBy {
@@ -357,11 +357,11 @@ func (awq *AccountWalletQuery) GroupBy(field string, fields ...string) *AccountW
 // Example:
 //
 //	var v []struct {
-//		UserID string `json:"user_id,omitempty"`
+//		Balance float64 `json:"balance,omitempty"`
 //	}
 //
 //	client.AccountWallet.Query().
-//		Select(accountwallet.FieldUserID).
+//		Select(accountwallet.FieldBalance).
 //		Scan(ctx, &v)
 func (awq *AccountWalletQuery) Select(fields ...string) *AccountWalletSelect {
 	awq.ctx.Fields = append(awq.ctx.Fields, fields...)

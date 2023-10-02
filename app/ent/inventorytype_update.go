@@ -55,6 +55,26 @@ func (itu *InventoryTypeUpdate) ClearDescription() *InventoryTypeUpdate {
 	return itu
 }
 
+// SetIndustryType sets the "industry_type" field.
+func (itu *InventoryTypeUpdate) SetIndustryType(it inventorytype.IndustryType) *InventoryTypeUpdate {
+	itu.mutation.SetIndustryType(it)
+	return itu
+}
+
+// SetNillableIndustryType sets the "industry_type" field if the given value is not nil.
+func (itu *InventoryTypeUpdate) SetNillableIndustryType(it *inventorytype.IndustryType) *InventoryTypeUpdate {
+	if it != nil {
+		itu.SetIndustryType(*it)
+	}
+	return itu
+}
+
+// ClearIndustryType clears the value of the "industry_type" field.
+func (itu *InventoryTypeUpdate) ClearIndustryType() *InventoryTypeUpdate {
+	itu.mutation.ClearIndustryType()
+	return itu
+}
+
 // SetMeasurementUnit sets the "measurement_unit" field.
 func (itu *InventoryTypeUpdate) SetMeasurementUnit(s string) *InventoryTypeUpdate {
 	itu.mutation.SetMeasurementUnit(s)
@@ -179,7 +199,20 @@ func (itu *InventoryTypeUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (itu *InventoryTypeUpdate) check() error {
+	if v, ok := itu.mutation.IndustryType(); ok {
+		if err := inventorytype.IndustryTypeValidator(v); err != nil {
+			return &ValidationError{Name: "industry_type", err: fmt.Errorf(`ent: validator failed for field "InventoryType.industry_type": %w`, err)}
+		}
+	}
+	return nil
+}
+
 func (itu *InventoryTypeUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := itu.check(); err != nil {
+		return n, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(inventorytype.Table, inventorytype.Columns, sqlgraph.NewFieldSpec(inventorytype.FieldID, field.TypeString))
 	if ps := itu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -196,6 +229,12 @@ func (itu *InventoryTypeUpdate) sqlSave(ctx context.Context) (n int, err error) 
 	}
 	if itu.mutation.DescriptionCleared() {
 		_spec.ClearField(inventorytype.FieldDescription, field.TypeString)
+	}
+	if value, ok := itu.mutation.IndustryType(); ok {
+		_spec.SetField(inventorytype.FieldIndustryType, field.TypeEnum, value)
+	}
+	if itu.mutation.IndustryTypeCleared() {
+		_spec.ClearField(inventorytype.FieldIndustryType, field.TypeEnum)
 	}
 	if value, ok := itu.mutation.MeasurementUnit(); ok {
 		_spec.SetField(inventorytype.FieldMeasurementUnit, field.TypeString, value)
@@ -339,6 +378,26 @@ func (ituo *InventoryTypeUpdateOne) ClearDescription() *InventoryTypeUpdateOne {
 	return ituo
 }
 
+// SetIndustryType sets the "industry_type" field.
+func (ituo *InventoryTypeUpdateOne) SetIndustryType(it inventorytype.IndustryType) *InventoryTypeUpdateOne {
+	ituo.mutation.SetIndustryType(it)
+	return ituo
+}
+
+// SetNillableIndustryType sets the "industry_type" field if the given value is not nil.
+func (ituo *InventoryTypeUpdateOne) SetNillableIndustryType(it *inventorytype.IndustryType) *InventoryTypeUpdateOne {
+	if it != nil {
+		ituo.SetIndustryType(*it)
+	}
+	return ituo
+}
+
+// ClearIndustryType clears the value of the "industry_type" field.
+func (ituo *InventoryTypeUpdateOne) ClearIndustryType() *InventoryTypeUpdateOne {
+	ituo.mutation.ClearIndustryType()
+	return ituo
+}
+
 // SetMeasurementUnit sets the "measurement_unit" field.
 func (ituo *InventoryTypeUpdateOne) SetMeasurementUnit(s string) *InventoryTypeUpdateOne {
 	ituo.mutation.SetMeasurementUnit(s)
@@ -476,7 +535,20 @@ func (ituo *InventoryTypeUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (ituo *InventoryTypeUpdateOne) check() error {
+	if v, ok := ituo.mutation.IndustryType(); ok {
+		if err := inventorytype.IndustryTypeValidator(v); err != nil {
+			return &ValidationError{Name: "industry_type", err: fmt.Errorf(`ent: validator failed for field "InventoryType.industry_type": %w`, err)}
+		}
+	}
+	return nil
+}
+
 func (ituo *InventoryTypeUpdateOne) sqlSave(ctx context.Context) (_node *InventoryType, err error) {
+	if err := ituo.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(inventorytype.Table, inventorytype.Columns, sqlgraph.NewFieldSpec(inventorytype.FieldID, field.TypeString))
 	id, ok := ituo.mutation.ID()
 	if !ok {
@@ -510,6 +582,12 @@ func (ituo *InventoryTypeUpdateOne) sqlSave(ctx context.Context) (_node *Invento
 	}
 	if ituo.mutation.DescriptionCleared() {
 		_spec.ClearField(inventorytype.FieldDescription, field.TypeString)
+	}
+	if value, ok := ituo.mutation.IndustryType(); ok {
+		_spec.SetField(inventorytype.FieldIndustryType, field.TypeEnum, value)
+	}
+	if ituo.mutation.IndustryTypeCleared() {
+		_spec.ClearField(inventorytype.FieldIndustryType, field.TypeEnum)
 	}
 	if value, ok := ituo.mutation.MeasurementUnit(); ok {
 		_spec.SetField(inventorytype.FieldMeasurementUnit, field.TypeString, value)
