@@ -1,40 +1,41 @@
 package schema
 
 import (
-	//"context"
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	//"github.com/auth0/go-auth0/management"
 	//"github.com/getsentry/sentry-go"
 	//gen "placio-app/ent"
 	//"placio-app/ent/hook"
 )
 
-// Business holds the schema definition for the Business entity.
-type Business struct {
+// User holds the schema definition for the User entity.
+type User struct {
 	ent.Schema
 }
 
-// Fields of the Business.
-func (Business) Fields() []ent.Field {
+// Fields of the User.
+func (User) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("id").
 			MaxLen(36).
 			Unique().
 			Immutable(),
-		field.String("name"),
-		field.Text("description").Optional(),
+		field.String("auth0_id").Unique(),
+		field.String("name").Optional(),
 		field.String("picture").Optional(),
 		field.String("cover_image").Optional().Default("https://res.cloudinary.com/placio/image/upload/v1686842319/mjl8stmbn5xmfsm50vbg.jpg"),
+		field.String("username").Unique(),
 		field.String("website").Optional(),
 		field.String("location").Optional(),
-		field.String("longitude").Optional(),
 		field.JSON("map_coordinates", map[string]interface{}{}).Optional(),
+		field.String("longitude").Optional(),
 		field.String("latitude").Optional(),
-		field.String("email").Optional(),
-		field.String("phone").Optional(),
-		field.JSON("business_settings", map[string]interface{}{}).Optional(),
-		field.String("url").Optional(),
+		field.Text("bio").Optional().Default("Add a bio to your profile"),
+		//field.JSON("auth0_data", &management.User{}).Optional(),
+		field.JSON("app_settings", map[string]interface{}{}).Optional(),
+		field.JSON("user_settings", map[string]interface{}{}).Optional(),
 		field.String("search_text").Optional(),
 		field.Float("relevance_score").Optional(),
 		field.Int("follower_count").Default(0),
@@ -42,36 +43,43 @@ func (Business) Fields() []ent.Field {
 	}
 }
 
-// Edges of the Business.
-func (Business) Edges() []ent.Edge {
+// Edges of the User.
+func (User) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("userBusinesses", UserBusiness.Type),
-		edge.To("business_account_settings", AccountSettings.Type).
-			Unique(),
+		edge.To("comments", Comment.Type),
+		edge.To("likes", Like.Type),
 		edge.To("posts", Post.Type),
-		edge.To("followedUsers", BusinessFollowUser.Type),
-		edge.To("followerUsers", UserFollowBusiness.Type),
-		edge.To("followedBusinesses", BusinessFollowBusiness.Type),
-		edge.To("followerBusinesses", BusinessFollowBusiness.Type),
-		edge.To("places", Place.Type),
+		edge.To("followedUsers", UserFollowUser.Type),
+		edge.To("followerUsers", UserFollowUser.Type),
+		edge.To("followedBusinesses", UserFollowBusiness.Type),
+		edge.To("followerBusinesses", BusinessFollowUser.Type),
+		edge.To("reviews", Review.Type),
+		edge.To("bookings", Booking.Type),
+		edge.To("reservations", Reservation.Type),
+		edge.To("helps", Help.Type).Immutable(),
 		edge.To("categories", Category.Type),
+		edge.To("places", Place.Type),
 		edge.To("categoryAssignments", CategoryAssignment.Type),
-		edge.To("events", Event.Type),
-		edge.To("businessFollowEvents", BusinessFollowEvent.Type),
-		edge.To("faqs", FAQ.Type),
+		edge.To("ownedEvents", Event.Type).
+			Unique(),
+		edge.To("userFollowEvents", UserFollowEvent.Type),
+		edge.To("followedPlaces", UserFollowPlace.Type),
+		edge.To("likedPlaces", UserLikePlace.Type),
 		edge.To("ratings", Rating.Type),
-		edge.To("place_inventories", PlaceInventory.Type),
-		edge.To("websites", Website.Type).Unique(),
+		edge.To("transaction_histories", TransactionHistory.Type),
+		edge.To("reservation_blocks", ReservationBlock.Type),
 		edge.To("notifications", Notification.Type),
 		edge.To("wallet", AccountWallet.Type).Unique(),
 	}
 }
 
-//func (Business) Hooks() []ent.Hook {
+//
+//func (User) Hooks() []ent.Hook {
 //	return []ent.Hook{
 //		hook.On(
 //			func(next ent.Mutator) ent.Mutator {
-//				return hook.BusinessFunc(func(ctx context.Context, m *gen.BusinessMutation) (ent.Value, error) {
+//				return hook.UserFunc(func(ctx context.Context, m *gen.UserMutation) (ent.Value, error) {
 //					oldLocation, _ := m.OldLocation(ctx)
 //					err := ProcessLocation(m, oldLocation)
 //					if err != nil {

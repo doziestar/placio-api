@@ -4,7 +4,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
-	"placio-app/domains/inventory"
+	//"placio-app/domains/inventory"
 )
 
 type InventoryType struct {
@@ -21,15 +21,15 @@ func (InventoryType) Fields() []ent.Field {
 		field.String("name").
 			Unique(),
 		field.String("description").Optional(),
-		field.Enum("industry_type").Values(
-			string(inventory.IndustryHotel),
-			string(inventory.IndustryRestaurant),
-			string(inventory.IndustryBar),
-			string(inventory.IndustryClub),
-			string(inventory.IndustryGym),
-			string(inventory.IndustryEvents),
-			string(inventory.IndustryRetail),
-			string(inventory.IndustryOther)).Optional(),
+		//field.Enum("industry_type").Values(
+		//	string(inventory.IndustryHotel),
+		//	string(inventory.IndustryRestaurant),
+		//	string(inventory.IndustryBar),
+		//	string(inventory.IndustryClub),
+		//	string(inventory.IndustryGym),
+		//	string(inventory.IndustryEvents),
+		//	string(inventory.IndustryRetail),
+		//	string(inventory.IndustryOther)).Optional(),
 		field.String("measurement_unit").Optional(),
 	}
 }
