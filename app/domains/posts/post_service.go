@@ -112,38 +112,32 @@ func (ps *PostServiceImpl) CreatePost(ctx context.Context, newPost *ent.Post, us
 	postBuilder := ps.client.Post.
 		Create().
 		SetID(newPost.ID).
-		SetContent(newPost.Content).SetUpdatedAt(time.Now())
+		SetContent(newPost.Content).
+		SetUpdatedAt(time.Now()).
+		SetUserID(userID)
 
-	// Associate with user
-	postBuilder = postBuilder.SetUserID(userID)
 	// Associate with business, if business ID is provided
 	if businessID != "" {
 		postBuilder = postBuilder.SetBusinessAccountID(businessID)
 	}
 
-	fmt.Println("saving post postBuilder", postBuilder)
 	// Save post
 	post, err := postBuilder.Save(ctx)
-	log.Printf("post: %v", post)
-	log.Printf("err: %v", err)
 	if err != nil {
-		fmt.Errorf("failed creating post: %w", err)
 		return nil, fmt.Errorf("failed creating post: %w", err)
 	}
+	log.Printf("post saved: %v", post)
 
 	for _, mediaDto := range medias {
 		createdMedia, err := ps.mediaService.CreateMedia(ctx, mediaDto.URL, mediaDto.Type)
 		if err != nil {
-
 			return nil, fmt.Errorf("failed creating media: %w", err)
 		}
 
 		err = ps.AddMediaToPost(ctx, newPost, createdMedia)
 		if err != nil {
-
 			return nil, fmt.Errorf("failed adding media to post: %w", err)
 		}
-
 	}
 
 	postToReturn, err := ps.GetPost(ctx, post.ID)
@@ -151,23 +145,19 @@ func (ps *PostServiceImpl) CreatePost(ctx context.Context, newPost *ent.Post, us
 		return nil, fmt.Errorf("failed getting post: %w", err)
 	}
 
-	fmt.Println("saved post", post)
-	fmt.Println("saved post", post)
-
 	// Publish post created event
-	log.Println("publishing post:created event")
 	postBytes, err := json.Marshal(postToReturn)
 	if err != nil {
 		log.Println("error serializing post:", err)
-	} else {
-		err = ps.producer.PublishMessage(ctx, []byte(postToReturn.ID), postBytes)
-		if err != nil {
-			log.Println("error sending post to Kafka:", err)
-		} else {
-			log.Println("published post:created event to Kafka")
-		}
+		return postToReturn, nil
 	}
-	log.Println("published post:created event")
+
+	err = ps.producer.PublishMessage(ctx, []byte(postToReturn.ID), postBytes)
+	if err != nil {
+		log.Println("error sending post to Kafka:", err)
+	} else {
+		log.Println("published post:created event to Kafka")
+	}
 
 	return postToReturn, nil
 }
