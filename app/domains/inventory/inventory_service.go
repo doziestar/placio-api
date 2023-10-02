@@ -103,6 +103,7 @@ func (s *InventoryServiceImpl) CreateInventoryAttribute(ctx context.Context, dat
 	}
 
 	attribute, err := s.client.InventoryAttribute.Create().
+		SetID(uuid.New().String()).
 		SetName(data.Name).
 		SetIsMandatory(data.IsMandatory).
 		SetInventoryType(inventoryType).
