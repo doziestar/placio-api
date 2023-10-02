@@ -155,7 +155,7 @@ func (s *UserServiceImpl) GetUser(ctx context.Context, auth0ID string) (*ent.Use
 
 	u, err := s.client.User.
 		Query().
-		Where(user.Auth0IDEQ(auth0ID)).
+		Where(user.IDEQ(auth0ID)).
 		WithLikes(func(query *ent.LikeQuery) {
 			query.WithPost()
 		}).
@@ -270,6 +270,10 @@ func (s *UserServiceImpl) GetUserByUserId(ctx context.Context, userId string) (*
 	u, err := s.client.User.
 		Query().
 		Where(user.IDEQ(userId)).
+		WithUserBusinesses(func(query *ent.UserBusinessQuery) {
+			query.WithUser()
+			query.WithBusiness()
+		}).
 		First(ctx)
 
 	if err != nil {
