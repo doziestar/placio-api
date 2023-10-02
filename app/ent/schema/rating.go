@@ -1,9 +1,15 @@
 package schema
 
 import (
+	"context"
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"fmt"
+	"github.com/google/uuid"
+	gen "placio-app/ent"
+	"placio-app/ent/hook"
+
 	//gen "placio-app/ent"
 	//"placio-app/ent/hook"
 	"time"
@@ -48,25 +54,25 @@ func (Rating) Edges() []ent.Edge {
 	}
 }
 
-//func (Rating) Hooks() []ent.Hook {
-//	return []ent.Hook{
-//		hook.On(
-//			func(next ent.Mutator) ent.Mutator {
-//				return hook.RatingFunc(func(ctx context.Context, m *gen.RatingMutation) (ent.Value, error) {
-//					if !m.Op().Is(ent.OpCreate) {
-//						return next.Mutate(ctx, m)
-//					}
-//
-//					uid, err := uuid.NewRandom()
-//					if err != nil {
-//						return nil, fmt.Errorf("failed to generate uuid: %w", err)
-//					}
-//
-//					m.SetID(uid.String())
-//					return next.Mutate(ctx, m)
-//				})
-//			},
-//			ent.OpCreate,
-//		),
-//	}
-//}
+func (Rating) Hooks() []ent.Hook {
+	return []ent.Hook{
+		hook.On(
+			func(next ent.Mutator) ent.Mutator {
+				return hook.RatingFunc(func(ctx context.Context, m *gen.RatingMutation) (ent.Value, error) {
+					if !m.Op().Is(ent.OpCreate) {
+						return next.Mutate(ctx, m)
+					}
+
+					uid, err := uuid.NewRandom()
+					if err != nil {
+						return nil, fmt.Errorf("failed to generate uuid: %w", err)
+					}
+
+					m.SetID(uid.String())
+					return next.Mutate(ctx, m)
+				})
+			},
+			ent.OpCreate,
+		),
+	}
+}
