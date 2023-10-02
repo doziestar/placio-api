@@ -154,6 +154,12 @@ func (s *SearchServiceImpl) SearchBusinessesDB(ctx context.Context, searchText s
 	businesses, err = s.entClient.Business.
 		Query().
 		Where(business.Or(predicates...)).
+		WithPlaces().
+		WithEvents().
+		WithFollowedUsers(func(query *ent.BusinessFollowUserQuery) {
+			query.WithUser()
+			query.WithBusiness()
+		}).
 		All(ctx)
 	if err != nil {
 		return nil, err
@@ -214,6 +220,16 @@ func (s *SearchServiceImpl) SearchPlacesDB(ctx context.Context, searchText strin
 	places, err = s.entClient.Place.
 		Query().
 		Where(place.Or(predicates...)).
+		WithMedias().
+		WithEvents().
+		WithUsers(func(query *ent.UserQuery) {
+			query.WithPlaces()
+		}).
+		WithBusiness(func(query *ent.BusinessQuery) {
+			query.WithPlaces()
+			query.WithEvents()
+			query.WithUserBusinesses()
+		}).
 		All(ctx)
 	if err != nil {
 		return nil, err
