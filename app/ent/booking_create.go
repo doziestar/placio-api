@@ -232,11 +232,15 @@ func (bc *BookingCreate) createSpec() (*Booking, *sqlgraph.CreateSpec) {
 // BookingCreateBulk is the builder for creating many Booking entities in bulk.
 type BookingCreateBulk struct {
 	config
+	err      error
 	builders []*BookingCreate
 }
 
 // Save creates the Booking entities in the database.
 func (bcb *BookingCreateBulk) Save(ctx context.Context) ([]*Booking, error) {
+	if bcb.err != nil {
+		return nil, bcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(bcb.builders))
 	nodes := make([]*Booking, len(bcb.builders))
 	mutators := make([]Mutator, len(bcb.builders))

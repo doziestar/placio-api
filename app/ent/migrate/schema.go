@@ -30,6 +30,45 @@ var (
 			},
 		},
 	}
+	// AccountWalletsColumns holds the columns for the "account_wallets" table.
+	AccountWalletsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true},
+		{Name: "balance", Type: field.TypeFloat64, Default: 0},
+		{Name: "total_deposited", Type: field.TypeFloat64, Default: 0},
+		{Name: "total_withdrawn", Type: field.TypeFloat64, Default: 0},
+		{Name: "total_earned", Type: field.TypeFloat64, Default: 0},
+		{Name: "total_spent", Type: field.TypeFloat64, Default: 0},
+		{Name: "total_refunded", Type: field.TypeFloat64, Default: 0},
+		{Name: "total_fees", Type: field.TypeFloat64, Default: 0},
+		{Name: "total_tax", Type: field.TypeFloat64, Default: 0},
+		{Name: "total_discount", Type: field.TypeFloat64, Default: 0},
+		{Name: "total_revenue", Type: field.TypeFloat64, Default: 0},
+		{Name: "total_expenses", Type: field.TypeFloat64, Default: 0},
+		{Name: "total_profit", Type: field.TypeFloat64, Default: 0},
+		{Name: "total_loss", Type: field.TypeFloat64, Default: 0},
+		{Name: "business_wallet", Type: field.TypeString, Unique: true, Nullable: true, Size: 36},
+		{Name: "user_wallet", Type: field.TypeString, Unique: true, Nullable: true, Size: 36},
+	}
+	// AccountWalletsTable holds the schema information for the "account_wallets" table.
+	AccountWalletsTable = &schema.Table{
+		Name:       "account_wallets",
+		Columns:    AccountWalletsColumns,
+		PrimaryKey: []*schema.Column{AccountWalletsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "account_wallets_businesses_wallet",
+				Columns:    []*schema.Column{AccountWalletsColumns[14]},
+				RefColumns: []*schema.Column{BusinessesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "account_wallets_users_wallet",
+				Columns:    []*schema.Column{AccountWalletsColumns[15]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// AmenitiesColumns holds the columns for the "amenities" table.
 	AmenitiesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
@@ -1413,8 +1452,28 @@ var (
 	}
 	// WebsitesColumns holds the columns for the "websites" table.
 	WebsitesColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString},
+		{Name: "id", Type: field.TypeString, Unique: true},
 		{Name: "domain_name", Type: field.TypeString, Unique: true},
+		{Name: "heading_text", Type: field.TypeString},
+		{Name: "business_logo", Type: field.TypeString},
+		{Name: "business_name", Type: field.TypeString},
+		{Name: "banner_section_background_image", Type: field.TypeString},
+		{Name: "banner_section_background_color", Type: field.TypeString},
+		{Name: "banner_section_text", Type: field.TypeString},
+		{Name: "three_items_section_heading_text", Type: field.TypeString},
+		{Name: "three_items_section_details_text", Type: field.TypeString, Size: 2147483647},
+		{Name: "three_items_section_item_one_text", Type: field.TypeString},
+		{Name: "three_items_section_item_two_text", Type: field.TypeString},
+		{Name: "three_items_section_item_three_text", Type: field.TypeString},
+		{Name: "banner_two_section_background_image", Type: field.TypeString},
+		{Name: "banner_two_section_background_color", Type: field.TypeString},
+		{Name: "banner_two_left_section_heading_text", Type: field.TypeString},
+		{Name: "banner_two_left_section_details_text", Type: field.TypeString},
+		{Name: "banner_two_left_section_button_text", Type: field.TypeString},
+		{Name: "banner_two_left_section_button_link", Type: field.TypeString},
+		{Name: "banner_two_right_side_image", Type: field.TypeString},
+		{Name: "achievements_section", Type: field.TypeJSON},
+		{Name: "inventory_section_heading_text", Type: field.TypeString},
 		{Name: "creation_date", Type: field.TypeTime},
 		{Name: "last_updated", Type: field.TypeTime},
 		{Name: "title", Type: field.TypeString},
@@ -1451,13 +1510,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "websites_businesses_websites",
-				Columns:    []*schema.Column{WebsitesColumns[27]},
+				Columns:    []*schema.Column{WebsitesColumns[47]},
 				RefColumns: []*schema.Column{BusinessesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "websites_templates_websites",
-				Columns:    []*schema.Column{WebsitesColumns[28]},
+				Columns:    []*schema.Column{WebsitesColumns[48]},
 				RefColumns: []*schema.Column{TemplatesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -1691,6 +1750,7 @@ var (
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		AccountSettingsTable,
+		AccountWalletsTable,
 		AmenitiesTable,
 		BookingsTable,
 		BusinessesTable,
@@ -1751,6 +1811,8 @@ var (
 
 func init() {
 	AccountSettingsTable.ForeignKeys[0].RefTable = BusinessesTable
+	AccountWalletsTable.ForeignKeys[0].RefTable = BusinessesTable
+	AccountWalletsTable.ForeignKeys[1].RefTable = UsersTable
 	BookingsTable.ForeignKeys[0].RefTable = PlacesTable
 	BookingsTable.ForeignKeys[1].RefTable = RoomsTable
 	BookingsTable.ForeignKeys[2].RefTable = UsersTable

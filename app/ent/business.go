@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"placio-app/ent/accountsettings"
+	"placio-app/ent/accountwallet"
 	"placio-app/ent/business"
 	"placio-app/ent/website"
 	"strings"
@@ -95,9 +96,11 @@ type BusinessEdges struct {
 	Websites *Website `json:"websites,omitempty"`
 	// Notifications holds the value of the notifications edge.
 	Notifications []*Notification `json:"notifications,omitempty"`
+	// Wallet holds the value of the wallet edge.
+	Wallet *AccountWallet `json:"wallet,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [17]bool
+	loadedTypes [18]bool
 }
 
 // UserBusinessesOrErr returns the UserBusinesses value or an error if the edge
@@ -259,6 +262,19 @@ func (e BusinessEdges) NotificationsOrErr() ([]*Notification, error) {
 		return e.Notifications, nil
 	}
 	return nil, &NotLoadedError{edge: "notifications"}
+}
+
+// WalletOrErr returns the Wallet value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e BusinessEdges) WalletOrErr() (*AccountWallet, error) {
+	if e.loadedTypes[17] {
+		if e.Wallet == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: accountwallet.Label}
+		}
+		return e.Wallet, nil
+	}
+	return nil, &NotLoadedError{edge: "wallet"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -497,6 +513,11 @@ func (b *Business) QueryWebsites() *WebsiteQuery {
 // QueryNotifications queries the "notifications" edge of the Business entity.
 func (b *Business) QueryNotifications() *NotificationQuery {
 	return NewBusinessClient(b.config).QueryNotifications(b)
+}
+
+// QueryWallet queries the "wallet" edge of the Business entity.
+func (b *Business) QueryWallet() *AccountWalletQuery {
+	return NewBusinessClient(b.config).QueryWallet(b)
 }
 
 // Update returns a builder for updating this Business.

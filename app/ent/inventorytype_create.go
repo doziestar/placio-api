@@ -241,11 +241,15 @@ func (itc *InventoryTypeCreate) createSpec() (*InventoryType, *sqlgraph.CreateSp
 // InventoryTypeCreateBulk is the builder for creating many InventoryType entities in bulk.
 type InventoryTypeCreateBulk struct {
 	config
+	err      error
 	builders []*InventoryTypeCreate
 }
 
 // Save creates the InventoryType entities in the database.
 func (itcb *InventoryTypeCreateBulk) Save(ctx context.Context) ([]*InventoryType, error) {
+	if itcb.err != nil {
+		return nil, itcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(itcb.builders))
 	nodes := make([]*InventoryType, len(itcb.builders))
 	mutators := make([]Mutator, len(itcb.builders))

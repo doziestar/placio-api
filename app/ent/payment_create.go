@@ -89,11 +89,15 @@ func (pc *PaymentCreate) createSpec() (*Payment, *sqlgraph.CreateSpec) {
 // PaymentCreateBulk is the builder for creating many Payment entities in bulk.
 type PaymentCreateBulk struct {
 	config
+	err      error
 	builders []*PaymentCreate
 }
 
 // Save creates the Payment entities in the database.
 func (pcb *PaymentCreateBulk) Save(ctx context.Context) ([]*Payment, error) {
+	if pcb.err != nil {
+		return nil, pcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(pcb.builders))
 	nodes := make([]*Payment, len(pcb.builders))
 	mutators := make([]Mutator, len(pcb.builders))

@@ -227,11 +227,15 @@ func (fc *FAQCreate) createSpec() (*FAQ, *sqlgraph.CreateSpec) {
 // FAQCreateBulk is the builder for creating many FAQ entities in bulk.
 type FAQCreateBulk struct {
 	config
+	err      error
 	builders []*FAQCreate
 }
 
 // Save creates the FAQ entities in the database.
 func (fcb *FAQCreateBulk) Save(ctx context.Context) ([]*FAQ, error) {
+	if fcb.err != nil {
+		return nil, fcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(fcb.builders))
 	nodes := make([]*FAQ, len(fcb.builders))
 	mutators := make([]Mutator, len(fcb.builders))

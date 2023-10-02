@@ -8,6 +8,9 @@ import (
 	"github.com/getsentry/sentry-go"
 	gen "placio-app/ent"
 	"placio-app/ent/hook"
+	//"github.com/getsentry/sentry-go"
+	//gen "placio-app/ent/ent"
+	//"placio-app/ent/ent/hook"
 )
 
 // Business holds the schema definition for the Business entity.
@@ -63,6 +66,7 @@ func (Business) Edges() []ent.Edge {
 		edge.To("place_inventories", PlaceInventory.Type),
 		edge.To("websites", Website.Type).Unique(),
 		edge.To("notifications", Notification.Type),
+		edge.To("wallet", AccountWallet.Type).Unique(),
 	}
 }
 

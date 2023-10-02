@@ -5,6 +5,7 @@ package ent
 import (
 	"encoding/json"
 	"fmt"
+	"placio-app/ent/accountwallet"
 	"placio-app/ent/event"
 	"placio-app/ent/user"
 	"strings"
@@ -109,9 +110,11 @@ type UserEdges struct {
 	ReservationBlocks []*ReservationBlock `json:"reservation_blocks,omitempty"`
 	// Notifications holds the value of the notifications edge.
 	Notifications []*Notification `json:"notifications,omitempty"`
+	// Wallet holds the value of the wallet edge.
+	Wallet *AccountWallet `json:"wallet,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [23]bool
+	loadedTypes [24]bool
 }
 
 // UserBusinessesOrErr returns the UserBusinesses value or an error if the edge
@@ -323,6 +326,19 @@ func (e UserEdges) NotificationsOrErr() ([]*Notification, error) {
 		return e.Notifications, nil
 	}
 	return nil, &NotLoadedError{edge: "notifications"}
+}
+
+// WalletOrErr returns the Wallet value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e UserEdges) WalletOrErr() (*AccountWallet, error) {
+	if e.loadedTypes[23] {
+		if e.Wallet == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: accountwallet.Label}
+		}
+		return e.Wallet, nil
+	}
+	return nil, &NotLoadedError{edge: "wallet"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -601,6 +617,11 @@ func (u *User) QueryReservationBlocks() *ReservationBlockQuery {
 // QueryNotifications queries the "notifications" edge of the User entity.
 func (u *User) QueryNotifications() *NotificationQuery {
 	return NewUserClient(u.config).QueryNotifications(u)
+}
+
+// QueryWallet queries the "wallet" edge of the User entity.
+func (u *User) QueryWallet() *AccountWalletQuery {
+	return NewUserClient(u.config).QueryWallet(u)
 }
 
 // Update returns a builder for updating this User.

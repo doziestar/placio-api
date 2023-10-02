@@ -51,6 +51,14 @@ func main() {
 	app.Use(gin.Recovery())
 
 	app.Use(cmd.PrometheusMiddleware())
+
+	// @Summary Metrics
+	// @Description Get the metrics for the application
+	// @Tags metrics
+	// @Accept  json
+	// @Produce  json
+	// @Success 200 {object} string "ok"
+	// @Router /metrics [get]
 	app.GET("/metrics", gin.WrapH(promhttp.Handler()))
 
 	// initialize middleware

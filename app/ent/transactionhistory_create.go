@@ -226,11 +226,15 @@ func (thc *TransactionHistoryCreate) createSpec() (*TransactionHistory, *sqlgrap
 // TransactionHistoryCreateBulk is the builder for creating many TransactionHistory entities in bulk.
 type TransactionHistoryCreateBulk struct {
 	config
+	err      error
 	builders []*TransactionHistoryCreate
 }
 
 // Save creates the TransactionHistory entities in the database.
 func (thcb *TransactionHistoryCreateBulk) Save(ctx context.Context) ([]*TransactionHistory, error) {
+	if thcb.err != nil {
+		return nil, thcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(thcb.builders))
 	nodes := make([]*TransactionHistory, len(thcb.builders))
 	mutators := make([]Mutator, len(thcb.builders))

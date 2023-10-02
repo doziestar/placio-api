@@ -220,11 +220,15 @@ func (ufec *UserFollowEventCreate) createSpec() (*UserFollowEvent, *sqlgraph.Cre
 // UserFollowEventCreateBulk is the builder for creating many UserFollowEvent entities in bulk.
 type UserFollowEventCreateBulk struct {
 	config
+	err      error
 	builders []*UserFollowEventCreate
 }
 
 // Save creates the UserFollowEvent entities in the database.
 func (ufecb *UserFollowEventCreateBulk) Save(ctx context.Context) ([]*UserFollowEvent, error) {
+	if ufecb.err != nil {
+		return nil, ufecb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ufecb.builders))
 	nodes := make([]*UserFollowEvent, len(ufecb.builders))
 	mutators := make([]Mutator, len(ufecb.builders))

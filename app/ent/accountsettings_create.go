@@ -176,11 +176,15 @@ func (asc *AccountSettingsCreate) createSpec() (*AccountSettings, *sqlgraph.Crea
 // AccountSettingsCreateBulk is the builder for creating many AccountSettings entities in bulk.
 type AccountSettingsCreateBulk struct {
 	config
+	err      error
 	builders []*AccountSettingsCreate
 }
 
 // Save creates the AccountSettings entities in the database.
 func (ascb *AccountSettingsCreateBulk) Save(ctx context.Context) ([]*AccountSettings, error) {
+	if ascb.err != nil {
+		return nil, ascb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ascb.builders))
 	nodes := make([]*AccountSettings, len(ascb.builders))
 	mutators := make([]Mutator, len(ascb.builders))

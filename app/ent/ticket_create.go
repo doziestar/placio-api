@@ -225,11 +225,15 @@ func (tc *TicketCreate) createSpec() (*Ticket, *sqlgraph.CreateSpec) {
 // TicketCreateBulk is the builder for creating many Ticket entities in bulk.
 type TicketCreateBulk struct {
 	config
+	err      error
 	builders []*TicketCreate
 }
 
 // Save creates the Ticket entities in the database.
 func (tcb *TicketCreateBulk) Save(ctx context.Context) ([]*Ticket, error) {
+	if tcb.err != nil {
+		return nil, tcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(tcb.builders))
 	nodes := make([]*Ticket, len(tcb.builders))
 	mutators := make([]Mutator, len(tcb.builders))

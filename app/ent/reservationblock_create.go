@@ -209,11 +209,15 @@ func (rbc *ReservationBlockCreate) createSpec() (*ReservationBlock, *sqlgraph.Cr
 // ReservationBlockCreateBulk is the builder for creating many ReservationBlock entities in bulk.
 type ReservationBlockCreateBulk struct {
 	config
+	err      error
 	builders []*ReservationBlockCreate
 }
 
 // Save creates the ReservationBlock entities in the database.
 func (rbcb *ReservationBlockCreateBulk) Save(ctx context.Context) ([]*ReservationBlock, error) {
+	if rbcb.err != nil {
+		return nil, rbcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(rbcb.builders))
 	nodes := make([]*ReservationBlock, len(rbcb.builders))
 	mutators := make([]Mutator, len(rbcb.builders))

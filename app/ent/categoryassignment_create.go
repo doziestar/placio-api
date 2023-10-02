@@ -269,11 +269,15 @@ func (cac *CategoryAssignmentCreate) createSpec() (*CategoryAssignment, *sqlgrap
 // CategoryAssignmentCreateBulk is the builder for creating many CategoryAssignment entities in bulk.
 type CategoryAssignmentCreateBulk struct {
 	config
+	err      error
 	builders []*CategoryAssignmentCreate
 }
 
 // Save creates the CategoryAssignment entities in the database.
 func (cacb *CategoryAssignmentCreateBulk) Save(ctx context.Context) ([]*CategoryAssignment, error) {
+	if cacb.err != nil {
+		return nil, cacb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(cacb.builders))
 	nodes := make([]*CategoryAssignment, len(cacb.builders))
 	mutators := make([]Mutator, len(cacb.builders))

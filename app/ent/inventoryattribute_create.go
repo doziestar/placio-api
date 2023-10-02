@@ -240,11 +240,15 @@ func (iac *InventoryAttributeCreate) createSpec() (*InventoryAttribute, *sqlgrap
 // InventoryAttributeCreateBulk is the builder for creating many InventoryAttribute entities in bulk.
 type InventoryAttributeCreateBulk struct {
 	config
+	err      error
 	builders []*InventoryAttributeCreate
 }
 
 // Save creates the InventoryAttribute entities in the database.
 func (iacb *InventoryAttributeCreateBulk) Save(ctx context.Context) ([]*InventoryAttribute, error) {
+	if iacb.err != nil {
+		return nil, iacb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(iacb.builders))
 	nodes := make([]*InventoryAttribute, len(iacb.builders))
 	mutators := make([]Mutator, len(iacb.builders))

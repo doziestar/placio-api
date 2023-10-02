@@ -163,11 +163,15 @@ func (ac *AmenityCreate) createSpec() (*Amenity, *sqlgraph.CreateSpec) {
 // AmenityCreateBulk is the builder for creating many Amenity entities in bulk.
 type AmenityCreateBulk struct {
 	config
+	err      error
 	builders []*AmenityCreate
 }
 
 // Save creates the Amenity entities in the database.
 func (acb *AmenityCreateBulk) Save(ctx context.Context) ([]*Amenity, error) {
+	if acb.err != nil {
+		return nil, acb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(acb.builders))
 	nodes := make([]*Amenity, len(acb.builders))
 	mutators := make([]Mutator, len(acb.builders))

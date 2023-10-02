@@ -222,11 +222,15 @@ func (ufuc *UserFollowUserCreate) createSpec() (*UserFollowUser, *sqlgraph.Creat
 // UserFollowUserCreateBulk is the builder for creating many UserFollowUser entities in bulk.
 type UserFollowUserCreateBulk struct {
 	config
+	err      error
 	builders []*UserFollowUserCreate
 }
 
 // Save creates the UserFollowUser entities in the database.
 func (ufucb *UserFollowUserCreateBulk) Save(ctx context.Context) ([]*UserFollowUser, error) {
+	if ufucb.err != nil {
+		return nil, ufucb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ufucb.builders))
 	nodes := make([]*UserFollowUser, len(ufucb.builders))
 	mutators := make([]Mutator, len(ufucb.builders))

@@ -1,10 +1,10 @@
 package inventory
 
 type inventoryTypeData struct {
-	Name            string       `json:"name"`
-	Description     string       `json:"description"`
-	MeasurementUnit string       `json:"measurement_unit"`
-	IndustryType    IndustryType `json:"industry_type"`
+	Name            string `json:"name"`
+	Description     string `json:"description"`
+	MeasurementUnit string `json:"measurement_unit"`
+	IndustryType    string `json:"industry_type"`
 }
 
 type inventoryAttributeData struct {

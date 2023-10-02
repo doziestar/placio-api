@@ -217,11 +217,15 @@ func (bfbc *BusinessFollowBusinessCreate) createSpec() (*BusinessFollowBusiness,
 // BusinessFollowBusinessCreateBulk is the builder for creating many BusinessFollowBusiness entities in bulk.
 type BusinessFollowBusinessCreateBulk struct {
 	config
+	err      error
 	builders []*BusinessFollowBusinessCreate
 }
 
 // Save creates the BusinessFollowBusiness entities in the database.
 func (bfbcb *BusinessFollowBusinessCreateBulk) Save(ctx context.Context) ([]*BusinessFollowBusiness, error) {
+	if bfbcb.err != nil {
+		return nil, bfbcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(bfbcb.builders))
 	nodes := make([]*BusinessFollowBusiness, len(bfbcb.builders))
 	mutators := make([]Mutator, len(bfbcb.builders))

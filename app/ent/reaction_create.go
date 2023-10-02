@@ -89,11 +89,15 @@ func (rc *ReactionCreate) createSpec() (*Reaction, *sqlgraph.CreateSpec) {
 // ReactionCreateBulk is the builder for creating many Reaction entities in bulk.
 type ReactionCreateBulk struct {
 	config
+	err      error
 	builders []*ReactionCreate
 }
 
 // Save creates the Reaction entities in the database.
 func (rcb *ReactionCreateBulk) Save(ctx context.Context) ([]*Reaction, error) {
+	if rcb.err != nil {
+		return nil, rcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(rcb.builders))
 	nodes := make([]*Reaction, len(rcb.builders))
 	mutators := make([]Mutator, len(rcb.builders))

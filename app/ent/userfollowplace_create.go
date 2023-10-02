@@ -218,11 +218,15 @@ func (ufpc *UserFollowPlaceCreate) createSpec() (*UserFollowPlace, *sqlgraph.Cre
 // UserFollowPlaceCreateBulk is the builder for creating many UserFollowPlace entities in bulk.
 type UserFollowPlaceCreateBulk struct {
 	config
+	err      error
 	builders []*UserFollowPlaceCreate
 }
 
 // Save creates the UserFollowPlace entities in the database.
 func (ufpcb *UserFollowPlaceCreateBulk) Save(ctx context.Context) ([]*UserFollowPlace, error) {
+	if ufpcb.err != nil {
+		return nil, ufpcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ufpcb.builders))
 	nodes := make([]*UserFollowPlace, len(ufpcb.builders))
 	mutators := make([]Mutator, len(ufpcb.builders))

@@ -227,11 +227,15 @@ func (hc *HelpCreate) createSpec() (*Help, *sqlgraph.CreateSpec) {
 // HelpCreateBulk is the builder for creating many Help entities in bulk.
 type HelpCreateBulk struct {
 	config
+	err      error
 	builders []*HelpCreate
 }
 
 // Save creates the Help entities in the database.
 func (hcb *HelpCreateBulk) Save(ctx context.Context) ([]*Help, error) {
+	if hcb.err != nil {
+		return nil, hcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(hcb.builders))
 	nodes := make([]*Help, len(hcb.builders))
 	mutators := make([]Mutator, len(hcb.builders))

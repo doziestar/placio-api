@@ -161,11 +161,15 @@ func (tc *TemplateCreate) createSpec() (*Template, *sqlgraph.CreateSpec) {
 // TemplateCreateBulk is the builder for creating many Template entities in bulk.
 type TemplateCreateBulk struct {
 	config
+	err      error
 	builders []*TemplateCreate
 }
 
 // Save creates the Template entities in the database.
 func (tcb *TemplateCreateBulk) Save(ctx context.Context) ([]*Template, error) {
+	if tcb.err != nil {
+		return nil, tcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(tcb.builders))
 	nodes := make([]*Template, len(tcb.builders))
 	mutators := make([]Mutator, len(tcb.builders))

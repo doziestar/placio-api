@@ -56,9 +56,9 @@ func NewInventoryService(client *ent.Client, cache *cache.CacheService, mediaSer
 
 func (s *InventoryServiceImpl) CreateInventoryType(ctx context.Context, data *inventoryTypeData) (*ent.InventoryType, error) {
 
-	if !IsValidIndustryType(data.IndustryType) {
-		return nil, errors.ErrUnprocessable
-	}
+	//if !IsValidIndustryType(data.IndustryType) {
+	//	return nil, errors.ErrUnprocessable
+	//}
 
 	return s.client.InventoryType.Create().
 		SetID(uuid.New().String()).
@@ -71,9 +71,9 @@ func (s *InventoryServiceImpl) CreateInventoryType(ctx context.Context, data *in
 
 func (s *InventoryServiceImpl) UpdateInventoryType(ctx context.Context, inventoryTypeID string, data *inventoryTypeData) (*ent.InventoryType, error) {
 
-	if !IsValidIndustryType(data.IndustryType) {
-		return nil, errors.ErrUnprocessable
-	}
+	//if !IsValidIndustryType(data.IndustryType) {
+	//	return nil, errors.ErrUnprocessable
+	//}
 
 	return s.client.InventoryType.UpdateOneID(inventoryTypeID).
 		SetName(data.Name).
@@ -103,6 +103,7 @@ func (s *InventoryServiceImpl) CreateInventoryAttribute(ctx context.Context, dat
 	}
 
 	attribute, err := s.client.InventoryAttribute.Create().
+		SetID(uuid.New().String()).
 		SetName(data.Name).
 		SetIsMandatory(data.IsMandatory).
 		SetInventoryType(inventoryType).

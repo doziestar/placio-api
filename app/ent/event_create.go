@@ -1571,11 +1571,15 @@ func (ec *EventCreate) createSpec() (*Event, *sqlgraph.CreateSpec) {
 // EventCreateBulk is the builder for creating many Event entities in bulk.
 type EventCreateBulk struct {
 	config
+	err      error
 	builders []*EventCreate
 }
 
 // Save creates the Event entities in the database.
 func (ecb *EventCreateBulk) Save(ctx context.Context) ([]*Event, error) {
+	if ecb.err != nil {
+		return nil, ecb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ecb.builders))
 	nodes := make([]*Event, len(ecb.builders))
 	mutators := make([]Mutator, len(ecb.builders))

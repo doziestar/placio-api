@@ -14,6 +14,8 @@ type Tx struct {
 	config
 	// AccountSettings is the client for interacting with the AccountSettings builders.
 	AccountSettings *AccountSettingsClient
+	// AccountWallet is the client for interacting with the AccountWallet builders.
+	AccountWallet *AccountWalletClient
 	// Amenity is the client for interacting with the Amenity builders.
 	Amenity *AmenityClient
 	// Booking is the client for interacting with the Booking builders.
@@ -238,6 +240,7 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.AccountSettings = NewAccountSettingsClient(tx.config)
+	tx.AccountWallet = NewAccountWalletClient(tx.config)
 	tx.Amenity = NewAmenityClient(tx.config)
 	tx.Booking = NewBookingClient(tx.config)
 	tx.Business = NewBusinessClient(tx.config)

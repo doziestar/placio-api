@@ -1285,11 +1285,15 @@ func (pc *PlaceCreate) createSpec() (*Place, *sqlgraph.CreateSpec) {
 // PlaceCreateBulk is the builder for creating many Place entities in bulk.
 type PlaceCreateBulk struct {
 	config
+	err      error
 	builders []*PlaceCreate
 }
 
 // Save creates the Place entities in the database.
 func (pcb *PlaceCreateBulk) Save(ctx context.Context) ([]*Place, error) {
+	if pcb.err != nil {
+		return nil, pcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(pcb.builders))
 	nodes := make([]*Place, len(pcb.builders))
 	mutators := make([]Mutator, len(pcb.builders))

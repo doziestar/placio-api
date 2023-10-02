@@ -358,11 +358,15 @@ func (cc *CategoryCreate) createSpec() (*Category, *sqlgraph.CreateSpec) {
 // CategoryCreateBulk is the builder for creating many Category entities in bulk.
 type CategoryCreateBulk struct {
 	config
+	err      error
 	builders []*CategoryCreate
 }
 
 // Save creates the Category entities in the database.
 func (ccb *CategoryCreateBulk) Save(ctx context.Context) ([]*Category, error) {
+	if ccb.err != nil {
+		return nil, ccb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ccb.builders))
 	nodes := make([]*Category, len(ccb.builders))
 	mutators := make([]Mutator, len(ccb.builders))

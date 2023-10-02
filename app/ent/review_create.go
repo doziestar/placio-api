@@ -482,11 +482,15 @@ func (rc *ReviewCreate) createSpec() (*Review, *sqlgraph.CreateSpec) {
 // ReviewCreateBulk is the builder for creating many Review entities in bulk.
 type ReviewCreateBulk struct {
 	config
+	err      error
 	builders []*ReviewCreate
 }
 
 // Save creates the Review entities in the database.
 func (rcb *ReviewCreateBulk) Save(ctx context.Context) ([]*Review, error) {
+	if rcb.err != nil {
+		return nil, rcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(rcb.builders))
 	nodes := make([]*Review, len(rcb.builders))
 	mutators := make([]Mutator, len(rcb.builders))

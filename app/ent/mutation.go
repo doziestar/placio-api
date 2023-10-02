@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"placio-app/ent/accountsettings"
+	"placio-app/ent/accountwallet"
 	"placio-app/ent/amenity"
 	"placio-app/ent/booking"
 	"placio-app/ent/business"
@@ -67,6 +68,7 @@ const (
 
 	// Node types.
 	TypeAccountSettings         = "AccountSettings"
+	TypeAccountWallet           = "AccountWallet"
 	TypeAmenity                 = "Amenity"
 	TypeBooking                 = "Booking"
 	TypeBusiness                = "Business"
@@ -652,6 +654,1544 @@ func (m *AccountSettingsMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown AccountSettings edge %s", name)
+}
+
+// AccountWalletMutation represents an operation that mutates the AccountWallet nodes in the graph.
+type AccountWalletMutation struct {
+	config
+	op                 Op
+	typ                string
+	id                 *string
+	balance            *float64
+	addbalance         *float64
+	total_deposited    *float64
+	addtotal_deposited *float64
+	total_withdrawn    *float64
+	addtotal_withdrawn *float64
+	total_earned       *float64
+	addtotal_earned    *float64
+	total_spent        *float64
+	addtotal_spent     *float64
+	total_refunded     *float64
+	addtotal_refunded  *float64
+	total_fees         *float64
+	addtotal_fees      *float64
+	total_tax          *float64
+	addtotal_tax       *float64
+	total_discount     *float64
+	addtotal_discount  *float64
+	total_revenue      *float64
+	addtotal_revenue   *float64
+	total_expenses     *float64
+	addtotal_expenses  *float64
+	total_profit       *float64
+	addtotal_profit    *float64
+	total_loss         *float64
+	addtotal_loss      *float64
+	clearedFields      map[string]struct{}
+	user               *string
+	cleareduser        bool
+	business           *string
+	clearedbusiness    bool
+	done               bool
+	oldValue           func(context.Context) (*AccountWallet, error)
+	predicates         []predicate.AccountWallet
+}
+
+var _ ent.Mutation = (*AccountWalletMutation)(nil)
+
+// accountwalletOption allows management of the mutation configuration using functional options.
+type accountwalletOption func(*AccountWalletMutation)
+
+// newAccountWalletMutation creates new mutation for the AccountWallet entity.
+func newAccountWalletMutation(c config, op Op, opts ...accountwalletOption) *AccountWalletMutation {
+	m := &AccountWalletMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeAccountWallet,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withAccountWalletID sets the ID field of the mutation.
+func withAccountWalletID(id string) accountwalletOption {
+	return func(m *AccountWalletMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *AccountWallet
+		)
+		m.oldValue = func(ctx context.Context) (*AccountWallet, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().AccountWallet.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withAccountWallet sets the old AccountWallet of the mutation.
+func withAccountWallet(node *AccountWallet) accountwalletOption {
+	return func(m *AccountWalletMutation) {
+		m.oldValue = func(context.Context) (*AccountWallet, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m AccountWalletMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m AccountWalletMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of AccountWallet entities.
+func (m *AccountWalletMutation) SetID(id string) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *AccountWalletMutation) ID() (id string, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *AccountWalletMutation) IDs(ctx context.Context) ([]string, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []string{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().AccountWallet.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetBalance sets the "balance" field.
+func (m *AccountWalletMutation) SetBalance(f float64) {
+	m.balance = &f
+	m.addbalance = nil
+}
+
+// Balance returns the value of the "balance" field in the mutation.
+func (m *AccountWalletMutation) Balance() (r float64, exists bool) {
+	v := m.balance
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBalance returns the old "balance" field's value of the AccountWallet entity.
+// If the AccountWallet object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountWalletMutation) OldBalance(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBalance is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBalance requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBalance: %w", err)
+	}
+	return oldValue.Balance, nil
+}
+
+// AddBalance adds f to the "balance" field.
+func (m *AccountWalletMutation) AddBalance(f float64) {
+	if m.addbalance != nil {
+		*m.addbalance += f
+	} else {
+		m.addbalance = &f
+	}
+}
+
+// AddedBalance returns the value that was added to the "balance" field in this mutation.
+func (m *AccountWalletMutation) AddedBalance() (r float64, exists bool) {
+	v := m.addbalance
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetBalance resets all changes to the "balance" field.
+func (m *AccountWalletMutation) ResetBalance() {
+	m.balance = nil
+	m.addbalance = nil
+}
+
+// SetTotalDeposited sets the "total_deposited" field.
+func (m *AccountWalletMutation) SetTotalDeposited(f float64) {
+	m.total_deposited = &f
+	m.addtotal_deposited = nil
+}
+
+// TotalDeposited returns the value of the "total_deposited" field in the mutation.
+func (m *AccountWalletMutation) TotalDeposited() (r float64, exists bool) {
+	v := m.total_deposited
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTotalDeposited returns the old "total_deposited" field's value of the AccountWallet entity.
+// If the AccountWallet object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountWalletMutation) OldTotalDeposited(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTotalDeposited is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTotalDeposited requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTotalDeposited: %w", err)
+	}
+	return oldValue.TotalDeposited, nil
+}
+
+// AddTotalDeposited adds f to the "total_deposited" field.
+func (m *AccountWalletMutation) AddTotalDeposited(f float64) {
+	if m.addtotal_deposited != nil {
+		*m.addtotal_deposited += f
+	} else {
+		m.addtotal_deposited = &f
+	}
+}
+
+// AddedTotalDeposited returns the value that was added to the "total_deposited" field in this mutation.
+func (m *AccountWalletMutation) AddedTotalDeposited() (r float64, exists bool) {
+	v := m.addtotal_deposited
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetTotalDeposited resets all changes to the "total_deposited" field.
+func (m *AccountWalletMutation) ResetTotalDeposited() {
+	m.total_deposited = nil
+	m.addtotal_deposited = nil
+}
+
+// SetTotalWithdrawn sets the "total_withdrawn" field.
+func (m *AccountWalletMutation) SetTotalWithdrawn(f float64) {
+	m.total_withdrawn = &f
+	m.addtotal_withdrawn = nil
+}
+
+// TotalWithdrawn returns the value of the "total_withdrawn" field in the mutation.
+func (m *AccountWalletMutation) TotalWithdrawn() (r float64, exists bool) {
+	v := m.total_withdrawn
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTotalWithdrawn returns the old "total_withdrawn" field's value of the AccountWallet entity.
+// If the AccountWallet object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountWalletMutation) OldTotalWithdrawn(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTotalWithdrawn is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTotalWithdrawn requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTotalWithdrawn: %w", err)
+	}
+	return oldValue.TotalWithdrawn, nil
+}
+
+// AddTotalWithdrawn adds f to the "total_withdrawn" field.
+func (m *AccountWalletMutation) AddTotalWithdrawn(f float64) {
+	if m.addtotal_withdrawn != nil {
+		*m.addtotal_withdrawn += f
+	} else {
+		m.addtotal_withdrawn = &f
+	}
+}
+
+// AddedTotalWithdrawn returns the value that was added to the "total_withdrawn" field in this mutation.
+func (m *AccountWalletMutation) AddedTotalWithdrawn() (r float64, exists bool) {
+	v := m.addtotal_withdrawn
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetTotalWithdrawn resets all changes to the "total_withdrawn" field.
+func (m *AccountWalletMutation) ResetTotalWithdrawn() {
+	m.total_withdrawn = nil
+	m.addtotal_withdrawn = nil
+}
+
+// SetTotalEarned sets the "total_earned" field.
+func (m *AccountWalletMutation) SetTotalEarned(f float64) {
+	m.total_earned = &f
+	m.addtotal_earned = nil
+}
+
+// TotalEarned returns the value of the "total_earned" field in the mutation.
+func (m *AccountWalletMutation) TotalEarned() (r float64, exists bool) {
+	v := m.total_earned
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTotalEarned returns the old "total_earned" field's value of the AccountWallet entity.
+// If the AccountWallet object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountWalletMutation) OldTotalEarned(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTotalEarned is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTotalEarned requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTotalEarned: %w", err)
+	}
+	return oldValue.TotalEarned, nil
+}
+
+// AddTotalEarned adds f to the "total_earned" field.
+func (m *AccountWalletMutation) AddTotalEarned(f float64) {
+	if m.addtotal_earned != nil {
+		*m.addtotal_earned += f
+	} else {
+		m.addtotal_earned = &f
+	}
+}
+
+// AddedTotalEarned returns the value that was added to the "total_earned" field in this mutation.
+func (m *AccountWalletMutation) AddedTotalEarned() (r float64, exists bool) {
+	v := m.addtotal_earned
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetTotalEarned resets all changes to the "total_earned" field.
+func (m *AccountWalletMutation) ResetTotalEarned() {
+	m.total_earned = nil
+	m.addtotal_earned = nil
+}
+
+// SetTotalSpent sets the "total_spent" field.
+func (m *AccountWalletMutation) SetTotalSpent(f float64) {
+	m.total_spent = &f
+	m.addtotal_spent = nil
+}
+
+// TotalSpent returns the value of the "total_spent" field in the mutation.
+func (m *AccountWalletMutation) TotalSpent() (r float64, exists bool) {
+	v := m.total_spent
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTotalSpent returns the old "total_spent" field's value of the AccountWallet entity.
+// If the AccountWallet object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountWalletMutation) OldTotalSpent(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTotalSpent is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTotalSpent requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTotalSpent: %w", err)
+	}
+	return oldValue.TotalSpent, nil
+}
+
+// AddTotalSpent adds f to the "total_spent" field.
+func (m *AccountWalletMutation) AddTotalSpent(f float64) {
+	if m.addtotal_spent != nil {
+		*m.addtotal_spent += f
+	} else {
+		m.addtotal_spent = &f
+	}
+}
+
+// AddedTotalSpent returns the value that was added to the "total_spent" field in this mutation.
+func (m *AccountWalletMutation) AddedTotalSpent() (r float64, exists bool) {
+	v := m.addtotal_spent
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetTotalSpent resets all changes to the "total_spent" field.
+func (m *AccountWalletMutation) ResetTotalSpent() {
+	m.total_spent = nil
+	m.addtotal_spent = nil
+}
+
+// SetTotalRefunded sets the "total_refunded" field.
+func (m *AccountWalletMutation) SetTotalRefunded(f float64) {
+	m.total_refunded = &f
+	m.addtotal_refunded = nil
+}
+
+// TotalRefunded returns the value of the "total_refunded" field in the mutation.
+func (m *AccountWalletMutation) TotalRefunded() (r float64, exists bool) {
+	v := m.total_refunded
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTotalRefunded returns the old "total_refunded" field's value of the AccountWallet entity.
+// If the AccountWallet object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountWalletMutation) OldTotalRefunded(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTotalRefunded is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTotalRefunded requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTotalRefunded: %w", err)
+	}
+	return oldValue.TotalRefunded, nil
+}
+
+// AddTotalRefunded adds f to the "total_refunded" field.
+func (m *AccountWalletMutation) AddTotalRefunded(f float64) {
+	if m.addtotal_refunded != nil {
+		*m.addtotal_refunded += f
+	} else {
+		m.addtotal_refunded = &f
+	}
+}
+
+// AddedTotalRefunded returns the value that was added to the "total_refunded" field in this mutation.
+func (m *AccountWalletMutation) AddedTotalRefunded() (r float64, exists bool) {
+	v := m.addtotal_refunded
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetTotalRefunded resets all changes to the "total_refunded" field.
+func (m *AccountWalletMutation) ResetTotalRefunded() {
+	m.total_refunded = nil
+	m.addtotal_refunded = nil
+}
+
+// SetTotalFees sets the "total_fees" field.
+func (m *AccountWalletMutation) SetTotalFees(f float64) {
+	m.total_fees = &f
+	m.addtotal_fees = nil
+}
+
+// TotalFees returns the value of the "total_fees" field in the mutation.
+func (m *AccountWalletMutation) TotalFees() (r float64, exists bool) {
+	v := m.total_fees
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTotalFees returns the old "total_fees" field's value of the AccountWallet entity.
+// If the AccountWallet object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountWalletMutation) OldTotalFees(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTotalFees is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTotalFees requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTotalFees: %w", err)
+	}
+	return oldValue.TotalFees, nil
+}
+
+// AddTotalFees adds f to the "total_fees" field.
+func (m *AccountWalletMutation) AddTotalFees(f float64) {
+	if m.addtotal_fees != nil {
+		*m.addtotal_fees += f
+	} else {
+		m.addtotal_fees = &f
+	}
+}
+
+// AddedTotalFees returns the value that was added to the "total_fees" field in this mutation.
+func (m *AccountWalletMutation) AddedTotalFees() (r float64, exists bool) {
+	v := m.addtotal_fees
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetTotalFees resets all changes to the "total_fees" field.
+func (m *AccountWalletMutation) ResetTotalFees() {
+	m.total_fees = nil
+	m.addtotal_fees = nil
+}
+
+// SetTotalTax sets the "total_tax" field.
+func (m *AccountWalletMutation) SetTotalTax(f float64) {
+	m.total_tax = &f
+	m.addtotal_tax = nil
+}
+
+// TotalTax returns the value of the "total_tax" field in the mutation.
+func (m *AccountWalletMutation) TotalTax() (r float64, exists bool) {
+	v := m.total_tax
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTotalTax returns the old "total_tax" field's value of the AccountWallet entity.
+// If the AccountWallet object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountWalletMutation) OldTotalTax(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTotalTax is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTotalTax requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTotalTax: %w", err)
+	}
+	return oldValue.TotalTax, nil
+}
+
+// AddTotalTax adds f to the "total_tax" field.
+func (m *AccountWalletMutation) AddTotalTax(f float64) {
+	if m.addtotal_tax != nil {
+		*m.addtotal_tax += f
+	} else {
+		m.addtotal_tax = &f
+	}
+}
+
+// AddedTotalTax returns the value that was added to the "total_tax" field in this mutation.
+func (m *AccountWalletMutation) AddedTotalTax() (r float64, exists bool) {
+	v := m.addtotal_tax
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetTotalTax resets all changes to the "total_tax" field.
+func (m *AccountWalletMutation) ResetTotalTax() {
+	m.total_tax = nil
+	m.addtotal_tax = nil
+}
+
+// SetTotalDiscount sets the "total_discount" field.
+func (m *AccountWalletMutation) SetTotalDiscount(f float64) {
+	m.total_discount = &f
+	m.addtotal_discount = nil
+}
+
+// TotalDiscount returns the value of the "total_discount" field in the mutation.
+func (m *AccountWalletMutation) TotalDiscount() (r float64, exists bool) {
+	v := m.total_discount
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTotalDiscount returns the old "total_discount" field's value of the AccountWallet entity.
+// If the AccountWallet object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountWalletMutation) OldTotalDiscount(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTotalDiscount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTotalDiscount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTotalDiscount: %w", err)
+	}
+	return oldValue.TotalDiscount, nil
+}
+
+// AddTotalDiscount adds f to the "total_discount" field.
+func (m *AccountWalletMutation) AddTotalDiscount(f float64) {
+	if m.addtotal_discount != nil {
+		*m.addtotal_discount += f
+	} else {
+		m.addtotal_discount = &f
+	}
+}
+
+// AddedTotalDiscount returns the value that was added to the "total_discount" field in this mutation.
+func (m *AccountWalletMutation) AddedTotalDiscount() (r float64, exists bool) {
+	v := m.addtotal_discount
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetTotalDiscount resets all changes to the "total_discount" field.
+func (m *AccountWalletMutation) ResetTotalDiscount() {
+	m.total_discount = nil
+	m.addtotal_discount = nil
+}
+
+// SetTotalRevenue sets the "total_revenue" field.
+func (m *AccountWalletMutation) SetTotalRevenue(f float64) {
+	m.total_revenue = &f
+	m.addtotal_revenue = nil
+}
+
+// TotalRevenue returns the value of the "total_revenue" field in the mutation.
+func (m *AccountWalletMutation) TotalRevenue() (r float64, exists bool) {
+	v := m.total_revenue
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTotalRevenue returns the old "total_revenue" field's value of the AccountWallet entity.
+// If the AccountWallet object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountWalletMutation) OldTotalRevenue(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTotalRevenue is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTotalRevenue requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTotalRevenue: %w", err)
+	}
+	return oldValue.TotalRevenue, nil
+}
+
+// AddTotalRevenue adds f to the "total_revenue" field.
+func (m *AccountWalletMutation) AddTotalRevenue(f float64) {
+	if m.addtotal_revenue != nil {
+		*m.addtotal_revenue += f
+	} else {
+		m.addtotal_revenue = &f
+	}
+}
+
+// AddedTotalRevenue returns the value that was added to the "total_revenue" field in this mutation.
+func (m *AccountWalletMutation) AddedTotalRevenue() (r float64, exists bool) {
+	v := m.addtotal_revenue
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetTotalRevenue resets all changes to the "total_revenue" field.
+func (m *AccountWalletMutation) ResetTotalRevenue() {
+	m.total_revenue = nil
+	m.addtotal_revenue = nil
+}
+
+// SetTotalExpenses sets the "total_expenses" field.
+func (m *AccountWalletMutation) SetTotalExpenses(f float64) {
+	m.total_expenses = &f
+	m.addtotal_expenses = nil
+}
+
+// TotalExpenses returns the value of the "total_expenses" field in the mutation.
+func (m *AccountWalletMutation) TotalExpenses() (r float64, exists bool) {
+	v := m.total_expenses
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTotalExpenses returns the old "total_expenses" field's value of the AccountWallet entity.
+// If the AccountWallet object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountWalletMutation) OldTotalExpenses(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTotalExpenses is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTotalExpenses requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTotalExpenses: %w", err)
+	}
+	return oldValue.TotalExpenses, nil
+}
+
+// AddTotalExpenses adds f to the "total_expenses" field.
+func (m *AccountWalletMutation) AddTotalExpenses(f float64) {
+	if m.addtotal_expenses != nil {
+		*m.addtotal_expenses += f
+	} else {
+		m.addtotal_expenses = &f
+	}
+}
+
+// AddedTotalExpenses returns the value that was added to the "total_expenses" field in this mutation.
+func (m *AccountWalletMutation) AddedTotalExpenses() (r float64, exists bool) {
+	v := m.addtotal_expenses
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetTotalExpenses resets all changes to the "total_expenses" field.
+func (m *AccountWalletMutation) ResetTotalExpenses() {
+	m.total_expenses = nil
+	m.addtotal_expenses = nil
+}
+
+// SetTotalProfit sets the "total_profit" field.
+func (m *AccountWalletMutation) SetTotalProfit(f float64) {
+	m.total_profit = &f
+	m.addtotal_profit = nil
+}
+
+// TotalProfit returns the value of the "total_profit" field in the mutation.
+func (m *AccountWalletMutation) TotalProfit() (r float64, exists bool) {
+	v := m.total_profit
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTotalProfit returns the old "total_profit" field's value of the AccountWallet entity.
+// If the AccountWallet object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountWalletMutation) OldTotalProfit(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTotalProfit is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTotalProfit requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTotalProfit: %w", err)
+	}
+	return oldValue.TotalProfit, nil
+}
+
+// AddTotalProfit adds f to the "total_profit" field.
+func (m *AccountWalletMutation) AddTotalProfit(f float64) {
+	if m.addtotal_profit != nil {
+		*m.addtotal_profit += f
+	} else {
+		m.addtotal_profit = &f
+	}
+}
+
+// AddedTotalProfit returns the value that was added to the "total_profit" field in this mutation.
+func (m *AccountWalletMutation) AddedTotalProfit() (r float64, exists bool) {
+	v := m.addtotal_profit
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetTotalProfit resets all changes to the "total_profit" field.
+func (m *AccountWalletMutation) ResetTotalProfit() {
+	m.total_profit = nil
+	m.addtotal_profit = nil
+}
+
+// SetTotalLoss sets the "total_loss" field.
+func (m *AccountWalletMutation) SetTotalLoss(f float64) {
+	m.total_loss = &f
+	m.addtotal_loss = nil
+}
+
+// TotalLoss returns the value of the "total_loss" field in the mutation.
+func (m *AccountWalletMutation) TotalLoss() (r float64, exists bool) {
+	v := m.total_loss
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTotalLoss returns the old "total_loss" field's value of the AccountWallet entity.
+// If the AccountWallet object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AccountWalletMutation) OldTotalLoss(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTotalLoss is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTotalLoss requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTotalLoss: %w", err)
+	}
+	return oldValue.TotalLoss, nil
+}
+
+// AddTotalLoss adds f to the "total_loss" field.
+func (m *AccountWalletMutation) AddTotalLoss(f float64) {
+	if m.addtotal_loss != nil {
+		*m.addtotal_loss += f
+	} else {
+		m.addtotal_loss = &f
+	}
+}
+
+// AddedTotalLoss returns the value that was added to the "total_loss" field in this mutation.
+func (m *AccountWalletMutation) AddedTotalLoss() (r float64, exists bool) {
+	v := m.addtotal_loss
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetTotalLoss resets all changes to the "total_loss" field.
+func (m *AccountWalletMutation) ResetTotalLoss() {
+	m.total_loss = nil
+	m.addtotal_loss = nil
+}
+
+// SetUserID sets the "user" edge to the User entity by id.
+func (m *AccountWalletMutation) SetUserID(id string) {
+	m.user = &id
+}
+
+// ClearUser clears the "user" edge to the User entity.
+func (m *AccountWalletMutation) ClearUser() {
+	m.cleareduser = true
+}
+
+// UserCleared reports if the "user" edge to the User entity was cleared.
+func (m *AccountWalletMutation) UserCleared() bool {
+	return m.cleareduser
+}
+
+// UserID returns the "user" edge ID in the mutation.
+func (m *AccountWalletMutation) UserID() (id string, exists bool) {
+	if m.user != nil {
+		return *m.user, true
+	}
+	return
+}
+
+// UserIDs returns the "user" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// UserID instead. It exists only for internal usage by the builders.
+func (m *AccountWalletMutation) UserIDs() (ids []string) {
+	if id := m.user; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetUser resets all changes to the "user" edge.
+func (m *AccountWalletMutation) ResetUser() {
+	m.user = nil
+	m.cleareduser = false
+}
+
+// SetBusinessID sets the "business" edge to the Business entity by id.
+func (m *AccountWalletMutation) SetBusinessID(id string) {
+	m.business = &id
+}
+
+// ClearBusiness clears the "business" edge to the Business entity.
+func (m *AccountWalletMutation) ClearBusiness() {
+	m.clearedbusiness = true
+}
+
+// BusinessCleared reports if the "business" edge to the Business entity was cleared.
+func (m *AccountWalletMutation) BusinessCleared() bool {
+	return m.clearedbusiness
+}
+
+// BusinessID returns the "business" edge ID in the mutation.
+func (m *AccountWalletMutation) BusinessID() (id string, exists bool) {
+	if m.business != nil {
+		return *m.business, true
+	}
+	return
+}
+
+// BusinessIDs returns the "business" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// BusinessID instead. It exists only for internal usage by the builders.
+func (m *AccountWalletMutation) BusinessIDs() (ids []string) {
+	if id := m.business; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetBusiness resets all changes to the "business" edge.
+func (m *AccountWalletMutation) ResetBusiness() {
+	m.business = nil
+	m.clearedbusiness = false
+}
+
+// Where appends a list predicates to the AccountWalletMutation builder.
+func (m *AccountWalletMutation) Where(ps ...predicate.AccountWallet) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the AccountWalletMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *AccountWalletMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.AccountWallet, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *AccountWalletMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *AccountWalletMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (AccountWallet).
+func (m *AccountWalletMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *AccountWalletMutation) Fields() []string {
+	fields := make([]string, 0, 13)
+	if m.balance != nil {
+		fields = append(fields, accountwallet.FieldBalance)
+	}
+	if m.total_deposited != nil {
+		fields = append(fields, accountwallet.FieldTotalDeposited)
+	}
+	if m.total_withdrawn != nil {
+		fields = append(fields, accountwallet.FieldTotalWithdrawn)
+	}
+	if m.total_earned != nil {
+		fields = append(fields, accountwallet.FieldTotalEarned)
+	}
+	if m.total_spent != nil {
+		fields = append(fields, accountwallet.FieldTotalSpent)
+	}
+	if m.total_refunded != nil {
+		fields = append(fields, accountwallet.FieldTotalRefunded)
+	}
+	if m.total_fees != nil {
+		fields = append(fields, accountwallet.FieldTotalFees)
+	}
+	if m.total_tax != nil {
+		fields = append(fields, accountwallet.FieldTotalTax)
+	}
+	if m.total_discount != nil {
+		fields = append(fields, accountwallet.FieldTotalDiscount)
+	}
+	if m.total_revenue != nil {
+		fields = append(fields, accountwallet.FieldTotalRevenue)
+	}
+	if m.total_expenses != nil {
+		fields = append(fields, accountwallet.FieldTotalExpenses)
+	}
+	if m.total_profit != nil {
+		fields = append(fields, accountwallet.FieldTotalProfit)
+	}
+	if m.total_loss != nil {
+		fields = append(fields, accountwallet.FieldTotalLoss)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *AccountWalletMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case accountwallet.FieldBalance:
+		return m.Balance()
+	case accountwallet.FieldTotalDeposited:
+		return m.TotalDeposited()
+	case accountwallet.FieldTotalWithdrawn:
+		return m.TotalWithdrawn()
+	case accountwallet.FieldTotalEarned:
+		return m.TotalEarned()
+	case accountwallet.FieldTotalSpent:
+		return m.TotalSpent()
+	case accountwallet.FieldTotalRefunded:
+		return m.TotalRefunded()
+	case accountwallet.FieldTotalFees:
+		return m.TotalFees()
+	case accountwallet.FieldTotalTax:
+		return m.TotalTax()
+	case accountwallet.FieldTotalDiscount:
+		return m.TotalDiscount()
+	case accountwallet.FieldTotalRevenue:
+		return m.TotalRevenue()
+	case accountwallet.FieldTotalExpenses:
+		return m.TotalExpenses()
+	case accountwallet.FieldTotalProfit:
+		return m.TotalProfit()
+	case accountwallet.FieldTotalLoss:
+		return m.TotalLoss()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *AccountWalletMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case accountwallet.FieldBalance:
+		return m.OldBalance(ctx)
+	case accountwallet.FieldTotalDeposited:
+		return m.OldTotalDeposited(ctx)
+	case accountwallet.FieldTotalWithdrawn:
+		return m.OldTotalWithdrawn(ctx)
+	case accountwallet.FieldTotalEarned:
+		return m.OldTotalEarned(ctx)
+	case accountwallet.FieldTotalSpent:
+		return m.OldTotalSpent(ctx)
+	case accountwallet.FieldTotalRefunded:
+		return m.OldTotalRefunded(ctx)
+	case accountwallet.FieldTotalFees:
+		return m.OldTotalFees(ctx)
+	case accountwallet.FieldTotalTax:
+		return m.OldTotalTax(ctx)
+	case accountwallet.FieldTotalDiscount:
+		return m.OldTotalDiscount(ctx)
+	case accountwallet.FieldTotalRevenue:
+		return m.OldTotalRevenue(ctx)
+	case accountwallet.FieldTotalExpenses:
+		return m.OldTotalExpenses(ctx)
+	case accountwallet.FieldTotalProfit:
+		return m.OldTotalProfit(ctx)
+	case accountwallet.FieldTotalLoss:
+		return m.OldTotalLoss(ctx)
+	}
+	return nil, fmt.Errorf("unknown AccountWallet field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *AccountWalletMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case accountwallet.FieldBalance:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBalance(v)
+		return nil
+	case accountwallet.FieldTotalDeposited:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTotalDeposited(v)
+		return nil
+	case accountwallet.FieldTotalWithdrawn:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTotalWithdrawn(v)
+		return nil
+	case accountwallet.FieldTotalEarned:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTotalEarned(v)
+		return nil
+	case accountwallet.FieldTotalSpent:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTotalSpent(v)
+		return nil
+	case accountwallet.FieldTotalRefunded:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTotalRefunded(v)
+		return nil
+	case accountwallet.FieldTotalFees:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTotalFees(v)
+		return nil
+	case accountwallet.FieldTotalTax:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTotalTax(v)
+		return nil
+	case accountwallet.FieldTotalDiscount:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTotalDiscount(v)
+		return nil
+	case accountwallet.FieldTotalRevenue:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTotalRevenue(v)
+		return nil
+	case accountwallet.FieldTotalExpenses:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTotalExpenses(v)
+		return nil
+	case accountwallet.FieldTotalProfit:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTotalProfit(v)
+		return nil
+	case accountwallet.FieldTotalLoss:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTotalLoss(v)
+		return nil
+	}
+	return fmt.Errorf("unknown AccountWallet field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *AccountWalletMutation) AddedFields() []string {
+	var fields []string
+	if m.addbalance != nil {
+		fields = append(fields, accountwallet.FieldBalance)
+	}
+	if m.addtotal_deposited != nil {
+		fields = append(fields, accountwallet.FieldTotalDeposited)
+	}
+	if m.addtotal_withdrawn != nil {
+		fields = append(fields, accountwallet.FieldTotalWithdrawn)
+	}
+	if m.addtotal_earned != nil {
+		fields = append(fields, accountwallet.FieldTotalEarned)
+	}
+	if m.addtotal_spent != nil {
+		fields = append(fields, accountwallet.FieldTotalSpent)
+	}
+	if m.addtotal_refunded != nil {
+		fields = append(fields, accountwallet.FieldTotalRefunded)
+	}
+	if m.addtotal_fees != nil {
+		fields = append(fields, accountwallet.FieldTotalFees)
+	}
+	if m.addtotal_tax != nil {
+		fields = append(fields, accountwallet.FieldTotalTax)
+	}
+	if m.addtotal_discount != nil {
+		fields = append(fields, accountwallet.FieldTotalDiscount)
+	}
+	if m.addtotal_revenue != nil {
+		fields = append(fields, accountwallet.FieldTotalRevenue)
+	}
+	if m.addtotal_expenses != nil {
+		fields = append(fields, accountwallet.FieldTotalExpenses)
+	}
+	if m.addtotal_profit != nil {
+		fields = append(fields, accountwallet.FieldTotalProfit)
+	}
+	if m.addtotal_loss != nil {
+		fields = append(fields, accountwallet.FieldTotalLoss)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *AccountWalletMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case accountwallet.FieldBalance:
+		return m.AddedBalance()
+	case accountwallet.FieldTotalDeposited:
+		return m.AddedTotalDeposited()
+	case accountwallet.FieldTotalWithdrawn:
+		return m.AddedTotalWithdrawn()
+	case accountwallet.FieldTotalEarned:
+		return m.AddedTotalEarned()
+	case accountwallet.FieldTotalSpent:
+		return m.AddedTotalSpent()
+	case accountwallet.FieldTotalRefunded:
+		return m.AddedTotalRefunded()
+	case accountwallet.FieldTotalFees:
+		return m.AddedTotalFees()
+	case accountwallet.FieldTotalTax:
+		return m.AddedTotalTax()
+	case accountwallet.FieldTotalDiscount:
+		return m.AddedTotalDiscount()
+	case accountwallet.FieldTotalRevenue:
+		return m.AddedTotalRevenue()
+	case accountwallet.FieldTotalExpenses:
+		return m.AddedTotalExpenses()
+	case accountwallet.FieldTotalProfit:
+		return m.AddedTotalProfit()
+	case accountwallet.FieldTotalLoss:
+		return m.AddedTotalLoss()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *AccountWalletMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case accountwallet.FieldBalance:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddBalance(v)
+		return nil
+	case accountwallet.FieldTotalDeposited:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTotalDeposited(v)
+		return nil
+	case accountwallet.FieldTotalWithdrawn:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTotalWithdrawn(v)
+		return nil
+	case accountwallet.FieldTotalEarned:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTotalEarned(v)
+		return nil
+	case accountwallet.FieldTotalSpent:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTotalSpent(v)
+		return nil
+	case accountwallet.FieldTotalRefunded:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTotalRefunded(v)
+		return nil
+	case accountwallet.FieldTotalFees:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTotalFees(v)
+		return nil
+	case accountwallet.FieldTotalTax:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTotalTax(v)
+		return nil
+	case accountwallet.FieldTotalDiscount:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTotalDiscount(v)
+		return nil
+	case accountwallet.FieldTotalRevenue:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTotalRevenue(v)
+		return nil
+	case accountwallet.FieldTotalExpenses:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTotalExpenses(v)
+		return nil
+	case accountwallet.FieldTotalProfit:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTotalProfit(v)
+		return nil
+	case accountwallet.FieldTotalLoss:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTotalLoss(v)
+		return nil
+	}
+	return fmt.Errorf("unknown AccountWallet numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *AccountWalletMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *AccountWalletMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *AccountWalletMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown AccountWallet nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *AccountWalletMutation) ResetField(name string) error {
+	switch name {
+	case accountwallet.FieldBalance:
+		m.ResetBalance()
+		return nil
+	case accountwallet.FieldTotalDeposited:
+		m.ResetTotalDeposited()
+		return nil
+	case accountwallet.FieldTotalWithdrawn:
+		m.ResetTotalWithdrawn()
+		return nil
+	case accountwallet.FieldTotalEarned:
+		m.ResetTotalEarned()
+		return nil
+	case accountwallet.FieldTotalSpent:
+		m.ResetTotalSpent()
+		return nil
+	case accountwallet.FieldTotalRefunded:
+		m.ResetTotalRefunded()
+		return nil
+	case accountwallet.FieldTotalFees:
+		m.ResetTotalFees()
+		return nil
+	case accountwallet.FieldTotalTax:
+		m.ResetTotalTax()
+		return nil
+	case accountwallet.FieldTotalDiscount:
+		m.ResetTotalDiscount()
+		return nil
+	case accountwallet.FieldTotalRevenue:
+		m.ResetTotalRevenue()
+		return nil
+	case accountwallet.FieldTotalExpenses:
+		m.ResetTotalExpenses()
+		return nil
+	case accountwallet.FieldTotalProfit:
+		m.ResetTotalProfit()
+		return nil
+	case accountwallet.FieldTotalLoss:
+		m.ResetTotalLoss()
+		return nil
+	}
+	return fmt.Errorf("unknown AccountWallet field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *AccountWalletMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.user != nil {
+		edges = append(edges, accountwallet.EdgeUser)
+	}
+	if m.business != nil {
+		edges = append(edges, accountwallet.EdgeBusiness)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *AccountWalletMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case accountwallet.EdgeUser:
+		if id := m.user; id != nil {
+			return []ent.Value{*id}
+		}
+	case accountwallet.EdgeBusiness:
+		if id := m.business; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *AccountWalletMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *AccountWalletMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *AccountWalletMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.cleareduser {
+		edges = append(edges, accountwallet.EdgeUser)
+	}
+	if m.clearedbusiness {
+		edges = append(edges, accountwallet.EdgeBusiness)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *AccountWalletMutation) EdgeCleared(name string) bool {
+	switch name {
+	case accountwallet.EdgeUser:
+		return m.cleareduser
+	case accountwallet.EdgeBusiness:
+		return m.clearedbusiness
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *AccountWalletMutation) ClearEdge(name string) error {
+	switch name {
+	case accountwallet.EdgeUser:
+		m.ClearUser()
+		return nil
+	case accountwallet.EdgeBusiness:
+		m.ClearBusiness()
+		return nil
+	}
+	return fmt.Errorf("unknown AccountWallet unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *AccountWalletMutation) ResetEdge(name string) error {
+	switch name {
+	case accountwallet.EdgeUser:
+		m.ResetUser()
+		return nil
+	case accountwallet.EdgeBusiness:
+		m.ResetBusiness()
+		return nil
+	}
+	return fmt.Errorf("unknown AccountWallet edge %s", name)
 }
 
 // AmenityMutation represents an operation that mutates the Amenity nodes in the graph.
@@ -1829,6 +3369,8 @@ type BusinessMutation struct {
 	notifications                    map[string]struct{}
 	removednotifications             map[string]struct{}
 	clearednotifications             bool
+	wallet                           *string
+	clearedwallet                    bool
 	done                             bool
 	oldValue                         func(context.Context) (*Business, error)
 	predicates                       []predicate.Business
@@ -3681,6 +5223,45 @@ func (m *BusinessMutation) ResetNotifications() {
 	m.removednotifications = nil
 }
 
+// SetWalletID sets the "wallet" edge to the AccountWallet entity by id.
+func (m *BusinessMutation) SetWalletID(id string) {
+	m.wallet = &id
+}
+
+// ClearWallet clears the "wallet" edge to the AccountWallet entity.
+func (m *BusinessMutation) ClearWallet() {
+	m.clearedwallet = true
+}
+
+// WalletCleared reports if the "wallet" edge to the AccountWallet entity was cleared.
+func (m *BusinessMutation) WalletCleared() bool {
+	return m.clearedwallet
+}
+
+// WalletID returns the "wallet" edge ID in the mutation.
+func (m *BusinessMutation) WalletID() (id string, exists bool) {
+	if m.wallet != nil {
+		return *m.wallet, true
+	}
+	return
+}
+
+// WalletIDs returns the "wallet" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// WalletID instead. It exists only for internal usage by the builders.
+func (m *BusinessMutation) WalletIDs() (ids []string) {
+	if id := m.wallet; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetWallet resets all changes to the "wallet" edge.
+func (m *BusinessMutation) ResetWallet() {
+	m.wallet = nil
+	m.clearedwallet = false
+}
+
 // Where appends a list predicates to the BusinessMutation builder.
 func (m *BusinessMutation) Where(ps ...predicate.Business) {
 	m.predicates = append(m.predicates, ps...)
@@ -4212,7 +5793,7 @@ func (m *BusinessMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *BusinessMutation) AddedEdges() []string {
-	edges := make([]string, 0, 17)
+	edges := make([]string, 0, 18)
 	if m.userBusinesses != nil {
 		edges = append(edges, business.EdgeUserBusinesses)
 	}
@@ -4263,6 +5844,9 @@ func (m *BusinessMutation) AddedEdges() []string {
 	}
 	if m.notifications != nil {
 		edges = append(edges, business.EdgeNotifications)
+	}
+	if m.wallet != nil {
+		edges = append(edges, business.EdgeWallet)
 	}
 	return edges
 }
@@ -4369,13 +5953,17 @@ func (m *BusinessMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case business.EdgeWallet:
+		if id := m.wallet; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *BusinessMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 17)
+	edges := make([]string, 0, 18)
 	if m.removeduserBusinesses != nil {
 		edges = append(edges, business.EdgeUserBusinesses)
 	}
@@ -4524,7 +6112,7 @@ func (m *BusinessMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *BusinessMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 17)
+	edges := make([]string, 0, 18)
 	if m.cleareduserBusinesses {
 		edges = append(edges, business.EdgeUserBusinesses)
 	}
@@ -4576,6 +6164,9 @@ func (m *BusinessMutation) ClearedEdges() []string {
 	if m.clearednotifications {
 		edges = append(edges, business.EdgeNotifications)
 	}
+	if m.clearedwallet {
+		edges = append(edges, business.EdgeWallet)
+	}
 	return edges
 }
 
@@ -4617,6 +6208,8 @@ func (m *BusinessMutation) EdgeCleared(name string) bool {
 		return m.clearedwebsites
 	case business.EdgeNotifications:
 		return m.clearednotifications
+	case business.EdgeWallet:
+		return m.clearedwallet
 	}
 	return false
 }
@@ -4630,6 +6223,9 @@ func (m *BusinessMutation) ClearEdge(name string) error {
 		return nil
 	case business.EdgeWebsites:
 		m.ClearWebsites()
+		return nil
+	case business.EdgeWallet:
+		m.ClearWallet()
 		return nil
 	}
 	return fmt.Errorf("unknown Business unique edge %s", name)
@@ -4689,6 +6285,9 @@ func (m *BusinessMutation) ResetEdge(name string) error {
 		return nil
 	case business.EdgeNotifications:
 		m.ResetNotifications()
+		return nil
+	case business.EdgeWallet:
+		m.ResetWallet()
 		return nil
 	}
 	return fmt.Errorf("unknown Business edge %s", name)
@@ -7682,6 +9281,7 @@ func (m *CategoryAssignmentMutation) SetUserID(id string) {
 // ClearUser clears the "user" edge to the User entity.
 func (m *CategoryAssignmentMutation) ClearUser() {
 	m.cleareduser = true
+	m.clearedFields[categoryassignment.FieldEntityID] = struct{}{}
 }
 
 // UserCleared reports if the "user" edge to the User entity was cleared.
@@ -7721,6 +9321,7 @@ func (m *CategoryAssignmentMutation) SetBusinessID(id string) {
 // ClearBusiness clears the "business" edge to the Business entity.
 func (m *CategoryAssignmentMutation) ClearBusiness() {
 	m.clearedbusiness = true
+	m.clearedFields[categoryassignment.FieldEntityID] = struct{}{}
 }
 
 // BusinessCleared reports if the "business" edge to the Business entity was cleared.
@@ -7760,6 +9361,7 @@ func (m *CategoryAssignmentMutation) SetPlaceID(id string) {
 // ClearPlace clears the "place" edge to the Place entity.
 func (m *CategoryAssignmentMutation) ClearPlace() {
 	m.clearedplace = true
+	m.clearedFields[categoryassignment.FieldEntityID] = struct{}{}
 }
 
 // PlaceCleared reports if the "place" edge to the Place entity was cleared.
@@ -7794,6 +9396,7 @@ func (m *CategoryAssignmentMutation) ResetPlace() {
 // ClearCategory clears the "category" edge to the Category entity.
 func (m *CategoryAssignmentMutation) ClearCategory() {
 	m.clearedcategory = true
+	m.clearedFields[categoryassignment.FieldCategoryID] = struct{}{}
 }
 
 // CategoryCleared reports if the "category" edge to the Category entity was cleared.
@@ -8761,6 +10364,7 @@ func (m *CommentMutation) ResetPost() {
 // ClearParentComment clears the "parentComment" edge to the Comment entity.
 func (m *CommentMutation) ClearParentComment() {
 	m.clearedparentComment = true
+	m.clearedFields[comment.FieldParentCommentID] = struct{}{}
 }
 
 // ParentCommentCleared reports if the "parentComment" edge to the Comment entity was cleared.
@@ -16149,6 +17753,7 @@ func (m *HelpMutation) ResetUserID() {
 // ClearUser clears the "user" edge to the User entity.
 func (m *HelpMutation) ClearUser() {
 	m.cleareduser = true
+	m.clearedFields[help.FieldUserID] = struct{}{}
 }
 
 // UserCleared reports if the "user" edge to the User entity was cleared.
@@ -36711,6 +38316,8 @@ type UserMutation struct {
 	notifications                map[string]struct{}
 	removednotifications         map[string]struct{}
 	clearednotifications         bool
+	wallet                       *string
+	clearedwallet                bool
 	done                         bool
 	oldValue                     func(context.Context) (*User, error)
 	predicates                   []predicate.User
@@ -38938,6 +40545,45 @@ func (m *UserMutation) ResetNotifications() {
 	m.removednotifications = nil
 }
 
+// SetWalletID sets the "wallet" edge to the AccountWallet entity by id.
+func (m *UserMutation) SetWalletID(id string) {
+	m.wallet = &id
+}
+
+// ClearWallet clears the "wallet" edge to the AccountWallet entity.
+func (m *UserMutation) ClearWallet() {
+	m.clearedwallet = true
+}
+
+// WalletCleared reports if the "wallet" edge to the AccountWallet entity was cleared.
+func (m *UserMutation) WalletCleared() bool {
+	return m.clearedwallet
+}
+
+// WalletID returns the "wallet" edge ID in the mutation.
+func (m *UserMutation) WalletID() (id string, exists bool) {
+	if m.wallet != nil {
+		return *m.wallet, true
+	}
+	return
+}
+
+// WalletIDs returns the "wallet" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// WalletID instead. It exists only for internal usage by the builders.
+func (m *UserMutation) WalletIDs() (ids []string) {
+	if id := m.wallet; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetWallet resets all changes to the "wallet" edge.
+func (m *UserMutation) ResetWallet() {
+	m.wallet = nil
+	m.clearedwallet = false
+}
+
 // Where appends a list predicates to the UserMutation builder.
 func (m *UserMutation) Where(ps ...predicate.User) {
 	m.predicates = append(m.predicates, ps...)
@@ -39486,7 +41132,7 @@ func (m *UserMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserMutation) AddedEdges() []string {
-	edges := make([]string, 0, 23)
+	edges := make([]string, 0, 24)
 	if m.userBusinesses != nil {
 		edges = append(edges, user.EdgeUserBusinesses)
 	}
@@ -39555,6 +41201,9 @@ func (m *UserMutation) AddedEdges() []string {
 	}
 	if m.notifications != nil {
 		edges = append(edges, user.EdgeNotifications)
+	}
+	if m.wallet != nil {
+		edges = append(edges, user.EdgeWallet)
 	}
 	return edges
 }
@@ -39699,13 +41348,17 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeWallet:
+		if id := m.wallet; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 23)
+	edges := make([]string, 0, 24)
 	if m.removeduserBusinesses != nil {
 		edges = append(edges, user.EdgeUserBusinesses)
 	}
@@ -39917,7 +41570,7 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 23)
+	edges := make([]string, 0, 24)
 	if m.cleareduserBusinesses {
 		edges = append(edges, user.EdgeUserBusinesses)
 	}
@@ -39987,6 +41640,9 @@ func (m *UserMutation) ClearedEdges() []string {
 	if m.clearednotifications {
 		edges = append(edges, user.EdgeNotifications)
 	}
+	if m.clearedwallet {
+		edges = append(edges, user.EdgeWallet)
+	}
 	return edges
 }
 
@@ -40040,6 +41696,8 @@ func (m *UserMutation) EdgeCleared(name string) bool {
 		return m.clearedreservation_blocks
 	case user.EdgeNotifications:
 		return m.clearednotifications
+	case user.EdgeWallet:
+		return m.clearedwallet
 	}
 	return false
 }
@@ -40050,6 +41708,9 @@ func (m *UserMutation) ClearEdge(name string) error {
 	switch name {
 	case user.EdgeOwnedEvents:
 		m.ClearOwnedEvents()
+		return nil
+	case user.EdgeWallet:
+		m.ClearWallet()
 		return nil
 	}
 	return fmt.Errorf("unknown User unique edge %s", name)
@@ -40127,6 +41788,9 @@ func (m *UserMutation) ResetEdge(name string) error {
 		return nil
 	case user.EdgeNotifications:
 		m.ResetNotifications()
+		return nil
+	case user.EdgeWallet:
+		m.ResetWallet()
 		return nil
 	}
 	return fmt.Errorf("unknown User edge %s", name)
@@ -43229,49 +44893,69 @@ func (m *UserLikePlaceMutation) ResetEdge(name string) error {
 // WebsiteMutation represents an operation that mutates the Website nodes in the graph.
 type WebsiteMutation struct {
 	config
-	op                  Op
-	typ                 string
-	id                  *string
-	domainName          *string
-	creationDate        *time.Time
-	lastUpdated         *time.Time
-	title               *string
-	description         *string
-	keywords            *string
-	language            *string
-	logo                *string
-	favicon             *string
-	facebook            *string
-	twitter             *string
-	instagram           *string
-	youtube             *string
-	linkedin            *string
-	pinterest           *string
-	mapCoordinates      *map[string]interface{}
-	longitude           *string
-	latitude            *string
-	address             *string
-	city                *string
-	state               *string
-	country             *string
-	zipCode             *string
-	phoneNumber         *string
-	email               *string
-	metaTags            *map[string]interface{}
-	clearedFields       map[string]struct{}
-	business            *string
-	clearedbusiness     bool
-	template            *string
-	clearedtemplate     bool
-	customBlocks        map[string]struct{}
-	removedcustomBlocks map[string]struct{}
-	clearedcustomBlocks bool
-	assets              map[string]struct{}
-	removedassets       map[string]struct{}
-	clearedassets       bool
-	done                bool
-	oldValue            func(context.Context) (*Website, error)
-	predicates          []predicate.Website
+	op                                   Op
+	typ                                  string
+	id                                   *string
+	domainName                           *string
+	heading_text                         *string
+	business_logo                        *string
+	business_name                        *string
+	banner_section_background_image      *string
+	banner_section_background_color      *string
+	banner_section_text                  *string
+	three_items_section_heading_text     *string
+	three_items_section_details_text     *string
+	three_items_section_item_one_text    *string
+	three_items_section_item_two_text    *string
+	three_items_section_item_three_text  *string
+	banner_two_section_background_image  *string
+	banner_two_section_background_color  *string
+	banner_two_left_section_heading_text *string
+	banner_two_left_section_details_text *string
+	banner_two_left_section_button_text  *string
+	banner_two_left_section_button_link  *string
+	banner_two_right_side_image          *string
+	achievements_section                 *map[string]interface{}
+	_Inventory_section_heading_text      *string
+	creationDate                         *time.Time
+	lastUpdated                          *time.Time
+	title                                *string
+	description                          *string
+	keywords                             *string
+	language                             *string
+	logo                                 *string
+	favicon                              *string
+	facebook                             *string
+	twitter                              *string
+	instagram                            *string
+	youtube                              *string
+	linkedin                             *string
+	pinterest                            *string
+	mapCoordinates                       *map[string]interface{}
+	longitude                            *string
+	latitude                             *string
+	address                              *string
+	city                                 *string
+	state                                *string
+	country                              *string
+	zipCode                              *string
+	phoneNumber                          *string
+	email                                *string
+	metaTags                             *map[string]interface{}
+	clearedFields                        map[string]struct{}
+	business                             *string
+	clearedbusiness                      bool
+	template                             *string
+	clearedtemplate                      bool
+	customBlocks                         map[string]struct{}
+	removedcustomBlocks                  map[string]struct{}
+	clearedcustomBlocks                  bool
+	assets                               map[string]struct{}
+	removedassets                        map[string]struct{}
+	clearedassets                        bool
+	done                                 bool
+	oldValue                             func(context.Context) (*Website, error)
+	predicates                           []predicate.Website
 }
 
 var _ ent.Mutation = (*WebsiteMutation)(nil)
@@ -43344,6 +45028,12 @@ func (m WebsiteMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Website entities.
+func (m *WebsiteMutation) SetID(id string) {
+	m.id = &id
+}
+
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
 func (m *WebsiteMutation) ID() (id string, exists bool) {
@@ -43406,6 +45096,726 @@ func (m *WebsiteMutation) OldDomainName(ctx context.Context) (v string, err erro
 // ResetDomainName resets all changes to the "domainName" field.
 func (m *WebsiteMutation) ResetDomainName() {
 	m.domainName = nil
+}
+
+// SetHeadingText sets the "heading_text" field.
+func (m *WebsiteMutation) SetHeadingText(s string) {
+	m.heading_text = &s
+}
+
+// HeadingText returns the value of the "heading_text" field in the mutation.
+func (m *WebsiteMutation) HeadingText() (r string, exists bool) {
+	v := m.heading_text
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHeadingText returns the old "heading_text" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldHeadingText(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldHeadingText is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldHeadingText requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHeadingText: %w", err)
+	}
+	return oldValue.HeadingText, nil
+}
+
+// ResetHeadingText resets all changes to the "heading_text" field.
+func (m *WebsiteMutation) ResetHeadingText() {
+	m.heading_text = nil
+}
+
+// SetBusinessLogo sets the "business_logo" field.
+func (m *WebsiteMutation) SetBusinessLogo(s string) {
+	m.business_logo = &s
+}
+
+// BusinessLogo returns the value of the "business_logo" field in the mutation.
+func (m *WebsiteMutation) BusinessLogo() (r string, exists bool) {
+	v := m.business_logo
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBusinessLogo returns the old "business_logo" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldBusinessLogo(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBusinessLogo is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBusinessLogo requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBusinessLogo: %w", err)
+	}
+	return oldValue.BusinessLogo, nil
+}
+
+// ResetBusinessLogo resets all changes to the "business_logo" field.
+func (m *WebsiteMutation) ResetBusinessLogo() {
+	m.business_logo = nil
+}
+
+// SetBusinessName sets the "business_name" field.
+func (m *WebsiteMutation) SetBusinessName(s string) {
+	m.business_name = &s
+}
+
+// BusinessName returns the value of the "business_name" field in the mutation.
+func (m *WebsiteMutation) BusinessName() (r string, exists bool) {
+	v := m.business_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBusinessName returns the old "business_name" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldBusinessName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBusinessName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBusinessName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBusinessName: %w", err)
+	}
+	return oldValue.BusinessName, nil
+}
+
+// ResetBusinessName resets all changes to the "business_name" field.
+func (m *WebsiteMutation) ResetBusinessName() {
+	m.business_name = nil
+}
+
+// SetBannerSectionBackgroundImage sets the "banner_section_background_image" field.
+func (m *WebsiteMutation) SetBannerSectionBackgroundImage(s string) {
+	m.banner_section_background_image = &s
+}
+
+// BannerSectionBackgroundImage returns the value of the "banner_section_background_image" field in the mutation.
+func (m *WebsiteMutation) BannerSectionBackgroundImage() (r string, exists bool) {
+	v := m.banner_section_background_image
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBannerSectionBackgroundImage returns the old "banner_section_background_image" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldBannerSectionBackgroundImage(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBannerSectionBackgroundImage is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBannerSectionBackgroundImage requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBannerSectionBackgroundImage: %w", err)
+	}
+	return oldValue.BannerSectionBackgroundImage, nil
+}
+
+// ResetBannerSectionBackgroundImage resets all changes to the "banner_section_background_image" field.
+func (m *WebsiteMutation) ResetBannerSectionBackgroundImage() {
+	m.banner_section_background_image = nil
+}
+
+// SetBannerSectionBackgroundColor sets the "banner_section_background_color" field.
+func (m *WebsiteMutation) SetBannerSectionBackgroundColor(s string) {
+	m.banner_section_background_color = &s
+}
+
+// BannerSectionBackgroundColor returns the value of the "banner_section_background_color" field in the mutation.
+func (m *WebsiteMutation) BannerSectionBackgroundColor() (r string, exists bool) {
+	v := m.banner_section_background_color
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBannerSectionBackgroundColor returns the old "banner_section_background_color" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldBannerSectionBackgroundColor(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBannerSectionBackgroundColor is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBannerSectionBackgroundColor requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBannerSectionBackgroundColor: %w", err)
+	}
+	return oldValue.BannerSectionBackgroundColor, nil
+}
+
+// ResetBannerSectionBackgroundColor resets all changes to the "banner_section_background_color" field.
+func (m *WebsiteMutation) ResetBannerSectionBackgroundColor() {
+	m.banner_section_background_color = nil
+}
+
+// SetBannerSectionText sets the "banner_section_text" field.
+func (m *WebsiteMutation) SetBannerSectionText(s string) {
+	m.banner_section_text = &s
+}
+
+// BannerSectionText returns the value of the "banner_section_text" field in the mutation.
+func (m *WebsiteMutation) BannerSectionText() (r string, exists bool) {
+	v := m.banner_section_text
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBannerSectionText returns the old "banner_section_text" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldBannerSectionText(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBannerSectionText is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBannerSectionText requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBannerSectionText: %w", err)
+	}
+	return oldValue.BannerSectionText, nil
+}
+
+// ResetBannerSectionText resets all changes to the "banner_section_text" field.
+func (m *WebsiteMutation) ResetBannerSectionText() {
+	m.banner_section_text = nil
+}
+
+// SetThreeItemsSectionHeadingText sets the "three_items_section_heading_text" field.
+func (m *WebsiteMutation) SetThreeItemsSectionHeadingText(s string) {
+	m.three_items_section_heading_text = &s
+}
+
+// ThreeItemsSectionHeadingText returns the value of the "three_items_section_heading_text" field in the mutation.
+func (m *WebsiteMutation) ThreeItemsSectionHeadingText() (r string, exists bool) {
+	v := m.three_items_section_heading_text
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldThreeItemsSectionHeadingText returns the old "three_items_section_heading_text" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldThreeItemsSectionHeadingText(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldThreeItemsSectionHeadingText is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldThreeItemsSectionHeadingText requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldThreeItemsSectionHeadingText: %w", err)
+	}
+	return oldValue.ThreeItemsSectionHeadingText, nil
+}
+
+// ResetThreeItemsSectionHeadingText resets all changes to the "three_items_section_heading_text" field.
+func (m *WebsiteMutation) ResetThreeItemsSectionHeadingText() {
+	m.three_items_section_heading_text = nil
+}
+
+// SetThreeItemsSectionDetailsText sets the "three_items_section_details_text" field.
+func (m *WebsiteMutation) SetThreeItemsSectionDetailsText(s string) {
+	m.three_items_section_details_text = &s
+}
+
+// ThreeItemsSectionDetailsText returns the value of the "three_items_section_details_text" field in the mutation.
+func (m *WebsiteMutation) ThreeItemsSectionDetailsText() (r string, exists bool) {
+	v := m.three_items_section_details_text
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldThreeItemsSectionDetailsText returns the old "three_items_section_details_text" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldThreeItemsSectionDetailsText(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldThreeItemsSectionDetailsText is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldThreeItemsSectionDetailsText requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldThreeItemsSectionDetailsText: %w", err)
+	}
+	return oldValue.ThreeItemsSectionDetailsText, nil
+}
+
+// ResetThreeItemsSectionDetailsText resets all changes to the "three_items_section_details_text" field.
+func (m *WebsiteMutation) ResetThreeItemsSectionDetailsText() {
+	m.three_items_section_details_text = nil
+}
+
+// SetThreeItemsSectionItemOneText sets the "three_items_section_item_one_text" field.
+func (m *WebsiteMutation) SetThreeItemsSectionItemOneText(s string) {
+	m.three_items_section_item_one_text = &s
+}
+
+// ThreeItemsSectionItemOneText returns the value of the "three_items_section_item_one_text" field in the mutation.
+func (m *WebsiteMutation) ThreeItemsSectionItemOneText() (r string, exists bool) {
+	v := m.three_items_section_item_one_text
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldThreeItemsSectionItemOneText returns the old "three_items_section_item_one_text" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldThreeItemsSectionItemOneText(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldThreeItemsSectionItemOneText is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldThreeItemsSectionItemOneText requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldThreeItemsSectionItemOneText: %w", err)
+	}
+	return oldValue.ThreeItemsSectionItemOneText, nil
+}
+
+// ResetThreeItemsSectionItemOneText resets all changes to the "three_items_section_item_one_text" field.
+func (m *WebsiteMutation) ResetThreeItemsSectionItemOneText() {
+	m.three_items_section_item_one_text = nil
+}
+
+// SetThreeItemsSectionItemTwoText sets the "three_items_section_item_two_text" field.
+func (m *WebsiteMutation) SetThreeItemsSectionItemTwoText(s string) {
+	m.three_items_section_item_two_text = &s
+}
+
+// ThreeItemsSectionItemTwoText returns the value of the "three_items_section_item_two_text" field in the mutation.
+func (m *WebsiteMutation) ThreeItemsSectionItemTwoText() (r string, exists bool) {
+	v := m.three_items_section_item_two_text
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldThreeItemsSectionItemTwoText returns the old "three_items_section_item_two_text" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldThreeItemsSectionItemTwoText(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldThreeItemsSectionItemTwoText is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldThreeItemsSectionItemTwoText requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldThreeItemsSectionItemTwoText: %w", err)
+	}
+	return oldValue.ThreeItemsSectionItemTwoText, nil
+}
+
+// ResetThreeItemsSectionItemTwoText resets all changes to the "three_items_section_item_two_text" field.
+func (m *WebsiteMutation) ResetThreeItemsSectionItemTwoText() {
+	m.three_items_section_item_two_text = nil
+}
+
+// SetThreeItemsSectionItemThreeText sets the "three_items_section_item_three_text" field.
+func (m *WebsiteMutation) SetThreeItemsSectionItemThreeText(s string) {
+	m.three_items_section_item_three_text = &s
+}
+
+// ThreeItemsSectionItemThreeText returns the value of the "three_items_section_item_three_text" field in the mutation.
+func (m *WebsiteMutation) ThreeItemsSectionItemThreeText() (r string, exists bool) {
+	v := m.three_items_section_item_three_text
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldThreeItemsSectionItemThreeText returns the old "three_items_section_item_three_text" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldThreeItemsSectionItemThreeText(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldThreeItemsSectionItemThreeText is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldThreeItemsSectionItemThreeText requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldThreeItemsSectionItemThreeText: %w", err)
+	}
+	return oldValue.ThreeItemsSectionItemThreeText, nil
+}
+
+// ResetThreeItemsSectionItemThreeText resets all changes to the "three_items_section_item_three_text" field.
+func (m *WebsiteMutation) ResetThreeItemsSectionItemThreeText() {
+	m.three_items_section_item_three_text = nil
+}
+
+// SetBannerTwoSectionBackgroundImage sets the "banner_two_section_background_image" field.
+func (m *WebsiteMutation) SetBannerTwoSectionBackgroundImage(s string) {
+	m.banner_two_section_background_image = &s
+}
+
+// BannerTwoSectionBackgroundImage returns the value of the "banner_two_section_background_image" field in the mutation.
+func (m *WebsiteMutation) BannerTwoSectionBackgroundImage() (r string, exists bool) {
+	v := m.banner_two_section_background_image
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBannerTwoSectionBackgroundImage returns the old "banner_two_section_background_image" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldBannerTwoSectionBackgroundImage(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBannerTwoSectionBackgroundImage is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBannerTwoSectionBackgroundImage requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBannerTwoSectionBackgroundImage: %w", err)
+	}
+	return oldValue.BannerTwoSectionBackgroundImage, nil
+}
+
+// ResetBannerTwoSectionBackgroundImage resets all changes to the "banner_two_section_background_image" field.
+func (m *WebsiteMutation) ResetBannerTwoSectionBackgroundImage() {
+	m.banner_two_section_background_image = nil
+}
+
+// SetBannerTwoSectionBackgroundColor sets the "banner_two_section_background_color" field.
+func (m *WebsiteMutation) SetBannerTwoSectionBackgroundColor(s string) {
+	m.banner_two_section_background_color = &s
+}
+
+// BannerTwoSectionBackgroundColor returns the value of the "banner_two_section_background_color" field in the mutation.
+func (m *WebsiteMutation) BannerTwoSectionBackgroundColor() (r string, exists bool) {
+	v := m.banner_two_section_background_color
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBannerTwoSectionBackgroundColor returns the old "banner_two_section_background_color" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldBannerTwoSectionBackgroundColor(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBannerTwoSectionBackgroundColor is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBannerTwoSectionBackgroundColor requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBannerTwoSectionBackgroundColor: %w", err)
+	}
+	return oldValue.BannerTwoSectionBackgroundColor, nil
+}
+
+// ResetBannerTwoSectionBackgroundColor resets all changes to the "banner_two_section_background_color" field.
+func (m *WebsiteMutation) ResetBannerTwoSectionBackgroundColor() {
+	m.banner_two_section_background_color = nil
+}
+
+// SetBannerTwoLeftSectionHeadingText sets the "banner_two_left_section_heading_text" field.
+func (m *WebsiteMutation) SetBannerTwoLeftSectionHeadingText(s string) {
+	m.banner_two_left_section_heading_text = &s
+}
+
+// BannerTwoLeftSectionHeadingText returns the value of the "banner_two_left_section_heading_text" field in the mutation.
+func (m *WebsiteMutation) BannerTwoLeftSectionHeadingText() (r string, exists bool) {
+	v := m.banner_two_left_section_heading_text
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBannerTwoLeftSectionHeadingText returns the old "banner_two_left_section_heading_text" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldBannerTwoLeftSectionHeadingText(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBannerTwoLeftSectionHeadingText is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBannerTwoLeftSectionHeadingText requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBannerTwoLeftSectionHeadingText: %w", err)
+	}
+	return oldValue.BannerTwoLeftSectionHeadingText, nil
+}
+
+// ResetBannerTwoLeftSectionHeadingText resets all changes to the "banner_two_left_section_heading_text" field.
+func (m *WebsiteMutation) ResetBannerTwoLeftSectionHeadingText() {
+	m.banner_two_left_section_heading_text = nil
+}
+
+// SetBannerTwoLeftSectionDetailsText sets the "banner_two_left_section_details_text" field.
+func (m *WebsiteMutation) SetBannerTwoLeftSectionDetailsText(s string) {
+	m.banner_two_left_section_details_text = &s
+}
+
+// BannerTwoLeftSectionDetailsText returns the value of the "banner_two_left_section_details_text" field in the mutation.
+func (m *WebsiteMutation) BannerTwoLeftSectionDetailsText() (r string, exists bool) {
+	v := m.banner_two_left_section_details_text
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBannerTwoLeftSectionDetailsText returns the old "banner_two_left_section_details_text" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldBannerTwoLeftSectionDetailsText(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBannerTwoLeftSectionDetailsText is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBannerTwoLeftSectionDetailsText requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBannerTwoLeftSectionDetailsText: %w", err)
+	}
+	return oldValue.BannerTwoLeftSectionDetailsText, nil
+}
+
+// ResetBannerTwoLeftSectionDetailsText resets all changes to the "banner_two_left_section_details_text" field.
+func (m *WebsiteMutation) ResetBannerTwoLeftSectionDetailsText() {
+	m.banner_two_left_section_details_text = nil
+}
+
+// SetBannerTwoLeftSectionButtonText sets the "banner_two_left_section_button_text" field.
+func (m *WebsiteMutation) SetBannerTwoLeftSectionButtonText(s string) {
+	m.banner_two_left_section_button_text = &s
+}
+
+// BannerTwoLeftSectionButtonText returns the value of the "banner_two_left_section_button_text" field in the mutation.
+func (m *WebsiteMutation) BannerTwoLeftSectionButtonText() (r string, exists bool) {
+	v := m.banner_two_left_section_button_text
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBannerTwoLeftSectionButtonText returns the old "banner_two_left_section_button_text" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldBannerTwoLeftSectionButtonText(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBannerTwoLeftSectionButtonText is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBannerTwoLeftSectionButtonText requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBannerTwoLeftSectionButtonText: %w", err)
+	}
+	return oldValue.BannerTwoLeftSectionButtonText, nil
+}
+
+// ResetBannerTwoLeftSectionButtonText resets all changes to the "banner_two_left_section_button_text" field.
+func (m *WebsiteMutation) ResetBannerTwoLeftSectionButtonText() {
+	m.banner_two_left_section_button_text = nil
+}
+
+// SetBannerTwoLeftSectionButtonLink sets the "banner_two_left_section_button_link" field.
+func (m *WebsiteMutation) SetBannerTwoLeftSectionButtonLink(s string) {
+	m.banner_two_left_section_button_link = &s
+}
+
+// BannerTwoLeftSectionButtonLink returns the value of the "banner_two_left_section_button_link" field in the mutation.
+func (m *WebsiteMutation) BannerTwoLeftSectionButtonLink() (r string, exists bool) {
+	v := m.banner_two_left_section_button_link
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBannerTwoLeftSectionButtonLink returns the old "banner_two_left_section_button_link" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldBannerTwoLeftSectionButtonLink(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBannerTwoLeftSectionButtonLink is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBannerTwoLeftSectionButtonLink requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBannerTwoLeftSectionButtonLink: %w", err)
+	}
+	return oldValue.BannerTwoLeftSectionButtonLink, nil
+}
+
+// ResetBannerTwoLeftSectionButtonLink resets all changes to the "banner_two_left_section_button_link" field.
+func (m *WebsiteMutation) ResetBannerTwoLeftSectionButtonLink() {
+	m.banner_two_left_section_button_link = nil
+}
+
+// SetBannerTwoRightSideImage sets the "banner_two_right_side_image" field.
+func (m *WebsiteMutation) SetBannerTwoRightSideImage(s string) {
+	m.banner_two_right_side_image = &s
+}
+
+// BannerTwoRightSideImage returns the value of the "banner_two_right_side_image" field in the mutation.
+func (m *WebsiteMutation) BannerTwoRightSideImage() (r string, exists bool) {
+	v := m.banner_two_right_side_image
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBannerTwoRightSideImage returns the old "banner_two_right_side_image" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldBannerTwoRightSideImage(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBannerTwoRightSideImage is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBannerTwoRightSideImage requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBannerTwoRightSideImage: %w", err)
+	}
+	return oldValue.BannerTwoRightSideImage, nil
+}
+
+// ResetBannerTwoRightSideImage resets all changes to the "banner_two_right_side_image" field.
+func (m *WebsiteMutation) ResetBannerTwoRightSideImage() {
+	m.banner_two_right_side_image = nil
+}
+
+// SetAchievementsSection sets the "achievements_section" field.
+func (m *WebsiteMutation) SetAchievementsSection(value map[string]interface{}) {
+	m.achievements_section = &value
+}
+
+// AchievementsSection returns the value of the "achievements_section" field in the mutation.
+func (m *WebsiteMutation) AchievementsSection() (r map[string]interface{}, exists bool) {
+	v := m.achievements_section
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAchievementsSection returns the old "achievements_section" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldAchievementsSection(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAchievementsSection is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAchievementsSection requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAchievementsSection: %w", err)
+	}
+	return oldValue.AchievementsSection, nil
+}
+
+// ResetAchievementsSection resets all changes to the "achievements_section" field.
+func (m *WebsiteMutation) ResetAchievementsSection() {
+	m.achievements_section = nil
+}
+
+// SetInventorySectionHeadingText sets the "Inventory_section_heading_text" field.
+func (m *WebsiteMutation) SetInventorySectionHeadingText(s string) {
+	m._Inventory_section_heading_text = &s
+}
+
+// InventorySectionHeadingText returns the value of the "Inventory_section_heading_text" field in the mutation.
+func (m *WebsiteMutation) InventorySectionHeadingText() (r string, exists bool) {
+	v := m._Inventory_section_heading_text
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldInventorySectionHeadingText returns the old "Inventory_section_heading_text" field's value of the Website entity.
+// If the Website object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WebsiteMutation) OldInventorySectionHeadingText(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldInventorySectionHeadingText is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldInventorySectionHeadingText requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldInventorySectionHeadingText: %w", err)
+	}
+	return oldValue.InventorySectionHeadingText, nil
+}
+
+// ResetInventorySectionHeadingText resets all changes to the "Inventory_section_heading_text" field.
+func (m *WebsiteMutation) ResetInventorySectionHeadingText() {
+	m._Inventory_section_heading_text = nil
 }
 
 // SetCreationDate sets the "creationDate" field.
@@ -44528,9 +46938,69 @@ func (m *WebsiteMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *WebsiteMutation) Fields() []string {
-	fields := make([]string, 0, 26)
+	fields := make([]string, 0, 46)
 	if m.domainName != nil {
 		fields = append(fields, website.FieldDomainName)
+	}
+	if m.heading_text != nil {
+		fields = append(fields, website.FieldHeadingText)
+	}
+	if m.business_logo != nil {
+		fields = append(fields, website.FieldBusinessLogo)
+	}
+	if m.business_name != nil {
+		fields = append(fields, website.FieldBusinessName)
+	}
+	if m.banner_section_background_image != nil {
+		fields = append(fields, website.FieldBannerSectionBackgroundImage)
+	}
+	if m.banner_section_background_color != nil {
+		fields = append(fields, website.FieldBannerSectionBackgroundColor)
+	}
+	if m.banner_section_text != nil {
+		fields = append(fields, website.FieldBannerSectionText)
+	}
+	if m.three_items_section_heading_text != nil {
+		fields = append(fields, website.FieldThreeItemsSectionHeadingText)
+	}
+	if m.three_items_section_details_text != nil {
+		fields = append(fields, website.FieldThreeItemsSectionDetailsText)
+	}
+	if m.three_items_section_item_one_text != nil {
+		fields = append(fields, website.FieldThreeItemsSectionItemOneText)
+	}
+	if m.three_items_section_item_two_text != nil {
+		fields = append(fields, website.FieldThreeItemsSectionItemTwoText)
+	}
+	if m.three_items_section_item_three_text != nil {
+		fields = append(fields, website.FieldThreeItemsSectionItemThreeText)
+	}
+	if m.banner_two_section_background_image != nil {
+		fields = append(fields, website.FieldBannerTwoSectionBackgroundImage)
+	}
+	if m.banner_two_section_background_color != nil {
+		fields = append(fields, website.FieldBannerTwoSectionBackgroundColor)
+	}
+	if m.banner_two_left_section_heading_text != nil {
+		fields = append(fields, website.FieldBannerTwoLeftSectionHeadingText)
+	}
+	if m.banner_two_left_section_details_text != nil {
+		fields = append(fields, website.FieldBannerTwoLeftSectionDetailsText)
+	}
+	if m.banner_two_left_section_button_text != nil {
+		fields = append(fields, website.FieldBannerTwoLeftSectionButtonText)
+	}
+	if m.banner_two_left_section_button_link != nil {
+		fields = append(fields, website.FieldBannerTwoLeftSectionButtonLink)
+	}
+	if m.banner_two_right_side_image != nil {
+		fields = append(fields, website.FieldBannerTwoRightSideImage)
+	}
+	if m.achievements_section != nil {
+		fields = append(fields, website.FieldAchievementsSection)
+	}
+	if m._Inventory_section_heading_text != nil {
+		fields = append(fields, website.FieldInventorySectionHeadingText)
 	}
 	if m.creationDate != nil {
 		fields = append(fields, website.FieldCreationDate)
@@ -44617,6 +47087,46 @@ func (m *WebsiteMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case website.FieldDomainName:
 		return m.DomainName()
+	case website.FieldHeadingText:
+		return m.HeadingText()
+	case website.FieldBusinessLogo:
+		return m.BusinessLogo()
+	case website.FieldBusinessName:
+		return m.BusinessName()
+	case website.FieldBannerSectionBackgroundImage:
+		return m.BannerSectionBackgroundImage()
+	case website.FieldBannerSectionBackgroundColor:
+		return m.BannerSectionBackgroundColor()
+	case website.FieldBannerSectionText:
+		return m.BannerSectionText()
+	case website.FieldThreeItemsSectionHeadingText:
+		return m.ThreeItemsSectionHeadingText()
+	case website.FieldThreeItemsSectionDetailsText:
+		return m.ThreeItemsSectionDetailsText()
+	case website.FieldThreeItemsSectionItemOneText:
+		return m.ThreeItemsSectionItemOneText()
+	case website.FieldThreeItemsSectionItemTwoText:
+		return m.ThreeItemsSectionItemTwoText()
+	case website.FieldThreeItemsSectionItemThreeText:
+		return m.ThreeItemsSectionItemThreeText()
+	case website.FieldBannerTwoSectionBackgroundImage:
+		return m.BannerTwoSectionBackgroundImage()
+	case website.FieldBannerTwoSectionBackgroundColor:
+		return m.BannerTwoSectionBackgroundColor()
+	case website.FieldBannerTwoLeftSectionHeadingText:
+		return m.BannerTwoLeftSectionHeadingText()
+	case website.FieldBannerTwoLeftSectionDetailsText:
+		return m.BannerTwoLeftSectionDetailsText()
+	case website.FieldBannerTwoLeftSectionButtonText:
+		return m.BannerTwoLeftSectionButtonText()
+	case website.FieldBannerTwoLeftSectionButtonLink:
+		return m.BannerTwoLeftSectionButtonLink()
+	case website.FieldBannerTwoRightSideImage:
+		return m.BannerTwoRightSideImage()
+	case website.FieldAchievementsSection:
+		return m.AchievementsSection()
+	case website.FieldInventorySectionHeadingText:
+		return m.InventorySectionHeadingText()
 	case website.FieldCreationDate:
 		return m.CreationDate()
 	case website.FieldLastUpdated:
@@ -44678,6 +47188,46 @@ func (m *WebsiteMutation) OldField(ctx context.Context, name string) (ent.Value,
 	switch name {
 	case website.FieldDomainName:
 		return m.OldDomainName(ctx)
+	case website.FieldHeadingText:
+		return m.OldHeadingText(ctx)
+	case website.FieldBusinessLogo:
+		return m.OldBusinessLogo(ctx)
+	case website.FieldBusinessName:
+		return m.OldBusinessName(ctx)
+	case website.FieldBannerSectionBackgroundImage:
+		return m.OldBannerSectionBackgroundImage(ctx)
+	case website.FieldBannerSectionBackgroundColor:
+		return m.OldBannerSectionBackgroundColor(ctx)
+	case website.FieldBannerSectionText:
+		return m.OldBannerSectionText(ctx)
+	case website.FieldThreeItemsSectionHeadingText:
+		return m.OldThreeItemsSectionHeadingText(ctx)
+	case website.FieldThreeItemsSectionDetailsText:
+		return m.OldThreeItemsSectionDetailsText(ctx)
+	case website.FieldThreeItemsSectionItemOneText:
+		return m.OldThreeItemsSectionItemOneText(ctx)
+	case website.FieldThreeItemsSectionItemTwoText:
+		return m.OldThreeItemsSectionItemTwoText(ctx)
+	case website.FieldThreeItemsSectionItemThreeText:
+		return m.OldThreeItemsSectionItemThreeText(ctx)
+	case website.FieldBannerTwoSectionBackgroundImage:
+		return m.OldBannerTwoSectionBackgroundImage(ctx)
+	case website.FieldBannerTwoSectionBackgroundColor:
+		return m.OldBannerTwoSectionBackgroundColor(ctx)
+	case website.FieldBannerTwoLeftSectionHeadingText:
+		return m.OldBannerTwoLeftSectionHeadingText(ctx)
+	case website.FieldBannerTwoLeftSectionDetailsText:
+		return m.OldBannerTwoLeftSectionDetailsText(ctx)
+	case website.FieldBannerTwoLeftSectionButtonText:
+		return m.OldBannerTwoLeftSectionButtonText(ctx)
+	case website.FieldBannerTwoLeftSectionButtonLink:
+		return m.OldBannerTwoLeftSectionButtonLink(ctx)
+	case website.FieldBannerTwoRightSideImage:
+		return m.OldBannerTwoRightSideImage(ctx)
+	case website.FieldAchievementsSection:
+		return m.OldAchievementsSection(ctx)
+	case website.FieldInventorySectionHeadingText:
+		return m.OldInventorySectionHeadingText(ctx)
 	case website.FieldCreationDate:
 		return m.OldCreationDate(ctx)
 	case website.FieldLastUpdated:
@@ -44743,6 +47293,146 @@ func (m *WebsiteMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDomainName(v)
+		return nil
+	case website.FieldHeadingText:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHeadingText(v)
+		return nil
+	case website.FieldBusinessLogo:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBusinessLogo(v)
+		return nil
+	case website.FieldBusinessName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBusinessName(v)
+		return nil
+	case website.FieldBannerSectionBackgroundImage:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBannerSectionBackgroundImage(v)
+		return nil
+	case website.FieldBannerSectionBackgroundColor:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBannerSectionBackgroundColor(v)
+		return nil
+	case website.FieldBannerSectionText:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBannerSectionText(v)
+		return nil
+	case website.FieldThreeItemsSectionHeadingText:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetThreeItemsSectionHeadingText(v)
+		return nil
+	case website.FieldThreeItemsSectionDetailsText:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetThreeItemsSectionDetailsText(v)
+		return nil
+	case website.FieldThreeItemsSectionItemOneText:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetThreeItemsSectionItemOneText(v)
+		return nil
+	case website.FieldThreeItemsSectionItemTwoText:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetThreeItemsSectionItemTwoText(v)
+		return nil
+	case website.FieldThreeItemsSectionItemThreeText:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetThreeItemsSectionItemThreeText(v)
+		return nil
+	case website.FieldBannerTwoSectionBackgroundImage:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBannerTwoSectionBackgroundImage(v)
+		return nil
+	case website.FieldBannerTwoSectionBackgroundColor:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBannerTwoSectionBackgroundColor(v)
+		return nil
+	case website.FieldBannerTwoLeftSectionHeadingText:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBannerTwoLeftSectionHeadingText(v)
+		return nil
+	case website.FieldBannerTwoLeftSectionDetailsText:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBannerTwoLeftSectionDetailsText(v)
+		return nil
+	case website.FieldBannerTwoLeftSectionButtonText:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBannerTwoLeftSectionButtonText(v)
+		return nil
+	case website.FieldBannerTwoLeftSectionButtonLink:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBannerTwoLeftSectionButtonLink(v)
+		return nil
+	case website.FieldBannerTwoRightSideImage:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBannerTwoRightSideImage(v)
+		return nil
+	case website.FieldAchievementsSection:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAchievementsSection(v)
+		return nil
+	case website.FieldInventorySectionHeadingText:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetInventorySectionHeadingText(v)
 		return nil
 	case website.FieldCreationDate:
 		v, ok := value.(time.Time)
@@ -44970,6 +47660,66 @@ func (m *WebsiteMutation) ResetField(name string) error {
 	switch name {
 	case website.FieldDomainName:
 		m.ResetDomainName()
+		return nil
+	case website.FieldHeadingText:
+		m.ResetHeadingText()
+		return nil
+	case website.FieldBusinessLogo:
+		m.ResetBusinessLogo()
+		return nil
+	case website.FieldBusinessName:
+		m.ResetBusinessName()
+		return nil
+	case website.FieldBannerSectionBackgroundImage:
+		m.ResetBannerSectionBackgroundImage()
+		return nil
+	case website.FieldBannerSectionBackgroundColor:
+		m.ResetBannerSectionBackgroundColor()
+		return nil
+	case website.FieldBannerSectionText:
+		m.ResetBannerSectionText()
+		return nil
+	case website.FieldThreeItemsSectionHeadingText:
+		m.ResetThreeItemsSectionHeadingText()
+		return nil
+	case website.FieldThreeItemsSectionDetailsText:
+		m.ResetThreeItemsSectionDetailsText()
+		return nil
+	case website.FieldThreeItemsSectionItemOneText:
+		m.ResetThreeItemsSectionItemOneText()
+		return nil
+	case website.FieldThreeItemsSectionItemTwoText:
+		m.ResetThreeItemsSectionItemTwoText()
+		return nil
+	case website.FieldThreeItemsSectionItemThreeText:
+		m.ResetThreeItemsSectionItemThreeText()
+		return nil
+	case website.FieldBannerTwoSectionBackgroundImage:
+		m.ResetBannerTwoSectionBackgroundImage()
+		return nil
+	case website.FieldBannerTwoSectionBackgroundColor:
+		m.ResetBannerTwoSectionBackgroundColor()
+		return nil
+	case website.FieldBannerTwoLeftSectionHeadingText:
+		m.ResetBannerTwoLeftSectionHeadingText()
+		return nil
+	case website.FieldBannerTwoLeftSectionDetailsText:
+		m.ResetBannerTwoLeftSectionDetailsText()
+		return nil
+	case website.FieldBannerTwoLeftSectionButtonText:
+		m.ResetBannerTwoLeftSectionButtonText()
+		return nil
+	case website.FieldBannerTwoLeftSectionButtonLink:
+		m.ResetBannerTwoLeftSectionButtonLink()
+		return nil
+	case website.FieldBannerTwoRightSideImage:
+		m.ResetBannerTwoRightSideImage()
+		return nil
+	case website.FieldAchievementsSection:
+		m.ResetAchievementsSection()
+		return nil
+	case website.FieldInventorySectionHeadingText:
+		m.ResetInventorySectionHeadingText()
 		return nil
 	case website.FieldCreationDate:
 		m.ResetCreationDate()

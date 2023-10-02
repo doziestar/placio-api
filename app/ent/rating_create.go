@@ -316,11 +316,15 @@ func (rc *RatingCreate) createSpec() (*Rating, *sqlgraph.CreateSpec) {
 // RatingCreateBulk is the builder for creating many Rating entities in bulk.
 type RatingCreateBulk struct {
 	config
+	err      error
 	builders []*RatingCreate
 }
 
 // Save creates the Rating entities in the database.
 func (rcb *RatingCreateBulk) Save(ctx context.Context) ([]*Rating, error) {
+	if rcb.err != nil {
+		return nil, rcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(rcb.builders))
 	nodes := make([]*Rating, len(rcb.builders))
 	mutators := make([]Mutator, len(rcb.builders))

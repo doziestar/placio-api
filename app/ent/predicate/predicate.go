@@ -9,6 +9,9 @@ import (
 // AccountSettings is the predicate function for accountsettings builders.
 type AccountSettings func(*sql.Selector)
 
+// AccountWallet is the predicate function for accountwallet builders.
+type AccountWallet func(*sql.Selector)
+
 // Amenity is the predicate function for amenity builders.
 type Amenity func(*sql.Selector)
 

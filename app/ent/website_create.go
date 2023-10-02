@@ -30,6 +30,126 @@ func (wc *WebsiteCreate) SetDomainName(s string) *WebsiteCreate {
 	return wc
 }
 
+// SetHeadingText sets the "heading_text" field.
+func (wc *WebsiteCreate) SetHeadingText(s string) *WebsiteCreate {
+	wc.mutation.SetHeadingText(s)
+	return wc
+}
+
+// SetBusinessLogo sets the "business_logo" field.
+func (wc *WebsiteCreate) SetBusinessLogo(s string) *WebsiteCreate {
+	wc.mutation.SetBusinessLogo(s)
+	return wc
+}
+
+// SetBusinessName sets the "business_name" field.
+func (wc *WebsiteCreate) SetBusinessName(s string) *WebsiteCreate {
+	wc.mutation.SetBusinessName(s)
+	return wc
+}
+
+// SetBannerSectionBackgroundImage sets the "banner_section_background_image" field.
+func (wc *WebsiteCreate) SetBannerSectionBackgroundImage(s string) *WebsiteCreate {
+	wc.mutation.SetBannerSectionBackgroundImage(s)
+	return wc
+}
+
+// SetBannerSectionBackgroundColor sets the "banner_section_background_color" field.
+func (wc *WebsiteCreate) SetBannerSectionBackgroundColor(s string) *WebsiteCreate {
+	wc.mutation.SetBannerSectionBackgroundColor(s)
+	return wc
+}
+
+// SetBannerSectionText sets the "banner_section_text" field.
+func (wc *WebsiteCreate) SetBannerSectionText(s string) *WebsiteCreate {
+	wc.mutation.SetBannerSectionText(s)
+	return wc
+}
+
+// SetThreeItemsSectionHeadingText sets the "three_items_section_heading_text" field.
+func (wc *WebsiteCreate) SetThreeItemsSectionHeadingText(s string) *WebsiteCreate {
+	wc.mutation.SetThreeItemsSectionHeadingText(s)
+	return wc
+}
+
+// SetThreeItemsSectionDetailsText sets the "three_items_section_details_text" field.
+func (wc *WebsiteCreate) SetThreeItemsSectionDetailsText(s string) *WebsiteCreate {
+	wc.mutation.SetThreeItemsSectionDetailsText(s)
+	return wc
+}
+
+// SetThreeItemsSectionItemOneText sets the "three_items_section_item_one_text" field.
+func (wc *WebsiteCreate) SetThreeItemsSectionItemOneText(s string) *WebsiteCreate {
+	wc.mutation.SetThreeItemsSectionItemOneText(s)
+	return wc
+}
+
+// SetThreeItemsSectionItemTwoText sets the "three_items_section_item_two_text" field.
+func (wc *WebsiteCreate) SetThreeItemsSectionItemTwoText(s string) *WebsiteCreate {
+	wc.mutation.SetThreeItemsSectionItemTwoText(s)
+	return wc
+}
+
+// SetThreeItemsSectionItemThreeText sets the "three_items_section_item_three_text" field.
+func (wc *WebsiteCreate) SetThreeItemsSectionItemThreeText(s string) *WebsiteCreate {
+	wc.mutation.SetThreeItemsSectionItemThreeText(s)
+	return wc
+}
+
+// SetBannerTwoSectionBackgroundImage sets the "banner_two_section_background_image" field.
+func (wc *WebsiteCreate) SetBannerTwoSectionBackgroundImage(s string) *WebsiteCreate {
+	wc.mutation.SetBannerTwoSectionBackgroundImage(s)
+	return wc
+}
+
+// SetBannerTwoSectionBackgroundColor sets the "banner_two_section_background_color" field.
+func (wc *WebsiteCreate) SetBannerTwoSectionBackgroundColor(s string) *WebsiteCreate {
+	wc.mutation.SetBannerTwoSectionBackgroundColor(s)
+	return wc
+}
+
+// SetBannerTwoLeftSectionHeadingText sets the "banner_two_left_section_heading_text" field.
+func (wc *WebsiteCreate) SetBannerTwoLeftSectionHeadingText(s string) *WebsiteCreate {
+	wc.mutation.SetBannerTwoLeftSectionHeadingText(s)
+	return wc
+}
+
+// SetBannerTwoLeftSectionDetailsText sets the "banner_two_left_section_details_text" field.
+func (wc *WebsiteCreate) SetBannerTwoLeftSectionDetailsText(s string) *WebsiteCreate {
+	wc.mutation.SetBannerTwoLeftSectionDetailsText(s)
+	return wc
+}
+
+// SetBannerTwoLeftSectionButtonText sets the "banner_two_left_section_button_text" field.
+func (wc *WebsiteCreate) SetBannerTwoLeftSectionButtonText(s string) *WebsiteCreate {
+	wc.mutation.SetBannerTwoLeftSectionButtonText(s)
+	return wc
+}
+
+// SetBannerTwoLeftSectionButtonLink sets the "banner_two_left_section_button_link" field.
+func (wc *WebsiteCreate) SetBannerTwoLeftSectionButtonLink(s string) *WebsiteCreate {
+	wc.mutation.SetBannerTwoLeftSectionButtonLink(s)
+	return wc
+}
+
+// SetBannerTwoRightSideImage sets the "banner_two_right_side_image" field.
+func (wc *WebsiteCreate) SetBannerTwoRightSideImage(s string) *WebsiteCreate {
+	wc.mutation.SetBannerTwoRightSideImage(s)
+	return wc
+}
+
+// SetAchievementsSection sets the "achievements_section" field.
+func (wc *WebsiteCreate) SetAchievementsSection(m map[string]interface{}) *WebsiteCreate {
+	wc.mutation.SetAchievementsSection(m)
+	return wc
+}
+
+// SetInventorySectionHeadingText sets the "Inventory_section_heading_text" field.
+func (wc *WebsiteCreate) SetInventorySectionHeadingText(s string) *WebsiteCreate {
+	wc.mutation.SetInventorySectionHeadingText(s)
+	return wc
+}
+
 // SetCreationDate sets the "creationDate" field.
 func (wc *WebsiteCreate) SetCreationDate(t time.Time) *WebsiteCreate {
 	wc.mutation.SetCreationDate(t)
@@ -188,6 +308,12 @@ func (wc *WebsiteCreate) SetMetaTags(m map[string]interface{}) *WebsiteCreate {
 	return wc
 }
 
+// SetID sets the "id" field.
+func (wc *WebsiteCreate) SetID(s string) *WebsiteCreate {
+	wc.mutation.SetID(s)
+	return wc
+}
+
 // SetBusinessID sets the "business" edge to the Business entity by ID.
 func (wc *WebsiteCreate) SetBusinessID(id string) *WebsiteCreate {
 	wc.mutation.SetBusinessID(id)
@@ -285,6 +411,66 @@ func (wc *WebsiteCreate) defaults() {
 func (wc *WebsiteCreate) check() error {
 	if _, ok := wc.mutation.DomainName(); !ok {
 		return &ValidationError{Name: "domainName", err: errors.New(`ent: missing required field "Website.domainName"`)}
+	}
+	if _, ok := wc.mutation.HeadingText(); !ok {
+		return &ValidationError{Name: "heading_text", err: errors.New(`ent: missing required field "Website.heading_text"`)}
+	}
+	if _, ok := wc.mutation.BusinessLogo(); !ok {
+		return &ValidationError{Name: "business_logo", err: errors.New(`ent: missing required field "Website.business_logo"`)}
+	}
+	if _, ok := wc.mutation.BusinessName(); !ok {
+		return &ValidationError{Name: "business_name", err: errors.New(`ent: missing required field "Website.business_name"`)}
+	}
+	if _, ok := wc.mutation.BannerSectionBackgroundImage(); !ok {
+		return &ValidationError{Name: "banner_section_background_image", err: errors.New(`ent: missing required field "Website.banner_section_background_image"`)}
+	}
+	if _, ok := wc.mutation.BannerSectionBackgroundColor(); !ok {
+		return &ValidationError{Name: "banner_section_background_color", err: errors.New(`ent: missing required field "Website.banner_section_background_color"`)}
+	}
+	if _, ok := wc.mutation.BannerSectionText(); !ok {
+		return &ValidationError{Name: "banner_section_text", err: errors.New(`ent: missing required field "Website.banner_section_text"`)}
+	}
+	if _, ok := wc.mutation.ThreeItemsSectionHeadingText(); !ok {
+		return &ValidationError{Name: "three_items_section_heading_text", err: errors.New(`ent: missing required field "Website.three_items_section_heading_text"`)}
+	}
+	if _, ok := wc.mutation.ThreeItemsSectionDetailsText(); !ok {
+		return &ValidationError{Name: "three_items_section_details_text", err: errors.New(`ent: missing required field "Website.three_items_section_details_text"`)}
+	}
+	if _, ok := wc.mutation.ThreeItemsSectionItemOneText(); !ok {
+		return &ValidationError{Name: "three_items_section_item_one_text", err: errors.New(`ent: missing required field "Website.three_items_section_item_one_text"`)}
+	}
+	if _, ok := wc.mutation.ThreeItemsSectionItemTwoText(); !ok {
+		return &ValidationError{Name: "three_items_section_item_two_text", err: errors.New(`ent: missing required field "Website.three_items_section_item_two_text"`)}
+	}
+	if _, ok := wc.mutation.ThreeItemsSectionItemThreeText(); !ok {
+		return &ValidationError{Name: "three_items_section_item_three_text", err: errors.New(`ent: missing required field "Website.three_items_section_item_three_text"`)}
+	}
+	if _, ok := wc.mutation.BannerTwoSectionBackgroundImage(); !ok {
+		return &ValidationError{Name: "banner_two_section_background_image", err: errors.New(`ent: missing required field "Website.banner_two_section_background_image"`)}
+	}
+	if _, ok := wc.mutation.BannerTwoSectionBackgroundColor(); !ok {
+		return &ValidationError{Name: "banner_two_section_background_color", err: errors.New(`ent: missing required field "Website.banner_two_section_background_color"`)}
+	}
+	if _, ok := wc.mutation.BannerTwoLeftSectionHeadingText(); !ok {
+		return &ValidationError{Name: "banner_two_left_section_heading_text", err: errors.New(`ent: missing required field "Website.banner_two_left_section_heading_text"`)}
+	}
+	if _, ok := wc.mutation.BannerTwoLeftSectionDetailsText(); !ok {
+		return &ValidationError{Name: "banner_two_left_section_details_text", err: errors.New(`ent: missing required field "Website.banner_two_left_section_details_text"`)}
+	}
+	if _, ok := wc.mutation.BannerTwoLeftSectionButtonText(); !ok {
+		return &ValidationError{Name: "banner_two_left_section_button_text", err: errors.New(`ent: missing required field "Website.banner_two_left_section_button_text"`)}
+	}
+	if _, ok := wc.mutation.BannerTwoLeftSectionButtonLink(); !ok {
+		return &ValidationError{Name: "banner_two_left_section_button_link", err: errors.New(`ent: missing required field "Website.banner_two_left_section_button_link"`)}
+	}
+	if _, ok := wc.mutation.BannerTwoRightSideImage(); !ok {
+		return &ValidationError{Name: "banner_two_right_side_image", err: errors.New(`ent: missing required field "Website.banner_two_right_side_image"`)}
+	}
+	if _, ok := wc.mutation.AchievementsSection(); !ok {
+		return &ValidationError{Name: "achievements_section", err: errors.New(`ent: missing required field "Website.achievements_section"`)}
+	}
+	if _, ok := wc.mutation.InventorySectionHeadingText(); !ok {
+		return &ValidationError{Name: "Inventory_section_heading_text", err: errors.New(`ent: missing required field "Website.Inventory_section_heading_text"`)}
 	}
 	if _, ok := wc.mutation.CreationDate(); !ok {
 		return &ValidationError{Name: "creationDate", err: errors.New(`ent: missing required field "Website.creationDate"`)}
@@ -398,9 +584,93 @@ func (wc *WebsiteCreate) createSpec() (*Website, *sqlgraph.CreateSpec) {
 		_node = &Website{config: wc.config}
 		_spec = sqlgraph.NewCreateSpec(website.Table, sqlgraph.NewFieldSpec(website.FieldID, field.TypeString))
 	)
+	if id, ok := wc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
 	if value, ok := wc.mutation.DomainName(); ok {
 		_spec.SetField(website.FieldDomainName, field.TypeString, value)
 		_node.DomainName = value
+	}
+	if value, ok := wc.mutation.HeadingText(); ok {
+		_spec.SetField(website.FieldHeadingText, field.TypeString, value)
+		_node.HeadingText = value
+	}
+	if value, ok := wc.mutation.BusinessLogo(); ok {
+		_spec.SetField(website.FieldBusinessLogo, field.TypeString, value)
+		_node.BusinessLogo = value
+	}
+	if value, ok := wc.mutation.BusinessName(); ok {
+		_spec.SetField(website.FieldBusinessName, field.TypeString, value)
+		_node.BusinessName = value
+	}
+	if value, ok := wc.mutation.BannerSectionBackgroundImage(); ok {
+		_spec.SetField(website.FieldBannerSectionBackgroundImage, field.TypeString, value)
+		_node.BannerSectionBackgroundImage = value
+	}
+	if value, ok := wc.mutation.BannerSectionBackgroundColor(); ok {
+		_spec.SetField(website.FieldBannerSectionBackgroundColor, field.TypeString, value)
+		_node.BannerSectionBackgroundColor = value
+	}
+	if value, ok := wc.mutation.BannerSectionText(); ok {
+		_spec.SetField(website.FieldBannerSectionText, field.TypeString, value)
+		_node.BannerSectionText = value
+	}
+	if value, ok := wc.mutation.ThreeItemsSectionHeadingText(); ok {
+		_spec.SetField(website.FieldThreeItemsSectionHeadingText, field.TypeString, value)
+		_node.ThreeItemsSectionHeadingText = value
+	}
+	if value, ok := wc.mutation.ThreeItemsSectionDetailsText(); ok {
+		_spec.SetField(website.FieldThreeItemsSectionDetailsText, field.TypeString, value)
+		_node.ThreeItemsSectionDetailsText = value
+	}
+	if value, ok := wc.mutation.ThreeItemsSectionItemOneText(); ok {
+		_spec.SetField(website.FieldThreeItemsSectionItemOneText, field.TypeString, value)
+		_node.ThreeItemsSectionItemOneText = value
+	}
+	if value, ok := wc.mutation.ThreeItemsSectionItemTwoText(); ok {
+		_spec.SetField(website.FieldThreeItemsSectionItemTwoText, field.TypeString, value)
+		_node.ThreeItemsSectionItemTwoText = value
+	}
+	if value, ok := wc.mutation.ThreeItemsSectionItemThreeText(); ok {
+		_spec.SetField(website.FieldThreeItemsSectionItemThreeText, field.TypeString, value)
+		_node.ThreeItemsSectionItemThreeText = value
+	}
+	if value, ok := wc.mutation.BannerTwoSectionBackgroundImage(); ok {
+		_spec.SetField(website.FieldBannerTwoSectionBackgroundImage, field.TypeString, value)
+		_node.BannerTwoSectionBackgroundImage = value
+	}
+	if value, ok := wc.mutation.BannerTwoSectionBackgroundColor(); ok {
+		_spec.SetField(website.FieldBannerTwoSectionBackgroundColor, field.TypeString, value)
+		_node.BannerTwoSectionBackgroundColor = value
+	}
+	if value, ok := wc.mutation.BannerTwoLeftSectionHeadingText(); ok {
+		_spec.SetField(website.FieldBannerTwoLeftSectionHeadingText, field.TypeString, value)
+		_node.BannerTwoLeftSectionHeadingText = value
+	}
+	if value, ok := wc.mutation.BannerTwoLeftSectionDetailsText(); ok {
+		_spec.SetField(website.FieldBannerTwoLeftSectionDetailsText, field.TypeString, value)
+		_node.BannerTwoLeftSectionDetailsText = value
+	}
+	if value, ok := wc.mutation.BannerTwoLeftSectionButtonText(); ok {
+		_spec.SetField(website.FieldBannerTwoLeftSectionButtonText, field.TypeString, value)
+		_node.BannerTwoLeftSectionButtonText = value
+	}
+	if value, ok := wc.mutation.BannerTwoLeftSectionButtonLink(); ok {
+		_spec.SetField(website.FieldBannerTwoLeftSectionButtonLink, field.TypeString, value)
+		_node.BannerTwoLeftSectionButtonLink = value
+	}
+	if value, ok := wc.mutation.BannerTwoRightSideImage(); ok {
+		_spec.SetField(website.FieldBannerTwoRightSideImage, field.TypeString, value)
+		_node.BannerTwoRightSideImage = value
+	}
+	if value, ok := wc.mutation.AchievementsSection(); ok {
+		_spec.SetField(website.FieldAchievementsSection, field.TypeJSON, value)
+		_node.AchievementsSection = value
+	}
+	if value, ok := wc.mutation.InventorySectionHeadingText(); ok {
+		_spec.SetField(website.FieldInventorySectionHeadingText, field.TypeString, value)
+		_node.InventorySectionHeadingText = value
 	}
 	if value, ok := wc.mutation.CreationDate(); ok {
 		_spec.SetField(website.FieldCreationDate, field.TypeTime, value)
@@ -574,11 +844,15 @@ func (wc *WebsiteCreate) createSpec() (*Website, *sqlgraph.CreateSpec) {
 // WebsiteCreateBulk is the builder for creating many Website entities in bulk.
 type WebsiteCreateBulk struct {
 	config
+	err      error
 	builders []*WebsiteCreate
 }
 
 // Save creates the Website entities in the database.
 func (wcb *WebsiteCreateBulk) Save(ctx context.Context) ([]*Website, error) {
+	if wcb.err != nil {
+		return nil, wcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(wcb.builders))
 	nodes := make([]*Website, len(wcb.builders))
 	mutators := make([]Mutator, len(wcb.builders))

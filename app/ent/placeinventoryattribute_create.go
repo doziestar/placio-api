@@ -202,11 +202,15 @@ func (piac *PlaceInventoryAttributeCreate) createSpec() (*PlaceInventoryAttribut
 // PlaceInventoryAttributeCreateBulk is the builder for creating many PlaceInventoryAttribute entities in bulk.
 type PlaceInventoryAttributeCreateBulk struct {
 	config
+	err      error
 	builders []*PlaceInventoryAttributeCreate
 }
 
 // Save creates the PlaceInventoryAttribute entities in the database.
 func (piacb *PlaceInventoryAttributeCreateBulk) Save(ctx context.Context) ([]*PlaceInventoryAttribute, error) {
+	if piacb.err != nil {
+		return nil, piacb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(piacb.builders))
 	nodes := make([]*PlaceInventoryAttribute, len(piacb.builders))
 	mutators := make([]Mutator, len(piacb.builders))

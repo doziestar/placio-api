@@ -220,11 +220,15 @@ func (bfec *BusinessFollowEventCreate) createSpec() (*BusinessFollowEvent, *sqlg
 // BusinessFollowEventCreateBulk is the builder for creating many BusinessFollowEvent entities in bulk.
 type BusinessFollowEventCreateBulk struct {
 	config
+	err      error
 	builders []*BusinessFollowEventCreate
 }
 
 // Save creates the BusinessFollowEvent entities in the database.
 func (bfecb *BusinessFollowEventCreateBulk) Save(ctx context.Context) ([]*BusinessFollowEvent, error) {
+	if bfecb.err != nil {
+		return nil, bfecb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(bfecb.builders))
 	nodes := make([]*BusinessFollowEvent, len(bfecb.builders))
 	mutators := make([]Mutator, len(bfecb.builders))

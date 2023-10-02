@@ -218,11 +218,15 @@ func (ufbc *UserFollowBusinessCreate) createSpec() (*UserFollowBusiness, *sqlgra
 // UserFollowBusinessCreateBulk is the builder for creating many UserFollowBusiness entities in bulk.
 type UserFollowBusinessCreateBulk struct {
 	config
+	err      error
 	builders []*UserFollowBusinessCreate
 }
 
 // Save creates the UserFollowBusiness entities in the database.
 func (ufbcb *UserFollowBusinessCreateBulk) Save(ctx context.Context) ([]*UserFollowBusiness, error) {
+	if ufbcb.err != nil {
+		return nil, ufbcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ufbcb.builders))
 	nodes := make([]*UserFollowBusiness, len(ufbcb.builders))
 	mutators := make([]Mutator, len(ufbcb.builders))

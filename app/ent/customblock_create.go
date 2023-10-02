@@ -135,11 +135,15 @@ func (cbc *CustomBlockCreate) createSpec() (*CustomBlock, *sqlgraph.CreateSpec) 
 // CustomBlockCreateBulk is the builder for creating many CustomBlock entities in bulk.
 type CustomBlockCreateBulk struct {
 	config
+	err      error
 	builders []*CustomBlockCreate
 }
 
 // Save creates the CustomBlock entities in the database.
 func (cbcb *CustomBlockCreateBulk) Save(ctx context.Context) ([]*CustomBlock, error) {
+	if cbcb.err != nil {
+		return nil, cbcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(cbcb.builders))
 	nodes := make([]*CustomBlock, len(cbcb.builders))
 	mutators := make([]Mutator, len(cbcb.builders))

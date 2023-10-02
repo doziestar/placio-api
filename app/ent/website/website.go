@@ -16,6 +16,46 @@ const (
 	FieldID = "id"
 	// FieldDomainName holds the string denoting the domainname field in the database.
 	FieldDomainName = "domain_name"
+	// FieldHeadingText holds the string denoting the heading_text field in the database.
+	FieldHeadingText = "heading_text"
+	// FieldBusinessLogo holds the string denoting the business_logo field in the database.
+	FieldBusinessLogo = "business_logo"
+	// FieldBusinessName holds the string denoting the business_name field in the database.
+	FieldBusinessName = "business_name"
+	// FieldBannerSectionBackgroundImage holds the string denoting the banner_section_background_image field in the database.
+	FieldBannerSectionBackgroundImage = "banner_section_background_image"
+	// FieldBannerSectionBackgroundColor holds the string denoting the banner_section_background_color field in the database.
+	FieldBannerSectionBackgroundColor = "banner_section_background_color"
+	// FieldBannerSectionText holds the string denoting the banner_section_text field in the database.
+	FieldBannerSectionText = "banner_section_text"
+	// FieldThreeItemsSectionHeadingText holds the string denoting the three_items_section_heading_text field in the database.
+	FieldThreeItemsSectionHeadingText = "three_items_section_heading_text"
+	// FieldThreeItemsSectionDetailsText holds the string denoting the three_items_section_details_text field in the database.
+	FieldThreeItemsSectionDetailsText = "three_items_section_details_text"
+	// FieldThreeItemsSectionItemOneText holds the string denoting the three_items_section_item_one_text field in the database.
+	FieldThreeItemsSectionItemOneText = "three_items_section_item_one_text"
+	// FieldThreeItemsSectionItemTwoText holds the string denoting the three_items_section_item_two_text field in the database.
+	FieldThreeItemsSectionItemTwoText = "three_items_section_item_two_text"
+	// FieldThreeItemsSectionItemThreeText holds the string denoting the three_items_section_item_three_text field in the database.
+	FieldThreeItemsSectionItemThreeText = "three_items_section_item_three_text"
+	// FieldBannerTwoSectionBackgroundImage holds the string denoting the banner_two_section_background_image field in the database.
+	FieldBannerTwoSectionBackgroundImage = "banner_two_section_background_image"
+	// FieldBannerTwoSectionBackgroundColor holds the string denoting the banner_two_section_background_color field in the database.
+	FieldBannerTwoSectionBackgroundColor = "banner_two_section_background_color"
+	// FieldBannerTwoLeftSectionHeadingText holds the string denoting the banner_two_left_section_heading_text field in the database.
+	FieldBannerTwoLeftSectionHeadingText = "banner_two_left_section_heading_text"
+	// FieldBannerTwoLeftSectionDetailsText holds the string denoting the banner_two_left_section_details_text field in the database.
+	FieldBannerTwoLeftSectionDetailsText = "banner_two_left_section_details_text"
+	// FieldBannerTwoLeftSectionButtonText holds the string denoting the banner_two_left_section_button_text field in the database.
+	FieldBannerTwoLeftSectionButtonText = "banner_two_left_section_button_text"
+	// FieldBannerTwoLeftSectionButtonLink holds the string denoting the banner_two_left_section_button_link field in the database.
+	FieldBannerTwoLeftSectionButtonLink = "banner_two_left_section_button_link"
+	// FieldBannerTwoRightSideImage holds the string denoting the banner_two_right_side_image field in the database.
+	FieldBannerTwoRightSideImage = "banner_two_right_side_image"
+	// FieldAchievementsSection holds the string denoting the achievements_section field in the database.
+	FieldAchievementsSection = "achievements_section"
+	// FieldInventorySectionHeadingText holds the string denoting the inventory_section_heading_text field in the database.
+	FieldInventorySectionHeadingText = "inventory_section_heading_text"
 	// FieldCreationDate holds the string denoting the creationdate field in the database.
 	FieldCreationDate = "creation_date"
 	// FieldLastUpdated holds the string denoting the lastupdated field in the database.
@@ -110,6 +150,26 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldDomainName,
+	FieldHeadingText,
+	FieldBusinessLogo,
+	FieldBusinessName,
+	FieldBannerSectionBackgroundImage,
+	FieldBannerSectionBackgroundColor,
+	FieldBannerSectionText,
+	FieldThreeItemsSectionHeadingText,
+	FieldThreeItemsSectionDetailsText,
+	FieldThreeItemsSectionItemOneText,
+	FieldThreeItemsSectionItemTwoText,
+	FieldThreeItemsSectionItemThreeText,
+	FieldBannerTwoSectionBackgroundImage,
+	FieldBannerTwoSectionBackgroundColor,
+	FieldBannerTwoLeftSectionHeadingText,
+	FieldBannerTwoLeftSectionDetailsText,
+	FieldBannerTwoLeftSectionButtonText,
+	FieldBannerTwoLeftSectionButtonLink,
+	FieldBannerTwoRightSideImage,
+	FieldAchievementsSection,
+	FieldInventorySectionHeadingText,
 	FieldCreationDate,
 	FieldLastUpdated,
 	FieldTitle,
@@ -177,6 +237,101 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 // ByDomainName orders the results by the domainName field.
 func ByDomainName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDomainName, opts...).ToFunc()
+}
+
+// ByHeadingText orders the results by the heading_text field.
+func ByHeadingText(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldHeadingText, opts...).ToFunc()
+}
+
+// ByBusinessLogo orders the results by the business_logo field.
+func ByBusinessLogo(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBusinessLogo, opts...).ToFunc()
+}
+
+// ByBusinessName orders the results by the business_name field.
+func ByBusinessName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBusinessName, opts...).ToFunc()
+}
+
+// ByBannerSectionBackgroundImage orders the results by the banner_section_background_image field.
+func ByBannerSectionBackgroundImage(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBannerSectionBackgroundImage, opts...).ToFunc()
+}
+
+// ByBannerSectionBackgroundColor orders the results by the banner_section_background_color field.
+func ByBannerSectionBackgroundColor(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBannerSectionBackgroundColor, opts...).ToFunc()
+}
+
+// ByBannerSectionText orders the results by the banner_section_text field.
+func ByBannerSectionText(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBannerSectionText, opts...).ToFunc()
+}
+
+// ByThreeItemsSectionHeadingText orders the results by the three_items_section_heading_text field.
+func ByThreeItemsSectionHeadingText(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldThreeItemsSectionHeadingText, opts...).ToFunc()
+}
+
+// ByThreeItemsSectionDetailsText orders the results by the three_items_section_details_text field.
+func ByThreeItemsSectionDetailsText(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldThreeItemsSectionDetailsText, opts...).ToFunc()
+}
+
+// ByThreeItemsSectionItemOneText orders the results by the three_items_section_item_one_text field.
+func ByThreeItemsSectionItemOneText(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldThreeItemsSectionItemOneText, opts...).ToFunc()
+}
+
+// ByThreeItemsSectionItemTwoText orders the results by the three_items_section_item_two_text field.
+func ByThreeItemsSectionItemTwoText(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldThreeItemsSectionItemTwoText, opts...).ToFunc()
+}
+
+// ByThreeItemsSectionItemThreeText orders the results by the three_items_section_item_three_text field.
+func ByThreeItemsSectionItemThreeText(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldThreeItemsSectionItemThreeText, opts...).ToFunc()
+}
+
+// ByBannerTwoSectionBackgroundImage orders the results by the banner_two_section_background_image field.
+func ByBannerTwoSectionBackgroundImage(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBannerTwoSectionBackgroundImage, opts...).ToFunc()
+}
+
+// ByBannerTwoSectionBackgroundColor orders the results by the banner_two_section_background_color field.
+func ByBannerTwoSectionBackgroundColor(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBannerTwoSectionBackgroundColor, opts...).ToFunc()
+}
+
+// ByBannerTwoLeftSectionHeadingText orders the results by the banner_two_left_section_heading_text field.
+func ByBannerTwoLeftSectionHeadingText(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBannerTwoLeftSectionHeadingText, opts...).ToFunc()
+}
+
+// ByBannerTwoLeftSectionDetailsText orders the results by the banner_two_left_section_details_text field.
+func ByBannerTwoLeftSectionDetailsText(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBannerTwoLeftSectionDetailsText, opts...).ToFunc()
+}
+
+// ByBannerTwoLeftSectionButtonText orders the results by the banner_two_left_section_button_text field.
+func ByBannerTwoLeftSectionButtonText(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBannerTwoLeftSectionButtonText, opts...).ToFunc()
+}
+
+// ByBannerTwoLeftSectionButtonLink orders the results by the banner_two_left_section_button_link field.
+func ByBannerTwoLeftSectionButtonLink(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBannerTwoLeftSectionButtonLink, opts...).ToFunc()
+}
+
+// ByBannerTwoRightSideImage orders the results by the banner_two_right_side_image field.
+func ByBannerTwoRightSideImage(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBannerTwoRightSideImage, opts...).ToFunc()
+}
+
+// ByInventorySectionHeadingText orders the results by the Inventory_section_heading_text field.
+func ByInventorySectionHeadingText(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldInventorySectionHeadingText, opts...).ToFunc()
 }
 
 // ByCreationDate orders the results by the creationDate field.

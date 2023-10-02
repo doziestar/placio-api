@@ -6,6 +6,7 @@ import (
 	_ "placio-app/Dto"
 	_ "placio-app/ent"
 	"placio-app/utility"
+	"placio-pkg/middleware"
 )
 
 type LikeController struct {
@@ -20,18 +21,18 @@ func NewLikeController(likeService LikeService, userPlacesLikes UserLikePlaceSer
 func (likesController *LikeController) RegisterRoutes(router *gin.RouterGroup) {
 	likeRouter := router.Group("/likes")
 	{
-		likeRouter.POST("/post/:postID", likesController.likePost)
-		likeRouter.DELETE("/:likeID", likesController.unlikePost)
-		likeRouter.GET("/user/:userID", likesController.getUserLikes)
-		likeRouter.GET("/post/:postID", likesController.getPostLikes)
+		likeRouter.POST("/post/:postID", middleware.ErrorMiddleware(likesController.likePost))
+		likeRouter.DELETE("/:likeID", middleware.ErrorMiddleware(likesController.unlikePost))
+		likeRouter.GET("/user/:userID", middleware.ErrorMiddleware(likesController.getUserLikes))
+		likeRouter.GET("/post/:postID", middleware.ErrorMiddleware(likesController.getPostLikes))
 
 		likePlaceRouter := likeRouter.Group("/place")
 		{
-			likePlaceRouter.POST("/:placeID", utility.Use(likesController.likePlace))
-			likePlaceRouter.DELETE("/:userLikePlaceID", utility.Use(likesController.unlikePlace))
-			likePlaceRouter.GET("/user/:userID", utility.Use(likesController.getUserLikedPlaces))
-			likePlaceRouter.GET("/:placeID", utility.Use(likesController.getPlaceLikes))
-			likePlaceRouter.GET("check/:placeID", utility.Use(likesController.checkUserLikesPlace))
+			likePlaceRouter.POST("/:placeID", middleware.ErrorMiddleware(likesController.likePlace))
+			likePlaceRouter.DELETE("/:userLikePlaceID", middleware.ErrorMiddleware(likesController.unlikePlace))
+			likePlaceRouter.GET("/user/:userID", middleware.ErrorMiddleware(likesController.getUserLikedPlaces))
+			likePlaceRouter.GET("/:placeID", middleware.ErrorMiddleware(likesController.getPlaceLikes))
+			likePlaceRouter.GET("check/:placeID", middleware.ErrorMiddleware(likesController.checkUserLikesPlace))
 		}
 	}
 }
@@ -74,17 +75,18 @@ func (likesController *LikeController) checkUserLikesPlace(ctx *gin.Context) err
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/likes/user/{userID}/post/{postID} [post]
-func (likesController *LikeController) likePost(ctx *gin.Context) {
+func (likesController *LikeController) likePost(ctx *gin.Context) error {
 	userID := ctx.MustGet("user").(string)
 	postID := ctx.Param("postID")
 
 	like, err := likesController.likeService.LikePost(ctx, userID, postID)
 	if err != nil {
 
-		return
+		return err
 	}
 
 	ctx.JSON(http.StatusOK, utility.ProcessResponse(like, "success", "Successfully liked post", ""))
+	return nil
 }
 
 // @Summary Unlike a post
@@ -98,16 +100,17 @@ func (likesController *LikeController) likePost(ctx *gin.Context) {
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/likes/{likeID} [delete]
-func (likesController *LikeController) unlikePost(ctx *gin.Context) {
+func (likesController *LikeController) unlikePost(ctx *gin.Context) error {
 	likeID := ctx.Param("likeID")
 
 	err := likesController.likeService.UnlikePost(ctx, likeID)
 	if err != nil {
 
-		return
+		return err
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"status": "success", "message": "Successfully unliked post"})
+	return nil
 }
 
 // @Summary Get user likes
@@ -121,16 +124,17 @@ func (likesController *LikeController) unlikePost(ctx *gin.Context) {
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/likes/user/{userID} [get]
-func (likesController *LikeController) getUserLikes(ctx *gin.Context) {
+func (likesController *LikeController) getUserLikes(ctx *gin.Context) error {
 	userID := ctx.Param("userID")
 
 	likes, err := likesController.likeService.GetUserLikes(ctx, userID)
 	if err != nil {
 
-		return
+		return err
 	}
 
-	ctx.JSON(http.StatusOK, likes)
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(likes, "success", "Successfully retrieved user likes", ""))
+	return nil
 }
 
 // @Summary Get post likes
@@ -144,16 +148,17 @@ func (likesController *LikeController) getUserLikes(ctx *gin.Context) {
 // @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/likes/post/{postID} [get]
-func (likesController *LikeController) getPostLikes(ctx *gin.Context) {
+func (likesController *LikeController) getPostLikes(ctx *gin.Context) error {
 	postID := ctx.Param("postID")
 
 	likes, err := likesController.likeService.GetPostLikes(ctx, postID)
 	if err != nil {
 
-		return
+		return err
 	}
 
-	ctx.JSON(http.StatusOK, likes)
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(likes, "success", "Successfully retrieved post likes", ""))
+	return nil
 }
 
 // @Summary Like a place

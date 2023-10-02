@@ -223,11 +223,15 @@ func (frc *FeatureReleaseCreate) createSpec() (*FeatureRelease, *sqlgraph.Create
 // FeatureReleaseCreateBulk is the builder for creating many FeatureRelease entities in bulk.
 type FeatureReleaseCreateBulk struct {
 	config
+	err      error
 	builders []*FeatureReleaseCreate
 }
 
 // Save creates the FeatureRelease entities in the database.
 func (frcb *FeatureReleaseCreateBulk) Save(ctx context.Context) ([]*FeatureRelease, error) {
+	if frcb.err != nil {
+		return nil, frcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(frcb.builders))
 	nodes := make([]*FeatureRelease, len(frcb.builders))
 	mutators := make([]Mutator, len(frcb.builders))
