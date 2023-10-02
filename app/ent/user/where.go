@@ -1638,6 +1638,29 @@ func HasNotificationsWith(preds ...predicate.Notification) predicate.User {
 	})
 }
 
+// HasWallet applies the HasEdge predicate on the "wallet" edge.
+func HasWallet() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, WalletTable, WalletColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasWalletWith applies the HasEdge predicate on the "wallet" edge with a given conditions (other predicates).
+func HasWalletWith(preds ...predicate.AccountWallet) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newWalletStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.User) predicate.User {
 	return predicate.User(func(s *sql.Selector) {

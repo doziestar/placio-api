@@ -20,6 +20,18 @@ func (f AccountSettingsFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Va
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AccountSettingsMutation", m)
 }
 
+// The AccountWalletFunc type is an adapter to allow the use of ordinary
+// function as AccountWallet mutator.
+type AccountWalletFunc func(context.Context, *ent.AccountWalletMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AccountWalletFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AccountWalletMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AccountWalletMutation", m)
+}
+
 // The AmenityFunc type is an adapter to allow the use of ordinary
 // function as Amenity mutator.
 type AmenityFunc func(context.Context, *ent.AmenityMutation) (ent.Value, error)

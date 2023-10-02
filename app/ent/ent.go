@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"placio-app/ent/accountsettings"
+	"placio-app/ent/accountwallet"
 	"placio-app/ent/amenity"
 	"placio-app/ent/booking"
 	"placio-app/ent/business"
@@ -120,6 +121,7 @@ func checkColumn(table, column string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
 			accountsettings.Table:         accountsettings.ValidColumn,
+			accountwallet.Table:           accountwallet.ValidColumn,
 			amenity.Table:                 amenity.ValidColumn,
 			booking.Table:                 booking.ValidColumn,
 			business.Table:                business.ValidColumn,

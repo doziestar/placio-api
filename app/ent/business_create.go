@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"placio-app/ent/accountsettings"
+	"placio-app/ent/accountwallet"
 	"placio-app/ent/business"
 	"placio-app/ent/businessfollowbusiness"
 	"placio-app/ent/businessfollowevent"
@@ -518,6 +519,25 @@ func (bc *BusinessCreate) AddNotifications(n ...*Notification) *BusinessCreate {
 	return bc.AddNotificationIDs(ids...)
 }
 
+// SetWalletID sets the "wallet" edge to the AccountWallet entity by ID.
+func (bc *BusinessCreate) SetWalletID(id string) *BusinessCreate {
+	bc.mutation.SetWalletID(id)
+	return bc
+}
+
+// SetNillableWalletID sets the "wallet" edge to the AccountWallet entity by ID if the given value is not nil.
+func (bc *BusinessCreate) SetNillableWalletID(id *string) *BusinessCreate {
+	if id != nil {
+		bc = bc.SetWalletID(*id)
+	}
+	return bc
+}
+
+// SetWallet sets the "wallet" edge to the AccountWallet entity.
+func (bc *BusinessCreate) SetWallet(a *AccountWallet) *BusinessCreate {
+	return bc.SetWalletID(a.ID)
+}
+
 // Mutation returns the BusinessMutation object of the builder.
 func (bc *BusinessCreate) Mutation() *BusinessMutation {
 	return bc.mutation
@@ -954,6 +974,22 @@ func (bc *BusinessCreate) createSpec() (*Business, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(notification.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := bc.mutation.WalletIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   business.WalletTable,
+			Columns: []string{business.WalletColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(accountwallet.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

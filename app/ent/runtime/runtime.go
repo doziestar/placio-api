@@ -4,6 +4,7 @@ package runtime
 
 import (
 	"placio-app/ent/accountsettings"
+	"placio-app/ent/accountwallet"
 	"placio-app/ent/amenity"
 	"placio-app/ent/booking"
 	"placio-app/ent/business"
@@ -54,6 +55,60 @@ func init() {
 	accountsettingsDescID := accountsettingsFields[0].Descriptor()
 	// accountsettings.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	accountsettings.IDValidator = accountsettingsDescID.Validators[0].(func(string) error)
+	accountwalletFields := schema.AccountWallet{}.Fields()
+	_ = accountwalletFields
+	// accountwalletDescBalance is the schema descriptor for balance field.
+	accountwalletDescBalance := accountwalletFields[3].Descriptor()
+	// accountwallet.DefaultBalance holds the default value on creation for the balance field.
+	accountwallet.DefaultBalance = accountwalletDescBalance.Default.(float64)
+	// accountwalletDescTotalDeposited is the schema descriptor for total_deposited field.
+	accountwalletDescTotalDeposited := accountwalletFields[4].Descriptor()
+	// accountwallet.DefaultTotalDeposited holds the default value on creation for the total_deposited field.
+	accountwallet.DefaultTotalDeposited = accountwalletDescTotalDeposited.Default.(float64)
+	// accountwalletDescTotalWithdrawn is the schema descriptor for total_withdrawn field.
+	accountwalletDescTotalWithdrawn := accountwalletFields[5].Descriptor()
+	// accountwallet.DefaultTotalWithdrawn holds the default value on creation for the total_withdrawn field.
+	accountwallet.DefaultTotalWithdrawn = accountwalletDescTotalWithdrawn.Default.(float64)
+	// accountwalletDescTotalEarned is the schema descriptor for total_earned field.
+	accountwalletDescTotalEarned := accountwalletFields[6].Descriptor()
+	// accountwallet.DefaultTotalEarned holds the default value on creation for the total_earned field.
+	accountwallet.DefaultTotalEarned = accountwalletDescTotalEarned.Default.(float64)
+	// accountwalletDescTotalSpent is the schema descriptor for total_spent field.
+	accountwalletDescTotalSpent := accountwalletFields[7].Descriptor()
+	// accountwallet.DefaultTotalSpent holds the default value on creation for the total_spent field.
+	accountwallet.DefaultTotalSpent = accountwalletDescTotalSpent.Default.(float64)
+	// accountwalletDescTotalRefunded is the schema descriptor for total_refunded field.
+	accountwalletDescTotalRefunded := accountwalletFields[8].Descriptor()
+	// accountwallet.DefaultTotalRefunded holds the default value on creation for the total_refunded field.
+	accountwallet.DefaultTotalRefunded = accountwalletDescTotalRefunded.Default.(float64)
+	// accountwalletDescTotalFees is the schema descriptor for total_fees field.
+	accountwalletDescTotalFees := accountwalletFields[9].Descriptor()
+	// accountwallet.DefaultTotalFees holds the default value on creation for the total_fees field.
+	accountwallet.DefaultTotalFees = accountwalletDescTotalFees.Default.(float64)
+	// accountwalletDescTotalTax is the schema descriptor for total_tax field.
+	accountwalletDescTotalTax := accountwalletFields[10].Descriptor()
+	// accountwallet.DefaultTotalTax holds the default value on creation for the total_tax field.
+	accountwallet.DefaultTotalTax = accountwalletDescTotalTax.Default.(float64)
+	// accountwalletDescTotalDiscount is the schema descriptor for total_discount field.
+	accountwalletDescTotalDiscount := accountwalletFields[11].Descriptor()
+	// accountwallet.DefaultTotalDiscount holds the default value on creation for the total_discount field.
+	accountwallet.DefaultTotalDiscount = accountwalletDescTotalDiscount.Default.(float64)
+	// accountwalletDescTotalRevenue is the schema descriptor for total_revenue field.
+	accountwalletDescTotalRevenue := accountwalletFields[12].Descriptor()
+	// accountwallet.DefaultTotalRevenue holds the default value on creation for the total_revenue field.
+	accountwallet.DefaultTotalRevenue = accountwalletDescTotalRevenue.Default.(float64)
+	// accountwalletDescTotalExpenses is the schema descriptor for total_expenses field.
+	accountwalletDescTotalExpenses := accountwalletFields[13].Descriptor()
+	// accountwallet.DefaultTotalExpenses holds the default value on creation for the total_expenses field.
+	accountwallet.DefaultTotalExpenses = accountwalletDescTotalExpenses.Default.(float64)
+	// accountwalletDescTotalProfit is the schema descriptor for total_profit field.
+	accountwalletDescTotalProfit := accountwalletFields[14].Descriptor()
+	// accountwallet.DefaultTotalProfit holds the default value on creation for the total_profit field.
+	accountwallet.DefaultTotalProfit = accountwalletDescTotalProfit.Default.(float64)
+	// accountwalletDescTotalLoss is the schema descriptor for total_loss field.
+	accountwalletDescTotalLoss := accountwalletFields[15].Descriptor()
+	// accountwallet.DefaultTotalLoss holds the default value on creation for the total_loss field.
+	accountwallet.DefaultTotalLoss = accountwalletDescTotalLoss.Default.(float64)
 	amenityFields := schema.Amenity{}.Fields()
 	_ = amenityFields
 	// amenityDescID is the schema descriptor for id field.

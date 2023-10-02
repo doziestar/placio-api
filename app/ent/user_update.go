@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"placio-app/ent/accountwallet"
 	"placio-app/ent/booking"
 	"placio-app/ent/businessfollowuser"
 	"placio-app/ent/category"
@@ -692,6 +693,25 @@ func (uu *UserUpdate) AddNotifications(n ...*Notification) *UserUpdate {
 	return uu.AddNotificationIDs(ids...)
 }
 
+// SetWalletID sets the "wallet" edge to the AccountWallet entity by ID.
+func (uu *UserUpdate) SetWalletID(id string) *UserUpdate {
+	uu.mutation.SetWalletID(id)
+	return uu
+}
+
+// SetNillableWalletID sets the "wallet" edge to the AccountWallet entity by ID if the given value is not nil.
+func (uu *UserUpdate) SetNillableWalletID(id *string) *UserUpdate {
+	if id != nil {
+		uu = uu.SetWalletID(*id)
+	}
+	return uu
+}
+
+// SetWallet sets the "wallet" edge to the AccountWallet entity.
+func (uu *UserUpdate) SetWallet(a *AccountWallet) *UserUpdate {
+	return uu.SetWalletID(a.ID)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -1142,6 +1162,12 @@ func (uu *UserUpdate) RemoveNotifications(n ...*Notification) *UserUpdate {
 		ids[i] = n[i].ID
 	}
 	return uu.RemoveNotificationIDs(ids...)
+}
+
+// ClearWallet clears the "wallet" edge to the AccountWallet entity.
+func (uu *UserUpdate) ClearWallet() *UserUpdate {
+	uu.mutation.ClearWallet()
+	return uu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -2259,6 +2285,35 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if uu.mutation.WalletCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   user.WalletTable,
+			Columns: []string{user.WalletColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(accountwallet.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.WalletIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   user.WalletTable,
+			Columns: []string{user.WalletColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(accountwallet.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -2922,6 +2977,25 @@ func (uuo *UserUpdateOne) AddNotifications(n ...*Notification) *UserUpdateOne {
 	return uuo.AddNotificationIDs(ids...)
 }
 
+// SetWalletID sets the "wallet" edge to the AccountWallet entity by ID.
+func (uuo *UserUpdateOne) SetWalletID(id string) *UserUpdateOne {
+	uuo.mutation.SetWalletID(id)
+	return uuo
+}
+
+// SetNillableWalletID sets the "wallet" edge to the AccountWallet entity by ID if the given value is not nil.
+func (uuo *UserUpdateOne) SetNillableWalletID(id *string) *UserUpdateOne {
+	if id != nil {
+		uuo = uuo.SetWalletID(*id)
+	}
+	return uuo
+}
+
+// SetWallet sets the "wallet" edge to the AccountWallet entity.
+func (uuo *UserUpdateOne) SetWallet(a *AccountWallet) *UserUpdateOne {
+	return uuo.SetWalletID(a.ID)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
@@ -3372,6 +3446,12 @@ func (uuo *UserUpdateOne) RemoveNotifications(n ...*Notification) *UserUpdateOne
 		ids[i] = n[i].ID
 	}
 	return uuo.RemoveNotificationIDs(ids...)
+}
+
+// ClearWallet clears the "wallet" edge to the AccountWallet entity.
+func (uuo *UserUpdateOne) ClearWallet() *UserUpdateOne {
+	uuo.mutation.ClearWallet()
+	return uuo
 }
 
 // Where appends a list predicates to the UserUpdate builder.
@@ -4512,6 +4592,35 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(notification.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.WalletCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   user.WalletTable,
+			Columns: []string{user.WalletColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(accountwallet.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.WalletIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   user.WalletTable,
+			Columns: []string{user.WalletColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(accountwallet.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

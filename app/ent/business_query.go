@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math"
 	"placio-app/ent/accountsettings"
+	"placio-app/ent/accountwallet"
 	"placio-app/ent/business"
 	"placio-app/ent/businessfollowbusiness"
 	"placio-app/ent/businessfollowevent"
@@ -55,6 +56,7 @@ type BusinessQuery struct {
 	withPlaceInventories        *PlaceInventoryQuery
 	withWebsites                *WebsiteQuery
 	withNotifications           *NotificationQuery
+	withWallet                  *AccountWalletQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -465,6 +467,28 @@ func (bq *BusinessQuery) QueryNotifications() *NotificationQuery {
 	return query
 }
 
+// QueryWallet chains the current query on the "wallet" edge.
+func (bq *BusinessQuery) QueryWallet() *AccountWalletQuery {
+	query := (&AccountWalletClient{config: bq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := bq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := bq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(business.Table, business.FieldID, selector),
+			sqlgraph.To(accountwallet.Table, accountwallet.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, business.WalletTable, business.WalletColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(bq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Business entity from the query.
 // Returns a *NotFoundError when no Business was found.
 func (bq *BusinessQuery) First(ctx context.Context) (*Business, error) {
@@ -674,6 +698,7 @@ func (bq *BusinessQuery) Clone() *BusinessQuery {
 		withPlaceInventories:        bq.withPlaceInventories.Clone(),
 		withWebsites:                bq.withWebsites.Clone(),
 		withNotifications:           bq.withNotifications.Clone(),
+		withWallet:                  bq.withWallet.Clone(),
 		// clone intermediate query.
 		sql:  bq.sql.Clone(),
 		path: bq.path,
@@ -867,6 +892,17 @@ func (bq *BusinessQuery) WithNotifications(opts ...func(*NotificationQuery)) *Bu
 	return bq
 }
 
+// WithWallet tells the query-builder to eager-load the nodes that are connected to
+// the "wallet" edge. The optional arguments are used to configure the query builder of the edge.
+func (bq *BusinessQuery) WithWallet(opts ...func(*AccountWalletQuery)) *BusinessQuery {
+	query := (&AccountWalletClient{config: bq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	bq.withWallet = query
+	return bq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -945,7 +981,7 @@ func (bq *BusinessQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Bus
 	var (
 		nodes       = []*Business{}
 		_spec       = bq.querySpec()
-		loadedTypes = [17]bool{
+		loadedTypes = [18]bool{
 			bq.withUserBusinesses != nil,
 			bq.withBusinessAccountSettings != nil,
 			bq.withPosts != nil,
@@ -963,6 +999,7 @@ func (bq *BusinessQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Bus
 			bq.withPlaceInventories != nil,
 			bq.withWebsites != nil,
 			bq.withNotifications != nil,
+			bq.withWallet != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -1105,6 +1142,12 @@ func (bq *BusinessQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Bus
 		if err := bq.loadNotifications(ctx, query, nodes,
 			func(n *Business) { n.Edges.Notifications = []*Notification{} },
 			func(n *Business, e *Notification) { n.Edges.Notifications = append(n.Edges.Notifications, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := bq.withWallet; query != nil {
+		if err := bq.loadWallet(ctx, query, nodes, nil,
+			func(n *Business, e *AccountWallet) { n.Edges.Wallet = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -1659,6 +1702,34 @@ func (bq *BusinessQuery) loadNotifications(ctx context.Context, query *Notificat
 		for kn := range nodes {
 			assign(kn, n)
 		}
+	}
+	return nil
+}
+func (bq *BusinessQuery) loadWallet(ctx context.Context, query *AccountWalletQuery, nodes []*Business, init func(*Business), assign func(*Business, *AccountWallet)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Business)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+	}
+	query.withFKs = true
+	query.Where(predicate.AccountWallet(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(business.WalletColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.business_wallet
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "business_wallet" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "business_wallet" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
 	}
 	return nil
 }

@@ -30,6 +30,47 @@ var (
 			},
 		},
 	}
+	// AccountWalletsColumns holds the columns for the "account_wallets" table.
+	AccountWalletsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true},
+		{Name: "user_id", Type: field.TypeString},
+		{Name: "business_id", Type: field.TypeString},
+		{Name: "balance", Type: field.TypeFloat64, Default: 0},
+		{Name: "total_deposited", Type: field.TypeFloat64, Default: 0},
+		{Name: "total_withdrawn", Type: field.TypeFloat64, Default: 0},
+		{Name: "total_earned", Type: field.TypeFloat64, Default: 0},
+		{Name: "total_spent", Type: field.TypeFloat64, Default: 0},
+		{Name: "total_refunded", Type: field.TypeFloat64, Default: 0},
+		{Name: "total_fees", Type: field.TypeFloat64, Default: 0},
+		{Name: "total_tax", Type: field.TypeFloat64, Default: 0},
+		{Name: "total_discount", Type: field.TypeFloat64, Default: 0},
+		{Name: "total_revenue", Type: field.TypeFloat64, Default: 0},
+		{Name: "total_expenses", Type: field.TypeFloat64, Default: 0},
+		{Name: "total_profit", Type: field.TypeFloat64, Default: 0},
+		{Name: "total_loss", Type: field.TypeFloat64, Default: 0},
+		{Name: "business_wallet", Type: field.TypeString, Unique: true, Nullable: true, Size: 36},
+		{Name: "user_wallet", Type: field.TypeString, Unique: true, Nullable: true, Size: 36},
+	}
+	// AccountWalletsTable holds the schema information for the "account_wallets" table.
+	AccountWalletsTable = &schema.Table{
+		Name:       "account_wallets",
+		Columns:    AccountWalletsColumns,
+		PrimaryKey: []*schema.Column{AccountWalletsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "account_wallets_businesses_wallet",
+				Columns:    []*schema.Column{AccountWalletsColumns[16]},
+				RefColumns: []*schema.Column{BusinessesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "account_wallets_users_wallet",
+				Columns:    []*schema.Column{AccountWalletsColumns[17]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// AmenitiesColumns holds the columns for the "amenities" table.
 	AmenitiesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
@@ -1711,6 +1752,7 @@ var (
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		AccountSettingsTable,
+		AccountWalletsTable,
 		AmenitiesTable,
 		BookingsTable,
 		BusinessesTable,
@@ -1771,6 +1813,8 @@ var (
 
 func init() {
 	AccountSettingsTable.ForeignKeys[0].RefTable = BusinessesTable
+	AccountWalletsTable.ForeignKeys[0].RefTable = BusinessesTable
+	AccountWalletsTable.ForeignKeys[1].RefTable = UsersTable
 	BookingsTable.ForeignKeys[0].RefTable = PlacesTable
 	BookingsTable.ForeignKeys[1].RefTable = RoomsTable
 	BookingsTable.ForeignKeys[2].RefTable = UsersTable

@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"placio-app/ent/accountsettings"
+	"placio-app/ent/accountwallet"
 	"placio-app/ent/business"
 	"placio-app/ent/businessfollowbusiness"
 	"placio-app/ent/businessfollowevent"
@@ -625,6 +626,25 @@ func (bu *BusinessUpdate) AddNotifications(n ...*Notification) *BusinessUpdate {
 	return bu.AddNotificationIDs(ids...)
 }
 
+// SetWalletID sets the "wallet" edge to the AccountWallet entity by ID.
+func (bu *BusinessUpdate) SetWalletID(id string) *BusinessUpdate {
+	bu.mutation.SetWalletID(id)
+	return bu
+}
+
+// SetNillableWalletID sets the "wallet" edge to the AccountWallet entity by ID if the given value is not nil.
+func (bu *BusinessUpdate) SetNillableWalletID(id *string) *BusinessUpdate {
+	if id != nil {
+		bu = bu.SetWalletID(*id)
+	}
+	return bu
+}
+
+// SetWallet sets the "wallet" edge to the AccountWallet entity.
+func (bu *BusinessUpdate) SetWallet(a *AccountWallet) *BusinessUpdate {
+	return bu.SetWalletID(a.ID)
+}
+
 // Mutation returns the BusinessMutation object of the builder.
 func (bu *BusinessUpdate) Mutation() *BusinessMutation {
 	return bu.mutation
@@ -955,6 +975,12 @@ func (bu *BusinessUpdate) RemoveNotifications(n ...*Notification) *BusinessUpdat
 		ids[i] = n[i].ID
 	}
 	return bu.RemoveNotificationIDs(ids...)
+}
+
+// ClearWallet clears the "wallet" edge to the AccountWallet entity.
+func (bu *BusinessUpdate) ClearWallet() *BusinessUpdate {
+	bu.mutation.ClearWallet()
+	return bu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1828,6 +1854,35 @@ func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if bu.mutation.WalletCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   business.WalletTable,
+			Columns: []string{business.WalletColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(accountwallet.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.WalletIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   business.WalletTable,
+			Columns: []string{business.WalletColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(accountwallet.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, bu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{business.Label}
@@ -2430,6 +2485,25 @@ func (buo *BusinessUpdateOne) AddNotifications(n ...*Notification) *BusinessUpda
 	return buo.AddNotificationIDs(ids...)
 }
 
+// SetWalletID sets the "wallet" edge to the AccountWallet entity by ID.
+func (buo *BusinessUpdateOne) SetWalletID(id string) *BusinessUpdateOne {
+	buo.mutation.SetWalletID(id)
+	return buo
+}
+
+// SetNillableWalletID sets the "wallet" edge to the AccountWallet entity by ID if the given value is not nil.
+func (buo *BusinessUpdateOne) SetNillableWalletID(id *string) *BusinessUpdateOne {
+	if id != nil {
+		buo = buo.SetWalletID(*id)
+	}
+	return buo
+}
+
+// SetWallet sets the "wallet" edge to the AccountWallet entity.
+func (buo *BusinessUpdateOne) SetWallet(a *AccountWallet) *BusinessUpdateOne {
+	return buo.SetWalletID(a.ID)
+}
+
 // Mutation returns the BusinessMutation object of the builder.
 func (buo *BusinessUpdateOne) Mutation() *BusinessMutation {
 	return buo.mutation
@@ -2760,6 +2834,12 @@ func (buo *BusinessUpdateOne) RemoveNotifications(n ...*Notification) *BusinessU
 		ids[i] = n[i].ID
 	}
 	return buo.RemoveNotificationIDs(ids...)
+}
+
+// ClearWallet clears the "wallet" edge to the AccountWallet entity.
+func (buo *BusinessUpdateOne) ClearWallet() *BusinessUpdateOne {
+	buo.mutation.ClearWallet()
+	return buo
 }
 
 // Where appends a list predicates to the BusinessUpdate builder.
@@ -3656,6 +3736,35 @@ func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(notification.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if buo.mutation.WalletCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   business.WalletTable,
+			Columns: []string{business.WalletColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(accountwallet.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.WalletIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   business.WalletTable,
+			Columns: []string{business.WalletColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(accountwallet.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

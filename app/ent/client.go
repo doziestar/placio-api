@@ -11,6 +11,7 @@ import (
 	"placio-app/ent/migrate"
 
 	"placio-app/ent/accountsettings"
+	"placio-app/ent/accountwallet"
 	"placio-app/ent/amenity"
 	"placio-app/ent/booking"
 	"placio-app/ent/business"
@@ -71,6 +72,8 @@ type Client struct {
 	Schema *migrate.Schema
 	// AccountSettings is the client for interacting with the AccountSettings builders.
 	AccountSettings *AccountSettingsClient
+	// AccountWallet is the client for interacting with the AccountWallet builders.
+	AccountWallet *AccountWalletClient
 	// Amenity is the client for interacting with the Amenity builders.
 	Amenity *AmenityClient
 	// Booking is the client for interacting with the Booking builders.
@@ -177,6 +180,7 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.AccountSettings = NewAccountSettingsClient(c.config)
+	c.AccountWallet = NewAccountWalletClient(c.config)
 	c.Amenity = NewAmenityClient(c.config)
 	c.Booking = NewBookingClient(c.config)
 	c.Business = NewBusinessClient(c.config)
@@ -306,6 +310,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ctx:                     ctx,
 		config:                  cfg,
 		AccountSettings:         NewAccountSettingsClient(cfg),
+		AccountWallet:           NewAccountWalletClient(cfg),
 		Amenity:                 NewAmenityClient(cfg),
 		Booking:                 NewBookingClient(cfg),
 		Business:                NewBusinessClient(cfg),
@@ -372,6 +377,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		ctx:                     ctx,
 		config:                  cfg,
 		AccountSettings:         NewAccountSettingsClient(cfg),
+		AccountWallet:           NewAccountWalletClient(cfg),
 		Amenity:                 NewAmenityClient(cfg),
 		Booking:                 NewBookingClient(cfg),
 		Business:                NewBusinessClient(cfg),
@@ -447,15 +453,16 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
-		c.AccountSettings, c.Amenity, c.Booking, c.Business, c.BusinessFollowBusiness,
-		c.BusinessFollowEvent, c.BusinessFollowUser, c.Category, c.CategoryAssignment,
-		c.Chat, c.Comment, c.CustomBlock, c.Event, c.FAQ, c.FeatureRelease, c.Help,
-		c.InventoryAttribute, c.InventoryType, c.Like, c.Media, c.Menu, c.Notification,
-		c.Order, c.Payment, c.Place, c.PlaceInventory, c.PlaceInventoryAttribute,
-		c.Post, c.Rating, c.Reaction, c.Reservation, c.ReservationBlock, c.Resourse,
-		c.Review, c.Room, c.Template, c.Ticket, c.TicketOption, c.TransactionHistory,
-		c.User, c.UserBusiness, c.UserFollowBusiness, c.UserFollowEvent,
-		c.UserFollowPlace, c.UserFollowUser, c.UserLikePlace, c.Website,
+		c.AccountSettings, c.AccountWallet, c.Amenity, c.Booking, c.Business,
+		c.BusinessFollowBusiness, c.BusinessFollowEvent, c.BusinessFollowUser,
+		c.Category, c.CategoryAssignment, c.Chat, c.Comment, c.CustomBlock, c.Event,
+		c.FAQ, c.FeatureRelease, c.Help, c.InventoryAttribute, c.InventoryType, c.Like,
+		c.Media, c.Menu, c.Notification, c.Order, c.Payment, c.Place, c.PlaceInventory,
+		c.PlaceInventoryAttribute, c.Post, c.Rating, c.Reaction, c.Reservation,
+		c.ReservationBlock, c.Resourse, c.Review, c.Room, c.Template, c.Ticket,
+		c.TicketOption, c.TransactionHistory, c.User, c.UserBusiness,
+		c.UserFollowBusiness, c.UserFollowEvent, c.UserFollowPlace, c.UserFollowUser,
+		c.UserLikePlace, c.Website,
 	} {
 		n.Use(hooks...)
 	}
@@ -465,15 +472,16 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
-		c.AccountSettings, c.Amenity, c.Booking, c.Business, c.BusinessFollowBusiness,
-		c.BusinessFollowEvent, c.BusinessFollowUser, c.Category, c.CategoryAssignment,
-		c.Chat, c.Comment, c.CustomBlock, c.Event, c.FAQ, c.FeatureRelease, c.Help,
-		c.InventoryAttribute, c.InventoryType, c.Like, c.Media, c.Menu, c.Notification,
-		c.Order, c.Payment, c.Place, c.PlaceInventory, c.PlaceInventoryAttribute,
-		c.Post, c.Rating, c.Reaction, c.Reservation, c.ReservationBlock, c.Resourse,
-		c.Review, c.Room, c.Template, c.Ticket, c.TicketOption, c.TransactionHistory,
-		c.User, c.UserBusiness, c.UserFollowBusiness, c.UserFollowEvent,
-		c.UserFollowPlace, c.UserFollowUser, c.UserLikePlace, c.Website,
+		c.AccountSettings, c.AccountWallet, c.Amenity, c.Booking, c.Business,
+		c.BusinessFollowBusiness, c.BusinessFollowEvent, c.BusinessFollowUser,
+		c.Category, c.CategoryAssignment, c.Chat, c.Comment, c.CustomBlock, c.Event,
+		c.FAQ, c.FeatureRelease, c.Help, c.InventoryAttribute, c.InventoryType, c.Like,
+		c.Media, c.Menu, c.Notification, c.Order, c.Payment, c.Place, c.PlaceInventory,
+		c.PlaceInventoryAttribute, c.Post, c.Rating, c.Reaction, c.Reservation,
+		c.ReservationBlock, c.Resourse, c.Review, c.Room, c.Template, c.Ticket,
+		c.TicketOption, c.TransactionHistory, c.User, c.UserBusiness,
+		c.UserFollowBusiness, c.UserFollowEvent, c.UserFollowPlace, c.UserFollowUser,
+		c.UserLikePlace, c.Website,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -484,6 +492,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
 	case *AccountSettingsMutation:
 		return c.AccountSettings.mutate(ctx, m)
+	case *AccountWalletMutation:
+		return c.AccountWallet.mutate(ctx, m)
 	case *AmenityMutation:
 		return c.Amenity.mutate(ctx, m)
 	case *BookingMutation:
@@ -712,6 +722,156 @@ func (c *AccountSettingsClient) mutate(ctx context.Context, m *AccountSettingsMu
 		return (&AccountSettingsDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown AccountSettings mutation op: %q", m.Op())
+	}
+}
+
+// AccountWalletClient is a client for the AccountWallet schema.
+type AccountWalletClient struct {
+	config
+}
+
+// NewAccountWalletClient returns a client for the AccountWallet from the given config.
+func NewAccountWalletClient(c config) *AccountWalletClient {
+	return &AccountWalletClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `accountwallet.Hooks(f(g(h())))`.
+func (c *AccountWalletClient) Use(hooks ...Hook) {
+	c.hooks.AccountWallet = append(c.hooks.AccountWallet, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `accountwallet.Intercept(f(g(h())))`.
+func (c *AccountWalletClient) Intercept(interceptors ...Interceptor) {
+	c.inters.AccountWallet = append(c.inters.AccountWallet, interceptors...)
+}
+
+// Create returns a builder for creating a AccountWallet entity.
+func (c *AccountWalletClient) Create() *AccountWalletCreate {
+	mutation := newAccountWalletMutation(c.config, OpCreate)
+	return &AccountWalletCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of AccountWallet entities.
+func (c *AccountWalletClient) CreateBulk(builders ...*AccountWalletCreate) *AccountWalletCreateBulk {
+	return &AccountWalletCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for AccountWallet.
+func (c *AccountWalletClient) Update() *AccountWalletUpdate {
+	mutation := newAccountWalletMutation(c.config, OpUpdate)
+	return &AccountWalletUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AccountWalletClient) UpdateOne(aw *AccountWallet) *AccountWalletUpdateOne {
+	mutation := newAccountWalletMutation(c.config, OpUpdateOne, withAccountWallet(aw))
+	return &AccountWalletUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AccountWalletClient) UpdateOneID(id string) *AccountWalletUpdateOne {
+	mutation := newAccountWalletMutation(c.config, OpUpdateOne, withAccountWalletID(id))
+	return &AccountWalletUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for AccountWallet.
+func (c *AccountWalletClient) Delete() *AccountWalletDelete {
+	mutation := newAccountWalletMutation(c.config, OpDelete)
+	return &AccountWalletDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *AccountWalletClient) DeleteOne(aw *AccountWallet) *AccountWalletDeleteOne {
+	return c.DeleteOneID(aw.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *AccountWalletClient) DeleteOneID(id string) *AccountWalletDeleteOne {
+	builder := c.Delete().Where(accountwallet.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AccountWalletDeleteOne{builder}
+}
+
+// Query returns a query builder for AccountWallet.
+func (c *AccountWalletClient) Query() *AccountWalletQuery {
+	return &AccountWalletQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeAccountWallet},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a AccountWallet entity by its id.
+func (c *AccountWalletClient) Get(ctx context.Context, id string) (*AccountWallet, error) {
+	return c.Query().Where(accountwallet.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AccountWalletClient) GetX(ctx context.Context, id string) *AccountWallet {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryUser queries the user edge of a AccountWallet.
+func (c *AccountWalletClient) QueryUser(aw *AccountWallet) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := aw.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(accountwallet.Table, accountwallet.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, accountwallet.UserTable, accountwallet.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(aw.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryBusiness queries the business edge of a AccountWallet.
+func (c *AccountWalletClient) QueryBusiness(aw *AccountWallet) *BusinessQuery {
+	query := (&BusinessClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := aw.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(accountwallet.Table, accountwallet.FieldID, id),
+			sqlgraph.To(business.Table, business.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, accountwallet.BusinessTable, accountwallet.BusinessColumn),
+		)
+		fromV = sqlgraph.Neighbors(aw.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *AccountWalletClient) Hooks() []Hook {
+	return c.hooks.AccountWallet
+}
+
+// Interceptors returns the client interceptors.
+func (c *AccountWalletClient) Interceptors() []Interceptor {
+	return c.inters.AccountWallet
+}
+
+func (c *AccountWalletClient) mutate(ctx context.Context, m *AccountWalletMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&AccountWalletCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&AccountWalletUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&AccountWalletUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&AccountWalletDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown AccountWallet mutation op: %q", m.Op())
 	}
 }
 
@@ -1357,6 +1517,22 @@ func (c *BusinessClient) QueryNotifications(b *Business) *NotificationQuery {
 			sqlgraph.From(business.Table, business.FieldID, id),
 			sqlgraph.To(notification.Table, notification.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, false, business.NotificationsTable, business.NotificationsPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryWallet queries the wallet edge of a Business.
+func (c *BusinessClient) QueryWallet(b *Business) *AccountWalletQuery {
+	query := (&AccountWalletClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(business.Table, business.FieldID, id),
+			sqlgraph.To(accountwallet.Table, accountwallet.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, business.WalletTable, business.WalletColumn),
 		)
 		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
 		return fromV, nil
@@ -7681,6 +7857,22 @@ func (c *UserClient) QueryNotifications(u *User) *NotificationQuery {
 	return query
 }
 
+// QueryWallet queries the wallet edge of a User.
+func (c *UserClient) QueryWallet(u *User) *AccountWalletQuery {
+	query := (&AccountWalletClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(accountwallet.Table, accountwallet.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, user.WalletTable, user.WalletColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *UserClient) Hooks() []Hook {
 	hooks := c.hooks.User
@@ -8792,23 +8984,25 @@ func (c *WebsiteClient) mutate(ctx context.Context, m *WebsiteMutation) (Value, 
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		AccountSettings, Amenity, Booking, Business, BusinessFollowBusiness,
-		BusinessFollowEvent, BusinessFollowUser, Category, CategoryAssignment, Chat,
-		Comment, CustomBlock, Event, FAQ, FeatureRelease, Help, InventoryAttribute,
-		InventoryType, Like, Media, Menu, Notification, Order, Payment, Place,
-		PlaceInventory, PlaceInventoryAttribute, Post, Rating, Reaction, Reservation,
-		ReservationBlock, Resourse, Review, Room, Template, Ticket, TicketOption,
-		TransactionHistory, User, UserBusiness, UserFollowBusiness, UserFollowEvent,
-		UserFollowPlace, UserFollowUser, UserLikePlace, Website []ent.Hook
+		AccountSettings, AccountWallet, Amenity, Booking, Business,
+		BusinessFollowBusiness, BusinessFollowEvent, BusinessFollowUser, Category,
+		CategoryAssignment, Chat, Comment, CustomBlock, Event, FAQ, FeatureRelease,
+		Help, InventoryAttribute, InventoryType, Like, Media, Menu, Notification,
+		Order, Payment, Place, PlaceInventory, PlaceInventoryAttribute, Post, Rating,
+		Reaction, Reservation, ReservationBlock, Resourse, Review, Room, Template,
+		Ticket, TicketOption, TransactionHistory, User, UserBusiness,
+		UserFollowBusiness, UserFollowEvent, UserFollowPlace, UserFollowUser,
+		UserLikePlace, Website []ent.Hook
 	}
 	inters struct {
-		AccountSettings, Amenity, Booking, Business, BusinessFollowBusiness,
-		BusinessFollowEvent, BusinessFollowUser, Category, CategoryAssignment, Chat,
-		Comment, CustomBlock, Event, FAQ, FeatureRelease, Help, InventoryAttribute,
-		InventoryType, Like, Media, Menu, Notification, Order, Payment, Place,
-		PlaceInventory, PlaceInventoryAttribute, Post, Rating, Reaction, Reservation,
-		ReservationBlock, Resourse, Review, Room, Template, Ticket, TicketOption,
-		TransactionHistory, User, UserBusiness, UserFollowBusiness, UserFollowEvent,
-		UserFollowPlace, UserFollowUser, UserLikePlace, Website []ent.Interceptor
+		AccountSettings, AccountWallet, Amenity, Booking, Business,
+		BusinessFollowBusiness, BusinessFollowEvent, BusinessFollowUser, Category,
+		CategoryAssignment, Chat, Comment, CustomBlock, Event, FAQ, FeatureRelease,
+		Help, InventoryAttribute, InventoryType, Like, Media, Menu, Notification,
+		Order, Payment, Place, PlaceInventory, PlaceInventoryAttribute, Post, Rating,
+		Reaction, Reservation, ReservationBlock, Resourse, Review, Room, Template,
+		Ticket, TicketOption, TransactionHistory, User, UserBusiness,
+		UserFollowBusiness, UserFollowEvent, UserFollowPlace, UserFollowUser,
+		UserLikePlace, Website []ent.Interceptor
 	}
 )
