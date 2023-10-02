@@ -6,12 +6,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/business"
-	"placio-app/ent/customblock"
-	"placio-app/ent/media"
-	"placio-app/ent/predicate"
-	"placio-app/ent/template"
-	"placio-app/ent/website"
+	"placio_api/business"
+	"placio_api/customblock"
+	"placio_api/media"
+	"placio_api/predicate"
+	"placio_api/template"
+	"placio_api/website"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -466,10 +466,10 @@ func (wu *WebsiteUpdate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (wu *WebsiteUpdate) check() error {
 	if _, ok := wu.mutation.BusinessID(); wu.mutation.BusinessCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Website.business"`)
+		return errors.New(`placio_api: clearing a required unique edge "Website.business"`)
 	}
 	if _, ok := wu.mutation.TemplateID(); wu.mutation.TemplateCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Website.template"`)
+		return errors.New(`placio_api: clearing a required unique edge "Website.template"`)
 	}
 	return nil
 }
@@ -1239,10 +1239,10 @@ func (wuo *WebsiteUpdateOne) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (wuo *WebsiteUpdateOne) check() error {
 	if _, ok := wuo.mutation.BusinessID(); wuo.mutation.BusinessCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Website.business"`)
+		return errors.New(`placio_api: clearing a required unique edge "Website.business"`)
 	}
 	if _, ok := wuo.mutation.TemplateID(); wuo.mutation.TemplateCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Website.template"`)
+		return errors.New(`placio_api: clearing a required unique edge "Website.template"`)
 	}
 	return nil
 }
@@ -1254,7 +1254,7 @@ func (wuo *WebsiteUpdateOne) sqlSave(ctx context.Context) (_node *Website, err e
 	_spec := sqlgraph.NewUpdateSpec(website.Table, website.Columns, sqlgraph.NewFieldSpec(website.FieldID, field.TypeString))
 	id, ok := wuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Website.id" for update`)}
+		return nil, &ValidationError{Name: "id", err: errors.New(`placio_api: missing "Website.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := wuo.fields; len(fields) > 0 {
@@ -1262,7 +1262,7 @@ func (wuo *WebsiteUpdateOne) sqlSave(ctx context.Context) (_node *Website, err e
 		_spec.Node.Columns = append(_spec.Node.Columns, website.FieldID)
 		for _, f := range fields {
 			if !website.ValidColumn(f) {
-				return nil, &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
+				return nil, &ValidationError{Name: f, err: fmt.Errorf("placio_api: invalid field %q for query", f)}
 			}
 			if f != website.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, f)

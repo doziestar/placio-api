@@ -6,9 +6,9 @@ import (
 	"context"
 	"fmt"
 	"math"
-	"placio-app/ent/predicate"
-	"placio-app/ent/user"
-	"placio-app/ent/userfollowuser"
+	"placio_api/predicate"
+	"placio_api/user"
+	"placio_api/userfollowuser"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -270,7 +270,7 @@ func (ufuq *UserFollowUserQuery) Exist(ctx context.Context) (bool, error) {
 	case IsNotFound(err):
 		return false, nil
 	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
+		return false, fmt.Errorf("placio_api: check existence: %w", err)
 	default:
 		return true, nil
 	}
@@ -339,7 +339,7 @@ func (ufuq *UserFollowUserQuery) WithFollowed(opts ...func(*UserQuery)) *UserFol
 //
 //	client.UserFollowUser.Query().
 //		GroupBy(userfollowuser.FieldCreatedAt).
-//		Aggregate(ent.Count()).
+//		Aggregate(placio_api.Count()).
 //		Scan(ctx, &v)
 func (ufuq *UserFollowUserQuery) GroupBy(field string, fields ...string) *UserFollowUserGroupBy {
 	ufuq.ctx.Fields = append([]string{field}, fields...)
@@ -378,7 +378,7 @@ func (ufuq *UserFollowUserQuery) Aggregate(fns ...AggregateFunc) *UserFollowUser
 func (ufuq *UserFollowUserQuery) prepareQuery(ctx context.Context) error {
 	for _, inter := range ufuq.inters {
 		if inter == nil {
-			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+			return fmt.Errorf("placio_api: uninitialized interceptor (forgotten import placio_api/runtime?)")
 		}
 		if trv, ok := inter.(Traverser); ok {
 			if err := trv.Traverse(ctx, ufuq); err != nil {
@@ -388,7 +388,7 @@ func (ufuq *UserFollowUserQuery) prepareQuery(ctx context.Context) error {
 	}
 	for _, f := range ufuq.ctx.Fields {
 		if !userfollowuser.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
+			return &ValidationError{Name: f, err: fmt.Errorf("placio_api: invalid field %q for query", f)}
 		}
 	}
 	if ufuq.path != nil {

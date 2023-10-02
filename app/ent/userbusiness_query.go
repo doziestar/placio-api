@@ -6,10 +6,10 @@ import (
 	"context"
 	"fmt"
 	"math"
-	"placio-app/ent/business"
-	"placio-app/ent/predicate"
-	"placio-app/ent/user"
-	"placio-app/ent/userbusiness"
+	"placio_api/business"
+	"placio_api/predicate"
+	"placio_api/user"
+	"placio_api/userbusiness"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -271,7 +271,7 @@ func (ubq *UserBusinessQuery) Exist(ctx context.Context) (bool, error) {
 	case IsNotFound(err):
 		return false, nil
 	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
+		return false, fmt.Errorf("placio_api: check existence: %w", err)
 	default:
 		return true, nil
 	}
@@ -340,7 +340,7 @@ func (ubq *UserBusinessQuery) WithBusiness(opts ...func(*BusinessQuery)) *UserBu
 //
 //	client.UserBusiness.Query().
 //		GroupBy(userbusiness.FieldRole).
-//		Aggregate(ent.Count()).
+//		Aggregate(placio_api.Count()).
 //		Scan(ctx, &v)
 func (ubq *UserBusinessQuery) GroupBy(field string, fields ...string) *UserBusinessGroupBy {
 	ubq.ctx.Fields = append([]string{field}, fields...)
@@ -379,7 +379,7 @@ func (ubq *UserBusinessQuery) Aggregate(fns ...AggregateFunc) *UserBusinessSelec
 func (ubq *UserBusinessQuery) prepareQuery(ctx context.Context) error {
 	for _, inter := range ubq.inters {
 		if inter == nil {
-			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+			return fmt.Errorf("placio_api: uninitialized interceptor (forgotten import placio_api/runtime?)")
 		}
 		if trv, ok := inter.(Traverser); ok {
 			if err := trv.Traverse(ctx, ubq); err != nil {
@@ -389,7 +389,7 @@ func (ubq *UserBusinessQuery) prepareQuery(ctx context.Context) error {
 	}
 	for _, f := range ubq.ctx.Fields {
 		if !userbusiness.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
+			return &ValidationError{Name: f, err: fmt.Errorf("placio_api: invalid field %q for query", f)}
 		}
 	}
 	if ubq.path != nil {

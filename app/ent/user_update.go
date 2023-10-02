@@ -6,35 +6,34 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/accountwallet"
-	"placio-app/ent/booking"
-	"placio-app/ent/businessfollowuser"
-	"placio-app/ent/category"
-	"placio-app/ent/categoryassignment"
-	"placio-app/ent/comment"
-	"placio-app/ent/event"
-	"placio-app/ent/like"
-	"placio-app/ent/notification"
-	"placio-app/ent/place"
-	"placio-app/ent/post"
-	"placio-app/ent/predicate"
-	"placio-app/ent/rating"
-	"placio-app/ent/reservation"
-	"placio-app/ent/reservationblock"
-	"placio-app/ent/review"
-	"placio-app/ent/transactionhistory"
-	"placio-app/ent/user"
-	"placio-app/ent/userbusiness"
-	"placio-app/ent/userfollowbusiness"
-	"placio-app/ent/userfollowevent"
-	"placio-app/ent/userfollowplace"
-	"placio-app/ent/userfollowuser"
-	"placio-app/ent/userlikeplace"
+	"placio_api/accountwallet"
+	"placio_api/booking"
+	"placio_api/businessfollowuser"
+	"placio_api/category"
+	"placio_api/categoryassignment"
+	"placio_api/comment"
+	"placio_api/event"
+	"placio_api/like"
+	"placio_api/notification"
+	"placio_api/place"
+	"placio_api/post"
+	"placio_api/predicate"
+	"placio_api/rating"
+	"placio_api/reservation"
+	"placio_api/reservationblock"
+	"placio_api/review"
+	"placio_api/transactionhistory"
+	"placio_api/user"
+	"placio_api/userbusiness"
+	"placio_api/userfollowbusiness"
+	"placio_api/userfollowevent"
+	"placio_api/userfollowplace"
+	"placio_api/userfollowuser"
+	"placio_api/userlikeplace"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/auth0/go-auth0/management"
 )
 
 // UserUpdate is the builder for updating User entities.
@@ -231,18 +230,6 @@ func (uu *UserUpdate) SetNillableBio(s *string) *UserUpdate {
 // ClearBio clears the value of the "bio" field.
 func (uu *UserUpdate) ClearBio() *UserUpdate {
 	uu.mutation.ClearBio()
-	return uu
-}
-
-// SetAuth0Data sets the "auth0_data" field.
-func (uu *UserUpdate) SetAuth0Data(m *management.User) *UserUpdate {
-	uu.mutation.SetAuth0Data(m)
-	return uu
-}
-
-// ClearAuth0Data clears the value of the "auth0_data" field.
-func (uu *UserUpdate) ClearAuth0Data() *UserUpdate {
-	uu.mutation.ClearAuth0Data()
 	return uu
 }
 
@@ -1265,12 +1252,6 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if uu.mutation.BioCleared() {
 		_spec.ClearField(user.FieldBio, field.TypeString)
-	}
-	if value, ok := uu.mutation.Auth0Data(); ok {
-		_spec.SetField(user.FieldAuth0Data, field.TypeJSON, value)
-	}
-	if uu.mutation.Auth0DataCleared() {
-		_spec.ClearField(user.FieldAuth0Data, field.TypeJSON)
 	}
 	if value, ok := uu.mutation.AppSettings(); ok {
 		_spec.SetField(user.FieldAppSettings, field.TypeJSON, value)
@@ -2518,18 +2499,6 @@ func (uuo *UserUpdateOne) ClearBio() *UserUpdateOne {
 	return uuo
 }
 
-// SetAuth0Data sets the "auth0_data" field.
-func (uuo *UserUpdateOne) SetAuth0Data(m *management.User) *UserUpdateOne {
-	uuo.mutation.SetAuth0Data(m)
-	return uuo
-}
-
-// ClearAuth0Data clears the value of the "auth0_data" field.
-func (uuo *UserUpdateOne) ClearAuth0Data() *UserUpdateOne {
-	uuo.mutation.ClearAuth0Data()
-	return uuo
-}
-
 // SetAppSettings sets the "app_settings" field.
 func (uuo *UserUpdateOne) SetAppSettings(m map[string]interface{}) *UserUpdateOne {
 	uuo.mutation.SetAppSettings(m)
@@ -3498,7 +3467,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	_spec := sqlgraph.NewUpdateSpec(user.Table, user.Columns, sqlgraph.NewFieldSpec(user.FieldID, field.TypeString))
 	id, ok := uuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "User.id" for update`)}
+		return nil, &ValidationError{Name: "id", err: errors.New(`placio_api: missing "User.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := uuo.fields; len(fields) > 0 {
@@ -3506,7 +3475,7 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 		_spec.Node.Columns = append(_spec.Node.Columns, user.FieldID)
 		for _, f := range fields {
 			if !user.ValidColumn(f) {
-				return nil, &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
+				return nil, &ValidationError{Name: f, err: fmt.Errorf("placio_api: invalid field %q for query", f)}
 			}
 			if f != user.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, f)
@@ -3579,12 +3548,6 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if uuo.mutation.BioCleared() {
 		_spec.ClearField(user.FieldBio, field.TypeString)
-	}
-	if value, ok := uuo.mutation.Auth0Data(); ok {
-		_spec.SetField(user.FieldAuth0Data, field.TypeJSON, value)
-	}
-	if uuo.mutation.Auth0DataCleared() {
-		_spec.ClearField(user.FieldAuth0Data, field.TypeJSON)
 	}
 	if value, ok := uuo.mutation.AppSettings(); ok {
 		_spec.SetField(user.FieldAppSettings, field.TypeJSON, value)

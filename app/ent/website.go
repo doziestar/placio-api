@@ -5,9 +5,9 @@ package ent
 import (
 	"encoding/json"
 	"fmt"
-	"placio-app/ent/business"
-	"placio-app/ent/template"
-	"placio-app/ent/website"
+	"placio_api/business"
+	"placio_api/template"
+	"placio_api/website"
 	"strings"
 	"time"
 
@@ -556,7 +556,7 @@ func (w *Website) Update() *WebsiteUpdateOne {
 func (w *Website) Unwrap() *Website {
 	_tx, ok := w.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: Website is not a transactional entity")
+		panic("placio_api: Website is not a transactional entity")
 	}
 	w.config.driver = _tx.drv
 	return w

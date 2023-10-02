@@ -4,11 +4,11 @@ package ent
 
 import (
 	"fmt"
-	"placio-app/ent/business"
-	"placio-app/ent/category"
-	"placio-app/ent/inventorytype"
-	"placio-app/ent/place"
-	"placio-app/ent/placeinventory"
+	"placio_api/business"
+	"placio_api/category"
+	"placio_api/inventorytype"
+	"placio_api/place"
+	"placio_api/placeinventory"
 	"strings"
 	"time"
 
@@ -365,7 +365,7 @@ func (pi *PlaceInventory) Update() *PlaceInventoryUpdateOne {
 func (pi *PlaceInventory) Unwrap() *PlaceInventory {
 	_tx, ok := pi.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: PlaceInventory is not a transactional entity")
+		panic("placio_api: PlaceInventory is not a transactional entity")
 	}
 	pi.config.driver = _tx.drv
 	return pi

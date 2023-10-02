@@ -4,7 +4,7 @@ package ent
 
 import (
 	"fmt"
-	"placio-app/ent/order"
+	"placio_api/order"
 	"strings"
 
 	"entgo.io/ent"
@@ -72,7 +72,7 @@ func (o *Order) Update() *OrderUpdateOne {
 func (o *Order) Unwrap() *Order {
 	_tx, ok := o.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: Order is not a transactional entity")
+		panic("placio_api: Order is not a transactional entity")
 	}
 	o.config.driver = _tx.drv
 	return o

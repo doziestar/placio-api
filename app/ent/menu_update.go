@@ -6,10 +6,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/category"
-	"placio-app/ent/menu"
-	"placio-app/ent/place"
-	"placio-app/ent/predicate"
+	"placio_api/category"
+	"placio_api/menu"
+	"placio_api/place"
+	"placio_api/predicate"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -335,7 +335,7 @@ func (muo *MenuUpdateOne) sqlSave(ctx context.Context) (_node *Menu, err error) 
 	_spec := sqlgraph.NewUpdateSpec(menu.Table, menu.Columns, sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString))
 	id, ok := muo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Menu.id" for update`)}
+		return nil, &ValidationError{Name: "id", err: errors.New(`placio_api: missing "Menu.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := muo.fields; len(fields) > 0 {
@@ -343,7 +343,7 @@ func (muo *MenuUpdateOne) sqlSave(ctx context.Context) (_node *Menu, err error) 
 		_spec.Node.Columns = append(_spec.Node.Columns, menu.FieldID)
 		for _, f := range fields {
 			if !menu.ValidColumn(f) {
-				return nil, &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
+				return nil, &ValidationError{Name: f, err: fmt.Errorf("placio_api: invalid field %q for query", f)}
 			}
 			if f != menu.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, f)

@@ -5,8 +5,8 @@ package ent
 import (
 	"encoding/json"
 	"fmt"
-	"placio-app/ent/business"
-	"placio-app/ent/place"
+	"placio_api/business"
+	"placio_api/place"
 	"strings"
 
 	"entgo.io/ent"
@@ -696,7 +696,7 @@ func (pl *Place) Update() *PlaceUpdateOne {
 func (pl *Place) Unwrap() *Place {
 	_tx, ok := pl.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: Place is not a transactional entity")
+		panic("placio_api: Place is not a transactional entity")
 	}
 	pl.config.driver = _tx.drv
 	return pl

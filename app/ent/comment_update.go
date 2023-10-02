@@ -6,10 +6,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/comment"
-	"placio-app/ent/post"
-	"placio-app/ent/predicate"
-	"placio-app/ent/user"
+	"placio_api/comment"
+	"placio_api/post"
+	"placio_api/predicate"
+	"placio_api/user"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -218,7 +218,7 @@ func (cu *CommentUpdate) defaults() {
 func (cu *CommentUpdate) check() error {
 	if v, ok := cu.mutation.Content(); ok {
 		if err := comment.ContentValidator(v); err != nil {
-			return &ValidationError{Name: "Content", err: fmt.Errorf(`ent: validator failed for field "Comment.Content": %w`, err)}
+			return &ValidationError{Name: "Content", err: fmt.Errorf(`placio_api: validator failed for field "Comment.Content": %w`, err)}
 		}
 	}
 	return nil
@@ -598,7 +598,7 @@ func (cuo *CommentUpdateOne) defaults() {
 func (cuo *CommentUpdateOne) check() error {
 	if v, ok := cuo.mutation.Content(); ok {
 		if err := comment.ContentValidator(v); err != nil {
-			return &ValidationError{Name: "Content", err: fmt.Errorf(`ent: validator failed for field "Comment.Content": %w`, err)}
+			return &ValidationError{Name: "Content", err: fmt.Errorf(`placio_api: validator failed for field "Comment.Content": %w`, err)}
 		}
 	}
 	return nil
@@ -611,7 +611,7 @@ func (cuo *CommentUpdateOne) sqlSave(ctx context.Context) (_node *Comment, err e
 	_spec := sqlgraph.NewUpdateSpec(comment.Table, comment.Columns, sqlgraph.NewFieldSpec(comment.FieldID, field.TypeString))
 	id, ok := cuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Comment.id" for update`)}
+		return nil, &ValidationError{Name: "id", err: errors.New(`placio_api: missing "Comment.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := cuo.fields; len(fields) > 0 {
@@ -619,7 +619,7 @@ func (cuo *CommentUpdateOne) sqlSave(ctx context.Context) (_node *Comment, err e
 		_spec.Node.Columns = append(_spec.Node.Columns, comment.FieldID)
 		for _, f := range fields {
 			if !comment.ValidColumn(f) {
-				return nil, &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
+				return nil, &ValidationError{Name: f, err: fmt.Errorf("placio_api: invalid field %q for query", f)}
 			}
 			if f != comment.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, f)

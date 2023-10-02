@@ -7,12 +7,12 @@ import (
 	"database/sql/driver"
 	"fmt"
 	"math"
-	"placio-app/ent/business"
-	"placio-app/ent/customblock"
-	"placio-app/ent/media"
-	"placio-app/ent/predicate"
-	"placio-app/ent/template"
-	"placio-app/ent/website"
+	"placio_api/business"
+	"placio_api/customblock"
+	"placio_api/media"
+	"placio_api/predicate"
+	"placio_api/template"
+	"placio_api/website"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -320,7 +320,7 @@ func (wq *WebsiteQuery) Exist(ctx context.Context) (bool, error) {
 	case IsNotFound(err):
 		return false, nil
 	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
+		return false, fmt.Errorf("placio_api: check existence: %w", err)
 	default:
 		return true, nil
 	}
@@ -413,7 +413,7 @@ func (wq *WebsiteQuery) WithAssets(opts ...func(*MediaQuery)) *WebsiteQuery {
 //
 //	client.Website.Query().
 //		GroupBy(website.FieldDomainName).
-//		Aggregate(ent.Count()).
+//		Aggregate(placio_api.Count()).
 //		Scan(ctx, &v)
 func (wq *WebsiteQuery) GroupBy(field string, fields ...string) *WebsiteGroupBy {
 	wq.ctx.Fields = append([]string{field}, fields...)
@@ -452,7 +452,7 @@ func (wq *WebsiteQuery) Aggregate(fns ...AggregateFunc) *WebsiteSelect {
 func (wq *WebsiteQuery) prepareQuery(ctx context.Context) error {
 	for _, inter := range wq.inters {
 		if inter == nil {
-			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+			return fmt.Errorf("placio_api: uninitialized interceptor (forgotten import placio_api/runtime?)")
 		}
 		if trv, ok := inter.(Traverser); ok {
 			if err := trv.Traverse(ctx, wq); err != nil {
@@ -462,7 +462,7 @@ func (wq *WebsiteQuery) prepareQuery(ctx context.Context) error {
 	}
 	for _, f := range wq.ctx.Fields {
 		if !website.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
+			return &ValidationError{Name: f, err: fmt.Errorf("placio_api: invalid field %q for query", f)}
 		}
 	}
 	if wq.path != nil {

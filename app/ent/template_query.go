@@ -7,9 +7,9 @@ import (
 	"database/sql/driver"
 	"fmt"
 	"math"
-	"placio-app/ent/predicate"
-	"placio-app/ent/template"
-	"placio-app/ent/website"
+	"placio_api/predicate"
+	"placio_api/template"
+	"placio_api/website"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -247,7 +247,7 @@ func (tq *TemplateQuery) Exist(ctx context.Context) (bool, error) {
 	case IsNotFound(err):
 		return false, nil
 	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
+		return false, fmt.Errorf("placio_api: check existence: %w", err)
 	default:
 		return true, nil
 	}
@@ -304,7 +304,7 @@ func (tq *TemplateQuery) WithWebsites(opts ...func(*WebsiteQuery)) *TemplateQuer
 //
 //	client.Template.Query().
 //		GroupBy(template.FieldName).
-//		Aggregate(ent.Count()).
+//		Aggregate(placio_api.Count()).
 //		Scan(ctx, &v)
 func (tq *TemplateQuery) GroupBy(field string, fields ...string) *TemplateGroupBy {
 	tq.ctx.Fields = append([]string{field}, fields...)
@@ -343,7 +343,7 @@ func (tq *TemplateQuery) Aggregate(fns ...AggregateFunc) *TemplateSelect {
 func (tq *TemplateQuery) prepareQuery(ctx context.Context) error {
 	for _, inter := range tq.inters {
 		if inter == nil {
-			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+			return fmt.Errorf("placio_api: uninitialized interceptor (forgotten import placio_api/runtime?)")
 		}
 		if trv, ok := inter.(Traverser); ok {
 			if err := trv.Traverse(ctx, tq); err != nil {
@@ -353,7 +353,7 @@ func (tq *TemplateQuery) prepareQuery(ctx context.Context) error {
 	}
 	for _, f := range tq.ctx.Fields {
 		if !template.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
+			return &ValidationError{Name: f, err: fmt.Errorf("placio_api: invalid field %q for query", f)}
 		}
 	}
 	if tq.path != nil {

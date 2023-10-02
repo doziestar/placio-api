@@ -6,10 +6,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/place"
-	"placio-app/ent/predicate"
-	"placio-app/ent/reservation"
-	"placio-app/ent/user"
+	"placio_api/place"
+	"placio_api/predicate"
+	"placio_api/reservation"
+	"placio_api/user"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -375,7 +375,7 @@ func (ruo *ReservationUpdateOne) sqlSave(ctx context.Context) (_node *Reservatio
 	_spec := sqlgraph.NewUpdateSpec(reservation.Table, reservation.Columns, sqlgraph.NewFieldSpec(reservation.FieldID, field.TypeString))
 	id, ok := ruo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Reservation.id" for update`)}
+		return nil, &ValidationError{Name: "id", err: errors.New(`placio_api: missing "Reservation.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := ruo.fields; len(fields) > 0 {
@@ -383,7 +383,7 @@ func (ruo *ReservationUpdateOne) sqlSave(ctx context.Context) (_node *Reservatio
 		_spec.Node.Columns = append(_spec.Node.Columns, reservation.FieldID)
 		for _, f := range fields {
 			if !reservation.ValidColumn(f) {
-				return nil, &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
+				return nil, &ValidationError{Name: f, err: fmt.Errorf("placio_api: invalid field %q for query", f)}
 			}
 			if f != reservation.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, f)

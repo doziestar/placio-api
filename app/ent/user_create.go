@@ -6,34 +6,33 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/accountwallet"
-	"placio-app/ent/booking"
-	"placio-app/ent/businessfollowuser"
-	"placio-app/ent/category"
-	"placio-app/ent/categoryassignment"
-	"placio-app/ent/comment"
-	"placio-app/ent/event"
-	"placio-app/ent/help"
-	"placio-app/ent/like"
-	"placio-app/ent/notification"
-	"placio-app/ent/place"
-	"placio-app/ent/post"
-	"placio-app/ent/rating"
-	"placio-app/ent/reservation"
-	"placio-app/ent/reservationblock"
-	"placio-app/ent/review"
-	"placio-app/ent/transactionhistory"
-	"placio-app/ent/user"
-	"placio-app/ent/userbusiness"
-	"placio-app/ent/userfollowbusiness"
-	"placio-app/ent/userfollowevent"
-	"placio-app/ent/userfollowplace"
-	"placio-app/ent/userfollowuser"
-	"placio-app/ent/userlikeplace"
+	"placio_api/accountwallet"
+	"placio_api/booking"
+	"placio_api/businessfollowuser"
+	"placio_api/category"
+	"placio_api/categoryassignment"
+	"placio_api/comment"
+	"placio_api/event"
+	"placio_api/help"
+	"placio_api/like"
+	"placio_api/notification"
+	"placio_api/place"
+	"placio_api/post"
+	"placio_api/rating"
+	"placio_api/reservation"
+	"placio_api/reservationblock"
+	"placio_api/review"
+	"placio_api/transactionhistory"
+	"placio_api/user"
+	"placio_api/userbusiness"
+	"placio_api/userfollowbusiness"
+	"placio_api/userfollowevent"
+	"placio_api/userfollowplace"
+	"placio_api/userfollowuser"
+	"placio_api/userlikeplace"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/auth0/go-auth0/management"
 )
 
 // UserCreate is the builder for creating a User entity.
@@ -170,12 +169,6 @@ func (uc *UserCreate) SetNillableBio(s *string) *UserCreate {
 	if s != nil {
 		uc.SetBio(*s)
 	}
-	return uc
-}
-
-// SetAuth0Data sets the "auth0_data" field.
-func (uc *UserCreate) SetAuth0Data(m *management.User) *UserCreate {
-	uc.mutation.SetAuth0Data(m)
 	return uc
 }
 
@@ -628,9 +621,7 @@ func (uc *UserCreate) Mutation() *UserMutation {
 
 // Save creates the User in the database.
 func (uc *UserCreate) Save(ctx context.Context) (*User, error) {
-	if err := uc.defaults(); err != nil {
-		return nil, err
-	}
+	uc.defaults()
 	return withHooks(ctx, uc.sqlSave, uc.mutation, uc.hooks)
 }
 
@@ -657,7 +648,7 @@ func (uc *UserCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (uc *UserCreate) defaults() error {
+func (uc *UserCreate) defaults() {
 	if _, ok := uc.mutation.CoverImage(); !ok {
 		v := user.DefaultCoverImage
 		uc.mutation.SetCoverImage(v)
@@ -674,26 +665,25 @@ func (uc *UserCreate) defaults() error {
 		v := user.DefaultFollowingCount
 		uc.mutation.SetFollowingCount(v)
 	}
-	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (uc *UserCreate) check() error {
 	if _, ok := uc.mutation.Auth0ID(); !ok {
-		return &ValidationError{Name: "auth0_id", err: errors.New(`ent: missing required field "User.auth0_id"`)}
+		return &ValidationError{Name: "auth0_id", err: errors.New(`placio_api: missing required field "User.auth0_id"`)}
 	}
 	if _, ok := uc.mutation.Username(); !ok {
-		return &ValidationError{Name: "username", err: errors.New(`ent: missing required field "User.username"`)}
+		return &ValidationError{Name: "username", err: errors.New(`placio_api: missing required field "User.username"`)}
 	}
 	if _, ok := uc.mutation.FollowerCount(); !ok {
-		return &ValidationError{Name: "follower_count", err: errors.New(`ent: missing required field "User.follower_count"`)}
+		return &ValidationError{Name: "follower_count", err: errors.New(`placio_api: missing required field "User.follower_count"`)}
 	}
 	if _, ok := uc.mutation.FollowingCount(); !ok {
-		return &ValidationError{Name: "following_count", err: errors.New(`ent: missing required field "User.following_count"`)}
+		return &ValidationError{Name: "following_count", err: errors.New(`placio_api: missing required field "User.following_count"`)}
 	}
 	if v, ok := uc.mutation.ID(); ok {
 		if err := user.IDValidator(v); err != nil {
-			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "User.id": %w`, err)}
+			return &ValidationError{Name: "id", err: fmt.Errorf(`placio_api: validator failed for field "User.id": %w`, err)}
 		}
 	}
 	return nil
@@ -774,10 +764,6 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.Bio(); ok {
 		_spec.SetField(user.FieldBio, field.TypeString, value)
 		_node.Bio = value
-	}
-	if value, ok := uc.mutation.Auth0Data(); ok {
-		_spec.SetField(user.FieldAuth0Data, field.TypeJSON, value)
-		_node.Auth0Data = value
 	}
 	if value, ok := uc.mutation.AppSettings(); ok {
 		_spec.SetField(user.FieldAppSettings, field.TypeJSON, value)
@@ -1193,11 +1179,15 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 // UserCreateBulk is the builder for creating many User entities in bulk.
 type UserCreateBulk struct {
 	config
+	err      error
 	builders []*UserCreate
 }
 
 // Save creates the User entities in the database.
 func (ucb *UserCreateBulk) Save(ctx context.Context) ([]*User, error) {
+	if ucb.err != nil {
+		return nil, ucb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ucb.builders))
 	nodes := make([]*User, len(ucb.builders))
 	mutators := make([]Mutator, len(ucb.builders))

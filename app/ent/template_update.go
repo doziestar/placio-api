@@ -6,9 +6,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/predicate"
-	"placio-app/ent/template"
-	"placio-app/ent/website"
+	"placio_api/predicate"
+	"placio_api/template"
+	"placio_api/website"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -300,7 +300,7 @@ func (tuo *TemplateUpdateOne) sqlSave(ctx context.Context) (_node *Template, err
 	_spec := sqlgraph.NewUpdateSpec(template.Table, template.Columns, sqlgraph.NewFieldSpec(template.FieldID, field.TypeString))
 	id, ok := tuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Template.id" for update`)}
+		return nil, &ValidationError{Name: "id", err: errors.New(`placio_api: missing "Template.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := tuo.fields; len(fields) > 0 {
@@ -308,7 +308,7 @@ func (tuo *TemplateUpdateOne) sqlSave(ctx context.Context) (_node *Template, err
 		_spec.Node.Columns = append(_spec.Node.Columns, template.FieldID)
 		for _, f := range fields {
 			if !template.ValidColumn(f) {
-				return nil, &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
+				return nil, &ValidationError{Name: f, err: fmt.Errorf("placio_api: invalid field %q for query", f)}
 			}
 			if f != template.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, f)

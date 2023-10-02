@@ -6,9 +6,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/business"
-	"placio-app/ent/user"
-	"placio-app/ent/userfollowbusiness"
+	"placio_api/business"
+	"placio_api/user"
+	"placio_api/userfollowbusiness"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -130,10 +130,10 @@ func (ufbc *UserFollowBusinessCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (ufbc *UserFollowBusinessCreate) check() error {
 	if _, ok := ufbc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "CreatedAt", err: errors.New(`ent: missing required field "UserFollowBusiness.CreatedAt"`)}
+		return &ValidationError{Name: "CreatedAt", err: errors.New(`placio_api: missing required field "UserFollowBusiness.CreatedAt"`)}
 	}
 	if _, ok := ufbc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "UpdatedAt", err: errors.New(`ent: missing required field "UserFollowBusiness.UpdatedAt"`)}
+		return &ValidationError{Name: "UpdatedAt", err: errors.New(`placio_api: missing required field "UserFollowBusiness.UpdatedAt"`)}
 	}
 	return nil
 }
@@ -218,11 +218,15 @@ func (ufbc *UserFollowBusinessCreate) createSpec() (*UserFollowBusiness, *sqlgra
 // UserFollowBusinessCreateBulk is the builder for creating many UserFollowBusiness entities in bulk.
 type UserFollowBusinessCreateBulk struct {
 	config
+	err      error
 	builders []*UserFollowBusinessCreate
 }
 
 // Save creates the UserFollowBusiness entities in the database.
 func (ufbcb *UserFollowBusinessCreateBulk) Save(ctx context.Context) ([]*UserFollowBusiness, error) {
+	if ufbcb.err != nil {
+		return nil, ufbcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ufbcb.builders))
 	nodes := make([]*UserFollowBusiness, len(ufbcb.builders))
 	mutators := make([]Mutator, len(ufbcb.builders))

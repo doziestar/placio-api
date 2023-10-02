@@ -4,9 +4,9 @@ package ent
 
 import (
 	"fmt"
-	"placio-app/ent/place"
-	"placio-app/ent/reservation"
-	"placio-app/ent/user"
+	"placio_api/place"
+	"placio_api/reservation"
+	"placio_api/user"
 	"strings"
 	"time"
 
@@ -181,7 +181,7 @@ func (r *Reservation) Update() *ReservationUpdateOne {
 func (r *Reservation) Unwrap() *Reservation {
 	_tx, ok := r.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: Reservation is not a transactional entity")
+		panic("placio_api: Reservation is not a transactional entity")
 	}
 	r.config.driver = _tx.drv
 	return r

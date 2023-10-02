@@ -6,11 +6,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/business"
-	"placio-app/ent/event"
-	"placio-app/ent/place"
-	"placio-app/ent/rating"
-	"placio-app/ent/user"
+	"placio_api/business"
+	"placio_api/event"
+	"placio_api/place"
+	"placio_api/rating"
+	"placio_api/user"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -139,9 +139,7 @@ func (rc *RatingCreate) Mutation() *RatingMutation {
 
 // Save creates the Rating in the database.
 func (rc *RatingCreate) Save(ctx context.Context) (*Rating, error) {
-	if err := rc.defaults(); err != nil {
-		return nil, err
-	}
+	rc.defaults()
 	return withHooks(ctx, rc.sqlSave, rc.mutation, rc.hooks)
 }
 
@@ -168,32 +166,28 @@ func (rc *RatingCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (rc *RatingCreate) defaults() error {
+func (rc *RatingCreate) defaults() {
 	if _, ok := rc.mutation.RatedAt(); !ok {
-		if rating.DefaultRatedAt == nil {
-			return fmt.Errorf("ent: uninitialized rating.DefaultRatedAt (forgotten import ent/runtime?)")
-		}
 		v := rating.DefaultRatedAt()
 		rc.mutation.SetRatedAt(v)
 	}
-	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (rc *RatingCreate) check() error {
 	if _, ok := rc.mutation.Score(); !ok {
-		return &ValidationError{Name: "score", err: errors.New(`ent: missing required field "Rating.score"`)}
+		return &ValidationError{Name: "score", err: errors.New(`placio_api: missing required field "Rating.score"`)}
 	}
 	if v, ok := rc.mutation.Score(); ok {
 		if err := rating.ScoreValidator(v); err != nil {
-			return &ValidationError{Name: "score", err: fmt.Errorf(`ent: validator failed for field "Rating.score": %w`, err)}
+			return &ValidationError{Name: "score", err: fmt.Errorf(`placio_api: validator failed for field "Rating.score": %w`, err)}
 		}
 	}
 	if _, ok := rc.mutation.RatedAt(); !ok {
-		return &ValidationError{Name: "ratedAt", err: errors.New(`ent: missing required field "Rating.ratedAt"`)}
+		return &ValidationError{Name: "ratedAt", err: errors.New(`placio_api: missing required field "Rating.ratedAt"`)}
 	}
 	if _, ok := rc.mutation.UserID(); !ok {
-		return &ValidationError{Name: "user", err: errors.New(`ent: missing required edge "Rating.user"`)}
+		return &ValidationError{Name: "user", err: errors.New(`placio_api: missing required edge "Rating.user"`)}
 	}
 	return nil
 }
@@ -316,11 +310,15 @@ func (rc *RatingCreate) createSpec() (*Rating, *sqlgraph.CreateSpec) {
 // RatingCreateBulk is the builder for creating many Rating entities in bulk.
 type RatingCreateBulk struct {
 	config
+	err      error
 	builders []*RatingCreate
 }
 
 // Save creates the Rating entities in the database.
 func (rcb *RatingCreateBulk) Save(ctx context.Context) ([]*Rating, error) {
+	if rcb.err != nil {
+		return nil, rcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(rcb.builders))
 	nodes := make([]*Rating, len(rcb.builders))
 	mutators := make([]Mutator, len(rcb.builders))

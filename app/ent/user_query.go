@@ -7,31 +7,31 @@ import (
 	"database/sql/driver"
 	"fmt"
 	"math"
-	"placio-app/ent/accountwallet"
-	"placio-app/ent/booking"
-	"placio-app/ent/businessfollowuser"
-	"placio-app/ent/category"
-	"placio-app/ent/categoryassignment"
-	"placio-app/ent/comment"
-	"placio-app/ent/event"
-	"placio-app/ent/help"
-	"placio-app/ent/like"
-	"placio-app/ent/notification"
-	"placio-app/ent/place"
-	"placio-app/ent/post"
-	"placio-app/ent/predicate"
-	"placio-app/ent/rating"
-	"placio-app/ent/reservation"
-	"placio-app/ent/reservationblock"
-	"placio-app/ent/review"
-	"placio-app/ent/transactionhistory"
-	"placio-app/ent/user"
-	"placio-app/ent/userbusiness"
-	"placio-app/ent/userfollowbusiness"
-	"placio-app/ent/userfollowevent"
-	"placio-app/ent/userfollowplace"
-	"placio-app/ent/userfollowuser"
-	"placio-app/ent/userlikeplace"
+	"placio_api/accountwallet"
+	"placio_api/booking"
+	"placio_api/businessfollowuser"
+	"placio_api/category"
+	"placio_api/categoryassignment"
+	"placio_api/comment"
+	"placio_api/event"
+	"placio_api/help"
+	"placio_api/like"
+	"placio_api/notification"
+	"placio_api/place"
+	"placio_api/post"
+	"placio_api/predicate"
+	"placio_api/rating"
+	"placio_api/reservation"
+	"placio_api/reservationblock"
+	"placio_api/review"
+	"placio_api/transactionhistory"
+	"placio_api/user"
+	"placio_api/userbusiness"
+	"placio_api/userfollowbusiness"
+	"placio_api/userfollowevent"
+	"placio_api/userfollowplace"
+	"placio_api/userfollowuser"
+	"placio_api/userlikeplace"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -798,7 +798,7 @@ func (uq *UserQuery) Exist(ctx context.Context) (bool, error) {
 	case IsNotFound(err):
 		return false, nil
 	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
+		return false, fmt.Errorf("placio_api: check existence: %w", err)
 	default:
 		return true, nil
 	}
@@ -1131,7 +1131,7 @@ func (uq *UserQuery) WithWallet(opts ...func(*AccountWalletQuery)) *UserQuery {
 //
 //	client.User.Query().
 //		GroupBy(user.FieldAuth0ID).
-//		Aggregate(ent.Count()).
+//		Aggregate(placio_api.Count()).
 //		Scan(ctx, &v)
 func (uq *UserQuery) GroupBy(field string, fields ...string) *UserGroupBy {
 	uq.ctx.Fields = append([]string{field}, fields...)
@@ -1170,7 +1170,7 @@ func (uq *UserQuery) Aggregate(fns ...AggregateFunc) *UserSelect {
 func (uq *UserQuery) prepareQuery(ctx context.Context) error {
 	for _, inter := range uq.inters {
 		if inter == nil {
-			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+			return fmt.Errorf("placio_api: uninitialized interceptor (forgotten import placio_api/runtime?)")
 		}
 		if trv, ok := inter.(Traverser); ok {
 			if err := trv.Traverse(ctx, uq); err != nil {
@@ -1180,7 +1180,7 @@ func (uq *UserQuery) prepareQuery(ctx context.Context) error {
 	}
 	for _, f := range uq.ctx.Fields {
 		if !user.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
+			return &ValidationError{Name: f, err: fmt.Errorf("placio_api: invalid field %q for query", f)}
 		}
 	}
 	if uq.path != nil {

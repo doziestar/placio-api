@@ -5,9 +5,9 @@ package ent
 import (
 	"encoding/json"
 	"fmt"
-	"placio-app/ent/inventoryattribute"
-	"placio-app/ent/placeinventory"
-	"placio-app/ent/placeinventoryattribute"
+	"placio_api/inventoryattribute"
+	"placio_api/placeinventory"
+	"placio_api/placeinventoryattribute"
 	"strings"
 
 	"entgo.io/ent"
@@ -165,7 +165,7 @@ func (pia *PlaceInventoryAttribute) Update() *PlaceInventoryAttributeUpdateOne {
 func (pia *PlaceInventoryAttribute) Unwrap() *PlaceInventoryAttribute {
 	_tx, ok := pia.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: PlaceInventoryAttribute is not a transactional entity")
+		panic("placio_api: PlaceInventoryAttribute is not a transactional entity")
 	}
 	pia.config.driver = _tx.drv
 	return pia

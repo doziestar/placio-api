@@ -4,8 +4,8 @@ package ent
 
 import (
 	"context"
-	"placio-app/ent/predicate"
-	"placio-app/ent/reaction"
+	"placio_api/predicate"
+	"placio_api/reaction"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"

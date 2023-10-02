@@ -5,591 +5,591 @@ package hook
 import (
 	"context"
 	"fmt"
-	"placio-app/ent"
+	"placio_api"
 )
 
 // The AccountSettingsFunc type is an adapter to allow the use of ordinary
 // function as AccountSettings mutator.
-type AccountSettingsFunc func(context.Context, *ent.AccountSettingsMutation) (ent.Value, error)
+type AccountSettingsFunc func(context.Context, *placio_api.AccountSettingsMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f AccountSettingsFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.AccountSettingsMutation); ok {
+func (f AccountSettingsFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.AccountSettingsMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AccountSettingsMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.AccountSettingsMutation", m)
 }
 
 // The AccountWalletFunc type is an adapter to allow the use of ordinary
 // function as AccountWallet mutator.
-type AccountWalletFunc func(context.Context, *ent.AccountWalletMutation) (ent.Value, error)
+type AccountWalletFunc func(context.Context, *placio_api.AccountWalletMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f AccountWalletFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.AccountWalletMutation); ok {
+func (f AccountWalletFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.AccountWalletMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AccountWalletMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.AccountWalletMutation", m)
 }
 
 // The AmenityFunc type is an adapter to allow the use of ordinary
 // function as Amenity mutator.
-type AmenityFunc func(context.Context, *ent.AmenityMutation) (ent.Value, error)
+type AmenityFunc func(context.Context, *placio_api.AmenityMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f AmenityFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.AmenityMutation); ok {
+func (f AmenityFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.AmenityMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AmenityMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.AmenityMutation", m)
 }
 
 // The BookingFunc type is an adapter to allow the use of ordinary
 // function as Booking mutator.
-type BookingFunc func(context.Context, *ent.BookingMutation) (ent.Value, error)
+type BookingFunc func(context.Context, *placio_api.BookingMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f BookingFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.BookingMutation); ok {
+func (f BookingFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.BookingMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.BookingMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.BookingMutation", m)
 }
 
 // The BusinessFunc type is an adapter to allow the use of ordinary
 // function as Business mutator.
-type BusinessFunc func(context.Context, *ent.BusinessMutation) (ent.Value, error)
+type BusinessFunc func(context.Context, *placio_api.BusinessMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f BusinessFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.BusinessMutation); ok {
+func (f BusinessFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.BusinessMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.BusinessMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.BusinessMutation", m)
 }
 
 // The BusinessFollowBusinessFunc type is an adapter to allow the use of ordinary
 // function as BusinessFollowBusiness mutator.
-type BusinessFollowBusinessFunc func(context.Context, *ent.BusinessFollowBusinessMutation) (ent.Value, error)
+type BusinessFollowBusinessFunc func(context.Context, *placio_api.BusinessFollowBusinessMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f BusinessFollowBusinessFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.BusinessFollowBusinessMutation); ok {
+func (f BusinessFollowBusinessFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.BusinessFollowBusinessMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.BusinessFollowBusinessMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.BusinessFollowBusinessMutation", m)
 }
 
 // The BusinessFollowEventFunc type is an adapter to allow the use of ordinary
 // function as BusinessFollowEvent mutator.
-type BusinessFollowEventFunc func(context.Context, *ent.BusinessFollowEventMutation) (ent.Value, error)
+type BusinessFollowEventFunc func(context.Context, *placio_api.BusinessFollowEventMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f BusinessFollowEventFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.BusinessFollowEventMutation); ok {
+func (f BusinessFollowEventFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.BusinessFollowEventMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.BusinessFollowEventMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.BusinessFollowEventMutation", m)
 }
 
 // The BusinessFollowUserFunc type is an adapter to allow the use of ordinary
 // function as BusinessFollowUser mutator.
-type BusinessFollowUserFunc func(context.Context, *ent.BusinessFollowUserMutation) (ent.Value, error)
+type BusinessFollowUserFunc func(context.Context, *placio_api.BusinessFollowUserMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f BusinessFollowUserFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.BusinessFollowUserMutation); ok {
+func (f BusinessFollowUserFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.BusinessFollowUserMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.BusinessFollowUserMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.BusinessFollowUserMutation", m)
 }
 
 // The CategoryFunc type is an adapter to allow the use of ordinary
 // function as Category mutator.
-type CategoryFunc func(context.Context, *ent.CategoryMutation) (ent.Value, error)
+type CategoryFunc func(context.Context, *placio_api.CategoryMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f CategoryFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.CategoryMutation); ok {
+func (f CategoryFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.CategoryMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CategoryMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.CategoryMutation", m)
 }
 
 // The CategoryAssignmentFunc type is an adapter to allow the use of ordinary
 // function as CategoryAssignment mutator.
-type CategoryAssignmentFunc func(context.Context, *ent.CategoryAssignmentMutation) (ent.Value, error)
+type CategoryAssignmentFunc func(context.Context, *placio_api.CategoryAssignmentMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f CategoryAssignmentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.CategoryAssignmentMutation); ok {
+func (f CategoryAssignmentFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.CategoryAssignmentMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CategoryAssignmentMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.CategoryAssignmentMutation", m)
 }
 
 // The ChatFunc type is an adapter to allow the use of ordinary
 // function as Chat mutator.
-type ChatFunc func(context.Context, *ent.ChatMutation) (ent.Value, error)
+type ChatFunc func(context.Context, *placio_api.ChatMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f ChatFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.ChatMutation); ok {
+func (f ChatFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.ChatMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ChatMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.ChatMutation", m)
 }
 
 // The CommentFunc type is an adapter to allow the use of ordinary
 // function as Comment mutator.
-type CommentFunc func(context.Context, *ent.CommentMutation) (ent.Value, error)
+type CommentFunc func(context.Context, *placio_api.CommentMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f CommentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.CommentMutation); ok {
+func (f CommentFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.CommentMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CommentMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.CommentMutation", m)
 }
 
 // The CustomBlockFunc type is an adapter to allow the use of ordinary
 // function as CustomBlock mutator.
-type CustomBlockFunc func(context.Context, *ent.CustomBlockMutation) (ent.Value, error)
+type CustomBlockFunc func(context.Context, *placio_api.CustomBlockMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f CustomBlockFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.CustomBlockMutation); ok {
+func (f CustomBlockFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.CustomBlockMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CustomBlockMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.CustomBlockMutation", m)
 }
 
 // The EventFunc type is an adapter to allow the use of ordinary
 // function as Event mutator.
-type EventFunc func(context.Context, *ent.EventMutation) (ent.Value, error)
+type EventFunc func(context.Context, *placio_api.EventMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f EventFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.EventMutation); ok {
+func (f EventFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.EventMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.EventMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.EventMutation", m)
 }
 
 // The FAQFunc type is an adapter to allow the use of ordinary
 // function as FAQ mutator.
-type FAQFunc func(context.Context, *ent.FAQMutation) (ent.Value, error)
+type FAQFunc func(context.Context, *placio_api.FAQMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f FAQFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.FAQMutation); ok {
+func (f FAQFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.FAQMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.FAQMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.FAQMutation", m)
 }
 
 // The FeatureReleaseFunc type is an adapter to allow the use of ordinary
 // function as FeatureRelease mutator.
-type FeatureReleaseFunc func(context.Context, *ent.FeatureReleaseMutation) (ent.Value, error)
+type FeatureReleaseFunc func(context.Context, *placio_api.FeatureReleaseMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f FeatureReleaseFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.FeatureReleaseMutation); ok {
+func (f FeatureReleaseFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.FeatureReleaseMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.FeatureReleaseMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.FeatureReleaseMutation", m)
 }
 
 // The HelpFunc type is an adapter to allow the use of ordinary
 // function as Help mutator.
-type HelpFunc func(context.Context, *ent.HelpMutation) (ent.Value, error)
+type HelpFunc func(context.Context, *placio_api.HelpMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f HelpFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.HelpMutation); ok {
+func (f HelpFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.HelpMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.HelpMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.HelpMutation", m)
 }
 
 // The InventoryAttributeFunc type is an adapter to allow the use of ordinary
 // function as InventoryAttribute mutator.
-type InventoryAttributeFunc func(context.Context, *ent.InventoryAttributeMutation) (ent.Value, error)
+type InventoryAttributeFunc func(context.Context, *placio_api.InventoryAttributeMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f InventoryAttributeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.InventoryAttributeMutation); ok {
+func (f InventoryAttributeFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.InventoryAttributeMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.InventoryAttributeMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.InventoryAttributeMutation", m)
 }
 
 // The InventoryTypeFunc type is an adapter to allow the use of ordinary
 // function as InventoryType mutator.
-type InventoryTypeFunc func(context.Context, *ent.InventoryTypeMutation) (ent.Value, error)
+type InventoryTypeFunc func(context.Context, *placio_api.InventoryTypeMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f InventoryTypeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.InventoryTypeMutation); ok {
+func (f InventoryTypeFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.InventoryTypeMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.InventoryTypeMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.InventoryTypeMutation", m)
 }
 
 // The LikeFunc type is an adapter to allow the use of ordinary
 // function as Like mutator.
-type LikeFunc func(context.Context, *ent.LikeMutation) (ent.Value, error)
+type LikeFunc func(context.Context, *placio_api.LikeMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f LikeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.LikeMutation); ok {
+func (f LikeFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.LikeMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.LikeMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.LikeMutation", m)
 }
 
 // The MediaFunc type is an adapter to allow the use of ordinary
 // function as Media mutator.
-type MediaFunc func(context.Context, *ent.MediaMutation) (ent.Value, error)
+type MediaFunc func(context.Context, *placio_api.MediaMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f MediaFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.MediaMutation); ok {
+func (f MediaFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.MediaMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.MediaMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.MediaMutation", m)
 }
 
 // The MenuFunc type is an adapter to allow the use of ordinary
 // function as Menu mutator.
-type MenuFunc func(context.Context, *ent.MenuMutation) (ent.Value, error)
+type MenuFunc func(context.Context, *placio_api.MenuMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f MenuFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.MenuMutation); ok {
+func (f MenuFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.MenuMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.MenuMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.MenuMutation", m)
 }
 
 // The NotificationFunc type is an adapter to allow the use of ordinary
 // function as Notification mutator.
-type NotificationFunc func(context.Context, *ent.NotificationMutation) (ent.Value, error)
+type NotificationFunc func(context.Context, *placio_api.NotificationMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f NotificationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.NotificationMutation); ok {
+func (f NotificationFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.NotificationMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.NotificationMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.NotificationMutation", m)
 }
 
 // The OrderFunc type is an adapter to allow the use of ordinary
 // function as Order mutator.
-type OrderFunc func(context.Context, *ent.OrderMutation) (ent.Value, error)
+type OrderFunc func(context.Context, *placio_api.OrderMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f OrderFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.OrderMutation); ok {
+func (f OrderFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.OrderMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.OrderMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.OrderMutation", m)
 }
 
 // The PaymentFunc type is an adapter to allow the use of ordinary
 // function as Payment mutator.
-type PaymentFunc func(context.Context, *ent.PaymentMutation) (ent.Value, error)
+type PaymentFunc func(context.Context, *placio_api.PaymentMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f PaymentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.PaymentMutation); ok {
+func (f PaymentFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.PaymentMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PaymentMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.PaymentMutation", m)
 }
 
 // The PlaceFunc type is an adapter to allow the use of ordinary
 // function as Place mutator.
-type PlaceFunc func(context.Context, *ent.PlaceMutation) (ent.Value, error)
+type PlaceFunc func(context.Context, *placio_api.PlaceMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f PlaceFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.PlaceMutation); ok {
+func (f PlaceFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.PlaceMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PlaceMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.PlaceMutation", m)
 }
 
 // The PlaceInventoryFunc type is an adapter to allow the use of ordinary
 // function as PlaceInventory mutator.
-type PlaceInventoryFunc func(context.Context, *ent.PlaceInventoryMutation) (ent.Value, error)
+type PlaceInventoryFunc func(context.Context, *placio_api.PlaceInventoryMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f PlaceInventoryFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.PlaceInventoryMutation); ok {
+func (f PlaceInventoryFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.PlaceInventoryMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PlaceInventoryMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.PlaceInventoryMutation", m)
 }
 
 // The PlaceInventoryAttributeFunc type is an adapter to allow the use of ordinary
 // function as PlaceInventoryAttribute mutator.
-type PlaceInventoryAttributeFunc func(context.Context, *ent.PlaceInventoryAttributeMutation) (ent.Value, error)
+type PlaceInventoryAttributeFunc func(context.Context, *placio_api.PlaceInventoryAttributeMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f PlaceInventoryAttributeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.PlaceInventoryAttributeMutation); ok {
+func (f PlaceInventoryAttributeFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.PlaceInventoryAttributeMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PlaceInventoryAttributeMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.PlaceInventoryAttributeMutation", m)
 }
 
 // The PostFunc type is an adapter to allow the use of ordinary
 // function as Post mutator.
-type PostFunc func(context.Context, *ent.PostMutation) (ent.Value, error)
+type PostFunc func(context.Context, *placio_api.PostMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f PostFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.PostMutation); ok {
+func (f PostFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.PostMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PostMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.PostMutation", m)
 }
 
 // The RatingFunc type is an adapter to allow the use of ordinary
 // function as Rating mutator.
-type RatingFunc func(context.Context, *ent.RatingMutation) (ent.Value, error)
+type RatingFunc func(context.Context, *placio_api.RatingMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f RatingFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.RatingMutation); ok {
+func (f RatingFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.RatingMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.RatingMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.RatingMutation", m)
 }
 
 // The ReactionFunc type is an adapter to allow the use of ordinary
 // function as Reaction mutator.
-type ReactionFunc func(context.Context, *ent.ReactionMutation) (ent.Value, error)
+type ReactionFunc func(context.Context, *placio_api.ReactionMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f ReactionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.ReactionMutation); ok {
+func (f ReactionFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.ReactionMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ReactionMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.ReactionMutation", m)
 }
 
 // The ReservationFunc type is an adapter to allow the use of ordinary
 // function as Reservation mutator.
-type ReservationFunc func(context.Context, *ent.ReservationMutation) (ent.Value, error)
+type ReservationFunc func(context.Context, *placio_api.ReservationMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f ReservationFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.ReservationMutation); ok {
+func (f ReservationFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.ReservationMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ReservationMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.ReservationMutation", m)
 }
 
 // The ReservationBlockFunc type is an adapter to allow the use of ordinary
 // function as ReservationBlock mutator.
-type ReservationBlockFunc func(context.Context, *ent.ReservationBlockMutation) (ent.Value, error)
+type ReservationBlockFunc func(context.Context, *placio_api.ReservationBlockMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f ReservationBlockFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.ReservationBlockMutation); ok {
+func (f ReservationBlockFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.ReservationBlockMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ReservationBlockMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.ReservationBlockMutation", m)
 }
 
 // The ResourseFunc type is an adapter to allow the use of ordinary
 // function as Resourse mutator.
-type ResourseFunc func(context.Context, *ent.ResourseMutation) (ent.Value, error)
+type ResourseFunc func(context.Context, *placio_api.ResourseMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f ResourseFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.ResourseMutation); ok {
+func (f ResourseFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.ResourseMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ResourseMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.ResourseMutation", m)
 }
 
 // The ReviewFunc type is an adapter to allow the use of ordinary
 // function as Review mutator.
-type ReviewFunc func(context.Context, *ent.ReviewMutation) (ent.Value, error)
+type ReviewFunc func(context.Context, *placio_api.ReviewMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f ReviewFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.ReviewMutation); ok {
+func (f ReviewFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.ReviewMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ReviewMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.ReviewMutation", m)
 }
 
 // The RoomFunc type is an adapter to allow the use of ordinary
 // function as Room mutator.
-type RoomFunc func(context.Context, *ent.RoomMutation) (ent.Value, error)
+type RoomFunc func(context.Context, *placio_api.RoomMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f RoomFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.RoomMutation); ok {
+func (f RoomFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.RoomMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.RoomMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.RoomMutation", m)
 }
 
 // The TemplateFunc type is an adapter to allow the use of ordinary
 // function as Template mutator.
-type TemplateFunc func(context.Context, *ent.TemplateMutation) (ent.Value, error)
+type TemplateFunc func(context.Context, *placio_api.TemplateMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f TemplateFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.TemplateMutation); ok {
+func (f TemplateFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.TemplateMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TemplateMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.TemplateMutation", m)
 }
 
 // The TicketFunc type is an adapter to allow the use of ordinary
 // function as Ticket mutator.
-type TicketFunc func(context.Context, *ent.TicketMutation) (ent.Value, error)
+type TicketFunc func(context.Context, *placio_api.TicketMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f TicketFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.TicketMutation); ok {
+func (f TicketFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.TicketMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TicketMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.TicketMutation", m)
 }
 
 // The TicketOptionFunc type is an adapter to allow the use of ordinary
 // function as TicketOption mutator.
-type TicketOptionFunc func(context.Context, *ent.TicketOptionMutation) (ent.Value, error)
+type TicketOptionFunc func(context.Context, *placio_api.TicketOptionMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f TicketOptionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.TicketOptionMutation); ok {
+func (f TicketOptionFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.TicketOptionMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TicketOptionMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.TicketOptionMutation", m)
 }
 
 // The TransactionHistoryFunc type is an adapter to allow the use of ordinary
 // function as TransactionHistory mutator.
-type TransactionHistoryFunc func(context.Context, *ent.TransactionHistoryMutation) (ent.Value, error)
+type TransactionHistoryFunc func(context.Context, *placio_api.TransactionHistoryMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f TransactionHistoryFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.TransactionHistoryMutation); ok {
+func (f TransactionHistoryFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.TransactionHistoryMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TransactionHistoryMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.TransactionHistoryMutation", m)
 }
 
 // The UserFunc type is an adapter to allow the use of ordinary
 // function as User mutator.
-type UserFunc func(context.Context, *ent.UserMutation) (ent.Value, error)
+type UserFunc func(context.Context, *placio_api.UserMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f UserFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.UserMutation); ok {
+func (f UserFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.UserMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.UserMutation", m)
 }
 
 // The UserBusinessFunc type is an adapter to allow the use of ordinary
 // function as UserBusiness mutator.
-type UserBusinessFunc func(context.Context, *ent.UserBusinessMutation) (ent.Value, error)
+type UserBusinessFunc func(context.Context, *placio_api.UserBusinessMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f UserBusinessFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.UserBusinessMutation); ok {
+func (f UserBusinessFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.UserBusinessMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserBusinessMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.UserBusinessMutation", m)
 }
 
 // The UserFollowBusinessFunc type is an adapter to allow the use of ordinary
 // function as UserFollowBusiness mutator.
-type UserFollowBusinessFunc func(context.Context, *ent.UserFollowBusinessMutation) (ent.Value, error)
+type UserFollowBusinessFunc func(context.Context, *placio_api.UserFollowBusinessMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f UserFollowBusinessFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.UserFollowBusinessMutation); ok {
+func (f UserFollowBusinessFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.UserFollowBusinessMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserFollowBusinessMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.UserFollowBusinessMutation", m)
 }
 
 // The UserFollowEventFunc type is an adapter to allow the use of ordinary
 // function as UserFollowEvent mutator.
-type UserFollowEventFunc func(context.Context, *ent.UserFollowEventMutation) (ent.Value, error)
+type UserFollowEventFunc func(context.Context, *placio_api.UserFollowEventMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f UserFollowEventFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.UserFollowEventMutation); ok {
+func (f UserFollowEventFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.UserFollowEventMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserFollowEventMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.UserFollowEventMutation", m)
 }
 
 // The UserFollowPlaceFunc type is an adapter to allow the use of ordinary
 // function as UserFollowPlace mutator.
-type UserFollowPlaceFunc func(context.Context, *ent.UserFollowPlaceMutation) (ent.Value, error)
+type UserFollowPlaceFunc func(context.Context, *placio_api.UserFollowPlaceMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f UserFollowPlaceFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.UserFollowPlaceMutation); ok {
+func (f UserFollowPlaceFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.UserFollowPlaceMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserFollowPlaceMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.UserFollowPlaceMutation", m)
 }
 
 // The UserFollowUserFunc type is an adapter to allow the use of ordinary
 // function as UserFollowUser mutator.
-type UserFollowUserFunc func(context.Context, *ent.UserFollowUserMutation) (ent.Value, error)
+type UserFollowUserFunc func(context.Context, *placio_api.UserFollowUserMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f UserFollowUserFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.UserFollowUserMutation); ok {
+func (f UserFollowUserFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.UserFollowUserMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserFollowUserMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.UserFollowUserMutation", m)
 }
 
 // The UserLikePlaceFunc type is an adapter to allow the use of ordinary
 // function as UserLikePlace mutator.
-type UserLikePlaceFunc func(context.Context, *ent.UserLikePlaceMutation) (ent.Value, error)
+type UserLikePlaceFunc func(context.Context, *placio_api.UserLikePlaceMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f UserLikePlaceFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.UserLikePlaceMutation); ok {
+func (f UserLikePlaceFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.UserLikePlaceMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.UserLikePlaceMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.UserLikePlaceMutation", m)
 }
 
 // The WebsiteFunc type is an adapter to allow the use of ordinary
 // function as Website mutator.
-type WebsiteFunc func(context.Context, *ent.WebsiteMutation) (ent.Value, error)
+type WebsiteFunc func(context.Context, *placio_api.WebsiteMutation) (placio_api.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f WebsiteFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.WebsiteMutation); ok {
+func (f WebsiteFunc) Mutate(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
+	if mv, ok := m.(*placio_api.WebsiteMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.WebsiteMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *placio_api.WebsiteMutation", m)
 }
 
 // Condition is a hook condition function.
-type Condition func(context.Context, ent.Mutation) bool
+type Condition func(context.Context, placio_api.Mutation) bool
 
 // And groups conditions with the AND operator.
 func And(first, second Condition, rest ...Condition) Condition {
-	return func(ctx context.Context, m ent.Mutation) bool {
+	return func(ctx context.Context, m placio_api.Mutation) bool {
 		if !first(ctx, m) || !second(ctx, m) {
 			return false
 		}
@@ -604,7 +604,7 @@ func And(first, second Condition, rest ...Condition) Condition {
 
 // Or groups conditions with the OR operator.
 func Or(first, second Condition, rest ...Condition) Condition {
-	return func(ctx context.Context, m ent.Mutation) bool {
+	return func(ctx context.Context, m placio_api.Mutation) bool {
 		if first(ctx, m) || second(ctx, m) {
 			return true
 		}
@@ -619,21 +619,21 @@ func Or(first, second Condition, rest ...Condition) Condition {
 
 // Not negates a given condition.
 func Not(cond Condition) Condition {
-	return func(ctx context.Context, m ent.Mutation) bool {
+	return func(ctx context.Context, m placio_api.Mutation) bool {
 		return !cond(ctx, m)
 	}
 }
 
 // HasOp is a condition testing mutation operation.
-func HasOp(op ent.Op) Condition {
-	return func(_ context.Context, m ent.Mutation) bool {
+func HasOp(op placio_api.Op) Condition {
+	return func(_ context.Context, m placio_api.Mutation) bool {
 		return m.Op().Is(op)
 	}
 }
 
 // HasAddedFields is a condition validating `.AddedField` on fields.
 func HasAddedFields(field string, fields ...string) Condition {
-	return func(_ context.Context, m ent.Mutation) bool {
+	return func(_ context.Context, m placio_api.Mutation) bool {
 		if _, exists := m.AddedField(field); !exists {
 			return false
 		}
@@ -648,7 +648,7 @@ func HasAddedFields(field string, fields ...string) Condition {
 
 // HasClearedFields is a condition validating `.FieldCleared` on fields.
 func HasClearedFields(field string, fields ...string) Condition {
-	return func(_ context.Context, m ent.Mutation) bool {
+	return func(_ context.Context, m placio_api.Mutation) bool {
 		if exists := m.FieldCleared(field); !exists {
 			return false
 		}
@@ -663,7 +663,7 @@ func HasClearedFields(field string, fields ...string) Condition {
 
 // HasFields is a condition validating `.Field` on fields.
 func HasFields(field string, fields ...string) Condition {
-	return func(_ context.Context, m ent.Mutation) bool {
+	return func(_ context.Context, m placio_api.Mutation) bool {
 		if _, exists := m.Field(field); !exists {
 			return false
 		}
@@ -679,9 +679,9 @@ func HasFields(field string, fields ...string) Condition {
 // If executes the given hook under condition.
 //
 //	hook.If(ComputeAverage, And(HasFields(...), HasAddedFields(...)))
-func If(hk ent.Hook, cond Condition) ent.Hook {
-	return func(next ent.Mutator) ent.Mutator {
-		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+func If(hk placio_api.Hook, cond Condition) placio_api.Hook {
+	return func(next placio_api.Mutator) placio_api.Mutator {
+		return placio_api.MutateFunc(func(ctx context.Context, m placio_api.Mutation) (placio_api.Value, error) {
 			if cond(ctx, m) {
 				return hk(next).Mutate(ctx, m)
 			}
@@ -692,22 +692,22 @@ func If(hk ent.Hook, cond Condition) ent.Hook {
 
 // On executes the given hook only for the given operation.
 //
-//	hook.On(Log, ent.Delete|ent.Create)
-func On(hk ent.Hook, op ent.Op) ent.Hook {
+//	hook.On(Log, placio_api.Delete|placio_api.Create)
+func On(hk placio_api.Hook, op placio_api.Op) placio_api.Hook {
 	return If(hk, HasOp(op))
 }
 
 // Unless skips the given hook only for the given operation.
 //
-//	hook.Unless(Log, ent.Update|ent.UpdateOne)
-func Unless(hk ent.Hook, op ent.Op) ent.Hook {
+//	hook.Unless(Log, placio_api.Update|placio_api.UpdateOne)
+func Unless(hk placio_api.Hook, op placio_api.Op) placio_api.Hook {
 	return If(hk, Not(HasOp(op)))
 }
 
 // FixedError is a hook returning a fixed error.
-func FixedError(err error) ent.Hook {
-	return func(ent.Mutator) ent.Mutator {
-		return ent.MutateFunc(func(context.Context, ent.Mutation) (ent.Value, error) {
+func FixedError(err error) placio_api.Hook {
+	return func(placio_api.Mutator) placio_api.Mutator {
+		return placio_api.MutateFunc(func(context.Context, placio_api.Mutation) (placio_api.Value, error) {
 			return nil, err
 		})
 	}
@@ -715,12 +715,12 @@ func FixedError(err error) ent.Hook {
 
 // Reject returns a hook that rejects all operations that match op.
 //
-//	func (T) Hooks() []ent.Hook {
-//		return []ent.Hook{
-//			Reject(ent.Delete|ent.Update),
+//	func (T) Hooks() []placio_api.Hook {
+//		return []placio_api.Hook{
+//			Reject(placio_api.Delete|placio_api.Update),
 //		}
 //	}
-func Reject(op ent.Op) ent.Hook {
+func Reject(op placio_api.Op) placio_api.Hook {
 	hk := FixedError(fmt.Errorf("%s operation is not allowed", op))
 	return On(hk, op)
 }
@@ -728,17 +728,17 @@ func Reject(op ent.Op) ent.Hook {
 // Chain acts as a list of hooks and is effectively immutable.
 // Once created, it will always hold the same set of hooks in the same order.
 type Chain struct {
-	hooks []ent.Hook
+	hooks []placio_api.Hook
 }
 
 // NewChain creates a new chain of hooks.
-func NewChain(hooks ...ent.Hook) Chain {
-	return Chain{append([]ent.Hook(nil), hooks...)}
+func NewChain(hooks ...placio_api.Hook) Chain {
+	return Chain{append([]placio_api.Hook(nil), hooks...)}
 }
 
 // Hook chains the list of hooks and returns the final hook.
-func (c Chain) Hook() ent.Hook {
-	return func(mutator ent.Mutator) ent.Mutator {
+func (c Chain) Hook() placio_api.Hook {
+	return func(mutator placio_api.Mutator) placio_api.Mutator {
 		for i := len(c.hooks) - 1; i >= 0; i-- {
 			mutator = c.hooks[i](mutator)
 		}
@@ -748,8 +748,8 @@ func (c Chain) Hook() ent.Hook {
 
 // Append extends a chain, adding the specified hook
 // as the last ones in the mutation flow.
-func (c Chain) Append(hooks ...ent.Hook) Chain {
-	newHooks := make([]ent.Hook, 0, len(c.hooks)+len(hooks))
+func (c Chain) Append(hooks ...placio_api.Hook) Chain {
+	newHooks := make([]placio_api.Hook, 0, len(c.hooks)+len(hooks))
 	newHooks = append(newHooks, c.hooks...)
 	newHooks = append(newHooks, hooks...)
 	return Chain{newHooks}

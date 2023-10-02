@@ -6,12 +6,12 @@ import (
 	"context"
 	"fmt"
 	"math"
-	"placio-app/ent/business"
-	"placio-app/ent/event"
-	"placio-app/ent/place"
-	"placio-app/ent/predicate"
-	"placio-app/ent/rating"
-	"placio-app/ent/user"
+	"placio_api/business"
+	"placio_api/event"
+	"placio_api/place"
+	"placio_api/predicate"
+	"placio_api/rating"
+	"placio_api/user"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -319,7 +319,7 @@ func (rq *RatingQuery) Exist(ctx context.Context) (bool, error) {
 	case IsNotFound(err):
 		return false, nil
 	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
+		return false, fmt.Errorf("placio_api: check existence: %w", err)
 	default:
 		return true, nil
 	}
@@ -412,7 +412,7 @@ func (rq *RatingQuery) WithEvent(opts ...func(*EventQuery)) *RatingQuery {
 //
 //	client.Rating.Query().
 //		GroupBy(rating.FieldScore).
-//		Aggregate(ent.Count()).
+//		Aggregate(placio_api.Count()).
 //		Scan(ctx, &v)
 func (rq *RatingQuery) GroupBy(field string, fields ...string) *RatingGroupBy {
 	rq.ctx.Fields = append([]string{field}, fields...)
@@ -451,7 +451,7 @@ func (rq *RatingQuery) Aggregate(fns ...AggregateFunc) *RatingSelect {
 func (rq *RatingQuery) prepareQuery(ctx context.Context) error {
 	for _, inter := range rq.inters {
 		if inter == nil {
-			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+			return fmt.Errorf("placio_api: uninitialized interceptor (forgotten import placio_api/runtime?)")
 		}
 		if trv, ok := inter.(Traverser); ok {
 			if err := trv.Traverse(ctx, rq); err != nil {
@@ -461,7 +461,7 @@ func (rq *RatingQuery) prepareQuery(ctx context.Context) error {
 	}
 	for _, f := range rq.ctx.Fields {
 		if !rating.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
+			return &ValidationError{Name: f, err: fmt.Errorf("placio_api: invalid field %q for query", f)}
 		}
 	}
 	if rq.path != nil {

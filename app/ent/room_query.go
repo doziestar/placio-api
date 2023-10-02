@@ -7,10 +7,10 @@ import (
 	"database/sql/driver"
 	"fmt"
 	"math"
-	"placio-app/ent/booking"
-	"placio-app/ent/place"
-	"placio-app/ent/predicate"
-	"placio-app/ent/room"
+	"placio_api/booking"
+	"placio_api/place"
+	"placio_api/predicate"
+	"placio_api/room"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -272,7 +272,7 @@ func (rq *RoomQuery) Exist(ctx context.Context) (bool, error) {
 	case IsNotFound(err):
 		return false, nil
 	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
+		return false, fmt.Errorf("placio_api: check existence: %w", err)
 	default:
 		return true, nil
 	}
@@ -341,7 +341,7 @@ func (rq *RoomQuery) WithBookings(opts ...func(*BookingQuery)) *RoomQuery {
 //
 //	client.Room.Query().
 //		GroupBy(room.FieldNumber).
-//		Aggregate(ent.Count()).
+//		Aggregate(placio_api.Count()).
 //		Scan(ctx, &v)
 func (rq *RoomQuery) GroupBy(field string, fields ...string) *RoomGroupBy {
 	rq.ctx.Fields = append([]string{field}, fields...)
@@ -380,7 +380,7 @@ func (rq *RoomQuery) Aggregate(fns ...AggregateFunc) *RoomSelect {
 func (rq *RoomQuery) prepareQuery(ctx context.Context) error {
 	for _, inter := range rq.inters {
 		if inter == nil {
-			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+			return fmt.Errorf("placio_api: uninitialized interceptor (forgotten import placio_api/runtime?)")
 		}
 		if trv, ok := inter.(Traverser); ok {
 			if err := trv.Traverse(ctx, rq); err != nil {
@@ -390,7 +390,7 @@ func (rq *RoomQuery) prepareQuery(ctx context.Context) error {
 	}
 	for _, f := range rq.ctx.Fields {
 		if !room.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
+			return &ValidationError{Name: f, err: fmt.Errorf("placio_api: invalid field %q for query", f)}
 		}
 	}
 	if rq.path != nil {

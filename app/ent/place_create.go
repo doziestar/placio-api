@@ -6,24 +6,24 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/amenity"
-	"placio-app/ent/booking"
-	"placio-app/ent/business"
-	"placio-app/ent/category"
-	"placio-app/ent/categoryassignment"
-	"placio-app/ent/event"
-	"placio-app/ent/faq"
-	"placio-app/ent/media"
-	"placio-app/ent/menu"
-	"placio-app/ent/place"
-	"placio-app/ent/placeinventory"
-	"placio-app/ent/rating"
-	"placio-app/ent/reservation"
-	"placio-app/ent/review"
-	"placio-app/ent/room"
-	"placio-app/ent/user"
-	"placio-app/ent/userfollowplace"
-	"placio-app/ent/userlikeplace"
+	"placio_api/amenity"
+	"placio_api/booking"
+	"placio_api/business"
+	"placio_api/category"
+	"placio_api/categoryassignment"
+	"placio_api/event"
+	"placio_api/faq"
+	"placio_api/media"
+	"placio_api/menu"
+	"placio_api/place"
+	"placio_api/placeinventory"
+	"placio_api/rating"
+	"placio_api/reservation"
+	"placio_api/review"
+	"placio_api/room"
+	"placio_api/user"
+	"placio_api/userfollowplace"
+	"placio_api/userlikeplace"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -724,9 +724,7 @@ func (pc *PlaceCreate) Mutation() *PlaceMutation {
 
 // Save creates the Place in the database.
 func (pc *PlaceCreate) Save(ctx context.Context) (*Place, error) {
-	if err := pc.defaults(); err != nil {
-		return nil, err
-	}
+	pc.defaults()
 	return withHooks(ctx, pc.sqlSave, pc.mutation, pc.hooks)
 }
 
@@ -753,7 +751,7 @@ func (pc *PlaceCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (pc *PlaceCreate) defaults() error {
+func (pc *PlaceCreate) defaults() {
 	if _, ok := pc.mutation.CoverImage(); !ok {
 		v := place.DefaultCoverImage
 		pc.mutation.SetCoverImage(v)
@@ -790,41 +788,40 @@ func (pc *PlaceCreate) defaults() error {
 		v := place.DefaultFollowedByCurrentUser
 		pc.mutation.SetFollowedByCurrentUser(v)
 	}
-	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (pc *PlaceCreate) check() error {
 	if _, ok := pc.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Place.name"`)}
+		return &ValidationError{Name: "name", err: errors.New(`placio_api: missing required field "Place.name"`)}
 	}
 	if _, ok := pc.mutation.FollowerCount(); !ok {
-		return &ValidationError{Name: "follower_count", err: errors.New(`ent: missing required field "Place.follower_count"`)}
+		return &ValidationError{Name: "follower_count", err: errors.New(`placio_api: missing required field "Place.follower_count"`)}
 	}
 	if _, ok := pc.mutation.LikeCount(); !ok {
-		return &ValidationError{Name: "like_count", err: errors.New(`ent: missing required field "Place.like_count"`)}
+		return &ValidationError{Name: "like_count", err: errors.New(`placio_api: missing required field "Place.like_count"`)}
 	}
 	if _, ok := pc.mutation.ReviewCount(); !ok {
-		return &ValidationError{Name: "review_count", err: errors.New(`ent: missing required field "Place.review_count"`)}
+		return &ValidationError{Name: "review_count", err: errors.New(`placio_api: missing required field "Place.review_count"`)}
 	}
 	if _, ok := pc.mutation.FollowingCount(); !ok {
-		return &ValidationError{Name: "following_count", err: errors.New(`ent: missing required field "Place.following_count"`)}
+		return &ValidationError{Name: "following_count", err: errors.New(`placio_api: missing required field "Place.following_count"`)}
 	}
 	if _, ok := pc.mutation.IsPremium(); !ok {
-		return &ValidationError{Name: "is_Premium", err: errors.New(`ent: missing required field "Place.is_Premium"`)}
+		return &ValidationError{Name: "is_Premium", err: errors.New(`placio_api: missing required field "Place.is_Premium"`)}
 	}
 	if _, ok := pc.mutation.IsPublished(); !ok {
-		return &ValidationError{Name: "is_published", err: errors.New(`ent: missing required field "Place.is_published"`)}
+		return &ValidationError{Name: "is_published", err: errors.New(`placio_api: missing required field "Place.is_published"`)}
 	}
 	if _, ok := pc.mutation.LikedByCurrentUser(); !ok {
-		return &ValidationError{Name: "likedByCurrentUser", err: errors.New(`ent: missing required field "Place.likedByCurrentUser"`)}
+		return &ValidationError{Name: "likedByCurrentUser", err: errors.New(`placio_api: missing required field "Place.likedByCurrentUser"`)}
 	}
 	if _, ok := pc.mutation.FollowedByCurrentUser(); !ok {
-		return &ValidationError{Name: "followedByCurrentUser", err: errors.New(`ent: missing required field "Place.followedByCurrentUser"`)}
+		return &ValidationError{Name: "followedByCurrentUser", err: errors.New(`placio_api: missing required field "Place.followedByCurrentUser"`)}
 	}
 	if v, ok := pc.mutation.ID(); ok {
 		if err := place.IDValidator(v); err != nil {
-			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "Place.id": %w`, err)}
+			return &ValidationError{Name: "id", err: fmt.Errorf(`placio_api: validator failed for field "Place.id": %w`, err)}
 		}
 	}
 	return nil
@@ -1285,11 +1282,15 @@ func (pc *PlaceCreate) createSpec() (*Place, *sqlgraph.CreateSpec) {
 // PlaceCreateBulk is the builder for creating many Place entities in bulk.
 type PlaceCreateBulk struct {
 	config
+	err      error
 	builders []*PlaceCreate
 }
 
 // Save creates the Place entities in the database.
 func (pcb *PlaceCreateBulk) Save(ctx context.Context) ([]*Place, error) {
+	if pcb.err != nil {
+		return nil, pcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(pcb.builders))
 	nodes := make([]*Place, len(pcb.builders))
 	mutators := make([]Mutator, len(pcb.builders))

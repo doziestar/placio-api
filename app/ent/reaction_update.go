@@ -6,8 +6,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/predicate"
-	"placio-app/ent/reaction"
+	"placio_api/predicate"
+	"placio_api/reaction"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -137,7 +137,7 @@ func (ruo *ReactionUpdateOne) sqlSave(ctx context.Context) (_node *Reaction, err
 	_spec := sqlgraph.NewUpdateSpec(reaction.Table, reaction.Columns, sqlgraph.NewFieldSpec(reaction.FieldID, field.TypeString))
 	id, ok := ruo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Reaction.id" for update`)}
+		return nil, &ValidationError{Name: "id", err: errors.New(`placio_api: missing "Reaction.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := ruo.fields; len(fields) > 0 {
@@ -145,7 +145,7 @@ func (ruo *ReactionUpdateOne) sqlSave(ctx context.Context) (_node *Reaction, err
 		_spec.Node.Columns = append(_spec.Node.Columns, reaction.FieldID)
 		for _, f := range fields {
 			if !reaction.ValidColumn(f) {
-				return nil, &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
+				return nil, &ValidationError{Name: f, err: fmt.Errorf("placio_api: invalid field %q for query", f)}
 			}
 			if f != reaction.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, f)

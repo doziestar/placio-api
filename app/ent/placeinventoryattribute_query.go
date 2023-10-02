@@ -6,10 +6,10 @@ import (
 	"context"
 	"fmt"
 	"math"
-	"placio-app/ent/inventoryattribute"
-	"placio-app/ent/placeinventory"
-	"placio-app/ent/placeinventoryattribute"
-	"placio-app/ent/predicate"
+	"placio_api/inventoryattribute"
+	"placio_api/placeinventory"
+	"placio_api/placeinventoryattribute"
+	"placio_api/predicate"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -271,7 +271,7 @@ func (piaq *PlaceInventoryAttributeQuery) Exist(ctx context.Context) (bool, erro
 	case IsNotFound(err):
 		return false, nil
 	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
+		return false, fmt.Errorf("placio_api: check existence: %w", err)
 	default:
 		return true, nil
 	}
@@ -340,7 +340,7 @@ func (piaq *PlaceInventoryAttributeQuery) WithAttributeType(opts ...func(*Invent
 //
 //	client.PlaceInventoryAttribute.Query().
 //		GroupBy(placeinventoryattribute.FieldValue).
-//		Aggregate(ent.Count()).
+//		Aggregate(placio_api.Count()).
 //		Scan(ctx, &v)
 func (piaq *PlaceInventoryAttributeQuery) GroupBy(field string, fields ...string) *PlaceInventoryAttributeGroupBy {
 	piaq.ctx.Fields = append([]string{field}, fields...)
@@ -379,7 +379,7 @@ func (piaq *PlaceInventoryAttributeQuery) Aggregate(fns ...AggregateFunc) *Place
 func (piaq *PlaceInventoryAttributeQuery) prepareQuery(ctx context.Context) error {
 	for _, inter := range piaq.inters {
 		if inter == nil {
-			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+			return fmt.Errorf("placio_api: uninitialized interceptor (forgotten import placio_api/runtime?)")
 		}
 		if trv, ok := inter.(Traverser); ok {
 			if err := trv.Traverse(ctx, piaq); err != nil {
@@ -389,7 +389,7 @@ func (piaq *PlaceInventoryAttributeQuery) prepareQuery(ctx context.Context) erro
 	}
 	for _, f := range piaq.ctx.Fields {
 		if !placeinventoryattribute.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
+			return &ValidationError{Name: f, err: fmt.Errorf("placio_api: invalid field %q for query", f)}
 		}
 	}
 	if piaq.path != nil {

@@ -6,8 +6,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/user"
-	"placio-app/ent/userfollowuser"
+	"placio_api/user"
+	"placio_api/userfollowuser"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -129,14 +129,14 @@ func (ufuc *UserFollowUserCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (ufuc *UserFollowUserCreate) check() error {
 	if _, ok := ufuc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "CreatedAt", err: errors.New(`ent: missing required field "UserFollowUser.CreatedAt"`)}
+		return &ValidationError{Name: "CreatedAt", err: errors.New(`placio_api: missing required field "UserFollowUser.CreatedAt"`)}
 	}
 	if _, ok := ufuc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "UpdatedAt", err: errors.New(`ent: missing required field "UserFollowUser.UpdatedAt"`)}
+		return &ValidationError{Name: "UpdatedAt", err: errors.New(`placio_api: missing required field "UserFollowUser.UpdatedAt"`)}
 	}
 	if v, ok := ufuc.mutation.ID(); ok {
 		if err := userfollowuser.IDValidator(v); err != nil {
-			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "UserFollowUser.id": %w`, err)}
+			return &ValidationError{Name: "id", err: fmt.Errorf(`placio_api: validator failed for field "UserFollowUser.id": %w`, err)}
 		}
 	}
 	return nil
@@ -222,11 +222,15 @@ func (ufuc *UserFollowUserCreate) createSpec() (*UserFollowUser, *sqlgraph.Creat
 // UserFollowUserCreateBulk is the builder for creating many UserFollowUser entities in bulk.
 type UserFollowUserCreateBulk struct {
 	config
+	err      error
 	builders []*UserFollowUserCreate
 }
 
 // Save creates the UserFollowUser entities in the database.
 func (ufucb *UserFollowUserCreateBulk) Save(ctx context.Context) ([]*UserFollowUser, error) {
+	if ufucb.err != nil {
+		return nil, ufucb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ufucb.builders))
 	nodes := make([]*UserFollowUser, len(ufucb.builders))
 	mutators := make([]Mutator, len(ufucb.builders))

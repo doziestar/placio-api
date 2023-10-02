@@ -6,9 +6,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/place"
-	"placio-app/ent/reservation"
-	"placio-app/ent/user"
+	"placio_api/place"
+	"placio_api/reservation"
+	"placio_api/user"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -125,20 +125,20 @@ func (rc *ReservationCreate) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (rc *ReservationCreate) check() error {
 	if _, ok := rc.mutation.Date(); !ok {
-		return &ValidationError{Name: "date", err: errors.New(`ent: missing required field "Reservation.date"`)}
+		return &ValidationError{Name: "date", err: errors.New(`placio_api: missing required field "Reservation.date"`)}
 	}
 	if _, ok := rc.mutation.Time(); !ok {
-		return &ValidationError{Name: "time", err: errors.New(`ent: missing required field "Reservation.time"`)}
+		return &ValidationError{Name: "time", err: errors.New(`placio_api: missing required field "Reservation.time"`)}
 	}
 	if _, ok := rc.mutation.NumberOfPeople(); !ok {
-		return &ValidationError{Name: "numberOfPeople", err: errors.New(`ent: missing required field "Reservation.numberOfPeople"`)}
+		return &ValidationError{Name: "numberOfPeople", err: errors.New(`placio_api: missing required field "Reservation.numberOfPeople"`)}
 	}
 	if _, ok := rc.mutation.Status(); !ok {
-		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Reservation.status"`)}
+		return &ValidationError{Name: "status", err: errors.New(`placio_api: missing required field "Reservation.status"`)}
 	}
 	if v, ok := rc.mutation.ID(); ok {
 		if err := reservation.IDValidator(v); err != nil {
-			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "Reservation.id": %w`, err)}
+			return &ValidationError{Name: "id", err: fmt.Errorf(`placio_api: validator failed for field "Reservation.id": %w`, err)}
 		}
 	}
 	return nil
@@ -232,11 +232,15 @@ func (rc *ReservationCreate) createSpec() (*Reservation, *sqlgraph.CreateSpec) {
 // ReservationCreateBulk is the builder for creating many Reservation entities in bulk.
 type ReservationCreateBulk struct {
 	config
+	err      error
 	builders []*ReservationCreate
 }
 
 // Save creates the Reservation entities in the database.
 func (rcb *ReservationCreateBulk) Save(ctx context.Context) ([]*Reservation, error) {
+	if rcb.err != nil {
+		return nil, rcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(rcb.builders))
 	nodes := make([]*Reservation, len(rcb.builders))
 	mutators := make([]Mutator, len(rcb.builders))

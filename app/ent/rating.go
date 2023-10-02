@@ -4,11 +4,11 @@ package ent
 
 import (
 	"fmt"
-	"placio-app/ent/business"
-	"placio-app/ent/event"
-	"placio-app/ent/place"
-	"placio-app/ent/rating"
-	"placio-app/ent/user"
+	"placio_api/business"
+	"placio_api/event"
+	"placio_api/place"
+	"placio_api/rating"
+	"placio_api/user"
 	"strings"
 	"time"
 
@@ -265,7 +265,7 @@ func (r *Rating) Update() *RatingUpdateOne {
 func (r *Rating) Unwrap() *Rating {
 	_tx, ok := r.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: Rating is not a transactional entity")
+		panic("placio_api: Rating is not a transactional entity")
 	}
 	r.config.driver = _tx.drv
 	return r

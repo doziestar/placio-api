@@ -4,7 +4,7 @@ package ent
 
 import (
 	"fmt"
-	"placio-app/ent/template"
+	"placio_api/template"
 	"strings"
 
 	"entgo.io/ent"
@@ -122,7 +122,7 @@ func (t *Template) Update() *TemplateUpdateOne {
 func (t *Template) Unwrap() *Template {
 	_tx, ok := t.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: Template is not a transactional entity")
+		panic("placio_api: Template is not a transactional entity")
 	}
 	t.config.driver = _tx.drv
 	return t

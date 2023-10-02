@@ -4,7 +4,7 @@ package ent
 
 import (
 	"fmt"
-	"placio-app/ent/reaction"
+	"placio_api/reaction"
 	"strings"
 
 	"entgo.io/ent"
@@ -72,7 +72,7 @@ func (r *Reaction) Update() *ReactionUpdateOne {
 func (r *Reaction) Unwrap() *Reaction {
 	_tx, ok := r.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: Reaction is not a transactional entity")
+		panic("placio_api: Reaction is not a transactional entity")
 	}
 	r.config.driver = _tx.drv
 	return r

@@ -5,14 +5,13 @@ package ent
 import (
 	"encoding/json"
 	"fmt"
-	"placio-app/ent/accountwallet"
-	"placio-app/ent/event"
-	"placio-app/ent/user"
+	"placio_api/accountwallet"
+	"placio_api/event"
+	"placio_api/user"
 	"strings"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/auth0/go-auth0/management"
 )
 
 // User is the model entity for the User schema.
@@ -42,8 +41,6 @@ type User struct {
 	Latitude string `json:"latitude,omitempty"`
 	// Bio holds the value of the "bio" field.
 	Bio string `json:"bio,omitempty"`
-	// Auth0Data holds the value of the "auth0_data" field.
-	Auth0Data *management.User `json:"auth0_data,omitempty"`
 	// AppSettings holds the value of the "app_settings" field.
 	AppSettings map[string]interface{} `json:"app_settings,omitempty"`
 	// UserSettings holds the value of the "user_settings" field.
@@ -346,7 +343,7 @@ func (*User) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case user.FieldMapCoordinates, user.FieldAuth0Data, user.FieldAppSettings, user.FieldUserSettings:
+		case user.FieldMapCoordinates, user.FieldAppSettings, user.FieldUserSettings:
 			values[i] = new([]byte)
 		case user.FieldRelevanceScore:
 			values[i] = new(sql.NullFloat64)
@@ -442,14 +439,6 @@ func (u *User) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field bio", values[i])
 			} else if value.Valid {
 				u.Bio = value.String
-			}
-		case user.FieldAuth0Data:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field auth0_data", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &u.Auth0Data); err != nil {
-					return fmt.Errorf("unmarshal field auth0_data: %w", err)
-				}
 			}
 		case user.FieldAppSettings:
 			if value, ok := values[i].(*[]byte); !ok {
@@ -636,7 +625,7 @@ func (u *User) Update() *UserUpdateOne {
 func (u *User) Unwrap() *User {
 	_tx, ok := u.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: User is not a transactional entity")
+		panic("placio_api: User is not a transactional entity")
 	}
 	u.config.driver = _tx.drv
 	return u
@@ -679,9 +668,6 @@ func (u *User) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("bio=")
 	builder.WriteString(u.Bio)
-	builder.WriteString(", ")
-	builder.WriteString("auth0_data=")
-	builder.WriteString(fmt.Sprintf("%v", u.Auth0Data))
 	builder.WriteString(", ")
 	builder.WriteString("app_settings=")
 	builder.WriteString(fmt.Sprintf("%v", u.AppSettings))

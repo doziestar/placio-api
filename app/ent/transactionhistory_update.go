@@ -6,10 +6,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/placeinventory"
-	"placio-app/ent/predicate"
-	"placio-app/ent/transactionhistory"
-	"placio-app/ent/user"
+	"placio_api/placeinventory"
+	"placio_api/predicate"
+	"placio_api/transactionhistory"
+	"placio_api/user"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -149,7 +149,7 @@ func (thu *TransactionHistoryUpdate) ExecX(ctx context.Context) {
 func (thu *TransactionHistoryUpdate) check() error {
 	if v, ok := thu.mutation.TransactionType(); ok {
 		if err := transactionhistory.TransactionTypeValidator(v); err != nil {
-			return &ValidationError{Name: "transaction_type", err: fmt.Errorf(`ent: validator failed for field "TransactionHistory.transaction_type": %w`, err)}
+			return &ValidationError{Name: "transaction_type", err: fmt.Errorf(`placio_api: validator failed for field "TransactionHistory.transaction_type": %w`, err)}
 		}
 	}
 	return nil
@@ -389,7 +389,7 @@ func (thuo *TransactionHistoryUpdateOne) ExecX(ctx context.Context) {
 func (thuo *TransactionHistoryUpdateOne) check() error {
 	if v, ok := thuo.mutation.TransactionType(); ok {
 		if err := transactionhistory.TransactionTypeValidator(v); err != nil {
-			return &ValidationError{Name: "transaction_type", err: fmt.Errorf(`ent: validator failed for field "TransactionHistory.transaction_type": %w`, err)}
+			return &ValidationError{Name: "transaction_type", err: fmt.Errorf(`placio_api: validator failed for field "TransactionHistory.transaction_type": %w`, err)}
 		}
 	}
 	return nil
@@ -402,7 +402,7 @@ func (thuo *TransactionHistoryUpdateOne) sqlSave(ctx context.Context) (_node *Tr
 	_spec := sqlgraph.NewUpdateSpec(transactionhistory.Table, transactionhistory.Columns, sqlgraph.NewFieldSpec(transactionhistory.FieldID, field.TypeString))
 	id, ok := thuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "TransactionHistory.id" for update`)}
+		return nil, &ValidationError{Name: "id", err: errors.New(`placio_api: missing "TransactionHistory.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := thuo.fields; len(fields) > 0 {
@@ -410,7 +410,7 @@ func (thuo *TransactionHistoryUpdateOne) sqlSave(ctx context.Context) (_node *Tr
 		_spec.Node.Columns = append(_spec.Node.Columns, transactionhistory.FieldID)
 		for _, f := range fields {
 			if !transactionhistory.ValidColumn(f) {
-				return nil, &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
+				return nil, &ValidationError{Name: f, err: fmt.Errorf("placio_api: invalid field %q for query", f)}
 			}
 			if f != transactionhistory.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, f)

@@ -4,8 +4,8 @@ package ent
 
 import (
 	"fmt"
-	"placio-app/ent/place"
-	"placio-app/ent/room"
+	"placio_api/place"
+	"placio_api/room"
 	"strings"
 
 	"entgo.io/ent"
@@ -181,7 +181,7 @@ func (r *Room) Update() *RoomUpdateOne {
 func (r *Room) Unwrap() *Room {
 	_tx, ok := r.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: Room is not a transactional entity")
+		panic("placio_api: Room is not a transactional entity")
 	}
 	r.config.driver = _tx.drv
 	return r

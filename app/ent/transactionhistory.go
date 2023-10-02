@@ -4,9 +4,9 @@ package ent
 
 import (
 	"fmt"
-	"placio-app/ent/placeinventory"
-	"placio-app/ent/transactionhistory"
-	"placio-app/ent/user"
+	"placio_api/placeinventory"
+	"placio_api/transactionhistory"
+	"placio_api/user"
 	"strings"
 	"time"
 
@@ -173,7 +173,7 @@ func (th *TransactionHistory) Update() *TransactionHistoryUpdateOne {
 func (th *TransactionHistory) Unwrap() *TransactionHistory {
 	_tx, ok := th.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: TransactionHistory is not a transactional entity")
+		panic("placio_api: TransactionHistory is not a transactional entity")
 	}
 	th.config.driver = _tx.drv
 	return th

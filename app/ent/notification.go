@@ -4,7 +4,7 @@ package ent
 
 import (
 	"fmt"
-	"placio-app/ent/notification"
+	"placio_api/notification"
 	"strings"
 	"time"
 
@@ -209,7 +209,7 @@ func (n *Notification) Update() *NotificationUpdateOne {
 func (n *Notification) Unwrap() *Notification {
 	_tx, ok := n.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: Notification is not a transactional entity")
+		panic("placio_api: Notification is not a transactional entity")
 	}
 	n.config.driver = _tx.drv
 	return n

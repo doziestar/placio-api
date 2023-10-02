@@ -4,9 +4,9 @@ package ent
 
 import (
 	"fmt"
-	"placio-app/ent/business"
-	"placio-app/ent/post"
-	"placio-app/ent/user"
+	"placio_api/business"
+	"placio_api/post"
+	"placio_api/user"
 	"strings"
 	"time"
 
@@ -343,7 +343,7 @@ func (po *Post) Update() *PostUpdateOne {
 func (po *Post) Unwrap() *Post {
 	_tx, ok := po.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: Post is not a transactional entity")
+		panic("placio_api: Post is not a transactional entity")
 	}
 	po.config.driver = _tx.drv
 	return po

@@ -4,8 +4,8 @@ package ent
 
 import (
 	"context"
-	"placio-app/ent/inventorytype"
-	"placio-app/ent/predicate"
+	"placio_api/inventorytype"
+	"placio_api/predicate"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"

@@ -4,11 +4,11 @@ package enttest
 
 import (
 	"context"
-	"placio-app/ent"
+	"placio_api"
 	// required by schema hooks.
-	_ "placio-app/ent/runtime"
+	_ "placio_api/runtime"
 
-	"placio-app/ent/migrate"
+	"placio_api/migrate"
 
 	"entgo.io/ent/dialect/sql/schema"
 )
@@ -25,13 +25,13 @@ type (
 	Option func(*options)
 
 	options struct {
-		opts        []ent.Option
+		opts        []placio_api.Option
 		migrateOpts []schema.MigrateOption
 	}
 )
 
 // WithOptions forwards options to client creation.
-func WithOptions(opts ...ent.Option) Option {
+func WithOptions(opts ...placio_api.Option) Option {
 	return func(o *options) {
 		o.opts = append(o.opts, opts...)
 	}
@@ -52,10 +52,10 @@ func newOptions(opts []Option) *options {
 	return o
 }
 
-// Open calls ent.Open and auto-run migration.
-func Open(t TestingT, driverName, dataSourceName string, opts ...Option) *ent.Client {
+// Open calls placio_api.Open and auto-run migration.
+func Open(t TestingT, driverName, dataSourceName string, opts ...Option) *placio_api.Client {
 	o := newOptions(opts)
-	c, err := ent.Open(driverName, dataSourceName, o.opts...)
+	c, err := placio_api.Open(driverName, dataSourceName, o.opts...)
 	if err != nil {
 		t.Error(err)
 		t.FailNow()
@@ -64,14 +64,14 @@ func Open(t TestingT, driverName, dataSourceName string, opts ...Option) *ent.Cl
 	return c
 }
 
-// NewClient calls ent.NewClient and auto-run migration.
-func NewClient(t TestingT, opts ...Option) *ent.Client {
+// NewClient calls placio_api.NewClient and auto-run migration.
+func NewClient(t TestingT, opts ...Option) *placio_api.Client {
 	o := newOptions(opts)
-	c := ent.NewClient(o.opts...)
+	c := placio_api.NewClient(o.opts...)
 	migrateSchema(t, c, o)
 	return c
 }
-func migrateSchema(t TestingT, c *ent.Client, o *options) {
+func migrateSchema(t TestingT, c *placio_api.Client, o *options) {
 	tables, err := schema.CopyTables(migrate.Tables)
 	if err != nil {
 		t.Error(err)

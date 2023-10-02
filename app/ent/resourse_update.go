@@ -6,8 +6,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/predicate"
-	"placio-app/ent/resourse"
+	"placio_api/predicate"
+	"placio_api/resourse"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -137,7 +137,7 @@ func (ruo *ResourseUpdateOne) sqlSave(ctx context.Context) (_node *Resourse, err
 	_spec := sqlgraph.NewUpdateSpec(resourse.Table, resourse.Columns, sqlgraph.NewFieldSpec(resourse.FieldID, field.TypeString))
 	id, ok := ruo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Resourse.id" for update`)}
+		return nil, &ValidationError{Name: "id", err: errors.New(`placio_api: missing "Resourse.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := ruo.fields; len(fields) > 0 {
@@ -145,7 +145,7 @@ func (ruo *ResourseUpdateOne) sqlSave(ctx context.Context) (_node *Resourse, err
 		_spec.Node.Columns = append(_spec.Node.Columns, resourse.FieldID)
 		for _, f := range fields {
 			if !resourse.ValidColumn(f) {
-				return nil, &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
+				return nil, &ValidationError{Name: f, err: fmt.Errorf("placio_api: invalid field %q for query", f)}
 			}
 			if f != resourse.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, f)

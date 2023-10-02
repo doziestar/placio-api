@@ -6,8 +6,8 @@ import (
 	"context"
 	"fmt"
 	"math"
-	"placio-app/ent/order"
-	"placio-app/ent/predicate"
+	"placio_api/order"
+	"placio_api/predicate"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -222,7 +222,7 @@ func (oq *OrderQuery) Exist(ctx context.Context) (bool, error) {
 	case IsNotFound(err):
 		return false, nil
 	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
+		return false, fmt.Errorf("placio_api: check existence: %w", err)
 	default:
 		return true, nil
 	}
@@ -284,7 +284,7 @@ func (oq *OrderQuery) Aggregate(fns ...AggregateFunc) *OrderSelect {
 func (oq *OrderQuery) prepareQuery(ctx context.Context) error {
 	for _, inter := range oq.inters {
 		if inter == nil {
-			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+			return fmt.Errorf("placio_api: uninitialized interceptor (forgotten import placio_api/runtime?)")
 		}
 		if trv, ok := inter.(Traverser); ok {
 			if err := trv.Traverse(ctx, oq); err != nil {
@@ -294,7 +294,7 @@ func (oq *OrderQuery) prepareQuery(ctx context.Context) error {
 	}
 	for _, f := range oq.ctx.Fields {
 		if !order.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
+			return &ValidationError{Name: f, err: fmt.Errorf("placio_api: invalid field %q for query", f)}
 		}
 	}
 	if oq.path != nil {

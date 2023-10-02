@@ -6,8 +6,8 @@ import (
 	"context"
 	"fmt"
 	"math"
-	"placio-app/ent/predicate"
-	"placio-app/ent/reaction"
+	"placio_api/predicate"
+	"placio_api/reaction"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -222,7 +222,7 @@ func (rq *ReactionQuery) Exist(ctx context.Context) (bool, error) {
 	case IsNotFound(err):
 		return false, nil
 	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
+		return false, fmt.Errorf("placio_api: check existence: %w", err)
 	default:
 		return true, nil
 	}
@@ -284,7 +284,7 @@ func (rq *ReactionQuery) Aggregate(fns ...AggregateFunc) *ReactionSelect {
 func (rq *ReactionQuery) prepareQuery(ctx context.Context) error {
 	for _, inter := range rq.inters {
 		if inter == nil {
-			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+			return fmt.Errorf("placio_api: uninitialized interceptor (forgotten import placio_api/runtime?)")
 		}
 		if trv, ok := inter.(Traverser); ok {
 			if err := trv.Traverse(ctx, rq); err != nil {
@@ -294,7 +294,7 @@ func (rq *ReactionQuery) prepareQuery(ctx context.Context) error {
 	}
 	for _, f := range rq.ctx.Fields {
 		if !reaction.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
+			return &ValidationError{Name: f, err: fmt.Errorf("placio_api: invalid field %q for query", f)}
 		}
 	}
 	if rq.path != nil {

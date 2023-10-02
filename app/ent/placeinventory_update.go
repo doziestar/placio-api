@@ -6,16 +6,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/business"
-	"placio-app/ent/category"
-	"placio-app/ent/inventorytype"
-	"placio-app/ent/media"
-	"placio-app/ent/place"
-	"placio-app/ent/placeinventory"
-	"placio-app/ent/placeinventoryattribute"
-	"placio-app/ent/predicate"
-	"placio-app/ent/reservationblock"
-	"placio-app/ent/transactionhistory"
+	"placio_api/business"
+	"placio_api/category"
+	"placio_api/inventorytype"
+	"placio_api/media"
+	"placio_api/place"
+	"placio_api/placeinventory"
+	"placio_api/placeinventoryattribute"
+	"placio_api/predicate"
+	"placio_api/reservationblock"
+	"placio_api/transactionhistory"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -1379,7 +1379,7 @@ func (piuo *PlaceInventoryUpdateOne) sqlSave(ctx context.Context) (_node *PlaceI
 	_spec := sqlgraph.NewUpdateSpec(placeinventory.Table, placeinventory.Columns, sqlgraph.NewFieldSpec(placeinventory.FieldID, field.TypeString))
 	id, ok := piuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "PlaceInventory.id" for update`)}
+		return nil, &ValidationError{Name: "id", err: errors.New(`placio_api: missing "PlaceInventory.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := piuo.fields; len(fields) > 0 {
@@ -1387,7 +1387,7 @@ func (piuo *PlaceInventoryUpdateOne) sqlSave(ctx context.Context) (_node *PlaceI
 		_spec.Node.Columns = append(_spec.Node.Columns, placeinventory.FieldID)
 		for _, f := range fields {
 			if !placeinventory.ValidColumn(f) {
-				return nil, &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
+				return nil, &ValidationError{Name: f, err: fmt.Errorf("placio_api: invalid field %q for query", f)}
 			}
 			if f != placeinventory.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, f)

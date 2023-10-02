@@ -3,7 +3,7 @@
 package businessfollowuser
 
 import (
-	"placio-app/ent/predicate"
+	"placio_api/predicate"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -203,32 +203,15 @@ func HasUserWith(preds ...predicate.User) predicate.BusinessFollowUser {
 
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.BusinessFollowUser) predicate.BusinessFollowUser {
-	return predicate.BusinessFollowUser(func(s *sql.Selector) {
-		s1 := s.Clone().SetP(nil)
-		for _, p := range predicates {
-			p(s1)
-		}
-		s.Where(s1.P())
-	})
+	return predicate.BusinessFollowUser(sql.AndPredicates(predicates...))
 }
 
 // Or groups predicates with the OR operator between them.
 func Or(predicates ...predicate.BusinessFollowUser) predicate.BusinessFollowUser {
-	return predicate.BusinessFollowUser(func(s *sql.Selector) {
-		s1 := s.Clone().SetP(nil)
-		for i, p := range predicates {
-			if i > 0 {
-				s1.Or()
-			}
-			p(s1)
-		}
-		s.Where(s1.P())
-	})
+	return predicate.BusinessFollowUser(sql.OrPredicates(predicates...))
 }
 
 // Not applies the not operator on the given predicate.
 func Not(p predicate.BusinessFollowUser) predicate.BusinessFollowUser {
-	return predicate.BusinessFollowUser(func(s *sql.Selector) {
-		p(s.Not())
-	})
+	return predicate.BusinessFollowUser(sql.NotPredicates(p))
 }

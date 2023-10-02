@@ -4,7 +4,7 @@ package ent
 
 import (
 	"fmt"
-	"placio-app/ent/payment"
+	"placio_api/payment"
 	"strings"
 
 	"entgo.io/ent"
@@ -72,7 +72,7 @@ func (pa *Payment) Update() *PaymentUpdateOne {
 func (pa *Payment) Unwrap() *Payment {
 	_tx, ok := pa.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: Payment is not a transactional entity")
+		panic("placio_api: Payment is not a transactional entity")
 	}
 	pa.config.driver = _tx.drv
 	return pa

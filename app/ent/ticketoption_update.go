@@ -6,9 +6,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/event"
-	"placio-app/ent/predicate"
-	"placio-app/ent/ticketoption"
+	"placio_api/event"
+	"placio_api/predicate"
+	"placio_api/ticketoption"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -282,7 +282,7 @@ func (touo *TicketOptionUpdateOne) sqlSave(ctx context.Context) (_node *TicketOp
 	_spec := sqlgraph.NewUpdateSpec(ticketoption.Table, ticketoption.Columns, sqlgraph.NewFieldSpec(ticketoption.FieldID, field.TypeString))
 	id, ok := touo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "TicketOption.id" for update`)}
+		return nil, &ValidationError{Name: "id", err: errors.New(`placio_api: missing "TicketOption.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := touo.fields; len(fields) > 0 {
@@ -290,7 +290,7 @@ func (touo *TicketOptionUpdateOne) sqlSave(ctx context.Context) (_node *TicketOp
 		_spec.Node.Columns = append(_spec.Node.Columns, ticketoption.FieldID)
 		for _, f := range fields {
 			if !ticketoption.ValidColumn(f) {
-				return nil, &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
+				return nil, &ValidationError{Name: f, err: fmt.Errorf("placio_api: invalid field %q for query", f)}
 			}
 			if f != ticketoption.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, f)

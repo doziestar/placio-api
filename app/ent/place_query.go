@@ -7,25 +7,25 @@ import (
 	"database/sql/driver"
 	"fmt"
 	"math"
-	"placio-app/ent/amenity"
-	"placio-app/ent/booking"
-	"placio-app/ent/business"
-	"placio-app/ent/category"
-	"placio-app/ent/categoryassignment"
-	"placio-app/ent/event"
-	"placio-app/ent/faq"
-	"placio-app/ent/media"
-	"placio-app/ent/menu"
-	"placio-app/ent/place"
-	"placio-app/ent/placeinventory"
-	"placio-app/ent/predicate"
-	"placio-app/ent/rating"
-	"placio-app/ent/reservation"
-	"placio-app/ent/review"
-	"placio-app/ent/room"
-	"placio-app/ent/user"
-	"placio-app/ent/userfollowplace"
-	"placio-app/ent/userlikeplace"
+	"placio_api/amenity"
+	"placio_api/booking"
+	"placio_api/business"
+	"placio_api/category"
+	"placio_api/categoryassignment"
+	"placio_api/event"
+	"placio_api/faq"
+	"placio_api/media"
+	"placio_api/menu"
+	"placio_api/place"
+	"placio_api/placeinventory"
+	"placio_api/predicate"
+	"placio_api/rating"
+	"placio_api/reservation"
+	"placio_api/review"
+	"placio_api/room"
+	"placio_api/user"
+	"placio_api/userfollowplace"
+	"placio_api/userlikeplace"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -632,7 +632,7 @@ func (pq *PlaceQuery) Exist(ctx context.Context) (bool, error) {
 	case IsNotFound(err):
 		return false, nil
 	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
+		return false, fmt.Errorf("placio_api: check existence: %w", err)
 	default:
 		return true, nil
 	}
@@ -881,7 +881,7 @@ func (pq *PlaceQuery) WithInventories(opts ...func(*PlaceInventoryQuery)) *Place
 //
 //	client.Place.Query().
 //		GroupBy(place.FieldName).
-//		Aggregate(ent.Count()).
+//		Aggregate(placio_api.Count()).
 //		Scan(ctx, &v)
 func (pq *PlaceQuery) GroupBy(field string, fields ...string) *PlaceGroupBy {
 	pq.ctx.Fields = append([]string{field}, fields...)
@@ -920,7 +920,7 @@ func (pq *PlaceQuery) Aggregate(fns ...AggregateFunc) *PlaceSelect {
 func (pq *PlaceQuery) prepareQuery(ctx context.Context) error {
 	for _, inter := range pq.inters {
 		if inter == nil {
-			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+			return fmt.Errorf("placio_api: uninitialized interceptor (forgotten import placio_api/runtime?)")
 		}
 		if trv, ok := inter.(Traverser); ok {
 			if err := trv.Traverse(ctx, pq); err != nil {
@@ -930,7 +930,7 @@ func (pq *PlaceQuery) prepareQuery(ctx context.Context) error {
 	}
 	for _, f := range pq.ctx.Fields {
 		if !place.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
+			return &ValidationError{Name: f, err: fmt.Errorf("placio_api: invalid field %q for query", f)}
 		}
 	}
 	if pq.path != nil {

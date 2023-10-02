@@ -6,10 +6,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/business"
-	"placio-app/ent/notification"
-	"placio-app/ent/predicate"
-	"placio-app/ent/user"
+	"placio_api/business"
+	"placio_api/notification"
+	"placio_api/predicate"
+	"placio_api/user"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -227,37 +227,37 @@ func (nu *NotificationUpdate) ExecX(ctx context.Context) {
 func (nu *NotificationUpdate) check() error {
 	if v, ok := nu.mutation.Title(); ok {
 		if err := notification.TitleValidator(v); err != nil {
-			return &ValidationError{Name: "title", err: fmt.Errorf(`ent: validator failed for field "Notification.title": %w`, err)}
+			return &ValidationError{Name: "title", err: fmt.Errorf(`placio_api: validator failed for field "Notification.title": %w`, err)}
 		}
 	}
 	if v, ok := nu.mutation.Message(); ok {
 		if err := notification.MessageValidator(v); err != nil {
-			return &ValidationError{Name: "message", err: fmt.Errorf(`ent: validator failed for field "Notification.message": %w`, err)}
+			return &ValidationError{Name: "message", err: fmt.Errorf(`placio_api: validator failed for field "Notification.message": %w`, err)}
 		}
 	}
 	if v, ok := nu.mutation.Link(); ok {
 		if err := notification.LinkValidator(v); err != nil {
-			return &ValidationError{Name: "link", err: fmt.Errorf(`ent: validator failed for field "Notification.link": %w`, err)}
+			return &ValidationError{Name: "link", err: fmt.Errorf(`placio_api: validator failed for field "Notification.link": %w`, err)}
 		}
 	}
 	if v, ok := nu.mutation.NotifiableType(); ok {
 		if err := notification.NotifiableTypeValidator(v); err != nil {
-			return &ValidationError{Name: "notifiable_type", err: fmt.Errorf(`ent: validator failed for field "Notification.notifiable_type": %w`, err)}
+			return &ValidationError{Name: "notifiable_type", err: fmt.Errorf(`placio_api: validator failed for field "Notification.notifiable_type": %w`, err)}
 		}
 	}
 	if v, ok := nu.mutation.NotifiableID(); ok {
 		if err := notification.NotifiableIDValidator(v); err != nil {
-			return &ValidationError{Name: "notifiable_id", err: fmt.Errorf(`ent: validator failed for field "Notification.notifiable_id": %w`, err)}
+			return &ValidationError{Name: "notifiable_id", err: fmt.Errorf(`placio_api: validator failed for field "Notification.notifiable_id": %w`, err)}
 		}
 	}
 	if v, ok := nu.mutation.TriggeredBy(); ok {
 		if err := notification.TriggeredByValidator(v); err != nil {
-			return &ValidationError{Name: "triggered_by", err: fmt.Errorf(`ent: validator failed for field "Notification.triggered_by": %w`, err)}
+			return &ValidationError{Name: "triggered_by", err: fmt.Errorf(`placio_api: validator failed for field "Notification.triggered_by": %w`, err)}
 		}
 	}
 	if v, ok := nu.mutation.TriggeredTo(); ok {
 		if err := notification.TriggeredToValidator(v); err != nil {
-			return &ValidationError{Name: "triggered_to", err: fmt.Errorf(`ent: validator failed for field "Notification.triggered_to": %w`, err)}
+			return &ValidationError{Name: "triggered_to", err: fmt.Errorf(`placio_api: validator failed for field "Notification.triggered_to": %w`, err)}
 		}
 	}
 	return nil
@@ -631,37 +631,37 @@ func (nuo *NotificationUpdateOne) ExecX(ctx context.Context) {
 func (nuo *NotificationUpdateOne) check() error {
 	if v, ok := nuo.mutation.Title(); ok {
 		if err := notification.TitleValidator(v); err != nil {
-			return &ValidationError{Name: "title", err: fmt.Errorf(`ent: validator failed for field "Notification.title": %w`, err)}
+			return &ValidationError{Name: "title", err: fmt.Errorf(`placio_api: validator failed for field "Notification.title": %w`, err)}
 		}
 	}
 	if v, ok := nuo.mutation.Message(); ok {
 		if err := notification.MessageValidator(v); err != nil {
-			return &ValidationError{Name: "message", err: fmt.Errorf(`ent: validator failed for field "Notification.message": %w`, err)}
+			return &ValidationError{Name: "message", err: fmt.Errorf(`placio_api: validator failed for field "Notification.message": %w`, err)}
 		}
 	}
 	if v, ok := nuo.mutation.Link(); ok {
 		if err := notification.LinkValidator(v); err != nil {
-			return &ValidationError{Name: "link", err: fmt.Errorf(`ent: validator failed for field "Notification.link": %w`, err)}
+			return &ValidationError{Name: "link", err: fmt.Errorf(`placio_api: validator failed for field "Notification.link": %w`, err)}
 		}
 	}
 	if v, ok := nuo.mutation.NotifiableType(); ok {
 		if err := notification.NotifiableTypeValidator(v); err != nil {
-			return &ValidationError{Name: "notifiable_type", err: fmt.Errorf(`ent: validator failed for field "Notification.notifiable_type": %w`, err)}
+			return &ValidationError{Name: "notifiable_type", err: fmt.Errorf(`placio_api: validator failed for field "Notification.notifiable_type": %w`, err)}
 		}
 	}
 	if v, ok := nuo.mutation.NotifiableID(); ok {
 		if err := notification.NotifiableIDValidator(v); err != nil {
-			return &ValidationError{Name: "notifiable_id", err: fmt.Errorf(`ent: validator failed for field "Notification.notifiable_id": %w`, err)}
+			return &ValidationError{Name: "notifiable_id", err: fmt.Errorf(`placio_api: validator failed for field "Notification.notifiable_id": %w`, err)}
 		}
 	}
 	if v, ok := nuo.mutation.TriggeredBy(); ok {
 		if err := notification.TriggeredByValidator(v); err != nil {
-			return &ValidationError{Name: "triggered_by", err: fmt.Errorf(`ent: validator failed for field "Notification.triggered_by": %w`, err)}
+			return &ValidationError{Name: "triggered_by", err: fmt.Errorf(`placio_api: validator failed for field "Notification.triggered_by": %w`, err)}
 		}
 	}
 	if v, ok := nuo.mutation.TriggeredTo(); ok {
 		if err := notification.TriggeredToValidator(v); err != nil {
-			return &ValidationError{Name: "triggered_to", err: fmt.Errorf(`ent: validator failed for field "Notification.triggered_to": %w`, err)}
+			return &ValidationError{Name: "triggered_to", err: fmt.Errorf(`placio_api: validator failed for field "Notification.triggered_to": %w`, err)}
 		}
 	}
 	return nil
@@ -674,7 +674,7 @@ func (nuo *NotificationUpdateOne) sqlSave(ctx context.Context) (_node *Notificat
 	_spec := sqlgraph.NewUpdateSpec(notification.Table, notification.Columns, sqlgraph.NewFieldSpec(notification.FieldID, field.TypeString))
 	id, ok := nuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Notification.id" for update`)}
+		return nil, &ValidationError{Name: "id", err: errors.New(`placio_api: missing "Notification.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := nuo.fields; len(fields) > 0 {
@@ -682,7 +682,7 @@ func (nuo *NotificationUpdateOne) sqlSave(ctx context.Context) (_node *Notificat
 		_spec.Node.Columns = append(_spec.Node.Columns, notification.FieldID)
 		for _, f := range fields {
 			if !notification.ValidColumn(f) {
-				return nil, &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
+				return nil, &ValidationError{Name: f, err: fmt.Errorf("placio_api: invalid field %q for query", f)}
 			}
 			if f != notification.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, f)

@@ -4,9 +4,9 @@ package ent
 
 import (
 	"fmt"
-	"placio-app/ent/business"
-	"placio-app/ent/user"
-	"placio-app/ent/userfollowbusiness"
+	"placio_api/business"
+	"placio_api/user"
+	"placio_api/userfollowbusiness"
 	"strings"
 	"time"
 
@@ -163,7 +163,7 @@ func (ufb *UserFollowBusiness) Update() *UserFollowBusinessUpdateOne {
 func (ufb *UserFollowBusiness) Unwrap() *UserFollowBusiness {
 	_tx, ok := ufb.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: UserFollowBusiness is not a transactional entity")
+		panic("placio_api: UserFollowBusiness is not a transactional entity")
 	}
 	ufb.config.driver = _tx.drv
 	return ufb

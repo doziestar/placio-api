@@ -6,8 +6,8 @@ import (
 	"context"
 	"fmt"
 	"math"
-	"placio-app/ent/payment"
-	"placio-app/ent/predicate"
+	"placio_api/payment"
+	"placio_api/predicate"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -222,7 +222,7 @@ func (pq *PaymentQuery) Exist(ctx context.Context) (bool, error) {
 	case IsNotFound(err):
 		return false, nil
 	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
+		return false, fmt.Errorf("placio_api: check existence: %w", err)
 	default:
 		return true, nil
 	}
@@ -284,7 +284,7 @@ func (pq *PaymentQuery) Aggregate(fns ...AggregateFunc) *PaymentSelect {
 func (pq *PaymentQuery) prepareQuery(ctx context.Context) error {
 	for _, inter := range pq.inters {
 		if inter == nil {
-			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+			return fmt.Errorf("placio_api: uninitialized interceptor (forgotten import placio_api/runtime?)")
 		}
 		if trv, ok := inter.(Traverser); ok {
 			if err := trv.Traverse(ctx, pq); err != nil {
@@ -294,7 +294,7 @@ func (pq *PaymentQuery) prepareQuery(ctx context.Context) error {
 	}
 	for _, f := range pq.ctx.Fields {
 		if !payment.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
+			return &ValidationError{Name: f, err: fmt.Errorf("placio_api: invalid field %q for query", f)}
 		}
 	}
 	if pq.path != nil {

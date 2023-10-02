@@ -6,9 +6,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/inventoryattribute"
-	"placio-app/ent/placeinventory"
-	"placio-app/ent/placeinventoryattribute"
+	"placio_api/inventoryattribute"
+	"placio_api/placeinventory"
+	"placio_api/placeinventoryattribute"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -112,11 +112,11 @@ func (piac *PlaceInventoryAttributeCreate) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (piac *PlaceInventoryAttributeCreate) check() error {
 	if _, ok := piac.mutation.Value(); !ok {
-		return &ValidationError{Name: "value", err: errors.New(`ent: missing required field "PlaceInventoryAttribute.value"`)}
+		return &ValidationError{Name: "value", err: errors.New(`placio_api: missing required field "PlaceInventoryAttribute.value"`)}
 	}
 	if v, ok := piac.mutation.ID(); ok {
 		if err := placeinventoryattribute.IDValidator(v); err != nil {
-			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "PlaceInventoryAttribute.id": %w`, err)}
+			return &ValidationError{Name: "id", err: fmt.Errorf(`placio_api: validator failed for field "PlaceInventoryAttribute.id": %w`, err)}
 		}
 	}
 	return nil
@@ -202,11 +202,15 @@ func (piac *PlaceInventoryAttributeCreate) createSpec() (*PlaceInventoryAttribut
 // PlaceInventoryAttributeCreateBulk is the builder for creating many PlaceInventoryAttribute entities in bulk.
 type PlaceInventoryAttributeCreateBulk struct {
 	config
+	err      error
 	builders []*PlaceInventoryAttributeCreate
 }
 
 // Save creates the PlaceInventoryAttribute entities in the database.
 func (piacb *PlaceInventoryAttributeCreateBulk) Save(ctx context.Context) ([]*PlaceInventoryAttribute, error) {
+	if piacb.err != nil {
+		return nil, piacb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(piacb.builders))
 	nodes := make([]*PlaceInventoryAttribute, len(piacb.builders))
 	mutators := make([]Mutator, len(piacb.builders))

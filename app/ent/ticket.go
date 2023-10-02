@@ -4,8 +4,8 @@ package ent
 
 import (
 	"fmt"
-	"placio-app/ent/event"
-	"placio-app/ent/ticket"
+	"placio_api/event"
+	"placio_api/ticket"
 	"strings"
 	"time"
 
@@ -148,7 +148,7 @@ func (t *Ticket) Update() *TicketUpdateOne {
 func (t *Ticket) Unwrap() *Ticket {
 	_tx, ok := t.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: Ticket is not a transactional entity")
+		panic("placio_api: Ticket is not a transactional entity")
 	}
 	t.config.driver = _tx.drv
 	return t

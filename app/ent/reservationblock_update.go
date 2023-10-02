@@ -6,10 +6,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/placeinventory"
-	"placio-app/ent/predicate"
-	"placio-app/ent/reservationblock"
-	"placio-app/ent/user"
+	"placio_api/placeinventory"
+	"placio_api/predicate"
+	"placio_api/reservationblock"
+	"placio_api/user"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -134,7 +134,7 @@ func (rbu *ReservationBlockUpdate) ExecX(ctx context.Context) {
 func (rbu *ReservationBlockUpdate) check() error {
 	if v, ok := rbu.mutation.Status(); ok {
 		if err := reservationblock.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "ReservationBlock.status": %w`, err)}
+			return &ValidationError{Name: "status", err: fmt.Errorf(`placio_api: validator failed for field "ReservationBlock.status": %w`, err)}
 		}
 	}
 	return nil
@@ -356,7 +356,7 @@ func (rbuo *ReservationBlockUpdateOne) ExecX(ctx context.Context) {
 func (rbuo *ReservationBlockUpdateOne) check() error {
 	if v, ok := rbuo.mutation.Status(); ok {
 		if err := reservationblock.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "ReservationBlock.status": %w`, err)}
+			return &ValidationError{Name: "status", err: fmt.Errorf(`placio_api: validator failed for field "ReservationBlock.status": %w`, err)}
 		}
 	}
 	return nil
@@ -369,7 +369,7 @@ func (rbuo *ReservationBlockUpdateOne) sqlSave(ctx context.Context) (_node *Rese
 	_spec := sqlgraph.NewUpdateSpec(reservationblock.Table, reservationblock.Columns, sqlgraph.NewFieldSpec(reservationblock.FieldID, field.TypeString))
 	id, ok := rbuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "ReservationBlock.id" for update`)}
+		return nil, &ValidationError{Name: "id", err: errors.New(`placio_api: missing "ReservationBlock.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := rbuo.fields; len(fields) > 0 {
@@ -377,7 +377,7 @@ func (rbuo *ReservationBlockUpdateOne) sqlSave(ctx context.Context) (_node *Rese
 		_spec.Node.Columns = append(_spec.Node.Columns, reservationblock.FieldID)
 		for _, f := range fields {
 			if !reservationblock.ValidColumn(f) {
-				return nil, &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
+				return nil, &ValidationError{Name: f, err: fmt.Errorf("placio_api: invalid field %q for query", f)}
 			}
 			if f != reservationblock.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, f)

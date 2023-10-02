@@ -6,9 +6,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/placeinventory"
-	"placio-app/ent/reservationblock"
-	"placio-app/ent/user"
+	"placio_api/placeinventory"
+	"placio_api/reservationblock"
+	"placio_api/user"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -113,17 +113,17 @@ func (rbc *ReservationBlockCreate) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (rbc *ReservationBlockCreate) check() error {
 	if _, ok := rbc.mutation.StartTime(); !ok {
-		return &ValidationError{Name: "start_time", err: errors.New(`ent: missing required field "ReservationBlock.start_time"`)}
+		return &ValidationError{Name: "start_time", err: errors.New(`placio_api: missing required field "ReservationBlock.start_time"`)}
 	}
 	if _, ok := rbc.mutation.EndTime(); !ok {
-		return &ValidationError{Name: "end_time", err: errors.New(`ent: missing required field "ReservationBlock.end_time"`)}
+		return &ValidationError{Name: "end_time", err: errors.New(`placio_api: missing required field "ReservationBlock.end_time"`)}
 	}
 	if _, ok := rbc.mutation.Status(); !ok {
-		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "ReservationBlock.status"`)}
+		return &ValidationError{Name: "status", err: errors.New(`placio_api: missing required field "ReservationBlock.status"`)}
 	}
 	if v, ok := rbc.mutation.Status(); ok {
 		if err := reservationblock.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "ReservationBlock.status": %w`, err)}
+			return &ValidationError{Name: "status", err: fmt.Errorf(`placio_api: validator failed for field "ReservationBlock.status": %w`, err)}
 		}
 	}
 	return nil
@@ -209,11 +209,15 @@ func (rbc *ReservationBlockCreate) createSpec() (*ReservationBlock, *sqlgraph.Cr
 // ReservationBlockCreateBulk is the builder for creating many ReservationBlock entities in bulk.
 type ReservationBlockCreateBulk struct {
 	config
+	err      error
 	builders []*ReservationBlockCreate
 }
 
 // Save creates the ReservationBlock entities in the database.
 func (rbcb *ReservationBlockCreateBulk) Save(ctx context.Context) ([]*ReservationBlock, error) {
+	if rbcb.err != nil {
+		return nil, rbcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(rbcb.builders))
 	nodes := make([]*ReservationBlock, len(rbcb.builders))
 	mutators := make([]Mutator, len(rbcb.builders))

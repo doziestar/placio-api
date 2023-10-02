@@ -6,9 +6,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/business"
-	"placio-app/ent/user"
-	"placio-app/ent/userbusiness"
+	"placio_api/business"
+	"placio_api/user"
+	"placio_api/userbusiness"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -120,16 +120,16 @@ func (ubc *UserBusinessCreate) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (ubc *UserBusinessCreate) check() error {
 	if _, ok := ubc.mutation.Role(); !ok {
-		return &ValidationError{Name: "role", err: errors.New(`ent: missing required field "UserBusiness.role"`)}
+		return &ValidationError{Name: "role", err: errors.New(`placio_api: missing required field "UserBusiness.role"`)}
 	}
 	if v, ok := ubc.mutation.Permissions(); ok {
 		if err := userbusiness.PermissionsValidator(v); err != nil {
-			return &ValidationError{Name: "permissions", err: fmt.Errorf(`ent: validator failed for field "UserBusiness.permissions": %w`, err)}
+			return &ValidationError{Name: "permissions", err: fmt.Errorf(`placio_api: validator failed for field "UserBusiness.permissions": %w`, err)}
 		}
 	}
 	if v, ok := ubc.mutation.ID(); ok {
 		if err := userbusiness.IDValidator(v); err != nil {
-			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "UserBusiness.id": %w`, err)}
+			return &ValidationError{Name: "id", err: fmt.Errorf(`placio_api: validator failed for field "UserBusiness.id": %w`, err)}
 		}
 	}
 	return nil
@@ -215,11 +215,15 @@ func (ubc *UserBusinessCreate) createSpec() (*UserBusiness, *sqlgraph.CreateSpec
 // UserBusinessCreateBulk is the builder for creating many UserBusiness entities in bulk.
 type UserBusinessCreateBulk struct {
 	config
+	err      error
 	builders []*UserBusinessCreate
 }
 
 // Save creates the UserBusiness entities in the database.
 func (ubcb *UserBusinessCreateBulk) Save(ctx context.Context) ([]*UserBusiness, error) {
+	if ubcb.err != nil {
+		return nil, ubcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ubcb.builders))
 	nodes := make([]*UserBusiness, len(ubcb.builders))
 	mutators := make([]Mutator, len(ubcb.builders))

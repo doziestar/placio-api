@@ -7,10 +7,10 @@ import (
 	"database/sql/driver"
 	"fmt"
 	"math"
-	"placio-app/ent/event"
-	"placio-app/ent/predicate"
-	"placio-app/ent/ticket"
-	"placio-app/ent/ticketoption"
+	"placio_api/event"
+	"placio_api/predicate"
+	"placio_api/ticket"
+	"placio_api/ticketoption"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -272,7 +272,7 @@ func (tq *TicketQuery) Exist(ctx context.Context) (bool, error) {
 	case IsNotFound(err):
 		return false, nil
 	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
+		return false, fmt.Errorf("placio_api: check existence: %w", err)
 	default:
 		return true, nil
 	}
@@ -341,7 +341,7 @@ func (tq *TicketQuery) WithTicketOptions(opts ...func(*TicketOptionQuery)) *Tick
 //
 //	client.Ticket.Query().
 //		GroupBy(ticket.FieldCreatedAt).
-//		Aggregate(ent.Count()).
+//		Aggregate(placio_api.Count()).
 //		Scan(ctx, &v)
 func (tq *TicketQuery) GroupBy(field string, fields ...string) *TicketGroupBy {
 	tq.ctx.Fields = append([]string{field}, fields...)
@@ -380,7 +380,7 @@ func (tq *TicketQuery) Aggregate(fns ...AggregateFunc) *TicketSelect {
 func (tq *TicketQuery) prepareQuery(ctx context.Context) error {
 	for _, inter := range tq.inters {
 		if inter == nil {
-			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+			return fmt.Errorf("placio_api: uninitialized interceptor (forgotten import placio_api/runtime?)")
 		}
 		if trv, ok := inter.(Traverser); ok {
 			if err := trv.Traverse(ctx, tq); err != nil {
@@ -390,7 +390,7 @@ func (tq *TicketQuery) prepareQuery(ctx context.Context) error {
 	}
 	for _, f := range tq.ctx.Fields {
 		if !ticket.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
+			return &ValidationError{Name: f, err: fmt.Errorf("placio_api: invalid field %q for query", f)}
 		}
 	}
 	if tq.path != nil {

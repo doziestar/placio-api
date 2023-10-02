@@ -6,9 +6,9 @@ import (
 	"context"
 	"fmt"
 	"math"
-	"placio-app/ent/customblock"
-	"placio-app/ent/predicate"
-	"placio-app/ent/website"
+	"placio_api/customblock"
+	"placio_api/predicate"
+	"placio_api/website"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -247,7 +247,7 @@ func (cbq *CustomBlockQuery) Exist(ctx context.Context) (bool, error) {
 	case IsNotFound(err):
 		return false, nil
 	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
+		return false, fmt.Errorf("placio_api: check existence: %w", err)
 	default:
 		return true, nil
 	}
@@ -304,7 +304,7 @@ func (cbq *CustomBlockQuery) WithWebsite(opts ...func(*WebsiteQuery)) *CustomBlo
 //
 //	client.CustomBlock.Query().
 //		GroupBy(customblock.FieldContent).
-//		Aggregate(ent.Count()).
+//		Aggregate(placio_api.Count()).
 //		Scan(ctx, &v)
 func (cbq *CustomBlockQuery) GroupBy(field string, fields ...string) *CustomBlockGroupBy {
 	cbq.ctx.Fields = append([]string{field}, fields...)
@@ -343,7 +343,7 @@ func (cbq *CustomBlockQuery) Aggregate(fns ...AggregateFunc) *CustomBlockSelect 
 func (cbq *CustomBlockQuery) prepareQuery(ctx context.Context) error {
 	for _, inter := range cbq.inters {
 		if inter == nil {
-			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+			return fmt.Errorf("placio_api: uninitialized interceptor (forgotten import placio_api/runtime?)")
 		}
 		if trv, ok := inter.(Traverser); ok {
 			if err := trv.Traverse(ctx, cbq); err != nil {
@@ -353,7 +353,7 @@ func (cbq *CustomBlockQuery) prepareQuery(ctx context.Context) error {
 	}
 	for _, f := range cbq.ctx.Fields {
 		if !customblock.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
+			return &ValidationError{Name: f, err: fmt.Errorf("placio_api: invalid field %q for query", f)}
 		}
 	}
 	if cbq.path != nil {

@@ -3,7 +3,7 @@
 package inventorytype
 
 import (
-	"placio-app/ent/predicate"
+	"placio_api/predicate"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -219,36 +219,6 @@ func DescriptionContainsFold(v string) predicate.InventoryType {
 	return predicate.InventoryType(sql.FieldContainsFold(FieldDescription, v))
 }
 
-// IndustryTypeEQ applies the EQ predicate on the "industry_type" field.
-func IndustryTypeEQ(v IndustryType) predicate.InventoryType {
-	return predicate.InventoryType(sql.FieldEQ(FieldIndustryType, v))
-}
-
-// IndustryTypeNEQ applies the NEQ predicate on the "industry_type" field.
-func IndustryTypeNEQ(v IndustryType) predicate.InventoryType {
-	return predicate.InventoryType(sql.FieldNEQ(FieldIndustryType, v))
-}
-
-// IndustryTypeIn applies the In predicate on the "industry_type" field.
-func IndustryTypeIn(vs ...IndustryType) predicate.InventoryType {
-	return predicate.InventoryType(sql.FieldIn(FieldIndustryType, vs...))
-}
-
-// IndustryTypeNotIn applies the NotIn predicate on the "industry_type" field.
-func IndustryTypeNotIn(vs ...IndustryType) predicate.InventoryType {
-	return predicate.InventoryType(sql.FieldNotIn(FieldIndustryType, vs...))
-}
-
-// IndustryTypeIsNil applies the IsNil predicate on the "industry_type" field.
-func IndustryTypeIsNil() predicate.InventoryType {
-	return predicate.InventoryType(sql.FieldIsNull(FieldIndustryType))
-}
-
-// IndustryTypeNotNil applies the NotNil predicate on the "industry_type" field.
-func IndustryTypeNotNil() predicate.InventoryType {
-	return predicate.InventoryType(sql.FieldNotNull(FieldIndustryType))
-}
-
 // MeasurementUnitEQ applies the EQ predicate on the "measurement_unit" field.
 func MeasurementUnitEQ(v string) predicate.InventoryType {
 	return predicate.InventoryType(sql.FieldEQ(FieldMeasurementUnit, v))
@@ -372,32 +342,15 @@ func HasPlaceInventoriesWith(preds ...predicate.PlaceInventory) predicate.Invent
 
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.InventoryType) predicate.InventoryType {
-	return predicate.InventoryType(func(s *sql.Selector) {
-		s1 := s.Clone().SetP(nil)
-		for _, p := range predicates {
-			p(s1)
-		}
-		s.Where(s1.P())
-	})
+	return predicate.InventoryType(sql.AndPredicates(predicates...))
 }
 
 // Or groups predicates with the OR operator between them.
 func Or(predicates ...predicate.InventoryType) predicate.InventoryType {
-	return predicate.InventoryType(func(s *sql.Selector) {
-		s1 := s.Clone().SetP(nil)
-		for i, p := range predicates {
-			if i > 0 {
-				s1.Or()
-			}
-			p(s1)
-		}
-		s.Where(s1.P())
-	})
+	return predicate.InventoryType(sql.OrPredicates(predicates...))
 }
 
 // Not applies the not operator on the given predicate.
 func Not(p predicate.InventoryType) predicate.InventoryType {
-	return predicate.InventoryType(func(s *sql.Selector) {
-		p(s.Not())
-	})
+	return predicate.InventoryType(sql.NotPredicates(p))
 }

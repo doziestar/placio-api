@@ -6,9 +6,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/event"
-	"placio-app/ent/user"
-	"placio-app/ent/userfollowevent"
+	"placio_api/event"
+	"placio_api/user"
+	"placio_api/userfollowevent"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -126,16 +126,16 @@ func (ufec *UserFollowEventCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (ufec *UserFollowEventCreate) check() error {
 	if _, ok := ufec.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "createdAt", err: errors.New(`ent: missing required field "UserFollowEvent.createdAt"`)}
+		return &ValidationError{Name: "createdAt", err: errors.New(`placio_api: missing required field "UserFollowEvent.createdAt"`)}
 	}
 	if _, ok := ufec.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updatedAt", err: errors.New(`ent: missing required field "UserFollowEvent.updatedAt"`)}
+		return &ValidationError{Name: "updatedAt", err: errors.New(`placio_api: missing required field "UserFollowEvent.updatedAt"`)}
 	}
 	if _, ok := ufec.mutation.UserID(); !ok {
-		return &ValidationError{Name: "user", err: errors.New(`ent: missing required edge "UserFollowEvent.user"`)}
+		return &ValidationError{Name: "user", err: errors.New(`placio_api: missing required edge "UserFollowEvent.user"`)}
 	}
 	if _, ok := ufec.mutation.EventID(); !ok {
-		return &ValidationError{Name: "event", err: errors.New(`ent: missing required edge "UserFollowEvent.event"`)}
+		return &ValidationError{Name: "event", err: errors.New(`placio_api: missing required edge "UserFollowEvent.event"`)}
 	}
 	return nil
 }
@@ -220,11 +220,15 @@ func (ufec *UserFollowEventCreate) createSpec() (*UserFollowEvent, *sqlgraph.Cre
 // UserFollowEventCreateBulk is the builder for creating many UserFollowEvent entities in bulk.
 type UserFollowEventCreateBulk struct {
 	config
+	err      error
 	builders []*UserFollowEventCreate
 }
 
 // Save creates the UserFollowEvent entities in the database.
 func (ufecb *UserFollowEventCreateBulk) Save(ctx context.Context) ([]*UserFollowEvent, error) {
+	if ufecb.err != nil {
+		return nil, ufecb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ufecb.builders))
 	nodes := make([]*UserFollowEvent, len(ufecb.builders))
 	mutators := make([]Mutator, len(ufecb.builders))

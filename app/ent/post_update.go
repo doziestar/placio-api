@@ -6,14 +6,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/business"
-	"placio-app/ent/category"
-	"placio-app/ent/comment"
-	"placio-app/ent/like"
-	"placio-app/ent/media"
-	"placio-app/ent/post"
-	"placio-app/ent/predicate"
-	"placio-app/ent/user"
+	"placio_api/business"
+	"placio_api/category"
+	"placio_api/comment"
+	"placio_api/like"
+	"placio_api/media"
+	"placio_api/post"
+	"placio_api/predicate"
+	"placio_api/user"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -522,12 +522,12 @@ func (pu *PostUpdate) defaults() {
 func (pu *PostUpdate) check() error {
 	if v, ok := pu.mutation.Content(); ok {
 		if err := post.ContentValidator(v); err != nil {
-			return &ValidationError{Name: "Content", err: fmt.Errorf(`ent: validator failed for field "Post.Content": %w`, err)}
+			return &ValidationError{Name: "Content", err: fmt.Errorf(`placio_api: validator failed for field "Post.Content": %w`, err)}
 		}
 	}
 	if v, ok := pu.mutation.Privacy(); ok {
 		if err := post.PrivacyValidator(v); err != nil {
-			return &ValidationError{Name: "Privacy", err: fmt.Errorf(`ent: validator failed for field "Post.Privacy": %w`, err)}
+			return &ValidationError{Name: "Privacy", err: fmt.Errorf(`placio_api: validator failed for field "Post.Privacy": %w`, err)}
 		}
 	}
 	return nil
@@ -1370,12 +1370,12 @@ func (puo *PostUpdateOne) defaults() {
 func (puo *PostUpdateOne) check() error {
 	if v, ok := puo.mutation.Content(); ok {
 		if err := post.ContentValidator(v); err != nil {
-			return &ValidationError{Name: "Content", err: fmt.Errorf(`ent: validator failed for field "Post.Content": %w`, err)}
+			return &ValidationError{Name: "Content", err: fmt.Errorf(`placio_api: validator failed for field "Post.Content": %w`, err)}
 		}
 	}
 	if v, ok := puo.mutation.Privacy(); ok {
 		if err := post.PrivacyValidator(v); err != nil {
-			return &ValidationError{Name: "Privacy", err: fmt.Errorf(`ent: validator failed for field "Post.Privacy": %w`, err)}
+			return &ValidationError{Name: "Privacy", err: fmt.Errorf(`placio_api: validator failed for field "Post.Privacy": %w`, err)}
 		}
 	}
 	return nil
@@ -1388,7 +1388,7 @@ func (puo *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) 
 	_spec := sqlgraph.NewUpdateSpec(post.Table, post.Columns, sqlgraph.NewFieldSpec(post.FieldID, field.TypeString))
 	id, ok := puo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Post.id" for update`)}
+		return nil, &ValidationError{Name: "id", err: errors.New(`placio_api: missing "Post.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := puo.fields; len(fields) > 0 {
@@ -1396,7 +1396,7 @@ func (puo *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) 
 		_spec.Node.Columns = append(_spec.Node.Columns, post.FieldID)
 		for _, f := range fields {
 			if !post.ValidColumn(f) {
-				return nil, &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
+				return nil, &ValidationError{Name: f, err: fmt.Errorf("placio_api: invalid field %q for query", f)}
 			}
 			if f != post.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, f)

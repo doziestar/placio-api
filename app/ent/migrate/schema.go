@@ -589,7 +589,6 @@ var (
 		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
 		{Name: "name", Type: field.TypeString, Unique: true},
 		{Name: "description", Type: field.TypeString, Nullable: true},
-		{Name: "industry_type", Type: field.TypeEnum, Nullable: true, Enums: []string{"hotel", "restaurant", "bar", "club", "gym", "events", "retail", "other"}},
 		{Name: "measurement_unit", Type: field.TypeString, Nullable: true},
 	}
 	// InventoryTypesTable holds the schema information for the "inventory_types" table.
@@ -1263,7 +1262,6 @@ var (
 		{Name: "longitude", Type: field.TypeString, Nullable: true},
 		{Name: "latitude", Type: field.TypeString, Nullable: true},
 		{Name: "bio", Type: field.TypeString, Nullable: true, Size: 2147483647, Default: "Add a bio to your profile"},
-		{Name: "auth0_data", Type: field.TypeJSON, Nullable: true},
 		{Name: "app_settings", Type: field.TypeJSON, Nullable: true},
 		{Name: "user_settings", Type: field.TypeJSON, Nullable: true},
 		{Name: "search_text", Type: field.TypeString, Nullable: true},

@@ -6,14 +6,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/business"
-	"placio-app/ent/comment"
-	"placio-app/ent/event"
-	"placio-app/ent/like"
-	"placio-app/ent/media"
-	"placio-app/ent/place"
-	"placio-app/ent/review"
-	"placio-app/ent/user"
+	"placio_api/business"
+	"placio_api/comment"
+	"placio_api/event"
+	"placio_api/like"
+	"placio_api/media"
+	"placio_api/place"
+	"placio_api/review"
+	"placio_api/user"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -221,9 +221,7 @@ func (rc *ReviewCreate) Mutation() *ReviewMutation {
 
 // Save creates the Review in the database.
 func (rc *ReviewCreate) Save(ctx context.Context) (*Review, error) {
-	if err := rc.defaults(); err != nil {
-		return nil, err
-	}
+	rc.defaults()
 	return withHooks(ctx, rc.sqlSave, rc.mutation, rc.hooks)
 }
 
@@ -250,11 +248,8 @@ func (rc *ReviewCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (rc *ReviewCreate) defaults() error {
+func (rc *ReviewCreate) defaults() {
 	if _, ok := rc.mutation.CreatedAt(); !ok {
-		if review.DefaultCreatedAt == nil {
-			return fmt.Errorf("ent: uninitialized review.DefaultCreatedAt (forgotten import ent/runtime?)")
-		}
 		v := review.DefaultCreatedAt()
 		rc.mutation.SetCreatedAt(v)
 	}
@@ -270,36 +265,35 @@ func (rc *ReviewCreate) defaults() error {
 		v := review.DefaultFlag
 		rc.mutation.SetFlag(v)
 	}
-	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (rc *ReviewCreate) check() error {
 	if _, ok := rc.mutation.Score(); !ok {
-		return &ValidationError{Name: "score", err: errors.New(`ent: missing required field "Review.score"`)}
+		return &ValidationError{Name: "score", err: errors.New(`placio_api: missing required field "Review.score"`)}
 	}
 	if v, ok := rc.mutation.Score(); ok {
 		if err := review.ScoreValidator(v); err != nil {
-			return &ValidationError{Name: "score", err: fmt.Errorf(`ent: validator failed for field "Review.score": %w`, err)}
+			return &ValidationError{Name: "score", err: fmt.Errorf(`placio_api: validator failed for field "Review.score": %w`, err)}
 		}
 	}
 	if _, ok := rc.mutation.Content(); !ok {
-		return &ValidationError{Name: "content", err: errors.New(`ent: missing required field "Review.content"`)}
+		return &ValidationError{Name: "content", err: errors.New(`placio_api: missing required field "Review.content"`)}
 	}
 	if _, ok := rc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "createdAt", err: errors.New(`ent: missing required field "Review.createdAt"`)}
+		return &ValidationError{Name: "createdAt", err: errors.New(`placio_api: missing required field "Review.createdAt"`)}
 	}
 	if _, ok := rc.mutation.LikeCount(); !ok {
-		return &ValidationError{Name: "likeCount", err: errors.New(`ent: missing required field "Review.likeCount"`)}
+		return &ValidationError{Name: "likeCount", err: errors.New(`placio_api: missing required field "Review.likeCount"`)}
 	}
 	if _, ok := rc.mutation.DislikeCount(); !ok {
-		return &ValidationError{Name: "dislikeCount", err: errors.New(`ent: missing required field "Review.dislikeCount"`)}
+		return &ValidationError{Name: "dislikeCount", err: errors.New(`placio_api: missing required field "Review.dislikeCount"`)}
 	}
 	if _, ok := rc.mutation.Flag(); !ok {
-		return &ValidationError{Name: "flag", err: errors.New(`ent: missing required field "Review.flag"`)}
+		return &ValidationError{Name: "flag", err: errors.New(`placio_api: missing required field "Review.flag"`)}
 	}
 	if _, ok := rc.mutation.UserID(); !ok {
-		return &ValidationError{Name: "user", err: errors.New(`ent: missing required edge "Review.user"`)}
+		return &ValidationError{Name: "user", err: errors.New(`placio_api: missing required edge "Review.user"`)}
 	}
 	return nil
 }
@@ -482,11 +476,15 @@ func (rc *ReviewCreate) createSpec() (*Review, *sqlgraph.CreateSpec) {
 // ReviewCreateBulk is the builder for creating many Review entities in bulk.
 type ReviewCreateBulk struct {
 	config
+	err      error
 	builders []*ReviewCreate
 }
 
 // Save creates the Review entities in the database.
 func (rcb *ReviewCreateBulk) Save(ctx context.Context) ([]*Review, error) {
+	if rcb.err != nil {
+		return nil, rcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(rcb.builders))
 	nodes := make([]*Review, len(rcb.builders))
 	mutators := make([]Mutator, len(rcb.builders))

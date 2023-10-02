@@ -6,10 +6,10 @@ import (
 	"context"
 	"fmt"
 	"math"
-	"placio-app/ent/place"
-	"placio-app/ent/predicate"
-	"placio-app/ent/user"
-	"placio-app/ent/userlikeplace"
+	"placio_api/place"
+	"placio_api/predicate"
+	"placio_api/user"
+	"placio_api/userlikeplace"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -271,7 +271,7 @@ func (ulpq *UserLikePlaceQuery) Exist(ctx context.Context) (bool, error) {
 	case IsNotFound(err):
 		return false, nil
 	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
+		return false, fmt.Errorf("placio_api: check existence: %w", err)
 	default:
 		return true, nil
 	}
@@ -340,7 +340,7 @@ func (ulpq *UserLikePlaceQuery) WithPlace(opts ...func(*PlaceQuery)) *UserLikePl
 //
 //	client.UserLikePlace.Query().
 //		GroupBy(userlikeplace.FieldCreatedAt).
-//		Aggregate(ent.Count()).
+//		Aggregate(placio_api.Count()).
 //		Scan(ctx, &v)
 func (ulpq *UserLikePlaceQuery) GroupBy(field string, fields ...string) *UserLikePlaceGroupBy {
 	ulpq.ctx.Fields = append([]string{field}, fields...)
@@ -379,7 +379,7 @@ func (ulpq *UserLikePlaceQuery) Aggregate(fns ...AggregateFunc) *UserLikePlaceSe
 func (ulpq *UserLikePlaceQuery) prepareQuery(ctx context.Context) error {
 	for _, inter := range ulpq.inters {
 		if inter == nil {
-			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+			return fmt.Errorf("placio_api: uninitialized interceptor (forgotten import placio_api/runtime?)")
 		}
 		if trv, ok := inter.(Traverser); ok {
 			if err := trv.Traverse(ctx, ulpq); err != nil {
@@ -389,7 +389,7 @@ func (ulpq *UserLikePlaceQuery) prepareQuery(ctx context.Context) error {
 	}
 	for _, f := range ulpq.ctx.Fields {
 		if !userlikeplace.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
+			return &ValidationError{Name: f, err: fmt.Errorf("placio_api: invalid field %q for query", f)}
 		}
 	}
 	if ulpq.path != nil {

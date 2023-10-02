@@ -6,9 +6,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/place"
-	"placio-app/ent/user"
-	"placio-app/ent/userfollowplace"
+	"placio_api/place"
+	"placio_api/user"
+	"placio_api/userfollowplace"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -130,10 +130,10 @@ func (ufpc *UserFollowPlaceCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (ufpc *UserFollowPlaceCreate) check() error {
 	if _, ok := ufpc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "CreatedAt", err: errors.New(`ent: missing required field "UserFollowPlace.CreatedAt"`)}
+		return &ValidationError{Name: "CreatedAt", err: errors.New(`placio_api: missing required field "UserFollowPlace.CreatedAt"`)}
 	}
 	if _, ok := ufpc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "UpdatedAt", err: errors.New(`ent: missing required field "UserFollowPlace.UpdatedAt"`)}
+		return &ValidationError{Name: "UpdatedAt", err: errors.New(`placio_api: missing required field "UserFollowPlace.UpdatedAt"`)}
 	}
 	return nil
 }
@@ -218,11 +218,15 @@ func (ufpc *UserFollowPlaceCreate) createSpec() (*UserFollowPlace, *sqlgraph.Cre
 // UserFollowPlaceCreateBulk is the builder for creating many UserFollowPlace entities in bulk.
 type UserFollowPlaceCreateBulk struct {
 	config
+	err      error
 	builders []*UserFollowPlaceCreate
 }
 
 // Save creates the UserFollowPlace entities in the database.
 func (ufpcb *UserFollowPlaceCreateBulk) Save(ctx context.Context) ([]*UserFollowPlace, error) {
+	if ufpcb.err != nil {
+		return nil, ufpcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ufpcb.builders))
 	nodes := make([]*UserFollowPlace, len(ufpcb.builders))
 	mutators := make([]Mutator, len(ufpcb.builders))

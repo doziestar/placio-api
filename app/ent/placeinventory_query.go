@@ -7,16 +7,16 @@ import (
 	"database/sql/driver"
 	"fmt"
 	"math"
-	"placio-app/ent/business"
-	"placio-app/ent/category"
-	"placio-app/ent/inventorytype"
-	"placio-app/ent/media"
-	"placio-app/ent/place"
-	"placio-app/ent/placeinventory"
-	"placio-app/ent/placeinventoryattribute"
-	"placio-app/ent/predicate"
-	"placio-app/ent/reservationblock"
-	"placio-app/ent/transactionhistory"
+	"placio_api/business"
+	"placio_api/category"
+	"placio_api/inventorytype"
+	"placio_api/media"
+	"placio_api/place"
+	"placio_api/placeinventory"
+	"placio_api/placeinventoryattribute"
+	"placio_api/predicate"
+	"placio_api/reservationblock"
+	"placio_api/transactionhistory"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -416,7 +416,7 @@ func (piq *PlaceInventoryQuery) Exist(ctx context.Context) (bool, error) {
 	case IsNotFound(err):
 		return false, nil
 	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
+		return false, fmt.Errorf("placio_api: check existence: %w", err)
 	default:
 		return true, nil
 	}
@@ -557,7 +557,7 @@ func (piq *PlaceInventoryQuery) WithCategory(opts ...func(*CategoryQuery)) *Plac
 //
 //	client.PlaceInventory.Query().
 //		GroupBy(placeinventory.FieldName).
-//		Aggregate(ent.Count()).
+//		Aggregate(placio_api.Count()).
 //		Scan(ctx, &v)
 func (piq *PlaceInventoryQuery) GroupBy(field string, fields ...string) *PlaceInventoryGroupBy {
 	piq.ctx.Fields = append([]string{field}, fields...)
@@ -596,7 +596,7 @@ func (piq *PlaceInventoryQuery) Aggregate(fns ...AggregateFunc) *PlaceInventoryS
 func (piq *PlaceInventoryQuery) prepareQuery(ctx context.Context) error {
 	for _, inter := range piq.inters {
 		if inter == nil {
-			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+			return fmt.Errorf("placio_api: uninitialized interceptor (forgotten import placio_api/runtime?)")
 		}
 		if trv, ok := inter.(Traverser); ok {
 			if err := trv.Traverse(ctx, piq); err != nil {
@@ -606,7 +606,7 @@ func (piq *PlaceInventoryQuery) prepareQuery(ctx context.Context) error {
 	}
 	for _, f := range piq.ctx.Fields {
 		if !placeinventory.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
+			return &ValidationError{Name: f, err: fmt.Errorf("placio_api: invalid field %q for query", f)}
 		}
 	}
 	if piq.path != nil {

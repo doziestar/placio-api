@@ -6,15 +6,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/business"
-	"placio-app/ent/comment"
-	"placio-app/ent/event"
-	"placio-app/ent/like"
-	"placio-app/ent/media"
-	"placio-app/ent/place"
-	"placio-app/ent/predicate"
-	"placio-app/ent/review"
-	"placio-app/ent/user"
+	"placio_api/business"
+	"placio_api/comment"
+	"placio_api/event"
+	"placio_api/like"
+	"placio_api/media"
+	"placio_api/place"
+	"placio_api/predicate"
+	"placio_api/review"
+	"placio_api/user"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -360,11 +360,11 @@ func (ru *ReviewUpdate) ExecX(ctx context.Context) {
 func (ru *ReviewUpdate) check() error {
 	if v, ok := ru.mutation.Score(); ok {
 		if err := review.ScoreValidator(v); err != nil {
-			return &ValidationError{Name: "score", err: fmt.Errorf(`ent: validator failed for field "Review.score": %w`, err)}
+			return &ValidationError{Name: "score", err: fmt.Errorf(`placio_api: validator failed for field "Review.score": %w`, err)}
 		}
 	}
 	if _, ok := ru.mutation.UserID(); ru.mutation.UserCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Review.user"`)
+		return errors.New(`placio_api: clearing a required unique edge "Review.user"`)
 	}
 	return nil
 }
@@ -1017,11 +1017,11 @@ func (ruo *ReviewUpdateOne) ExecX(ctx context.Context) {
 func (ruo *ReviewUpdateOne) check() error {
 	if v, ok := ruo.mutation.Score(); ok {
 		if err := review.ScoreValidator(v); err != nil {
-			return &ValidationError{Name: "score", err: fmt.Errorf(`ent: validator failed for field "Review.score": %w`, err)}
+			return &ValidationError{Name: "score", err: fmt.Errorf(`placio_api: validator failed for field "Review.score": %w`, err)}
 		}
 	}
 	if _, ok := ruo.mutation.UserID(); ruo.mutation.UserCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Review.user"`)
+		return errors.New(`placio_api: clearing a required unique edge "Review.user"`)
 	}
 	return nil
 }
@@ -1033,7 +1033,7 @@ func (ruo *ReviewUpdateOne) sqlSave(ctx context.Context) (_node *Review, err err
 	_spec := sqlgraph.NewUpdateSpec(review.Table, review.Columns, sqlgraph.NewFieldSpec(review.FieldID, field.TypeString))
 	id, ok := ruo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Review.id" for update`)}
+		return nil, &ValidationError{Name: "id", err: errors.New(`placio_api: missing "Review.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := ruo.fields; len(fields) > 0 {
@@ -1041,7 +1041,7 @@ func (ruo *ReviewUpdateOne) sqlSave(ctx context.Context) (_node *Review, err err
 		_spec.Node.Columns = append(_spec.Node.Columns, review.FieldID)
 		for _, f := range fields {
 			if !review.ValidColumn(f) {
-				return nil, &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
+				return nil, &ValidationError{Name: f, err: fmt.Errorf("placio_api: invalid field %q for query", f)}
 			}
 			if f != review.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, f)

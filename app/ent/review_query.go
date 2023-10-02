@@ -7,15 +7,15 @@ import (
 	"database/sql/driver"
 	"fmt"
 	"math"
-	"placio-app/ent/business"
-	"placio-app/ent/comment"
-	"placio-app/ent/event"
-	"placio-app/ent/like"
-	"placio-app/ent/media"
-	"placio-app/ent/place"
-	"placio-app/ent/predicate"
-	"placio-app/ent/review"
-	"placio-app/ent/user"
+	"placio_api/business"
+	"placio_api/comment"
+	"placio_api/event"
+	"placio_api/like"
+	"placio_api/media"
+	"placio_api/place"
+	"placio_api/predicate"
+	"placio_api/review"
+	"placio_api/user"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -392,7 +392,7 @@ func (rq *ReviewQuery) Exist(ctx context.Context) (bool, error) {
 	case IsNotFound(err):
 		return false, nil
 	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
+		return false, fmt.Errorf("placio_api: check existence: %w", err)
 	default:
 		return true, nil
 	}
@@ -521,7 +521,7 @@ func (rq *ReviewQuery) WithLikes(opts ...func(*LikeQuery)) *ReviewQuery {
 //
 //	client.Review.Query().
 //		GroupBy(review.FieldScore).
-//		Aggregate(ent.Count()).
+//		Aggregate(placio_api.Count()).
 //		Scan(ctx, &v)
 func (rq *ReviewQuery) GroupBy(field string, fields ...string) *ReviewGroupBy {
 	rq.ctx.Fields = append([]string{field}, fields...)
@@ -560,7 +560,7 @@ func (rq *ReviewQuery) Aggregate(fns ...AggregateFunc) *ReviewSelect {
 func (rq *ReviewQuery) prepareQuery(ctx context.Context) error {
 	for _, inter := range rq.inters {
 		if inter == nil {
-			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+			return fmt.Errorf("placio_api: uninitialized interceptor (forgotten import placio_api/runtime?)")
 		}
 		if trv, ok := inter.(Traverser); ok {
 			if err := trv.Traverse(ctx, rq); err != nil {
@@ -570,7 +570,7 @@ func (rq *ReviewQuery) prepareQuery(ctx context.Context) error {
 	}
 	for _, f := range rq.ctx.Fields {
 		if !review.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
+			return &ValidationError{Name: f, err: fmt.Errorf("placio_api: invalid field %q for query", f)}
 		}
 	}
 	if rq.path != nil {

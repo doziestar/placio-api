@@ -4,9 +4,9 @@ package ent
 
 import (
 	"fmt"
-	"placio-app/ent/placeinventory"
-	"placio-app/ent/reservationblock"
-	"placio-app/ent/user"
+	"placio_api/placeinventory"
+	"placio_api/reservationblock"
+	"placio_api/user"
 	"strings"
 	"time"
 
@@ -171,7 +171,7 @@ func (rb *ReservationBlock) Update() *ReservationBlockUpdateOne {
 func (rb *ReservationBlock) Unwrap() *ReservationBlock {
 	_tx, ok := rb.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: ReservationBlock is not a transactional entity")
+		panic("placio_api: ReservationBlock is not a transactional entity")
 	}
 	rb.config.driver = _tx.drv
 	return rb

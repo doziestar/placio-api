@@ -6,8 +6,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/customblock"
-	"placio-app/ent/website"
+	"placio_api/customblock"
+	"placio_api/website"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -72,10 +72,10 @@ func (cbc *CustomBlockCreate) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (cbc *CustomBlockCreate) check() error {
 	if _, ok := cbc.mutation.Content(); !ok {
-		return &ValidationError{Name: "content", err: errors.New(`ent: missing required field "CustomBlock.content"`)}
+		return &ValidationError{Name: "content", err: errors.New(`placio_api: missing required field "CustomBlock.content"`)}
 	}
 	if _, ok := cbc.mutation.WebsiteID(); !ok {
-		return &ValidationError{Name: "website", err: errors.New(`ent: missing required edge "CustomBlock.website"`)}
+		return &ValidationError{Name: "website", err: errors.New(`placio_api: missing required edge "CustomBlock.website"`)}
 	}
 	return nil
 }
@@ -135,11 +135,15 @@ func (cbc *CustomBlockCreate) createSpec() (*CustomBlock, *sqlgraph.CreateSpec) 
 // CustomBlockCreateBulk is the builder for creating many CustomBlock entities in bulk.
 type CustomBlockCreateBulk struct {
 	config
+	err      error
 	builders []*CustomBlockCreate
 }
 
 // Save creates the CustomBlock entities in the database.
 func (cbcb *CustomBlockCreateBulk) Save(ctx context.Context) ([]*CustomBlock, error) {
+	if cbcb.err != nil {
+		return nil, cbcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(cbcb.builders))
 	nodes := make([]*CustomBlock, len(cbcb.builders))
 	mutators := make([]Mutator, len(cbcb.builders))

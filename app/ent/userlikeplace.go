@@ -4,9 +4,9 @@ package ent
 
 import (
 	"fmt"
-	"placio-app/ent/place"
-	"placio-app/ent/user"
-	"placio-app/ent/userlikeplace"
+	"placio_api/place"
+	"placio_api/user"
+	"placio_api/userlikeplace"
 	"strings"
 	"time"
 
@@ -163,7 +163,7 @@ func (ulp *UserLikePlace) Update() *UserLikePlaceUpdateOne {
 func (ulp *UserLikePlace) Unwrap() *UserLikePlace {
 	_tx, ok := ulp.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: UserLikePlace is not a transactional entity")
+		panic("placio_api: UserLikePlace is not a transactional entity")
 	}
 	ulp.config.driver = _tx.drv
 	return ulp

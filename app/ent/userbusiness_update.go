@@ -6,10 +6,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/business"
-	"placio-app/ent/predicate"
-	"placio-app/ent/user"
-	"placio-app/ent/userbusiness"
+	"placio_api/business"
+	"placio_api/predicate"
+	"placio_api/user"
+	"placio_api/userbusiness"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -141,7 +141,7 @@ func (ubu *UserBusinessUpdate) ExecX(ctx context.Context) {
 func (ubu *UserBusinessUpdate) check() error {
 	if v, ok := ubu.mutation.Permissions(); ok {
 		if err := userbusiness.PermissionsValidator(v); err != nil {
-			return &ValidationError{Name: "permissions", err: fmt.Errorf(`ent: validator failed for field "UserBusiness.permissions": %w`, err)}
+			return &ValidationError{Name: "permissions", err: fmt.Errorf(`placio_api: validator failed for field "UserBusiness.permissions": %w`, err)}
 		}
 	}
 	return nil
@@ -371,7 +371,7 @@ func (ubuo *UserBusinessUpdateOne) ExecX(ctx context.Context) {
 func (ubuo *UserBusinessUpdateOne) check() error {
 	if v, ok := ubuo.mutation.Permissions(); ok {
 		if err := userbusiness.PermissionsValidator(v); err != nil {
-			return &ValidationError{Name: "permissions", err: fmt.Errorf(`ent: validator failed for field "UserBusiness.permissions": %w`, err)}
+			return &ValidationError{Name: "permissions", err: fmt.Errorf(`placio_api: validator failed for field "UserBusiness.permissions": %w`, err)}
 		}
 	}
 	return nil
@@ -384,7 +384,7 @@ func (ubuo *UserBusinessUpdateOne) sqlSave(ctx context.Context) (_node *UserBusi
 	_spec := sqlgraph.NewUpdateSpec(userbusiness.Table, userbusiness.Columns, sqlgraph.NewFieldSpec(userbusiness.FieldID, field.TypeString))
 	id, ok := ubuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "UserBusiness.id" for update`)}
+		return nil, &ValidationError{Name: "id", err: errors.New(`placio_api: missing "UserBusiness.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := ubuo.fields; len(fields) > 0 {
@@ -392,7 +392,7 @@ func (ubuo *UserBusinessUpdateOne) sqlSave(ctx context.Context) (_node *UserBusi
 		_spec.Node.Columns = append(_spec.Node.Columns, userbusiness.FieldID)
 		for _, f := range fields {
 			if !userbusiness.ValidColumn(f) {
-				return nil, &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
+				return nil, &ValidationError{Name: f, err: fmt.Errorf("placio_api: invalid field %q for query", f)}
 			}
 			if f != userbusiness.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, f)

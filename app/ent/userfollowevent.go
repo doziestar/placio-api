@@ -4,9 +4,9 @@ package ent
 
 import (
 	"fmt"
-	"placio-app/ent/event"
-	"placio-app/ent/user"
-	"placio-app/ent/userfollowevent"
+	"placio_api/event"
+	"placio_api/user"
+	"placio_api/userfollowevent"
 	"strings"
 	"time"
 
@@ -163,7 +163,7 @@ func (ufe *UserFollowEvent) Update() *UserFollowEventUpdateOne {
 func (ufe *UserFollowEvent) Unwrap() *UserFollowEvent {
 	_tx, ok := ufe.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: UserFollowEvent is not a transactional entity")
+		panic("placio_api: UserFollowEvent is not a transactional entity")
 	}
 	ufe.config.driver = _tx.drv
 	return ufe

@@ -6,13 +6,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/business"
-	"placio-app/ent/category"
-	"placio-app/ent/comment"
-	"placio-app/ent/like"
-	"placio-app/ent/media"
-	"placio-app/ent/post"
-	"placio-app/ent/user"
+	"placio_api/business"
+	"placio_api/category"
+	"placio_api/comment"
+	"placio_api/like"
+	"placio_api/media"
+	"placio_api/post"
+	"placio_api/user"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -430,63 +430,63 @@ func (pc *PostCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (pc *PostCreate) check() error {
 	if _, ok := pc.mutation.Content(); !ok {
-		return &ValidationError{Name: "Content", err: errors.New(`ent: missing required field "Post.Content"`)}
+		return &ValidationError{Name: "Content", err: errors.New(`placio_api: missing required field "Post.Content"`)}
 	}
 	if v, ok := pc.mutation.Content(); ok {
 		if err := post.ContentValidator(v); err != nil {
-			return &ValidationError{Name: "Content", err: fmt.Errorf(`ent: validator failed for field "Post.Content": %w`, err)}
+			return &ValidationError{Name: "Content", err: fmt.Errorf(`placio_api: validator failed for field "Post.Content": %w`, err)}
 		}
 	}
 	if _, ok := pc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "CreatedAt", err: errors.New(`ent: missing required field "Post.CreatedAt"`)}
+		return &ValidationError{Name: "CreatedAt", err: errors.New(`placio_api: missing required field "Post.CreatedAt"`)}
 	}
 	if _, ok := pc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "UpdatedAt", err: errors.New(`ent: missing required field "Post.UpdatedAt"`)}
+		return &ValidationError{Name: "UpdatedAt", err: errors.New(`placio_api: missing required field "Post.UpdatedAt"`)}
 	}
 	if _, ok := pc.mutation.Privacy(); !ok {
-		return &ValidationError{Name: "Privacy", err: errors.New(`ent: missing required field "Post.Privacy"`)}
+		return &ValidationError{Name: "Privacy", err: errors.New(`placio_api: missing required field "Post.Privacy"`)}
 	}
 	if v, ok := pc.mutation.Privacy(); ok {
 		if err := post.PrivacyValidator(v); err != nil {
-			return &ValidationError{Name: "Privacy", err: fmt.Errorf(`ent: validator failed for field "Post.Privacy": %w`, err)}
+			return &ValidationError{Name: "Privacy", err: fmt.Errorf(`placio_api: validator failed for field "Post.Privacy": %w`, err)}
 		}
 	}
 	if _, ok := pc.mutation.LikedByMe(); !ok {
-		return &ValidationError{Name: "LikedByMe", err: errors.New(`ent: missing required field "Post.LikedByMe"`)}
+		return &ValidationError{Name: "LikedByMe", err: errors.New(`placio_api: missing required field "Post.LikedByMe"`)}
 	}
 	if _, ok := pc.mutation.LikeCount(); !ok {
-		return &ValidationError{Name: "LikeCount", err: errors.New(`ent: missing required field "Post.LikeCount"`)}
+		return &ValidationError{Name: "LikeCount", err: errors.New(`placio_api: missing required field "Post.LikeCount"`)}
 	}
 	if _, ok := pc.mutation.CommentCount(); !ok {
-		return &ValidationError{Name: "CommentCount", err: errors.New(`ent: missing required field "Post.CommentCount"`)}
+		return &ValidationError{Name: "CommentCount", err: errors.New(`placio_api: missing required field "Post.CommentCount"`)}
 	}
 	if _, ok := pc.mutation.ShareCount(); !ok {
-		return &ValidationError{Name: "ShareCount", err: errors.New(`ent: missing required field "Post.ShareCount"`)}
+		return &ValidationError{Name: "ShareCount", err: errors.New(`placio_api: missing required field "Post.ShareCount"`)}
 	}
 	if _, ok := pc.mutation.ViewCount(); !ok {
-		return &ValidationError{Name: "ViewCount", err: errors.New(`ent: missing required field "Post.ViewCount"`)}
+		return &ValidationError{Name: "ViewCount", err: errors.New(`placio_api: missing required field "Post.ViewCount"`)}
 	}
 	if _, ok := pc.mutation.IsSponsored(); !ok {
-		return &ValidationError{Name: "IsSponsored", err: errors.New(`ent: missing required field "Post.IsSponsored"`)}
+		return &ValidationError{Name: "IsSponsored", err: errors.New(`placio_api: missing required field "Post.IsSponsored"`)}
 	}
 	if _, ok := pc.mutation.IsPromoted(); !ok {
-		return &ValidationError{Name: "IsPromoted", err: errors.New(`ent: missing required field "Post.IsPromoted"`)}
+		return &ValidationError{Name: "IsPromoted", err: errors.New(`placio_api: missing required field "Post.IsPromoted"`)}
 	}
 	if _, ok := pc.mutation.IsBoosted(); !ok {
-		return &ValidationError{Name: "IsBoosted", err: errors.New(`ent: missing required field "Post.IsBoosted"`)}
+		return &ValidationError{Name: "IsBoosted", err: errors.New(`placio_api: missing required field "Post.IsBoosted"`)}
 	}
 	if _, ok := pc.mutation.IsPinned(); !ok {
-		return &ValidationError{Name: "IsPinned", err: errors.New(`ent: missing required field "Post.IsPinned"`)}
+		return &ValidationError{Name: "IsPinned", err: errors.New(`placio_api: missing required field "Post.IsPinned"`)}
 	}
 	if _, ok := pc.mutation.IsHidden(); !ok {
-		return &ValidationError{Name: "IsHidden", err: errors.New(`ent: missing required field "Post.IsHidden"`)}
+		return &ValidationError{Name: "IsHidden", err: errors.New(`placio_api: missing required field "Post.IsHidden"`)}
 	}
 	if _, ok := pc.mutation.RelevanceScore(); !ok {
-		return &ValidationError{Name: "RelevanceScore", err: errors.New(`ent: missing required field "Post.RelevanceScore"`)}
+		return &ValidationError{Name: "RelevanceScore", err: errors.New(`placio_api: missing required field "Post.RelevanceScore"`)}
 	}
 	if v, ok := pc.mutation.ID(); ok {
 		if err := post.IDValidator(v); err != nil {
-			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "Post.id": %w`, err)}
+			return &ValidationError{Name: "id", err: fmt.Errorf(`placio_api: validator failed for field "Post.id": %w`, err)}
 		}
 	}
 	return nil
@@ -692,11 +692,15 @@ func (pc *PostCreate) createSpec() (*Post, *sqlgraph.CreateSpec) {
 // PostCreateBulk is the builder for creating many Post entities in bulk.
 type PostCreateBulk struct {
 	config
+	err      error
 	builders []*PostCreate
 }
 
 // Save creates the Post entities in the database.
 func (pcb *PostCreateBulk) Save(ctx context.Context) ([]*Post, error) {
+	if pcb.err != nil {
+		return nil, pcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(pcb.builders))
 	nodes := make([]*Post, len(pcb.builders))
 	mutators := make([]Mutator, len(pcb.builders))

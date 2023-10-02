@@ -6,25 +6,25 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/amenity"
-	"placio-app/ent/booking"
-	"placio-app/ent/business"
-	"placio-app/ent/category"
-	"placio-app/ent/categoryassignment"
-	"placio-app/ent/event"
-	"placio-app/ent/faq"
-	"placio-app/ent/media"
-	"placio-app/ent/menu"
-	"placio-app/ent/place"
-	"placio-app/ent/placeinventory"
-	"placio-app/ent/predicate"
-	"placio-app/ent/rating"
-	"placio-app/ent/reservation"
-	"placio-app/ent/review"
-	"placio-app/ent/room"
-	"placio-app/ent/user"
-	"placio-app/ent/userfollowplace"
-	"placio-app/ent/userlikeplace"
+	"placio_api/amenity"
+	"placio_api/booking"
+	"placio_api/business"
+	"placio_api/category"
+	"placio_api/categoryassignment"
+	"placio_api/event"
+	"placio_api/faq"
+	"placio_api/media"
+	"placio_api/menu"
+	"placio_api/place"
+	"placio_api/placeinventory"
+	"placio_api/predicate"
+	"placio_api/rating"
+	"placio_api/reservation"
+	"placio_api/review"
+	"placio_api/room"
+	"placio_api/user"
+	"placio_api/userfollowplace"
+	"placio_api/userlikeplace"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -3604,7 +3604,7 @@ func (puo *PlaceUpdateOne) sqlSave(ctx context.Context) (_node *Place, err error
 	_spec := sqlgraph.NewUpdateSpec(place.Table, place.Columns, sqlgraph.NewFieldSpec(place.FieldID, field.TypeString))
 	id, ok := puo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Place.id" for update`)}
+		return nil, &ValidationError{Name: "id", err: errors.New(`placio_api: missing "Place.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := puo.fields; len(fields) > 0 {
@@ -3612,7 +3612,7 @@ func (puo *PlaceUpdateOne) sqlSave(ctx context.Context) (_node *Place, err error
 		_spec.Node.Columns = append(_spec.Node.Columns, place.FieldID)
 		for _, f := range fields {
 			if !place.ValidColumn(f) {
-				return nil, &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
+				return nil, &ValidationError{Name: f, err: fmt.Errorf("placio_api: invalid field %q for query", f)}
 			}
 			if f != place.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, f)

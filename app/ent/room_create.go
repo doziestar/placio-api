@@ -6,9 +6,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/booking"
-	"placio-app/ent/place"
-	"placio-app/ent/room"
+	"placio_api/booking"
+	"placio_api/place"
+	"placio_api/room"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -148,20 +148,20 @@ func (rc *RoomCreate) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (rc *RoomCreate) check() error {
 	if _, ok := rc.mutation.Number(); !ok {
-		return &ValidationError{Name: "number", err: errors.New(`ent: missing required field "Room.number"`)}
+		return &ValidationError{Name: "number", err: errors.New(`placio_api: missing required field "Room.number"`)}
 	}
 	if _, ok := rc.mutation.GetType(); !ok {
-		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "Room.type"`)}
+		return &ValidationError{Name: "type", err: errors.New(`placio_api: missing required field "Room.type"`)}
 	}
 	if _, ok := rc.mutation.Price(); !ok {
-		return &ValidationError{Name: "price", err: errors.New(`ent: missing required field "Room.price"`)}
+		return &ValidationError{Name: "price", err: errors.New(`placio_api: missing required field "Room.price"`)}
 	}
 	if _, ok := rc.mutation.Availability(); !ok {
-		return &ValidationError{Name: "availability", err: errors.New(`ent: missing required field "Room.availability"`)}
+		return &ValidationError{Name: "availability", err: errors.New(`placio_api: missing required field "Room.availability"`)}
 	}
 	if v, ok := rc.mutation.ID(); ok {
 		if err := room.IDValidator(v); err != nil {
-			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "Room.id": %w`, err)}
+			return &ValidationError{Name: "id", err: fmt.Errorf(`placio_api: validator failed for field "Room.id": %w`, err)}
 		}
 	}
 	return nil
@@ -262,11 +262,15 @@ func (rc *RoomCreate) createSpec() (*Room, *sqlgraph.CreateSpec) {
 // RoomCreateBulk is the builder for creating many Room entities in bulk.
 type RoomCreateBulk struct {
 	config
+	err      error
 	builders []*RoomCreate
 }
 
 // Save creates the Room entities in the database.
 func (rcb *RoomCreateBulk) Save(ctx context.Context) ([]*Room, error) {
+	if rcb.err != nil {
+		return nil, rcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(rcb.builders))
 	nodes := make([]*Room, len(rcb.builders))
 	mutators := make([]Mutator, len(rcb.builders))

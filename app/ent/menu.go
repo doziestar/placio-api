@@ -4,8 +4,8 @@ package ent
 
 import (
 	"fmt"
-	"placio-app/ent/menu"
-	"placio-app/ent/place"
+	"placio_api/menu"
+	"placio_api/place"
 	"strings"
 
 	"entgo.io/ent"
@@ -129,7 +129,7 @@ func (m *Menu) Update() *MenuUpdateOne {
 func (m *Menu) Unwrap() *Menu {
 	_tx, ok := m.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: Menu is not a transactional entity")
+		panic("placio_api: Menu is not a transactional entity")
 	}
 	m.config.driver = _tx.drv
 	return m

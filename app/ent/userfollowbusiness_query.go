@@ -6,10 +6,10 @@ import (
 	"context"
 	"fmt"
 	"math"
-	"placio-app/ent/business"
-	"placio-app/ent/predicate"
-	"placio-app/ent/user"
-	"placio-app/ent/userfollowbusiness"
+	"placio_api/business"
+	"placio_api/predicate"
+	"placio_api/user"
+	"placio_api/userfollowbusiness"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -271,7 +271,7 @@ func (ufbq *UserFollowBusinessQuery) Exist(ctx context.Context) (bool, error) {
 	case IsNotFound(err):
 		return false, nil
 	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
+		return false, fmt.Errorf("placio_api: check existence: %w", err)
 	default:
 		return true, nil
 	}
@@ -340,7 +340,7 @@ func (ufbq *UserFollowBusinessQuery) WithBusiness(opts ...func(*BusinessQuery)) 
 //
 //	client.UserFollowBusiness.Query().
 //		GroupBy(userfollowbusiness.FieldCreatedAt).
-//		Aggregate(ent.Count()).
+//		Aggregate(placio_api.Count()).
 //		Scan(ctx, &v)
 func (ufbq *UserFollowBusinessQuery) GroupBy(field string, fields ...string) *UserFollowBusinessGroupBy {
 	ufbq.ctx.Fields = append([]string{field}, fields...)
@@ -379,7 +379,7 @@ func (ufbq *UserFollowBusinessQuery) Aggregate(fns ...AggregateFunc) *UserFollow
 func (ufbq *UserFollowBusinessQuery) prepareQuery(ctx context.Context) error {
 	for _, inter := range ufbq.inters {
 		if inter == nil {
-			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+			return fmt.Errorf("placio_api: uninitialized interceptor (forgotten import placio_api/runtime?)")
 		}
 		if trv, ok := inter.(Traverser); ok {
 			if err := trv.Traverse(ctx, ufbq); err != nil {
@@ -389,7 +389,7 @@ func (ufbq *UserFollowBusinessQuery) prepareQuery(ctx context.Context) error {
 	}
 	for _, f := range ufbq.ctx.Fields {
 		if !userfollowbusiness.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
+			return &ValidationError{Name: f, err: fmt.Errorf("placio_api: invalid field %q for query", f)}
 		}
 	}
 	if ufbq.path != nil {

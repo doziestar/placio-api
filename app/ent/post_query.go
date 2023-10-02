@@ -7,14 +7,14 @@ import (
 	"database/sql/driver"
 	"fmt"
 	"math"
-	"placio-app/ent/business"
-	"placio-app/ent/category"
-	"placio-app/ent/comment"
-	"placio-app/ent/like"
-	"placio-app/ent/media"
-	"placio-app/ent/post"
-	"placio-app/ent/predicate"
-	"placio-app/ent/user"
+	"placio_api/business"
+	"placio_api/category"
+	"placio_api/comment"
+	"placio_api/like"
+	"placio_api/media"
+	"placio_api/post"
+	"placio_api/predicate"
+	"placio_api/user"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -368,7 +368,7 @@ func (pq *PostQuery) Exist(ctx context.Context) (bool, error) {
 	case IsNotFound(err):
 		return false, nil
 	case err != nil:
-		return false, fmt.Errorf("ent: check existence: %w", err)
+		return false, fmt.Errorf("placio_api: check existence: %w", err)
 	default:
 		return true, nil
 	}
@@ -485,7 +485,7 @@ func (pq *PostQuery) WithCategories(opts ...func(*CategoryQuery)) *PostQuery {
 //
 //	client.Post.Query().
 //		GroupBy(post.FieldContent).
-//		Aggregate(ent.Count()).
+//		Aggregate(placio_api.Count()).
 //		Scan(ctx, &v)
 func (pq *PostQuery) GroupBy(field string, fields ...string) *PostGroupBy {
 	pq.ctx.Fields = append([]string{field}, fields...)
@@ -524,7 +524,7 @@ func (pq *PostQuery) Aggregate(fns ...AggregateFunc) *PostSelect {
 func (pq *PostQuery) prepareQuery(ctx context.Context) error {
 	for _, inter := range pq.inters {
 		if inter == nil {
-			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
+			return fmt.Errorf("placio_api: uninitialized interceptor (forgotten import placio_api/runtime?)")
 		}
 		if trv, ok := inter.(Traverser); ok {
 			if err := trv.Traverse(ctx, pq); err != nil {
@@ -534,7 +534,7 @@ func (pq *PostQuery) prepareQuery(ctx context.Context) error {
 	}
 	for _, f := range pq.ctx.Fields {
 		if !post.ValidColumn(f) {
-			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
+			return &ValidationError{Name: f, err: fmt.Errorf("placio_api: invalid field %q for query", f)}
 		}
 	}
 	if pq.path != nil {

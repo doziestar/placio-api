@@ -6,8 +6,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/template"
-	"placio-app/ent/website"
+	"placio_api/template"
+	"placio_api/website"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -88,13 +88,13 @@ func (tc *TemplateCreate) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (tc *TemplateCreate) check() error {
 	if _, ok := tc.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Template.name"`)}
+		return &ValidationError{Name: "name", err: errors.New(`placio_api: missing required field "Template.name"`)}
 	}
 	if _, ok := tc.mutation.DefaultHTML(); !ok {
-		return &ValidationError{Name: "defaultHTML", err: errors.New(`ent: missing required field "Template.defaultHTML"`)}
+		return &ValidationError{Name: "defaultHTML", err: errors.New(`placio_api: missing required field "Template.defaultHTML"`)}
 	}
 	if _, ok := tc.mutation.DefaultCSS(); !ok {
-		return &ValidationError{Name: "defaultCSS", err: errors.New(`ent: missing required field "Template.defaultCSS"`)}
+		return &ValidationError{Name: "defaultCSS", err: errors.New(`placio_api: missing required field "Template.defaultCSS"`)}
 	}
 	return nil
 }
@@ -161,11 +161,15 @@ func (tc *TemplateCreate) createSpec() (*Template, *sqlgraph.CreateSpec) {
 // TemplateCreateBulk is the builder for creating many Template entities in bulk.
 type TemplateCreateBulk struct {
 	config
+	err      error
 	builders []*TemplateCreate
 }
 
 // Save creates the Template entities in the database.
 func (tcb *TemplateCreateBulk) Save(ctx context.Context) ([]*Template, error) {
+	if tcb.err != nil {
+		return nil, tcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(tcb.builders))
 	nodes := make([]*Template, len(tcb.builders))
 	mutators := make([]Mutator, len(tcb.builders))

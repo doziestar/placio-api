@@ -6,9 +6,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/placeinventory"
-	"placio-app/ent/transactionhistory"
-	"placio-app/ent/user"
+	"placio_api/placeinventory"
+	"placio_api/transactionhistory"
+	"placio_api/user"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -130,18 +130,18 @@ func (thc *TransactionHistoryCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (thc *TransactionHistoryCreate) check() error {
 	if _, ok := thc.mutation.TransactionType(); !ok {
-		return &ValidationError{Name: "transaction_type", err: errors.New(`ent: missing required field "TransactionHistory.transaction_type"`)}
+		return &ValidationError{Name: "transaction_type", err: errors.New(`placio_api: missing required field "TransactionHistory.transaction_type"`)}
 	}
 	if v, ok := thc.mutation.TransactionType(); ok {
 		if err := transactionhistory.TransactionTypeValidator(v); err != nil {
-			return &ValidationError{Name: "transaction_type", err: fmt.Errorf(`ent: validator failed for field "TransactionHistory.transaction_type": %w`, err)}
+			return &ValidationError{Name: "transaction_type", err: fmt.Errorf(`placio_api: validator failed for field "TransactionHistory.transaction_type": %w`, err)}
 		}
 	}
 	if _, ok := thc.mutation.Quantity(); !ok {
-		return &ValidationError{Name: "quantity", err: errors.New(`ent: missing required field "TransactionHistory.quantity"`)}
+		return &ValidationError{Name: "quantity", err: errors.New(`placio_api: missing required field "TransactionHistory.quantity"`)}
 	}
 	if _, ok := thc.mutation.Date(); !ok {
-		return &ValidationError{Name: "date", err: errors.New(`ent: missing required field "TransactionHistory.date"`)}
+		return &ValidationError{Name: "date", err: errors.New(`placio_api: missing required field "TransactionHistory.date"`)}
 	}
 	return nil
 }
@@ -226,11 +226,15 @@ func (thc *TransactionHistoryCreate) createSpec() (*TransactionHistory, *sqlgrap
 // TransactionHistoryCreateBulk is the builder for creating many TransactionHistory entities in bulk.
 type TransactionHistoryCreateBulk struct {
 	config
+	err      error
 	builders []*TransactionHistoryCreate
 }
 
 // Save creates the TransactionHistory entities in the database.
 func (thcb *TransactionHistoryCreateBulk) Save(ctx context.Context) ([]*TransactionHistory, error) {
+	if thcb.err != nil {
+		return nil, thcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(thcb.builders))
 	nodes := make([]*TransactionHistory, len(thcb.builders))
 	mutators := make([]Mutator, len(thcb.builders))

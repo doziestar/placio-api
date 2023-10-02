@@ -6,11 +6,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/business"
-	"placio-app/ent/customblock"
-	"placio-app/ent/media"
-	"placio-app/ent/template"
-	"placio-app/ent/website"
+	"placio_api/business"
+	"placio_api/customblock"
+	"placio_api/media"
+	"placio_api/template"
+	"placio_api/website"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -410,148 +410,148 @@ func (wc *WebsiteCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (wc *WebsiteCreate) check() error {
 	if _, ok := wc.mutation.DomainName(); !ok {
-		return &ValidationError{Name: "domainName", err: errors.New(`ent: missing required field "Website.domainName"`)}
+		return &ValidationError{Name: "domainName", err: errors.New(`placio_api: missing required field "Website.domainName"`)}
 	}
 	if _, ok := wc.mutation.HeadingText(); !ok {
-		return &ValidationError{Name: "heading_text", err: errors.New(`ent: missing required field "Website.heading_text"`)}
+		return &ValidationError{Name: "heading_text", err: errors.New(`placio_api: missing required field "Website.heading_text"`)}
 	}
 	if _, ok := wc.mutation.BusinessLogo(); !ok {
-		return &ValidationError{Name: "business_logo", err: errors.New(`ent: missing required field "Website.business_logo"`)}
+		return &ValidationError{Name: "business_logo", err: errors.New(`placio_api: missing required field "Website.business_logo"`)}
 	}
 	if _, ok := wc.mutation.BusinessName(); !ok {
-		return &ValidationError{Name: "business_name", err: errors.New(`ent: missing required field "Website.business_name"`)}
+		return &ValidationError{Name: "business_name", err: errors.New(`placio_api: missing required field "Website.business_name"`)}
 	}
 	if _, ok := wc.mutation.BannerSectionBackgroundImage(); !ok {
-		return &ValidationError{Name: "banner_section_background_image", err: errors.New(`ent: missing required field "Website.banner_section_background_image"`)}
+		return &ValidationError{Name: "banner_section_background_image", err: errors.New(`placio_api: missing required field "Website.banner_section_background_image"`)}
 	}
 	if _, ok := wc.mutation.BannerSectionBackgroundColor(); !ok {
-		return &ValidationError{Name: "banner_section_background_color", err: errors.New(`ent: missing required field "Website.banner_section_background_color"`)}
+		return &ValidationError{Name: "banner_section_background_color", err: errors.New(`placio_api: missing required field "Website.banner_section_background_color"`)}
 	}
 	if _, ok := wc.mutation.BannerSectionText(); !ok {
-		return &ValidationError{Name: "banner_section_text", err: errors.New(`ent: missing required field "Website.banner_section_text"`)}
+		return &ValidationError{Name: "banner_section_text", err: errors.New(`placio_api: missing required field "Website.banner_section_text"`)}
 	}
 	if _, ok := wc.mutation.ThreeItemsSectionHeadingText(); !ok {
-		return &ValidationError{Name: "three_items_section_heading_text", err: errors.New(`ent: missing required field "Website.three_items_section_heading_text"`)}
+		return &ValidationError{Name: "three_items_section_heading_text", err: errors.New(`placio_api: missing required field "Website.three_items_section_heading_text"`)}
 	}
 	if _, ok := wc.mutation.ThreeItemsSectionDetailsText(); !ok {
-		return &ValidationError{Name: "three_items_section_details_text", err: errors.New(`ent: missing required field "Website.three_items_section_details_text"`)}
+		return &ValidationError{Name: "three_items_section_details_text", err: errors.New(`placio_api: missing required field "Website.three_items_section_details_text"`)}
 	}
 	if _, ok := wc.mutation.ThreeItemsSectionItemOneText(); !ok {
-		return &ValidationError{Name: "three_items_section_item_one_text", err: errors.New(`ent: missing required field "Website.three_items_section_item_one_text"`)}
+		return &ValidationError{Name: "three_items_section_item_one_text", err: errors.New(`placio_api: missing required field "Website.three_items_section_item_one_text"`)}
 	}
 	if _, ok := wc.mutation.ThreeItemsSectionItemTwoText(); !ok {
-		return &ValidationError{Name: "three_items_section_item_two_text", err: errors.New(`ent: missing required field "Website.three_items_section_item_two_text"`)}
+		return &ValidationError{Name: "three_items_section_item_two_text", err: errors.New(`placio_api: missing required field "Website.three_items_section_item_two_text"`)}
 	}
 	if _, ok := wc.mutation.ThreeItemsSectionItemThreeText(); !ok {
-		return &ValidationError{Name: "three_items_section_item_three_text", err: errors.New(`ent: missing required field "Website.three_items_section_item_three_text"`)}
+		return &ValidationError{Name: "three_items_section_item_three_text", err: errors.New(`placio_api: missing required field "Website.three_items_section_item_three_text"`)}
 	}
 	if _, ok := wc.mutation.BannerTwoSectionBackgroundImage(); !ok {
-		return &ValidationError{Name: "banner_two_section_background_image", err: errors.New(`ent: missing required field "Website.banner_two_section_background_image"`)}
+		return &ValidationError{Name: "banner_two_section_background_image", err: errors.New(`placio_api: missing required field "Website.banner_two_section_background_image"`)}
 	}
 	if _, ok := wc.mutation.BannerTwoSectionBackgroundColor(); !ok {
-		return &ValidationError{Name: "banner_two_section_background_color", err: errors.New(`ent: missing required field "Website.banner_two_section_background_color"`)}
+		return &ValidationError{Name: "banner_two_section_background_color", err: errors.New(`placio_api: missing required field "Website.banner_two_section_background_color"`)}
 	}
 	if _, ok := wc.mutation.BannerTwoLeftSectionHeadingText(); !ok {
-		return &ValidationError{Name: "banner_two_left_section_heading_text", err: errors.New(`ent: missing required field "Website.banner_two_left_section_heading_text"`)}
+		return &ValidationError{Name: "banner_two_left_section_heading_text", err: errors.New(`placio_api: missing required field "Website.banner_two_left_section_heading_text"`)}
 	}
 	if _, ok := wc.mutation.BannerTwoLeftSectionDetailsText(); !ok {
-		return &ValidationError{Name: "banner_two_left_section_details_text", err: errors.New(`ent: missing required field "Website.banner_two_left_section_details_text"`)}
+		return &ValidationError{Name: "banner_two_left_section_details_text", err: errors.New(`placio_api: missing required field "Website.banner_two_left_section_details_text"`)}
 	}
 	if _, ok := wc.mutation.BannerTwoLeftSectionButtonText(); !ok {
-		return &ValidationError{Name: "banner_two_left_section_button_text", err: errors.New(`ent: missing required field "Website.banner_two_left_section_button_text"`)}
+		return &ValidationError{Name: "banner_two_left_section_button_text", err: errors.New(`placio_api: missing required field "Website.banner_two_left_section_button_text"`)}
 	}
 	if _, ok := wc.mutation.BannerTwoLeftSectionButtonLink(); !ok {
-		return &ValidationError{Name: "banner_two_left_section_button_link", err: errors.New(`ent: missing required field "Website.banner_two_left_section_button_link"`)}
+		return &ValidationError{Name: "banner_two_left_section_button_link", err: errors.New(`placio_api: missing required field "Website.banner_two_left_section_button_link"`)}
 	}
 	if _, ok := wc.mutation.BannerTwoRightSideImage(); !ok {
-		return &ValidationError{Name: "banner_two_right_side_image", err: errors.New(`ent: missing required field "Website.banner_two_right_side_image"`)}
+		return &ValidationError{Name: "banner_two_right_side_image", err: errors.New(`placio_api: missing required field "Website.banner_two_right_side_image"`)}
 	}
 	if _, ok := wc.mutation.AchievementsSection(); !ok {
-		return &ValidationError{Name: "achievements_section", err: errors.New(`ent: missing required field "Website.achievements_section"`)}
+		return &ValidationError{Name: "achievements_section", err: errors.New(`placio_api: missing required field "Website.achievements_section"`)}
 	}
 	if _, ok := wc.mutation.InventorySectionHeadingText(); !ok {
-		return &ValidationError{Name: "Inventory_section_heading_text", err: errors.New(`ent: missing required field "Website.Inventory_section_heading_text"`)}
+		return &ValidationError{Name: "Inventory_section_heading_text", err: errors.New(`placio_api: missing required field "Website.Inventory_section_heading_text"`)}
 	}
 	if _, ok := wc.mutation.CreationDate(); !ok {
-		return &ValidationError{Name: "creationDate", err: errors.New(`ent: missing required field "Website.creationDate"`)}
+		return &ValidationError{Name: "creationDate", err: errors.New(`placio_api: missing required field "Website.creationDate"`)}
 	}
 	if _, ok := wc.mutation.LastUpdated(); !ok {
-		return &ValidationError{Name: "lastUpdated", err: errors.New(`ent: missing required field "Website.lastUpdated"`)}
+		return &ValidationError{Name: "lastUpdated", err: errors.New(`placio_api: missing required field "Website.lastUpdated"`)}
 	}
 	if _, ok := wc.mutation.Title(); !ok {
-		return &ValidationError{Name: "title", err: errors.New(`ent: missing required field "Website.title"`)}
+		return &ValidationError{Name: "title", err: errors.New(`placio_api: missing required field "Website.title"`)}
 	}
 	if _, ok := wc.mutation.Description(); !ok {
-		return &ValidationError{Name: "description", err: errors.New(`ent: missing required field "Website.description"`)}
+		return &ValidationError{Name: "description", err: errors.New(`placio_api: missing required field "Website.description"`)}
 	}
 	if _, ok := wc.mutation.Keywords(); !ok {
-		return &ValidationError{Name: "keywords", err: errors.New(`ent: missing required field "Website.keywords"`)}
+		return &ValidationError{Name: "keywords", err: errors.New(`placio_api: missing required field "Website.keywords"`)}
 	}
 	if _, ok := wc.mutation.Language(); !ok {
-		return &ValidationError{Name: "language", err: errors.New(`ent: missing required field "Website.language"`)}
+		return &ValidationError{Name: "language", err: errors.New(`placio_api: missing required field "Website.language"`)}
 	}
 	if _, ok := wc.mutation.Logo(); !ok {
-		return &ValidationError{Name: "logo", err: errors.New(`ent: missing required field "Website.logo"`)}
+		return &ValidationError{Name: "logo", err: errors.New(`placio_api: missing required field "Website.logo"`)}
 	}
 	if _, ok := wc.mutation.Favicon(); !ok {
-		return &ValidationError{Name: "favicon", err: errors.New(`ent: missing required field "Website.favicon"`)}
+		return &ValidationError{Name: "favicon", err: errors.New(`placio_api: missing required field "Website.favicon"`)}
 	}
 	if _, ok := wc.mutation.Facebook(); !ok {
-		return &ValidationError{Name: "facebook", err: errors.New(`ent: missing required field "Website.facebook"`)}
+		return &ValidationError{Name: "facebook", err: errors.New(`placio_api: missing required field "Website.facebook"`)}
 	}
 	if _, ok := wc.mutation.Twitter(); !ok {
-		return &ValidationError{Name: "twitter", err: errors.New(`ent: missing required field "Website.twitter"`)}
+		return &ValidationError{Name: "twitter", err: errors.New(`placio_api: missing required field "Website.twitter"`)}
 	}
 	if _, ok := wc.mutation.Instagram(); !ok {
-		return &ValidationError{Name: "instagram", err: errors.New(`ent: missing required field "Website.instagram"`)}
+		return &ValidationError{Name: "instagram", err: errors.New(`placio_api: missing required field "Website.instagram"`)}
 	}
 	if _, ok := wc.mutation.Youtube(); !ok {
-		return &ValidationError{Name: "youtube", err: errors.New(`ent: missing required field "Website.youtube"`)}
+		return &ValidationError{Name: "youtube", err: errors.New(`placio_api: missing required field "Website.youtube"`)}
 	}
 	if _, ok := wc.mutation.Linkedin(); !ok {
-		return &ValidationError{Name: "linkedin", err: errors.New(`ent: missing required field "Website.linkedin"`)}
+		return &ValidationError{Name: "linkedin", err: errors.New(`placio_api: missing required field "Website.linkedin"`)}
 	}
 	if _, ok := wc.mutation.Pinterest(); !ok {
-		return &ValidationError{Name: "pinterest", err: errors.New(`ent: missing required field "Website.pinterest"`)}
+		return &ValidationError{Name: "pinterest", err: errors.New(`placio_api: missing required field "Website.pinterest"`)}
 	}
 	if _, ok := wc.mutation.MapCoordinates(); !ok {
-		return &ValidationError{Name: "mapCoordinates", err: errors.New(`ent: missing required field "Website.mapCoordinates"`)}
+		return &ValidationError{Name: "mapCoordinates", err: errors.New(`placio_api: missing required field "Website.mapCoordinates"`)}
 	}
 	if _, ok := wc.mutation.Longitude(); !ok {
-		return &ValidationError{Name: "longitude", err: errors.New(`ent: missing required field "Website.longitude"`)}
+		return &ValidationError{Name: "longitude", err: errors.New(`placio_api: missing required field "Website.longitude"`)}
 	}
 	if _, ok := wc.mutation.Latitude(); !ok {
-		return &ValidationError{Name: "latitude", err: errors.New(`ent: missing required field "Website.latitude"`)}
+		return &ValidationError{Name: "latitude", err: errors.New(`placio_api: missing required field "Website.latitude"`)}
 	}
 	if _, ok := wc.mutation.Address(); !ok {
-		return &ValidationError{Name: "address", err: errors.New(`ent: missing required field "Website.address"`)}
+		return &ValidationError{Name: "address", err: errors.New(`placio_api: missing required field "Website.address"`)}
 	}
 	if _, ok := wc.mutation.City(); !ok {
-		return &ValidationError{Name: "city", err: errors.New(`ent: missing required field "Website.city"`)}
+		return &ValidationError{Name: "city", err: errors.New(`placio_api: missing required field "Website.city"`)}
 	}
 	if _, ok := wc.mutation.State(); !ok {
-		return &ValidationError{Name: "state", err: errors.New(`ent: missing required field "Website.state"`)}
+		return &ValidationError{Name: "state", err: errors.New(`placio_api: missing required field "Website.state"`)}
 	}
 	if _, ok := wc.mutation.Country(); !ok {
-		return &ValidationError{Name: "country", err: errors.New(`ent: missing required field "Website.country"`)}
+		return &ValidationError{Name: "country", err: errors.New(`placio_api: missing required field "Website.country"`)}
 	}
 	if _, ok := wc.mutation.ZipCode(); !ok {
-		return &ValidationError{Name: "zipCode", err: errors.New(`ent: missing required field "Website.zipCode"`)}
+		return &ValidationError{Name: "zipCode", err: errors.New(`placio_api: missing required field "Website.zipCode"`)}
 	}
 	if _, ok := wc.mutation.PhoneNumber(); !ok {
-		return &ValidationError{Name: "phoneNumber", err: errors.New(`ent: missing required field "Website.phoneNumber"`)}
+		return &ValidationError{Name: "phoneNumber", err: errors.New(`placio_api: missing required field "Website.phoneNumber"`)}
 	}
 	if _, ok := wc.mutation.Email(); !ok {
-		return &ValidationError{Name: "email", err: errors.New(`ent: missing required field "Website.email"`)}
+		return &ValidationError{Name: "email", err: errors.New(`placio_api: missing required field "Website.email"`)}
 	}
 	if _, ok := wc.mutation.MetaTags(); !ok {
-		return &ValidationError{Name: "metaTags", err: errors.New(`ent: missing required field "Website.metaTags"`)}
+		return &ValidationError{Name: "metaTags", err: errors.New(`placio_api: missing required field "Website.metaTags"`)}
 	}
 	if _, ok := wc.mutation.BusinessID(); !ok {
-		return &ValidationError{Name: "business", err: errors.New(`ent: missing required edge "Website.business"`)}
+		return &ValidationError{Name: "business", err: errors.New(`placio_api: missing required edge "Website.business"`)}
 	}
 	if _, ok := wc.mutation.TemplateID(); !ok {
-		return &ValidationError{Name: "template", err: errors.New(`ent: missing required edge "Website.template"`)}
+		return &ValidationError{Name: "template", err: errors.New(`placio_api: missing required edge "Website.template"`)}
 	}
 	return nil
 }
@@ -844,11 +844,15 @@ func (wc *WebsiteCreate) createSpec() (*Website, *sqlgraph.CreateSpec) {
 // WebsiteCreateBulk is the builder for creating many Website entities in bulk.
 type WebsiteCreateBulk struct {
 	config
+	err      error
 	builders []*WebsiteCreate
 }
 
 // Save creates the Website entities in the database.
 func (wcb *WebsiteCreateBulk) Save(ctx context.Context) ([]*Website, error) {
+	if wcb.err != nil {
+		return nil, wcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(wcb.builders))
 	nodes := make([]*Website, len(wcb.builders))
 	mutators := make([]Mutator, len(wcb.builders))

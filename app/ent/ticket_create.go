@@ -6,9 +6,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/event"
-	"placio-app/ent/ticket"
-	"placio-app/ent/ticketoption"
+	"placio_api/event"
+	"placio_api/ticket"
+	"placio_api/ticketoption"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -138,10 +138,10 @@ func (tc *TicketCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (tc *TicketCreate) check() error {
 	if _, ok := tc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "createdAt", err: errors.New(`ent: missing required field "Ticket.createdAt"`)}
+		return &ValidationError{Name: "createdAt", err: errors.New(`placio_api: missing required field "Ticket.createdAt"`)}
 	}
 	if _, ok := tc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updatedAt", err: errors.New(`ent: missing required field "Ticket.updatedAt"`)}
+		return &ValidationError{Name: "updatedAt", err: errors.New(`placio_api: missing required field "Ticket.updatedAt"`)}
 	}
 	return nil
 }
@@ -225,11 +225,15 @@ func (tc *TicketCreate) createSpec() (*Ticket, *sqlgraph.CreateSpec) {
 // TicketCreateBulk is the builder for creating many Ticket entities in bulk.
 type TicketCreateBulk struct {
 	config
+	err      error
 	builders []*TicketCreate
 }
 
 // Save creates the Ticket entities in the database.
 func (tcb *TicketCreateBulk) Save(ctx context.Context) ([]*Ticket, error) {
+	if tcb.err != nil {
+		return nil, tcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(tcb.builders))
 	nodes := make([]*Ticket, len(tcb.builders))
 	mutators := make([]Mutator, len(tcb.builders))

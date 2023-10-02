@@ -6,9 +6,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/business"
-	"placio-app/ent/notification"
-	"placio-app/ent/user"
+	"placio_api/business"
+	"placio_api/notification"
+	"placio_api/user"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -188,76 +188,76 @@ func (nc *NotificationCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (nc *NotificationCreate) check() error {
 	if _, ok := nc.mutation.Title(); !ok {
-		return &ValidationError{Name: "title", err: errors.New(`ent: missing required field "Notification.title"`)}
+		return &ValidationError{Name: "title", err: errors.New(`placio_api: missing required field "Notification.title"`)}
 	}
 	if v, ok := nc.mutation.Title(); ok {
 		if err := notification.TitleValidator(v); err != nil {
-			return &ValidationError{Name: "title", err: fmt.Errorf(`ent: validator failed for field "Notification.title": %w`, err)}
+			return &ValidationError{Name: "title", err: fmt.Errorf(`placio_api: validator failed for field "Notification.title": %w`, err)}
 		}
 	}
 	if _, ok := nc.mutation.Message(); !ok {
-		return &ValidationError{Name: "message", err: errors.New(`ent: missing required field "Notification.message"`)}
+		return &ValidationError{Name: "message", err: errors.New(`placio_api: missing required field "Notification.message"`)}
 	}
 	if v, ok := nc.mutation.Message(); ok {
 		if err := notification.MessageValidator(v); err != nil {
-			return &ValidationError{Name: "message", err: fmt.Errorf(`ent: validator failed for field "Notification.message": %w`, err)}
+			return &ValidationError{Name: "message", err: fmt.Errorf(`placio_api: validator failed for field "Notification.message": %w`, err)}
 		}
 	}
 	if _, ok := nc.mutation.Link(); !ok {
-		return &ValidationError{Name: "link", err: errors.New(`ent: missing required field "Notification.link"`)}
+		return &ValidationError{Name: "link", err: errors.New(`placio_api: missing required field "Notification.link"`)}
 	}
 	if v, ok := nc.mutation.Link(); ok {
 		if err := notification.LinkValidator(v); err != nil {
-			return &ValidationError{Name: "link", err: fmt.Errorf(`ent: validator failed for field "Notification.link": %w`, err)}
+			return &ValidationError{Name: "link", err: fmt.Errorf(`placio_api: validator failed for field "Notification.link": %w`, err)}
 		}
 	}
 	if _, ok := nc.mutation.IsRead(); !ok {
-		return &ValidationError{Name: "is_read", err: errors.New(`ent: missing required field "Notification.is_read"`)}
+		return &ValidationError{Name: "is_read", err: errors.New(`placio_api: missing required field "Notification.is_read"`)}
 	}
 	if _, ok := nc.mutation.GetType(); !ok {
-		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "Notification.type"`)}
+		return &ValidationError{Name: "type", err: errors.New(`placio_api: missing required field "Notification.type"`)}
 	}
 	if _, ok := nc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Notification.created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`placio_api: missing required field "Notification.created_at"`)}
 	}
 	if _, ok := nc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Notification.updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`placio_api: missing required field "Notification.updated_at"`)}
 	}
 	if _, ok := nc.mutation.NotifiableType(); !ok {
-		return &ValidationError{Name: "notifiable_type", err: errors.New(`ent: missing required field "Notification.notifiable_type"`)}
+		return &ValidationError{Name: "notifiable_type", err: errors.New(`placio_api: missing required field "Notification.notifiable_type"`)}
 	}
 	if v, ok := nc.mutation.NotifiableType(); ok {
 		if err := notification.NotifiableTypeValidator(v); err != nil {
-			return &ValidationError{Name: "notifiable_type", err: fmt.Errorf(`ent: validator failed for field "Notification.notifiable_type": %w`, err)}
+			return &ValidationError{Name: "notifiable_type", err: fmt.Errorf(`placio_api: validator failed for field "Notification.notifiable_type": %w`, err)}
 		}
 	}
 	if _, ok := nc.mutation.NotifiableID(); !ok {
-		return &ValidationError{Name: "notifiable_id", err: errors.New(`ent: missing required field "Notification.notifiable_id"`)}
+		return &ValidationError{Name: "notifiable_id", err: errors.New(`placio_api: missing required field "Notification.notifiable_id"`)}
 	}
 	if v, ok := nc.mutation.NotifiableID(); ok {
 		if err := notification.NotifiableIDValidator(v); err != nil {
-			return &ValidationError{Name: "notifiable_id", err: fmt.Errorf(`ent: validator failed for field "Notification.notifiable_id": %w`, err)}
+			return &ValidationError{Name: "notifiable_id", err: fmt.Errorf(`placio_api: validator failed for field "Notification.notifiable_id": %w`, err)}
 		}
 	}
 	if _, ok := nc.mutation.TriggeredBy(); !ok {
-		return &ValidationError{Name: "triggered_by", err: errors.New(`ent: missing required field "Notification.triggered_by"`)}
+		return &ValidationError{Name: "triggered_by", err: errors.New(`placio_api: missing required field "Notification.triggered_by"`)}
 	}
 	if v, ok := nc.mutation.TriggeredBy(); ok {
 		if err := notification.TriggeredByValidator(v); err != nil {
-			return &ValidationError{Name: "triggered_by", err: fmt.Errorf(`ent: validator failed for field "Notification.triggered_by": %w`, err)}
+			return &ValidationError{Name: "triggered_by", err: fmt.Errorf(`placio_api: validator failed for field "Notification.triggered_by": %w`, err)}
 		}
 	}
 	if _, ok := nc.mutation.TriggeredTo(); !ok {
-		return &ValidationError{Name: "triggered_to", err: errors.New(`ent: missing required field "Notification.triggered_to"`)}
+		return &ValidationError{Name: "triggered_to", err: errors.New(`placio_api: missing required field "Notification.triggered_to"`)}
 	}
 	if v, ok := nc.mutation.TriggeredTo(); ok {
 		if err := notification.TriggeredToValidator(v); err != nil {
-			return &ValidationError{Name: "triggered_to", err: fmt.Errorf(`ent: validator failed for field "Notification.triggered_to": %w`, err)}
+			return &ValidationError{Name: "triggered_to", err: fmt.Errorf(`placio_api: validator failed for field "Notification.triggered_to": %w`, err)}
 		}
 	}
 	if v, ok := nc.mutation.ID(); ok {
 		if err := notification.IDValidator(v); err != nil {
-			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "Notification.id": %w`, err)}
+			return &ValidationError{Name: "id", err: fmt.Errorf(`placio_api: validator failed for field "Notification.id": %w`, err)}
 		}
 	}
 	return nil
@@ -377,11 +377,15 @@ func (nc *NotificationCreate) createSpec() (*Notification, *sqlgraph.CreateSpec)
 // NotificationCreateBulk is the builder for creating many Notification entities in bulk.
 type NotificationCreateBulk struct {
 	config
+	err      error
 	builders []*NotificationCreate
 }
 
 // Save creates the Notification entities in the database.
 func (ncb *NotificationCreateBulk) Save(ctx context.Context) ([]*Notification, error) {
+	if ncb.err != nil {
+		return nil, ncb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ncb.builders))
 	nodes := make([]*Notification, len(ncb.builders))
 	mutators := make([]Mutator, len(ncb.builders))

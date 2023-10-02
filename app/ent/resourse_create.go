@@ -5,7 +5,7 @@ package ent
 import (
 	"context"
 	"fmt"
-	"placio-app/ent/resourse"
+	"placio_api/resourse"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -89,11 +89,15 @@ func (rc *ResourseCreate) createSpec() (*Resourse, *sqlgraph.CreateSpec) {
 // ResourseCreateBulk is the builder for creating many Resourse entities in bulk.
 type ResourseCreateBulk struct {
 	config
+	err      error
 	builders []*ResourseCreate
 }
 
 // Save creates the Resourse entities in the database.
 func (rcb *ResourseCreateBulk) Save(ctx context.Context) ([]*Resourse, error) {
+	if rcb.err != nil {
+		return nil, rcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(rcb.builders))
 	nodes := make([]*Resourse, len(rcb.builders))
 	mutators := make([]Mutator, len(rcb.builders))

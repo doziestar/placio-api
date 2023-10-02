@@ -4,7 +4,7 @@ package ent
 
 import (
 	"fmt"
-	"placio-app/ent/resourse"
+	"placio_api/resourse"
 	"strings"
 
 	"entgo.io/ent"
@@ -72,7 +72,7 @@ func (r *Resourse) Update() *ResourseUpdateOne {
 func (r *Resourse) Unwrap() *Resourse {
 	_tx, ok := r.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: Resourse is not a transactional entity")
+		panic("placio_api: Resourse is not a transactional entity")
 	}
 	r.config.driver = _tx.drv
 	return r

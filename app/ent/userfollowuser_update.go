@@ -6,9 +6,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/predicate"
-	"placio-app/ent/user"
-	"placio-app/ent/userfollowuser"
+	"placio_api/predicate"
+	"placio_api/user"
+	"placio_api/userfollowuser"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -361,7 +361,7 @@ func (ufuuo *UserFollowUserUpdateOne) sqlSave(ctx context.Context) (_node *UserF
 	_spec := sqlgraph.NewUpdateSpec(userfollowuser.Table, userfollowuser.Columns, sqlgraph.NewFieldSpec(userfollowuser.FieldID, field.TypeString))
 	id, ok := ufuuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "UserFollowUser.id" for update`)}
+		return nil, &ValidationError{Name: "id", err: errors.New(`placio_api: missing "UserFollowUser.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := ufuuo.fields; len(fields) > 0 {
@@ -369,7 +369,7 @@ func (ufuuo *UserFollowUserUpdateOne) sqlSave(ctx context.Context) (_node *UserF
 		_spec.Node.Columns = append(_spec.Node.Columns, userfollowuser.FieldID)
 		for _, f := range fields {
 			if !userfollowuser.ValidColumn(f) {
-				return nil, &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
+				return nil, &ValidationError{Name: f, err: fmt.Errorf("placio_api: invalid field %q for query", f)}
 			}
 			if f != userfollowuser.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, f)

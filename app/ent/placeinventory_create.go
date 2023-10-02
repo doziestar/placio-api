@@ -6,15 +6,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/business"
-	"placio-app/ent/category"
-	"placio-app/ent/inventorytype"
-	"placio-app/ent/media"
-	"placio-app/ent/place"
-	"placio-app/ent/placeinventory"
-	"placio-app/ent/placeinventoryattribute"
-	"placio-app/ent/reservationblock"
-	"placio-app/ent/transactionhistory"
+	"placio_api/business"
+	"placio_api/category"
+	"placio_api/inventorytype"
+	"placio_api/media"
+	"placio_api/place"
+	"placio_api/placeinventory"
+	"placio_api/placeinventoryattribute"
+	"placio_api/reservationblock"
+	"placio_api/transactionhistory"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -344,20 +344,20 @@ func (pic *PlaceInventoryCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (pic *PlaceInventoryCreate) check() error {
 	if _, ok := pic.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "PlaceInventory.name"`)}
+		return &ValidationError{Name: "name", err: errors.New(`placio_api: missing required field "PlaceInventory.name"`)}
 	}
 	if _, ok := pic.mutation.Price(); !ok {
-		return &ValidationError{Name: "price", err: errors.New(`ent: missing required field "PlaceInventory.price"`)}
+		return &ValidationError{Name: "price", err: errors.New(`placio_api: missing required field "PlaceInventory.price"`)}
 	}
 	if _, ok := pic.mutation.StockQuantity(); !ok {
-		return &ValidationError{Name: "stock_quantity", err: errors.New(`ent: missing required field "PlaceInventory.stock_quantity"`)}
+		return &ValidationError{Name: "stock_quantity", err: errors.New(`placio_api: missing required field "PlaceInventory.stock_quantity"`)}
 	}
 	if _, ok := pic.mutation.LastUpdated(); !ok {
-		return &ValidationError{Name: "last_updated", err: errors.New(`ent: missing required field "PlaceInventory.last_updated"`)}
+		return &ValidationError{Name: "last_updated", err: errors.New(`placio_api: missing required field "PlaceInventory.last_updated"`)}
 	}
 	if v, ok := pic.mutation.ID(); ok {
 		if err := placeinventory.IDValidator(v); err != nil {
-			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "PlaceInventory.id": %w`, err)}
+			return &ValidationError{Name: "id", err: fmt.Errorf(`placio_api: validator failed for field "PlaceInventory.id": %w`, err)}
 		}
 	}
 	return nil
@@ -577,11 +577,15 @@ func (pic *PlaceInventoryCreate) createSpec() (*PlaceInventory, *sqlgraph.Create
 // PlaceInventoryCreateBulk is the builder for creating many PlaceInventory entities in bulk.
 type PlaceInventoryCreateBulk struct {
 	config
+	err      error
 	builders []*PlaceInventoryCreate
 }
 
 // Save creates the PlaceInventory entities in the database.
 func (picb *PlaceInventoryCreateBulk) Save(ctx context.Context) ([]*PlaceInventory, error) {
+	if picb.err != nil {
+		return nil, picb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(picb.builders))
 	nodes := make([]*PlaceInventory, len(picb.builders))
 	mutators := make([]Mutator, len(picb.builders))

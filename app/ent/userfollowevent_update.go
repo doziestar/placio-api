@@ -6,10 +6,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/event"
-	"placio-app/ent/predicate"
-	"placio-app/ent/user"
-	"placio-app/ent/userfollowevent"
+	"placio_api/event"
+	"placio_api/predicate"
+	"placio_api/user"
+	"placio_api/userfollowevent"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -128,10 +128,10 @@ func (ufeu *UserFollowEventUpdate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (ufeu *UserFollowEventUpdate) check() error {
 	if _, ok := ufeu.mutation.UserID(); ufeu.mutation.UserCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "UserFollowEvent.user"`)
+		return errors.New(`placio_api: clearing a required unique edge "UserFollowEvent.user"`)
 	}
 	if _, ok := ufeu.mutation.EventID(); ufeu.mutation.EventCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "UserFollowEvent.event"`)
+		return errors.New(`placio_api: clearing a required unique edge "UserFollowEvent.event"`)
 	}
 	return nil
 }
@@ -343,10 +343,10 @@ func (ufeuo *UserFollowEventUpdateOne) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (ufeuo *UserFollowEventUpdateOne) check() error {
 	if _, ok := ufeuo.mutation.UserID(); ufeuo.mutation.UserCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "UserFollowEvent.user"`)
+		return errors.New(`placio_api: clearing a required unique edge "UserFollowEvent.user"`)
 	}
 	if _, ok := ufeuo.mutation.EventID(); ufeuo.mutation.EventCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "UserFollowEvent.event"`)
+		return errors.New(`placio_api: clearing a required unique edge "UserFollowEvent.event"`)
 	}
 	return nil
 }
@@ -358,7 +358,7 @@ func (ufeuo *UserFollowEventUpdateOne) sqlSave(ctx context.Context) (_node *User
 	_spec := sqlgraph.NewUpdateSpec(userfollowevent.Table, userfollowevent.Columns, sqlgraph.NewFieldSpec(userfollowevent.FieldID, field.TypeString))
 	id, ok := ufeuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "UserFollowEvent.id" for update`)}
+		return nil, &ValidationError{Name: "id", err: errors.New(`placio_api: missing "UserFollowEvent.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := ufeuo.fields; len(fields) > 0 {
@@ -366,7 +366,7 @@ func (ufeuo *UserFollowEventUpdateOne) sqlSave(ctx context.Context) (_node *User
 		_spec.Node.Columns = append(_spec.Node.Columns, userfollowevent.FieldID)
 		for _, f := range fields {
 			if !userfollowevent.ValidColumn(f) {
-				return nil, &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
+				return nil, &ValidationError{Name: f, err: fmt.Errorf("placio_api: invalid field %q for query", f)}
 			}
 			if f != userfollowevent.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, f)

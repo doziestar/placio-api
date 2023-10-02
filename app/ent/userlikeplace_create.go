@@ -6,9 +6,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"placio-app/ent/place"
-	"placio-app/ent/user"
-	"placio-app/ent/userlikeplace"
+	"placio_api/place"
+	"placio_api/user"
+	"placio_api/userlikeplace"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -130,10 +130,10 @@ func (ulpc *UserLikePlaceCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (ulpc *UserLikePlaceCreate) check() error {
 	if _, ok := ulpc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "CreatedAt", err: errors.New(`ent: missing required field "UserLikePlace.CreatedAt"`)}
+		return &ValidationError{Name: "CreatedAt", err: errors.New(`placio_api: missing required field "UserLikePlace.CreatedAt"`)}
 	}
 	if _, ok := ulpc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "UpdatedAt", err: errors.New(`ent: missing required field "UserLikePlace.UpdatedAt"`)}
+		return &ValidationError{Name: "UpdatedAt", err: errors.New(`placio_api: missing required field "UserLikePlace.UpdatedAt"`)}
 	}
 	return nil
 }
@@ -218,11 +218,15 @@ func (ulpc *UserLikePlaceCreate) createSpec() (*UserLikePlace, *sqlgraph.CreateS
 // UserLikePlaceCreateBulk is the builder for creating many UserLikePlace entities in bulk.
 type UserLikePlaceCreateBulk struct {
 	config
+	err      error
 	builders []*UserLikePlaceCreate
 }
 
 // Save creates the UserLikePlace entities in the database.
 func (ulpcb *UserLikePlaceCreateBulk) Save(ctx context.Context) ([]*UserLikePlace, error) {
+	if ulpcb.err != nil {
+		return nil, ulpcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ulpcb.builders))
 	nodes := make([]*UserLikePlace, len(ulpcb.builders))
 	mutators := make([]Mutator, len(ulpcb.builders))
