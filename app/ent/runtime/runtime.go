@@ -638,11 +638,11 @@ func init() {
 	// user.DefaultBio holds the default value on creation for the bio field.
 	user.DefaultBio = userDescBio.Default.(string)
 	// userDescFollowerCount is the schema descriptor for follower_count field.
-	userDescFollowerCount := userFields[16].Descriptor()
+	userDescFollowerCount := userFields[17].Descriptor()
 	// user.DefaultFollowerCount holds the default value on creation for the follower_count field.
 	user.DefaultFollowerCount = userDescFollowerCount.Default.(int)
 	// userDescFollowingCount is the schema descriptor for following_count field.
-	userDescFollowingCount := userFields[17].Descriptor()
+	userDescFollowingCount := userFields[18].Descriptor()
 	// user.DefaultFollowingCount holds the default value on creation for the following_count field.
 	user.DefaultFollowingCount = userDescFollowingCount.Default.(int)
 	// userDescID is the schema descriptor for id field.

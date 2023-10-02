@@ -55,6 +55,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/auth0/go-auth0/management"
 )
 
 const (
@@ -38236,6 +38237,7 @@ type UserMutation struct {
 	longitude                    *string
 	latitude                     *string
 	bio                          *string
+	auth0_data                   **management.User
 	app_settings                 *map[string]interface{}
 	user_settings                *map[string]interface{}
 	search_text                  *string
@@ -38936,6 +38938,55 @@ func (m *UserMutation) BioCleared() bool {
 func (m *UserMutation) ResetBio() {
 	m.bio = nil
 	delete(m.clearedFields, user.FieldBio)
+}
+
+// SetAuth0Data sets the "auth0_data" field.
+func (m *UserMutation) SetAuth0Data(value *management.User) {
+	m.auth0_data = &value
+}
+
+// Auth0Data returns the value of the "auth0_data" field in the mutation.
+func (m *UserMutation) Auth0Data() (r *management.User, exists bool) {
+	v := m.auth0_data
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAuth0Data returns the old "auth0_data" field's value of the User entity.
+// If the User object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *UserMutation) OldAuth0Data(ctx context.Context) (v *management.User, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAuth0Data is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAuth0Data requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAuth0Data: %w", err)
+	}
+	return oldValue.Auth0Data, nil
+}
+
+// ClearAuth0Data clears the value of the "auth0_data" field.
+func (m *UserMutation) ClearAuth0Data() {
+	m.auth0_data = nil
+	m.clearedFields[user.FieldAuth0Data] = struct{}{}
+}
+
+// Auth0DataCleared returns if the "auth0_data" field was cleared in this mutation.
+func (m *UserMutation) Auth0DataCleared() bool {
+	_, ok := m.clearedFields[user.FieldAuth0Data]
+	return ok
+}
+
+// ResetAuth0Data resets all changes to the "auth0_data" field.
+func (m *UserMutation) ResetAuth0Data() {
+	m.auth0_data = nil
+	delete(m.clearedFields, user.FieldAuth0Data)
 }
 
 // SetAppSettings sets the "app_settings" field.
@@ -40567,7 +40618,7 @@ func (m *UserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UserMutation) Fields() []string {
-	fields := make([]string, 0, 17)
+	fields := make([]string, 0, 18)
 	if m.auth0_id != nil {
 		fields = append(fields, user.FieldAuth0ID)
 	}
@@ -40600,6 +40651,9 @@ func (m *UserMutation) Fields() []string {
 	}
 	if m.bio != nil {
 		fields = append(fields, user.FieldBio)
+	}
+	if m.auth0_data != nil {
+		fields = append(fields, user.FieldAuth0Data)
 	}
 	if m.app_settings != nil {
 		fields = append(fields, user.FieldAppSettings)
@@ -40649,6 +40703,8 @@ func (m *UserMutation) Field(name string) (ent.Value, bool) {
 		return m.Latitude()
 	case user.FieldBio:
 		return m.Bio()
+	case user.FieldAuth0Data:
+		return m.Auth0Data()
 	case user.FieldAppSettings:
 		return m.AppSettings()
 	case user.FieldUserSettings:
@@ -40692,6 +40748,8 @@ func (m *UserMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldLatitude(ctx)
 	case user.FieldBio:
 		return m.OldBio(ctx)
+	case user.FieldAuth0Data:
+		return m.OldAuth0Data(ctx)
 	case user.FieldAppSettings:
 		return m.OldAppSettings(ctx)
 	case user.FieldUserSettings:
@@ -40789,6 +40847,13 @@ func (m *UserMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetBio(v)
+		return nil
+	case user.FieldAuth0Data:
+		v, ok := value.(*management.User)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAuth0Data(v)
 		return nil
 	case user.FieldAppSettings:
 		v, ok := value.(map[string]interface{})
@@ -40928,6 +40993,9 @@ func (m *UserMutation) ClearedFields() []string {
 	if m.FieldCleared(user.FieldBio) {
 		fields = append(fields, user.FieldBio)
 	}
+	if m.FieldCleared(user.FieldAuth0Data) {
+		fields = append(fields, user.FieldAuth0Data)
+	}
 	if m.FieldCleared(user.FieldAppSettings) {
 		fields = append(fields, user.FieldAppSettings)
 	}
@@ -40981,6 +41049,9 @@ func (m *UserMutation) ClearField(name string) error {
 	case user.FieldBio:
 		m.ClearBio()
 		return nil
+	case user.FieldAuth0Data:
+		m.ClearAuth0Data()
+		return nil
 	case user.FieldAppSettings:
 		m.ClearAppSettings()
 		return nil
@@ -41033,6 +41104,9 @@ func (m *UserMutation) ResetField(name string) error {
 		return nil
 	case user.FieldBio:
 		m.ResetBio()
+		return nil
+	case user.FieldAuth0Data:
+		m.ResetAuth0Data()
 		return nil
 	case user.FieldAppSettings:
 		m.ResetAppSettings()

@@ -1261,6 +1261,7 @@ var (
 		{Name: "longitude", Type: field.TypeString, Nullable: true},
 		{Name: "latitude", Type: field.TypeString, Nullable: true},
 		{Name: "bio", Type: field.TypeString, Nullable: true, Size: 2147483647, Default: "Add a bio to your profile"},
+		{Name: "auth0_data", Type: field.TypeJSON, Nullable: true},
 		{Name: "app_settings", Type: field.TypeJSON, Nullable: true},
 		{Name: "user_settings", Type: field.TypeJSON, Nullable: true},
 		{Name: "search_text", Type: field.TypeString, Nullable: true},

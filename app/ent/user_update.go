@@ -34,6 +34,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auth0/go-auth0/management"
 )
 
 // UserUpdate is the builder for updating User entities.
@@ -230,6 +231,18 @@ func (uu *UserUpdate) SetNillableBio(s *string) *UserUpdate {
 // ClearBio clears the value of the "bio" field.
 func (uu *UserUpdate) ClearBio() *UserUpdate {
 	uu.mutation.ClearBio()
+	return uu
+}
+
+// SetAuth0Data sets the "auth0_data" field.
+func (uu *UserUpdate) SetAuth0Data(m *management.User) *UserUpdate {
+	uu.mutation.SetAuth0Data(m)
+	return uu
+}
+
+// ClearAuth0Data clears the value of the "auth0_data" field.
+func (uu *UserUpdate) ClearAuth0Data() *UserUpdate {
+	uu.mutation.ClearAuth0Data()
 	return uu
 }
 
@@ -1252,6 +1265,12 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if uu.mutation.BioCleared() {
 		_spec.ClearField(user.FieldBio, field.TypeString)
+	}
+	if value, ok := uu.mutation.Auth0Data(); ok {
+		_spec.SetField(user.FieldAuth0Data, field.TypeJSON, value)
+	}
+	if uu.mutation.Auth0DataCleared() {
+		_spec.ClearField(user.FieldAuth0Data, field.TypeJSON)
 	}
 	if value, ok := uu.mutation.AppSettings(); ok {
 		_spec.SetField(user.FieldAppSettings, field.TypeJSON, value)
@@ -2499,6 +2518,18 @@ func (uuo *UserUpdateOne) ClearBio() *UserUpdateOne {
 	return uuo
 }
 
+// SetAuth0Data sets the "auth0_data" field.
+func (uuo *UserUpdateOne) SetAuth0Data(m *management.User) *UserUpdateOne {
+	uuo.mutation.SetAuth0Data(m)
+	return uuo
+}
+
+// ClearAuth0Data clears the value of the "auth0_data" field.
+func (uuo *UserUpdateOne) ClearAuth0Data() *UserUpdateOne {
+	uuo.mutation.ClearAuth0Data()
+	return uuo
+}
+
 // SetAppSettings sets the "app_settings" field.
 func (uuo *UserUpdateOne) SetAppSettings(m map[string]interface{}) *UserUpdateOne {
 	uuo.mutation.SetAppSettings(m)
@@ -3548,6 +3579,12 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 	}
 	if uuo.mutation.BioCleared() {
 		_spec.ClearField(user.FieldBio, field.TypeString)
+	}
+	if value, ok := uuo.mutation.Auth0Data(); ok {
+		_spec.SetField(user.FieldAuth0Data, field.TypeJSON, value)
+	}
+	if uuo.mutation.Auth0DataCleared() {
+		_spec.ClearField(user.FieldAuth0Data, field.TypeJSON)
 	}
 	if value, ok := uuo.mutation.AppSettings(); ok {
 		_spec.SetField(user.FieldAppSettings, field.TypeJSON, value)

@@ -5,6 +5,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
+	"github.com/auth0/go-auth0/management"
 	"github.com/getsentry/sentry-go"
 	gen "placio-app/ent"
 	"placio-app/ent/hook"
@@ -33,7 +34,7 @@ func (User) Fields() []ent.Field {
 		field.String("longitude").Optional(),
 		field.String("latitude").Optional(),
 		field.Text("bio").Optional().Default("Add a bio to your profile"),
-		//field.JSON("auth0_data", &management.User{}).Optional(),
+		field.JSON("auth0_data", &management.User{}).Optional(),
 		field.JSON("app_settings", map[string]interface{}{}).Optional(),
 		field.JSON("user_settings", map[string]interface{}{}).Optional(),
 		field.String("search_text").Optional(),

@@ -874,6 +874,16 @@ func BioContainsFold(v string) predicate.User {
 	return predicate.User(sql.FieldContainsFold(FieldBio, v))
 }
 
+// Auth0DataIsNil applies the IsNil predicate on the "auth0_data" field.
+func Auth0DataIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldAuth0Data))
+}
+
+// Auth0DataNotNil applies the NotNil predicate on the "auth0_data" field.
+func Auth0DataNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldAuth0Data))
+}
+
 // AppSettingsIsNil applies the IsNil predicate on the "app_settings" field.
 func AppSettingsIsNil() predicate.User {
 	return predicate.User(sql.FieldIsNull(FieldAppSettings))

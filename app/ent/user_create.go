@@ -33,6 +33,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/auth0/go-auth0/management"
 )
 
 // UserCreate is the builder for creating a User entity.
@@ -169,6 +170,12 @@ func (uc *UserCreate) SetNillableBio(s *string) *UserCreate {
 	if s != nil {
 		uc.SetBio(*s)
 	}
+	return uc
+}
+
+// SetAuth0Data sets the "auth0_data" field.
+func (uc *UserCreate) SetAuth0Data(m *management.User) *UserCreate {
+	uc.mutation.SetAuth0Data(m)
 	return uc
 }
 
@@ -767,6 +774,10 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.Bio(); ok {
 		_spec.SetField(user.FieldBio, field.TypeString, value)
 		_node.Bio = value
+	}
+	if value, ok := uc.mutation.Auth0Data(); ok {
+		_spec.SetField(user.FieldAuth0Data, field.TypeJSON, value)
+		_node.Auth0Data = value
 	}
 	if value, ok := uc.mutation.AppSettings(); ok {
 		_spec.SetField(user.FieldAppSettings, field.TypeJSON, value)

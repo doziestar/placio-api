@@ -35,6 +35,8 @@ const (
 	FieldLatitude = "latitude"
 	// FieldBio holds the string denoting the bio field in the database.
 	FieldBio = "bio"
+	// FieldAuth0Data holds the string denoting the auth0_data field in the database.
+	FieldAuth0Data = "auth0_data"
 	// FieldAppSettings holds the string denoting the app_settings field in the database.
 	FieldAppSettings = "app_settings"
 	// FieldUserSettings holds the string denoting the user_settings field in the database.
@@ -277,6 +279,7 @@ var Columns = []string{
 	FieldLongitude,
 	FieldLatitude,
 	FieldBio,
+	FieldAuth0Data,
 	FieldAppSettings,
 	FieldUserSettings,
 	FieldSearchText,
