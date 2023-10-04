@@ -64,26 +64,8 @@ func (pc *PostController) RegisterRoutes(router *gin.RouterGroup) {
 // createPost creates a new post.
 func (pc *PostController) createPost(ctx *gin.Context) error {
 	// Extract the user from the context
-	authOID := ctx.MustGet("auth0_id").(string)
-	user, err := pc.userService.GetUser(ctx, authOID)
-	if err != nil {
-
-		return err
-	}
-
-	// Extract the BusinessAccountID from the query parameters, if it exists
-	var businessID string
-	var businessAccount *ent.Business
+	userId := ctx.MustGet("user").(string)
 	businessAccountId := ctx.Query("businessAccountId")
-	if businessAccountId != "" {
-		// Verify that the business account exists
-		businessAccount, err = pc.businessAccountService.GetBusinessAccount(ctx, businessAccountId)
-		if err != nil {
-
-			return err
-		}
-		businessID = businessAccount.ID
-	}
 
 	// Bind the incoming JSON to a new PostDto instance
 	data := new(PostDto)
@@ -102,7 +84,7 @@ func (pc *PostController) createPost(ctx *gin.Context) error {
 	}
 
 	// Create the post
-	newPost, err := pc.postService.CreatePost(ctx, post, user.ID, businessID, data.Medias)
+	newPost, err := pc.postService.CreatePost(ctx, post, userId, businessAccountId, data.Medias)
 	if err != nil {
 
 		return err

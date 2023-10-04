@@ -435,7 +435,7 @@ func (uc *UserController) updateAuth0AppMetadata(ctx *gin.Context) error {
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/users/ [get]
 func (uc *UserController) GetUser(ctx *gin.Context) error {
-	auth0ID := ctx.MustGet("auth0_id").(string)
+	auth0ID := ctx.MustGet("user").(string)
 	if auth0ID == "" {
 		return errors.New("user Auth0 ID required")
 	}

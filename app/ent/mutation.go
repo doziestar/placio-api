@@ -44945,8 +44945,6 @@ type WebsiteMutation struct {
 	clearedFields                        map[string]struct{}
 	business                             *string
 	clearedbusiness                      bool
-	template                             *string
-	clearedtemplate                      bool
 	customBlocks                         map[string]struct{}
 	removedcustomBlocks                  map[string]struct{}
 	clearedcustomBlocks                  bool
@@ -45129,9 +45127,22 @@ func (m *WebsiteMutation) OldHeadingText(ctx context.Context) (v string, err err
 	return oldValue.HeadingText, nil
 }
 
+// ClearHeadingText clears the value of the "heading_text" field.
+func (m *WebsiteMutation) ClearHeadingText() {
+	m.heading_text = nil
+	m.clearedFields[website.FieldHeadingText] = struct{}{}
+}
+
+// HeadingTextCleared returns if the "heading_text" field was cleared in this mutation.
+func (m *WebsiteMutation) HeadingTextCleared() bool {
+	_, ok := m.clearedFields[website.FieldHeadingText]
+	return ok
+}
+
 // ResetHeadingText resets all changes to the "heading_text" field.
 func (m *WebsiteMutation) ResetHeadingText() {
 	m.heading_text = nil
+	delete(m.clearedFields, website.FieldHeadingText)
 }
 
 // SetBusinessLogo sets the "business_logo" field.
@@ -45165,9 +45176,22 @@ func (m *WebsiteMutation) OldBusinessLogo(ctx context.Context) (v string, err er
 	return oldValue.BusinessLogo, nil
 }
 
+// ClearBusinessLogo clears the value of the "business_logo" field.
+func (m *WebsiteMutation) ClearBusinessLogo() {
+	m.business_logo = nil
+	m.clearedFields[website.FieldBusinessLogo] = struct{}{}
+}
+
+// BusinessLogoCleared returns if the "business_logo" field was cleared in this mutation.
+func (m *WebsiteMutation) BusinessLogoCleared() bool {
+	_, ok := m.clearedFields[website.FieldBusinessLogo]
+	return ok
+}
+
 // ResetBusinessLogo resets all changes to the "business_logo" field.
 func (m *WebsiteMutation) ResetBusinessLogo() {
 	m.business_logo = nil
+	delete(m.clearedFields, website.FieldBusinessLogo)
 }
 
 // SetBusinessName sets the "business_name" field.
@@ -45201,9 +45225,22 @@ func (m *WebsiteMutation) OldBusinessName(ctx context.Context) (v string, err er
 	return oldValue.BusinessName, nil
 }
 
+// ClearBusinessName clears the value of the "business_name" field.
+func (m *WebsiteMutation) ClearBusinessName() {
+	m.business_name = nil
+	m.clearedFields[website.FieldBusinessName] = struct{}{}
+}
+
+// BusinessNameCleared returns if the "business_name" field was cleared in this mutation.
+func (m *WebsiteMutation) BusinessNameCleared() bool {
+	_, ok := m.clearedFields[website.FieldBusinessName]
+	return ok
+}
+
 // ResetBusinessName resets all changes to the "business_name" field.
 func (m *WebsiteMutation) ResetBusinessName() {
 	m.business_name = nil
+	delete(m.clearedFields, website.FieldBusinessName)
 }
 
 // SetBannerSectionBackgroundImage sets the "banner_section_background_image" field.
@@ -45237,9 +45274,22 @@ func (m *WebsiteMutation) OldBannerSectionBackgroundImage(ctx context.Context) (
 	return oldValue.BannerSectionBackgroundImage, nil
 }
 
+// ClearBannerSectionBackgroundImage clears the value of the "banner_section_background_image" field.
+func (m *WebsiteMutation) ClearBannerSectionBackgroundImage() {
+	m.banner_section_background_image = nil
+	m.clearedFields[website.FieldBannerSectionBackgroundImage] = struct{}{}
+}
+
+// BannerSectionBackgroundImageCleared returns if the "banner_section_background_image" field was cleared in this mutation.
+func (m *WebsiteMutation) BannerSectionBackgroundImageCleared() bool {
+	_, ok := m.clearedFields[website.FieldBannerSectionBackgroundImage]
+	return ok
+}
+
 // ResetBannerSectionBackgroundImage resets all changes to the "banner_section_background_image" field.
 func (m *WebsiteMutation) ResetBannerSectionBackgroundImage() {
 	m.banner_section_background_image = nil
+	delete(m.clearedFields, website.FieldBannerSectionBackgroundImage)
 }
 
 // SetBannerSectionBackgroundColor sets the "banner_section_background_color" field.
@@ -45273,9 +45323,22 @@ func (m *WebsiteMutation) OldBannerSectionBackgroundColor(ctx context.Context) (
 	return oldValue.BannerSectionBackgroundColor, nil
 }
 
+// ClearBannerSectionBackgroundColor clears the value of the "banner_section_background_color" field.
+func (m *WebsiteMutation) ClearBannerSectionBackgroundColor() {
+	m.banner_section_background_color = nil
+	m.clearedFields[website.FieldBannerSectionBackgroundColor] = struct{}{}
+}
+
+// BannerSectionBackgroundColorCleared returns if the "banner_section_background_color" field was cleared in this mutation.
+func (m *WebsiteMutation) BannerSectionBackgroundColorCleared() bool {
+	_, ok := m.clearedFields[website.FieldBannerSectionBackgroundColor]
+	return ok
+}
+
 // ResetBannerSectionBackgroundColor resets all changes to the "banner_section_background_color" field.
 func (m *WebsiteMutation) ResetBannerSectionBackgroundColor() {
 	m.banner_section_background_color = nil
+	delete(m.clearedFields, website.FieldBannerSectionBackgroundColor)
 }
 
 // SetBannerSectionText sets the "banner_section_text" field.
@@ -45309,9 +45372,22 @@ func (m *WebsiteMutation) OldBannerSectionText(ctx context.Context) (v string, e
 	return oldValue.BannerSectionText, nil
 }
 
+// ClearBannerSectionText clears the value of the "banner_section_text" field.
+func (m *WebsiteMutation) ClearBannerSectionText() {
+	m.banner_section_text = nil
+	m.clearedFields[website.FieldBannerSectionText] = struct{}{}
+}
+
+// BannerSectionTextCleared returns if the "banner_section_text" field was cleared in this mutation.
+func (m *WebsiteMutation) BannerSectionTextCleared() bool {
+	_, ok := m.clearedFields[website.FieldBannerSectionText]
+	return ok
+}
+
 // ResetBannerSectionText resets all changes to the "banner_section_text" field.
 func (m *WebsiteMutation) ResetBannerSectionText() {
 	m.banner_section_text = nil
+	delete(m.clearedFields, website.FieldBannerSectionText)
 }
 
 // SetThreeItemsSectionHeadingText sets the "three_items_section_heading_text" field.
@@ -45345,9 +45421,22 @@ func (m *WebsiteMutation) OldThreeItemsSectionHeadingText(ctx context.Context) (
 	return oldValue.ThreeItemsSectionHeadingText, nil
 }
 
+// ClearThreeItemsSectionHeadingText clears the value of the "three_items_section_heading_text" field.
+func (m *WebsiteMutation) ClearThreeItemsSectionHeadingText() {
+	m.three_items_section_heading_text = nil
+	m.clearedFields[website.FieldThreeItemsSectionHeadingText] = struct{}{}
+}
+
+// ThreeItemsSectionHeadingTextCleared returns if the "three_items_section_heading_text" field was cleared in this mutation.
+func (m *WebsiteMutation) ThreeItemsSectionHeadingTextCleared() bool {
+	_, ok := m.clearedFields[website.FieldThreeItemsSectionHeadingText]
+	return ok
+}
+
 // ResetThreeItemsSectionHeadingText resets all changes to the "three_items_section_heading_text" field.
 func (m *WebsiteMutation) ResetThreeItemsSectionHeadingText() {
 	m.three_items_section_heading_text = nil
+	delete(m.clearedFields, website.FieldThreeItemsSectionHeadingText)
 }
 
 // SetThreeItemsSectionDetailsText sets the "three_items_section_details_text" field.
@@ -45381,9 +45470,22 @@ func (m *WebsiteMutation) OldThreeItemsSectionDetailsText(ctx context.Context) (
 	return oldValue.ThreeItemsSectionDetailsText, nil
 }
 
+// ClearThreeItemsSectionDetailsText clears the value of the "three_items_section_details_text" field.
+func (m *WebsiteMutation) ClearThreeItemsSectionDetailsText() {
+	m.three_items_section_details_text = nil
+	m.clearedFields[website.FieldThreeItemsSectionDetailsText] = struct{}{}
+}
+
+// ThreeItemsSectionDetailsTextCleared returns if the "three_items_section_details_text" field was cleared in this mutation.
+func (m *WebsiteMutation) ThreeItemsSectionDetailsTextCleared() bool {
+	_, ok := m.clearedFields[website.FieldThreeItemsSectionDetailsText]
+	return ok
+}
+
 // ResetThreeItemsSectionDetailsText resets all changes to the "three_items_section_details_text" field.
 func (m *WebsiteMutation) ResetThreeItemsSectionDetailsText() {
 	m.three_items_section_details_text = nil
+	delete(m.clearedFields, website.FieldThreeItemsSectionDetailsText)
 }
 
 // SetThreeItemsSectionItemOneText sets the "three_items_section_item_one_text" field.
@@ -45417,9 +45519,22 @@ func (m *WebsiteMutation) OldThreeItemsSectionItemOneText(ctx context.Context) (
 	return oldValue.ThreeItemsSectionItemOneText, nil
 }
 
+// ClearThreeItemsSectionItemOneText clears the value of the "three_items_section_item_one_text" field.
+func (m *WebsiteMutation) ClearThreeItemsSectionItemOneText() {
+	m.three_items_section_item_one_text = nil
+	m.clearedFields[website.FieldThreeItemsSectionItemOneText] = struct{}{}
+}
+
+// ThreeItemsSectionItemOneTextCleared returns if the "three_items_section_item_one_text" field was cleared in this mutation.
+func (m *WebsiteMutation) ThreeItemsSectionItemOneTextCleared() bool {
+	_, ok := m.clearedFields[website.FieldThreeItemsSectionItemOneText]
+	return ok
+}
+
 // ResetThreeItemsSectionItemOneText resets all changes to the "three_items_section_item_one_text" field.
 func (m *WebsiteMutation) ResetThreeItemsSectionItemOneText() {
 	m.three_items_section_item_one_text = nil
+	delete(m.clearedFields, website.FieldThreeItemsSectionItemOneText)
 }
 
 // SetThreeItemsSectionItemTwoText sets the "three_items_section_item_two_text" field.
@@ -45453,9 +45568,22 @@ func (m *WebsiteMutation) OldThreeItemsSectionItemTwoText(ctx context.Context) (
 	return oldValue.ThreeItemsSectionItemTwoText, nil
 }
 
+// ClearThreeItemsSectionItemTwoText clears the value of the "three_items_section_item_two_text" field.
+func (m *WebsiteMutation) ClearThreeItemsSectionItemTwoText() {
+	m.three_items_section_item_two_text = nil
+	m.clearedFields[website.FieldThreeItemsSectionItemTwoText] = struct{}{}
+}
+
+// ThreeItemsSectionItemTwoTextCleared returns if the "three_items_section_item_two_text" field was cleared in this mutation.
+func (m *WebsiteMutation) ThreeItemsSectionItemTwoTextCleared() bool {
+	_, ok := m.clearedFields[website.FieldThreeItemsSectionItemTwoText]
+	return ok
+}
+
 // ResetThreeItemsSectionItemTwoText resets all changes to the "three_items_section_item_two_text" field.
 func (m *WebsiteMutation) ResetThreeItemsSectionItemTwoText() {
 	m.three_items_section_item_two_text = nil
+	delete(m.clearedFields, website.FieldThreeItemsSectionItemTwoText)
 }
 
 // SetThreeItemsSectionItemThreeText sets the "three_items_section_item_three_text" field.
@@ -45489,9 +45617,22 @@ func (m *WebsiteMutation) OldThreeItemsSectionItemThreeText(ctx context.Context)
 	return oldValue.ThreeItemsSectionItemThreeText, nil
 }
 
+// ClearThreeItemsSectionItemThreeText clears the value of the "three_items_section_item_three_text" field.
+func (m *WebsiteMutation) ClearThreeItemsSectionItemThreeText() {
+	m.three_items_section_item_three_text = nil
+	m.clearedFields[website.FieldThreeItemsSectionItemThreeText] = struct{}{}
+}
+
+// ThreeItemsSectionItemThreeTextCleared returns if the "three_items_section_item_three_text" field was cleared in this mutation.
+func (m *WebsiteMutation) ThreeItemsSectionItemThreeTextCleared() bool {
+	_, ok := m.clearedFields[website.FieldThreeItemsSectionItemThreeText]
+	return ok
+}
+
 // ResetThreeItemsSectionItemThreeText resets all changes to the "three_items_section_item_three_text" field.
 func (m *WebsiteMutation) ResetThreeItemsSectionItemThreeText() {
 	m.three_items_section_item_three_text = nil
+	delete(m.clearedFields, website.FieldThreeItemsSectionItemThreeText)
 }
 
 // SetBannerTwoSectionBackgroundImage sets the "banner_two_section_background_image" field.
@@ -45525,9 +45666,22 @@ func (m *WebsiteMutation) OldBannerTwoSectionBackgroundImage(ctx context.Context
 	return oldValue.BannerTwoSectionBackgroundImage, nil
 }
 
+// ClearBannerTwoSectionBackgroundImage clears the value of the "banner_two_section_background_image" field.
+func (m *WebsiteMutation) ClearBannerTwoSectionBackgroundImage() {
+	m.banner_two_section_background_image = nil
+	m.clearedFields[website.FieldBannerTwoSectionBackgroundImage] = struct{}{}
+}
+
+// BannerTwoSectionBackgroundImageCleared returns if the "banner_two_section_background_image" field was cleared in this mutation.
+func (m *WebsiteMutation) BannerTwoSectionBackgroundImageCleared() bool {
+	_, ok := m.clearedFields[website.FieldBannerTwoSectionBackgroundImage]
+	return ok
+}
+
 // ResetBannerTwoSectionBackgroundImage resets all changes to the "banner_two_section_background_image" field.
 func (m *WebsiteMutation) ResetBannerTwoSectionBackgroundImage() {
 	m.banner_two_section_background_image = nil
+	delete(m.clearedFields, website.FieldBannerTwoSectionBackgroundImage)
 }
 
 // SetBannerTwoSectionBackgroundColor sets the "banner_two_section_background_color" field.
@@ -45561,9 +45715,22 @@ func (m *WebsiteMutation) OldBannerTwoSectionBackgroundColor(ctx context.Context
 	return oldValue.BannerTwoSectionBackgroundColor, nil
 }
 
+// ClearBannerTwoSectionBackgroundColor clears the value of the "banner_two_section_background_color" field.
+func (m *WebsiteMutation) ClearBannerTwoSectionBackgroundColor() {
+	m.banner_two_section_background_color = nil
+	m.clearedFields[website.FieldBannerTwoSectionBackgroundColor] = struct{}{}
+}
+
+// BannerTwoSectionBackgroundColorCleared returns if the "banner_two_section_background_color" field was cleared in this mutation.
+func (m *WebsiteMutation) BannerTwoSectionBackgroundColorCleared() bool {
+	_, ok := m.clearedFields[website.FieldBannerTwoSectionBackgroundColor]
+	return ok
+}
+
 // ResetBannerTwoSectionBackgroundColor resets all changes to the "banner_two_section_background_color" field.
 func (m *WebsiteMutation) ResetBannerTwoSectionBackgroundColor() {
 	m.banner_two_section_background_color = nil
+	delete(m.clearedFields, website.FieldBannerTwoSectionBackgroundColor)
 }
 
 // SetBannerTwoLeftSectionHeadingText sets the "banner_two_left_section_heading_text" field.
@@ -45597,9 +45764,22 @@ func (m *WebsiteMutation) OldBannerTwoLeftSectionHeadingText(ctx context.Context
 	return oldValue.BannerTwoLeftSectionHeadingText, nil
 }
 
+// ClearBannerTwoLeftSectionHeadingText clears the value of the "banner_two_left_section_heading_text" field.
+func (m *WebsiteMutation) ClearBannerTwoLeftSectionHeadingText() {
+	m.banner_two_left_section_heading_text = nil
+	m.clearedFields[website.FieldBannerTwoLeftSectionHeadingText] = struct{}{}
+}
+
+// BannerTwoLeftSectionHeadingTextCleared returns if the "banner_two_left_section_heading_text" field was cleared in this mutation.
+func (m *WebsiteMutation) BannerTwoLeftSectionHeadingTextCleared() bool {
+	_, ok := m.clearedFields[website.FieldBannerTwoLeftSectionHeadingText]
+	return ok
+}
+
 // ResetBannerTwoLeftSectionHeadingText resets all changes to the "banner_two_left_section_heading_text" field.
 func (m *WebsiteMutation) ResetBannerTwoLeftSectionHeadingText() {
 	m.banner_two_left_section_heading_text = nil
+	delete(m.clearedFields, website.FieldBannerTwoLeftSectionHeadingText)
 }
 
 // SetBannerTwoLeftSectionDetailsText sets the "banner_two_left_section_details_text" field.
@@ -45633,9 +45813,22 @@ func (m *WebsiteMutation) OldBannerTwoLeftSectionDetailsText(ctx context.Context
 	return oldValue.BannerTwoLeftSectionDetailsText, nil
 }
 
+// ClearBannerTwoLeftSectionDetailsText clears the value of the "banner_two_left_section_details_text" field.
+func (m *WebsiteMutation) ClearBannerTwoLeftSectionDetailsText() {
+	m.banner_two_left_section_details_text = nil
+	m.clearedFields[website.FieldBannerTwoLeftSectionDetailsText] = struct{}{}
+}
+
+// BannerTwoLeftSectionDetailsTextCleared returns if the "banner_two_left_section_details_text" field was cleared in this mutation.
+func (m *WebsiteMutation) BannerTwoLeftSectionDetailsTextCleared() bool {
+	_, ok := m.clearedFields[website.FieldBannerTwoLeftSectionDetailsText]
+	return ok
+}
+
 // ResetBannerTwoLeftSectionDetailsText resets all changes to the "banner_two_left_section_details_text" field.
 func (m *WebsiteMutation) ResetBannerTwoLeftSectionDetailsText() {
 	m.banner_two_left_section_details_text = nil
+	delete(m.clearedFields, website.FieldBannerTwoLeftSectionDetailsText)
 }
 
 // SetBannerTwoLeftSectionButtonText sets the "banner_two_left_section_button_text" field.
@@ -45669,9 +45862,22 @@ func (m *WebsiteMutation) OldBannerTwoLeftSectionButtonText(ctx context.Context)
 	return oldValue.BannerTwoLeftSectionButtonText, nil
 }
 
+// ClearBannerTwoLeftSectionButtonText clears the value of the "banner_two_left_section_button_text" field.
+func (m *WebsiteMutation) ClearBannerTwoLeftSectionButtonText() {
+	m.banner_two_left_section_button_text = nil
+	m.clearedFields[website.FieldBannerTwoLeftSectionButtonText] = struct{}{}
+}
+
+// BannerTwoLeftSectionButtonTextCleared returns if the "banner_two_left_section_button_text" field was cleared in this mutation.
+func (m *WebsiteMutation) BannerTwoLeftSectionButtonTextCleared() bool {
+	_, ok := m.clearedFields[website.FieldBannerTwoLeftSectionButtonText]
+	return ok
+}
+
 // ResetBannerTwoLeftSectionButtonText resets all changes to the "banner_two_left_section_button_text" field.
 func (m *WebsiteMutation) ResetBannerTwoLeftSectionButtonText() {
 	m.banner_two_left_section_button_text = nil
+	delete(m.clearedFields, website.FieldBannerTwoLeftSectionButtonText)
 }
 
 // SetBannerTwoLeftSectionButtonLink sets the "banner_two_left_section_button_link" field.
@@ -45705,9 +45911,22 @@ func (m *WebsiteMutation) OldBannerTwoLeftSectionButtonLink(ctx context.Context)
 	return oldValue.BannerTwoLeftSectionButtonLink, nil
 }
 
+// ClearBannerTwoLeftSectionButtonLink clears the value of the "banner_two_left_section_button_link" field.
+func (m *WebsiteMutation) ClearBannerTwoLeftSectionButtonLink() {
+	m.banner_two_left_section_button_link = nil
+	m.clearedFields[website.FieldBannerTwoLeftSectionButtonLink] = struct{}{}
+}
+
+// BannerTwoLeftSectionButtonLinkCleared returns if the "banner_two_left_section_button_link" field was cleared in this mutation.
+func (m *WebsiteMutation) BannerTwoLeftSectionButtonLinkCleared() bool {
+	_, ok := m.clearedFields[website.FieldBannerTwoLeftSectionButtonLink]
+	return ok
+}
+
 // ResetBannerTwoLeftSectionButtonLink resets all changes to the "banner_two_left_section_button_link" field.
 func (m *WebsiteMutation) ResetBannerTwoLeftSectionButtonLink() {
 	m.banner_two_left_section_button_link = nil
+	delete(m.clearedFields, website.FieldBannerTwoLeftSectionButtonLink)
 }
 
 // SetBannerTwoRightSideImage sets the "banner_two_right_side_image" field.
@@ -45741,9 +45960,22 @@ func (m *WebsiteMutation) OldBannerTwoRightSideImage(ctx context.Context) (v str
 	return oldValue.BannerTwoRightSideImage, nil
 }
 
+// ClearBannerTwoRightSideImage clears the value of the "banner_two_right_side_image" field.
+func (m *WebsiteMutation) ClearBannerTwoRightSideImage() {
+	m.banner_two_right_side_image = nil
+	m.clearedFields[website.FieldBannerTwoRightSideImage] = struct{}{}
+}
+
+// BannerTwoRightSideImageCleared returns if the "banner_two_right_side_image" field was cleared in this mutation.
+func (m *WebsiteMutation) BannerTwoRightSideImageCleared() bool {
+	_, ok := m.clearedFields[website.FieldBannerTwoRightSideImage]
+	return ok
+}
+
 // ResetBannerTwoRightSideImage resets all changes to the "banner_two_right_side_image" field.
 func (m *WebsiteMutation) ResetBannerTwoRightSideImage() {
 	m.banner_two_right_side_image = nil
+	delete(m.clearedFields, website.FieldBannerTwoRightSideImage)
 }
 
 // SetAchievementsSection sets the "achievements_section" field.
@@ -45777,9 +46009,22 @@ func (m *WebsiteMutation) OldAchievementsSection(ctx context.Context) (v map[str
 	return oldValue.AchievementsSection, nil
 }
 
+// ClearAchievementsSection clears the value of the "achievements_section" field.
+func (m *WebsiteMutation) ClearAchievementsSection() {
+	m.achievements_section = nil
+	m.clearedFields[website.FieldAchievementsSection] = struct{}{}
+}
+
+// AchievementsSectionCleared returns if the "achievements_section" field was cleared in this mutation.
+func (m *WebsiteMutation) AchievementsSectionCleared() bool {
+	_, ok := m.clearedFields[website.FieldAchievementsSection]
+	return ok
+}
+
 // ResetAchievementsSection resets all changes to the "achievements_section" field.
 func (m *WebsiteMutation) ResetAchievementsSection() {
 	m.achievements_section = nil
+	delete(m.clearedFields, website.FieldAchievementsSection)
 }
 
 // SetInventorySectionHeadingText sets the "Inventory_section_heading_text" field.
@@ -45813,9 +46058,22 @@ func (m *WebsiteMutation) OldInventorySectionHeadingText(ctx context.Context) (v
 	return oldValue.InventorySectionHeadingText, nil
 }
 
+// ClearInventorySectionHeadingText clears the value of the "Inventory_section_heading_text" field.
+func (m *WebsiteMutation) ClearInventorySectionHeadingText() {
+	m._Inventory_section_heading_text = nil
+	m.clearedFields[website.FieldInventorySectionHeadingText] = struct{}{}
+}
+
+// InventorySectionHeadingTextCleared returns if the "Inventory_section_heading_text" field was cleared in this mutation.
+func (m *WebsiteMutation) InventorySectionHeadingTextCleared() bool {
+	_, ok := m.clearedFields[website.FieldInventorySectionHeadingText]
+	return ok
+}
+
 // ResetInventorySectionHeadingText resets all changes to the "Inventory_section_heading_text" field.
 func (m *WebsiteMutation) ResetInventorySectionHeadingText() {
 	m._Inventory_section_heading_text = nil
+	delete(m.clearedFields, website.FieldInventorySectionHeadingText)
 }
 
 // SetCreationDate sets the "creationDate" field.
@@ -45921,9 +46179,22 @@ func (m *WebsiteMutation) OldTitle(ctx context.Context) (v string, err error) {
 	return oldValue.Title, nil
 }
 
+// ClearTitle clears the value of the "title" field.
+func (m *WebsiteMutation) ClearTitle() {
+	m.title = nil
+	m.clearedFields[website.FieldTitle] = struct{}{}
+}
+
+// TitleCleared returns if the "title" field was cleared in this mutation.
+func (m *WebsiteMutation) TitleCleared() bool {
+	_, ok := m.clearedFields[website.FieldTitle]
+	return ok
+}
+
 // ResetTitle resets all changes to the "title" field.
 func (m *WebsiteMutation) ResetTitle() {
 	m.title = nil
+	delete(m.clearedFields, website.FieldTitle)
 }
 
 // SetDescription sets the "description" field.
@@ -45957,9 +46228,22 @@ func (m *WebsiteMutation) OldDescription(ctx context.Context) (v string, err err
 	return oldValue.Description, nil
 }
 
+// ClearDescription clears the value of the "description" field.
+func (m *WebsiteMutation) ClearDescription() {
+	m.description = nil
+	m.clearedFields[website.FieldDescription] = struct{}{}
+}
+
+// DescriptionCleared returns if the "description" field was cleared in this mutation.
+func (m *WebsiteMutation) DescriptionCleared() bool {
+	_, ok := m.clearedFields[website.FieldDescription]
+	return ok
+}
+
 // ResetDescription resets all changes to the "description" field.
 func (m *WebsiteMutation) ResetDescription() {
 	m.description = nil
+	delete(m.clearedFields, website.FieldDescription)
 }
 
 // SetKeywords sets the "keywords" field.
@@ -45993,9 +46277,22 @@ func (m *WebsiteMutation) OldKeywords(ctx context.Context) (v string, err error)
 	return oldValue.Keywords, nil
 }
 
+// ClearKeywords clears the value of the "keywords" field.
+func (m *WebsiteMutation) ClearKeywords() {
+	m.keywords = nil
+	m.clearedFields[website.FieldKeywords] = struct{}{}
+}
+
+// KeywordsCleared returns if the "keywords" field was cleared in this mutation.
+func (m *WebsiteMutation) KeywordsCleared() bool {
+	_, ok := m.clearedFields[website.FieldKeywords]
+	return ok
+}
+
 // ResetKeywords resets all changes to the "keywords" field.
 func (m *WebsiteMutation) ResetKeywords() {
 	m.keywords = nil
+	delete(m.clearedFields, website.FieldKeywords)
 }
 
 // SetLanguage sets the "language" field.
@@ -46029,9 +46326,22 @@ func (m *WebsiteMutation) OldLanguage(ctx context.Context) (v string, err error)
 	return oldValue.Language, nil
 }
 
+// ClearLanguage clears the value of the "language" field.
+func (m *WebsiteMutation) ClearLanguage() {
+	m.language = nil
+	m.clearedFields[website.FieldLanguage] = struct{}{}
+}
+
+// LanguageCleared returns if the "language" field was cleared in this mutation.
+func (m *WebsiteMutation) LanguageCleared() bool {
+	_, ok := m.clearedFields[website.FieldLanguage]
+	return ok
+}
+
 // ResetLanguage resets all changes to the "language" field.
 func (m *WebsiteMutation) ResetLanguage() {
 	m.language = nil
+	delete(m.clearedFields, website.FieldLanguage)
 }
 
 // SetLogo sets the "logo" field.
@@ -46065,9 +46375,22 @@ func (m *WebsiteMutation) OldLogo(ctx context.Context) (v string, err error) {
 	return oldValue.Logo, nil
 }
 
+// ClearLogo clears the value of the "logo" field.
+func (m *WebsiteMutation) ClearLogo() {
+	m.logo = nil
+	m.clearedFields[website.FieldLogo] = struct{}{}
+}
+
+// LogoCleared returns if the "logo" field was cleared in this mutation.
+func (m *WebsiteMutation) LogoCleared() bool {
+	_, ok := m.clearedFields[website.FieldLogo]
+	return ok
+}
+
 // ResetLogo resets all changes to the "logo" field.
 func (m *WebsiteMutation) ResetLogo() {
 	m.logo = nil
+	delete(m.clearedFields, website.FieldLogo)
 }
 
 // SetFavicon sets the "favicon" field.
@@ -46101,9 +46424,22 @@ func (m *WebsiteMutation) OldFavicon(ctx context.Context) (v string, err error) 
 	return oldValue.Favicon, nil
 }
 
+// ClearFavicon clears the value of the "favicon" field.
+func (m *WebsiteMutation) ClearFavicon() {
+	m.favicon = nil
+	m.clearedFields[website.FieldFavicon] = struct{}{}
+}
+
+// FaviconCleared returns if the "favicon" field was cleared in this mutation.
+func (m *WebsiteMutation) FaviconCleared() bool {
+	_, ok := m.clearedFields[website.FieldFavicon]
+	return ok
+}
+
 // ResetFavicon resets all changes to the "favicon" field.
 func (m *WebsiteMutation) ResetFavicon() {
 	m.favicon = nil
+	delete(m.clearedFields, website.FieldFavicon)
 }
 
 // SetFacebook sets the "facebook" field.
@@ -46137,9 +46473,22 @@ func (m *WebsiteMutation) OldFacebook(ctx context.Context) (v string, err error)
 	return oldValue.Facebook, nil
 }
 
+// ClearFacebook clears the value of the "facebook" field.
+func (m *WebsiteMutation) ClearFacebook() {
+	m.facebook = nil
+	m.clearedFields[website.FieldFacebook] = struct{}{}
+}
+
+// FacebookCleared returns if the "facebook" field was cleared in this mutation.
+func (m *WebsiteMutation) FacebookCleared() bool {
+	_, ok := m.clearedFields[website.FieldFacebook]
+	return ok
+}
+
 // ResetFacebook resets all changes to the "facebook" field.
 func (m *WebsiteMutation) ResetFacebook() {
 	m.facebook = nil
+	delete(m.clearedFields, website.FieldFacebook)
 }
 
 // SetTwitter sets the "twitter" field.
@@ -46173,9 +46522,22 @@ func (m *WebsiteMutation) OldTwitter(ctx context.Context) (v string, err error) 
 	return oldValue.Twitter, nil
 }
 
+// ClearTwitter clears the value of the "twitter" field.
+func (m *WebsiteMutation) ClearTwitter() {
+	m.twitter = nil
+	m.clearedFields[website.FieldTwitter] = struct{}{}
+}
+
+// TwitterCleared returns if the "twitter" field was cleared in this mutation.
+func (m *WebsiteMutation) TwitterCleared() bool {
+	_, ok := m.clearedFields[website.FieldTwitter]
+	return ok
+}
+
 // ResetTwitter resets all changes to the "twitter" field.
 func (m *WebsiteMutation) ResetTwitter() {
 	m.twitter = nil
+	delete(m.clearedFields, website.FieldTwitter)
 }
 
 // SetInstagram sets the "instagram" field.
@@ -46209,9 +46571,22 @@ func (m *WebsiteMutation) OldInstagram(ctx context.Context) (v string, err error
 	return oldValue.Instagram, nil
 }
 
+// ClearInstagram clears the value of the "instagram" field.
+func (m *WebsiteMutation) ClearInstagram() {
+	m.instagram = nil
+	m.clearedFields[website.FieldInstagram] = struct{}{}
+}
+
+// InstagramCleared returns if the "instagram" field was cleared in this mutation.
+func (m *WebsiteMutation) InstagramCleared() bool {
+	_, ok := m.clearedFields[website.FieldInstagram]
+	return ok
+}
+
 // ResetInstagram resets all changes to the "instagram" field.
 func (m *WebsiteMutation) ResetInstagram() {
 	m.instagram = nil
+	delete(m.clearedFields, website.FieldInstagram)
 }
 
 // SetYoutube sets the "youtube" field.
@@ -46245,9 +46620,22 @@ func (m *WebsiteMutation) OldYoutube(ctx context.Context) (v string, err error) 
 	return oldValue.Youtube, nil
 }
 
+// ClearYoutube clears the value of the "youtube" field.
+func (m *WebsiteMutation) ClearYoutube() {
+	m.youtube = nil
+	m.clearedFields[website.FieldYoutube] = struct{}{}
+}
+
+// YoutubeCleared returns if the "youtube" field was cleared in this mutation.
+func (m *WebsiteMutation) YoutubeCleared() bool {
+	_, ok := m.clearedFields[website.FieldYoutube]
+	return ok
+}
+
 // ResetYoutube resets all changes to the "youtube" field.
 func (m *WebsiteMutation) ResetYoutube() {
 	m.youtube = nil
+	delete(m.clearedFields, website.FieldYoutube)
 }
 
 // SetLinkedin sets the "linkedin" field.
@@ -46281,9 +46669,22 @@ func (m *WebsiteMutation) OldLinkedin(ctx context.Context) (v string, err error)
 	return oldValue.Linkedin, nil
 }
 
+// ClearLinkedin clears the value of the "linkedin" field.
+func (m *WebsiteMutation) ClearLinkedin() {
+	m.linkedin = nil
+	m.clearedFields[website.FieldLinkedin] = struct{}{}
+}
+
+// LinkedinCleared returns if the "linkedin" field was cleared in this mutation.
+func (m *WebsiteMutation) LinkedinCleared() bool {
+	_, ok := m.clearedFields[website.FieldLinkedin]
+	return ok
+}
+
 // ResetLinkedin resets all changes to the "linkedin" field.
 func (m *WebsiteMutation) ResetLinkedin() {
 	m.linkedin = nil
+	delete(m.clearedFields, website.FieldLinkedin)
 }
 
 // SetPinterest sets the "pinterest" field.
@@ -46317,9 +46718,22 @@ func (m *WebsiteMutation) OldPinterest(ctx context.Context) (v string, err error
 	return oldValue.Pinterest, nil
 }
 
+// ClearPinterest clears the value of the "pinterest" field.
+func (m *WebsiteMutation) ClearPinterest() {
+	m.pinterest = nil
+	m.clearedFields[website.FieldPinterest] = struct{}{}
+}
+
+// PinterestCleared returns if the "pinterest" field was cleared in this mutation.
+func (m *WebsiteMutation) PinterestCleared() bool {
+	_, ok := m.clearedFields[website.FieldPinterest]
+	return ok
+}
+
 // ResetPinterest resets all changes to the "pinterest" field.
 func (m *WebsiteMutation) ResetPinterest() {
 	m.pinterest = nil
+	delete(m.clearedFields, website.FieldPinterest)
 }
 
 // SetMapCoordinates sets the "mapCoordinates" field.
@@ -46353,9 +46767,22 @@ func (m *WebsiteMutation) OldMapCoordinates(ctx context.Context) (v map[string]i
 	return oldValue.MapCoordinates, nil
 }
 
+// ClearMapCoordinates clears the value of the "mapCoordinates" field.
+func (m *WebsiteMutation) ClearMapCoordinates() {
+	m.mapCoordinates = nil
+	m.clearedFields[website.FieldMapCoordinates] = struct{}{}
+}
+
+// MapCoordinatesCleared returns if the "mapCoordinates" field was cleared in this mutation.
+func (m *WebsiteMutation) MapCoordinatesCleared() bool {
+	_, ok := m.clearedFields[website.FieldMapCoordinates]
+	return ok
+}
+
 // ResetMapCoordinates resets all changes to the "mapCoordinates" field.
 func (m *WebsiteMutation) ResetMapCoordinates() {
 	m.mapCoordinates = nil
+	delete(m.clearedFields, website.FieldMapCoordinates)
 }
 
 // SetLongitude sets the "longitude" field.
@@ -46389,9 +46816,22 @@ func (m *WebsiteMutation) OldLongitude(ctx context.Context) (v string, err error
 	return oldValue.Longitude, nil
 }
 
+// ClearLongitude clears the value of the "longitude" field.
+func (m *WebsiteMutation) ClearLongitude() {
+	m.longitude = nil
+	m.clearedFields[website.FieldLongitude] = struct{}{}
+}
+
+// LongitudeCleared returns if the "longitude" field was cleared in this mutation.
+func (m *WebsiteMutation) LongitudeCleared() bool {
+	_, ok := m.clearedFields[website.FieldLongitude]
+	return ok
+}
+
 // ResetLongitude resets all changes to the "longitude" field.
 func (m *WebsiteMutation) ResetLongitude() {
 	m.longitude = nil
+	delete(m.clearedFields, website.FieldLongitude)
 }
 
 // SetLatitude sets the "latitude" field.
@@ -46425,9 +46865,22 @@ func (m *WebsiteMutation) OldLatitude(ctx context.Context) (v string, err error)
 	return oldValue.Latitude, nil
 }
 
+// ClearLatitude clears the value of the "latitude" field.
+func (m *WebsiteMutation) ClearLatitude() {
+	m.latitude = nil
+	m.clearedFields[website.FieldLatitude] = struct{}{}
+}
+
+// LatitudeCleared returns if the "latitude" field was cleared in this mutation.
+func (m *WebsiteMutation) LatitudeCleared() bool {
+	_, ok := m.clearedFields[website.FieldLatitude]
+	return ok
+}
+
 // ResetLatitude resets all changes to the "latitude" field.
 func (m *WebsiteMutation) ResetLatitude() {
 	m.latitude = nil
+	delete(m.clearedFields, website.FieldLatitude)
 }
 
 // SetAddress sets the "address" field.
@@ -46461,9 +46914,22 @@ func (m *WebsiteMutation) OldAddress(ctx context.Context) (v string, err error) 
 	return oldValue.Address, nil
 }
 
+// ClearAddress clears the value of the "address" field.
+func (m *WebsiteMutation) ClearAddress() {
+	m.address = nil
+	m.clearedFields[website.FieldAddress] = struct{}{}
+}
+
+// AddressCleared returns if the "address" field was cleared in this mutation.
+func (m *WebsiteMutation) AddressCleared() bool {
+	_, ok := m.clearedFields[website.FieldAddress]
+	return ok
+}
+
 // ResetAddress resets all changes to the "address" field.
 func (m *WebsiteMutation) ResetAddress() {
 	m.address = nil
+	delete(m.clearedFields, website.FieldAddress)
 }
 
 // SetCity sets the "city" field.
@@ -46497,9 +46963,22 @@ func (m *WebsiteMutation) OldCity(ctx context.Context) (v string, err error) {
 	return oldValue.City, nil
 }
 
+// ClearCity clears the value of the "city" field.
+func (m *WebsiteMutation) ClearCity() {
+	m.city = nil
+	m.clearedFields[website.FieldCity] = struct{}{}
+}
+
+// CityCleared returns if the "city" field was cleared in this mutation.
+func (m *WebsiteMutation) CityCleared() bool {
+	_, ok := m.clearedFields[website.FieldCity]
+	return ok
+}
+
 // ResetCity resets all changes to the "city" field.
 func (m *WebsiteMutation) ResetCity() {
 	m.city = nil
+	delete(m.clearedFields, website.FieldCity)
 }
 
 // SetState sets the "state" field.
@@ -46533,9 +47012,22 @@ func (m *WebsiteMutation) OldState(ctx context.Context) (v string, err error) {
 	return oldValue.State, nil
 }
 
+// ClearState clears the value of the "state" field.
+func (m *WebsiteMutation) ClearState() {
+	m.state = nil
+	m.clearedFields[website.FieldState] = struct{}{}
+}
+
+// StateCleared returns if the "state" field was cleared in this mutation.
+func (m *WebsiteMutation) StateCleared() bool {
+	_, ok := m.clearedFields[website.FieldState]
+	return ok
+}
+
 // ResetState resets all changes to the "state" field.
 func (m *WebsiteMutation) ResetState() {
 	m.state = nil
+	delete(m.clearedFields, website.FieldState)
 }
 
 // SetCountry sets the "country" field.
@@ -46569,9 +47061,22 @@ func (m *WebsiteMutation) OldCountry(ctx context.Context) (v string, err error) 
 	return oldValue.Country, nil
 }
 
+// ClearCountry clears the value of the "country" field.
+func (m *WebsiteMutation) ClearCountry() {
+	m.country = nil
+	m.clearedFields[website.FieldCountry] = struct{}{}
+}
+
+// CountryCleared returns if the "country" field was cleared in this mutation.
+func (m *WebsiteMutation) CountryCleared() bool {
+	_, ok := m.clearedFields[website.FieldCountry]
+	return ok
+}
+
 // ResetCountry resets all changes to the "country" field.
 func (m *WebsiteMutation) ResetCountry() {
 	m.country = nil
+	delete(m.clearedFields, website.FieldCountry)
 }
 
 // SetZipCode sets the "zipCode" field.
@@ -46605,9 +47110,22 @@ func (m *WebsiteMutation) OldZipCode(ctx context.Context) (v string, err error) 
 	return oldValue.ZipCode, nil
 }
 
+// ClearZipCode clears the value of the "zipCode" field.
+func (m *WebsiteMutation) ClearZipCode() {
+	m.zipCode = nil
+	m.clearedFields[website.FieldZipCode] = struct{}{}
+}
+
+// ZipCodeCleared returns if the "zipCode" field was cleared in this mutation.
+func (m *WebsiteMutation) ZipCodeCleared() bool {
+	_, ok := m.clearedFields[website.FieldZipCode]
+	return ok
+}
+
 // ResetZipCode resets all changes to the "zipCode" field.
 func (m *WebsiteMutation) ResetZipCode() {
 	m.zipCode = nil
+	delete(m.clearedFields, website.FieldZipCode)
 }
 
 // SetPhoneNumber sets the "phoneNumber" field.
@@ -46641,9 +47159,22 @@ func (m *WebsiteMutation) OldPhoneNumber(ctx context.Context) (v string, err err
 	return oldValue.PhoneNumber, nil
 }
 
+// ClearPhoneNumber clears the value of the "phoneNumber" field.
+func (m *WebsiteMutation) ClearPhoneNumber() {
+	m.phoneNumber = nil
+	m.clearedFields[website.FieldPhoneNumber] = struct{}{}
+}
+
+// PhoneNumberCleared returns if the "phoneNumber" field was cleared in this mutation.
+func (m *WebsiteMutation) PhoneNumberCleared() bool {
+	_, ok := m.clearedFields[website.FieldPhoneNumber]
+	return ok
+}
+
 // ResetPhoneNumber resets all changes to the "phoneNumber" field.
 func (m *WebsiteMutation) ResetPhoneNumber() {
 	m.phoneNumber = nil
+	delete(m.clearedFields, website.FieldPhoneNumber)
 }
 
 // SetEmail sets the "email" field.
@@ -46677,9 +47208,22 @@ func (m *WebsiteMutation) OldEmail(ctx context.Context) (v string, err error) {
 	return oldValue.Email, nil
 }
 
+// ClearEmail clears the value of the "email" field.
+func (m *WebsiteMutation) ClearEmail() {
+	m.email = nil
+	m.clearedFields[website.FieldEmail] = struct{}{}
+}
+
+// EmailCleared returns if the "email" field was cleared in this mutation.
+func (m *WebsiteMutation) EmailCleared() bool {
+	_, ok := m.clearedFields[website.FieldEmail]
+	return ok
+}
+
 // ResetEmail resets all changes to the "email" field.
 func (m *WebsiteMutation) ResetEmail() {
 	m.email = nil
+	delete(m.clearedFields, website.FieldEmail)
 }
 
 // SetMetaTags sets the "metaTags" field.
@@ -46713,9 +47257,22 @@ func (m *WebsiteMutation) OldMetaTags(ctx context.Context) (v map[string]interfa
 	return oldValue.MetaTags, nil
 }
 
+// ClearMetaTags clears the value of the "metaTags" field.
+func (m *WebsiteMutation) ClearMetaTags() {
+	m.metaTags = nil
+	m.clearedFields[website.FieldMetaTags] = struct{}{}
+}
+
+// MetaTagsCleared returns if the "metaTags" field was cleared in this mutation.
+func (m *WebsiteMutation) MetaTagsCleared() bool {
+	_, ok := m.clearedFields[website.FieldMetaTags]
+	return ok
+}
+
 // ResetMetaTags resets all changes to the "metaTags" field.
 func (m *WebsiteMutation) ResetMetaTags() {
 	m.metaTags = nil
+	delete(m.clearedFields, website.FieldMetaTags)
 }
 
 // SetBusinessID sets the "business" edge to the Business entity by id.
@@ -46755,45 +47312,6 @@ func (m *WebsiteMutation) BusinessIDs() (ids []string) {
 func (m *WebsiteMutation) ResetBusiness() {
 	m.business = nil
 	m.clearedbusiness = false
-}
-
-// SetTemplateID sets the "template" edge to the Template entity by id.
-func (m *WebsiteMutation) SetTemplateID(id string) {
-	m.template = &id
-}
-
-// ClearTemplate clears the "template" edge to the Template entity.
-func (m *WebsiteMutation) ClearTemplate() {
-	m.clearedtemplate = true
-}
-
-// TemplateCleared reports if the "template" edge to the Template entity was cleared.
-func (m *WebsiteMutation) TemplateCleared() bool {
-	return m.clearedtemplate
-}
-
-// TemplateID returns the "template" edge ID in the mutation.
-func (m *WebsiteMutation) TemplateID() (id string, exists bool) {
-	if m.template != nil {
-		return *m.template, true
-	}
-	return
-}
-
-// TemplateIDs returns the "template" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// TemplateID instead. It exists only for internal usage by the builders.
-func (m *WebsiteMutation) TemplateIDs() (ids []string) {
-	if id := m.template; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetTemplate resets all changes to the "template" edge.
-func (m *WebsiteMutation) ResetTemplate() {
-	m.template = nil
-	m.clearedtemplate = false
 }
 
 // AddCustomBlockIDs adds the "customBlocks" edge to the CustomBlock entity by ids.
@@ -47638,7 +48156,137 @@ func (m *WebsiteMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *WebsiteMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(website.FieldHeadingText) {
+		fields = append(fields, website.FieldHeadingText)
+	}
+	if m.FieldCleared(website.FieldBusinessLogo) {
+		fields = append(fields, website.FieldBusinessLogo)
+	}
+	if m.FieldCleared(website.FieldBusinessName) {
+		fields = append(fields, website.FieldBusinessName)
+	}
+	if m.FieldCleared(website.FieldBannerSectionBackgroundImage) {
+		fields = append(fields, website.FieldBannerSectionBackgroundImage)
+	}
+	if m.FieldCleared(website.FieldBannerSectionBackgroundColor) {
+		fields = append(fields, website.FieldBannerSectionBackgroundColor)
+	}
+	if m.FieldCleared(website.FieldBannerSectionText) {
+		fields = append(fields, website.FieldBannerSectionText)
+	}
+	if m.FieldCleared(website.FieldThreeItemsSectionHeadingText) {
+		fields = append(fields, website.FieldThreeItemsSectionHeadingText)
+	}
+	if m.FieldCleared(website.FieldThreeItemsSectionDetailsText) {
+		fields = append(fields, website.FieldThreeItemsSectionDetailsText)
+	}
+	if m.FieldCleared(website.FieldThreeItemsSectionItemOneText) {
+		fields = append(fields, website.FieldThreeItemsSectionItemOneText)
+	}
+	if m.FieldCleared(website.FieldThreeItemsSectionItemTwoText) {
+		fields = append(fields, website.FieldThreeItemsSectionItemTwoText)
+	}
+	if m.FieldCleared(website.FieldThreeItemsSectionItemThreeText) {
+		fields = append(fields, website.FieldThreeItemsSectionItemThreeText)
+	}
+	if m.FieldCleared(website.FieldBannerTwoSectionBackgroundImage) {
+		fields = append(fields, website.FieldBannerTwoSectionBackgroundImage)
+	}
+	if m.FieldCleared(website.FieldBannerTwoSectionBackgroundColor) {
+		fields = append(fields, website.FieldBannerTwoSectionBackgroundColor)
+	}
+	if m.FieldCleared(website.FieldBannerTwoLeftSectionHeadingText) {
+		fields = append(fields, website.FieldBannerTwoLeftSectionHeadingText)
+	}
+	if m.FieldCleared(website.FieldBannerTwoLeftSectionDetailsText) {
+		fields = append(fields, website.FieldBannerTwoLeftSectionDetailsText)
+	}
+	if m.FieldCleared(website.FieldBannerTwoLeftSectionButtonText) {
+		fields = append(fields, website.FieldBannerTwoLeftSectionButtonText)
+	}
+	if m.FieldCleared(website.FieldBannerTwoLeftSectionButtonLink) {
+		fields = append(fields, website.FieldBannerTwoLeftSectionButtonLink)
+	}
+	if m.FieldCleared(website.FieldBannerTwoRightSideImage) {
+		fields = append(fields, website.FieldBannerTwoRightSideImage)
+	}
+	if m.FieldCleared(website.FieldAchievementsSection) {
+		fields = append(fields, website.FieldAchievementsSection)
+	}
+	if m.FieldCleared(website.FieldInventorySectionHeadingText) {
+		fields = append(fields, website.FieldInventorySectionHeadingText)
+	}
+	if m.FieldCleared(website.FieldTitle) {
+		fields = append(fields, website.FieldTitle)
+	}
+	if m.FieldCleared(website.FieldDescription) {
+		fields = append(fields, website.FieldDescription)
+	}
+	if m.FieldCleared(website.FieldKeywords) {
+		fields = append(fields, website.FieldKeywords)
+	}
+	if m.FieldCleared(website.FieldLanguage) {
+		fields = append(fields, website.FieldLanguage)
+	}
+	if m.FieldCleared(website.FieldLogo) {
+		fields = append(fields, website.FieldLogo)
+	}
+	if m.FieldCleared(website.FieldFavicon) {
+		fields = append(fields, website.FieldFavicon)
+	}
+	if m.FieldCleared(website.FieldFacebook) {
+		fields = append(fields, website.FieldFacebook)
+	}
+	if m.FieldCleared(website.FieldTwitter) {
+		fields = append(fields, website.FieldTwitter)
+	}
+	if m.FieldCleared(website.FieldInstagram) {
+		fields = append(fields, website.FieldInstagram)
+	}
+	if m.FieldCleared(website.FieldYoutube) {
+		fields = append(fields, website.FieldYoutube)
+	}
+	if m.FieldCleared(website.FieldLinkedin) {
+		fields = append(fields, website.FieldLinkedin)
+	}
+	if m.FieldCleared(website.FieldPinterest) {
+		fields = append(fields, website.FieldPinterest)
+	}
+	if m.FieldCleared(website.FieldMapCoordinates) {
+		fields = append(fields, website.FieldMapCoordinates)
+	}
+	if m.FieldCleared(website.FieldLongitude) {
+		fields = append(fields, website.FieldLongitude)
+	}
+	if m.FieldCleared(website.FieldLatitude) {
+		fields = append(fields, website.FieldLatitude)
+	}
+	if m.FieldCleared(website.FieldAddress) {
+		fields = append(fields, website.FieldAddress)
+	}
+	if m.FieldCleared(website.FieldCity) {
+		fields = append(fields, website.FieldCity)
+	}
+	if m.FieldCleared(website.FieldState) {
+		fields = append(fields, website.FieldState)
+	}
+	if m.FieldCleared(website.FieldCountry) {
+		fields = append(fields, website.FieldCountry)
+	}
+	if m.FieldCleared(website.FieldZipCode) {
+		fields = append(fields, website.FieldZipCode)
+	}
+	if m.FieldCleared(website.FieldPhoneNumber) {
+		fields = append(fields, website.FieldPhoneNumber)
+	}
+	if m.FieldCleared(website.FieldEmail) {
+		fields = append(fields, website.FieldEmail)
+	}
+	if m.FieldCleared(website.FieldMetaTags) {
+		fields = append(fields, website.FieldMetaTags)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -47651,6 +48299,137 @@ func (m *WebsiteMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *WebsiteMutation) ClearField(name string) error {
+	switch name {
+	case website.FieldHeadingText:
+		m.ClearHeadingText()
+		return nil
+	case website.FieldBusinessLogo:
+		m.ClearBusinessLogo()
+		return nil
+	case website.FieldBusinessName:
+		m.ClearBusinessName()
+		return nil
+	case website.FieldBannerSectionBackgroundImage:
+		m.ClearBannerSectionBackgroundImage()
+		return nil
+	case website.FieldBannerSectionBackgroundColor:
+		m.ClearBannerSectionBackgroundColor()
+		return nil
+	case website.FieldBannerSectionText:
+		m.ClearBannerSectionText()
+		return nil
+	case website.FieldThreeItemsSectionHeadingText:
+		m.ClearThreeItemsSectionHeadingText()
+		return nil
+	case website.FieldThreeItemsSectionDetailsText:
+		m.ClearThreeItemsSectionDetailsText()
+		return nil
+	case website.FieldThreeItemsSectionItemOneText:
+		m.ClearThreeItemsSectionItemOneText()
+		return nil
+	case website.FieldThreeItemsSectionItemTwoText:
+		m.ClearThreeItemsSectionItemTwoText()
+		return nil
+	case website.FieldThreeItemsSectionItemThreeText:
+		m.ClearThreeItemsSectionItemThreeText()
+		return nil
+	case website.FieldBannerTwoSectionBackgroundImage:
+		m.ClearBannerTwoSectionBackgroundImage()
+		return nil
+	case website.FieldBannerTwoSectionBackgroundColor:
+		m.ClearBannerTwoSectionBackgroundColor()
+		return nil
+	case website.FieldBannerTwoLeftSectionHeadingText:
+		m.ClearBannerTwoLeftSectionHeadingText()
+		return nil
+	case website.FieldBannerTwoLeftSectionDetailsText:
+		m.ClearBannerTwoLeftSectionDetailsText()
+		return nil
+	case website.FieldBannerTwoLeftSectionButtonText:
+		m.ClearBannerTwoLeftSectionButtonText()
+		return nil
+	case website.FieldBannerTwoLeftSectionButtonLink:
+		m.ClearBannerTwoLeftSectionButtonLink()
+		return nil
+	case website.FieldBannerTwoRightSideImage:
+		m.ClearBannerTwoRightSideImage()
+		return nil
+	case website.FieldAchievementsSection:
+		m.ClearAchievementsSection()
+		return nil
+	case website.FieldInventorySectionHeadingText:
+		m.ClearInventorySectionHeadingText()
+		return nil
+	case website.FieldTitle:
+		m.ClearTitle()
+		return nil
+	case website.FieldDescription:
+		m.ClearDescription()
+		return nil
+	case website.FieldKeywords:
+		m.ClearKeywords()
+		return nil
+	case website.FieldLanguage:
+		m.ClearLanguage()
+		return nil
+	case website.FieldLogo:
+		m.ClearLogo()
+		return nil
+	case website.FieldFavicon:
+		m.ClearFavicon()
+		return nil
+	case website.FieldFacebook:
+		m.ClearFacebook()
+		return nil
+	case website.FieldTwitter:
+		m.ClearTwitter()
+		return nil
+	case website.FieldInstagram:
+		m.ClearInstagram()
+		return nil
+	case website.FieldYoutube:
+		m.ClearYoutube()
+		return nil
+	case website.FieldLinkedin:
+		m.ClearLinkedin()
+		return nil
+	case website.FieldPinterest:
+		m.ClearPinterest()
+		return nil
+	case website.FieldMapCoordinates:
+		m.ClearMapCoordinates()
+		return nil
+	case website.FieldLongitude:
+		m.ClearLongitude()
+		return nil
+	case website.FieldLatitude:
+		m.ClearLatitude()
+		return nil
+	case website.FieldAddress:
+		m.ClearAddress()
+		return nil
+	case website.FieldCity:
+		m.ClearCity()
+		return nil
+	case website.FieldState:
+		m.ClearState()
+		return nil
+	case website.FieldCountry:
+		m.ClearCountry()
+		return nil
+	case website.FieldZipCode:
+		m.ClearZipCode()
+		return nil
+	case website.FieldPhoneNumber:
+		m.ClearPhoneNumber()
+		return nil
+	case website.FieldEmail:
+		m.ClearEmail()
+		return nil
+	case website.FieldMetaTags:
+		m.ClearMetaTags()
+		return nil
+	}
 	return fmt.Errorf("unknown Website nullable field %s", name)
 }
 
@@ -47802,12 +48581,9 @@ func (m *WebsiteMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *WebsiteMutation) AddedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 3)
 	if m.business != nil {
 		edges = append(edges, website.EdgeBusiness)
-	}
-	if m.template != nil {
-		edges = append(edges, website.EdgeTemplate)
 	}
 	if m.customBlocks != nil {
 		edges = append(edges, website.EdgeCustomBlocks)
@@ -47824,10 +48600,6 @@ func (m *WebsiteMutation) AddedIDs(name string) []ent.Value {
 	switch name {
 	case website.EdgeBusiness:
 		if id := m.business; id != nil {
-			return []ent.Value{*id}
-		}
-	case website.EdgeTemplate:
-		if id := m.template; id != nil {
 			return []ent.Value{*id}
 		}
 	case website.EdgeCustomBlocks:
@@ -47848,7 +48620,7 @@ func (m *WebsiteMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *WebsiteMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 3)
 	if m.removedcustomBlocks != nil {
 		edges = append(edges, website.EdgeCustomBlocks)
 	}
@@ -47880,12 +48652,9 @@ func (m *WebsiteMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *WebsiteMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 3)
 	if m.clearedbusiness {
 		edges = append(edges, website.EdgeBusiness)
-	}
-	if m.clearedtemplate {
-		edges = append(edges, website.EdgeTemplate)
 	}
 	if m.clearedcustomBlocks {
 		edges = append(edges, website.EdgeCustomBlocks)
@@ -47902,8 +48671,6 @@ func (m *WebsiteMutation) EdgeCleared(name string) bool {
 	switch name {
 	case website.EdgeBusiness:
 		return m.clearedbusiness
-	case website.EdgeTemplate:
-		return m.clearedtemplate
 	case website.EdgeCustomBlocks:
 		return m.clearedcustomBlocks
 	case website.EdgeAssets:
@@ -47919,9 +48686,6 @@ func (m *WebsiteMutation) ClearEdge(name string) error {
 	case website.EdgeBusiness:
 		m.ClearBusiness()
 		return nil
-	case website.EdgeTemplate:
-		m.ClearTemplate()
-		return nil
 	}
 	return fmt.Errorf("unknown Website unique edge %s", name)
 }
@@ -47932,9 +48696,6 @@ func (m *WebsiteMutation) ResetEdge(name string) error {
 	switch name {
 	case website.EdgeBusiness:
 		m.ResetBusiness()
-		return nil
-	case website.EdgeTemplate:
-		m.ResetTemplate()
 		return nil
 	case website.EdgeCustomBlocks:
 		m.ResetCustomBlocks()

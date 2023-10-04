@@ -319,6 +319,8 @@ func (s *BusinessAccountServiceImpl) GetBusinessAccount(ctx context.Context, bus
 				query.WithUser()
 			})
 		}).
+		WithWebsites(func(query *ent.WebsiteQuery) {
+		}).
 		Only(ctx)
 	if err != nil {
 		return nil, err

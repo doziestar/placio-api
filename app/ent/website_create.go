@@ -9,7 +9,6 @@ import (
 	"placio-app/ent/business"
 	"placio-app/ent/customblock"
 	"placio-app/ent/media"
-	"placio-app/ent/template"
 	"placio-app/ent/website"
 	"time"
 
@@ -36,9 +35,25 @@ func (wc *WebsiteCreate) SetHeadingText(s string) *WebsiteCreate {
 	return wc
 }
 
+// SetNillableHeadingText sets the "heading_text" field if the given value is not nil.
+func (wc *WebsiteCreate) SetNillableHeadingText(s *string) *WebsiteCreate {
+	if s != nil {
+		wc.SetHeadingText(*s)
+	}
+	return wc
+}
+
 // SetBusinessLogo sets the "business_logo" field.
 func (wc *WebsiteCreate) SetBusinessLogo(s string) *WebsiteCreate {
 	wc.mutation.SetBusinessLogo(s)
+	return wc
+}
+
+// SetNillableBusinessLogo sets the "business_logo" field if the given value is not nil.
+func (wc *WebsiteCreate) SetNillableBusinessLogo(s *string) *WebsiteCreate {
+	if s != nil {
+		wc.SetBusinessLogo(*s)
+	}
 	return wc
 }
 
@@ -48,9 +63,25 @@ func (wc *WebsiteCreate) SetBusinessName(s string) *WebsiteCreate {
 	return wc
 }
 
+// SetNillableBusinessName sets the "business_name" field if the given value is not nil.
+func (wc *WebsiteCreate) SetNillableBusinessName(s *string) *WebsiteCreate {
+	if s != nil {
+		wc.SetBusinessName(*s)
+	}
+	return wc
+}
+
 // SetBannerSectionBackgroundImage sets the "banner_section_background_image" field.
 func (wc *WebsiteCreate) SetBannerSectionBackgroundImage(s string) *WebsiteCreate {
 	wc.mutation.SetBannerSectionBackgroundImage(s)
+	return wc
+}
+
+// SetNillableBannerSectionBackgroundImage sets the "banner_section_background_image" field if the given value is not nil.
+func (wc *WebsiteCreate) SetNillableBannerSectionBackgroundImage(s *string) *WebsiteCreate {
+	if s != nil {
+		wc.SetBannerSectionBackgroundImage(*s)
+	}
 	return wc
 }
 
@@ -60,9 +91,25 @@ func (wc *WebsiteCreate) SetBannerSectionBackgroundColor(s string) *WebsiteCreat
 	return wc
 }
 
+// SetNillableBannerSectionBackgroundColor sets the "banner_section_background_color" field if the given value is not nil.
+func (wc *WebsiteCreate) SetNillableBannerSectionBackgroundColor(s *string) *WebsiteCreate {
+	if s != nil {
+		wc.SetBannerSectionBackgroundColor(*s)
+	}
+	return wc
+}
+
 // SetBannerSectionText sets the "banner_section_text" field.
 func (wc *WebsiteCreate) SetBannerSectionText(s string) *WebsiteCreate {
 	wc.mutation.SetBannerSectionText(s)
+	return wc
+}
+
+// SetNillableBannerSectionText sets the "banner_section_text" field if the given value is not nil.
+func (wc *WebsiteCreate) SetNillableBannerSectionText(s *string) *WebsiteCreate {
+	if s != nil {
+		wc.SetBannerSectionText(*s)
+	}
 	return wc
 }
 
@@ -72,9 +119,25 @@ func (wc *WebsiteCreate) SetThreeItemsSectionHeadingText(s string) *WebsiteCreat
 	return wc
 }
 
+// SetNillableThreeItemsSectionHeadingText sets the "three_items_section_heading_text" field if the given value is not nil.
+func (wc *WebsiteCreate) SetNillableThreeItemsSectionHeadingText(s *string) *WebsiteCreate {
+	if s != nil {
+		wc.SetThreeItemsSectionHeadingText(*s)
+	}
+	return wc
+}
+
 // SetThreeItemsSectionDetailsText sets the "three_items_section_details_text" field.
 func (wc *WebsiteCreate) SetThreeItemsSectionDetailsText(s string) *WebsiteCreate {
 	wc.mutation.SetThreeItemsSectionDetailsText(s)
+	return wc
+}
+
+// SetNillableThreeItemsSectionDetailsText sets the "three_items_section_details_text" field if the given value is not nil.
+func (wc *WebsiteCreate) SetNillableThreeItemsSectionDetailsText(s *string) *WebsiteCreate {
+	if s != nil {
+		wc.SetThreeItemsSectionDetailsText(*s)
+	}
 	return wc
 }
 
@@ -84,9 +147,25 @@ func (wc *WebsiteCreate) SetThreeItemsSectionItemOneText(s string) *WebsiteCreat
 	return wc
 }
 
+// SetNillableThreeItemsSectionItemOneText sets the "three_items_section_item_one_text" field if the given value is not nil.
+func (wc *WebsiteCreate) SetNillableThreeItemsSectionItemOneText(s *string) *WebsiteCreate {
+	if s != nil {
+		wc.SetThreeItemsSectionItemOneText(*s)
+	}
+	return wc
+}
+
 // SetThreeItemsSectionItemTwoText sets the "three_items_section_item_two_text" field.
 func (wc *WebsiteCreate) SetThreeItemsSectionItemTwoText(s string) *WebsiteCreate {
 	wc.mutation.SetThreeItemsSectionItemTwoText(s)
+	return wc
+}
+
+// SetNillableThreeItemsSectionItemTwoText sets the "three_items_section_item_two_text" field if the given value is not nil.
+func (wc *WebsiteCreate) SetNillableThreeItemsSectionItemTwoText(s *string) *WebsiteCreate {
+	if s != nil {
+		wc.SetThreeItemsSectionItemTwoText(*s)
+	}
 	return wc
 }
 
@@ -96,9 +175,25 @@ func (wc *WebsiteCreate) SetThreeItemsSectionItemThreeText(s string) *WebsiteCre
 	return wc
 }
 
+// SetNillableThreeItemsSectionItemThreeText sets the "three_items_section_item_three_text" field if the given value is not nil.
+func (wc *WebsiteCreate) SetNillableThreeItemsSectionItemThreeText(s *string) *WebsiteCreate {
+	if s != nil {
+		wc.SetThreeItemsSectionItemThreeText(*s)
+	}
+	return wc
+}
+
 // SetBannerTwoSectionBackgroundImage sets the "banner_two_section_background_image" field.
 func (wc *WebsiteCreate) SetBannerTwoSectionBackgroundImage(s string) *WebsiteCreate {
 	wc.mutation.SetBannerTwoSectionBackgroundImage(s)
+	return wc
+}
+
+// SetNillableBannerTwoSectionBackgroundImage sets the "banner_two_section_background_image" field if the given value is not nil.
+func (wc *WebsiteCreate) SetNillableBannerTwoSectionBackgroundImage(s *string) *WebsiteCreate {
+	if s != nil {
+		wc.SetBannerTwoSectionBackgroundImage(*s)
+	}
 	return wc
 }
 
@@ -108,9 +203,25 @@ func (wc *WebsiteCreate) SetBannerTwoSectionBackgroundColor(s string) *WebsiteCr
 	return wc
 }
 
+// SetNillableBannerTwoSectionBackgroundColor sets the "banner_two_section_background_color" field if the given value is not nil.
+func (wc *WebsiteCreate) SetNillableBannerTwoSectionBackgroundColor(s *string) *WebsiteCreate {
+	if s != nil {
+		wc.SetBannerTwoSectionBackgroundColor(*s)
+	}
+	return wc
+}
+
 // SetBannerTwoLeftSectionHeadingText sets the "banner_two_left_section_heading_text" field.
 func (wc *WebsiteCreate) SetBannerTwoLeftSectionHeadingText(s string) *WebsiteCreate {
 	wc.mutation.SetBannerTwoLeftSectionHeadingText(s)
+	return wc
+}
+
+// SetNillableBannerTwoLeftSectionHeadingText sets the "banner_two_left_section_heading_text" field if the given value is not nil.
+func (wc *WebsiteCreate) SetNillableBannerTwoLeftSectionHeadingText(s *string) *WebsiteCreate {
+	if s != nil {
+		wc.SetBannerTwoLeftSectionHeadingText(*s)
+	}
 	return wc
 }
 
@@ -120,9 +231,25 @@ func (wc *WebsiteCreate) SetBannerTwoLeftSectionDetailsText(s string) *WebsiteCr
 	return wc
 }
 
+// SetNillableBannerTwoLeftSectionDetailsText sets the "banner_two_left_section_details_text" field if the given value is not nil.
+func (wc *WebsiteCreate) SetNillableBannerTwoLeftSectionDetailsText(s *string) *WebsiteCreate {
+	if s != nil {
+		wc.SetBannerTwoLeftSectionDetailsText(*s)
+	}
+	return wc
+}
+
 // SetBannerTwoLeftSectionButtonText sets the "banner_two_left_section_button_text" field.
 func (wc *WebsiteCreate) SetBannerTwoLeftSectionButtonText(s string) *WebsiteCreate {
 	wc.mutation.SetBannerTwoLeftSectionButtonText(s)
+	return wc
+}
+
+// SetNillableBannerTwoLeftSectionButtonText sets the "banner_two_left_section_button_text" field if the given value is not nil.
+func (wc *WebsiteCreate) SetNillableBannerTwoLeftSectionButtonText(s *string) *WebsiteCreate {
+	if s != nil {
+		wc.SetBannerTwoLeftSectionButtonText(*s)
+	}
 	return wc
 }
 
@@ -132,9 +259,25 @@ func (wc *WebsiteCreate) SetBannerTwoLeftSectionButtonLink(s string) *WebsiteCre
 	return wc
 }
 
+// SetNillableBannerTwoLeftSectionButtonLink sets the "banner_two_left_section_button_link" field if the given value is not nil.
+func (wc *WebsiteCreate) SetNillableBannerTwoLeftSectionButtonLink(s *string) *WebsiteCreate {
+	if s != nil {
+		wc.SetBannerTwoLeftSectionButtonLink(*s)
+	}
+	return wc
+}
+
 // SetBannerTwoRightSideImage sets the "banner_two_right_side_image" field.
 func (wc *WebsiteCreate) SetBannerTwoRightSideImage(s string) *WebsiteCreate {
 	wc.mutation.SetBannerTwoRightSideImage(s)
+	return wc
+}
+
+// SetNillableBannerTwoRightSideImage sets the "banner_two_right_side_image" field if the given value is not nil.
+func (wc *WebsiteCreate) SetNillableBannerTwoRightSideImage(s *string) *WebsiteCreate {
+	if s != nil {
+		wc.SetBannerTwoRightSideImage(*s)
+	}
 	return wc
 }
 
@@ -147,6 +290,14 @@ func (wc *WebsiteCreate) SetAchievementsSection(m map[string]interface{}) *Websi
 // SetInventorySectionHeadingText sets the "Inventory_section_heading_text" field.
 func (wc *WebsiteCreate) SetInventorySectionHeadingText(s string) *WebsiteCreate {
 	wc.mutation.SetInventorySectionHeadingText(s)
+	return wc
+}
+
+// SetNillableInventorySectionHeadingText sets the "Inventory_section_heading_text" field if the given value is not nil.
+func (wc *WebsiteCreate) SetNillableInventorySectionHeadingText(s *string) *WebsiteCreate {
+	if s != nil {
+		wc.SetInventorySectionHeadingText(*s)
+	}
 	return wc
 }
 
@@ -176,9 +327,25 @@ func (wc *WebsiteCreate) SetTitle(s string) *WebsiteCreate {
 	return wc
 }
 
+// SetNillableTitle sets the "title" field if the given value is not nil.
+func (wc *WebsiteCreate) SetNillableTitle(s *string) *WebsiteCreate {
+	if s != nil {
+		wc.SetTitle(*s)
+	}
+	return wc
+}
+
 // SetDescription sets the "description" field.
 func (wc *WebsiteCreate) SetDescription(s string) *WebsiteCreate {
 	wc.mutation.SetDescription(s)
+	return wc
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (wc *WebsiteCreate) SetNillableDescription(s *string) *WebsiteCreate {
+	if s != nil {
+		wc.SetDescription(*s)
+	}
 	return wc
 }
 
@@ -188,9 +355,25 @@ func (wc *WebsiteCreate) SetKeywords(s string) *WebsiteCreate {
 	return wc
 }
 
+// SetNillableKeywords sets the "keywords" field if the given value is not nil.
+func (wc *WebsiteCreate) SetNillableKeywords(s *string) *WebsiteCreate {
+	if s != nil {
+		wc.SetKeywords(*s)
+	}
+	return wc
+}
+
 // SetLanguage sets the "language" field.
 func (wc *WebsiteCreate) SetLanguage(s string) *WebsiteCreate {
 	wc.mutation.SetLanguage(s)
+	return wc
+}
+
+// SetNillableLanguage sets the "language" field if the given value is not nil.
+func (wc *WebsiteCreate) SetNillableLanguage(s *string) *WebsiteCreate {
+	if s != nil {
+		wc.SetLanguage(*s)
+	}
 	return wc
 }
 
@@ -200,9 +383,25 @@ func (wc *WebsiteCreate) SetLogo(s string) *WebsiteCreate {
 	return wc
 }
 
+// SetNillableLogo sets the "logo" field if the given value is not nil.
+func (wc *WebsiteCreate) SetNillableLogo(s *string) *WebsiteCreate {
+	if s != nil {
+		wc.SetLogo(*s)
+	}
+	return wc
+}
+
 // SetFavicon sets the "favicon" field.
 func (wc *WebsiteCreate) SetFavicon(s string) *WebsiteCreate {
 	wc.mutation.SetFavicon(s)
+	return wc
+}
+
+// SetNillableFavicon sets the "favicon" field if the given value is not nil.
+func (wc *WebsiteCreate) SetNillableFavicon(s *string) *WebsiteCreate {
+	if s != nil {
+		wc.SetFavicon(*s)
+	}
 	return wc
 }
 
@@ -212,9 +411,25 @@ func (wc *WebsiteCreate) SetFacebook(s string) *WebsiteCreate {
 	return wc
 }
 
+// SetNillableFacebook sets the "facebook" field if the given value is not nil.
+func (wc *WebsiteCreate) SetNillableFacebook(s *string) *WebsiteCreate {
+	if s != nil {
+		wc.SetFacebook(*s)
+	}
+	return wc
+}
+
 // SetTwitter sets the "twitter" field.
 func (wc *WebsiteCreate) SetTwitter(s string) *WebsiteCreate {
 	wc.mutation.SetTwitter(s)
+	return wc
+}
+
+// SetNillableTwitter sets the "twitter" field if the given value is not nil.
+func (wc *WebsiteCreate) SetNillableTwitter(s *string) *WebsiteCreate {
+	if s != nil {
+		wc.SetTwitter(*s)
+	}
 	return wc
 }
 
@@ -224,9 +439,25 @@ func (wc *WebsiteCreate) SetInstagram(s string) *WebsiteCreate {
 	return wc
 }
 
+// SetNillableInstagram sets the "instagram" field if the given value is not nil.
+func (wc *WebsiteCreate) SetNillableInstagram(s *string) *WebsiteCreate {
+	if s != nil {
+		wc.SetInstagram(*s)
+	}
+	return wc
+}
+
 // SetYoutube sets the "youtube" field.
 func (wc *WebsiteCreate) SetYoutube(s string) *WebsiteCreate {
 	wc.mutation.SetYoutube(s)
+	return wc
+}
+
+// SetNillableYoutube sets the "youtube" field if the given value is not nil.
+func (wc *WebsiteCreate) SetNillableYoutube(s *string) *WebsiteCreate {
+	if s != nil {
+		wc.SetYoutube(*s)
+	}
 	return wc
 }
 
@@ -236,9 +467,25 @@ func (wc *WebsiteCreate) SetLinkedin(s string) *WebsiteCreate {
 	return wc
 }
 
+// SetNillableLinkedin sets the "linkedin" field if the given value is not nil.
+func (wc *WebsiteCreate) SetNillableLinkedin(s *string) *WebsiteCreate {
+	if s != nil {
+		wc.SetLinkedin(*s)
+	}
+	return wc
+}
+
 // SetPinterest sets the "pinterest" field.
 func (wc *WebsiteCreate) SetPinterest(s string) *WebsiteCreate {
 	wc.mutation.SetPinterest(s)
+	return wc
+}
+
+// SetNillablePinterest sets the "pinterest" field if the given value is not nil.
+func (wc *WebsiteCreate) SetNillablePinterest(s *string) *WebsiteCreate {
+	if s != nil {
+		wc.SetPinterest(*s)
+	}
 	return wc
 }
 
@@ -254,9 +501,25 @@ func (wc *WebsiteCreate) SetLongitude(s string) *WebsiteCreate {
 	return wc
 }
 
+// SetNillableLongitude sets the "longitude" field if the given value is not nil.
+func (wc *WebsiteCreate) SetNillableLongitude(s *string) *WebsiteCreate {
+	if s != nil {
+		wc.SetLongitude(*s)
+	}
+	return wc
+}
+
 // SetLatitude sets the "latitude" field.
 func (wc *WebsiteCreate) SetLatitude(s string) *WebsiteCreate {
 	wc.mutation.SetLatitude(s)
+	return wc
+}
+
+// SetNillableLatitude sets the "latitude" field if the given value is not nil.
+func (wc *WebsiteCreate) SetNillableLatitude(s *string) *WebsiteCreate {
+	if s != nil {
+		wc.SetLatitude(*s)
+	}
 	return wc
 }
 
@@ -266,9 +529,25 @@ func (wc *WebsiteCreate) SetAddress(s string) *WebsiteCreate {
 	return wc
 }
 
+// SetNillableAddress sets the "address" field if the given value is not nil.
+func (wc *WebsiteCreate) SetNillableAddress(s *string) *WebsiteCreate {
+	if s != nil {
+		wc.SetAddress(*s)
+	}
+	return wc
+}
+
 // SetCity sets the "city" field.
 func (wc *WebsiteCreate) SetCity(s string) *WebsiteCreate {
 	wc.mutation.SetCity(s)
+	return wc
+}
+
+// SetNillableCity sets the "city" field if the given value is not nil.
+func (wc *WebsiteCreate) SetNillableCity(s *string) *WebsiteCreate {
+	if s != nil {
+		wc.SetCity(*s)
+	}
 	return wc
 }
 
@@ -278,9 +557,25 @@ func (wc *WebsiteCreate) SetState(s string) *WebsiteCreate {
 	return wc
 }
 
+// SetNillableState sets the "state" field if the given value is not nil.
+func (wc *WebsiteCreate) SetNillableState(s *string) *WebsiteCreate {
+	if s != nil {
+		wc.SetState(*s)
+	}
+	return wc
+}
+
 // SetCountry sets the "country" field.
 func (wc *WebsiteCreate) SetCountry(s string) *WebsiteCreate {
 	wc.mutation.SetCountry(s)
+	return wc
+}
+
+// SetNillableCountry sets the "country" field if the given value is not nil.
+func (wc *WebsiteCreate) SetNillableCountry(s *string) *WebsiteCreate {
+	if s != nil {
+		wc.SetCountry(*s)
+	}
 	return wc
 }
 
@@ -290,15 +585,39 @@ func (wc *WebsiteCreate) SetZipCode(s string) *WebsiteCreate {
 	return wc
 }
 
+// SetNillableZipCode sets the "zipCode" field if the given value is not nil.
+func (wc *WebsiteCreate) SetNillableZipCode(s *string) *WebsiteCreate {
+	if s != nil {
+		wc.SetZipCode(*s)
+	}
+	return wc
+}
+
 // SetPhoneNumber sets the "phoneNumber" field.
 func (wc *WebsiteCreate) SetPhoneNumber(s string) *WebsiteCreate {
 	wc.mutation.SetPhoneNumber(s)
 	return wc
 }
 
+// SetNillablePhoneNumber sets the "phoneNumber" field if the given value is not nil.
+func (wc *WebsiteCreate) SetNillablePhoneNumber(s *string) *WebsiteCreate {
+	if s != nil {
+		wc.SetPhoneNumber(*s)
+	}
+	return wc
+}
+
 // SetEmail sets the "email" field.
 func (wc *WebsiteCreate) SetEmail(s string) *WebsiteCreate {
 	wc.mutation.SetEmail(s)
+	return wc
+}
+
+// SetNillableEmail sets the "email" field if the given value is not nil.
+func (wc *WebsiteCreate) SetNillableEmail(s *string) *WebsiteCreate {
+	if s != nil {
+		wc.SetEmail(*s)
+	}
 	return wc
 }
 
@@ -323,17 +642,6 @@ func (wc *WebsiteCreate) SetBusinessID(id string) *WebsiteCreate {
 // SetBusiness sets the "business" edge to the Business entity.
 func (wc *WebsiteCreate) SetBusiness(b *Business) *WebsiteCreate {
 	return wc.SetBusinessID(b.ID)
-}
-
-// SetTemplateID sets the "template" edge to the Template entity by ID.
-func (wc *WebsiteCreate) SetTemplateID(id string) *WebsiteCreate {
-	wc.mutation.SetTemplateID(id)
-	return wc
-}
-
-// SetTemplate sets the "template" edge to the Template entity.
-func (wc *WebsiteCreate) SetTemplate(t *Template) *WebsiteCreate {
-	return wc.SetTemplateID(t.ID)
 }
 
 // AddCustomBlockIDs adds the "customBlocks" edge to the CustomBlock entity by IDs.
@@ -412,146 +720,14 @@ func (wc *WebsiteCreate) check() error {
 	if _, ok := wc.mutation.DomainName(); !ok {
 		return &ValidationError{Name: "domainName", err: errors.New(`ent: missing required field "Website.domainName"`)}
 	}
-	if _, ok := wc.mutation.HeadingText(); !ok {
-		return &ValidationError{Name: "heading_text", err: errors.New(`ent: missing required field "Website.heading_text"`)}
-	}
-	if _, ok := wc.mutation.BusinessLogo(); !ok {
-		return &ValidationError{Name: "business_logo", err: errors.New(`ent: missing required field "Website.business_logo"`)}
-	}
-	if _, ok := wc.mutation.BusinessName(); !ok {
-		return &ValidationError{Name: "business_name", err: errors.New(`ent: missing required field "Website.business_name"`)}
-	}
-	if _, ok := wc.mutation.BannerSectionBackgroundImage(); !ok {
-		return &ValidationError{Name: "banner_section_background_image", err: errors.New(`ent: missing required field "Website.banner_section_background_image"`)}
-	}
-	if _, ok := wc.mutation.BannerSectionBackgroundColor(); !ok {
-		return &ValidationError{Name: "banner_section_background_color", err: errors.New(`ent: missing required field "Website.banner_section_background_color"`)}
-	}
-	if _, ok := wc.mutation.BannerSectionText(); !ok {
-		return &ValidationError{Name: "banner_section_text", err: errors.New(`ent: missing required field "Website.banner_section_text"`)}
-	}
-	if _, ok := wc.mutation.ThreeItemsSectionHeadingText(); !ok {
-		return &ValidationError{Name: "three_items_section_heading_text", err: errors.New(`ent: missing required field "Website.three_items_section_heading_text"`)}
-	}
-	if _, ok := wc.mutation.ThreeItemsSectionDetailsText(); !ok {
-		return &ValidationError{Name: "three_items_section_details_text", err: errors.New(`ent: missing required field "Website.three_items_section_details_text"`)}
-	}
-	if _, ok := wc.mutation.ThreeItemsSectionItemOneText(); !ok {
-		return &ValidationError{Name: "three_items_section_item_one_text", err: errors.New(`ent: missing required field "Website.three_items_section_item_one_text"`)}
-	}
-	if _, ok := wc.mutation.ThreeItemsSectionItemTwoText(); !ok {
-		return &ValidationError{Name: "three_items_section_item_two_text", err: errors.New(`ent: missing required field "Website.three_items_section_item_two_text"`)}
-	}
-	if _, ok := wc.mutation.ThreeItemsSectionItemThreeText(); !ok {
-		return &ValidationError{Name: "three_items_section_item_three_text", err: errors.New(`ent: missing required field "Website.three_items_section_item_three_text"`)}
-	}
-	if _, ok := wc.mutation.BannerTwoSectionBackgroundImage(); !ok {
-		return &ValidationError{Name: "banner_two_section_background_image", err: errors.New(`ent: missing required field "Website.banner_two_section_background_image"`)}
-	}
-	if _, ok := wc.mutation.BannerTwoSectionBackgroundColor(); !ok {
-		return &ValidationError{Name: "banner_two_section_background_color", err: errors.New(`ent: missing required field "Website.banner_two_section_background_color"`)}
-	}
-	if _, ok := wc.mutation.BannerTwoLeftSectionHeadingText(); !ok {
-		return &ValidationError{Name: "banner_two_left_section_heading_text", err: errors.New(`ent: missing required field "Website.banner_two_left_section_heading_text"`)}
-	}
-	if _, ok := wc.mutation.BannerTwoLeftSectionDetailsText(); !ok {
-		return &ValidationError{Name: "banner_two_left_section_details_text", err: errors.New(`ent: missing required field "Website.banner_two_left_section_details_text"`)}
-	}
-	if _, ok := wc.mutation.BannerTwoLeftSectionButtonText(); !ok {
-		return &ValidationError{Name: "banner_two_left_section_button_text", err: errors.New(`ent: missing required field "Website.banner_two_left_section_button_text"`)}
-	}
-	if _, ok := wc.mutation.BannerTwoLeftSectionButtonLink(); !ok {
-		return &ValidationError{Name: "banner_two_left_section_button_link", err: errors.New(`ent: missing required field "Website.banner_two_left_section_button_link"`)}
-	}
-	if _, ok := wc.mutation.BannerTwoRightSideImage(); !ok {
-		return &ValidationError{Name: "banner_two_right_side_image", err: errors.New(`ent: missing required field "Website.banner_two_right_side_image"`)}
-	}
-	if _, ok := wc.mutation.AchievementsSection(); !ok {
-		return &ValidationError{Name: "achievements_section", err: errors.New(`ent: missing required field "Website.achievements_section"`)}
-	}
-	if _, ok := wc.mutation.InventorySectionHeadingText(); !ok {
-		return &ValidationError{Name: "Inventory_section_heading_text", err: errors.New(`ent: missing required field "Website.Inventory_section_heading_text"`)}
-	}
 	if _, ok := wc.mutation.CreationDate(); !ok {
 		return &ValidationError{Name: "creationDate", err: errors.New(`ent: missing required field "Website.creationDate"`)}
 	}
 	if _, ok := wc.mutation.LastUpdated(); !ok {
 		return &ValidationError{Name: "lastUpdated", err: errors.New(`ent: missing required field "Website.lastUpdated"`)}
 	}
-	if _, ok := wc.mutation.Title(); !ok {
-		return &ValidationError{Name: "title", err: errors.New(`ent: missing required field "Website.title"`)}
-	}
-	if _, ok := wc.mutation.Description(); !ok {
-		return &ValidationError{Name: "description", err: errors.New(`ent: missing required field "Website.description"`)}
-	}
-	if _, ok := wc.mutation.Keywords(); !ok {
-		return &ValidationError{Name: "keywords", err: errors.New(`ent: missing required field "Website.keywords"`)}
-	}
-	if _, ok := wc.mutation.Language(); !ok {
-		return &ValidationError{Name: "language", err: errors.New(`ent: missing required field "Website.language"`)}
-	}
-	if _, ok := wc.mutation.Logo(); !ok {
-		return &ValidationError{Name: "logo", err: errors.New(`ent: missing required field "Website.logo"`)}
-	}
-	if _, ok := wc.mutation.Favicon(); !ok {
-		return &ValidationError{Name: "favicon", err: errors.New(`ent: missing required field "Website.favicon"`)}
-	}
-	if _, ok := wc.mutation.Facebook(); !ok {
-		return &ValidationError{Name: "facebook", err: errors.New(`ent: missing required field "Website.facebook"`)}
-	}
-	if _, ok := wc.mutation.Twitter(); !ok {
-		return &ValidationError{Name: "twitter", err: errors.New(`ent: missing required field "Website.twitter"`)}
-	}
-	if _, ok := wc.mutation.Instagram(); !ok {
-		return &ValidationError{Name: "instagram", err: errors.New(`ent: missing required field "Website.instagram"`)}
-	}
-	if _, ok := wc.mutation.Youtube(); !ok {
-		return &ValidationError{Name: "youtube", err: errors.New(`ent: missing required field "Website.youtube"`)}
-	}
-	if _, ok := wc.mutation.Linkedin(); !ok {
-		return &ValidationError{Name: "linkedin", err: errors.New(`ent: missing required field "Website.linkedin"`)}
-	}
-	if _, ok := wc.mutation.Pinterest(); !ok {
-		return &ValidationError{Name: "pinterest", err: errors.New(`ent: missing required field "Website.pinterest"`)}
-	}
-	if _, ok := wc.mutation.MapCoordinates(); !ok {
-		return &ValidationError{Name: "mapCoordinates", err: errors.New(`ent: missing required field "Website.mapCoordinates"`)}
-	}
-	if _, ok := wc.mutation.Longitude(); !ok {
-		return &ValidationError{Name: "longitude", err: errors.New(`ent: missing required field "Website.longitude"`)}
-	}
-	if _, ok := wc.mutation.Latitude(); !ok {
-		return &ValidationError{Name: "latitude", err: errors.New(`ent: missing required field "Website.latitude"`)}
-	}
-	if _, ok := wc.mutation.Address(); !ok {
-		return &ValidationError{Name: "address", err: errors.New(`ent: missing required field "Website.address"`)}
-	}
-	if _, ok := wc.mutation.City(); !ok {
-		return &ValidationError{Name: "city", err: errors.New(`ent: missing required field "Website.city"`)}
-	}
-	if _, ok := wc.mutation.State(); !ok {
-		return &ValidationError{Name: "state", err: errors.New(`ent: missing required field "Website.state"`)}
-	}
-	if _, ok := wc.mutation.Country(); !ok {
-		return &ValidationError{Name: "country", err: errors.New(`ent: missing required field "Website.country"`)}
-	}
-	if _, ok := wc.mutation.ZipCode(); !ok {
-		return &ValidationError{Name: "zipCode", err: errors.New(`ent: missing required field "Website.zipCode"`)}
-	}
-	if _, ok := wc.mutation.PhoneNumber(); !ok {
-		return &ValidationError{Name: "phoneNumber", err: errors.New(`ent: missing required field "Website.phoneNumber"`)}
-	}
-	if _, ok := wc.mutation.Email(); !ok {
-		return &ValidationError{Name: "email", err: errors.New(`ent: missing required field "Website.email"`)}
-	}
-	if _, ok := wc.mutation.MetaTags(); !ok {
-		return &ValidationError{Name: "metaTags", err: errors.New(`ent: missing required field "Website.metaTags"`)}
-	}
 	if _, ok := wc.mutation.BusinessID(); !ok {
 		return &ValidationError{Name: "business", err: errors.New(`ent: missing required edge "Website.business"`)}
-	}
-	if _, ok := wc.mutation.TemplateID(); !ok {
-		return &ValidationError{Name: "template", err: errors.New(`ent: missing required edge "Website.template"`)}
 	}
 	return nil
 }
@@ -787,23 +963,6 @@ func (wc *WebsiteCreate) createSpec() (*Website, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.business_websites = &nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := wc.mutation.TemplateIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   website.TemplateTable,
-			Columns: []string{website.TemplateColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(template.FieldID, field.TypeString),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.template_websites = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := wc.mutation.CustomBlocksIDs(); len(nodes) > 0 {

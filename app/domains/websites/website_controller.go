@@ -51,7 +51,7 @@ func (w *WebsiteController) createBusinessWebsite(c *gin.Context) error {
 	// get the website
 	website, err := w.websiteService.CreateBusinessWebsite(c, businessID, websiteData)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(err))
+
 		return err
 	}
 	// return the website
@@ -70,7 +70,6 @@ func (w *WebsiteController) updateBusinessWebsite(c *gin.Context) error {
 	// get the website
 	website, err := w.websiteService.UpdateBusinessWebsite(c, businessID, websiteData)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, utility.ProcessResponse(err))
 		return err
 	}
 	// return the website

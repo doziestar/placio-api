@@ -3,12 +3,14 @@ package websites
 import (
 	"context"
 	"github.com/google/uuid"
+	"log"
 	businessService "placio-app/domains/business"
 	"placio-app/domains/media"
 	"placio-app/domains/users"
 	"placio-app/ent"
 	"placio-app/ent/business"
 	"placio-app/ent/website"
+	"time"
 )
 
 type IWebsite interface {
@@ -34,7 +36,8 @@ func NewWebsiteService(client *ent.Client, businessService businessService.Busin
 }
 
 func (w *WebsiteService) GetBusinessWebsite(ctx context.Context, businessID string) (*ent.Website, error) {
-	website, err := w.client.Website.Query().Where(website.HasBusinessWith(business.ID(businessID))).First(ctx)
+	website, err := w.client.Website.Query().Where(website.HasBusinessWith(business.ID(businessID))).
+		WithCustomBlocks().WithAssets().WithBusiness().First(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -42,9 +45,11 @@ func (w *WebsiteService) GetBusinessWebsite(ctx context.Context, businessID stri
 }
 
 func (w *WebsiteService) CreateBusinessWebsite(ctx context.Context, businessID string, websiteData *ent.Website) (*ent.Website, error) {
+	log.Println("websiteData", websiteData)
 	websiteData, err := w.client.Website.Create().
 		SetID(uuid.New().String()).
 		SetBusinessID(businessID).
+		SetDomainName(websiteData.DomainName).
 		SetAchievementsSection(websiteData.AchievementsSection).
 		SetAddress(websiteData.Address).
 		SetBannerSectionBackgroundColor(websiteData.BannerSectionBackgroundColor).
@@ -73,8 +78,10 @@ func (w *WebsiteService) CreateBusinessWebsite(ctx context.Context, businessID s
 		SetLanguage(websiteData.Language).
 		SetLatitude(websiteData.Latitude).
 		SetLongitude(websiteData.Longitude).
+		SetLastUpdated(time.Now()).
 		Save(ctx)
 	if err != nil {
+		log.Println("err", err)
 		return nil, err
 	}
 

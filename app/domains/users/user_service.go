@@ -151,7 +151,6 @@ func (s *UserServiceImpl) GetFollowedContents(ctx context.Context, userID string
 }
 
 func (s *UserServiceImpl) GetUser(ctx context.Context, auth0ID string) (*ent.User, error) {
-	log.Println("GetUser", auth0ID)
 
 	u, err := s.client.User.
 		Query().
