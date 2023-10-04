@@ -3,6 +3,7 @@ package websites
 import (
 	"context"
 	"github.com/google/uuid"
+	"log"
 	businessService "placio-app/domains/business"
 	"placio-app/domains/media"
 	"placio-app/domains/users"
@@ -42,9 +43,11 @@ func (w *WebsiteService) GetBusinessWebsite(ctx context.Context, businessID stri
 }
 
 func (w *WebsiteService) CreateBusinessWebsite(ctx context.Context, businessID string, websiteData *ent.Website) (*ent.Website, error) {
+	log.Println("websiteData", websiteData)
 	websiteData, err := w.client.Website.Create().
 		SetID(uuid.New().String()).
 		SetBusinessID(businessID).
+		SetDomainName(websiteData.DomainName).
 		SetAchievementsSection(websiteData.AchievementsSection).
 		SetAddress(websiteData.Address).
 		SetBannerSectionBackgroundColor(websiteData.BannerSectionBackgroundColor).
@@ -75,6 +78,7 @@ func (w *WebsiteService) CreateBusinessWebsite(ctx context.Context, businessID s
 		SetLongitude(websiteData.Longitude).
 		Save(ctx)
 	if err != nil {
+		log.Println("err", err)
 		return nil, err
 	}
 

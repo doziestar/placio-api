@@ -44,9 +44,37 @@ func (wu *WebsiteUpdate) SetHeadingText(s string) *WebsiteUpdate {
 	return wu
 }
 
+// SetNillableHeadingText sets the "heading_text" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillableHeadingText(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetHeadingText(*s)
+	}
+	return wu
+}
+
+// ClearHeadingText clears the value of the "heading_text" field.
+func (wu *WebsiteUpdate) ClearHeadingText() *WebsiteUpdate {
+	wu.mutation.ClearHeadingText()
+	return wu
+}
+
 // SetBusinessLogo sets the "business_logo" field.
 func (wu *WebsiteUpdate) SetBusinessLogo(s string) *WebsiteUpdate {
 	wu.mutation.SetBusinessLogo(s)
+	return wu
+}
+
+// SetNillableBusinessLogo sets the "business_logo" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillableBusinessLogo(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetBusinessLogo(*s)
+	}
+	return wu
+}
+
+// ClearBusinessLogo clears the value of the "business_logo" field.
+func (wu *WebsiteUpdate) ClearBusinessLogo() *WebsiteUpdate {
+	wu.mutation.ClearBusinessLogo()
 	return wu
 }
 
@@ -56,9 +84,37 @@ func (wu *WebsiteUpdate) SetBusinessName(s string) *WebsiteUpdate {
 	return wu
 }
 
+// SetNillableBusinessName sets the "business_name" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillableBusinessName(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetBusinessName(*s)
+	}
+	return wu
+}
+
+// ClearBusinessName clears the value of the "business_name" field.
+func (wu *WebsiteUpdate) ClearBusinessName() *WebsiteUpdate {
+	wu.mutation.ClearBusinessName()
+	return wu
+}
+
 // SetBannerSectionBackgroundImage sets the "banner_section_background_image" field.
 func (wu *WebsiteUpdate) SetBannerSectionBackgroundImage(s string) *WebsiteUpdate {
 	wu.mutation.SetBannerSectionBackgroundImage(s)
+	return wu
+}
+
+// SetNillableBannerSectionBackgroundImage sets the "banner_section_background_image" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillableBannerSectionBackgroundImage(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetBannerSectionBackgroundImage(*s)
+	}
+	return wu
+}
+
+// ClearBannerSectionBackgroundImage clears the value of the "banner_section_background_image" field.
+func (wu *WebsiteUpdate) ClearBannerSectionBackgroundImage() *WebsiteUpdate {
+	wu.mutation.ClearBannerSectionBackgroundImage()
 	return wu
 }
 
@@ -68,9 +124,37 @@ func (wu *WebsiteUpdate) SetBannerSectionBackgroundColor(s string) *WebsiteUpdat
 	return wu
 }
 
+// SetNillableBannerSectionBackgroundColor sets the "banner_section_background_color" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillableBannerSectionBackgroundColor(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetBannerSectionBackgroundColor(*s)
+	}
+	return wu
+}
+
+// ClearBannerSectionBackgroundColor clears the value of the "banner_section_background_color" field.
+func (wu *WebsiteUpdate) ClearBannerSectionBackgroundColor() *WebsiteUpdate {
+	wu.mutation.ClearBannerSectionBackgroundColor()
+	return wu
+}
+
 // SetBannerSectionText sets the "banner_section_text" field.
 func (wu *WebsiteUpdate) SetBannerSectionText(s string) *WebsiteUpdate {
 	wu.mutation.SetBannerSectionText(s)
+	return wu
+}
+
+// SetNillableBannerSectionText sets the "banner_section_text" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillableBannerSectionText(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetBannerSectionText(*s)
+	}
+	return wu
+}
+
+// ClearBannerSectionText clears the value of the "banner_section_text" field.
+func (wu *WebsiteUpdate) ClearBannerSectionText() *WebsiteUpdate {
+	wu.mutation.ClearBannerSectionText()
 	return wu
 }
 
@@ -80,9 +164,37 @@ func (wu *WebsiteUpdate) SetThreeItemsSectionHeadingText(s string) *WebsiteUpdat
 	return wu
 }
 
+// SetNillableThreeItemsSectionHeadingText sets the "three_items_section_heading_text" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillableThreeItemsSectionHeadingText(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetThreeItemsSectionHeadingText(*s)
+	}
+	return wu
+}
+
+// ClearThreeItemsSectionHeadingText clears the value of the "three_items_section_heading_text" field.
+func (wu *WebsiteUpdate) ClearThreeItemsSectionHeadingText() *WebsiteUpdate {
+	wu.mutation.ClearThreeItemsSectionHeadingText()
+	return wu
+}
+
 // SetThreeItemsSectionDetailsText sets the "three_items_section_details_text" field.
 func (wu *WebsiteUpdate) SetThreeItemsSectionDetailsText(s string) *WebsiteUpdate {
 	wu.mutation.SetThreeItemsSectionDetailsText(s)
+	return wu
+}
+
+// SetNillableThreeItemsSectionDetailsText sets the "three_items_section_details_text" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillableThreeItemsSectionDetailsText(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetThreeItemsSectionDetailsText(*s)
+	}
+	return wu
+}
+
+// ClearThreeItemsSectionDetailsText clears the value of the "three_items_section_details_text" field.
+func (wu *WebsiteUpdate) ClearThreeItemsSectionDetailsText() *WebsiteUpdate {
+	wu.mutation.ClearThreeItemsSectionDetailsText()
 	return wu
 }
 
@@ -92,9 +204,37 @@ func (wu *WebsiteUpdate) SetThreeItemsSectionItemOneText(s string) *WebsiteUpdat
 	return wu
 }
 
+// SetNillableThreeItemsSectionItemOneText sets the "three_items_section_item_one_text" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillableThreeItemsSectionItemOneText(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetThreeItemsSectionItemOneText(*s)
+	}
+	return wu
+}
+
+// ClearThreeItemsSectionItemOneText clears the value of the "three_items_section_item_one_text" field.
+func (wu *WebsiteUpdate) ClearThreeItemsSectionItemOneText() *WebsiteUpdate {
+	wu.mutation.ClearThreeItemsSectionItemOneText()
+	return wu
+}
+
 // SetThreeItemsSectionItemTwoText sets the "three_items_section_item_two_text" field.
 func (wu *WebsiteUpdate) SetThreeItemsSectionItemTwoText(s string) *WebsiteUpdate {
 	wu.mutation.SetThreeItemsSectionItemTwoText(s)
+	return wu
+}
+
+// SetNillableThreeItemsSectionItemTwoText sets the "three_items_section_item_two_text" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillableThreeItemsSectionItemTwoText(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetThreeItemsSectionItemTwoText(*s)
+	}
+	return wu
+}
+
+// ClearThreeItemsSectionItemTwoText clears the value of the "three_items_section_item_two_text" field.
+func (wu *WebsiteUpdate) ClearThreeItemsSectionItemTwoText() *WebsiteUpdate {
+	wu.mutation.ClearThreeItemsSectionItemTwoText()
 	return wu
 }
 
@@ -104,9 +244,37 @@ func (wu *WebsiteUpdate) SetThreeItemsSectionItemThreeText(s string) *WebsiteUpd
 	return wu
 }
 
+// SetNillableThreeItemsSectionItemThreeText sets the "three_items_section_item_three_text" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillableThreeItemsSectionItemThreeText(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetThreeItemsSectionItemThreeText(*s)
+	}
+	return wu
+}
+
+// ClearThreeItemsSectionItemThreeText clears the value of the "three_items_section_item_three_text" field.
+func (wu *WebsiteUpdate) ClearThreeItemsSectionItemThreeText() *WebsiteUpdate {
+	wu.mutation.ClearThreeItemsSectionItemThreeText()
+	return wu
+}
+
 // SetBannerTwoSectionBackgroundImage sets the "banner_two_section_background_image" field.
 func (wu *WebsiteUpdate) SetBannerTwoSectionBackgroundImage(s string) *WebsiteUpdate {
 	wu.mutation.SetBannerTwoSectionBackgroundImage(s)
+	return wu
+}
+
+// SetNillableBannerTwoSectionBackgroundImage sets the "banner_two_section_background_image" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillableBannerTwoSectionBackgroundImage(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetBannerTwoSectionBackgroundImage(*s)
+	}
+	return wu
+}
+
+// ClearBannerTwoSectionBackgroundImage clears the value of the "banner_two_section_background_image" field.
+func (wu *WebsiteUpdate) ClearBannerTwoSectionBackgroundImage() *WebsiteUpdate {
+	wu.mutation.ClearBannerTwoSectionBackgroundImage()
 	return wu
 }
 
@@ -116,9 +284,37 @@ func (wu *WebsiteUpdate) SetBannerTwoSectionBackgroundColor(s string) *WebsiteUp
 	return wu
 }
 
+// SetNillableBannerTwoSectionBackgroundColor sets the "banner_two_section_background_color" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillableBannerTwoSectionBackgroundColor(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetBannerTwoSectionBackgroundColor(*s)
+	}
+	return wu
+}
+
+// ClearBannerTwoSectionBackgroundColor clears the value of the "banner_two_section_background_color" field.
+func (wu *WebsiteUpdate) ClearBannerTwoSectionBackgroundColor() *WebsiteUpdate {
+	wu.mutation.ClearBannerTwoSectionBackgroundColor()
+	return wu
+}
+
 // SetBannerTwoLeftSectionHeadingText sets the "banner_two_left_section_heading_text" field.
 func (wu *WebsiteUpdate) SetBannerTwoLeftSectionHeadingText(s string) *WebsiteUpdate {
 	wu.mutation.SetBannerTwoLeftSectionHeadingText(s)
+	return wu
+}
+
+// SetNillableBannerTwoLeftSectionHeadingText sets the "banner_two_left_section_heading_text" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillableBannerTwoLeftSectionHeadingText(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetBannerTwoLeftSectionHeadingText(*s)
+	}
+	return wu
+}
+
+// ClearBannerTwoLeftSectionHeadingText clears the value of the "banner_two_left_section_heading_text" field.
+func (wu *WebsiteUpdate) ClearBannerTwoLeftSectionHeadingText() *WebsiteUpdate {
+	wu.mutation.ClearBannerTwoLeftSectionHeadingText()
 	return wu
 }
 
@@ -128,9 +324,37 @@ func (wu *WebsiteUpdate) SetBannerTwoLeftSectionDetailsText(s string) *WebsiteUp
 	return wu
 }
 
+// SetNillableBannerTwoLeftSectionDetailsText sets the "banner_two_left_section_details_text" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillableBannerTwoLeftSectionDetailsText(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetBannerTwoLeftSectionDetailsText(*s)
+	}
+	return wu
+}
+
+// ClearBannerTwoLeftSectionDetailsText clears the value of the "banner_two_left_section_details_text" field.
+func (wu *WebsiteUpdate) ClearBannerTwoLeftSectionDetailsText() *WebsiteUpdate {
+	wu.mutation.ClearBannerTwoLeftSectionDetailsText()
+	return wu
+}
+
 // SetBannerTwoLeftSectionButtonText sets the "banner_two_left_section_button_text" field.
 func (wu *WebsiteUpdate) SetBannerTwoLeftSectionButtonText(s string) *WebsiteUpdate {
 	wu.mutation.SetBannerTwoLeftSectionButtonText(s)
+	return wu
+}
+
+// SetNillableBannerTwoLeftSectionButtonText sets the "banner_two_left_section_button_text" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillableBannerTwoLeftSectionButtonText(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetBannerTwoLeftSectionButtonText(*s)
+	}
+	return wu
+}
+
+// ClearBannerTwoLeftSectionButtonText clears the value of the "banner_two_left_section_button_text" field.
+func (wu *WebsiteUpdate) ClearBannerTwoLeftSectionButtonText() *WebsiteUpdate {
+	wu.mutation.ClearBannerTwoLeftSectionButtonText()
 	return wu
 }
 
@@ -140,9 +364,37 @@ func (wu *WebsiteUpdate) SetBannerTwoLeftSectionButtonLink(s string) *WebsiteUpd
 	return wu
 }
 
+// SetNillableBannerTwoLeftSectionButtonLink sets the "banner_two_left_section_button_link" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillableBannerTwoLeftSectionButtonLink(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetBannerTwoLeftSectionButtonLink(*s)
+	}
+	return wu
+}
+
+// ClearBannerTwoLeftSectionButtonLink clears the value of the "banner_two_left_section_button_link" field.
+func (wu *WebsiteUpdate) ClearBannerTwoLeftSectionButtonLink() *WebsiteUpdate {
+	wu.mutation.ClearBannerTwoLeftSectionButtonLink()
+	return wu
+}
+
 // SetBannerTwoRightSideImage sets the "banner_two_right_side_image" field.
 func (wu *WebsiteUpdate) SetBannerTwoRightSideImage(s string) *WebsiteUpdate {
 	wu.mutation.SetBannerTwoRightSideImage(s)
+	return wu
+}
+
+// SetNillableBannerTwoRightSideImage sets the "banner_two_right_side_image" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillableBannerTwoRightSideImage(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetBannerTwoRightSideImage(*s)
+	}
+	return wu
+}
+
+// ClearBannerTwoRightSideImage clears the value of the "banner_two_right_side_image" field.
+func (wu *WebsiteUpdate) ClearBannerTwoRightSideImage() *WebsiteUpdate {
+	wu.mutation.ClearBannerTwoRightSideImage()
 	return wu
 }
 
@@ -152,9 +404,29 @@ func (wu *WebsiteUpdate) SetAchievementsSection(m map[string]interface{}) *Websi
 	return wu
 }
 
+// ClearAchievementsSection clears the value of the "achievements_section" field.
+func (wu *WebsiteUpdate) ClearAchievementsSection() *WebsiteUpdate {
+	wu.mutation.ClearAchievementsSection()
+	return wu
+}
+
 // SetInventorySectionHeadingText sets the "Inventory_section_heading_text" field.
 func (wu *WebsiteUpdate) SetInventorySectionHeadingText(s string) *WebsiteUpdate {
 	wu.mutation.SetInventorySectionHeadingText(s)
+	return wu
+}
+
+// SetNillableInventorySectionHeadingText sets the "Inventory_section_heading_text" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillableInventorySectionHeadingText(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetInventorySectionHeadingText(*s)
+	}
+	return wu
+}
+
+// ClearInventorySectionHeadingText clears the value of the "Inventory_section_heading_text" field.
+func (wu *WebsiteUpdate) ClearInventorySectionHeadingText() *WebsiteUpdate {
+	wu.mutation.ClearInventorySectionHeadingText()
 	return wu
 }
 
@@ -184,9 +456,37 @@ func (wu *WebsiteUpdate) SetTitle(s string) *WebsiteUpdate {
 	return wu
 }
 
+// SetNillableTitle sets the "title" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillableTitle(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetTitle(*s)
+	}
+	return wu
+}
+
+// ClearTitle clears the value of the "title" field.
+func (wu *WebsiteUpdate) ClearTitle() *WebsiteUpdate {
+	wu.mutation.ClearTitle()
+	return wu
+}
+
 // SetDescription sets the "description" field.
 func (wu *WebsiteUpdate) SetDescription(s string) *WebsiteUpdate {
 	wu.mutation.SetDescription(s)
+	return wu
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillableDescription(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetDescription(*s)
+	}
+	return wu
+}
+
+// ClearDescription clears the value of the "description" field.
+func (wu *WebsiteUpdate) ClearDescription() *WebsiteUpdate {
+	wu.mutation.ClearDescription()
 	return wu
 }
 
@@ -196,9 +496,37 @@ func (wu *WebsiteUpdate) SetKeywords(s string) *WebsiteUpdate {
 	return wu
 }
 
+// SetNillableKeywords sets the "keywords" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillableKeywords(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetKeywords(*s)
+	}
+	return wu
+}
+
+// ClearKeywords clears the value of the "keywords" field.
+func (wu *WebsiteUpdate) ClearKeywords() *WebsiteUpdate {
+	wu.mutation.ClearKeywords()
+	return wu
+}
+
 // SetLanguage sets the "language" field.
 func (wu *WebsiteUpdate) SetLanguage(s string) *WebsiteUpdate {
 	wu.mutation.SetLanguage(s)
+	return wu
+}
+
+// SetNillableLanguage sets the "language" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillableLanguage(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetLanguage(*s)
+	}
+	return wu
+}
+
+// ClearLanguage clears the value of the "language" field.
+func (wu *WebsiteUpdate) ClearLanguage() *WebsiteUpdate {
+	wu.mutation.ClearLanguage()
 	return wu
 }
 
@@ -208,9 +536,37 @@ func (wu *WebsiteUpdate) SetLogo(s string) *WebsiteUpdate {
 	return wu
 }
 
+// SetNillableLogo sets the "logo" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillableLogo(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetLogo(*s)
+	}
+	return wu
+}
+
+// ClearLogo clears the value of the "logo" field.
+func (wu *WebsiteUpdate) ClearLogo() *WebsiteUpdate {
+	wu.mutation.ClearLogo()
+	return wu
+}
+
 // SetFavicon sets the "favicon" field.
 func (wu *WebsiteUpdate) SetFavicon(s string) *WebsiteUpdate {
 	wu.mutation.SetFavicon(s)
+	return wu
+}
+
+// SetNillableFavicon sets the "favicon" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillableFavicon(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetFavicon(*s)
+	}
+	return wu
+}
+
+// ClearFavicon clears the value of the "favicon" field.
+func (wu *WebsiteUpdate) ClearFavicon() *WebsiteUpdate {
+	wu.mutation.ClearFavicon()
 	return wu
 }
 
@@ -220,9 +576,37 @@ func (wu *WebsiteUpdate) SetFacebook(s string) *WebsiteUpdate {
 	return wu
 }
 
+// SetNillableFacebook sets the "facebook" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillableFacebook(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetFacebook(*s)
+	}
+	return wu
+}
+
+// ClearFacebook clears the value of the "facebook" field.
+func (wu *WebsiteUpdate) ClearFacebook() *WebsiteUpdate {
+	wu.mutation.ClearFacebook()
+	return wu
+}
+
 // SetTwitter sets the "twitter" field.
 func (wu *WebsiteUpdate) SetTwitter(s string) *WebsiteUpdate {
 	wu.mutation.SetTwitter(s)
+	return wu
+}
+
+// SetNillableTwitter sets the "twitter" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillableTwitter(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetTwitter(*s)
+	}
+	return wu
+}
+
+// ClearTwitter clears the value of the "twitter" field.
+func (wu *WebsiteUpdate) ClearTwitter() *WebsiteUpdate {
+	wu.mutation.ClearTwitter()
 	return wu
 }
 
@@ -232,9 +616,37 @@ func (wu *WebsiteUpdate) SetInstagram(s string) *WebsiteUpdate {
 	return wu
 }
 
+// SetNillableInstagram sets the "instagram" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillableInstagram(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetInstagram(*s)
+	}
+	return wu
+}
+
+// ClearInstagram clears the value of the "instagram" field.
+func (wu *WebsiteUpdate) ClearInstagram() *WebsiteUpdate {
+	wu.mutation.ClearInstagram()
+	return wu
+}
+
 // SetYoutube sets the "youtube" field.
 func (wu *WebsiteUpdate) SetYoutube(s string) *WebsiteUpdate {
 	wu.mutation.SetYoutube(s)
+	return wu
+}
+
+// SetNillableYoutube sets the "youtube" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillableYoutube(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetYoutube(*s)
+	}
+	return wu
+}
+
+// ClearYoutube clears the value of the "youtube" field.
+func (wu *WebsiteUpdate) ClearYoutube() *WebsiteUpdate {
+	wu.mutation.ClearYoutube()
 	return wu
 }
 
@@ -244,9 +656,37 @@ func (wu *WebsiteUpdate) SetLinkedin(s string) *WebsiteUpdate {
 	return wu
 }
 
+// SetNillableLinkedin sets the "linkedin" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillableLinkedin(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetLinkedin(*s)
+	}
+	return wu
+}
+
+// ClearLinkedin clears the value of the "linkedin" field.
+func (wu *WebsiteUpdate) ClearLinkedin() *WebsiteUpdate {
+	wu.mutation.ClearLinkedin()
+	return wu
+}
+
 // SetPinterest sets the "pinterest" field.
 func (wu *WebsiteUpdate) SetPinterest(s string) *WebsiteUpdate {
 	wu.mutation.SetPinterest(s)
+	return wu
+}
+
+// SetNillablePinterest sets the "pinterest" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillablePinterest(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetPinterest(*s)
+	}
+	return wu
+}
+
+// ClearPinterest clears the value of the "pinterest" field.
+func (wu *WebsiteUpdate) ClearPinterest() *WebsiteUpdate {
+	wu.mutation.ClearPinterest()
 	return wu
 }
 
@@ -256,9 +696,29 @@ func (wu *WebsiteUpdate) SetMapCoordinates(m map[string]interface{}) *WebsiteUpd
 	return wu
 }
 
+// ClearMapCoordinates clears the value of the "mapCoordinates" field.
+func (wu *WebsiteUpdate) ClearMapCoordinates() *WebsiteUpdate {
+	wu.mutation.ClearMapCoordinates()
+	return wu
+}
+
 // SetLongitude sets the "longitude" field.
 func (wu *WebsiteUpdate) SetLongitude(s string) *WebsiteUpdate {
 	wu.mutation.SetLongitude(s)
+	return wu
+}
+
+// SetNillableLongitude sets the "longitude" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillableLongitude(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetLongitude(*s)
+	}
+	return wu
+}
+
+// ClearLongitude clears the value of the "longitude" field.
+func (wu *WebsiteUpdate) ClearLongitude() *WebsiteUpdate {
+	wu.mutation.ClearLongitude()
 	return wu
 }
 
@@ -268,9 +728,37 @@ func (wu *WebsiteUpdate) SetLatitude(s string) *WebsiteUpdate {
 	return wu
 }
 
+// SetNillableLatitude sets the "latitude" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillableLatitude(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetLatitude(*s)
+	}
+	return wu
+}
+
+// ClearLatitude clears the value of the "latitude" field.
+func (wu *WebsiteUpdate) ClearLatitude() *WebsiteUpdate {
+	wu.mutation.ClearLatitude()
+	return wu
+}
+
 // SetAddress sets the "address" field.
 func (wu *WebsiteUpdate) SetAddress(s string) *WebsiteUpdate {
 	wu.mutation.SetAddress(s)
+	return wu
+}
+
+// SetNillableAddress sets the "address" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillableAddress(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetAddress(*s)
+	}
+	return wu
+}
+
+// ClearAddress clears the value of the "address" field.
+func (wu *WebsiteUpdate) ClearAddress() *WebsiteUpdate {
+	wu.mutation.ClearAddress()
 	return wu
 }
 
@@ -280,9 +768,37 @@ func (wu *WebsiteUpdate) SetCity(s string) *WebsiteUpdate {
 	return wu
 }
 
+// SetNillableCity sets the "city" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillableCity(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetCity(*s)
+	}
+	return wu
+}
+
+// ClearCity clears the value of the "city" field.
+func (wu *WebsiteUpdate) ClearCity() *WebsiteUpdate {
+	wu.mutation.ClearCity()
+	return wu
+}
+
 // SetState sets the "state" field.
 func (wu *WebsiteUpdate) SetState(s string) *WebsiteUpdate {
 	wu.mutation.SetState(s)
+	return wu
+}
+
+// SetNillableState sets the "state" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillableState(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetState(*s)
+	}
+	return wu
+}
+
+// ClearState clears the value of the "state" field.
+func (wu *WebsiteUpdate) ClearState() *WebsiteUpdate {
+	wu.mutation.ClearState()
 	return wu
 }
 
@@ -292,9 +808,37 @@ func (wu *WebsiteUpdate) SetCountry(s string) *WebsiteUpdate {
 	return wu
 }
 
+// SetNillableCountry sets the "country" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillableCountry(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetCountry(*s)
+	}
+	return wu
+}
+
+// ClearCountry clears the value of the "country" field.
+func (wu *WebsiteUpdate) ClearCountry() *WebsiteUpdate {
+	wu.mutation.ClearCountry()
+	return wu
+}
+
 // SetZipCode sets the "zipCode" field.
 func (wu *WebsiteUpdate) SetZipCode(s string) *WebsiteUpdate {
 	wu.mutation.SetZipCode(s)
+	return wu
+}
+
+// SetNillableZipCode sets the "zipCode" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillableZipCode(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetZipCode(*s)
+	}
+	return wu
+}
+
+// ClearZipCode clears the value of the "zipCode" field.
+func (wu *WebsiteUpdate) ClearZipCode() *WebsiteUpdate {
+	wu.mutation.ClearZipCode()
 	return wu
 }
 
@@ -304,15 +848,49 @@ func (wu *WebsiteUpdate) SetPhoneNumber(s string) *WebsiteUpdate {
 	return wu
 }
 
+// SetNillablePhoneNumber sets the "phoneNumber" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillablePhoneNumber(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetPhoneNumber(*s)
+	}
+	return wu
+}
+
+// ClearPhoneNumber clears the value of the "phoneNumber" field.
+func (wu *WebsiteUpdate) ClearPhoneNumber() *WebsiteUpdate {
+	wu.mutation.ClearPhoneNumber()
+	return wu
+}
+
 // SetEmail sets the "email" field.
 func (wu *WebsiteUpdate) SetEmail(s string) *WebsiteUpdate {
 	wu.mutation.SetEmail(s)
 	return wu
 }
 
+// SetNillableEmail sets the "email" field if the given value is not nil.
+func (wu *WebsiteUpdate) SetNillableEmail(s *string) *WebsiteUpdate {
+	if s != nil {
+		wu.SetEmail(*s)
+	}
+	return wu
+}
+
+// ClearEmail clears the value of the "email" field.
+func (wu *WebsiteUpdate) ClearEmail() *WebsiteUpdate {
+	wu.mutation.ClearEmail()
+	return wu
+}
+
 // SetMetaTags sets the "metaTags" field.
 func (wu *WebsiteUpdate) SetMetaTags(m map[string]interface{}) *WebsiteUpdate {
 	wu.mutation.SetMetaTags(m)
+	return wu
+}
+
+// ClearMetaTags clears the value of the "metaTags" field.
+func (wu *WebsiteUpdate) ClearMetaTags() *WebsiteUpdate {
+	wu.mutation.ClearMetaTags()
 	return wu
 }
 
@@ -492,62 +1070,122 @@ func (wu *WebsiteUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := wu.mutation.HeadingText(); ok {
 		_spec.SetField(website.FieldHeadingText, field.TypeString, value)
 	}
+	if wu.mutation.HeadingTextCleared() {
+		_spec.ClearField(website.FieldHeadingText, field.TypeString)
+	}
 	if value, ok := wu.mutation.BusinessLogo(); ok {
 		_spec.SetField(website.FieldBusinessLogo, field.TypeString, value)
+	}
+	if wu.mutation.BusinessLogoCleared() {
+		_spec.ClearField(website.FieldBusinessLogo, field.TypeString)
 	}
 	if value, ok := wu.mutation.BusinessName(); ok {
 		_spec.SetField(website.FieldBusinessName, field.TypeString, value)
 	}
+	if wu.mutation.BusinessNameCleared() {
+		_spec.ClearField(website.FieldBusinessName, field.TypeString)
+	}
 	if value, ok := wu.mutation.BannerSectionBackgroundImage(); ok {
 		_spec.SetField(website.FieldBannerSectionBackgroundImage, field.TypeString, value)
+	}
+	if wu.mutation.BannerSectionBackgroundImageCleared() {
+		_spec.ClearField(website.FieldBannerSectionBackgroundImage, field.TypeString)
 	}
 	if value, ok := wu.mutation.BannerSectionBackgroundColor(); ok {
 		_spec.SetField(website.FieldBannerSectionBackgroundColor, field.TypeString, value)
 	}
+	if wu.mutation.BannerSectionBackgroundColorCleared() {
+		_spec.ClearField(website.FieldBannerSectionBackgroundColor, field.TypeString)
+	}
 	if value, ok := wu.mutation.BannerSectionText(); ok {
 		_spec.SetField(website.FieldBannerSectionText, field.TypeString, value)
+	}
+	if wu.mutation.BannerSectionTextCleared() {
+		_spec.ClearField(website.FieldBannerSectionText, field.TypeString)
 	}
 	if value, ok := wu.mutation.ThreeItemsSectionHeadingText(); ok {
 		_spec.SetField(website.FieldThreeItemsSectionHeadingText, field.TypeString, value)
 	}
+	if wu.mutation.ThreeItemsSectionHeadingTextCleared() {
+		_spec.ClearField(website.FieldThreeItemsSectionHeadingText, field.TypeString)
+	}
 	if value, ok := wu.mutation.ThreeItemsSectionDetailsText(); ok {
 		_spec.SetField(website.FieldThreeItemsSectionDetailsText, field.TypeString, value)
+	}
+	if wu.mutation.ThreeItemsSectionDetailsTextCleared() {
+		_spec.ClearField(website.FieldThreeItemsSectionDetailsText, field.TypeString)
 	}
 	if value, ok := wu.mutation.ThreeItemsSectionItemOneText(); ok {
 		_spec.SetField(website.FieldThreeItemsSectionItemOneText, field.TypeString, value)
 	}
+	if wu.mutation.ThreeItemsSectionItemOneTextCleared() {
+		_spec.ClearField(website.FieldThreeItemsSectionItemOneText, field.TypeString)
+	}
 	if value, ok := wu.mutation.ThreeItemsSectionItemTwoText(); ok {
 		_spec.SetField(website.FieldThreeItemsSectionItemTwoText, field.TypeString, value)
+	}
+	if wu.mutation.ThreeItemsSectionItemTwoTextCleared() {
+		_spec.ClearField(website.FieldThreeItemsSectionItemTwoText, field.TypeString)
 	}
 	if value, ok := wu.mutation.ThreeItemsSectionItemThreeText(); ok {
 		_spec.SetField(website.FieldThreeItemsSectionItemThreeText, field.TypeString, value)
 	}
+	if wu.mutation.ThreeItemsSectionItemThreeTextCleared() {
+		_spec.ClearField(website.FieldThreeItemsSectionItemThreeText, field.TypeString)
+	}
 	if value, ok := wu.mutation.BannerTwoSectionBackgroundImage(); ok {
 		_spec.SetField(website.FieldBannerTwoSectionBackgroundImage, field.TypeString, value)
+	}
+	if wu.mutation.BannerTwoSectionBackgroundImageCleared() {
+		_spec.ClearField(website.FieldBannerTwoSectionBackgroundImage, field.TypeString)
 	}
 	if value, ok := wu.mutation.BannerTwoSectionBackgroundColor(); ok {
 		_spec.SetField(website.FieldBannerTwoSectionBackgroundColor, field.TypeString, value)
 	}
+	if wu.mutation.BannerTwoSectionBackgroundColorCleared() {
+		_spec.ClearField(website.FieldBannerTwoSectionBackgroundColor, field.TypeString)
+	}
 	if value, ok := wu.mutation.BannerTwoLeftSectionHeadingText(); ok {
 		_spec.SetField(website.FieldBannerTwoLeftSectionHeadingText, field.TypeString, value)
+	}
+	if wu.mutation.BannerTwoLeftSectionHeadingTextCleared() {
+		_spec.ClearField(website.FieldBannerTwoLeftSectionHeadingText, field.TypeString)
 	}
 	if value, ok := wu.mutation.BannerTwoLeftSectionDetailsText(); ok {
 		_spec.SetField(website.FieldBannerTwoLeftSectionDetailsText, field.TypeString, value)
 	}
+	if wu.mutation.BannerTwoLeftSectionDetailsTextCleared() {
+		_spec.ClearField(website.FieldBannerTwoLeftSectionDetailsText, field.TypeString)
+	}
 	if value, ok := wu.mutation.BannerTwoLeftSectionButtonText(); ok {
 		_spec.SetField(website.FieldBannerTwoLeftSectionButtonText, field.TypeString, value)
+	}
+	if wu.mutation.BannerTwoLeftSectionButtonTextCleared() {
+		_spec.ClearField(website.FieldBannerTwoLeftSectionButtonText, field.TypeString)
 	}
 	if value, ok := wu.mutation.BannerTwoLeftSectionButtonLink(); ok {
 		_spec.SetField(website.FieldBannerTwoLeftSectionButtonLink, field.TypeString, value)
 	}
+	if wu.mutation.BannerTwoLeftSectionButtonLinkCleared() {
+		_spec.ClearField(website.FieldBannerTwoLeftSectionButtonLink, field.TypeString)
+	}
 	if value, ok := wu.mutation.BannerTwoRightSideImage(); ok {
 		_spec.SetField(website.FieldBannerTwoRightSideImage, field.TypeString, value)
+	}
+	if wu.mutation.BannerTwoRightSideImageCleared() {
+		_spec.ClearField(website.FieldBannerTwoRightSideImage, field.TypeString)
 	}
 	if value, ok := wu.mutation.AchievementsSection(); ok {
 		_spec.SetField(website.FieldAchievementsSection, field.TypeJSON, value)
 	}
+	if wu.mutation.AchievementsSectionCleared() {
+		_spec.ClearField(website.FieldAchievementsSection, field.TypeJSON)
+	}
 	if value, ok := wu.mutation.InventorySectionHeadingText(); ok {
 		_spec.SetField(website.FieldInventorySectionHeadingText, field.TypeString, value)
+	}
+	if wu.mutation.InventorySectionHeadingTextCleared() {
+		_spec.ClearField(website.FieldInventorySectionHeadingText, field.TypeString)
 	}
 	if value, ok := wu.mutation.CreationDate(); ok {
 		_spec.SetField(website.FieldCreationDate, field.TypeTime, value)
@@ -558,71 +1196,140 @@ func (wu *WebsiteUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := wu.mutation.Title(); ok {
 		_spec.SetField(website.FieldTitle, field.TypeString, value)
 	}
+	if wu.mutation.TitleCleared() {
+		_spec.ClearField(website.FieldTitle, field.TypeString)
+	}
 	if value, ok := wu.mutation.Description(); ok {
 		_spec.SetField(website.FieldDescription, field.TypeString, value)
+	}
+	if wu.mutation.DescriptionCleared() {
+		_spec.ClearField(website.FieldDescription, field.TypeString)
 	}
 	if value, ok := wu.mutation.Keywords(); ok {
 		_spec.SetField(website.FieldKeywords, field.TypeString, value)
 	}
+	if wu.mutation.KeywordsCleared() {
+		_spec.ClearField(website.FieldKeywords, field.TypeString)
+	}
 	if value, ok := wu.mutation.Language(); ok {
 		_spec.SetField(website.FieldLanguage, field.TypeString, value)
+	}
+	if wu.mutation.LanguageCleared() {
+		_spec.ClearField(website.FieldLanguage, field.TypeString)
 	}
 	if value, ok := wu.mutation.Logo(); ok {
 		_spec.SetField(website.FieldLogo, field.TypeString, value)
 	}
+	if wu.mutation.LogoCleared() {
+		_spec.ClearField(website.FieldLogo, field.TypeString)
+	}
 	if value, ok := wu.mutation.Favicon(); ok {
 		_spec.SetField(website.FieldFavicon, field.TypeString, value)
+	}
+	if wu.mutation.FaviconCleared() {
+		_spec.ClearField(website.FieldFavicon, field.TypeString)
 	}
 	if value, ok := wu.mutation.Facebook(); ok {
 		_spec.SetField(website.FieldFacebook, field.TypeString, value)
 	}
+	if wu.mutation.FacebookCleared() {
+		_spec.ClearField(website.FieldFacebook, field.TypeString)
+	}
 	if value, ok := wu.mutation.Twitter(); ok {
 		_spec.SetField(website.FieldTwitter, field.TypeString, value)
+	}
+	if wu.mutation.TwitterCleared() {
+		_spec.ClearField(website.FieldTwitter, field.TypeString)
 	}
 	if value, ok := wu.mutation.Instagram(); ok {
 		_spec.SetField(website.FieldInstagram, field.TypeString, value)
 	}
+	if wu.mutation.InstagramCleared() {
+		_spec.ClearField(website.FieldInstagram, field.TypeString)
+	}
 	if value, ok := wu.mutation.Youtube(); ok {
 		_spec.SetField(website.FieldYoutube, field.TypeString, value)
+	}
+	if wu.mutation.YoutubeCleared() {
+		_spec.ClearField(website.FieldYoutube, field.TypeString)
 	}
 	if value, ok := wu.mutation.Linkedin(); ok {
 		_spec.SetField(website.FieldLinkedin, field.TypeString, value)
 	}
+	if wu.mutation.LinkedinCleared() {
+		_spec.ClearField(website.FieldLinkedin, field.TypeString)
+	}
 	if value, ok := wu.mutation.Pinterest(); ok {
 		_spec.SetField(website.FieldPinterest, field.TypeString, value)
+	}
+	if wu.mutation.PinterestCleared() {
+		_spec.ClearField(website.FieldPinterest, field.TypeString)
 	}
 	if value, ok := wu.mutation.MapCoordinates(); ok {
 		_spec.SetField(website.FieldMapCoordinates, field.TypeJSON, value)
 	}
+	if wu.mutation.MapCoordinatesCleared() {
+		_spec.ClearField(website.FieldMapCoordinates, field.TypeJSON)
+	}
 	if value, ok := wu.mutation.Longitude(); ok {
 		_spec.SetField(website.FieldLongitude, field.TypeString, value)
+	}
+	if wu.mutation.LongitudeCleared() {
+		_spec.ClearField(website.FieldLongitude, field.TypeString)
 	}
 	if value, ok := wu.mutation.Latitude(); ok {
 		_spec.SetField(website.FieldLatitude, field.TypeString, value)
 	}
+	if wu.mutation.LatitudeCleared() {
+		_spec.ClearField(website.FieldLatitude, field.TypeString)
+	}
 	if value, ok := wu.mutation.Address(); ok {
 		_spec.SetField(website.FieldAddress, field.TypeString, value)
+	}
+	if wu.mutation.AddressCleared() {
+		_spec.ClearField(website.FieldAddress, field.TypeString)
 	}
 	if value, ok := wu.mutation.City(); ok {
 		_spec.SetField(website.FieldCity, field.TypeString, value)
 	}
+	if wu.mutation.CityCleared() {
+		_spec.ClearField(website.FieldCity, field.TypeString)
+	}
 	if value, ok := wu.mutation.State(); ok {
 		_spec.SetField(website.FieldState, field.TypeString, value)
+	}
+	if wu.mutation.StateCleared() {
+		_spec.ClearField(website.FieldState, field.TypeString)
 	}
 	if value, ok := wu.mutation.Country(); ok {
 		_spec.SetField(website.FieldCountry, field.TypeString, value)
 	}
+	if wu.mutation.CountryCleared() {
+		_spec.ClearField(website.FieldCountry, field.TypeString)
+	}
 	if value, ok := wu.mutation.ZipCode(); ok {
 		_spec.SetField(website.FieldZipCode, field.TypeString, value)
+	}
+	if wu.mutation.ZipCodeCleared() {
+		_spec.ClearField(website.FieldZipCode, field.TypeString)
 	}
 	if value, ok := wu.mutation.PhoneNumber(); ok {
 		_spec.SetField(website.FieldPhoneNumber, field.TypeString, value)
 	}
+	if wu.mutation.PhoneNumberCleared() {
+		_spec.ClearField(website.FieldPhoneNumber, field.TypeString)
+	}
 	if value, ok := wu.mutation.Email(); ok {
 		_spec.SetField(website.FieldEmail, field.TypeString, value)
 	}
+	if wu.mutation.EmailCleared() {
+		_spec.ClearField(website.FieldEmail, field.TypeString)
+	}
 	if value, ok := wu.mutation.MetaTags(); ok {
 		_spec.SetField(website.FieldMetaTags, field.TypeJSON, value)
+	}
+	if wu.mutation.MetaTagsCleared() {
+		_spec.ClearField(website.FieldMetaTags, field.TypeJSON)
 	}
 	if wu.mutation.BusinessCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -804,9 +1511,37 @@ func (wuo *WebsiteUpdateOne) SetHeadingText(s string) *WebsiteUpdateOne {
 	return wuo
 }
 
+// SetNillableHeadingText sets the "heading_text" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillableHeadingText(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetHeadingText(*s)
+	}
+	return wuo
+}
+
+// ClearHeadingText clears the value of the "heading_text" field.
+func (wuo *WebsiteUpdateOne) ClearHeadingText() *WebsiteUpdateOne {
+	wuo.mutation.ClearHeadingText()
+	return wuo
+}
+
 // SetBusinessLogo sets the "business_logo" field.
 func (wuo *WebsiteUpdateOne) SetBusinessLogo(s string) *WebsiteUpdateOne {
 	wuo.mutation.SetBusinessLogo(s)
+	return wuo
+}
+
+// SetNillableBusinessLogo sets the "business_logo" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillableBusinessLogo(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetBusinessLogo(*s)
+	}
+	return wuo
+}
+
+// ClearBusinessLogo clears the value of the "business_logo" field.
+func (wuo *WebsiteUpdateOne) ClearBusinessLogo() *WebsiteUpdateOne {
+	wuo.mutation.ClearBusinessLogo()
 	return wuo
 }
 
@@ -816,9 +1551,37 @@ func (wuo *WebsiteUpdateOne) SetBusinessName(s string) *WebsiteUpdateOne {
 	return wuo
 }
 
+// SetNillableBusinessName sets the "business_name" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillableBusinessName(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetBusinessName(*s)
+	}
+	return wuo
+}
+
+// ClearBusinessName clears the value of the "business_name" field.
+func (wuo *WebsiteUpdateOne) ClearBusinessName() *WebsiteUpdateOne {
+	wuo.mutation.ClearBusinessName()
+	return wuo
+}
+
 // SetBannerSectionBackgroundImage sets the "banner_section_background_image" field.
 func (wuo *WebsiteUpdateOne) SetBannerSectionBackgroundImage(s string) *WebsiteUpdateOne {
 	wuo.mutation.SetBannerSectionBackgroundImage(s)
+	return wuo
+}
+
+// SetNillableBannerSectionBackgroundImage sets the "banner_section_background_image" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillableBannerSectionBackgroundImage(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetBannerSectionBackgroundImage(*s)
+	}
+	return wuo
+}
+
+// ClearBannerSectionBackgroundImage clears the value of the "banner_section_background_image" field.
+func (wuo *WebsiteUpdateOne) ClearBannerSectionBackgroundImage() *WebsiteUpdateOne {
+	wuo.mutation.ClearBannerSectionBackgroundImage()
 	return wuo
 }
 
@@ -828,9 +1591,37 @@ func (wuo *WebsiteUpdateOne) SetBannerSectionBackgroundColor(s string) *WebsiteU
 	return wuo
 }
 
+// SetNillableBannerSectionBackgroundColor sets the "banner_section_background_color" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillableBannerSectionBackgroundColor(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetBannerSectionBackgroundColor(*s)
+	}
+	return wuo
+}
+
+// ClearBannerSectionBackgroundColor clears the value of the "banner_section_background_color" field.
+func (wuo *WebsiteUpdateOne) ClearBannerSectionBackgroundColor() *WebsiteUpdateOne {
+	wuo.mutation.ClearBannerSectionBackgroundColor()
+	return wuo
+}
+
 // SetBannerSectionText sets the "banner_section_text" field.
 func (wuo *WebsiteUpdateOne) SetBannerSectionText(s string) *WebsiteUpdateOne {
 	wuo.mutation.SetBannerSectionText(s)
+	return wuo
+}
+
+// SetNillableBannerSectionText sets the "banner_section_text" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillableBannerSectionText(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetBannerSectionText(*s)
+	}
+	return wuo
+}
+
+// ClearBannerSectionText clears the value of the "banner_section_text" field.
+func (wuo *WebsiteUpdateOne) ClearBannerSectionText() *WebsiteUpdateOne {
+	wuo.mutation.ClearBannerSectionText()
 	return wuo
 }
 
@@ -840,9 +1631,37 @@ func (wuo *WebsiteUpdateOne) SetThreeItemsSectionHeadingText(s string) *WebsiteU
 	return wuo
 }
 
+// SetNillableThreeItemsSectionHeadingText sets the "three_items_section_heading_text" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillableThreeItemsSectionHeadingText(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetThreeItemsSectionHeadingText(*s)
+	}
+	return wuo
+}
+
+// ClearThreeItemsSectionHeadingText clears the value of the "three_items_section_heading_text" field.
+func (wuo *WebsiteUpdateOne) ClearThreeItemsSectionHeadingText() *WebsiteUpdateOne {
+	wuo.mutation.ClearThreeItemsSectionHeadingText()
+	return wuo
+}
+
 // SetThreeItemsSectionDetailsText sets the "three_items_section_details_text" field.
 func (wuo *WebsiteUpdateOne) SetThreeItemsSectionDetailsText(s string) *WebsiteUpdateOne {
 	wuo.mutation.SetThreeItemsSectionDetailsText(s)
+	return wuo
+}
+
+// SetNillableThreeItemsSectionDetailsText sets the "three_items_section_details_text" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillableThreeItemsSectionDetailsText(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetThreeItemsSectionDetailsText(*s)
+	}
+	return wuo
+}
+
+// ClearThreeItemsSectionDetailsText clears the value of the "three_items_section_details_text" field.
+func (wuo *WebsiteUpdateOne) ClearThreeItemsSectionDetailsText() *WebsiteUpdateOne {
+	wuo.mutation.ClearThreeItemsSectionDetailsText()
 	return wuo
 }
 
@@ -852,9 +1671,37 @@ func (wuo *WebsiteUpdateOne) SetThreeItemsSectionItemOneText(s string) *WebsiteU
 	return wuo
 }
 
+// SetNillableThreeItemsSectionItemOneText sets the "three_items_section_item_one_text" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillableThreeItemsSectionItemOneText(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetThreeItemsSectionItemOneText(*s)
+	}
+	return wuo
+}
+
+// ClearThreeItemsSectionItemOneText clears the value of the "three_items_section_item_one_text" field.
+func (wuo *WebsiteUpdateOne) ClearThreeItemsSectionItemOneText() *WebsiteUpdateOne {
+	wuo.mutation.ClearThreeItemsSectionItemOneText()
+	return wuo
+}
+
 // SetThreeItemsSectionItemTwoText sets the "three_items_section_item_two_text" field.
 func (wuo *WebsiteUpdateOne) SetThreeItemsSectionItemTwoText(s string) *WebsiteUpdateOne {
 	wuo.mutation.SetThreeItemsSectionItemTwoText(s)
+	return wuo
+}
+
+// SetNillableThreeItemsSectionItemTwoText sets the "three_items_section_item_two_text" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillableThreeItemsSectionItemTwoText(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetThreeItemsSectionItemTwoText(*s)
+	}
+	return wuo
+}
+
+// ClearThreeItemsSectionItemTwoText clears the value of the "three_items_section_item_two_text" field.
+func (wuo *WebsiteUpdateOne) ClearThreeItemsSectionItemTwoText() *WebsiteUpdateOne {
+	wuo.mutation.ClearThreeItemsSectionItemTwoText()
 	return wuo
 }
 
@@ -864,9 +1711,37 @@ func (wuo *WebsiteUpdateOne) SetThreeItemsSectionItemThreeText(s string) *Websit
 	return wuo
 }
 
+// SetNillableThreeItemsSectionItemThreeText sets the "three_items_section_item_three_text" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillableThreeItemsSectionItemThreeText(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetThreeItemsSectionItemThreeText(*s)
+	}
+	return wuo
+}
+
+// ClearThreeItemsSectionItemThreeText clears the value of the "three_items_section_item_three_text" field.
+func (wuo *WebsiteUpdateOne) ClearThreeItemsSectionItemThreeText() *WebsiteUpdateOne {
+	wuo.mutation.ClearThreeItemsSectionItemThreeText()
+	return wuo
+}
+
 // SetBannerTwoSectionBackgroundImage sets the "banner_two_section_background_image" field.
 func (wuo *WebsiteUpdateOne) SetBannerTwoSectionBackgroundImage(s string) *WebsiteUpdateOne {
 	wuo.mutation.SetBannerTwoSectionBackgroundImage(s)
+	return wuo
+}
+
+// SetNillableBannerTwoSectionBackgroundImage sets the "banner_two_section_background_image" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillableBannerTwoSectionBackgroundImage(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetBannerTwoSectionBackgroundImage(*s)
+	}
+	return wuo
+}
+
+// ClearBannerTwoSectionBackgroundImage clears the value of the "banner_two_section_background_image" field.
+func (wuo *WebsiteUpdateOne) ClearBannerTwoSectionBackgroundImage() *WebsiteUpdateOne {
+	wuo.mutation.ClearBannerTwoSectionBackgroundImage()
 	return wuo
 }
 
@@ -876,9 +1751,37 @@ func (wuo *WebsiteUpdateOne) SetBannerTwoSectionBackgroundColor(s string) *Websi
 	return wuo
 }
 
+// SetNillableBannerTwoSectionBackgroundColor sets the "banner_two_section_background_color" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillableBannerTwoSectionBackgroundColor(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetBannerTwoSectionBackgroundColor(*s)
+	}
+	return wuo
+}
+
+// ClearBannerTwoSectionBackgroundColor clears the value of the "banner_two_section_background_color" field.
+func (wuo *WebsiteUpdateOne) ClearBannerTwoSectionBackgroundColor() *WebsiteUpdateOne {
+	wuo.mutation.ClearBannerTwoSectionBackgroundColor()
+	return wuo
+}
+
 // SetBannerTwoLeftSectionHeadingText sets the "banner_two_left_section_heading_text" field.
 func (wuo *WebsiteUpdateOne) SetBannerTwoLeftSectionHeadingText(s string) *WebsiteUpdateOne {
 	wuo.mutation.SetBannerTwoLeftSectionHeadingText(s)
+	return wuo
+}
+
+// SetNillableBannerTwoLeftSectionHeadingText sets the "banner_two_left_section_heading_text" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillableBannerTwoLeftSectionHeadingText(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetBannerTwoLeftSectionHeadingText(*s)
+	}
+	return wuo
+}
+
+// ClearBannerTwoLeftSectionHeadingText clears the value of the "banner_two_left_section_heading_text" field.
+func (wuo *WebsiteUpdateOne) ClearBannerTwoLeftSectionHeadingText() *WebsiteUpdateOne {
+	wuo.mutation.ClearBannerTwoLeftSectionHeadingText()
 	return wuo
 }
 
@@ -888,9 +1791,37 @@ func (wuo *WebsiteUpdateOne) SetBannerTwoLeftSectionDetailsText(s string) *Websi
 	return wuo
 }
 
+// SetNillableBannerTwoLeftSectionDetailsText sets the "banner_two_left_section_details_text" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillableBannerTwoLeftSectionDetailsText(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetBannerTwoLeftSectionDetailsText(*s)
+	}
+	return wuo
+}
+
+// ClearBannerTwoLeftSectionDetailsText clears the value of the "banner_two_left_section_details_text" field.
+func (wuo *WebsiteUpdateOne) ClearBannerTwoLeftSectionDetailsText() *WebsiteUpdateOne {
+	wuo.mutation.ClearBannerTwoLeftSectionDetailsText()
+	return wuo
+}
+
 // SetBannerTwoLeftSectionButtonText sets the "banner_two_left_section_button_text" field.
 func (wuo *WebsiteUpdateOne) SetBannerTwoLeftSectionButtonText(s string) *WebsiteUpdateOne {
 	wuo.mutation.SetBannerTwoLeftSectionButtonText(s)
+	return wuo
+}
+
+// SetNillableBannerTwoLeftSectionButtonText sets the "banner_two_left_section_button_text" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillableBannerTwoLeftSectionButtonText(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetBannerTwoLeftSectionButtonText(*s)
+	}
+	return wuo
+}
+
+// ClearBannerTwoLeftSectionButtonText clears the value of the "banner_two_left_section_button_text" field.
+func (wuo *WebsiteUpdateOne) ClearBannerTwoLeftSectionButtonText() *WebsiteUpdateOne {
+	wuo.mutation.ClearBannerTwoLeftSectionButtonText()
 	return wuo
 }
 
@@ -900,9 +1831,37 @@ func (wuo *WebsiteUpdateOne) SetBannerTwoLeftSectionButtonLink(s string) *Websit
 	return wuo
 }
 
+// SetNillableBannerTwoLeftSectionButtonLink sets the "banner_two_left_section_button_link" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillableBannerTwoLeftSectionButtonLink(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetBannerTwoLeftSectionButtonLink(*s)
+	}
+	return wuo
+}
+
+// ClearBannerTwoLeftSectionButtonLink clears the value of the "banner_two_left_section_button_link" field.
+func (wuo *WebsiteUpdateOne) ClearBannerTwoLeftSectionButtonLink() *WebsiteUpdateOne {
+	wuo.mutation.ClearBannerTwoLeftSectionButtonLink()
+	return wuo
+}
+
 // SetBannerTwoRightSideImage sets the "banner_two_right_side_image" field.
 func (wuo *WebsiteUpdateOne) SetBannerTwoRightSideImage(s string) *WebsiteUpdateOne {
 	wuo.mutation.SetBannerTwoRightSideImage(s)
+	return wuo
+}
+
+// SetNillableBannerTwoRightSideImage sets the "banner_two_right_side_image" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillableBannerTwoRightSideImage(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetBannerTwoRightSideImage(*s)
+	}
+	return wuo
+}
+
+// ClearBannerTwoRightSideImage clears the value of the "banner_two_right_side_image" field.
+func (wuo *WebsiteUpdateOne) ClearBannerTwoRightSideImage() *WebsiteUpdateOne {
+	wuo.mutation.ClearBannerTwoRightSideImage()
 	return wuo
 }
 
@@ -912,9 +1871,29 @@ func (wuo *WebsiteUpdateOne) SetAchievementsSection(m map[string]interface{}) *W
 	return wuo
 }
 
+// ClearAchievementsSection clears the value of the "achievements_section" field.
+func (wuo *WebsiteUpdateOne) ClearAchievementsSection() *WebsiteUpdateOne {
+	wuo.mutation.ClearAchievementsSection()
+	return wuo
+}
+
 // SetInventorySectionHeadingText sets the "Inventory_section_heading_text" field.
 func (wuo *WebsiteUpdateOne) SetInventorySectionHeadingText(s string) *WebsiteUpdateOne {
 	wuo.mutation.SetInventorySectionHeadingText(s)
+	return wuo
+}
+
+// SetNillableInventorySectionHeadingText sets the "Inventory_section_heading_text" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillableInventorySectionHeadingText(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetInventorySectionHeadingText(*s)
+	}
+	return wuo
+}
+
+// ClearInventorySectionHeadingText clears the value of the "Inventory_section_heading_text" field.
+func (wuo *WebsiteUpdateOne) ClearInventorySectionHeadingText() *WebsiteUpdateOne {
+	wuo.mutation.ClearInventorySectionHeadingText()
 	return wuo
 }
 
@@ -944,9 +1923,37 @@ func (wuo *WebsiteUpdateOne) SetTitle(s string) *WebsiteUpdateOne {
 	return wuo
 }
 
+// SetNillableTitle sets the "title" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillableTitle(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetTitle(*s)
+	}
+	return wuo
+}
+
+// ClearTitle clears the value of the "title" field.
+func (wuo *WebsiteUpdateOne) ClearTitle() *WebsiteUpdateOne {
+	wuo.mutation.ClearTitle()
+	return wuo
+}
+
 // SetDescription sets the "description" field.
 func (wuo *WebsiteUpdateOne) SetDescription(s string) *WebsiteUpdateOne {
 	wuo.mutation.SetDescription(s)
+	return wuo
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillableDescription(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetDescription(*s)
+	}
+	return wuo
+}
+
+// ClearDescription clears the value of the "description" field.
+func (wuo *WebsiteUpdateOne) ClearDescription() *WebsiteUpdateOne {
+	wuo.mutation.ClearDescription()
 	return wuo
 }
 
@@ -956,9 +1963,37 @@ func (wuo *WebsiteUpdateOne) SetKeywords(s string) *WebsiteUpdateOne {
 	return wuo
 }
 
+// SetNillableKeywords sets the "keywords" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillableKeywords(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetKeywords(*s)
+	}
+	return wuo
+}
+
+// ClearKeywords clears the value of the "keywords" field.
+func (wuo *WebsiteUpdateOne) ClearKeywords() *WebsiteUpdateOne {
+	wuo.mutation.ClearKeywords()
+	return wuo
+}
+
 // SetLanguage sets the "language" field.
 func (wuo *WebsiteUpdateOne) SetLanguage(s string) *WebsiteUpdateOne {
 	wuo.mutation.SetLanguage(s)
+	return wuo
+}
+
+// SetNillableLanguage sets the "language" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillableLanguage(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetLanguage(*s)
+	}
+	return wuo
+}
+
+// ClearLanguage clears the value of the "language" field.
+func (wuo *WebsiteUpdateOne) ClearLanguage() *WebsiteUpdateOne {
+	wuo.mutation.ClearLanguage()
 	return wuo
 }
 
@@ -968,9 +2003,37 @@ func (wuo *WebsiteUpdateOne) SetLogo(s string) *WebsiteUpdateOne {
 	return wuo
 }
 
+// SetNillableLogo sets the "logo" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillableLogo(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetLogo(*s)
+	}
+	return wuo
+}
+
+// ClearLogo clears the value of the "logo" field.
+func (wuo *WebsiteUpdateOne) ClearLogo() *WebsiteUpdateOne {
+	wuo.mutation.ClearLogo()
+	return wuo
+}
+
 // SetFavicon sets the "favicon" field.
 func (wuo *WebsiteUpdateOne) SetFavicon(s string) *WebsiteUpdateOne {
 	wuo.mutation.SetFavicon(s)
+	return wuo
+}
+
+// SetNillableFavicon sets the "favicon" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillableFavicon(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetFavicon(*s)
+	}
+	return wuo
+}
+
+// ClearFavicon clears the value of the "favicon" field.
+func (wuo *WebsiteUpdateOne) ClearFavicon() *WebsiteUpdateOne {
+	wuo.mutation.ClearFavicon()
 	return wuo
 }
 
@@ -980,9 +2043,37 @@ func (wuo *WebsiteUpdateOne) SetFacebook(s string) *WebsiteUpdateOne {
 	return wuo
 }
 
+// SetNillableFacebook sets the "facebook" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillableFacebook(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetFacebook(*s)
+	}
+	return wuo
+}
+
+// ClearFacebook clears the value of the "facebook" field.
+func (wuo *WebsiteUpdateOne) ClearFacebook() *WebsiteUpdateOne {
+	wuo.mutation.ClearFacebook()
+	return wuo
+}
+
 // SetTwitter sets the "twitter" field.
 func (wuo *WebsiteUpdateOne) SetTwitter(s string) *WebsiteUpdateOne {
 	wuo.mutation.SetTwitter(s)
+	return wuo
+}
+
+// SetNillableTwitter sets the "twitter" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillableTwitter(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetTwitter(*s)
+	}
+	return wuo
+}
+
+// ClearTwitter clears the value of the "twitter" field.
+func (wuo *WebsiteUpdateOne) ClearTwitter() *WebsiteUpdateOne {
+	wuo.mutation.ClearTwitter()
 	return wuo
 }
 
@@ -992,9 +2083,37 @@ func (wuo *WebsiteUpdateOne) SetInstagram(s string) *WebsiteUpdateOne {
 	return wuo
 }
 
+// SetNillableInstagram sets the "instagram" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillableInstagram(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetInstagram(*s)
+	}
+	return wuo
+}
+
+// ClearInstagram clears the value of the "instagram" field.
+func (wuo *WebsiteUpdateOne) ClearInstagram() *WebsiteUpdateOne {
+	wuo.mutation.ClearInstagram()
+	return wuo
+}
+
 // SetYoutube sets the "youtube" field.
 func (wuo *WebsiteUpdateOne) SetYoutube(s string) *WebsiteUpdateOne {
 	wuo.mutation.SetYoutube(s)
+	return wuo
+}
+
+// SetNillableYoutube sets the "youtube" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillableYoutube(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetYoutube(*s)
+	}
+	return wuo
+}
+
+// ClearYoutube clears the value of the "youtube" field.
+func (wuo *WebsiteUpdateOne) ClearYoutube() *WebsiteUpdateOne {
+	wuo.mutation.ClearYoutube()
 	return wuo
 }
 
@@ -1004,9 +2123,37 @@ func (wuo *WebsiteUpdateOne) SetLinkedin(s string) *WebsiteUpdateOne {
 	return wuo
 }
 
+// SetNillableLinkedin sets the "linkedin" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillableLinkedin(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetLinkedin(*s)
+	}
+	return wuo
+}
+
+// ClearLinkedin clears the value of the "linkedin" field.
+func (wuo *WebsiteUpdateOne) ClearLinkedin() *WebsiteUpdateOne {
+	wuo.mutation.ClearLinkedin()
+	return wuo
+}
+
 // SetPinterest sets the "pinterest" field.
 func (wuo *WebsiteUpdateOne) SetPinterest(s string) *WebsiteUpdateOne {
 	wuo.mutation.SetPinterest(s)
+	return wuo
+}
+
+// SetNillablePinterest sets the "pinterest" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillablePinterest(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetPinterest(*s)
+	}
+	return wuo
+}
+
+// ClearPinterest clears the value of the "pinterest" field.
+func (wuo *WebsiteUpdateOne) ClearPinterest() *WebsiteUpdateOne {
+	wuo.mutation.ClearPinterest()
 	return wuo
 }
 
@@ -1016,9 +2163,29 @@ func (wuo *WebsiteUpdateOne) SetMapCoordinates(m map[string]interface{}) *Websit
 	return wuo
 }
 
+// ClearMapCoordinates clears the value of the "mapCoordinates" field.
+func (wuo *WebsiteUpdateOne) ClearMapCoordinates() *WebsiteUpdateOne {
+	wuo.mutation.ClearMapCoordinates()
+	return wuo
+}
+
 // SetLongitude sets the "longitude" field.
 func (wuo *WebsiteUpdateOne) SetLongitude(s string) *WebsiteUpdateOne {
 	wuo.mutation.SetLongitude(s)
+	return wuo
+}
+
+// SetNillableLongitude sets the "longitude" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillableLongitude(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetLongitude(*s)
+	}
+	return wuo
+}
+
+// ClearLongitude clears the value of the "longitude" field.
+func (wuo *WebsiteUpdateOne) ClearLongitude() *WebsiteUpdateOne {
+	wuo.mutation.ClearLongitude()
 	return wuo
 }
 
@@ -1028,9 +2195,37 @@ func (wuo *WebsiteUpdateOne) SetLatitude(s string) *WebsiteUpdateOne {
 	return wuo
 }
 
+// SetNillableLatitude sets the "latitude" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillableLatitude(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetLatitude(*s)
+	}
+	return wuo
+}
+
+// ClearLatitude clears the value of the "latitude" field.
+func (wuo *WebsiteUpdateOne) ClearLatitude() *WebsiteUpdateOne {
+	wuo.mutation.ClearLatitude()
+	return wuo
+}
+
 // SetAddress sets the "address" field.
 func (wuo *WebsiteUpdateOne) SetAddress(s string) *WebsiteUpdateOne {
 	wuo.mutation.SetAddress(s)
+	return wuo
+}
+
+// SetNillableAddress sets the "address" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillableAddress(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetAddress(*s)
+	}
+	return wuo
+}
+
+// ClearAddress clears the value of the "address" field.
+func (wuo *WebsiteUpdateOne) ClearAddress() *WebsiteUpdateOne {
+	wuo.mutation.ClearAddress()
 	return wuo
 }
 
@@ -1040,9 +2235,37 @@ func (wuo *WebsiteUpdateOne) SetCity(s string) *WebsiteUpdateOne {
 	return wuo
 }
 
+// SetNillableCity sets the "city" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillableCity(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetCity(*s)
+	}
+	return wuo
+}
+
+// ClearCity clears the value of the "city" field.
+func (wuo *WebsiteUpdateOne) ClearCity() *WebsiteUpdateOne {
+	wuo.mutation.ClearCity()
+	return wuo
+}
+
 // SetState sets the "state" field.
 func (wuo *WebsiteUpdateOne) SetState(s string) *WebsiteUpdateOne {
 	wuo.mutation.SetState(s)
+	return wuo
+}
+
+// SetNillableState sets the "state" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillableState(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetState(*s)
+	}
+	return wuo
+}
+
+// ClearState clears the value of the "state" field.
+func (wuo *WebsiteUpdateOne) ClearState() *WebsiteUpdateOne {
+	wuo.mutation.ClearState()
 	return wuo
 }
 
@@ -1052,9 +2275,37 @@ func (wuo *WebsiteUpdateOne) SetCountry(s string) *WebsiteUpdateOne {
 	return wuo
 }
 
+// SetNillableCountry sets the "country" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillableCountry(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetCountry(*s)
+	}
+	return wuo
+}
+
+// ClearCountry clears the value of the "country" field.
+func (wuo *WebsiteUpdateOne) ClearCountry() *WebsiteUpdateOne {
+	wuo.mutation.ClearCountry()
+	return wuo
+}
+
 // SetZipCode sets the "zipCode" field.
 func (wuo *WebsiteUpdateOne) SetZipCode(s string) *WebsiteUpdateOne {
 	wuo.mutation.SetZipCode(s)
+	return wuo
+}
+
+// SetNillableZipCode sets the "zipCode" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillableZipCode(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetZipCode(*s)
+	}
+	return wuo
+}
+
+// ClearZipCode clears the value of the "zipCode" field.
+func (wuo *WebsiteUpdateOne) ClearZipCode() *WebsiteUpdateOne {
+	wuo.mutation.ClearZipCode()
 	return wuo
 }
 
@@ -1064,15 +2315,49 @@ func (wuo *WebsiteUpdateOne) SetPhoneNumber(s string) *WebsiteUpdateOne {
 	return wuo
 }
 
+// SetNillablePhoneNumber sets the "phoneNumber" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillablePhoneNumber(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetPhoneNumber(*s)
+	}
+	return wuo
+}
+
+// ClearPhoneNumber clears the value of the "phoneNumber" field.
+func (wuo *WebsiteUpdateOne) ClearPhoneNumber() *WebsiteUpdateOne {
+	wuo.mutation.ClearPhoneNumber()
+	return wuo
+}
+
 // SetEmail sets the "email" field.
 func (wuo *WebsiteUpdateOne) SetEmail(s string) *WebsiteUpdateOne {
 	wuo.mutation.SetEmail(s)
 	return wuo
 }
 
+// SetNillableEmail sets the "email" field if the given value is not nil.
+func (wuo *WebsiteUpdateOne) SetNillableEmail(s *string) *WebsiteUpdateOne {
+	if s != nil {
+		wuo.SetEmail(*s)
+	}
+	return wuo
+}
+
+// ClearEmail clears the value of the "email" field.
+func (wuo *WebsiteUpdateOne) ClearEmail() *WebsiteUpdateOne {
+	wuo.mutation.ClearEmail()
+	return wuo
+}
+
 // SetMetaTags sets the "metaTags" field.
 func (wuo *WebsiteUpdateOne) SetMetaTags(m map[string]interface{}) *WebsiteUpdateOne {
 	wuo.mutation.SetMetaTags(m)
+	return wuo
+}
+
+// ClearMetaTags clears the value of the "metaTags" field.
+func (wuo *WebsiteUpdateOne) ClearMetaTags() *WebsiteUpdateOne {
+	wuo.mutation.ClearMetaTags()
 	return wuo
 }
 
@@ -1282,62 +2567,122 @@ func (wuo *WebsiteUpdateOne) sqlSave(ctx context.Context) (_node *Website, err e
 	if value, ok := wuo.mutation.HeadingText(); ok {
 		_spec.SetField(website.FieldHeadingText, field.TypeString, value)
 	}
+	if wuo.mutation.HeadingTextCleared() {
+		_spec.ClearField(website.FieldHeadingText, field.TypeString)
+	}
 	if value, ok := wuo.mutation.BusinessLogo(); ok {
 		_spec.SetField(website.FieldBusinessLogo, field.TypeString, value)
+	}
+	if wuo.mutation.BusinessLogoCleared() {
+		_spec.ClearField(website.FieldBusinessLogo, field.TypeString)
 	}
 	if value, ok := wuo.mutation.BusinessName(); ok {
 		_spec.SetField(website.FieldBusinessName, field.TypeString, value)
 	}
+	if wuo.mutation.BusinessNameCleared() {
+		_spec.ClearField(website.FieldBusinessName, field.TypeString)
+	}
 	if value, ok := wuo.mutation.BannerSectionBackgroundImage(); ok {
 		_spec.SetField(website.FieldBannerSectionBackgroundImage, field.TypeString, value)
+	}
+	if wuo.mutation.BannerSectionBackgroundImageCleared() {
+		_spec.ClearField(website.FieldBannerSectionBackgroundImage, field.TypeString)
 	}
 	if value, ok := wuo.mutation.BannerSectionBackgroundColor(); ok {
 		_spec.SetField(website.FieldBannerSectionBackgroundColor, field.TypeString, value)
 	}
+	if wuo.mutation.BannerSectionBackgroundColorCleared() {
+		_spec.ClearField(website.FieldBannerSectionBackgroundColor, field.TypeString)
+	}
 	if value, ok := wuo.mutation.BannerSectionText(); ok {
 		_spec.SetField(website.FieldBannerSectionText, field.TypeString, value)
+	}
+	if wuo.mutation.BannerSectionTextCleared() {
+		_spec.ClearField(website.FieldBannerSectionText, field.TypeString)
 	}
 	if value, ok := wuo.mutation.ThreeItemsSectionHeadingText(); ok {
 		_spec.SetField(website.FieldThreeItemsSectionHeadingText, field.TypeString, value)
 	}
+	if wuo.mutation.ThreeItemsSectionHeadingTextCleared() {
+		_spec.ClearField(website.FieldThreeItemsSectionHeadingText, field.TypeString)
+	}
 	if value, ok := wuo.mutation.ThreeItemsSectionDetailsText(); ok {
 		_spec.SetField(website.FieldThreeItemsSectionDetailsText, field.TypeString, value)
+	}
+	if wuo.mutation.ThreeItemsSectionDetailsTextCleared() {
+		_spec.ClearField(website.FieldThreeItemsSectionDetailsText, field.TypeString)
 	}
 	if value, ok := wuo.mutation.ThreeItemsSectionItemOneText(); ok {
 		_spec.SetField(website.FieldThreeItemsSectionItemOneText, field.TypeString, value)
 	}
+	if wuo.mutation.ThreeItemsSectionItemOneTextCleared() {
+		_spec.ClearField(website.FieldThreeItemsSectionItemOneText, field.TypeString)
+	}
 	if value, ok := wuo.mutation.ThreeItemsSectionItemTwoText(); ok {
 		_spec.SetField(website.FieldThreeItemsSectionItemTwoText, field.TypeString, value)
+	}
+	if wuo.mutation.ThreeItemsSectionItemTwoTextCleared() {
+		_spec.ClearField(website.FieldThreeItemsSectionItemTwoText, field.TypeString)
 	}
 	if value, ok := wuo.mutation.ThreeItemsSectionItemThreeText(); ok {
 		_spec.SetField(website.FieldThreeItemsSectionItemThreeText, field.TypeString, value)
 	}
+	if wuo.mutation.ThreeItemsSectionItemThreeTextCleared() {
+		_spec.ClearField(website.FieldThreeItemsSectionItemThreeText, field.TypeString)
+	}
 	if value, ok := wuo.mutation.BannerTwoSectionBackgroundImage(); ok {
 		_spec.SetField(website.FieldBannerTwoSectionBackgroundImage, field.TypeString, value)
+	}
+	if wuo.mutation.BannerTwoSectionBackgroundImageCleared() {
+		_spec.ClearField(website.FieldBannerTwoSectionBackgroundImage, field.TypeString)
 	}
 	if value, ok := wuo.mutation.BannerTwoSectionBackgroundColor(); ok {
 		_spec.SetField(website.FieldBannerTwoSectionBackgroundColor, field.TypeString, value)
 	}
+	if wuo.mutation.BannerTwoSectionBackgroundColorCleared() {
+		_spec.ClearField(website.FieldBannerTwoSectionBackgroundColor, field.TypeString)
+	}
 	if value, ok := wuo.mutation.BannerTwoLeftSectionHeadingText(); ok {
 		_spec.SetField(website.FieldBannerTwoLeftSectionHeadingText, field.TypeString, value)
+	}
+	if wuo.mutation.BannerTwoLeftSectionHeadingTextCleared() {
+		_spec.ClearField(website.FieldBannerTwoLeftSectionHeadingText, field.TypeString)
 	}
 	if value, ok := wuo.mutation.BannerTwoLeftSectionDetailsText(); ok {
 		_spec.SetField(website.FieldBannerTwoLeftSectionDetailsText, field.TypeString, value)
 	}
+	if wuo.mutation.BannerTwoLeftSectionDetailsTextCleared() {
+		_spec.ClearField(website.FieldBannerTwoLeftSectionDetailsText, field.TypeString)
+	}
 	if value, ok := wuo.mutation.BannerTwoLeftSectionButtonText(); ok {
 		_spec.SetField(website.FieldBannerTwoLeftSectionButtonText, field.TypeString, value)
+	}
+	if wuo.mutation.BannerTwoLeftSectionButtonTextCleared() {
+		_spec.ClearField(website.FieldBannerTwoLeftSectionButtonText, field.TypeString)
 	}
 	if value, ok := wuo.mutation.BannerTwoLeftSectionButtonLink(); ok {
 		_spec.SetField(website.FieldBannerTwoLeftSectionButtonLink, field.TypeString, value)
 	}
+	if wuo.mutation.BannerTwoLeftSectionButtonLinkCleared() {
+		_spec.ClearField(website.FieldBannerTwoLeftSectionButtonLink, field.TypeString)
+	}
 	if value, ok := wuo.mutation.BannerTwoRightSideImage(); ok {
 		_spec.SetField(website.FieldBannerTwoRightSideImage, field.TypeString, value)
+	}
+	if wuo.mutation.BannerTwoRightSideImageCleared() {
+		_spec.ClearField(website.FieldBannerTwoRightSideImage, field.TypeString)
 	}
 	if value, ok := wuo.mutation.AchievementsSection(); ok {
 		_spec.SetField(website.FieldAchievementsSection, field.TypeJSON, value)
 	}
+	if wuo.mutation.AchievementsSectionCleared() {
+		_spec.ClearField(website.FieldAchievementsSection, field.TypeJSON)
+	}
 	if value, ok := wuo.mutation.InventorySectionHeadingText(); ok {
 		_spec.SetField(website.FieldInventorySectionHeadingText, field.TypeString, value)
+	}
+	if wuo.mutation.InventorySectionHeadingTextCleared() {
+		_spec.ClearField(website.FieldInventorySectionHeadingText, field.TypeString)
 	}
 	if value, ok := wuo.mutation.CreationDate(); ok {
 		_spec.SetField(website.FieldCreationDate, field.TypeTime, value)
@@ -1348,71 +2693,140 @@ func (wuo *WebsiteUpdateOne) sqlSave(ctx context.Context) (_node *Website, err e
 	if value, ok := wuo.mutation.Title(); ok {
 		_spec.SetField(website.FieldTitle, field.TypeString, value)
 	}
+	if wuo.mutation.TitleCleared() {
+		_spec.ClearField(website.FieldTitle, field.TypeString)
+	}
 	if value, ok := wuo.mutation.Description(); ok {
 		_spec.SetField(website.FieldDescription, field.TypeString, value)
+	}
+	if wuo.mutation.DescriptionCleared() {
+		_spec.ClearField(website.FieldDescription, field.TypeString)
 	}
 	if value, ok := wuo.mutation.Keywords(); ok {
 		_spec.SetField(website.FieldKeywords, field.TypeString, value)
 	}
+	if wuo.mutation.KeywordsCleared() {
+		_spec.ClearField(website.FieldKeywords, field.TypeString)
+	}
 	if value, ok := wuo.mutation.Language(); ok {
 		_spec.SetField(website.FieldLanguage, field.TypeString, value)
+	}
+	if wuo.mutation.LanguageCleared() {
+		_spec.ClearField(website.FieldLanguage, field.TypeString)
 	}
 	if value, ok := wuo.mutation.Logo(); ok {
 		_spec.SetField(website.FieldLogo, field.TypeString, value)
 	}
+	if wuo.mutation.LogoCleared() {
+		_spec.ClearField(website.FieldLogo, field.TypeString)
+	}
 	if value, ok := wuo.mutation.Favicon(); ok {
 		_spec.SetField(website.FieldFavicon, field.TypeString, value)
+	}
+	if wuo.mutation.FaviconCleared() {
+		_spec.ClearField(website.FieldFavicon, field.TypeString)
 	}
 	if value, ok := wuo.mutation.Facebook(); ok {
 		_spec.SetField(website.FieldFacebook, field.TypeString, value)
 	}
+	if wuo.mutation.FacebookCleared() {
+		_spec.ClearField(website.FieldFacebook, field.TypeString)
+	}
 	if value, ok := wuo.mutation.Twitter(); ok {
 		_spec.SetField(website.FieldTwitter, field.TypeString, value)
+	}
+	if wuo.mutation.TwitterCleared() {
+		_spec.ClearField(website.FieldTwitter, field.TypeString)
 	}
 	if value, ok := wuo.mutation.Instagram(); ok {
 		_spec.SetField(website.FieldInstagram, field.TypeString, value)
 	}
+	if wuo.mutation.InstagramCleared() {
+		_spec.ClearField(website.FieldInstagram, field.TypeString)
+	}
 	if value, ok := wuo.mutation.Youtube(); ok {
 		_spec.SetField(website.FieldYoutube, field.TypeString, value)
+	}
+	if wuo.mutation.YoutubeCleared() {
+		_spec.ClearField(website.FieldYoutube, field.TypeString)
 	}
 	if value, ok := wuo.mutation.Linkedin(); ok {
 		_spec.SetField(website.FieldLinkedin, field.TypeString, value)
 	}
+	if wuo.mutation.LinkedinCleared() {
+		_spec.ClearField(website.FieldLinkedin, field.TypeString)
+	}
 	if value, ok := wuo.mutation.Pinterest(); ok {
 		_spec.SetField(website.FieldPinterest, field.TypeString, value)
+	}
+	if wuo.mutation.PinterestCleared() {
+		_spec.ClearField(website.FieldPinterest, field.TypeString)
 	}
 	if value, ok := wuo.mutation.MapCoordinates(); ok {
 		_spec.SetField(website.FieldMapCoordinates, field.TypeJSON, value)
 	}
+	if wuo.mutation.MapCoordinatesCleared() {
+		_spec.ClearField(website.FieldMapCoordinates, field.TypeJSON)
+	}
 	if value, ok := wuo.mutation.Longitude(); ok {
 		_spec.SetField(website.FieldLongitude, field.TypeString, value)
+	}
+	if wuo.mutation.LongitudeCleared() {
+		_spec.ClearField(website.FieldLongitude, field.TypeString)
 	}
 	if value, ok := wuo.mutation.Latitude(); ok {
 		_spec.SetField(website.FieldLatitude, field.TypeString, value)
 	}
+	if wuo.mutation.LatitudeCleared() {
+		_spec.ClearField(website.FieldLatitude, field.TypeString)
+	}
 	if value, ok := wuo.mutation.Address(); ok {
 		_spec.SetField(website.FieldAddress, field.TypeString, value)
+	}
+	if wuo.mutation.AddressCleared() {
+		_spec.ClearField(website.FieldAddress, field.TypeString)
 	}
 	if value, ok := wuo.mutation.City(); ok {
 		_spec.SetField(website.FieldCity, field.TypeString, value)
 	}
+	if wuo.mutation.CityCleared() {
+		_spec.ClearField(website.FieldCity, field.TypeString)
+	}
 	if value, ok := wuo.mutation.State(); ok {
 		_spec.SetField(website.FieldState, field.TypeString, value)
+	}
+	if wuo.mutation.StateCleared() {
+		_spec.ClearField(website.FieldState, field.TypeString)
 	}
 	if value, ok := wuo.mutation.Country(); ok {
 		_spec.SetField(website.FieldCountry, field.TypeString, value)
 	}
+	if wuo.mutation.CountryCleared() {
+		_spec.ClearField(website.FieldCountry, field.TypeString)
+	}
 	if value, ok := wuo.mutation.ZipCode(); ok {
 		_spec.SetField(website.FieldZipCode, field.TypeString, value)
+	}
+	if wuo.mutation.ZipCodeCleared() {
+		_spec.ClearField(website.FieldZipCode, field.TypeString)
 	}
 	if value, ok := wuo.mutation.PhoneNumber(); ok {
 		_spec.SetField(website.FieldPhoneNumber, field.TypeString, value)
 	}
+	if wuo.mutation.PhoneNumberCleared() {
+		_spec.ClearField(website.FieldPhoneNumber, field.TypeString)
+	}
 	if value, ok := wuo.mutation.Email(); ok {
 		_spec.SetField(website.FieldEmail, field.TypeString, value)
 	}
+	if wuo.mutation.EmailCleared() {
+		_spec.ClearField(website.FieldEmail, field.TypeString)
+	}
 	if value, ok := wuo.mutation.MetaTags(); ok {
 		_spec.SetField(website.FieldMetaTags, field.TypeJSON, value)
+	}
+	if wuo.mutation.MetaTagsCleared() {
+		_spec.ClearField(website.FieldMetaTags, field.TypeJSON)
 	}
 	if wuo.mutation.BusinessCleared() {
 		edge := &sqlgraph.EdgeSpec{

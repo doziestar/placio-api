@@ -400,6 +400,16 @@ func HeadingTextHasSuffix(v string) predicate.Website {
 	return predicate.Website(sql.FieldHasSuffix(FieldHeadingText, v))
 }
 
+// HeadingTextIsNil applies the IsNil predicate on the "heading_text" field.
+func HeadingTextIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldHeadingText))
+}
+
+// HeadingTextNotNil applies the NotNil predicate on the "heading_text" field.
+func HeadingTextNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldHeadingText))
+}
+
 // HeadingTextEqualFold applies the EqualFold predicate on the "heading_text" field.
 func HeadingTextEqualFold(v string) predicate.Website {
 	return predicate.Website(sql.FieldEqualFold(FieldHeadingText, v))
@@ -463,6 +473,16 @@ func BusinessLogoHasPrefix(v string) predicate.Website {
 // BusinessLogoHasSuffix applies the HasSuffix predicate on the "business_logo" field.
 func BusinessLogoHasSuffix(v string) predicate.Website {
 	return predicate.Website(sql.FieldHasSuffix(FieldBusinessLogo, v))
+}
+
+// BusinessLogoIsNil applies the IsNil predicate on the "business_logo" field.
+func BusinessLogoIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldBusinessLogo))
+}
+
+// BusinessLogoNotNil applies the NotNil predicate on the "business_logo" field.
+func BusinessLogoNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldBusinessLogo))
 }
 
 // BusinessLogoEqualFold applies the EqualFold predicate on the "business_logo" field.
@@ -530,6 +550,16 @@ func BusinessNameHasSuffix(v string) predicate.Website {
 	return predicate.Website(sql.FieldHasSuffix(FieldBusinessName, v))
 }
 
+// BusinessNameIsNil applies the IsNil predicate on the "business_name" field.
+func BusinessNameIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldBusinessName))
+}
+
+// BusinessNameNotNil applies the NotNil predicate on the "business_name" field.
+func BusinessNameNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldBusinessName))
+}
+
 // BusinessNameEqualFold applies the EqualFold predicate on the "business_name" field.
 func BusinessNameEqualFold(v string) predicate.Website {
 	return predicate.Website(sql.FieldEqualFold(FieldBusinessName, v))
@@ -593,6 +623,16 @@ func BannerSectionBackgroundImageHasPrefix(v string) predicate.Website {
 // BannerSectionBackgroundImageHasSuffix applies the HasSuffix predicate on the "banner_section_background_image" field.
 func BannerSectionBackgroundImageHasSuffix(v string) predicate.Website {
 	return predicate.Website(sql.FieldHasSuffix(FieldBannerSectionBackgroundImage, v))
+}
+
+// BannerSectionBackgroundImageIsNil applies the IsNil predicate on the "banner_section_background_image" field.
+func BannerSectionBackgroundImageIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldBannerSectionBackgroundImage))
+}
+
+// BannerSectionBackgroundImageNotNil applies the NotNil predicate on the "banner_section_background_image" field.
+func BannerSectionBackgroundImageNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldBannerSectionBackgroundImage))
 }
 
 // BannerSectionBackgroundImageEqualFold applies the EqualFold predicate on the "banner_section_background_image" field.
@@ -660,6 +700,16 @@ func BannerSectionBackgroundColorHasSuffix(v string) predicate.Website {
 	return predicate.Website(sql.FieldHasSuffix(FieldBannerSectionBackgroundColor, v))
 }
 
+// BannerSectionBackgroundColorIsNil applies the IsNil predicate on the "banner_section_background_color" field.
+func BannerSectionBackgroundColorIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldBannerSectionBackgroundColor))
+}
+
+// BannerSectionBackgroundColorNotNil applies the NotNil predicate on the "banner_section_background_color" field.
+func BannerSectionBackgroundColorNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldBannerSectionBackgroundColor))
+}
+
 // BannerSectionBackgroundColorEqualFold applies the EqualFold predicate on the "banner_section_background_color" field.
 func BannerSectionBackgroundColorEqualFold(v string) predicate.Website {
 	return predicate.Website(sql.FieldEqualFold(FieldBannerSectionBackgroundColor, v))
@@ -723,6 +773,16 @@ func BannerSectionTextHasPrefix(v string) predicate.Website {
 // BannerSectionTextHasSuffix applies the HasSuffix predicate on the "banner_section_text" field.
 func BannerSectionTextHasSuffix(v string) predicate.Website {
 	return predicate.Website(sql.FieldHasSuffix(FieldBannerSectionText, v))
+}
+
+// BannerSectionTextIsNil applies the IsNil predicate on the "banner_section_text" field.
+func BannerSectionTextIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldBannerSectionText))
+}
+
+// BannerSectionTextNotNil applies the NotNil predicate on the "banner_section_text" field.
+func BannerSectionTextNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldBannerSectionText))
 }
 
 // BannerSectionTextEqualFold applies the EqualFold predicate on the "banner_section_text" field.
@@ -790,6 +850,16 @@ func ThreeItemsSectionHeadingTextHasSuffix(v string) predicate.Website {
 	return predicate.Website(sql.FieldHasSuffix(FieldThreeItemsSectionHeadingText, v))
 }
 
+// ThreeItemsSectionHeadingTextIsNil applies the IsNil predicate on the "three_items_section_heading_text" field.
+func ThreeItemsSectionHeadingTextIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldThreeItemsSectionHeadingText))
+}
+
+// ThreeItemsSectionHeadingTextNotNil applies the NotNil predicate on the "three_items_section_heading_text" field.
+func ThreeItemsSectionHeadingTextNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldThreeItemsSectionHeadingText))
+}
+
 // ThreeItemsSectionHeadingTextEqualFold applies the EqualFold predicate on the "three_items_section_heading_text" field.
 func ThreeItemsSectionHeadingTextEqualFold(v string) predicate.Website {
 	return predicate.Website(sql.FieldEqualFold(FieldThreeItemsSectionHeadingText, v))
@@ -853,6 +923,16 @@ func ThreeItemsSectionDetailsTextHasPrefix(v string) predicate.Website {
 // ThreeItemsSectionDetailsTextHasSuffix applies the HasSuffix predicate on the "three_items_section_details_text" field.
 func ThreeItemsSectionDetailsTextHasSuffix(v string) predicate.Website {
 	return predicate.Website(sql.FieldHasSuffix(FieldThreeItemsSectionDetailsText, v))
+}
+
+// ThreeItemsSectionDetailsTextIsNil applies the IsNil predicate on the "three_items_section_details_text" field.
+func ThreeItemsSectionDetailsTextIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldThreeItemsSectionDetailsText))
+}
+
+// ThreeItemsSectionDetailsTextNotNil applies the NotNil predicate on the "three_items_section_details_text" field.
+func ThreeItemsSectionDetailsTextNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldThreeItemsSectionDetailsText))
 }
 
 // ThreeItemsSectionDetailsTextEqualFold applies the EqualFold predicate on the "three_items_section_details_text" field.
@@ -920,6 +1000,16 @@ func ThreeItemsSectionItemOneTextHasSuffix(v string) predicate.Website {
 	return predicate.Website(sql.FieldHasSuffix(FieldThreeItemsSectionItemOneText, v))
 }
 
+// ThreeItemsSectionItemOneTextIsNil applies the IsNil predicate on the "three_items_section_item_one_text" field.
+func ThreeItemsSectionItemOneTextIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldThreeItemsSectionItemOneText))
+}
+
+// ThreeItemsSectionItemOneTextNotNil applies the NotNil predicate on the "three_items_section_item_one_text" field.
+func ThreeItemsSectionItemOneTextNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldThreeItemsSectionItemOneText))
+}
+
 // ThreeItemsSectionItemOneTextEqualFold applies the EqualFold predicate on the "three_items_section_item_one_text" field.
 func ThreeItemsSectionItemOneTextEqualFold(v string) predicate.Website {
 	return predicate.Website(sql.FieldEqualFold(FieldThreeItemsSectionItemOneText, v))
@@ -983,6 +1073,16 @@ func ThreeItemsSectionItemTwoTextHasPrefix(v string) predicate.Website {
 // ThreeItemsSectionItemTwoTextHasSuffix applies the HasSuffix predicate on the "three_items_section_item_two_text" field.
 func ThreeItemsSectionItemTwoTextHasSuffix(v string) predicate.Website {
 	return predicate.Website(sql.FieldHasSuffix(FieldThreeItemsSectionItemTwoText, v))
+}
+
+// ThreeItemsSectionItemTwoTextIsNil applies the IsNil predicate on the "three_items_section_item_two_text" field.
+func ThreeItemsSectionItemTwoTextIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldThreeItemsSectionItemTwoText))
+}
+
+// ThreeItemsSectionItemTwoTextNotNil applies the NotNil predicate on the "three_items_section_item_two_text" field.
+func ThreeItemsSectionItemTwoTextNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldThreeItemsSectionItemTwoText))
 }
 
 // ThreeItemsSectionItemTwoTextEqualFold applies the EqualFold predicate on the "three_items_section_item_two_text" field.
@@ -1050,6 +1150,16 @@ func ThreeItemsSectionItemThreeTextHasSuffix(v string) predicate.Website {
 	return predicate.Website(sql.FieldHasSuffix(FieldThreeItemsSectionItemThreeText, v))
 }
 
+// ThreeItemsSectionItemThreeTextIsNil applies the IsNil predicate on the "three_items_section_item_three_text" field.
+func ThreeItemsSectionItemThreeTextIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldThreeItemsSectionItemThreeText))
+}
+
+// ThreeItemsSectionItemThreeTextNotNil applies the NotNil predicate on the "three_items_section_item_three_text" field.
+func ThreeItemsSectionItemThreeTextNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldThreeItemsSectionItemThreeText))
+}
+
 // ThreeItemsSectionItemThreeTextEqualFold applies the EqualFold predicate on the "three_items_section_item_three_text" field.
 func ThreeItemsSectionItemThreeTextEqualFold(v string) predicate.Website {
 	return predicate.Website(sql.FieldEqualFold(FieldThreeItemsSectionItemThreeText, v))
@@ -1113,6 +1223,16 @@ func BannerTwoSectionBackgroundImageHasPrefix(v string) predicate.Website {
 // BannerTwoSectionBackgroundImageHasSuffix applies the HasSuffix predicate on the "banner_two_section_background_image" field.
 func BannerTwoSectionBackgroundImageHasSuffix(v string) predicate.Website {
 	return predicate.Website(sql.FieldHasSuffix(FieldBannerTwoSectionBackgroundImage, v))
+}
+
+// BannerTwoSectionBackgroundImageIsNil applies the IsNil predicate on the "banner_two_section_background_image" field.
+func BannerTwoSectionBackgroundImageIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldBannerTwoSectionBackgroundImage))
+}
+
+// BannerTwoSectionBackgroundImageNotNil applies the NotNil predicate on the "banner_two_section_background_image" field.
+func BannerTwoSectionBackgroundImageNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldBannerTwoSectionBackgroundImage))
 }
 
 // BannerTwoSectionBackgroundImageEqualFold applies the EqualFold predicate on the "banner_two_section_background_image" field.
@@ -1180,6 +1300,16 @@ func BannerTwoSectionBackgroundColorHasSuffix(v string) predicate.Website {
 	return predicate.Website(sql.FieldHasSuffix(FieldBannerTwoSectionBackgroundColor, v))
 }
 
+// BannerTwoSectionBackgroundColorIsNil applies the IsNil predicate on the "banner_two_section_background_color" field.
+func BannerTwoSectionBackgroundColorIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldBannerTwoSectionBackgroundColor))
+}
+
+// BannerTwoSectionBackgroundColorNotNil applies the NotNil predicate on the "banner_two_section_background_color" field.
+func BannerTwoSectionBackgroundColorNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldBannerTwoSectionBackgroundColor))
+}
+
 // BannerTwoSectionBackgroundColorEqualFold applies the EqualFold predicate on the "banner_two_section_background_color" field.
 func BannerTwoSectionBackgroundColorEqualFold(v string) predicate.Website {
 	return predicate.Website(sql.FieldEqualFold(FieldBannerTwoSectionBackgroundColor, v))
@@ -1243,6 +1373,16 @@ func BannerTwoLeftSectionHeadingTextHasPrefix(v string) predicate.Website {
 // BannerTwoLeftSectionHeadingTextHasSuffix applies the HasSuffix predicate on the "banner_two_left_section_heading_text" field.
 func BannerTwoLeftSectionHeadingTextHasSuffix(v string) predicate.Website {
 	return predicate.Website(sql.FieldHasSuffix(FieldBannerTwoLeftSectionHeadingText, v))
+}
+
+// BannerTwoLeftSectionHeadingTextIsNil applies the IsNil predicate on the "banner_two_left_section_heading_text" field.
+func BannerTwoLeftSectionHeadingTextIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldBannerTwoLeftSectionHeadingText))
+}
+
+// BannerTwoLeftSectionHeadingTextNotNil applies the NotNil predicate on the "banner_two_left_section_heading_text" field.
+func BannerTwoLeftSectionHeadingTextNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldBannerTwoLeftSectionHeadingText))
 }
 
 // BannerTwoLeftSectionHeadingTextEqualFold applies the EqualFold predicate on the "banner_two_left_section_heading_text" field.
@@ -1310,6 +1450,16 @@ func BannerTwoLeftSectionDetailsTextHasSuffix(v string) predicate.Website {
 	return predicate.Website(sql.FieldHasSuffix(FieldBannerTwoLeftSectionDetailsText, v))
 }
 
+// BannerTwoLeftSectionDetailsTextIsNil applies the IsNil predicate on the "banner_two_left_section_details_text" field.
+func BannerTwoLeftSectionDetailsTextIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldBannerTwoLeftSectionDetailsText))
+}
+
+// BannerTwoLeftSectionDetailsTextNotNil applies the NotNil predicate on the "banner_two_left_section_details_text" field.
+func BannerTwoLeftSectionDetailsTextNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldBannerTwoLeftSectionDetailsText))
+}
+
 // BannerTwoLeftSectionDetailsTextEqualFold applies the EqualFold predicate on the "banner_two_left_section_details_text" field.
 func BannerTwoLeftSectionDetailsTextEqualFold(v string) predicate.Website {
 	return predicate.Website(sql.FieldEqualFold(FieldBannerTwoLeftSectionDetailsText, v))
@@ -1373,6 +1523,16 @@ func BannerTwoLeftSectionButtonTextHasPrefix(v string) predicate.Website {
 // BannerTwoLeftSectionButtonTextHasSuffix applies the HasSuffix predicate on the "banner_two_left_section_button_text" field.
 func BannerTwoLeftSectionButtonTextHasSuffix(v string) predicate.Website {
 	return predicate.Website(sql.FieldHasSuffix(FieldBannerTwoLeftSectionButtonText, v))
+}
+
+// BannerTwoLeftSectionButtonTextIsNil applies the IsNil predicate on the "banner_two_left_section_button_text" field.
+func BannerTwoLeftSectionButtonTextIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldBannerTwoLeftSectionButtonText))
+}
+
+// BannerTwoLeftSectionButtonTextNotNil applies the NotNil predicate on the "banner_two_left_section_button_text" field.
+func BannerTwoLeftSectionButtonTextNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldBannerTwoLeftSectionButtonText))
 }
 
 // BannerTwoLeftSectionButtonTextEqualFold applies the EqualFold predicate on the "banner_two_left_section_button_text" field.
@@ -1440,6 +1600,16 @@ func BannerTwoLeftSectionButtonLinkHasSuffix(v string) predicate.Website {
 	return predicate.Website(sql.FieldHasSuffix(FieldBannerTwoLeftSectionButtonLink, v))
 }
 
+// BannerTwoLeftSectionButtonLinkIsNil applies the IsNil predicate on the "banner_two_left_section_button_link" field.
+func BannerTwoLeftSectionButtonLinkIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldBannerTwoLeftSectionButtonLink))
+}
+
+// BannerTwoLeftSectionButtonLinkNotNil applies the NotNil predicate on the "banner_two_left_section_button_link" field.
+func BannerTwoLeftSectionButtonLinkNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldBannerTwoLeftSectionButtonLink))
+}
+
 // BannerTwoLeftSectionButtonLinkEqualFold applies the EqualFold predicate on the "banner_two_left_section_button_link" field.
 func BannerTwoLeftSectionButtonLinkEqualFold(v string) predicate.Website {
 	return predicate.Website(sql.FieldEqualFold(FieldBannerTwoLeftSectionButtonLink, v))
@@ -1505,6 +1675,16 @@ func BannerTwoRightSideImageHasSuffix(v string) predicate.Website {
 	return predicate.Website(sql.FieldHasSuffix(FieldBannerTwoRightSideImage, v))
 }
 
+// BannerTwoRightSideImageIsNil applies the IsNil predicate on the "banner_two_right_side_image" field.
+func BannerTwoRightSideImageIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldBannerTwoRightSideImage))
+}
+
+// BannerTwoRightSideImageNotNil applies the NotNil predicate on the "banner_two_right_side_image" field.
+func BannerTwoRightSideImageNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldBannerTwoRightSideImage))
+}
+
 // BannerTwoRightSideImageEqualFold applies the EqualFold predicate on the "banner_two_right_side_image" field.
 func BannerTwoRightSideImageEqualFold(v string) predicate.Website {
 	return predicate.Website(sql.FieldEqualFold(FieldBannerTwoRightSideImage, v))
@@ -1513,6 +1693,16 @@ func BannerTwoRightSideImageEqualFold(v string) predicate.Website {
 // BannerTwoRightSideImageContainsFold applies the ContainsFold predicate on the "banner_two_right_side_image" field.
 func BannerTwoRightSideImageContainsFold(v string) predicate.Website {
 	return predicate.Website(sql.FieldContainsFold(FieldBannerTwoRightSideImage, v))
+}
+
+// AchievementsSectionIsNil applies the IsNil predicate on the "achievements_section" field.
+func AchievementsSectionIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldAchievementsSection))
+}
+
+// AchievementsSectionNotNil applies the NotNil predicate on the "achievements_section" field.
+func AchievementsSectionNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldAchievementsSection))
 }
 
 // InventorySectionHeadingTextEQ applies the EQ predicate on the "Inventory_section_heading_text" field.
@@ -1568,6 +1758,16 @@ func InventorySectionHeadingTextHasPrefix(v string) predicate.Website {
 // InventorySectionHeadingTextHasSuffix applies the HasSuffix predicate on the "Inventory_section_heading_text" field.
 func InventorySectionHeadingTextHasSuffix(v string) predicate.Website {
 	return predicate.Website(sql.FieldHasSuffix(FieldInventorySectionHeadingText, v))
+}
+
+// InventorySectionHeadingTextIsNil applies the IsNil predicate on the "Inventory_section_heading_text" field.
+func InventorySectionHeadingTextIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldInventorySectionHeadingText))
+}
+
+// InventorySectionHeadingTextNotNil applies the NotNil predicate on the "Inventory_section_heading_text" field.
+func InventorySectionHeadingTextNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldInventorySectionHeadingText))
 }
 
 // InventorySectionHeadingTextEqualFold applies the EqualFold predicate on the "Inventory_section_heading_text" field.
@@ -1715,6 +1915,16 @@ func TitleHasSuffix(v string) predicate.Website {
 	return predicate.Website(sql.FieldHasSuffix(FieldTitle, v))
 }
 
+// TitleIsNil applies the IsNil predicate on the "title" field.
+func TitleIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldTitle))
+}
+
+// TitleNotNil applies the NotNil predicate on the "title" field.
+func TitleNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldTitle))
+}
+
 // TitleEqualFold applies the EqualFold predicate on the "title" field.
 func TitleEqualFold(v string) predicate.Website {
 	return predicate.Website(sql.FieldEqualFold(FieldTitle, v))
@@ -1778,6 +1988,16 @@ func DescriptionHasPrefix(v string) predicate.Website {
 // DescriptionHasSuffix applies the HasSuffix predicate on the "description" field.
 func DescriptionHasSuffix(v string) predicate.Website {
 	return predicate.Website(sql.FieldHasSuffix(FieldDescription, v))
+}
+
+// DescriptionIsNil applies the IsNil predicate on the "description" field.
+func DescriptionIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldDescription))
+}
+
+// DescriptionNotNil applies the NotNil predicate on the "description" field.
+func DescriptionNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldDescription))
 }
 
 // DescriptionEqualFold applies the EqualFold predicate on the "description" field.
@@ -1845,6 +2065,16 @@ func KeywordsHasSuffix(v string) predicate.Website {
 	return predicate.Website(sql.FieldHasSuffix(FieldKeywords, v))
 }
 
+// KeywordsIsNil applies the IsNil predicate on the "keywords" field.
+func KeywordsIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldKeywords))
+}
+
+// KeywordsNotNil applies the NotNil predicate on the "keywords" field.
+func KeywordsNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldKeywords))
+}
+
 // KeywordsEqualFold applies the EqualFold predicate on the "keywords" field.
 func KeywordsEqualFold(v string) predicate.Website {
 	return predicate.Website(sql.FieldEqualFold(FieldKeywords, v))
@@ -1908,6 +2138,16 @@ func LanguageHasPrefix(v string) predicate.Website {
 // LanguageHasSuffix applies the HasSuffix predicate on the "language" field.
 func LanguageHasSuffix(v string) predicate.Website {
 	return predicate.Website(sql.FieldHasSuffix(FieldLanguage, v))
+}
+
+// LanguageIsNil applies the IsNil predicate on the "language" field.
+func LanguageIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldLanguage))
+}
+
+// LanguageNotNil applies the NotNil predicate on the "language" field.
+func LanguageNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldLanguage))
 }
 
 // LanguageEqualFold applies the EqualFold predicate on the "language" field.
@@ -1975,6 +2215,16 @@ func LogoHasSuffix(v string) predicate.Website {
 	return predicate.Website(sql.FieldHasSuffix(FieldLogo, v))
 }
 
+// LogoIsNil applies the IsNil predicate on the "logo" field.
+func LogoIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldLogo))
+}
+
+// LogoNotNil applies the NotNil predicate on the "logo" field.
+func LogoNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldLogo))
+}
+
 // LogoEqualFold applies the EqualFold predicate on the "logo" field.
 func LogoEqualFold(v string) predicate.Website {
 	return predicate.Website(sql.FieldEqualFold(FieldLogo, v))
@@ -2038,6 +2288,16 @@ func FaviconHasPrefix(v string) predicate.Website {
 // FaviconHasSuffix applies the HasSuffix predicate on the "favicon" field.
 func FaviconHasSuffix(v string) predicate.Website {
 	return predicate.Website(sql.FieldHasSuffix(FieldFavicon, v))
+}
+
+// FaviconIsNil applies the IsNil predicate on the "favicon" field.
+func FaviconIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldFavicon))
+}
+
+// FaviconNotNil applies the NotNil predicate on the "favicon" field.
+func FaviconNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldFavicon))
 }
 
 // FaviconEqualFold applies the EqualFold predicate on the "favicon" field.
@@ -2105,6 +2365,16 @@ func FacebookHasSuffix(v string) predicate.Website {
 	return predicate.Website(sql.FieldHasSuffix(FieldFacebook, v))
 }
 
+// FacebookIsNil applies the IsNil predicate on the "facebook" field.
+func FacebookIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldFacebook))
+}
+
+// FacebookNotNil applies the NotNil predicate on the "facebook" field.
+func FacebookNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldFacebook))
+}
+
 // FacebookEqualFold applies the EqualFold predicate on the "facebook" field.
 func FacebookEqualFold(v string) predicate.Website {
 	return predicate.Website(sql.FieldEqualFold(FieldFacebook, v))
@@ -2168,6 +2438,16 @@ func TwitterHasPrefix(v string) predicate.Website {
 // TwitterHasSuffix applies the HasSuffix predicate on the "twitter" field.
 func TwitterHasSuffix(v string) predicate.Website {
 	return predicate.Website(sql.FieldHasSuffix(FieldTwitter, v))
+}
+
+// TwitterIsNil applies the IsNil predicate on the "twitter" field.
+func TwitterIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldTwitter))
+}
+
+// TwitterNotNil applies the NotNil predicate on the "twitter" field.
+func TwitterNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldTwitter))
 }
 
 // TwitterEqualFold applies the EqualFold predicate on the "twitter" field.
@@ -2235,6 +2515,16 @@ func InstagramHasSuffix(v string) predicate.Website {
 	return predicate.Website(sql.FieldHasSuffix(FieldInstagram, v))
 }
 
+// InstagramIsNil applies the IsNil predicate on the "instagram" field.
+func InstagramIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldInstagram))
+}
+
+// InstagramNotNil applies the NotNil predicate on the "instagram" field.
+func InstagramNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldInstagram))
+}
+
 // InstagramEqualFold applies the EqualFold predicate on the "instagram" field.
 func InstagramEqualFold(v string) predicate.Website {
 	return predicate.Website(sql.FieldEqualFold(FieldInstagram, v))
@@ -2298,6 +2588,16 @@ func YoutubeHasPrefix(v string) predicate.Website {
 // YoutubeHasSuffix applies the HasSuffix predicate on the "youtube" field.
 func YoutubeHasSuffix(v string) predicate.Website {
 	return predicate.Website(sql.FieldHasSuffix(FieldYoutube, v))
+}
+
+// YoutubeIsNil applies the IsNil predicate on the "youtube" field.
+func YoutubeIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldYoutube))
+}
+
+// YoutubeNotNil applies the NotNil predicate on the "youtube" field.
+func YoutubeNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldYoutube))
 }
 
 // YoutubeEqualFold applies the EqualFold predicate on the "youtube" field.
@@ -2365,6 +2665,16 @@ func LinkedinHasSuffix(v string) predicate.Website {
 	return predicate.Website(sql.FieldHasSuffix(FieldLinkedin, v))
 }
 
+// LinkedinIsNil applies the IsNil predicate on the "linkedin" field.
+func LinkedinIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldLinkedin))
+}
+
+// LinkedinNotNil applies the NotNil predicate on the "linkedin" field.
+func LinkedinNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldLinkedin))
+}
+
 // LinkedinEqualFold applies the EqualFold predicate on the "linkedin" field.
 func LinkedinEqualFold(v string) predicate.Website {
 	return predicate.Website(sql.FieldEqualFold(FieldLinkedin, v))
@@ -2430,6 +2740,16 @@ func PinterestHasSuffix(v string) predicate.Website {
 	return predicate.Website(sql.FieldHasSuffix(FieldPinterest, v))
 }
 
+// PinterestIsNil applies the IsNil predicate on the "pinterest" field.
+func PinterestIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldPinterest))
+}
+
+// PinterestNotNil applies the NotNil predicate on the "pinterest" field.
+func PinterestNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldPinterest))
+}
+
 // PinterestEqualFold applies the EqualFold predicate on the "pinterest" field.
 func PinterestEqualFold(v string) predicate.Website {
 	return predicate.Website(sql.FieldEqualFold(FieldPinterest, v))
@@ -2438,6 +2758,16 @@ func PinterestEqualFold(v string) predicate.Website {
 // PinterestContainsFold applies the ContainsFold predicate on the "pinterest" field.
 func PinterestContainsFold(v string) predicate.Website {
 	return predicate.Website(sql.FieldContainsFold(FieldPinterest, v))
+}
+
+// MapCoordinatesIsNil applies the IsNil predicate on the "mapCoordinates" field.
+func MapCoordinatesIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldMapCoordinates))
+}
+
+// MapCoordinatesNotNil applies the NotNil predicate on the "mapCoordinates" field.
+func MapCoordinatesNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldMapCoordinates))
 }
 
 // LongitudeEQ applies the EQ predicate on the "longitude" field.
@@ -2493,6 +2823,16 @@ func LongitudeHasPrefix(v string) predicate.Website {
 // LongitudeHasSuffix applies the HasSuffix predicate on the "longitude" field.
 func LongitudeHasSuffix(v string) predicate.Website {
 	return predicate.Website(sql.FieldHasSuffix(FieldLongitude, v))
+}
+
+// LongitudeIsNil applies the IsNil predicate on the "longitude" field.
+func LongitudeIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldLongitude))
+}
+
+// LongitudeNotNil applies the NotNil predicate on the "longitude" field.
+func LongitudeNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldLongitude))
 }
 
 // LongitudeEqualFold applies the EqualFold predicate on the "longitude" field.
@@ -2560,6 +2900,16 @@ func LatitudeHasSuffix(v string) predicate.Website {
 	return predicate.Website(sql.FieldHasSuffix(FieldLatitude, v))
 }
 
+// LatitudeIsNil applies the IsNil predicate on the "latitude" field.
+func LatitudeIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldLatitude))
+}
+
+// LatitudeNotNil applies the NotNil predicate on the "latitude" field.
+func LatitudeNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldLatitude))
+}
+
 // LatitudeEqualFold applies the EqualFold predicate on the "latitude" field.
 func LatitudeEqualFold(v string) predicate.Website {
 	return predicate.Website(sql.FieldEqualFold(FieldLatitude, v))
@@ -2623,6 +2973,16 @@ func AddressHasPrefix(v string) predicate.Website {
 // AddressHasSuffix applies the HasSuffix predicate on the "address" field.
 func AddressHasSuffix(v string) predicate.Website {
 	return predicate.Website(sql.FieldHasSuffix(FieldAddress, v))
+}
+
+// AddressIsNil applies the IsNil predicate on the "address" field.
+func AddressIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldAddress))
+}
+
+// AddressNotNil applies the NotNil predicate on the "address" field.
+func AddressNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldAddress))
 }
 
 // AddressEqualFold applies the EqualFold predicate on the "address" field.
@@ -2690,6 +3050,16 @@ func CityHasSuffix(v string) predicate.Website {
 	return predicate.Website(sql.FieldHasSuffix(FieldCity, v))
 }
 
+// CityIsNil applies the IsNil predicate on the "city" field.
+func CityIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldCity))
+}
+
+// CityNotNil applies the NotNil predicate on the "city" field.
+func CityNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldCity))
+}
+
 // CityEqualFold applies the EqualFold predicate on the "city" field.
 func CityEqualFold(v string) predicate.Website {
 	return predicate.Website(sql.FieldEqualFold(FieldCity, v))
@@ -2753,6 +3123,16 @@ func StateHasPrefix(v string) predicate.Website {
 // StateHasSuffix applies the HasSuffix predicate on the "state" field.
 func StateHasSuffix(v string) predicate.Website {
 	return predicate.Website(sql.FieldHasSuffix(FieldState, v))
+}
+
+// StateIsNil applies the IsNil predicate on the "state" field.
+func StateIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldState))
+}
+
+// StateNotNil applies the NotNil predicate on the "state" field.
+func StateNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldState))
 }
 
 // StateEqualFold applies the EqualFold predicate on the "state" field.
@@ -2820,6 +3200,16 @@ func CountryHasSuffix(v string) predicate.Website {
 	return predicate.Website(sql.FieldHasSuffix(FieldCountry, v))
 }
 
+// CountryIsNil applies the IsNil predicate on the "country" field.
+func CountryIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldCountry))
+}
+
+// CountryNotNil applies the NotNil predicate on the "country" field.
+func CountryNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldCountry))
+}
+
 // CountryEqualFold applies the EqualFold predicate on the "country" field.
 func CountryEqualFold(v string) predicate.Website {
 	return predicate.Website(sql.FieldEqualFold(FieldCountry, v))
@@ -2883,6 +3273,16 @@ func ZipCodeHasPrefix(v string) predicate.Website {
 // ZipCodeHasSuffix applies the HasSuffix predicate on the "zipCode" field.
 func ZipCodeHasSuffix(v string) predicate.Website {
 	return predicate.Website(sql.FieldHasSuffix(FieldZipCode, v))
+}
+
+// ZipCodeIsNil applies the IsNil predicate on the "zipCode" field.
+func ZipCodeIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldZipCode))
+}
+
+// ZipCodeNotNil applies the NotNil predicate on the "zipCode" field.
+func ZipCodeNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldZipCode))
 }
 
 // ZipCodeEqualFold applies the EqualFold predicate on the "zipCode" field.
@@ -2950,6 +3350,16 @@ func PhoneNumberHasSuffix(v string) predicate.Website {
 	return predicate.Website(sql.FieldHasSuffix(FieldPhoneNumber, v))
 }
 
+// PhoneNumberIsNil applies the IsNil predicate on the "phoneNumber" field.
+func PhoneNumberIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldPhoneNumber))
+}
+
+// PhoneNumberNotNil applies the NotNil predicate on the "phoneNumber" field.
+func PhoneNumberNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldPhoneNumber))
+}
+
 // PhoneNumberEqualFold applies the EqualFold predicate on the "phoneNumber" field.
 func PhoneNumberEqualFold(v string) predicate.Website {
 	return predicate.Website(sql.FieldEqualFold(FieldPhoneNumber, v))
@@ -3015,6 +3425,16 @@ func EmailHasSuffix(v string) predicate.Website {
 	return predicate.Website(sql.FieldHasSuffix(FieldEmail, v))
 }
 
+// EmailIsNil applies the IsNil predicate on the "email" field.
+func EmailIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldEmail))
+}
+
+// EmailNotNil applies the NotNil predicate on the "email" field.
+func EmailNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldEmail))
+}
+
 // EmailEqualFold applies the EqualFold predicate on the "email" field.
 func EmailEqualFold(v string) predicate.Website {
 	return predicate.Website(sql.FieldEqualFold(FieldEmail, v))
@@ -3023,6 +3443,16 @@ func EmailEqualFold(v string) predicate.Website {
 // EmailContainsFold applies the ContainsFold predicate on the "email" field.
 func EmailContainsFold(v string) predicate.Website {
 	return predicate.Website(sql.FieldContainsFold(FieldEmail, v))
+}
+
+// MetaTagsIsNil applies the IsNil predicate on the "metaTags" field.
+func MetaTagsIsNil() predicate.Website {
+	return predicate.Website(sql.FieldIsNull(FieldMetaTags))
+}
+
+// MetaTagsNotNil applies the NotNil predicate on the "metaTags" field.
+func MetaTagsNotNil() predicate.Website {
+	return predicate.Website(sql.FieldNotNull(FieldMetaTags))
 }
 
 // HasBusiness applies the HasEdge predicate on the "business" edge.
