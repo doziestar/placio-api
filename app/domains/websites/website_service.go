@@ -10,6 +10,7 @@ import (
 	"placio-app/ent"
 	"placio-app/ent/business"
 	"placio-app/ent/website"
+	"time"
 )
 
 type IWebsite interface {
@@ -76,6 +77,7 @@ func (w *WebsiteService) CreateBusinessWebsite(ctx context.Context, businessID s
 		SetLanguage(websiteData.Language).
 		SetLatitude(websiteData.Latitude).
 		SetLongitude(websiteData.Longitude).
+		SetLastUpdated(time.Now()).
 		Save(ctx)
 	if err != nil {
 		log.Println("err", err)

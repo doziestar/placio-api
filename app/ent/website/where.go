@@ -3478,29 +3478,6 @@ func HasBusinessWith(preds ...predicate.Business) predicate.Website {
 	})
 }
 
-// HasTemplate applies the HasEdge predicate on the "template" edge.
-func HasTemplate() predicate.Website {
-	return predicate.Website(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, TemplateTable, TemplateColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasTemplateWith applies the HasEdge predicate on the "template" edge with a given conditions (other predicates).
-func HasTemplateWith(preds ...predicate.Template) predicate.Website {
-	return predicate.Website(func(s *sql.Selector) {
-		step := newTemplateStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
 // HasCustomBlocks applies the HasEdge predicate on the "customBlocks" edge.
 func HasCustomBlocks() predicate.Website {
 	return predicate.Website(func(s *sql.Selector) {

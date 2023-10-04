@@ -108,8 +108,6 @@ const (
 	FieldMetaTags = "meta_tags"
 	// EdgeBusiness holds the string denoting the business edge name in mutations.
 	EdgeBusiness = "business"
-	// EdgeTemplate holds the string denoting the template edge name in mutations.
-	EdgeTemplate = "template"
 	// EdgeCustomBlocks holds the string denoting the customblocks edge name in mutations.
 	EdgeCustomBlocks = "customBlocks"
 	// EdgeAssets holds the string denoting the assets edge name in mutations.
@@ -123,13 +121,6 @@ const (
 	BusinessInverseTable = "businesses"
 	// BusinessColumn is the table column denoting the business relation/edge.
 	BusinessColumn = "business_websites"
-	// TemplateTable is the table that holds the template relation/edge.
-	TemplateTable = "websites"
-	// TemplateInverseTable is the table name for the Template entity.
-	// It exists in this package in order to avoid circular dependency with the "template" package.
-	TemplateInverseTable = "templates"
-	// TemplateColumn is the table column denoting the template relation/edge.
-	TemplateColumn = "template_websites"
 	// CustomBlocksTable is the table that holds the customBlocks relation/edge.
 	CustomBlocksTable = "custom_blocks"
 	// CustomBlocksInverseTable is the table name for the CustomBlock entity.
@@ -456,13 +447,6 @@ func ByBusinessField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
-// ByTemplateField orders the results by template field.
-func ByTemplateField(field string, opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newTemplateStep(), sql.OrderByField(field, opts...))
-	}
-}
-
 // ByCustomBlocksCount orders the results by customBlocks count.
 func ByCustomBlocksCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -495,13 +479,6 @@ func newBusinessStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(BusinessInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2O, true, BusinessTable, BusinessColumn),
-	)
-}
-func newTemplateStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(TemplateInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, true, TemplateTable, TemplateColumn),
 	)
 }
 func newCustomBlocksStep() *sqlgraph.Step {

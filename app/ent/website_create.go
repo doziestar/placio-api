@@ -9,7 +9,6 @@ import (
 	"placio-app/ent/business"
 	"placio-app/ent/customblock"
 	"placio-app/ent/media"
-	"placio-app/ent/template"
 	"placio-app/ent/website"
 	"time"
 
@@ -645,17 +644,6 @@ func (wc *WebsiteCreate) SetBusiness(b *Business) *WebsiteCreate {
 	return wc.SetBusinessID(b.ID)
 }
 
-// SetTemplateID sets the "template" edge to the Template entity by ID.
-func (wc *WebsiteCreate) SetTemplateID(id string) *WebsiteCreate {
-	wc.mutation.SetTemplateID(id)
-	return wc
-}
-
-// SetTemplate sets the "template" edge to the Template entity.
-func (wc *WebsiteCreate) SetTemplate(t *Template) *WebsiteCreate {
-	return wc.SetTemplateID(t.ID)
-}
-
 // AddCustomBlockIDs adds the "customBlocks" edge to the CustomBlock entity by IDs.
 func (wc *WebsiteCreate) AddCustomBlockIDs(ids ...string) *WebsiteCreate {
 	wc.mutation.AddCustomBlockIDs(ids...)
@@ -740,9 +728,6 @@ func (wc *WebsiteCreate) check() error {
 	}
 	if _, ok := wc.mutation.BusinessID(); !ok {
 		return &ValidationError{Name: "business", err: errors.New(`ent: missing required edge "Website.business"`)}
-	}
-	if _, ok := wc.mutation.TemplateID(); !ok {
-		return &ValidationError{Name: "template", err: errors.New(`ent: missing required edge "Website.template"`)}
 	}
 	return nil
 }
@@ -978,23 +963,6 @@ func (wc *WebsiteCreate) createSpec() (*Website, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.business_websites = &nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := wc.mutation.TemplateIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   website.TemplateTable,
-			Columns: []string{website.TemplateColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(template.FieldID, field.TypeString),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.template_websites = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := wc.mutation.CustomBlocksIDs(); len(nodes) > 0 {

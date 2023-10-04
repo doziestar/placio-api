@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"placio-app/ent/business"
-	"placio-app/ent/template"
 	"placio-app/ent/website"
 	"strings"
 	"time"
@@ -124,15 +123,13 @@ type Website struct {
 type WebsiteEdges struct {
 	// Business holds the value of the business edge.
 	Business *Business `json:"business,omitempty"`
-	// Template holds the value of the template edge.
-	Template *Template `json:"template,omitempty"`
 	// CustomBlocks holds the value of the customBlocks edge.
 	CustomBlocks []*CustomBlock `json:"customBlocks,omitempty"`
 	// Assets holds the value of the assets edge.
 	Assets []*Media `json:"assets,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [3]bool
 }
 
 // BusinessOrErr returns the Business value or an error if the edge
@@ -148,23 +145,10 @@ func (e WebsiteEdges) BusinessOrErr() (*Business, error) {
 	return nil, &NotLoadedError{edge: "business"}
 }
 
-// TemplateOrErr returns the Template value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e WebsiteEdges) TemplateOrErr() (*Template, error) {
-	if e.loadedTypes[1] {
-		if e.Template == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: template.Label}
-		}
-		return e.Template, nil
-	}
-	return nil, &NotLoadedError{edge: "template"}
-}
-
 // CustomBlocksOrErr returns the CustomBlocks value or an error if the edge
 // was not loaded in eager-loading.
 func (e WebsiteEdges) CustomBlocksOrErr() ([]*CustomBlock, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[1] {
 		return e.CustomBlocks, nil
 	}
 	return nil, &NotLoadedError{edge: "customBlocks"}
@@ -173,7 +157,7 @@ func (e WebsiteEdges) CustomBlocksOrErr() ([]*CustomBlock, error) {
 // AssetsOrErr returns the Assets value or an error if the edge
 // was not loaded in eager-loading.
 func (e WebsiteEdges) AssetsOrErr() ([]*Media, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[2] {
 		return e.Assets, nil
 	}
 	return nil, &NotLoadedError{edge: "assets"}
@@ -527,11 +511,6 @@ func (w *Website) Value(name string) (ent.Value, error) {
 // QueryBusiness queries the "business" edge of the Website entity.
 func (w *Website) QueryBusiness() *BusinessQuery {
 	return NewWebsiteClient(w.config).QueryBusiness(w)
-}
-
-// QueryTemplate queries the "template" edge of the Website entity.
-func (w *Website) QueryTemplate() *TemplateQuery {
-	return NewWebsiteClient(w.config).QueryTemplate(w)
 }
 
 // QueryCustomBlocks queries the "customBlocks" edge of the Website entity.

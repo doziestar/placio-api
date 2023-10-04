@@ -10,7 +10,6 @@ import (
 	"placio-app/ent/customblock"
 	"placio-app/ent/media"
 	"placio-app/ent/predicate"
-	"placio-app/ent/template"
 	"placio-app/ent/website"
 	"time"
 
@@ -905,17 +904,6 @@ func (wu *WebsiteUpdate) SetBusiness(b *Business) *WebsiteUpdate {
 	return wu.SetBusinessID(b.ID)
 }
 
-// SetTemplateID sets the "template" edge to the Template entity by ID.
-func (wu *WebsiteUpdate) SetTemplateID(id string) *WebsiteUpdate {
-	wu.mutation.SetTemplateID(id)
-	return wu
-}
-
-// SetTemplate sets the "template" edge to the Template entity.
-func (wu *WebsiteUpdate) SetTemplate(t *Template) *WebsiteUpdate {
-	return wu.SetTemplateID(t.ID)
-}
-
 // AddCustomBlockIDs adds the "customBlocks" edge to the CustomBlock entity by IDs.
 func (wu *WebsiteUpdate) AddCustomBlockIDs(ids ...string) *WebsiteUpdate {
 	wu.mutation.AddCustomBlockIDs(ids...)
@@ -954,12 +942,6 @@ func (wu *WebsiteUpdate) Mutation() *WebsiteMutation {
 // ClearBusiness clears the "business" edge to the Business entity.
 func (wu *WebsiteUpdate) ClearBusiness() *WebsiteUpdate {
 	wu.mutation.ClearBusiness()
-	return wu
-}
-
-// ClearTemplate clears the "template" edge to the Template entity.
-func (wu *WebsiteUpdate) ClearTemplate() *WebsiteUpdate {
-	wu.mutation.ClearTemplate()
 	return wu
 }
 
@@ -1045,9 +1027,6 @@ func (wu *WebsiteUpdate) defaults() {
 func (wu *WebsiteUpdate) check() error {
 	if _, ok := wu.mutation.BusinessID(); wu.mutation.BusinessCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Website.business"`)
-	}
-	if _, ok := wu.mutation.TemplateID(); wu.mutation.TemplateCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Website.template"`)
 	}
 	return nil
 }
@@ -1353,35 +1332,6 @@ func (wu *WebsiteUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(business.FieldID, field.TypeString),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if wu.mutation.TemplateCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   website.TemplateTable,
-			Columns: []string{website.TemplateColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(template.FieldID, field.TypeString),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := wu.mutation.TemplateIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   website.TemplateTable,
-			Columns: []string{website.TemplateColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(template.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -2372,17 +2322,6 @@ func (wuo *WebsiteUpdateOne) SetBusiness(b *Business) *WebsiteUpdateOne {
 	return wuo.SetBusinessID(b.ID)
 }
 
-// SetTemplateID sets the "template" edge to the Template entity by ID.
-func (wuo *WebsiteUpdateOne) SetTemplateID(id string) *WebsiteUpdateOne {
-	wuo.mutation.SetTemplateID(id)
-	return wuo
-}
-
-// SetTemplate sets the "template" edge to the Template entity.
-func (wuo *WebsiteUpdateOne) SetTemplate(t *Template) *WebsiteUpdateOne {
-	return wuo.SetTemplateID(t.ID)
-}
-
 // AddCustomBlockIDs adds the "customBlocks" edge to the CustomBlock entity by IDs.
 func (wuo *WebsiteUpdateOne) AddCustomBlockIDs(ids ...string) *WebsiteUpdateOne {
 	wuo.mutation.AddCustomBlockIDs(ids...)
@@ -2421,12 +2360,6 @@ func (wuo *WebsiteUpdateOne) Mutation() *WebsiteMutation {
 // ClearBusiness clears the "business" edge to the Business entity.
 func (wuo *WebsiteUpdateOne) ClearBusiness() *WebsiteUpdateOne {
 	wuo.mutation.ClearBusiness()
-	return wuo
-}
-
-// ClearTemplate clears the "template" edge to the Template entity.
-func (wuo *WebsiteUpdateOne) ClearTemplate() *WebsiteUpdateOne {
-	wuo.mutation.ClearTemplate()
 	return wuo
 }
 
@@ -2525,9 +2458,6 @@ func (wuo *WebsiteUpdateOne) defaults() {
 func (wuo *WebsiteUpdateOne) check() error {
 	if _, ok := wuo.mutation.BusinessID(); wuo.mutation.BusinessCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "Website.business"`)
-	}
-	if _, ok := wuo.mutation.TemplateID(); wuo.mutation.TemplateCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "Website.template"`)
 	}
 	return nil
 }
@@ -2850,35 +2780,6 @@ func (wuo *WebsiteUpdateOne) sqlSave(ctx context.Context) (_node *Website, err e
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(business.FieldID, field.TypeString),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if wuo.mutation.TemplateCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   website.TemplateTable,
-			Columns: []string{website.TemplateColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(template.FieldID, field.TypeString),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := wuo.mutation.TemplateIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   website.TemplateTable,
-			Columns: []string{website.TemplateColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(template.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

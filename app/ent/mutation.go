@@ -44945,8 +44945,6 @@ type WebsiteMutation struct {
 	clearedFields                        map[string]struct{}
 	business                             *string
 	clearedbusiness                      bool
-	template                             *string
-	clearedtemplate                      bool
 	customBlocks                         map[string]struct{}
 	removedcustomBlocks                  map[string]struct{}
 	clearedcustomBlocks                  bool
@@ -47316,45 +47314,6 @@ func (m *WebsiteMutation) ResetBusiness() {
 	m.clearedbusiness = false
 }
 
-// SetTemplateID sets the "template" edge to the Template entity by id.
-func (m *WebsiteMutation) SetTemplateID(id string) {
-	m.template = &id
-}
-
-// ClearTemplate clears the "template" edge to the Template entity.
-func (m *WebsiteMutation) ClearTemplate() {
-	m.clearedtemplate = true
-}
-
-// TemplateCleared reports if the "template" edge to the Template entity was cleared.
-func (m *WebsiteMutation) TemplateCleared() bool {
-	return m.clearedtemplate
-}
-
-// TemplateID returns the "template" edge ID in the mutation.
-func (m *WebsiteMutation) TemplateID() (id string, exists bool) {
-	if m.template != nil {
-		return *m.template, true
-	}
-	return
-}
-
-// TemplateIDs returns the "template" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// TemplateID instead. It exists only for internal usage by the builders.
-func (m *WebsiteMutation) TemplateIDs() (ids []string) {
-	if id := m.template; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetTemplate resets all changes to the "template" edge.
-func (m *WebsiteMutation) ResetTemplate() {
-	m.template = nil
-	m.clearedtemplate = false
-}
-
 // AddCustomBlockIDs adds the "customBlocks" edge to the CustomBlock entity by ids.
 func (m *WebsiteMutation) AddCustomBlockIDs(ids ...string) {
 	if m.customBlocks == nil {
@@ -48622,12 +48581,9 @@ func (m *WebsiteMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *WebsiteMutation) AddedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 3)
 	if m.business != nil {
 		edges = append(edges, website.EdgeBusiness)
-	}
-	if m.template != nil {
-		edges = append(edges, website.EdgeTemplate)
 	}
 	if m.customBlocks != nil {
 		edges = append(edges, website.EdgeCustomBlocks)
@@ -48644,10 +48600,6 @@ func (m *WebsiteMutation) AddedIDs(name string) []ent.Value {
 	switch name {
 	case website.EdgeBusiness:
 		if id := m.business; id != nil {
-			return []ent.Value{*id}
-		}
-	case website.EdgeTemplate:
-		if id := m.template; id != nil {
 			return []ent.Value{*id}
 		}
 	case website.EdgeCustomBlocks:
@@ -48668,7 +48620,7 @@ func (m *WebsiteMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *WebsiteMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 3)
 	if m.removedcustomBlocks != nil {
 		edges = append(edges, website.EdgeCustomBlocks)
 	}
@@ -48700,12 +48652,9 @@ func (m *WebsiteMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *WebsiteMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 3)
 	if m.clearedbusiness {
 		edges = append(edges, website.EdgeBusiness)
-	}
-	if m.clearedtemplate {
-		edges = append(edges, website.EdgeTemplate)
 	}
 	if m.clearedcustomBlocks {
 		edges = append(edges, website.EdgeCustomBlocks)
@@ -48722,8 +48671,6 @@ func (m *WebsiteMutation) EdgeCleared(name string) bool {
 	switch name {
 	case website.EdgeBusiness:
 		return m.clearedbusiness
-	case website.EdgeTemplate:
-		return m.clearedtemplate
 	case website.EdgeCustomBlocks:
 		return m.clearedcustomBlocks
 	case website.EdgeAssets:
@@ -48739,9 +48686,6 @@ func (m *WebsiteMutation) ClearEdge(name string) error {
 	case website.EdgeBusiness:
 		m.ClearBusiness()
 		return nil
-	case website.EdgeTemplate:
-		m.ClearTemplate()
-		return nil
 	}
 	return fmt.Errorf("unknown Website unique edge %s", name)
 }
@@ -48752,9 +48696,6 @@ func (m *WebsiteMutation) ResetEdge(name string) error {
 	switch name {
 	case website.EdgeBusiness:
 		m.ResetBusiness()
-		return nil
-	case website.EdgeTemplate:
-		m.ResetTemplate()
 		return nil
 	case website.EdgeCustomBlocks:
 		m.ResetCustomBlocks()

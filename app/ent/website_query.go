@@ -11,7 +11,6 @@ import (
 	"placio-app/ent/customblock"
 	"placio-app/ent/media"
 	"placio-app/ent/predicate"
-	"placio-app/ent/template"
 	"placio-app/ent/website"
 
 	"entgo.io/ent/dialect/sql"
@@ -27,7 +26,6 @@ type WebsiteQuery struct {
 	inters           []Interceptor
 	predicates       []predicate.Website
 	withBusiness     *BusinessQuery
-	withTemplate     *TemplateQuery
 	withCustomBlocks *CustomBlockQuery
 	withAssets       *MediaQuery
 	withFKs          bool
@@ -82,28 +80,6 @@ func (wq *WebsiteQuery) QueryBusiness() *BusinessQuery {
 			sqlgraph.From(website.Table, website.FieldID, selector),
 			sqlgraph.To(business.Table, business.FieldID),
 			sqlgraph.Edge(sqlgraph.O2O, true, website.BusinessTable, website.BusinessColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(wq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryTemplate chains the current query on the "template" edge.
-func (wq *WebsiteQuery) QueryTemplate() *TemplateQuery {
-	query := (&TemplateClient{config: wq.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := wq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := wq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(website.Table, website.FieldID, selector),
-			sqlgraph.To(template.Table, template.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, website.TemplateTable, website.TemplateColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(wq.driver.Dialect(), step)
 		return fromU, nil
@@ -348,7 +324,6 @@ func (wq *WebsiteQuery) Clone() *WebsiteQuery {
 		inters:           append([]Interceptor{}, wq.inters...),
 		predicates:       append([]predicate.Website{}, wq.predicates...),
 		withBusiness:     wq.withBusiness.Clone(),
-		withTemplate:     wq.withTemplate.Clone(),
 		withCustomBlocks: wq.withCustomBlocks.Clone(),
 		withAssets:       wq.withAssets.Clone(),
 		// clone intermediate query.
@@ -365,17 +340,6 @@ func (wq *WebsiteQuery) WithBusiness(opts ...func(*BusinessQuery)) *WebsiteQuery
 		opt(query)
 	}
 	wq.withBusiness = query
-	return wq
-}
-
-// WithTemplate tells the query-builder to eager-load the nodes that are connected to
-// the "template" edge. The optional arguments are used to configure the query builder of the edge.
-func (wq *WebsiteQuery) WithTemplate(opts ...func(*TemplateQuery)) *WebsiteQuery {
-	query := (&TemplateClient{config: wq.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	wq.withTemplate = query
 	return wq
 }
 
@@ -480,14 +444,13 @@ func (wq *WebsiteQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Webs
 		nodes       = []*Website{}
 		withFKs     = wq.withFKs
 		_spec       = wq.querySpec()
-		loadedTypes = [4]bool{
+		loadedTypes = [3]bool{
 			wq.withBusiness != nil,
-			wq.withTemplate != nil,
 			wq.withCustomBlocks != nil,
 			wq.withAssets != nil,
 		}
 	)
-	if wq.withBusiness != nil || wq.withTemplate != nil {
+	if wq.withBusiness != nil {
 		withFKs = true
 	}
 	if withFKs {
@@ -514,12 +477,6 @@ func (wq *WebsiteQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Webs
 	if query := wq.withBusiness; query != nil {
 		if err := wq.loadBusiness(ctx, query, nodes, nil,
 			func(n *Website, e *Business) { n.Edges.Business = e }); err != nil {
-			return nil, err
-		}
-	}
-	if query := wq.withTemplate; query != nil {
-		if err := wq.loadTemplate(ctx, query, nodes, nil,
-			func(n *Website, e *Template) { n.Edges.Template = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -565,38 +522,6 @@ func (wq *WebsiteQuery) loadBusiness(ctx context.Context, query *BusinessQuery, 
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "business_websites" returned %v`, n.ID)
-		}
-		for i := range nodes {
-			assign(nodes[i], n)
-		}
-	}
-	return nil
-}
-func (wq *WebsiteQuery) loadTemplate(ctx context.Context, query *TemplateQuery, nodes []*Website, init func(*Website), assign func(*Website, *Template)) error {
-	ids := make([]string, 0, len(nodes))
-	nodeids := make(map[string][]*Website)
-	for i := range nodes {
-		if nodes[i].template_websites == nil {
-			continue
-		}
-		fk := *nodes[i].template_websites
-		if _, ok := nodeids[fk]; !ok {
-			ids = append(ids, fk)
-		}
-		nodeids[fk] = append(nodeids[fk], nodes[i])
-	}
-	if len(ids) == 0 {
-		return nil
-	}
-	query.Where(template.IDIn(ids...))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		nodes, ok := nodeids[n.ID]
-		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "template_websites" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)

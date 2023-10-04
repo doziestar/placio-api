@@ -9632,22 +9632,6 @@ func (c *WebsiteClient) QueryBusiness(w *Website) *BusinessQuery {
 	return query
 }
 
-// QueryTemplate queries the template edge of a Website.
-func (c *WebsiteClient) QueryTemplate(w *Website) *TemplateQuery {
-	query := (&TemplateClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := w.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(website.Table, website.FieldID, id),
-			sqlgraph.To(template.Table, template.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, website.TemplateTable, website.TemplateColumn),
-		)
-		fromV = sqlgraph.Neighbors(w.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // QueryCustomBlocks queries the customBlocks edge of a Website.
 func (c *WebsiteClient) QueryCustomBlocks(w *Website) *CustomBlockQuery {
 	query := (&CustomBlockClient{config: c.config}).Query()

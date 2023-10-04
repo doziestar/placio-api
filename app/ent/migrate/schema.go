@@ -1500,7 +1500,7 @@ var (
 		{Name: "email", Type: field.TypeString, Nullable: true},
 		{Name: "meta_tags", Type: field.TypeJSON, Nullable: true},
 		{Name: "business_websites", Type: field.TypeString, Unique: true, Size: 36},
-		{Name: "template_websites", Type: field.TypeString},
+		{Name: "template_websites", Type: field.TypeString, Nullable: true},
 	}
 	// WebsitesTable holds the schema information for the "websites" table.
 	WebsitesTable = &schema.Table{
@@ -1518,7 +1518,7 @@ var (
 				Symbol:     "websites_templates_websites",
 				Columns:    []*schema.Column{WebsitesColumns[48]},
 				RefColumns: []*schema.Column{TemplatesColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.SetNull,
 			},
 		},
 	}

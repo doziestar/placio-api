@@ -66,7 +66,7 @@ func (Website) Fields() []ent.Field {
 func (Website) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("business", Business.Type).Ref("websites").Unique().Required(),
-		edge.From("template", Template.Type).Unique().Required().Ref("websites"),
+		//edge.From("template", Template.Type).Unique().Required().Ref("websites"),
 		edge.To("customBlocks", CustomBlock.Type),
 		edge.To("assets", Media.Type),
 		//edge.From("users", User.Type).Ref("websites"),
