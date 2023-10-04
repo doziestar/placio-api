@@ -36,7 +36,8 @@ func NewWebsiteService(client *ent.Client, businessService businessService.Busin
 }
 
 func (w *WebsiteService) GetBusinessWebsite(ctx context.Context, businessID string) (*ent.Website, error) {
-	website, err := w.client.Website.Query().Where(website.HasBusinessWith(business.ID(businessID))).First(ctx)
+	website, err := w.client.Website.Query().Where(website.HasBusinessWith(business.ID(businessID))).
+		WithCustomBlocks().WithAssets().WithBusiness().First(ctx)
 	if err != nil {
 		return nil, err
 	}
