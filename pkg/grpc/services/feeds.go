@@ -42,6 +42,16 @@ func convertToPbPost(p *ent.Post) *proto.Post {
 		}
 	}
 
+	var businessAccount *proto.Post_Business
+	if p.Edges.BusinessAccount != nil {
+		businessAccount = &proto.Post_Business{
+			Id:         p.Edges.BusinessAccount.ID,
+			Name:       p.Edges.BusinessAccount.Name,
+			Picture:    p.Edges.BusinessAccount.Picture,
+			CoverImage: p.Edges.BusinessAccount.CoverImage,
+		}
+	}
+
 	var media []*proto.Post_Media
 	for _, m := range p.Edges.Medias {
 		if m != nil {
@@ -95,6 +105,7 @@ func convertToPbPost(p *ent.Post) *proto.Post {
 			User:     user,
 			Comments: pbComments,
 			Medias:   media,
+			Business: businessAccount,
 		},
 	}
 }

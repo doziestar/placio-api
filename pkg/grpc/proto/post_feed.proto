@@ -35,6 +35,7 @@ message Post {
     User user = 1;
     repeated Comment comments = 2;
     repeated Media medias = 3;
+    Business business = 4;
   }
 
   message CommentEdge {
@@ -63,6 +64,13 @@ message Post {
     string CreatedAt = 3;
     string UpdatedAt = 4;
     CommentEdge edges = 5;
+  }
+
+  message Business {
+    string id = 1;
+    string name = 2;
+    string picture = 3;
+    string cover_image = 4;
   }
 }
 
