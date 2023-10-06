@@ -27,10 +27,11 @@ func NewPostController(postService PostService, userService users.UserService, b
 	return &PostController{postService: postService, userService: userService, businessAccountService: businessAccountService, mediaService: mediaService}
 }
 
-func (pc *PostController) RegisterRoutes(router *gin.RouterGroup) {
+func (pc *PostController) RegisterRoutes(router *gin.RouterGroup, routerWithoutAuth *gin.RouterGroup) {
 	postRouter := router.Group("/posts")
+	postRouterWithoutAuth := routerWithoutAuth.Group("/posts")
 	{
-		postRouter.GET("/:id", utility.Use(pc.getPost))
+		postRouterWithoutAuth.GET("/:id", utility.Use(pc.getPost))
 		postRouter.POST("/", utility.Use(pc.createPost))
 		postRouter.PUT("/:id", utility.Use(pc.updatePost))
 		postRouter.DELETE("/:id", utility.Use(pc.deletePost))

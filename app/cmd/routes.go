@@ -138,7 +138,7 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		// posts
 		postService := posts.NewPostService(client, redisClient, mediaService, producer)
 		postController := posts.NewPostController(postService, userService, businessService, mediaService)
-		postController.RegisterRoutes(routerGroupV1)
+		postController.RegisterRoutes(routerGroupV1, routerGroupV1WithoutAuth)
 
 		// events
 		eventService := events_management.NewEventService(client, searchService)
@@ -175,7 +175,7 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		// recommendations
 		recommendationService := recommendations.NewRecommendations(client, userService, placeService)
 		recommendationController := recommendations.NewRecommendationController(*recommendationService)
-		recommendationController.RegisterRoutes(routerGroupV1)
+		recommendationController.RegisterRoutes(routerGroupV1, routerGroupV1WithoutAuth)
 
 		// notifications
 		notificationService := notifications.NewNotificationService(client)
