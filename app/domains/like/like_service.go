@@ -66,28 +66,23 @@ func (s *UserLikePlaceServiceImpl) CheckIfUserLikesPlace(ctx context.Context, us
 }
 
 func (s *LikeServiceImpl) LikePost(ctx context.Context, userID string, postID string) (*ent.Like, error) {
-	user, err := s.client.User.
-		Query().
-		Where(user.ID(userID)).
-		Only(ctx)
-	if err != nil {
-		return nil, err
-	}
+	log.Println("LikePost called ", userID, postID)
 
-	post, err := s.client.Post.
-		Query().
-		Where(post.ID(postID)).
-		Only(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	return s.client.Like.
+	likes, err := s.client.Like.
 		Create().
 		SetID(uuid.New().String()).
-		SetUser(user).
-		SetPost(post).
+		SetUserID(userID).
+		SetPostID(postID).
+		SetLike(true).
+		SetUpdatedAt(time.Now()).
 		Save(ctx)
+
+	if err != nil {
+		log.Println("Error creating like: ", err)
+		return nil, err
+	}
+
+	return likes, nil
 }
 
 func (s *LikeServiceImpl) UnlikePost(ctx context.Context, likeID string) error {

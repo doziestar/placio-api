@@ -15,14 +15,15 @@ func NewRecommendationController(recommendationService RecommendationService) *R
 	return &RecommendationController{recommendationService: recommendationService}
 }
 
-func (rc *RecommendationController) RegisterRoutes(router *gin.RouterGroup) {
-	recommendationRouter := router.Group("/recommendations")
+func (rc *RecommendationController) RegisterRoutes(router *gin.RouterGroup, routerWithoutAuth *gin.RouterGroup) {
+	//recommendationRouter := router.Group("/recommendations")
+	recommendationRouterWithoutAuth := routerWithoutAuth.Group("/recommendations")
 	{
-		recommendationRouter.GET("/places", middleware.ErrorMiddleware(rc.getPlacesRecommendations))
-		recommendationRouter.GET("/restaurants", middleware.ErrorMiddleware(rc.getRestaurantsRecommendations))
-		recommendationRouter.GET("/hotels", middleware.ErrorMiddleware(rc.getHotelsRecommendations))
-		recommendationRouter.GET("/inventory", middleware.ErrorMiddleware(rc.getInventoryRecommendations))
-		recommendationRouter.GET("/users", middleware.ErrorMiddleware(rc.getUsersRecommendations))
+		recommendationRouterWithoutAuth.GET("/places", middleware.ErrorMiddleware(rc.getPlacesRecommendations))
+		recommendationRouterWithoutAuth.GET("/restaurants", middleware.ErrorMiddleware(rc.getRestaurantsRecommendations))
+		recommendationRouterWithoutAuth.GET("/hotels", middleware.ErrorMiddleware(rc.getHotelsRecommendations))
+		recommendationRouterWithoutAuth.GET("/inventory", middleware.ErrorMiddleware(rc.getInventoryRecommendations))
+		recommendationRouterWithoutAuth.GET("/users", middleware.ErrorMiddleware(rc.getUsersRecommendations))
 	}
 }
 

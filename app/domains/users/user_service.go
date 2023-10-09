@@ -273,6 +273,19 @@ func (s *UserServiceImpl) GetUserByUserId(ctx context.Context, userId string) (*
 			query.WithUser()
 			query.WithBusiness()
 		}).
+		WithPlaces(func(query *ent.PlaceQuery) {
+			query.WithBusiness()
+		}).
+		WithLikes(func(query *ent.LikeQuery) {
+			query.WithPost()
+		}).
+		WithFollowedUsers(func(query *ent.UserFollowUserQuery) {
+			query.WithFollowed()
+
+		}).
+		WithFollowerUsers(func(query *ent.UserFollowUserQuery) {
+			query.WithFollower()
+		}).
 		First(ctx)
 
 	if err != nil {

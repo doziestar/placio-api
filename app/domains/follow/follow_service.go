@@ -2,7 +2,9 @@ package follow
 
 import (
 	"context"
+	"errors"
 	"github.com/google/uuid"
+	"log"
 	"placio-app/domains/cache"
 	"placio-app/ent"
 	"placio-app/ent/business"
@@ -55,6 +57,7 @@ func (s *FollowService) FollowUserToBusiness(ctx context.Context, userID, busine
 		SetID(uuid.New().String()).
 		SetUserID(userID).
 		SetBusinessID(businessID).
+		SetUpdatedAt(time.Now()).
 		Save(ctx)
 
 	return err
@@ -80,16 +83,37 @@ func (s *FollowService) GetFollowedBusinessesByUser(ctx context.Context, userID 
 	return businesses, err
 }
 
-// FollowUserToUser User-User methods
 func (s *FollowService) FollowUserToUser(ctx context.Context, followerID, followedID string) error {
-	_, err := s.client.UserFollowUser.
+	isFollowing, err := s.isUserFollowing(ctx, followerID, followedID)
+	if err != nil {
+		return err
+	}
+	if isFollowing {
+		return errors.New("User already follows the user")
+	}
+
+	_, err = s.client.UserFollowUser.
 		Create().
 		SetID(uuid.New().String()).
 		SetFollowerID(followerID).
 		SetFollowedID(followedID).
+		SetUpdatedAt(time.Now()).
 		Save(ctx)
 
+	log.Println("FollowUserToUser 3", err)
+
 	return err
+}
+
+func (s *FollowService) isUserFollowing(ctx context.Context, followerID, followedID string) (bool, error) {
+	count, err := s.client.UserFollowUser.
+		Query().
+		Where(userfollowuser.HasFollowerWith(user.ID(followerID)), userfollowuser.HasFollowedWith(user.ID(followedID))).
+		Count(ctx)
+	if err != nil {
+		return false, err
+	}
+	return count > 0, nil
 }
 
 func (s *FollowService) UnfollowUserToUser(ctx context.Context, followerID, followedID string) error {

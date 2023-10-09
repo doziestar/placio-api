@@ -50,6 +50,18 @@ func (w *WebsiteService) CreateBusinessWebsite(ctx context.Context, businessID s
 		SetID(uuid.New().String()).
 		SetBusinessID(businessID).
 		SetDomainName(websiteData.DomainName).
+		SetBannerSectionBackgroundColor(websiteData.BannerSectionBackgroundColor).
+		SetThreeItemsSectionHeadingText(websiteData.ThreeItemsSectionHeadingText).
+		SetThreeItemsSectionItemOneText(websiteData.ThreeItemsSectionItemOneText).
+		SetThreeItemsSectionItemTwoText(websiteData.ThreeItemsSectionItemTwoText).
+		SetThreeItemsSectionItemThreeText(websiteData.ThreeItemsSectionItemThreeText).
+		SetThreeItemsSectionDetailsText(websiteData.ThreeItemsSectionDetailsText).
+		SetBannerTwoSectionBackgroundColor(websiteData.BannerTwoSectionBackgroundColor).
+		SetBannerTwoLeftSectionHeadingText(websiteData.BannerTwoLeftSectionHeadingText).
+		SetBannerTwoLeftSectionDetailsText(websiteData.BannerTwoLeftSectionDetailsText).
+		SetBannerTwoRightSideImage(websiteData.BannerTwoRightSideImage).
+		SetInventorySectionHeadingText(websiteData.InventorySectionHeadingText).
+		SetHeadingText(websiteData.HeadingText).
 		SetAchievementsSection(websiteData.AchievementsSection).
 		SetAddress(websiteData.Address).
 		SetBannerSectionBackgroundColor(websiteData.BannerSectionBackgroundColor).

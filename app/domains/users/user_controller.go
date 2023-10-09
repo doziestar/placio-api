@@ -435,6 +435,19 @@ func (uc *UserController) updateAuth0AppMetadata(ctx *gin.Context) error {
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/users/ [get]
 func (uc *UserController) GetUser(ctx *gin.Context) error {
+	userID := ctx.DefaultQuery("userId", "")
+	if userID != "" {
+		user, err := uc.userService.GetUserByUserId(ctx, userID)
+		if err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				return nil
+			}
+
+			return err
+		}
+		ctx.JSON(http.StatusOK, utility.ProcessResponse(user, "success", "Successfully retrieved user", ""))
+		return nil
+	}
 	auth0ID := ctx.MustGet("user").(string)
 	if auth0ID == "" {
 		return errors.New("user Auth0 ID required")
