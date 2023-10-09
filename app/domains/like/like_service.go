@@ -87,6 +87,7 @@ func (s *LikeServiceImpl) LikePost(ctx context.Context, userID string, postID st
 		SetID(uuid.New().String()).
 		SetUser(user).
 		SetPost(post).
+		SetUpdatedAt(time.Now()).
 		Save(ctx)
 }
 
