@@ -250,6 +250,20 @@ func (s *BusinessAccountServiceImpl) CreateBusinessAccount(ctx context.Context, 
 		return nil, fmt.Errorf("error committing transaction: %w", err)
 	}
 
+	// I need to create a business website
+	_, err = s.client.Website.
+		Create().
+		SetID(uuid.New().String()).
+		SetBusiness(businessAccount).
+		SetDomainName(businessData.Website).
+		SetEmail(businessData.Email).
+		SetTitle(businessData.Name).
+		Save(ctx)
+
+	if err != nil {
+		return nil, fmt.Errorf("error creating business website: %w", err)
+	}
+
 	// Now we need to fetch the created business account with its relationships
 	businessAccount, err = s.client.Business.
 		Query().
