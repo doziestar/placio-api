@@ -250,8 +250,11 @@ func (fc *FollowController) followUserToUser(c *gin.Context) error {
 
 	err := fc.service.FollowUserToUser(c, followerID, followedID)
 	if err != nil {
-
-		return nil
+		if err.Error() == "User already follows the user" {
+			c.JSON(http.StatusBadRequest, utility.ProcessResponse(nil, "error", err.Error(), ""))
+			return nil
+		}
+		return err
 	}
 
 	c.JSON(http.StatusCreated, utility.ProcessResponse(nil, "success", "User successfully followed the user", ""))
