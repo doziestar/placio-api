@@ -28,7 +28,7 @@ func NewUserController(userService UserService, cache utility.RedisClient) *User
 func (uc *UserController) RegisterRoutes(router *gin.RouterGroup) {
 	userRouter := router.Group("/users")
 	{
-		userRouter.GET("/:id?", utility.Use(uc.GetUser))
+		userRouter.GET("/", utility.Use(uc.GetUser))
 		userRouter.GET("/followers", utility.Use(uc.getFollowers))
 		userRouter.GET("/:id/followers", utility.Use(uc.getFollowersByUserID))
 		userRouter.GET("/likes", utility.Use(uc.getLikes))
@@ -435,9 +435,9 @@ func (uc *UserController) updateAuth0AppMetadata(ctx *gin.Context) error {
 // @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
 // @Router /api/v1/users/ [get]
 func (uc *UserController) GetUser(ctx *gin.Context) error {
-	userID := ctx.Param("id")
-	if userID != "" || userID != ":id" {
-		user, err := uc.userService.GetUser(ctx, userID)
+	userID := ctx.DefaultQuery("userId", "")
+	if userID != "" {
+		user, err := uc.userService.GetUserByUserId(ctx, userID)
 		if err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				return nil
