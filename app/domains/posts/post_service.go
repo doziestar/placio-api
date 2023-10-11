@@ -200,16 +200,18 @@ func (ps *PostServiceImpl) GetPost(ctx context.Context, postID string) (*ent.Pos
 		WithMedias().
 		Only(ctx)
 
-	userId := ctx.Value("user").(string)
+	if user, ok := ctx.Value("user").(string); ok {
+		userId := user
 
-	for _, like := range post.Edges.Likes {
-		if like.Edges.User.ID == userId {
-			post.LikedByMe = true
+		for _, like := range post.Edges.Likes {
+			if like.Edges.User.ID == userId {
+				post.LikedByMe = true
+			}
 		}
-	}
 
-	post.LikeCount = len(post.Edges.Likes)
-	post.CommentCount = len(post.Edges.Comments)
+		post.LikeCount = len(post.Edges.Likes)
+		post.CommentCount = len(post.Edges.Comments)
+	}
 
 	if err != nil {
 		return nil, fmt.Errorf("failed getting post: %w", err)
