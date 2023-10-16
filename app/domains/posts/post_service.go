@@ -5,9 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
-	"google.golang.org/grpc/status"
 	"log"
 	"placio-app/domains/media"
 	"placio-app/ent"
@@ -53,11 +51,14 @@ func NewPostService(client *ent.Client, cache *utility.RedisClient, mediaService
 func (ps *PostServiceImpl) GetPostFeeds(ctx context.Context) ([]*ent.Post, error) {
 	log.Println("Getting post feeds from DB...", ctx.Value("user"))
 	md, ok := metadata.FromIncomingContext(ctx)
-	if !ok {
-		return nil, status.Errorf(codes.Internal, "Failed to retrieve metadata from context")
+
+	var userId string
+
+	if ok {
+		userId = md.Get("user")[0]
 	}
 
-	userId := md.Get("user")[0]
+	userId = ctx.Value("user").(string)
 
 	//Get All Posts
 	posts, err := ps.client.Post.

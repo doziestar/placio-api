@@ -17,6 +17,7 @@ type IWebsite interface {
 	GetBusinessWebsite(ctx context.Context, businessID string) (*ent.Website, error)
 	CreateBusinessWebsite(ctx context.Context, businessID string, websiteData *ent.Website) (*ent.Website, error)
 	UpdateBusinessWebsite(ctx context.Context, businessID string, websiteData *ent.Website) (*ent.Website, error)
+	VerifyDomainName(ctx context.Context, domainName string) (bool, error)
 }
 
 type WebsiteService struct {
@@ -33,6 +34,19 @@ func NewWebsiteService(client *ent.Client, businessService businessService.Busin
 		userService:     userService,
 		mediaService:    mediaService,
 	}
+}
+
+func (w *WebsiteService) VerifyDomainName(ctx context.Context, domainName string) (bool, error) {
+	_, err := w.client.Website.Query().Where(website.DomainName(domainName)).First(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return false, nil
+		} else {
+			return false, err
+		}
+	}
+
+	return true, nil
 }
 
 func (w *WebsiteService) GetBusinessWebsite(ctx context.Context, businessID string) (*ent.Website, error) {

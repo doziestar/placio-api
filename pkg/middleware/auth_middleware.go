@@ -66,6 +66,17 @@ func EnsureValidToken() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenString := c.GetHeader("Authorization")
 
+		log.Println("tokenString", tokenString)
+		log.Println("tokenString", c.Request.URL.Query().Get("token"))
+		log.Println("context", c.Request.Header.Get("Authorization"))
+		log.Println("context", c.Request.Header.Get("Authorization:"))
+
+		if tokenString == "" {
+			tokenString = c.Request.URL.Query().Get("token")
+		}
+
+		log.Println("tokenString", tokenString)
+
 		if tokenString == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{"message": "Authorization header is missing"})
 			c.Abort()

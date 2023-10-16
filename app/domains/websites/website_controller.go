@@ -24,6 +24,7 @@ func (w *WebsiteController) RegisterRoutes(router *gin.RouterGroup) {
 		websiteRouter.GET("/:businessID", middleware.ErrorMiddleware(w.getBusinessWebsite))
 		websiteRouter.POST("/:businessID", middleware.ErrorMiddleware(w.createBusinessWebsite))
 		websiteRouter.PATCH("/:businessID", middleware.ErrorMiddleware(w.updateBusinessWebsite))
+		websiteRouter.GET("/verify/:domainName", middleware.ErrorMiddleware(w.verifyDomainName))
 	}
 }
 
@@ -37,6 +38,21 @@ func (w *WebsiteController) getBusinessWebsite(c *gin.Context) error {
 	}
 	// return the website
 	c.JSON(http.StatusOK, utility.ProcessResponse(website))
+	return nil
+}
+
+func (w *WebsiteController) verifyDomainName(c *gin.Context) error {
+
+	// get the domain name
+	domainName := c.Param("domainName")
+	// get the website
+
+	domainNameExists, err := w.websiteService.VerifyDomainName(c, domainName)
+	if err != nil {
+		return err
+	}
+
+	c.JSON(http.StatusOK, utility.ProcessResponse(domainNameExists))
 	return nil
 }
 
