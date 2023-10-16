@@ -14,7 +14,7 @@ import (
 )
 
 type IWebsite interface {
-	GetBusinessWebsite(ctx context.Context, businessID string) (*ent.Website, error)
+	GetBusinessWebsite(ctx context.Context, businessID, domainName string) (*ent.Website, error)
 	CreateBusinessWebsite(ctx context.Context, businessID string, websiteData *ent.Website) (*ent.Website, error)
 	UpdateBusinessWebsite(ctx context.Context, businessID string, websiteData *ent.Website) (*ent.Website, error)
 	VerifyDomainName(ctx context.Context, domainName string) (bool, error)
@@ -49,13 +49,33 @@ func (w *WebsiteService) VerifyDomainName(ctx context.Context, domainName string
 	return true, nil
 }
 
-func (w *WebsiteService) GetBusinessWebsite(ctx context.Context, businessID string) (*ent.Website, error) {
-	website, err := w.client.Website.Query().Where(website.HasBusinessWith(business.ID(businessID))).
-		WithCustomBlocks().WithAssets().WithBusiness().First(ctx)
+func (w *WebsiteService) GetBusinessWebsite(ctx context.Context, businessID, domainName string) (*ent.Website, error) {
+	var websiteData *ent.Website
+	var err error
+
+	if domainName != "" {
+		websiteData, err = w.client.Website.
+			Query().
+			Where(website.DomainName(domainName)).
+			WithCustomBlocks().
+			WithAssets().
+			WithBusiness().
+			First(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return websiteData, nil
+	}
+	websiteData, err = w.client.Website.Query().
+		Where(website.HasBusinessWith(business.ID(businessID))).
+		WithCustomBlocks().
+		WithAssets().
+		WithBusiness().
+		First(ctx)
 	if err != nil {
 		return nil, err
 	}
-	return website, nil
+	return websiteData, nil
 }
 
 func (w *WebsiteService) CreateBusinessWebsite(ctx context.Context, businessID string, websiteData *ent.Website) (*ent.Website, error) {

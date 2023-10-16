@@ -255,7 +255,7 @@ func (s *BusinessAccountServiceImpl) CreateBusinessAccount(ctx context.Context, 
 		Create().
 		SetID(uuid.New().String()).
 		SetBusiness(businessAccount).
-		SetDomainName(businessData.Website).
+		SetDomainName(businessData.Website + uuid.New().String()).
 		SetEmail(businessData.Email).
 		SetTitle(businessData.Name).
 		Save(ctx)
