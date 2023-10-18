@@ -1,6 +1,9 @@
 package cmd
 
 import (
+	"bytes"
+	"fmt"
+	"io/ioutil"
 	_ "placio-api/docs/app"
 	"placio-app/domains/amenities"
 	"placio-app/domains/booking"
@@ -36,7 +39,19 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
+func requestBodyLogger() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		body, _ := ioutil.ReadAll(c.Request.Body)
+		c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+
+		fmt.Println("Request Body:", string(body))
+
+		c.Next()
+	}
+}
+
 func InitializeRoutes(app *gin.Engine, client *ent.Client) {
+	app.Use(requestBodyLogger())
 	routerGroupV1 := app.Group("/api/v1")
 	routerGroupV1WithoutAuth := app.Group("/api/v1")
 	{
