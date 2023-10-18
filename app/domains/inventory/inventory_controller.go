@@ -2,6 +2,7 @@ package inventory
 
 import (
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	"placio-app/utility"
 	"placio-pkg/middleware"
@@ -194,11 +195,13 @@ func (ic *InventoryController) createPlaceInventory(c *gin.Context) error {
 
 	var data placeInventoryData
 	if err := c.ShouldBindJSON(&data); err != nil {
+		log.Println("error", err)
 		return err
 	}
 
 	result, err := ic.inventoryService.CreatePlaceInventory(c, placeID, &data)
 	if err != nil {
+		log.Println("error", err)
 		return err
 	}
 
