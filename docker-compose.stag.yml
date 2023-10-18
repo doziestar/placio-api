@@ -36,6 +36,33 @@ services:
       # - 'traefik.http.routers.traefik-secure.middlewares=user-auth@file'
       - "traefik.http.routers.traefik-secure.service=api@internal"
 
+  askai:
+    ports:
+      - "8282:8282"
+    env_file:
+      - /usr/local/askai/.env
+    restart: always
+    build:
+      context: .
+      dockerfile: ./askai/Dockerfile
+    entrypoint: >
+      sh -c "sleep 5 && python ./askai/askai/main.py"
+    networks:
+      - default
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=default
+      - "traefik.http.routers.backend-secure.entrypoints=websecure"
+      - "traefik.http.routers.backend-secure.rule=Host(`askai.palnight.com`)"
+      - "traefik.http.routers.backend-secure.middlewares=cors"
+      - "traefik.http.routers.backend-secure.service=backend"
+      - "traefik.http.services.backend.loadbalancer.server.port=7070"
+      - "traefik.http.middlewares.cors.headers.accesscontrolallowmethods=GET,POST,PUT,DELETE,OPTIONS,PATCH"
+      - "traefik.http.middlewares.cors.headers.accesscontrolallowcredentials=true"
+      - "traefik.http.middlewares.cors.headers.accesscontrolallowheaders=Content-Type,Authorization"
+      - "traefik.http.middlewares.cors.headers.accesscontrolmaxage=100"
+      - "traefik.http.middlewares.cors.headers.addvaryheader=true"
+
   placio-backend:
     ports:
       - "7070:7070"
