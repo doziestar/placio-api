@@ -56,9 +56,9 @@ func (ps *PostServiceImpl) GetPostFeeds(ctx context.Context) ([]*ent.Post, error
 
 	if ok {
 		userId = md.Get("user")[0]
+	} else {
+		userId = ctx.Value("user").(string)
 	}
-
-	userId = ctx.Value("user").(string)
 
 	//Get All Posts
 	posts, err := ps.client.Post.
