@@ -185,7 +185,7 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		// website
 		websiteService := websites.NewWebsiteService(client, businessService, userService, mediaService)
 		websiteController := websites.NewWebsiteController(websiteService)
-		websiteController.RegisterRoutes(routerGroupV1)
+		websiteController.RegisterRoutes(routerGroupV1, routerGroupV1WithoutAuth)
 
 	}
 

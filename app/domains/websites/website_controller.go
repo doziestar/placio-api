@@ -18,10 +18,11 @@ func NewWebsiteController(websiteService IWebsite) *WebsiteController {
 	}
 }
 
-func (w *WebsiteController) RegisterRoutes(router *gin.RouterGroup) {
+func (w *WebsiteController) RegisterRoutes(router *gin.RouterGroup, routerWithoutAuth *gin.RouterGroup) {
 	websiteRouter := router.Group("/website")
+	websiteRouterWithoutAuth := routerWithoutAuth.Group("/website")
 	{
-		websiteRouter.GET("/", middleware.ErrorMiddleware(w.getBusinessWebsite))
+		websiteRouterWithoutAuth.GET("/", middleware.ErrorMiddleware(w.getBusinessWebsite))
 		websiteRouter.POST("/:businessID", middleware.ErrorMiddleware(w.createBusinessWebsite))
 		websiteRouter.PATCH("/:businessID", middleware.ErrorMiddleware(w.updateBusinessWebsite))
 		websiteRouter.GET("/verify/:domainName", middleware.ErrorMiddleware(w.verifyDomainName))
