@@ -37,8 +37,11 @@ func NewWebsiteService(client *ent.Client, businessService businessService.Busin
 }
 
 func (w *WebsiteService) VerifyDomainName(ctx context.Context, domainName string) (bool, error) {
-	website, _ := w.client.Website.Query().Where(website.DomainName(domainName)).First(ctx)
-	return website == nil, nil
+	_, err := w.client.Website.Query().Where(website.DomainName(domainName)).First(ctx)
+	if ent.IsNotFound(err) {
+		return false, nil
+	}
+	return true, nil
 }
 
 func (w *WebsiteService) GetBusinessWebsite(ctx context.Context, businessID, domainName string) (*ent.Website, error) {
