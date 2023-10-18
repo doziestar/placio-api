@@ -49,10 +49,10 @@ services:
       - ./askai/.env
     restart: always
     build:
-      context: .
-      dockerfile: ./askai/Dockerfile
-    entrypoint: >
-      sh -c "sleep 5 && python ./askai/askai/main.py"
+      context: ./askai
+      dockerfile: ./Dockerfile
+#    entrypoint: >
+#      sh -c "sleep 5 && python /askai/askai/main.py"
     networks:
       - default
 

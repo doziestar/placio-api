@@ -2,8 +2,8 @@ from typing import Any, List
 
 from fastapi import APIRouter
 
-from askai.app.services.base import OpenAIApi
-from askai.app.services.context import ask_question_context, explore_topic_context, explore_topic_resources_context, \
+from app.services.base import OpenAIApi
+from app.services.context import ask_question_context, explore_topic_context, explore_topic_resources_context, \
   practice_language_context, homework_helper_context, essay_grader_context, generate_flashcards_context, \
   simulate_scenario_context, educational_game_context, post_message_context, create_learning_path_context, \
   track_progress_context
