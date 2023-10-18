@@ -52,11 +52,11 @@ services:
     labels:
       - traefik.enable=true
       - traefik.docker.network=default
-      - "traefik.http.routers.backend-secure.entrypoints=websecure"
-      - "traefik.http.routers.backend-secure.rule=Host(`askai.palnight.com`)"
-      - "traefik.http.routers.backend-secure.middlewares=cors"
-      - "traefik.http.routers.backend-secure.service=backend"
-      - "traefik.http.services.backend.loadbalancer.server.port=8282"
+      - "traefik.http.routers.askai-secure.entrypoints=websecure"
+      - "traefik.http.routers.askai-secure.rule=Host(`askai.palnight.com`)"
+      - "traefik.http.routers.askai-secure.middlewares=cors"
+      - "traefik.http.routers.askai-secure.service=askai"
+      - "traefik.http.services.askai.loadbalancer.server.port=8282"
       - "traefik.http.middlewares.cors.headers.accesscontrolallowmethods=GET,POST,PUT,DELETE,OPTIONS,PATCH"
       - "traefik.http.middlewares.cors.headers.accesscontrolallowcredentials=true"
       - "traefik.http.middlewares.cors.headers.accesscontrolallowheaders=Content-Type,Authorization"
