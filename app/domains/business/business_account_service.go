@@ -19,6 +19,7 @@ import (
 	"placio-app/ent/userbusiness"
 	"placio-app/utility"
 	appErrors "placio-pkg/errors"
+	"time"
 )
 
 type BusinessAccountService interface {
@@ -227,6 +228,8 @@ func (s *BusinessAccountServiceImpl) CreateBusinessAccount(ctx context.Context, 
 	// add the business account to the search index
 	err = s.searchService.CreateOrUpdateBusiness(ctx, businessAccount)
 	if err != nil {
+		log.Println("error adding buisness account to search index", err)
+		log.Println("error adding buisness account to search index", err)
 		tx.Rollback()
 		return nil, fmt.Errorf("error creating business account: %w", err)
 	}
@@ -241,6 +244,7 @@ func (s *BusinessAccountServiceImpl) CreateBusinessAccount(ctx context.Context, 
 		Save(ctx)
 
 	if err != nil {
+		log.Println("error creating user-business relationship", err)
 		tx.Rollback()
 		return nil, fmt.Errorf("error creating user-business relationship: %w", err)
 	}
@@ -258,11 +262,15 @@ func (s *BusinessAccountServiceImpl) CreateBusinessAccount(ctx context.Context, 
 		SetDomainName(businessData.Website + uuid.New().String()).
 		SetEmail(businessData.Email).
 		SetTitle(businessData.Name).
+		SetLastUpdated(time.Now()).
 		Save(ctx)
 
 	if err != nil {
+		log.Println("error creating business website", err)
 		return nil, fmt.Errorf("error creating business website: %w", err)
 	}
+
+	log.Println("businessAccount", businessAccount)
 
 	// Now we need to fetch the created business account with its relationships
 	businessAccount, err = s.client.Business.
@@ -275,11 +283,11 @@ func (s *BusinessAccountServiceImpl) CreateBusinessAccount(ctx context.Context, 
 		return nil, fmt.Errorf("error fetching created business account: %w", err)
 	}
 
-	// add business account to search index
-	err = s.searchService.CreateOrUpdateBusiness(ctx, businessAccount)
-	if err != nil {
-		return nil, fmt.Errorf("error adding buisness account to search index: %w", err)
-	}
+	//// add business account to search index
+	//err = s.searchService.CreateOrUpdateBusiness(ctx, businessAccount)
+	//if err != nil {
+	//	return nil, fmt.Errorf("error adding buisness account to search index: %w", err)
+	//}
 	return businessAccount, nil
 }
 

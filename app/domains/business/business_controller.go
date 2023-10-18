@@ -1,8 +1,10 @@
 package business
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"placio-app/domains/events_management"
@@ -23,7 +25,19 @@ func NewBusinessAccountController(service BusinessAccountService, cache utility.
 	return &BusinessAccountController{service: service, cache: cache}
 }
 
+func RequestBodyLogger() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		body, _ := ioutil.ReadAll(c.Request.Body)
+		c.Request.Body = ioutil.NopCloser(bytes.NewBuffer(body))
+
+		fmt.Println("Request Body:", string(body))
+
+		c.Next()
+	}
+}
+
 func (bc *BusinessAccountController) RegisterRoutes(router *gin.RouterGroup) {
+	router.Use(RequestBodyLogger())
 	businessRouter := router.Group("/business")
 	{
 		businessRouter.POST("/:businessAccountID/follow/user/:userID", utility.Use(bc.followUser))
@@ -406,7 +420,7 @@ func (bc *BusinessAccountController) getFollowedContents(c *gin.Context) error {
 func (bc *BusinessAccountController) createBusinessAccount(c *gin.Context) error {
 	var businessData BusinessDto
 	if err := c.ShouldBindJSON(&businessData); err != nil {
-
+		log.Println("error", err.Error())
 		return err
 	}
 	business, err := bc.service.CreateBusinessAccount(c, &businessData)
