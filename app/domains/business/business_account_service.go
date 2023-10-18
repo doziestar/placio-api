@@ -19,6 +19,7 @@ import (
 	"placio-app/ent/userbusiness"
 	"placio-app/utility"
 	appErrors "placio-pkg/errors"
+	"strings"
 	"time"
 )
 
@@ -176,6 +177,14 @@ func (s *BusinessAccountServiceImpl) GetFollowedContents(ctx context.Context, bu
 	return allPosts, nil
 }
 
+func extractFirstWord(str string) string {
+	words := strings.Fields(str)
+	if len(words) > 0 {
+		return words[0]
+	}
+	return str
+}
+
 // CreateBusinessAccount creates a new Business Account and associates it with a user.
 func (s *BusinessAccountServiceImpl) CreateBusinessAccount(ctx context.Context, businessData *BusinessDto) (*ent.Business, error) {
 	// Validate inputs
@@ -254,12 +263,14 @@ func (s *BusinessAccountServiceImpl) CreateBusinessAccount(ctx context.Context, 
 		return nil, fmt.Errorf("error committing transaction: %w", err)
 	}
 
+	domainName := extractFirstWord(businessData.Name) + uuid.New().String()[:6]
+
 	// I need to create a business website
 	_, err = s.client.Website.
 		Create().
 		SetID(uuid.New().String()).
 		SetBusiness(businessAccount).
-		SetDomainName(businessData.Website + uuid.New().String()).
+		SetDomainName(domainName).
 		SetEmail(businessData.Email).
 		SetTitle(businessData.Name).
 		SetLastUpdated(time.Now()).
