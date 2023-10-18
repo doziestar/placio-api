@@ -1,0 +1,2 @@
+[run]
+omit = ./askai/main.py,*/__init__.py
