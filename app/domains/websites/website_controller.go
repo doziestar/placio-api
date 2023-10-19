@@ -23,7 +23,7 @@ func (w *WebsiteController) RegisterRoutes(router *gin.RouterGroup, routerWithou
 	websiteRouterWithoutAuth := routerWithoutAuth.Group("/website")
 	{
 		websiteRouterWithoutAuth.GET("/", middleware.ErrorMiddleware(w.getBusinessWebsite))
-		websiteRouter.POST("/:businessID", middleware.ErrorMiddleware(w.createBusinessWebsite))
+		//websiteRouter.POST("/:businessID", middleware.ErrorMiddleware(w.createBusinessWebsite))
 		websiteRouter.PATCH("/:businessID", middleware.ErrorMiddleware(w.updateBusinessWebsite))
 		websiteRouter.GET("/verify/:domainName", middleware.ErrorMiddleware(w.verifyDomainName))
 	}
