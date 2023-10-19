@@ -4,6 +4,7 @@ import logging.config
 from fastapi import FastAPI
 from starlette.middleware.base import BaseHTTPMiddleware
 from .api import api_router
+from .api.metrics import metrics_router
 from .version import __version__
 
 
@@ -33,6 +34,7 @@ def create_application() -> FastAPI:
 
     # add defined routers
     application.include_router(api_router, prefix="/api/v1")
+    application.include_router(metrics_router)
 
     # logging.config.dictConfig(settings.LOGGING_CONFIG)
 

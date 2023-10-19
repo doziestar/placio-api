@@ -5,6 +5,9 @@ scrape_configs:
   - job_name: 'app'
     static_configs:
       - targets: [ 'placio-backend:7070' ]
+  - job_name: 'askai'
+    static_configs:
+      - targets: [ 'askai:8282' ]
   - job_name: 'placio-realtime'
     static_configs:
       - targets: [ 'placio-realtime:7080' ]
