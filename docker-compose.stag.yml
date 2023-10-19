@@ -39,6 +39,8 @@ services:
   askai:
     ports:
       - "8282:8282"
+    environment:
+      - PORT=8282
     env_file:
       - /home/placio/.env
     restart: always
