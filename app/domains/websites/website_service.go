@@ -14,9 +14,10 @@ import (
 )
 
 type IWebsite interface {
-	GetBusinessWebsite(ctx context.Context, businessID string) (*ent.Website, error)
+	GetBusinessWebsite(ctx context.Context, businessID, domainName string) (*ent.Website, error)
 	CreateBusinessWebsite(ctx context.Context, businessID string, websiteData *ent.Website) (*ent.Website, error)
 	UpdateBusinessWebsite(ctx context.Context, businessID string, websiteData *ent.Website) (*ent.Website, error)
+	VerifyDomainName(ctx context.Context, domainName string) (bool, error)
 }
 
 type WebsiteService struct {
@@ -35,13 +36,41 @@ func NewWebsiteService(client *ent.Client, businessService businessService.Busin
 	}
 }
 
-func (w *WebsiteService) GetBusinessWebsite(ctx context.Context, businessID string) (*ent.Website, error) {
-	website, err := w.client.Website.Query().Where(website.HasBusinessWith(business.ID(businessID))).
-		WithCustomBlocks().WithAssets().WithBusiness().First(ctx)
+func (w *WebsiteService) VerifyDomainName(ctx context.Context, domainName string) (bool, error) {
+	_, err := w.client.Website.Query().Where(website.DomainName(domainName)).First(ctx)
+	if ent.IsNotFound(err) {
+		return false, nil
+	}
+	return true, nil
+}
+
+func (w *WebsiteService) GetBusinessWebsite(ctx context.Context, businessID, domainName string) (*ent.Website, error) {
+	var websiteData *ent.Website
+	var err error
+
+	if domainName != "" {
+		websiteData, err = w.client.Website.
+			Query().
+			Where(website.DomainName(domainName)).
+			WithCustomBlocks().
+			WithAssets().
+			WithBusiness().
+			First(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return websiteData, nil
+	}
+	websiteData, err = w.client.Website.Query().
+		Where(website.HasBusinessWith(business.ID(businessID))).
+		WithCustomBlocks().
+		WithAssets().
+		WithBusiness().
+		First(ctx)
 	if err != nil {
 		return nil, err
 	}
-	return website, nil
+	return websiteData, nil
 }
 
 func (w *WebsiteService) CreateBusinessWebsite(ctx context.Context, businessID string, websiteData *ent.Website) (*ent.Website, error) {
@@ -103,7 +132,19 @@ func (w *WebsiteService) CreateBusinessWebsite(ctx context.Context, businessID s
 func (w *WebsiteService) UpdateBusinessWebsite(ctx context.Context, businessID string, websiteData *ent.Website) (*ent.Website, error) {
 	// update the website
 	website, err := w.client.Website.UpdateOneID(websiteData.ID).
-		SetBusinessID(businessID).
+		SetDomainName(websiteData.DomainName).
+		SetBannerSectionBackgroundColor(websiteData.BannerSectionBackgroundColor).
+		SetThreeItemsSectionHeadingText(websiteData.ThreeItemsSectionHeadingText).
+		SetThreeItemsSectionItemOneText(websiteData.ThreeItemsSectionItemOneText).
+		SetThreeItemsSectionItemTwoText(websiteData.ThreeItemsSectionItemTwoText).
+		SetThreeItemsSectionItemThreeText(websiteData.ThreeItemsSectionItemThreeText).
+		SetThreeItemsSectionDetailsText(websiteData.ThreeItemsSectionDetailsText).
+		SetBannerTwoSectionBackgroundColor(websiteData.BannerTwoSectionBackgroundColor).
+		SetBannerTwoLeftSectionHeadingText(websiteData.BannerTwoLeftSectionHeadingText).
+		SetBannerTwoLeftSectionDetailsText(websiteData.BannerTwoLeftSectionDetailsText).
+		SetBannerTwoRightSideImage(websiteData.BannerTwoRightSideImage).
+		SetInventorySectionHeadingText(websiteData.InventorySectionHeadingText).
+		SetHeadingText(websiteData.HeadingText).
 		SetAchievementsSection(websiteData.AchievementsSection).
 		SetAddress(websiteData.Address).
 		SetBannerSectionBackgroundColor(websiteData.BannerSectionBackgroundColor).
@@ -132,6 +173,7 @@ func (w *WebsiteService) UpdateBusinessWebsite(ctx context.Context, businessID s
 		SetLanguage(websiteData.Language).
 		SetLatitude(websiteData.Latitude).
 		SetLongitude(websiteData.Longitude).
+		SetLastUpdated(time.Now()).
 		Save(ctx)
 
 	if err != nil {

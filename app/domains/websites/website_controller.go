@@ -18,25 +18,43 @@ func NewWebsiteController(websiteService IWebsite) *WebsiteController {
 	}
 }
 
-func (w *WebsiteController) RegisterRoutes(router *gin.RouterGroup) {
+func (w *WebsiteController) RegisterRoutes(router *gin.RouterGroup, routerWithoutAuth *gin.RouterGroup) {
 	websiteRouter := router.Group("/website")
+	websiteRouterWithoutAuth := routerWithoutAuth.Group("/website")
 	{
-		websiteRouter.GET("/:businessID", middleware.ErrorMiddleware(w.getBusinessWebsite))
-		websiteRouter.POST("/:businessID", middleware.ErrorMiddleware(w.createBusinessWebsite))
+		websiteRouterWithoutAuth.GET("/", middleware.ErrorMiddleware(w.getBusinessWebsite))
+		//websiteRouter.POST("/:businessID", middleware.ErrorMiddleware(w.createBusinessWebsite))
 		websiteRouter.PATCH("/:businessID", middleware.ErrorMiddleware(w.updateBusinessWebsite))
+		websiteRouter.GET("/verify/:domainName", middleware.ErrorMiddleware(w.verifyDomainName))
 	}
 }
 
 func (w *WebsiteController) getBusinessWebsite(c *gin.Context) error {
 	// get the business id
-	businessID := c.Param("businessID")
+	businessID := c.Query("businessID")
+	domainName := c.Query("domainName")
 	// get the website
-	website, err := w.websiteService.GetBusinessWebsite(c, businessID)
+	website, err := w.websiteService.GetBusinessWebsite(c, businessID, domainName)
 	if err != nil {
 		return err
 	}
 	// return the website
 	c.JSON(http.StatusOK, utility.ProcessResponse(website))
+	return nil
+}
+
+func (w *WebsiteController) verifyDomainName(c *gin.Context) error {
+
+	// get the domain name
+	domainName := c.Param("domainName")
+	// get the website
+
+	domainNameExists, err := w.websiteService.VerifyDomainName(c, domainName)
+	if err != nil {
+		return err
+	}
+
+	c.JSON(http.StatusOK, utility.ProcessResponse(domainNameExists))
 	return nil
 }
 

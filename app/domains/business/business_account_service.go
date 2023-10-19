@@ -19,6 +19,8 @@ import (
 	"placio-app/ent/userbusiness"
 	"placio-app/utility"
 	appErrors "placio-pkg/errors"
+	"strings"
+	"time"
 )
 
 type BusinessAccountService interface {
@@ -175,6 +177,14 @@ func (s *BusinessAccountServiceImpl) GetFollowedContents(ctx context.Context, bu
 	return allPosts, nil
 }
 
+func extractFirstWord(str string) string {
+	words := strings.Fields(str)
+	if len(words) > 0 {
+		return words[0]
+	}
+	return str
+}
+
 // CreateBusinessAccount creates a new Business Account and associates it with a user.
 func (s *BusinessAccountServiceImpl) CreateBusinessAccount(ctx context.Context, businessData *BusinessDto) (*ent.Business, error) {
 	// Validate inputs
@@ -227,6 +237,8 @@ func (s *BusinessAccountServiceImpl) CreateBusinessAccount(ctx context.Context, 
 	// add the business account to the search index
 	err = s.searchService.CreateOrUpdateBusiness(ctx, businessAccount)
 	if err != nil {
+		log.Println("error adding buisness account to search index", err)
+		log.Println("error adding buisness account to search index", err)
 		tx.Rollback()
 		return nil, fmt.Errorf("error creating business account: %w", err)
 	}
@@ -241,6 +253,7 @@ func (s *BusinessAccountServiceImpl) CreateBusinessAccount(ctx context.Context, 
 		Save(ctx)
 
 	if err != nil {
+		log.Println("error creating user-business relationship", err)
 		tx.Rollback()
 		return nil, fmt.Errorf("error creating user-business relationship: %w", err)
 	}
@@ -250,19 +263,28 @@ func (s *BusinessAccountServiceImpl) CreateBusinessAccount(ctx context.Context, 
 		return nil, fmt.Errorf("error committing transaction: %w", err)
 	}
 
+	domainName := extractFirstWord(businessData.Name) + uuid.New().String()[:6]
+
 	// I need to create a business website
 	_, err = s.client.Website.
 		Create().
 		SetID(uuid.New().String()).
 		SetBusiness(businessAccount).
-		SetDomainName(businessData.Website).
+		SetDomainName(domainName).
 		SetEmail(businessData.Email).
 		SetTitle(businessData.Name).
+		SetLogo("https://www.placio.io/Images/defaults/default-picture.png").
+		SetBannerTwoSectionBackgroundImage("https://www.placio.io/Images/defaults/default-cover-photo.png").
+		SetBannerSectionBackgroundImage("https://www.placio.io/Images/defaults/default-cover-photo.png").
+		SetLastUpdated(time.Now()).
 		Save(ctx)
 
 	if err != nil {
+		log.Println("error creating business website", err)
 		return nil, fmt.Errorf("error creating business website: %w", err)
 	}
+
+	log.Println("businessAccount", businessAccount)
 
 	// Now we need to fetch the created business account with its relationships
 	businessAccount, err = s.client.Business.
@@ -275,11 +297,11 @@ func (s *BusinessAccountServiceImpl) CreateBusinessAccount(ctx context.Context, 
 		return nil, fmt.Errorf("error fetching created business account: %w", err)
 	}
 
-	// add business account to search index
-	err = s.searchService.CreateOrUpdateBusiness(ctx, businessAccount)
-	if err != nil {
-		return nil, fmt.Errorf("error adding buisness account to search index: %w", err)
-	}
+	//// add business account to search index
+	//err = s.searchService.CreateOrUpdateBusiness(ctx, businessAccount)
+	//if err != nil {
+	//	return nil, fmt.Errorf("error adding buisness account to search index: %w", err)
+	//}
 	return businessAccount, nil
 }
 

@@ -65,6 +65,9 @@ func EnsureValidToken() gin.HandlerFunc {
 
 	return func(c *gin.Context) {
 		tokenString := c.GetHeader("Authorization")
+		if tokenString == "" {
+			tokenString = c.GetHeader("X-Auth")
+		}
 
 		if tokenString == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{"message": "Authorization header is missing"})

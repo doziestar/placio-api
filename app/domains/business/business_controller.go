@@ -406,7 +406,7 @@ func (bc *BusinessAccountController) getFollowedContents(c *gin.Context) error {
 func (bc *BusinessAccountController) createBusinessAccount(c *gin.Context) error {
 	var businessData BusinessDto
 	if err := c.ShouldBindJSON(&businessData); err != nil {
-
+		log.Println("error", err.Error())
 		return err
 	}
 	business, err := bc.service.CreateBusinessAccount(c, &businessData)

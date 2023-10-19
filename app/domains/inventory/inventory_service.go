@@ -166,6 +166,7 @@ func (s *InventoryServiceImpl) CreatePlaceInventory(ctx context.Context, placeID
 	}
 
 	placeInventory, err := s.client.PlaceInventory.Create().
+		SetID(uuid.New().String()).
 		SetName(data.Name).
 		SetStockQuantity(data.Quantity).
 		SetLastUpdated(time.Now()).

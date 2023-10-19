@@ -36,6 +36,27 @@ services:
       # - 'traefik.http.routers.traefik-secure.middlewares=user-auth@file'
       - "traefik.http.routers.traefik-secure.service=api@internal"
 
+  askai:
+    ports:
+      - "8282:8282"
+    environment:
+      - PORT=8282
+    env_file:
+      - /home/placio/.env
+    restart: always
+    build:
+      context: ./askai
+      dockerfile: ./Dockerfile
+    networks:
+      - default
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=default
+      - "traefik.http.routers.askai-secure.entrypoints=websecure"
+      - "traefik.http.routers.askai-secure.rule=Host(`askai.palnight.com`)"
+      - "traefik.http.routers.askai-secure.service=askai"
+      - "traefik.http.services.askai.loadbalancer.server.port=8282"
+
   placio-backend:
     ports:
       - "7070:7070"
