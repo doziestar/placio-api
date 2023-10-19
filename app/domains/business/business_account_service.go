@@ -273,6 +273,9 @@ func (s *BusinessAccountServiceImpl) CreateBusinessAccount(ctx context.Context, 
 		SetDomainName(domainName).
 		SetEmail(businessData.Email).
 		SetTitle(businessData.Name).
+		SetLogo("https://www.placio.io/Images/defaults/default-picture.png").
+		SetBannerTwoSectionBackgroundImage("https://www.placio.io/Images/defaults/default-cover-photo.png").
+		SetBannerSectionBackgroundImage("https://www.placio.io/Images/defaults/default-cover-photo.png").
 		SetLastUpdated(time.Now()).
 		Save(ctx)
 
