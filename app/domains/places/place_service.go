@@ -110,14 +110,20 @@ func (s *PlaceServiceImpl) GetPlace(ctx context.Context, placeID string) (*ent.P
 	placeData, err := s.client.Place.
 		Query().
 		Where(place.ID(placeID)).
-		WithUsers().
-		WithBusiness().
+		WithUsers(func(query *ent.UserQuery) {
+			query.WithPlaces()
+		}).
+		WithBusiness(func(query *ent.BusinessQuery) {
+			query.WithPlaces()
+			query.WithPlaces()
+		}).
 		WithCategories().
 		WithCategoryAssignments().
 		WithEvents().
 		WithAmenities().
 		WithMenus().
 		WithFaqs().
+		WithMedias().
 		First(ctx)
 	if err != nil {
 		sentry.CaptureException(err)
