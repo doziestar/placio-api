@@ -156,7 +156,18 @@ func (s *UserServiceImpl) GetUser(ctx context.Context, auth0ID string) (*ent.Use
 		Query().
 		Where(user.IDEQ(auth0ID)).
 		WithLikes(func(query *ent.LikeQuery) {
-			query.WithPost()
+			query.WithPost(func(query *ent.PostQuery) {
+				query.WithUser()
+				query.WithMedias()
+				query.WithBusinessAccount()
+				query.WithComments(func(query *ent.CommentQuery) {
+					query.WithUser()
+				})
+				query.WithLikes(func(query *ent.LikeQuery) {
+					query.WithUser()
+					query.WithPost()
+				})
+			})
 		}).
 		WithFollowedUsers(func(query *ent.UserFollowUserQuery) {
 			query.WithFollowed()
@@ -176,6 +187,14 @@ func (s *UserServiceImpl) GetUser(ctx context.Context, auth0ID string) (*ent.Use
 		}).
 		WithPosts(func(query *ent.PostQuery) {
 			query.WithMedias()
+			query.WithUser()
+			query.WithBusinessAccount()
+			query.WithComments(func(query *ent.CommentQuery) {
+				query.WithUser()
+				query.WithReplies(func(query *ent.CommentQuery) {
+					query.WithUser()
+				})
+			})
 		}).
 		WithComments(func(query *ent.CommentQuery) {
 			query.WithUser()
@@ -286,8 +305,18 @@ func (s *UserServiceImpl) GetUserByUserId(ctx context.Context, userId string) (*
 				})
 				query.WithLikes(func(query *ent.LikeQuery) {
 					query.WithUser()
+					query.WithPost()
 				})
 			})
+		}).
+		WithLikedPlaces(func(query *ent.UserLikePlaceQuery) {
+			query.WithPlace(func(query *ent.PlaceQuery) {
+				query.WithBusiness()
+			})
+		}).
+		WithPosts(func(query *ent.PostQuery) {
+			query.WithUser()
+			query.WithMedias()
 		}).
 		WithFollowedUsers(func(query *ent.UserFollowUserQuery) {
 			query.WithFollowed()
