@@ -14,7 +14,6 @@ import (
 	"placio-app/ent/predicate"
 	"placio-app/utility"
 	"placio-pkg/kafka"
-	"sync"
 	"time"
 
 	"github.com/getsentry/sentry-go"
@@ -78,22 +77,17 @@ func (ps *PostServiceImpl) GetPostFeeds(ctx context.Context) ([]*ent.Post, error
 		WithUser().
 		All(ctx)
 
-	var wg sync.WaitGroup
-
 	for _, post := range posts {
+		post.LikeCount = len(post.Edges.Likes)
+		post.CommentCount = len(post.Edges.Comments)
+
 		for _, like := range post.Edges.Likes {
 			if like.Edges.User.ID == userId {
 				post.LikedByMe = true
+				break
 			}
 		}
-		wg.Add(1)
-		go func(post *ent.Post) {
-			defer wg.Done()
-			post.LikeCount = len(post.Edges.Likes)
-			post.CommentCount = len(post.Edges.Comments)
-		}(post)
 	}
-	wg.Wait()
 
 	if err != nil {
 		sentry.CaptureException(err)
@@ -207,12 +201,13 @@ func (ps *PostServiceImpl) GetPost(ctx context.Context, postID string) (*ent.Pos
 		for _, like := range post.Edges.Likes {
 			if like.Edges.User.ID == userId {
 				post.LikedByMe = true
+				break
 			}
 		}
-
-		post.LikeCount = len(post.Edges.Likes)
-		post.CommentCount = len(post.Edges.Comments)
 	}
+
+	post.LikeCount = len(post.Edges.Likes)
+	post.CommentCount = len(post.Edges.Comments)
 
 	if err != nil {
 		return nil, fmt.Errorf("failed getting post: %w", err)

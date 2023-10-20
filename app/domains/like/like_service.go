@@ -68,6 +68,28 @@ func (s *UserLikePlaceServiceImpl) CheckIfUserLikesPlace(ctx context.Context, us
 func (s *LikeServiceImpl) LikePost(ctx context.Context, userID string, postID string) (*ent.Like, error) {
 	log.Println("LikePost called ", userID, postID)
 
+	// Check if the user already liked the post
+	existingLike, err := s.client.Like.
+		Query().
+		Where(like.HasUserWith(user.ID(userID))).
+		Where(like.HasPostWith(post.ID(postID))).
+		Only(ctx)
+
+	if err == nil && existingLike != nil {
+		// If a like exists, delete it to 'unlike' the post
+		err = s.client.Like.DeleteOne(existingLike).Exec(ctx)
+		if err != nil {
+			log.Println("Error unliking post: ", err)
+			return nil, err
+		}
+		return nil, nil // Returning nil since no like was created
+	} else if !ent.IsNotFound(err) {
+		// If it's an error other than 'not found', return the error
+		log.Println("Error checking existing like: ", err)
+		return nil, err
+	}
+
+	// If no existing like, create a new like
 	likes, err := s.client.Like.
 		Create().
 		SetID(uuid.New().String()).

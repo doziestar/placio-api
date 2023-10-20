@@ -30,6 +30,7 @@ func (uc *UserController) RegisterRoutes(router *gin.RouterGroup) {
 	{
 		userRouter.GET("/", utility.Use(uc.GetUser))
 		userRouter.GET("/followers", utility.Use(uc.getFollowers))
+		userRouter.GET("/check-following/:userID", utility.Use(uc.checkFollowing))
 		userRouter.GET("/:id/followers", utility.Use(uc.getFollowersByUserID))
 		userRouter.GET("/likes", utility.Use(uc.getLikes))
 		userRouter.GET("/:id/likes", utility.Use(uc.getUserLikesUserID))
@@ -51,6 +52,31 @@ func (uc *UserController) RegisterRoutes(router *gin.RouterGroup) {
 		userRouter.DELETE("/unfollow/business/:followerID/:businessID", utility.Use(uc.unfollowBusiness))
 		userRouter.GET("/followed-contents/:userID", utility.Use(uc.getFollowedContents))
 	}
+}
+
+// @Summary Check if user is following another user
+// @Description Check if user is following another user
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param userID path string true "ID of the user"
+// @Param followerID path string true "ID of the follower"
+// @Success 200 {object} bool "Successfully retrieved followers"
+// @Failure 400 {object} Dto.Error
+// @Failure 401 {object} Dto.Error
+// @Failure 500 {object} Dto.Error
+// @Router /api/v1/users/check-following/{userID}/{followerID} [get]
+func (uc *UserController) checkFollowing(ctx *gin.Context) error {
+	followerId := ctx.Param("userID")
+	user := ctx.GetString("user")
+
+	isFollowing, err := uc.userService.CheckFollowing(ctx, user, followerId)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(isFollowing, "success", "Successfully retrieved followers", ""))
+	return nil
 }
 
 // @Summary Follow a user

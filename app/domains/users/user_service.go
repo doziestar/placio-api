@@ -41,6 +41,7 @@ type UserService interface {
 	UpdateAuth0UserInformation(userID string, userData *models.Auth0UserData) (*management.User, error)
 	GetUserByUserId(ctx context.Context, userId string) (*ent.User, error)
 	UpdateUser(ctx context.Context, userID string, userData map[string]interface{}) (*ent.User, error)
+	CheckFollowing(ctx context.Context, userId string, followedID string) (bool, error)
 	// GetAuth0ManagementToken GetAuth0UserMetaData(userID string, IdToken string) (models.Metadata, error)
 	//GetAuth0AppMetaData(userID string, IdToken string) (models.AppMetadata, error)
 	//GetAuth0UserRoles(userID string, IdToken string) ([]string, error)
@@ -75,6 +76,26 @@ type auth0TokenResponse struct {
 
 func NewUserService(client *ent.Client, cache *utility.RedisClient, searchService search.SearchService) *UserServiceImpl {
 	return &UserServiceImpl{client: client, cache: cache, searchService: searchService}
+}
+
+func (s *UserServiceImpl) CheckFollowing(ctx context.Context, userId string, followedID string) (bool, error) {
+	followedUser, err := s.client.UserFollowUser.
+		Query().
+		Where(userfollowuser.HasFollowerWith(user.ID(userId)), userfollowuser.HasFollowedWith(user.ID(followedID))).
+		Only(ctx)
+
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return false, nil
+		}
+		return false, err
+	}
+
+	if followedUser != nil {
+		return true, nil
+	}
+
+	return false, nil
 }
 
 func (s *UserServiceImpl) FollowUser(ctx context.Context, followerID string, followedID string) error {
