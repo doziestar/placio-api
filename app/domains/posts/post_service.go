@@ -74,6 +74,7 @@ func (ps *PostServiceImpl) GetPostFeeds(ctx context.Context) ([]*ent.Post, error
 		WithLikes(func(query *ent.LikeQuery) {
 			query.WithUser()
 		}).
+		WithBusinessAccount().
 		WithUser().
 		All(ctx)
 

@@ -30,7 +30,7 @@ func (uc *UserController) RegisterRoutes(router *gin.RouterGroup) {
 	{
 		userRouter.GET("/", utility.Use(uc.GetUser))
 		userRouter.GET("/followers", utility.Use(uc.getFollowers))
-		userRouter.GET("/check-following/:userID", utility.Use(uc.checkFollowing))
+		userRouter.GET("/check-following", utility.Use(uc.checkFollowing))
 		userRouter.GET("/:id/followers", utility.Use(uc.getFollowersByUserID))
 		userRouter.GET("/likes", utility.Use(uc.getLikes))
 		userRouter.GET("/:id/likes", utility.Use(uc.getUserLikesUserID))
@@ -65,12 +65,13 @@ func (uc *UserController) RegisterRoutes(router *gin.RouterGroup) {
 // @Failure 400 {object} Dto.Error
 // @Failure 401 {object} Dto.Error
 // @Failure 500 {object} Dto.Error
-// @Router /api/v1/users/check-following/{userID}/{followerID} [get]
+// @Router /api/v1/users/check-following/ [get]
 func (uc *UserController) checkFollowing(ctx *gin.Context) error {
-	followerId := ctx.Param("userID")
+	followerId := ctx.Query("userID")
+	businessId := ctx.Query("businessID")
 	user := ctx.GetString("user")
 
-	isFollowing, err := uc.userService.CheckFollowing(ctx, user, followerId)
+	isFollowing, err := uc.userService.CheckFollowing(ctx, user, followerId, businessId)
 	if err != nil {
 		return err
 	}

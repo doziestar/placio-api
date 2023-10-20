@@ -328,8 +328,14 @@ func (s *BusinessAccountServiceImpl) GetBusinessAccount(ctx context.Context, bus
 	businessAccount, err := s.client.Business.
 		Query().
 		Where(business.IDEQ(businessAccountID)).
-		WithFollowerUsers().
-		WithFollowedUsers().
+		WithFollowerUsers(func(query *ent.UserFollowBusinessQuery) {
+			query.WithBusiness()
+			query.WithUser()
+		}).
+		WithFollowedUsers(func(query *ent.BusinessFollowUserQuery) {
+			query.WithBusiness()
+			query.WithUser()
+		}).
 		WithFollowerBusinesses(func(query *ent.BusinessFollowBusinessQuery) {
 			query.WithFollower()
 

@@ -41,7 +41,7 @@ type UserService interface {
 	UpdateAuth0UserInformation(userID string, userData *models.Auth0UserData) (*management.User, error)
 	GetUserByUserId(ctx context.Context, userId string) (*ent.User, error)
 	UpdateUser(ctx context.Context, userID string, userData map[string]interface{}) (*ent.User, error)
-	CheckFollowing(ctx context.Context, userId string, followedID string) (bool, error)
+	CheckFollowing(ctx context.Context, userId string, followedID, businessId string) (bool, error)
 	// GetAuth0ManagementToken GetAuth0UserMetaData(userID string, IdToken string) (models.Metadata, error)
 	//GetAuth0AppMetaData(userID string, IdToken string) (models.AppMetadata, error)
 	//GetAuth0UserRoles(userID string, IdToken string) ([]string, error)
@@ -78,21 +78,42 @@ func NewUserService(client *ent.Client, cache *utility.RedisClient, searchServic
 	return &UserServiceImpl{client: client, cache: cache, searchService: searchService}
 }
 
-func (s *UserServiceImpl) CheckFollowing(ctx context.Context, userId string, followedID string) (bool, error) {
-	followedUser, err := s.client.UserFollowUser.
-		Query().
-		Where(userfollowuser.HasFollowerWith(user.ID(userId)), userfollowuser.HasFollowedWith(user.ID(followedID))).
-		Only(ctx)
+func (s *UserServiceImpl) CheckFollowing(ctx context.Context, userId string, followedID, businessId string) (bool, error) {
+	if businessId != "" {
+		// Check if the user is following the business
+		followedBusiness, err := s.client.UserFollowBusiness.
+			Query().
+			Where(userfollowbusiness.HasUserWith(user.ID(userId)), userfollowbusiness.HasBusinessWith(business.ID(businessId))).
+			Only(ctx)
 
-	if err != nil {
-		if ent.IsNotFound(err) {
-			return false, nil
+		if err != nil {
+			if ent.IsNotFound(err) {
+				return false, nil
+			}
+			return false, err
 		}
-		return false, err
-	}
 
-	if followedUser != nil {
-		return true, nil
+		if followedBusiness != nil {
+			return true, nil
+		}
+
+	} else {
+		// Check if the user is following another user
+		followedUser, err := s.client.UserFollowUser.
+			Query().
+			Where(userfollowuser.HasFollowerWith(user.ID(userId)), userfollowuser.HasFollowedWith(user.ID(followedID))).
+			Only(ctx)
+
+		if err != nil {
+			if ent.IsNotFound(err) {
+				return false, nil
+			}
+			return false, err
+		}
+
+		if followedUser != nil {
+			return true, nil
+		}
 	}
 
 	return false, nil
