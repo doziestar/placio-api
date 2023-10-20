@@ -2,9 +2,7 @@ package follow
 
 import (
 	"context"
-	"errors"
 	"github.com/google/uuid"
-	"log"
 	"placio-app/domains/cache"
 	"placio-app/ent"
 	"placio-app/ent/business"
@@ -50,9 +48,26 @@ func NewFollowService(client *ent.Client, cacheService cache.ICacheService) *Fol
 	return &FollowService{client: client, cacheService: cacheService}
 }
 
-// FollowUserToBusiness User-Business methods
 func (s *FollowService) FollowUserToBusiness(ctx context.Context, userID, businessID string) error {
-	_, err := s.client.UserFollowBusiness.
+	// Check if the user is already following the business
+	existingFollow, err := s.client.UserFollowBusiness.
+		Query().
+		Where(userfollowbusiness.HasUserWith(user.ID(userID)), userfollowbusiness.HasBusinessWith(business.ID(businessID))).
+		Only(ctx)
+
+	if err != nil && !ent.IsNotFound(err) {
+		// Unexpected error
+		return err
+	}
+
+	if existingFollow != nil {
+		// The user is already following the business, so unfollow
+		err = s.client.UserFollowBusiness.DeleteOne(existingFollow).Exec(ctx)
+		return err
+	}
+
+	// Create a new follow relationship
+	_, err = s.client.UserFollowBusiness.
 		Create().
 		SetID(uuid.New().String()).
 		SetUserID(userID).
@@ -88,21 +103,32 @@ func (s *FollowService) FollowUserToUser(ctx context.Context, followerID, follow
 	if err != nil {
 		return err
 	}
+
 	if isFollowing {
-		return errors.New("User already follows the user")
+		// If the user is already following, then unfollow
+		_, err = s.client.UserFollowUser.
+			Delete().
+			Where(userfollowuser.HasFollowerWith(user.ID(followerID)), userfollowuser.HasFollowedWith(user.ID(followedID))).
+			Exec(ctx)
+
+		if err != nil {
+			return err
+		}
+		return nil // or return some message indicating unfollowed successfully
+	} else {
+		// Create a new follow relationship
+		_, err = s.client.UserFollowUser.
+			Create().
+			SetID(uuid.New().String()).
+			SetFollowerID(followerID).
+			SetFollowedID(followedID).
+			SetUpdatedAt(time.Now()).
+			Save(ctx)
+		if err != nil {
+			return err
+		}
+		return nil // or return some message indicating followed successfully
 	}
-
-	_, err = s.client.UserFollowUser.
-		Create().
-		SetID(uuid.New().String()).
-		SetFollowerID(followerID).
-		SetFollowedID(followedID).
-		SetUpdatedAt(time.Now()).
-		Save(ctx)
-
-	log.Println("FollowUserToUser 3", err)
-
-	return err
 }
 
 func (s *FollowService) isUserFollowing(ctx context.Context, followerID, followedID string) (bool, error) {
@@ -138,14 +164,8 @@ func (s *FollowService) GetFollowedUsersByUser(ctx context.Context, userID strin
 
 // FollowUserToPlace User-Place methods
 func (s *FollowService) FollowUserToPlace(ctx context.Context, userID, placeID string) error {
-
-	_, err := s.client.UserFollowPlace.
-		Create().
-		SetID(uuid.New().String()).
-		SetUserID(userID).
-		SetPlaceID(placeID).
-		SetUpdatedAt(time.Now()).
-		Save(ctx)
+	// Check if the user already follows the place
+	isFollowing, err := s.isUserFollowingPlace(ctx, userID, placeID)
 	if err != nil {
 		return err
 	}
@@ -154,16 +174,64 @@ func (s *FollowService) FollowUserToPlace(ctx context.Context, userID, placeID s
 	if err != nil {
 		return err
 	}
-	_, err = s.client.Place.
-		UpdateOne(placeToUpdate).
-		SetFollowerCount(placeToUpdate.FollowerCount + 1).
-		Save(ctx)
-	if err != nil {
-		return err
+
+	if isFollowing {
+		// If the user already follows the place, unfollow
+		_, err = s.client.UserFollowPlace.
+			Delete().
+			Where(userfollowplace.HasUserWith(user.ID(userID)), userfollowplace.HasPlaceWith(place.ID(placeID))).
+			Exec(ctx)
+		if err != nil {
+			return err
+		}
+
+		// Decrease the follower count
+		_, err = s.client.Place.
+			UpdateOne(placeToUpdate).
+			SetFollowerCount(placeToUpdate.FollowerCount - 1).
+			Save(ctx)
+		if err != nil {
+			return err
+		}
+
+	} else {
+		// If the user doesn't follow, create a new relationship
+		_, err = s.client.UserFollowPlace.
+			Create().
+			SetID(uuid.New().String()).
+			SetUserID(userID).
+			SetPlaceID(placeID).
+			SetUpdatedAt(time.Now()).
+			Save(ctx)
+		if err != nil {
+			return err
+		}
+
+		// Increase the follower count
+		_, err = s.client.Place.
+			UpdateOne(placeToUpdate).
+			SetFollowerCount(placeToUpdate.FollowerCount + 1).
+			Save(ctx)
+		if err != nil {
+			return err
+		}
 	}
 
-	//go s.cacheService.AddPlaceToCacheAndSearchIndex(ctx, placeToUpdate)
+	// If needed, you can add the caching logic here
+	// go s.cacheService.AddPlaceToCacheAndSearchIndex(ctx, placeToUpdate)
+
 	return nil
+}
+
+func (s *FollowService) isUserFollowingPlace(ctx context.Context, userID, placeID string) (bool, error) {
+	count, err := s.client.UserFollowPlace.
+		Query().
+		Where(userfollowplace.HasUserWith(user.ID(userID)), userfollowplace.HasPlaceWith(place.ID(placeID))).
+		Count(ctx)
+	if err != nil {
+		return false, err
+	}
+	return count > 0, nil
 }
 
 func (s *FollowService) UnfollowUserToPlace(ctx context.Context, userID, placeID string) error {
