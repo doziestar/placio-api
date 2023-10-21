@@ -1,7 +1,7 @@
 import os
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Dict
 from fastapi import APIRouter, Depends, HTTPException, status, Header
-from elevenlabs import generate, play, voices, clone
+from elevenlabs import generate, play, voices, clone, Voice
 
 voice_router = APIRouter(prefix="/voice", tags=["voice"])
 
@@ -17,7 +17,7 @@ async def get_api_key(api_key: Optional[str] = Header(default=None)):
     return api_key
 
 
-@voice_router.get("/get_voices", response_model=List[str], dependencies=[Depends(get_api_key)])
+@voice_router.get("/get_voices", response_model=List[Voice], dependencies=[Depends(get_api_key)])
 async def get_voices() -> Any:
     try:
         available_voices = voices().voices
