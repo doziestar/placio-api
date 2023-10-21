@@ -26,7 +26,19 @@ async def get_voices() -> Any:
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@voice_router.post("/generate", response_model=str, dependencies=[Depends(get_api_key)])
+@voice_router.get("/get_voice", response_model=Voice, dependencies=[Depends(get_api_key)])
+async def get_voice(voice_id: str) -> Any:
+    try:
+        available_voices = voices().voices
+        for voice in available_voices:
+            if voice.voiceId == voice_id:
+                return voice
+        raise HTTPException(status_code=404, detail="Voice not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@voice_router.post("/generate", response_model=Voice, dependencies=[Depends(get_api_key)])
 async def generate_voice(text: str, voice: str) -> Any:
     try:
         generated_voice = generate(text, voice)
