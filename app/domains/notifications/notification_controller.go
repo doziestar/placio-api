@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"placio-app/utility"
+	"placio-pkg/errors"
 	"placio-pkg/middleware"
 	"strconv"
 )
@@ -22,102 +23,74 @@ func (n *NotificationController) RegisterRoutes(router *gin.RouterGroup) {
 	router.GET("/notification/:notificationID", middleware.ErrorMiddleware(n.GetNotification))
 	router.GET("/notifications", middleware.ErrorMiddleware(n.GetNotifications))
 	router.GET("/notifications/unread", middleware.ErrorMiddleware(n.GetUnreadNotifications))
-	router.POST("/notification/", middleware.ErrorMiddleware(n.CreateNotification))
 	router.DELETE("/notification/:notificationID", middleware.ErrorMiddleware(n.DeleteNotification))
+	router.GET("/notifications/unread/count", middleware.ErrorMiddleware(n.GetUnreadNotificationsCount))
 }
 
 func (n *NotificationController) GetNotification(c *gin.Context) error {
-	// get the notification id
 	notificationID := c.Param("notificationID")
-	// get the notification
-	notification, err := n.notificationService.GetNotification(c, notificationID)
+	notification, err := n.notificationService.GetNotification(c.Request.Context(), notificationID)
 	if err != nil {
-		return err
+		return errors.ErrNotFound
 	}
-	// return the notification
 	c.JSON(http.StatusOK, utility.ProcessResponse(notification))
 	return nil
 }
 
+func (n *NotificationController) GetUnreadNotificationsCount(c *gin.Context) error {
+	userID := c.GetString("user")
+	count, err := n.notificationService.GetUnreadNotificationsCount(c.Request.Context(), userID)
+	if err != nil {
+		return errors.New("Failed to retrieve notifications count")
+	}
+	c.JSON(http.StatusOK, utility.ProcessResponse(count))
+	return nil
+}
+
 func (n *NotificationController) GetNotifications(c *gin.Context) error {
-	// get the user id
-	userID := c.Query("userID")
-	// get the limit
-	limit := c.Query("limit")
-	// get the offset
-	offset := c.Query("offset")
-
-	limits, err := strconv.Atoi(limit)
+	userID := c.GetString("user")
+	limit, err := strconv.Atoi(c.DefaultQuery("limit", "10"))
 	if err != nil {
-		return err
+		return errors.ErrInvalidLimitValue
+	}
+	offset, err := strconv.Atoi(c.DefaultQuery("offset", "0"))
+	if err != nil {
+		return errors.ErrInvalidOffset
 	}
 
-	offsets, err := strconv.Atoi(offset)
+	notifications, err := n.notificationService.GetNotifications(c.Request.Context(), userID, limit, offset)
 	if err != nil {
-		return err
+		return errors.New("Failed to retrieve notifications")
 	}
-
-	// get the notifications
-	notifications, err := n.notificationService.GetNotifications(c, userID, limits, offsets)
-	if err != nil {
-		return err
-	}
-	// return the notifications
 	c.JSON(http.StatusOK, utility.ProcessResponse(notifications))
 	return nil
 }
 
 func (n *NotificationController) GetUnreadNotifications(c *gin.Context) error {
-	// get the user id
-	userID := c.Query("userID")
-	// get the limit
-	limit := c.Query("limit")
-	// get the offset
-	offset := c.Query("offset")
-
-	limits, err := strconv.Atoi(limit)
+	userID := c.GetString("user")
+	limit, err := strconv.Atoi(c.DefaultQuery("limit", "10"))
 	if err != nil {
-		return err
+		return errors.ErrInvalidLimitValue
+	}
+	offset, err := strconv.Atoi(c.DefaultQuery("offset", "0"))
+	if err != nil {
+		return errors.ErrInvalidOffset
 	}
 
-	offsets, err := strconv.Atoi(offset)
+	notifications, err := n.notificationService.GetUnreadNotifications(c.Request.Context(), userID, limit, offset)
 	if err != nil {
-		return err
+		return errors.New("Failed to retrieve notifications")
 	}
-
-	// get the notifications
-	notifications, err := n.notificationService.GetUnreadNotifications(c, userID, limits, offsets)
-	if err != nil {
-		return err
-	}
-	// return the notifications
 	c.JSON(http.StatusOK, utility.ProcessResponse(notifications))
 	return nil
 }
 
-func (n *NotificationController) CreateNotification(c *gin.Context) error {
-	var notification *Notification
-	// bind the notification
-	err := c.BindJSON(&notification)
-	// get the notification
-	notificationData, err := n.notificationService.CreateNotification(c, notification)
-	if err != nil {
-		return err
-	}
-	// return the notification
-	c.JSON(http.StatusOK, utility.ProcessResponse(notificationData))
-	return nil
-}
-
 func (n *NotificationController) DeleteNotification(c *gin.Context) error {
-	// get the notification id
 	notificationID := c.Param("notificationID")
-	// delete the notification
-	err := n.notificationService.DeleteNotification(c, notificationID)
+	err := n.notificationService.DeleteNotification(c.Request.Context(), notificationID)
 	if err != nil {
-		return err
+		return errors.New("Failed to delete notification")
 	}
-	// return the notification
-	c.JSON(http.StatusOK, utility.ProcessResponse("notification deleted successfully"))
+	c.JSON(http.StatusOK, utility.ProcessResponse("Notification deleted successfully"))
 	return nil
 }

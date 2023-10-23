@@ -719,6 +719,7 @@ var (
 		{Name: "link", Type: field.TypeString, Size: 255},
 		{Name: "is_read", Type: field.TypeBool, Default: false},
 		{Name: "type", Type: field.TypeInt, Default: 0},
+		{Name: "unread_count", Type: field.TypeInt, Default: 0},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "notifiable_type", Type: field.TypeString, Size: 255},
@@ -1597,6 +1598,31 @@ var (
 			},
 		},
 	}
+	// CommentNotificationsColumns holds the columns for the "comment_notifications" table.
+	CommentNotificationsColumns = []*schema.Column{
+		{Name: "comment_id", Type: field.TypeString, Size: 36},
+		{Name: "notification_id", Type: field.TypeString, Size: 36},
+	}
+	// CommentNotificationsTable holds the schema information for the "comment_notifications" table.
+	CommentNotificationsTable = &schema.Table{
+		Name:       "comment_notifications",
+		Columns:    CommentNotificationsColumns,
+		PrimaryKey: []*schema.Column{CommentNotificationsColumns[0], CommentNotificationsColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "comment_notifications_comment_id",
+				Columns:    []*schema.Column{CommentNotificationsColumns[0]},
+				RefColumns: []*schema.Column{CommentsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "comment_notifications_notification_id",
+				Columns:    []*schema.Column{CommentNotificationsColumns[1]},
+				RefColumns: []*schema.Column{NotificationsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// FaqPlaceColumns holds the columns for the "faq_place" table.
 	FaqPlaceColumns = []*schema.Column{
 		{Name: "faq_id", Type: field.TypeString},
@@ -1672,6 +1698,31 @@ var (
 			},
 		},
 	}
+	// PlaceNotificationsColumns holds the columns for the "place_notifications" table.
+	PlaceNotificationsColumns = []*schema.Column{
+		{Name: "place_id", Type: field.TypeString, Size: 36},
+		{Name: "notification_id", Type: field.TypeString, Size: 36},
+	}
+	// PlaceNotificationsTable holds the schema information for the "place_notifications" table.
+	PlaceNotificationsTable = &schema.Table{
+		Name:       "place_notifications",
+		Columns:    PlaceNotificationsColumns,
+		PrimaryKey: []*schema.Column{PlaceNotificationsColumns[0], PlaceNotificationsColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "place_notifications_place_id",
+				Columns:    []*schema.Column{PlaceNotificationsColumns[0]},
+				RefColumns: []*schema.Column{PlacesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "place_notifications_notification_id",
+				Columns:    []*schema.Column{PlaceNotificationsColumns[1]},
+				RefColumns: []*schema.Column{NotificationsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// PlaceInventoryMediaColumns holds the columns for the "place_inventory_media" table.
 	PlaceInventoryMediaColumns = []*schema.Column{
 		{Name: "place_inventory_id", Type: field.TypeString, Size: 36},
@@ -1693,6 +1744,31 @@ var (
 				Symbol:     "place_inventory_media_media_id",
 				Columns:    []*schema.Column{PlaceInventoryMediaColumns[1]},
 				RefColumns: []*schema.Column{MediaColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
+	// PostNotificationsColumns holds the columns for the "post_notifications" table.
+	PostNotificationsColumns = []*schema.Column{
+		{Name: "post_id", Type: field.TypeString, Size: 36},
+		{Name: "notification_id", Type: field.TypeString, Size: 36},
+	}
+	// PostNotificationsTable holds the schema information for the "post_notifications" table.
+	PostNotificationsTable = &schema.Table{
+		Name:       "post_notifications",
+		Columns:    PostNotificationsColumns,
+		PrimaryKey: []*schema.Column{PostNotificationsColumns[0], PostNotificationsColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "post_notifications_post_id",
+				Columns:    []*schema.Column{PostNotificationsColumns[0]},
+				RefColumns: []*schema.Column{PostsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "post_notifications_notification_id",
+				Columns:    []*schema.Column{PostNotificationsColumns[1]},
+				RefColumns: []*schema.Column{NotificationsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 		},
@@ -1800,10 +1876,13 @@ var (
 		AmenityPlacesTable,
 		BusinessNotificationsTable,
 		CategoryMediaTable,
+		CommentNotificationsTable,
 		FaqPlaceTable,
 		FaqEventTable,
 		PlaceMediasTable,
+		PlaceNotificationsTable,
 		PlaceInventoryMediaTable,
+		PostNotificationsTable,
 		UserPlacesTable,
 		UserNotificationsTable,
 	}
@@ -1907,14 +1986,20 @@ func init() {
 	BusinessNotificationsTable.ForeignKeys[1].RefTable = NotificationsTable
 	CategoryMediaTable.ForeignKeys[0].RefTable = CategoriesTable
 	CategoryMediaTable.ForeignKeys[1].RefTable = MediaTable
+	CommentNotificationsTable.ForeignKeys[0].RefTable = CommentsTable
+	CommentNotificationsTable.ForeignKeys[1].RefTable = NotificationsTable
 	FaqPlaceTable.ForeignKeys[0].RefTable = FaQsTable
 	FaqPlaceTable.ForeignKeys[1].RefTable = PlacesTable
 	FaqEventTable.ForeignKeys[0].RefTable = FaQsTable
 	FaqEventTable.ForeignKeys[1].RefTable = EventsTable
 	PlaceMediasTable.ForeignKeys[0].RefTable = PlacesTable
 	PlaceMediasTable.ForeignKeys[1].RefTable = MediaTable
+	PlaceNotificationsTable.ForeignKeys[0].RefTable = PlacesTable
+	PlaceNotificationsTable.ForeignKeys[1].RefTable = NotificationsTable
 	PlaceInventoryMediaTable.ForeignKeys[0].RefTable = PlaceInventoriesTable
 	PlaceInventoryMediaTable.ForeignKeys[1].RefTable = MediaTable
+	PostNotificationsTable.ForeignKeys[0].RefTable = PostsTable
+	PostNotificationsTable.ForeignKeys[1].RefTable = NotificationsTable
 	UserPlacesTable.ForeignKeys[0].RefTable = UsersTable
 	UserPlacesTable.ForeignKeys[1].RefTable = PlacesTable
 	UserNotificationsTable.ForeignKeys[0].RefTable = UsersTable

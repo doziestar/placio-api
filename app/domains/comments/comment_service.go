@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"log"
+	"placio-app/domains/notifications"
 	"placio-app/ent"
 	"placio-app/ent/comment"
 	"time"
@@ -18,11 +19,12 @@ type CommentService interface {
 }
 
 type CommentServiceImpl struct {
-	client *ent.Client
+	client        *ent.Client
+	notifications notifications.INotification
 }
 
-func NewCommentService(client *ent.Client) CommentService {
-	return &CommentServiceImpl{client: client}
+func NewCommentService(client *ent.Client, notifications notifications.INotification) CommentService {
+	return &CommentServiceImpl{client: client, notifications: notifications}
 }
 
 func (cs *CommentServiceImpl) CreateComment(ctx context.Context, userID string, postID string, content string) (*ent.Comment, error) {
@@ -54,6 +56,31 @@ func (cs *CommentServiceImpl) CreateComment(ctx context.Context, userID string, 
 	if err != nil {
 		log.Println("Failed to add comment", err)
 		return nil, fmt.Errorf("failed adding comment: %w", err)
+	}
+
+	// Create a new notification entity
+	notification := &ent.Notification{
+		Title:          fmt.Sprintf("%s commented on your post", user.Name),
+		Message:        content,
+		Type:           1,
+		TriggeredBy:    user.ID,
+		TriggeredTo:    comment.Edges.User.ID,
+		NotifiableType: "comment",
+		NotifiableID:   comment.ID,
+		CreatedAt:      time.Now(),
+		UpdatedAt:      time.Now(),
+		Edges: ent.NotificationEdges{
+			User:    []*ent.User{user},       // Associate the notification with the user
+			Comment: []*ent.Comment{comment}, // Associate the notification with the comment (reply)
+		},
+	}
+
+	// Attempt to create the notification in the database
+	_, err = cs.notifications.CreateNotification(ctx, notification)
+	if err != nil {
+		// Log the error if notification creation fails
+		log.Printf("Failed to create notification: %v", err)
+		// Decide how you want to handle the error - you can return it, log it, or ignore it
 	}
 
 	return comment, nil
@@ -131,12 +158,39 @@ func (cs *CommentServiceImpl) CreateReply(ctx context.Context, userID string, pa
 		SetUser(user).
 		SetUpdatedAt(time.Now()).
 		SetParentComment(parentComment).
-		SetParentCommentID(parentCommentID).
 		Save(ctx)
 
 	if err != nil {
 		log.Println("Failed to add comment", err)
 		return nil, fmt.Errorf("failed adding comment: %w", err)
+	}
+
+	if parentComment.Edges.User != nil && parentComment.Edges.User.ID != userID {
+		notificationContent := fmt.Sprintf("%s replied to your comment", user.Name)
+		notification := &ent.Notification{
+			Title:          fmt.Sprintf("%s replied to your comment", user.Name),
+			Message:        notificationContent,
+			Type:           1,
+			TriggeredBy:    user.ID,
+			TriggeredTo:    parentComment.Edges.User.ID,
+			NotifiableType: "comment",
+			NotifiableID:   parentComment.ID,
+			CreatedAt:      time.Now(),
+			UpdatedAt:      time.Now(),
+			Edges: ent.NotificationEdges{
+				User: []*ent.User{
+					user,
+				},
+				Comment: []*ent.Comment{
+					reply,
+				},
+			},
+		}
+		_, err := cs.notifications.CreateNotification(ctx, notification)
+		if err != nil {
+			log.Printf("Failed to create notification: %v", err)
+			// Decide how you want to handle the error - you can return it, log it, or ignore it
+		}
 	}
 
 	return reply, nil

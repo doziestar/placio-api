@@ -377,20 +377,24 @@ func init() {
 	notificationDescType := notificationFields[5].Descriptor()
 	// notification.DefaultType holds the default value on creation for the type field.
 	notification.DefaultType = notificationDescType.Default.(int)
+	// notificationDescUnreadCount is the schema descriptor for unread_count field.
+	notificationDescUnreadCount := notificationFields[6].Descriptor()
+	// notification.DefaultUnreadCount holds the default value on creation for the unread_count field.
+	notification.DefaultUnreadCount = notificationDescUnreadCount.Default.(int)
 	// notificationDescNotifiableType is the schema descriptor for notifiable_type field.
-	notificationDescNotifiableType := notificationFields[8].Descriptor()
+	notificationDescNotifiableType := notificationFields[9].Descriptor()
 	// notification.NotifiableTypeValidator is a validator for the "notifiable_type" field. It is called by the builders before save.
 	notification.NotifiableTypeValidator = notificationDescNotifiableType.Validators[0].(func(string) error)
 	// notificationDescNotifiableID is the schema descriptor for notifiable_id field.
-	notificationDescNotifiableID := notificationFields[9].Descriptor()
+	notificationDescNotifiableID := notificationFields[10].Descriptor()
 	// notification.NotifiableIDValidator is a validator for the "notifiable_id" field. It is called by the builders before save.
 	notification.NotifiableIDValidator = notificationDescNotifiableID.Validators[0].(func(string) error)
 	// notificationDescTriggeredBy is the schema descriptor for triggered_by field.
-	notificationDescTriggeredBy := notificationFields[10].Descriptor()
+	notificationDescTriggeredBy := notificationFields[11].Descriptor()
 	// notification.TriggeredByValidator is a validator for the "triggered_by" field. It is called by the builders before save.
 	notification.TriggeredByValidator = notificationDescTriggeredBy.Validators[0].(func(string) error)
 	// notificationDescTriggeredTo is the schema descriptor for triggered_to field.
-	notificationDescTriggeredTo := notificationFields[11].Descriptor()
+	notificationDescTriggeredTo := notificationFields[12].Descriptor()
 	// notification.TriggeredToValidator is a validator for the "triggered_to" field. It is called by the builders before save.
 	notification.TriggeredToValidator = notificationDescTriggeredTo.Validators[0].(func(string) error)
 	// notificationDescID is the schema descriptor for id field.

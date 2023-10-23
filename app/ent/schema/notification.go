@@ -22,10 +22,11 @@ func (Notification) Fields() []ent.Field {
 		field.String("link").MaxLen(255),
 		field.Bool("is_read").Default(false),
 		field.Int("type").Default(0),
+		field.Int("unread_count").Default(0),
 		field.Time("created_at"),
 		field.Time("updated_at"),
-		field.String("notifiable_type").MaxLen(255), // for example: "Post", "Comment", "Order", etc.
-		field.String("notifiable_id").MaxLen(36),    // for example: "Post ID", "Comment ID", "Order ID", etc.
+		field.String("notifiable_type").MaxLen(255),
+		field.String("notifiable_id").MaxLen(36),
 		field.String("triggered_by").MaxLen(36),
 		field.String("triggered_to").MaxLen(36),
 	}
@@ -36,5 +37,8 @@ func (Notification) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("user", User.Type).Ref("notifications"),
 		edge.From("business_account", Business.Type).Ref("notifications"),
+		edge.From("place", Place.Type).Ref("notifications"),
+		edge.From("post", Post.Type).Ref("notifications"),
+		edge.From("comment", Comment.Type).Ref("notifications"),
 	}
 }

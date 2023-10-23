@@ -27,6 +27,8 @@ var (
 	ErrInvalidInput      = errors.New("invalid input")
 	ErrPermissionDenied  = errors.New("permission denied")
 	ErrUserAlreadyInTeam = errors.New("user already in team")
+	ErrInvalidLimitValue = errors.New("invalid limit value")
+	ErrInvalidOffset     = errors.New("invalid offset value")
 )
 
 // LogAndReturnError Log to sentry and return error

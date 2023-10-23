@@ -10017,6 +10017,9 @@ type CommentMutation struct {
 	replies              map[string]struct{}
 	removedreplies       map[string]struct{}
 	clearedreplies       bool
+	notifications        map[string]struct{}
+	removednotifications map[string]struct{}
+	clearednotifications bool
 	done                 bool
 	oldValue             func(context.Context) (*Comment, error)
 	predicates           []predicate.Comment
@@ -10442,6 +10445,60 @@ func (m *CommentMutation) ResetReplies() {
 	m.removedreplies = nil
 }
 
+// AddNotificationIDs adds the "notifications" edge to the Notification entity by ids.
+func (m *CommentMutation) AddNotificationIDs(ids ...string) {
+	if m.notifications == nil {
+		m.notifications = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.notifications[ids[i]] = struct{}{}
+	}
+}
+
+// ClearNotifications clears the "notifications" edge to the Notification entity.
+func (m *CommentMutation) ClearNotifications() {
+	m.clearednotifications = true
+}
+
+// NotificationsCleared reports if the "notifications" edge to the Notification entity was cleared.
+func (m *CommentMutation) NotificationsCleared() bool {
+	return m.clearednotifications
+}
+
+// RemoveNotificationIDs removes the "notifications" edge to the Notification entity by IDs.
+func (m *CommentMutation) RemoveNotificationIDs(ids ...string) {
+	if m.removednotifications == nil {
+		m.removednotifications = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.notifications, ids[i])
+		m.removednotifications[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedNotifications returns the removed IDs of the "notifications" edge to the Notification entity.
+func (m *CommentMutation) RemovedNotificationsIDs() (ids []string) {
+	for id := range m.removednotifications {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// NotificationsIDs returns the "notifications" edge IDs in the mutation.
+func (m *CommentMutation) NotificationsIDs() (ids []string) {
+	for id := range m.notifications {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetNotifications resets all changes to the "notifications" edge.
+func (m *CommentMutation) ResetNotifications() {
+	m.notifications = nil
+	m.clearednotifications = false
+	m.removednotifications = nil
+}
+
 // Where appends a list predicates to the CommentMutation builder.
 func (m *CommentMutation) Where(ps ...predicate.Comment) {
 	m.predicates = append(m.predicates, ps...)
@@ -10635,7 +10692,7 @@ func (m *CommentMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *CommentMutation) AddedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.user != nil {
 		edges = append(edges, comment.EdgeUser)
 	}
@@ -10647,6 +10704,9 @@ func (m *CommentMutation) AddedEdges() []string {
 	}
 	if m.replies != nil {
 		edges = append(edges, comment.EdgeReplies)
+	}
+	if m.notifications != nil {
+		edges = append(edges, comment.EdgeNotifications)
 	}
 	return edges
 }
@@ -10673,15 +10733,24 @@ func (m *CommentMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case comment.EdgeNotifications:
+		ids := make([]ent.Value, 0, len(m.notifications))
+		for id := range m.notifications {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *CommentMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.removedreplies != nil {
 		edges = append(edges, comment.EdgeReplies)
+	}
+	if m.removednotifications != nil {
+		edges = append(edges, comment.EdgeNotifications)
 	}
 	return edges
 }
@@ -10696,13 +10765,19 @@ func (m *CommentMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case comment.EdgeNotifications:
+		ids := make([]ent.Value, 0, len(m.removednotifications))
+		for id := range m.removednotifications {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *CommentMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.cleareduser {
 		edges = append(edges, comment.EdgeUser)
 	}
@@ -10714,6 +10789,9 @@ func (m *CommentMutation) ClearedEdges() []string {
 	}
 	if m.clearedreplies {
 		edges = append(edges, comment.EdgeReplies)
+	}
+	if m.clearednotifications {
+		edges = append(edges, comment.EdgeNotifications)
 	}
 	return edges
 }
@@ -10730,6 +10808,8 @@ func (m *CommentMutation) EdgeCleared(name string) bool {
 		return m.clearedparentComment
 	case comment.EdgeReplies:
 		return m.clearedreplies
+	case comment.EdgeNotifications:
+		return m.clearednotifications
 	}
 	return false
 }
@@ -10766,6 +10846,9 @@ func (m *CommentMutation) ResetEdge(name string) error {
 		return nil
 	case comment.EdgeReplies:
 		m.ResetReplies()
+		return nil
+	case comment.EdgeNotifications:
+		m.ResetNotifications()
 		return nil
 	}
 	return fmt.Errorf("unknown Comment edge %s", name)
@@ -21586,6 +21669,8 @@ type NotificationMutation struct {
 	is_read                 *bool
 	_type                   *int
 	add_type                *int
+	unread_count            *int
+	addunread_count         *int
 	created_at              *time.Time
 	updated_at              *time.Time
 	notifiable_type         *string
@@ -21599,6 +21684,15 @@ type NotificationMutation struct {
 	business_account        map[string]struct{}
 	removedbusiness_account map[string]struct{}
 	clearedbusiness_account bool
+	place                   map[string]struct{}
+	removedplace            map[string]struct{}
+	clearedplace            bool
+	post                    map[string]struct{}
+	removedpost             map[string]struct{}
+	clearedpost             bool
+	comment                 map[string]struct{}
+	removedcomment          map[string]struct{}
+	clearedcomment          bool
 	done                    bool
 	oldValue                func(context.Context) (*Notification, error)
 	predicates              []predicate.Notification
@@ -21906,6 +22000,62 @@ func (m *NotificationMutation) AddedType() (r int, exists bool) {
 func (m *NotificationMutation) ResetType() {
 	m._type = nil
 	m.add_type = nil
+}
+
+// SetUnreadCount sets the "unread_count" field.
+func (m *NotificationMutation) SetUnreadCount(i int) {
+	m.unread_count = &i
+	m.addunread_count = nil
+}
+
+// UnreadCount returns the value of the "unread_count" field in the mutation.
+func (m *NotificationMutation) UnreadCount() (r int, exists bool) {
+	v := m.unread_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUnreadCount returns the old "unread_count" field's value of the Notification entity.
+// If the Notification object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *NotificationMutation) OldUnreadCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUnreadCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUnreadCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUnreadCount: %w", err)
+	}
+	return oldValue.UnreadCount, nil
+}
+
+// AddUnreadCount adds i to the "unread_count" field.
+func (m *NotificationMutation) AddUnreadCount(i int) {
+	if m.addunread_count != nil {
+		*m.addunread_count += i
+	} else {
+		m.addunread_count = &i
+	}
+}
+
+// AddedUnreadCount returns the value that was added to the "unread_count" field in this mutation.
+func (m *NotificationMutation) AddedUnreadCount() (r int, exists bool) {
+	v := m.addunread_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetUnreadCount resets all changes to the "unread_count" field.
+func (m *NotificationMutation) ResetUnreadCount() {
+	m.unread_count = nil
+	m.addunread_count = nil
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -22232,6 +22382,168 @@ func (m *NotificationMutation) ResetBusinessAccount() {
 	m.removedbusiness_account = nil
 }
 
+// AddPlaceIDs adds the "place" edge to the Place entity by ids.
+func (m *NotificationMutation) AddPlaceIDs(ids ...string) {
+	if m.place == nil {
+		m.place = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.place[ids[i]] = struct{}{}
+	}
+}
+
+// ClearPlace clears the "place" edge to the Place entity.
+func (m *NotificationMutation) ClearPlace() {
+	m.clearedplace = true
+}
+
+// PlaceCleared reports if the "place" edge to the Place entity was cleared.
+func (m *NotificationMutation) PlaceCleared() bool {
+	return m.clearedplace
+}
+
+// RemovePlaceIDs removes the "place" edge to the Place entity by IDs.
+func (m *NotificationMutation) RemovePlaceIDs(ids ...string) {
+	if m.removedplace == nil {
+		m.removedplace = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.place, ids[i])
+		m.removedplace[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedPlace returns the removed IDs of the "place" edge to the Place entity.
+func (m *NotificationMutation) RemovedPlaceIDs() (ids []string) {
+	for id := range m.removedplace {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// PlaceIDs returns the "place" edge IDs in the mutation.
+func (m *NotificationMutation) PlaceIDs() (ids []string) {
+	for id := range m.place {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetPlace resets all changes to the "place" edge.
+func (m *NotificationMutation) ResetPlace() {
+	m.place = nil
+	m.clearedplace = false
+	m.removedplace = nil
+}
+
+// AddPostIDs adds the "post" edge to the Post entity by ids.
+func (m *NotificationMutation) AddPostIDs(ids ...string) {
+	if m.post == nil {
+		m.post = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.post[ids[i]] = struct{}{}
+	}
+}
+
+// ClearPost clears the "post" edge to the Post entity.
+func (m *NotificationMutation) ClearPost() {
+	m.clearedpost = true
+}
+
+// PostCleared reports if the "post" edge to the Post entity was cleared.
+func (m *NotificationMutation) PostCleared() bool {
+	return m.clearedpost
+}
+
+// RemovePostIDs removes the "post" edge to the Post entity by IDs.
+func (m *NotificationMutation) RemovePostIDs(ids ...string) {
+	if m.removedpost == nil {
+		m.removedpost = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.post, ids[i])
+		m.removedpost[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedPost returns the removed IDs of the "post" edge to the Post entity.
+func (m *NotificationMutation) RemovedPostIDs() (ids []string) {
+	for id := range m.removedpost {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// PostIDs returns the "post" edge IDs in the mutation.
+func (m *NotificationMutation) PostIDs() (ids []string) {
+	for id := range m.post {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetPost resets all changes to the "post" edge.
+func (m *NotificationMutation) ResetPost() {
+	m.post = nil
+	m.clearedpost = false
+	m.removedpost = nil
+}
+
+// AddCommentIDs adds the "comment" edge to the Comment entity by ids.
+func (m *NotificationMutation) AddCommentIDs(ids ...string) {
+	if m.comment == nil {
+		m.comment = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.comment[ids[i]] = struct{}{}
+	}
+}
+
+// ClearComment clears the "comment" edge to the Comment entity.
+func (m *NotificationMutation) ClearComment() {
+	m.clearedcomment = true
+}
+
+// CommentCleared reports if the "comment" edge to the Comment entity was cleared.
+func (m *NotificationMutation) CommentCleared() bool {
+	return m.clearedcomment
+}
+
+// RemoveCommentIDs removes the "comment" edge to the Comment entity by IDs.
+func (m *NotificationMutation) RemoveCommentIDs(ids ...string) {
+	if m.removedcomment == nil {
+		m.removedcomment = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.comment, ids[i])
+		m.removedcomment[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedComment returns the removed IDs of the "comment" edge to the Comment entity.
+func (m *NotificationMutation) RemovedCommentIDs() (ids []string) {
+	for id := range m.removedcomment {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// CommentIDs returns the "comment" edge IDs in the mutation.
+func (m *NotificationMutation) CommentIDs() (ids []string) {
+	for id := range m.comment {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetComment resets all changes to the "comment" edge.
+func (m *NotificationMutation) ResetComment() {
+	m.comment = nil
+	m.clearedcomment = false
+	m.removedcomment = nil
+}
+
 // Where appends a list predicates to the NotificationMutation builder.
 func (m *NotificationMutation) Where(ps ...predicate.Notification) {
 	m.predicates = append(m.predicates, ps...)
@@ -22266,7 +22578,7 @@ func (m *NotificationMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *NotificationMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 12)
 	if m.title != nil {
 		fields = append(fields, notification.FieldTitle)
 	}
@@ -22281,6 +22593,9 @@ func (m *NotificationMutation) Fields() []string {
 	}
 	if m._type != nil {
 		fields = append(fields, notification.FieldType)
+	}
+	if m.unread_count != nil {
+		fields = append(fields, notification.FieldUnreadCount)
 	}
 	if m.created_at != nil {
 		fields = append(fields, notification.FieldCreatedAt)
@@ -22318,6 +22633,8 @@ func (m *NotificationMutation) Field(name string) (ent.Value, bool) {
 		return m.IsRead()
 	case notification.FieldType:
 		return m.GetType()
+	case notification.FieldUnreadCount:
+		return m.UnreadCount()
 	case notification.FieldCreatedAt:
 		return m.CreatedAt()
 	case notification.FieldUpdatedAt:
@@ -22349,6 +22666,8 @@ func (m *NotificationMutation) OldField(ctx context.Context, name string) (ent.V
 		return m.OldIsRead(ctx)
 	case notification.FieldType:
 		return m.OldType(ctx)
+	case notification.FieldUnreadCount:
+		return m.OldUnreadCount(ctx)
 	case notification.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case notification.FieldUpdatedAt:
@@ -22405,6 +22724,13 @@ func (m *NotificationMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetType(v)
 		return nil
+	case notification.FieldUnreadCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUnreadCount(v)
+		return nil
 	case notification.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -22458,6 +22784,9 @@ func (m *NotificationMutation) AddedFields() []string {
 	if m.add_type != nil {
 		fields = append(fields, notification.FieldType)
 	}
+	if m.addunread_count != nil {
+		fields = append(fields, notification.FieldUnreadCount)
+	}
 	return fields
 }
 
@@ -22468,6 +22797,8 @@ func (m *NotificationMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
 	case notification.FieldType:
 		return m.AddedType()
+	case notification.FieldUnreadCount:
+		return m.AddedUnreadCount()
 	}
 	return nil, false
 }
@@ -22483,6 +22814,13 @@ func (m *NotificationMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddType(v)
+		return nil
+	case notification.FieldUnreadCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUnreadCount(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Notification numeric field %s", name)
@@ -22526,6 +22864,9 @@ func (m *NotificationMutation) ResetField(name string) error {
 	case notification.FieldType:
 		m.ResetType()
 		return nil
+	case notification.FieldUnreadCount:
+		m.ResetUnreadCount()
+		return nil
 	case notification.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
@@ -22550,12 +22891,21 @@ func (m *NotificationMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *NotificationMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 5)
 	if m.user != nil {
 		edges = append(edges, notification.EdgeUser)
 	}
 	if m.business_account != nil {
 		edges = append(edges, notification.EdgeBusinessAccount)
+	}
+	if m.place != nil {
+		edges = append(edges, notification.EdgePlace)
+	}
+	if m.post != nil {
+		edges = append(edges, notification.EdgePost)
+	}
+	if m.comment != nil {
+		edges = append(edges, notification.EdgeComment)
 	}
 	return edges
 }
@@ -22576,18 +22926,45 @@ func (m *NotificationMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case notification.EdgePlace:
+		ids := make([]ent.Value, 0, len(m.place))
+		for id := range m.place {
+			ids = append(ids, id)
+		}
+		return ids
+	case notification.EdgePost:
+		ids := make([]ent.Value, 0, len(m.post))
+		for id := range m.post {
+			ids = append(ids, id)
+		}
+		return ids
+	case notification.EdgeComment:
+		ids := make([]ent.Value, 0, len(m.comment))
+		for id := range m.comment {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *NotificationMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 5)
 	if m.removeduser != nil {
 		edges = append(edges, notification.EdgeUser)
 	}
 	if m.removedbusiness_account != nil {
 		edges = append(edges, notification.EdgeBusinessAccount)
+	}
+	if m.removedplace != nil {
+		edges = append(edges, notification.EdgePlace)
+	}
+	if m.removedpost != nil {
+		edges = append(edges, notification.EdgePost)
+	}
+	if m.removedcomment != nil {
+		edges = append(edges, notification.EdgeComment)
 	}
 	return edges
 }
@@ -22608,18 +22985,45 @@ func (m *NotificationMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case notification.EdgePlace:
+		ids := make([]ent.Value, 0, len(m.removedplace))
+		for id := range m.removedplace {
+			ids = append(ids, id)
+		}
+		return ids
+	case notification.EdgePost:
+		ids := make([]ent.Value, 0, len(m.removedpost))
+		for id := range m.removedpost {
+			ids = append(ids, id)
+		}
+		return ids
+	case notification.EdgeComment:
+		ids := make([]ent.Value, 0, len(m.removedcomment))
+		for id := range m.removedcomment {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *NotificationMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 5)
 	if m.cleareduser {
 		edges = append(edges, notification.EdgeUser)
 	}
 	if m.clearedbusiness_account {
 		edges = append(edges, notification.EdgeBusinessAccount)
+	}
+	if m.clearedplace {
+		edges = append(edges, notification.EdgePlace)
+	}
+	if m.clearedpost {
+		edges = append(edges, notification.EdgePost)
+	}
+	if m.clearedcomment {
+		edges = append(edges, notification.EdgeComment)
 	}
 	return edges
 }
@@ -22632,6 +23036,12 @@ func (m *NotificationMutation) EdgeCleared(name string) bool {
 		return m.cleareduser
 	case notification.EdgeBusinessAccount:
 		return m.clearedbusiness_account
+	case notification.EdgePlace:
+		return m.clearedplace
+	case notification.EdgePost:
+		return m.clearedpost
+	case notification.EdgeComment:
+		return m.clearedcomment
 	}
 	return false
 }
@@ -22653,6 +23063,15 @@ func (m *NotificationMutation) ResetEdge(name string) error {
 		return nil
 	case notification.EdgeBusinessAccount:
 		m.ResetBusinessAccount()
+		return nil
+	case notification.EdgePlace:
+		m.ResetPlace()
+		return nil
+	case notification.EdgePost:
+		m.ResetPost()
+		return nil
+	case notification.EdgeComment:
+		m.ResetComment()
 		return nil
 	}
 	return fmt.Errorf("unknown Notification edge %s", name)
@@ -23288,6 +23707,9 @@ type PlaceMutation struct {
 	inventories                map[string]struct{}
 	removedinventories         map[string]struct{}
 	clearedinventories         bool
+	notifications              map[string]struct{}
+	removednotifications       map[string]struct{}
+	clearednotifications       bool
 	done                       bool
 	oldValue                   func(context.Context) (*Place, error)
 	predicates                 []predicate.Place
@@ -26117,6 +26539,60 @@ func (m *PlaceMutation) ResetInventories() {
 	m.removedinventories = nil
 }
 
+// AddNotificationIDs adds the "notifications" edge to the Notification entity by ids.
+func (m *PlaceMutation) AddNotificationIDs(ids ...string) {
+	if m.notifications == nil {
+		m.notifications = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.notifications[ids[i]] = struct{}{}
+	}
+}
+
+// ClearNotifications clears the "notifications" edge to the Notification entity.
+func (m *PlaceMutation) ClearNotifications() {
+	m.clearednotifications = true
+}
+
+// NotificationsCleared reports if the "notifications" edge to the Notification entity was cleared.
+func (m *PlaceMutation) NotificationsCleared() bool {
+	return m.clearednotifications
+}
+
+// RemoveNotificationIDs removes the "notifications" edge to the Notification entity by IDs.
+func (m *PlaceMutation) RemoveNotificationIDs(ids ...string) {
+	if m.removednotifications == nil {
+		m.removednotifications = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.notifications, ids[i])
+		m.removednotifications[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedNotifications returns the removed IDs of the "notifications" edge to the Notification entity.
+func (m *PlaceMutation) RemovedNotificationsIDs() (ids []string) {
+	for id := range m.removednotifications {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// NotificationsIDs returns the "notifications" edge IDs in the mutation.
+func (m *PlaceMutation) NotificationsIDs() (ids []string) {
+	for id := range m.notifications {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetNotifications resets all changes to the "notifications" edge.
+func (m *PlaceMutation) ResetNotifications() {
+	m.notifications = nil
+	m.clearednotifications = false
+	m.removednotifications = nil
+}
+
 // Where appends a list predicates to the PlaceMutation builder.
 func (m *PlaceMutation) Where(ps ...predicate.Place) {
 	m.predicates = append(m.predicates, ps...)
@@ -27085,7 +27561,7 @@ func (m *PlaceMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PlaceMutation) AddedEdges() []string {
-	edges := make([]string, 0, 17)
+	edges := make([]string, 0, 18)
 	if m.business != nil {
 		edges = append(edges, place.EdgeBusiness)
 	}
@@ -27136,6 +27612,9 @@ func (m *PlaceMutation) AddedEdges() []string {
 	}
 	if m.inventories != nil {
 		edges = append(edges, place.EdgeInventories)
+	}
+	if m.notifications != nil {
+		edges = append(edges, place.EdgeNotifications)
 	}
 	return edges
 }
@@ -27244,13 +27723,19 @@ func (m *PlaceMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case place.EdgeNotifications:
+		ids := make([]ent.Value, 0, len(m.notifications))
+		for id := range m.notifications {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PlaceMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 17)
+	edges := make([]string, 0, 18)
 	if m.removedusers != nil {
 		edges = append(edges, place.EdgeUsers)
 	}
@@ -27298,6 +27783,9 @@ func (m *PlaceMutation) RemovedEdges() []string {
 	}
 	if m.removedinventories != nil {
 		edges = append(edges, place.EdgeInventories)
+	}
+	if m.removednotifications != nil {
+		edges = append(edges, place.EdgeNotifications)
 	}
 	return edges
 }
@@ -27402,13 +27890,19 @@ func (m *PlaceMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case place.EdgeNotifications:
+		ids := make([]ent.Value, 0, len(m.removednotifications))
+		for id := range m.removednotifications {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PlaceMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 17)
+	edges := make([]string, 0, 18)
 	if m.clearedbusiness {
 		edges = append(edges, place.EdgeBusiness)
 	}
@@ -27460,6 +27954,9 @@ func (m *PlaceMutation) ClearedEdges() []string {
 	if m.clearedinventories {
 		edges = append(edges, place.EdgeInventories)
 	}
+	if m.clearednotifications {
+		edges = append(edges, place.EdgeNotifications)
+	}
 	return edges
 }
 
@@ -27501,6 +27998,8 @@ func (m *PlaceMutation) EdgeCleared(name string) bool {
 		return m.clearedratings
 	case place.EdgeInventories:
 		return m.clearedinventories
+	case place.EdgeNotifications:
+		return m.clearednotifications
 	}
 	return false
 }
@@ -27570,6 +28069,9 @@ func (m *PlaceMutation) ResetEdge(name string) error {
 		return nil
 	case place.EdgeInventories:
 		m.ResetInventories()
+		return nil
+	case place.EdgeNotifications:
+		m.ResetNotifications()
 		return nil
 	}
 	return fmt.Errorf("unknown Place edge %s", name)
@@ -29842,6 +30344,9 @@ type PostMutation struct {
 	categories              map[string]struct{}
 	removedcategories       map[string]struct{}
 	clearedcategories       bool
+	notifications           map[string]struct{}
+	removednotifications    map[string]struct{}
+	clearednotifications    bool
 	done                    bool
 	oldValue                func(context.Context) (*Post, error)
 	predicates              []predicate.Post
@@ -30934,6 +31439,60 @@ func (m *PostMutation) ResetCategories() {
 	m.removedcategories = nil
 }
 
+// AddNotificationIDs adds the "notifications" edge to the Notification entity by ids.
+func (m *PostMutation) AddNotificationIDs(ids ...string) {
+	if m.notifications == nil {
+		m.notifications = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.notifications[ids[i]] = struct{}{}
+	}
+}
+
+// ClearNotifications clears the "notifications" edge to the Notification entity.
+func (m *PostMutation) ClearNotifications() {
+	m.clearednotifications = true
+}
+
+// NotificationsCleared reports if the "notifications" edge to the Notification entity was cleared.
+func (m *PostMutation) NotificationsCleared() bool {
+	return m.clearednotifications
+}
+
+// RemoveNotificationIDs removes the "notifications" edge to the Notification entity by IDs.
+func (m *PostMutation) RemoveNotificationIDs(ids ...string) {
+	if m.removednotifications == nil {
+		m.removednotifications = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.notifications, ids[i])
+		m.removednotifications[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedNotifications returns the removed IDs of the "notifications" edge to the Notification entity.
+func (m *PostMutation) RemovedNotificationsIDs() (ids []string) {
+	for id := range m.removednotifications {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// NotificationsIDs returns the "notifications" edge IDs in the mutation.
+func (m *PostMutation) NotificationsIDs() (ids []string) {
+	for id := range m.notifications {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetNotifications resets all changes to the "notifications" edge.
+func (m *PostMutation) ResetNotifications() {
+	m.notifications = nil
+	m.clearednotifications = false
+	m.removednotifications = nil
+}
+
 // Where appends a list predicates to the PostMutation builder.
 func (m *PostMutation) Where(ps ...predicate.Post) {
 	m.predicates = append(m.predicates, ps...)
@@ -31394,7 +31953,7 @@ func (m *PostMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PostMutation) AddedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 7)
 	if m.user != nil {
 		edges = append(edges, post.EdgeUser)
 	}
@@ -31412,6 +31971,9 @@ func (m *PostMutation) AddedEdges() []string {
 	}
 	if m.categories != nil {
 		edges = append(edges, post.EdgeCategories)
+	}
+	if m.notifications != nil {
+		edges = append(edges, post.EdgeNotifications)
 	}
 	return edges
 }
@@ -31452,13 +32014,19 @@ func (m *PostMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case post.EdgeNotifications:
+		ids := make([]ent.Value, 0, len(m.notifications))
+		for id := range m.notifications {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PostMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 7)
 	if m.removedmedias != nil {
 		edges = append(edges, post.EdgeMedias)
 	}
@@ -31470,6 +32038,9 @@ func (m *PostMutation) RemovedEdges() []string {
 	}
 	if m.removedcategories != nil {
 		edges = append(edges, post.EdgeCategories)
+	}
+	if m.removednotifications != nil {
+		edges = append(edges, post.EdgeNotifications)
 	}
 	return edges
 }
@@ -31502,13 +32073,19 @@ func (m *PostMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case post.EdgeNotifications:
+		ids := make([]ent.Value, 0, len(m.removednotifications))
+		for id := range m.removednotifications {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PostMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 7)
 	if m.cleareduser {
 		edges = append(edges, post.EdgeUser)
 	}
@@ -31526,6 +32103,9 @@ func (m *PostMutation) ClearedEdges() []string {
 	}
 	if m.clearedcategories {
 		edges = append(edges, post.EdgeCategories)
+	}
+	if m.clearednotifications {
+		edges = append(edges, post.EdgeNotifications)
 	}
 	return edges
 }
@@ -31546,6 +32126,8 @@ func (m *PostMutation) EdgeCleared(name string) bool {
 		return m.clearedlikes
 	case post.EdgeCategories:
 		return m.clearedcategories
+	case post.EdgeNotifications:
+		return m.clearednotifications
 	}
 	return false
 }
@@ -31585,6 +32167,9 @@ func (m *PostMutation) ResetEdge(name string) error {
 		return nil
 	case post.EdgeCategories:
 		m.ResetCategories()
+		return nil
+	case post.EdgeNotifications:
+		m.ResetNotifications()
 		return nil
 	}
 	return fmt.Errorf("unknown Post edge %s", name)

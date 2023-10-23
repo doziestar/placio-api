@@ -119,6 +119,8 @@ const (
 	EdgeRatings = "ratings"
 	// EdgeInventories holds the string denoting the inventories edge name in mutations.
 	EdgeInventories = "inventories"
+	// EdgeNotifications holds the string denoting the notifications edge name in mutations.
+	EdgeNotifications = "notifications"
 	// Table holds the table name of the place in the database.
 	Table = "places"
 	// BusinessTable is the table that holds the business relation/edge.
@@ -232,6 +234,11 @@ const (
 	InventoriesInverseTable = "place_inventories"
 	// InventoriesColumn is the table column denoting the inventories relation/edge.
 	InventoriesColumn = "place_inventories"
+	// NotificationsTable is the table that holds the notifications relation/edge. The primary key declared below.
+	NotificationsTable = "place_notifications"
+	// NotificationsInverseTable is the table name for the Notification entity.
+	// It exists in this package in order to avoid circular dependency with the "notification" package.
+	NotificationsInverseTable = "notifications"
 )
 
 // Columns holds all SQL columns for place fields.
@@ -295,6 +302,9 @@ var (
 	// FaqsPrimaryKey and FaqsColumn2 are the table columns denoting the
 	// primary key for the faqs relation (M2M).
 	FaqsPrimaryKey = []string{"faq_id", "place_id"}
+	// NotificationsPrimaryKey and NotificationsColumn2 are the table columns denoting the
+	// primary key for the notifications relation (M2M).
+	NotificationsPrimaryKey = []string{"place_id", "notification_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -709,6 +719,20 @@ func ByInventories(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newInventoriesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByNotificationsCount orders the results by notifications count.
+func ByNotificationsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newNotificationsStep(), opts...)
+	}
+}
+
+// ByNotifications orders the results by notifications terms.
+func ByNotifications(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newNotificationsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newBusinessStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -826,5 +850,12 @@ func newInventoriesStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(InventoriesInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, InventoriesTable, InventoriesColumn),
+	)
+}
+func newNotificationsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(NotificationsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, false, NotificationsTable, NotificationsPrimaryKey...),
 	)
 }
