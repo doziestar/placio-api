@@ -5,8 +5,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/google/uuid"
 	"google.golang.org/grpc/metadata"
 	"log"
+	"mime/multipart"
 	"placio-app/domains/media"
 	"placio-app/ent"
 	"placio-app/ent/comment"
@@ -20,7 +22,7 @@ import (
 )
 
 type PostService interface {
-	CreatePost(ctx context.Context, newPost *ent.Post, userID string, businessID string, media []MediaDto) (*ent.Post, error)
+	CreatePost(ctx context.Context, newPost *ent.Post, userID string, businessID string, mediaFiles []*multipart.FileHeader) (*ent.Post, error)
 	GetPost(ctx context.Context, postID string) (*ent.Post, error)
 	UpdatePost(ctx context.Context, updatedPost *ent.Post) (*ent.Post, error)
 	DeletePost(ctx context.Context, postID string) error
@@ -99,7 +101,7 @@ func (ps *PostServiceImpl) GetPostFeeds(ctx context.Context) ([]*ent.Post, error
 	return posts, nil
 }
 
-func (ps *PostServiceImpl) CreatePost(ctx context.Context, newPost *ent.Post, userID string, businessID string, medias []MediaDto) (*ent.Post, error) {
+func (ps *PostServiceImpl) CreatePost(ctx context.Context, newPost *ent.Post, userID string, businessID string, mediaFiles []*multipart.FileHeader) (*ent.Post, error) {
 	if newPost == nil {
 		return nil, errors.New("post cannot be nil")
 	}
@@ -107,7 +109,7 @@ func (ps *PostServiceImpl) CreatePost(ctx context.Context, newPost *ent.Post, us
 	// Create builder
 	postBuilder := ps.client.Post.
 		Create().
-		SetID(newPost.ID).
+		SetID(uuid.New().String()).
 		SetContent(newPost.Content).
 		SetUpdatedAt(time.Now()).
 		SetUserID(userID)
@@ -124,16 +126,24 @@ func (ps *PostServiceImpl) CreatePost(ctx context.Context, newPost *ent.Post, us
 	}
 	log.Printf("post saved: %v", post)
 
-	for _, mediaDto := range medias {
-		createdMedia, err := ps.mediaService.CreateMedia(ctx, mediaDto.URL, mediaDto.Type)
-		if err != nil {
-			return nil, fmt.Errorf("failed creating media: %w", err)
-		}
+	if len(mediaFiles) > 0 {
+		go func() {
+			medias, err := ps.mediaService.UploadAndCreateMedia(ctx, mediaFiles)
+			if err != nil {
+				log.Printf("failed uploading and creating media: %v", err)
+				return
+			}
 
-		err = ps.AddMediaToPost(ctx, newPost, createdMedia)
-		if err != nil {
-			return nil, fmt.Errorf("failed adding media to post: %w", err)
-		}
+			_, err = ps.client.Post.
+				UpdateOneID(post.ID).
+				AddMedias(medias...).
+				Save(ctx)
+			if err != nil {
+				log.Printf("failed adding media to post: %v", err)
+				return
+			}
+
+		}()
 	}
 
 	postToReturn, err := ps.GetPost(ctx, post.ID)
