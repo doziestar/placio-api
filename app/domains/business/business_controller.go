@@ -2,11 +2,9 @@ package business
 
 import (
 	"errors"
-	"fmt"
 	"log"
 	"net/http"
 	"placio-app/domains/events_management"
-	"placio-app/ent"
 	_ "placio-app/ent"
 	"placio-app/utility"
 
@@ -525,7 +523,15 @@ func (bc *BusinessAccountController) getUserBusinessAccounts(c *gin.Context) err
 	log.Println("Get user business accounts")
 	// get user id from context
 	userID := c.GetString("user")
-	return utility.GetDataFromCache[[]*ent.Business](c, &bc.cache, bc.service.GetUserBusinessAccounts, userID, fmt.Sprintf("business:%s", userID))
+
+	userBusinessAccounts, err := bc.service.GetUserBusinessAccounts(c, userID)
+	if err != nil {
+		log.Println("Error getting user business accounts", err)
+		return err
+	}
+
+	c.JSON(http.StatusOK, userBusinessAccounts)
+	return nil
 }
 
 // @Summary Remove user from business account
