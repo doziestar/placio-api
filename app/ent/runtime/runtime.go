@@ -21,7 +21,10 @@ import (
 	"placio-app/ent/like"
 	"placio-app/ent/media"
 	"placio-app/ent/menu"
+	"placio-app/ent/menuitem"
 	"placio-app/ent/notification"
+	"placio-app/ent/order"
+	"placio-app/ent/orderitem"
 	"placio-app/ent/place"
 	"placio-app/ent/placeinventory"
 	"placio-app/ent/placeinventoryattribute"
@@ -31,6 +34,7 @@ import (
 	"placio-app/ent/review"
 	"placio-app/ent/room"
 	"placio-app/ent/schema"
+	"placio-app/ent/table"
 	"placio-app/ent/ticket"
 	"placio-app/ent/ticketoption"
 	"placio-app/ent/transactionhistory"
@@ -355,6 +359,12 @@ func init() {
 	menuDescID := menuFields[0].Descriptor()
 	// menu.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	menu.IDValidator = menuDescID.Validators[0].(func(string) error)
+	menuitemFields := schema.MenuItem{}.Fields()
+	_ = menuitemFields
+	// menuitemDescID is the schema descriptor for id field.
+	menuitemDescID := menuitemFields[0].Descriptor()
+	// menuitem.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	menuitem.IDValidator = menuitemDescID.Validators[0].(func(string) error)
 	notificationFields := schema.Notification{}.Fields()
 	_ = notificationFields
 	// notificationDescTitle is the schema descriptor for title field.
@@ -401,6 +411,32 @@ func init() {
 	notificationDescID := notificationFields[0].Descriptor()
 	// notification.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	notification.IDValidator = notificationDescID.Validators[0].(func(string) error)
+	orderFields := schema.Order{}.Fields()
+	_ = orderFields
+	// orderDescCreatedAt is the schema descriptor for created_at field.
+	orderDescCreatedAt := orderFields[1].Descriptor()
+	// order.DefaultCreatedAt holds the default value on creation for the created_at field.
+	order.DefaultCreatedAt = orderDescCreatedAt.Default.(func() time.Time)
+	// orderDescUpdatedAt is the schema descriptor for updated_at field.
+	orderDescUpdatedAt := orderFields[2].Descriptor()
+	// order.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	order.DefaultUpdatedAt = orderDescUpdatedAt.Default.(func() time.Time)
+	// order.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	order.UpdateDefaultUpdatedAt = orderDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// orderDescID is the schema descriptor for id field.
+	orderDescID := orderFields[0].Descriptor()
+	// order.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	order.IDValidator = orderDescID.Validators[0].(func(string) error)
+	orderitemFields := schema.OrderItem{}.Fields()
+	_ = orderitemFields
+	// orderitemDescQuantity is the schema descriptor for quantity field.
+	orderitemDescQuantity := orderitemFields[1].Descriptor()
+	// orderitem.DefaultQuantity holds the default value on creation for the quantity field.
+	orderitem.DefaultQuantity = orderitemDescQuantity.Default.(int)
+	// orderitemDescID is the schema descriptor for id field.
+	orderitemDescID := orderitemFields[0].Descriptor()
+	// orderitem.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	orderitem.IDValidator = orderitemDescID.Validators[0].(func(string) error)
 	placeHooks := schema.Place{}.Hooks()
 	place.Hooks[0] = placeHooks[0]
 	placeFields := schema.Place{}.Fields()
@@ -599,6 +635,12 @@ func init() {
 	roomDescID := roomFields[0].Descriptor()
 	// room.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	room.IDValidator = roomDescID.Validators[0].(func(string) error)
+	tableFields := schema.Table{}.Fields()
+	_ = tableFields
+	// tableDescID is the schema descriptor for id field.
+	tableDescID := tableFields[0].Descriptor()
+	// table.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	table.IDValidator = tableDescID.Validators[0].(func(string) error)
 	ticketFields := schema.Ticket{}.Fields()
 	_ = ticketFields
 	// ticketDescCreatedAt is the schema descriptor for createdAt field.
@@ -649,6 +691,10 @@ func init() {
 	userDescFollowingCount := userFields[18].Descriptor()
 	// user.DefaultFollowingCount holds the default value on creation for the following_count field.
 	user.DefaultFollowingCount = userDescFollowingCount.Default.(int)
+	// userDescIsPremium is the schema descriptor for is_premium field.
+	userDescIsPremium := userFields[21].Descriptor()
+	// user.DefaultIsPremium holds the default value on creation for the is_premium field.
+	user.DefaultIsPremium = userDescIsPremium.Default.(bool)
 	// userDescID is the schema descriptor for id field.
 	userDescID := userFields[0].Descriptor()
 	// user.IDValidator is a validator for the "id" field. It is called by the builders before save.

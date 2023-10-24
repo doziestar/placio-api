@@ -52,6 +52,8 @@ const (
 	EdgeBusiness = "business"
 	// EdgeCategory holds the string denoting the category edge name in mutations.
 	EdgeCategory = "category"
+	// EdgeMenuItem holds the string denoting the menu_item edge name in mutations.
+	EdgeMenuItem = "menu_item"
 	// Table holds the table name of the placeinventory in the database.
 	Table = "place_inventories"
 	// PlaceTable is the table that holds the place relation/edge.
@@ -108,6 +110,13 @@ const (
 	CategoryInverseTable = "categories"
 	// CategoryColumn is the table column denoting the category relation/edge.
 	CategoryColumn = "category_place_inventories"
+	// MenuItemTable is the table that holds the menu_item relation/edge.
+	MenuItemTable = "place_inventories"
+	// MenuItemInverseTable is the table name for the MenuItem entity.
+	// It exists in this package in order to avoid circular dependency with the "menuitem" package.
+	MenuItemInverseTable = "menu_items"
+	// MenuItemColumn is the table column denoting the menu_item relation/edge.
+	MenuItemColumn = "menu_item_inventory"
 )
 
 // Columns holds all SQL columns for placeinventory fields.
@@ -132,6 +141,7 @@ var ForeignKeys = []string{
 	"business_place_inventories",
 	"category_place_inventories",
 	"inventory_type_place_inventories",
+	"menu_item_inventory",
 	"place_inventories",
 }
 
@@ -309,6 +319,13 @@ func ByCategoryField(field string, opts ...sql.OrderTermOption) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newCategoryStep(), sql.OrderByField(field, opts...))
 	}
 }
+
+// ByMenuItemField orders the results by menu_item field.
+func ByMenuItemField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newMenuItemStep(), sql.OrderByField(field, opts...))
+	}
+}
 func newPlaceStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -363,5 +380,12 @@ func newCategoryStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CategoryInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, true, CategoryTable, CategoryColumn),
+	)
+}
+func newMenuItemStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(MenuItemInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2O, true, MenuItemTable, MenuItemColumn),
 	)
 }

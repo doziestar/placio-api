@@ -3,9 +3,12 @@
 package ent
 
 import (
+	"encoding/json"
 	"fmt"
 	"placio-app/ent/order"
+	"placio-app/ent/user"
 	"strings"
+	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -13,10 +16,68 @@ import (
 
 // Order is the model entity for the Order schema.
 type Order struct {
-	config
+	config `json:"-"`
 	// ID of the ent.
-	ID           string `json:"id,omitempty"`
+	ID string `json:"id,omitempty"`
+	// CreatedAt holds the value of the "created_at" field.
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	// UpdatedAt holds the value of the "updated_at" field.
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// Status holds the value of the "status" field.
+	Status order.Status `json:"status,omitempty"`
+	// TotalAmount holds the value of the "total_amount" field.
+	TotalAmount float64 `json:"total_amount,omitempty"`
+	// AdditionalInfo holds the value of the "additional_info" field.
+	AdditionalInfo map[string]interface{} `json:"additional_info,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the OrderQuery when eager-loading is set.
+	Edges        OrderEdges `json:"edges"`
+	user_orders  *string
 	selectValues sql.SelectValues
+}
+
+// OrderEdges holds the relations/edges for other nodes in the graph.
+type OrderEdges struct {
+	// User holds the value of the user edge.
+	User *User `json:"user,omitempty"`
+	// OrderItems holds the value of the order_items edge.
+	OrderItems []*OrderItem `json:"order_items,omitempty"`
+	// Table holds the value of the table edge.
+	Table []*Table `json:"table,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [3]bool
+}
+
+// UserOrErr returns the User value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e OrderEdges) UserOrErr() (*User, error) {
+	if e.loadedTypes[0] {
+		if e.User == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: user.Label}
+		}
+		return e.User, nil
+	}
+	return nil, &NotLoadedError{edge: "user"}
+}
+
+// OrderItemsOrErr returns the OrderItems value or an error if the edge
+// was not loaded in eager-loading.
+func (e OrderEdges) OrderItemsOrErr() ([]*OrderItem, error) {
+	if e.loadedTypes[1] {
+		return e.OrderItems, nil
+	}
+	return nil, &NotLoadedError{edge: "order_items"}
+}
+
+// TableOrErr returns the Table value or an error if the edge
+// was not loaded in eager-loading.
+func (e OrderEdges) TableOrErr() ([]*Table, error) {
+	if e.loadedTypes[2] {
+		return e.Table, nil
+	}
+	return nil, &NotLoadedError{edge: "table"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -24,7 +85,15 @@ func (*Order) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case order.FieldID:
+		case order.FieldAdditionalInfo:
+			values[i] = new([]byte)
+		case order.FieldTotalAmount:
+			values[i] = new(sql.NullFloat64)
+		case order.FieldID, order.FieldStatus:
+			values[i] = new(sql.NullString)
+		case order.FieldCreatedAt, order.FieldUpdatedAt:
+			values[i] = new(sql.NullTime)
+		case order.ForeignKeys[0]: // user_orders
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -47,6 +116,45 @@ func (o *Order) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				o.ID = value.String
 			}
+		case order.FieldCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field created_at", values[i])
+			} else if value.Valid {
+				o.CreatedAt = value.Time
+			}
+		case order.FieldUpdatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
+			} else if value.Valid {
+				o.UpdatedAt = value.Time
+			}
+		case order.FieldStatus:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field status", values[i])
+			} else if value.Valid {
+				o.Status = order.Status(value.String)
+			}
+		case order.FieldTotalAmount:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field total_amount", values[i])
+			} else if value.Valid {
+				o.TotalAmount = value.Float64
+			}
+		case order.FieldAdditionalInfo:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field additional_info", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &o.AdditionalInfo); err != nil {
+					return fmt.Errorf("unmarshal field additional_info: %w", err)
+				}
+			}
+		case order.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field user_orders", values[i])
+			} else if value.Valid {
+				o.user_orders = new(string)
+				*o.user_orders = value.String
+			}
 		default:
 			o.selectValues.Set(columns[i], values[i])
 		}
@@ -58,6 +166,21 @@ func (o *Order) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (o *Order) Value(name string) (ent.Value, error) {
 	return o.selectValues.Get(name)
+}
+
+// QueryUser queries the "user" edge of the Order entity.
+func (o *Order) QueryUser() *UserQuery {
+	return NewOrderClient(o.config).QueryUser(o)
+}
+
+// QueryOrderItems queries the "order_items" edge of the Order entity.
+func (o *Order) QueryOrderItems() *OrderItemQuery {
+	return NewOrderClient(o.config).QueryOrderItems(o)
+}
+
+// QueryTable queries the "table" edge of the Order entity.
+func (o *Order) QueryTable() *TableQuery {
+	return NewOrderClient(o.config).QueryTable(o)
 }
 
 // Update returns a builder for updating this Order.
@@ -82,7 +205,21 @@ func (o *Order) Unwrap() *Order {
 func (o *Order) String() string {
 	var builder strings.Builder
 	builder.WriteString("Order(")
-	builder.WriteString(fmt.Sprintf("id=%v", o.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", o.ID))
+	builder.WriteString("created_at=")
+	builder.WriteString(o.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("updated_at=")
+	builder.WriteString(o.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("status=")
+	builder.WriteString(fmt.Sprintf("%v", o.Status))
+	builder.WriteString(", ")
+	builder.WriteString("total_amount=")
+	builder.WriteString(fmt.Sprintf("%v", o.TotalAmount))
+	builder.WriteString(", ")
+	builder.WriteString("additional_info=")
+	builder.WriteString(fmt.Sprintf("%v", o.AdditionalInfo))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -2198,6 +2198,29 @@ func HasNotificationsWith(preds ...predicate.Notification) predicate.Place {
 	})
 }
 
+// HasTables applies the HasEdge predicate on the "tables" edge.
+func HasTables() predicate.Place {
+	return predicate.Place(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, TablesTable, TablesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasTablesWith applies the HasEdge predicate on the "tables" edge with a given conditions (other predicates).
+func HasTablesWith(preds ...predicate.Table) predicate.Place {
+	return predicate.Place(func(s *sql.Selector) {
+		step := newTablesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Place) predicate.Place {
 	return predicate.Place(sql.AndPredicates(predicates...))

@@ -14,9 +14,13 @@ import (
 
 // Menu is the model entity for the Menu schema.
 type Menu struct {
-	config
+	config `json:"-"`
 	// ID of the ent.
 	ID string `json:"id,omitempty"`
+	// Name holds the value of the "name" field.
+	Name string `json:"name,omitempty"`
+	// Description holds the value of the "description" field.
+	Description string `json:"description,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the MenuQuery when eager-loading is set.
 	Edges        MenuEdges `json:"edges"`
@@ -30,9 +34,11 @@ type MenuEdges struct {
 	Place *Place `json:"place,omitempty"`
 	// Categories holds the value of the categories edge.
 	Categories []*Category `json:"categories,omitempty"`
+	// MenuItems holds the value of the menu_items edge.
+	MenuItems []*MenuItem `json:"menu_items,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // PlaceOrErr returns the Place value or an error if the edge
@@ -57,12 +63,21 @@ func (e MenuEdges) CategoriesOrErr() ([]*Category, error) {
 	return nil, &NotLoadedError{edge: "categories"}
 }
 
+// MenuItemsOrErr returns the MenuItems value or an error if the edge
+// was not loaded in eager-loading.
+func (e MenuEdges) MenuItemsOrErr() ([]*MenuItem, error) {
+	if e.loadedTypes[2] {
+		return e.MenuItems, nil
+	}
+	return nil, &NotLoadedError{edge: "menu_items"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Menu) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case menu.FieldID:
+		case menu.FieldID, menu.FieldName, menu.FieldDescription:
 			values[i] = new(sql.NullString)
 		case menu.ForeignKeys[0]: // place_menus
 			values[i] = new(sql.NullString)
@@ -86,6 +101,18 @@ func (m *Menu) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value.Valid {
 				m.ID = value.String
+			}
+		case menu.FieldName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field name", values[i])
+			} else if value.Valid {
+				m.Name = value.String
+			}
+		case menu.FieldDescription:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field description", values[i])
+			} else if value.Valid {
+				m.Description = value.String
 			}
 		case menu.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -117,6 +144,11 @@ func (m *Menu) QueryCategories() *CategoryQuery {
 	return NewMenuClient(m.config).QueryCategories(m)
 }
 
+// QueryMenuItems queries the "menu_items" edge of the Menu entity.
+func (m *Menu) QueryMenuItems() *MenuItemQuery {
+	return NewMenuClient(m.config).QueryMenuItems(m)
+}
+
 // Update returns a builder for updating this Menu.
 // Note that you need to call Menu.Unwrap() before calling this method if this Menu
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -139,7 +171,12 @@ func (m *Menu) Unwrap() *Menu {
 func (m *Menu) String() string {
 	var builder strings.Builder
 	builder.WriteString("Menu(")
-	builder.WriteString(fmt.Sprintf("id=%v", m.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", m.ID))
+	builder.WriteString("name=")
+	builder.WriteString(m.Name)
+	builder.WriteString(", ")
+	builder.WriteString("description=")
+	builder.WriteString(m.Description)
 	builder.WriteByte(')')
 	return builder.String()
 }

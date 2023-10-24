@@ -87,6 +87,7 @@ func (Place) Edges() []ent.Edge {
 		edge.To("ratings", Rating.Type),
 		edge.To("inventories", PlaceInventory.Type),
 		edge.To("notifications", Notification.Type),
+		edge.To("tables", Table.Type),
 	}
 }
 

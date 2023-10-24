@@ -72,11 +72,17 @@ type Media func(*sql.Selector)
 // Menu is the predicate function for menu builders.
 type Menu func(*sql.Selector)
 
+// MenuItem is the predicate function for menuitem builders.
+type MenuItem func(*sql.Selector)
+
 // Notification is the predicate function for notification builders.
 type Notification func(*sql.Selector)
 
 // Order is the predicate function for order builders.
 type Order func(*sql.Selector)
+
+// OrderItem is the predicate function for orderitem builders.
+type OrderItem func(*sql.Selector)
 
 // Payment is the predicate function for payment builders.
 type Payment func(*sql.Selector)
@@ -113,6 +119,9 @@ type Review func(*sql.Selector)
 
 // Room is the predicate function for room builders.
 type Room func(*sql.Selector)
+
+// Table is the predicate function for table builders.
+type Table func(*sql.Selector)
 
 // Template is the predicate function for template builders.
 type Template func(*sql.Selector)

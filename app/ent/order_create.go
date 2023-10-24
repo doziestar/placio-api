@@ -4,8 +4,13 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"placio-app/ent/order"
+	"placio-app/ent/orderitem"
+	"placio-app/ent/table"
+	"placio-app/ent/user"
+	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -18,6 +23,115 @@ type OrderCreate struct {
 	hooks    []Hook
 }
 
+// SetCreatedAt sets the "created_at" field.
+func (oc *OrderCreate) SetCreatedAt(t time.Time) *OrderCreate {
+	oc.mutation.SetCreatedAt(t)
+	return oc
+}
+
+// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
+func (oc *OrderCreate) SetNillableCreatedAt(t *time.Time) *OrderCreate {
+	if t != nil {
+		oc.SetCreatedAt(*t)
+	}
+	return oc
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (oc *OrderCreate) SetUpdatedAt(t time.Time) *OrderCreate {
+	oc.mutation.SetUpdatedAt(t)
+	return oc
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (oc *OrderCreate) SetNillableUpdatedAt(t *time.Time) *OrderCreate {
+	if t != nil {
+		oc.SetUpdatedAt(*t)
+	}
+	return oc
+}
+
+// SetStatus sets the "status" field.
+func (oc *OrderCreate) SetStatus(o order.Status) *OrderCreate {
+	oc.mutation.SetStatus(o)
+	return oc
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (oc *OrderCreate) SetNillableStatus(o *order.Status) *OrderCreate {
+	if o != nil {
+		oc.SetStatus(*o)
+	}
+	return oc
+}
+
+// SetTotalAmount sets the "total_amount" field.
+func (oc *OrderCreate) SetTotalAmount(f float64) *OrderCreate {
+	oc.mutation.SetTotalAmount(f)
+	return oc
+}
+
+// SetAdditionalInfo sets the "additional_info" field.
+func (oc *OrderCreate) SetAdditionalInfo(m map[string]interface{}) *OrderCreate {
+	oc.mutation.SetAdditionalInfo(m)
+	return oc
+}
+
+// SetID sets the "id" field.
+func (oc *OrderCreate) SetID(s string) *OrderCreate {
+	oc.mutation.SetID(s)
+	return oc
+}
+
+// SetUserID sets the "user" edge to the User entity by ID.
+func (oc *OrderCreate) SetUserID(id string) *OrderCreate {
+	oc.mutation.SetUserID(id)
+	return oc
+}
+
+// SetNillableUserID sets the "user" edge to the User entity by ID if the given value is not nil.
+func (oc *OrderCreate) SetNillableUserID(id *string) *OrderCreate {
+	if id != nil {
+		oc = oc.SetUserID(*id)
+	}
+	return oc
+}
+
+// SetUser sets the "user" edge to the User entity.
+func (oc *OrderCreate) SetUser(u *User) *OrderCreate {
+	return oc.SetUserID(u.ID)
+}
+
+// AddOrderItemIDs adds the "order_items" edge to the OrderItem entity by IDs.
+func (oc *OrderCreate) AddOrderItemIDs(ids ...string) *OrderCreate {
+	oc.mutation.AddOrderItemIDs(ids...)
+	return oc
+}
+
+// AddOrderItems adds the "order_items" edges to the OrderItem entity.
+func (oc *OrderCreate) AddOrderItems(o ...*OrderItem) *OrderCreate {
+	ids := make([]string, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return oc.AddOrderItemIDs(ids...)
+}
+
+// AddTableIDs adds the "table" edge to the Table entity by IDs.
+func (oc *OrderCreate) AddTableIDs(ids ...string) *OrderCreate {
+	oc.mutation.AddTableIDs(ids...)
+	return oc
+}
+
+// AddTable adds the "table" edges to the Table entity.
+func (oc *OrderCreate) AddTable(t ...*Table) *OrderCreate {
+	ids := make([]string, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return oc.AddTableIDs(ids...)
+}
+
 // Mutation returns the OrderMutation object of the builder.
 func (oc *OrderCreate) Mutation() *OrderMutation {
 	return oc.mutation
@@ -25,6 +139,7 @@ func (oc *OrderCreate) Mutation() *OrderMutation {
 
 // Save creates the Order in the database.
 func (oc *OrderCreate) Save(ctx context.Context) (*Order, error) {
+	oc.defaults()
 	return withHooks(ctx, oc.sqlSave, oc.mutation, oc.hooks)
 }
 
@@ -50,8 +165,46 @@ func (oc *OrderCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (oc *OrderCreate) defaults() {
+	if _, ok := oc.mutation.CreatedAt(); !ok {
+		v := order.DefaultCreatedAt()
+		oc.mutation.SetCreatedAt(v)
+	}
+	if _, ok := oc.mutation.UpdatedAt(); !ok {
+		v := order.DefaultUpdatedAt()
+		oc.mutation.SetUpdatedAt(v)
+	}
+	if _, ok := oc.mutation.Status(); !ok {
+		v := order.DefaultStatus
+		oc.mutation.SetStatus(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (oc *OrderCreate) check() error {
+	if _, ok := oc.mutation.CreatedAt(); !ok {
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Order.created_at"`)}
+	}
+	if _, ok := oc.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Order.updated_at"`)}
+	}
+	if _, ok := oc.mutation.Status(); !ok {
+		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Order.status"`)}
+	}
+	if v, ok := oc.mutation.Status(); ok {
+		if err := order.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Order.status": %w`, err)}
+		}
+	}
+	if _, ok := oc.mutation.TotalAmount(); !ok {
+		return &ValidationError{Name: "total_amount", err: errors.New(`ent: missing required field "Order.total_amount"`)}
+	}
+	if v, ok := oc.mutation.ID(); ok {
+		if err := order.IDValidator(v); err != nil {
+			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "Order.id": %w`, err)}
+		}
+	}
 	return nil
 }
 
@@ -83,6 +236,79 @@ func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 		_node = &Order{config: oc.config}
 		_spec = sqlgraph.NewCreateSpec(order.Table, sqlgraph.NewFieldSpec(order.FieldID, field.TypeString))
 	)
+	if id, ok := oc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
+	if value, ok := oc.mutation.CreatedAt(); ok {
+		_spec.SetField(order.FieldCreatedAt, field.TypeTime, value)
+		_node.CreatedAt = value
+	}
+	if value, ok := oc.mutation.UpdatedAt(); ok {
+		_spec.SetField(order.FieldUpdatedAt, field.TypeTime, value)
+		_node.UpdatedAt = value
+	}
+	if value, ok := oc.mutation.Status(); ok {
+		_spec.SetField(order.FieldStatus, field.TypeEnum, value)
+		_node.Status = value
+	}
+	if value, ok := oc.mutation.TotalAmount(); ok {
+		_spec.SetField(order.FieldTotalAmount, field.TypeFloat64, value)
+		_node.TotalAmount = value
+	}
+	if value, ok := oc.mutation.AdditionalInfo(); ok {
+		_spec.SetField(order.FieldAdditionalInfo, field.TypeJSON, value)
+		_node.AdditionalInfo = value
+	}
+	if nodes := oc.mutation.UserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   order.UserTable,
+			Columns: []string{order.UserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.user_orders = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := oc.mutation.OrderItemsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   order.OrderItemsTable,
+			Columns: order.OrderItemsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(orderitem.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := oc.mutation.TableIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   order.TableTable,
+			Columns: order.TablePrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(table.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	return _node, _spec
 }
 
@@ -104,6 +330,7 @@ func (ocb *OrderCreateBulk) Save(ctx context.Context) ([]*Order, error) {
 	for i := range ocb.builders {
 		func(i int, root context.Context) {
 			builder := ocb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*OrderMutation)
 				if !ok {

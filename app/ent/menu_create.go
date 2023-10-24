@@ -4,9 +4,11 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"placio-app/ent/category"
 	"placio-app/ent/menu"
+	"placio-app/ent/menuitem"
 	"placio-app/ent/place"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -18,6 +20,26 @@ type MenuCreate struct {
 	config
 	mutation *MenuMutation
 	hooks    []Hook
+}
+
+// SetName sets the "name" field.
+func (mc *MenuCreate) SetName(s string) *MenuCreate {
+	mc.mutation.SetName(s)
+	return mc
+}
+
+// SetDescription sets the "description" field.
+func (mc *MenuCreate) SetDescription(s string) *MenuCreate {
+	mc.mutation.SetDescription(s)
+	return mc
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (mc *MenuCreate) SetNillableDescription(s *string) *MenuCreate {
+	if s != nil {
+		mc.SetDescription(*s)
+	}
+	return mc
 }
 
 // SetID sets the "id" field.
@@ -60,6 +82,21 @@ func (mc *MenuCreate) AddCategories(c ...*Category) *MenuCreate {
 	return mc.AddCategoryIDs(ids...)
 }
 
+// AddMenuItemIDs adds the "menu_items" edge to the MenuItem entity by IDs.
+func (mc *MenuCreate) AddMenuItemIDs(ids ...string) *MenuCreate {
+	mc.mutation.AddMenuItemIDs(ids...)
+	return mc
+}
+
+// AddMenuItems adds the "menu_items" edges to the MenuItem entity.
+func (mc *MenuCreate) AddMenuItems(m ...*MenuItem) *MenuCreate {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return mc.AddMenuItemIDs(ids...)
+}
+
 // Mutation returns the MenuMutation object of the builder.
 func (mc *MenuCreate) Mutation() *MenuMutation {
 	return mc.mutation
@@ -94,6 +131,9 @@ func (mc *MenuCreate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (mc *MenuCreate) check() error {
+	if _, ok := mc.mutation.Name(); !ok {
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Menu.name"`)}
+	}
 	if v, ok := mc.mutation.ID(); ok {
 		if err := menu.IDValidator(v); err != nil {
 			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "Menu.id": %w`, err)}
@@ -134,6 +174,14 @@ func (mc *MenuCreate) createSpec() (*Menu, *sqlgraph.CreateSpec) {
 		_node.ID = id
 		_spec.ID.Value = id
 	}
+	if value, ok := mc.mutation.Name(); ok {
+		_spec.SetField(menu.FieldName, field.TypeString, value)
+		_node.Name = value
+	}
+	if value, ok := mc.mutation.Description(); ok {
+		_spec.SetField(menu.FieldDescription, field.TypeString, value)
+		_node.Description = value
+	}
 	if nodes := mc.mutation.PlaceIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -160,6 +208,22 @@ func (mc *MenuCreate) createSpec() (*Menu, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := mc.mutation.MenuItemsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   menu.MenuItemsTable,
+			Columns: menu.MenuItemsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(menuitem.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

@@ -11,6 +11,7 @@ import (
 	"placio-app/ent/category"
 	"placio-app/ent/inventorytype"
 	"placio-app/ent/media"
+	"placio-app/ent/menuitem"
 	"placio-app/ent/place"
 	"placio-app/ent/placeinventory"
 	"placio-app/ent/placeinventoryattribute"
@@ -38,6 +39,7 @@ type PlaceInventoryQuery struct {
 	withReservationBlocks    *ReservationBlockQuery
 	withBusiness             *BusinessQuery
 	withCategory             *CategoryQuery
+	withMenuItem             *MenuItemQuery
 	withFKs                  bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -251,6 +253,28 @@ func (piq *PlaceInventoryQuery) QueryCategory() *CategoryQuery {
 	return query
 }
 
+// QueryMenuItem chains the current query on the "menu_item" edge.
+func (piq *PlaceInventoryQuery) QueryMenuItem() *MenuItemQuery {
+	query := (&MenuItemClient{config: piq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := piq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := piq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(placeinventory.Table, placeinventory.FieldID, selector),
+			sqlgraph.To(menuitem.Table, menuitem.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, placeinventory.MenuItemTable, placeinventory.MenuItemColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(piq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first PlaceInventory entity from the query.
 // Returns a *NotFoundError when no PlaceInventory was found.
 func (piq *PlaceInventoryQuery) First(ctx context.Context) (*PlaceInventory, error) {
@@ -451,6 +475,7 @@ func (piq *PlaceInventoryQuery) Clone() *PlaceInventoryQuery {
 		withReservationBlocks:    piq.withReservationBlocks.Clone(),
 		withBusiness:             piq.withBusiness.Clone(),
 		withCategory:             piq.withCategory.Clone(),
+		withMenuItem:             piq.withMenuItem.Clone(),
 		// clone intermediate query.
 		sql:  piq.sql.Clone(),
 		path: piq.path,
@@ -545,6 +570,17 @@ func (piq *PlaceInventoryQuery) WithCategory(opts ...func(*CategoryQuery)) *Plac
 	return piq
 }
 
+// WithMenuItem tells the query-builder to eager-load the nodes that are connected to
+// the "menu_item" edge. The optional arguments are used to configure the query builder of the edge.
+func (piq *PlaceInventoryQuery) WithMenuItem(opts ...func(*MenuItemQuery)) *PlaceInventoryQuery {
+	query := (&MenuItemClient{config: piq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	piq.withMenuItem = query
+	return piq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -624,7 +660,7 @@ func (piq *PlaceInventoryQuery) sqlAll(ctx context.Context, hooks ...queryHook) 
 		nodes       = []*PlaceInventory{}
 		withFKs     = piq.withFKs
 		_spec       = piq.querySpec()
-		loadedTypes = [8]bool{
+		loadedTypes = [9]bool{
 			piq.withPlace != nil,
 			piq.withInventoryType != nil,
 			piq.withAttributes != nil,
@@ -633,9 +669,10 @@ func (piq *PlaceInventoryQuery) sqlAll(ctx context.Context, hooks ...queryHook) 
 			piq.withReservationBlocks != nil,
 			piq.withBusiness != nil,
 			piq.withCategory != nil,
+			piq.withMenuItem != nil,
 		}
 	)
-	if piq.withPlace != nil || piq.withInventoryType != nil || piq.withBusiness != nil || piq.withCategory != nil {
+	if piq.withPlace != nil || piq.withInventoryType != nil || piq.withBusiness != nil || piq.withCategory != nil || piq.withMenuItem != nil {
 		withFKs = true
 	}
 	if withFKs {
@@ -714,6 +751,12 @@ func (piq *PlaceInventoryQuery) sqlAll(ctx context.Context, hooks ...queryHook) 
 	if query := piq.withCategory; query != nil {
 		if err := piq.loadCategory(ctx, query, nodes, nil,
 			func(n *PlaceInventory, e *Category) { n.Edges.Category = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := piq.withMenuItem; query != nil {
+		if err := piq.loadMenuItem(ctx, query, nodes, nil,
+			func(n *PlaceInventory, e *MenuItem) { n.Edges.MenuItem = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -995,6 +1038,38 @@ func (piq *PlaceInventoryQuery) loadCategory(ctx context.Context, query *Categor
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "category_place_inventories" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (piq *PlaceInventoryQuery) loadMenuItem(ctx context.Context, query *MenuItemQuery, nodes []*PlaceInventory, init func(*PlaceInventory), assign func(*PlaceInventory, *MenuItem)) error {
+	ids := make([]string, 0, len(nodes))
+	nodeids := make(map[string][]*PlaceInventory)
+	for i := range nodes {
+		if nodes[i].menu_item_inventory == nil {
+			continue
+		}
+		fk := *nodes[i].menu_item_inventory
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(menuitem.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "menu_item_inventory" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)

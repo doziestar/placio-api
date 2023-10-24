@@ -33,8 +33,10 @@ import (
 	"placio-app/ent/like"
 	"placio-app/ent/media"
 	"placio-app/ent/menu"
+	"placio-app/ent/menuitem"
 	"placio-app/ent/notification"
 	"placio-app/ent/order"
+	"placio-app/ent/orderitem"
 	"placio-app/ent/payment"
 	"placio-app/ent/place"
 	"placio-app/ent/placeinventory"
@@ -47,6 +49,7 @@ import (
 	"placio-app/ent/resourse"
 	"placio-app/ent/review"
 	"placio-app/ent/room"
+	"placio-app/ent/table"
 	"placio-app/ent/template"
 	"placio-app/ent/ticket"
 	"placio-app/ent/ticketoption"
@@ -115,10 +118,14 @@ type Client struct {
 	Media *MediaClient
 	// Menu is the client for interacting with the Menu builders.
 	Menu *MenuClient
+	// MenuItem is the client for interacting with the MenuItem builders.
+	MenuItem *MenuItemClient
 	// Notification is the client for interacting with the Notification builders.
 	Notification *NotificationClient
 	// Order is the client for interacting with the Order builders.
 	Order *OrderClient
+	// OrderItem is the client for interacting with the OrderItem builders.
+	OrderItem *OrderItemClient
 	// Payment is the client for interacting with the Payment builders.
 	Payment *PaymentClient
 	// Place is the client for interacting with the Place builders.
@@ -143,6 +150,8 @@ type Client struct {
 	Review *ReviewClient
 	// Room is the client for interacting with the Room builders.
 	Room *RoomClient
+	// Table is the client for interacting with the Table builders.
+	Table *TableClient
 	// Template is the client for interacting with the Template builders.
 	Template *TemplateClient
 	// Ticket is the client for interacting with the Ticket builders.
@@ -202,8 +211,10 @@ func (c *Client) init() {
 	c.Like = NewLikeClient(c.config)
 	c.Media = NewMediaClient(c.config)
 	c.Menu = NewMenuClient(c.config)
+	c.MenuItem = NewMenuItemClient(c.config)
 	c.Notification = NewNotificationClient(c.config)
 	c.Order = NewOrderClient(c.config)
+	c.OrderItem = NewOrderItemClient(c.config)
 	c.Payment = NewPaymentClient(c.config)
 	c.Place = NewPlaceClient(c.config)
 	c.PlaceInventory = NewPlaceInventoryClient(c.config)
@@ -216,6 +227,7 @@ func (c *Client) init() {
 	c.Resourse = NewResourseClient(c.config)
 	c.Review = NewReviewClient(c.config)
 	c.Room = NewRoomClient(c.config)
+	c.Table = NewTableClient(c.config)
 	c.Template = NewTemplateClient(c.config)
 	c.Ticket = NewTicketClient(c.config)
 	c.TicketOption = NewTicketOptionClient(c.config)
@@ -335,8 +347,10 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Like:                    NewLikeClient(cfg),
 		Media:                   NewMediaClient(cfg),
 		Menu:                    NewMenuClient(cfg),
+		MenuItem:                NewMenuItemClient(cfg),
 		Notification:            NewNotificationClient(cfg),
 		Order:                   NewOrderClient(cfg),
+		OrderItem:               NewOrderItemClient(cfg),
 		Payment:                 NewPaymentClient(cfg),
 		Place:                   NewPlaceClient(cfg),
 		PlaceInventory:          NewPlaceInventoryClient(cfg),
@@ -349,6 +363,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Resourse:                NewResourseClient(cfg),
 		Review:                  NewReviewClient(cfg),
 		Room:                    NewRoomClient(cfg),
+		Table:                   NewTableClient(cfg),
 		Template:                NewTemplateClient(cfg),
 		Ticket:                  NewTicketClient(cfg),
 		TicketOption:            NewTicketOptionClient(cfg),
@@ -402,8 +417,10 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Like:                    NewLikeClient(cfg),
 		Media:                   NewMediaClient(cfg),
 		Menu:                    NewMenuClient(cfg),
+		MenuItem:                NewMenuItemClient(cfg),
 		Notification:            NewNotificationClient(cfg),
 		Order:                   NewOrderClient(cfg),
+		OrderItem:               NewOrderItemClient(cfg),
 		Payment:                 NewPaymentClient(cfg),
 		Place:                   NewPlaceClient(cfg),
 		PlaceInventory:          NewPlaceInventoryClient(cfg),
@@ -416,6 +433,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Resourse:                NewResourseClient(cfg),
 		Review:                  NewReviewClient(cfg),
 		Room:                    NewRoomClient(cfg),
+		Table:                   NewTableClient(cfg),
 		Template:                NewTemplateClient(cfg),
 		Ticket:                  NewTicketClient(cfg),
 		TicketOption:            NewTicketOptionClient(cfg),
@@ -461,12 +479,12 @@ func (c *Client) Use(hooks ...Hook) {
 		c.BusinessFollowBusiness, c.BusinessFollowEvent, c.BusinessFollowUser,
 		c.Category, c.CategoryAssignment, c.Chat, c.Comment, c.CustomBlock, c.Event,
 		c.FAQ, c.FeatureRelease, c.Help, c.InventoryAttribute, c.InventoryType, c.Like,
-		c.Media, c.Menu, c.Notification, c.Order, c.Payment, c.Place, c.PlaceInventory,
-		c.PlaceInventoryAttribute, c.Post, c.Rating, c.Reaction, c.Reservation,
-		c.ReservationBlock, c.Resourse, c.Review, c.Room, c.Template, c.Ticket,
-		c.TicketOption, c.TransactionHistory, c.User, c.UserBusiness,
-		c.UserFollowBusiness, c.UserFollowEvent, c.UserFollowPlace, c.UserFollowUser,
-		c.UserLikePlace, c.Website,
+		c.Media, c.Menu, c.MenuItem, c.Notification, c.Order, c.OrderItem, c.Payment,
+		c.Place, c.PlaceInventory, c.PlaceInventoryAttribute, c.Post, c.Rating,
+		c.Reaction, c.Reservation, c.ReservationBlock, c.Resourse, c.Review, c.Room,
+		c.Table, c.Template, c.Ticket, c.TicketOption, c.TransactionHistory, c.User,
+		c.UserBusiness, c.UserFollowBusiness, c.UserFollowEvent, c.UserFollowPlace,
+		c.UserFollowUser, c.UserLikePlace, c.Website,
 	} {
 		n.Use(hooks...)
 	}
@@ -480,12 +498,12 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.BusinessFollowBusiness, c.BusinessFollowEvent, c.BusinessFollowUser,
 		c.Category, c.CategoryAssignment, c.Chat, c.Comment, c.CustomBlock, c.Event,
 		c.FAQ, c.FeatureRelease, c.Help, c.InventoryAttribute, c.InventoryType, c.Like,
-		c.Media, c.Menu, c.Notification, c.Order, c.Payment, c.Place, c.PlaceInventory,
-		c.PlaceInventoryAttribute, c.Post, c.Rating, c.Reaction, c.Reservation,
-		c.ReservationBlock, c.Resourse, c.Review, c.Room, c.Template, c.Ticket,
-		c.TicketOption, c.TransactionHistory, c.User, c.UserBusiness,
-		c.UserFollowBusiness, c.UserFollowEvent, c.UserFollowPlace, c.UserFollowUser,
-		c.UserLikePlace, c.Website,
+		c.Media, c.Menu, c.MenuItem, c.Notification, c.Order, c.OrderItem, c.Payment,
+		c.Place, c.PlaceInventory, c.PlaceInventoryAttribute, c.Post, c.Rating,
+		c.Reaction, c.Reservation, c.ReservationBlock, c.Resourse, c.Review, c.Room,
+		c.Table, c.Template, c.Ticket, c.TicketOption, c.TransactionHistory, c.User,
+		c.UserBusiness, c.UserFollowBusiness, c.UserFollowEvent, c.UserFollowPlace,
+		c.UserFollowUser, c.UserLikePlace, c.Website,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -538,10 +556,14 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Media.mutate(ctx, m)
 	case *MenuMutation:
 		return c.Menu.mutate(ctx, m)
+	case *MenuItemMutation:
+		return c.MenuItem.mutate(ctx, m)
 	case *NotificationMutation:
 		return c.Notification.mutate(ctx, m)
 	case *OrderMutation:
 		return c.Order.mutate(ctx, m)
+	case *OrderItemMutation:
+		return c.OrderItem.mutate(ctx, m)
 	case *PaymentMutation:
 		return c.Payment.mutate(ctx, m)
 	case *PlaceMutation:
@@ -566,6 +588,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Review.mutate(ctx, m)
 	case *RoomMutation:
 		return c.Room.mutate(ctx, m)
+	case *TableMutation:
+		return c.Table.mutate(ctx, m)
 	case *TemplateMutation:
 		return c.Template.mutate(ctx, m)
 	case *TicketMutation:
@@ -4666,6 +4690,22 @@ func (c *MenuClient) QueryCategories(m *Menu) *CategoryQuery {
 	return query
 }
 
+// QueryMenuItems queries the menu_items edge of a Menu.
+func (c *MenuClient) QueryMenuItems(m *Menu) *MenuItemQuery {
+	query := (&MenuItemClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(menu.Table, menu.FieldID, id),
+			sqlgraph.To(menuitem.Table, menuitem.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, menu.MenuItemsTable, menu.MenuItemsPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *MenuClient) Hooks() []Hook {
 	return c.hooks.Menu
@@ -4688,6 +4728,203 @@ func (c *MenuClient) mutate(ctx context.Context, m *MenuMutation) (Value, error)
 		return (&MenuDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Menu mutation op: %q", m.Op())
+	}
+}
+
+// MenuItemClient is a client for the MenuItem schema.
+type MenuItemClient struct {
+	config
+}
+
+// NewMenuItemClient returns a client for the MenuItem from the given config.
+func NewMenuItemClient(c config) *MenuItemClient {
+	return &MenuItemClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `menuitem.Hooks(f(g(h())))`.
+func (c *MenuItemClient) Use(hooks ...Hook) {
+	c.hooks.MenuItem = append(c.hooks.MenuItem, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `menuitem.Intercept(f(g(h())))`.
+func (c *MenuItemClient) Intercept(interceptors ...Interceptor) {
+	c.inters.MenuItem = append(c.inters.MenuItem, interceptors...)
+}
+
+// Create returns a builder for creating a MenuItem entity.
+func (c *MenuItemClient) Create() *MenuItemCreate {
+	mutation := newMenuItemMutation(c.config, OpCreate)
+	return &MenuItemCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of MenuItem entities.
+func (c *MenuItemClient) CreateBulk(builders ...*MenuItemCreate) *MenuItemCreateBulk {
+	return &MenuItemCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *MenuItemClient) MapCreateBulk(slice any, setFunc func(*MenuItemCreate, int)) *MenuItemCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &MenuItemCreateBulk{err: fmt.Errorf("calling to MenuItemClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*MenuItemCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &MenuItemCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for MenuItem.
+func (c *MenuItemClient) Update() *MenuItemUpdate {
+	mutation := newMenuItemMutation(c.config, OpUpdate)
+	return &MenuItemUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *MenuItemClient) UpdateOne(mi *MenuItem) *MenuItemUpdateOne {
+	mutation := newMenuItemMutation(c.config, OpUpdateOne, withMenuItem(mi))
+	return &MenuItemUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *MenuItemClient) UpdateOneID(id string) *MenuItemUpdateOne {
+	mutation := newMenuItemMutation(c.config, OpUpdateOne, withMenuItemID(id))
+	return &MenuItemUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for MenuItem.
+func (c *MenuItemClient) Delete() *MenuItemDelete {
+	mutation := newMenuItemMutation(c.config, OpDelete)
+	return &MenuItemDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *MenuItemClient) DeleteOne(mi *MenuItem) *MenuItemDeleteOne {
+	return c.DeleteOneID(mi.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *MenuItemClient) DeleteOneID(id string) *MenuItemDeleteOne {
+	builder := c.Delete().Where(menuitem.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &MenuItemDeleteOne{builder}
+}
+
+// Query returns a query builder for MenuItem.
+func (c *MenuItemClient) Query() *MenuItemQuery {
+	return &MenuItemQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeMenuItem},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a MenuItem entity by its id.
+func (c *MenuItemClient) Get(ctx context.Context, id string) (*MenuItem, error) {
+	return c.Query().Where(menuitem.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *MenuItemClient) GetX(ctx context.Context, id string) *MenuItem {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryMenu queries the menu edge of a MenuItem.
+func (c *MenuItemClient) QueryMenu(mi *MenuItem) *MenuQuery {
+	query := (&MenuClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := mi.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(menuitem.Table, menuitem.FieldID, id),
+			sqlgraph.To(menu.Table, menu.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, menuitem.MenuTable, menuitem.MenuPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(mi.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryInventory queries the inventory edge of a MenuItem.
+func (c *MenuItemClient) QueryInventory(mi *MenuItem) *PlaceInventoryQuery {
+	query := (&PlaceInventoryClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := mi.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(menuitem.Table, menuitem.FieldID, id),
+			sqlgraph.To(placeinventory.Table, placeinventory.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, menuitem.InventoryTable, menuitem.InventoryColumn),
+		)
+		fromV = sqlgraph.Neighbors(mi.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryMedia queries the media edge of a MenuItem.
+func (c *MenuItemClient) QueryMedia(mi *MenuItem) *MediaQuery {
+	query := (&MediaClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := mi.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(menuitem.Table, menuitem.FieldID, id),
+			sqlgraph.To(media.Table, media.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, menuitem.MediaTable, menuitem.MediaColumn),
+		)
+		fromV = sqlgraph.Neighbors(mi.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryOrderItems queries the order_items edge of a MenuItem.
+func (c *MenuItemClient) QueryOrderItems(mi *MenuItem) *OrderItemQuery {
+	query := (&OrderItemClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := mi.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(menuitem.Table, menuitem.FieldID, id),
+			sqlgraph.To(orderitem.Table, orderitem.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, menuitem.OrderItemsTable, menuitem.OrderItemsPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(mi.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *MenuItemClient) Hooks() []Hook {
+	return c.hooks.MenuItem
+}
+
+// Interceptors returns the client interceptors.
+func (c *MenuItemClient) Interceptors() []Interceptor {
+	return c.inters.MenuItem
+}
+
+func (c *MenuItemClient) mutate(ctx context.Context, m *MenuItemMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&MenuItemCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&MenuItemUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&MenuItemUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&MenuItemDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown MenuItem mutation op: %q", m.Op())
 	}
 }
 
@@ -5012,6 +5249,54 @@ func (c *OrderClient) GetX(ctx context.Context, id string) *Order {
 	return obj
 }
 
+// QueryUser queries the user edge of a Order.
+func (c *OrderClient) QueryUser(o *Order) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := o.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(order.Table, order.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, order.UserTable, order.UserColumn),
+		)
+		fromV = sqlgraph.Neighbors(o.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryOrderItems queries the order_items edge of a Order.
+func (c *OrderClient) QueryOrderItems(o *Order) *OrderItemQuery {
+	query := (&OrderItemClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := o.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(order.Table, order.FieldID, id),
+			sqlgraph.To(orderitem.Table, orderitem.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, order.OrderItemsTable, order.OrderItemsPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(o.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTable queries the table edge of a Order.
+func (c *OrderClient) QueryTable(o *Order) *TableQuery {
+	query := (&TableClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := o.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(order.Table, order.FieldID, id),
+			sqlgraph.To(table.Table, table.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, order.TableTable, order.TablePrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(o.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *OrderClient) Hooks() []Hook {
 	return c.hooks.Order
@@ -5034,6 +5319,171 @@ func (c *OrderClient) mutate(ctx context.Context, m *OrderMutation) (Value, erro
 		return (&OrderDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Order mutation op: %q", m.Op())
+	}
+}
+
+// OrderItemClient is a client for the OrderItem schema.
+type OrderItemClient struct {
+	config
+}
+
+// NewOrderItemClient returns a client for the OrderItem from the given config.
+func NewOrderItemClient(c config) *OrderItemClient {
+	return &OrderItemClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `orderitem.Hooks(f(g(h())))`.
+func (c *OrderItemClient) Use(hooks ...Hook) {
+	c.hooks.OrderItem = append(c.hooks.OrderItem, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `orderitem.Intercept(f(g(h())))`.
+func (c *OrderItemClient) Intercept(interceptors ...Interceptor) {
+	c.inters.OrderItem = append(c.inters.OrderItem, interceptors...)
+}
+
+// Create returns a builder for creating a OrderItem entity.
+func (c *OrderItemClient) Create() *OrderItemCreate {
+	mutation := newOrderItemMutation(c.config, OpCreate)
+	return &OrderItemCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of OrderItem entities.
+func (c *OrderItemClient) CreateBulk(builders ...*OrderItemCreate) *OrderItemCreateBulk {
+	return &OrderItemCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *OrderItemClient) MapCreateBulk(slice any, setFunc func(*OrderItemCreate, int)) *OrderItemCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &OrderItemCreateBulk{err: fmt.Errorf("calling to OrderItemClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*OrderItemCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &OrderItemCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for OrderItem.
+func (c *OrderItemClient) Update() *OrderItemUpdate {
+	mutation := newOrderItemMutation(c.config, OpUpdate)
+	return &OrderItemUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *OrderItemClient) UpdateOne(oi *OrderItem) *OrderItemUpdateOne {
+	mutation := newOrderItemMutation(c.config, OpUpdateOne, withOrderItem(oi))
+	return &OrderItemUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *OrderItemClient) UpdateOneID(id string) *OrderItemUpdateOne {
+	mutation := newOrderItemMutation(c.config, OpUpdateOne, withOrderItemID(id))
+	return &OrderItemUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for OrderItem.
+func (c *OrderItemClient) Delete() *OrderItemDelete {
+	mutation := newOrderItemMutation(c.config, OpDelete)
+	return &OrderItemDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *OrderItemClient) DeleteOne(oi *OrderItem) *OrderItemDeleteOne {
+	return c.DeleteOneID(oi.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *OrderItemClient) DeleteOneID(id string) *OrderItemDeleteOne {
+	builder := c.Delete().Where(orderitem.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &OrderItemDeleteOne{builder}
+}
+
+// Query returns a query builder for OrderItem.
+func (c *OrderItemClient) Query() *OrderItemQuery {
+	return &OrderItemQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeOrderItem},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a OrderItem entity by its id.
+func (c *OrderItemClient) Get(ctx context.Context, id string) (*OrderItem, error) {
+	return c.Query().Where(orderitem.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *OrderItemClient) GetX(ctx context.Context, id string) *OrderItem {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryOrder queries the order edge of a OrderItem.
+func (c *OrderItemClient) QueryOrder(oi *OrderItem) *OrderQuery {
+	query := (&OrderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := oi.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(orderitem.Table, orderitem.FieldID, id),
+			sqlgraph.To(order.Table, order.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, orderitem.OrderTable, orderitem.OrderPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(oi.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryMenuItem queries the menu_item edge of a OrderItem.
+func (c *OrderItemClient) QueryMenuItem(oi *OrderItem) *MenuItemQuery {
+	query := (&MenuItemClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := oi.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(orderitem.Table, orderitem.FieldID, id),
+			sqlgraph.To(menuitem.Table, menuitem.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, orderitem.MenuItemTable, orderitem.MenuItemPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(oi.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *OrderItemClient) Hooks() []Hook {
+	return c.hooks.OrderItem
+}
+
+// Interceptors returns the client interceptors.
+func (c *OrderItemClient) Interceptors() []Interceptor {
+	return c.inters.OrderItem
+}
+
+func (c *OrderItemClient) mutate(ctx context.Context, m *OrderItemMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&OrderItemCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&OrderItemUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&OrderItemUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&OrderItemDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown OrderItem mutation op: %q", m.Op())
 	}
 }
 
@@ -5566,6 +6016,22 @@ func (c *PlaceClient) QueryNotifications(pl *Place) *NotificationQuery {
 	return query
 }
 
+// QueryTables queries the tables edge of a Place.
+func (c *PlaceClient) QueryTables(pl *Place) *TableQuery {
+	query := (&TableClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pl.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(place.Table, place.FieldID, id),
+			sqlgraph.To(table.Table, table.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, place.TablesTable, place.TablesColumn),
+		)
+		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *PlaceClient) Hooks() []Hook {
 	hooks := c.hooks.Place
@@ -5821,6 +6287,22 @@ func (c *PlaceInventoryClient) QueryCategory(pi *PlaceInventory) *CategoryQuery 
 			sqlgraph.From(placeinventory.Table, placeinventory.FieldID, id),
 			sqlgraph.To(category.Table, category.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, placeinventory.CategoryTable, placeinventory.CategoryColumn),
+		)
+		fromV = sqlgraph.Neighbors(pi.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryMenuItem queries the menu_item edge of a PlaceInventory.
+func (c *PlaceInventoryClient) QueryMenuItem(pi *PlaceInventory) *MenuItemQuery {
+	query := (&MenuItemClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pi.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(placeinventory.Table, placeinventory.FieldID, id),
+			sqlgraph.To(menuitem.Table, menuitem.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, placeinventory.MenuItemTable, placeinventory.MenuItemColumn),
 		)
 		fromV = sqlgraph.Neighbors(pi.driver.Dialect(), step)
 		return fromV, nil
@@ -7468,6 +7950,171 @@ func (c *RoomClient) mutate(ctx context.Context, m *RoomMutation) (Value, error)
 	}
 }
 
+// TableClient is a client for the Table schema.
+type TableClient struct {
+	config
+}
+
+// NewTableClient returns a client for the Table from the given config.
+func NewTableClient(c config) *TableClient {
+	return &TableClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `table.Hooks(f(g(h())))`.
+func (c *TableClient) Use(hooks ...Hook) {
+	c.hooks.Table = append(c.hooks.Table, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `table.Intercept(f(g(h())))`.
+func (c *TableClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Table = append(c.inters.Table, interceptors...)
+}
+
+// Create returns a builder for creating a Table entity.
+func (c *TableClient) Create() *TableCreate {
+	mutation := newTableMutation(c.config, OpCreate)
+	return &TableCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Table entities.
+func (c *TableClient) CreateBulk(builders ...*TableCreate) *TableCreateBulk {
+	return &TableCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *TableClient) MapCreateBulk(slice any, setFunc func(*TableCreate, int)) *TableCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &TableCreateBulk{err: fmt.Errorf("calling to TableClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*TableCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &TableCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Table.
+func (c *TableClient) Update() *TableUpdate {
+	mutation := newTableMutation(c.config, OpUpdate)
+	return &TableUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TableClient) UpdateOne(t *Table) *TableUpdateOne {
+	mutation := newTableMutation(c.config, OpUpdateOne, withTable(t))
+	return &TableUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TableClient) UpdateOneID(id string) *TableUpdateOne {
+	mutation := newTableMutation(c.config, OpUpdateOne, withTableID(id))
+	return &TableUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Table.
+func (c *TableClient) Delete() *TableDelete {
+	mutation := newTableMutation(c.config, OpDelete)
+	return &TableDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *TableClient) DeleteOne(t *Table) *TableDeleteOne {
+	return c.DeleteOneID(t.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *TableClient) DeleteOneID(id string) *TableDeleteOne {
+	builder := c.Delete().Where(table.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TableDeleteOne{builder}
+}
+
+// Query returns a query builder for Table.
+func (c *TableClient) Query() *TableQuery {
+	return &TableQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeTable},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Table entity by its id.
+func (c *TableClient) Get(ctx context.Context, id string) (*Table, error) {
+	return c.Query().Where(table.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TableClient) GetX(ctx context.Context, id string) *Table {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryPlace queries the place edge of a Table.
+func (c *TableClient) QueryPlace(t *Table) *PlaceQuery {
+	query := (&PlaceClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(table.Table, table.FieldID, id),
+			sqlgraph.To(place.Table, place.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, table.PlaceTable, table.PlaceColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryOrders queries the orders edge of a Table.
+func (c *TableClient) QueryOrders(t *Table) *OrderQuery {
+	query := (&OrderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(table.Table, table.FieldID, id),
+			sqlgraph.To(order.Table, order.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, table.OrdersTable, table.OrdersPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *TableClient) Hooks() []Hook {
+	return c.hooks.Table
+}
+
+// Interceptors returns the client interceptors.
+func (c *TableClient) Interceptors() []Interceptor {
+	return c.inters.Table
+}
+
+func (c *TableClient) mutate(ctx context.Context, m *TableMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&TableCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&TableUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&TableUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&TableDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Table mutation op: %q", m.Op())
+	}
+}
+
 // TemplateClient is a client for the Template schema.
 type TemplateClient struct {
 	config
@@ -8581,6 +9228,22 @@ func (c *UserClient) QueryWallet(u *User) *AccountWalletQuery {
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(accountwallet.Table, accountwallet.FieldID),
 			sqlgraph.Edge(sqlgraph.O2O, false, user.WalletTable, user.WalletColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryOrders queries the orders edge of a User.
+func (c *UserClient) QueryOrders(u *User) *OrderQuery {
+	query := (&OrderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(order.Table, order.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.OrdersTable, user.OrdersColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil
@@ -9791,22 +10454,22 @@ type (
 		AccountSettings, AccountWallet, Amenity, Booking, Business,
 		BusinessFollowBusiness, BusinessFollowEvent, BusinessFollowUser, Category,
 		CategoryAssignment, Chat, Comment, CustomBlock, Event, FAQ, FeatureRelease,
-		Help, InventoryAttribute, InventoryType, Like, Media, Menu, Notification,
-		Order, Payment, Place, PlaceInventory, PlaceInventoryAttribute, Post, Rating,
-		Reaction, Reservation, ReservationBlock, Resourse, Review, Room, Template,
-		Ticket, TicketOption, TransactionHistory, User, UserBusiness,
-		UserFollowBusiness, UserFollowEvent, UserFollowPlace, UserFollowUser,
-		UserLikePlace, Website []ent.Hook
+		Help, InventoryAttribute, InventoryType, Like, Media, Menu, MenuItem,
+		Notification, Order, OrderItem, Payment, Place, PlaceInventory,
+		PlaceInventoryAttribute, Post, Rating, Reaction, Reservation, ReservationBlock,
+		Resourse, Review, Room, Table, Template, Ticket, TicketOption,
+		TransactionHistory, User, UserBusiness, UserFollowBusiness, UserFollowEvent,
+		UserFollowPlace, UserFollowUser, UserLikePlace, Website []ent.Hook
 	}
 	inters struct {
 		AccountSettings, AccountWallet, Amenity, Booking, Business,
 		BusinessFollowBusiness, BusinessFollowEvent, BusinessFollowUser, Category,
 		CategoryAssignment, Chat, Comment, CustomBlock, Event, FAQ, FeatureRelease,
-		Help, InventoryAttribute, InventoryType, Like, Media, Menu, Notification,
-		Order, Payment, Place, PlaceInventory, PlaceInventoryAttribute, Post, Rating,
-		Reaction, Reservation, ReservationBlock, Resourse, Review, Room, Template,
-		Ticket, TicketOption, TransactionHistory, User, UserBusiness,
-		UserFollowBusiness, UserFollowEvent, UserFollowPlace, UserFollowUser,
-		UserLikePlace, Website []ent.Interceptor
+		Help, InventoryAttribute, InventoryType, Like, Media, Menu, MenuItem,
+		Notification, Order, OrderItem, Payment, Place, PlaceInventory,
+		PlaceInventoryAttribute, Post, Rating, Reaction, Reservation, ReservationBlock,
+		Resourse, Review, Room, Table, Template, Ticket, TicketOption,
+		TransactionHistory, User, UserBusiness, UserFollowBusiness, UserFollowEvent,
+		UserFollowPlace, UserFollowUser, UserLikePlace, Website []ent.Interceptor
 	}
 )

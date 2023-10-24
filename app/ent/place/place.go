@@ -121,6 +121,8 @@ const (
 	EdgeInventories = "inventories"
 	// EdgeNotifications holds the string denoting the notifications edge name in mutations.
 	EdgeNotifications = "notifications"
+	// EdgeTables holds the string denoting the tables edge name in mutations.
+	EdgeTables = "tables"
 	// Table holds the table name of the place in the database.
 	Table = "places"
 	// BusinessTable is the table that holds the business relation/edge.
@@ -239,6 +241,13 @@ const (
 	// NotificationsInverseTable is the table name for the Notification entity.
 	// It exists in this package in order to avoid circular dependency with the "notification" package.
 	NotificationsInverseTable = "notifications"
+	// TablesTable is the table that holds the tables relation/edge.
+	TablesTable = "tables"
+	// TablesInverseTable is the table name for the Table entity.
+	// It exists in this package in order to avoid circular dependency with the "table" package.
+	TablesInverseTable = "tables"
+	// TablesColumn is the table column denoting the tables relation/edge.
+	TablesColumn = "place_tables"
 )
 
 // Columns holds all SQL columns for place fields.
@@ -733,6 +742,20 @@ func ByNotifications(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newNotificationsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByTablesCount orders the results by tables count.
+func ByTablesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newTablesStep(), opts...)
+	}
+}
+
+// ByTables orders the results by tables terms.
+func ByTables(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newTablesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newBusinessStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -857,5 +880,12 @@ func newNotificationsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(NotificationsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2M, false, NotificationsTable, NotificationsPrimaryKey...),
+	)
+}
+func newTablesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(TablesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, TablesTable, TablesColumn),
 	)
 }

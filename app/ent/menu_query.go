@@ -9,6 +9,7 @@ import (
 	"math"
 	"placio-app/ent/category"
 	"placio-app/ent/menu"
+	"placio-app/ent/menuitem"
 	"placio-app/ent/place"
 	"placio-app/ent/predicate"
 
@@ -26,6 +27,7 @@ type MenuQuery struct {
 	predicates     []predicate.Menu
 	withPlace      *PlaceQuery
 	withCategories *CategoryQuery
+	withMenuItems  *MenuItemQuery
 	withFKs        bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -100,6 +102,28 @@ func (mq *MenuQuery) QueryCategories() *CategoryQuery {
 			sqlgraph.From(menu.Table, menu.FieldID, selector),
 			sqlgraph.To(category.Table, category.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, menu.CategoriesTable, menu.CategoriesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryMenuItems chains the current query on the "menu_items" edge.
+func (mq *MenuQuery) QueryMenuItems() *MenuItemQuery {
+	query := (&MenuItemClient{config: mq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := mq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := mq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(menu.Table, menu.FieldID, selector),
+			sqlgraph.To(menuitem.Table, menuitem.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, menu.MenuItemsTable, menu.MenuItemsPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
 		return fromU, nil
@@ -301,6 +325,7 @@ func (mq *MenuQuery) Clone() *MenuQuery {
 		predicates:     append([]predicate.Menu{}, mq.predicates...),
 		withPlace:      mq.withPlace.Clone(),
 		withCategories: mq.withCategories.Clone(),
+		withMenuItems:  mq.withMenuItems.Clone(),
 		// clone intermediate query.
 		sql:  mq.sql.Clone(),
 		path: mq.path,
@@ -329,8 +354,31 @@ func (mq *MenuQuery) WithCategories(opts ...func(*CategoryQuery)) *MenuQuery {
 	return mq
 }
 
+// WithMenuItems tells the query-builder to eager-load the nodes that are connected to
+// the "menu_items" edge. The optional arguments are used to configure the query builder of the edge.
+func (mq *MenuQuery) WithMenuItems(opts ...func(*MenuItemQuery)) *MenuQuery {
+	query := (&MenuItemClient{config: mq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	mq.withMenuItems = query
+	return mq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
+//
+// Example:
+//
+//	var v []struct {
+//		Name string `json:"name,omitempty"`
+//		Count int `json:"count,omitempty"`
+//	}
+//
+//	client.Menu.Query().
+//		GroupBy(menu.FieldName).
+//		Aggregate(ent.Count()).
+//		Scan(ctx, &v)
 func (mq *MenuQuery) GroupBy(field string, fields ...string) *MenuGroupBy {
 	mq.ctx.Fields = append([]string{field}, fields...)
 	grbuild := &MenuGroupBy{build: mq}
@@ -342,6 +390,16 @@ func (mq *MenuQuery) GroupBy(field string, fields ...string) *MenuGroupBy {
 
 // Select allows the selection one or more fields/columns for the given query,
 // instead of selecting all fields in the entity.
+//
+// Example:
+//
+//	var v []struct {
+//		Name string `json:"name,omitempty"`
+//	}
+//
+//	client.Menu.Query().
+//		Select(menu.FieldName).
+//		Scan(ctx, &v)
 func (mq *MenuQuery) Select(fields ...string) *MenuSelect {
 	mq.ctx.Fields = append(mq.ctx.Fields, fields...)
 	sbuild := &MenuSelect{MenuQuery: mq}
@@ -386,9 +444,10 @@ func (mq *MenuQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Menu, e
 		nodes       = []*Menu{}
 		withFKs     = mq.withFKs
 		_spec       = mq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			mq.withPlace != nil,
 			mq.withCategories != nil,
+			mq.withMenuItems != nil,
 		}
 	)
 	if mq.withPlace != nil {
@@ -425,6 +484,13 @@ func (mq *MenuQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Menu, e
 		if err := mq.loadCategories(ctx, query, nodes,
 			func(n *Menu) { n.Edges.Categories = []*Category{} },
 			func(n *Menu, e *Category) { n.Edges.Categories = append(n.Edges.Categories, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := mq.withMenuItems; query != nil {
+		if err := mq.loadMenuItems(ctx, query, nodes,
+			func(n *Menu) { n.Edges.MenuItems = []*MenuItem{} },
+			func(n *Menu, e *MenuItem) { n.Edges.MenuItems = append(n.Edges.MenuItems, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -491,6 +557,67 @@ func (mq *MenuQuery) loadCategories(ctx context.Context, query *CategoryQuery, n
 			return fmt.Errorf(`unexpected referenced foreign-key "menu_categories" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
+	}
+	return nil
+}
+func (mq *MenuQuery) loadMenuItems(ctx context.Context, query *MenuItemQuery, nodes []*Menu, init func(*Menu), assign func(*Menu, *MenuItem)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[string]*Menu)
+	nids := make(map[string]map[*Menu]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(menu.MenuItemsTable)
+		s.Join(joinT).On(s.C(menuitem.FieldID), joinT.C(menu.MenuItemsPrimaryKey[1]))
+		s.Where(sql.InValues(joinT.C(menu.MenuItemsPrimaryKey[0]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(menu.MenuItemsPrimaryKey[0]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(sql.NullString)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := values[0].(*sql.NullString).String
+				inValue := values[1].(*sql.NullString).String
+				if nids[inValue] == nil {
+					nids[inValue] = map[*Menu]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*MenuItem](ctx, query, qr, query.inters)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "menu_items" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
+		}
 	}
 	return nil
 }

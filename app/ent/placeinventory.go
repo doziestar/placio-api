@@ -7,6 +7,7 @@ import (
 	"placio-app/ent/business"
 	"placio-app/ent/category"
 	"placio-app/ent/inventorytype"
+	"placio-app/ent/menuitem"
 	"placio-app/ent/place"
 	"placio-app/ent/placeinventory"
 	"strings"
@@ -49,6 +50,7 @@ type PlaceInventory struct {
 	business_place_inventories       *string
 	category_place_inventories       *string
 	inventory_type_place_inventories *string
+	menu_item_inventory              *string
 	place_inventories                *string
 	selectValues                     sql.SelectValues
 }
@@ -71,9 +73,11 @@ type PlaceInventoryEdges struct {
 	Business *Business `json:"business,omitempty"`
 	// Category holds the value of the category edge.
 	Category *Category `json:"category,omitempty"`
+	// MenuItem holds the value of the menu_item edge.
+	MenuItem *MenuItem `json:"menu_item,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [8]bool
+	loadedTypes [9]bool
 }
 
 // PlaceOrErr returns the Place value or an error if the edge
@@ -164,6 +168,19 @@ func (e PlaceInventoryEdges) CategoryOrErr() (*Category, error) {
 	return nil, &NotLoadedError{edge: "category"}
 }
 
+// MenuItemOrErr returns the MenuItem value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e PlaceInventoryEdges) MenuItemOrErr() (*MenuItem, error) {
+	if e.loadedTypes[8] {
+		if e.MenuItem == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: menuitem.Label}
+		}
+		return e.MenuItem, nil
+	}
+	return nil, &NotLoadedError{edge: "menu_item"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*PlaceInventory) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -183,7 +200,9 @@ func (*PlaceInventory) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case placeinventory.ForeignKeys[2]: // inventory_type_place_inventories
 			values[i] = new(sql.NullString)
-		case placeinventory.ForeignKeys[3]: // place_inventories
+		case placeinventory.ForeignKeys[3]: // menu_item_inventory
+			values[i] = new(sql.NullString)
+		case placeinventory.ForeignKeys[4]: // place_inventories
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -295,6 +314,13 @@ func (pi *PlaceInventory) assignValues(columns []string, values []any) error {
 			}
 		case placeinventory.ForeignKeys[3]:
 			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field menu_item_inventory", values[i])
+			} else if value.Valid {
+				pi.menu_item_inventory = new(string)
+				*pi.menu_item_inventory = value.String
+			}
+		case placeinventory.ForeignKeys[4]:
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field place_inventories", values[i])
 			} else if value.Valid {
 				pi.place_inventories = new(string)
@@ -351,6 +377,11 @@ func (pi *PlaceInventory) QueryBusiness() *BusinessQuery {
 // QueryCategory queries the "category" edge of the PlaceInventory entity.
 func (pi *PlaceInventory) QueryCategory() *CategoryQuery {
 	return NewPlaceInventoryClient(pi.config).QueryCategory(pi)
+}
+
+// QueryMenuItem queries the "menu_item" edge of the PlaceInventory entity.
+func (pi *PlaceInventory) QueryMenuItem() *MenuItemQuery {
+	return NewPlaceInventoryClient(pi.config).QueryMenuItem(pi)
 }
 
 // Update returns a builder for updating this PlaceInventory.

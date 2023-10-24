@@ -22,6 +22,7 @@ import (
 	"placio-app/ent/reservation"
 	"placio-app/ent/review"
 	"placio-app/ent/room"
+	"placio-app/ent/table"
 	"placio-app/ent/user"
 	"placio-app/ent/userfollowplace"
 	"placio-app/ent/userlikeplace"
@@ -733,6 +734,21 @@ func (pc *PlaceCreate) AddNotifications(n ...*Notification) *PlaceCreate {
 	return pc.AddNotificationIDs(ids...)
 }
 
+// AddTableIDs adds the "tables" edge to the Table entity by IDs.
+func (pc *PlaceCreate) AddTableIDs(ids ...string) *PlaceCreate {
+	pc.mutation.AddTableIDs(ids...)
+	return pc
+}
+
+// AddTables adds the "tables" edges to the Table entity.
+func (pc *PlaceCreate) AddTables(t ...*Table) *PlaceCreate {
+	ids := make([]string, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return pc.AddTableIDs(ids...)
+}
+
 // Mutation returns the PlaceMutation object of the builder.
 func (pc *PlaceCreate) Mutation() *PlaceMutation {
 	return pc.mutation
@@ -1304,6 +1320,22 @@ func (pc *PlaceCreate) createSpec() (*Place, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(notification.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.TablesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   place.TablesTable,
+			Columns: []string{place.TablesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(table.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

@@ -56,10 +56,14 @@ type Tx struct {
 	Media *MediaClient
 	// Menu is the client for interacting with the Menu builders.
 	Menu *MenuClient
+	// MenuItem is the client for interacting with the MenuItem builders.
+	MenuItem *MenuItemClient
 	// Notification is the client for interacting with the Notification builders.
 	Notification *NotificationClient
 	// Order is the client for interacting with the Order builders.
 	Order *OrderClient
+	// OrderItem is the client for interacting with the OrderItem builders.
+	OrderItem *OrderItemClient
 	// Payment is the client for interacting with the Payment builders.
 	Payment *PaymentClient
 	// Place is the client for interacting with the Place builders.
@@ -84,6 +88,8 @@ type Tx struct {
 	Review *ReviewClient
 	// Room is the client for interacting with the Room builders.
 	Room *RoomClient
+	// Table is the client for interacting with the Table builders.
+	Table *TableClient
 	// Template is the client for interacting with the Template builders.
 	Template *TemplateClient
 	// Ticket is the client for interacting with the Ticket builders.
@@ -261,8 +267,10 @@ func (tx *Tx) init() {
 	tx.Like = NewLikeClient(tx.config)
 	tx.Media = NewMediaClient(tx.config)
 	tx.Menu = NewMenuClient(tx.config)
+	tx.MenuItem = NewMenuItemClient(tx.config)
 	tx.Notification = NewNotificationClient(tx.config)
 	tx.Order = NewOrderClient(tx.config)
+	tx.OrderItem = NewOrderItemClient(tx.config)
 	tx.Payment = NewPaymentClient(tx.config)
 	tx.Place = NewPlaceClient(tx.config)
 	tx.PlaceInventory = NewPlaceInventoryClient(tx.config)
@@ -275,6 +283,7 @@ func (tx *Tx) init() {
 	tx.Resourse = NewResourseClient(tx.config)
 	tx.Review = NewReviewClient(tx.config)
 	tx.Room = NewRoomClient(tx.config)
+	tx.Table = NewTableClient(tx.config)
 	tx.Template = NewTemplateClient(tx.config)
 	tx.Ticket = NewTicketClient(tx.config)
 	tx.TicketOption = NewTicketOptionClient(tx.config)

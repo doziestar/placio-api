@@ -134,6 +134,11 @@ func FollowingCount(v int) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldFollowingCount, v))
 }
 
+// IsPremium applies equality check predicate on the "is_premium" field. It's identical to IsPremiumEQ.
+func IsPremium(v bool) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldIsPremium, v))
+}
+
 // Auth0IDEQ applies the EQ predicate on the "auth0_id" field.
 func Auth0IDEQ(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldAuth0ID, v))
@@ -1109,6 +1114,46 @@ func FollowingCountLTE(v int) predicate.User {
 	return predicate.User(sql.FieldLTE(FieldFollowingCount, v))
 }
 
+// RoleEQ applies the EQ predicate on the "role" field.
+func RoleEQ(v Role) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldRole, v))
+}
+
+// RoleNEQ applies the NEQ predicate on the "role" field.
+func RoleNEQ(v Role) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldRole, v))
+}
+
+// RoleIn applies the In predicate on the "role" field.
+func RoleIn(vs ...Role) predicate.User {
+	return predicate.User(sql.FieldIn(FieldRole, vs...))
+}
+
+// RoleNotIn applies the NotIn predicate on the "role" field.
+func RoleNotIn(vs ...Role) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldRole, vs...))
+}
+
+// PermissionsIsNil applies the IsNil predicate on the "permissions" field.
+func PermissionsIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldPermissions))
+}
+
+// PermissionsNotNil applies the NotNil predicate on the "permissions" field.
+func PermissionsNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldPermissions))
+}
+
+// IsPremiumEQ applies the EQ predicate on the "is_premium" field.
+func IsPremiumEQ(v bool) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldIsPremium, v))
+}
+
+// IsPremiumNEQ applies the NEQ predicate on the "is_premium" field.
+func IsPremiumNEQ(v bool) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldIsPremium, v))
+}
+
 // HasUserBusinesses applies the HasEdge predicate on the "userBusinesses" edge.
 func HasUserBusinesses() predicate.User {
 	return predicate.User(func(s *sql.Selector) {
@@ -1653,6 +1698,29 @@ func HasWallet() predicate.User {
 func HasWalletWith(preds ...predicate.AccountWallet) predicate.User {
 	return predicate.User(func(s *sql.Selector) {
 		step := newWalletStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasOrders applies the HasEdge predicate on the "orders" edge.
+func HasOrders() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, OrdersTable, OrdersColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasOrdersWith applies the HasEdge predicate on the "orders" edge with a given conditions (other predicates).
+func HasOrdersWith(preds ...predicate.Order) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newOrdersStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

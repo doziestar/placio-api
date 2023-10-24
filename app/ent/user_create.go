@@ -16,6 +16,7 @@ import (
 	"placio-app/ent/help"
 	"placio-app/ent/like"
 	"placio-app/ent/notification"
+	"placio-app/ent/order"
 	"placio-app/ent/place"
 	"placio-app/ent/post"
 	"placio-app/ent/rating"
@@ -243,6 +244,40 @@ func (uc *UserCreate) SetFollowingCount(i int) *UserCreate {
 func (uc *UserCreate) SetNillableFollowingCount(i *int) *UserCreate {
 	if i != nil {
 		uc.SetFollowingCount(*i)
+	}
+	return uc
+}
+
+// SetRole sets the "role" field.
+func (uc *UserCreate) SetRole(u user.Role) *UserCreate {
+	uc.mutation.SetRole(u)
+	return uc
+}
+
+// SetNillableRole sets the "role" field if the given value is not nil.
+func (uc *UserCreate) SetNillableRole(u *user.Role) *UserCreate {
+	if u != nil {
+		uc.SetRole(*u)
+	}
+	return uc
+}
+
+// SetPermissions sets the "permissions" field.
+func (uc *UserCreate) SetPermissions(s []string) *UserCreate {
+	uc.mutation.SetPermissions(s)
+	return uc
+}
+
+// SetIsPremium sets the "is_premium" field.
+func (uc *UserCreate) SetIsPremium(b bool) *UserCreate {
+	uc.mutation.SetIsPremium(b)
+	return uc
+}
+
+// SetNillableIsPremium sets the "is_premium" field if the given value is not nil.
+func (uc *UserCreate) SetNillableIsPremium(b *bool) *UserCreate {
+	if b != nil {
+		uc.SetIsPremium(*b)
 	}
 	return uc
 }
@@ -621,6 +656,21 @@ func (uc *UserCreate) SetWallet(a *AccountWallet) *UserCreate {
 	return uc.SetWalletID(a.ID)
 }
 
+// AddOrderIDs adds the "orders" edge to the Order entity by IDs.
+func (uc *UserCreate) AddOrderIDs(ids ...string) *UserCreate {
+	uc.mutation.AddOrderIDs(ids...)
+	return uc
+}
+
+// AddOrders adds the "orders" edges to the Order entity.
+func (uc *UserCreate) AddOrders(o ...*Order) *UserCreate {
+	ids := make([]string, len(o))
+	for i := range o {
+		ids[i] = o[i].ID
+	}
+	return uc.AddOrderIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uc *UserCreate) Mutation() *UserMutation {
 	return uc.mutation
@@ -674,6 +724,14 @@ func (uc *UserCreate) defaults() error {
 		v := user.DefaultFollowingCount
 		uc.mutation.SetFollowingCount(v)
 	}
+	if _, ok := uc.mutation.Role(); !ok {
+		v := user.DefaultRole
+		uc.mutation.SetRole(v)
+	}
+	if _, ok := uc.mutation.IsPremium(); !ok {
+		v := user.DefaultIsPremium
+		uc.mutation.SetIsPremium(v)
+	}
 	return nil
 }
 
@@ -690,6 +748,17 @@ func (uc *UserCreate) check() error {
 	}
 	if _, ok := uc.mutation.FollowingCount(); !ok {
 		return &ValidationError{Name: "following_count", err: errors.New(`ent: missing required field "User.following_count"`)}
+	}
+	if _, ok := uc.mutation.Role(); !ok {
+		return &ValidationError{Name: "role", err: errors.New(`ent: missing required field "User.role"`)}
+	}
+	if v, ok := uc.mutation.Role(); ok {
+		if err := user.RoleValidator(v); err != nil {
+			return &ValidationError{Name: "role", err: fmt.Errorf(`ent: validator failed for field "User.role": %w`, err)}
+		}
+	}
+	if _, ok := uc.mutation.IsPremium(); !ok {
+		return &ValidationError{Name: "is_premium", err: errors.New(`ent: missing required field "User.is_premium"`)}
 	}
 	if v, ok := uc.mutation.ID(); ok {
 		if err := user.IDValidator(v); err != nil {
@@ -802,6 +871,18 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 	if value, ok := uc.mutation.FollowingCount(); ok {
 		_spec.SetField(user.FieldFollowingCount, field.TypeInt, value)
 		_node.FollowingCount = value
+	}
+	if value, ok := uc.mutation.Role(); ok {
+		_spec.SetField(user.FieldRole, field.TypeEnum, value)
+		_node.Role = value
+	}
+	if value, ok := uc.mutation.Permissions(); ok {
+		_spec.SetField(user.FieldPermissions, field.TypeJSON, value)
+		_node.Permissions = value
+	}
+	if value, ok := uc.mutation.IsPremium(); ok {
+		_spec.SetField(user.FieldIsPremium, field.TypeBool, value)
+		_node.IsPremium = value
 	}
 	if nodes := uc.mutation.UserBusinessesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -1180,6 +1261,22 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(accountwallet.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.OrdersIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.OrdersTable,
+			Columns: []string{user.OrdersColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

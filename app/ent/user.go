@@ -56,6 +56,12 @@ type User struct {
 	FollowerCount int `json:"follower_count,omitempty"`
 	// FollowingCount holds the value of the "following_count" field.
 	FollowingCount int `json:"following_count,omitempty"`
+	// Role holds the value of the "role" field.
+	Role user.Role `json:"role,omitempty"`
+	// Permissions holds the value of the "permissions" field.
+	Permissions []string `json:"permissions,omitempty"`
+	// IsPremium holds the value of the "is_premium" field.
+	IsPremium bool `json:"is_premium,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserQuery when eager-loading is set.
 	Edges        UserEdges `json:"edges"`
@@ -112,9 +118,11 @@ type UserEdges struct {
 	Notifications []*Notification `json:"notifications,omitempty"`
 	// Wallet holds the value of the wallet edge.
 	Wallet *AccountWallet `json:"wallet,omitempty"`
+	// Orders holds the value of the orders edge.
+	Orders []*Order `json:"orders,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [24]bool
+	loadedTypes [25]bool
 }
 
 // UserBusinessesOrErr returns the UserBusinesses value or an error if the edge
@@ -341,18 +349,29 @@ func (e UserEdges) WalletOrErr() (*AccountWallet, error) {
 	return nil, &NotLoadedError{edge: "wallet"}
 }
 
+// OrdersOrErr returns the Orders value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) OrdersOrErr() ([]*Order, error) {
+	if e.loadedTypes[24] {
+		return e.Orders, nil
+	}
+	return nil, &NotLoadedError{edge: "orders"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*User) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case user.FieldMapCoordinates, user.FieldAuth0Data, user.FieldAppSettings, user.FieldUserSettings:
+		case user.FieldMapCoordinates, user.FieldAuth0Data, user.FieldAppSettings, user.FieldUserSettings, user.FieldPermissions:
 			values[i] = new([]byte)
+		case user.FieldIsPremium:
+			values[i] = new(sql.NullBool)
 		case user.FieldRelevanceScore:
 			values[i] = new(sql.NullFloat64)
 		case user.FieldFollowerCount, user.FieldFollowingCount:
 			values[i] = new(sql.NullInt64)
-		case user.FieldID, user.FieldAuth0ID, user.FieldName, user.FieldPicture, user.FieldCoverImage, user.FieldUsername, user.FieldWebsite, user.FieldLocation, user.FieldLongitude, user.FieldLatitude, user.FieldBio, user.FieldSearchText:
+		case user.FieldID, user.FieldAuth0ID, user.FieldName, user.FieldPicture, user.FieldCoverImage, user.FieldUsername, user.FieldWebsite, user.FieldLocation, user.FieldLongitude, user.FieldLatitude, user.FieldBio, user.FieldSearchText, user.FieldRole:
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -491,6 +510,26 @@ func (u *User) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				u.FollowingCount = int(value.Int64)
 			}
+		case user.FieldRole:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field role", values[i])
+			} else if value.Valid {
+				u.Role = user.Role(value.String)
+			}
+		case user.FieldPermissions:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field permissions", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &u.Permissions); err != nil {
+					return fmt.Errorf("unmarshal field permissions: %w", err)
+				}
+			}
+		case user.FieldIsPremium:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_premium", values[i])
+			} else if value.Valid {
+				u.IsPremium = value.Bool
+			}
 		default:
 			u.selectValues.Set(columns[i], values[i])
 		}
@@ -624,6 +663,11 @@ func (u *User) QueryWallet() *AccountWalletQuery {
 	return NewUserClient(u.config).QueryWallet(u)
 }
 
+// QueryOrders queries the "orders" edge of the User entity.
+func (u *User) QueryOrders() *OrderQuery {
+	return NewUserClient(u.config).QueryOrders(u)
+}
+
 // Update returns a builder for updating this User.
 // Note that you need to call User.Unwrap() before calling this method if this User
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -700,6 +744,15 @@ func (u *User) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("following_count=")
 	builder.WriteString(fmt.Sprintf("%v", u.FollowingCount))
+	builder.WriteString(", ")
+	builder.WriteString("role=")
+	builder.WriteString(fmt.Sprintf("%v", u.Role))
+	builder.WriteString(", ")
+	builder.WriteString("permissions=")
+	builder.WriteString(fmt.Sprintf("%v", u.Permissions))
+	builder.WriteString(", ")
+	builder.WriteString("is_premium=")
+	builder.WriteString(fmt.Sprintf("%v", u.IsPremium))
 	builder.WriteByte(')')
 	return builder.String()
 }
