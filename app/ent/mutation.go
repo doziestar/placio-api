@@ -34,6 +34,7 @@ import (
 	"placio-app/ent/place"
 	"placio-app/ent/placeinventory"
 	"placio-app/ent/placeinventoryattribute"
+	"placio-app/ent/placetable"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
 	"placio-app/ent/rating"
@@ -41,7 +42,6 @@ import (
 	"placio-app/ent/reservationblock"
 	"placio-app/ent/review"
 	"placio-app/ent/room"
-	"placio-app/ent/table"
 	"placio-app/ent/template"
 	"placio-app/ent/ticket"
 	"placio-app/ent/ticketoption"
@@ -101,6 +101,7 @@ const (
 	TypePlace                   = "Place"
 	TypePlaceInventory          = "PlaceInventory"
 	TypePlaceInventoryAttribute = "PlaceInventoryAttribute"
+	TypePlaceTable              = "PlaceTable"
 	TypePost                    = "Post"
 	TypeRating                  = "Rating"
 	TypeReaction                = "Reaction"
@@ -109,7 +110,6 @@ const (
 	TypeResourse                = "Resourse"
 	TypeReview                  = "Review"
 	TypeRoom                    = "Room"
-	TypeTable                   = "Table"
 	TypeTemplate                = "Template"
 	TypeTicket                  = "Ticket"
 	TypeTicketOption            = "TicketOption"
@@ -24754,7 +24754,7 @@ func (m *OrderMutation) ResetOrderItems() {
 	m.removedorder_items = nil
 }
 
-// AddTableIDs adds the "table" edge to the Table entity by ids.
+// AddTableIDs adds the "table" edge to the PlaceTable entity by ids.
 func (m *OrderMutation) AddTableIDs(ids ...string) {
 	if m.table == nil {
 		m.table = make(map[string]struct{})
@@ -24764,17 +24764,17 @@ func (m *OrderMutation) AddTableIDs(ids ...string) {
 	}
 }
 
-// ClearTable clears the "table" edge to the Table entity.
+// ClearTable clears the "table" edge to the PlaceTable entity.
 func (m *OrderMutation) ClearTable() {
 	m.clearedtable = true
 }
 
-// TableCleared reports if the "table" edge to the Table entity was cleared.
+// TableCleared reports if the "table" edge to the PlaceTable entity was cleared.
 func (m *OrderMutation) TableCleared() bool {
 	return m.clearedtable
 }
 
-// RemoveTableIDs removes the "table" edge to the Table entity by IDs.
+// RemoveTableIDs removes the "table" edge to the PlaceTable entity by IDs.
 func (m *OrderMutation) RemoveTableIDs(ids ...string) {
 	if m.removedtable == nil {
 		m.removedtable = make(map[string]struct{})
@@ -24785,7 +24785,7 @@ func (m *OrderMutation) RemoveTableIDs(ids ...string) {
 	}
 }
 
-// RemovedTable returns the removed IDs of the "table" edge to the Table entity.
+// RemovedTable returns the removed IDs of the "table" edge to the PlaceTable entity.
 func (m *OrderMutation) RemovedTableIDs() (ids []string) {
 	for id := range m.removedtable {
 		ids = append(ids, id)
@@ -29225,7 +29225,7 @@ func (m *PlaceMutation) ResetNotifications() {
 	m.removednotifications = nil
 }
 
-// AddTableIDs adds the "tables" edge to the Table entity by ids.
+// AddTableIDs adds the "tables" edge to the PlaceTable entity by ids.
 func (m *PlaceMutation) AddTableIDs(ids ...string) {
 	if m.tables == nil {
 		m.tables = make(map[string]struct{})
@@ -29235,17 +29235,17 @@ func (m *PlaceMutation) AddTableIDs(ids ...string) {
 	}
 }
 
-// ClearTables clears the "tables" edge to the Table entity.
+// ClearTables clears the "tables" edge to the PlaceTable entity.
 func (m *PlaceMutation) ClearTables() {
 	m.clearedtables = true
 }
 
-// TablesCleared reports if the "tables" edge to the Table entity was cleared.
+// TablesCleared reports if the "tables" edge to the PlaceTable entity was cleared.
 func (m *PlaceMutation) TablesCleared() bool {
 	return m.clearedtables
 }
 
-// RemoveTableIDs removes the "tables" edge to the Table entity by IDs.
+// RemoveTableIDs removes the "tables" edge to the PlaceTable entity by IDs.
 func (m *PlaceMutation) RemoveTableIDs(ids ...string) {
 	if m.removedtables == nil {
 		m.removedtables = make(map[string]struct{})
@@ -29256,7 +29256,7 @@ func (m *PlaceMutation) RemoveTableIDs(ids ...string) {
 	}
 }
 
-// RemovedTables returns the removed IDs of the "tables" edge to the Table entity.
+// RemovedTables returns the removed IDs of the "tables" edge to the PlaceTable entity.
 func (m *PlaceMutation) RemovedTablesIDs() (ids []string) {
 	for id := range m.removedtables {
 		ids = append(ids, id)
@@ -33069,6 +33069,602 @@ func (m *PlaceInventoryAttributeMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown PlaceInventoryAttribute edge %s", name)
+}
+
+// PlaceTableMutation represents an operation that mutates the PlaceTable nodes in the graph.
+type PlaceTableMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *string
+	number        *int
+	addnumber     *int
+	qr_code       *string
+	clearedFields map[string]struct{}
+	place         *string
+	clearedplace  bool
+	orders        map[string]struct{}
+	removedorders map[string]struct{}
+	clearedorders bool
+	done          bool
+	oldValue      func(context.Context) (*PlaceTable, error)
+	predicates    []predicate.PlaceTable
+}
+
+var _ ent.Mutation = (*PlaceTableMutation)(nil)
+
+// placetableOption allows management of the mutation configuration using functional options.
+type placetableOption func(*PlaceTableMutation)
+
+// newPlaceTableMutation creates new mutation for the PlaceTable entity.
+func newPlaceTableMutation(c config, op Op, opts ...placetableOption) *PlaceTableMutation {
+	m := &PlaceTableMutation{
+		config:        c,
+		op:            op,
+		typ:           TypePlaceTable,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withPlaceTableID sets the ID field of the mutation.
+func withPlaceTableID(id string) placetableOption {
+	return func(m *PlaceTableMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *PlaceTable
+		)
+		m.oldValue = func(ctx context.Context) (*PlaceTable, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().PlaceTable.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withPlaceTable sets the old PlaceTable of the mutation.
+func withPlaceTable(node *PlaceTable) placetableOption {
+	return func(m *PlaceTableMutation) {
+		m.oldValue = func(context.Context) (*PlaceTable, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m PlaceTableMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m PlaceTableMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of PlaceTable entities.
+func (m *PlaceTableMutation) SetID(id string) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *PlaceTableMutation) ID() (id string, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *PlaceTableMutation) IDs(ctx context.Context) ([]string, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []string{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().PlaceTable.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetNumber sets the "number" field.
+func (m *PlaceTableMutation) SetNumber(i int) {
+	m.number = &i
+	m.addnumber = nil
+}
+
+// Number returns the value of the "number" field in the mutation.
+func (m *PlaceTableMutation) Number() (r int, exists bool) {
+	v := m.number
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNumber returns the old "number" field's value of the PlaceTable entity.
+// If the PlaceTable object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceTableMutation) OldNumber(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNumber is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNumber requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNumber: %w", err)
+	}
+	return oldValue.Number, nil
+}
+
+// AddNumber adds i to the "number" field.
+func (m *PlaceTableMutation) AddNumber(i int) {
+	if m.addnumber != nil {
+		*m.addnumber += i
+	} else {
+		m.addnumber = &i
+	}
+}
+
+// AddedNumber returns the value that was added to the "number" field in this mutation.
+func (m *PlaceTableMutation) AddedNumber() (r int, exists bool) {
+	v := m.addnumber
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetNumber resets all changes to the "number" field.
+func (m *PlaceTableMutation) ResetNumber() {
+	m.number = nil
+	m.addnumber = nil
+}
+
+// SetQrCode sets the "qr_code" field.
+func (m *PlaceTableMutation) SetQrCode(s string) {
+	m.qr_code = &s
+}
+
+// QrCode returns the value of the "qr_code" field in the mutation.
+func (m *PlaceTableMutation) QrCode() (r string, exists bool) {
+	v := m.qr_code
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldQrCode returns the old "qr_code" field's value of the PlaceTable entity.
+// If the PlaceTable object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceTableMutation) OldQrCode(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldQrCode is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldQrCode requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldQrCode: %w", err)
+	}
+	return oldValue.QrCode, nil
+}
+
+// ClearQrCode clears the value of the "qr_code" field.
+func (m *PlaceTableMutation) ClearQrCode() {
+	m.qr_code = nil
+	m.clearedFields[placetable.FieldQrCode] = struct{}{}
+}
+
+// QrCodeCleared returns if the "qr_code" field was cleared in this mutation.
+func (m *PlaceTableMutation) QrCodeCleared() bool {
+	_, ok := m.clearedFields[placetable.FieldQrCode]
+	return ok
+}
+
+// ResetQrCode resets all changes to the "qr_code" field.
+func (m *PlaceTableMutation) ResetQrCode() {
+	m.qr_code = nil
+	delete(m.clearedFields, placetable.FieldQrCode)
+}
+
+// SetPlaceID sets the "place" edge to the Place entity by id.
+func (m *PlaceTableMutation) SetPlaceID(id string) {
+	m.place = &id
+}
+
+// ClearPlace clears the "place" edge to the Place entity.
+func (m *PlaceTableMutation) ClearPlace() {
+	m.clearedplace = true
+}
+
+// PlaceCleared reports if the "place" edge to the Place entity was cleared.
+func (m *PlaceTableMutation) PlaceCleared() bool {
+	return m.clearedplace
+}
+
+// PlaceID returns the "place" edge ID in the mutation.
+func (m *PlaceTableMutation) PlaceID() (id string, exists bool) {
+	if m.place != nil {
+		return *m.place, true
+	}
+	return
+}
+
+// PlaceIDs returns the "place" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// PlaceID instead. It exists only for internal usage by the builders.
+func (m *PlaceTableMutation) PlaceIDs() (ids []string) {
+	if id := m.place; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetPlace resets all changes to the "place" edge.
+func (m *PlaceTableMutation) ResetPlace() {
+	m.place = nil
+	m.clearedplace = false
+}
+
+// AddOrderIDs adds the "orders" edge to the Order entity by ids.
+func (m *PlaceTableMutation) AddOrderIDs(ids ...string) {
+	if m.orders == nil {
+		m.orders = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.orders[ids[i]] = struct{}{}
+	}
+}
+
+// ClearOrders clears the "orders" edge to the Order entity.
+func (m *PlaceTableMutation) ClearOrders() {
+	m.clearedorders = true
+}
+
+// OrdersCleared reports if the "orders" edge to the Order entity was cleared.
+func (m *PlaceTableMutation) OrdersCleared() bool {
+	return m.clearedorders
+}
+
+// RemoveOrderIDs removes the "orders" edge to the Order entity by IDs.
+func (m *PlaceTableMutation) RemoveOrderIDs(ids ...string) {
+	if m.removedorders == nil {
+		m.removedorders = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.orders, ids[i])
+		m.removedorders[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedOrders returns the removed IDs of the "orders" edge to the Order entity.
+func (m *PlaceTableMutation) RemovedOrdersIDs() (ids []string) {
+	for id := range m.removedorders {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// OrdersIDs returns the "orders" edge IDs in the mutation.
+func (m *PlaceTableMutation) OrdersIDs() (ids []string) {
+	for id := range m.orders {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetOrders resets all changes to the "orders" edge.
+func (m *PlaceTableMutation) ResetOrders() {
+	m.orders = nil
+	m.clearedorders = false
+	m.removedorders = nil
+}
+
+// Where appends a list predicates to the PlaceTableMutation builder.
+func (m *PlaceTableMutation) Where(ps ...predicate.PlaceTable) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the PlaceTableMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *PlaceTableMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.PlaceTable, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *PlaceTableMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *PlaceTableMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (PlaceTable).
+func (m *PlaceTableMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *PlaceTableMutation) Fields() []string {
+	fields := make([]string, 0, 2)
+	if m.number != nil {
+		fields = append(fields, placetable.FieldNumber)
+	}
+	if m.qr_code != nil {
+		fields = append(fields, placetable.FieldQrCode)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *PlaceTableMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case placetable.FieldNumber:
+		return m.Number()
+	case placetable.FieldQrCode:
+		return m.QrCode()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *PlaceTableMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case placetable.FieldNumber:
+		return m.OldNumber(ctx)
+	case placetable.FieldQrCode:
+		return m.OldQrCode(ctx)
+	}
+	return nil, fmt.Errorf("unknown PlaceTable field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *PlaceTableMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case placetable.FieldNumber:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNumber(v)
+		return nil
+	case placetable.FieldQrCode:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetQrCode(v)
+		return nil
+	}
+	return fmt.Errorf("unknown PlaceTable field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *PlaceTableMutation) AddedFields() []string {
+	var fields []string
+	if m.addnumber != nil {
+		fields = append(fields, placetable.FieldNumber)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *PlaceTableMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case placetable.FieldNumber:
+		return m.AddedNumber()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *PlaceTableMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case placetable.FieldNumber:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddNumber(v)
+		return nil
+	}
+	return fmt.Errorf("unknown PlaceTable numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *PlaceTableMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(placetable.FieldQrCode) {
+		fields = append(fields, placetable.FieldQrCode)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *PlaceTableMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *PlaceTableMutation) ClearField(name string) error {
+	switch name {
+	case placetable.FieldQrCode:
+		m.ClearQrCode()
+		return nil
+	}
+	return fmt.Errorf("unknown PlaceTable nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *PlaceTableMutation) ResetField(name string) error {
+	switch name {
+	case placetable.FieldNumber:
+		m.ResetNumber()
+		return nil
+	case placetable.FieldQrCode:
+		m.ResetQrCode()
+		return nil
+	}
+	return fmt.Errorf("unknown PlaceTable field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *PlaceTableMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.place != nil {
+		edges = append(edges, placetable.EdgePlace)
+	}
+	if m.orders != nil {
+		edges = append(edges, placetable.EdgeOrders)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *PlaceTableMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case placetable.EdgePlace:
+		if id := m.place; id != nil {
+			return []ent.Value{*id}
+		}
+	case placetable.EdgeOrders:
+		ids := make([]ent.Value, 0, len(m.orders))
+		for id := range m.orders {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *PlaceTableMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.removedorders != nil {
+		edges = append(edges, placetable.EdgeOrders)
+	}
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *PlaceTableMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case placetable.EdgeOrders:
+		ids := make([]ent.Value, 0, len(m.removedorders))
+		for id := range m.removedorders {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *PlaceTableMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedplace {
+		edges = append(edges, placetable.EdgePlace)
+	}
+	if m.clearedorders {
+		edges = append(edges, placetable.EdgeOrders)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *PlaceTableMutation) EdgeCleared(name string) bool {
+	switch name {
+	case placetable.EdgePlace:
+		return m.clearedplace
+	case placetable.EdgeOrders:
+		return m.clearedorders
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *PlaceTableMutation) ClearEdge(name string) error {
+	switch name {
+	case placetable.EdgePlace:
+		m.ClearPlace()
+		return nil
+	}
+	return fmt.Errorf("unknown PlaceTable unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *PlaceTableMutation) ResetEdge(name string) error {
+	switch name {
+	case placetable.EdgePlace:
+		m.ResetPlace()
+		return nil
+	case placetable.EdgeOrders:
+		m.ResetOrders()
+		return nil
+	}
+	return fmt.Errorf("unknown PlaceTable edge %s", name)
 }
 
 // PostMutation represents an operation that mutates the Post nodes in the graph.
@@ -39460,602 +40056,6 @@ func (m *RoomMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown Room edge %s", name)
-}
-
-// TableMutation represents an operation that mutates the Table nodes in the graph.
-type TableMutation struct {
-	config
-	op            Op
-	typ           string
-	id            *string
-	number        *int
-	addnumber     *int
-	qr_code       *string
-	clearedFields map[string]struct{}
-	place         *string
-	clearedplace  bool
-	orders        map[string]struct{}
-	removedorders map[string]struct{}
-	clearedorders bool
-	done          bool
-	oldValue      func(context.Context) (*Table, error)
-	predicates    []predicate.Table
-}
-
-var _ ent.Mutation = (*TableMutation)(nil)
-
-// tableOption allows management of the mutation configuration using functional options.
-type tableOption func(*TableMutation)
-
-// newTableMutation creates new mutation for the Table entity.
-func newTableMutation(c config, op Op, opts ...tableOption) *TableMutation {
-	m := &TableMutation{
-		config:        c,
-		op:            op,
-		typ:           TypeTable,
-		clearedFields: make(map[string]struct{}),
-	}
-	for _, opt := range opts {
-		opt(m)
-	}
-	return m
-}
-
-// withTableID sets the ID field of the mutation.
-func withTableID(id string) tableOption {
-	return func(m *TableMutation) {
-		var (
-			err   error
-			once  sync.Once
-			value *Table
-		)
-		m.oldValue = func(ctx context.Context) (*Table, error) {
-			once.Do(func() {
-				if m.done {
-					err = errors.New("querying old values post mutation is not allowed")
-				} else {
-					value, err = m.Client().Table.Get(ctx, id)
-				}
-			})
-			return value, err
-		}
-		m.id = &id
-	}
-}
-
-// withTable sets the old Table of the mutation.
-func withTable(node *Table) tableOption {
-	return func(m *TableMutation) {
-		m.oldValue = func(context.Context) (*Table, error) {
-			return node, nil
-		}
-		m.id = &node.ID
-	}
-}
-
-// Client returns a new `ent.Client` from the mutation. If the mutation was
-// executed in a transaction (ent.Tx), a transactional client is returned.
-func (m TableMutation) Client() *Client {
-	client := &Client{config: m.config}
-	client.init()
-	return client
-}
-
-// Tx returns an `ent.Tx` for mutations that were executed in transactions;
-// it returns an error otherwise.
-func (m TableMutation) Tx() (*Tx, error) {
-	if _, ok := m.driver.(*txDriver); !ok {
-		return nil, errors.New("ent: mutation is not running in a transaction")
-	}
-	tx := &Tx{config: m.config}
-	tx.init()
-	return tx, nil
-}
-
-// SetID sets the value of the id field. Note that this
-// operation is only accepted on creation of Table entities.
-func (m *TableMutation) SetID(id string) {
-	m.id = &id
-}
-
-// ID returns the ID value in the mutation. Note that the ID is only available
-// if it was provided to the builder or after it was returned from the database.
-func (m *TableMutation) ID() (id string, exists bool) {
-	if m.id == nil {
-		return
-	}
-	return *m.id, true
-}
-
-// IDs queries the database and returns the entity ids that match the mutation's predicate.
-// That means, if the mutation is applied within a transaction with an isolation level such
-// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
-// or updated by the mutation.
-func (m *TableMutation) IDs(ctx context.Context) ([]string, error) {
-	switch {
-	case m.op.Is(OpUpdateOne | OpDeleteOne):
-		id, exists := m.ID()
-		if exists {
-			return []string{id}, nil
-		}
-		fallthrough
-	case m.op.Is(OpUpdate | OpDelete):
-		return m.Client().Table.Query().Where(m.predicates...).IDs(ctx)
-	default:
-		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
-	}
-}
-
-// SetNumber sets the "number" field.
-func (m *TableMutation) SetNumber(i int) {
-	m.number = &i
-	m.addnumber = nil
-}
-
-// Number returns the value of the "number" field in the mutation.
-func (m *TableMutation) Number() (r int, exists bool) {
-	v := m.number
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldNumber returns the old "number" field's value of the Table entity.
-// If the Table object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TableMutation) OldNumber(ctx context.Context) (v int, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldNumber is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldNumber requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldNumber: %w", err)
-	}
-	return oldValue.Number, nil
-}
-
-// AddNumber adds i to the "number" field.
-func (m *TableMutation) AddNumber(i int) {
-	if m.addnumber != nil {
-		*m.addnumber += i
-	} else {
-		m.addnumber = &i
-	}
-}
-
-// AddedNumber returns the value that was added to the "number" field in this mutation.
-func (m *TableMutation) AddedNumber() (r int, exists bool) {
-	v := m.addnumber
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetNumber resets all changes to the "number" field.
-func (m *TableMutation) ResetNumber() {
-	m.number = nil
-	m.addnumber = nil
-}
-
-// SetQrCode sets the "qr_code" field.
-func (m *TableMutation) SetQrCode(s string) {
-	m.qr_code = &s
-}
-
-// QrCode returns the value of the "qr_code" field in the mutation.
-func (m *TableMutation) QrCode() (r string, exists bool) {
-	v := m.qr_code
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldQrCode returns the old "qr_code" field's value of the Table entity.
-// If the Table object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TableMutation) OldQrCode(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldQrCode is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldQrCode requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldQrCode: %w", err)
-	}
-	return oldValue.QrCode, nil
-}
-
-// ClearQrCode clears the value of the "qr_code" field.
-func (m *TableMutation) ClearQrCode() {
-	m.qr_code = nil
-	m.clearedFields[table.FieldQrCode] = struct{}{}
-}
-
-// QrCodeCleared returns if the "qr_code" field was cleared in this mutation.
-func (m *TableMutation) QrCodeCleared() bool {
-	_, ok := m.clearedFields[table.FieldQrCode]
-	return ok
-}
-
-// ResetQrCode resets all changes to the "qr_code" field.
-func (m *TableMutation) ResetQrCode() {
-	m.qr_code = nil
-	delete(m.clearedFields, table.FieldQrCode)
-}
-
-// SetPlaceID sets the "place" edge to the Place entity by id.
-func (m *TableMutation) SetPlaceID(id string) {
-	m.place = &id
-}
-
-// ClearPlace clears the "place" edge to the Place entity.
-func (m *TableMutation) ClearPlace() {
-	m.clearedplace = true
-}
-
-// PlaceCleared reports if the "place" edge to the Place entity was cleared.
-func (m *TableMutation) PlaceCleared() bool {
-	return m.clearedplace
-}
-
-// PlaceID returns the "place" edge ID in the mutation.
-func (m *TableMutation) PlaceID() (id string, exists bool) {
-	if m.place != nil {
-		return *m.place, true
-	}
-	return
-}
-
-// PlaceIDs returns the "place" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// PlaceID instead. It exists only for internal usage by the builders.
-func (m *TableMutation) PlaceIDs() (ids []string) {
-	if id := m.place; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetPlace resets all changes to the "place" edge.
-func (m *TableMutation) ResetPlace() {
-	m.place = nil
-	m.clearedplace = false
-}
-
-// AddOrderIDs adds the "orders" edge to the Order entity by ids.
-func (m *TableMutation) AddOrderIDs(ids ...string) {
-	if m.orders == nil {
-		m.orders = make(map[string]struct{})
-	}
-	for i := range ids {
-		m.orders[ids[i]] = struct{}{}
-	}
-}
-
-// ClearOrders clears the "orders" edge to the Order entity.
-func (m *TableMutation) ClearOrders() {
-	m.clearedorders = true
-}
-
-// OrdersCleared reports if the "orders" edge to the Order entity was cleared.
-func (m *TableMutation) OrdersCleared() bool {
-	return m.clearedorders
-}
-
-// RemoveOrderIDs removes the "orders" edge to the Order entity by IDs.
-func (m *TableMutation) RemoveOrderIDs(ids ...string) {
-	if m.removedorders == nil {
-		m.removedorders = make(map[string]struct{})
-	}
-	for i := range ids {
-		delete(m.orders, ids[i])
-		m.removedorders[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedOrders returns the removed IDs of the "orders" edge to the Order entity.
-func (m *TableMutation) RemovedOrdersIDs() (ids []string) {
-	for id := range m.removedorders {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// OrdersIDs returns the "orders" edge IDs in the mutation.
-func (m *TableMutation) OrdersIDs() (ids []string) {
-	for id := range m.orders {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// ResetOrders resets all changes to the "orders" edge.
-func (m *TableMutation) ResetOrders() {
-	m.orders = nil
-	m.clearedorders = false
-	m.removedorders = nil
-}
-
-// Where appends a list predicates to the TableMutation builder.
-func (m *TableMutation) Where(ps ...predicate.Table) {
-	m.predicates = append(m.predicates, ps...)
-}
-
-// WhereP appends storage-level predicates to the TableMutation builder. Using this method,
-// users can use type-assertion to append predicates that do not depend on any generated package.
-func (m *TableMutation) WhereP(ps ...func(*sql.Selector)) {
-	p := make([]predicate.Table, len(ps))
-	for i := range ps {
-		p[i] = ps[i]
-	}
-	m.Where(p...)
-}
-
-// Op returns the operation name.
-func (m *TableMutation) Op() Op {
-	return m.op
-}
-
-// SetOp allows setting the mutation operation.
-func (m *TableMutation) SetOp(op Op) {
-	m.op = op
-}
-
-// Type returns the node type of this mutation (Table).
-func (m *TableMutation) Type() string {
-	return m.typ
-}
-
-// Fields returns all fields that were changed during this mutation. Note that in
-// order to get all numeric fields that were incremented/decremented, call
-// AddedFields().
-func (m *TableMutation) Fields() []string {
-	fields := make([]string, 0, 2)
-	if m.number != nil {
-		fields = append(fields, table.FieldNumber)
-	}
-	if m.qr_code != nil {
-		fields = append(fields, table.FieldQrCode)
-	}
-	return fields
-}
-
-// Field returns the value of a field with the given name. The second boolean
-// return value indicates that this field was not set, or was not defined in the
-// schema.
-func (m *TableMutation) Field(name string) (ent.Value, bool) {
-	switch name {
-	case table.FieldNumber:
-		return m.Number()
-	case table.FieldQrCode:
-		return m.QrCode()
-	}
-	return nil, false
-}
-
-// OldField returns the old value of the field from the database. An error is
-// returned if the mutation operation is not UpdateOne, or the query to the
-// database failed.
-func (m *TableMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
-	switch name {
-	case table.FieldNumber:
-		return m.OldNumber(ctx)
-	case table.FieldQrCode:
-		return m.OldQrCode(ctx)
-	}
-	return nil, fmt.Errorf("unknown Table field %s", name)
-}
-
-// SetField sets the value of a field with the given name. It returns an error if
-// the field is not defined in the schema, or if the type mismatched the field
-// type.
-func (m *TableMutation) SetField(name string, value ent.Value) error {
-	switch name {
-	case table.FieldNumber:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetNumber(v)
-		return nil
-	case table.FieldQrCode:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetQrCode(v)
-		return nil
-	}
-	return fmt.Errorf("unknown Table field %s", name)
-}
-
-// AddedFields returns all numeric fields that were incremented/decremented during
-// this mutation.
-func (m *TableMutation) AddedFields() []string {
-	var fields []string
-	if m.addnumber != nil {
-		fields = append(fields, table.FieldNumber)
-	}
-	return fields
-}
-
-// AddedField returns the numeric value that was incremented/decremented on a field
-// with the given name. The second boolean return value indicates that this field
-// was not set, or was not defined in the schema.
-func (m *TableMutation) AddedField(name string) (ent.Value, bool) {
-	switch name {
-	case table.FieldNumber:
-		return m.AddedNumber()
-	}
-	return nil, false
-}
-
-// AddField adds the value to the field with the given name. It returns an error if
-// the field is not defined in the schema, or if the type mismatched the field
-// type.
-func (m *TableMutation) AddField(name string, value ent.Value) error {
-	switch name {
-	case table.FieldNumber:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddNumber(v)
-		return nil
-	}
-	return fmt.Errorf("unknown Table numeric field %s", name)
-}
-
-// ClearedFields returns all nullable fields that were cleared during this
-// mutation.
-func (m *TableMutation) ClearedFields() []string {
-	var fields []string
-	if m.FieldCleared(table.FieldQrCode) {
-		fields = append(fields, table.FieldQrCode)
-	}
-	return fields
-}
-
-// FieldCleared returns a boolean indicating if a field with the given name was
-// cleared in this mutation.
-func (m *TableMutation) FieldCleared(name string) bool {
-	_, ok := m.clearedFields[name]
-	return ok
-}
-
-// ClearField clears the value of the field with the given name. It returns an
-// error if the field is not defined in the schema.
-func (m *TableMutation) ClearField(name string) error {
-	switch name {
-	case table.FieldQrCode:
-		m.ClearQrCode()
-		return nil
-	}
-	return fmt.Errorf("unknown Table nullable field %s", name)
-}
-
-// ResetField resets all changes in the mutation for the field with the given name.
-// It returns an error if the field is not defined in the schema.
-func (m *TableMutation) ResetField(name string) error {
-	switch name {
-	case table.FieldNumber:
-		m.ResetNumber()
-		return nil
-	case table.FieldQrCode:
-		m.ResetQrCode()
-		return nil
-	}
-	return fmt.Errorf("unknown Table field %s", name)
-}
-
-// AddedEdges returns all edge names that were set/added in this mutation.
-func (m *TableMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
-	if m.place != nil {
-		edges = append(edges, table.EdgePlace)
-	}
-	if m.orders != nil {
-		edges = append(edges, table.EdgeOrders)
-	}
-	return edges
-}
-
-// AddedIDs returns all IDs (to other nodes) that were added for the given edge
-// name in this mutation.
-func (m *TableMutation) AddedIDs(name string) []ent.Value {
-	switch name {
-	case table.EdgePlace:
-		if id := m.place; id != nil {
-			return []ent.Value{*id}
-		}
-	case table.EdgeOrders:
-		ids := make([]ent.Value, 0, len(m.orders))
-		for id := range m.orders {
-			ids = append(ids, id)
-		}
-		return ids
-	}
-	return nil
-}
-
-// RemovedEdges returns all edge names that were removed in this mutation.
-func (m *TableMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
-	if m.removedorders != nil {
-		edges = append(edges, table.EdgeOrders)
-	}
-	return edges
-}
-
-// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
-// the given name in this mutation.
-func (m *TableMutation) RemovedIDs(name string) []ent.Value {
-	switch name {
-	case table.EdgeOrders:
-		ids := make([]ent.Value, 0, len(m.removedorders))
-		for id := range m.removedorders {
-			ids = append(ids, id)
-		}
-		return ids
-	}
-	return nil
-}
-
-// ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *TableMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
-	if m.clearedplace {
-		edges = append(edges, table.EdgePlace)
-	}
-	if m.clearedorders {
-		edges = append(edges, table.EdgeOrders)
-	}
-	return edges
-}
-
-// EdgeCleared returns a boolean which indicates if the edge with the given name
-// was cleared in this mutation.
-func (m *TableMutation) EdgeCleared(name string) bool {
-	switch name {
-	case table.EdgePlace:
-		return m.clearedplace
-	case table.EdgeOrders:
-		return m.clearedorders
-	}
-	return false
-}
-
-// ClearEdge clears the value of the edge with the given name. It returns an error
-// if that edge is not defined in the schema.
-func (m *TableMutation) ClearEdge(name string) error {
-	switch name {
-	case table.EdgePlace:
-		m.ClearPlace()
-		return nil
-	}
-	return fmt.Errorf("unknown Table unique edge %s", name)
-}
-
-// ResetEdge resets all changes to the edge with the given name in this mutation.
-// It returns an error if the edge is not defined in the schema.
-func (m *TableMutation) ResetEdge(name string) error {
-	switch name {
-	case table.EdgePlace:
-		m.ResetPlace()
-		return nil
-	case table.EdgeOrders:
-		m.ResetOrders()
-		return nil
-	}
-	return fmt.Errorf("unknown Table edge %s", name)
 }
 
 // TemplateMutation represents an operation that mutates the Template nodes in the graph.

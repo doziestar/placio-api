@@ -9,8 +9,8 @@ import (
 	"math"
 	"placio-app/ent/order"
 	"placio-app/ent/orderitem"
+	"placio-app/ent/placetable"
 	"placio-app/ent/predicate"
-	"placio-app/ent/table"
 	"placio-app/ent/user"
 
 	"entgo.io/ent/dialect/sql"
@@ -27,7 +27,7 @@ type OrderQuery struct {
 	predicates     []predicate.Order
 	withUser       *UserQuery
 	withOrderItems *OrderItemQuery
-	withTable      *TableQuery
+	withTable      *PlaceTableQuery
 	withFKs        bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -110,8 +110,8 @@ func (oq *OrderQuery) QueryOrderItems() *OrderItemQuery {
 }
 
 // QueryTable chains the current query on the "table" edge.
-func (oq *OrderQuery) QueryTable() *TableQuery {
-	query := (&TableClient{config: oq.config}).Query()
+func (oq *OrderQuery) QueryTable() *PlaceTableQuery {
+	query := (&PlaceTableClient{config: oq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := oq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -122,7 +122,7 @@ func (oq *OrderQuery) QueryTable() *TableQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(order.Table, order.FieldID, selector),
-			sqlgraph.To(table.Table, table.FieldID),
+			sqlgraph.To(placetable.Table, placetable.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, true, order.TableTable, order.TablePrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(oq.driver.Dialect(), step)
@@ -356,8 +356,8 @@ func (oq *OrderQuery) WithOrderItems(opts ...func(*OrderItemQuery)) *OrderQuery 
 
 // WithTable tells the query-builder to eager-load the nodes that are connected to
 // the "table" edge. The optional arguments are used to configure the query builder of the edge.
-func (oq *OrderQuery) WithTable(opts ...func(*TableQuery)) *OrderQuery {
-	query := (&TableClient{config: oq.config}).Query()
+func (oq *OrderQuery) WithTable(opts ...func(*PlaceTableQuery)) *OrderQuery {
+	query := (&PlaceTableClient{config: oq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -489,8 +489,8 @@ func (oq *OrderQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Order,
 	}
 	if query := oq.withTable; query != nil {
 		if err := oq.loadTable(ctx, query, nodes,
-			func(n *Order) { n.Edges.Table = []*Table{} },
-			func(n *Order, e *Table) { n.Edges.Table = append(n.Edges.Table, e) }); err != nil {
+			func(n *Order) { n.Edges.Table = []*PlaceTable{} },
+			func(n *Order, e *PlaceTable) { n.Edges.Table = append(n.Edges.Table, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -590,7 +590,7 @@ func (oq *OrderQuery) loadOrderItems(ctx context.Context, query *OrderItemQuery,
 	}
 	return nil
 }
-func (oq *OrderQuery) loadTable(ctx context.Context, query *TableQuery, nodes []*Order, init func(*Order), assign func(*Order, *Table)) error {
+func (oq *OrderQuery) loadTable(ctx context.Context, query *PlaceTableQuery, nodes []*Order, init func(*Order), assign func(*Order, *PlaceTable)) error {
 	edgeIDs := make([]driver.Value, len(nodes))
 	byID := make(map[string]*Order)
 	nids := make(map[string]map[*Order]struct{})
@@ -603,7 +603,7 @@ func (oq *OrderQuery) loadTable(ctx context.Context, query *TableQuery, nodes []
 	}
 	query.Where(func(s *sql.Selector) {
 		joinT := sql.Table(order.TableTable)
-		s.Join(joinT).On(s.C(table.FieldID), joinT.C(order.TablePrimaryKey[0]))
+		s.Join(joinT).On(s.C(placetable.FieldID), joinT.C(order.TablePrimaryKey[0]))
 		s.Where(sql.InValues(joinT.C(order.TablePrimaryKey[1]), edgeIDs...))
 		columns := s.SelectedColumns()
 		s.Select(joinT.C(order.TablePrimaryKey[1]))
@@ -636,7 +636,7 @@ func (oq *OrderQuery) loadTable(ctx context.Context, query *TableQuery, nodes []
 			}
 		})
 	})
-	neighbors, err := withInterceptors[[]*Table](ctx, query, qr, query.inters)
+	neighbors, err := withInterceptors[[]*PlaceTable](ctx, query, qr, query.inters)
 	if err != nil {
 		return err
 	}

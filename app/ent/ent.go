@@ -36,6 +36,7 @@ import (
 	"placio-app/ent/place"
 	"placio-app/ent/placeinventory"
 	"placio-app/ent/placeinventoryattribute"
+	"placio-app/ent/placetable"
 	"placio-app/ent/post"
 	"placio-app/ent/rating"
 	"placio-app/ent/reaction"
@@ -152,6 +153,7 @@ func checkColumn(table, column string) error {
 			place.Table:                   place.ValidColumn,
 			placeinventory.Table:          placeinventory.ValidColumn,
 			placeinventoryattribute.Table: placeinventoryattribute.ValidColumn,
+			placetable.Table:              placetable.ValidColumn,
 			post.Table:                    post.ValidColumn,
 			rating.Table:                  rating.ValidColumn,
 			reaction.Table:                reaction.ValidColumn,
@@ -160,7 +162,6 @@ func checkColumn(table, column string) error {
 			resourse.Table:                resourse.ValidColumn,
 			review.Table:                  review.ValidColumn,
 			room.Table:                    room.ValidColumn,
-			table.Table:                   table.ValidColumn,
 			template.Table:                template.ValidColumn,
 			ticket.Table:                  ticket.ValidColumn,
 			ticketoption.Table:            ticketoption.ValidColumn,

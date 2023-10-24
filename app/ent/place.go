@@ -137,7 +137,7 @@ type PlaceEdges struct {
 	// Notifications holds the value of the notifications edge.
 	Notifications []*Notification `json:"notifications,omitempty"`
 	// Tables holds the value of the tables edge.
-	Tables []*Table `json:"tables,omitempty"`
+	Tables []*PlaceTable `json:"tables,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [19]bool
@@ -311,7 +311,7 @@ func (e PlaceEdges) NotificationsOrErr() ([]*Notification, error) {
 
 // TablesOrErr returns the Tables value or an error if the edge
 // was not loaded in eager-loading.
-func (e PlaceEdges) TablesOrErr() ([]*Table, error) {
+func (e PlaceEdges) TablesOrErr() ([]*PlaceTable, error) {
 	if e.loadedTypes[18] {
 		return e.Tables, nil
 	}
@@ -712,7 +712,7 @@ func (pl *Place) QueryNotifications() *NotificationQuery {
 }
 
 // QueryTables queries the "tables" edge of the Place entity.
-func (pl *Place) QueryTables() *TableQuery {
+func (pl *Place) QueryTables() *PlaceTableQuery {
 	return NewPlaceClient(pl.config).QueryTables(pl)
 }
 

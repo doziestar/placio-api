@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"placio-app/ent/order"
 	"placio-app/ent/orderitem"
+	"placio-app/ent/placetable"
 	"placio-app/ent/predicate"
-	"placio-app/ent/table"
 	"placio-app/ent/user"
 	"time"
 
@@ -124,17 +124,17 @@ func (ou *OrderUpdate) AddOrderItems(o ...*OrderItem) *OrderUpdate {
 	return ou.AddOrderItemIDs(ids...)
 }
 
-// AddTableIDs adds the "table" edge to the Table entity by IDs.
+// AddTableIDs adds the "table" edge to the PlaceTable entity by IDs.
 func (ou *OrderUpdate) AddTableIDs(ids ...string) *OrderUpdate {
 	ou.mutation.AddTableIDs(ids...)
 	return ou
 }
 
-// AddTable adds the "table" edges to the Table entity.
-func (ou *OrderUpdate) AddTable(t ...*Table) *OrderUpdate {
-	ids := make([]string, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
+// AddTable adds the "table" edges to the PlaceTable entity.
+func (ou *OrderUpdate) AddTable(p ...*PlaceTable) *OrderUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
 	}
 	return ou.AddTableIDs(ids...)
 }
@@ -171,23 +171,23 @@ func (ou *OrderUpdate) RemoveOrderItems(o ...*OrderItem) *OrderUpdate {
 	return ou.RemoveOrderItemIDs(ids...)
 }
 
-// ClearTable clears all "table" edges to the Table entity.
+// ClearTable clears all "table" edges to the PlaceTable entity.
 func (ou *OrderUpdate) ClearTable() *OrderUpdate {
 	ou.mutation.ClearTable()
 	return ou
 }
 
-// RemoveTableIDs removes the "table" edge to Table entities by IDs.
+// RemoveTableIDs removes the "table" edge to PlaceTable entities by IDs.
 func (ou *OrderUpdate) RemoveTableIDs(ids ...string) *OrderUpdate {
 	ou.mutation.RemoveTableIDs(ids...)
 	return ou
 }
 
-// RemoveTable removes "table" edges to Table entities.
-func (ou *OrderUpdate) RemoveTable(t ...*Table) *OrderUpdate {
-	ids := make([]string, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
+// RemoveTable removes "table" edges to PlaceTable entities.
+func (ou *OrderUpdate) RemoveTable(p ...*PlaceTable) *OrderUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
 	}
 	return ou.RemoveTableIDs(ids...)
 }
@@ -353,7 +353,7 @@ func (ou *OrderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: order.TablePrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(table.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -366,7 +366,7 @@ func (ou *OrderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: order.TablePrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(table.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -382,7 +382,7 @@ func (ou *OrderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Columns: order.TablePrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(table.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -503,17 +503,17 @@ func (ouo *OrderUpdateOne) AddOrderItems(o ...*OrderItem) *OrderUpdateOne {
 	return ouo.AddOrderItemIDs(ids...)
 }
 
-// AddTableIDs adds the "table" edge to the Table entity by IDs.
+// AddTableIDs adds the "table" edge to the PlaceTable entity by IDs.
 func (ouo *OrderUpdateOne) AddTableIDs(ids ...string) *OrderUpdateOne {
 	ouo.mutation.AddTableIDs(ids...)
 	return ouo
 }
 
-// AddTable adds the "table" edges to the Table entity.
-func (ouo *OrderUpdateOne) AddTable(t ...*Table) *OrderUpdateOne {
-	ids := make([]string, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
+// AddTable adds the "table" edges to the PlaceTable entity.
+func (ouo *OrderUpdateOne) AddTable(p ...*PlaceTable) *OrderUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
 	}
 	return ouo.AddTableIDs(ids...)
 }
@@ -550,23 +550,23 @@ func (ouo *OrderUpdateOne) RemoveOrderItems(o ...*OrderItem) *OrderUpdateOne {
 	return ouo.RemoveOrderItemIDs(ids...)
 }
 
-// ClearTable clears all "table" edges to the Table entity.
+// ClearTable clears all "table" edges to the PlaceTable entity.
 func (ouo *OrderUpdateOne) ClearTable() *OrderUpdateOne {
 	ouo.mutation.ClearTable()
 	return ouo
 }
 
-// RemoveTableIDs removes the "table" edge to Table entities by IDs.
+// RemoveTableIDs removes the "table" edge to PlaceTable entities by IDs.
 func (ouo *OrderUpdateOne) RemoveTableIDs(ids ...string) *OrderUpdateOne {
 	ouo.mutation.RemoveTableIDs(ids...)
 	return ouo
 }
 
-// RemoveTable removes "table" edges to Table entities.
-func (ouo *OrderUpdateOne) RemoveTable(t ...*Table) *OrderUpdateOne {
-	ids := make([]string, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
+// RemoveTable removes "table" edges to PlaceTable entities.
+func (ouo *OrderUpdateOne) RemoveTable(p ...*PlaceTable) *OrderUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
 	}
 	return ouo.RemoveTableIDs(ids...)
 }
@@ -762,7 +762,7 @@ func (ouo *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error
 			Columns: order.TablePrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(table.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
@@ -775,7 +775,7 @@ func (ouo *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error
 			Columns: order.TablePrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(table.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -791,7 +791,7 @@ func (ouo *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error
 			Columns: order.TablePrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(table.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

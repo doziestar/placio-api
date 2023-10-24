@@ -6,12 +6,12 @@ import (
 	"entgo.io/ent/schema/field"
 )
 
-type Table struct {
+type PlaceTable struct {
 	ent.Schema
 }
 
 // Fields of the Table.
-func (Table) Fields() []ent.Field {
+func (PlaceTable) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("id").
 			MaxLen(36).
@@ -23,7 +23,7 @@ func (Table) Fields() []ent.Field {
 }
 
 // Edges of the Table.
-func (Table) Edges() []ent.Edge {
+func (PlaceTable) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("place", Place.Type).
 			Ref("tables").

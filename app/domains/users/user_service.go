@@ -257,11 +257,10 @@ func (s *UserServiceImpl) GetUser(ctx context.Context, auth0ID string) (*ent.Use
 		}
 
 		// userId should be the same as auth0ID but without the auth0| prefix
-		userId := strings.Split(auth0ID, "|")[1]
 		newUser, err := s.client.User.
 			Create().
-			SetID(userId).
-			SetAuth0ID(auth0ID).
+			SetID(auth0ID).
+			SetAuth0ID("auth0 | " + auth0ID).
 			SetName(*auth0Data.Name).
 			SetUsername(utility.GenerateRandomUsername()).
 			SetPicture(*auth0Data.Picture).

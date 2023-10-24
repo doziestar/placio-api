@@ -41,6 +41,7 @@ import (
 	"placio-app/ent/place"
 	"placio-app/ent/placeinventory"
 	"placio-app/ent/placeinventoryattribute"
+	"placio-app/ent/placetable"
 	"placio-app/ent/post"
 	"placio-app/ent/rating"
 	"placio-app/ent/reaction"
@@ -49,7 +50,6 @@ import (
 	"placio-app/ent/resourse"
 	"placio-app/ent/review"
 	"placio-app/ent/room"
-	"placio-app/ent/table"
 	"placio-app/ent/template"
 	"placio-app/ent/ticket"
 	"placio-app/ent/ticketoption"
@@ -134,6 +134,8 @@ type Client struct {
 	PlaceInventory *PlaceInventoryClient
 	// PlaceInventoryAttribute is the client for interacting with the PlaceInventoryAttribute builders.
 	PlaceInventoryAttribute *PlaceInventoryAttributeClient
+	// PlaceTable is the client for interacting with the PlaceTable builders.
+	PlaceTable *PlaceTableClient
 	// Post is the client for interacting with the Post builders.
 	Post *PostClient
 	// Rating is the client for interacting with the Rating builders.
@@ -150,8 +152,6 @@ type Client struct {
 	Review *ReviewClient
 	// Room is the client for interacting with the Room builders.
 	Room *RoomClient
-	// Table is the client for interacting with the Table builders.
-	Table *TableClient
 	// Template is the client for interacting with the Template builders.
 	Template *TemplateClient
 	// Ticket is the client for interacting with the Ticket builders.
@@ -219,6 +219,7 @@ func (c *Client) init() {
 	c.Place = NewPlaceClient(c.config)
 	c.PlaceInventory = NewPlaceInventoryClient(c.config)
 	c.PlaceInventoryAttribute = NewPlaceInventoryAttributeClient(c.config)
+	c.PlaceTable = NewPlaceTableClient(c.config)
 	c.Post = NewPostClient(c.config)
 	c.Rating = NewRatingClient(c.config)
 	c.Reaction = NewReactionClient(c.config)
@@ -227,7 +228,6 @@ func (c *Client) init() {
 	c.Resourse = NewResourseClient(c.config)
 	c.Review = NewReviewClient(c.config)
 	c.Room = NewRoomClient(c.config)
-	c.Table = NewTableClient(c.config)
 	c.Template = NewTemplateClient(c.config)
 	c.Ticket = NewTicketClient(c.config)
 	c.TicketOption = NewTicketOptionClient(c.config)
@@ -355,6 +355,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Place:                   NewPlaceClient(cfg),
 		PlaceInventory:          NewPlaceInventoryClient(cfg),
 		PlaceInventoryAttribute: NewPlaceInventoryAttributeClient(cfg),
+		PlaceTable:              NewPlaceTableClient(cfg),
 		Post:                    NewPostClient(cfg),
 		Rating:                  NewRatingClient(cfg),
 		Reaction:                NewReactionClient(cfg),
@@ -363,7 +364,6 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Resourse:                NewResourseClient(cfg),
 		Review:                  NewReviewClient(cfg),
 		Room:                    NewRoomClient(cfg),
-		Table:                   NewTableClient(cfg),
 		Template:                NewTemplateClient(cfg),
 		Ticket:                  NewTicketClient(cfg),
 		TicketOption:            NewTicketOptionClient(cfg),
@@ -425,6 +425,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Place:                   NewPlaceClient(cfg),
 		PlaceInventory:          NewPlaceInventoryClient(cfg),
 		PlaceInventoryAttribute: NewPlaceInventoryAttributeClient(cfg),
+		PlaceTable:              NewPlaceTableClient(cfg),
 		Post:                    NewPostClient(cfg),
 		Rating:                  NewRatingClient(cfg),
 		Reaction:                NewReactionClient(cfg),
@@ -433,7 +434,6 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Resourse:                NewResourseClient(cfg),
 		Review:                  NewReviewClient(cfg),
 		Room:                    NewRoomClient(cfg),
-		Table:                   NewTableClient(cfg),
 		Template:                NewTemplateClient(cfg),
 		Ticket:                  NewTicketClient(cfg),
 		TicketOption:            NewTicketOptionClient(cfg),
@@ -480,9 +480,9 @@ func (c *Client) Use(hooks ...Hook) {
 		c.Category, c.CategoryAssignment, c.Chat, c.Comment, c.CustomBlock, c.Event,
 		c.FAQ, c.FeatureRelease, c.Help, c.InventoryAttribute, c.InventoryType, c.Like,
 		c.Media, c.Menu, c.MenuItem, c.Notification, c.Order, c.OrderItem, c.Payment,
-		c.Place, c.PlaceInventory, c.PlaceInventoryAttribute, c.Post, c.Rating,
-		c.Reaction, c.Reservation, c.ReservationBlock, c.Resourse, c.Review, c.Room,
-		c.Table, c.Template, c.Ticket, c.TicketOption, c.TransactionHistory, c.User,
+		c.Place, c.PlaceInventory, c.PlaceInventoryAttribute, c.PlaceTable, c.Post,
+		c.Rating, c.Reaction, c.Reservation, c.ReservationBlock, c.Resourse, c.Review,
+		c.Room, c.Template, c.Ticket, c.TicketOption, c.TransactionHistory, c.User,
 		c.UserBusiness, c.UserFollowBusiness, c.UserFollowEvent, c.UserFollowPlace,
 		c.UserFollowUser, c.UserLikePlace, c.Website,
 	} {
@@ -499,9 +499,9 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.Category, c.CategoryAssignment, c.Chat, c.Comment, c.CustomBlock, c.Event,
 		c.FAQ, c.FeatureRelease, c.Help, c.InventoryAttribute, c.InventoryType, c.Like,
 		c.Media, c.Menu, c.MenuItem, c.Notification, c.Order, c.OrderItem, c.Payment,
-		c.Place, c.PlaceInventory, c.PlaceInventoryAttribute, c.Post, c.Rating,
-		c.Reaction, c.Reservation, c.ReservationBlock, c.Resourse, c.Review, c.Room,
-		c.Table, c.Template, c.Ticket, c.TicketOption, c.TransactionHistory, c.User,
+		c.Place, c.PlaceInventory, c.PlaceInventoryAttribute, c.PlaceTable, c.Post,
+		c.Rating, c.Reaction, c.Reservation, c.ReservationBlock, c.Resourse, c.Review,
+		c.Room, c.Template, c.Ticket, c.TicketOption, c.TransactionHistory, c.User,
 		c.UserBusiness, c.UserFollowBusiness, c.UserFollowEvent, c.UserFollowPlace,
 		c.UserFollowUser, c.UserLikePlace, c.Website,
 	} {
@@ -572,6 +572,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.PlaceInventory.mutate(ctx, m)
 	case *PlaceInventoryAttributeMutation:
 		return c.PlaceInventoryAttribute.mutate(ctx, m)
+	case *PlaceTableMutation:
+		return c.PlaceTable.mutate(ctx, m)
 	case *PostMutation:
 		return c.Post.mutate(ctx, m)
 	case *RatingMutation:
@@ -588,8 +590,6 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Review.mutate(ctx, m)
 	case *RoomMutation:
 		return c.Room.mutate(ctx, m)
-	case *TableMutation:
-		return c.Table.mutate(ctx, m)
 	case *TemplateMutation:
 		return c.Template.mutate(ctx, m)
 	case *TicketMutation:
@@ -5282,13 +5282,13 @@ func (c *OrderClient) QueryOrderItems(o *Order) *OrderItemQuery {
 }
 
 // QueryTable queries the table edge of a Order.
-func (c *OrderClient) QueryTable(o *Order) *TableQuery {
-	query := (&TableClient{config: c.config}).Query()
+func (c *OrderClient) QueryTable(o *Order) *PlaceTableQuery {
+	query := (&PlaceTableClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := o.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(order.Table, order.FieldID, id),
-			sqlgraph.To(table.Table, table.FieldID),
+			sqlgraph.To(placetable.Table, placetable.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, true, order.TableTable, order.TablePrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(o.driver.Dialect(), step)
@@ -6017,13 +6017,13 @@ func (c *PlaceClient) QueryNotifications(pl *Place) *NotificationQuery {
 }
 
 // QueryTables queries the tables edge of a Place.
-func (c *PlaceClient) QueryTables(pl *Place) *TableQuery {
-	query := (&TableClient{config: c.config}).Query()
+func (c *PlaceClient) QueryTables(pl *Place) *PlaceTableQuery {
+	query := (&PlaceTableClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := pl.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(place.Table, place.FieldID, id),
-			sqlgraph.To(table.Table, table.FieldID),
+			sqlgraph.To(placetable.Table, placetable.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, place.TablesTable, place.TablesColumn),
 		)
 		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
@@ -6497,6 +6497,171 @@ func (c *PlaceInventoryAttributeClient) mutate(ctx context.Context, m *PlaceInve
 		return (&PlaceInventoryAttributeDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown PlaceInventoryAttribute mutation op: %q", m.Op())
+	}
+}
+
+// PlaceTableClient is a client for the PlaceTable schema.
+type PlaceTableClient struct {
+	config
+}
+
+// NewPlaceTableClient returns a client for the PlaceTable from the given config.
+func NewPlaceTableClient(c config) *PlaceTableClient {
+	return &PlaceTableClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `placetable.Hooks(f(g(h())))`.
+func (c *PlaceTableClient) Use(hooks ...Hook) {
+	c.hooks.PlaceTable = append(c.hooks.PlaceTable, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `placetable.Intercept(f(g(h())))`.
+func (c *PlaceTableClient) Intercept(interceptors ...Interceptor) {
+	c.inters.PlaceTable = append(c.inters.PlaceTable, interceptors...)
+}
+
+// Create returns a builder for creating a PlaceTable entity.
+func (c *PlaceTableClient) Create() *PlaceTableCreate {
+	mutation := newPlaceTableMutation(c.config, OpCreate)
+	return &PlaceTableCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of PlaceTable entities.
+func (c *PlaceTableClient) CreateBulk(builders ...*PlaceTableCreate) *PlaceTableCreateBulk {
+	return &PlaceTableCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *PlaceTableClient) MapCreateBulk(slice any, setFunc func(*PlaceTableCreate, int)) *PlaceTableCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &PlaceTableCreateBulk{err: fmt.Errorf("calling to PlaceTableClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*PlaceTableCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &PlaceTableCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for PlaceTable.
+func (c *PlaceTableClient) Update() *PlaceTableUpdate {
+	mutation := newPlaceTableMutation(c.config, OpUpdate)
+	return &PlaceTableUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *PlaceTableClient) UpdateOne(pt *PlaceTable) *PlaceTableUpdateOne {
+	mutation := newPlaceTableMutation(c.config, OpUpdateOne, withPlaceTable(pt))
+	return &PlaceTableUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *PlaceTableClient) UpdateOneID(id string) *PlaceTableUpdateOne {
+	mutation := newPlaceTableMutation(c.config, OpUpdateOne, withPlaceTableID(id))
+	return &PlaceTableUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for PlaceTable.
+func (c *PlaceTableClient) Delete() *PlaceTableDelete {
+	mutation := newPlaceTableMutation(c.config, OpDelete)
+	return &PlaceTableDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *PlaceTableClient) DeleteOne(pt *PlaceTable) *PlaceTableDeleteOne {
+	return c.DeleteOneID(pt.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *PlaceTableClient) DeleteOneID(id string) *PlaceTableDeleteOne {
+	builder := c.Delete().Where(placetable.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &PlaceTableDeleteOne{builder}
+}
+
+// Query returns a query builder for PlaceTable.
+func (c *PlaceTableClient) Query() *PlaceTableQuery {
+	return &PlaceTableQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypePlaceTable},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a PlaceTable entity by its id.
+func (c *PlaceTableClient) Get(ctx context.Context, id string) (*PlaceTable, error) {
+	return c.Query().Where(placetable.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *PlaceTableClient) GetX(ctx context.Context, id string) *PlaceTable {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryPlace queries the place edge of a PlaceTable.
+func (c *PlaceTableClient) QueryPlace(pt *PlaceTable) *PlaceQuery {
+	query := (&PlaceClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pt.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(placetable.Table, placetable.FieldID, id),
+			sqlgraph.To(place.Table, place.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, placetable.PlaceTable, placetable.PlaceColumn),
+		)
+		fromV = sqlgraph.Neighbors(pt.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryOrders queries the orders edge of a PlaceTable.
+func (c *PlaceTableClient) QueryOrders(pt *PlaceTable) *OrderQuery {
+	query := (&OrderClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pt.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(placetable.Table, placetable.FieldID, id),
+			sqlgraph.To(order.Table, order.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, placetable.OrdersTable, placetable.OrdersPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(pt.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *PlaceTableClient) Hooks() []Hook {
+	return c.hooks.PlaceTable
+}
+
+// Interceptors returns the client interceptors.
+func (c *PlaceTableClient) Interceptors() []Interceptor {
+	return c.inters.PlaceTable
+}
+
+func (c *PlaceTableClient) mutate(ctx context.Context, m *PlaceTableMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&PlaceTableCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&PlaceTableUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&PlaceTableUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&PlaceTableDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown PlaceTable mutation op: %q", m.Op())
 	}
 }
 
@@ -7947,171 +8112,6 @@ func (c *RoomClient) mutate(ctx context.Context, m *RoomMutation) (Value, error)
 		return (&RoomDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Room mutation op: %q", m.Op())
-	}
-}
-
-// TableClient is a client for the Table schema.
-type TableClient struct {
-	config
-}
-
-// NewTableClient returns a client for the Table from the given config.
-func NewTableClient(c config) *TableClient {
-	return &TableClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `table.Hooks(f(g(h())))`.
-func (c *TableClient) Use(hooks ...Hook) {
-	c.hooks.Table = append(c.hooks.Table, hooks...)
-}
-
-// Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `table.Intercept(f(g(h())))`.
-func (c *TableClient) Intercept(interceptors ...Interceptor) {
-	c.inters.Table = append(c.inters.Table, interceptors...)
-}
-
-// Create returns a builder for creating a Table entity.
-func (c *TableClient) Create() *TableCreate {
-	mutation := newTableMutation(c.config, OpCreate)
-	return &TableCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of Table entities.
-func (c *TableClient) CreateBulk(builders ...*TableCreate) *TableCreateBulk {
-	return &TableCreateBulk{config: c.config, builders: builders}
-}
-
-// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
-// a builder and applies setFunc on it.
-func (c *TableClient) MapCreateBulk(slice any, setFunc func(*TableCreate, int)) *TableCreateBulk {
-	rv := reflect.ValueOf(slice)
-	if rv.Kind() != reflect.Slice {
-		return &TableCreateBulk{err: fmt.Errorf("calling to TableClient.MapCreateBulk with wrong type %T, need slice", slice)}
-	}
-	builders := make([]*TableCreate, rv.Len())
-	for i := 0; i < rv.Len(); i++ {
-		builders[i] = c.Create()
-		setFunc(builders[i], i)
-	}
-	return &TableCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for Table.
-func (c *TableClient) Update() *TableUpdate {
-	mutation := newTableMutation(c.config, OpUpdate)
-	return &TableUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *TableClient) UpdateOne(t *Table) *TableUpdateOne {
-	mutation := newTableMutation(c.config, OpUpdateOne, withTable(t))
-	return &TableUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *TableClient) UpdateOneID(id string) *TableUpdateOne {
-	mutation := newTableMutation(c.config, OpUpdateOne, withTableID(id))
-	return &TableUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for Table.
-func (c *TableClient) Delete() *TableDelete {
-	mutation := newTableMutation(c.config, OpDelete)
-	return &TableDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *TableClient) DeleteOne(t *Table) *TableDeleteOne {
-	return c.DeleteOneID(t.ID)
-}
-
-// DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *TableClient) DeleteOneID(id string) *TableDeleteOne {
-	builder := c.Delete().Where(table.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &TableDeleteOne{builder}
-}
-
-// Query returns a query builder for Table.
-func (c *TableClient) Query() *TableQuery {
-	return &TableQuery{
-		config: c.config,
-		ctx:    &QueryContext{Type: TypeTable},
-		inters: c.Interceptors(),
-	}
-}
-
-// Get returns a Table entity by its id.
-func (c *TableClient) Get(ctx context.Context, id string) (*Table, error) {
-	return c.Query().Where(table.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *TableClient) GetX(ctx context.Context, id string) *Table {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// QueryPlace queries the place edge of a Table.
-func (c *TableClient) QueryPlace(t *Table) *PlaceQuery {
-	query := (&PlaceClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := t.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(table.Table, table.FieldID, id),
-			sqlgraph.To(place.Table, place.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, table.PlaceTable, table.PlaceColumn),
-		)
-		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryOrders queries the orders edge of a Table.
-func (c *TableClient) QueryOrders(t *Table) *OrderQuery {
-	query := (&OrderClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := t.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(table.Table, table.FieldID, id),
-			sqlgraph.To(order.Table, order.FieldID),
-			sqlgraph.Edge(sqlgraph.M2M, false, table.OrdersTable, table.OrdersPrimaryKey...),
-		)
-		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// Hooks returns the client hooks.
-func (c *TableClient) Hooks() []Hook {
-	return c.hooks.Table
-}
-
-// Interceptors returns the client interceptors.
-func (c *TableClient) Interceptors() []Interceptor {
-	return c.inters.Table
-}
-
-func (c *TableClient) mutate(ctx context.Context, m *TableMutation) (Value, error) {
-	switch m.Op() {
-	case OpCreate:
-		return (&TableCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdate:
-		return (&TableUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdateOne:
-		return (&TableUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpDelete, OpDeleteOne:
-		return (&TableDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
-	default:
-		return nil, fmt.Errorf("ent: unknown Table mutation op: %q", m.Op())
 	}
 }
 
@@ -10456,8 +10456,8 @@ type (
 		CategoryAssignment, Chat, Comment, CustomBlock, Event, FAQ, FeatureRelease,
 		Help, InventoryAttribute, InventoryType, Like, Media, Menu, MenuItem,
 		Notification, Order, OrderItem, Payment, Place, PlaceInventory,
-		PlaceInventoryAttribute, Post, Rating, Reaction, Reservation, ReservationBlock,
-		Resourse, Review, Room, Table, Template, Ticket, TicketOption,
+		PlaceInventoryAttribute, PlaceTable, Post, Rating, Reaction, Reservation,
+		ReservationBlock, Resourse, Review, Room, Template, Ticket, TicketOption,
 		TransactionHistory, User, UserBusiness, UserFollowBusiness, UserFollowEvent,
 		UserFollowPlace, UserFollowUser, UserLikePlace, Website []ent.Hook
 	}
@@ -10467,8 +10467,8 @@ type (
 		CategoryAssignment, Chat, Comment, CustomBlock, Event, FAQ, FeatureRelease,
 		Help, InventoryAttribute, InventoryType, Like, Media, Menu, MenuItem,
 		Notification, Order, OrderItem, Payment, Place, PlaceInventory,
-		PlaceInventoryAttribute, Post, Rating, Reaction, Reservation, ReservationBlock,
-		Resourse, Review, Room, Table, Template, Ticket, TicketOption,
+		PlaceInventoryAttribute, PlaceTable, Post, Rating, Reaction, Reservation,
+		ReservationBlock, Resourse, Review, Room, Template, Ticket, TicketOption,
 		TransactionHistory, User, UserBusiness, UserFollowBusiness, UserFollowEvent,
 		UserFollowPlace, UserFollowUser, UserLikePlace, Website []ent.Interceptor
 	}

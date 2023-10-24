@@ -18,11 +18,11 @@ import (
 	"placio-app/ent/notification"
 	"placio-app/ent/place"
 	"placio-app/ent/placeinventory"
+	"placio-app/ent/placetable"
 	"placio-app/ent/rating"
 	"placio-app/ent/reservation"
 	"placio-app/ent/review"
 	"placio-app/ent/room"
-	"placio-app/ent/table"
 	"placio-app/ent/user"
 	"placio-app/ent/userfollowplace"
 	"placio-app/ent/userlikeplace"
@@ -734,17 +734,17 @@ func (pc *PlaceCreate) AddNotifications(n ...*Notification) *PlaceCreate {
 	return pc.AddNotificationIDs(ids...)
 }
 
-// AddTableIDs adds the "tables" edge to the Table entity by IDs.
+// AddTableIDs adds the "tables" edge to the PlaceTable entity by IDs.
 func (pc *PlaceCreate) AddTableIDs(ids ...string) *PlaceCreate {
 	pc.mutation.AddTableIDs(ids...)
 	return pc
 }
 
-// AddTables adds the "tables" edges to the Table entity.
-func (pc *PlaceCreate) AddTables(t ...*Table) *PlaceCreate {
-	ids := make([]string, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
+// AddTables adds the "tables" edges to the PlaceTable entity.
+func (pc *PlaceCreate) AddTables(p ...*PlaceTable) *PlaceCreate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
 	}
 	return pc.AddTableIDs(ids...)
 }
@@ -1335,7 +1335,7 @@ func (pc *PlaceCreate) createSpec() (*Place, *sqlgraph.CreateSpec) {
 			Columns: []string{place.TablesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(table.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

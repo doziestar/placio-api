@@ -368,6 +368,18 @@ func (f PlaceInventoryAttributeFunc) Mutate(ctx context.Context, m ent.Mutation)
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PlaceInventoryAttributeMutation", m)
 }
 
+// The PlaceTableFunc type is an adapter to allow the use of ordinary
+// function as PlaceTable mutator.
+type PlaceTableFunc func(context.Context, *ent.PlaceTableMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PlaceTableFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.PlaceTableMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PlaceTableMutation", m)
+}
+
 // The PostFunc type is an adapter to allow the use of ordinary
 // function as Post mutator.
 type PostFunc func(context.Context, *ent.PostMutation) (ent.Value, error)
@@ -462,18 +474,6 @@ func (f RoomFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error)
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.RoomMutation", m)
-}
-
-// The TableFunc type is an adapter to allow the use of ordinary
-// function as Table mutator.
-type TableFunc func(context.Context, *ent.TableMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f TableFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.TableMutation); ok {
-		return f(ctx, mv)
-	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TableMutation", m)
 }
 
 // The TemplateFunc type is an adapter to allow the use of ordinary

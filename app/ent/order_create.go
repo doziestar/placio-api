@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"placio-app/ent/order"
 	"placio-app/ent/orderitem"
-	"placio-app/ent/table"
+	"placio-app/ent/placetable"
 	"placio-app/ent/user"
 	"time"
 
@@ -117,17 +117,17 @@ func (oc *OrderCreate) AddOrderItems(o ...*OrderItem) *OrderCreate {
 	return oc.AddOrderItemIDs(ids...)
 }
 
-// AddTableIDs adds the "table" edge to the Table entity by IDs.
+// AddTableIDs adds the "table" edge to the PlaceTable entity by IDs.
 func (oc *OrderCreate) AddTableIDs(ids ...string) *OrderCreate {
 	oc.mutation.AddTableIDs(ids...)
 	return oc
 }
 
-// AddTable adds the "table" edges to the Table entity.
-func (oc *OrderCreate) AddTable(t ...*Table) *OrderCreate {
-	ids := make([]string, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
+// AddTable adds the "table" edges to the PlaceTable entity.
+func (oc *OrderCreate) AddTable(p ...*PlaceTable) *OrderCreate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
 	}
 	return oc.AddTableIDs(ids...)
 }
@@ -301,7 +301,7 @@ func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 			Columns: order.TablePrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(table.FieldID, field.TypeString),
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

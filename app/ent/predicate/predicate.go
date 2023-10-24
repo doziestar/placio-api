@@ -96,6 +96,9 @@ type PlaceInventory func(*sql.Selector)
 // PlaceInventoryAttribute is the predicate function for placeinventoryattribute builders.
 type PlaceInventoryAttribute func(*sql.Selector)
 
+// PlaceTable is the predicate function for placetable builders.
+type PlaceTable func(*sql.Selector)
+
 // Post is the predicate function for post builders.
 type Post func(*sql.Selector)
 
@@ -119,9 +122,6 @@ type Review func(*sql.Selector)
 
 // Room is the predicate function for room builders.
 type Room func(*sql.Selector)
-
-// Table is the predicate function for table builders.
-type Table func(*sql.Selector)
 
 // Template is the predicate function for template builders.
 type Template func(*sql.Selector)

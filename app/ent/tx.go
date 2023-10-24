@@ -72,6 +72,8 @@ type Tx struct {
 	PlaceInventory *PlaceInventoryClient
 	// PlaceInventoryAttribute is the client for interacting with the PlaceInventoryAttribute builders.
 	PlaceInventoryAttribute *PlaceInventoryAttributeClient
+	// PlaceTable is the client for interacting with the PlaceTable builders.
+	PlaceTable *PlaceTableClient
 	// Post is the client for interacting with the Post builders.
 	Post *PostClient
 	// Rating is the client for interacting with the Rating builders.
@@ -88,8 +90,6 @@ type Tx struct {
 	Review *ReviewClient
 	// Room is the client for interacting with the Room builders.
 	Room *RoomClient
-	// Table is the client for interacting with the Table builders.
-	Table *TableClient
 	// Template is the client for interacting with the Template builders.
 	Template *TemplateClient
 	// Ticket is the client for interacting with the Ticket builders.
@@ -275,6 +275,7 @@ func (tx *Tx) init() {
 	tx.Place = NewPlaceClient(tx.config)
 	tx.PlaceInventory = NewPlaceInventoryClient(tx.config)
 	tx.PlaceInventoryAttribute = NewPlaceInventoryAttributeClient(tx.config)
+	tx.PlaceTable = NewPlaceTableClient(tx.config)
 	tx.Post = NewPostClient(tx.config)
 	tx.Rating = NewRatingClient(tx.config)
 	tx.Reaction = NewReactionClient(tx.config)
@@ -283,7 +284,6 @@ func (tx *Tx) init() {
 	tx.Resourse = NewResourseClient(tx.config)
 	tx.Review = NewReviewClient(tx.config)
 	tx.Room = NewRoomClient(tx.config)
-	tx.Table = NewTableClient(tx.config)
 	tx.Template = NewTemplateClient(tx.config)
 	tx.Ticket = NewTicketClient(tx.config)
 	tx.TicketOption = NewTicketOptionClient(tx.config)

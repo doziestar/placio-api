@@ -43,7 +43,7 @@ type OrderEdges struct {
 	// OrderItems holds the value of the order_items edge.
 	OrderItems []*OrderItem `json:"order_items,omitempty"`
 	// Table holds the value of the table edge.
-	Table []*Table `json:"table,omitempty"`
+	Table []*PlaceTable `json:"table,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [3]bool
@@ -73,7 +73,7 @@ func (e OrderEdges) OrderItemsOrErr() ([]*OrderItem, error) {
 
 // TableOrErr returns the Table value or an error if the edge
 // was not loaded in eager-loading.
-func (e OrderEdges) TableOrErr() ([]*Table, error) {
+func (e OrderEdges) TableOrErr() ([]*PlaceTable, error) {
 	if e.loadedTypes[2] {
 		return e.Table, nil
 	}
@@ -179,7 +179,7 @@ func (o *Order) QueryOrderItems() *OrderItemQuery {
 }
 
 // QueryTable queries the "table" edge of the Order entity.
-func (o *Order) QueryTable() *TableQuery {
+func (o *Order) QueryTable() *PlaceTableQuery {
 	return NewOrderClient(o.config).QueryTable(o)
 }
 

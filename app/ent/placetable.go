@@ -5,15 +5,15 @@ package ent
 import (
 	"fmt"
 	"placio-app/ent/place"
-	"placio-app/ent/table"
+	"placio-app/ent/placetable"
 	"strings"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 )
 
-// Table is the model entity for the Table schema.
-type Table struct {
+// PlaceTable is the model entity for the PlaceTable schema.
+type PlaceTable struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID string `json:"id,omitempty"`
@@ -22,14 +22,14 @@ type Table struct {
 	// QrCode holds the value of the "qr_code" field.
 	QrCode string `json:"qr_code,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
-	// The values are being populated by the TableQuery when eager-loading is set.
-	Edges        TableEdges `json:"edges"`
+	// The values are being populated by the PlaceTableQuery when eager-loading is set.
+	Edges        PlaceTableEdges `json:"edges"`
 	place_tables *string
 	selectValues sql.SelectValues
 }
 
-// TableEdges holds the relations/edges for other nodes in the graph.
-type TableEdges struct {
+// PlaceTableEdges holds the relations/edges for other nodes in the graph.
+type PlaceTableEdges struct {
 	// Place holds the value of the place edge.
 	Place *Place `json:"place,omitempty"`
 	// Orders holds the value of the orders edge.
@@ -41,7 +41,7 @@ type TableEdges struct {
 
 // PlaceOrErr returns the Place value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e TableEdges) PlaceOrErr() (*Place, error) {
+func (e PlaceTableEdges) PlaceOrErr() (*Place, error) {
 	if e.loadedTypes[0] {
 		if e.Place == nil {
 			// Edge was loaded but was not found.
@@ -54,7 +54,7 @@ func (e TableEdges) PlaceOrErr() (*Place, error) {
 
 // OrdersOrErr returns the Orders value or an error if the edge
 // was not loaded in eager-loading.
-func (e TableEdges) OrdersOrErr() ([]*Order, error) {
+func (e PlaceTableEdges) OrdersOrErr() ([]*Order, error) {
 	if e.loadedTypes[1] {
 		return e.Orders, nil
 	}
@@ -62,15 +62,15 @@ func (e TableEdges) OrdersOrErr() ([]*Order, error) {
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*Table) scanValues(columns []string) ([]any, error) {
+func (*PlaceTable) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case table.FieldNumber:
+		case placetable.FieldNumber:
 			values[i] = new(sql.NullInt64)
-		case table.FieldID, table.FieldQrCode:
+		case placetable.FieldID, placetable.FieldQrCode:
 			values[i] = new(sql.NullString)
-		case table.ForeignKeys[0]: // place_tables
+		case placetable.ForeignKeys[0]: // place_tables
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -80,92 +80,92 @@ func (*Table) scanValues(columns []string) ([]any, error) {
 }
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
-// to the Table fields.
-func (t *Table) assignValues(columns []string, values []any) error {
+// to the PlaceTable fields.
+func (pt *PlaceTable) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
 	for i := range columns {
 		switch columns[i] {
-		case table.FieldID:
+		case placetable.FieldID:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value.Valid {
-				t.ID = value.String
+				pt.ID = value.String
 			}
-		case table.FieldNumber:
+		case placetable.FieldNumber:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field number", values[i])
 			} else if value.Valid {
-				t.Number = int(value.Int64)
+				pt.Number = int(value.Int64)
 			}
-		case table.FieldQrCode:
+		case placetable.FieldQrCode:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field qr_code", values[i])
 			} else if value.Valid {
-				t.QrCode = value.String
+				pt.QrCode = value.String
 			}
-		case table.ForeignKeys[0]:
+		case placetable.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field place_tables", values[i])
 			} else if value.Valid {
-				t.place_tables = new(string)
-				*t.place_tables = value.String
+				pt.place_tables = new(string)
+				*pt.place_tables = value.String
 			}
 		default:
-			t.selectValues.Set(columns[i], values[i])
+			pt.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
 }
 
-// Value returns the ent.Value that was dynamically selected and assigned to the Table.
+// Value returns the ent.Value that was dynamically selected and assigned to the PlaceTable.
 // This includes values selected through modifiers, order, etc.
-func (t *Table) Value(name string) (ent.Value, error) {
-	return t.selectValues.Get(name)
+func (pt *PlaceTable) Value(name string) (ent.Value, error) {
+	return pt.selectValues.Get(name)
 }
 
-// QueryPlace queries the "place" edge of the Table entity.
-func (t *Table) QueryPlace() *PlaceQuery {
-	return NewTableClient(t.config).QueryPlace(t)
+// QueryPlace queries the "place" edge of the PlaceTable entity.
+func (pt *PlaceTable) QueryPlace() *PlaceQuery {
+	return NewPlaceTableClient(pt.config).QueryPlace(pt)
 }
 
-// QueryOrders queries the "orders" edge of the Table entity.
-func (t *Table) QueryOrders() *OrderQuery {
-	return NewTableClient(t.config).QueryOrders(t)
+// QueryOrders queries the "orders" edge of the PlaceTable entity.
+func (pt *PlaceTable) QueryOrders() *OrderQuery {
+	return NewPlaceTableClient(pt.config).QueryOrders(pt)
 }
 
-// Update returns a builder for updating this Table.
-// Note that you need to call Table.Unwrap() before calling this method if this Table
+// Update returns a builder for updating this PlaceTable.
+// Note that you need to call PlaceTable.Unwrap() before calling this method if this PlaceTable
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (t *Table) Update() *TableUpdateOne {
-	return NewTableClient(t.config).UpdateOne(t)
+func (pt *PlaceTable) Update() *PlaceTableUpdateOne {
+	return NewPlaceTableClient(pt.config).UpdateOne(pt)
 }
 
-// Unwrap unwraps the Table entity that was returned from a transaction after it was closed,
+// Unwrap unwraps the PlaceTable entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (t *Table) Unwrap() *Table {
-	_tx, ok := t.config.driver.(*txDriver)
+func (pt *PlaceTable) Unwrap() *PlaceTable {
+	_tx, ok := pt.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: Table is not a transactional entity")
+		panic("ent: PlaceTable is not a transactional entity")
 	}
-	t.config.driver = _tx.drv
-	return t
+	pt.config.driver = _tx.drv
+	return pt
 }
 
 // String implements the fmt.Stringer.
-func (t *Table) String() string {
+func (pt *PlaceTable) String() string {
 	var builder strings.Builder
-	builder.WriteString("Table(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", t.ID))
+	builder.WriteString("PlaceTable(")
+	builder.WriteString(fmt.Sprintf("id=%v, ", pt.ID))
 	builder.WriteString("number=")
-	builder.WriteString(fmt.Sprintf("%v", t.Number))
+	builder.WriteString(fmt.Sprintf("%v", pt.Number))
 	builder.WriteString(", ")
 	builder.WriteString("qr_code=")
-	builder.WriteString(t.QrCode)
+	builder.WriteString(pt.QrCode)
 	builder.WriteByte(')')
 	return builder.String()
 }
 
-// Tables is a parsable slice of Table.
-type Tables []*Table
+// PlaceTables is a parsable slice of PlaceTable.
+type PlaceTables []*PlaceTable

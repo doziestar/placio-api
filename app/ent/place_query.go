@@ -19,12 +19,12 @@ import (
 	"placio-app/ent/notification"
 	"placio-app/ent/place"
 	"placio-app/ent/placeinventory"
+	"placio-app/ent/placetable"
 	"placio-app/ent/predicate"
 	"placio-app/ent/rating"
 	"placio-app/ent/reservation"
 	"placio-app/ent/review"
 	"placio-app/ent/room"
-	"placio-app/ent/table"
 	"placio-app/ent/user"
 	"placio-app/ent/userfollowplace"
 	"placio-app/ent/userlikeplace"
@@ -59,7 +59,7 @@ type PlaceQuery struct {
 	withRatings             *RatingQuery
 	withInventories         *PlaceInventoryQuery
 	withNotifications       *NotificationQuery
-	withTables              *TableQuery
+	withTables              *PlaceTableQuery
 	withFKs                 bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -494,8 +494,8 @@ func (pq *PlaceQuery) QueryNotifications() *NotificationQuery {
 }
 
 // QueryTables chains the current query on the "tables" edge.
-func (pq *PlaceQuery) QueryTables() *TableQuery {
-	query := (&TableClient{config: pq.config}).Query()
+func (pq *PlaceQuery) QueryTables() *PlaceTableQuery {
+	query := (&PlaceTableClient{config: pq.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := pq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -506,7 +506,7 @@ func (pq *PlaceQuery) QueryTables() *TableQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(place.Table, place.FieldID, selector),
-			sqlgraph.To(table.Table, table.FieldID),
+			sqlgraph.To(placetable.Table, placetable.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, place.TablesTable, place.TablesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
@@ -932,8 +932,8 @@ func (pq *PlaceQuery) WithNotifications(opts ...func(*NotificationQuery)) *Place
 
 // WithTables tells the query-builder to eager-load the nodes that are connected to
 // the "tables" edge. The optional arguments are used to configure the query builder of the edge.
-func (pq *PlaceQuery) WithTables(opts ...func(*TableQuery)) *PlaceQuery {
-	query := (&TableClient{config: pq.config}).Query()
+func (pq *PlaceQuery) WithTables(opts ...func(*PlaceTableQuery)) *PlaceQuery {
+	query := (&PlaceTableClient{config: pq.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
@@ -1195,8 +1195,8 @@ func (pq *PlaceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Place,
 	}
 	if query := pq.withTables; query != nil {
 		if err := pq.loadTables(ctx, query, nodes,
-			func(n *Place) { n.Edges.Tables = []*Table{} },
-			func(n *Place, e *Table) { n.Edges.Tables = append(n.Edges.Tables, e) }); err != nil {
+			func(n *Place) { n.Edges.Tables = []*PlaceTable{} },
+			func(n *Place, e *PlaceTable) { n.Edges.Tables = append(n.Edges.Tables, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -1912,7 +1912,7 @@ func (pq *PlaceQuery) loadNotifications(ctx context.Context, query *Notification
 	}
 	return nil
 }
-func (pq *PlaceQuery) loadTables(ctx context.Context, query *TableQuery, nodes []*Place, init func(*Place), assign func(*Place, *Table)) error {
+func (pq *PlaceQuery) loadTables(ctx context.Context, query *PlaceTableQuery, nodes []*Place, init func(*Place), assign func(*Place, *PlaceTable)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[string]*Place)
 	for i := range nodes {
@@ -1923,7 +1923,7 @@ func (pq *PlaceQuery) loadTables(ctx context.Context, query *TableQuery, nodes [
 		}
 	}
 	query.withFKs = true
-	query.Where(predicate.Table(func(s *sql.Selector) {
+	query.Where(predicate.PlaceTable(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(place.TablesColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)

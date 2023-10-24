@@ -2210,7 +2210,7 @@ func HasTables() predicate.Place {
 }
 
 // HasTablesWith applies the HasEdge predicate on the "tables" edge with a given conditions (other predicates).
-func HasTablesWith(preds ...predicate.Table) predicate.Place {
+func HasTablesWith(preds ...predicate.PlaceTable) predicate.Place {
 	return predicate.Place(func(s *sql.Selector) {
 		step := newTablesStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {

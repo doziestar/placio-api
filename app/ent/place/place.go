@@ -242,10 +242,10 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "notification" package.
 	NotificationsInverseTable = "notifications"
 	// TablesTable is the table that holds the tables relation/edge.
-	TablesTable = "tables"
-	// TablesInverseTable is the table name for the Table entity.
-	// It exists in this package in order to avoid circular dependency with the "table" package.
-	TablesInverseTable = "tables"
+	TablesTable = "place_tables"
+	// TablesInverseTable is the table name for the PlaceTable entity.
+	// It exists in this package in order to avoid circular dependency with the "placetable" package.
+	TablesInverseTable = "place_tables"
 	// TablesColumn is the table column denoting the tables relation/edge.
 	TablesColumn = "place_tables"
 )

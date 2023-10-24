@@ -38,7 +38,7 @@ func (Order) Edges() []ent.Edge {
 			Ref("orders").
 			Unique(),
 		edge.To("order_items", OrderItem.Type),
-		edge.From("table", Table.Type).
+		edge.From("table", PlaceTable.Type).
 			Ref("orders"),
 	}
 }

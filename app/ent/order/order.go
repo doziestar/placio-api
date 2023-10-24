@@ -46,10 +46,10 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "orderitem" package.
 	OrderItemsInverseTable = "order_items"
 	// TableTable is the table that holds the table relation/edge. The primary key declared below.
-	TableTable = "table_orders"
-	// TableInverseTable is the table name for the Table entity.
-	// It exists in this package in order to avoid circular dependency with the "table" package.
-	TableInverseTable = "tables"
+	TableTable = "place_table_orders"
+	// TableInverseTable is the table name for the PlaceTable entity.
+	// It exists in this package in order to avoid circular dependency with the "placetable" package.
+	TableInverseTable = "place_tables"
 )
 
 // Columns holds all SQL columns for order fields.
@@ -74,7 +74,7 @@ var (
 	OrderItemsPrimaryKey = []string{"order_id", "order_item_id"}
 	// TablePrimaryKey and TableColumn2 are the table columns denoting the
 	// primary key for the table relation (M2M).
-	TablePrimaryKey = []string{"table_id", "order_id"}
+	TablePrimaryKey = []string{"place_table_id", "order_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).
