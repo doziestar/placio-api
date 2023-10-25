@@ -203,6 +203,8 @@ func (s *UserServiceImpl) GetUser(ctx context.Context, auth0ID string) (*ent.Use
 		userId = strings.Replace(auth0ID, "auth0|", "", 1)
 	}
 
+	log.Println("GetUser", auth0ID, "userId", userId)
+
 	u, err := s.client.User.
 		Query().
 		Where(user.IDEQ(userId)).
