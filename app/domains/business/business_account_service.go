@@ -273,9 +273,10 @@ func (s *BusinessAccountServiceImpl) CreateBusinessAccount(ctx context.Context, 
 		SetDomainName(domainName).
 		SetEmail(businessData.Email).
 		SetTitle(businessData.Name).
-		SetLogo("https://www.placio.io/Images/defaults/default-picture.png").
-		SetBannerTwoSectionBackgroundImage("https://www.placio.io/Images/defaults/default-cover-photo.png").
-		SetBannerSectionBackgroundImage("https://www.placio.io/Images/defaults/default-cover-photo.png").
+		SetLogo("https://res.cloudinary.com/placio/image/upload/v1698229500/defaults/samantha-gades-fIHozNWfcvs-unsplash_kto0l3.jpg").
+		SetBannerTwoSectionBackgroundImage("https://res.cloudinary.com/placio/image/upload/v1698229499/defaults/francesca-saraco-_dS27XGgRyQ-unsplash_jnuvcx.jpg").
+		SetBannerSectionBackgroundImage("https://res.cloudinary.com/placio/image/upload/v1698229501/defaults/fernando-alvarez-rodriguez-M7GddPqJowg-unsplash_gchmsc.jpg").
+		SetBannerTwoRightSideImage("https://res.cloudinary.com/placio/image/upload/v1698229500/defaults/samantha-gades-fIHozNWfcvs-unsplash_kto0l3.jpg").
 		SetLastUpdated(time.Now()).
 		Save(ctx)
 
