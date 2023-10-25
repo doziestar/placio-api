@@ -2,11 +2,9 @@ package users
 
 import (
 	"errors"
-	"fmt"
 	"log"
 	"net/http"
 	_ "placio-app/Dto"
-	"placio-app/ent"
 	_ "placio-app/ent"
 	"placio-app/models"
 	"placio-app/utility"
@@ -475,13 +473,18 @@ func (uc *UserController) GetUser(ctx *gin.Context) error {
 		ctx.JSON(http.StatusOK, utility.ProcessResponse(user, "success", "Successfully retrieved user", ""))
 		return nil
 	}
-	auth0ID := ctx.MustGet("user").(string)
+	auth0ID := ctx.MustGet("auth0_id").(string)
 	if auth0ID == "" {
 		return errors.New("user Auth0 ID required")
 	}
 
-	return utility.GetDataFromCache[*ent.User](ctx, &uc.cache, uc.userService.GetUser, auth0ID, fmt.Sprintf("user:%s", auth0ID))
+	user, err := uc.userService.GetUser(ctx, auth0ID)
+	if err != nil {
+		return err
+	}
 
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(user, "success", "Successfully retrieved user", ""))
+	return nil
 }
 
 // UpdateUser updates a user's details.

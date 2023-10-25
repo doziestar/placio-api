@@ -193,10 +193,19 @@ func (s *UserServiceImpl) GetFollowedContents(ctx context.Context, userID string
 }
 
 func (s *UserServiceImpl) GetUser(ctx context.Context, auth0ID string) (*ent.User, error) {
+	var userId string
+
+	if auth0ID == "" {
+		return nil, errors.New("auth0ID is empty")
+	}
+
+	if strings.HasPrefix(auth0ID, "auth0|") {
+		userId = strings.Replace(auth0ID, "auth0|", "", 1)
+	}
 
 	u, err := s.client.User.
 		Query().
-		Where(user.IDEQ(auth0ID)).
+		Where(user.IDEQ(userId)).
 		WithLikes(func(query *ent.LikeQuery) {
 			query.WithPost(func(query *ent.PostQuery) {
 				query.WithUser()
@@ -259,8 +268,8 @@ func (s *UserServiceImpl) GetUser(ctx context.Context, auth0ID string) (*ent.Use
 		// userId should be the same as auth0ID but without the auth0| prefix
 		newUser, err := s.client.User.
 			Create().
-			SetID(auth0ID).
-			SetAuth0ID("auth0 | " + auth0ID).
+			SetID(userId).
+			SetAuth0ID(auth0ID).
 			SetName(*auth0Data.Name).
 			SetUsername(utility.GenerateRandomUsername()).
 			SetPicture(*auth0Data.Picture).
