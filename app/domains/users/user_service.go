@@ -199,8 +199,10 @@ func (s *UserServiceImpl) GetUser(ctx context.Context, auth0ID string) (*ent.Use
 		return nil, errors.New("auth0ID is empty")
 	}
 
-	if strings.HasPrefix(auth0ID, "auth0|") {
-		userId = strings.Replace(auth0ID, "auth0|", "", 1)
+	if strings.Contains(auth0ID, "|") {
+		userId = strings.Split(auth0ID, "|")[1]
+	} else {
+		userId = auth0ID
 	}
 
 	log.Println("GetUser", auth0ID, "userId", userId)
