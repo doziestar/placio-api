@@ -56,10 +56,14 @@ type Tx struct {
 	Media *MediaClient
 	// Menu is the client for interacting with the Menu builders.
 	Menu *MenuClient
+	// MenuItem is the client for interacting with the MenuItem builders.
+	MenuItem *MenuItemClient
 	// Notification is the client for interacting with the Notification builders.
 	Notification *NotificationClient
 	// Order is the client for interacting with the Order builders.
 	Order *OrderClient
+	// OrderItem is the client for interacting with the OrderItem builders.
+	OrderItem *OrderItemClient
 	// Payment is the client for interacting with the Payment builders.
 	Payment *PaymentClient
 	// Place is the client for interacting with the Place builders.
@@ -68,6 +72,8 @@ type Tx struct {
 	PlaceInventory *PlaceInventoryClient
 	// PlaceInventoryAttribute is the client for interacting with the PlaceInventoryAttribute builders.
 	PlaceInventoryAttribute *PlaceInventoryAttributeClient
+	// PlaceTable is the client for interacting with the PlaceTable builders.
+	PlaceTable *PlaceTableClient
 	// Post is the client for interacting with the Post builders.
 	Post *PostClient
 	// Rating is the client for interacting with the Rating builders.
@@ -261,12 +267,15 @@ func (tx *Tx) init() {
 	tx.Like = NewLikeClient(tx.config)
 	tx.Media = NewMediaClient(tx.config)
 	tx.Menu = NewMenuClient(tx.config)
+	tx.MenuItem = NewMenuItemClient(tx.config)
 	tx.Notification = NewNotificationClient(tx.config)
 	tx.Order = NewOrderClient(tx.config)
+	tx.OrderItem = NewOrderItemClient(tx.config)
 	tx.Payment = NewPaymentClient(tx.config)
 	tx.Place = NewPlaceClient(tx.config)
 	tx.PlaceInventory = NewPlaceInventoryClient(tx.config)
 	tx.PlaceInventoryAttribute = NewPlaceInventoryAttributeClient(tx.config)
+	tx.PlaceTable = NewPlaceTableClient(tx.config)
 	tx.Post = NewPostClient(tx.config)
 	tx.Rating = NewRatingClient(tx.config)
 	tx.Reaction = NewReactionClient(tx.config)

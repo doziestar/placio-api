@@ -90,6 +90,11 @@ func Type(v int) predicate.Notification {
 	return predicate.Notification(sql.FieldEQ(FieldType, v))
 }
 
+// UnreadCount applies equality check predicate on the "unread_count" field. It's identical to UnreadCountEQ.
+func UnreadCount(v int) predicate.Notification {
+	return predicate.Notification(sql.FieldEQ(FieldUnreadCount, v))
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Notification {
 	return predicate.Notification(sql.FieldEQ(FieldCreatedAt, v))
@@ -363,6 +368,46 @@ func TypeLT(v int) predicate.Notification {
 // TypeLTE applies the LTE predicate on the "type" field.
 func TypeLTE(v int) predicate.Notification {
 	return predicate.Notification(sql.FieldLTE(FieldType, v))
+}
+
+// UnreadCountEQ applies the EQ predicate on the "unread_count" field.
+func UnreadCountEQ(v int) predicate.Notification {
+	return predicate.Notification(sql.FieldEQ(FieldUnreadCount, v))
+}
+
+// UnreadCountNEQ applies the NEQ predicate on the "unread_count" field.
+func UnreadCountNEQ(v int) predicate.Notification {
+	return predicate.Notification(sql.FieldNEQ(FieldUnreadCount, v))
+}
+
+// UnreadCountIn applies the In predicate on the "unread_count" field.
+func UnreadCountIn(vs ...int) predicate.Notification {
+	return predicate.Notification(sql.FieldIn(FieldUnreadCount, vs...))
+}
+
+// UnreadCountNotIn applies the NotIn predicate on the "unread_count" field.
+func UnreadCountNotIn(vs ...int) predicate.Notification {
+	return predicate.Notification(sql.FieldNotIn(FieldUnreadCount, vs...))
+}
+
+// UnreadCountGT applies the GT predicate on the "unread_count" field.
+func UnreadCountGT(v int) predicate.Notification {
+	return predicate.Notification(sql.FieldGT(FieldUnreadCount, v))
+}
+
+// UnreadCountGTE applies the GTE predicate on the "unread_count" field.
+func UnreadCountGTE(v int) predicate.Notification {
+	return predicate.Notification(sql.FieldGTE(FieldUnreadCount, v))
+}
+
+// UnreadCountLT applies the LT predicate on the "unread_count" field.
+func UnreadCountLT(v int) predicate.Notification {
+	return predicate.Notification(sql.FieldLT(FieldUnreadCount, v))
+}
+
+// UnreadCountLTE applies the LTE predicate on the "unread_count" field.
+func UnreadCountLTE(v int) predicate.Notification {
+	return predicate.Notification(sql.FieldLTE(FieldUnreadCount, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -743,6 +788,75 @@ func HasBusinessAccount() predicate.Notification {
 func HasBusinessAccountWith(preds ...predicate.Business) predicate.Notification {
 	return predicate.Notification(func(s *sql.Selector) {
 		step := newBusinessAccountStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasPlace applies the HasEdge predicate on the "place" edge.
+func HasPlace() predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, PlaceTable, PlacePrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasPlaceWith applies the HasEdge predicate on the "place" edge with a given conditions (other predicates).
+func HasPlaceWith(preds ...predicate.Place) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		step := newPlaceStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasPost applies the HasEdge predicate on the "post" edge.
+func HasPost() predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, PostTable, PostPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasPostWith applies the HasEdge predicate on the "post" edge with a given conditions (other predicates).
+func HasPostWith(preds ...predicate.Post) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		step := newPostStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasComment applies the HasEdge predicate on the "comment" edge.
+func HasComment() predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, CommentTable, CommentPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCommentWith applies the HasEdge predicate on the "comment" edge with a given conditions (other predicates).
+func HasCommentWith(preds ...predicate.Comment) predicate.Notification {
+	return predicate.Notification(func(s *sql.Selector) {
+		step := newCommentStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

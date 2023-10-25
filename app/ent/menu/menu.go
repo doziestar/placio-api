@@ -12,10 +12,16 @@ const (
 	Label = "menu"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldName holds the string denoting the name field in the database.
+	FieldName = "name"
+	// FieldDescription holds the string denoting the description field in the database.
+	FieldDescription = "description"
 	// EdgePlace holds the string denoting the place edge name in mutations.
 	EdgePlace = "place"
 	// EdgeCategories holds the string denoting the categories edge name in mutations.
 	EdgeCategories = "categories"
+	// EdgeMenuItems holds the string denoting the menu_items edge name in mutations.
+	EdgeMenuItems = "menu_items"
 	// Table holds the table name of the menu in the database.
 	Table = "menus"
 	// PlaceTable is the table that holds the place relation/edge.
@@ -32,11 +38,18 @@ const (
 	CategoriesInverseTable = "categories"
 	// CategoriesColumn is the table column denoting the categories relation/edge.
 	CategoriesColumn = "menu_categories"
+	// MenuItemsTable is the table that holds the menu_items relation/edge. The primary key declared below.
+	MenuItemsTable = "menu_menu_items"
+	// MenuItemsInverseTable is the table name for the MenuItem entity.
+	// It exists in this package in order to avoid circular dependency with the "menuitem" package.
+	MenuItemsInverseTable = "menu_items"
 )
 
 // Columns holds all SQL columns for menu fields.
 var Columns = []string{
 	FieldID,
+	FieldName,
+	FieldDescription,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "menus"
@@ -44,6 +57,12 @@ var Columns = []string{
 var ForeignKeys = []string{
 	"place_menus",
 }
+
+var (
+	// MenuItemsPrimaryKey and MenuItemsColumn2 are the table columns denoting the
+	// primary key for the menu_items relation (M2M).
+	MenuItemsPrimaryKey = []string{"menu_id", "menu_item_id"}
+)
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
@@ -73,6 +92,16 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
 }
 
+// ByName orders the results by the name field.
+func ByName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldName, opts...).ToFunc()
+}
+
+// ByDescription orders the results by the description field.
+func ByDescription(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDescription, opts...).ToFunc()
+}
+
 // ByPlaceField orders the results by place field.
 func ByPlaceField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -93,6 +122,20 @@ func ByCategories(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newCategoriesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByMenuItemsCount orders the results by menu_items count.
+func ByMenuItemsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newMenuItemsStep(), opts...)
+	}
+}
+
+// ByMenuItems orders the results by menu_items terms.
+func ByMenuItems(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newMenuItemsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newPlaceStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -105,5 +148,12 @@ func newCategoriesStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CategoriesInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, CategoriesTable, CategoriesColumn),
+	)
+}
+func newMenuItemsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(MenuItemsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, false, MenuItemsTable, MenuItemsPrimaryKey...),
 	)
 }

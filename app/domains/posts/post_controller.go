@@ -9,7 +9,6 @@ import (
 	"placio-app/ent"
 	_ "placio-app/ent"
 	"placio-app/ent/post"
-	"placio-app/models"
 	"placio-app/utility"
 	appErr "placio-pkg/errors"
 
@@ -64,34 +63,31 @@ func (pc *PostController) RegisterRoutes(router *gin.RouterGroup, routerWithoutA
 // @Router /api/v1/posts/ [post]
 // createPost creates a new post.
 func (pc *PostController) createPost(ctx *gin.Context) error {
-	// Extract the user from the context
 	userId := ctx.MustGet("user").(string)
 	businessAccountId := ctx.Query("businessAccountId")
 
-	// Bind the incoming JSON to a new PostDto instance
-	data := new(PostDto)
-	if err := ctx.BindJSON(data); err != nil {
-
+	form, err := ctx.MultipartForm()
+	if err != nil {
 		return err
 	}
 
-	privacy := post.Privacy(data.Privacy)
+	content := form.Value["content"][0]
+	privacy := form.Value["privacy"][0]
+
+	mediaFiles, _ := form.File["medias"]
 
 	// Create a new Post instance
-	post := &ent.Post{
-		Content: data.Content,
-		ID:      models.GenerateID(),
-		Privacy: privacy,
+	newPost := &ent.Post{
+		Content: content,
+		Privacy: post.Privacy(privacy),
 	}
 
-	// Create the post
-	newPost, err := pc.postService.CreatePost(ctx, post, userId, businessAccountId, data.Medias)
+	createdPost, err := pc.postService.CreatePost(ctx, newPost, userId, businessAccountId, mediaFiles)
 	if err != nil {
-
 		return err
 	}
 
-	ctx.JSON(http.StatusCreated, utility.ProcessResponse(newPost, "success", "Post created successfully"))
+	ctx.JSON(http.StatusCreated, utility.ProcessResponse(createdPost, "success", "Post created successfully"))
 	return nil
 }
 

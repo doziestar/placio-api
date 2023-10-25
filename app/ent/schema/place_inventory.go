@@ -47,6 +47,9 @@ func (PlaceInventory) Edges() []ent.Edge {
 		edge.From("category", Category.Type).
 			Ref("place_inventories").
 			Unique(),
+		edge.From("menu_item", MenuItem.Type).
+			Ref("inventory").
+			Unique(),
 	}
 }
 

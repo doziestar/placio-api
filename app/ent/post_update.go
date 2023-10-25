@@ -11,6 +11,7 @@ import (
 	"placio-app/ent/comment"
 	"placio-app/ent/like"
 	"placio-app/ent/media"
+	"placio-app/ent/notification"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
 	"placio-app/ent/user"
@@ -381,6 +382,21 @@ func (pu *PostUpdate) AddCategories(c ...*Category) *PostUpdate {
 	return pu.AddCategoryIDs(ids...)
 }
 
+// AddNotificationIDs adds the "notifications" edge to the Notification entity by IDs.
+func (pu *PostUpdate) AddNotificationIDs(ids ...string) *PostUpdate {
+	pu.mutation.AddNotificationIDs(ids...)
+	return pu
+}
+
+// AddNotifications adds the "notifications" edges to the Notification entity.
+func (pu *PostUpdate) AddNotifications(n ...*Notification) *PostUpdate {
+	ids := make([]string, len(n))
+	for i := range n {
+		ids[i] = n[i].ID
+	}
+	return pu.AddNotificationIDs(ids...)
+}
+
 // Mutation returns the PostMutation object of the builder.
 func (pu *PostUpdate) Mutation() *PostMutation {
 	return pu.mutation
@@ -480,6 +496,27 @@ func (pu *PostUpdate) RemoveCategories(c ...*Category) *PostUpdate {
 		ids[i] = c[i].ID
 	}
 	return pu.RemoveCategoryIDs(ids...)
+}
+
+// ClearNotifications clears all "notifications" edges to the Notification entity.
+func (pu *PostUpdate) ClearNotifications() *PostUpdate {
+	pu.mutation.ClearNotifications()
+	return pu
+}
+
+// RemoveNotificationIDs removes the "notifications" edge to Notification entities by IDs.
+func (pu *PostUpdate) RemoveNotificationIDs(ids ...string) *PostUpdate {
+	pu.mutation.RemoveNotificationIDs(ids...)
+	return pu
+}
+
+// RemoveNotifications removes "notifications" edges to Notification entities.
+func (pu *PostUpdate) RemoveNotifications(n ...*Notification) *PostUpdate {
+	ids := make([]string, len(n))
+	for i := range n {
+		ids[i] = n[i].ID
+	}
+	return pu.RemoveNotificationIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -842,6 +879,51 @@ func (pu *PostUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if pu.mutation.NotificationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   post.NotificationsTable,
+			Columns: post.NotificationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(notification.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.RemovedNotificationsIDs(); len(nodes) > 0 && !pu.mutation.NotificationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   post.NotificationsTable,
+			Columns: post.NotificationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(notification.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.NotificationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   post.NotificationsTable,
+			Columns: post.NotificationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(notification.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -1216,6 +1298,21 @@ func (puo *PostUpdateOne) AddCategories(c ...*Category) *PostUpdateOne {
 	return puo.AddCategoryIDs(ids...)
 }
 
+// AddNotificationIDs adds the "notifications" edge to the Notification entity by IDs.
+func (puo *PostUpdateOne) AddNotificationIDs(ids ...string) *PostUpdateOne {
+	puo.mutation.AddNotificationIDs(ids...)
+	return puo
+}
+
+// AddNotifications adds the "notifications" edges to the Notification entity.
+func (puo *PostUpdateOne) AddNotifications(n ...*Notification) *PostUpdateOne {
+	ids := make([]string, len(n))
+	for i := range n {
+		ids[i] = n[i].ID
+	}
+	return puo.AddNotificationIDs(ids...)
+}
+
 // Mutation returns the PostMutation object of the builder.
 func (puo *PostUpdateOne) Mutation() *PostMutation {
 	return puo.mutation
@@ -1315,6 +1412,27 @@ func (puo *PostUpdateOne) RemoveCategories(c ...*Category) *PostUpdateOne {
 		ids[i] = c[i].ID
 	}
 	return puo.RemoveCategoryIDs(ids...)
+}
+
+// ClearNotifications clears all "notifications" edges to the Notification entity.
+func (puo *PostUpdateOne) ClearNotifications() *PostUpdateOne {
+	puo.mutation.ClearNotifications()
+	return puo
+}
+
+// RemoveNotificationIDs removes the "notifications" edge to Notification entities by IDs.
+func (puo *PostUpdateOne) RemoveNotificationIDs(ids ...string) *PostUpdateOne {
+	puo.mutation.RemoveNotificationIDs(ids...)
+	return puo
+}
+
+// RemoveNotifications removes "notifications" edges to Notification entities.
+func (puo *PostUpdateOne) RemoveNotifications(n ...*Notification) *PostUpdateOne {
+	ids := make([]string, len(n))
+	for i := range n {
+		ids[i] = n[i].ID
+	}
+	return puo.RemoveNotificationIDs(ids...)
 }
 
 // Where appends a list predicates to the PostUpdate builder.
@@ -1707,6 +1825,51 @@ func (puo *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if puo.mutation.NotificationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   post.NotificationsTable,
+			Columns: post.NotificationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(notification.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.RemovedNotificationsIDs(); len(nodes) > 0 && !puo.mutation.NotificationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   post.NotificationsTable,
+			Columns: post.NotificationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(notification.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.NotificationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   post.NotificationsTable,
+			Columns: post.NotificationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(notification.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

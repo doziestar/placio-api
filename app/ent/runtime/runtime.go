@@ -21,10 +21,14 @@ import (
 	"placio-app/ent/like"
 	"placio-app/ent/media"
 	"placio-app/ent/menu"
+	"placio-app/ent/menuitem"
 	"placio-app/ent/notification"
+	"placio-app/ent/order"
+	"placio-app/ent/orderitem"
 	"placio-app/ent/place"
 	"placio-app/ent/placeinventory"
 	"placio-app/ent/placeinventoryattribute"
+	"placio-app/ent/placetable"
 	"placio-app/ent/post"
 	"placio-app/ent/rating"
 	"placio-app/ent/reservation"
@@ -355,6 +359,12 @@ func init() {
 	menuDescID := menuFields[0].Descriptor()
 	// menu.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	menu.IDValidator = menuDescID.Validators[0].(func(string) error)
+	menuitemFields := schema.MenuItem{}.Fields()
+	_ = menuitemFields
+	// menuitemDescID is the schema descriptor for id field.
+	menuitemDescID := menuitemFields[0].Descriptor()
+	// menuitem.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	menuitem.IDValidator = menuitemDescID.Validators[0].(func(string) error)
 	notificationFields := schema.Notification{}.Fields()
 	_ = notificationFields
 	// notificationDescTitle is the schema descriptor for title field.
@@ -377,26 +387,56 @@ func init() {
 	notificationDescType := notificationFields[5].Descriptor()
 	// notification.DefaultType holds the default value on creation for the type field.
 	notification.DefaultType = notificationDescType.Default.(int)
+	// notificationDescUnreadCount is the schema descriptor for unread_count field.
+	notificationDescUnreadCount := notificationFields[6].Descriptor()
+	// notification.DefaultUnreadCount holds the default value on creation for the unread_count field.
+	notification.DefaultUnreadCount = notificationDescUnreadCount.Default.(int)
 	// notificationDescNotifiableType is the schema descriptor for notifiable_type field.
-	notificationDescNotifiableType := notificationFields[8].Descriptor()
+	notificationDescNotifiableType := notificationFields[9].Descriptor()
 	// notification.NotifiableTypeValidator is a validator for the "notifiable_type" field. It is called by the builders before save.
 	notification.NotifiableTypeValidator = notificationDescNotifiableType.Validators[0].(func(string) error)
 	// notificationDescNotifiableID is the schema descriptor for notifiable_id field.
-	notificationDescNotifiableID := notificationFields[9].Descriptor()
+	notificationDescNotifiableID := notificationFields[10].Descriptor()
 	// notification.NotifiableIDValidator is a validator for the "notifiable_id" field. It is called by the builders before save.
 	notification.NotifiableIDValidator = notificationDescNotifiableID.Validators[0].(func(string) error)
 	// notificationDescTriggeredBy is the schema descriptor for triggered_by field.
-	notificationDescTriggeredBy := notificationFields[10].Descriptor()
+	notificationDescTriggeredBy := notificationFields[11].Descriptor()
 	// notification.TriggeredByValidator is a validator for the "triggered_by" field. It is called by the builders before save.
 	notification.TriggeredByValidator = notificationDescTriggeredBy.Validators[0].(func(string) error)
 	// notificationDescTriggeredTo is the schema descriptor for triggered_to field.
-	notificationDescTriggeredTo := notificationFields[11].Descriptor()
+	notificationDescTriggeredTo := notificationFields[12].Descriptor()
 	// notification.TriggeredToValidator is a validator for the "triggered_to" field. It is called by the builders before save.
 	notification.TriggeredToValidator = notificationDescTriggeredTo.Validators[0].(func(string) error)
 	// notificationDescID is the schema descriptor for id field.
 	notificationDescID := notificationFields[0].Descriptor()
 	// notification.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	notification.IDValidator = notificationDescID.Validators[0].(func(string) error)
+	orderFields := schema.Order{}.Fields()
+	_ = orderFields
+	// orderDescCreatedAt is the schema descriptor for created_at field.
+	orderDescCreatedAt := orderFields[1].Descriptor()
+	// order.DefaultCreatedAt holds the default value on creation for the created_at field.
+	order.DefaultCreatedAt = orderDescCreatedAt.Default.(func() time.Time)
+	// orderDescUpdatedAt is the schema descriptor for updated_at field.
+	orderDescUpdatedAt := orderFields[2].Descriptor()
+	// order.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	order.DefaultUpdatedAt = orderDescUpdatedAt.Default.(func() time.Time)
+	// order.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	order.UpdateDefaultUpdatedAt = orderDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// orderDescID is the schema descriptor for id field.
+	orderDescID := orderFields[0].Descriptor()
+	// order.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	order.IDValidator = orderDescID.Validators[0].(func(string) error)
+	orderitemFields := schema.OrderItem{}.Fields()
+	_ = orderitemFields
+	// orderitemDescQuantity is the schema descriptor for quantity field.
+	orderitemDescQuantity := orderitemFields[1].Descriptor()
+	// orderitem.DefaultQuantity holds the default value on creation for the quantity field.
+	orderitem.DefaultQuantity = orderitemDescQuantity.Default.(int)
+	// orderitemDescID is the schema descriptor for id field.
+	orderitemDescID := orderitemFields[0].Descriptor()
+	// orderitem.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	orderitem.IDValidator = orderitemDescID.Validators[0].(func(string) error)
 	placeHooks := schema.Place{}.Hooks()
 	place.Hooks[0] = placeHooks[0]
 	placeFields := schema.Place{}.Fields()
@@ -457,6 +497,12 @@ func init() {
 	placeinventoryattributeDescID := placeinventoryattributeFields[0].Descriptor()
 	// placeinventoryattribute.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	placeinventoryattribute.IDValidator = placeinventoryattributeDescID.Validators[0].(func(string) error)
+	placetableFields := schema.PlaceTable{}.Fields()
+	_ = placetableFields
+	// placetableDescID is the schema descriptor for id field.
+	placetableDescID := placetableFields[0].Descriptor()
+	// placetable.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	placetable.IDValidator = placetableDescID.Validators[0].(func(string) error)
 	postFields := schema.Post{}.Fields()
 	_ = postFields
 	// postDescContent is the schema descriptor for Content field.
@@ -645,6 +691,10 @@ func init() {
 	userDescFollowingCount := userFields[18].Descriptor()
 	// user.DefaultFollowingCount holds the default value on creation for the following_count field.
 	user.DefaultFollowingCount = userDescFollowingCount.Default.(int)
+	// userDescIsPremium is the schema descriptor for is_premium field.
+	userDescIsPremium := userFields[21].Descriptor()
+	// user.DefaultIsPremium holds the default value on creation for the is_premium field.
+	user.DefaultIsPremium = userDescIsPremium.Default.(bool)
 	// userDescID is the schema descriptor for id field.
 	userDescID := userFields[0].Descriptor()
 	// user.IDValidator is a validator for the "id" field. It is called by the builders before save.

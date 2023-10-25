@@ -22,6 +22,8 @@ const (
 	FieldIsRead = "is_read"
 	// FieldType holds the string denoting the type field in the database.
 	FieldType = "type"
+	// FieldUnreadCount holds the string denoting the unread_count field in the database.
+	FieldUnreadCount = "unread_count"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -38,6 +40,12 @@ const (
 	EdgeUser = "user"
 	// EdgeBusinessAccount holds the string denoting the business_account edge name in mutations.
 	EdgeBusinessAccount = "business_account"
+	// EdgePlace holds the string denoting the place edge name in mutations.
+	EdgePlace = "place"
+	// EdgePost holds the string denoting the post edge name in mutations.
+	EdgePost = "post"
+	// EdgeComment holds the string denoting the comment edge name in mutations.
+	EdgeComment = "comment"
 	// Table holds the table name of the notification in the database.
 	Table = "notifications"
 	// UserTable is the table that holds the user relation/edge. The primary key declared below.
@@ -50,6 +58,21 @@ const (
 	// BusinessAccountInverseTable is the table name for the Business entity.
 	// It exists in this package in order to avoid circular dependency with the "business" package.
 	BusinessAccountInverseTable = "businesses"
+	// PlaceTable is the table that holds the place relation/edge. The primary key declared below.
+	PlaceTable = "place_notifications"
+	// PlaceInverseTable is the table name for the Place entity.
+	// It exists in this package in order to avoid circular dependency with the "place" package.
+	PlaceInverseTable = "places"
+	// PostTable is the table that holds the post relation/edge. The primary key declared below.
+	PostTable = "post_notifications"
+	// PostInverseTable is the table name for the Post entity.
+	// It exists in this package in order to avoid circular dependency with the "post" package.
+	PostInverseTable = "posts"
+	// CommentTable is the table that holds the comment relation/edge. The primary key declared below.
+	CommentTable = "comment_notifications"
+	// CommentInverseTable is the table name for the Comment entity.
+	// It exists in this package in order to avoid circular dependency with the "comment" package.
+	CommentInverseTable = "comments"
 )
 
 // Columns holds all SQL columns for notification fields.
@@ -60,6 +83,7 @@ var Columns = []string{
 	FieldLink,
 	FieldIsRead,
 	FieldType,
+	FieldUnreadCount,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldNotifiableType,
@@ -75,6 +99,15 @@ var (
 	// BusinessAccountPrimaryKey and BusinessAccountColumn2 are the table columns denoting the
 	// primary key for the business_account relation (M2M).
 	BusinessAccountPrimaryKey = []string{"business_id", "notification_id"}
+	// PlacePrimaryKey and PlaceColumn2 are the table columns denoting the
+	// primary key for the place relation (M2M).
+	PlacePrimaryKey = []string{"place_id", "notification_id"}
+	// PostPrimaryKey and PostColumn2 are the table columns denoting the
+	// primary key for the post relation (M2M).
+	PostPrimaryKey = []string{"post_id", "notification_id"}
+	// CommentPrimaryKey and CommentColumn2 are the table columns denoting the
+	// primary key for the comment relation (M2M).
+	CommentPrimaryKey = []string{"comment_id", "notification_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -98,6 +131,8 @@ var (
 	DefaultIsRead bool
 	// DefaultType holds the default value on creation for the "type" field.
 	DefaultType int
+	// DefaultUnreadCount holds the default value on creation for the "unread_count" field.
+	DefaultUnreadCount int
 	// NotifiableTypeValidator is a validator for the "notifiable_type" field. It is called by the builders before save.
 	NotifiableTypeValidator func(string) error
 	// NotifiableIDValidator is a validator for the "notifiable_id" field. It is called by the builders before save.
@@ -141,6 +176,11 @@ func ByIsRead(opts ...sql.OrderTermOption) OrderOption {
 // ByType orders the results by the type field.
 func ByType(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldType, opts...).ToFunc()
+}
+
+// ByUnreadCount orders the results by the unread_count field.
+func ByUnreadCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUnreadCount, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the created_at field.
@@ -200,6 +240,48 @@ func ByBusinessAccount(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newBusinessAccountStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByPlaceCount orders the results by place count.
+func ByPlaceCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newPlaceStep(), opts...)
+	}
+}
+
+// ByPlace orders the results by place terms.
+func ByPlace(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newPlaceStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByPostCount orders the results by post count.
+func ByPostCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newPostStep(), opts...)
+	}
+}
+
+// ByPost orders the results by post terms.
+func ByPost(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newPostStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByCommentCount orders the results by comment count.
+func ByCommentCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newCommentStep(), opts...)
+	}
+}
+
+// ByComment orders the results by comment terms.
+func ByComment(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCommentStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newUserStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -212,5 +294,26 @@ func newBusinessAccountStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(BusinessAccountInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2M, true, BusinessAccountTable, BusinessAccountPrimaryKey...),
+	)
+}
+func newPlaceStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(PlaceInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, true, PlaceTable, PlacePrimaryKey...),
+	)
+}
+func newPostStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(PostInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, true, PostTable, PostPrimaryKey...),
+	)
+}
+func newCommentStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CommentInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, true, CommentTable, CommentPrimaryKey...),
 	)
 }

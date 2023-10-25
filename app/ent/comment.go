@@ -46,9 +46,11 @@ type CommentEdges struct {
 	ParentComment *Comment `json:"parentComment,omitempty"`
 	// Replies holds the value of the replies edge.
 	Replies []*Comment `json:"replies,omitempty"`
+	// Notifications holds the value of the notifications edge.
+	Notifications []*Notification `json:"notifications,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [5]bool
 }
 
 // UserOrErr returns the User value or an error if the edge
@@ -97,6 +99,15 @@ func (e CommentEdges) RepliesOrErr() ([]*Comment, error) {
 		return e.Replies, nil
 	}
 	return nil, &NotLoadedError{edge: "replies"}
+}
+
+// NotificationsOrErr returns the Notifications value or an error if the edge
+// was not loaded in eager-loading.
+func (e CommentEdges) NotificationsOrErr() ([]*Notification, error) {
+	if e.loadedTypes[4] {
+		return e.Notifications, nil
+	}
+	return nil, &NotLoadedError{edge: "notifications"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -212,6 +223,11 @@ func (c *Comment) QueryParentComment() *CommentQuery {
 // QueryReplies queries the "replies" edge of the Comment entity.
 func (c *Comment) QueryReplies() *CommentQuery {
 	return NewCommentClient(c.config).QueryReplies(c)
+}
+
+// QueryNotifications queries the "notifications" edge of the Comment entity.
+func (c *Comment) QueryNotifications() *NotificationQuery {
+	return NewCommentClient(c.config).QueryNotifications(c)
 }
 
 // Update returns a builder for updating this Comment.

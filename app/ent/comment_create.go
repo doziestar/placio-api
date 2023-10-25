@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"placio-app/ent/comment"
+	"placio-app/ent/notification"
 	"placio-app/ent/post"
 	"placio-app/ent/user"
 	"time"
@@ -124,6 +125,21 @@ func (cc *CommentCreate) AddReplies(c ...*Comment) *CommentCreate {
 		ids[i] = c[i].ID
 	}
 	return cc.AddReplyIDs(ids...)
+}
+
+// AddNotificationIDs adds the "notifications" edge to the Notification entity by IDs.
+func (cc *CommentCreate) AddNotificationIDs(ids ...string) *CommentCreate {
+	cc.mutation.AddNotificationIDs(ids...)
+	return cc
+}
+
+// AddNotifications adds the "notifications" edges to the Notification entity.
+func (cc *CommentCreate) AddNotifications(n ...*Notification) *CommentCreate {
+	ids := make([]string, len(n))
+	for i := range n {
+		ids[i] = n[i].ID
+	}
+	return cc.AddNotificationIDs(ids...)
 }
 
 // Mutation returns the CommentMutation object of the builder.
@@ -295,6 +311,22 @@ func (cc *CommentCreate) createSpec() (*Comment, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(comment.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := cc.mutation.NotificationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   comment.NotificationsTable,
+			Columns: comment.NotificationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(notification.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

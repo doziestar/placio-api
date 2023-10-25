@@ -10,6 +10,7 @@ import (
 	"placio-app/ent/category"
 	"placio-app/ent/inventorytype"
 	"placio-app/ent/media"
+	"placio-app/ent/menuitem"
 	"placio-app/ent/place"
 	"placio-app/ent/placeinventory"
 	"placio-app/ent/placeinventoryattribute"
@@ -300,6 +301,25 @@ func (pic *PlaceInventoryCreate) SetCategory(c *Category) *PlaceInventoryCreate 
 	return pic.SetCategoryID(c.ID)
 }
 
+// SetMenuItemID sets the "menu_item" edge to the MenuItem entity by ID.
+func (pic *PlaceInventoryCreate) SetMenuItemID(id string) *PlaceInventoryCreate {
+	pic.mutation.SetMenuItemID(id)
+	return pic
+}
+
+// SetNillableMenuItemID sets the "menu_item" edge to the MenuItem entity by ID if the given value is not nil.
+func (pic *PlaceInventoryCreate) SetNillableMenuItemID(id *string) *PlaceInventoryCreate {
+	if id != nil {
+		pic = pic.SetMenuItemID(*id)
+	}
+	return pic
+}
+
+// SetMenuItem sets the "menu_item" edge to the MenuItem entity.
+func (pic *PlaceInventoryCreate) SetMenuItem(m *MenuItem) *PlaceInventoryCreate {
+	return pic.SetMenuItemID(m.ID)
+}
+
 // Mutation returns the PlaceInventoryMutation object of the builder.
 func (pic *PlaceInventoryCreate) Mutation() *PlaceInventoryMutation {
 	return pic.mutation
@@ -569,6 +589,23 @@ func (pic *PlaceInventoryCreate) createSpec() (*PlaceInventory, *sqlgraph.Create
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.category_place_inventories = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pic.mutation.MenuItemIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   placeinventory.MenuItemTable,
+			Columns: []string{placeinventory.MenuItemColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(menuitem.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.menu_item_inventory = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

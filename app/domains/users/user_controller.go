@@ -2,11 +2,9 @@ package users
 
 import (
 	"errors"
-	"fmt"
 	"log"
 	"net/http"
 	_ "placio-app/Dto"
-	"placio-app/ent"
 	_ "placio-app/ent"
 	"placio-app/models"
 	"placio-app/utility"
@@ -30,6 +28,7 @@ func (uc *UserController) RegisterRoutes(router *gin.RouterGroup) {
 	{
 		userRouter.GET("/", utility.Use(uc.GetUser))
 		userRouter.GET("/followers", utility.Use(uc.getFollowers))
+		userRouter.GET("/check-following", utility.Use(uc.checkFollowing))
 		userRouter.GET("/:id/followers", utility.Use(uc.getFollowersByUserID))
 		userRouter.GET("/likes", utility.Use(uc.getLikes))
 		userRouter.GET("/:id/likes", utility.Use(uc.getUserLikesUserID))
@@ -51,6 +50,32 @@ func (uc *UserController) RegisterRoutes(router *gin.RouterGroup) {
 		userRouter.DELETE("/unfollow/business/:followerID/:businessID", utility.Use(uc.unfollowBusiness))
 		userRouter.GET("/followed-contents/:userID", utility.Use(uc.getFollowedContents))
 	}
+}
+
+// @Summary Check if user is following another user
+// @Description Check if user is following another user
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param userID path string true "ID of the user"
+// @Param followerID path string true "ID of the follower"
+// @Success 200 {object} bool "Successfully retrieved followers"
+// @Failure 400 {object} Dto.Error
+// @Failure 401 {object} Dto.Error
+// @Failure 500 {object} Dto.Error
+// @Router /api/v1/users/check-following/ [get]
+func (uc *UserController) checkFollowing(ctx *gin.Context) error {
+	followerId := ctx.Query("userID")
+	businessId := ctx.Query("businessID")
+	user := ctx.GetString("user")
+
+	isFollowing, err := uc.userService.CheckFollowing(ctx, user, followerId, businessId)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(isFollowing, "success", "Successfully retrieved followers", ""))
+	return nil
 }
 
 // @Summary Follow a user
@@ -448,13 +473,18 @@ func (uc *UserController) GetUser(ctx *gin.Context) error {
 		ctx.JSON(http.StatusOK, utility.ProcessResponse(user, "success", "Successfully retrieved user", ""))
 		return nil
 	}
-	auth0ID := ctx.MustGet("user").(string)
+	auth0ID := ctx.MustGet("auth0_id").(string)
 	if auth0ID == "" {
 		return errors.New("user Auth0 ID required")
 	}
 
-	return utility.GetDataFromCache[*ent.User](ctx, &uc.cache, uc.userService.GetUser, auth0ID, fmt.Sprintf("user:%s", auth0ID))
+	user, err := uc.userService.GetUser(ctx, auth0ID)
+	if err != nil {
+		return err
+	}
 
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(user, "success", "Successfully retrieved user", ""))
+	return nil
 }
 
 // UpdateUser updates a user's details.

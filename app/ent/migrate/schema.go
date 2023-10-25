@@ -662,6 +662,7 @@ var (
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "like_count", Type: field.TypeInt, Default: 0},
 		{Name: "dislike_count", Type: field.TypeInt, Default: 0},
+		{Name: "menu_item_media", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "post_medias", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "review_medias", Type: field.TypeString, Nullable: true},
 		{Name: "website_assets", Type: field.TypeString, Nullable: true},
@@ -673,20 +674,26 @@ var (
 		PrimaryKey: []*schema.Column{MediaColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "media_posts_medias",
+				Symbol:     "media_menu_items_media",
 				Columns:    []*schema.Column{MediaColumns[7]},
+				RefColumns: []*schema.Column{MenuItemsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "media_posts_medias",
+				Columns:    []*schema.Column{MediaColumns[8]},
 				RefColumns: []*schema.Column{PostsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "media_reviews_medias",
-				Columns:    []*schema.Column{MediaColumns[8]},
+				Columns:    []*schema.Column{MediaColumns[9]},
 				RefColumns: []*schema.Column{ReviewsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "media_websites_assets",
-				Columns:    []*schema.Column{MediaColumns[9]},
+				Columns:    []*schema.Column{MediaColumns[10]},
 				RefColumns: []*schema.Column{WebsitesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -695,6 +702,8 @@ var (
 	// MenusColumns holds the columns for the "menus" table.
 	MenusColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
+		{Name: "name", Type: field.TypeString},
+		{Name: "description", Type: field.TypeString, Nullable: true},
 		{Name: "place_menus", Type: field.TypeString, Nullable: true, Size: 36},
 	}
 	// MenusTable holds the schema information for the "menus" table.
@@ -705,11 +714,26 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "menus_places_menus",
-				Columns:    []*schema.Column{MenusColumns[1]},
+				Columns:    []*schema.Column{MenusColumns[3]},
 				RefColumns: []*schema.Column{PlacesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
+	}
+	// MenuItemsColumns holds the columns for the "menu_items" table.
+	MenuItemsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
+		{Name: "name", Type: field.TypeString},
+		{Name: "description", Type: field.TypeString, Nullable: true},
+		{Name: "price", Type: field.TypeFloat64},
+		{Name: "preparation_time", Type: field.TypeInt, Nullable: true},
+		{Name: "options", Type: field.TypeJSON, Nullable: true},
+	}
+	// MenuItemsTable holds the schema information for the "menu_items" table.
+	MenuItemsTable = &schema.Table{
+		Name:       "menu_items",
+		Columns:    MenuItemsColumns,
+		PrimaryKey: []*schema.Column{MenuItemsColumns[0]},
 	}
 	// NotificationsColumns holds the columns for the "notifications" table.
 	NotificationsColumns = []*schema.Column{
@@ -719,6 +743,7 @@ var (
 		{Name: "link", Type: field.TypeString, Size: 255},
 		{Name: "is_read", Type: field.TypeBool, Default: false},
 		{Name: "type", Type: field.TypeInt, Default: 0},
+		{Name: "unread_count", Type: field.TypeInt, Default: 0},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "notifiable_type", Type: field.TypeString, Size: 255},
@@ -734,13 +759,41 @@ var (
 	}
 	// OrdersColumns holds the columns for the "orders" table.
 	OrdersColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString},
+		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "status", Type: field.TypeEnum, Enums: []string{"pending", "confirmed", "completed", "cancelled"}, Default: "pending"},
+		{Name: "total_amount", Type: field.TypeFloat64},
+		{Name: "additional_info", Type: field.TypeJSON, Nullable: true},
+		{Name: "user_orders", Type: field.TypeString, Nullable: true, Size: 36},
 	}
 	// OrdersTable holds the schema information for the "orders" table.
 	OrdersTable = &schema.Table{
 		Name:       "orders",
 		Columns:    OrdersColumns,
 		PrimaryKey: []*schema.Column{OrdersColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "orders_users_orders",
+				Columns:    []*schema.Column{OrdersColumns[6]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
+	// OrderItemsColumns holds the columns for the "order_items" table.
+	OrderItemsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
+		{Name: "quantity", Type: field.TypeInt, Default: 1},
+		{Name: "price_per_item", Type: field.TypeFloat64},
+		{Name: "total_price", Type: field.TypeFloat64, SchemaType: map[string]string{"postgres": "decimal"}},
+		{Name: "options", Type: field.TypeJSON, Nullable: true},
+	}
+	// OrderItemsTable holds the schema information for the "order_items" table.
+	OrderItemsTable = &schema.Table{
+		Name:       "order_items",
+		Columns:    OrderItemsColumns,
+		PrimaryKey: []*schema.Column{OrderItemsColumns[0]},
 	}
 	// PaymentsColumns holds the columns for the "payments" table.
 	PaymentsColumns = []*schema.Column{
@@ -831,6 +884,7 @@ var (
 		{Name: "business_place_inventories", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "category_place_inventories", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "inventory_type_place_inventories", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "menu_item_inventory", Type: field.TypeString, Unique: true, Nullable: true, Size: 36},
 		{Name: "place_inventories", Type: field.TypeString, Nullable: true, Size: 36},
 	}
 	// PlaceInventoriesTable holds the schema information for the "place_inventories" table.
@@ -858,8 +912,14 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "place_inventories_places_inventories",
+				Symbol:     "place_inventories_menu_items_inventory",
 				Columns:    []*schema.Column{PlaceInventoriesColumns[15]},
+				RefColumns: []*schema.Column{MenuItemsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "place_inventories_places_inventories",
+				Columns:    []*schema.Column{PlaceInventoriesColumns[16]},
 				RefColumns: []*schema.Column{PlacesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -889,6 +949,27 @@ var (
 				Symbol:     "place_inventory_attributes_place_inventories_attributes",
 				Columns:    []*schema.Column{PlaceInventoryAttributesColumns[4]},
 				RefColumns: []*schema.Column{PlaceInventoriesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
+	// PlaceTablesColumns holds the columns for the "place_tables" table.
+	PlaceTablesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
+		{Name: "number", Type: field.TypeInt},
+		{Name: "qr_code", Type: field.TypeString, Nullable: true},
+		{Name: "place_tables", Type: field.TypeString, Nullable: true, Size: 36},
+	}
+	// PlaceTablesTable holds the schema information for the "place_tables" table.
+	PlaceTablesTable = &schema.Table{
+		Name:       "place_tables",
+		Columns:    PlaceTablesColumns,
+		PrimaryKey: []*schema.Column{PlaceTablesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "place_tables_places_tables",
+				Columns:    []*schema.Column{PlaceTablesColumns[3]},
+				RefColumns: []*schema.Column{PlacesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -1268,6 +1349,9 @@ var (
 		{Name: "relevance_score", Type: field.TypeFloat64, Nullable: true},
 		{Name: "follower_count", Type: field.TypeInt, Default: 0},
 		{Name: "following_count", Type: field.TypeInt, Default: 0},
+		{Name: "role", Type: field.TypeEnum, Enums: []string{"user", "admin", "business_owner", "staff"}, Default: "user"},
+		{Name: "permissions", Type: field.TypeJSON, Nullable: true},
+		{Name: "is_premium", Type: field.TypeBool, Default: false},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{
@@ -1597,6 +1681,31 @@ var (
 			},
 		},
 	}
+	// CommentNotificationsColumns holds the columns for the "comment_notifications" table.
+	CommentNotificationsColumns = []*schema.Column{
+		{Name: "comment_id", Type: field.TypeString, Size: 36},
+		{Name: "notification_id", Type: field.TypeString, Size: 36},
+	}
+	// CommentNotificationsTable holds the schema information for the "comment_notifications" table.
+	CommentNotificationsTable = &schema.Table{
+		Name:       "comment_notifications",
+		Columns:    CommentNotificationsColumns,
+		PrimaryKey: []*schema.Column{CommentNotificationsColumns[0], CommentNotificationsColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "comment_notifications_comment_id",
+				Columns:    []*schema.Column{CommentNotificationsColumns[0]},
+				RefColumns: []*schema.Column{CommentsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "comment_notifications_notification_id",
+				Columns:    []*schema.Column{CommentNotificationsColumns[1]},
+				RefColumns: []*schema.Column{NotificationsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// FaqPlaceColumns holds the columns for the "faq_place" table.
 	FaqPlaceColumns = []*schema.Column{
 		{Name: "faq_id", Type: field.TypeString},
@@ -1647,6 +1756,81 @@ var (
 			},
 		},
 	}
+	// MenuMenuItemsColumns holds the columns for the "menu_menu_items" table.
+	MenuMenuItemsColumns = []*schema.Column{
+		{Name: "menu_id", Type: field.TypeString, Size: 36},
+		{Name: "menu_item_id", Type: field.TypeString, Size: 36},
+	}
+	// MenuMenuItemsTable holds the schema information for the "menu_menu_items" table.
+	MenuMenuItemsTable = &schema.Table{
+		Name:       "menu_menu_items",
+		Columns:    MenuMenuItemsColumns,
+		PrimaryKey: []*schema.Column{MenuMenuItemsColumns[0], MenuMenuItemsColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "menu_menu_items_menu_id",
+				Columns:    []*schema.Column{MenuMenuItemsColumns[0]},
+				RefColumns: []*schema.Column{MenusColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "menu_menu_items_menu_item_id",
+				Columns:    []*schema.Column{MenuMenuItemsColumns[1]},
+				RefColumns: []*schema.Column{MenuItemsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
+	// MenuItemOrderItemsColumns holds the columns for the "menu_item_order_items" table.
+	MenuItemOrderItemsColumns = []*schema.Column{
+		{Name: "menu_item_id", Type: field.TypeString, Size: 36},
+		{Name: "order_item_id", Type: field.TypeString, Size: 36},
+	}
+	// MenuItemOrderItemsTable holds the schema information for the "menu_item_order_items" table.
+	MenuItemOrderItemsTable = &schema.Table{
+		Name:       "menu_item_order_items",
+		Columns:    MenuItemOrderItemsColumns,
+		PrimaryKey: []*schema.Column{MenuItemOrderItemsColumns[0], MenuItemOrderItemsColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "menu_item_order_items_menu_item_id",
+				Columns:    []*schema.Column{MenuItemOrderItemsColumns[0]},
+				RefColumns: []*schema.Column{MenuItemsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "menu_item_order_items_order_item_id",
+				Columns:    []*schema.Column{MenuItemOrderItemsColumns[1]},
+				RefColumns: []*schema.Column{OrderItemsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
+	// OrderOrderItemsColumns holds the columns for the "order_order_items" table.
+	OrderOrderItemsColumns = []*schema.Column{
+		{Name: "order_id", Type: field.TypeString, Size: 36},
+		{Name: "order_item_id", Type: field.TypeString, Size: 36},
+	}
+	// OrderOrderItemsTable holds the schema information for the "order_order_items" table.
+	OrderOrderItemsTable = &schema.Table{
+		Name:       "order_order_items",
+		Columns:    OrderOrderItemsColumns,
+		PrimaryKey: []*schema.Column{OrderOrderItemsColumns[0], OrderOrderItemsColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "order_order_items_order_id",
+				Columns:    []*schema.Column{OrderOrderItemsColumns[0]},
+				RefColumns: []*schema.Column{OrdersColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "order_order_items_order_item_id",
+				Columns:    []*schema.Column{OrderOrderItemsColumns[1]},
+				RefColumns: []*schema.Column{OrderItemsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// PlaceMediasColumns holds the columns for the "place_medias" table.
 	PlaceMediasColumns = []*schema.Column{
 		{Name: "place_id", Type: field.TypeString, Size: 36},
@@ -1672,6 +1856,31 @@ var (
 			},
 		},
 	}
+	// PlaceNotificationsColumns holds the columns for the "place_notifications" table.
+	PlaceNotificationsColumns = []*schema.Column{
+		{Name: "place_id", Type: field.TypeString, Size: 36},
+		{Name: "notification_id", Type: field.TypeString, Size: 36},
+	}
+	// PlaceNotificationsTable holds the schema information for the "place_notifications" table.
+	PlaceNotificationsTable = &schema.Table{
+		Name:       "place_notifications",
+		Columns:    PlaceNotificationsColumns,
+		PrimaryKey: []*schema.Column{PlaceNotificationsColumns[0], PlaceNotificationsColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "place_notifications_place_id",
+				Columns:    []*schema.Column{PlaceNotificationsColumns[0]},
+				RefColumns: []*schema.Column{PlacesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "place_notifications_notification_id",
+				Columns:    []*schema.Column{PlaceNotificationsColumns[1]},
+				RefColumns: []*schema.Column{NotificationsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// PlaceInventoryMediaColumns holds the columns for the "place_inventory_media" table.
 	PlaceInventoryMediaColumns = []*schema.Column{
 		{Name: "place_inventory_id", Type: field.TypeString, Size: 36},
@@ -1693,6 +1902,56 @@ var (
 				Symbol:     "place_inventory_media_media_id",
 				Columns:    []*schema.Column{PlaceInventoryMediaColumns[1]},
 				RefColumns: []*schema.Column{MediaColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
+	// PlaceTableOrdersColumns holds the columns for the "place_table_orders" table.
+	PlaceTableOrdersColumns = []*schema.Column{
+		{Name: "place_table_id", Type: field.TypeString, Size: 36},
+		{Name: "order_id", Type: field.TypeString, Size: 36},
+	}
+	// PlaceTableOrdersTable holds the schema information for the "place_table_orders" table.
+	PlaceTableOrdersTable = &schema.Table{
+		Name:       "place_table_orders",
+		Columns:    PlaceTableOrdersColumns,
+		PrimaryKey: []*schema.Column{PlaceTableOrdersColumns[0], PlaceTableOrdersColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "place_table_orders_place_table_id",
+				Columns:    []*schema.Column{PlaceTableOrdersColumns[0]},
+				RefColumns: []*schema.Column{PlaceTablesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "place_table_orders_order_id",
+				Columns:    []*schema.Column{PlaceTableOrdersColumns[1]},
+				RefColumns: []*schema.Column{OrdersColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
+	// PostNotificationsColumns holds the columns for the "post_notifications" table.
+	PostNotificationsColumns = []*schema.Column{
+		{Name: "post_id", Type: field.TypeString, Size: 36},
+		{Name: "notification_id", Type: field.TypeString, Size: 36},
+	}
+	// PostNotificationsTable holds the schema information for the "post_notifications" table.
+	PostNotificationsTable = &schema.Table{
+		Name:       "post_notifications",
+		Columns:    PostNotificationsColumns,
+		PrimaryKey: []*schema.Column{PostNotificationsColumns[0], PostNotificationsColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "post_notifications_post_id",
+				Columns:    []*schema.Column{PostNotificationsColumns[0]},
+				RefColumns: []*schema.Column{PostsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "post_notifications_notification_id",
+				Columns:    []*schema.Column{PostNotificationsColumns[1]},
+				RefColumns: []*schema.Column{NotificationsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 		},
@@ -1771,12 +2030,15 @@ var (
 		LikesTable,
 		MediaTable,
 		MenusTable,
+		MenuItemsTable,
 		NotificationsTable,
 		OrdersTable,
+		OrderItemsTable,
 		PaymentsTable,
 		PlacesTable,
 		PlaceInventoriesTable,
 		PlaceInventoryAttributesTable,
+		PlaceTablesTable,
 		PostsTable,
 		RatingsTable,
 		ReactionsTable,
@@ -1800,10 +2062,17 @@ var (
 		AmenityPlacesTable,
 		BusinessNotificationsTable,
 		CategoryMediaTable,
+		CommentNotificationsTable,
 		FaqPlaceTable,
 		FaqEventTable,
+		MenuMenuItemsTable,
+		MenuItemOrderItemsTable,
+		OrderOrderItemsTable,
 		PlaceMediasTable,
+		PlaceNotificationsTable,
 		PlaceInventoryMediaTable,
+		PlaceTableOrdersTable,
+		PostNotificationsTable,
 		UserPlacesTable,
 		UserNotificationsTable,
 	}
@@ -1850,18 +2119,22 @@ func init() {
 	LikesTable.ForeignKeys[3].RefTable = PostsTable
 	LikesTable.ForeignKeys[4].RefTable = ReviewsTable
 	LikesTable.ForeignKeys[5].RefTable = UsersTable
-	MediaTable.ForeignKeys[0].RefTable = PostsTable
-	MediaTable.ForeignKeys[1].RefTable = ReviewsTable
-	MediaTable.ForeignKeys[2].RefTable = WebsitesTable
+	MediaTable.ForeignKeys[0].RefTable = MenuItemsTable
+	MediaTable.ForeignKeys[1].RefTable = PostsTable
+	MediaTable.ForeignKeys[2].RefTable = ReviewsTable
+	MediaTable.ForeignKeys[3].RefTable = WebsitesTable
 	MenusTable.ForeignKeys[0].RefTable = PlacesTable
+	OrdersTable.ForeignKeys[0].RefTable = UsersTable
 	PlacesTable.ForeignKeys[0].RefTable = BusinessesTable
 	PlacesTable.ForeignKeys[1].RefTable = EventsTable
 	PlaceInventoriesTable.ForeignKeys[0].RefTable = BusinessesTable
 	PlaceInventoriesTable.ForeignKeys[1].RefTable = CategoriesTable
 	PlaceInventoriesTable.ForeignKeys[2].RefTable = InventoryTypesTable
-	PlaceInventoriesTable.ForeignKeys[3].RefTable = PlacesTable
+	PlaceInventoriesTable.ForeignKeys[3].RefTable = MenuItemsTable
+	PlaceInventoriesTable.ForeignKeys[4].RefTable = PlacesTable
 	PlaceInventoryAttributesTable.ForeignKeys[0].RefTable = InventoryAttributesTable
 	PlaceInventoryAttributesTable.ForeignKeys[1].RefTable = PlaceInventoriesTable
+	PlaceTablesTable.ForeignKeys[0].RefTable = PlacesTable
 	PostsTable.ForeignKeys[0].RefTable = BusinessesTable
 	PostsTable.ForeignKeys[1].RefTable = UsersTable
 	RatingsTable.ForeignKeys[0].RefTable = BusinessesTable
@@ -1907,14 +2180,28 @@ func init() {
 	BusinessNotificationsTable.ForeignKeys[1].RefTable = NotificationsTable
 	CategoryMediaTable.ForeignKeys[0].RefTable = CategoriesTable
 	CategoryMediaTable.ForeignKeys[1].RefTable = MediaTable
+	CommentNotificationsTable.ForeignKeys[0].RefTable = CommentsTable
+	CommentNotificationsTable.ForeignKeys[1].RefTable = NotificationsTable
 	FaqPlaceTable.ForeignKeys[0].RefTable = FaQsTable
 	FaqPlaceTable.ForeignKeys[1].RefTable = PlacesTable
 	FaqEventTable.ForeignKeys[0].RefTable = FaQsTable
 	FaqEventTable.ForeignKeys[1].RefTable = EventsTable
+	MenuMenuItemsTable.ForeignKeys[0].RefTable = MenusTable
+	MenuMenuItemsTable.ForeignKeys[1].RefTable = MenuItemsTable
+	MenuItemOrderItemsTable.ForeignKeys[0].RefTable = MenuItemsTable
+	MenuItemOrderItemsTable.ForeignKeys[1].RefTable = OrderItemsTable
+	OrderOrderItemsTable.ForeignKeys[0].RefTable = OrdersTable
+	OrderOrderItemsTable.ForeignKeys[1].RefTable = OrderItemsTable
 	PlaceMediasTable.ForeignKeys[0].RefTable = PlacesTable
 	PlaceMediasTable.ForeignKeys[1].RefTable = MediaTable
+	PlaceNotificationsTable.ForeignKeys[0].RefTable = PlacesTable
+	PlaceNotificationsTable.ForeignKeys[1].RefTable = NotificationsTable
 	PlaceInventoryMediaTable.ForeignKeys[0].RefTable = PlaceInventoriesTable
 	PlaceInventoryMediaTable.ForeignKeys[1].RefTable = MediaTable
+	PlaceTableOrdersTable.ForeignKeys[0].RefTable = PlaceTablesTable
+	PlaceTableOrdersTable.ForeignKeys[1].RefTable = OrdersTable
+	PostNotificationsTable.ForeignKeys[0].RefTable = PostsTable
+	PostNotificationsTable.ForeignKeys[1].RefTable = NotificationsTable
 	UserPlacesTable.ForeignKeys[0].RefTable = UsersTable
 	UserPlacesTable.ForeignKeys[1].RefTable = PlacesTable
 	UserNotificationsTable.ForeignKeys[0].RefTable = UsersTable

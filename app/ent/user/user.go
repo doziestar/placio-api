@@ -3,6 +3,8 @@
 package user
 
 import (
+	"fmt"
+
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -49,6 +51,12 @@ const (
 	FieldFollowerCount = "follower_count"
 	// FieldFollowingCount holds the string denoting the following_count field in the database.
 	FieldFollowingCount = "following_count"
+	// FieldRole holds the string denoting the role field in the database.
+	FieldRole = "role"
+	// FieldPermissions holds the string denoting the permissions field in the database.
+	FieldPermissions = "permissions"
+	// FieldIsPremium holds the string denoting the is_premium field in the database.
+	FieldIsPremium = "is_premium"
 	// EdgeUserBusinesses holds the string denoting the userbusinesses edge name in mutations.
 	EdgeUserBusinesses = "userBusinesses"
 	// EdgeComments holds the string denoting the comments edge name in mutations.
@@ -97,6 +105,8 @@ const (
 	EdgeNotifications = "notifications"
 	// EdgeWallet holds the string denoting the wallet edge name in mutations.
 	EdgeWallet = "wallet"
+	// EdgeOrders holds the string denoting the orders edge name in mutations.
+	EdgeOrders = "orders"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// UserBusinessesTable is the table that holds the userBusinesses relation/edge.
@@ -263,6 +273,13 @@ const (
 	WalletInverseTable = "account_wallets"
 	// WalletColumn is the table column denoting the wallet relation/edge.
 	WalletColumn = "user_wallet"
+	// OrdersTable is the table that holds the orders relation/edge.
+	OrdersTable = "orders"
+	// OrdersInverseTable is the table name for the Order entity.
+	// It exists in this package in order to avoid circular dependency with the "order" package.
+	OrdersInverseTable = "orders"
+	// OrdersColumn is the table column denoting the orders relation/edge.
+	OrdersColumn = "user_orders"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -286,6 +303,9 @@ var Columns = []string{
 	FieldRelevanceScore,
 	FieldFollowerCount,
 	FieldFollowingCount,
+	FieldRole,
+	FieldPermissions,
+	FieldIsPremium,
 }
 
 var (
@@ -322,9 +342,39 @@ var (
 	DefaultFollowerCount int
 	// DefaultFollowingCount holds the default value on creation for the "following_count" field.
 	DefaultFollowingCount int
+	// DefaultIsPremium holds the default value on creation for the "is_premium" field.
+	DefaultIsPremium bool
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(string) error
 )
+
+// Role defines the type for the "role" enum field.
+type Role string
+
+// RoleUser is the default value of the Role enum.
+const DefaultRole = RoleUser
+
+// Role values.
+const (
+	RoleUser          Role = "user"
+	RoleAdmin         Role = "admin"
+	RoleBusinessOwner Role = "business_owner"
+	RoleStaff         Role = "staff"
+)
+
+func (r Role) String() string {
+	return string(r)
+}
+
+// RoleValidator is a validator for the "role" field enum values. It is called by the builders before save.
+func RoleValidator(r Role) error {
+	switch r {
+	case RoleUser, RoleAdmin, RoleBusinessOwner, RoleStaff:
+		return nil
+	default:
+		return fmt.Errorf("user: invalid enum value for role field: %q", r)
+	}
+}
 
 // OrderOption defines the ordering options for the User queries.
 type OrderOption func(*sql.Selector)
@@ -402,6 +452,16 @@ func ByFollowerCount(opts ...sql.OrderTermOption) OrderOption {
 // ByFollowingCount orders the results by the following_count field.
 func ByFollowingCount(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldFollowingCount, opts...).ToFunc()
+}
+
+// ByRole orders the results by the role field.
+func ByRole(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRole, opts...).ToFunc()
+}
+
+// ByIsPremium orders the results by the is_premium field.
+func ByIsPremium(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsPremium, opts...).ToFunc()
 }
 
 // ByUserBusinessesCount orders the results by userBusinesses count.
@@ -725,6 +785,20 @@ func ByWalletField(field string, opts ...sql.OrderTermOption) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newWalletStep(), sql.OrderByField(field, opts...))
 	}
 }
+
+// ByOrdersCount orders the results by orders count.
+func ByOrdersCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newOrdersStep(), opts...)
+	}
+}
+
+// ByOrders orders the results by orders terms.
+func ByOrders(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newOrdersStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newUserBusinessesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -891,5 +965,12 @@ func newWalletStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(WalletInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2O, false, WalletTable, WalletColumn),
+	)
+}
+func newOrdersStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(OrdersInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, OrdersTable, OrdersColumn),
 	)
 }

@@ -84,6 +84,11 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 
 		cacheService := cache.NewCacheService(client, *redisClient, searchService)
 
+		// notifications
+		notificationService := notifications.NewNotificationService(client)
+		notificationController := notifications.NewNotificationController(notificationService)
+		notificationController.RegisterRoutes(routerGroupV1)
+
 		// user
 		userService := users.NewUserService(client, redisClient, searchService)
 		userController := users.NewUserController(userService, *redisClient)
@@ -95,7 +100,7 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		mediaController.RegisterRoutes(routerGroupV1WithoutAuth)
 
 		// comments
-		commentService := comments.NewCommentService(client)
+		commentService := comments.NewCommentService(client, notificationService)
 		commentController := comments.NewCommentController(commentService, userService)
 		commentController.RegisterRoutes(routerGroupV1)
 
@@ -191,11 +196,6 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		recommendationService := recommendations.NewRecommendations(client, userService, placeService)
 		recommendationController := recommendations.NewRecommendationController(*recommendationService)
 		recommendationController.RegisterRoutes(routerGroupV1, routerGroupV1WithoutAuth)
-
-		// notifications
-		notificationService := notifications.NewNotificationService(client)
-		notificationController := notifications.NewNotificationController(notificationService)
-		notificationController.RegisterRoutes(routerGroupV1)
 
 		// website
 		websiteService := websites.NewWebsiteService(client, businessService, userService, mediaService)

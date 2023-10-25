@@ -41,6 +41,7 @@ type UserService interface {
 	UpdateAuth0UserInformation(userID string, userData *models.Auth0UserData) (*management.User, error)
 	GetUserByUserId(ctx context.Context, userId string) (*ent.User, error)
 	UpdateUser(ctx context.Context, userID string, userData map[string]interface{}) (*ent.User, error)
+	CheckFollowing(ctx context.Context, userId string, followedID, businessId string) (bool, error)
 	// GetAuth0ManagementToken GetAuth0UserMetaData(userID string, IdToken string) (models.Metadata, error)
 	//GetAuth0AppMetaData(userID string, IdToken string) (models.AppMetadata, error)
 	//GetAuth0UserRoles(userID string, IdToken string) ([]string, error)
@@ -75,6 +76,47 @@ type auth0TokenResponse struct {
 
 func NewUserService(client *ent.Client, cache *utility.RedisClient, searchService search.SearchService) *UserServiceImpl {
 	return &UserServiceImpl{client: client, cache: cache, searchService: searchService}
+}
+
+func (s *UserServiceImpl) CheckFollowing(ctx context.Context, userId string, followedID, businessId string) (bool, error) {
+	if businessId != "" {
+		// Check if the user is following the business
+		followedBusiness, err := s.client.UserFollowBusiness.
+			Query().
+			Where(userfollowbusiness.HasUserWith(user.ID(userId)), userfollowbusiness.HasBusinessWith(business.ID(businessId))).
+			Only(ctx)
+
+		if err != nil {
+			if ent.IsNotFound(err) {
+				return false, nil
+			}
+			return false, err
+		}
+
+		if followedBusiness != nil {
+			return true, nil
+		}
+
+	} else {
+		// Check if the user is following another user
+		followedUser, err := s.client.UserFollowUser.
+			Query().
+			Where(userfollowuser.HasFollowerWith(user.ID(userId)), userfollowuser.HasFollowedWith(user.ID(followedID))).
+			Only(ctx)
+
+		if err != nil {
+			if ent.IsNotFound(err) {
+				return false, nil
+			}
+			return false, err
+		}
+
+		if followedUser != nil {
+			return true, nil
+		}
+	}
+
+	return false, nil
 }
 
 func (s *UserServiceImpl) FollowUser(ctx context.Context, followerID string, followedID string) error {
@@ -151,12 +193,32 @@ func (s *UserServiceImpl) GetFollowedContents(ctx context.Context, userID string
 }
 
 func (s *UserServiceImpl) GetUser(ctx context.Context, auth0ID string) (*ent.User, error) {
+	var userId string
+
+	if auth0ID == "" {
+		return nil, errors.New("auth0ID is empty")
+	}
+
+	if strings.HasPrefix(auth0ID, "auth0|") {
+		userId = strings.Replace(auth0ID, "auth0|", "", 1)
+	}
 
 	u, err := s.client.User.
 		Query().
-		Where(user.IDEQ(auth0ID)).
+		Where(user.IDEQ(userId)).
 		WithLikes(func(query *ent.LikeQuery) {
-			query.WithPost()
+			query.WithPost(func(query *ent.PostQuery) {
+				query.WithUser()
+				query.WithMedias()
+				query.WithBusinessAccount()
+				query.WithComments(func(query *ent.CommentQuery) {
+					query.WithUser()
+				})
+				query.WithLikes(func(query *ent.LikeQuery) {
+					query.WithUser()
+					query.WithPost()
+				})
+			})
 		}).
 		WithFollowedUsers(func(query *ent.UserFollowUserQuery) {
 			query.WithFollowed()
@@ -176,6 +238,14 @@ func (s *UserServiceImpl) GetUser(ctx context.Context, auth0ID string) (*ent.Use
 		}).
 		WithPosts(func(query *ent.PostQuery) {
 			query.WithMedias()
+			query.WithUser()
+			query.WithBusinessAccount()
+			query.WithComments(func(query *ent.CommentQuery) {
+				query.WithUser()
+				query.WithReplies(func(query *ent.CommentQuery) {
+					query.WithUser()
+				})
+			})
 		}).
 		WithComments(func(query *ent.CommentQuery) {
 			query.WithUser()
@@ -196,7 +266,6 @@ func (s *UserServiceImpl) GetUser(ctx context.Context, auth0ID string) (*ent.Use
 		}
 
 		// userId should be the same as auth0ID but without the auth0| prefix
-		userId := strings.Split(auth0ID, "|")[1]
 		newUser, err := s.client.User.
 			Create().
 			SetID(userId).
@@ -286,8 +355,18 @@ func (s *UserServiceImpl) GetUserByUserId(ctx context.Context, userId string) (*
 				})
 				query.WithLikes(func(query *ent.LikeQuery) {
 					query.WithUser()
+					query.WithPost()
 				})
 			})
+		}).
+		WithLikedPlaces(func(query *ent.UserLikePlaceQuery) {
+			query.WithPlace(func(query *ent.PlaceQuery) {
+				query.WithBusiness()
+			})
+		}).
+		WithPosts(func(query *ent.PostQuery) {
+			query.WithUser()
+			query.WithMedias()
 		}).
 		WithFollowedUsers(func(query *ent.UserFollowUserQuery) {
 			query.WithFollowed()

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"placio-app/ent/category"
 	"placio-app/ent/menu"
+	"placio-app/ent/menuitem"
 	"placio-app/ent/place"
 	"placio-app/ent/predicate"
 
@@ -26,6 +27,32 @@ type MenuUpdate struct {
 // Where appends a list predicates to the MenuUpdate builder.
 func (mu *MenuUpdate) Where(ps ...predicate.Menu) *MenuUpdate {
 	mu.mutation.Where(ps...)
+	return mu
+}
+
+// SetName sets the "name" field.
+func (mu *MenuUpdate) SetName(s string) *MenuUpdate {
+	mu.mutation.SetName(s)
+	return mu
+}
+
+// SetDescription sets the "description" field.
+func (mu *MenuUpdate) SetDescription(s string) *MenuUpdate {
+	mu.mutation.SetDescription(s)
+	return mu
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (mu *MenuUpdate) SetNillableDescription(s *string) *MenuUpdate {
+	if s != nil {
+		mu.SetDescription(*s)
+	}
+	return mu
+}
+
+// ClearDescription clears the value of the "description" field.
+func (mu *MenuUpdate) ClearDescription() *MenuUpdate {
+	mu.mutation.ClearDescription()
 	return mu
 }
 
@@ -63,6 +90,21 @@ func (mu *MenuUpdate) AddCategories(c ...*Category) *MenuUpdate {
 	return mu.AddCategoryIDs(ids...)
 }
 
+// AddMenuItemIDs adds the "menu_items" edge to the MenuItem entity by IDs.
+func (mu *MenuUpdate) AddMenuItemIDs(ids ...string) *MenuUpdate {
+	mu.mutation.AddMenuItemIDs(ids...)
+	return mu
+}
+
+// AddMenuItems adds the "menu_items" edges to the MenuItem entity.
+func (mu *MenuUpdate) AddMenuItems(m ...*MenuItem) *MenuUpdate {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return mu.AddMenuItemIDs(ids...)
+}
+
 // Mutation returns the MenuMutation object of the builder.
 func (mu *MenuUpdate) Mutation() *MenuMutation {
 	return mu.mutation
@@ -93,6 +135,27 @@ func (mu *MenuUpdate) RemoveCategories(c ...*Category) *MenuUpdate {
 		ids[i] = c[i].ID
 	}
 	return mu.RemoveCategoryIDs(ids...)
+}
+
+// ClearMenuItems clears all "menu_items" edges to the MenuItem entity.
+func (mu *MenuUpdate) ClearMenuItems() *MenuUpdate {
+	mu.mutation.ClearMenuItems()
+	return mu
+}
+
+// RemoveMenuItemIDs removes the "menu_items" edge to MenuItem entities by IDs.
+func (mu *MenuUpdate) RemoveMenuItemIDs(ids ...string) *MenuUpdate {
+	mu.mutation.RemoveMenuItemIDs(ids...)
+	return mu
+}
+
+// RemoveMenuItems removes "menu_items" edges to MenuItem entities.
+func (mu *MenuUpdate) RemoveMenuItems(m ...*MenuItem) *MenuUpdate {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return mu.RemoveMenuItemIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -130,6 +193,15 @@ func (mu *MenuUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := mu.mutation.Name(); ok {
+		_spec.SetField(menu.FieldName, field.TypeString, value)
+	}
+	if value, ok := mu.mutation.Description(); ok {
+		_spec.SetField(menu.FieldDescription, field.TypeString, value)
+	}
+	if mu.mutation.DescriptionCleared() {
+		_spec.ClearField(menu.FieldDescription, field.TypeString)
 	}
 	if mu.mutation.PlaceCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -205,6 +277,51 @@ func (mu *MenuUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if mu.mutation.MenuItemsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   menu.MenuItemsTable,
+			Columns: menu.MenuItemsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(menuitem.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.RemovedMenuItemsIDs(); len(nodes) > 0 && !mu.mutation.MenuItemsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   menu.MenuItemsTable,
+			Columns: menu.MenuItemsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(menuitem.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.MenuItemsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   menu.MenuItemsTable,
+			Columns: menu.MenuItemsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(menuitem.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, mu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{menu.Label}
@@ -223,6 +340,32 @@ type MenuUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *MenuMutation
+}
+
+// SetName sets the "name" field.
+func (muo *MenuUpdateOne) SetName(s string) *MenuUpdateOne {
+	muo.mutation.SetName(s)
+	return muo
+}
+
+// SetDescription sets the "description" field.
+func (muo *MenuUpdateOne) SetDescription(s string) *MenuUpdateOne {
+	muo.mutation.SetDescription(s)
+	return muo
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (muo *MenuUpdateOne) SetNillableDescription(s *string) *MenuUpdateOne {
+	if s != nil {
+		muo.SetDescription(*s)
+	}
+	return muo
+}
+
+// ClearDescription clears the value of the "description" field.
+func (muo *MenuUpdateOne) ClearDescription() *MenuUpdateOne {
+	muo.mutation.ClearDescription()
+	return muo
 }
 
 // SetPlaceID sets the "place" edge to the Place entity by ID.
@@ -259,6 +402,21 @@ func (muo *MenuUpdateOne) AddCategories(c ...*Category) *MenuUpdateOne {
 	return muo.AddCategoryIDs(ids...)
 }
 
+// AddMenuItemIDs adds the "menu_items" edge to the MenuItem entity by IDs.
+func (muo *MenuUpdateOne) AddMenuItemIDs(ids ...string) *MenuUpdateOne {
+	muo.mutation.AddMenuItemIDs(ids...)
+	return muo
+}
+
+// AddMenuItems adds the "menu_items" edges to the MenuItem entity.
+func (muo *MenuUpdateOne) AddMenuItems(m ...*MenuItem) *MenuUpdateOne {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return muo.AddMenuItemIDs(ids...)
+}
+
 // Mutation returns the MenuMutation object of the builder.
 func (muo *MenuUpdateOne) Mutation() *MenuMutation {
 	return muo.mutation
@@ -289,6 +447,27 @@ func (muo *MenuUpdateOne) RemoveCategories(c ...*Category) *MenuUpdateOne {
 		ids[i] = c[i].ID
 	}
 	return muo.RemoveCategoryIDs(ids...)
+}
+
+// ClearMenuItems clears all "menu_items" edges to the MenuItem entity.
+func (muo *MenuUpdateOne) ClearMenuItems() *MenuUpdateOne {
+	muo.mutation.ClearMenuItems()
+	return muo
+}
+
+// RemoveMenuItemIDs removes the "menu_items" edge to MenuItem entities by IDs.
+func (muo *MenuUpdateOne) RemoveMenuItemIDs(ids ...string) *MenuUpdateOne {
+	muo.mutation.RemoveMenuItemIDs(ids...)
+	return muo
+}
+
+// RemoveMenuItems removes "menu_items" edges to MenuItem entities.
+func (muo *MenuUpdateOne) RemoveMenuItems(m ...*MenuItem) *MenuUpdateOne {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return muo.RemoveMenuItemIDs(ids...)
 }
 
 // Where appends a list predicates to the MenuUpdate builder.
@@ -357,6 +536,15 @@ func (muo *MenuUpdateOne) sqlSave(ctx context.Context) (_node *Menu, err error) 
 			}
 		}
 	}
+	if value, ok := muo.mutation.Name(); ok {
+		_spec.SetField(menu.FieldName, field.TypeString, value)
+	}
+	if value, ok := muo.mutation.Description(); ok {
+		_spec.SetField(menu.FieldDescription, field.TypeString, value)
+	}
+	if muo.mutation.DescriptionCleared() {
+		_spec.ClearField(menu.FieldDescription, field.TypeString)
+	}
 	if muo.mutation.PlaceCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -424,6 +612,51 @@ func (muo *MenuUpdateOne) sqlSave(ctx context.Context) (_node *Menu, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if muo.mutation.MenuItemsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   menu.MenuItemsTable,
+			Columns: menu.MenuItemsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(menuitem.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.RemovedMenuItemsIDs(); len(nodes) > 0 && !muo.mutation.MenuItemsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   menu.MenuItemsTable,
+			Columns: menu.MenuItemsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(menuitem.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.MenuItemsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   menu.MenuItemsTable,
+			Columns: menu.MenuItemsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(menuitem.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

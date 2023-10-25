@@ -41,5 +41,6 @@ func (Comment) Edges() []ent.Edge {
 			From("parentComment").
 			Field("parentCommentID").
 			Unique(),
+		edge.To("notifications", Notification.Type),
 	}
 }

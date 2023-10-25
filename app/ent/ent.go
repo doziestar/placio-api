@@ -28,12 +28,15 @@ import (
 	"placio-app/ent/like"
 	"placio-app/ent/media"
 	"placio-app/ent/menu"
+	"placio-app/ent/menuitem"
 	"placio-app/ent/notification"
 	"placio-app/ent/order"
+	"placio-app/ent/orderitem"
 	"placio-app/ent/payment"
 	"placio-app/ent/place"
 	"placio-app/ent/placeinventory"
 	"placio-app/ent/placeinventoryattribute"
+	"placio-app/ent/placetable"
 	"placio-app/ent/post"
 	"placio-app/ent/rating"
 	"placio-app/ent/reaction"
@@ -142,12 +145,15 @@ func checkColumn(table, column string) error {
 			like.Table:                    like.ValidColumn,
 			media.Table:                   media.ValidColumn,
 			menu.Table:                    menu.ValidColumn,
+			menuitem.Table:                menuitem.ValidColumn,
 			notification.Table:            notification.ValidColumn,
 			order.Table:                   order.ValidColumn,
+			orderitem.Table:               orderitem.ValidColumn,
 			payment.Table:                 payment.ValidColumn,
 			place.Table:                   place.ValidColumn,
 			placeinventory.Table:          placeinventory.ValidColumn,
 			placeinventoryattribute.Table: placeinventoryattribute.ValidColumn,
+			placetable.Table:              placetable.ValidColumn,
 			post.Table:                    post.ValidColumn,
 			rating.Table:                  rating.ValidColumn,
 			reaction.Table:                reaction.ValidColumn,

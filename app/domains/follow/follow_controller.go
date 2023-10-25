@@ -171,11 +171,14 @@ func (fc *FollowController) followUserToBusiness(c *gin.Context) error {
 
 	err := fc.service.FollowUserToBusiness(c, userID, businessID)
 	if err != nil {
-
+		if err.Error() == "user is already following the business" {
+			c.JSON(http.StatusBadRequest, utility.ProcessResponse(nil, "error", err.Error(), ""))
+			return nil
+		}
 		return nil
 	}
 
-	c.JSON(http.StatusCreated, utility.ProcessResponse(nil, "success", "User successfully followed the business", ""))
+	c.JSON(http.StatusCreated, utility.ProcessResponse(nil, "success"))
 	return nil
 }
 
@@ -257,7 +260,7 @@ func (fc *FollowController) followUserToUser(c *gin.Context) error {
 		return err
 	}
 
-	c.JSON(http.StatusCreated, utility.ProcessResponse(nil, "success", "User successfully followed the user", ""))
+	c.JSON(http.StatusCreated, utility.ProcessResponse(nil, "success"))
 	return nil
 }
 
@@ -336,7 +339,7 @@ func (fc *FollowController) followUserToPlace(c *gin.Context) error {
 		return nil
 	}
 
-	c.JSON(http.StatusCreated, utility.ProcessResponse(nil, "success", "User successfully followed the place", ""))
+	c.JSON(http.StatusCreated, utility.ProcessResponse(nil, "success"))
 	return nil
 }
 

@@ -8,7 +8,10 @@ import (
 	"fmt"
 	"math"
 	"placio-app/ent/business"
+	"placio-app/ent/comment"
 	"placio-app/ent/notification"
+	"placio-app/ent/place"
+	"placio-app/ent/post"
 	"placio-app/ent/predicate"
 	"placio-app/ent/user"
 
@@ -26,6 +29,9 @@ type NotificationQuery struct {
 	predicates          []predicate.Notification
 	withUser            *UserQuery
 	withBusinessAccount *BusinessQuery
+	withPlace           *PlaceQuery
+	withPost            *PostQuery
+	withComment         *CommentQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -99,6 +105,72 @@ func (nq *NotificationQuery) QueryBusinessAccount() *BusinessQuery {
 			sqlgraph.From(notification.Table, notification.FieldID, selector),
 			sqlgraph.To(business.Table, business.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, true, notification.BusinessAccountTable, notification.BusinessAccountPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(nq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryPlace chains the current query on the "place" edge.
+func (nq *NotificationQuery) QueryPlace() *PlaceQuery {
+	query := (&PlaceClient{config: nq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := nq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := nq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(notification.Table, notification.FieldID, selector),
+			sqlgraph.To(place.Table, place.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, notification.PlaceTable, notification.PlacePrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(nq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryPost chains the current query on the "post" edge.
+func (nq *NotificationQuery) QueryPost() *PostQuery {
+	query := (&PostClient{config: nq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := nq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := nq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(notification.Table, notification.FieldID, selector),
+			sqlgraph.To(post.Table, post.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, notification.PostTable, notification.PostPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(nq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryComment chains the current query on the "comment" edge.
+func (nq *NotificationQuery) QueryComment() *CommentQuery {
+	query := (&CommentClient{config: nq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := nq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := nq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(notification.Table, notification.FieldID, selector),
+			sqlgraph.To(comment.Table, comment.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, notification.CommentTable, notification.CommentPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(nq.driver.Dialect(), step)
 		return fromU, nil
@@ -300,6 +372,9 @@ func (nq *NotificationQuery) Clone() *NotificationQuery {
 		predicates:          append([]predicate.Notification{}, nq.predicates...),
 		withUser:            nq.withUser.Clone(),
 		withBusinessAccount: nq.withBusinessAccount.Clone(),
+		withPlace:           nq.withPlace.Clone(),
+		withPost:            nq.withPost.Clone(),
+		withComment:         nq.withComment.Clone(),
 		// clone intermediate query.
 		sql:  nq.sql.Clone(),
 		path: nq.path,
@@ -325,6 +400,39 @@ func (nq *NotificationQuery) WithBusinessAccount(opts ...func(*BusinessQuery)) *
 		opt(query)
 	}
 	nq.withBusinessAccount = query
+	return nq
+}
+
+// WithPlace tells the query-builder to eager-load the nodes that are connected to
+// the "place" edge. The optional arguments are used to configure the query builder of the edge.
+func (nq *NotificationQuery) WithPlace(opts ...func(*PlaceQuery)) *NotificationQuery {
+	query := (&PlaceClient{config: nq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	nq.withPlace = query
+	return nq
+}
+
+// WithPost tells the query-builder to eager-load the nodes that are connected to
+// the "post" edge. The optional arguments are used to configure the query builder of the edge.
+func (nq *NotificationQuery) WithPost(opts ...func(*PostQuery)) *NotificationQuery {
+	query := (&PostClient{config: nq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	nq.withPost = query
+	return nq
+}
+
+// WithComment tells the query-builder to eager-load the nodes that are connected to
+// the "comment" edge. The optional arguments are used to configure the query builder of the edge.
+func (nq *NotificationQuery) WithComment(opts ...func(*CommentQuery)) *NotificationQuery {
+	query := (&CommentClient{config: nq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	nq.withComment = query
 	return nq
 }
 
@@ -406,9 +514,12 @@ func (nq *NotificationQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]
 	var (
 		nodes       = []*Notification{}
 		_spec       = nq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [5]bool{
 			nq.withUser != nil,
 			nq.withBusinessAccount != nil,
+			nq.withPlace != nil,
+			nq.withPost != nil,
+			nq.withComment != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -440,6 +551,27 @@ func (nq *NotificationQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]
 		if err := nq.loadBusinessAccount(ctx, query, nodes,
 			func(n *Notification) { n.Edges.BusinessAccount = []*Business{} },
 			func(n *Notification, e *Business) { n.Edges.BusinessAccount = append(n.Edges.BusinessAccount, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := nq.withPlace; query != nil {
+		if err := nq.loadPlace(ctx, query, nodes,
+			func(n *Notification) { n.Edges.Place = []*Place{} },
+			func(n *Notification, e *Place) { n.Edges.Place = append(n.Edges.Place, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := nq.withPost; query != nil {
+		if err := nq.loadPost(ctx, query, nodes,
+			func(n *Notification) { n.Edges.Post = []*Post{} },
+			func(n *Notification, e *Post) { n.Edges.Post = append(n.Edges.Post, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := nq.withComment; query != nil {
+		if err := nq.loadComment(ctx, query, nodes,
+			func(n *Notification) { n.Edges.Comment = []*Comment{} },
+			func(n *Notification, e *Comment) { n.Edges.Comment = append(n.Edges.Comment, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -561,6 +693,189 @@ func (nq *NotificationQuery) loadBusinessAccount(ctx context.Context, query *Bus
 		nodes, ok := nids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected "business_account" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
+		}
+	}
+	return nil
+}
+func (nq *NotificationQuery) loadPlace(ctx context.Context, query *PlaceQuery, nodes []*Notification, init func(*Notification), assign func(*Notification, *Place)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[string]*Notification)
+	nids := make(map[string]map[*Notification]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(notification.PlaceTable)
+		s.Join(joinT).On(s.C(place.FieldID), joinT.C(notification.PlacePrimaryKey[0]))
+		s.Where(sql.InValues(joinT.C(notification.PlacePrimaryKey[1]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(notification.PlacePrimaryKey[1]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(sql.NullString)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := values[0].(*sql.NullString).String
+				inValue := values[1].(*sql.NullString).String
+				if nids[inValue] == nil {
+					nids[inValue] = map[*Notification]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*Place](ctx, query, qr, query.inters)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "place" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
+		}
+	}
+	return nil
+}
+func (nq *NotificationQuery) loadPost(ctx context.Context, query *PostQuery, nodes []*Notification, init func(*Notification), assign func(*Notification, *Post)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[string]*Notification)
+	nids := make(map[string]map[*Notification]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(notification.PostTable)
+		s.Join(joinT).On(s.C(post.FieldID), joinT.C(notification.PostPrimaryKey[0]))
+		s.Where(sql.InValues(joinT.C(notification.PostPrimaryKey[1]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(notification.PostPrimaryKey[1]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(sql.NullString)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := values[0].(*sql.NullString).String
+				inValue := values[1].(*sql.NullString).String
+				if nids[inValue] == nil {
+					nids[inValue] = map[*Notification]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*Post](ctx, query, qr, query.inters)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "post" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
+		}
+	}
+	return nil
+}
+func (nq *NotificationQuery) loadComment(ctx context.Context, query *CommentQuery, nodes []*Notification, init func(*Notification), assign func(*Notification, *Comment)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[string]*Notification)
+	nids := make(map[string]map[*Notification]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(notification.CommentTable)
+		s.Join(joinT).On(s.C(comment.FieldID), joinT.C(notification.CommentPrimaryKey[0]))
+		s.Where(sql.InValues(joinT.C(notification.CommentPrimaryKey[1]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(notification.CommentPrimaryKey[1]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(sql.NullString)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := values[0].(*sql.NullString).String
+				inValue := values[1].(*sql.NullString).String
+				if nids[inValue] == nil {
+					nids[inValue] = map[*Notification]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*Comment](ctx, query, qr, query.inters)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "comment" node returned %v`, n.ID)
 		}
 		for kn := range nodes {
 			assign(kn, n)

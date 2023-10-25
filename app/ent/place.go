@@ -134,9 +134,13 @@ type PlaceEdges struct {
 	Ratings []*Rating `json:"ratings,omitempty"`
 	// Inventories holds the value of the inventories edge.
 	Inventories []*PlaceInventory `json:"inventories,omitempty"`
+	// Notifications holds the value of the notifications edge.
+	Notifications []*Notification `json:"notifications,omitempty"`
+	// Tables holds the value of the tables edge.
+	Tables []*PlaceTable `json:"tables,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [17]bool
+	loadedTypes [19]bool
 }
 
 // BusinessOrErr returns the Business value or an error if the edge
@@ -294,6 +298,24 @@ func (e PlaceEdges) InventoriesOrErr() ([]*PlaceInventory, error) {
 		return e.Inventories, nil
 	}
 	return nil, &NotLoadedError{edge: "inventories"}
+}
+
+// NotificationsOrErr returns the Notifications value or an error if the edge
+// was not loaded in eager-loading.
+func (e PlaceEdges) NotificationsOrErr() ([]*Notification, error) {
+	if e.loadedTypes[17] {
+		return e.Notifications, nil
+	}
+	return nil, &NotLoadedError{edge: "notifications"}
+}
+
+// TablesOrErr returns the Tables value or an error if the edge
+// was not loaded in eager-loading.
+func (e PlaceEdges) TablesOrErr() ([]*PlaceTable, error) {
+	if e.loadedTypes[18] {
+		return e.Tables, nil
+	}
+	return nil, &NotLoadedError{edge: "tables"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -682,6 +704,16 @@ func (pl *Place) QueryRatings() *RatingQuery {
 // QueryInventories queries the "inventories" edge of the Place entity.
 func (pl *Place) QueryInventories() *PlaceInventoryQuery {
 	return NewPlaceClient(pl.config).QueryInventories(pl)
+}
+
+// QueryNotifications queries the "notifications" edge of the Place entity.
+func (pl *Place) QueryNotifications() *NotificationQuery {
+	return NewPlaceClient(pl.config).QueryNotifications(pl)
+}
+
+// QueryTables queries the "tables" edge of the Place entity.
+func (pl *Place) QueryTables() *PlaceTableQuery {
+	return NewPlaceClient(pl.config).QueryTables(pl)
 }
 
 // Update returns a builder for updating this Place.

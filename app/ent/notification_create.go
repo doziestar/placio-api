@@ -7,7 +7,10 @@ import (
 	"errors"
 	"fmt"
 	"placio-app/ent/business"
+	"placio-app/ent/comment"
 	"placio-app/ent/notification"
+	"placio-app/ent/place"
+	"placio-app/ent/post"
 	"placio-app/ent/user"
 	"time"
 
@@ -64,6 +67,20 @@ func (nc *NotificationCreate) SetType(i int) *NotificationCreate {
 func (nc *NotificationCreate) SetNillableType(i *int) *NotificationCreate {
 	if i != nil {
 		nc.SetType(*i)
+	}
+	return nc
+}
+
+// SetUnreadCount sets the "unread_count" field.
+func (nc *NotificationCreate) SetUnreadCount(i int) *NotificationCreate {
+	nc.mutation.SetUnreadCount(i)
+	return nc
+}
+
+// SetNillableUnreadCount sets the "unread_count" field if the given value is not nil.
+func (nc *NotificationCreate) SetNillableUnreadCount(i *int) *NotificationCreate {
+	if i != nil {
+		nc.SetUnreadCount(*i)
 	}
 	return nc
 }
@@ -140,6 +157,51 @@ func (nc *NotificationCreate) AddBusinessAccount(b ...*Business) *NotificationCr
 	return nc.AddBusinessAccountIDs(ids...)
 }
 
+// AddPlaceIDs adds the "place" edge to the Place entity by IDs.
+func (nc *NotificationCreate) AddPlaceIDs(ids ...string) *NotificationCreate {
+	nc.mutation.AddPlaceIDs(ids...)
+	return nc
+}
+
+// AddPlace adds the "place" edges to the Place entity.
+func (nc *NotificationCreate) AddPlace(p ...*Place) *NotificationCreate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return nc.AddPlaceIDs(ids...)
+}
+
+// AddPostIDs adds the "post" edge to the Post entity by IDs.
+func (nc *NotificationCreate) AddPostIDs(ids ...string) *NotificationCreate {
+	nc.mutation.AddPostIDs(ids...)
+	return nc
+}
+
+// AddPost adds the "post" edges to the Post entity.
+func (nc *NotificationCreate) AddPost(p ...*Post) *NotificationCreate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return nc.AddPostIDs(ids...)
+}
+
+// AddCommentIDs adds the "comment" edge to the Comment entity by IDs.
+func (nc *NotificationCreate) AddCommentIDs(ids ...string) *NotificationCreate {
+	nc.mutation.AddCommentIDs(ids...)
+	return nc
+}
+
+// AddComment adds the "comment" edges to the Comment entity.
+func (nc *NotificationCreate) AddComment(c ...*Comment) *NotificationCreate {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return nc.AddCommentIDs(ids...)
+}
+
 // Mutation returns the NotificationMutation object of the builder.
 func (nc *NotificationCreate) Mutation() *NotificationMutation {
 	return nc.mutation
@@ -183,6 +245,10 @@ func (nc *NotificationCreate) defaults() {
 		v := notification.DefaultType
 		nc.mutation.SetType(v)
 	}
+	if _, ok := nc.mutation.UnreadCount(); !ok {
+		v := notification.DefaultUnreadCount
+		nc.mutation.SetUnreadCount(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -216,6 +282,9 @@ func (nc *NotificationCreate) check() error {
 	}
 	if _, ok := nc.mutation.GetType(); !ok {
 		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "Notification.type"`)}
+	}
+	if _, ok := nc.mutation.UnreadCount(); !ok {
+		return &ValidationError{Name: "unread_count", err: errors.New(`ent: missing required field "Notification.unread_count"`)}
 	}
 	if _, ok := nc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Notification.created_at"`)}
@@ -315,6 +384,10 @@ func (nc *NotificationCreate) createSpec() (*Notification, *sqlgraph.CreateSpec)
 		_spec.SetField(notification.FieldType, field.TypeInt, value)
 		_node.Type = value
 	}
+	if value, ok := nc.mutation.UnreadCount(); ok {
+		_spec.SetField(notification.FieldUnreadCount, field.TypeInt, value)
+		_node.UnreadCount = value
+	}
 	if value, ok := nc.mutation.CreatedAt(); ok {
 		_spec.SetField(notification.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
@@ -364,6 +437,54 @@ func (nc *NotificationCreate) createSpec() (*Notification, *sqlgraph.CreateSpec)
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(business.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := nc.mutation.PlaceIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   notification.PlaceTable,
+			Columns: notification.PlacePrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := nc.mutation.PostIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   notification.PostTable,
+			Columns: notification.PostPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := nc.mutation.CommentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   notification.CommentTable,
+			Columns: notification.CommentPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(comment.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

@@ -7,7 +7,10 @@ import (
 	"errors"
 	"fmt"
 	"placio-app/ent/business"
+	"placio-app/ent/comment"
 	"placio-app/ent/notification"
+	"placio-app/ent/place"
+	"placio-app/ent/post"
 	"placio-app/ent/predicate"
 	"placio-app/ent/user"
 	"time"
@@ -83,6 +86,27 @@ func (nu *NotificationUpdate) AddType(i int) *NotificationUpdate {
 	return nu
 }
 
+// SetUnreadCount sets the "unread_count" field.
+func (nu *NotificationUpdate) SetUnreadCount(i int) *NotificationUpdate {
+	nu.mutation.ResetUnreadCount()
+	nu.mutation.SetUnreadCount(i)
+	return nu
+}
+
+// SetNillableUnreadCount sets the "unread_count" field if the given value is not nil.
+func (nu *NotificationUpdate) SetNillableUnreadCount(i *int) *NotificationUpdate {
+	if i != nil {
+		nu.SetUnreadCount(*i)
+	}
+	return nu
+}
+
+// AddUnreadCount adds i to the "unread_count" field.
+func (nu *NotificationUpdate) AddUnreadCount(i int) *NotificationUpdate {
+	nu.mutation.AddUnreadCount(i)
+	return nu
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (nu *NotificationUpdate) SetCreatedAt(t time.Time) *NotificationUpdate {
 	nu.mutation.SetCreatedAt(t)
@@ -149,6 +173,51 @@ func (nu *NotificationUpdate) AddBusinessAccount(b ...*Business) *NotificationUp
 	return nu.AddBusinessAccountIDs(ids...)
 }
 
+// AddPlaceIDs adds the "place" edge to the Place entity by IDs.
+func (nu *NotificationUpdate) AddPlaceIDs(ids ...string) *NotificationUpdate {
+	nu.mutation.AddPlaceIDs(ids...)
+	return nu
+}
+
+// AddPlace adds the "place" edges to the Place entity.
+func (nu *NotificationUpdate) AddPlace(p ...*Place) *NotificationUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return nu.AddPlaceIDs(ids...)
+}
+
+// AddPostIDs adds the "post" edge to the Post entity by IDs.
+func (nu *NotificationUpdate) AddPostIDs(ids ...string) *NotificationUpdate {
+	nu.mutation.AddPostIDs(ids...)
+	return nu
+}
+
+// AddPost adds the "post" edges to the Post entity.
+func (nu *NotificationUpdate) AddPost(p ...*Post) *NotificationUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return nu.AddPostIDs(ids...)
+}
+
+// AddCommentIDs adds the "comment" edge to the Comment entity by IDs.
+func (nu *NotificationUpdate) AddCommentIDs(ids ...string) *NotificationUpdate {
+	nu.mutation.AddCommentIDs(ids...)
+	return nu
+}
+
+// AddComment adds the "comment" edges to the Comment entity.
+func (nu *NotificationUpdate) AddComment(c ...*Comment) *NotificationUpdate {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return nu.AddCommentIDs(ids...)
+}
+
 // Mutation returns the NotificationMutation object of the builder.
 func (nu *NotificationUpdate) Mutation() *NotificationMutation {
 	return nu.mutation
@@ -194,6 +263,69 @@ func (nu *NotificationUpdate) RemoveBusinessAccount(b ...*Business) *Notificatio
 		ids[i] = b[i].ID
 	}
 	return nu.RemoveBusinessAccountIDs(ids...)
+}
+
+// ClearPlace clears all "place" edges to the Place entity.
+func (nu *NotificationUpdate) ClearPlace() *NotificationUpdate {
+	nu.mutation.ClearPlace()
+	return nu
+}
+
+// RemovePlaceIDs removes the "place" edge to Place entities by IDs.
+func (nu *NotificationUpdate) RemovePlaceIDs(ids ...string) *NotificationUpdate {
+	nu.mutation.RemovePlaceIDs(ids...)
+	return nu
+}
+
+// RemovePlace removes "place" edges to Place entities.
+func (nu *NotificationUpdate) RemovePlace(p ...*Place) *NotificationUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return nu.RemovePlaceIDs(ids...)
+}
+
+// ClearPost clears all "post" edges to the Post entity.
+func (nu *NotificationUpdate) ClearPost() *NotificationUpdate {
+	nu.mutation.ClearPost()
+	return nu
+}
+
+// RemovePostIDs removes the "post" edge to Post entities by IDs.
+func (nu *NotificationUpdate) RemovePostIDs(ids ...string) *NotificationUpdate {
+	nu.mutation.RemovePostIDs(ids...)
+	return nu
+}
+
+// RemovePost removes "post" edges to Post entities.
+func (nu *NotificationUpdate) RemovePost(p ...*Post) *NotificationUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return nu.RemovePostIDs(ids...)
+}
+
+// ClearComment clears all "comment" edges to the Comment entity.
+func (nu *NotificationUpdate) ClearComment() *NotificationUpdate {
+	nu.mutation.ClearComment()
+	return nu
+}
+
+// RemoveCommentIDs removes the "comment" edge to Comment entities by IDs.
+func (nu *NotificationUpdate) RemoveCommentIDs(ids ...string) *NotificationUpdate {
+	nu.mutation.RemoveCommentIDs(ids...)
+	return nu
+}
+
+// RemoveComment removes "comment" edges to Comment entities.
+func (nu *NotificationUpdate) RemoveComment(c ...*Comment) *NotificationUpdate {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return nu.RemoveCommentIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -292,6 +424,12 @@ func (nu *NotificationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := nu.mutation.AddedType(); ok {
 		_spec.AddField(notification.FieldType, field.TypeInt, value)
+	}
+	if value, ok := nu.mutation.UnreadCount(); ok {
+		_spec.SetField(notification.FieldUnreadCount, field.TypeInt, value)
+	}
+	if value, ok := nu.mutation.AddedUnreadCount(); ok {
+		_spec.AddField(notification.FieldUnreadCount, field.TypeInt, value)
 	}
 	if value, ok := nu.mutation.CreatedAt(); ok {
 		_spec.SetField(notification.FieldCreatedAt, field.TypeTime, value)
@@ -401,6 +539,141 @@ func (nu *NotificationUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if nu.mutation.PlaceCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   notification.PlaceTable,
+			Columns: notification.PlacePrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := nu.mutation.RemovedPlaceIDs(); len(nodes) > 0 && !nu.mutation.PlaceCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   notification.PlaceTable,
+			Columns: notification.PlacePrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := nu.mutation.PlaceIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   notification.PlaceTable,
+			Columns: notification.PlacePrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if nu.mutation.PostCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   notification.PostTable,
+			Columns: notification.PostPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := nu.mutation.RemovedPostIDs(); len(nodes) > 0 && !nu.mutation.PostCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   notification.PostTable,
+			Columns: notification.PostPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := nu.mutation.PostIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   notification.PostTable,
+			Columns: notification.PostPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if nu.mutation.CommentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   notification.CommentTable,
+			Columns: notification.CommentPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(comment.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := nu.mutation.RemovedCommentIDs(); len(nodes) > 0 && !nu.mutation.CommentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   notification.CommentTable,
+			Columns: notification.CommentPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(comment.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := nu.mutation.CommentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   notification.CommentTable,
+			Columns: notification.CommentPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(comment.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, nu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{notification.Label}
@@ -474,6 +747,27 @@ func (nuo *NotificationUpdateOne) AddType(i int) *NotificationUpdateOne {
 	return nuo
 }
 
+// SetUnreadCount sets the "unread_count" field.
+func (nuo *NotificationUpdateOne) SetUnreadCount(i int) *NotificationUpdateOne {
+	nuo.mutation.ResetUnreadCount()
+	nuo.mutation.SetUnreadCount(i)
+	return nuo
+}
+
+// SetNillableUnreadCount sets the "unread_count" field if the given value is not nil.
+func (nuo *NotificationUpdateOne) SetNillableUnreadCount(i *int) *NotificationUpdateOne {
+	if i != nil {
+		nuo.SetUnreadCount(*i)
+	}
+	return nuo
+}
+
+// AddUnreadCount adds i to the "unread_count" field.
+func (nuo *NotificationUpdateOne) AddUnreadCount(i int) *NotificationUpdateOne {
+	nuo.mutation.AddUnreadCount(i)
+	return nuo
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (nuo *NotificationUpdateOne) SetCreatedAt(t time.Time) *NotificationUpdateOne {
 	nuo.mutation.SetCreatedAt(t)
@@ -540,6 +834,51 @@ func (nuo *NotificationUpdateOne) AddBusinessAccount(b ...*Business) *Notificati
 	return nuo.AddBusinessAccountIDs(ids...)
 }
 
+// AddPlaceIDs adds the "place" edge to the Place entity by IDs.
+func (nuo *NotificationUpdateOne) AddPlaceIDs(ids ...string) *NotificationUpdateOne {
+	nuo.mutation.AddPlaceIDs(ids...)
+	return nuo
+}
+
+// AddPlace adds the "place" edges to the Place entity.
+func (nuo *NotificationUpdateOne) AddPlace(p ...*Place) *NotificationUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return nuo.AddPlaceIDs(ids...)
+}
+
+// AddPostIDs adds the "post" edge to the Post entity by IDs.
+func (nuo *NotificationUpdateOne) AddPostIDs(ids ...string) *NotificationUpdateOne {
+	nuo.mutation.AddPostIDs(ids...)
+	return nuo
+}
+
+// AddPost adds the "post" edges to the Post entity.
+func (nuo *NotificationUpdateOne) AddPost(p ...*Post) *NotificationUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return nuo.AddPostIDs(ids...)
+}
+
+// AddCommentIDs adds the "comment" edge to the Comment entity by IDs.
+func (nuo *NotificationUpdateOne) AddCommentIDs(ids ...string) *NotificationUpdateOne {
+	nuo.mutation.AddCommentIDs(ids...)
+	return nuo
+}
+
+// AddComment adds the "comment" edges to the Comment entity.
+func (nuo *NotificationUpdateOne) AddComment(c ...*Comment) *NotificationUpdateOne {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return nuo.AddCommentIDs(ids...)
+}
+
 // Mutation returns the NotificationMutation object of the builder.
 func (nuo *NotificationUpdateOne) Mutation() *NotificationMutation {
 	return nuo.mutation
@@ -585,6 +924,69 @@ func (nuo *NotificationUpdateOne) RemoveBusinessAccount(b ...*Business) *Notific
 		ids[i] = b[i].ID
 	}
 	return nuo.RemoveBusinessAccountIDs(ids...)
+}
+
+// ClearPlace clears all "place" edges to the Place entity.
+func (nuo *NotificationUpdateOne) ClearPlace() *NotificationUpdateOne {
+	nuo.mutation.ClearPlace()
+	return nuo
+}
+
+// RemovePlaceIDs removes the "place" edge to Place entities by IDs.
+func (nuo *NotificationUpdateOne) RemovePlaceIDs(ids ...string) *NotificationUpdateOne {
+	nuo.mutation.RemovePlaceIDs(ids...)
+	return nuo
+}
+
+// RemovePlace removes "place" edges to Place entities.
+func (nuo *NotificationUpdateOne) RemovePlace(p ...*Place) *NotificationUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return nuo.RemovePlaceIDs(ids...)
+}
+
+// ClearPost clears all "post" edges to the Post entity.
+func (nuo *NotificationUpdateOne) ClearPost() *NotificationUpdateOne {
+	nuo.mutation.ClearPost()
+	return nuo
+}
+
+// RemovePostIDs removes the "post" edge to Post entities by IDs.
+func (nuo *NotificationUpdateOne) RemovePostIDs(ids ...string) *NotificationUpdateOne {
+	nuo.mutation.RemovePostIDs(ids...)
+	return nuo
+}
+
+// RemovePost removes "post" edges to Post entities.
+func (nuo *NotificationUpdateOne) RemovePost(p ...*Post) *NotificationUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return nuo.RemovePostIDs(ids...)
+}
+
+// ClearComment clears all "comment" edges to the Comment entity.
+func (nuo *NotificationUpdateOne) ClearComment() *NotificationUpdateOne {
+	nuo.mutation.ClearComment()
+	return nuo
+}
+
+// RemoveCommentIDs removes the "comment" edge to Comment entities by IDs.
+func (nuo *NotificationUpdateOne) RemoveCommentIDs(ids ...string) *NotificationUpdateOne {
+	nuo.mutation.RemoveCommentIDs(ids...)
+	return nuo
+}
+
+// RemoveComment removes "comment" edges to Comment entities.
+func (nuo *NotificationUpdateOne) RemoveComment(c ...*Comment) *NotificationUpdateOne {
+	ids := make([]string, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return nuo.RemoveCommentIDs(ids...)
 }
 
 // Where appends a list predicates to the NotificationUpdate builder.
@@ -714,6 +1116,12 @@ func (nuo *NotificationUpdateOne) sqlSave(ctx context.Context) (_node *Notificat
 	if value, ok := nuo.mutation.AddedType(); ok {
 		_spec.AddField(notification.FieldType, field.TypeInt, value)
 	}
+	if value, ok := nuo.mutation.UnreadCount(); ok {
+		_spec.SetField(notification.FieldUnreadCount, field.TypeInt, value)
+	}
+	if value, ok := nuo.mutation.AddedUnreadCount(); ok {
+		_spec.AddField(notification.FieldUnreadCount, field.TypeInt, value)
+	}
 	if value, ok := nuo.mutation.CreatedAt(); ok {
 		_spec.SetField(notification.FieldCreatedAt, field.TypeTime, value)
 	}
@@ -815,6 +1223,141 @@ func (nuo *NotificationUpdateOne) sqlSave(ctx context.Context) (_node *Notificat
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(business.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if nuo.mutation.PlaceCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   notification.PlaceTable,
+			Columns: notification.PlacePrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := nuo.mutation.RemovedPlaceIDs(); len(nodes) > 0 && !nuo.mutation.PlaceCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   notification.PlaceTable,
+			Columns: notification.PlacePrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := nuo.mutation.PlaceIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   notification.PlaceTable,
+			Columns: notification.PlacePrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if nuo.mutation.PostCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   notification.PostTable,
+			Columns: notification.PostPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := nuo.mutation.RemovedPostIDs(); len(nodes) > 0 && !nuo.mutation.PostCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   notification.PostTable,
+			Columns: notification.PostPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := nuo.mutation.PostIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   notification.PostTable,
+			Columns: notification.PostPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if nuo.mutation.CommentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   notification.CommentTable,
+			Columns: notification.CommentPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(comment.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := nuo.mutation.RemovedCommentIDs(); len(nodes) > 0 && !nuo.mutation.CommentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   notification.CommentTable,
+			Columns: notification.CommentPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(comment.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := nuo.mutation.CommentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   notification.CommentTable,
+			Columns: notification.CommentPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(comment.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

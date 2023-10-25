@@ -27,6 +27,8 @@ type Notification struct {
 	IsRead bool `json:"is_read,omitempty"`
 	// Type holds the value of the "type" field.
 	Type int `json:"type,omitempty"`
+	// UnreadCount holds the value of the "unread_count" field.
+	UnreadCount int `json:"unread_count,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -51,9 +53,15 @@ type NotificationEdges struct {
 	User []*User `json:"user,omitempty"`
 	// BusinessAccount holds the value of the business_account edge.
 	BusinessAccount []*Business `json:"business_account,omitempty"`
+	// Place holds the value of the place edge.
+	Place []*Place `json:"place,omitempty"`
+	// Post holds the value of the post edge.
+	Post []*Post `json:"post,omitempty"`
+	// Comment holds the value of the comment edge.
+	Comment []*Comment `json:"comment,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [5]bool
 }
 
 // UserOrErr returns the User value or an error if the edge
@@ -74,6 +82,33 @@ func (e NotificationEdges) BusinessAccountOrErr() ([]*Business, error) {
 	return nil, &NotLoadedError{edge: "business_account"}
 }
 
+// PlaceOrErr returns the Place value or an error if the edge
+// was not loaded in eager-loading.
+func (e NotificationEdges) PlaceOrErr() ([]*Place, error) {
+	if e.loadedTypes[2] {
+		return e.Place, nil
+	}
+	return nil, &NotLoadedError{edge: "place"}
+}
+
+// PostOrErr returns the Post value or an error if the edge
+// was not loaded in eager-loading.
+func (e NotificationEdges) PostOrErr() ([]*Post, error) {
+	if e.loadedTypes[3] {
+		return e.Post, nil
+	}
+	return nil, &NotLoadedError{edge: "post"}
+}
+
+// CommentOrErr returns the Comment value or an error if the edge
+// was not loaded in eager-loading.
+func (e NotificationEdges) CommentOrErr() ([]*Comment, error) {
+	if e.loadedTypes[4] {
+		return e.Comment, nil
+	}
+	return nil, &NotLoadedError{edge: "comment"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Notification) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -81,7 +116,7 @@ func (*Notification) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case notification.FieldIsRead:
 			values[i] = new(sql.NullBool)
-		case notification.FieldType:
+		case notification.FieldType, notification.FieldUnreadCount:
 			values[i] = new(sql.NullInt64)
 		case notification.FieldID, notification.FieldTitle, notification.FieldMessage, notification.FieldLink, notification.FieldNotifiableType, notification.FieldNotifiableID, notification.FieldTriggeredBy, notification.FieldTriggeredTo:
 			values[i] = new(sql.NullString)
@@ -137,6 +172,12 @@ func (n *Notification) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field type", values[i])
 			} else if value.Valid {
 				n.Type = int(value.Int64)
+			}
+		case notification.FieldUnreadCount:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field unread_count", values[i])
+			} else if value.Valid {
+				n.UnreadCount = int(value.Int64)
 			}
 		case notification.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -197,6 +238,21 @@ func (n *Notification) QueryBusinessAccount() *BusinessQuery {
 	return NewNotificationClient(n.config).QueryBusinessAccount(n)
 }
 
+// QueryPlace queries the "place" edge of the Notification entity.
+func (n *Notification) QueryPlace() *PlaceQuery {
+	return NewNotificationClient(n.config).QueryPlace(n)
+}
+
+// QueryPost queries the "post" edge of the Notification entity.
+func (n *Notification) QueryPost() *PostQuery {
+	return NewNotificationClient(n.config).QueryPost(n)
+}
+
+// QueryComment queries the "comment" edge of the Notification entity.
+func (n *Notification) QueryComment() *CommentQuery {
+	return NewNotificationClient(n.config).QueryComment(n)
+}
+
 // Update returns a builder for updating this Notification.
 // Note that you need to call Notification.Unwrap() before calling this method if this Notification
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -234,6 +290,9 @@ func (n *Notification) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("type=")
 	builder.WriteString(fmt.Sprintf("%v", n.Type))
+	builder.WriteString(", ")
+	builder.WriteString("unread_count=")
+	builder.WriteString(fmt.Sprintf("%v", n.UnreadCount))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(n.CreatedAt.Format(time.ANSIC))

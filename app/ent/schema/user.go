@@ -41,6 +41,11 @@ func (User) Fields() []ent.Field {
 		field.Float("relevance_score").Optional(),
 		field.Int("follower_count").Default(0),
 		field.Int("following_count").Default(0),
+		field.Enum("role").
+			Values("user", "admin", "business_owner", "staff").
+			Default("user"),
+		field.JSON("permissions", []string{}).Optional(),
+		field.Bool("is_premium").Default(false),
 	}
 }
 
@@ -72,6 +77,7 @@ func (User) Edges() []ent.Edge {
 		edge.To("reservation_blocks", ReservationBlock.Type),
 		edge.To("notifications", Notification.Type),
 		edge.To("wallet", AccountWallet.Type).Unique(),
+		edge.To("orders", Order.Type),
 	}
 }
 

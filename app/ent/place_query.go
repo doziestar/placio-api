@@ -16,8 +16,10 @@ import (
 	"placio-app/ent/faq"
 	"placio-app/ent/media"
 	"placio-app/ent/menu"
+	"placio-app/ent/notification"
 	"placio-app/ent/place"
 	"placio-app/ent/placeinventory"
+	"placio-app/ent/placetable"
 	"placio-app/ent/predicate"
 	"placio-app/ent/rating"
 	"placio-app/ent/reservation"
@@ -56,6 +58,8 @@ type PlaceQuery struct {
 	withFollowerUsers       *UserFollowPlaceQuery
 	withRatings             *RatingQuery
 	withInventories         *PlaceInventoryQuery
+	withNotifications       *NotificationQuery
+	withTables              *PlaceTableQuery
 	withFKs                 bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -467,6 +471,50 @@ func (pq *PlaceQuery) QueryInventories() *PlaceInventoryQuery {
 	return query
 }
 
+// QueryNotifications chains the current query on the "notifications" edge.
+func (pq *PlaceQuery) QueryNotifications() *NotificationQuery {
+	query := (&NotificationClient{config: pq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(place.Table, place.FieldID, selector),
+			sqlgraph.To(notification.Table, notification.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, place.NotificationsTable, place.NotificationsPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryTables chains the current query on the "tables" edge.
+func (pq *PlaceQuery) QueryTables() *PlaceTableQuery {
+	query := (&PlaceTableClient{config: pq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(place.Table, place.FieldID, selector),
+			sqlgraph.To(placetable.Table, placetable.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, place.TablesTable, place.TablesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Place entity from the query.
 // Returns a *NotFoundError when no Place was found.
 func (pq *PlaceQuery) First(ctx context.Context) (*Place, error) {
@@ -676,6 +724,8 @@ func (pq *PlaceQuery) Clone() *PlaceQuery {
 		withFollowerUsers:       pq.withFollowerUsers.Clone(),
 		withRatings:             pq.withRatings.Clone(),
 		withInventories:         pq.withInventories.Clone(),
+		withNotifications:       pq.withNotifications.Clone(),
+		withTables:              pq.withTables.Clone(),
 		// clone intermediate query.
 		sql:  pq.sql.Clone(),
 		path: pq.path,
@@ -869,6 +919,28 @@ func (pq *PlaceQuery) WithInventories(opts ...func(*PlaceInventoryQuery)) *Place
 	return pq
 }
 
+// WithNotifications tells the query-builder to eager-load the nodes that are connected to
+// the "notifications" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *PlaceQuery) WithNotifications(opts ...func(*NotificationQuery)) *PlaceQuery {
+	query := (&NotificationClient{config: pq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withNotifications = query
+	return pq
+}
+
+// WithTables tells the query-builder to eager-load the nodes that are connected to
+// the "tables" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *PlaceQuery) WithTables(opts ...func(*PlaceTableQuery)) *PlaceQuery {
+	query := (&PlaceTableClient{config: pq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withTables = query
+	return pq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -948,7 +1020,7 @@ func (pq *PlaceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Place,
 		nodes       = []*Place{}
 		withFKs     = pq.withFKs
 		_spec       = pq.querySpec()
-		loadedTypes = [17]bool{
+		loadedTypes = [19]bool{
 			pq.withBusiness != nil,
 			pq.withUsers != nil,
 			pq.withReviews != nil,
@@ -966,6 +1038,8 @@ func (pq *PlaceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Place,
 			pq.withFollowerUsers != nil,
 			pq.withRatings != nil,
 			pq.withInventories != nil,
+			pq.withNotifications != nil,
+			pq.withTables != nil,
 		}
 	)
 	if pq.withBusiness != nil {
@@ -1109,6 +1183,20 @@ func (pq *PlaceQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Place,
 		if err := pq.loadInventories(ctx, query, nodes,
 			func(n *Place) { n.Edges.Inventories = []*PlaceInventory{} },
 			func(n *Place, e *PlaceInventory) { n.Edges.Inventories = append(n.Edges.Inventories, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := pq.withNotifications; query != nil {
+		if err := pq.loadNotifications(ctx, query, nodes,
+			func(n *Place) { n.Edges.Notifications = []*Notification{} },
+			func(n *Place, e *Notification) { n.Edges.Notifications = append(n.Edges.Notifications, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := pq.withTables; query != nil {
+		if err := pq.loadTables(ctx, query, nodes,
+			func(n *Place) { n.Edges.Tables = []*PlaceTable{} },
+			func(n *Place, e *PlaceTable) { n.Edges.Tables = append(n.Edges.Tables, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -1758,6 +1846,98 @@ func (pq *PlaceQuery) loadInventories(ctx context.Context, query *PlaceInventory
 		node, ok := nodeids[*fk]
 		if !ok {
 			return fmt.Errorf(`unexpected referenced foreign-key "place_inventories" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (pq *PlaceQuery) loadNotifications(ctx context.Context, query *NotificationQuery, nodes []*Place, init func(*Place), assign func(*Place, *Notification)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[string]*Place)
+	nids := make(map[string]map[*Place]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(place.NotificationsTable)
+		s.Join(joinT).On(s.C(notification.FieldID), joinT.C(place.NotificationsPrimaryKey[1]))
+		s.Where(sql.InValues(joinT.C(place.NotificationsPrimaryKey[0]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(place.NotificationsPrimaryKey[0]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(sql.NullString)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := values[0].(*sql.NullString).String
+				inValue := values[1].(*sql.NullString).String
+				if nids[inValue] == nil {
+					nids[inValue] = map[*Place]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*Notification](ctx, query, qr, query.inters)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "notifications" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
+		}
+	}
+	return nil
+}
+func (pq *PlaceQuery) loadTables(ctx context.Context, query *PlaceTableQuery, nodes []*Place, init func(*Place), assign func(*Place, *PlaceTable)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Place)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.PlaceTable(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(place.TablesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.place_tables
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "place_tables" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "place_tables" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

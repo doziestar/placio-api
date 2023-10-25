@@ -51,5 +51,6 @@ func (Post) Edges() []ent.Edge {
 		edge.To("comments", Comment.Type),
 		edge.To("likes", Like.Type),
 		edge.To("categories", Category.Type),
+		edge.To("notifications", Notification.Type),
 	}
 }

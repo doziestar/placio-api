@@ -17,7 +17,8 @@ func (Menu) Fields() []ent.Field {
 			MaxLen(36).
 			Unique().
 			Immutable(),
-		// add any other fields that a Menu would have
+		field.String("name"),
+		field.String("description").Optional(),
 	}
 }
 
@@ -28,6 +29,37 @@ func (Menu) Edges() []ent.Edge {
 			Ref("menus").
 			Unique(),
 		edge.To("categories", Category.Type),
+		edge.To("menu_items", MenuItem.Type),
 		// add any other edges that a Menu would have
+	}
+}
+
+type MenuItem struct {
+	ent.Schema
+}
+
+// Fields of the MenuItem.
+func (MenuItem) Fields() []ent.Field {
+	return []ent.Field{
+		field.String("id").
+			MaxLen(36).
+			Unique().
+			Immutable(),
+		field.String("name"),
+		field.String("description").Optional(),
+		field.Float("price"),
+		field.Int("preparation_time").Optional(),
+		field.JSON("options", []string{}).Optional(),
+	}
+}
+
+// Edges of the MenuItem.
+func (MenuItem) Edges() []ent.Edge {
+	return []ent.Edge{
+		edge.From("menu", Menu.Type).
+			Ref("menu_items"),
+		edge.To("inventory", PlaceInventory.Type).Unique(),
+		edge.To("media", Media.Type),
+		edge.To("order_items", OrderItem.Type),
 	}
 }

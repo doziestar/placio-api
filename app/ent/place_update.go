@@ -15,8 +15,10 @@ import (
 	"placio-app/ent/faq"
 	"placio-app/ent/media"
 	"placio-app/ent/menu"
+	"placio-app/ent/notification"
 	"placio-app/ent/place"
 	"placio-app/ent/placeinventory"
+	"placio-app/ent/placetable"
 	"placio-app/ent/predicate"
 	"placio-app/ent/rating"
 	"placio-app/ent/reservation"
@@ -942,6 +944,36 @@ func (pu *PlaceUpdate) AddInventories(p ...*PlaceInventory) *PlaceUpdate {
 	return pu.AddInventoryIDs(ids...)
 }
 
+// AddNotificationIDs adds the "notifications" edge to the Notification entity by IDs.
+func (pu *PlaceUpdate) AddNotificationIDs(ids ...string) *PlaceUpdate {
+	pu.mutation.AddNotificationIDs(ids...)
+	return pu
+}
+
+// AddNotifications adds the "notifications" edges to the Notification entity.
+func (pu *PlaceUpdate) AddNotifications(n ...*Notification) *PlaceUpdate {
+	ids := make([]string, len(n))
+	for i := range n {
+		ids[i] = n[i].ID
+	}
+	return pu.AddNotificationIDs(ids...)
+}
+
+// AddTableIDs adds the "tables" edge to the PlaceTable entity by IDs.
+func (pu *PlaceUpdate) AddTableIDs(ids ...string) *PlaceUpdate {
+	pu.mutation.AddTableIDs(ids...)
+	return pu
+}
+
+// AddTables adds the "tables" edges to the PlaceTable entity.
+func (pu *PlaceUpdate) AddTables(p ...*PlaceTable) *PlaceUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pu.AddTableIDs(ids...)
+}
+
 // Mutation returns the PlaceMutation object of the builder.
 func (pu *PlaceUpdate) Mutation() *PlaceMutation {
 	return pu.mutation
@@ -1287,6 +1319,48 @@ func (pu *PlaceUpdate) RemoveInventories(p ...*PlaceInventory) *PlaceUpdate {
 		ids[i] = p[i].ID
 	}
 	return pu.RemoveInventoryIDs(ids...)
+}
+
+// ClearNotifications clears all "notifications" edges to the Notification entity.
+func (pu *PlaceUpdate) ClearNotifications() *PlaceUpdate {
+	pu.mutation.ClearNotifications()
+	return pu
+}
+
+// RemoveNotificationIDs removes the "notifications" edge to Notification entities by IDs.
+func (pu *PlaceUpdate) RemoveNotificationIDs(ids ...string) *PlaceUpdate {
+	pu.mutation.RemoveNotificationIDs(ids...)
+	return pu
+}
+
+// RemoveNotifications removes "notifications" edges to Notification entities.
+func (pu *PlaceUpdate) RemoveNotifications(n ...*Notification) *PlaceUpdate {
+	ids := make([]string, len(n))
+	for i := range n {
+		ids[i] = n[i].ID
+	}
+	return pu.RemoveNotificationIDs(ids...)
+}
+
+// ClearTables clears all "tables" edges to the PlaceTable entity.
+func (pu *PlaceUpdate) ClearTables() *PlaceUpdate {
+	pu.mutation.ClearTables()
+	return pu
+}
+
+// RemoveTableIDs removes the "tables" edge to PlaceTable entities by IDs.
+func (pu *PlaceUpdate) RemoveTableIDs(ids ...string) *PlaceUpdate {
+	pu.mutation.RemoveTableIDs(ids...)
+	return pu
+}
+
+// RemoveTables removes "tables" edges to PlaceTable entities.
+func (pu *PlaceUpdate) RemoveTables(p ...*PlaceTable) *PlaceUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pu.RemoveTableIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -2296,6 +2370,96 @@ func (pu *PlaceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if pu.mutation.NotificationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.NotificationsTable,
+			Columns: place.NotificationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(notification.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.RemovedNotificationsIDs(); len(nodes) > 0 && !pu.mutation.NotificationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.NotificationsTable,
+			Columns: place.NotificationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(notification.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.NotificationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.NotificationsTable,
+			Columns: place.NotificationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(notification.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if pu.mutation.TablesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   place.TablesTable,
+			Columns: []string{place.TablesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.RemovedTablesIDs(); len(nodes) > 0 && !pu.mutation.TablesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   place.TablesTable,
+			Columns: []string{place.TablesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.TablesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   place.TablesTable,
+			Columns: []string{place.TablesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, pu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{place.Label}
@@ -3213,6 +3377,36 @@ func (puo *PlaceUpdateOne) AddInventories(p ...*PlaceInventory) *PlaceUpdateOne 
 	return puo.AddInventoryIDs(ids...)
 }
 
+// AddNotificationIDs adds the "notifications" edge to the Notification entity by IDs.
+func (puo *PlaceUpdateOne) AddNotificationIDs(ids ...string) *PlaceUpdateOne {
+	puo.mutation.AddNotificationIDs(ids...)
+	return puo
+}
+
+// AddNotifications adds the "notifications" edges to the Notification entity.
+func (puo *PlaceUpdateOne) AddNotifications(n ...*Notification) *PlaceUpdateOne {
+	ids := make([]string, len(n))
+	for i := range n {
+		ids[i] = n[i].ID
+	}
+	return puo.AddNotificationIDs(ids...)
+}
+
+// AddTableIDs adds the "tables" edge to the PlaceTable entity by IDs.
+func (puo *PlaceUpdateOne) AddTableIDs(ids ...string) *PlaceUpdateOne {
+	puo.mutation.AddTableIDs(ids...)
+	return puo
+}
+
+// AddTables adds the "tables" edges to the PlaceTable entity.
+func (puo *PlaceUpdateOne) AddTables(p ...*PlaceTable) *PlaceUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return puo.AddTableIDs(ids...)
+}
+
 // Mutation returns the PlaceMutation object of the builder.
 func (puo *PlaceUpdateOne) Mutation() *PlaceMutation {
 	return puo.mutation
@@ -3558,6 +3752,48 @@ func (puo *PlaceUpdateOne) RemoveInventories(p ...*PlaceInventory) *PlaceUpdateO
 		ids[i] = p[i].ID
 	}
 	return puo.RemoveInventoryIDs(ids...)
+}
+
+// ClearNotifications clears all "notifications" edges to the Notification entity.
+func (puo *PlaceUpdateOne) ClearNotifications() *PlaceUpdateOne {
+	puo.mutation.ClearNotifications()
+	return puo
+}
+
+// RemoveNotificationIDs removes the "notifications" edge to Notification entities by IDs.
+func (puo *PlaceUpdateOne) RemoveNotificationIDs(ids ...string) *PlaceUpdateOne {
+	puo.mutation.RemoveNotificationIDs(ids...)
+	return puo
+}
+
+// RemoveNotifications removes "notifications" edges to Notification entities.
+func (puo *PlaceUpdateOne) RemoveNotifications(n ...*Notification) *PlaceUpdateOne {
+	ids := make([]string, len(n))
+	for i := range n {
+		ids[i] = n[i].ID
+	}
+	return puo.RemoveNotificationIDs(ids...)
+}
+
+// ClearTables clears all "tables" edges to the PlaceTable entity.
+func (puo *PlaceUpdateOne) ClearTables() *PlaceUpdateOne {
+	puo.mutation.ClearTables()
+	return puo
+}
+
+// RemoveTableIDs removes the "tables" edge to PlaceTable entities by IDs.
+func (puo *PlaceUpdateOne) RemoveTableIDs(ids ...string) *PlaceUpdateOne {
+	puo.mutation.RemoveTableIDs(ids...)
+	return puo
+}
+
+// RemoveTables removes "tables" edges to PlaceTable entities.
+func (puo *PlaceUpdateOne) RemoveTables(p ...*PlaceTable) *PlaceUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return puo.RemoveTableIDs(ids...)
 }
 
 // Where appends a list predicates to the PlaceUpdate builder.
@@ -4590,6 +4826,96 @@ func (puo *PlaceUpdateOne) sqlSave(ctx context.Context) (_node *Place, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(placeinventory.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if puo.mutation.NotificationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.NotificationsTable,
+			Columns: place.NotificationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(notification.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.RemovedNotificationsIDs(); len(nodes) > 0 && !puo.mutation.NotificationsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.NotificationsTable,
+			Columns: place.NotificationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(notification.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.NotificationsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   place.NotificationsTable,
+			Columns: place.NotificationsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(notification.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if puo.mutation.TablesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   place.TablesTable,
+			Columns: []string{place.TablesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.RemovedTablesIDs(); len(nodes) > 0 && !puo.mutation.TablesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   place.TablesTable,
+			Columns: []string{place.TablesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.TablesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   place.TablesTable,
+			Columns: []string{place.TablesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
