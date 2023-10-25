@@ -703,6 +703,8 @@ var (
 	MenusColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
 		{Name: "name", Type: field.TypeString},
+		{Name: "deleted_at", Type: field.TypeString, Nullable: true},
+		{Name: "is_deleted", Type: field.TypeBool, Default: false},
 		{Name: "description", Type: field.TypeString, Nullable: true},
 		{Name: "place_menus", Type: field.TypeString, Nullable: true, Size: 36},
 	}
@@ -714,7 +716,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "menus_places_menus",
-				Columns:    []*schema.Column{MenusColumns[3]},
+				Columns:    []*schema.Column{MenusColumns[5]},
 				RefColumns: []*schema.Column{PlacesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -728,6 +730,8 @@ var (
 		{Name: "price", Type: field.TypeFloat64},
 		{Name: "preparation_time", Type: field.TypeInt, Nullable: true},
 		{Name: "options", Type: field.TypeJSON, Nullable: true},
+		{Name: "deleted_at", Type: field.TypeString, Nullable: true},
+		{Name: "is_deleted", Type: field.TypeBool, Default: false},
 	}
 	// MenuItemsTable holds the schema information for the "menu_items" table.
 	MenuItemsTable = &schema.Table{
@@ -765,6 +769,8 @@ var (
 		{Name: "status", Type: field.TypeEnum, Enums: []string{"pending", "confirmed", "completed", "cancelled"}, Default: "pending"},
 		{Name: "total_amount", Type: field.TypeFloat64},
 		{Name: "additional_info", Type: field.TypeJSON, Nullable: true},
+		{Name: "deleted_at", Type: field.TypeString, Nullable: true},
+		{Name: "is_deleted", Type: field.TypeBool, Default: false},
 		{Name: "user_orders", Type: field.TypeString, Nullable: true, Size: 36},
 	}
 	// OrdersTable holds the schema information for the "orders" table.
@@ -775,7 +781,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "orders_users_orders",
-				Columns:    []*schema.Column{OrdersColumns[6]},
+				Columns:    []*schema.Column{OrdersColumns[8]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -957,6 +963,8 @@ var (
 	PlaceTablesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
 		{Name: "number", Type: field.TypeInt},
+		{Name: "deleted_at", Type: field.TypeString, Nullable: true},
+		{Name: "is_deleted", Type: field.TypeBool, Default: false},
 		{Name: "qr_code", Type: field.TypeString, Nullable: true},
 		{Name: "place_tables", Type: field.TypeString, Nullable: true, Size: 36},
 	}
@@ -968,7 +976,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "place_tables_places_tables",
-				Columns:    []*schema.Column{PlaceTablesColumns[3]},
+				Columns:    []*schema.Column{PlaceTablesColumns[5]},
 				RefColumns: []*schema.Column{PlacesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},

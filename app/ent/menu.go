@@ -19,6 +19,10 @@ type Menu struct {
 	ID string `json:"id,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
+	// DeletedAt holds the value of the "deleted_at" field.
+	DeletedAt string `json:"deleted_at,omitempty"`
+	// IsDeleted holds the value of the "is_deleted" field.
+	IsDeleted bool `json:"is_deleted,omitempty"`
 	// Description holds the value of the "description" field.
 	Description string `json:"description,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -77,7 +81,9 @@ func (*Menu) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case menu.FieldID, menu.FieldName, menu.FieldDescription:
+		case menu.FieldIsDeleted:
+			values[i] = new(sql.NullBool)
+		case menu.FieldID, menu.FieldName, menu.FieldDeletedAt, menu.FieldDescription:
 			values[i] = new(sql.NullString)
 		case menu.ForeignKeys[0]: // place_menus
 			values[i] = new(sql.NullString)
@@ -107,6 +113,18 @@ func (m *Menu) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
 				m.Name = value.String
+			}
+		case menu.FieldDeletedAt:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
+			} else if value.Valid {
+				m.DeletedAt = value.String
+			}
+		case menu.FieldIsDeleted:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_deleted", values[i])
+			} else if value.Valid {
+				m.IsDeleted = value.Bool
 			}
 		case menu.FieldDescription:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -174,6 +192,12 @@ func (m *Menu) String() string {
 	builder.WriteString(fmt.Sprintf("id=%v, ", m.ID))
 	builder.WriteString("name=")
 	builder.WriteString(m.Name)
+	builder.WriteString(", ")
+	builder.WriteString("deleted_at=")
+	builder.WriteString(m.DeletedAt)
+	builder.WriteString(", ")
+	builder.WriteString("is_deleted=")
+	builder.WriteString(fmt.Sprintf("%v", m.IsDeleted))
 	builder.WriteString(", ")
 	builder.WriteString("description=")
 	builder.WriteString(m.Description)

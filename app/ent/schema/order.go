@@ -28,6 +28,8 @@ func (Order) Fields() []ent.Field {
 			Default("pending"),
 		field.Float("total_amount"),
 		field.JSON("additional_info", map[string]interface{}{}).Optional(),
+		field.String("deleted_at").Optional(),
+		field.Bool("is_deleted").Default(false),
 	}
 }
 

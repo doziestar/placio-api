@@ -84,6 +84,16 @@ func PreparationTime(v int) predicate.MenuItem {
 	return predicate.MenuItem(sql.FieldEQ(FieldPreparationTime, v))
 }
 
+// DeletedAt applies equality check predicate on the "deleted_at" field. It's identical to DeletedAtEQ.
+func DeletedAt(v string) predicate.MenuItem {
+	return predicate.MenuItem(sql.FieldEQ(FieldDeletedAt, v))
+}
+
+// IsDeleted applies equality check predicate on the "is_deleted" field. It's identical to IsDeletedEQ.
+func IsDeleted(v bool) predicate.MenuItem {
+	return predicate.MenuItem(sql.FieldEQ(FieldIsDeleted, v))
+}
+
 // NameEQ applies the EQ predicate on the "name" field.
 func NameEQ(v string) predicate.MenuItem {
 	return predicate.MenuItem(sql.FieldEQ(FieldName, v))
@@ -322,6 +332,91 @@ func OptionsIsNil() predicate.MenuItem {
 // OptionsNotNil applies the NotNil predicate on the "options" field.
 func OptionsNotNil() predicate.MenuItem {
 	return predicate.MenuItem(sql.FieldNotNull(FieldOptions))
+}
+
+// DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
+func DeletedAtEQ(v string) predicate.MenuItem {
+	return predicate.MenuItem(sql.FieldEQ(FieldDeletedAt, v))
+}
+
+// DeletedAtNEQ applies the NEQ predicate on the "deleted_at" field.
+func DeletedAtNEQ(v string) predicate.MenuItem {
+	return predicate.MenuItem(sql.FieldNEQ(FieldDeletedAt, v))
+}
+
+// DeletedAtIn applies the In predicate on the "deleted_at" field.
+func DeletedAtIn(vs ...string) predicate.MenuItem {
+	return predicate.MenuItem(sql.FieldIn(FieldDeletedAt, vs...))
+}
+
+// DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
+func DeletedAtNotIn(vs ...string) predicate.MenuItem {
+	return predicate.MenuItem(sql.FieldNotIn(FieldDeletedAt, vs...))
+}
+
+// DeletedAtGT applies the GT predicate on the "deleted_at" field.
+func DeletedAtGT(v string) predicate.MenuItem {
+	return predicate.MenuItem(sql.FieldGT(FieldDeletedAt, v))
+}
+
+// DeletedAtGTE applies the GTE predicate on the "deleted_at" field.
+func DeletedAtGTE(v string) predicate.MenuItem {
+	return predicate.MenuItem(sql.FieldGTE(FieldDeletedAt, v))
+}
+
+// DeletedAtLT applies the LT predicate on the "deleted_at" field.
+func DeletedAtLT(v string) predicate.MenuItem {
+	return predicate.MenuItem(sql.FieldLT(FieldDeletedAt, v))
+}
+
+// DeletedAtLTE applies the LTE predicate on the "deleted_at" field.
+func DeletedAtLTE(v string) predicate.MenuItem {
+	return predicate.MenuItem(sql.FieldLTE(FieldDeletedAt, v))
+}
+
+// DeletedAtContains applies the Contains predicate on the "deleted_at" field.
+func DeletedAtContains(v string) predicate.MenuItem {
+	return predicate.MenuItem(sql.FieldContains(FieldDeletedAt, v))
+}
+
+// DeletedAtHasPrefix applies the HasPrefix predicate on the "deleted_at" field.
+func DeletedAtHasPrefix(v string) predicate.MenuItem {
+	return predicate.MenuItem(sql.FieldHasPrefix(FieldDeletedAt, v))
+}
+
+// DeletedAtHasSuffix applies the HasSuffix predicate on the "deleted_at" field.
+func DeletedAtHasSuffix(v string) predicate.MenuItem {
+	return predicate.MenuItem(sql.FieldHasSuffix(FieldDeletedAt, v))
+}
+
+// DeletedAtIsNil applies the IsNil predicate on the "deleted_at" field.
+func DeletedAtIsNil() predicate.MenuItem {
+	return predicate.MenuItem(sql.FieldIsNull(FieldDeletedAt))
+}
+
+// DeletedAtNotNil applies the NotNil predicate on the "deleted_at" field.
+func DeletedAtNotNil() predicate.MenuItem {
+	return predicate.MenuItem(sql.FieldNotNull(FieldDeletedAt))
+}
+
+// DeletedAtEqualFold applies the EqualFold predicate on the "deleted_at" field.
+func DeletedAtEqualFold(v string) predicate.MenuItem {
+	return predicate.MenuItem(sql.FieldEqualFold(FieldDeletedAt, v))
+}
+
+// DeletedAtContainsFold applies the ContainsFold predicate on the "deleted_at" field.
+func DeletedAtContainsFold(v string) predicate.MenuItem {
+	return predicate.MenuItem(sql.FieldContainsFold(FieldDeletedAt, v))
+}
+
+// IsDeletedEQ applies the EQ predicate on the "is_deleted" field.
+func IsDeletedEQ(v bool) predicate.MenuItem {
+	return predicate.MenuItem(sql.FieldEQ(FieldIsDeleted, v))
+}
+
+// IsDeletedNEQ applies the NEQ predicate on the "is_deleted" field.
+func IsDeletedNEQ(v bool) predicate.MenuItem {
+	return predicate.MenuItem(sql.FieldNEQ(FieldIsDeleted, v))
 }
 
 // HasMenu applies the HasEdge predicate on the "menu" edge.

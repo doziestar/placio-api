@@ -19,6 +19,10 @@ type PlaceTable struct {
 	ID string `json:"id,omitempty"`
 	// Number holds the value of the "number" field.
 	Number int `json:"number,omitempty"`
+	// DeletedAt holds the value of the "deleted_at" field.
+	DeletedAt string `json:"deleted_at,omitempty"`
+	// IsDeleted holds the value of the "is_deleted" field.
+	IsDeleted bool `json:"is_deleted,omitempty"`
 	// QrCode holds the value of the "qr_code" field.
 	QrCode string `json:"qr_code,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -66,9 +70,11 @@ func (*PlaceTable) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case placetable.FieldIsDeleted:
+			values[i] = new(sql.NullBool)
 		case placetable.FieldNumber:
 			values[i] = new(sql.NullInt64)
-		case placetable.FieldID, placetable.FieldQrCode:
+		case placetable.FieldID, placetable.FieldDeletedAt, placetable.FieldQrCode:
 			values[i] = new(sql.NullString)
 		case placetable.ForeignKeys[0]: // place_tables
 			values[i] = new(sql.NullString)
@@ -98,6 +104,18 @@ func (pt *PlaceTable) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field number", values[i])
 			} else if value.Valid {
 				pt.Number = int(value.Int64)
+			}
+		case placetable.FieldDeletedAt:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
+			} else if value.Valid {
+				pt.DeletedAt = value.String
+			}
+		case placetable.FieldIsDeleted:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_deleted", values[i])
+			} else if value.Valid {
+				pt.IsDeleted = value.Bool
 			}
 		case placetable.FieldQrCode:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -160,6 +178,12 @@ func (pt *PlaceTable) String() string {
 	builder.WriteString(fmt.Sprintf("id=%v, ", pt.ID))
 	builder.WriteString("number=")
 	builder.WriteString(fmt.Sprintf("%v", pt.Number))
+	builder.WriteString(", ")
+	builder.WriteString("deleted_at=")
+	builder.WriteString(pt.DeletedAt)
+	builder.WriteString(", ")
+	builder.WriteString("is_deleted=")
+	builder.WriteString(fmt.Sprintf("%v", pt.IsDeleted))
 	builder.WriteString(", ")
 	builder.WriteString("qr_code=")
 	builder.WriteString(pt.QrCode)

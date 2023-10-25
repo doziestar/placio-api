@@ -25,6 +25,7 @@ import (
 	"placio-app/domains/recommendations"
 	"placio-app/domains/reviews"
 	"placio-app/domains/search"
+	"placio-app/domains/smartMenu"
 	"placio-app/domains/users"
 	"placio-app/domains/websites"
 	"placio-app/ent"
@@ -51,7 +52,7 @@ func requestBodyLogger() gin.HandlerFunc {
 }
 
 func InitializeRoutes(app *gin.Engine, client *ent.Client) {
-	app.Use(requestBodyLogger())
+	//app.Use(requestBodyLogger())
 	routerGroupV1 := app.Group("/api/v1")
 	routerGroupV1WithoutAuth := app.Group("/api/v1")
 	{
@@ -190,6 +191,10 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		featureReleaseController := feature_releases.NewFeatureReleaseController(featureReleaseService, *redisClient)
 		featureReleaseController.RegisterRoutes(routerGroupV1, routerGroupV1WithoutAuth)
 
+		// smart menu
+		smartMenuService := smartMenu.NewSmartMenuService(client)
+		smartMenuController := smartMenu.NewSmartMenuController(smartMenuService)
+		smartMenuController.RegisterRoutes(routerGroupV1WithoutAuth)
 		// TODO: Below are the routes that need to be implemented
 
 		// recommendations

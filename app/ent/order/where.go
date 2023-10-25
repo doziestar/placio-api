@@ -80,6 +80,16 @@ func TotalAmount(v float64) predicate.Order {
 	return predicate.Order(sql.FieldEQ(FieldTotalAmount, v))
 }
 
+// DeletedAt applies equality check predicate on the "deleted_at" field. It's identical to DeletedAtEQ.
+func DeletedAt(v string) predicate.Order {
+	return predicate.Order(sql.FieldEQ(FieldDeletedAt, v))
+}
+
+// IsDeleted applies equality check predicate on the "is_deleted" field. It's identical to IsDeletedEQ.
+func IsDeleted(v bool) predicate.Order {
+	return predicate.Order(sql.FieldEQ(FieldIsDeleted, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Order {
 	return predicate.Order(sql.FieldEQ(FieldCreatedAt, v))
@@ -228,6 +238,91 @@ func AdditionalInfoIsNil() predicate.Order {
 // AdditionalInfoNotNil applies the NotNil predicate on the "additional_info" field.
 func AdditionalInfoNotNil() predicate.Order {
 	return predicate.Order(sql.FieldNotNull(FieldAdditionalInfo))
+}
+
+// DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
+func DeletedAtEQ(v string) predicate.Order {
+	return predicate.Order(sql.FieldEQ(FieldDeletedAt, v))
+}
+
+// DeletedAtNEQ applies the NEQ predicate on the "deleted_at" field.
+func DeletedAtNEQ(v string) predicate.Order {
+	return predicate.Order(sql.FieldNEQ(FieldDeletedAt, v))
+}
+
+// DeletedAtIn applies the In predicate on the "deleted_at" field.
+func DeletedAtIn(vs ...string) predicate.Order {
+	return predicate.Order(sql.FieldIn(FieldDeletedAt, vs...))
+}
+
+// DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
+func DeletedAtNotIn(vs ...string) predicate.Order {
+	return predicate.Order(sql.FieldNotIn(FieldDeletedAt, vs...))
+}
+
+// DeletedAtGT applies the GT predicate on the "deleted_at" field.
+func DeletedAtGT(v string) predicate.Order {
+	return predicate.Order(sql.FieldGT(FieldDeletedAt, v))
+}
+
+// DeletedAtGTE applies the GTE predicate on the "deleted_at" field.
+func DeletedAtGTE(v string) predicate.Order {
+	return predicate.Order(sql.FieldGTE(FieldDeletedAt, v))
+}
+
+// DeletedAtLT applies the LT predicate on the "deleted_at" field.
+func DeletedAtLT(v string) predicate.Order {
+	return predicate.Order(sql.FieldLT(FieldDeletedAt, v))
+}
+
+// DeletedAtLTE applies the LTE predicate on the "deleted_at" field.
+func DeletedAtLTE(v string) predicate.Order {
+	return predicate.Order(sql.FieldLTE(FieldDeletedAt, v))
+}
+
+// DeletedAtContains applies the Contains predicate on the "deleted_at" field.
+func DeletedAtContains(v string) predicate.Order {
+	return predicate.Order(sql.FieldContains(FieldDeletedAt, v))
+}
+
+// DeletedAtHasPrefix applies the HasPrefix predicate on the "deleted_at" field.
+func DeletedAtHasPrefix(v string) predicate.Order {
+	return predicate.Order(sql.FieldHasPrefix(FieldDeletedAt, v))
+}
+
+// DeletedAtHasSuffix applies the HasSuffix predicate on the "deleted_at" field.
+func DeletedAtHasSuffix(v string) predicate.Order {
+	return predicate.Order(sql.FieldHasSuffix(FieldDeletedAt, v))
+}
+
+// DeletedAtIsNil applies the IsNil predicate on the "deleted_at" field.
+func DeletedAtIsNil() predicate.Order {
+	return predicate.Order(sql.FieldIsNull(FieldDeletedAt))
+}
+
+// DeletedAtNotNil applies the NotNil predicate on the "deleted_at" field.
+func DeletedAtNotNil() predicate.Order {
+	return predicate.Order(sql.FieldNotNull(FieldDeletedAt))
+}
+
+// DeletedAtEqualFold applies the EqualFold predicate on the "deleted_at" field.
+func DeletedAtEqualFold(v string) predicate.Order {
+	return predicate.Order(sql.FieldEqualFold(FieldDeletedAt, v))
+}
+
+// DeletedAtContainsFold applies the ContainsFold predicate on the "deleted_at" field.
+func DeletedAtContainsFold(v string) predicate.Order {
+	return predicate.Order(sql.FieldContainsFold(FieldDeletedAt, v))
+}
+
+// IsDeletedEQ applies the EQ predicate on the "is_deleted" field.
+func IsDeletedEQ(v bool) predicate.Order {
+	return predicate.Order(sql.FieldEQ(FieldIsDeleted, v))
+}
+
+// IsDeletedNEQ applies the NEQ predicate on the "is_deleted" field.
+func IsDeletedNEQ(v bool) predicate.Order {
+	return predicate.Order(sql.FieldNEQ(FieldIsDeleted, v))
 }
 
 // HasUser applies the HasEdge predicate on the "user" edge.

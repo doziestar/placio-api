@@ -42,6 +42,40 @@ func (ptu *PlaceTableUpdate) AddNumber(i int) *PlaceTableUpdate {
 	return ptu
 }
 
+// SetDeletedAt sets the "deleted_at" field.
+func (ptu *PlaceTableUpdate) SetDeletedAt(s string) *PlaceTableUpdate {
+	ptu.mutation.SetDeletedAt(s)
+	return ptu
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (ptu *PlaceTableUpdate) SetNillableDeletedAt(s *string) *PlaceTableUpdate {
+	if s != nil {
+		ptu.SetDeletedAt(*s)
+	}
+	return ptu
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (ptu *PlaceTableUpdate) ClearDeletedAt() *PlaceTableUpdate {
+	ptu.mutation.ClearDeletedAt()
+	return ptu
+}
+
+// SetIsDeleted sets the "is_deleted" field.
+func (ptu *PlaceTableUpdate) SetIsDeleted(b bool) *PlaceTableUpdate {
+	ptu.mutation.SetIsDeleted(b)
+	return ptu
+}
+
+// SetNillableIsDeleted sets the "is_deleted" field if the given value is not nil.
+func (ptu *PlaceTableUpdate) SetNillableIsDeleted(b *bool) *PlaceTableUpdate {
+	if b != nil {
+		ptu.SetIsDeleted(*b)
+	}
+	return ptu
+}
+
 // SetQrCode sets the "qr_code" field.
 func (ptu *PlaceTableUpdate) SetQrCode(s string) *PlaceTableUpdate {
 	ptu.mutation.SetQrCode(s)
@@ -170,6 +204,15 @@ func (ptu *PlaceTableUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := ptu.mutation.AddedNumber(); ok {
 		_spec.AddField(placetable.FieldNumber, field.TypeInt, value)
 	}
+	if value, ok := ptu.mutation.DeletedAt(); ok {
+		_spec.SetField(placetable.FieldDeletedAt, field.TypeString, value)
+	}
+	if ptu.mutation.DeletedAtCleared() {
+		_spec.ClearField(placetable.FieldDeletedAt, field.TypeString)
+	}
+	if value, ok := ptu.mutation.IsDeleted(); ok {
+		_spec.SetField(placetable.FieldIsDeleted, field.TypeBool, value)
+	}
 	if value, ok := ptu.mutation.QrCode(); ok {
 		_spec.SetField(placetable.FieldQrCode, field.TypeString, value)
 	}
@@ -280,6 +323,40 @@ func (ptuo *PlaceTableUpdateOne) SetNumber(i int) *PlaceTableUpdateOne {
 // AddNumber adds i to the "number" field.
 func (ptuo *PlaceTableUpdateOne) AddNumber(i int) *PlaceTableUpdateOne {
 	ptuo.mutation.AddNumber(i)
+	return ptuo
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (ptuo *PlaceTableUpdateOne) SetDeletedAt(s string) *PlaceTableUpdateOne {
+	ptuo.mutation.SetDeletedAt(s)
+	return ptuo
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (ptuo *PlaceTableUpdateOne) SetNillableDeletedAt(s *string) *PlaceTableUpdateOne {
+	if s != nil {
+		ptuo.SetDeletedAt(*s)
+	}
+	return ptuo
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (ptuo *PlaceTableUpdateOne) ClearDeletedAt() *PlaceTableUpdateOne {
+	ptuo.mutation.ClearDeletedAt()
+	return ptuo
+}
+
+// SetIsDeleted sets the "is_deleted" field.
+func (ptuo *PlaceTableUpdateOne) SetIsDeleted(b bool) *PlaceTableUpdateOne {
+	ptuo.mutation.SetIsDeleted(b)
+	return ptuo
+}
+
+// SetNillableIsDeleted sets the "is_deleted" field if the given value is not nil.
+func (ptuo *PlaceTableUpdateOne) SetNillableIsDeleted(b *bool) *PlaceTableUpdateOne {
+	if b != nil {
+		ptuo.SetIsDeleted(*b)
+	}
 	return ptuo
 }
 
@@ -440,6 +517,15 @@ func (ptuo *PlaceTableUpdateOne) sqlSave(ctx context.Context) (_node *PlaceTable
 	}
 	if value, ok := ptuo.mutation.AddedNumber(); ok {
 		_spec.AddField(placetable.FieldNumber, field.TypeInt, value)
+	}
+	if value, ok := ptuo.mutation.DeletedAt(); ok {
+		_spec.SetField(placetable.FieldDeletedAt, field.TypeString, value)
+	}
+	if ptuo.mutation.DeletedAtCleared() {
+		_spec.ClearField(placetable.FieldDeletedAt, field.TypeString)
+	}
+	if value, ok := ptuo.mutation.IsDeleted(); ok {
+		_spec.SetField(placetable.FieldIsDeleted, field.TypeBool, value)
 	}
 	if value, ok := ptuo.mutation.QrCode(); ok {
 		_spec.SetField(placetable.FieldQrCode, field.TypeString, value)

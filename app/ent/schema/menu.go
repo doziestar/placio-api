@@ -18,6 +18,8 @@ func (Menu) Fields() []ent.Field {
 			Unique().
 			Immutable(),
 		field.String("name"),
+		field.String("deleted_at").Optional(),
+		field.Bool("is_deleted").Default(false),
 		field.String("description").Optional(),
 	}
 }
@@ -50,6 +52,8 @@ func (MenuItem) Fields() []ent.Field {
 		field.Float("price"),
 		field.Int("preparation_time").Optional(),
 		field.JSON("options", []string{}).Optional(),
+		field.String("deleted_at").Optional(),
+		field.Bool("is_deleted").Default(false),
 	}
 }
 

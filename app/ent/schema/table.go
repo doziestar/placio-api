@@ -18,6 +18,8 @@ func (PlaceTable) Fields() []ent.Field {
 			Unique().
 			Immutable(),
 		field.Int("number"),
+		field.String("deleted_at").Optional(),
+		field.Bool("is_deleted").Default(false),
 		field.String("qr_code").Optional(),
 	}
 }
