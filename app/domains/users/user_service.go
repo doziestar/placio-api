@@ -260,6 +260,8 @@ func (s *UserServiceImpl) GetUser(ctx context.Context, auth0ID string) (*ent.Use
 			return nil, err
 		}
 
+		log.Println("GetUser", auth0ID, "user not found, creating new user")
+
 		auth0Data, err := s.getAuth0UserDataWithRetry(auth0ID, 3, 1*time.Second)
 		if err != nil {
 			return nil, err
