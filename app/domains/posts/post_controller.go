@@ -35,20 +35,11 @@ func (pc *PostController) RegisterRoutes(router *gin.RouterGroup, routerWithoutA
 	{
 		postRouterWithoutAuth.GET("/:id", utility.Use(pc.getPost))
 		postRouter.POST("/", utility.Use(pc.createPost))
+		postRouter.POST("/repost/", utility.Use(pc.repost))
 		postRouter.PUT("/:id", utility.Use(pc.updatePost))
 		postRouter.DELETE("/:id", utility.Use(pc.deletePost))
 		postRouter.GET("/:id/comments", utility.Use(pc.getCommentsByPost))
 		postRouter.GET("/", utility.Use(pc.getPostFeeds))
-		//postRouter.GET("/:id/user", utility.Use(pc.getPostsByUser))
-
-		//postRouter.PUT("/:id", utility.Use(pc.updatePost))
-		//postRouter.DELETE("/:id", utility.Use(pc.deletePost))
-		//postRouter.GET("/:id/comments", utility.Use(pc.getComments))
-		//postRouter.POST("/:id/comments", utility.Use(pc.createComment))
-		//postRouter.PUT("/comments/:id", utility.Use(pc.updateComment))
-		//postRouter.DELETE("/comments/:id", utility.Use(pc.deleteComment))
-		//postRouter.POST("/:id/like", utility.Use(pc.likePost))
-		//postRouter.POST("/:id/unlike", utility.Use(pc.unlikePost))
 	}
 }
 
@@ -108,6 +99,37 @@ func (pc *PostController) createPost(ctx *gin.Context) error {
 	}
 
 	ctx.JSON(http.StatusCreated, utility.ProcessResponse(createdPost, "success", "Post created successfully"))
+	return nil
+}
+
+// Repost creates a new post as a repost of an existing post.
+// @Summary Create a new repost
+// @Description Repost an existing post
+// @Tags Post
+// @Accept json
+// @Produce json
+// @Param RepostDto body Dto.RepostDto true "Repost Data"
+// @Success 201 {object} Dto.PostResponseDto "Successfully created repost"
+// @Failure 400 {object} Dto.ErrorDTO "Bad Request"
+// @Failure 401 {object} Dto.ErrorDTO "Unauthorized"
+// @Failure 500 {object} Dto.ErrorDTO "Internal Server Error"
+// @Router /api/v1/posts/repost [post]
+func (pc *PostController) repost(ctx *gin.Context) error {
+	userId := ctx.MustGet("user").(string)
+
+	var repostDto RepostDto
+	if err := ctx.ShouldBindJSON(&repostDto); err != nil {
+		log.Printf("Error binding JSON: %v", err)
+		return err
+	}
+
+	repostedPost, err := pc.postService.Repost(ctx, repostDto.OriginalPostID, repostDto.Content, userId, repostDto.BusinessID)
+	if err != nil {
+		log.Println("Failed to create repost", err)
+		return err
+	}
+
+	ctx.JSON(http.StatusCreated, utility.ProcessResponse(repostedPost, "success", "Repost created successfully"))
 	return nil
 }
 

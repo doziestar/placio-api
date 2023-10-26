@@ -28,3 +28,9 @@ type PostResponseDto struct {
 	CreatedAt time.Time     `json:"created_at"`
 	Medias    []MediaDto    `json:"medias"`
 }
+
+type RepostDto struct {
+	OriginalPostID string `json:"originalPostId" binding:"required"`
+	Content        string `json:"content,omitempty"`
+	BusinessID     string `json:"businessId,omitempty"`
+}

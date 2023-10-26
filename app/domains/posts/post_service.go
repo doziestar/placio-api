@@ -24,6 +24,7 @@ import (
 type PostService interface {
 	CreatePost(ctx context.Context, newPost *ent.Post, userID string, businessID string, mediaFiles []*multipart.FileHeader) (*ent.Post, error)
 	GetPost(ctx context.Context, postID string) (*ent.Post, error)
+	Repost(ctx context.Context, originalPostID, content, userID, businessID string) (*ent.Post, error)
 	UpdatePost(ctx context.Context, updatedPost *ent.Post) (*ent.Post, error)
 	DeletePost(ctx context.Context, postID string) error
 	ListPosts(ctx context.Context, page, pageSize int, sortBy []string, filters ...predicate.Post) ([]*ent.Post, error)
@@ -106,21 +107,35 @@ func (ps *PostServiceImpl) Repost(ctx context.Context, originalPostID, content, 
 		return nil, errors.New("original post ID, content, and user ID must be provided")
 	}
 
-	originalPost, err := ps.client.Post.
+	tx, err := ps.client.Tx(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed starting a transaction: %w", err)
+	}
+
+	originalPost, err := tx.Post.
 		Query().
 		Where(post.IDEQ(originalPostID)).
 		Only(ctx)
 	if err != nil {
+		_ = tx.Rollback()
 		return nil, fmt.Errorf("failed retrieving original post: %w", err)
 	}
 
+	// Increment repost count of original post
+	_, err = tx.Post.
+		UpdateOne(originalPost).
+		AddRepostCount(1).
+		Save(ctx)
+	if err != nil {
+		_ = tx.Rollback()
+		return nil, fmt.Errorf("failed incrementing repost count: %w", err)
+	}
+
 	// Create a new post as a repost
-	repostBuilder := ps.client.Post.
+	repostBuilder := tx.Post.
 		Create().
 		SetID(uuid.New().String()).
-		SetContent(content).
 		SetUpdatedAt(time.Now()).
-		SetUserID(userID).
 		SetIsRepost(true).
 		AddOriginalPost(originalPost)
 
@@ -129,10 +144,23 @@ func (ps *PostServiceImpl) Repost(ctx context.Context, originalPostID, content, 
 		repostBuilder.SetBusinessAccountID(businessID)
 	}
 
+	if content == "" {
+		repostBuilder.SetContent(originalPost.Content)
+	}
+
+	if userID == "" {
+		repostBuilder.SetUserID(originalPost.Edges.User.ID)
+	}
+
 	// Save post
 	repost, err := repostBuilder.Save(ctx)
 	if err != nil {
+		_ = tx.Rollback()
 		return nil, fmt.Errorf("failed creating repost: %w", err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, fmt.Errorf("failed committing transaction: %w", err)
 	}
 
 	log.Printf("repost saved: %v", repost)
