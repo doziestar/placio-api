@@ -999,9 +999,12 @@ var (
 		{Name: "is_boosted", Type: field.TypeBool, Default: false},
 		{Name: "is_pinned", Type: field.TypeBool, Default: false},
 		{Name: "is_hidden", Type: field.TypeBool, Default: false},
+		{Name: "report_count", Type: field.TypeInt, Default: 0},
+		{Name: "is_repost", Type: field.TypeBool, Default: false},
 		{Name: "relevance_score", Type: field.TypeInt, Default: 0},
 		{Name: "search_text", Type: field.TypeString, Nullable: true},
 		{Name: "business_posts", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "post_original_post", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "user_posts", Type: field.TypeString, Nullable: true, Size: 36},
 	}
 	// PostsTable holds the schema information for the "posts" table.
@@ -1012,13 +1015,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "posts_businesses_posts",
-				Columns:    []*schema.Column{PostsColumns[17]},
+				Columns:    []*schema.Column{PostsColumns[19]},
 				RefColumns: []*schema.Column{BusinessesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
+				Symbol:     "posts_posts_original_post",
+				Columns:    []*schema.Column{PostsColumns[20]},
+				RefColumns: []*schema.Column{PostsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
 				Symbol:     "posts_users_posts",
-				Columns:    []*schema.Column{PostsColumns[18]},
+				Columns:    []*schema.Column{PostsColumns[21]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -2144,7 +2153,8 @@ func init() {
 	PlaceInventoryAttributesTable.ForeignKeys[1].RefTable = PlaceInventoriesTable
 	PlaceTablesTable.ForeignKeys[0].RefTable = PlacesTable
 	PostsTable.ForeignKeys[0].RefTable = BusinessesTable
-	PostsTable.ForeignKeys[1].RefTable = UsersTable
+	PostsTable.ForeignKeys[1].RefTable = PostsTable
+	PostsTable.ForeignKeys[2].RefTable = UsersTable
 	RatingsTable.ForeignKeys[0].RefTable = BusinessesTable
 	RatingsTable.ForeignKeys[1].RefTable = EventsTable
 	RatingsTable.ForeignKeys[2].RefTable = PlacesTable

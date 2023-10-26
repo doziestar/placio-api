@@ -130,6 +130,16 @@ func IsHidden(v bool) predicate.Post {
 	return predicate.Post(sql.FieldEQ(FieldIsHidden, v))
 }
 
+// ReportCount applies equality check predicate on the "ReportCount" field. It's identical to ReportCountEQ.
+func ReportCount(v int) predicate.Post {
+	return predicate.Post(sql.FieldEQ(FieldReportCount, v))
+}
+
+// IsRepost applies equality check predicate on the "IsRepost" field. It's identical to IsRepostEQ.
+func IsRepost(v bool) predicate.Post {
+	return predicate.Post(sql.FieldEQ(FieldIsRepost, v))
+}
+
 // RelevanceScore applies equality check predicate on the "RelevanceScore" field. It's identical to RelevanceScoreEQ.
 func RelevanceScore(v int) predicate.Post {
 	return predicate.Post(sql.FieldEQ(FieldRelevanceScore, v))
@@ -525,6 +535,56 @@ func IsHiddenNEQ(v bool) predicate.Post {
 	return predicate.Post(sql.FieldNEQ(FieldIsHidden, v))
 }
 
+// ReportCountEQ applies the EQ predicate on the "ReportCount" field.
+func ReportCountEQ(v int) predicate.Post {
+	return predicate.Post(sql.FieldEQ(FieldReportCount, v))
+}
+
+// ReportCountNEQ applies the NEQ predicate on the "ReportCount" field.
+func ReportCountNEQ(v int) predicate.Post {
+	return predicate.Post(sql.FieldNEQ(FieldReportCount, v))
+}
+
+// ReportCountIn applies the In predicate on the "ReportCount" field.
+func ReportCountIn(vs ...int) predicate.Post {
+	return predicate.Post(sql.FieldIn(FieldReportCount, vs...))
+}
+
+// ReportCountNotIn applies the NotIn predicate on the "ReportCount" field.
+func ReportCountNotIn(vs ...int) predicate.Post {
+	return predicate.Post(sql.FieldNotIn(FieldReportCount, vs...))
+}
+
+// ReportCountGT applies the GT predicate on the "ReportCount" field.
+func ReportCountGT(v int) predicate.Post {
+	return predicate.Post(sql.FieldGT(FieldReportCount, v))
+}
+
+// ReportCountGTE applies the GTE predicate on the "ReportCount" field.
+func ReportCountGTE(v int) predicate.Post {
+	return predicate.Post(sql.FieldGTE(FieldReportCount, v))
+}
+
+// ReportCountLT applies the LT predicate on the "ReportCount" field.
+func ReportCountLT(v int) predicate.Post {
+	return predicate.Post(sql.FieldLT(FieldReportCount, v))
+}
+
+// ReportCountLTE applies the LTE predicate on the "ReportCount" field.
+func ReportCountLTE(v int) predicate.Post {
+	return predicate.Post(sql.FieldLTE(FieldReportCount, v))
+}
+
+// IsRepostEQ applies the EQ predicate on the "IsRepost" field.
+func IsRepostEQ(v bool) predicate.Post {
+	return predicate.Post(sql.FieldEQ(FieldIsRepost, v))
+}
+
+// IsRepostNEQ applies the NEQ predicate on the "IsRepost" field.
+func IsRepostNEQ(v bool) predicate.Post {
+	return predicate.Post(sql.FieldNEQ(FieldIsRepost, v))
+}
+
 // RelevanceScoreEQ applies the EQ predicate on the "RelevanceScore" field.
 func RelevanceScoreEQ(v int) predicate.Post {
 	return predicate.Post(sql.FieldEQ(FieldRelevanceScore, v))
@@ -793,6 +853,52 @@ func HasNotifications() predicate.Post {
 func HasNotificationsWith(preds ...predicate.Notification) predicate.Post {
 	return predicate.Post(func(s *sql.Selector) {
 		step := newNotificationsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasReposts applies the HasEdge predicate on the "reposts" edge.
+func HasReposts() predicate.Post {
+	return predicate.Post(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, RepostsTable, RepostsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasRepostsWith applies the HasEdge predicate on the "reposts" edge with a given conditions (other predicates).
+func HasRepostsWith(preds ...predicate.Post) predicate.Post {
+	return predicate.Post(func(s *sql.Selector) {
+		step := newRepostsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasOriginalPost applies the HasEdge predicate on the "original_post" edge.
+func HasOriginalPost() predicate.Post {
+	return predicate.Post(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, OriginalPostTable, OriginalPostColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasOriginalPostWith applies the HasEdge predicate on the "original_post" edge with a given conditions (other predicates).
+func HasOriginalPostWith(preds ...predicate.Post) predicate.Post {
+	return predicate.Post(func(s *sql.Selector) {
+		step := newOriginalPostStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

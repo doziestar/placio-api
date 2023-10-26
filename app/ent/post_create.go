@@ -207,6 +207,34 @@ func (pc *PostCreate) SetNillableIsHidden(b *bool) *PostCreate {
 	return pc
 }
 
+// SetReportCount sets the "ReportCount" field.
+func (pc *PostCreate) SetReportCount(i int) *PostCreate {
+	pc.mutation.SetReportCount(i)
+	return pc
+}
+
+// SetNillableReportCount sets the "ReportCount" field if the given value is not nil.
+func (pc *PostCreate) SetNillableReportCount(i *int) *PostCreate {
+	if i != nil {
+		pc.SetReportCount(*i)
+	}
+	return pc
+}
+
+// SetIsRepost sets the "IsRepost" field.
+func (pc *PostCreate) SetIsRepost(b bool) *PostCreate {
+	pc.mutation.SetIsRepost(b)
+	return pc
+}
+
+// SetNillableIsRepost sets the "IsRepost" field if the given value is not nil.
+func (pc *PostCreate) SetNillableIsRepost(b *bool) *PostCreate {
+	if b != nil {
+		pc.SetIsRepost(*b)
+	}
+	return pc
+}
+
 // SetRelevanceScore sets the "RelevanceScore" field.
 func (pc *PostCreate) SetRelevanceScore(i int) *PostCreate {
 	pc.mutation.SetRelevanceScore(i)
@@ -354,6 +382,40 @@ func (pc *PostCreate) AddNotifications(n ...*Notification) *PostCreate {
 	return pc.AddNotificationIDs(ids...)
 }
 
+// SetRepostsID sets the "reposts" edge to the Post entity by ID.
+func (pc *PostCreate) SetRepostsID(id string) *PostCreate {
+	pc.mutation.SetRepostsID(id)
+	return pc
+}
+
+// SetNillableRepostsID sets the "reposts" edge to the Post entity by ID if the given value is not nil.
+func (pc *PostCreate) SetNillableRepostsID(id *string) *PostCreate {
+	if id != nil {
+		pc = pc.SetRepostsID(*id)
+	}
+	return pc
+}
+
+// SetReposts sets the "reposts" edge to the Post entity.
+func (pc *PostCreate) SetReposts(p *Post) *PostCreate {
+	return pc.SetRepostsID(p.ID)
+}
+
+// AddOriginalPostIDs adds the "original_post" edge to the Post entity by IDs.
+func (pc *PostCreate) AddOriginalPostIDs(ids ...string) *PostCreate {
+	pc.mutation.AddOriginalPostIDs(ids...)
+	return pc
+}
+
+// AddOriginalPost adds the "original_post" edges to the Post entity.
+func (pc *PostCreate) AddOriginalPost(p ...*Post) *PostCreate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pc.AddOriginalPostIDs(ids...)
+}
+
 // Mutation returns the PostMutation object of the builder.
 func (pc *PostCreate) Mutation() *PostMutation {
 	return pc.mutation
@@ -437,6 +499,14 @@ func (pc *PostCreate) defaults() {
 		v := post.DefaultIsHidden
 		pc.mutation.SetIsHidden(v)
 	}
+	if _, ok := pc.mutation.ReportCount(); !ok {
+		v := post.DefaultReportCount
+		pc.mutation.SetReportCount(v)
+	}
+	if _, ok := pc.mutation.IsRepost(); !ok {
+		v := post.DefaultIsRepost
+		pc.mutation.SetIsRepost(v)
+	}
 	if _, ok := pc.mutation.RelevanceScore(); !ok {
 		v := post.DefaultRelevanceScore
 		pc.mutation.SetRelevanceScore(v)
@@ -496,6 +566,12 @@ func (pc *PostCreate) check() error {
 	}
 	if _, ok := pc.mutation.IsHidden(); !ok {
 		return &ValidationError{Name: "IsHidden", err: errors.New(`ent: missing required field "Post.IsHidden"`)}
+	}
+	if _, ok := pc.mutation.ReportCount(); !ok {
+		return &ValidationError{Name: "ReportCount", err: errors.New(`ent: missing required field "Post.ReportCount"`)}
+	}
+	if _, ok := pc.mutation.IsRepost(); !ok {
+		return &ValidationError{Name: "IsRepost", err: errors.New(`ent: missing required field "Post.IsRepost"`)}
 	}
 	if _, ok := pc.mutation.RelevanceScore(); !ok {
 		return &ValidationError{Name: "RelevanceScore", err: errors.New(`ent: missing required field "Post.RelevanceScore"`)}
@@ -595,6 +671,14 @@ func (pc *PostCreate) createSpec() (*Post, *sqlgraph.CreateSpec) {
 	if value, ok := pc.mutation.IsHidden(); ok {
 		_spec.SetField(post.FieldIsHidden, field.TypeBool, value)
 		_node.IsHidden = value
+	}
+	if value, ok := pc.mutation.ReportCount(); ok {
+		_spec.SetField(post.FieldReportCount, field.TypeInt, value)
+		_node.ReportCount = value
+	}
+	if value, ok := pc.mutation.IsRepost(); ok {
+		_spec.SetField(post.FieldIsRepost, field.TypeBool, value)
+		_node.IsRepost = value
 	}
 	if value, ok := pc.mutation.RelevanceScore(); ok {
 		_spec.SetField(post.FieldRelevanceScore, field.TypeInt, value)
@@ -711,6 +795,39 @@ func (pc *PostCreate) createSpec() (*Post, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(notification.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.RepostsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   post.RepostsTable,
+			Columns: []string{post.RepostsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.post_original_post = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.OriginalPostIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   post.OriginalPostTable,
+			Columns: []string{post.OriginalPostColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

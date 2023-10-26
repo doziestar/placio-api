@@ -47,16 +47,21 @@ type Post struct {
 	IsPinned bool `json:"IsPinned,omitempty"`
 	// IsHidden holds the value of the "IsHidden" field.
 	IsHidden bool `json:"IsHidden,omitempty"`
+	// ReportCount holds the value of the "ReportCount" field.
+	ReportCount int `json:"ReportCount,omitempty"`
+	// IsRepost holds the value of the "IsRepost" field.
+	IsRepost bool `json:"IsRepost,omitempty"`
 	// RelevanceScore holds the value of the "RelevanceScore" field.
 	RelevanceScore int `json:"RelevanceScore,omitempty"`
 	// SearchText holds the value of the "SearchText" field.
 	SearchText string `json:"SearchText,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PostQuery when eager-loading is set.
-	Edges          PostEdges `json:"edges"`
-	business_posts *string
-	user_posts     *string
-	selectValues   sql.SelectValues
+	Edges              PostEdges `json:"edges"`
+	business_posts     *string
+	post_original_post *string
+	user_posts         *string
+	selectValues       sql.SelectValues
 }
 
 // PostEdges holds the relations/edges for other nodes in the graph.
@@ -75,9 +80,13 @@ type PostEdges struct {
 	Categories []*Category `json:"categories,omitempty"`
 	// Notifications holds the value of the notifications edge.
 	Notifications []*Notification `json:"notifications,omitempty"`
+	// Reposts holds the value of the reposts edge.
+	Reposts *Post `json:"reposts,omitempty"`
+	// OriginalPost holds the value of the original_post edge.
+	OriginalPost []*Post `json:"original_post,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [7]bool
+	loadedTypes [9]bool
 }
 
 // UserOrErr returns the User value or an error if the edge
@@ -151,14 +160,36 @@ func (e PostEdges) NotificationsOrErr() ([]*Notification, error) {
 	return nil, &NotLoadedError{edge: "notifications"}
 }
 
+// RepostsOrErr returns the Reposts value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e PostEdges) RepostsOrErr() (*Post, error) {
+	if e.loadedTypes[7] {
+		if e.Reposts == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: post.Label}
+		}
+		return e.Reposts, nil
+	}
+	return nil, &NotLoadedError{edge: "reposts"}
+}
+
+// OriginalPostOrErr returns the OriginalPost value or an error if the edge
+// was not loaded in eager-loading.
+func (e PostEdges) OriginalPostOrErr() ([]*Post, error) {
+	if e.loadedTypes[8] {
+		return e.OriginalPost, nil
+	}
+	return nil, &NotLoadedError{edge: "original_post"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Post) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case post.FieldLikedByMe, post.FieldIsSponsored, post.FieldIsPromoted, post.FieldIsBoosted, post.FieldIsPinned, post.FieldIsHidden:
+		case post.FieldLikedByMe, post.FieldIsSponsored, post.FieldIsPromoted, post.FieldIsBoosted, post.FieldIsPinned, post.FieldIsHidden, post.FieldIsRepost:
 			values[i] = new(sql.NullBool)
-		case post.FieldLikeCount, post.FieldCommentCount, post.FieldShareCount, post.FieldViewCount, post.FieldRelevanceScore:
+		case post.FieldLikeCount, post.FieldCommentCount, post.FieldShareCount, post.FieldViewCount, post.FieldReportCount, post.FieldRelevanceScore:
 			values[i] = new(sql.NullInt64)
 		case post.FieldID, post.FieldContent, post.FieldPrivacy, post.FieldSearchText:
 			values[i] = new(sql.NullString)
@@ -166,7 +197,9 @@ func (*Post) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullTime)
 		case post.ForeignKeys[0]: // business_posts
 			values[i] = new(sql.NullString)
-		case post.ForeignKeys[1]: // user_posts
+		case post.ForeignKeys[1]: // post_original_post
+			values[i] = new(sql.NullString)
+		case post.ForeignKeys[2]: // user_posts
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -273,6 +306,18 @@ func (po *Post) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				po.IsHidden = value.Bool
 			}
+		case post.FieldReportCount:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field ReportCount", values[i])
+			} else if value.Valid {
+				po.ReportCount = int(value.Int64)
+			}
+		case post.FieldIsRepost:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field IsRepost", values[i])
+			} else if value.Valid {
+				po.IsRepost = value.Bool
+			}
 		case post.FieldRelevanceScore:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field RelevanceScore", values[i])
@@ -293,6 +338,13 @@ func (po *Post) assignValues(columns []string, values []any) error {
 				*po.business_posts = value.String
 			}
 		case post.ForeignKeys[1]:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field post_original_post", values[i])
+			} else if value.Valid {
+				po.post_original_post = new(string)
+				*po.post_original_post = value.String
+			}
+		case post.ForeignKeys[2]:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field user_posts", values[i])
 			} else if value.Valid {
@@ -345,6 +397,16 @@ func (po *Post) QueryCategories() *CategoryQuery {
 // QueryNotifications queries the "notifications" edge of the Post entity.
 func (po *Post) QueryNotifications() *NotificationQuery {
 	return NewPostClient(po.config).QueryNotifications(po)
+}
+
+// QueryReposts queries the "reposts" edge of the Post entity.
+func (po *Post) QueryReposts() *PostQuery {
+	return NewPostClient(po.config).QueryReposts(po)
+}
+
+// QueryOriginalPost queries the "original_post" edge of the Post entity.
+func (po *Post) QueryOriginalPost() *PostQuery {
+	return NewPostClient(po.config).QueryOriginalPost(po)
 }
 
 // Update returns a builder for updating this Post.
@@ -411,6 +473,12 @@ func (po *Post) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("IsHidden=")
 	builder.WriteString(fmt.Sprintf("%v", po.IsHidden))
+	builder.WriteString(", ")
+	builder.WriteString("ReportCount=")
+	builder.WriteString(fmt.Sprintf("%v", po.ReportCount))
+	builder.WriteString(", ")
+	builder.WriteString("IsRepost=")
+	builder.WriteString(fmt.Sprintf("%v", po.IsRepost))
 	builder.WriteString(", ")
 	builder.WriteString("RelevanceScore=")
 	builder.WriteString(fmt.Sprintf("%v", po.RelevanceScore))

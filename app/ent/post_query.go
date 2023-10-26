@@ -36,6 +36,8 @@ type PostQuery struct {
 	withLikes           *LikeQuery
 	withCategories      *CategoryQuery
 	withNotifications   *NotificationQuery
+	withReposts         *PostQuery
+	withOriginalPost    *PostQuery
 	withFKs             bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -220,6 +222,50 @@ func (pq *PostQuery) QueryNotifications() *NotificationQuery {
 			sqlgraph.From(post.Table, post.FieldID, selector),
 			sqlgraph.To(notification.Table, notification.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, false, post.NotificationsTable, post.NotificationsPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryReposts chains the current query on the "reposts" edge.
+func (pq *PostQuery) QueryReposts() *PostQuery {
+	query := (&PostClient{config: pq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(post.Table, post.FieldID, selector),
+			sqlgraph.To(post.Table, post.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, post.RepostsTable, post.RepostsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryOriginalPost chains the current query on the "original_post" edge.
+func (pq *PostQuery) QueryOriginalPost() *PostQuery {
+	query := (&PostClient{config: pq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(post.Table, post.FieldID, selector),
+			sqlgraph.To(post.Table, post.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, post.OriginalPostTable, post.OriginalPostColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
 		return fromU, nil
@@ -426,6 +472,8 @@ func (pq *PostQuery) Clone() *PostQuery {
 		withLikes:           pq.withLikes.Clone(),
 		withCategories:      pq.withCategories.Clone(),
 		withNotifications:   pq.withNotifications.Clone(),
+		withReposts:         pq.withReposts.Clone(),
+		withOriginalPost:    pq.withOriginalPost.Clone(),
 		// clone intermediate query.
 		sql:  pq.sql.Clone(),
 		path: pq.path,
@@ -509,6 +557,28 @@ func (pq *PostQuery) WithNotifications(opts ...func(*NotificationQuery)) *PostQu
 	return pq
 }
 
+// WithReposts tells the query-builder to eager-load the nodes that are connected to
+// the "reposts" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *PostQuery) WithReposts(opts ...func(*PostQuery)) *PostQuery {
+	query := (&PostClient{config: pq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withReposts = query
+	return pq
+}
+
+// WithOriginalPost tells the query-builder to eager-load the nodes that are connected to
+// the "original_post" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *PostQuery) WithOriginalPost(opts ...func(*PostQuery)) *PostQuery {
+	query := (&PostClient{config: pq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withOriginalPost = query
+	return pq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -588,7 +658,7 @@ func (pq *PostQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Post, e
 		nodes       = []*Post{}
 		withFKs     = pq.withFKs
 		_spec       = pq.querySpec()
-		loadedTypes = [7]bool{
+		loadedTypes = [9]bool{
 			pq.withUser != nil,
 			pq.withBusinessAccount != nil,
 			pq.withMedias != nil,
@@ -596,9 +666,11 @@ func (pq *PostQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Post, e
 			pq.withLikes != nil,
 			pq.withCategories != nil,
 			pq.withNotifications != nil,
+			pq.withReposts != nil,
+			pq.withOriginalPost != nil,
 		}
 	)
-	if pq.withUser != nil || pq.withBusinessAccount != nil {
+	if pq.withUser != nil || pq.withBusinessAccount != nil || pq.withReposts != nil {
 		withFKs = true
 	}
 	if withFKs {
@@ -666,6 +738,19 @@ func (pq *PostQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Post, e
 		if err := pq.loadNotifications(ctx, query, nodes,
 			func(n *Post) { n.Edges.Notifications = []*Notification{} },
 			func(n *Post, e *Notification) { n.Edges.Notifications = append(n.Edges.Notifications, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := pq.withReposts; query != nil {
+		if err := pq.loadReposts(ctx, query, nodes, nil,
+			func(n *Post, e *Post) { n.Edges.Reposts = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := pq.withOriginalPost; query != nil {
+		if err := pq.loadOriginalPost(ctx, query, nodes,
+			func(n *Post) { n.Edges.OriginalPost = []*Post{} },
+			func(n *Post, e *Post) { n.Edges.OriginalPost = append(n.Edges.OriginalPost, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -918,6 +1003,69 @@ func (pq *PostQuery) loadNotifications(ctx context.Context, query *NotificationQ
 		for kn := range nodes {
 			assign(kn, n)
 		}
+	}
+	return nil
+}
+func (pq *PostQuery) loadReposts(ctx context.Context, query *PostQuery, nodes []*Post, init func(*Post), assign func(*Post, *Post)) error {
+	ids := make([]string, 0, len(nodes))
+	nodeids := make(map[string][]*Post)
+	for i := range nodes {
+		if nodes[i].post_original_post == nil {
+			continue
+		}
+		fk := *nodes[i].post_original_post
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(post.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "post_original_post" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (pq *PostQuery) loadOriginalPost(ctx context.Context, query *PostQuery, nodes []*Post, init func(*Post), assign func(*Post, *Post)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*Post)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Post(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(post.OriginalPostColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.post_original_post
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "post_original_post" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "post_original_post" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
 	}
 	return nil
 }

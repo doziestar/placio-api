@@ -33,6 +33,8 @@ func (Post) Fields() []ent.Field {
 		field.Bool("IsBoosted").Default(false),
 		field.Bool("IsPinned").Default(false),
 		field.Bool("IsHidden").Default(false),
+		field.Int("RepostCount").Default(0),
+		field.Bool("IsRepost").Default(false),
 		field.Int("RelevanceScore").Default(0),
 		field.String("SearchText").Optional(),
 	}
@@ -52,5 +54,8 @@ func (Post) Edges() []ent.Edge {
 		edge.To("likes", Like.Type),
 		edge.To("categories", Category.Type),
 		edge.To("notifications", Notification.Type),
+		edge.To("original_post", Post.Type).
+			From("reposts").
+			Unique(),
 	}
 }

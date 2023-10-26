@@ -34199,6 +34199,9 @@ type PostMutation struct {
 	_IsBoosted              *bool
 	_IsPinned               *bool
 	_IsHidden               *bool
+	_ReportCount            *int
+	add_ReportCount         *int
+	_IsRepost               *bool
 	_RelevanceScore         *int
 	add_RelevanceScore      *int
 	_SearchText             *string
@@ -34222,6 +34225,11 @@ type PostMutation struct {
 	notifications           map[string]struct{}
 	removednotifications    map[string]struct{}
 	clearednotifications    bool
+	reposts                 *string
+	clearedreposts          bool
+	original_post           map[string]struct{}
+	removedoriginal_post    map[string]struct{}
+	clearedoriginal_post    bool
 	done                    bool
 	oldValue                func(context.Context) (*Post, error)
 	predicates              []predicate.Post
@@ -34915,6 +34923,98 @@ func (m *PostMutation) ResetIsHidden() {
 	m._IsHidden = nil
 }
 
+// SetReportCount sets the "ReportCount" field.
+func (m *PostMutation) SetReportCount(i int) {
+	m._ReportCount = &i
+	m.add_ReportCount = nil
+}
+
+// ReportCount returns the value of the "ReportCount" field in the mutation.
+func (m *PostMutation) ReportCount() (r int, exists bool) {
+	v := m._ReportCount
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldReportCount returns the old "ReportCount" field's value of the Post entity.
+// If the Post object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PostMutation) OldReportCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldReportCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldReportCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldReportCount: %w", err)
+	}
+	return oldValue.ReportCount, nil
+}
+
+// AddReportCount adds i to the "ReportCount" field.
+func (m *PostMutation) AddReportCount(i int) {
+	if m.add_ReportCount != nil {
+		*m.add_ReportCount += i
+	} else {
+		m.add_ReportCount = &i
+	}
+}
+
+// AddedReportCount returns the value that was added to the "ReportCount" field in this mutation.
+func (m *PostMutation) AddedReportCount() (r int, exists bool) {
+	v := m.add_ReportCount
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetReportCount resets all changes to the "ReportCount" field.
+func (m *PostMutation) ResetReportCount() {
+	m._ReportCount = nil
+	m.add_ReportCount = nil
+}
+
+// SetIsRepost sets the "IsRepost" field.
+func (m *PostMutation) SetIsRepost(b bool) {
+	m._IsRepost = &b
+}
+
+// IsRepost returns the value of the "IsRepost" field in the mutation.
+func (m *PostMutation) IsRepost() (r bool, exists bool) {
+	v := m._IsRepost
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsRepost returns the old "IsRepost" field's value of the Post entity.
+// If the Post object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PostMutation) OldIsRepost(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsRepost is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsRepost requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsRepost: %w", err)
+	}
+	return oldValue.IsRepost, nil
+}
+
+// ResetIsRepost resets all changes to the "IsRepost" field.
+func (m *PostMutation) ResetIsRepost() {
+	m._IsRepost = nil
+}
+
 // SetRelevanceScore sets the "RelevanceScore" field.
 func (m *PostMutation) SetRelevanceScore(i int) {
 	m._RelevanceScore = &i
@@ -35368,6 +35468,99 @@ func (m *PostMutation) ResetNotifications() {
 	m.removednotifications = nil
 }
 
+// SetRepostsID sets the "reposts" edge to the Post entity by id.
+func (m *PostMutation) SetRepostsID(id string) {
+	m.reposts = &id
+}
+
+// ClearReposts clears the "reposts" edge to the Post entity.
+func (m *PostMutation) ClearReposts() {
+	m.clearedreposts = true
+}
+
+// RepostsCleared reports if the "reposts" edge to the Post entity was cleared.
+func (m *PostMutation) RepostsCleared() bool {
+	return m.clearedreposts
+}
+
+// RepostsID returns the "reposts" edge ID in the mutation.
+func (m *PostMutation) RepostsID() (id string, exists bool) {
+	if m.reposts != nil {
+		return *m.reposts, true
+	}
+	return
+}
+
+// RepostsIDs returns the "reposts" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// RepostsID instead. It exists only for internal usage by the builders.
+func (m *PostMutation) RepostsIDs() (ids []string) {
+	if id := m.reposts; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetReposts resets all changes to the "reposts" edge.
+func (m *PostMutation) ResetReposts() {
+	m.reposts = nil
+	m.clearedreposts = false
+}
+
+// AddOriginalPostIDs adds the "original_post" edge to the Post entity by ids.
+func (m *PostMutation) AddOriginalPostIDs(ids ...string) {
+	if m.original_post == nil {
+		m.original_post = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.original_post[ids[i]] = struct{}{}
+	}
+}
+
+// ClearOriginalPost clears the "original_post" edge to the Post entity.
+func (m *PostMutation) ClearOriginalPost() {
+	m.clearedoriginal_post = true
+}
+
+// OriginalPostCleared reports if the "original_post" edge to the Post entity was cleared.
+func (m *PostMutation) OriginalPostCleared() bool {
+	return m.clearedoriginal_post
+}
+
+// RemoveOriginalPostIDs removes the "original_post" edge to the Post entity by IDs.
+func (m *PostMutation) RemoveOriginalPostIDs(ids ...string) {
+	if m.removedoriginal_post == nil {
+		m.removedoriginal_post = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.original_post, ids[i])
+		m.removedoriginal_post[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedOriginalPost returns the removed IDs of the "original_post" edge to the Post entity.
+func (m *PostMutation) RemovedOriginalPostIDs() (ids []string) {
+	for id := range m.removedoriginal_post {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// OriginalPostIDs returns the "original_post" edge IDs in the mutation.
+func (m *PostMutation) OriginalPostIDs() (ids []string) {
+	for id := range m.original_post {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetOriginalPost resets all changes to the "original_post" edge.
+func (m *PostMutation) ResetOriginalPost() {
+	m.original_post = nil
+	m.clearedoriginal_post = false
+	m.removedoriginal_post = nil
+}
+
 // Where appends a list predicates to the PostMutation builder.
 func (m *PostMutation) Where(ps ...predicate.Post) {
 	m.predicates = append(m.predicates, ps...)
@@ -35402,7 +35595,7 @@ func (m *PostMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PostMutation) Fields() []string {
-	fields := make([]string, 0, 16)
+	fields := make([]string, 0, 18)
 	if m._Content != nil {
 		fields = append(fields, post.FieldContent)
 	}
@@ -35444,6 +35637,12 @@ func (m *PostMutation) Fields() []string {
 	}
 	if m._IsHidden != nil {
 		fields = append(fields, post.FieldIsHidden)
+	}
+	if m._ReportCount != nil {
+		fields = append(fields, post.FieldReportCount)
+	}
+	if m._IsRepost != nil {
+		fields = append(fields, post.FieldIsRepost)
 	}
 	if m._RelevanceScore != nil {
 		fields = append(fields, post.FieldRelevanceScore)
@@ -35487,6 +35686,10 @@ func (m *PostMutation) Field(name string) (ent.Value, bool) {
 		return m.IsPinned()
 	case post.FieldIsHidden:
 		return m.IsHidden()
+	case post.FieldReportCount:
+		return m.ReportCount()
+	case post.FieldIsRepost:
+		return m.IsRepost()
 	case post.FieldRelevanceScore:
 		return m.RelevanceScore()
 	case post.FieldSearchText:
@@ -35528,6 +35731,10 @@ func (m *PostMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldIsPinned(ctx)
 	case post.FieldIsHidden:
 		return m.OldIsHidden(ctx)
+	case post.FieldReportCount:
+		return m.OldReportCount(ctx)
+	case post.FieldIsRepost:
+		return m.OldIsRepost(ctx)
 	case post.FieldRelevanceScore:
 		return m.OldRelevanceScore(ctx)
 	case post.FieldSearchText:
@@ -35639,6 +35846,20 @@ func (m *PostMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetIsHidden(v)
 		return nil
+	case post.FieldReportCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetReportCount(v)
+		return nil
+	case post.FieldIsRepost:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsRepost(v)
+		return nil
 	case post.FieldRelevanceScore:
 		v, ok := value.(int)
 		if !ok {
@@ -35673,6 +35894,9 @@ func (m *PostMutation) AddedFields() []string {
 	if m.add_ViewCount != nil {
 		fields = append(fields, post.FieldViewCount)
 	}
+	if m.add_ReportCount != nil {
+		fields = append(fields, post.FieldReportCount)
+	}
 	if m.add_RelevanceScore != nil {
 		fields = append(fields, post.FieldRelevanceScore)
 	}
@@ -35692,6 +35916,8 @@ func (m *PostMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedShareCount()
 	case post.FieldViewCount:
 		return m.AddedViewCount()
+	case post.FieldReportCount:
+		return m.AddedReportCount()
 	case post.FieldRelevanceScore:
 		return m.AddedRelevanceScore()
 	}
@@ -35730,6 +35956,13 @@ func (m *PostMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddViewCount(v)
+		return nil
+	case post.FieldReportCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddReportCount(v)
 		return nil
 	case post.FieldRelevanceScore:
 		v, ok := value.(int)
@@ -35816,6 +36049,12 @@ func (m *PostMutation) ResetField(name string) error {
 	case post.FieldIsHidden:
 		m.ResetIsHidden()
 		return nil
+	case post.FieldReportCount:
+		m.ResetReportCount()
+		return nil
+	case post.FieldIsRepost:
+		m.ResetIsRepost()
+		return nil
 	case post.FieldRelevanceScore:
 		m.ResetRelevanceScore()
 		return nil
@@ -35828,7 +36067,7 @@ func (m *PostMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PostMutation) AddedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 9)
 	if m.user != nil {
 		edges = append(edges, post.EdgeUser)
 	}
@@ -35849,6 +36088,12 @@ func (m *PostMutation) AddedEdges() []string {
 	}
 	if m.notifications != nil {
 		edges = append(edges, post.EdgeNotifications)
+	}
+	if m.reposts != nil {
+		edges = append(edges, post.EdgeReposts)
+	}
+	if m.original_post != nil {
+		edges = append(edges, post.EdgeOriginalPost)
 	}
 	return edges
 }
@@ -35895,13 +36140,23 @@ func (m *PostMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case post.EdgeReposts:
+		if id := m.reposts; id != nil {
+			return []ent.Value{*id}
+		}
+	case post.EdgeOriginalPost:
+		ids := make([]ent.Value, 0, len(m.original_post))
+		for id := range m.original_post {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PostMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 9)
 	if m.removedmedias != nil {
 		edges = append(edges, post.EdgeMedias)
 	}
@@ -35916,6 +36171,9 @@ func (m *PostMutation) RemovedEdges() []string {
 	}
 	if m.removednotifications != nil {
 		edges = append(edges, post.EdgeNotifications)
+	}
+	if m.removedoriginal_post != nil {
+		edges = append(edges, post.EdgeOriginalPost)
 	}
 	return edges
 }
@@ -35954,13 +36212,19 @@ func (m *PostMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case post.EdgeOriginalPost:
+		ids := make([]ent.Value, 0, len(m.removedoriginal_post))
+		for id := range m.removedoriginal_post {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PostMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 9)
 	if m.cleareduser {
 		edges = append(edges, post.EdgeUser)
 	}
@@ -35981,6 +36245,12 @@ func (m *PostMutation) ClearedEdges() []string {
 	}
 	if m.clearednotifications {
 		edges = append(edges, post.EdgeNotifications)
+	}
+	if m.clearedreposts {
+		edges = append(edges, post.EdgeReposts)
+	}
+	if m.clearedoriginal_post {
+		edges = append(edges, post.EdgeOriginalPost)
 	}
 	return edges
 }
@@ -36003,6 +36273,10 @@ func (m *PostMutation) EdgeCleared(name string) bool {
 		return m.clearedcategories
 	case post.EdgeNotifications:
 		return m.clearednotifications
+	case post.EdgeReposts:
+		return m.clearedreposts
+	case post.EdgeOriginalPost:
+		return m.clearedoriginal_post
 	}
 	return false
 }
@@ -36016,6 +36290,9 @@ func (m *PostMutation) ClearEdge(name string) error {
 		return nil
 	case post.EdgeBusinessAccount:
 		m.ClearBusinessAccount()
+		return nil
+	case post.EdgeReposts:
+		m.ClearReposts()
 		return nil
 	}
 	return fmt.Errorf("unknown Post unique edge %s", name)
@@ -36045,6 +36322,12 @@ func (m *PostMutation) ResetEdge(name string) error {
 		return nil
 	case post.EdgeNotifications:
 		m.ResetNotifications()
+		return nil
+	case post.EdgeReposts:
+		m.ResetReposts()
+		return nil
+	case post.EdgeOriginalPost:
+		m.ResetOriginalPost()
 		return nil
 	}
 	return fmt.Errorf("unknown Post edge %s", name)
