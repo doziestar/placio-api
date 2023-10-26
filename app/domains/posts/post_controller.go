@@ -1,6 +1,9 @@
 package posts
 
 import (
+	"errors"
+	"log"
+	"mime/multipart"
 	"net/http"
 	_ "placio-app/Dto"
 	"placio-app/domains/business"
@@ -68,13 +71,27 @@ func (pc *PostController) createPost(ctx *gin.Context) error {
 
 	form, err := ctx.MultipartForm()
 	if err != nil {
+		log.Printf("Error parsing form: %v", err)
 		return err
 	}
 
-	content := form.Value["content"][0]
-	privacy := form.Value["privacy"][0]
+	contents, ok := form.Value["content"]
+	if !ok || len(contents) == 0 {
+		log.Println("Content is missing")
+		return errors.New("content is required")
+	}
+	content := contents[0]
 
-	mediaFiles, _ := form.File["medias"]
+	privacies, ok := form.Value["privacy"]
+	privacy := "public"
+	if ok && len(privacies) > 0 {
+		privacy = privacies[0]
+	}
+
+	mediaFiles, ok := form.File["medias"]
+	if !ok {
+		mediaFiles = []*multipart.FileHeader{}
+	}
 
 	// Create a new Post instance
 	newPost := &ent.Post{
@@ -82,8 +99,11 @@ func (pc *PostController) createPost(ctx *gin.Context) error {
 		Privacy: post.Privacy(privacy),
 	}
 
+	log.Println("about to create a post", newPost, userId, businessAccountId, mediaFiles)
+
 	createdPost, err := pc.postService.CreatePost(ctx, newPost, userId, businessAccountId, mediaFiles)
 	if err != nil {
+		log.Println("Failed to create post", err)
 		return err
 	}
 
