@@ -573,10 +573,10 @@ func init() {
 	postDescIsHidden := postFields[14].Descriptor()
 	// post.DefaultIsHidden holds the default value on creation for the IsHidden field.
 	post.DefaultIsHidden = postDescIsHidden.Default.(bool)
-	// postDescReportCount is the schema descriptor for ReportCount field.
-	postDescReportCount := postFields[15].Descriptor()
-	// post.DefaultReportCount holds the default value on creation for the ReportCount field.
-	post.DefaultReportCount = postDescReportCount.Default.(int)
+	// postDescRepostCount is the schema descriptor for RepostCount field.
+	postDescRepostCount := postFields[15].Descriptor()
+	// post.DefaultRepostCount holds the default value on creation for the RepostCount field.
+	post.DefaultRepostCount = postDescRepostCount.Default.(int)
 	// postDescIsRepost is the schema descriptor for IsRepost field.
 	postDescIsRepost := postFields[16].Descriptor()
 	// post.DefaultIsRepost holds the default value on creation for the IsRepost field.

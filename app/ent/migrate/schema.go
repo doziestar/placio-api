@@ -999,7 +999,7 @@ var (
 		{Name: "is_boosted", Type: field.TypeBool, Default: false},
 		{Name: "is_pinned", Type: field.TypeBool, Default: false},
 		{Name: "is_hidden", Type: field.TypeBool, Default: false},
-		{Name: "report_count", Type: field.TypeInt, Default: 0},
+		{Name: "repost_count", Type: field.TypeInt, Default: 0},
 		{Name: "is_repost", Type: field.TypeBool, Default: false},
 		{Name: "relevance_score", Type: field.TypeInt, Default: 0},
 		{Name: "search_text", Type: field.TypeString, Nullable: true},

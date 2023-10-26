@@ -47,8 +47,8 @@ type Post struct {
 	IsPinned bool `json:"IsPinned,omitempty"`
 	// IsHidden holds the value of the "IsHidden" field.
 	IsHidden bool `json:"IsHidden,omitempty"`
-	// ReportCount holds the value of the "ReportCount" field.
-	ReportCount int `json:"ReportCount,omitempty"`
+	// RepostCount holds the value of the "RepostCount" field.
+	RepostCount int `json:"RepostCount,omitempty"`
 	// IsRepost holds the value of the "IsRepost" field.
 	IsRepost bool `json:"IsRepost,omitempty"`
 	// RelevanceScore holds the value of the "RelevanceScore" field.
@@ -189,7 +189,7 @@ func (*Post) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case post.FieldLikedByMe, post.FieldIsSponsored, post.FieldIsPromoted, post.FieldIsBoosted, post.FieldIsPinned, post.FieldIsHidden, post.FieldIsRepost:
 			values[i] = new(sql.NullBool)
-		case post.FieldLikeCount, post.FieldCommentCount, post.FieldShareCount, post.FieldViewCount, post.FieldReportCount, post.FieldRelevanceScore:
+		case post.FieldLikeCount, post.FieldCommentCount, post.FieldShareCount, post.FieldViewCount, post.FieldRepostCount, post.FieldRelevanceScore:
 			values[i] = new(sql.NullInt64)
 		case post.FieldID, post.FieldContent, post.FieldPrivacy, post.FieldSearchText:
 			values[i] = new(sql.NullString)
@@ -306,11 +306,11 @@ func (po *Post) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				po.IsHidden = value.Bool
 			}
-		case post.FieldReportCount:
+		case post.FieldRepostCount:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field ReportCount", values[i])
+				return fmt.Errorf("unexpected type %T for field RepostCount", values[i])
 			} else if value.Valid {
-				po.ReportCount = int(value.Int64)
+				po.RepostCount = int(value.Int64)
 			}
 		case post.FieldIsRepost:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -474,8 +474,8 @@ func (po *Post) String() string {
 	builder.WriteString("IsHidden=")
 	builder.WriteString(fmt.Sprintf("%v", po.IsHidden))
 	builder.WriteString(", ")
-	builder.WriteString("ReportCount=")
-	builder.WriteString(fmt.Sprintf("%v", po.ReportCount))
+	builder.WriteString("RepostCount=")
+	builder.WriteString(fmt.Sprintf("%v", po.RepostCount))
 	builder.WriteString(", ")
 	builder.WriteString("IsRepost=")
 	builder.WriteString(fmt.Sprintf("%v", po.IsRepost))

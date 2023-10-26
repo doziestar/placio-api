@@ -130,9 +130,9 @@ func IsHidden(v bool) predicate.Post {
 	return predicate.Post(sql.FieldEQ(FieldIsHidden, v))
 }
 
-// ReportCount applies equality check predicate on the "ReportCount" field. It's identical to ReportCountEQ.
-func ReportCount(v int) predicate.Post {
-	return predicate.Post(sql.FieldEQ(FieldReportCount, v))
+// RepostCount applies equality check predicate on the "RepostCount" field. It's identical to RepostCountEQ.
+func RepostCount(v int) predicate.Post {
+	return predicate.Post(sql.FieldEQ(FieldRepostCount, v))
 }
 
 // IsRepost applies equality check predicate on the "IsRepost" field. It's identical to IsRepostEQ.
@@ -535,44 +535,44 @@ func IsHiddenNEQ(v bool) predicate.Post {
 	return predicate.Post(sql.FieldNEQ(FieldIsHidden, v))
 }
 
-// ReportCountEQ applies the EQ predicate on the "ReportCount" field.
-func ReportCountEQ(v int) predicate.Post {
-	return predicate.Post(sql.FieldEQ(FieldReportCount, v))
+// RepostCountEQ applies the EQ predicate on the "RepostCount" field.
+func RepostCountEQ(v int) predicate.Post {
+	return predicate.Post(sql.FieldEQ(FieldRepostCount, v))
 }
 
-// ReportCountNEQ applies the NEQ predicate on the "ReportCount" field.
-func ReportCountNEQ(v int) predicate.Post {
-	return predicate.Post(sql.FieldNEQ(FieldReportCount, v))
+// RepostCountNEQ applies the NEQ predicate on the "RepostCount" field.
+func RepostCountNEQ(v int) predicate.Post {
+	return predicate.Post(sql.FieldNEQ(FieldRepostCount, v))
 }
 
-// ReportCountIn applies the In predicate on the "ReportCount" field.
-func ReportCountIn(vs ...int) predicate.Post {
-	return predicate.Post(sql.FieldIn(FieldReportCount, vs...))
+// RepostCountIn applies the In predicate on the "RepostCount" field.
+func RepostCountIn(vs ...int) predicate.Post {
+	return predicate.Post(sql.FieldIn(FieldRepostCount, vs...))
 }
 
-// ReportCountNotIn applies the NotIn predicate on the "ReportCount" field.
-func ReportCountNotIn(vs ...int) predicate.Post {
-	return predicate.Post(sql.FieldNotIn(FieldReportCount, vs...))
+// RepostCountNotIn applies the NotIn predicate on the "RepostCount" field.
+func RepostCountNotIn(vs ...int) predicate.Post {
+	return predicate.Post(sql.FieldNotIn(FieldRepostCount, vs...))
 }
 
-// ReportCountGT applies the GT predicate on the "ReportCount" field.
-func ReportCountGT(v int) predicate.Post {
-	return predicate.Post(sql.FieldGT(FieldReportCount, v))
+// RepostCountGT applies the GT predicate on the "RepostCount" field.
+func RepostCountGT(v int) predicate.Post {
+	return predicate.Post(sql.FieldGT(FieldRepostCount, v))
 }
 
-// ReportCountGTE applies the GTE predicate on the "ReportCount" field.
-func ReportCountGTE(v int) predicate.Post {
-	return predicate.Post(sql.FieldGTE(FieldReportCount, v))
+// RepostCountGTE applies the GTE predicate on the "RepostCount" field.
+func RepostCountGTE(v int) predicate.Post {
+	return predicate.Post(sql.FieldGTE(FieldRepostCount, v))
 }
 
-// ReportCountLT applies the LT predicate on the "ReportCount" field.
-func ReportCountLT(v int) predicate.Post {
-	return predicate.Post(sql.FieldLT(FieldReportCount, v))
+// RepostCountLT applies the LT predicate on the "RepostCount" field.
+func RepostCountLT(v int) predicate.Post {
+	return predicate.Post(sql.FieldLT(FieldRepostCount, v))
 }
 
-// ReportCountLTE applies the LTE predicate on the "ReportCount" field.
-func ReportCountLTE(v int) predicate.Post {
-	return predicate.Post(sql.FieldLTE(FieldReportCount, v))
+// RepostCountLTE applies the LTE predicate on the "RepostCount" field.
+func RepostCountLTE(v int) predicate.Post {
+	return predicate.Post(sql.FieldLTE(FieldRepostCount, v))
 }
 
 // IsRepostEQ applies the EQ predicate on the "IsRepost" field.

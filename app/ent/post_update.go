@@ -243,24 +243,24 @@ func (pu *PostUpdate) SetNillableIsHidden(b *bool) *PostUpdate {
 	return pu
 }
 
-// SetReportCount sets the "ReportCount" field.
-func (pu *PostUpdate) SetReportCount(i int) *PostUpdate {
-	pu.mutation.ResetReportCount()
-	pu.mutation.SetReportCount(i)
+// SetRepostCount sets the "RepostCount" field.
+func (pu *PostUpdate) SetRepostCount(i int) *PostUpdate {
+	pu.mutation.ResetRepostCount()
+	pu.mutation.SetRepostCount(i)
 	return pu
 }
 
-// SetNillableReportCount sets the "ReportCount" field if the given value is not nil.
-func (pu *PostUpdate) SetNillableReportCount(i *int) *PostUpdate {
+// SetNillableRepostCount sets the "RepostCount" field if the given value is not nil.
+func (pu *PostUpdate) SetNillableRepostCount(i *int) *PostUpdate {
 	if i != nil {
-		pu.SetReportCount(*i)
+		pu.SetRepostCount(*i)
 	}
 	return pu
 }
 
-// AddReportCount adds i to the "ReportCount" field.
-func (pu *PostUpdate) AddReportCount(i int) *PostUpdate {
-	pu.mutation.AddReportCount(i)
+// AddRepostCount adds i to the "RepostCount" field.
+func (pu *PostUpdate) AddRepostCount(i int) *PostUpdate {
+	pu.mutation.AddRepostCount(i)
 	return pu
 }
 
@@ -732,11 +732,11 @@ func (pu *PostUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := pu.mutation.IsHidden(); ok {
 		_spec.SetField(post.FieldIsHidden, field.TypeBool, value)
 	}
-	if value, ok := pu.mutation.ReportCount(); ok {
-		_spec.SetField(post.FieldReportCount, field.TypeInt, value)
+	if value, ok := pu.mutation.RepostCount(); ok {
+		_spec.SetField(post.FieldRepostCount, field.TypeInt, value)
 	}
-	if value, ok := pu.mutation.AddedReportCount(); ok {
-		_spec.AddField(post.FieldReportCount, field.TypeInt, value)
+	if value, ok := pu.mutation.AddedRepostCount(); ok {
+		_spec.AddField(post.FieldRepostCount, field.TypeInt, value)
 	}
 	if value, ok := pu.mutation.IsRepost(); ok {
 		_spec.SetField(post.FieldIsRepost, field.TypeBool, value)
@@ -1338,24 +1338,24 @@ func (puo *PostUpdateOne) SetNillableIsHidden(b *bool) *PostUpdateOne {
 	return puo
 }
 
-// SetReportCount sets the "ReportCount" field.
-func (puo *PostUpdateOne) SetReportCount(i int) *PostUpdateOne {
-	puo.mutation.ResetReportCount()
-	puo.mutation.SetReportCount(i)
+// SetRepostCount sets the "RepostCount" field.
+func (puo *PostUpdateOne) SetRepostCount(i int) *PostUpdateOne {
+	puo.mutation.ResetRepostCount()
+	puo.mutation.SetRepostCount(i)
 	return puo
 }
 
-// SetNillableReportCount sets the "ReportCount" field if the given value is not nil.
-func (puo *PostUpdateOne) SetNillableReportCount(i *int) *PostUpdateOne {
+// SetNillableRepostCount sets the "RepostCount" field if the given value is not nil.
+func (puo *PostUpdateOne) SetNillableRepostCount(i *int) *PostUpdateOne {
 	if i != nil {
-		puo.SetReportCount(*i)
+		puo.SetRepostCount(*i)
 	}
 	return puo
 }
 
-// AddReportCount adds i to the "ReportCount" field.
-func (puo *PostUpdateOne) AddReportCount(i int) *PostUpdateOne {
-	puo.mutation.AddReportCount(i)
+// AddRepostCount adds i to the "RepostCount" field.
+func (puo *PostUpdateOne) AddRepostCount(i int) *PostUpdateOne {
+	puo.mutation.AddRepostCount(i)
 	return puo
 }
 
@@ -1857,11 +1857,11 @@ func (puo *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) 
 	if value, ok := puo.mutation.IsHidden(); ok {
 		_spec.SetField(post.FieldIsHidden, field.TypeBool, value)
 	}
-	if value, ok := puo.mutation.ReportCount(); ok {
-		_spec.SetField(post.FieldReportCount, field.TypeInt, value)
+	if value, ok := puo.mutation.RepostCount(); ok {
+		_spec.SetField(post.FieldRepostCount, field.TypeInt, value)
 	}
-	if value, ok := puo.mutation.AddedReportCount(); ok {
-		_spec.AddField(post.FieldReportCount, field.TypeInt, value)
+	if value, ok := puo.mutation.AddedRepostCount(); ok {
+		_spec.AddField(post.FieldRepostCount, field.TypeInt, value)
 	}
 	if value, ok := puo.mutation.IsRepost(); ok {
 		_spec.SetField(post.FieldIsRepost, field.TypeBool, value)

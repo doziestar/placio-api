@@ -34199,8 +34199,8 @@ type PostMutation struct {
 	_IsBoosted              *bool
 	_IsPinned               *bool
 	_IsHidden               *bool
-	_ReportCount            *int
-	add_ReportCount         *int
+	_RepostCount            *int
+	add_RepostCount         *int
 	_IsRepost               *bool
 	_RelevanceScore         *int
 	add_RelevanceScore      *int
@@ -34923,60 +34923,60 @@ func (m *PostMutation) ResetIsHidden() {
 	m._IsHidden = nil
 }
 
-// SetReportCount sets the "ReportCount" field.
-func (m *PostMutation) SetReportCount(i int) {
-	m._ReportCount = &i
-	m.add_ReportCount = nil
+// SetRepostCount sets the "RepostCount" field.
+func (m *PostMutation) SetRepostCount(i int) {
+	m._RepostCount = &i
+	m.add_RepostCount = nil
 }
 
-// ReportCount returns the value of the "ReportCount" field in the mutation.
-func (m *PostMutation) ReportCount() (r int, exists bool) {
-	v := m._ReportCount
+// RepostCount returns the value of the "RepostCount" field in the mutation.
+func (m *PostMutation) RepostCount() (r int, exists bool) {
+	v := m._RepostCount
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldReportCount returns the old "ReportCount" field's value of the Post entity.
+// OldRepostCount returns the old "RepostCount" field's value of the Post entity.
 // If the Post object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PostMutation) OldReportCount(ctx context.Context) (v int, err error) {
+func (m *PostMutation) OldRepostCount(ctx context.Context) (v int, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldReportCount is only allowed on UpdateOne operations")
+		return v, errors.New("OldRepostCount is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldReportCount requires an ID field in the mutation")
+		return v, errors.New("OldRepostCount requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldReportCount: %w", err)
+		return v, fmt.Errorf("querying old value for OldRepostCount: %w", err)
 	}
-	return oldValue.ReportCount, nil
+	return oldValue.RepostCount, nil
 }
 
-// AddReportCount adds i to the "ReportCount" field.
-func (m *PostMutation) AddReportCount(i int) {
-	if m.add_ReportCount != nil {
-		*m.add_ReportCount += i
+// AddRepostCount adds i to the "RepostCount" field.
+func (m *PostMutation) AddRepostCount(i int) {
+	if m.add_RepostCount != nil {
+		*m.add_RepostCount += i
 	} else {
-		m.add_ReportCount = &i
+		m.add_RepostCount = &i
 	}
 }
 
-// AddedReportCount returns the value that was added to the "ReportCount" field in this mutation.
-func (m *PostMutation) AddedReportCount() (r int, exists bool) {
-	v := m.add_ReportCount
+// AddedRepostCount returns the value that was added to the "RepostCount" field in this mutation.
+func (m *PostMutation) AddedRepostCount() (r int, exists bool) {
+	v := m.add_RepostCount
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// ResetReportCount resets all changes to the "ReportCount" field.
-func (m *PostMutation) ResetReportCount() {
-	m._ReportCount = nil
-	m.add_ReportCount = nil
+// ResetRepostCount resets all changes to the "RepostCount" field.
+func (m *PostMutation) ResetRepostCount() {
+	m._RepostCount = nil
+	m.add_RepostCount = nil
 }
 
 // SetIsRepost sets the "IsRepost" field.
@@ -35638,8 +35638,8 @@ func (m *PostMutation) Fields() []string {
 	if m._IsHidden != nil {
 		fields = append(fields, post.FieldIsHidden)
 	}
-	if m._ReportCount != nil {
-		fields = append(fields, post.FieldReportCount)
+	if m._RepostCount != nil {
+		fields = append(fields, post.FieldRepostCount)
 	}
 	if m._IsRepost != nil {
 		fields = append(fields, post.FieldIsRepost)
@@ -35686,8 +35686,8 @@ func (m *PostMutation) Field(name string) (ent.Value, bool) {
 		return m.IsPinned()
 	case post.FieldIsHidden:
 		return m.IsHidden()
-	case post.FieldReportCount:
-		return m.ReportCount()
+	case post.FieldRepostCount:
+		return m.RepostCount()
 	case post.FieldIsRepost:
 		return m.IsRepost()
 	case post.FieldRelevanceScore:
@@ -35731,8 +35731,8 @@ func (m *PostMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldIsPinned(ctx)
 	case post.FieldIsHidden:
 		return m.OldIsHidden(ctx)
-	case post.FieldReportCount:
-		return m.OldReportCount(ctx)
+	case post.FieldRepostCount:
+		return m.OldRepostCount(ctx)
 	case post.FieldIsRepost:
 		return m.OldIsRepost(ctx)
 	case post.FieldRelevanceScore:
@@ -35846,12 +35846,12 @@ func (m *PostMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetIsHidden(v)
 		return nil
-	case post.FieldReportCount:
+	case post.FieldRepostCount:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetReportCount(v)
+		m.SetRepostCount(v)
 		return nil
 	case post.FieldIsRepost:
 		v, ok := value.(bool)
@@ -35894,8 +35894,8 @@ func (m *PostMutation) AddedFields() []string {
 	if m.add_ViewCount != nil {
 		fields = append(fields, post.FieldViewCount)
 	}
-	if m.add_ReportCount != nil {
-		fields = append(fields, post.FieldReportCount)
+	if m.add_RepostCount != nil {
+		fields = append(fields, post.FieldRepostCount)
 	}
 	if m.add_RelevanceScore != nil {
 		fields = append(fields, post.FieldRelevanceScore)
@@ -35916,8 +35916,8 @@ func (m *PostMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedShareCount()
 	case post.FieldViewCount:
 		return m.AddedViewCount()
-	case post.FieldReportCount:
-		return m.AddedReportCount()
+	case post.FieldRepostCount:
+		return m.AddedRepostCount()
 	case post.FieldRelevanceScore:
 		return m.AddedRelevanceScore()
 	}
@@ -35957,12 +35957,12 @@ func (m *PostMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddViewCount(v)
 		return nil
-	case post.FieldReportCount:
+	case post.FieldRepostCount:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.AddReportCount(v)
+		m.AddRepostCount(v)
 		return nil
 	case post.FieldRelevanceScore:
 		v, ok := value.(int)
@@ -36049,8 +36049,8 @@ func (m *PostMutation) ResetField(name string) error {
 	case post.FieldIsHidden:
 		m.ResetIsHidden()
 		return nil
-	case post.FieldReportCount:
-		m.ResetReportCount()
+	case post.FieldRepostCount:
+		m.ResetRepostCount()
 		return nil
 	case post.FieldIsRepost:
 		m.ResetIsRepost()

@@ -43,8 +43,8 @@ const (
 	FieldIsPinned = "is_pinned"
 	// FieldIsHidden holds the string denoting the ishidden field in the database.
 	FieldIsHidden = "is_hidden"
-	// FieldReportCount holds the string denoting the reportcount field in the database.
-	FieldReportCount = "report_count"
+	// FieldRepostCount holds the string denoting the repostcount field in the database.
+	FieldRepostCount = "repost_count"
 	// FieldIsRepost holds the string denoting the isrepost field in the database.
 	FieldIsRepost = "is_repost"
 	// FieldRelevanceScore holds the string denoting the relevancescore field in the database.
@@ -145,7 +145,7 @@ var Columns = []string{
 	FieldIsBoosted,
 	FieldIsPinned,
 	FieldIsHidden,
-	FieldReportCount,
+	FieldRepostCount,
 	FieldIsRepost,
 	FieldRelevanceScore,
 	FieldSearchText,
@@ -207,8 +207,8 @@ var (
 	DefaultIsPinned bool
 	// DefaultIsHidden holds the default value on creation for the "IsHidden" field.
 	DefaultIsHidden bool
-	// DefaultReportCount holds the default value on creation for the "ReportCount" field.
-	DefaultReportCount int
+	// DefaultRepostCount holds the default value on creation for the "RepostCount" field.
+	DefaultRepostCount int
 	// DefaultIsRepost holds the default value on creation for the "IsRepost" field.
 	DefaultIsRepost bool
 	// DefaultRelevanceScore holds the default value on creation for the "RelevanceScore" field.
@@ -322,9 +322,9 @@ func ByIsHidden(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIsHidden, opts...).ToFunc()
 }
 
-// ByReportCount orders the results by the ReportCount field.
-func ByReportCount(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldReportCount, opts...).ToFunc()
+// ByRepostCount orders the results by the RepostCount field.
+func ByRepostCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRepostCount, opts...).ToFunc()
 }
 
 // ByIsRepost orders the results by the IsRepost field.

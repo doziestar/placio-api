@@ -207,16 +207,16 @@ func (pc *PostCreate) SetNillableIsHidden(b *bool) *PostCreate {
 	return pc
 }
 
-// SetReportCount sets the "ReportCount" field.
-func (pc *PostCreate) SetReportCount(i int) *PostCreate {
-	pc.mutation.SetReportCount(i)
+// SetRepostCount sets the "RepostCount" field.
+func (pc *PostCreate) SetRepostCount(i int) *PostCreate {
+	pc.mutation.SetRepostCount(i)
 	return pc
 }
 
-// SetNillableReportCount sets the "ReportCount" field if the given value is not nil.
-func (pc *PostCreate) SetNillableReportCount(i *int) *PostCreate {
+// SetNillableRepostCount sets the "RepostCount" field if the given value is not nil.
+func (pc *PostCreate) SetNillableRepostCount(i *int) *PostCreate {
 	if i != nil {
-		pc.SetReportCount(*i)
+		pc.SetRepostCount(*i)
 	}
 	return pc
 }
@@ -499,9 +499,9 @@ func (pc *PostCreate) defaults() {
 		v := post.DefaultIsHidden
 		pc.mutation.SetIsHidden(v)
 	}
-	if _, ok := pc.mutation.ReportCount(); !ok {
-		v := post.DefaultReportCount
-		pc.mutation.SetReportCount(v)
+	if _, ok := pc.mutation.RepostCount(); !ok {
+		v := post.DefaultRepostCount
+		pc.mutation.SetRepostCount(v)
 	}
 	if _, ok := pc.mutation.IsRepost(); !ok {
 		v := post.DefaultIsRepost
@@ -567,8 +567,8 @@ func (pc *PostCreate) check() error {
 	if _, ok := pc.mutation.IsHidden(); !ok {
 		return &ValidationError{Name: "IsHidden", err: errors.New(`ent: missing required field "Post.IsHidden"`)}
 	}
-	if _, ok := pc.mutation.ReportCount(); !ok {
-		return &ValidationError{Name: "ReportCount", err: errors.New(`ent: missing required field "Post.ReportCount"`)}
+	if _, ok := pc.mutation.RepostCount(); !ok {
+		return &ValidationError{Name: "RepostCount", err: errors.New(`ent: missing required field "Post.RepostCount"`)}
 	}
 	if _, ok := pc.mutation.IsRepost(); !ok {
 		return &ValidationError{Name: "IsRepost", err: errors.New(`ent: missing required field "Post.IsRepost"`)}
@@ -672,9 +672,9 @@ func (pc *PostCreate) createSpec() (*Post, *sqlgraph.CreateSpec) {
 		_spec.SetField(post.FieldIsHidden, field.TypeBool, value)
 		_node.IsHidden = value
 	}
-	if value, ok := pc.mutation.ReportCount(); ok {
-		_spec.SetField(post.FieldReportCount, field.TypeInt, value)
-		_node.ReportCount = value
+	if value, ok := pc.mutation.RepostCount(); ok {
+		_spec.SetField(post.FieldRepostCount, field.TypeInt, value)
+		_node.RepostCount = value
 	}
 	if value, ok := pc.mutation.IsRepost(); ok {
 		_spec.SetField(post.FieldIsRepost, field.TypeBool, value)

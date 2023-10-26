@@ -101,6 +101,44 @@ func (ps *PostServiceImpl) GetPostFeeds(ctx context.Context) ([]*ent.Post, error
 	return posts, nil
 }
 
+func (ps *PostServiceImpl) Repost(ctx context.Context, originalPostID, content, userID, businessID string) (*ent.Post, error) {
+	if originalPostID == "" {
+		return nil, errors.New("original post ID, content, and user ID must be provided")
+	}
+
+	originalPost, err := ps.client.Post.
+		Query().
+		Where(post.IDEQ(originalPostID)).
+		Only(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed retrieving original post: %w", err)
+	}
+
+	// Create a new post as a repost
+	repostBuilder := ps.client.Post.
+		Create().
+		SetID(uuid.New().String()).
+		SetContent(content).
+		SetUpdatedAt(time.Now()).
+		SetUserID(userID).
+		SetIsRepost(true).
+		AddOriginalPost(originalPost)
+
+	// Associate with business account if business ID is provided
+	if businessID != "" {
+		repostBuilder.SetBusinessAccountID(businessID)
+	}
+
+	// Save post
+	repost, err := repostBuilder.Save(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed creating repost: %w", err)
+	}
+
+	log.Printf("repost saved: %v", repost)
+	return repost, nil
+}
+
 func (ps *PostServiceImpl) CreatePost(ctx context.Context, newPost *ent.Post, userID string, businessID string, mediaFiles []*multipart.FileHeader) (*ent.Post, error) {
 	if newPost == nil {
 		return nil, errors.New("post cannot be nil")
