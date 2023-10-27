@@ -79,6 +79,10 @@ func (ps *PostServiceImpl) GetPostFeeds(ctx context.Context) ([]*ent.Post, error
 		}).
 		WithBusinessAccount().
 		WithUser().
+		WithOriginalPost(func(query *ent.PostQuery) {
+			query.WithUser()
+			query.WithMedias()
+		}).
 		All(ctx)
 
 	for _, post := range posts {
@@ -271,6 +275,10 @@ func (ps *PostServiceImpl) GetPost(ctx context.Context, postID string) (*ent.Pos
 		WithUser().
 		WithBusinessAccount().
 		WithMedias().
+		WithOriginalPost(func(query *ent.PostQuery) {
+			query.WithUser()
+			query.WithMedias()
+		}).
 		Only(ctx)
 
 	if user, ok := ctx.Value("user").(string); ok {
