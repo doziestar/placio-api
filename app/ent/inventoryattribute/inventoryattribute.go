@@ -16,6 +16,10 @@ const (
 	FieldID = "id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
+	// FieldImageURL holds the string denoting the image_url field in the database.
+	FieldImageURL = "image_url"
+	// FieldIconURL holds the string denoting the icon_url field in the database.
+	FieldIconURL = "icon_url"
 	// FieldIsMandatory holds the string denoting the is_mandatory field in the database.
 	FieldIsMandatory = "is_mandatory"
 	// FieldDataType holds the string denoting the data_type field in the database.
@@ -46,6 +50,8 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldName,
+	FieldImageURL,
+	FieldIconURL,
 	FieldIsMandatory,
 	FieldDataType,
 }
@@ -115,6 +121,16 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 // ByName orders the results by the name field.
 func ByName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldName, opts...).ToFunc()
+}
+
+// ByImageURL orders the results by the image_url field.
+func ByImageURL(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldImageURL, opts...).ToFunc()
+}
+
+// ByIconURL orders the results by the icon_url field.
+func ByIconURL(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIconURL, opts...).ToFunc()
 }
 
 // ByIsMandatory orders the results by the is_mandatory field.

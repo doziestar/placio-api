@@ -69,6 +69,16 @@ func Name(v string) predicate.InventoryAttribute {
 	return predicate.InventoryAttribute(sql.FieldEQ(FieldName, v))
 }
 
+// ImageURL applies equality check predicate on the "image_url" field. It's identical to ImageURLEQ.
+func ImageURL(v string) predicate.InventoryAttribute {
+	return predicate.InventoryAttribute(sql.FieldEQ(FieldImageURL, v))
+}
+
+// IconURL applies equality check predicate on the "icon_url" field. It's identical to IconURLEQ.
+func IconURL(v string) predicate.InventoryAttribute {
+	return predicate.InventoryAttribute(sql.FieldEQ(FieldIconURL, v))
+}
+
 // IsMandatory applies equality check predicate on the "is_mandatory" field. It's identical to IsMandatoryEQ.
 func IsMandatory(v bool) predicate.InventoryAttribute {
 	return predicate.InventoryAttribute(sql.FieldEQ(FieldIsMandatory, v))
@@ -137,6 +147,156 @@ func NameEqualFold(v string) predicate.InventoryAttribute {
 // NameContainsFold applies the ContainsFold predicate on the "name" field.
 func NameContainsFold(v string) predicate.InventoryAttribute {
 	return predicate.InventoryAttribute(sql.FieldContainsFold(FieldName, v))
+}
+
+// ImageURLEQ applies the EQ predicate on the "image_url" field.
+func ImageURLEQ(v string) predicate.InventoryAttribute {
+	return predicate.InventoryAttribute(sql.FieldEQ(FieldImageURL, v))
+}
+
+// ImageURLNEQ applies the NEQ predicate on the "image_url" field.
+func ImageURLNEQ(v string) predicate.InventoryAttribute {
+	return predicate.InventoryAttribute(sql.FieldNEQ(FieldImageURL, v))
+}
+
+// ImageURLIn applies the In predicate on the "image_url" field.
+func ImageURLIn(vs ...string) predicate.InventoryAttribute {
+	return predicate.InventoryAttribute(sql.FieldIn(FieldImageURL, vs...))
+}
+
+// ImageURLNotIn applies the NotIn predicate on the "image_url" field.
+func ImageURLNotIn(vs ...string) predicate.InventoryAttribute {
+	return predicate.InventoryAttribute(sql.FieldNotIn(FieldImageURL, vs...))
+}
+
+// ImageURLGT applies the GT predicate on the "image_url" field.
+func ImageURLGT(v string) predicate.InventoryAttribute {
+	return predicate.InventoryAttribute(sql.FieldGT(FieldImageURL, v))
+}
+
+// ImageURLGTE applies the GTE predicate on the "image_url" field.
+func ImageURLGTE(v string) predicate.InventoryAttribute {
+	return predicate.InventoryAttribute(sql.FieldGTE(FieldImageURL, v))
+}
+
+// ImageURLLT applies the LT predicate on the "image_url" field.
+func ImageURLLT(v string) predicate.InventoryAttribute {
+	return predicate.InventoryAttribute(sql.FieldLT(FieldImageURL, v))
+}
+
+// ImageURLLTE applies the LTE predicate on the "image_url" field.
+func ImageURLLTE(v string) predicate.InventoryAttribute {
+	return predicate.InventoryAttribute(sql.FieldLTE(FieldImageURL, v))
+}
+
+// ImageURLContains applies the Contains predicate on the "image_url" field.
+func ImageURLContains(v string) predicate.InventoryAttribute {
+	return predicate.InventoryAttribute(sql.FieldContains(FieldImageURL, v))
+}
+
+// ImageURLHasPrefix applies the HasPrefix predicate on the "image_url" field.
+func ImageURLHasPrefix(v string) predicate.InventoryAttribute {
+	return predicate.InventoryAttribute(sql.FieldHasPrefix(FieldImageURL, v))
+}
+
+// ImageURLHasSuffix applies the HasSuffix predicate on the "image_url" field.
+func ImageURLHasSuffix(v string) predicate.InventoryAttribute {
+	return predicate.InventoryAttribute(sql.FieldHasSuffix(FieldImageURL, v))
+}
+
+// ImageURLIsNil applies the IsNil predicate on the "image_url" field.
+func ImageURLIsNil() predicate.InventoryAttribute {
+	return predicate.InventoryAttribute(sql.FieldIsNull(FieldImageURL))
+}
+
+// ImageURLNotNil applies the NotNil predicate on the "image_url" field.
+func ImageURLNotNil() predicate.InventoryAttribute {
+	return predicate.InventoryAttribute(sql.FieldNotNull(FieldImageURL))
+}
+
+// ImageURLEqualFold applies the EqualFold predicate on the "image_url" field.
+func ImageURLEqualFold(v string) predicate.InventoryAttribute {
+	return predicate.InventoryAttribute(sql.FieldEqualFold(FieldImageURL, v))
+}
+
+// ImageURLContainsFold applies the ContainsFold predicate on the "image_url" field.
+func ImageURLContainsFold(v string) predicate.InventoryAttribute {
+	return predicate.InventoryAttribute(sql.FieldContainsFold(FieldImageURL, v))
+}
+
+// IconURLEQ applies the EQ predicate on the "icon_url" field.
+func IconURLEQ(v string) predicate.InventoryAttribute {
+	return predicate.InventoryAttribute(sql.FieldEQ(FieldIconURL, v))
+}
+
+// IconURLNEQ applies the NEQ predicate on the "icon_url" field.
+func IconURLNEQ(v string) predicate.InventoryAttribute {
+	return predicate.InventoryAttribute(sql.FieldNEQ(FieldIconURL, v))
+}
+
+// IconURLIn applies the In predicate on the "icon_url" field.
+func IconURLIn(vs ...string) predicate.InventoryAttribute {
+	return predicate.InventoryAttribute(sql.FieldIn(FieldIconURL, vs...))
+}
+
+// IconURLNotIn applies the NotIn predicate on the "icon_url" field.
+func IconURLNotIn(vs ...string) predicate.InventoryAttribute {
+	return predicate.InventoryAttribute(sql.FieldNotIn(FieldIconURL, vs...))
+}
+
+// IconURLGT applies the GT predicate on the "icon_url" field.
+func IconURLGT(v string) predicate.InventoryAttribute {
+	return predicate.InventoryAttribute(sql.FieldGT(FieldIconURL, v))
+}
+
+// IconURLGTE applies the GTE predicate on the "icon_url" field.
+func IconURLGTE(v string) predicate.InventoryAttribute {
+	return predicate.InventoryAttribute(sql.FieldGTE(FieldIconURL, v))
+}
+
+// IconURLLT applies the LT predicate on the "icon_url" field.
+func IconURLLT(v string) predicate.InventoryAttribute {
+	return predicate.InventoryAttribute(sql.FieldLT(FieldIconURL, v))
+}
+
+// IconURLLTE applies the LTE predicate on the "icon_url" field.
+func IconURLLTE(v string) predicate.InventoryAttribute {
+	return predicate.InventoryAttribute(sql.FieldLTE(FieldIconURL, v))
+}
+
+// IconURLContains applies the Contains predicate on the "icon_url" field.
+func IconURLContains(v string) predicate.InventoryAttribute {
+	return predicate.InventoryAttribute(sql.FieldContains(FieldIconURL, v))
+}
+
+// IconURLHasPrefix applies the HasPrefix predicate on the "icon_url" field.
+func IconURLHasPrefix(v string) predicate.InventoryAttribute {
+	return predicate.InventoryAttribute(sql.FieldHasPrefix(FieldIconURL, v))
+}
+
+// IconURLHasSuffix applies the HasSuffix predicate on the "icon_url" field.
+func IconURLHasSuffix(v string) predicate.InventoryAttribute {
+	return predicate.InventoryAttribute(sql.FieldHasSuffix(FieldIconURL, v))
+}
+
+// IconURLIsNil applies the IsNil predicate on the "icon_url" field.
+func IconURLIsNil() predicate.InventoryAttribute {
+	return predicate.InventoryAttribute(sql.FieldIsNull(FieldIconURL))
+}
+
+// IconURLNotNil applies the NotNil predicate on the "icon_url" field.
+func IconURLNotNil() predicate.InventoryAttribute {
+	return predicate.InventoryAttribute(sql.FieldNotNull(FieldIconURL))
+}
+
+// IconURLEqualFold applies the EqualFold predicate on the "icon_url" field.
+func IconURLEqualFold(v string) predicate.InventoryAttribute {
+	return predicate.InventoryAttribute(sql.FieldEqualFold(FieldIconURL, v))
+}
+
+// IconURLContainsFold applies the ContainsFold predicate on the "icon_url" field.
+func IconURLContainsFold(v string) predicate.InventoryAttribute {
+	return predicate.InventoryAttribute(sql.FieldContainsFold(FieldIconURL, v))
 }
 
 // IsMandatoryEQ applies the EQ predicate on the "is_mandatory" field.

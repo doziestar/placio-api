@@ -118,7 +118,7 @@ func (ps *PostServiceImpl) Repost(ctx context.Context, originalPostID, content, 
 		Only(ctx)
 	if err != nil {
 		_ = tx.Rollback()
-		return nil, fmt.Errorf("failed retrieving original post: %w", err)
+		return nil, err
 	}
 
 	// Increment repost count of original post

@@ -302,7 +302,7 @@ func init() {
 	inventoryattributeFields := schema.InventoryAttribute{}.Fields()
 	_ = inventoryattributeFields
 	// inventoryattributeDescIsMandatory is the schema descriptor for is_mandatory field.
-	inventoryattributeDescIsMandatory := inventoryattributeFields[2].Descriptor()
+	inventoryattributeDescIsMandatory := inventoryattributeFields[4].Descriptor()
 	// inventoryattribute.DefaultIsMandatory holds the default value on creation for the is_mandatory field.
 	inventoryattribute.DefaultIsMandatory = inventoryattributeDescIsMandatory.Default.(bool)
 	// inventoryattributeDescID is the schema descriptor for id field.

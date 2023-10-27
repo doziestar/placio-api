@@ -19,6 +19,10 @@ type InventoryAttribute struct {
 	ID string `json:"id,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
+	// ImageURL holds the value of the "image_url" field.
+	ImageURL string `json:"image_url,omitempty"`
+	// IconURL holds the value of the "icon_url" field.
+	IconURL string `json:"icon_url,omitempty"`
 	// IsMandatory holds the value of the "is_mandatory" field.
 	IsMandatory bool `json:"is_mandatory,omitempty"`
 	// DataType holds the value of the "data_type" field.
@@ -70,7 +74,7 @@ func (*InventoryAttribute) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case inventoryattribute.FieldIsMandatory:
 			values[i] = new(sql.NullBool)
-		case inventoryattribute.FieldID, inventoryattribute.FieldName, inventoryattribute.FieldDataType:
+		case inventoryattribute.FieldID, inventoryattribute.FieldName, inventoryattribute.FieldImageURL, inventoryattribute.FieldIconURL, inventoryattribute.FieldDataType:
 			values[i] = new(sql.NullString)
 		case inventoryattribute.ForeignKeys[0]: // inventory_type_attributes
 			values[i] = new(sql.NullString)
@@ -100,6 +104,18 @@ func (ia *InventoryAttribute) assignValues(columns []string, values []any) error
 				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
 				ia.Name = value.String
+			}
+		case inventoryattribute.FieldImageURL:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field image_url", values[i])
+			} else if value.Valid {
+				ia.ImageURL = value.String
+			}
+		case inventoryattribute.FieldIconURL:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field icon_url", values[i])
+			} else if value.Valid {
+				ia.IconURL = value.String
 			}
 		case inventoryattribute.FieldIsMandatory:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -168,6 +184,12 @@ func (ia *InventoryAttribute) String() string {
 	builder.WriteString(fmt.Sprintf("id=%v, ", ia.ID))
 	builder.WriteString("name=")
 	builder.WriteString(ia.Name)
+	builder.WriteString(", ")
+	builder.WriteString("image_url=")
+	builder.WriteString(ia.ImageURL)
+	builder.WriteString(", ")
+	builder.WriteString("icon_url=")
+	builder.WriteString(ia.IconURL)
 	builder.WriteString(", ")
 	builder.WriteString("is_mandatory=")
 	builder.WriteString(fmt.Sprintf("%v", ia.IsMandatory))

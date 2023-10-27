@@ -31,6 +31,8 @@ func (InventoryType) Fields() []ent.Field {
 		field.String("name").
 			Unique(),
 		field.String("description").Optional(),
+		field.String("image_url").Optional(),
+		field.String("icon_url").Optional(),
 		field.Enum("industry_type").Values(
 			IndustryHotel,
 			IndustryRestaurant,
@@ -65,6 +67,8 @@ func (InventoryAttribute) Fields() []ent.Field {
 			Unique().
 			Immutable(),
 		field.String("name"),
+		field.String("image_url").Optional(),
+		field.String("icon_url").Optional(),
 		field.Bool("is_mandatory").Default(false),
 		field.Enum("data_type").Values("string", "number", "boolean", "date", "enum").Optional(),
 	}

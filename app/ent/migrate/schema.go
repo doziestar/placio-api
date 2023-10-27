@@ -564,6 +564,8 @@ var (
 	InventoryAttributesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
 		{Name: "name", Type: field.TypeString},
+		{Name: "image_url", Type: field.TypeString, Nullable: true},
+		{Name: "icon_url", Type: field.TypeString, Nullable: true},
 		{Name: "is_mandatory", Type: field.TypeBool, Default: false},
 		{Name: "data_type", Type: field.TypeEnum, Nullable: true, Enums: []string{"string", "number", "boolean", "date", "enum"}},
 		{Name: "inventory_type_attributes", Type: field.TypeString, Nullable: true, Size: 36},
@@ -576,7 +578,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "inventory_attributes_inventory_types_attributes",
-				Columns:    []*schema.Column{InventoryAttributesColumns[4]},
+				Columns:    []*schema.Column{InventoryAttributesColumns[6]},
 				RefColumns: []*schema.Column{InventoryTypesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -587,6 +589,8 @@ var (
 		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
 		{Name: "name", Type: field.TypeString, Unique: true},
 		{Name: "description", Type: field.TypeString, Nullable: true},
+		{Name: "image_url", Type: field.TypeString, Nullable: true},
+		{Name: "icon_url", Type: field.TypeString, Nullable: true},
 		{Name: "industry_type", Type: field.TypeEnum, Nullable: true, Enums: []string{"hotel", "restaurant", "bar", "club", "gym", "events", "retail", "other"}},
 		{Name: "measurement_unit", Type: field.TypeString, Nullable: true},
 	}

@@ -18,6 +18,10 @@ const (
 	FieldName = "name"
 	// FieldDescription holds the string denoting the description field in the database.
 	FieldDescription = "description"
+	// FieldImageURL holds the string denoting the image_url field in the database.
+	FieldImageURL = "image_url"
+	// FieldIconURL holds the string denoting the icon_url field in the database.
+	FieldIconURL = "icon_url"
 	// FieldIndustryType holds the string denoting the industry_type field in the database.
 	FieldIndustryType = "industry_type"
 	// FieldMeasurementUnit holds the string denoting the measurement_unit field in the database.
@@ -49,6 +53,8 @@ var Columns = []string{
 	FieldID,
 	FieldName,
 	FieldDescription,
+	FieldImageURL,
+	FieldIconURL,
 	FieldIndustryType,
 	FieldMeasurementUnit,
 }
@@ -113,6 +119,16 @@ func ByName(opts ...sql.OrderTermOption) OrderOption {
 // ByDescription orders the results by the description field.
 func ByDescription(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDescription, opts...).ToFunc()
+}
+
+// ByImageURL orders the results by the image_url field.
+func ByImageURL(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldImageURL, opts...).ToFunc()
+}
+
+// ByIconURL orders the results by the icon_url field.
+func ByIconURL(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIconURL, opts...).ToFunc()
 }
 
 // ByIndustryType orders the results by the industry_type field.

@@ -18173,6 +18173,8 @@ type InventoryAttributeMutation struct {
 	typ                               string
 	id                                *string
 	name                              *string
+	image_url                         *string
+	icon_url                          *string
 	is_mandatory                      *bool
 	data_type                         *inventoryattribute.DataType
 	clearedFields                     map[string]struct{}
@@ -18324,6 +18326,104 @@ func (m *InventoryAttributeMutation) OldName(ctx context.Context) (v string, err
 // ResetName resets all changes to the "name" field.
 func (m *InventoryAttributeMutation) ResetName() {
 	m.name = nil
+}
+
+// SetImageURL sets the "image_url" field.
+func (m *InventoryAttributeMutation) SetImageURL(s string) {
+	m.image_url = &s
+}
+
+// ImageURL returns the value of the "image_url" field in the mutation.
+func (m *InventoryAttributeMutation) ImageURL() (r string, exists bool) {
+	v := m.image_url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldImageURL returns the old "image_url" field's value of the InventoryAttribute entity.
+// If the InventoryAttribute object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *InventoryAttributeMutation) OldImageURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldImageURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldImageURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldImageURL: %w", err)
+	}
+	return oldValue.ImageURL, nil
+}
+
+// ClearImageURL clears the value of the "image_url" field.
+func (m *InventoryAttributeMutation) ClearImageURL() {
+	m.image_url = nil
+	m.clearedFields[inventoryattribute.FieldImageURL] = struct{}{}
+}
+
+// ImageURLCleared returns if the "image_url" field was cleared in this mutation.
+func (m *InventoryAttributeMutation) ImageURLCleared() bool {
+	_, ok := m.clearedFields[inventoryattribute.FieldImageURL]
+	return ok
+}
+
+// ResetImageURL resets all changes to the "image_url" field.
+func (m *InventoryAttributeMutation) ResetImageURL() {
+	m.image_url = nil
+	delete(m.clearedFields, inventoryattribute.FieldImageURL)
+}
+
+// SetIconURL sets the "icon_url" field.
+func (m *InventoryAttributeMutation) SetIconURL(s string) {
+	m.icon_url = &s
+}
+
+// IconURL returns the value of the "icon_url" field in the mutation.
+func (m *InventoryAttributeMutation) IconURL() (r string, exists bool) {
+	v := m.icon_url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIconURL returns the old "icon_url" field's value of the InventoryAttribute entity.
+// If the InventoryAttribute object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *InventoryAttributeMutation) OldIconURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIconURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIconURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIconURL: %w", err)
+	}
+	return oldValue.IconURL, nil
+}
+
+// ClearIconURL clears the value of the "icon_url" field.
+func (m *InventoryAttributeMutation) ClearIconURL() {
+	m.icon_url = nil
+	m.clearedFields[inventoryattribute.FieldIconURL] = struct{}{}
+}
+
+// IconURLCleared returns if the "icon_url" field was cleared in this mutation.
+func (m *InventoryAttributeMutation) IconURLCleared() bool {
+	_, ok := m.clearedFields[inventoryattribute.FieldIconURL]
+	return ok
+}
+
+// ResetIconURL resets all changes to the "icon_url" field.
+func (m *InventoryAttributeMutation) ResetIconURL() {
+	m.icon_url = nil
+	delete(m.clearedFields, inventoryattribute.FieldIconURL)
 }
 
 // SetIsMandatory sets the "is_mandatory" field.
@@ -18538,9 +18638,15 @@ func (m *InventoryAttributeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *InventoryAttributeMutation) Fields() []string {
-	fields := make([]string, 0, 3)
+	fields := make([]string, 0, 5)
 	if m.name != nil {
 		fields = append(fields, inventoryattribute.FieldName)
+	}
+	if m.image_url != nil {
+		fields = append(fields, inventoryattribute.FieldImageURL)
+	}
+	if m.icon_url != nil {
+		fields = append(fields, inventoryattribute.FieldIconURL)
 	}
 	if m.is_mandatory != nil {
 		fields = append(fields, inventoryattribute.FieldIsMandatory)
@@ -18558,6 +18664,10 @@ func (m *InventoryAttributeMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case inventoryattribute.FieldName:
 		return m.Name()
+	case inventoryattribute.FieldImageURL:
+		return m.ImageURL()
+	case inventoryattribute.FieldIconURL:
+		return m.IconURL()
 	case inventoryattribute.FieldIsMandatory:
 		return m.IsMandatory()
 	case inventoryattribute.FieldDataType:
@@ -18573,6 +18683,10 @@ func (m *InventoryAttributeMutation) OldField(ctx context.Context, name string) 
 	switch name {
 	case inventoryattribute.FieldName:
 		return m.OldName(ctx)
+	case inventoryattribute.FieldImageURL:
+		return m.OldImageURL(ctx)
+	case inventoryattribute.FieldIconURL:
+		return m.OldIconURL(ctx)
 	case inventoryattribute.FieldIsMandatory:
 		return m.OldIsMandatory(ctx)
 	case inventoryattribute.FieldDataType:
@@ -18592,6 +18706,20 @@ func (m *InventoryAttributeMutation) SetField(name string, value ent.Value) erro
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetName(v)
+		return nil
+	case inventoryattribute.FieldImageURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetImageURL(v)
+		return nil
+	case inventoryattribute.FieldIconURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIconURL(v)
 		return nil
 	case inventoryattribute.FieldIsMandatory:
 		v, ok := value.(bool)
@@ -18637,6 +18765,12 @@ func (m *InventoryAttributeMutation) AddField(name string, value ent.Value) erro
 // mutation.
 func (m *InventoryAttributeMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(inventoryattribute.FieldImageURL) {
+		fields = append(fields, inventoryattribute.FieldImageURL)
+	}
+	if m.FieldCleared(inventoryattribute.FieldIconURL) {
+		fields = append(fields, inventoryattribute.FieldIconURL)
+	}
 	if m.FieldCleared(inventoryattribute.FieldDataType) {
 		fields = append(fields, inventoryattribute.FieldDataType)
 	}
@@ -18654,6 +18788,12 @@ func (m *InventoryAttributeMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *InventoryAttributeMutation) ClearField(name string) error {
 	switch name {
+	case inventoryattribute.FieldImageURL:
+		m.ClearImageURL()
+		return nil
+	case inventoryattribute.FieldIconURL:
+		m.ClearIconURL()
+		return nil
 	case inventoryattribute.FieldDataType:
 		m.ClearDataType()
 		return nil
@@ -18667,6 +18807,12 @@ func (m *InventoryAttributeMutation) ResetField(name string) error {
 	switch name {
 	case inventoryattribute.FieldName:
 		m.ResetName()
+		return nil
+	case inventoryattribute.FieldImageURL:
+		m.ResetImageURL()
+		return nil
+	case inventoryattribute.FieldIconURL:
+		m.ResetIconURL()
 		return nil
 	case inventoryattribute.FieldIsMandatory:
 		m.ResetIsMandatory()
@@ -18788,6 +18934,8 @@ type InventoryTypeMutation struct {
 	id                       *string
 	name                     *string
 	description              *string
+	image_url                *string
+	icon_url                 *string
 	industry_type            *inventorytype.IndustryType
 	measurement_unit         *string
 	clearedFields            map[string]struct{}
@@ -18989,6 +19137,104 @@ func (m *InventoryTypeMutation) DescriptionCleared() bool {
 func (m *InventoryTypeMutation) ResetDescription() {
 	m.description = nil
 	delete(m.clearedFields, inventorytype.FieldDescription)
+}
+
+// SetImageURL sets the "image_url" field.
+func (m *InventoryTypeMutation) SetImageURL(s string) {
+	m.image_url = &s
+}
+
+// ImageURL returns the value of the "image_url" field in the mutation.
+func (m *InventoryTypeMutation) ImageURL() (r string, exists bool) {
+	v := m.image_url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldImageURL returns the old "image_url" field's value of the InventoryType entity.
+// If the InventoryType object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *InventoryTypeMutation) OldImageURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldImageURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldImageURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldImageURL: %w", err)
+	}
+	return oldValue.ImageURL, nil
+}
+
+// ClearImageURL clears the value of the "image_url" field.
+func (m *InventoryTypeMutation) ClearImageURL() {
+	m.image_url = nil
+	m.clearedFields[inventorytype.FieldImageURL] = struct{}{}
+}
+
+// ImageURLCleared returns if the "image_url" field was cleared in this mutation.
+func (m *InventoryTypeMutation) ImageURLCleared() bool {
+	_, ok := m.clearedFields[inventorytype.FieldImageURL]
+	return ok
+}
+
+// ResetImageURL resets all changes to the "image_url" field.
+func (m *InventoryTypeMutation) ResetImageURL() {
+	m.image_url = nil
+	delete(m.clearedFields, inventorytype.FieldImageURL)
+}
+
+// SetIconURL sets the "icon_url" field.
+func (m *InventoryTypeMutation) SetIconURL(s string) {
+	m.icon_url = &s
+}
+
+// IconURL returns the value of the "icon_url" field in the mutation.
+func (m *InventoryTypeMutation) IconURL() (r string, exists bool) {
+	v := m.icon_url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIconURL returns the old "icon_url" field's value of the InventoryType entity.
+// If the InventoryType object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *InventoryTypeMutation) OldIconURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIconURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIconURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIconURL: %w", err)
+	}
+	return oldValue.IconURL, nil
+}
+
+// ClearIconURL clears the value of the "icon_url" field.
+func (m *InventoryTypeMutation) ClearIconURL() {
+	m.icon_url = nil
+	m.clearedFields[inventorytype.FieldIconURL] = struct{}{}
+}
+
+// IconURLCleared returns if the "icon_url" field was cleared in this mutation.
+func (m *InventoryTypeMutation) IconURLCleared() bool {
+	_, ok := m.clearedFields[inventorytype.FieldIconURL]
+	return ok
+}
+
+// ResetIconURL resets all changes to the "icon_url" field.
+func (m *InventoryTypeMutation) ResetIconURL() {
+	m.icon_url = nil
+	delete(m.clearedFields, inventorytype.FieldIconURL)
 }
 
 // SetIndustryType sets the "industry_type" field.
@@ -19231,12 +19477,18 @@ func (m *InventoryTypeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *InventoryTypeMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 6)
 	if m.name != nil {
 		fields = append(fields, inventorytype.FieldName)
 	}
 	if m.description != nil {
 		fields = append(fields, inventorytype.FieldDescription)
+	}
+	if m.image_url != nil {
+		fields = append(fields, inventorytype.FieldImageURL)
+	}
+	if m.icon_url != nil {
+		fields = append(fields, inventorytype.FieldIconURL)
 	}
 	if m.industry_type != nil {
 		fields = append(fields, inventorytype.FieldIndustryType)
@@ -19256,6 +19508,10 @@ func (m *InventoryTypeMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case inventorytype.FieldDescription:
 		return m.Description()
+	case inventorytype.FieldImageURL:
+		return m.ImageURL()
+	case inventorytype.FieldIconURL:
+		return m.IconURL()
 	case inventorytype.FieldIndustryType:
 		return m.IndustryType()
 	case inventorytype.FieldMeasurementUnit:
@@ -19273,6 +19529,10 @@ func (m *InventoryTypeMutation) OldField(ctx context.Context, name string) (ent.
 		return m.OldName(ctx)
 	case inventorytype.FieldDescription:
 		return m.OldDescription(ctx)
+	case inventorytype.FieldImageURL:
+		return m.OldImageURL(ctx)
+	case inventorytype.FieldIconURL:
+		return m.OldIconURL(ctx)
 	case inventorytype.FieldIndustryType:
 		return m.OldIndustryType(ctx)
 	case inventorytype.FieldMeasurementUnit:
@@ -19299,6 +19559,20 @@ func (m *InventoryTypeMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDescription(v)
+		return nil
+	case inventorytype.FieldImageURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetImageURL(v)
+		return nil
+	case inventorytype.FieldIconURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIconURL(v)
 		return nil
 	case inventorytype.FieldIndustryType:
 		v, ok := value.(inventorytype.IndustryType)
@@ -19347,6 +19621,12 @@ func (m *InventoryTypeMutation) ClearedFields() []string {
 	if m.FieldCleared(inventorytype.FieldDescription) {
 		fields = append(fields, inventorytype.FieldDescription)
 	}
+	if m.FieldCleared(inventorytype.FieldImageURL) {
+		fields = append(fields, inventorytype.FieldImageURL)
+	}
+	if m.FieldCleared(inventorytype.FieldIconURL) {
+		fields = append(fields, inventorytype.FieldIconURL)
+	}
 	if m.FieldCleared(inventorytype.FieldIndustryType) {
 		fields = append(fields, inventorytype.FieldIndustryType)
 	}
@@ -19370,6 +19650,12 @@ func (m *InventoryTypeMutation) ClearField(name string) error {
 	case inventorytype.FieldDescription:
 		m.ClearDescription()
 		return nil
+	case inventorytype.FieldImageURL:
+		m.ClearImageURL()
+		return nil
+	case inventorytype.FieldIconURL:
+		m.ClearIconURL()
+		return nil
 	case inventorytype.FieldIndustryType:
 		m.ClearIndustryType()
 		return nil
@@ -19389,6 +19675,12 @@ func (m *InventoryTypeMutation) ResetField(name string) error {
 		return nil
 	case inventorytype.FieldDescription:
 		m.ResetDescription()
+		return nil
+	case inventorytype.FieldImageURL:
+		m.ResetImageURL()
+		return nil
+	case inventorytype.FieldIconURL:
+		m.ResetIconURL()
 		return nil
 	case inventorytype.FieldIndustryType:
 		m.ResetIndustryType()
