@@ -43,6 +43,10 @@ const (
 	FieldIsPinned = "is_pinned"
 	// FieldIsHidden holds the string denoting the ishidden field in the database.
 	FieldIsHidden = "is_hidden"
+	// FieldRepostCount holds the string denoting the repostcount field in the database.
+	FieldRepostCount = "repost_count"
+	// FieldIsRepost holds the string denoting the isrepost field in the database.
+	FieldIsRepost = "is_repost"
 	// FieldRelevanceScore holds the string denoting the relevancescore field in the database.
 	FieldRelevanceScore = "relevance_score"
 	// FieldSearchText holds the string denoting the searchtext field in the database.
@@ -61,6 +65,10 @@ const (
 	EdgeCategories = "categories"
 	// EdgeNotifications holds the string denoting the notifications edge name in mutations.
 	EdgeNotifications = "notifications"
+	// EdgeReposts holds the string denoting the reposts edge name in mutations.
+	EdgeReposts = "reposts"
+	// EdgeOriginalPost holds the string denoting the original_post edge name in mutations.
+	EdgeOriginalPost = "original_post"
 	// Table holds the table name of the post in the database.
 	Table = "posts"
 	// UserTable is the table that holds the user relation/edge.
@@ -110,6 +118,14 @@ const (
 	// NotificationsInverseTable is the table name for the Notification entity.
 	// It exists in this package in order to avoid circular dependency with the "notification" package.
 	NotificationsInverseTable = "notifications"
+	// RepostsTable is the table that holds the reposts relation/edge.
+	RepostsTable = "posts"
+	// RepostsColumn is the table column denoting the reposts relation/edge.
+	RepostsColumn = "post_original_post"
+	// OriginalPostTable is the table that holds the original_post relation/edge.
+	OriginalPostTable = "posts"
+	// OriginalPostColumn is the table column denoting the original_post relation/edge.
+	OriginalPostColumn = "post_original_post"
 )
 
 // Columns holds all SQL columns for post fields.
@@ -129,6 +145,8 @@ var Columns = []string{
 	FieldIsBoosted,
 	FieldIsPinned,
 	FieldIsHidden,
+	FieldRepostCount,
+	FieldIsRepost,
 	FieldRelevanceScore,
 	FieldSearchText,
 }
@@ -137,6 +155,7 @@ var Columns = []string{
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
 	"business_posts",
+	"post_original_post",
 	"user_posts",
 }
 
@@ -188,6 +207,10 @@ var (
 	DefaultIsPinned bool
 	// DefaultIsHidden holds the default value on creation for the "IsHidden" field.
 	DefaultIsHidden bool
+	// DefaultRepostCount holds the default value on creation for the "RepostCount" field.
+	DefaultRepostCount int
+	// DefaultIsRepost holds the default value on creation for the "IsRepost" field.
+	DefaultIsRepost bool
 	// DefaultRelevanceScore holds the default value on creation for the "RelevanceScore" field.
 	DefaultRelevanceScore int
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
@@ -299,6 +322,16 @@ func ByIsHidden(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIsHidden, opts...).ToFunc()
 }
 
+// ByRepostCount orders the results by the RepostCount field.
+func ByRepostCount(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRepostCount, opts...).ToFunc()
+}
+
+// ByIsRepost orders the results by the IsRepost field.
+func ByIsRepost(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsRepost, opts...).ToFunc()
+}
+
 // ByRelevanceScore orders the results by the RelevanceScore field.
 func ByRelevanceScore(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRelevanceScore, opts...).ToFunc()
@@ -392,6 +425,27 @@ func ByNotifications(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newNotificationsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByRepostsField orders the results by reposts field.
+func ByRepostsField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newRepostsStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByOriginalPostCount orders the results by original_post count.
+func ByOriginalPostCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newOriginalPostStep(), opts...)
+	}
+}
+
+// ByOriginalPost orders the results by original_post terms.
+func ByOriginalPost(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newOriginalPostStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newUserStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -439,5 +493,19 @@ func newNotificationsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(NotificationsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2M, false, NotificationsTable, NotificationsPrimaryKey...),
+	)
+}
+func newRepostsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(Table, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, RepostsTable, RepostsColumn),
+	)
+}
+func newOriginalPostStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(Table, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, OriginalPostTable, OriginalPostColumn),
 	)
 }

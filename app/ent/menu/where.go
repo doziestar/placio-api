@@ -69,6 +69,16 @@ func Name(v string) predicate.Menu {
 	return predicate.Menu(sql.FieldEQ(FieldName, v))
 }
 
+// DeletedAt applies equality check predicate on the "deleted_at" field. It's identical to DeletedAtEQ.
+func DeletedAt(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldEQ(FieldDeletedAt, v))
+}
+
+// IsDeleted applies equality check predicate on the "is_deleted" field. It's identical to IsDeletedEQ.
+func IsDeleted(v bool) predicate.Menu {
+	return predicate.Menu(sql.FieldEQ(FieldIsDeleted, v))
+}
+
 // Description applies equality check predicate on the "description" field. It's identical to DescriptionEQ.
 func Description(v string) predicate.Menu {
 	return predicate.Menu(sql.FieldEQ(FieldDescription, v))
@@ -137,6 +147,91 @@ func NameEqualFold(v string) predicate.Menu {
 // NameContainsFold applies the ContainsFold predicate on the "name" field.
 func NameContainsFold(v string) predicate.Menu {
 	return predicate.Menu(sql.FieldContainsFold(FieldName, v))
+}
+
+// DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
+func DeletedAtEQ(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldEQ(FieldDeletedAt, v))
+}
+
+// DeletedAtNEQ applies the NEQ predicate on the "deleted_at" field.
+func DeletedAtNEQ(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldNEQ(FieldDeletedAt, v))
+}
+
+// DeletedAtIn applies the In predicate on the "deleted_at" field.
+func DeletedAtIn(vs ...string) predicate.Menu {
+	return predicate.Menu(sql.FieldIn(FieldDeletedAt, vs...))
+}
+
+// DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
+func DeletedAtNotIn(vs ...string) predicate.Menu {
+	return predicate.Menu(sql.FieldNotIn(FieldDeletedAt, vs...))
+}
+
+// DeletedAtGT applies the GT predicate on the "deleted_at" field.
+func DeletedAtGT(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldGT(FieldDeletedAt, v))
+}
+
+// DeletedAtGTE applies the GTE predicate on the "deleted_at" field.
+func DeletedAtGTE(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldGTE(FieldDeletedAt, v))
+}
+
+// DeletedAtLT applies the LT predicate on the "deleted_at" field.
+func DeletedAtLT(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldLT(FieldDeletedAt, v))
+}
+
+// DeletedAtLTE applies the LTE predicate on the "deleted_at" field.
+func DeletedAtLTE(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldLTE(FieldDeletedAt, v))
+}
+
+// DeletedAtContains applies the Contains predicate on the "deleted_at" field.
+func DeletedAtContains(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldContains(FieldDeletedAt, v))
+}
+
+// DeletedAtHasPrefix applies the HasPrefix predicate on the "deleted_at" field.
+func DeletedAtHasPrefix(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldHasPrefix(FieldDeletedAt, v))
+}
+
+// DeletedAtHasSuffix applies the HasSuffix predicate on the "deleted_at" field.
+func DeletedAtHasSuffix(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldHasSuffix(FieldDeletedAt, v))
+}
+
+// DeletedAtIsNil applies the IsNil predicate on the "deleted_at" field.
+func DeletedAtIsNil() predicate.Menu {
+	return predicate.Menu(sql.FieldIsNull(FieldDeletedAt))
+}
+
+// DeletedAtNotNil applies the NotNil predicate on the "deleted_at" field.
+func DeletedAtNotNil() predicate.Menu {
+	return predicate.Menu(sql.FieldNotNull(FieldDeletedAt))
+}
+
+// DeletedAtEqualFold applies the EqualFold predicate on the "deleted_at" field.
+func DeletedAtEqualFold(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldEqualFold(FieldDeletedAt, v))
+}
+
+// DeletedAtContainsFold applies the ContainsFold predicate on the "deleted_at" field.
+func DeletedAtContainsFold(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldContainsFold(FieldDeletedAt, v))
+}
+
+// IsDeletedEQ applies the EQ predicate on the "is_deleted" field.
+func IsDeletedEQ(v bool) predicate.Menu {
+	return predicate.Menu(sql.FieldEQ(FieldIsDeleted, v))
+}
+
+// IsDeletedNEQ applies the NEQ predicate on the "is_deleted" field.
+func IsDeletedNEQ(v bool) predicate.Menu {
+	return predicate.Menu(sql.FieldNEQ(FieldIsDeleted, v))
 }
 
 // DescriptionEQ applies the EQ predicate on the "description" field.

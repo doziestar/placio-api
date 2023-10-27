@@ -22,6 +22,10 @@ const (
 	FieldPreparationTime = "preparation_time"
 	// FieldOptions holds the string denoting the options field in the database.
 	FieldOptions = "options"
+	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
+	FieldDeletedAt = "deleted_at"
+	// FieldIsDeleted holds the string denoting the is_deleted field in the database.
+	FieldIsDeleted = "is_deleted"
 	// EdgeMenu holds the string denoting the menu edge name in mutations.
 	EdgeMenu = "menu"
 	// EdgeInventory holds the string denoting the inventory edge name in mutations.
@@ -66,6 +70,8 @@ var Columns = []string{
 	FieldPrice,
 	FieldPreparationTime,
 	FieldOptions,
+	FieldDeletedAt,
+	FieldIsDeleted,
 }
 
 var (
@@ -88,6 +94,8 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// DefaultIsDeleted holds the default value on creation for the "is_deleted" field.
+	DefaultIsDeleted bool
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(string) error
 )
@@ -118,6 +126,16 @@ func ByPrice(opts ...sql.OrderTermOption) OrderOption {
 // ByPreparationTime orders the results by the preparation_time field.
 func ByPreparationTime(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPreparationTime, opts...).ToFunc()
+}
+
+// ByDeletedAt orders the results by the deleted_at field.
+func ByDeletedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDeletedAt, opts...).ToFunc()
+}
+
+// ByIsDeleted orders the results by the is_deleted field.
+func ByIsDeleted(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsDeleted, opts...).ToFunc()
 }
 
 // ByMenuCount orders the results by menu count.

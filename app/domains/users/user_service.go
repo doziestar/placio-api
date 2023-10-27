@@ -199,9 +199,13 @@ func (s *UserServiceImpl) GetUser(ctx context.Context, auth0ID string) (*ent.Use
 		return nil, errors.New("auth0ID is empty")
 	}
 
-	if strings.HasPrefix(auth0ID, "auth0|") {
-		userId = strings.Replace(auth0ID, "auth0|", "", 1)
+	if strings.Contains(auth0ID, "|") {
+		userId = strings.Split(auth0ID, "|")[1]
+	} else {
+		userId = auth0ID
 	}
+
+	log.Println("GetUser", auth0ID, "userId", userId)
 
 	u, err := s.client.User.
 		Query().
@@ -259,6 +263,8 @@ func (s *UserServiceImpl) GetUser(ctx context.Context, auth0ID string) (*ent.Use
 		if !ent.IsNotFound(err) {
 			return nil, err
 		}
+
+		log.Println("GetUser", auth0ID, "user not found, creating new user")
 
 		auth0Data, err := s.getAuth0UserDataWithRetry(auth0ID, 3, 1*time.Second)
 		if err != nil {

@@ -41,6 +41,20 @@ func (pu *PostUpdate) SetContent(s string) *PostUpdate {
 	return pu
 }
 
+// SetNillableContent sets the "Content" field if the given value is not nil.
+func (pu *PostUpdate) SetNillableContent(s *string) *PostUpdate {
+	if s != nil {
+		pu.SetContent(*s)
+	}
+	return pu
+}
+
+// ClearContent clears the value of the "Content" field.
+func (pu *PostUpdate) ClearContent() *PostUpdate {
+	pu.mutation.ClearContent()
+	return pu
+}
+
 // SetCreatedAt sets the "CreatedAt" field.
 func (pu *PostUpdate) SetCreatedAt(t time.Time) *PostUpdate {
 	pu.mutation.SetCreatedAt(t)
@@ -243,6 +257,41 @@ func (pu *PostUpdate) SetNillableIsHidden(b *bool) *PostUpdate {
 	return pu
 }
 
+// SetRepostCount sets the "RepostCount" field.
+func (pu *PostUpdate) SetRepostCount(i int) *PostUpdate {
+	pu.mutation.ResetRepostCount()
+	pu.mutation.SetRepostCount(i)
+	return pu
+}
+
+// SetNillableRepostCount sets the "RepostCount" field if the given value is not nil.
+func (pu *PostUpdate) SetNillableRepostCount(i *int) *PostUpdate {
+	if i != nil {
+		pu.SetRepostCount(*i)
+	}
+	return pu
+}
+
+// AddRepostCount adds i to the "RepostCount" field.
+func (pu *PostUpdate) AddRepostCount(i int) *PostUpdate {
+	pu.mutation.AddRepostCount(i)
+	return pu
+}
+
+// SetIsRepost sets the "IsRepost" field.
+func (pu *PostUpdate) SetIsRepost(b bool) *PostUpdate {
+	pu.mutation.SetIsRepost(b)
+	return pu
+}
+
+// SetNillableIsRepost sets the "IsRepost" field if the given value is not nil.
+func (pu *PostUpdate) SetNillableIsRepost(b *bool) *PostUpdate {
+	if b != nil {
+		pu.SetIsRepost(*b)
+	}
+	return pu
+}
+
 // SetRelevanceScore sets the "RelevanceScore" field.
 func (pu *PostUpdate) SetRelevanceScore(i int) *PostUpdate {
 	pu.mutation.ResetRelevanceScore()
@@ -397,6 +446,40 @@ func (pu *PostUpdate) AddNotifications(n ...*Notification) *PostUpdate {
 	return pu.AddNotificationIDs(ids...)
 }
 
+// SetRepostsID sets the "reposts" edge to the Post entity by ID.
+func (pu *PostUpdate) SetRepostsID(id string) *PostUpdate {
+	pu.mutation.SetRepostsID(id)
+	return pu
+}
+
+// SetNillableRepostsID sets the "reposts" edge to the Post entity by ID if the given value is not nil.
+func (pu *PostUpdate) SetNillableRepostsID(id *string) *PostUpdate {
+	if id != nil {
+		pu = pu.SetRepostsID(*id)
+	}
+	return pu
+}
+
+// SetReposts sets the "reposts" edge to the Post entity.
+func (pu *PostUpdate) SetReposts(p *Post) *PostUpdate {
+	return pu.SetRepostsID(p.ID)
+}
+
+// AddOriginalPostIDs adds the "original_post" edge to the Post entity by IDs.
+func (pu *PostUpdate) AddOriginalPostIDs(ids ...string) *PostUpdate {
+	pu.mutation.AddOriginalPostIDs(ids...)
+	return pu
+}
+
+// AddOriginalPost adds the "original_post" edges to the Post entity.
+func (pu *PostUpdate) AddOriginalPost(p ...*Post) *PostUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pu.AddOriginalPostIDs(ids...)
+}
+
 // Mutation returns the PostMutation object of the builder.
 func (pu *PostUpdate) Mutation() *PostMutation {
 	return pu.mutation
@@ -519,6 +602,33 @@ func (pu *PostUpdate) RemoveNotifications(n ...*Notification) *PostUpdate {
 	return pu.RemoveNotificationIDs(ids...)
 }
 
+// ClearReposts clears the "reposts" edge to the Post entity.
+func (pu *PostUpdate) ClearReposts() *PostUpdate {
+	pu.mutation.ClearReposts()
+	return pu
+}
+
+// ClearOriginalPost clears all "original_post" edges to the Post entity.
+func (pu *PostUpdate) ClearOriginalPost() *PostUpdate {
+	pu.mutation.ClearOriginalPost()
+	return pu
+}
+
+// RemoveOriginalPostIDs removes the "original_post" edge to Post entities by IDs.
+func (pu *PostUpdate) RemoveOriginalPostIDs(ids ...string) *PostUpdate {
+	pu.mutation.RemoveOriginalPostIDs(ids...)
+	return pu
+}
+
+// RemoveOriginalPost removes "original_post" edges to Post entities.
+func (pu *PostUpdate) RemoveOriginalPost(p ...*Post) *PostUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pu.RemoveOriginalPostIDs(ids...)
+}
+
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (pu *PostUpdate) Save(ctx context.Context) (int, error) {
 	pu.defaults()
@@ -585,6 +695,9 @@ func (pu *PostUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := pu.mutation.Content(); ok {
 		_spec.SetField(post.FieldContent, field.TypeString, value)
 	}
+	if pu.mutation.ContentCleared() {
+		_spec.ClearField(post.FieldContent, field.TypeString)
+	}
 	if value, ok := pu.mutation.CreatedAt(); ok {
 		_spec.SetField(post.FieldCreatedAt, field.TypeTime, value)
 	}
@@ -635,6 +748,15 @@ func (pu *PostUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := pu.mutation.IsHidden(); ok {
 		_spec.SetField(post.FieldIsHidden, field.TypeBool, value)
+	}
+	if value, ok := pu.mutation.RepostCount(); ok {
+		_spec.SetField(post.FieldRepostCount, field.TypeInt, value)
+	}
+	if value, ok := pu.mutation.AddedRepostCount(); ok {
+		_spec.AddField(post.FieldRepostCount, field.TypeInt, value)
+	}
+	if value, ok := pu.mutation.IsRepost(); ok {
+		_spec.SetField(post.FieldIsRepost, field.TypeBool, value)
 	}
 	if value, ok := pu.mutation.RelevanceScore(); ok {
 		_spec.SetField(post.FieldRelevanceScore, field.TypeInt, value)
@@ -931,6 +1053,80 @@ func (pu *PostUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if pu.mutation.RepostsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   post.RepostsTable,
+			Columns: []string{post.RepostsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.RepostsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   post.RepostsTable,
+			Columns: []string{post.RepostsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if pu.mutation.OriginalPostCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   post.OriginalPostTable,
+			Columns: []string{post.OriginalPostColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.RemovedOriginalPostIDs(); len(nodes) > 0 && !pu.mutation.OriginalPostCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   post.OriginalPostTable,
+			Columns: []string{post.OriginalPostColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.OriginalPostIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   post.OriginalPostTable,
+			Columns: []string{post.OriginalPostColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, pu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{post.Label}
@@ -954,6 +1150,20 @@ type PostUpdateOne struct {
 // SetContent sets the "Content" field.
 func (puo *PostUpdateOne) SetContent(s string) *PostUpdateOne {
 	puo.mutation.SetContent(s)
+	return puo
+}
+
+// SetNillableContent sets the "Content" field if the given value is not nil.
+func (puo *PostUpdateOne) SetNillableContent(s *string) *PostUpdateOne {
+	if s != nil {
+		puo.SetContent(*s)
+	}
+	return puo
+}
+
+// ClearContent clears the value of the "Content" field.
+func (puo *PostUpdateOne) ClearContent() *PostUpdateOne {
+	puo.mutation.ClearContent()
 	return puo
 }
 
@@ -1159,6 +1369,41 @@ func (puo *PostUpdateOne) SetNillableIsHidden(b *bool) *PostUpdateOne {
 	return puo
 }
 
+// SetRepostCount sets the "RepostCount" field.
+func (puo *PostUpdateOne) SetRepostCount(i int) *PostUpdateOne {
+	puo.mutation.ResetRepostCount()
+	puo.mutation.SetRepostCount(i)
+	return puo
+}
+
+// SetNillableRepostCount sets the "RepostCount" field if the given value is not nil.
+func (puo *PostUpdateOne) SetNillableRepostCount(i *int) *PostUpdateOne {
+	if i != nil {
+		puo.SetRepostCount(*i)
+	}
+	return puo
+}
+
+// AddRepostCount adds i to the "RepostCount" field.
+func (puo *PostUpdateOne) AddRepostCount(i int) *PostUpdateOne {
+	puo.mutation.AddRepostCount(i)
+	return puo
+}
+
+// SetIsRepost sets the "IsRepost" field.
+func (puo *PostUpdateOne) SetIsRepost(b bool) *PostUpdateOne {
+	puo.mutation.SetIsRepost(b)
+	return puo
+}
+
+// SetNillableIsRepost sets the "IsRepost" field if the given value is not nil.
+func (puo *PostUpdateOne) SetNillableIsRepost(b *bool) *PostUpdateOne {
+	if b != nil {
+		puo.SetIsRepost(*b)
+	}
+	return puo
+}
+
 // SetRelevanceScore sets the "RelevanceScore" field.
 func (puo *PostUpdateOne) SetRelevanceScore(i int) *PostUpdateOne {
 	puo.mutation.ResetRelevanceScore()
@@ -1313,6 +1558,40 @@ func (puo *PostUpdateOne) AddNotifications(n ...*Notification) *PostUpdateOne {
 	return puo.AddNotificationIDs(ids...)
 }
 
+// SetRepostsID sets the "reposts" edge to the Post entity by ID.
+func (puo *PostUpdateOne) SetRepostsID(id string) *PostUpdateOne {
+	puo.mutation.SetRepostsID(id)
+	return puo
+}
+
+// SetNillableRepostsID sets the "reposts" edge to the Post entity by ID if the given value is not nil.
+func (puo *PostUpdateOne) SetNillableRepostsID(id *string) *PostUpdateOne {
+	if id != nil {
+		puo = puo.SetRepostsID(*id)
+	}
+	return puo
+}
+
+// SetReposts sets the "reposts" edge to the Post entity.
+func (puo *PostUpdateOne) SetReposts(p *Post) *PostUpdateOne {
+	return puo.SetRepostsID(p.ID)
+}
+
+// AddOriginalPostIDs adds the "original_post" edge to the Post entity by IDs.
+func (puo *PostUpdateOne) AddOriginalPostIDs(ids ...string) *PostUpdateOne {
+	puo.mutation.AddOriginalPostIDs(ids...)
+	return puo
+}
+
+// AddOriginalPost adds the "original_post" edges to the Post entity.
+func (puo *PostUpdateOne) AddOriginalPost(p ...*Post) *PostUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return puo.AddOriginalPostIDs(ids...)
+}
+
 // Mutation returns the PostMutation object of the builder.
 func (puo *PostUpdateOne) Mutation() *PostMutation {
 	return puo.mutation
@@ -1435,6 +1714,33 @@ func (puo *PostUpdateOne) RemoveNotifications(n ...*Notification) *PostUpdateOne
 	return puo.RemoveNotificationIDs(ids...)
 }
 
+// ClearReposts clears the "reposts" edge to the Post entity.
+func (puo *PostUpdateOne) ClearReposts() *PostUpdateOne {
+	puo.mutation.ClearReposts()
+	return puo
+}
+
+// ClearOriginalPost clears all "original_post" edges to the Post entity.
+func (puo *PostUpdateOne) ClearOriginalPost() *PostUpdateOne {
+	puo.mutation.ClearOriginalPost()
+	return puo
+}
+
+// RemoveOriginalPostIDs removes the "original_post" edge to Post entities by IDs.
+func (puo *PostUpdateOne) RemoveOriginalPostIDs(ids ...string) *PostUpdateOne {
+	puo.mutation.RemoveOriginalPostIDs(ids...)
+	return puo
+}
+
+// RemoveOriginalPost removes "original_post" edges to Post entities.
+func (puo *PostUpdateOne) RemoveOriginalPost(p ...*Post) *PostUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return puo.RemoveOriginalPostIDs(ids...)
+}
+
 // Where appends a list predicates to the PostUpdate builder.
 func (puo *PostUpdateOne) Where(ps ...predicate.Post) *PostUpdateOne {
 	puo.mutation.Where(ps...)
@@ -1531,6 +1837,9 @@ func (puo *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) 
 	if value, ok := puo.mutation.Content(); ok {
 		_spec.SetField(post.FieldContent, field.TypeString, value)
 	}
+	if puo.mutation.ContentCleared() {
+		_spec.ClearField(post.FieldContent, field.TypeString)
+	}
 	if value, ok := puo.mutation.CreatedAt(); ok {
 		_spec.SetField(post.FieldCreatedAt, field.TypeTime, value)
 	}
@@ -1581,6 +1890,15 @@ func (puo *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) 
 	}
 	if value, ok := puo.mutation.IsHidden(); ok {
 		_spec.SetField(post.FieldIsHidden, field.TypeBool, value)
+	}
+	if value, ok := puo.mutation.RepostCount(); ok {
+		_spec.SetField(post.FieldRepostCount, field.TypeInt, value)
+	}
+	if value, ok := puo.mutation.AddedRepostCount(); ok {
+		_spec.AddField(post.FieldRepostCount, field.TypeInt, value)
+	}
+	if value, ok := puo.mutation.IsRepost(); ok {
+		_spec.SetField(post.FieldIsRepost, field.TypeBool, value)
 	}
 	if value, ok := puo.mutation.RelevanceScore(); ok {
 		_spec.SetField(post.FieldRelevanceScore, field.TypeInt, value)
@@ -1870,6 +2188,80 @@ func (puo *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(notification.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if puo.mutation.RepostsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   post.RepostsTable,
+			Columns: []string{post.RepostsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.RepostsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   post.RepostsTable,
+			Columns: []string{post.RepostsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if puo.mutation.OriginalPostCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   post.OriginalPostTable,
+			Columns: []string{post.OriginalPostColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.RemovedOriginalPostIDs(); len(nodes) > 0 && !puo.mutation.OriginalPostCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   post.OriginalPostTable,
+			Columns: []string{post.OriginalPostColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.OriginalPostIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   post.OriginalPostTable,
+			Columns: []string{post.OriginalPostColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(post.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

@@ -28,6 +28,34 @@ func (mc *MenuCreate) SetName(s string) *MenuCreate {
 	return mc
 }
 
+// SetDeletedAt sets the "deleted_at" field.
+func (mc *MenuCreate) SetDeletedAt(s string) *MenuCreate {
+	mc.mutation.SetDeletedAt(s)
+	return mc
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (mc *MenuCreate) SetNillableDeletedAt(s *string) *MenuCreate {
+	if s != nil {
+		mc.SetDeletedAt(*s)
+	}
+	return mc
+}
+
+// SetIsDeleted sets the "is_deleted" field.
+func (mc *MenuCreate) SetIsDeleted(b bool) *MenuCreate {
+	mc.mutation.SetIsDeleted(b)
+	return mc
+}
+
+// SetNillableIsDeleted sets the "is_deleted" field if the given value is not nil.
+func (mc *MenuCreate) SetNillableIsDeleted(b *bool) *MenuCreate {
+	if b != nil {
+		mc.SetIsDeleted(*b)
+	}
+	return mc
+}
+
 // SetDescription sets the "description" field.
 func (mc *MenuCreate) SetDescription(s string) *MenuCreate {
 	mc.mutation.SetDescription(s)
@@ -104,6 +132,7 @@ func (mc *MenuCreate) Mutation() *MenuMutation {
 
 // Save creates the Menu in the database.
 func (mc *MenuCreate) Save(ctx context.Context) (*Menu, error) {
+	mc.defaults()
 	return withHooks(ctx, mc.sqlSave, mc.mutation, mc.hooks)
 }
 
@@ -129,10 +158,21 @@ func (mc *MenuCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (mc *MenuCreate) defaults() {
+	if _, ok := mc.mutation.IsDeleted(); !ok {
+		v := menu.DefaultIsDeleted
+		mc.mutation.SetIsDeleted(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (mc *MenuCreate) check() error {
 	if _, ok := mc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Menu.name"`)}
+	}
+	if _, ok := mc.mutation.IsDeleted(); !ok {
+		return &ValidationError{Name: "is_deleted", err: errors.New(`ent: missing required field "Menu.is_deleted"`)}
 	}
 	if v, ok := mc.mutation.ID(); ok {
 		if err := menu.IDValidator(v); err != nil {
@@ -177,6 +217,14 @@ func (mc *MenuCreate) createSpec() (*Menu, *sqlgraph.CreateSpec) {
 	if value, ok := mc.mutation.Name(); ok {
 		_spec.SetField(menu.FieldName, field.TypeString, value)
 		_node.Name = value
+	}
+	if value, ok := mc.mutation.DeletedAt(); ok {
+		_spec.SetField(menu.FieldDeletedAt, field.TypeString, value)
+		_node.DeletedAt = value
+	}
+	if value, ok := mc.mutation.IsDeleted(); ok {
+		_spec.SetField(menu.FieldIsDeleted, field.TypeBool, value)
+		_node.IsDeleted = value
 	}
 	if value, ok := mc.mutation.Description(); ok {
 		_spec.SetField(menu.FieldDescription, field.TypeString, value)
@@ -252,6 +300,7 @@ func (mcb *MenuCreateBulk) Save(ctx context.Context) ([]*Menu, error) {
 	for i := range mcb.builders {
 		func(i int, root context.Context) {
 			builder := mcb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*MenuMutation)
 				if !ok {

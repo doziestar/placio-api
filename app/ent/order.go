@@ -29,6 +29,10 @@ type Order struct {
 	TotalAmount float64 `json:"total_amount,omitempty"`
 	// AdditionalInfo holds the value of the "additional_info" field.
 	AdditionalInfo map[string]interface{} `json:"additional_info,omitempty"`
+	// DeletedAt holds the value of the "deleted_at" field.
+	DeletedAt string `json:"deleted_at,omitempty"`
+	// IsDeleted holds the value of the "is_deleted" field.
+	IsDeleted bool `json:"is_deleted,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the OrderQuery when eager-loading is set.
 	Edges        OrderEdges `json:"edges"`
@@ -87,9 +91,11 @@ func (*Order) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case order.FieldAdditionalInfo:
 			values[i] = new([]byte)
+		case order.FieldIsDeleted:
+			values[i] = new(sql.NullBool)
 		case order.FieldTotalAmount:
 			values[i] = new(sql.NullFloat64)
-		case order.FieldID, order.FieldStatus:
+		case order.FieldID, order.FieldStatus, order.FieldDeletedAt:
 			values[i] = new(sql.NullString)
 		case order.FieldCreatedAt, order.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -147,6 +153,18 @@ func (o *Order) assignValues(columns []string, values []any) error {
 				if err := json.Unmarshal(*value, &o.AdditionalInfo); err != nil {
 					return fmt.Errorf("unmarshal field additional_info: %w", err)
 				}
+			}
+		case order.FieldDeletedAt:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
+			} else if value.Valid {
+				o.DeletedAt = value.String
+			}
+		case order.FieldIsDeleted:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_deleted", values[i])
+			} else if value.Valid {
+				o.IsDeleted = value.Bool
 			}
 		case order.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -220,6 +238,12 @@ func (o *Order) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("additional_info=")
 	builder.WriteString(fmt.Sprintf("%v", o.AdditionalInfo))
+	builder.WriteString(", ")
+	builder.WriteString("deleted_at=")
+	builder.WriteString(o.DeletedAt)
+	builder.WriteString(", ")
+	builder.WriteString("is_deleted=")
+	builder.WriteString(fmt.Sprintf("%v", o.IsDeleted))
 	builder.WriteByte(')')
 	return builder.String()
 }

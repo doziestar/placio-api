@@ -18173,6 +18173,8 @@ type InventoryAttributeMutation struct {
 	typ                               string
 	id                                *string
 	name                              *string
+	image_url                         *string
+	icon_url                          *string
 	is_mandatory                      *bool
 	data_type                         *inventoryattribute.DataType
 	clearedFields                     map[string]struct{}
@@ -18324,6 +18326,104 @@ func (m *InventoryAttributeMutation) OldName(ctx context.Context) (v string, err
 // ResetName resets all changes to the "name" field.
 func (m *InventoryAttributeMutation) ResetName() {
 	m.name = nil
+}
+
+// SetImageURL sets the "image_url" field.
+func (m *InventoryAttributeMutation) SetImageURL(s string) {
+	m.image_url = &s
+}
+
+// ImageURL returns the value of the "image_url" field in the mutation.
+func (m *InventoryAttributeMutation) ImageURL() (r string, exists bool) {
+	v := m.image_url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldImageURL returns the old "image_url" field's value of the InventoryAttribute entity.
+// If the InventoryAttribute object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *InventoryAttributeMutation) OldImageURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldImageURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldImageURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldImageURL: %w", err)
+	}
+	return oldValue.ImageURL, nil
+}
+
+// ClearImageURL clears the value of the "image_url" field.
+func (m *InventoryAttributeMutation) ClearImageURL() {
+	m.image_url = nil
+	m.clearedFields[inventoryattribute.FieldImageURL] = struct{}{}
+}
+
+// ImageURLCleared returns if the "image_url" field was cleared in this mutation.
+func (m *InventoryAttributeMutation) ImageURLCleared() bool {
+	_, ok := m.clearedFields[inventoryattribute.FieldImageURL]
+	return ok
+}
+
+// ResetImageURL resets all changes to the "image_url" field.
+func (m *InventoryAttributeMutation) ResetImageURL() {
+	m.image_url = nil
+	delete(m.clearedFields, inventoryattribute.FieldImageURL)
+}
+
+// SetIconURL sets the "icon_url" field.
+func (m *InventoryAttributeMutation) SetIconURL(s string) {
+	m.icon_url = &s
+}
+
+// IconURL returns the value of the "icon_url" field in the mutation.
+func (m *InventoryAttributeMutation) IconURL() (r string, exists bool) {
+	v := m.icon_url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIconURL returns the old "icon_url" field's value of the InventoryAttribute entity.
+// If the InventoryAttribute object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *InventoryAttributeMutation) OldIconURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIconURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIconURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIconURL: %w", err)
+	}
+	return oldValue.IconURL, nil
+}
+
+// ClearIconURL clears the value of the "icon_url" field.
+func (m *InventoryAttributeMutation) ClearIconURL() {
+	m.icon_url = nil
+	m.clearedFields[inventoryattribute.FieldIconURL] = struct{}{}
+}
+
+// IconURLCleared returns if the "icon_url" field was cleared in this mutation.
+func (m *InventoryAttributeMutation) IconURLCleared() bool {
+	_, ok := m.clearedFields[inventoryattribute.FieldIconURL]
+	return ok
+}
+
+// ResetIconURL resets all changes to the "icon_url" field.
+func (m *InventoryAttributeMutation) ResetIconURL() {
+	m.icon_url = nil
+	delete(m.clearedFields, inventoryattribute.FieldIconURL)
 }
 
 // SetIsMandatory sets the "is_mandatory" field.
@@ -18538,9 +18638,15 @@ func (m *InventoryAttributeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *InventoryAttributeMutation) Fields() []string {
-	fields := make([]string, 0, 3)
+	fields := make([]string, 0, 5)
 	if m.name != nil {
 		fields = append(fields, inventoryattribute.FieldName)
+	}
+	if m.image_url != nil {
+		fields = append(fields, inventoryattribute.FieldImageURL)
+	}
+	if m.icon_url != nil {
+		fields = append(fields, inventoryattribute.FieldIconURL)
 	}
 	if m.is_mandatory != nil {
 		fields = append(fields, inventoryattribute.FieldIsMandatory)
@@ -18558,6 +18664,10 @@ func (m *InventoryAttributeMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case inventoryattribute.FieldName:
 		return m.Name()
+	case inventoryattribute.FieldImageURL:
+		return m.ImageURL()
+	case inventoryattribute.FieldIconURL:
+		return m.IconURL()
 	case inventoryattribute.FieldIsMandatory:
 		return m.IsMandatory()
 	case inventoryattribute.FieldDataType:
@@ -18573,6 +18683,10 @@ func (m *InventoryAttributeMutation) OldField(ctx context.Context, name string) 
 	switch name {
 	case inventoryattribute.FieldName:
 		return m.OldName(ctx)
+	case inventoryattribute.FieldImageURL:
+		return m.OldImageURL(ctx)
+	case inventoryattribute.FieldIconURL:
+		return m.OldIconURL(ctx)
 	case inventoryattribute.FieldIsMandatory:
 		return m.OldIsMandatory(ctx)
 	case inventoryattribute.FieldDataType:
@@ -18592,6 +18706,20 @@ func (m *InventoryAttributeMutation) SetField(name string, value ent.Value) erro
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetName(v)
+		return nil
+	case inventoryattribute.FieldImageURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetImageURL(v)
+		return nil
+	case inventoryattribute.FieldIconURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIconURL(v)
 		return nil
 	case inventoryattribute.FieldIsMandatory:
 		v, ok := value.(bool)
@@ -18637,6 +18765,12 @@ func (m *InventoryAttributeMutation) AddField(name string, value ent.Value) erro
 // mutation.
 func (m *InventoryAttributeMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(inventoryattribute.FieldImageURL) {
+		fields = append(fields, inventoryattribute.FieldImageURL)
+	}
+	if m.FieldCleared(inventoryattribute.FieldIconURL) {
+		fields = append(fields, inventoryattribute.FieldIconURL)
+	}
 	if m.FieldCleared(inventoryattribute.FieldDataType) {
 		fields = append(fields, inventoryattribute.FieldDataType)
 	}
@@ -18654,6 +18788,12 @@ func (m *InventoryAttributeMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *InventoryAttributeMutation) ClearField(name string) error {
 	switch name {
+	case inventoryattribute.FieldImageURL:
+		m.ClearImageURL()
+		return nil
+	case inventoryattribute.FieldIconURL:
+		m.ClearIconURL()
+		return nil
 	case inventoryattribute.FieldDataType:
 		m.ClearDataType()
 		return nil
@@ -18667,6 +18807,12 @@ func (m *InventoryAttributeMutation) ResetField(name string) error {
 	switch name {
 	case inventoryattribute.FieldName:
 		m.ResetName()
+		return nil
+	case inventoryattribute.FieldImageURL:
+		m.ResetImageURL()
+		return nil
+	case inventoryattribute.FieldIconURL:
+		m.ResetIconURL()
 		return nil
 	case inventoryattribute.FieldIsMandatory:
 		m.ResetIsMandatory()
@@ -18788,6 +18934,8 @@ type InventoryTypeMutation struct {
 	id                       *string
 	name                     *string
 	description              *string
+	image_url                *string
+	icon_url                 *string
 	industry_type            *inventorytype.IndustryType
 	measurement_unit         *string
 	clearedFields            map[string]struct{}
@@ -18989,6 +19137,104 @@ func (m *InventoryTypeMutation) DescriptionCleared() bool {
 func (m *InventoryTypeMutation) ResetDescription() {
 	m.description = nil
 	delete(m.clearedFields, inventorytype.FieldDescription)
+}
+
+// SetImageURL sets the "image_url" field.
+func (m *InventoryTypeMutation) SetImageURL(s string) {
+	m.image_url = &s
+}
+
+// ImageURL returns the value of the "image_url" field in the mutation.
+func (m *InventoryTypeMutation) ImageURL() (r string, exists bool) {
+	v := m.image_url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldImageURL returns the old "image_url" field's value of the InventoryType entity.
+// If the InventoryType object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *InventoryTypeMutation) OldImageURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldImageURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldImageURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldImageURL: %w", err)
+	}
+	return oldValue.ImageURL, nil
+}
+
+// ClearImageURL clears the value of the "image_url" field.
+func (m *InventoryTypeMutation) ClearImageURL() {
+	m.image_url = nil
+	m.clearedFields[inventorytype.FieldImageURL] = struct{}{}
+}
+
+// ImageURLCleared returns if the "image_url" field was cleared in this mutation.
+func (m *InventoryTypeMutation) ImageURLCleared() bool {
+	_, ok := m.clearedFields[inventorytype.FieldImageURL]
+	return ok
+}
+
+// ResetImageURL resets all changes to the "image_url" field.
+func (m *InventoryTypeMutation) ResetImageURL() {
+	m.image_url = nil
+	delete(m.clearedFields, inventorytype.FieldImageURL)
+}
+
+// SetIconURL sets the "icon_url" field.
+func (m *InventoryTypeMutation) SetIconURL(s string) {
+	m.icon_url = &s
+}
+
+// IconURL returns the value of the "icon_url" field in the mutation.
+func (m *InventoryTypeMutation) IconURL() (r string, exists bool) {
+	v := m.icon_url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIconURL returns the old "icon_url" field's value of the InventoryType entity.
+// If the InventoryType object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *InventoryTypeMutation) OldIconURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIconURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIconURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIconURL: %w", err)
+	}
+	return oldValue.IconURL, nil
+}
+
+// ClearIconURL clears the value of the "icon_url" field.
+func (m *InventoryTypeMutation) ClearIconURL() {
+	m.icon_url = nil
+	m.clearedFields[inventorytype.FieldIconURL] = struct{}{}
+}
+
+// IconURLCleared returns if the "icon_url" field was cleared in this mutation.
+func (m *InventoryTypeMutation) IconURLCleared() bool {
+	_, ok := m.clearedFields[inventorytype.FieldIconURL]
+	return ok
+}
+
+// ResetIconURL resets all changes to the "icon_url" field.
+func (m *InventoryTypeMutation) ResetIconURL() {
+	m.icon_url = nil
+	delete(m.clearedFields, inventorytype.FieldIconURL)
 }
 
 // SetIndustryType sets the "industry_type" field.
@@ -19231,12 +19477,18 @@ func (m *InventoryTypeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *InventoryTypeMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 6)
 	if m.name != nil {
 		fields = append(fields, inventorytype.FieldName)
 	}
 	if m.description != nil {
 		fields = append(fields, inventorytype.FieldDescription)
+	}
+	if m.image_url != nil {
+		fields = append(fields, inventorytype.FieldImageURL)
+	}
+	if m.icon_url != nil {
+		fields = append(fields, inventorytype.FieldIconURL)
 	}
 	if m.industry_type != nil {
 		fields = append(fields, inventorytype.FieldIndustryType)
@@ -19256,6 +19508,10 @@ func (m *InventoryTypeMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case inventorytype.FieldDescription:
 		return m.Description()
+	case inventorytype.FieldImageURL:
+		return m.ImageURL()
+	case inventorytype.FieldIconURL:
+		return m.IconURL()
 	case inventorytype.FieldIndustryType:
 		return m.IndustryType()
 	case inventorytype.FieldMeasurementUnit:
@@ -19273,6 +19529,10 @@ func (m *InventoryTypeMutation) OldField(ctx context.Context, name string) (ent.
 		return m.OldName(ctx)
 	case inventorytype.FieldDescription:
 		return m.OldDescription(ctx)
+	case inventorytype.FieldImageURL:
+		return m.OldImageURL(ctx)
+	case inventorytype.FieldIconURL:
+		return m.OldIconURL(ctx)
 	case inventorytype.FieldIndustryType:
 		return m.OldIndustryType(ctx)
 	case inventorytype.FieldMeasurementUnit:
@@ -19299,6 +19559,20 @@ func (m *InventoryTypeMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDescription(v)
+		return nil
+	case inventorytype.FieldImageURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetImageURL(v)
+		return nil
+	case inventorytype.FieldIconURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIconURL(v)
 		return nil
 	case inventorytype.FieldIndustryType:
 		v, ok := value.(inventorytype.IndustryType)
@@ -19347,6 +19621,12 @@ func (m *InventoryTypeMutation) ClearedFields() []string {
 	if m.FieldCleared(inventorytype.FieldDescription) {
 		fields = append(fields, inventorytype.FieldDescription)
 	}
+	if m.FieldCleared(inventorytype.FieldImageURL) {
+		fields = append(fields, inventorytype.FieldImageURL)
+	}
+	if m.FieldCleared(inventorytype.FieldIconURL) {
+		fields = append(fields, inventorytype.FieldIconURL)
+	}
 	if m.FieldCleared(inventorytype.FieldIndustryType) {
 		fields = append(fields, inventorytype.FieldIndustryType)
 	}
@@ -19370,6 +19650,12 @@ func (m *InventoryTypeMutation) ClearField(name string) error {
 	case inventorytype.FieldDescription:
 		m.ClearDescription()
 		return nil
+	case inventorytype.FieldImageURL:
+		m.ClearImageURL()
+		return nil
+	case inventorytype.FieldIconURL:
+		m.ClearIconURL()
+		return nil
 	case inventorytype.FieldIndustryType:
 		m.ClearIndustryType()
 		return nil
@@ -19389,6 +19675,12 @@ func (m *InventoryTypeMutation) ResetField(name string) error {
 		return nil
 	case inventorytype.FieldDescription:
 		m.ResetDescription()
+		return nil
+	case inventorytype.FieldImageURL:
+		m.ResetImageURL()
+		return nil
+	case inventorytype.FieldIconURL:
+		m.ResetIconURL()
 		return nil
 	case inventorytype.FieldIndustryType:
 		m.ResetIndustryType()
@@ -21249,6 +21541,8 @@ type MenuMutation struct {
 	typ               string
 	id                *string
 	name              *string
+	deleted_at        *string
+	is_deleted        *bool
 	description       *string
 	clearedFields     map[string]struct{}
 	place             *string
@@ -21402,6 +21696,91 @@ func (m *MenuMutation) OldName(ctx context.Context) (v string, err error) {
 // ResetName resets all changes to the "name" field.
 func (m *MenuMutation) ResetName() {
 	m.name = nil
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *MenuMutation) SetDeletedAt(s string) {
+	m.deleted_at = &s
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *MenuMutation) DeletedAt() (r string, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the Menu entity.
+// If the Menu object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuMutation) OldDeletedAt(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *MenuMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[menu.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *MenuMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[menu.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *MenuMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, menu.FieldDeletedAt)
+}
+
+// SetIsDeleted sets the "is_deleted" field.
+func (m *MenuMutation) SetIsDeleted(b bool) {
+	m.is_deleted = &b
+}
+
+// IsDeleted returns the value of the "is_deleted" field in the mutation.
+func (m *MenuMutation) IsDeleted() (r bool, exists bool) {
+	v := m.is_deleted
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsDeleted returns the old "is_deleted" field's value of the Menu entity.
+// If the Menu object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuMutation) OldIsDeleted(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsDeleted is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsDeleted requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsDeleted: %w", err)
+	}
+	return oldValue.IsDeleted, nil
+}
+
+// ResetIsDeleted resets all changes to the "is_deleted" field.
+func (m *MenuMutation) ResetIsDeleted() {
+	m.is_deleted = nil
 }
 
 // SetDescription sets the "description" field.
@@ -21634,9 +22013,15 @@ func (m *MenuMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *MenuMutation) Fields() []string {
-	fields := make([]string, 0, 2)
+	fields := make([]string, 0, 4)
 	if m.name != nil {
 		fields = append(fields, menu.FieldName)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, menu.FieldDeletedAt)
+	}
+	if m.is_deleted != nil {
+		fields = append(fields, menu.FieldIsDeleted)
 	}
 	if m.description != nil {
 		fields = append(fields, menu.FieldDescription)
@@ -21651,6 +22036,10 @@ func (m *MenuMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case menu.FieldName:
 		return m.Name()
+	case menu.FieldDeletedAt:
+		return m.DeletedAt()
+	case menu.FieldIsDeleted:
+		return m.IsDeleted()
 	case menu.FieldDescription:
 		return m.Description()
 	}
@@ -21664,6 +22053,10 @@ func (m *MenuMutation) OldField(ctx context.Context, name string) (ent.Value, er
 	switch name {
 	case menu.FieldName:
 		return m.OldName(ctx)
+	case menu.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case menu.FieldIsDeleted:
+		return m.OldIsDeleted(ctx)
 	case menu.FieldDescription:
 		return m.OldDescription(ctx)
 	}
@@ -21681,6 +22074,20 @@ func (m *MenuMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetName(v)
+		return nil
+	case menu.FieldDeletedAt:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case menu.FieldIsDeleted:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsDeleted(v)
 		return nil
 	case menu.FieldDescription:
 		v, ok := value.(string)
@@ -21719,6 +22126,9 @@ func (m *MenuMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *MenuMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(menu.FieldDeletedAt) {
+		fields = append(fields, menu.FieldDeletedAt)
+	}
 	if m.FieldCleared(menu.FieldDescription) {
 		fields = append(fields, menu.FieldDescription)
 	}
@@ -21736,6 +22146,9 @@ func (m *MenuMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *MenuMutation) ClearField(name string) error {
 	switch name {
+	case menu.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
 	case menu.FieldDescription:
 		m.ClearDescription()
 		return nil
@@ -21749,6 +22162,12 @@ func (m *MenuMutation) ResetField(name string) error {
 	switch name {
 	case menu.FieldName:
 		m.ResetName()
+		return nil
+	case menu.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case menu.FieldIsDeleted:
+		m.ResetIsDeleted()
 		return nil
 	case menu.FieldDescription:
 		m.ResetDescription()
@@ -21899,6 +22318,8 @@ type MenuItemMutation struct {
 	addpreparation_time *int
 	options             *[]string
 	appendoptions       []string
+	deleted_at          *string
+	is_deleted          *bool
 	clearedFields       map[string]struct{}
 	menu                map[string]struct{}
 	removedmenu         map[string]struct{}
@@ -22296,6 +22717,91 @@ func (m *MenuItemMutation) ResetOptions() {
 	delete(m.clearedFields, menuitem.FieldOptions)
 }
 
+// SetDeletedAt sets the "deleted_at" field.
+func (m *MenuItemMutation) SetDeletedAt(s string) {
+	m.deleted_at = &s
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *MenuItemMutation) DeletedAt() (r string, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the MenuItem entity.
+// If the MenuItem object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuItemMutation) OldDeletedAt(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *MenuItemMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[menuitem.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *MenuItemMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[menuitem.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *MenuItemMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, menuitem.FieldDeletedAt)
+}
+
+// SetIsDeleted sets the "is_deleted" field.
+func (m *MenuItemMutation) SetIsDeleted(b bool) {
+	m.is_deleted = &b
+}
+
+// IsDeleted returns the value of the "is_deleted" field in the mutation.
+func (m *MenuItemMutation) IsDeleted() (r bool, exists bool) {
+	v := m.is_deleted
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsDeleted returns the old "is_deleted" field's value of the MenuItem entity.
+// If the MenuItem object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuItemMutation) OldIsDeleted(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsDeleted is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsDeleted requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsDeleted: %w", err)
+	}
+	return oldValue.IsDeleted, nil
+}
+
+// ResetIsDeleted resets all changes to the "is_deleted" field.
+func (m *MenuItemMutation) ResetIsDeleted() {
+	m.is_deleted = nil
+}
+
 // AddMenuIDs adds the "menu" edge to the Menu entity by ids.
 func (m *MenuItemMutation) AddMenuIDs(ids ...string) {
 	if m.menu == nil {
@@ -22531,7 +23037,7 @@ func (m *MenuItemMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *MenuItemMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 7)
 	if m.name != nil {
 		fields = append(fields, menuitem.FieldName)
 	}
@@ -22546,6 +23052,12 @@ func (m *MenuItemMutation) Fields() []string {
 	}
 	if m.options != nil {
 		fields = append(fields, menuitem.FieldOptions)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, menuitem.FieldDeletedAt)
+	}
+	if m.is_deleted != nil {
+		fields = append(fields, menuitem.FieldIsDeleted)
 	}
 	return fields
 }
@@ -22565,6 +23077,10 @@ func (m *MenuItemMutation) Field(name string) (ent.Value, bool) {
 		return m.PreparationTime()
 	case menuitem.FieldOptions:
 		return m.Options()
+	case menuitem.FieldDeletedAt:
+		return m.DeletedAt()
+	case menuitem.FieldIsDeleted:
+		return m.IsDeleted()
 	}
 	return nil, false
 }
@@ -22584,6 +23100,10 @@ func (m *MenuItemMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldPreparationTime(ctx)
 	case menuitem.FieldOptions:
 		return m.OldOptions(ctx)
+	case menuitem.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case menuitem.FieldIsDeleted:
+		return m.OldIsDeleted(ctx)
 	}
 	return nil, fmt.Errorf("unknown MenuItem field %s", name)
 }
@@ -22627,6 +23147,20 @@ func (m *MenuItemMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetOptions(v)
+		return nil
+	case menuitem.FieldDeletedAt:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case menuitem.FieldIsDeleted:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsDeleted(v)
 		return nil
 	}
 	return fmt.Errorf("unknown MenuItem field %s", name)
@@ -22694,6 +23228,9 @@ func (m *MenuItemMutation) ClearedFields() []string {
 	if m.FieldCleared(menuitem.FieldOptions) {
 		fields = append(fields, menuitem.FieldOptions)
 	}
+	if m.FieldCleared(menuitem.FieldDeletedAt) {
+		fields = append(fields, menuitem.FieldDeletedAt)
+	}
 	return fields
 }
 
@@ -22717,6 +23254,9 @@ func (m *MenuItemMutation) ClearField(name string) error {
 	case menuitem.FieldOptions:
 		m.ClearOptions()
 		return nil
+	case menuitem.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
 	}
 	return fmt.Errorf("unknown MenuItem nullable field %s", name)
 }
@@ -22739,6 +23279,12 @@ func (m *MenuItemMutation) ResetField(name string) error {
 		return nil
 	case menuitem.FieldOptions:
 		m.ResetOptions()
+		return nil
+	case menuitem.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case menuitem.FieldIsDeleted:
+		m.ResetIsDeleted()
 		return nil
 	}
 	return fmt.Errorf("unknown MenuItem field %s", name)
@@ -24330,6 +24876,8 @@ type OrderMutation struct {
 	total_amount       *float64
 	addtotal_amount    *float64
 	additional_info    *map[string]interface{}
+	deleted_at         *string
+	is_deleted         *bool
 	clearedFields      map[string]struct{}
 	user               *string
 	cleareduser        bool
@@ -24661,6 +25209,91 @@ func (m *OrderMutation) ResetAdditionalInfo() {
 	delete(m.clearedFields, order.FieldAdditionalInfo)
 }
 
+// SetDeletedAt sets the "deleted_at" field.
+func (m *OrderMutation) SetDeletedAt(s string) {
+	m.deleted_at = &s
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *OrderMutation) DeletedAt() (r string, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the Order entity.
+// If the Order object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OrderMutation) OldDeletedAt(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *OrderMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[order.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *OrderMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[order.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *OrderMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, order.FieldDeletedAt)
+}
+
+// SetIsDeleted sets the "is_deleted" field.
+func (m *OrderMutation) SetIsDeleted(b bool) {
+	m.is_deleted = &b
+}
+
+// IsDeleted returns the value of the "is_deleted" field in the mutation.
+func (m *OrderMutation) IsDeleted() (r bool, exists bool) {
+	v := m.is_deleted
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsDeleted returns the old "is_deleted" field's value of the Order entity.
+// If the Order object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OrderMutation) OldIsDeleted(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsDeleted is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsDeleted requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsDeleted: %w", err)
+	}
+	return oldValue.IsDeleted, nil
+}
+
+// ResetIsDeleted resets all changes to the "is_deleted" field.
+func (m *OrderMutation) ResetIsDeleted() {
+	m.is_deleted = nil
+}
+
 // SetUserID sets the "user" edge to the User entity by id.
 func (m *OrderMutation) SetUserID(id string) {
 	m.user = &id
@@ -24842,7 +25475,7 @@ func (m *OrderMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *OrderMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 7)
 	if m.created_at != nil {
 		fields = append(fields, order.FieldCreatedAt)
 	}
@@ -24857,6 +25490,12 @@ func (m *OrderMutation) Fields() []string {
 	}
 	if m.additional_info != nil {
 		fields = append(fields, order.FieldAdditionalInfo)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, order.FieldDeletedAt)
+	}
+	if m.is_deleted != nil {
+		fields = append(fields, order.FieldIsDeleted)
 	}
 	return fields
 }
@@ -24876,6 +25515,10 @@ func (m *OrderMutation) Field(name string) (ent.Value, bool) {
 		return m.TotalAmount()
 	case order.FieldAdditionalInfo:
 		return m.AdditionalInfo()
+	case order.FieldDeletedAt:
+		return m.DeletedAt()
+	case order.FieldIsDeleted:
+		return m.IsDeleted()
 	}
 	return nil, false
 }
@@ -24895,6 +25538,10 @@ func (m *OrderMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldTotalAmount(ctx)
 	case order.FieldAdditionalInfo:
 		return m.OldAdditionalInfo(ctx)
+	case order.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case order.FieldIsDeleted:
+		return m.OldIsDeleted(ctx)
 	}
 	return nil, fmt.Errorf("unknown Order field %s", name)
 }
@@ -24938,6 +25585,20 @@ func (m *OrderMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetAdditionalInfo(v)
+		return nil
+	case order.FieldDeletedAt:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case order.FieldIsDeleted:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsDeleted(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Order field %s", name)
@@ -24987,6 +25648,9 @@ func (m *OrderMutation) ClearedFields() []string {
 	if m.FieldCleared(order.FieldAdditionalInfo) {
 		fields = append(fields, order.FieldAdditionalInfo)
 	}
+	if m.FieldCleared(order.FieldDeletedAt) {
+		fields = append(fields, order.FieldDeletedAt)
+	}
 	return fields
 }
 
@@ -25003,6 +25667,9 @@ func (m *OrderMutation) ClearField(name string) error {
 	switch name {
 	case order.FieldAdditionalInfo:
 		m.ClearAdditionalInfo()
+		return nil
+	case order.FieldDeletedAt:
+		m.ClearDeletedAt()
 		return nil
 	}
 	return fmt.Errorf("unknown Order nullable field %s", name)
@@ -25026,6 +25693,12 @@ func (m *OrderMutation) ResetField(name string) error {
 		return nil
 	case order.FieldAdditionalInfo:
 		m.ResetAdditionalInfo()
+		return nil
+	case order.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case order.FieldIsDeleted:
+		m.ResetIsDeleted()
 		return nil
 	}
 	return fmt.Errorf("unknown Order field %s", name)
@@ -33079,6 +33752,8 @@ type PlaceTableMutation struct {
 	id            *string
 	number        *int
 	addnumber     *int
+	deleted_at    *string
+	is_deleted    *bool
 	qr_code       *string
 	clearedFields map[string]struct{}
 	place         *string
@@ -33249,6 +33924,91 @@ func (m *PlaceTableMutation) AddedNumber() (r int, exists bool) {
 func (m *PlaceTableMutation) ResetNumber() {
 	m.number = nil
 	m.addnumber = nil
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *PlaceTableMutation) SetDeletedAt(s string) {
+	m.deleted_at = &s
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *PlaceTableMutation) DeletedAt() (r string, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the PlaceTable entity.
+// If the PlaceTable object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceTableMutation) OldDeletedAt(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *PlaceTableMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[placetable.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *PlaceTableMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[placetable.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *PlaceTableMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, placetable.FieldDeletedAt)
+}
+
+// SetIsDeleted sets the "is_deleted" field.
+func (m *PlaceTableMutation) SetIsDeleted(b bool) {
+	m.is_deleted = &b
+}
+
+// IsDeleted returns the value of the "is_deleted" field in the mutation.
+func (m *PlaceTableMutation) IsDeleted() (r bool, exists bool) {
+	v := m.is_deleted
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsDeleted returns the old "is_deleted" field's value of the PlaceTable entity.
+// If the PlaceTable object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceTableMutation) OldIsDeleted(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsDeleted is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsDeleted requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsDeleted: %w", err)
+	}
+	return oldValue.IsDeleted, nil
+}
+
+// ResetIsDeleted resets all changes to the "is_deleted" field.
+func (m *PlaceTableMutation) ResetIsDeleted() {
+	m.is_deleted = nil
 }
 
 // SetQrCode sets the "qr_code" field.
@@ -33427,9 +34187,15 @@ func (m *PlaceTableMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PlaceTableMutation) Fields() []string {
-	fields := make([]string, 0, 2)
+	fields := make([]string, 0, 4)
 	if m.number != nil {
 		fields = append(fields, placetable.FieldNumber)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, placetable.FieldDeletedAt)
+	}
+	if m.is_deleted != nil {
+		fields = append(fields, placetable.FieldIsDeleted)
 	}
 	if m.qr_code != nil {
 		fields = append(fields, placetable.FieldQrCode)
@@ -33444,6 +34210,10 @@ func (m *PlaceTableMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case placetable.FieldNumber:
 		return m.Number()
+	case placetable.FieldDeletedAt:
+		return m.DeletedAt()
+	case placetable.FieldIsDeleted:
+		return m.IsDeleted()
 	case placetable.FieldQrCode:
 		return m.QrCode()
 	}
@@ -33457,6 +34227,10 @@ func (m *PlaceTableMutation) OldField(ctx context.Context, name string) (ent.Val
 	switch name {
 	case placetable.FieldNumber:
 		return m.OldNumber(ctx)
+	case placetable.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case placetable.FieldIsDeleted:
+		return m.OldIsDeleted(ctx)
 	case placetable.FieldQrCode:
 		return m.OldQrCode(ctx)
 	}
@@ -33474,6 +34248,20 @@ func (m *PlaceTableMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetNumber(v)
+		return nil
+	case placetable.FieldDeletedAt:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case placetable.FieldIsDeleted:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsDeleted(v)
 		return nil
 	case placetable.FieldQrCode:
 		v, ok := value.(string)
@@ -33527,6 +34315,9 @@ func (m *PlaceTableMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *PlaceTableMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(placetable.FieldDeletedAt) {
+		fields = append(fields, placetable.FieldDeletedAt)
+	}
 	if m.FieldCleared(placetable.FieldQrCode) {
 		fields = append(fields, placetable.FieldQrCode)
 	}
@@ -33544,6 +34335,9 @@ func (m *PlaceTableMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *PlaceTableMutation) ClearField(name string) error {
 	switch name {
+	case placetable.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
 	case placetable.FieldQrCode:
 		m.ClearQrCode()
 		return nil
@@ -33557,6 +34351,12 @@ func (m *PlaceTableMutation) ResetField(name string) error {
 	switch name {
 	case placetable.FieldNumber:
 		m.ResetNumber()
+		return nil
+	case placetable.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case placetable.FieldIsDeleted:
+		m.ResetIsDeleted()
 		return nil
 	case placetable.FieldQrCode:
 		m.ResetQrCode()
@@ -33691,6 +34491,9 @@ type PostMutation struct {
 	_IsBoosted              *bool
 	_IsPinned               *bool
 	_IsHidden               *bool
+	_RepostCount            *int
+	add_RepostCount         *int
+	_IsRepost               *bool
 	_RelevanceScore         *int
 	add_RelevanceScore      *int
 	_SearchText             *string
@@ -33714,6 +34517,11 @@ type PostMutation struct {
 	notifications           map[string]struct{}
 	removednotifications    map[string]struct{}
 	clearednotifications    bool
+	reposts                 *string
+	clearedreposts          bool
+	original_post           map[string]struct{}
+	removedoriginal_post    map[string]struct{}
+	clearedoriginal_post    bool
 	done                    bool
 	oldValue                func(context.Context) (*Post, error)
 	predicates              []predicate.Post
@@ -33854,9 +34662,22 @@ func (m *PostMutation) OldContent(ctx context.Context) (v string, err error) {
 	return oldValue.Content, nil
 }
 
+// ClearContent clears the value of the "Content" field.
+func (m *PostMutation) ClearContent() {
+	m._Content = nil
+	m.clearedFields[post.FieldContent] = struct{}{}
+}
+
+// ContentCleared returns if the "Content" field was cleared in this mutation.
+func (m *PostMutation) ContentCleared() bool {
+	_, ok := m.clearedFields[post.FieldContent]
+	return ok
+}
+
 // ResetContent resets all changes to the "Content" field.
 func (m *PostMutation) ResetContent() {
 	m._Content = nil
+	delete(m.clearedFields, post.FieldContent)
 }
 
 // SetCreatedAt sets the "CreatedAt" field.
@@ -34407,6 +35228,98 @@ func (m *PostMutation) ResetIsHidden() {
 	m._IsHidden = nil
 }
 
+// SetRepostCount sets the "RepostCount" field.
+func (m *PostMutation) SetRepostCount(i int) {
+	m._RepostCount = &i
+	m.add_RepostCount = nil
+}
+
+// RepostCount returns the value of the "RepostCount" field in the mutation.
+func (m *PostMutation) RepostCount() (r int, exists bool) {
+	v := m._RepostCount
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRepostCount returns the old "RepostCount" field's value of the Post entity.
+// If the Post object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PostMutation) OldRepostCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRepostCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRepostCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRepostCount: %w", err)
+	}
+	return oldValue.RepostCount, nil
+}
+
+// AddRepostCount adds i to the "RepostCount" field.
+func (m *PostMutation) AddRepostCount(i int) {
+	if m.add_RepostCount != nil {
+		*m.add_RepostCount += i
+	} else {
+		m.add_RepostCount = &i
+	}
+}
+
+// AddedRepostCount returns the value that was added to the "RepostCount" field in this mutation.
+func (m *PostMutation) AddedRepostCount() (r int, exists bool) {
+	v := m.add_RepostCount
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetRepostCount resets all changes to the "RepostCount" field.
+func (m *PostMutation) ResetRepostCount() {
+	m._RepostCount = nil
+	m.add_RepostCount = nil
+}
+
+// SetIsRepost sets the "IsRepost" field.
+func (m *PostMutation) SetIsRepost(b bool) {
+	m._IsRepost = &b
+}
+
+// IsRepost returns the value of the "IsRepost" field in the mutation.
+func (m *PostMutation) IsRepost() (r bool, exists bool) {
+	v := m._IsRepost
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsRepost returns the old "IsRepost" field's value of the Post entity.
+// If the Post object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PostMutation) OldIsRepost(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsRepost is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsRepost requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsRepost: %w", err)
+	}
+	return oldValue.IsRepost, nil
+}
+
+// ResetIsRepost resets all changes to the "IsRepost" field.
+func (m *PostMutation) ResetIsRepost() {
+	m._IsRepost = nil
+}
+
 // SetRelevanceScore sets the "RelevanceScore" field.
 func (m *PostMutation) SetRelevanceScore(i int) {
 	m._RelevanceScore = &i
@@ -34860,6 +35773,99 @@ func (m *PostMutation) ResetNotifications() {
 	m.removednotifications = nil
 }
 
+// SetRepostsID sets the "reposts" edge to the Post entity by id.
+func (m *PostMutation) SetRepostsID(id string) {
+	m.reposts = &id
+}
+
+// ClearReposts clears the "reposts" edge to the Post entity.
+func (m *PostMutation) ClearReposts() {
+	m.clearedreposts = true
+}
+
+// RepostsCleared reports if the "reposts" edge to the Post entity was cleared.
+func (m *PostMutation) RepostsCleared() bool {
+	return m.clearedreposts
+}
+
+// RepostsID returns the "reposts" edge ID in the mutation.
+func (m *PostMutation) RepostsID() (id string, exists bool) {
+	if m.reposts != nil {
+		return *m.reposts, true
+	}
+	return
+}
+
+// RepostsIDs returns the "reposts" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// RepostsID instead. It exists only for internal usage by the builders.
+func (m *PostMutation) RepostsIDs() (ids []string) {
+	if id := m.reposts; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetReposts resets all changes to the "reposts" edge.
+func (m *PostMutation) ResetReposts() {
+	m.reposts = nil
+	m.clearedreposts = false
+}
+
+// AddOriginalPostIDs adds the "original_post" edge to the Post entity by ids.
+func (m *PostMutation) AddOriginalPostIDs(ids ...string) {
+	if m.original_post == nil {
+		m.original_post = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.original_post[ids[i]] = struct{}{}
+	}
+}
+
+// ClearOriginalPost clears the "original_post" edge to the Post entity.
+func (m *PostMutation) ClearOriginalPost() {
+	m.clearedoriginal_post = true
+}
+
+// OriginalPostCleared reports if the "original_post" edge to the Post entity was cleared.
+func (m *PostMutation) OriginalPostCleared() bool {
+	return m.clearedoriginal_post
+}
+
+// RemoveOriginalPostIDs removes the "original_post" edge to the Post entity by IDs.
+func (m *PostMutation) RemoveOriginalPostIDs(ids ...string) {
+	if m.removedoriginal_post == nil {
+		m.removedoriginal_post = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.original_post, ids[i])
+		m.removedoriginal_post[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedOriginalPost returns the removed IDs of the "original_post" edge to the Post entity.
+func (m *PostMutation) RemovedOriginalPostIDs() (ids []string) {
+	for id := range m.removedoriginal_post {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// OriginalPostIDs returns the "original_post" edge IDs in the mutation.
+func (m *PostMutation) OriginalPostIDs() (ids []string) {
+	for id := range m.original_post {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetOriginalPost resets all changes to the "original_post" edge.
+func (m *PostMutation) ResetOriginalPost() {
+	m.original_post = nil
+	m.clearedoriginal_post = false
+	m.removedoriginal_post = nil
+}
+
 // Where appends a list predicates to the PostMutation builder.
 func (m *PostMutation) Where(ps ...predicate.Post) {
 	m.predicates = append(m.predicates, ps...)
@@ -34894,7 +35900,7 @@ func (m *PostMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PostMutation) Fields() []string {
-	fields := make([]string, 0, 16)
+	fields := make([]string, 0, 18)
 	if m._Content != nil {
 		fields = append(fields, post.FieldContent)
 	}
@@ -34936,6 +35942,12 @@ func (m *PostMutation) Fields() []string {
 	}
 	if m._IsHidden != nil {
 		fields = append(fields, post.FieldIsHidden)
+	}
+	if m._RepostCount != nil {
+		fields = append(fields, post.FieldRepostCount)
+	}
+	if m._IsRepost != nil {
+		fields = append(fields, post.FieldIsRepost)
 	}
 	if m._RelevanceScore != nil {
 		fields = append(fields, post.FieldRelevanceScore)
@@ -34979,6 +35991,10 @@ func (m *PostMutation) Field(name string) (ent.Value, bool) {
 		return m.IsPinned()
 	case post.FieldIsHidden:
 		return m.IsHidden()
+	case post.FieldRepostCount:
+		return m.RepostCount()
+	case post.FieldIsRepost:
+		return m.IsRepost()
 	case post.FieldRelevanceScore:
 		return m.RelevanceScore()
 	case post.FieldSearchText:
@@ -35020,6 +36036,10 @@ func (m *PostMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldIsPinned(ctx)
 	case post.FieldIsHidden:
 		return m.OldIsHidden(ctx)
+	case post.FieldRepostCount:
+		return m.OldRepostCount(ctx)
+	case post.FieldIsRepost:
+		return m.OldIsRepost(ctx)
 	case post.FieldRelevanceScore:
 		return m.OldRelevanceScore(ctx)
 	case post.FieldSearchText:
@@ -35131,6 +36151,20 @@ func (m *PostMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetIsHidden(v)
 		return nil
+	case post.FieldRepostCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRepostCount(v)
+		return nil
+	case post.FieldIsRepost:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsRepost(v)
+		return nil
 	case post.FieldRelevanceScore:
 		v, ok := value.(int)
 		if !ok {
@@ -35165,6 +36199,9 @@ func (m *PostMutation) AddedFields() []string {
 	if m.add_ViewCount != nil {
 		fields = append(fields, post.FieldViewCount)
 	}
+	if m.add_RepostCount != nil {
+		fields = append(fields, post.FieldRepostCount)
+	}
 	if m.add_RelevanceScore != nil {
 		fields = append(fields, post.FieldRelevanceScore)
 	}
@@ -35184,6 +36221,8 @@ func (m *PostMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedShareCount()
 	case post.FieldViewCount:
 		return m.AddedViewCount()
+	case post.FieldRepostCount:
+		return m.AddedRepostCount()
 	case post.FieldRelevanceScore:
 		return m.AddedRelevanceScore()
 	}
@@ -35223,6 +36262,13 @@ func (m *PostMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddViewCount(v)
 		return nil
+	case post.FieldRepostCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddRepostCount(v)
+		return nil
 	case post.FieldRelevanceScore:
 		v, ok := value.(int)
 		if !ok {
@@ -35238,6 +36284,9 @@ func (m *PostMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *PostMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(post.FieldContent) {
+		fields = append(fields, post.FieldContent)
+	}
 	if m.FieldCleared(post.FieldSearchText) {
 		fields = append(fields, post.FieldSearchText)
 	}
@@ -35255,6 +36304,9 @@ func (m *PostMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *PostMutation) ClearField(name string) error {
 	switch name {
+	case post.FieldContent:
+		m.ClearContent()
+		return nil
 	case post.FieldSearchText:
 		m.ClearSearchText()
 		return nil
@@ -35308,6 +36360,12 @@ func (m *PostMutation) ResetField(name string) error {
 	case post.FieldIsHidden:
 		m.ResetIsHidden()
 		return nil
+	case post.FieldRepostCount:
+		m.ResetRepostCount()
+		return nil
+	case post.FieldIsRepost:
+		m.ResetIsRepost()
+		return nil
 	case post.FieldRelevanceScore:
 		m.ResetRelevanceScore()
 		return nil
@@ -35320,7 +36378,7 @@ func (m *PostMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PostMutation) AddedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 9)
 	if m.user != nil {
 		edges = append(edges, post.EdgeUser)
 	}
@@ -35341,6 +36399,12 @@ func (m *PostMutation) AddedEdges() []string {
 	}
 	if m.notifications != nil {
 		edges = append(edges, post.EdgeNotifications)
+	}
+	if m.reposts != nil {
+		edges = append(edges, post.EdgeReposts)
+	}
+	if m.original_post != nil {
+		edges = append(edges, post.EdgeOriginalPost)
 	}
 	return edges
 }
@@ -35387,13 +36451,23 @@ func (m *PostMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case post.EdgeReposts:
+		if id := m.reposts; id != nil {
+			return []ent.Value{*id}
+		}
+	case post.EdgeOriginalPost:
+		ids := make([]ent.Value, 0, len(m.original_post))
+		for id := range m.original_post {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PostMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 9)
 	if m.removedmedias != nil {
 		edges = append(edges, post.EdgeMedias)
 	}
@@ -35408,6 +36482,9 @@ func (m *PostMutation) RemovedEdges() []string {
 	}
 	if m.removednotifications != nil {
 		edges = append(edges, post.EdgeNotifications)
+	}
+	if m.removedoriginal_post != nil {
+		edges = append(edges, post.EdgeOriginalPost)
 	}
 	return edges
 }
@@ -35446,13 +36523,19 @@ func (m *PostMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case post.EdgeOriginalPost:
+		ids := make([]ent.Value, 0, len(m.removedoriginal_post))
+		for id := range m.removedoriginal_post {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PostMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 9)
 	if m.cleareduser {
 		edges = append(edges, post.EdgeUser)
 	}
@@ -35473,6 +36556,12 @@ func (m *PostMutation) ClearedEdges() []string {
 	}
 	if m.clearednotifications {
 		edges = append(edges, post.EdgeNotifications)
+	}
+	if m.clearedreposts {
+		edges = append(edges, post.EdgeReposts)
+	}
+	if m.clearedoriginal_post {
+		edges = append(edges, post.EdgeOriginalPost)
 	}
 	return edges
 }
@@ -35495,6 +36584,10 @@ func (m *PostMutation) EdgeCleared(name string) bool {
 		return m.clearedcategories
 	case post.EdgeNotifications:
 		return m.clearednotifications
+	case post.EdgeReposts:
+		return m.clearedreposts
+	case post.EdgeOriginalPost:
+		return m.clearedoriginal_post
 	}
 	return false
 }
@@ -35508,6 +36601,9 @@ func (m *PostMutation) ClearEdge(name string) error {
 		return nil
 	case post.EdgeBusinessAccount:
 		m.ClearBusinessAccount()
+		return nil
+	case post.EdgeReposts:
+		m.ClearReposts()
 		return nil
 	}
 	return fmt.Errorf("unknown Post unique edge %s", name)
@@ -35537,6 +36633,12 @@ func (m *PostMutation) ResetEdge(name string) error {
 		return nil
 	case post.EdgeNotifications:
 		m.ResetNotifications()
+		return nil
+	case post.EdgeReposts:
+		m.ResetReposts()
+		return nil
+	case post.EdgeOriginalPost:
+		m.ResetOriginalPost()
 		return nil
 	}
 	return fmt.Errorf("unknown Post edge %s", name)

@@ -564,6 +564,8 @@ var (
 	InventoryAttributesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
 		{Name: "name", Type: field.TypeString},
+		{Name: "image_url", Type: field.TypeString, Nullable: true},
+		{Name: "icon_url", Type: field.TypeString, Nullable: true},
 		{Name: "is_mandatory", Type: field.TypeBool, Default: false},
 		{Name: "data_type", Type: field.TypeEnum, Nullable: true, Enums: []string{"string", "number", "boolean", "date", "enum"}},
 		{Name: "inventory_type_attributes", Type: field.TypeString, Nullable: true, Size: 36},
@@ -576,7 +578,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "inventory_attributes_inventory_types_attributes",
-				Columns:    []*schema.Column{InventoryAttributesColumns[4]},
+				Columns:    []*schema.Column{InventoryAttributesColumns[6]},
 				RefColumns: []*schema.Column{InventoryTypesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -587,6 +589,8 @@ var (
 		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
 		{Name: "name", Type: field.TypeString, Unique: true},
 		{Name: "description", Type: field.TypeString, Nullable: true},
+		{Name: "image_url", Type: field.TypeString, Nullable: true},
+		{Name: "icon_url", Type: field.TypeString, Nullable: true},
 		{Name: "industry_type", Type: field.TypeEnum, Nullable: true, Enums: []string{"hotel", "restaurant", "bar", "club", "gym", "events", "retail", "other"}},
 		{Name: "measurement_unit", Type: field.TypeString, Nullable: true},
 	}
@@ -703,6 +707,8 @@ var (
 	MenusColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
 		{Name: "name", Type: field.TypeString},
+		{Name: "deleted_at", Type: field.TypeString, Nullable: true},
+		{Name: "is_deleted", Type: field.TypeBool, Default: false},
 		{Name: "description", Type: field.TypeString, Nullable: true},
 		{Name: "place_menus", Type: field.TypeString, Nullable: true, Size: 36},
 	}
@@ -714,7 +720,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "menus_places_menus",
-				Columns:    []*schema.Column{MenusColumns[3]},
+				Columns:    []*schema.Column{MenusColumns[5]},
 				RefColumns: []*schema.Column{PlacesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -728,6 +734,8 @@ var (
 		{Name: "price", Type: field.TypeFloat64},
 		{Name: "preparation_time", Type: field.TypeInt, Nullable: true},
 		{Name: "options", Type: field.TypeJSON, Nullable: true},
+		{Name: "deleted_at", Type: field.TypeString, Nullable: true},
+		{Name: "is_deleted", Type: field.TypeBool, Default: false},
 	}
 	// MenuItemsTable holds the schema information for the "menu_items" table.
 	MenuItemsTable = &schema.Table{
@@ -765,6 +773,8 @@ var (
 		{Name: "status", Type: field.TypeEnum, Enums: []string{"pending", "confirmed", "completed", "cancelled"}, Default: "pending"},
 		{Name: "total_amount", Type: field.TypeFloat64},
 		{Name: "additional_info", Type: field.TypeJSON, Nullable: true},
+		{Name: "deleted_at", Type: field.TypeString, Nullable: true},
+		{Name: "is_deleted", Type: field.TypeBool, Default: false},
 		{Name: "user_orders", Type: field.TypeString, Nullable: true, Size: 36},
 	}
 	// OrdersTable holds the schema information for the "orders" table.
@@ -775,7 +785,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "orders_users_orders",
-				Columns:    []*schema.Column{OrdersColumns[6]},
+				Columns:    []*schema.Column{OrdersColumns[8]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -957,6 +967,8 @@ var (
 	PlaceTablesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
 		{Name: "number", Type: field.TypeInt},
+		{Name: "deleted_at", Type: field.TypeString, Nullable: true},
+		{Name: "is_deleted", Type: field.TypeBool, Default: false},
 		{Name: "qr_code", Type: field.TypeString, Nullable: true},
 		{Name: "place_tables", Type: field.TypeString, Nullable: true, Size: 36},
 	}
@@ -968,7 +980,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "place_tables_places_tables",
-				Columns:    []*schema.Column{PlaceTablesColumns[3]},
+				Columns:    []*schema.Column{PlaceTablesColumns[5]},
 				RefColumns: []*schema.Column{PlacesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -977,7 +989,7 @@ var (
 	// PostsColumns holds the columns for the "posts" table.
 	PostsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
-		{Name: "content", Type: field.TypeString, Size: 2147483647},
+		{Name: "content", Type: field.TypeString, Nullable: true, Size: 2147483647},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "privacy", Type: field.TypeEnum, Enums: []string{"Public", "FollowersOnly", "OnlyMe"}, Default: "Public"},
@@ -991,9 +1003,12 @@ var (
 		{Name: "is_boosted", Type: field.TypeBool, Default: false},
 		{Name: "is_pinned", Type: field.TypeBool, Default: false},
 		{Name: "is_hidden", Type: field.TypeBool, Default: false},
+		{Name: "repost_count", Type: field.TypeInt, Default: 0},
+		{Name: "is_repost", Type: field.TypeBool, Default: false},
 		{Name: "relevance_score", Type: field.TypeInt, Default: 0},
 		{Name: "search_text", Type: field.TypeString, Nullable: true},
 		{Name: "business_posts", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "post_original_post", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "user_posts", Type: field.TypeString, Nullable: true, Size: 36},
 	}
 	// PostsTable holds the schema information for the "posts" table.
@@ -1004,13 +1019,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "posts_businesses_posts",
-				Columns:    []*schema.Column{PostsColumns[17]},
+				Columns:    []*schema.Column{PostsColumns[19]},
 				RefColumns: []*schema.Column{BusinessesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
+				Symbol:     "posts_posts_original_post",
+				Columns:    []*schema.Column{PostsColumns[20]},
+				RefColumns: []*schema.Column{PostsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
 				Symbol:     "posts_users_posts",
-				Columns:    []*schema.Column{PostsColumns[18]},
+				Columns:    []*schema.Column{PostsColumns[21]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -2136,7 +2157,8 @@ func init() {
 	PlaceInventoryAttributesTable.ForeignKeys[1].RefTable = PlaceInventoriesTable
 	PlaceTablesTable.ForeignKeys[0].RefTable = PlacesTable
 	PostsTable.ForeignKeys[0].RefTable = BusinessesTable
-	PostsTable.ForeignKeys[1].RefTable = UsersTable
+	PostsTable.ForeignKeys[1].RefTable = PostsTable
+	PostsTable.ForeignKeys[2].RefTable = UsersTable
 	RatingsTable.ForeignKeys[0].RefTable = BusinessesTable
 	RatingsTable.ForeignKeys[1].RefTable = EventsTable
 	RatingsTable.ForeignKeys[2].RefTable = PlacesTable

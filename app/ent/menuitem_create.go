@@ -69,6 +69,34 @@ func (mic *MenuItemCreate) SetOptions(s []string) *MenuItemCreate {
 	return mic
 }
 
+// SetDeletedAt sets the "deleted_at" field.
+func (mic *MenuItemCreate) SetDeletedAt(s string) *MenuItemCreate {
+	mic.mutation.SetDeletedAt(s)
+	return mic
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (mic *MenuItemCreate) SetNillableDeletedAt(s *string) *MenuItemCreate {
+	if s != nil {
+		mic.SetDeletedAt(*s)
+	}
+	return mic
+}
+
+// SetIsDeleted sets the "is_deleted" field.
+func (mic *MenuItemCreate) SetIsDeleted(b bool) *MenuItemCreate {
+	mic.mutation.SetIsDeleted(b)
+	return mic
+}
+
+// SetNillableIsDeleted sets the "is_deleted" field if the given value is not nil.
+func (mic *MenuItemCreate) SetNillableIsDeleted(b *bool) *MenuItemCreate {
+	if b != nil {
+		mic.SetIsDeleted(*b)
+	}
+	return mic
+}
+
 // SetID sets the "id" field.
 func (mic *MenuItemCreate) SetID(s string) *MenuItemCreate {
 	mic.mutation.SetID(s)
@@ -146,6 +174,7 @@ func (mic *MenuItemCreate) Mutation() *MenuItemMutation {
 
 // Save creates the MenuItem in the database.
 func (mic *MenuItemCreate) Save(ctx context.Context) (*MenuItem, error) {
+	mic.defaults()
 	return withHooks(ctx, mic.sqlSave, mic.mutation, mic.hooks)
 }
 
@@ -171,6 +200,14 @@ func (mic *MenuItemCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (mic *MenuItemCreate) defaults() {
+	if _, ok := mic.mutation.IsDeleted(); !ok {
+		v := menuitem.DefaultIsDeleted
+		mic.mutation.SetIsDeleted(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (mic *MenuItemCreate) check() error {
 	if _, ok := mic.mutation.Name(); !ok {
@@ -178,6 +215,9 @@ func (mic *MenuItemCreate) check() error {
 	}
 	if _, ok := mic.mutation.Price(); !ok {
 		return &ValidationError{Name: "price", err: errors.New(`ent: missing required field "MenuItem.price"`)}
+	}
+	if _, ok := mic.mutation.IsDeleted(); !ok {
+		return &ValidationError{Name: "is_deleted", err: errors.New(`ent: missing required field "MenuItem.is_deleted"`)}
 	}
 	if v, ok := mic.mutation.ID(); ok {
 		if err := menuitem.IDValidator(v); err != nil {
@@ -238,6 +278,14 @@ func (mic *MenuItemCreate) createSpec() (*MenuItem, *sqlgraph.CreateSpec) {
 	if value, ok := mic.mutation.Options(); ok {
 		_spec.SetField(menuitem.FieldOptions, field.TypeJSON, value)
 		_node.Options = value
+	}
+	if value, ok := mic.mutation.DeletedAt(); ok {
+		_spec.SetField(menuitem.FieldDeletedAt, field.TypeString, value)
+		_node.DeletedAt = value
+	}
+	if value, ok := mic.mutation.IsDeleted(); ok {
+		_spec.SetField(menuitem.FieldIsDeleted, field.TypeBool, value)
+		_node.IsDeleted = value
 	}
 	if nodes := mic.mutation.MenuIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -324,6 +372,7 @@ func (micb *MenuItemCreateBulk) Save(ctx context.Context) ([]*MenuItem, error) {
 	for i := range micb.builders {
 		func(i int, root context.Context) {
 			builder := micb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*MenuItemMutation)
 				if !ok {

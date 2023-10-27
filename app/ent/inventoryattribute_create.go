@@ -27,6 +27,34 @@ func (iac *InventoryAttributeCreate) SetName(s string) *InventoryAttributeCreate
 	return iac
 }
 
+// SetImageURL sets the "image_url" field.
+func (iac *InventoryAttributeCreate) SetImageURL(s string) *InventoryAttributeCreate {
+	iac.mutation.SetImageURL(s)
+	return iac
+}
+
+// SetNillableImageURL sets the "image_url" field if the given value is not nil.
+func (iac *InventoryAttributeCreate) SetNillableImageURL(s *string) *InventoryAttributeCreate {
+	if s != nil {
+		iac.SetImageURL(*s)
+	}
+	return iac
+}
+
+// SetIconURL sets the "icon_url" field.
+func (iac *InventoryAttributeCreate) SetIconURL(s string) *InventoryAttributeCreate {
+	iac.mutation.SetIconURL(s)
+	return iac
+}
+
+// SetNillableIconURL sets the "icon_url" field if the given value is not nil.
+func (iac *InventoryAttributeCreate) SetNillableIconURL(s *string) *InventoryAttributeCreate {
+	if s != nil {
+		iac.SetIconURL(*s)
+	}
+	return iac
+}
+
 // SetIsMandatory sets the "is_mandatory" field.
 func (iac *InventoryAttributeCreate) SetIsMandatory(b bool) *InventoryAttributeCreate {
 	iac.mutation.SetIsMandatory(b)
@@ -192,6 +220,14 @@ func (iac *InventoryAttributeCreate) createSpec() (*InventoryAttribute, *sqlgrap
 	if value, ok := iac.mutation.Name(); ok {
 		_spec.SetField(inventoryattribute.FieldName, field.TypeString, value)
 		_node.Name = value
+	}
+	if value, ok := iac.mutation.ImageURL(); ok {
+		_spec.SetField(inventoryattribute.FieldImageURL, field.TypeString, value)
+		_node.ImageURL = value
+	}
+	if value, ok := iac.mutation.IconURL(); ok {
+		_spec.SetField(inventoryattribute.FieldIconURL, field.TypeString, value)
+		_node.IconURL = value
 	}
 	if value, ok := iac.mutation.IsMandatory(); ok {
 		_spec.SetField(inventoryattribute.FieldIsMandatory, field.TypeBool, value)

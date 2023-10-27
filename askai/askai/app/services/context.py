@@ -16,8 +16,47 @@ def explore_topic_resources_context(topic: str) -> str:
 
 # For the /practice_language endpoint
 def practice_language_context(text: str, language: str) -> str:
-    return f"Review the following text in {language} and provide corrections or suggestions for improvement: '{text}'."
+    language_dict = {
+        'French': 'bonjour le monde',
+        'Spanish': 'hola mundo',
+        'German': 'hallo Welt',
+        'Italian': 'ciao mondo',
+        'Portuguese': 'olá mundo',
+        'Russian': 'привет мир',
+        'Chinese (Simplified)': '你好，世界',
+        'Japanese': 'こんにちは世界',
+        'Korean': '안녕하세요 세계',
+        'Arabic': 'مرحبا بالعالم',
+        'Hindi': 'नमस्ते दुनिया',
+        'Bengali': 'হ্যালো বিশ্ব',
+        'Turkish': 'merhaba dünya',
+        'Vietnamese': 'xin chào thế giới',
+        'Thai': 'สวัสดีโลก',
+        'Indonesian': 'halo dunia',
+        'Filipino': 'kamusta mundo',
+    }
+    translation_example = language_dict.get(language, 'Translation not available')
+    return f"""
+    You have been given a text in English: '{text}'.
+    As a native {language} speaker, please translate the text '{text}' into {language}.
+    Example translation: '{translation_example}'.
 
+    Note: The text may not be grammatically correct or make sense in the given language.
+    I am looking for a translation that is as close as possible to the original text.
+    I am not looking for a perfect translation, but rather a translation that is natural and fluent.
+    I will be evaluating your translation based on the following criteria:
+    - Fluency: Does the translation sound natural and fluent?
+    - Accuracy: Does the translation accurately convey the meaning of the original text?
+    - Grammar: Does the translation use proper grammar and punctuation?
+    - Spelling: Does the translation use proper spelling?
+    - Vocabulary: Does the translation use proper vocabulary?
+    - Style: Does the translation use proper style and tone?
+
+    Important: Please do add any additional text to the translation.
+    Please only translate the text provided.
+
+    Please translate the text '{text}' into {language}.
+    """
 
 # For the /homework_helper endpoint
 def homework_helper_context(question: str, hint_only: bool) -> str:

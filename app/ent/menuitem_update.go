@@ -116,6 +116,40 @@ func (miu *MenuItemUpdate) ClearOptions() *MenuItemUpdate {
 	return miu
 }
 
+// SetDeletedAt sets the "deleted_at" field.
+func (miu *MenuItemUpdate) SetDeletedAt(s string) *MenuItemUpdate {
+	miu.mutation.SetDeletedAt(s)
+	return miu
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (miu *MenuItemUpdate) SetNillableDeletedAt(s *string) *MenuItemUpdate {
+	if s != nil {
+		miu.SetDeletedAt(*s)
+	}
+	return miu
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (miu *MenuItemUpdate) ClearDeletedAt() *MenuItemUpdate {
+	miu.mutation.ClearDeletedAt()
+	return miu
+}
+
+// SetIsDeleted sets the "is_deleted" field.
+func (miu *MenuItemUpdate) SetIsDeleted(b bool) *MenuItemUpdate {
+	miu.mutation.SetIsDeleted(b)
+	return miu
+}
+
+// SetNillableIsDeleted sets the "is_deleted" field if the given value is not nil.
+func (miu *MenuItemUpdate) SetNillableIsDeleted(b *bool) *MenuItemUpdate {
+	if b != nil {
+		miu.SetIsDeleted(*b)
+	}
+	return miu
+}
+
 // AddMenuIDs adds the "menu" edge to the Menu entity by IDs.
 func (miu *MenuItemUpdate) AddMenuIDs(ids ...string) *MenuItemUpdate {
 	miu.mutation.AddMenuIDs(ids...)
@@ -324,6 +358,15 @@ func (miu *MenuItemUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if miu.mutation.OptionsCleared() {
 		_spec.ClearField(menuitem.FieldOptions, field.TypeJSON)
+	}
+	if value, ok := miu.mutation.DeletedAt(); ok {
+		_spec.SetField(menuitem.FieldDeletedAt, field.TypeString, value)
+	}
+	if miu.mutation.DeletedAtCleared() {
+		_spec.ClearField(menuitem.FieldDeletedAt, field.TypeString)
+	}
+	if value, ok := miu.mutation.IsDeleted(); ok {
+		_spec.SetField(menuitem.FieldIsDeleted, field.TypeBool, value)
 	}
 	if miu.mutation.MenuCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -593,6 +636,40 @@ func (miuo *MenuItemUpdateOne) ClearOptions() *MenuItemUpdateOne {
 	return miuo
 }
 
+// SetDeletedAt sets the "deleted_at" field.
+func (miuo *MenuItemUpdateOne) SetDeletedAt(s string) *MenuItemUpdateOne {
+	miuo.mutation.SetDeletedAt(s)
+	return miuo
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (miuo *MenuItemUpdateOne) SetNillableDeletedAt(s *string) *MenuItemUpdateOne {
+	if s != nil {
+		miuo.SetDeletedAt(*s)
+	}
+	return miuo
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (miuo *MenuItemUpdateOne) ClearDeletedAt() *MenuItemUpdateOne {
+	miuo.mutation.ClearDeletedAt()
+	return miuo
+}
+
+// SetIsDeleted sets the "is_deleted" field.
+func (miuo *MenuItemUpdateOne) SetIsDeleted(b bool) *MenuItemUpdateOne {
+	miuo.mutation.SetIsDeleted(b)
+	return miuo
+}
+
+// SetNillableIsDeleted sets the "is_deleted" field if the given value is not nil.
+func (miuo *MenuItemUpdateOne) SetNillableIsDeleted(b *bool) *MenuItemUpdateOne {
+	if b != nil {
+		miuo.SetIsDeleted(*b)
+	}
+	return miuo
+}
+
 // AddMenuIDs adds the "menu" edge to the Menu entity by IDs.
 func (miuo *MenuItemUpdateOne) AddMenuIDs(ids ...string) *MenuItemUpdateOne {
 	miuo.mutation.AddMenuIDs(ids...)
@@ -831,6 +908,15 @@ func (miuo *MenuItemUpdateOne) sqlSave(ctx context.Context) (_node *MenuItem, er
 	}
 	if miuo.mutation.OptionsCleared() {
 		_spec.ClearField(menuitem.FieldOptions, field.TypeJSON)
+	}
+	if value, ok := miuo.mutation.DeletedAt(); ok {
+		_spec.SetField(menuitem.FieldDeletedAt, field.TypeString, value)
+	}
+	if miuo.mutation.DeletedAtCleared() {
+		_spec.ClearField(menuitem.FieldDeletedAt, field.TypeString)
+	}
+	if value, ok := miuo.mutation.IsDeleted(); ok {
+		_spec.SetField(menuitem.FieldIsDeleted, field.TypeBool, value)
 	}
 	if miuo.mutation.MenuCleared() {
 		edge := &sqlgraph.EdgeSpec{

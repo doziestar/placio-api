@@ -302,7 +302,7 @@ func init() {
 	inventoryattributeFields := schema.InventoryAttribute{}.Fields()
 	_ = inventoryattributeFields
 	// inventoryattributeDescIsMandatory is the schema descriptor for is_mandatory field.
-	inventoryattributeDescIsMandatory := inventoryattributeFields[2].Descriptor()
+	inventoryattributeDescIsMandatory := inventoryattributeFields[4].Descriptor()
 	// inventoryattribute.DefaultIsMandatory holds the default value on creation for the is_mandatory field.
 	inventoryattribute.DefaultIsMandatory = inventoryattributeDescIsMandatory.Default.(bool)
 	// inventoryattributeDescID is the schema descriptor for id field.
@@ -355,12 +355,20 @@ func init() {
 	media.IDValidator = mediaDescID.Validators[0].(func(string) error)
 	menuFields := schema.Menu{}.Fields()
 	_ = menuFields
+	// menuDescIsDeleted is the schema descriptor for is_deleted field.
+	menuDescIsDeleted := menuFields[3].Descriptor()
+	// menu.DefaultIsDeleted holds the default value on creation for the is_deleted field.
+	menu.DefaultIsDeleted = menuDescIsDeleted.Default.(bool)
 	// menuDescID is the schema descriptor for id field.
 	menuDescID := menuFields[0].Descriptor()
 	// menu.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	menu.IDValidator = menuDescID.Validators[0].(func(string) error)
 	menuitemFields := schema.MenuItem{}.Fields()
 	_ = menuitemFields
+	// menuitemDescIsDeleted is the schema descriptor for is_deleted field.
+	menuitemDescIsDeleted := menuitemFields[7].Descriptor()
+	// menuitem.DefaultIsDeleted holds the default value on creation for the is_deleted field.
+	menuitem.DefaultIsDeleted = menuitemDescIsDeleted.Default.(bool)
 	// menuitemDescID is the schema descriptor for id field.
 	menuitemDescID := menuitemFields[0].Descriptor()
 	// menuitem.IDValidator is a validator for the "id" field. It is called by the builders before save.
@@ -423,6 +431,10 @@ func init() {
 	order.DefaultUpdatedAt = orderDescUpdatedAt.Default.(func() time.Time)
 	// order.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	order.UpdateDefaultUpdatedAt = orderDescUpdatedAt.UpdateDefault.(func() time.Time)
+	// orderDescIsDeleted is the schema descriptor for is_deleted field.
+	orderDescIsDeleted := orderFields[7].Descriptor()
+	// order.DefaultIsDeleted holds the default value on creation for the is_deleted field.
+	order.DefaultIsDeleted = orderDescIsDeleted.Default.(bool)
 	// orderDescID is the schema descriptor for id field.
 	orderDescID := orderFields[0].Descriptor()
 	// order.IDValidator is a validator for the "id" field. It is called by the builders before save.
@@ -499,6 +511,10 @@ func init() {
 	placeinventoryattribute.IDValidator = placeinventoryattributeDescID.Validators[0].(func(string) error)
 	placetableFields := schema.PlaceTable{}.Fields()
 	_ = placetableFields
+	// placetableDescIsDeleted is the schema descriptor for is_deleted field.
+	placetableDescIsDeleted := placetableFields[3].Descriptor()
+	// placetable.DefaultIsDeleted holds the default value on creation for the is_deleted field.
+	placetable.DefaultIsDeleted = placetableDescIsDeleted.Default.(bool)
 	// placetableDescID is the schema descriptor for id field.
 	placetableDescID := placetableFields[0].Descriptor()
 	// placetable.IDValidator is a validator for the "id" field. It is called by the builders before save.
@@ -557,8 +573,16 @@ func init() {
 	postDescIsHidden := postFields[14].Descriptor()
 	// post.DefaultIsHidden holds the default value on creation for the IsHidden field.
 	post.DefaultIsHidden = postDescIsHidden.Default.(bool)
+	// postDescRepostCount is the schema descriptor for RepostCount field.
+	postDescRepostCount := postFields[15].Descriptor()
+	// post.DefaultRepostCount holds the default value on creation for the RepostCount field.
+	post.DefaultRepostCount = postDescRepostCount.Default.(int)
+	// postDescIsRepost is the schema descriptor for IsRepost field.
+	postDescIsRepost := postFields[16].Descriptor()
+	// post.DefaultIsRepost holds the default value on creation for the IsRepost field.
+	post.DefaultIsRepost = postDescIsRepost.Default.(bool)
 	// postDescRelevanceScore is the schema descriptor for RelevanceScore field.
-	postDescRelevanceScore := postFields[15].Descriptor()
+	postDescRelevanceScore := postFields[17].Descriptor()
 	// post.DefaultRelevanceScore holds the default value on creation for the RelevanceScore field.
 	post.DefaultRelevanceScore = postDescRelevanceScore.Default.(int)
 	// postDescID is the schema descriptor for id field.

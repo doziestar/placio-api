@@ -27,6 +27,34 @@ func (ptc *PlaceTableCreate) SetNumber(i int) *PlaceTableCreate {
 	return ptc
 }
 
+// SetDeletedAt sets the "deleted_at" field.
+func (ptc *PlaceTableCreate) SetDeletedAt(s string) *PlaceTableCreate {
+	ptc.mutation.SetDeletedAt(s)
+	return ptc
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (ptc *PlaceTableCreate) SetNillableDeletedAt(s *string) *PlaceTableCreate {
+	if s != nil {
+		ptc.SetDeletedAt(*s)
+	}
+	return ptc
+}
+
+// SetIsDeleted sets the "is_deleted" field.
+func (ptc *PlaceTableCreate) SetIsDeleted(b bool) *PlaceTableCreate {
+	ptc.mutation.SetIsDeleted(b)
+	return ptc
+}
+
+// SetNillableIsDeleted sets the "is_deleted" field if the given value is not nil.
+func (ptc *PlaceTableCreate) SetNillableIsDeleted(b *bool) *PlaceTableCreate {
+	if b != nil {
+		ptc.SetIsDeleted(*b)
+	}
+	return ptc
+}
+
 // SetQrCode sets the "qr_code" field.
 func (ptc *PlaceTableCreate) SetQrCode(s string) *PlaceTableCreate {
 	ptc.mutation.SetQrCode(s)
@@ -88,6 +116,7 @@ func (ptc *PlaceTableCreate) Mutation() *PlaceTableMutation {
 
 // Save creates the PlaceTable in the database.
 func (ptc *PlaceTableCreate) Save(ctx context.Context) (*PlaceTable, error) {
+	ptc.defaults()
 	return withHooks(ctx, ptc.sqlSave, ptc.mutation, ptc.hooks)
 }
 
@@ -113,10 +142,21 @@ func (ptc *PlaceTableCreate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (ptc *PlaceTableCreate) defaults() {
+	if _, ok := ptc.mutation.IsDeleted(); !ok {
+		v := placetable.DefaultIsDeleted
+		ptc.mutation.SetIsDeleted(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (ptc *PlaceTableCreate) check() error {
 	if _, ok := ptc.mutation.Number(); !ok {
 		return &ValidationError{Name: "number", err: errors.New(`ent: missing required field "PlaceTable.number"`)}
+	}
+	if _, ok := ptc.mutation.IsDeleted(); !ok {
+		return &ValidationError{Name: "is_deleted", err: errors.New(`ent: missing required field "PlaceTable.is_deleted"`)}
 	}
 	if v, ok := ptc.mutation.ID(); ok {
 		if err := placetable.IDValidator(v); err != nil {
@@ -161,6 +201,14 @@ func (ptc *PlaceTableCreate) createSpec() (*PlaceTable, *sqlgraph.CreateSpec) {
 	if value, ok := ptc.mutation.Number(); ok {
 		_spec.SetField(placetable.FieldNumber, field.TypeInt, value)
 		_node.Number = value
+	}
+	if value, ok := ptc.mutation.DeletedAt(); ok {
+		_spec.SetField(placetable.FieldDeletedAt, field.TypeString, value)
+		_node.DeletedAt = value
+	}
+	if value, ok := ptc.mutation.IsDeleted(); ok {
+		_spec.SetField(placetable.FieldIsDeleted, field.TypeBool, value)
+		_node.IsDeleted = value
 	}
 	if value, ok := ptc.mutation.QrCode(); ok {
 		_spec.SetField(placetable.FieldQrCode, field.TypeString, value)
@@ -220,6 +268,7 @@ func (ptcb *PlaceTableCreateBulk) Save(ctx context.Context) ([]*PlaceTable, erro
 	for i := range ptcb.builders {
 		func(i int, root context.Context) {
 			builder := ptcb.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*PlaceTableMutation)
 				if !ok {

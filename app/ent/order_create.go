@@ -77,6 +77,34 @@ func (oc *OrderCreate) SetAdditionalInfo(m map[string]interface{}) *OrderCreate 
 	return oc
 }
 
+// SetDeletedAt sets the "deleted_at" field.
+func (oc *OrderCreate) SetDeletedAt(s string) *OrderCreate {
+	oc.mutation.SetDeletedAt(s)
+	return oc
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (oc *OrderCreate) SetNillableDeletedAt(s *string) *OrderCreate {
+	if s != nil {
+		oc.SetDeletedAt(*s)
+	}
+	return oc
+}
+
+// SetIsDeleted sets the "is_deleted" field.
+func (oc *OrderCreate) SetIsDeleted(b bool) *OrderCreate {
+	oc.mutation.SetIsDeleted(b)
+	return oc
+}
+
+// SetNillableIsDeleted sets the "is_deleted" field if the given value is not nil.
+func (oc *OrderCreate) SetNillableIsDeleted(b *bool) *OrderCreate {
+	if b != nil {
+		oc.SetIsDeleted(*b)
+	}
+	return oc
+}
+
 // SetID sets the "id" field.
 func (oc *OrderCreate) SetID(s string) *OrderCreate {
 	oc.mutation.SetID(s)
@@ -179,6 +207,10 @@ func (oc *OrderCreate) defaults() {
 		v := order.DefaultStatus
 		oc.mutation.SetStatus(v)
 	}
+	if _, ok := oc.mutation.IsDeleted(); !ok {
+		v := order.DefaultIsDeleted
+		oc.mutation.SetIsDeleted(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -199,6 +231,9 @@ func (oc *OrderCreate) check() error {
 	}
 	if _, ok := oc.mutation.TotalAmount(); !ok {
 		return &ValidationError{Name: "total_amount", err: errors.New(`ent: missing required field "Order.total_amount"`)}
+	}
+	if _, ok := oc.mutation.IsDeleted(); !ok {
+		return &ValidationError{Name: "is_deleted", err: errors.New(`ent: missing required field "Order.is_deleted"`)}
 	}
 	if v, ok := oc.mutation.ID(); ok {
 		if err := order.IDValidator(v); err != nil {
@@ -259,6 +294,14 @@ func (oc *OrderCreate) createSpec() (*Order, *sqlgraph.CreateSpec) {
 	if value, ok := oc.mutation.AdditionalInfo(); ok {
 		_spec.SetField(order.FieldAdditionalInfo, field.TypeJSON, value)
 		_node.AdditionalInfo = value
+	}
+	if value, ok := oc.mutation.DeletedAt(); ok {
+		_spec.SetField(order.FieldDeletedAt, field.TypeString, value)
+		_node.DeletedAt = value
+	}
+	if value, ok := oc.mutation.IsDeleted(); ok {
+		_spec.SetField(order.FieldIsDeleted, field.TypeBool, value)
+		_node.IsDeleted = value
 	}
 	if nodes := oc.mutation.UserIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

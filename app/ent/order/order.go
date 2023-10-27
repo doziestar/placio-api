@@ -25,6 +25,10 @@ const (
 	FieldTotalAmount = "total_amount"
 	// FieldAdditionalInfo holds the string denoting the additional_info field in the database.
 	FieldAdditionalInfo = "additional_info"
+	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
+	FieldDeletedAt = "deleted_at"
+	// FieldIsDeleted holds the string denoting the is_deleted field in the database.
+	FieldIsDeleted = "is_deleted"
 	// EdgeUser holds the string denoting the user edge name in mutations.
 	EdgeUser = "user"
 	// EdgeOrderItems holds the string denoting the order_items edge name in mutations.
@@ -60,6 +64,8 @@ var Columns = []string{
 	FieldStatus,
 	FieldTotalAmount,
 	FieldAdditionalInfo,
+	FieldDeletedAt,
+	FieldIsDeleted,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "orders"
@@ -99,6 +105,8 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultIsDeleted holds the default value on creation for the "is_deleted" field.
+	DefaultIsDeleted bool
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(string) error
 )
@@ -157,6 +165,16 @@ func ByStatus(opts ...sql.OrderTermOption) OrderOption {
 // ByTotalAmount orders the results by the total_amount field.
 func ByTotalAmount(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTotalAmount, opts...).ToFunc()
+}
+
+// ByDeletedAt orders the results by the deleted_at field.
+func ByDeletedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDeletedAt, opts...).ToFunc()
+}
+
+// ByIsDeleted orders the results by the is_deleted field.
+func ByIsDeleted(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsDeleted, opts...).ToFunc()
 }
 
 // ByUserField orders the results by user field.

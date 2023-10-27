@@ -28,6 +28,10 @@ type MenuItem struct {
 	PreparationTime int `json:"preparation_time,omitempty"`
 	// Options holds the value of the "options" field.
 	Options []string `json:"options,omitempty"`
+	// DeletedAt holds the value of the "deleted_at" field.
+	DeletedAt string `json:"deleted_at,omitempty"`
+	// IsDeleted holds the value of the "is_deleted" field.
+	IsDeleted bool `json:"is_deleted,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the MenuItemQuery when eager-loading is set.
 	Edges        MenuItemEdges `json:"edges"`
@@ -96,11 +100,13 @@ func (*MenuItem) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case menuitem.FieldOptions:
 			values[i] = new([]byte)
+		case menuitem.FieldIsDeleted:
+			values[i] = new(sql.NullBool)
 		case menuitem.FieldPrice:
 			values[i] = new(sql.NullFloat64)
 		case menuitem.FieldPreparationTime:
 			values[i] = new(sql.NullInt64)
-		case menuitem.FieldID, menuitem.FieldName, menuitem.FieldDescription:
+		case menuitem.FieldID, menuitem.FieldName, menuitem.FieldDescription, menuitem.FieldDeletedAt:
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -154,6 +160,18 @@ func (mi *MenuItem) assignValues(columns []string, values []any) error {
 				if err := json.Unmarshal(*value, &mi.Options); err != nil {
 					return fmt.Errorf("unmarshal field options: %w", err)
 				}
+			}
+		case menuitem.FieldDeletedAt:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
+			} else if value.Valid {
+				mi.DeletedAt = value.String
+			}
+		case menuitem.FieldIsDeleted:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_deleted", values[i])
+			} else if value.Valid {
+				mi.IsDeleted = value.Bool
 			}
 		default:
 			mi.selectValues.Set(columns[i], values[i])
@@ -225,6 +243,12 @@ func (mi *MenuItem) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("options=")
 	builder.WriteString(fmt.Sprintf("%v", mi.Options))
+	builder.WriteString(", ")
+	builder.WriteString("deleted_at=")
+	builder.WriteString(mi.DeletedAt)
+	builder.WriteString(", ")
+	builder.WriteString("is_deleted=")
+	builder.WriteString(fmt.Sprintf("%v", mi.IsDeleted))
 	builder.WriteByte(')')
 	return builder.String()
 }

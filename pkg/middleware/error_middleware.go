@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"errors"
+	"fmt"
 	"github.com/getsentry/sentry-go"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -62,7 +63,7 @@ func ErrorMiddleware(fn func(*gin.Context) error) gin.HandlerFunc {
 				c.JSON(http.StatusConflict, gin.H{"error": "Constraint Error"})
 				return
 			}
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+			c.JSON(http.StatusInternalServerError, fmt.Sprintf("Internal Server Error: %s", err.Error()))
 			return
 		}
 		c.Next()

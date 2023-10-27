@@ -22,8 +22,10 @@ message Post {
   int64 LikeCount = 5;
   int64 CommentCount = 6;
   bool LikedByMe = 7;
-  PrivacyType Privacy = 8;
-  Edge edges = 9;
+  bool isRepost = 8;
+  int64 RepostCount = 9;
+  PrivacyType Privacy = 10;
+  Edge edges = 11;
 
   enum PrivacyType {
     UNKNOWN = 0;
@@ -36,6 +38,7 @@ message Post {
     repeated Comment comments = 2;
     repeated Media medias = 3;
     Business business = 4;
+    Post parent = 5;
   }
 
   message CommentEdge {

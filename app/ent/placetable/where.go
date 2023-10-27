@@ -69,6 +69,16 @@ func Number(v int) predicate.PlaceTable {
 	return predicate.PlaceTable(sql.FieldEQ(FieldNumber, v))
 }
 
+// DeletedAt applies equality check predicate on the "deleted_at" field. It's identical to DeletedAtEQ.
+func DeletedAt(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEQ(FieldDeletedAt, v))
+}
+
+// IsDeleted applies equality check predicate on the "is_deleted" field. It's identical to IsDeletedEQ.
+func IsDeleted(v bool) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEQ(FieldIsDeleted, v))
+}
+
 // QrCode applies equality check predicate on the "qr_code" field. It's identical to QrCodeEQ.
 func QrCode(v string) predicate.PlaceTable {
 	return predicate.PlaceTable(sql.FieldEQ(FieldQrCode, v))
@@ -112,6 +122,91 @@ func NumberLT(v int) predicate.PlaceTable {
 // NumberLTE applies the LTE predicate on the "number" field.
 func NumberLTE(v int) predicate.PlaceTable {
 	return predicate.PlaceTable(sql.FieldLTE(FieldNumber, v))
+}
+
+// DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
+func DeletedAtEQ(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEQ(FieldDeletedAt, v))
+}
+
+// DeletedAtNEQ applies the NEQ predicate on the "deleted_at" field.
+func DeletedAtNEQ(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNEQ(FieldDeletedAt, v))
+}
+
+// DeletedAtIn applies the In predicate on the "deleted_at" field.
+func DeletedAtIn(vs ...string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldIn(FieldDeletedAt, vs...))
+}
+
+// DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
+func DeletedAtNotIn(vs ...string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNotIn(FieldDeletedAt, vs...))
+}
+
+// DeletedAtGT applies the GT predicate on the "deleted_at" field.
+func DeletedAtGT(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldGT(FieldDeletedAt, v))
+}
+
+// DeletedAtGTE applies the GTE predicate on the "deleted_at" field.
+func DeletedAtGTE(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldGTE(FieldDeletedAt, v))
+}
+
+// DeletedAtLT applies the LT predicate on the "deleted_at" field.
+func DeletedAtLT(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldLT(FieldDeletedAt, v))
+}
+
+// DeletedAtLTE applies the LTE predicate on the "deleted_at" field.
+func DeletedAtLTE(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldLTE(FieldDeletedAt, v))
+}
+
+// DeletedAtContains applies the Contains predicate on the "deleted_at" field.
+func DeletedAtContains(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldContains(FieldDeletedAt, v))
+}
+
+// DeletedAtHasPrefix applies the HasPrefix predicate on the "deleted_at" field.
+func DeletedAtHasPrefix(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldHasPrefix(FieldDeletedAt, v))
+}
+
+// DeletedAtHasSuffix applies the HasSuffix predicate on the "deleted_at" field.
+func DeletedAtHasSuffix(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldHasSuffix(FieldDeletedAt, v))
+}
+
+// DeletedAtIsNil applies the IsNil predicate on the "deleted_at" field.
+func DeletedAtIsNil() predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldIsNull(FieldDeletedAt))
+}
+
+// DeletedAtNotNil applies the NotNil predicate on the "deleted_at" field.
+func DeletedAtNotNil() predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNotNull(FieldDeletedAt))
+}
+
+// DeletedAtEqualFold applies the EqualFold predicate on the "deleted_at" field.
+func DeletedAtEqualFold(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEqualFold(FieldDeletedAt, v))
+}
+
+// DeletedAtContainsFold applies the ContainsFold predicate on the "deleted_at" field.
+func DeletedAtContainsFold(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldContainsFold(FieldDeletedAt, v))
+}
+
+// IsDeletedEQ applies the EQ predicate on the "is_deleted" field.
+func IsDeletedEQ(v bool) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEQ(FieldIsDeleted, v))
+}
+
+// IsDeletedNEQ applies the NEQ predicate on the "is_deleted" field.
+func IsDeletedNEQ(v bool) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNEQ(FieldIsDeleted, v))
 }
 
 // QrCodeEQ applies the EQ predicate on the "qr_code" field.

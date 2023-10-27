@@ -35,6 +35,46 @@ func (iau *InventoryAttributeUpdate) SetName(s string) *InventoryAttributeUpdate
 	return iau
 }
 
+// SetImageURL sets the "image_url" field.
+func (iau *InventoryAttributeUpdate) SetImageURL(s string) *InventoryAttributeUpdate {
+	iau.mutation.SetImageURL(s)
+	return iau
+}
+
+// SetNillableImageURL sets the "image_url" field if the given value is not nil.
+func (iau *InventoryAttributeUpdate) SetNillableImageURL(s *string) *InventoryAttributeUpdate {
+	if s != nil {
+		iau.SetImageURL(*s)
+	}
+	return iau
+}
+
+// ClearImageURL clears the value of the "image_url" field.
+func (iau *InventoryAttributeUpdate) ClearImageURL() *InventoryAttributeUpdate {
+	iau.mutation.ClearImageURL()
+	return iau
+}
+
+// SetIconURL sets the "icon_url" field.
+func (iau *InventoryAttributeUpdate) SetIconURL(s string) *InventoryAttributeUpdate {
+	iau.mutation.SetIconURL(s)
+	return iau
+}
+
+// SetNillableIconURL sets the "icon_url" field if the given value is not nil.
+func (iau *InventoryAttributeUpdate) SetNillableIconURL(s *string) *InventoryAttributeUpdate {
+	if s != nil {
+		iau.SetIconURL(*s)
+	}
+	return iau
+}
+
+// ClearIconURL clears the value of the "icon_url" field.
+func (iau *InventoryAttributeUpdate) ClearIconURL() *InventoryAttributeUpdate {
+	iau.mutation.ClearIconURL()
+	return iau
+}
+
 // SetIsMandatory sets the "is_mandatory" field.
 func (iau *InventoryAttributeUpdate) SetIsMandatory(b bool) *InventoryAttributeUpdate {
 	iau.mutation.SetIsMandatory(b)
@@ -187,6 +227,18 @@ func (iau *InventoryAttributeUpdate) sqlSave(ctx context.Context) (n int, err er
 	if value, ok := iau.mutation.Name(); ok {
 		_spec.SetField(inventoryattribute.FieldName, field.TypeString, value)
 	}
+	if value, ok := iau.mutation.ImageURL(); ok {
+		_spec.SetField(inventoryattribute.FieldImageURL, field.TypeString, value)
+	}
+	if iau.mutation.ImageURLCleared() {
+		_spec.ClearField(inventoryattribute.FieldImageURL, field.TypeString)
+	}
+	if value, ok := iau.mutation.IconURL(); ok {
+		_spec.SetField(inventoryattribute.FieldIconURL, field.TypeString, value)
+	}
+	if iau.mutation.IconURLCleared() {
+		_spec.ClearField(inventoryattribute.FieldIconURL, field.TypeString)
+	}
 	if value, ok := iau.mutation.IsMandatory(); ok {
 		_spec.SetField(inventoryattribute.FieldIsMandatory, field.TypeBool, value)
 	}
@@ -293,6 +345,46 @@ type InventoryAttributeUpdateOne struct {
 // SetName sets the "name" field.
 func (iauo *InventoryAttributeUpdateOne) SetName(s string) *InventoryAttributeUpdateOne {
 	iauo.mutation.SetName(s)
+	return iauo
+}
+
+// SetImageURL sets the "image_url" field.
+func (iauo *InventoryAttributeUpdateOne) SetImageURL(s string) *InventoryAttributeUpdateOne {
+	iauo.mutation.SetImageURL(s)
+	return iauo
+}
+
+// SetNillableImageURL sets the "image_url" field if the given value is not nil.
+func (iauo *InventoryAttributeUpdateOne) SetNillableImageURL(s *string) *InventoryAttributeUpdateOne {
+	if s != nil {
+		iauo.SetImageURL(*s)
+	}
+	return iauo
+}
+
+// ClearImageURL clears the value of the "image_url" field.
+func (iauo *InventoryAttributeUpdateOne) ClearImageURL() *InventoryAttributeUpdateOne {
+	iauo.mutation.ClearImageURL()
+	return iauo
+}
+
+// SetIconURL sets the "icon_url" field.
+func (iauo *InventoryAttributeUpdateOne) SetIconURL(s string) *InventoryAttributeUpdateOne {
+	iauo.mutation.SetIconURL(s)
+	return iauo
+}
+
+// SetNillableIconURL sets the "icon_url" field if the given value is not nil.
+func (iauo *InventoryAttributeUpdateOne) SetNillableIconURL(s *string) *InventoryAttributeUpdateOne {
+	if s != nil {
+		iauo.SetIconURL(*s)
+	}
+	return iauo
+}
+
+// ClearIconURL clears the value of the "icon_url" field.
+func (iauo *InventoryAttributeUpdateOne) ClearIconURL() *InventoryAttributeUpdateOne {
+	iauo.mutation.ClearIconURL()
 	return iauo
 }
 
@@ -477,6 +569,18 @@ func (iauo *InventoryAttributeUpdateOne) sqlSave(ctx context.Context) (_node *In
 	}
 	if value, ok := iauo.mutation.Name(); ok {
 		_spec.SetField(inventoryattribute.FieldName, field.TypeString, value)
+	}
+	if value, ok := iauo.mutation.ImageURL(); ok {
+		_spec.SetField(inventoryattribute.FieldImageURL, field.TypeString, value)
+	}
+	if iauo.mutation.ImageURLCleared() {
+		_spec.ClearField(inventoryattribute.FieldImageURL, field.TypeString)
+	}
+	if value, ok := iauo.mutation.IconURL(); ok {
+		_spec.SetField(inventoryattribute.FieldIconURL, field.TypeString, value)
+	}
+	if iauo.mutation.IconURLCleared() {
+		_spec.ClearField(inventoryattribute.FieldIconURL, field.TypeString)
 	}
 	if value, ok := iauo.mutation.IsMandatory(); ok {
 		_spec.SetField(inventoryattribute.FieldIsMandatory, field.TypeBool, value)

@@ -41,6 +41,34 @@ func (itc *InventoryTypeCreate) SetNillableDescription(s *string) *InventoryType
 	return itc
 }
 
+// SetImageURL sets the "image_url" field.
+func (itc *InventoryTypeCreate) SetImageURL(s string) *InventoryTypeCreate {
+	itc.mutation.SetImageURL(s)
+	return itc
+}
+
+// SetNillableImageURL sets the "image_url" field if the given value is not nil.
+func (itc *InventoryTypeCreate) SetNillableImageURL(s *string) *InventoryTypeCreate {
+	if s != nil {
+		itc.SetImageURL(*s)
+	}
+	return itc
+}
+
+// SetIconURL sets the "icon_url" field.
+func (itc *InventoryTypeCreate) SetIconURL(s string) *InventoryTypeCreate {
+	itc.mutation.SetIconURL(s)
+	return itc
+}
+
+// SetNillableIconURL sets the "icon_url" field if the given value is not nil.
+func (itc *InventoryTypeCreate) SetNillableIconURL(s *string) *InventoryTypeCreate {
+	if s != nil {
+		itc.SetIconURL(*s)
+	}
+	return itc
+}
+
 // SetIndustryType sets the "industry_type" field.
 func (itc *InventoryTypeCreate) SetIndustryType(it inventorytype.IndustryType) *InventoryTypeCreate {
 	itc.mutation.SetIndustryType(it)
@@ -194,6 +222,14 @@ func (itc *InventoryTypeCreate) createSpec() (*InventoryType, *sqlgraph.CreateSp
 	if value, ok := itc.mutation.Description(); ok {
 		_spec.SetField(inventorytype.FieldDescription, field.TypeString, value)
 		_node.Description = value
+	}
+	if value, ok := itc.mutation.ImageURL(); ok {
+		_spec.SetField(inventorytype.FieldImageURL, field.TypeString, value)
+		_node.ImageURL = value
+	}
+	if value, ok := itc.mutation.IconURL(); ok {
+		_spec.SetField(inventorytype.FieldIconURL, field.TypeString, value)
+		_node.IconURL = value
 	}
 	if value, ok := itc.mutation.IndustryType(); ok {
 		_spec.SetField(inventorytype.FieldIndustryType, field.TypeEnum, value)

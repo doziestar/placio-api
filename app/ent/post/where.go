@@ -130,6 +130,16 @@ func IsHidden(v bool) predicate.Post {
 	return predicate.Post(sql.FieldEQ(FieldIsHidden, v))
 }
 
+// RepostCount applies equality check predicate on the "RepostCount" field. It's identical to RepostCountEQ.
+func RepostCount(v int) predicate.Post {
+	return predicate.Post(sql.FieldEQ(FieldRepostCount, v))
+}
+
+// IsRepost applies equality check predicate on the "IsRepost" field. It's identical to IsRepostEQ.
+func IsRepost(v bool) predicate.Post {
+	return predicate.Post(sql.FieldEQ(FieldIsRepost, v))
+}
+
 // RelevanceScore applies equality check predicate on the "RelevanceScore" field. It's identical to RelevanceScoreEQ.
 func RelevanceScore(v int) predicate.Post {
 	return predicate.Post(sql.FieldEQ(FieldRelevanceScore, v))
@@ -193,6 +203,16 @@ func ContentHasPrefix(v string) predicate.Post {
 // ContentHasSuffix applies the HasSuffix predicate on the "Content" field.
 func ContentHasSuffix(v string) predicate.Post {
 	return predicate.Post(sql.FieldHasSuffix(FieldContent, v))
+}
+
+// ContentIsNil applies the IsNil predicate on the "Content" field.
+func ContentIsNil() predicate.Post {
+	return predicate.Post(sql.FieldIsNull(FieldContent))
+}
+
+// ContentNotNil applies the NotNil predicate on the "Content" field.
+func ContentNotNil() predicate.Post {
+	return predicate.Post(sql.FieldNotNull(FieldContent))
 }
 
 // ContentEqualFold applies the EqualFold predicate on the "Content" field.
@@ -525,6 +545,56 @@ func IsHiddenNEQ(v bool) predicate.Post {
 	return predicate.Post(sql.FieldNEQ(FieldIsHidden, v))
 }
 
+// RepostCountEQ applies the EQ predicate on the "RepostCount" field.
+func RepostCountEQ(v int) predicate.Post {
+	return predicate.Post(sql.FieldEQ(FieldRepostCount, v))
+}
+
+// RepostCountNEQ applies the NEQ predicate on the "RepostCount" field.
+func RepostCountNEQ(v int) predicate.Post {
+	return predicate.Post(sql.FieldNEQ(FieldRepostCount, v))
+}
+
+// RepostCountIn applies the In predicate on the "RepostCount" field.
+func RepostCountIn(vs ...int) predicate.Post {
+	return predicate.Post(sql.FieldIn(FieldRepostCount, vs...))
+}
+
+// RepostCountNotIn applies the NotIn predicate on the "RepostCount" field.
+func RepostCountNotIn(vs ...int) predicate.Post {
+	return predicate.Post(sql.FieldNotIn(FieldRepostCount, vs...))
+}
+
+// RepostCountGT applies the GT predicate on the "RepostCount" field.
+func RepostCountGT(v int) predicate.Post {
+	return predicate.Post(sql.FieldGT(FieldRepostCount, v))
+}
+
+// RepostCountGTE applies the GTE predicate on the "RepostCount" field.
+func RepostCountGTE(v int) predicate.Post {
+	return predicate.Post(sql.FieldGTE(FieldRepostCount, v))
+}
+
+// RepostCountLT applies the LT predicate on the "RepostCount" field.
+func RepostCountLT(v int) predicate.Post {
+	return predicate.Post(sql.FieldLT(FieldRepostCount, v))
+}
+
+// RepostCountLTE applies the LTE predicate on the "RepostCount" field.
+func RepostCountLTE(v int) predicate.Post {
+	return predicate.Post(sql.FieldLTE(FieldRepostCount, v))
+}
+
+// IsRepostEQ applies the EQ predicate on the "IsRepost" field.
+func IsRepostEQ(v bool) predicate.Post {
+	return predicate.Post(sql.FieldEQ(FieldIsRepost, v))
+}
+
+// IsRepostNEQ applies the NEQ predicate on the "IsRepost" field.
+func IsRepostNEQ(v bool) predicate.Post {
+	return predicate.Post(sql.FieldNEQ(FieldIsRepost, v))
+}
+
 // RelevanceScoreEQ applies the EQ predicate on the "RelevanceScore" field.
 func RelevanceScoreEQ(v int) predicate.Post {
 	return predicate.Post(sql.FieldEQ(FieldRelevanceScore, v))
@@ -793,6 +863,52 @@ func HasNotifications() predicate.Post {
 func HasNotificationsWith(preds ...predicate.Notification) predicate.Post {
 	return predicate.Post(func(s *sql.Selector) {
 		step := newNotificationsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasReposts applies the HasEdge predicate on the "reposts" edge.
+func HasReposts() predicate.Post {
+	return predicate.Post(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, RepostsTable, RepostsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasRepostsWith applies the HasEdge predicate on the "reposts" edge with a given conditions (other predicates).
+func HasRepostsWith(preds ...predicate.Post) predicate.Post {
+	return predicate.Post(func(s *sql.Selector) {
+		step := newRepostsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasOriginalPost applies the HasEdge predicate on the "original_post" edge.
+func HasOriginalPost() predicate.Post {
+	return predicate.Post(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, OriginalPostTable, OriginalPostColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasOriginalPostWith applies the HasEdge predicate on the "original_post" edge with a given conditions (other predicates).
+func HasOriginalPostWith(preds ...predicate.Post) predicate.Post {
+	return predicate.Post(func(s *sql.Selector) {
+		step := newOriginalPostStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

@@ -14,6 +14,10 @@ const (
 	FieldID = "id"
 	// FieldNumber holds the string denoting the number field in the database.
 	FieldNumber = "number"
+	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
+	FieldDeletedAt = "deleted_at"
+	// FieldIsDeleted holds the string denoting the is_deleted field in the database.
+	FieldIsDeleted = "is_deleted"
 	// FieldQrCode holds the string denoting the qr_code field in the database.
 	FieldQrCode = "qr_code"
 	// EdgePlace holds the string denoting the place edge name in mutations.
@@ -40,6 +44,8 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldNumber,
+	FieldDeletedAt,
+	FieldIsDeleted,
 	FieldQrCode,
 }
 
@@ -71,6 +77,8 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// DefaultIsDeleted holds the default value on creation for the "is_deleted" field.
+	DefaultIsDeleted bool
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(string) error
 )
@@ -86,6 +94,16 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 // ByNumber orders the results by the number field.
 func ByNumber(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldNumber, opts...).ToFunc()
+}
+
+// ByDeletedAt orders the results by the deleted_at field.
+func ByDeletedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDeletedAt, opts...).ToFunc()
+}
+
+// ByIsDeleted orders the results by the is_deleted field.
+func ByIsDeleted(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsDeleted, opts...).ToFunc()
 }
 
 // ByQrCode orders the results by the qr_code field.

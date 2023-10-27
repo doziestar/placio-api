@@ -90,6 +90,40 @@ func (ou *OrderUpdate) ClearAdditionalInfo() *OrderUpdate {
 	return ou
 }
 
+// SetDeletedAt sets the "deleted_at" field.
+func (ou *OrderUpdate) SetDeletedAt(s string) *OrderUpdate {
+	ou.mutation.SetDeletedAt(s)
+	return ou
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (ou *OrderUpdate) SetNillableDeletedAt(s *string) *OrderUpdate {
+	if s != nil {
+		ou.SetDeletedAt(*s)
+	}
+	return ou
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (ou *OrderUpdate) ClearDeletedAt() *OrderUpdate {
+	ou.mutation.ClearDeletedAt()
+	return ou
+}
+
+// SetIsDeleted sets the "is_deleted" field.
+func (ou *OrderUpdate) SetIsDeleted(b bool) *OrderUpdate {
+	ou.mutation.SetIsDeleted(b)
+	return ou
+}
+
+// SetNillableIsDeleted sets the "is_deleted" field if the given value is not nil.
+func (ou *OrderUpdate) SetNillableIsDeleted(b *bool) *OrderUpdate {
+	if b != nil {
+		ou.SetIsDeleted(*b)
+	}
+	return ou
+}
+
 // SetUserID sets the "user" edge to the User entity by ID.
 func (ou *OrderUpdate) SetUserID(id string) *OrderUpdate {
 	ou.mutation.SetUserID(id)
@@ -270,6 +304,15 @@ func (ou *OrderUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if ou.mutation.AdditionalInfoCleared() {
 		_spec.ClearField(order.FieldAdditionalInfo, field.TypeJSON)
+	}
+	if value, ok := ou.mutation.DeletedAt(); ok {
+		_spec.SetField(order.FieldDeletedAt, field.TypeString, value)
+	}
+	if ou.mutation.DeletedAtCleared() {
+		_spec.ClearField(order.FieldDeletedAt, field.TypeString)
+	}
+	if value, ok := ou.mutation.IsDeleted(); ok {
+		_spec.SetField(order.FieldIsDeleted, field.TypeBool, value)
 	}
 	if ou.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -466,6 +509,40 @@ func (ouo *OrderUpdateOne) SetAdditionalInfo(m map[string]interface{}) *OrderUpd
 // ClearAdditionalInfo clears the value of the "additional_info" field.
 func (ouo *OrderUpdateOne) ClearAdditionalInfo() *OrderUpdateOne {
 	ouo.mutation.ClearAdditionalInfo()
+	return ouo
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (ouo *OrderUpdateOne) SetDeletedAt(s string) *OrderUpdateOne {
+	ouo.mutation.SetDeletedAt(s)
+	return ouo
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (ouo *OrderUpdateOne) SetNillableDeletedAt(s *string) *OrderUpdateOne {
+	if s != nil {
+		ouo.SetDeletedAt(*s)
+	}
+	return ouo
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (ouo *OrderUpdateOne) ClearDeletedAt() *OrderUpdateOne {
+	ouo.mutation.ClearDeletedAt()
+	return ouo
+}
+
+// SetIsDeleted sets the "is_deleted" field.
+func (ouo *OrderUpdateOne) SetIsDeleted(b bool) *OrderUpdateOne {
+	ouo.mutation.SetIsDeleted(b)
+	return ouo
+}
+
+// SetNillableIsDeleted sets the "is_deleted" field if the given value is not nil.
+func (ouo *OrderUpdateOne) SetNillableIsDeleted(b *bool) *OrderUpdateOne {
+	if b != nil {
+		ouo.SetIsDeleted(*b)
+	}
 	return ouo
 }
 
@@ -679,6 +756,15 @@ func (ouo *OrderUpdateOne) sqlSave(ctx context.Context) (_node *Order, err error
 	}
 	if ouo.mutation.AdditionalInfoCleared() {
 		_spec.ClearField(order.FieldAdditionalInfo, field.TypeJSON)
+	}
+	if value, ok := ouo.mutation.DeletedAt(); ok {
+		_spec.SetField(order.FieldDeletedAt, field.TypeString, value)
+	}
+	if ouo.mutation.DeletedAtCleared() {
+		_spec.ClearField(order.FieldDeletedAt, field.TypeString)
+	}
+	if value, ok := ouo.mutation.IsDeleted(); ok {
+		_spec.SetField(order.FieldIsDeleted, field.TypeBool, value)
 	}
 	if ouo.mutation.UserCleared() {
 		edge := &sqlgraph.EdgeSpec{

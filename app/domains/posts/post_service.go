@@ -24,6 +24,7 @@ import (
 type PostService interface {
 	CreatePost(ctx context.Context, newPost *ent.Post, userID string, businessID string, mediaFiles []*multipart.FileHeader) (*ent.Post, error)
 	GetPost(ctx context.Context, postID string) (*ent.Post, error)
+	Repost(ctx context.Context, originalPostID, content, userID, businessID string) (*ent.Post, error)
 	UpdatePost(ctx context.Context, updatedPost *ent.Post) (*ent.Post, error)
 	DeletePost(ctx context.Context, postID string) error
 	ListPosts(ctx context.Context, page, pageSize int, sortBy []string, filters ...predicate.Post) ([]*ent.Post, error)
@@ -78,6 +79,20 @@ func (ps *PostServiceImpl) GetPostFeeds(ctx context.Context) ([]*ent.Post, error
 		}).
 		WithBusinessAccount().
 		WithUser().
+		WithOriginalPost(func(query *ent.PostQuery) {
+			query.WithUser()
+			query.WithMedias()
+			query.WithLikes()
+			query.WithComments(func(query *ent.CommentQuery) {
+				query.WithUser()
+				query.WithReplies(func(query *ent.CommentQuery) {
+					query.WithUser()
+				}).WithParentComment(func(query *ent.CommentQuery) {
+					query.WithUser()
+				})
+			})
+			query.WithBusinessAccount()
+		}).
 		All(ctx)
 
 	for _, post := range posts {
@@ -99,6 +114,72 @@ func (ps *PostServiceImpl) GetPostFeeds(ctx context.Context) ([]*ent.Post, error
 
 	// Return the posts
 	return posts, nil
+}
+
+func (ps *PostServiceImpl) Repost(ctx context.Context, originalPostID, content, userID, businessID string) (*ent.Post, error) {
+	if originalPostID == "" {
+		return nil, errors.New("original post ID, content, and user ID must be provided")
+	}
+
+	tx, err := ps.client.Tx(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed starting a transaction: %w", err)
+	}
+
+	originalPost, err := tx.Post.
+		Query().
+		Where(post.IDEQ(originalPostID)).
+		Only(ctx)
+	if err != nil {
+		_ = tx.Rollback()
+		return nil, err
+	}
+
+	// Increment repost count of original post
+	_, err = tx.Post.
+		UpdateOne(originalPost).
+		AddRepostCount(1).
+		Save(ctx)
+	if err != nil {
+		_ = tx.Rollback()
+		return nil, fmt.Errorf("failed incrementing repost count: %w", err)
+	}
+
+	// Create a new post as a repost
+	repostBuilder := tx.Post.
+		Create().
+		SetID(uuid.New().String()).
+		SetContent(content).
+		SetUpdatedAt(time.Now()).
+		SetIsRepost(true).
+		AddOriginalPost(originalPost)
+
+	// Associate with business account if business ID is provided
+	if businessID != "" {
+		repostBuilder.SetBusinessAccountID(businessID)
+	}
+
+	if content != "" {
+		repostBuilder.SetContent(originalPost.Content)
+	}
+
+	if userID != "" {
+		repostBuilder.SetUserID(userID)
+	}
+
+	// Save post
+	repost, err := repostBuilder.Save(ctx)
+	if err != nil {
+		_ = tx.Rollback()
+		return nil, fmt.Errorf("failed creating repost: %w", err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, fmt.Errorf("failed committing transaction: %w", err)
+	}
+
+	log.Printf("repost saved: %v", repost)
+	return repost, nil
 }
 
 func (ps *PostServiceImpl) CreatePost(ctx context.Context, newPost *ent.Post, userID string, businessID string, mediaFiles []*multipart.FileHeader) (*ent.Post, error) {
@@ -204,6 +285,20 @@ func (ps *PostServiceImpl) GetPost(ctx context.Context, postID string) (*ent.Pos
 		WithUser().
 		WithBusinessAccount().
 		WithMedias().
+		WithOriginalPost(func(query *ent.PostQuery) {
+			query.WithUser()
+			query.WithMedias()
+			query.WithLikes()
+			query.WithComments(func(query *ent.CommentQuery) {
+				query.WithUser()
+				query.WithReplies(func(query *ent.CommentQuery) {
+					query.WithUser()
+				}).WithParentComment(func(query *ent.CommentQuery) {
+					query.WithUser()
+				})
+			})
+			query.WithBusinessAccount()
+		}).
 		Only(ctx)
 
 	if user, ok := ctx.Value("user").(string); ok {

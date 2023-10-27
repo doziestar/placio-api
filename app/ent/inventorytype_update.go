@@ -55,6 +55,46 @@ func (itu *InventoryTypeUpdate) ClearDescription() *InventoryTypeUpdate {
 	return itu
 }
 
+// SetImageURL sets the "image_url" field.
+func (itu *InventoryTypeUpdate) SetImageURL(s string) *InventoryTypeUpdate {
+	itu.mutation.SetImageURL(s)
+	return itu
+}
+
+// SetNillableImageURL sets the "image_url" field if the given value is not nil.
+func (itu *InventoryTypeUpdate) SetNillableImageURL(s *string) *InventoryTypeUpdate {
+	if s != nil {
+		itu.SetImageURL(*s)
+	}
+	return itu
+}
+
+// ClearImageURL clears the value of the "image_url" field.
+func (itu *InventoryTypeUpdate) ClearImageURL() *InventoryTypeUpdate {
+	itu.mutation.ClearImageURL()
+	return itu
+}
+
+// SetIconURL sets the "icon_url" field.
+func (itu *InventoryTypeUpdate) SetIconURL(s string) *InventoryTypeUpdate {
+	itu.mutation.SetIconURL(s)
+	return itu
+}
+
+// SetNillableIconURL sets the "icon_url" field if the given value is not nil.
+func (itu *InventoryTypeUpdate) SetNillableIconURL(s *string) *InventoryTypeUpdate {
+	if s != nil {
+		itu.SetIconURL(*s)
+	}
+	return itu
+}
+
+// ClearIconURL clears the value of the "icon_url" field.
+func (itu *InventoryTypeUpdate) ClearIconURL() *InventoryTypeUpdate {
+	itu.mutation.ClearIconURL()
+	return itu
+}
+
 // SetIndustryType sets the "industry_type" field.
 func (itu *InventoryTypeUpdate) SetIndustryType(it inventorytype.IndustryType) *InventoryTypeUpdate {
 	itu.mutation.SetIndustryType(it)
@@ -230,6 +270,18 @@ func (itu *InventoryTypeUpdate) sqlSave(ctx context.Context) (n int, err error) 
 	if itu.mutation.DescriptionCleared() {
 		_spec.ClearField(inventorytype.FieldDescription, field.TypeString)
 	}
+	if value, ok := itu.mutation.ImageURL(); ok {
+		_spec.SetField(inventorytype.FieldImageURL, field.TypeString, value)
+	}
+	if itu.mutation.ImageURLCleared() {
+		_spec.ClearField(inventorytype.FieldImageURL, field.TypeString)
+	}
+	if value, ok := itu.mutation.IconURL(); ok {
+		_spec.SetField(inventorytype.FieldIconURL, field.TypeString, value)
+	}
+	if itu.mutation.IconURLCleared() {
+		_spec.ClearField(inventorytype.FieldIconURL, field.TypeString)
+	}
 	if value, ok := itu.mutation.IndustryType(); ok {
 		_spec.SetField(inventorytype.FieldIndustryType, field.TypeEnum, value)
 	}
@@ -375,6 +427,46 @@ func (ituo *InventoryTypeUpdateOne) SetNillableDescription(s *string) *Inventory
 // ClearDescription clears the value of the "description" field.
 func (ituo *InventoryTypeUpdateOne) ClearDescription() *InventoryTypeUpdateOne {
 	ituo.mutation.ClearDescription()
+	return ituo
+}
+
+// SetImageURL sets the "image_url" field.
+func (ituo *InventoryTypeUpdateOne) SetImageURL(s string) *InventoryTypeUpdateOne {
+	ituo.mutation.SetImageURL(s)
+	return ituo
+}
+
+// SetNillableImageURL sets the "image_url" field if the given value is not nil.
+func (ituo *InventoryTypeUpdateOne) SetNillableImageURL(s *string) *InventoryTypeUpdateOne {
+	if s != nil {
+		ituo.SetImageURL(*s)
+	}
+	return ituo
+}
+
+// ClearImageURL clears the value of the "image_url" field.
+func (ituo *InventoryTypeUpdateOne) ClearImageURL() *InventoryTypeUpdateOne {
+	ituo.mutation.ClearImageURL()
+	return ituo
+}
+
+// SetIconURL sets the "icon_url" field.
+func (ituo *InventoryTypeUpdateOne) SetIconURL(s string) *InventoryTypeUpdateOne {
+	ituo.mutation.SetIconURL(s)
+	return ituo
+}
+
+// SetNillableIconURL sets the "icon_url" field if the given value is not nil.
+func (ituo *InventoryTypeUpdateOne) SetNillableIconURL(s *string) *InventoryTypeUpdateOne {
+	if s != nil {
+		ituo.SetIconURL(*s)
+	}
+	return ituo
+}
+
+// ClearIconURL clears the value of the "icon_url" field.
+func (ituo *InventoryTypeUpdateOne) ClearIconURL() *InventoryTypeUpdateOne {
+	ituo.mutation.ClearIconURL()
 	return ituo
 }
 
@@ -582,6 +674,18 @@ func (ituo *InventoryTypeUpdateOne) sqlSave(ctx context.Context) (_node *Invento
 	}
 	if ituo.mutation.DescriptionCleared() {
 		_spec.ClearField(inventorytype.FieldDescription, field.TypeString)
+	}
+	if value, ok := ituo.mutation.ImageURL(); ok {
+		_spec.SetField(inventorytype.FieldImageURL, field.TypeString, value)
+	}
+	if ituo.mutation.ImageURLCleared() {
+		_spec.ClearField(inventorytype.FieldImageURL, field.TypeString)
+	}
+	if value, ok := ituo.mutation.IconURL(); ok {
+		_spec.SetField(inventorytype.FieldIconURL, field.TypeString, value)
+	}
+	if ituo.mutation.IconURLCleared() {
+		_spec.ClearField(inventorytype.FieldIconURL, field.TypeString)
 	}
 	if value, ok := ituo.mutation.IndustryType(); ok {
 		_spec.SetField(inventorytype.FieldIndustryType, field.TypeEnum, value)

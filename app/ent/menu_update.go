@@ -36,6 +36,40 @@ func (mu *MenuUpdate) SetName(s string) *MenuUpdate {
 	return mu
 }
 
+// SetDeletedAt sets the "deleted_at" field.
+func (mu *MenuUpdate) SetDeletedAt(s string) *MenuUpdate {
+	mu.mutation.SetDeletedAt(s)
+	return mu
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (mu *MenuUpdate) SetNillableDeletedAt(s *string) *MenuUpdate {
+	if s != nil {
+		mu.SetDeletedAt(*s)
+	}
+	return mu
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (mu *MenuUpdate) ClearDeletedAt() *MenuUpdate {
+	mu.mutation.ClearDeletedAt()
+	return mu
+}
+
+// SetIsDeleted sets the "is_deleted" field.
+func (mu *MenuUpdate) SetIsDeleted(b bool) *MenuUpdate {
+	mu.mutation.SetIsDeleted(b)
+	return mu
+}
+
+// SetNillableIsDeleted sets the "is_deleted" field if the given value is not nil.
+func (mu *MenuUpdate) SetNillableIsDeleted(b *bool) *MenuUpdate {
+	if b != nil {
+		mu.SetIsDeleted(*b)
+	}
+	return mu
+}
+
 // SetDescription sets the "description" field.
 func (mu *MenuUpdate) SetDescription(s string) *MenuUpdate {
 	mu.mutation.SetDescription(s)
@@ -197,6 +231,15 @@ func (mu *MenuUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := mu.mutation.Name(); ok {
 		_spec.SetField(menu.FieldName, field.TypeString, value)
 	}
+	if value, ok := mu.mutation.DeletedAt(); ok {
+		_spec.SetField(menu.FieldDeletedAt, field.TypeString, value)
+	}
+	if mu.mutation.DeletedAtCleared() {
+		_spec.ClearField(menu.FieldDeletedAt, field.TypeString)
+	}
+	if value, ok := mu.mutation.IsDeleted(); ok {
+		_spec.SetField(menu.FieldIsDeleted, field.TypeBool, value)
+	}
 	if value, ok := mu.mutation.Description(); ok {
 		_spec.SetField(menu.FieldDescription, field.TypeString, value)
 	}
@@ -345,6 +388,40 @@ type MenuUpdateOne struct {
 // SetName sets the "name" field.
 func (muo *MenuUpdateOne) SetName(s string) *MenuUpdateOne {
 	muo.mutation.SetName(s)
+	return muo
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (muo *MenuUpdateOne) SetDeletedAt(s string) *MenuUpdateOne {
+	muo.mutation.SetDeletedAt(s)
+	return muo
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (muo *MenuUpdateOne) SetNillableDeletedAt(s *string) *MenuUpdateOne {
+	if s != nil {
+		muo.SetDeletedAt(*s)
+	}
+	return muo
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (muo *MenuUpdateOne) ClearDeletedAt() *MenuUpdateOne {
+	muo.mutation.ClearDeletedAt()
+	return muo
+}
+
+// SetIsDeleted sets the "is_deleted" field.
+func (muo *MenuUpdateOne) SetIsDeleted(b bool) *MenuUpdateOne {
+	muo.mutation.SetIsDeleted(b)
+	return muo
+}
+
+// SetNillableIsDeleted sets the "is_deleted" field if the given value is not nil.
+func (muo *MenuUpdateOne) SetNillableIsDeleted(b *bool) *MenuUpdateOne {
+	if b != nil {
+		muo.SetIsDeleted(*b)
+	}
 	return muo
 }
 
@@ -538,6 +615,15 @@ func (muo *MenuUpdateOne) sqlSave(ctx context.Context) (_node *Menu, err error) 
 	}
 	if value, ok := muo.mutation.Name(); ok {
 		_spec.SetField(menu.FieldName, field.TypeString, value)
+	}
+	if value, ok := muo.mutation.DeletedAt(); ok {
+		_spec.SetField(menu.FieldDeletedAt, field.TypeString, value)
+	}
+	if muo.mutation.DeletedAtCleared() {
+		_spec.ClearField(menu.FieldDeletedAt, field.TypeString)
+	}
+	if value, ok := muo.mutation.IsDeleted(); ok {
+		_spec.SetField(menu.FieldIsDeleted, field.TypeBool, value)
 	}
 	if value, ok := muo.mutation.Description(); ok {
 		_spec.SetField(menu.FieldDescription, field.TypeString, value)
