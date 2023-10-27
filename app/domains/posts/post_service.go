@@ -164,7 +164,7 @@ func (ps *PostServiceImpl) Repost(ctx context.Context, originalPostID, content, 
 	}
 
 	if userID == "" {
-		repostBuilder.SetUserID(originalPost.Edges.User.ID)
+		repostBuilder.SetUserID(userID)
 	}
 
 	// Save post
