@@ -82,6 +82,16 @@ func (ps *PostServiceImpl) GetPostFeeds(ctx context.Context) ([]*ent.Post, error
 		WithOriginalPost(func(query *ent.PostQuery) {
 			query.WithUser()
 			query.WithMedias()
+			query.WithLikes()
+			query.WithComments(func(query *ent.CommentQuery) {
+				query.WithUser()
+				query.WithReplies(func(query *ent.CommentQuery) {
+					query.WithUser()
+				}).WithParentComment(func(query *ent.CommentQuery) {
+					query.WithUser()
+				})
+			})
+			query.WithBusinessAccount()
 		}).
 		All(ctx)
 
@@ -278,6 +288,16 @@ func (ps *PostServiceImpl) GetPost(ctx context.Context, postID string) (*ent.Pos
 		WithOriginalPost(func(query *ent.PostQuery) {
 			query.WithUser()
 			query.WithMedias()
+			query.WithLikes()
+			query.WithComments(func(query *ent.CommentQuery) {
+				query.WithUser()
+				query.WithReplies(func(query *ent.CommentQuery) {
+					query.WithUser()
+				}).WithParentComment(func(query *ent.CommentQuery) {
+					query.WithUser()
+				})
+			})
+			query.WithBusinessAccount()
 		}).
 		Only(ctx)
 

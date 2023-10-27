@@ -90,6 +90,7 @@ func convertToPbPost(p *ent.Post) *proto.Post {
 		UpdatedAt:    p.UpdatedAt.String(),
 		LikeCount:    int64(p.LikeCount),
 		CommentCount: int64(p.CommentCount),
+		IsRepost:     p.IsRepost,
 		LikedByMe:    p.LikedByMe,
 		Privacy: func() proto.Post_PrivacyType {
 			switch p.Privacy {
@@ -106,6 +107,12 @@ func convertToPbPost(p *ent.Post) *proto.Post {
 			Comments: pbComments,
 			Medias:   media,
 			Business: businessAccount,
+			Parent: func() *proto.Post {
+				if p.Edges.OriginalPost != nil {
+					return convertToPbPost(p.Edges.OriginalPost[0])
+				}
+				return nil
+			}(),
 		},
 	}
 }
