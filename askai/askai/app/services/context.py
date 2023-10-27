@@ -16,7 +16,16 @@ def explore_topic_resources_context(topic: str) -> str:
 
 # For the /practice_language endpoint
 def practice_language_context(text: str, language: str) -> str:
-    return f"Review the following text in {language} and provide corrections or suggestions for improvement: '{text}'."
+    return f"""
+    You are provided with a {language} text: '{text}'.
+    and you are a native speaker of {language}.
+    translate the text: '{text}' to {language}. example
+    example: text: 'hello world', language: 'french'
+    translation: 'bonjour le monde'
+
+    example2: text: 'hello world', language: 'spanish'
+    translation: 'hola mundo'
+    """
 
 
 # For the /homework_helper endpoint
