@@ -159,11 +159,11 @@ func (ps *PostServiceImpl) Repost(ctx context.Context, originalPostID, content, 
 		repostBuilder.SetBusinessAccountID(businessID)
 	}
 
-	if content == "" {
+	if content != "" {
 		repostBuilder.SetContent(originalPost.Content)
 	}
 
-	if userID == "" {
+	if userID != "" {
 		repostBuilder.SetUserID(userID)
 	}
 
