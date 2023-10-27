@@ -23,8 +23,9 @@ message Post {
   int64 CommentCount = 6;
   bool LikedByMe = 7;
   bool isRepost = 8;
-  PrivacyType Privacy = 9;
-  Edge edges = 10;
+  int64 RepostCount = 9;
+  PrivacyType Privacy = 10;
+  Edge edges = 11;
 
   enum PrivacyType {
     UNKNOWN = 0;

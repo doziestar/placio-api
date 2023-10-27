@@ -92,6 +92,7 @@ func convertToPbPost(p *ent.Post) *proto.Post {
 		CommentCount: int64(p.CommentCount),
 		IsRepost:     p.IsRepost,
 		LikedByMe:    p.LikedByMe,
+		RepostCount:  int64(p.RepostCount),
 		Privacy: func() proto.Post_PrivacyType {
 			switch p.Privacy {
 			case "PUBLIC":
