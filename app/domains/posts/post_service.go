@@ -135,6 +135,7 @@ func (ps *PostServiceImpl) Repost(ctx context.Context, originalPostID, content, 
 	repostBuilder := tx.Post.
 		Create().
 		SetID(uuid.New().String()).
+		SetContent(content).
 		SetUpdatedAt(time.Now()).
 		SetIsRepost(true).
 		AddOriginalPost(originalPost)

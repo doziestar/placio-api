@@ -34662,9 +34662,22 @@ func (m *PostMutation) OldContent(ctx context.Context) (v string, err error) {
 	return oldValue.Content, nil
 }
 
+// ClearContent clears the value of the "Content" field.
+func (m *PostMutation) ClearContent() {
+	m._Content = nil
+	m.clearedFields[post.FieldContent] = struct{}{}
+}
+
+// ContentCleared returns if the "Content" field was cleared in this mutation.
+func (m *PostMutation) ContentCleared() bool {
+	_, ok := m.clearedFields[post.FieldContent]
+	return ok
+}
+
 // ResetContent resets all changes to the "Content" field.
 func (m *PostMutation) ResetContent() {
 	m._Content = nil
+	delete(m.clearedFields, post.FieldContent)
 }
 
 // SetCreatedAt sets the "CreatedAt" field.
@@ -36271,6 +36284,9 @@ func (m *PostMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *PostMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(post.FieldContent) {
+		fields = append(fields, post.FieldContent)
+	}
 	if m.FieldCleared(post.FieldSearchText) {
 		fields = append(fields, post.FieldSearchText)
 	}
@@ -36288,6 +36304,9 @@ func (m *PostMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *PostMutation) ClearField(name string) error {
 	switch name {
+	case post.FieldContent:
+		m.ClearContent()
+		return nil
 	case post.FieldSearchText:
 		m.ClearSearchText()
 		return nil

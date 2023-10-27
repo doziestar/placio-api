@@ -33,6 +33,14 @@ func (pc *PostCreate) SetContent(s string) *PostCreate {
 	return pc
 }
 
+// SetNillableContent sets the "Content" field if the given value is not nil.
+func (pc *PostCreate) SetNillableContent(s *string) *PostCreate {
+	if s != nil {
+		pc.SetContent(*s)
+	}
+	return pc
+}
+
 // SetCreatedAt sets the "CreatedAt" field.
 func (pc *PostCreate) SetCreatedAt(t time.Time) *PostCreate {
 	pc.mutation.SetCreatedAt(t)
@@ -515,9 +523,6 @@ func (pc *PostCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (pc *PostCreate) check() error {
-	if _, ok := pc.mutation.Content(); !ok {
-		return &ValidationError{Name: "Content", err: errors.New(`ent: missing required field "Post.Content"`)}
-	}
 	if v, ok := pc.mutation.Content(); ok {
 		if err := post.ContentValidator(v); err != nil {
 			return &ValidationError{Name: "Content", err: fmt.Errorf(`ent: validator failed for field "Post.Content": %w`, err)}

@@ -41,6 +41,20 @@ func (pu *PostUpdate) SetContent(s string) *PostUpdate {
 	return pu
 }
 
+// SetNillableContent sets the "Content" field if the given value is not nil.
+func (pu *PostUpdate) SetNillableContent(s *string) *PostUpdate {
+	if s != nil {
+		pu.SetContent(*s)
+	}
+	return pu
+}
+
+// ClearContent clears the value of the "Content" field.
+func (pu *PostUpdate) ClearContent() *PostUpdate {
+	pu.mutation.ClearContent()
+	return pu
+}
+
 // SetCreatedAt sets the "CreatedAt" field.
 func (pu *PostUpdate) SetCreatedAt(t time.Time) *PostUpdate {
 	pu.mutation.SetCreatedAt(t)
@@ -681,6 +695,9 @@ func (pu *PostUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := pu.mutation.Content(); ok {
 		_spec.SetField(post.FieldContent, field.TypeString, value)
 	}
+	if pu.mutation.ContentCleared() {
+		_spec.ClearField(post.FieldContent, field.TypeString)
+	}
 	if value, ok := pu.mutation.CreatedAt(); ok {
 		_spec.SetField(post.FieldCreatedAt, field.TypeTime, value)
 	}
@@ -1133,6 +1150,20 @@ type PostUpdateOne struct {
 // SetContent sets the "Content" field.
 func (puo *PostUpdateOne) SetContent(s string) *PostUpdateOne {
 	puo.mutation.SetContent(s)
+	return puo
+}
+
+// SetNillableContent sets the "Content" field if the given value is not nil.
+func (puo *PostUpdateOne) SetNillableContent(s *string) *PostUpdateOne {
+	if s != nil {
+		puo.SetContent(*s)
+	}
+	return puo
+}
+
+// ClearContent clears the value of the "Content" field.
+func (puo *PostUpdateOne) ClearContent() *PostUpdateOne {
+	puo.mutation.ClearContent()
 	return puo
 }
 
@@ -1805,6 +1836,9 @@ func (puo *PostUpdateOne) sqlSave(ctx context.Context) (_node *Post, err error) 
 	}
 	if value, ok := puo.mutation.Content(); ok {
 		_spec.SetField(post.FieldContent, field.TypeString, value)
+	}
+	if puo.mutation.ContentCleared() {
+		_spec.ClearField(post.FieldContent, field.TypeString)
 	}
 	if value, ok := puo.mutation.CreatedAt(); ok {
 		_spec.SetField(post.FieldCreatedAt, field.TypeTime, value)

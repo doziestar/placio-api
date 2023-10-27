@@ -19,7 +19,7 @@ func (Post) Fields() []ent.Field {
 			MaxLen(36).
 			Unique().
 			Immutable(),
-		field.String("Content").MaxLen(2147483647),
+		field.String("Content").MaxLen(2147483647).Optional(),
 		field.Time("CreatedAt").Default(time.Now),
 		field.Time("UpdatedAt").UpdateDefault(time.Now),
 		field.Enum("Privacy").Values("Public", "FollowersOnly", "OnlyMe").Default("Public"),
