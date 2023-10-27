@@ -108,7 +108,7 @@ func convertToPbPost(p *ent.Post) *proto.Post {
 			Medias:   media,
 			Business: businessAccount,
 			Parent: func() *proto.Post {
-				if p.Edges.OriginalPost != nil {
+				if len(p.Edges.OriginalPost) != 0 {
 					return convertToPbPost(p.Edges.OriginalPost[0])
 				}
 				return nil
