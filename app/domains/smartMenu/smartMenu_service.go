@@ -8,6 +8,7 @@ import (
 	"placio-app/ent"
 	"placio-app/ent/category"
 	"placio-app/ent/menu"
+	"placio-app/ent/menuitem"
 	"placio-app/ent/place"
 	"placio-app/ent/placetable"
 	"strings"
@@ -29,6 +30,13 @@ type ISmartMenu interface {
 	DeleteMenu(context.Context, string) error
 	RestoreMenu(context.Context, string) (*ent.Menu, error)
 
+	CreateMenuItem(context.Context, string, *ent.MenuItem, []*multipart.FileHeader) (*ent.MenuItem, error)
+	GetMenuItems(context.Context, string) ([]*ent.MenuItem, error)
+	GetMenuItemByID(context.Context, string) (*ent.MenuItem, error)
+	UpdateMenuItem(context.Context, string, *ent.MenuItem) (*ent.MenuItem, error)
+	DeleteMenuItem(context.Context, string) error
+	RestoreMenuItem(context.Context, string) (*ent.MenuItem, error)
+
 	CreateTable(context.Context, string, *ent.PlaceTable) (*ent.PlaceTable, error)
 	GetTables(context.Context, string) ([]*ent.PlaceTable, error)
 	GetTableByID(context.Context, string) (*ent.PlaceTable, error)
@@ -48,6 +56,103 @@ type ISmartMenu interface {
 
 func NewSmartMenuService(client *ent.Client, mediaService media.MediaService) *SmartMenuService {
 	return &SmartMenuService{client: client, mediaService: mediaService}
+}
+
+func (s *SmartMenuService) CreateMenuItem(ctx context.Context, menuId string, menuItemDto *ent.MenuItem, mediaFiles []*multipart.FileHeader) (*ent.MenuItem, error) {
+	existingMenuItem, err := s.client.MenuItem.
+		Query().
+		Where(menuitem.Name(strings.ToLower(menuItemDto.Name))).
+		Where(menuitem.HasMenuWith(menu.ID(menuId))).
+		Only(ctx)
+	if err != nil && !ent.IsNotFound(err) {
+		log.Println("Error checking if menu item with name", menuItemDto.Name, "exists for menu", menuId, ":", err)
+		return nil, err
+	}
+	if existingMenuItem != nil {
+		log.Println("Menu item with name", menuItemDto.Name, "already exists for menu", menuId)
+		return existingMenuItem, nil
+	}
+
+	log.Println("Creating menu item with name", menuItemDto.Name)
+
+	// Create and return the new menu item
+	newMenuItem, err := s.client.MenuItem.
+		Create().
+		SetID(uuid.New().String()).
+		SetName(menuItemDto.Name).
+		SetDescription(menuItemDto.Description).
+		SetPrice(menuItemDto.Price).
+		SetIsAvailable(menuItemDto.IsAvailable).
+		AddMenuIDs(menuId).
+		Save(ctx)
+	if err != nil {
+		log.Println("Error creating menu item with name", menuItemDto.Name, ":", err)
+		return nil, err
+	}
+
+	// Create the media for the menu item
+	if len(mediaFiles) > 0 {
+		go func(menuItemID string, mediaFiles []*multipart.FileHeader) {
+			ctx := context.Background() // Use a background context for the asynchronous operation
+			log.Println("Uploading media for menu item with ID", menuItemID)
+			
+			media, err := s.mediaService.UploadAndCreateMedia(ctx, mediaFiles)
+			if err != nil {
+				log.Println("Error uploading media for menu item with ID", menuItemID, ":", err)
+				return
+			}
+			
+			_, err = s.client.MenuItem.
+				UpdateOneID(menuItemID).
+				AddMedia(media...).
+				Save(ctx)
+			if err != nil {
+				log.Println("Error adding media to menu item with ID", menuItemID, ":", err)
+				return
+			}
+			
+			log.Println("Media uploaded and added to menu item with ID", menuItemID)
+		}(newMenuItem.ID, mediaFiles)
+	}
+
+	return newMenuItem, nil
+}
+
+func (s *SmartMenuService) GetMenuItems(ctx context.Context, menuId string) ([]*ent.MenuItem, error) {
+	return s.client.MenuItem.
+		Query().
+		Where(menuitem.HasMenuWith(menu.ID(menuId))).
+		WithMedia().
+		All(ctx)
+}
+
+func (s *SmartMenuService) GetMenuItemByID(ctx context.Context, menuItemId string) (*ent.MenuItem, error) {
+	return s.client.MenuItem.
+		Query().
+		Where(menuitem.ID(menuItemId)).
+		WithMedia().
+		Only(ctx)
+}
+
+func (s *SmartMenuService) UpdateMenuItem(ctx context.Context, menuItemId string, menuItemDto *ent.MenuItem) (*ent.MenuItem, error) {
+	return s.client.MenuItem.
+		UpdateOneID(menuItemId).
+		SetName(menuItemDto.Name).
+		SetDescription(menuItemDto.Description).
+		SetPrice(menuItemDto.Price).
+		SetIsAvailable(menuItemDto.IsAvailable).
+		Save(ctx)
+}
+
+func (s *SmartMenuService) DeleteMenuItem(ctx context.Context, menuItemId string) error {
+	return s.client.MenuItem.
+		DeleteOneID(menuItemId).
+		Exec(ctx)
+}
+
+func (s *SmartMenuService) RestoreMenuItem(ctx context.Context, menuItemId string) (*ent.MenuItem, error) {
+	// TODO: Implement restore functionality if soft delete is implemented
+	return nil, nil
 }
 
 func (s *SmartMenuService) CreateMenu(ctx context.Context, placeId string, menuDto *ent.Menu, cat string, medias []*multipart.FileHeader) (*ent.Menu, error) {

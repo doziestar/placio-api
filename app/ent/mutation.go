@@ -22860,6 +22860,8 @@ type MenuItemMutation struct {
 	description         *string
 	price               *float64
 	addprice            *float64
+	currency            *string
+	is_available        *bool
 	preparation_time    *int
 	addpreparation_time *int
 	options             *[]string
@@ -23126,6 +23128,91 @@ func (m *MenuItemMutation) AddedPrice() (r float64, exists bool) {
 func (m *MenuItemMutation) ResetPrice() {
 	m.price = nil
 	m.addprice = nil
+}
+
+// SetCurrency sets the "currency" field.
+func (m *MenuItemMutation) SetCurrency(s string) {
+	m.currency = &s
+}
+
+// Currency returns the value of the "currency" field in the mutation.
+func (m *MenuItemMutation) Currency() (r string, exists bool) {
+	v := m.currency
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCurrency returns the old "currency" field's value of the MenuItem entity.
+// If the MenuItem object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuItemMutation) OldCurrency(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCurrency is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCurrency requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCurrency: %w", err)
+	}
+	return oldValue.Currency, nil
+}
+
+// ClearCurrency clears the value of the "currency" field.
+func (m *MenuItemMutation) ClearCurrency() {
+	m.currency = nil
+	m.clearedFields[menuitem.FieldCurrency] = struct{}{}
+}
+
+// CurrencyCleared returns if the "currency" field was cleared in this mutation.
+func (m *MenuItemMutation) CurrencyCleared() bool {
+	_, ok := m.clearedFields[menuitem.FieldCurrency]
+	return ok
+}
+
+// ResetCurrency resets all changes to the "currency" field.
+func (m *MenuItemMutation) ResetCurrency() {
+	m.currency = nil
+	delete(m.clearedFields, menuitem.FieldCurrency)
+}
+
+// SetIsAvailable sets the "is_available" field.
+func (m *MenuItemMutation) SetIsAvailable(b bool) {
+	m.is_available = &b
+}
+
+// IsAvailable returns the value of the "is_available" field in the mutation.
+func (m *MenuItemMutation) IsAvailable() (r bool, exists bool) {
+	v := m.is_available
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsAvailable returns the old "is_available" field's value of the MenuItem entity.
+// If the MenuItem object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuItemMutation) OldIsAvailable(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsAvailable is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsAvailable requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsAvailable: %w", err)
+	}
+	return oldValue.IsAvailable, nil
+}
+
+// ResetIsAvailable resets all changes to the "is_available" field.
+func (m *MenuItemMutation) ResetIsAvailable() {
+	m.is_available = nil
 }
 
 // SetPreparationTime sets the "preparation_time" field.
@@ -23583,7 +23670,7 @@ func (m *MenuItemMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *MenuItemMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 9)
 	if m.name != nil {
 		fields = append(fields, menuitem.FieldName)
 	}
@@ -23592,6 +23679,12 @@ func (m *MenuItemMutation) Fields() []string {
 	}
 	if m.price != nil {
 		fields = append(fields, menuitem.FieldPrice)
+	}
+	if m.currency != nil {
+		fields = append(fields, menuitem.FieldCurrency)
+	}
+	if m.is_available != nil {
+		fields = append(fields, menuitem.FieldIsAvailable)
 	}
 	if m.preparation_time != nil {
 		fields = append(fields, menuitem.FieldPreparationTime)
@@ -23619,6 +23712,10 @@ func (m *MenuItemMutation) Field(name string) (ent.Value, bool) {
 		return m.Description()
 	case menuitem.FieldPrice:
 		return m.Price()
+	case menuitem.FieldCurrency:
+		return m.Currency()
+	case menuitem.FieldIsAvailable:
+		return m.IsAvailable()
 	case menuitem.FieldPreparationTime:
 		return m.PreparationTime()
 	case menuitem.FieldOptions:
@@ -23642,6 +23739,10 @@ func (m *MenuItemMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldDescription(ctx)
 	case menuitem.FieldPrice:
 		return m.OldPrice(ctx)
+	case menuitem.FieldCurrency:
+		return m.OldCurrency(ctx)
+	case menuitem.FieldIsAvailable:
+		return m.OldIsAvailable(ctx)
 	case menuitem.FieldPreparationTime:
 		return m.OldPreparationTime(ctx)
 	case menuitem.FieldOptions:
@@ -23679,6 +23780,20 @@ func (m *MenuItemMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetPrice(v)
+		return nil
+	case menuitem.FieldCurrency:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCurrency(v)
+		return nil
+	case menuitem.FieldIsAvailable:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsAvailable(v)
 		return nil
 	case menuitem.FieldPreparationTime:
 		v, ok := value.(int)
@@ -23768,6 +23883,9 @@ func (m *MenuItemMutation) ClearedFields() []string {
 	if m.FieldCleared(menuitem.FieldDescription) {
 		fields = append(fields, menuitem.FieldDescription)
 	}
+	if m.FieldCleared(menuitem.FieldCurrency) {
+		fields = append(fields, menuitem.FieldCurrency)
+	}
 	if m.FieldCleared(menuitem.FieldPreparationTime) {
 		fields = append(fields, menuitem.FieldPreparationTime)
 	}
@@ -23794,6 +23912,9 @@ func (m *MenuItemMutation) ClearField(name string) error {
 	case menuitem.FieldDescription:
 		m.ClearDescription()
 		return nil
+	case menuitem.FieldCurrency:
+		m.ClearCurrency()
+		return nil
 	case menuitem.FieldPreparationTime:
 		m.ClearPreparationTime()
 		return nil
@@ -23819,6 +23940,12 @@ func (m *MenuItemMutation) ResetField(name string) error {
 		return nil
 	case menuitem.FieldPrice:
 		m.ResetPrice()
+		return nil
+	case menuitem.FieldCurrency:
+		m.ResetCurrency()
+		return nil
+	case menuitem.FieldIsAvailable:
+		m.ResetIsAvailable()
 		return nil
 	case menuitem.FieldPreparationTime:
 		m.ResetPreparationTime()

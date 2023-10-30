@@ -55,6 +55,8 @@ func (MenuItem) Fields() []ent.Field {
 		field.String("name"),
 		field.String("description").Optional(),
 		field.Float("price"),
+		field.String("currency").Optional(),
+		field.Bool("is_available").Default(true),
 		field.Int("preparation_time").Optional(),
 		field.JSON("options", []string{}).Optional(),
 		field.String("deleted_at").Optional(),

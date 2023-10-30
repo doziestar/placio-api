@@ -49,6 +49,34 @@ func (mic *MenuItemCreate) SetPrice(f float64) *MenuItemCreate {
 	return mic
 }
 
+// SetCurrency sets the "currency" field.
+func (mic *MenuItemCreate) SetCurrency(s string) *MenuItemCreate {
+	mic.mutation.SetCurrency(s)
+	return mic
+}
+
+// SetNillableCurrency sets the "currency" field if the given value is not nil.
+func (mic *MenuItemCreate) SetNillableCurrency(s *string) *MenuItemCreate {
+	if s != nil {
+		mic.SetCurrency(*s)
+	}
+	return mic
+}
+
+// SetIsAvailable sets the "is_available" field.
+func (mic *MenuItemCreate) SetIsAvailable(b bool) *MenuItemCreate {
+	mic.mutation.SetIsAvailable(b)
+	return mic
+}
+
+// SetNillableIsAvailable sets the "is_available" field if the given value is not nil.
+func (mic *MenuItemCreate) SetNillableIsAvailable(b *bool) *MenuItemCreate {
+	if b != nil {
+		mic.SetIsAvailable(*b)
+	}
+	return mic
+}
+
 // SetPreparationTime sets the "preparation_time" field.
 func (mic *MenuItemCreate) SetPreparationTime(i int) *MenuItemCreate {
 	mic.mutation.SetPreparationTime(i)
@@ -202,6 +230,10 @@ func (mic *MenuItemCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (mic *MenuItemCreate) defaults() {
+	if _, ok := mic.mutation.IsAvailable(); !ok {
+		v := menuitem.DefaultIsAvailable
+		mic.mutation.SetIsAvailable(v)
+	}
 	if _, ok := mic.mutation.IsDeleted(); !ok {
 		v := menuitem.DefaultIsDeleted
 		mic.mutation.SetIsDeleted(v)
@@ -215,6 +247,9 @@ func (mic *MenuItemCreate) check() error {
 	}
 	if _, ok := mic.mutation.Price(); !ok {
 		return &ValidationError{Name: "price", err: errors.New(`ent: missing required field "MenuItem.price"`)}
+	}
+	if _, ok := mic.mutation.IsAvailable(); !ok {
+		return &ValidationError{Name: "is_available", err: errors.New(`ent: missing required field "MenuItem.is_available"`)}
 	}
 	if _, ok := mic.mutation.IsDeleted(); !ok {
 		return &ValidationError{Name: "is_deleted", err: errors.New(`ent: missing required field "MenuItem.is_deleted"`)}
@@ -270,6 +305,14 @@ func (mic *MenuItemCreate) createSpec() (*MenuItem, *sqlgraph.CreateSpec) {
 	if value, ok := mic.mutation.Price(); ok {
 		_spec.SetField(menuitem.FieldPrice, field.TypeFloat64, value)
 		_node.Price = value
+	}
+	if value, ok := mic.mutation.Currency(); ok {
+		_spec.SetField(menuitem.FieldCurrency, field.TypeString, value)
+		_node.Currency = value
+	}
+	if value, ok := mic.mutation.IsAvailable(); ok {
+		_spec.SetField(menuitem.FieldIsAvailable, field.TypeBool, value)
+		_node.IsAvailable = value
 	}
 	if value, ok := mic.mutation.PreparationTime(); ok {
 		_spec.SetField(menuitem.FieldPreparationTime, field.TypeInt, value)

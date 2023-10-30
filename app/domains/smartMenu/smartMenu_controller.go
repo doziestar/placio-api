@@ -8,6 +8,7 @@ import (
 	"placio-app/utility"
 	"placio-pkg/errors"
 	"placio-pkg/middleware"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -26,6 +27,7 @@ func (c *SmartMenuController) RegisterRoutes(router *gin.RouterGroup) {
 		menuIDParam  = "menuId"
 		tableIDParam = "tableId"
 		orderIDParam = "orderId"
+		menuItemIDParam = "menuItemId"
 	)
 
 	menuRouter := router.Group("/menus")
@@ -37,6 +39,34 @@ func (c *SmartMenuController) RegisterRoutes(router *gin.RouterGroup) {
 		menuRouter.DELETE(fmt.Sprintf("/:%s", menuIDParam), middleware.ErrorMiddleware(c.deleteMenu))
 		menuRouter.PATCH(fmt.Sprintf("/:%s/restore", menuIDParam), middleware.ErrorMiddleware(c.restoreMenu))
 	}
+
+	 menuItemRouter := router.Group("/menuItems")
+    {
+        // Create a new menu item
+        menuItemRouter.POST("/", middleware.ErrorMiddleware(c.createMenuItem))
+        // Required Body Params: name, price, status, description, menuId
+
+        // Get all menu items
+        menuItemRouter.GET("/", middleware.ErrorMiddleware(c.getMenuItems))
+        // Optional Query Params: menuId, status
+
+        // Get a specific menu item by ID
+        menuItemRouter.GET(fmt.Sprintf("/:%s", menuItemIDParam), middleware.ErrorMiddleware(c.getMenuItemByID))
+        // Required Path Params: menuItemId
+
+        // Update a specific menu item by ID
+        menuItemRouter.PUT(fmt.Sprintf("/:%s", menuItemIDParam), middleware.ErrorMiddleware(c.updateMenuItem))
+        // Required Path Params: menuItemId
+        // Required Body Params: Any of name, price, status, description
+
+        // Delete a specific menu item by ID
+        menuItemRouter.DELETE(fmt.Sprintf("/:%s", menuItemIDParam), middleware.ErrorMiddleware(c.deleteMenuItem))
+        // Required Path Params: menuItemId
+
+        // Restore a specific deleted menu item by ID
+        menuItemRouter.PATCH(fmt.Sprintf("/:%s/restore", menuItemIDParam), middleware.ErrorMiddleware(c.restoreMenuItem))
+        // Required Path Params: menuItemId
+    }
 
 	tableRouter := router.Group("/tables")
 	{
@@ -58,6 +88,182 @@ func (c *SmartMenuController) RegisterRoutes(router *gin.RouterGroup) {
 		orderRouter.DELETE(fmt.Sprintf("/:%s", orderIDParam), middleware.ErrorMiddleware(c.deleteOrder))
 		orderRouter.PATCH(fmt.Sprintf("/:%s/restore", orderIDParam), middleware.ErrorMiddleware(c.restoreOrder))
 	}
+}
+
+// CreateMenuItem creates a new menu item.
+// @Summary Create a new menu item
+// @Description Create a new menu item for the authenticated user
+// @Tags MenuItem
+// @Accept json
+// @Produce json
+// @Param menuId path string true "Menu ID"
+// @Param menuItem body MenuItem true "Menu Item"
+// @Success 200 {object} MenuResponseDto "Successfully created a new menu item"
+// @Failure 400 {object} ErrorDTO "Bad Request"
+// @Router /menuItems/{menuId} [post]
+func (c *SmartMenuController) createMenuItem(ctx *gin.Context) error {
+	menuId := ctx.Param("menuId")
+	var menuItem ent.MenuItem
+
+	form, err := ctx.MultipartForm()
+	if err != nil {
+		log.Println("Error parsing form:", err)
+		return nil
+	}
+
+	// It's a good practice to check if the form values exist before accessing them
+	if name, exists := form.Value["name"]; exists {
+		menuItem.Name = name[0]
+	}
+	if description, exists := form.Value["description"]; exists {
+		menuItem.Description = description[0]
+	}
+	if price, exists := form.Value["price"]; exists {
+		menuItem.Price, err = strconv.ParseFloat(price[0], 64)
+		if err != nil {
+			log.Println("Error parsing price:", err)
+			menuItem.Price = 0
+		}
+	}
+	if preparationTime, exists := form.Value["preparationTime"]; exists {
+		menuItem.PreparationTime, err =  strconv.Atoi(preparationTime[0])
+		if err != nil {
+			log.Println("Error parsing preparationTime:", err)
+			menuItem.PreparationTime = 2
+		}
+	}
+	if isAvailable, exists := form.Value["isAvailable"]; exists {
+		menuItem.IsAvailable = isAvailable[0] == "true"
+	}
+	if options, exists := form.Value["options"]; exists {
+		menuItem.Options = []string{options[0]}
+	}
+	if err := ctx.ShouldBindJSON(&menuItem); err != nil {
+		return err
+	}
+
+	medias := form.File["medias"]
+	if len(medias) == 0 {
+		medias = nil
+	}
+	
+	createdMenuItem, err := c.smartMenuService.CreateMenuItem(ctx.Request.Context(), menuId, &menuItem, medias)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(createdMenuItem))
+	return nil
+}
+
+// GetMenuItems retrieves a list of menu items.
+// @Summary Get menu items
+// @Description Get menu items for the authenticated user
+// @Tags MenuItem
+// @Accept json
+// @Produce json
+// @Success 200 {object} []MenuResponseDto "Successfully retrieved menu items"
+// @Failure 400 {object} ErrorDTO "Bad Request"
+// @Router /menuItems [get]
+func (c *SmartMenuController) getMenuItems(ctx *gin.Context) error {
+	menuId := ctx.Query("menuId")
+	menuItems, err := c.smartMenuService.GetMenuItems(ctx, menuId)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(menuItems))
+	return nil
+}
+
+// GetMenuItemByID retrieves a menu item by ID.
+// @Summary Get menu item by ID
+// @Description Get menu item by ID for the authenticated user
+// @Tags MenuItem
+// @Accept json
+// @Produce json
+// @Param menuItemId path string true "Menu Item ID"
+// @Success 200 {object} MenuResponseDto "Successfully retrieved menu item"
+// @Failure 400 {object} ErrorDTO "Bad Request"
+// @Router /menuItems/{menuItemId} [get]
+func (c *SmartMenuController) getMenuItemByID(ctx *gin.Context) error {
+	menuItemId := ctx.Param("menuItemId")
+	menuItem, err := c.smartMenuService.GetMenuItemByID(ctx, menuItemId)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(menuItem))
+	return nil
+}
+
+// UpdateMenuItem updates a menu item.
+// @Summary Update menu item
+// @Description Update menu item for the authenticated user
+// @Tags MenuItem
+// @Accept json
+// @Produce json
+// @Param menuItemId path string true "Menu Item ID"
+// @Param menuItem body MenuItem true "Menu Item"
+// @Success 200 {object} MenuResponseDto "Successfully updated menu item"
+// @Failure 400 {object} ErrorDTO "Bad Request"
+// @Router /menuItems/{menuItemId} [put]
+func (c *SmartMenuController) updateMenuItem(ctx *gin.Context) error {
+	menuItemId := ctx.Param("menuItemId")
+	var menuItem ent.MenuItem
+	if err := ctx.ShouldBindJSON(&menuItem); err != nil {
+		return err
+	}
+	
+	updatedMenuItem, err := c.smartMenuService.UpdateMenuItem(ctx.Request.Context(), menuItemId, &menuItem)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(updatedMenuItem))
+	return nil
+}
+
+// DeleteMenuItem deletes a menu item.
+// @Summary Delete menu item
+// @Description Delete menu item for the authenticated user
+// @Tags MenuItem
+// @Accept json
+// @Produce json
+// @Param menuItemId path string true "Menu Item ID"
+// @Success 200 {object} MenuResponseDto "Successfully deleted menu item"
+// @Failure 400 {object} ErrorDTO "Bad Request"
+// @Router /menuItems/{menuItemId} [delete]
+func (c *SmartMenuController) deleteMenuItem(ctx *gin.Context) error {
+	menuItemId := ctx.Param("menuItemId")
+	err := c.smartMenuService.DeleteMenuItem(ctx.Request.Context(), menuItemId)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse("Menu item successfully deleted"))
+	return nil
+}
+
+// RestoreMenuItem restores a menu item.
+// @Summary Restore menu item
+// @Description Restore menu item for the authenticated user
+// @Tags MenuItem
+// @Accept json
+// @Produce json
+// @Param menuItemId path string true "Menu Item ID"
+// @Success 200 {object} MenuResponseDto "Successfully restored menu item"
+// @Failure 400 {object} ErrorDTO "Bad Request"
+// @Router /menuItems/{menuItemId}/restore [patch]
+func (c *SmartMenuController) restoreMenuItem(ctx *gin.Context) error {
+	menuItemId := ctx.Param("menuItemId")
+	restoredMenuItem, err := c.smartMenuService.RestoreMenuItem(ctx, menuItemId)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(restoredMenuItem))
+	return nil
 }
 
 // CreateMenu creates a new menu.

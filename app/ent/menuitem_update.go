@@ -71,6 +71,40 @@ func (miu *MenuItemUpdate) AddPrice(f float64) *MenuItemUpdate {
 	return miu
 }
 
+// SetCurrency sets the "currency" field.
+func (miu *MenuItemUpdate) SetCurrency(s string) *MenuItemUpdate {
+	miu.mutation.SetCurrency(s)
+	return miu
+}
+
+// SetNillableCurrency sets the "currency" field if the given value is not nil.
+func (miu *MenuItemUpdate) SetNillableCurrency(s *string) *MenuItemUpdate {
+	if s != nil {
+		miu.SetCurrency(*s)
+	}
+	return miu
+}
+
+// ClearCurrency clears the value of the "currency" field.
+func (miu *MenuItemUpdate) ClearCurrency() *MenuItemUpdate {
+	miu.mutation.ClearCurrency()
+	return miu
+}
+
+// SetIsAvailable sets the "is_available" field.
+func (miu *MenuItemUpdate) SetIsAvailable(b bool) *MenuItemUpdate {
+	miu.mutation.SetIsAvailable(b)
+	return miu
+}
+
+// SetNillableIsAvailable sets the "is_available" field if the given value is not nil.
+func (miu *MenuItemUpdate) SetNillableIsAvailable(b *bool) *MenuItemUpdate {
+	if b != nil {
+		miu.SetIsAvailable(*b)
+	}
+	return miu
+}
+
 // SetPreparationTime sets the "preparation_time" field.
 func (miu *MenuItemUpdate) SetPreparationTime(i int) *MenuItemUpdate {
 	miu.mutation.ResetPreparationTime()
@@ -339,6 +373,15 @@ func (miu *MenuItemUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := miu.mutation.AddedPrice(); ok {
 		_spec.AddField(menuitem.FieldPrice, field.TypeFloat64, value)
 	}
+	if value, ok := miu.mutation.Currency(); ok {
+		_spec.SetField(menuitem.FieldCurrency, field.TypeString, value)
+	}
+	if miu.mutation.CurrencyCleared() {
+		_spec.ClearField(menuitem.FieldCurrency, field.TypeString)
+	}
+	if value, ok := miu.mutation.IsAvailable(); ok {
+		_spec.SetField(menuitem.FieldIsAvailable, field.TypeBool, value)
+	}
 	if value, ok := miu.mutation.PreparationTime(); ok {
 		_spec.SetField(menuitem.FieldPreparationTime, field.TypeInt, value)
 	}
@@ -588,6 +631,40 @@ func (miuo *MenuItemUpdateOne) SetPrice(f float64) *MenuItemUpdateOne {
 // AddPrice adds f to the "price" field.
 func (miuo *MenuItemUpdateOne) AddPrice(f float64) *MenuItemUpdateOne {
 	miuo.mutation.AddPrice(f)
+	return miuo
+}
+
+// SetCurrency sets the "currency" field.
+func (miuo *MenuItemUpdateOne) SetCurrency(s string) *MenuItemUpdateOne {
+	miuo.mutation.SetCurrency(s)
+	return miuo
+}
+
+// SetNillableCurrency sets the "currency" field if the given value is not nil.
+func (miuo *MenuItemUpdateOne) SetNillableCurrency(s *string) *MenuItemUpdateOne {
+	if s != nil {
+		miuo.SetCurrency(*s)
+	}
+	return miuo
+}
+
+// ClearCurrency clears the value of the "currency" field.
+func (miuo *MenuItemUpdateOne) ClearCurrency() *MenuItemUpdateOne {
+	miuo.mutation.ClearCurrency()
+	return miuo
+}
+
+// SetIsAvailable sets the "is_available" field.
+func (miuo *MenuItemUpdateOne) SetIsAvailable(b bool) *MenuItemUpdateOne {
+	miuo.mutation.SetIsAvailable(b)
+	return miuo
+}
+
+// SetNillableIsAvailable sets the "is_available" field if the given value is not nil.
+func (miuo *MenuItemUpdateOne) SetNillableIsAvailable(b *bool) *MenuItemUpdateOne {
+	if b != nil {
+		miuo.SetIsAvailable(*b)
+	}
 	return miuo
 }
 
@@ -888,6 +965,15 @@ func (miuo *MenuItemUpdateOne) sqlSave(ctx context.Context) (_node *MenuItem, er
 	}
 	if value, ok := miuo.mutation.AddedPrice(); ok {
 		_spec.AddField(menuitem.FieldPrice, field.TypeFloat64, value)
+	}
+	if value, ok := miuo.mutation.Currency(); ok {
+		_spec.SetField(menuitem.FieldCurrency, field.TypeString, value)
+	}
+	if miuo.mutation.CurrencyCleared() {
+		_spec.ClearField(menuitem.FieldCurrency, field.TypeString)
+	}
+	if value, ok := miuo.mutation.IsAvailable(); ok {
+		_spec.SetField(menuitem.FieldIsAvailable, field.TypeBool, value)
 	}
 	if value, ok := miuo.mutation.PreparationTime(); ok {
 		_spec.SetField(menuitem.FieldPreparationTime, field.TypeInt, value)

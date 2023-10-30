@@ -720,6 +720,8 @@ var (
 		{Name: "name", Type: field.TypeString},
 		{Name: "description", Type: field.TypeString, Nullable: true},
 		{Name: "price", Type: field.TypeFloat64},
+		{Name: "currency", Type: field.TypeString, Nullable: true},
+		{Name: "is_available", Type: field.TypeBool, Default: true},
 		{Name: "preparation_time", Type: field.TypeInt, Nullable: true},
 		{Name: "options", Type: field.TypeJSON, Nullable: true},
 		{Name: "deleted_at", Type: field.TypeString, Nullable: true},

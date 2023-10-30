@@ -24,6 +24,10 @@ type MenuItem struct {
 	Description string `json:"description,omitempty"`
 	// Price holds the value of the "price" field.
 	Price float64 `json:"price,omitempty"`
+	// Currency holds the value of the "currency" field.
+	Currency string `json:"currency,omitempty"`
+	// IsAvailable holds the value of the "is_available" field.
+	IsAvailable bool `json:"is_available,omitempty"`
 	// PreparationTime holds the value of the "preparation_time" field.
 	PreparationTime int `json:"preparation_time,omitempty"`
 	// Options holds the value of the "options" field.
@@ -100,13 +104,13 @@ func (*MenuItem) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case menuitem.FieldOptions:
 			values[i] = new([]byte)
-		case menuitem.FieldIsDeleted:
+		case menuitem.FieldIsAvailable, menuitem.FieldIsDeleted:
 			values[i] = new(sql.NullBool)
 		case menuitem.FieldPrice:
 			values[i] = new(sql.NullFloat64)
 		case menuitem.FieldPreparationTime:
 			values[i] = new(sql.NullInt64)
-		case menuitem.FieldID, menuitem.FieldName, menuitem.FieldDescription, menuitem.FieldDeletedAt:
+		case menuitem.FieldID, menuitem.FieldName, menuitem.FieldDescription, menuitem.FieldCurrency, menuitem.FieldDeletedAt:
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -146,6 +150,18 @@ func (mi *MenuItem) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field price", values[i])
 			} else if value.Valid {
 				mi.Price = value.Float64
+			}
+		case menuitem.FieldCurrency:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field currency", values[i])
+			} else if value.Valid {
+				mi.Currency = value.String
+			}
+		case menuitem.FieldIsAvailable:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_available", values[i])
+			} else if value.Valid {
+				mi.IsAvailable = value.Bool
 			}
 		case menuitem.FieldPreparationTime:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -237,6 +253,12 @@ func (mi *MenuItem) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("price=")
 	builder.WriteString(fmt.Sprintf("%v", mi.Price))
+	builder.WriteString(", ")
+	builder.WriteString("currency=")
+	builder.WriteString(mi.Currency)
+	builder.WriteString(", ")
+	builder.WriteString("is_available=")
+	builder.WriteString(fmt.Sprintf("%v", mi.IsAvailable))
 	builder.WriteString(", ")
 	builder.WriteString("preparation_time=")
 	builder.WriteString(fmt.Sprintf("%v", mi.PreparationTime))
