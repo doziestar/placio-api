@@ -10,6 +10,7 @@ import (
 	"placio-app/ent/category"
 	"placio-app/ent/categoryassignment"
 	"placio-app/ent/media"
+	"placio-app/ent/menu"
 	"placio-app/ent/placeinventory"
 	"placio-app/ent/predicate"
 
@@ -28,6 +29,7 @@ type CategoryQuery struct {
 	withCategoryAssignments *CategoryAssignmentQuery
 	withPlaceInventories    *PlaceInventoryQuery
 	withMedia               *MediaQuery
+	withMenus               *MenuQuery
 	withFKs                 bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -124,6 +126,28 @@ func (cq *CategoryQuery) QueryMedia() *MediaQuery {
 			sqlgraph.From(category.Table, category.FieldID, selector),
 			sqlgraph.To(media.Table, media.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, false, category.MediaTable, category.MediaPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryMenus chains the current query on the "menus" edge.
+func (cq *CategoryQuery) QueryMenus() *MenuQuery {
+	query := (&MenuClient{config: cq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(category.Table, category.FieldID, selector),
+			sqlgraph.To(menu.Table, menu.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, category.MenusTable, category.MenusPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -326,6 +350,7 @@ func (cq *CategoryQuery) Clone() *CategoryQuery {
 		withCategoryAssignments: cq.withCategoryAssignments.Clone(),
 		withPlaceInventories:    cq.withPlaceInventories.Clone(),
 		withMedia:               cq.withMedia.Clone(),
+		withMenus:               cq.withMenus.Clone(),
 		// clone intermediate query.
 		sql:  cq.sql.Clone(),
 		path: cq.path,
@@ -362,6 +387,17 @@ func (cq *CategoryQuery) WithMedia(opts ...func(*MediaQuery)) *CategoryQuery {
 		opt(query)
 	}
 	cq.withMedia = query
+	return cq
+}
+
+// WithMenus tells the query-builder to eager-load the nodes that are connected to
+// the "menus" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *CategoryQuery) WithMenus(opts ...func(*MenuQuery)) *CategoryQuery {
+	query := (&MenuClient{config: cq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withMenus = query
 	return cq
 }
 
@@ -444,10 +480,11 @@ func (cq *CategoryQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cat
 		nodes       = []*Category{}
 		withFKs     = cq.withFKs
 		_spec       = cq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [4]bool{
 			cq.withCategoryAssignments != nil,
 			cq.withPlaceInventories != nil,
 			cq.withMedia != nil,
+			cq.withMenus != nil,
 		}
 	)
 	if withFKs {
@@ -491,6 +528,13 @@ func (cq *CategoryQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Cat
 		if err := cq.loadMedia(ctx, query, nodes,
 			func(n *Category) { n.Edges.Media = []*Media{} },
 			func(n *Category, e *Media) { n.Edges.Media = append(n.Edges.Media, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := cq.withMenus; query != nil {
+		if err := cq.loadMenus(ctx, query, nodes,
+			func(n *Category) { n.Edges.Menus = []*Menu{} },
+			func(n *Category, e *Menu) { n.Edges.Menus = append(n.Edges.Menus, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -613,6 +657,67 @@ func (cq *CategoryQuery) loadMedia(ctx context.Context, query *MediaQuery, nodes
 		nodes, ok := nids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected "media" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
+		}
+	}
+	return nil
+}
+func (cq *CategoryQuery) loadMenus(ctx context.Context, query *MenuQuery, nodes []*Category, init func(*Category), assign func(*Category, *Menu)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[string]*Category)
+	nids := make(map[string]map[*Category]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(category.MenusTable)
+		s.Join(joinT).On(s.C(menu.FieldID), joinT.C(category.MenusPrimaryKey[0]))
+		s.Where(sql.InValues(joinT.C(category.MenusPrimaryKey[1]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(category.MenusPrimaryKey[1]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(sql.NullString)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := values[0].(*sql.NullString).String
+				inValue := values[1].(*sql.NullString).String
+				if nids[inValue] == nil {
+					nids[inValue] = map[*Category]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*Menu](ctx, query, qr, query.inters)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "menus" node returned %v`, n.ID)
 		}
 		for kn := range nodes {
 			assign(kn, n)

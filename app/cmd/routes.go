@@ -192,7 +192,7 @@ func InitializeRoutes(app *gin.Engine, client *ent.Client) {
 		featureReleaseController.RegisterRoutes(routerGroupV1, routerGroupV1WithoutAuth)
 
 		// smart menu
-		smartMenuService := smartMenu.NewSmartMenuService(client)
+		smartMenuService := smartMenu.NewSmartMenuService(client, mediaService)
 		smartMenuController := smartMenu.NewSmartMenuController(smartMenuService)
 		smartMenuController.RegisterRoutes(routerGroupV1WithoutAuth)
 		// TODO: Below are the routes that need to be implemented

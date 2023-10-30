@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"placio-app/ent/category"
+	"placio-app/ent/media"
 	"placio-app/ent/menu"
 	"placio-app/ent/menuitem"
 	"placio-app/ent/place"
@@ -70,29 +71,81 @@ func (mc *MenuCreate) SetNillableDescription(s *string) *MenuCreate {
 	return mc
 }
 
+// SetPreparationTime sets the "preparation_time" field.
+func (mc *MenuCreate) SetPreparationTime(s string) *MenuCreate {
+	mc.mutation.SetPreparationTime(s)
+	return mc
+}
+
+// SetNillablePreparationTime sets the "preparation_time" field if the given value is not nil.
+func (mc *MenuCreate) SetNillablePreparationTime(s *string) *MenuCreate {
+	if s != nil {
+		mc.SetPreparationTime(*s)
+	}
+	return mc
+}
+
+// SetOptions sets the "options" field.
+func (mc *MenuCreate) SetOptions(s string) *MenuCreate {
+	mc.mutation.SetOptions(s)
+	return mc
+}
+
+// SetNillableOptions sets the "options" field if the given value is not nil.
+func (mc *MenuCreate) SetNillableOptions(s *string) *MenuCreate {
+	if s != nil {
+		mc.SetOptions(*s)
+	}
+	return mc
+}
+
+// SetPrice sets the "price" field.
+func (mc *MenuCreate) SetPrice(s string) *MenuCreate {
+	mc.mutation.SetPrice(s)
+	return mc
+}
+
+// SetNillablePrice sets the "price" field if the given value is not nil.
+func (mc *MenuCreate) SetNillablePrice(s *string) *MenuCreate {
+	if s != nil {
+		mc.SetPrice(*s)
+	}
+	return mc
+}
+
+// SetIsAvailable sets the "is_available" field.
+func (mc *MenuCreate) SetIsAvailable(b bool) *MenuCreate {
+	mc.mutation.SetIsAvailable(b)
+	return mc
+}
+
+// SetNillableIsAvailable sets the "is_available" field if the given value is not nil.
+func (mc *MenuCreate) SetNillableIsAvailable(b *bool) *MenuCreate {
+	if b != nil {
+		mc.SetIsAvailable(*b)
+	}
+	return mc
+}
+
 // SetID sets the "id" field.
 func (mc *MenuCreate) SetID(s string) *MenuCreate {
 	mc.mutation.SetID(s)
 	return mc
 }
 
-// SetPlaceID sets the "place" edge to the Place entity by ID.
-func (mc *MenuCreate) SetPlaceID(id string) *MenuCreate {
-	mc.mutation.SetPlaceID(id)
+// AddPlaceIDs adds the "place" edge to the Place entity by IDs.
+func (mc *MenuCreate) AddPlaceIDs(ids ...string) *MenuCreate {
+	mc.mutation.AddPlaceIDs(ids...)
 	return mc
 }
 
-// SetNillablePlaceID sets the "place" edge to the Place entity by ID if the given value is not nil.
-func (mc *MenuCreate) SetNillablePlaceID(id *string) *MenuCreate {
-	if id != nil {
-		mc = mc.SetPlaceID(*id)
+// AddPlace adds the "place" edges to the Place entity.
+func (mc *MenuCreate) AddPlace(p ...*Place) *MenuCreate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
 	}
-	return mc
-}
-
-// SetPlace sets the "place" edge to the Place entity.
-func (mc *MenuCreate) SetPlace(p *Place) *MenuCreate {
-	return mc.SetPlaceID(p.ID)
+	return mc.AddPlaceIDs(ids...)
 }
 
 // AddCategoryIDs adds the "categories" edge to the Category entity by IDs.
@@ -123,6 +176,21 @@ func (mc *MenuCreate) AddMenuItems(m ...*MenuItem) *MenuCreate {
 		ids[i] = m[i].ID
 	}
 	return mc.AddMenuItemIDs(ids...)
+}
+
+// AddMediumIDs adds the "media" edge to the Media entity by IDs.
+func (mc *MenuCreate) AddMediumIDs(ids ...string) *MenuCreate {
+	mc.mutation.AddMediumIDs(ids...)
+	return mc
+}
+
+// AddMedia adds the "media" edges to the Media entity.
+func (mc *MenuCreate) AddMedia(m ...*Media) *MenuCreate {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return mc.AddMediumIDs(ids...)
 }
 
 // Mutation returns the MenuMutation object of the builder.
@@ -164,6 +232,10 @@ func (mc *MenuCreate) defaults() {
 		v := menu.DefaultIsDeleted
 		mc.mutation.SetIsDeleted(v)
 	}
+	if _, ok := mc.mutation.IsAvailable(); !ok {
+		v := menu.DefaultIsAvailable
+		mc.mutation.SetIsAvailable(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -173,6 +245,9 @@ func (mc *MenuCreate) check() error {
 	}
 	if _, ok := mc.mutation.IsDeleted(); !ok {
 		return &ValidationError{Name: "is_deleted", err: errors.New(`ent: missing required field "Menu.is_deleted"`)}
+	}
+	if _, ok := mc.mutation.IsAvailable(); !ok {
+		return &ValidationError{Name: "is_available", err: errors.New(`ent: missing required field "Menu.is_available"`)}
 	}
 	if v, ok := mc.mutation.ID(); ok {
 		if err := menu.IDValidator(v); err != nil {
@@ -230,12 +305,28 @@ func (mc *MenuCreate) createSpec() (*Menu, *sqlgraph.CreateSpec) {
 		_spec.SetField(menu.FieldDescription, field.TypeString, value)
 		_node.Description = value
 	}
+	if value, ok := mc.mutation.PreparationTime(); ok {
+		_spec.SetField(menu.FieldPreparationTime, field.TypeString, value)
+		_node.PreparationTime = value
+	}
+	if value, ok := mc.mutation.Options(); ok {
+		_spec.SetField(menu.FieldOptions, field.TypeString, value)
+		_node.Options = value
+	}
+	if value, ok := mc.mutation.Price(); ok {
+		_spec.SetField(menu.FieldPrice, field.TypeString, value)
+		_node.Price = value
+	}
+	if value, ok := mc.mutation.IsAvailable(); ok {
+		_spec.SetField(menu.FieldIsAvailable, field.TypeBool, value)
+		_node.IsAvailable = value
+	}
 	if nodes := mc.mutation.PlaceIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
+			Rel:     sqlgraph.M2M,
 			Inverse: true,
 			Table:   menu.PlaceTable,
-			Columns: []string{menu.PlaceColumn},
+			Columns: menu.PlacePrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
@@ -244,15 +335,14 @@ func (mc *MenuCreate) createSpec() (*Menu, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.place_menus = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := mc.mutation.CategoriesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
+			Rel:     sqlgraph.M2M,
 			Inverse: false,
 			Table:   menu.CategoriesTable,
-			Columns: []string{menu.CategoriesColumn},
+			Columns: menu.CategoriesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
@@ -272,6 +362,22 @@ func (mc *MenuCreate) createSpec() (*Menu, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(menuitem.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := mc.mutation.MediaIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   menu.MediaTable,
+			Columns: menu.MediaPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

@@ -2320,6 +2320,22 @@ func (c *CategoryClient) QueryMedia(ca *Category) *MediaQuery {
 	return query
 }
 
+// QueryMenus queries the menus edge of a Category.
+func (c *CategoryClient) QueryMenus(ca *Category) *MenuQuery {
+	query := (&MenuClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ca.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(category.Table, category.FieldID, id),
+			sqlgraph.To(menu.Table, menu.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, category.MenusTable, category.MenusPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(ca.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *CategoryClient) Hooks() []Hook {
 	return c.hooks.Category
@@ -4525,6 +4541,22 @@ func (c *MediaClient) QueryPlaceInventory(m *Media) *PlaceInventoryQuery {
 	return query
 }
 
+// QueryMenu queries the menu edge of a Media.
+func (c *MediaClient) QueryMenu(m *Media) *MenuQuery {
+	query := (&MenuClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(media.Table, media.FieldID, id),
+			sqlgraph.To(menu.Table, menu.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, media.MenuTable, media.MenuPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *MediaClient) Hooks() []Hook {
 	return c.hooks.Media
@@ -4666,7 +4698,7 @@ func (c *MenuClient) QueryPlace(m *Menu) *PlaceQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(menu.Table, menu.FieldID, id),
 			sqlgraph.To(place.Table, place.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, menu.PlaceTable, menu.PlaceColumn),
+			sqlgraph.Edge(sqlgraph.M2M, true, menu.PlaceTable, menu.PlacePrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(m.driver.Dialect(), step)
 		return fromV, nil
@@ -4682,7 +4714,7 @@ func (c *MenuClient) QueryCategories(m *Menu) *CategoryQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(menu.Table, menu.FieldID, id),
 			sqlgraph.To(category.Table, category.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, menu.CategoriesTable, menu.CategoriesColumn),
+			sqlgraph.Edge(sqlgraph.M2M, false, menu.CategoriesTable, menu.CategoriesPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(m.driver.Dialect(), step)
 		return fromV, nil
@@ -4699,6 +4731,22 @@ func (c *MenuClient) QueryMenuItems(m *Menu) *MenuItemQuery {
 			sqlgraph.From(menu.Table, menu.FieldID, id),
 			sqlgraph.To(menuitem.Table, menuitem.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, false, menu.MenuItemsTable, menu.MenuItemsPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryMedia queries the media edge of a Menu.
+func (c *MenuClient) QueryMedia(m *Menu) *MediaQuery {
+	query := (&MediaClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(menu.Table, menu.FieldID, id),
+			sqlgraph.To(media.Table, media.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, menu.MediaTable, menu.MediaPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(m.driver.Dialect(), step)
 		return fromV, nil
@@ -5816,7 +5864,7 @@ func (c *PlaceClient) QueryMenus(pl *Place) *MenuQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(place.Table, place.FieldID, id),
 			sqlgraph.To(menu.Table, menu.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, place.MenusTable, place.MenusColumn),
+			sqlgraph.Edge(sqlgraph.M2M, false, place.MenusTable, place.MenusPrimaryKey...),
 		)
 		fromV = sqlgraph.Neighbors(pl.driver.Dialect(), step)
 		return fromV, nil

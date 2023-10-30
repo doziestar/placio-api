@@ -500,6 +500,29 @@ func HasPlaceInventoryWith(preds ...predicate.PlaceInventory) predicate.Media {
 	})
 }
 
+// HasMenu applies the HasEdge predicate on the "menu" edge.
+func HasMenu() predicate.Media {
+	return predicate.Media(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, MenuTable, MenuPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasMenuWith applies the HasEdge predicate on the "menu" edge with a given conditions (other predicates).
+func HasMenuWith(preds ...predicate.Menu) predicate.Media {
+	return predicate.Media(func(s *sql.Selector) {
+		step := newMenuStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Media) predicate.Media {
 	return predicate.Media(sql.AndPredicates(predicates...))

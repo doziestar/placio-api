@@ -39,7 +39,6 @@ type Category struct {
 	Edges                  CategoryEdges `json:"edges"`
 	business_categories    *string
 	event_event_categories *string
-	menu_categories        *string
 	place_categories       *string
 	post_categories        *string
 	user_categories        *string
@@ -54,9 +53,11 @@ type CategoryEdges struct {
 	PlaceInventories []*PlaceInventory `json:"place_inventories,omitempty"`
 	// Media holds the value of the media edge.
 	Media []*Media `json:"media,omitempty"`
+	// Menus holds the value of the menus edge.
+	Menus []*Menu `json:"menus,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 }
 
 // CategoryAssignmentsOrErr returns the CategoryAssignments value or an error if the edge
@@ -86,6 +87,15 @@ func (e CategoryEdges) MediaOrErr() ([]*Media, error) {
 	return nil, &NotLoadedError{edge: "media"}
 }
 
+// MenusOrErr returns the Menus value or an error if the edge
+// was not loaded in eager-loading.
+func (e CategoryEdges) MenusOrErr() ([]*Menu, error) {
+	if e.loadedTypes[3] {
+		return e.Menus, nil
+	}
+	return nil, &NotLoadedError{edge: "menus"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Category) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -97,13 +107,11 @@ func (*Category) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case category.ForeignKeys[1]: // event_event_categories
 			values[i] = new(sql.NullString)
-		case category.ForeignKeys[2]: // menu_categories
+		case category.ForeignKeys[2]: // place_categories
 			values[i] = new(sql.NullString)
-		case category.ForeignKeys[3]: // place_categories
+		case category.ForeignKeys[3]: // post_categories
 			values[i] = new(sql.NullString)
-		case category.ForeignKeys[4]: // post_categories
-			values[i] = new(sql.NullString)
-		case category.ForeignKeys[5]: // user_categories
+		case category.ForeignKeys[4]: // user_categories
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -196,26 +204,19 @@ func (c *Category) assignValues(columns []string, values []any) error {
 			}
 		case category.ForeignKeys[2]:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field menu_categories", values[i])
-			} else if value.Valid {
-				c.menu_categories = new(string)
-				*c.menu_categories = value.String
-			}
-		case category.ForeignKeys[3]:
-			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field place_categories", values[i])
 			} else if value.Valid {
 				c.place_categories = new(string)
 				*c.place_categories = value.String
 			}
-		case category.ForeignKeys[4]:
+		case category.ForeignKeys[3]:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field post_categories", values[i])
 			} else if value.Valid {
 				c.post_categories = new(string)
 				*c.post_categories = value.String
 			}
-		case category.ForeignKeys[5]:
+		case category.ForeignKeys[4]:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field user_categories", values[i])
 			} else if value.Valid {
@@ -248,6 +249,11 @@ func (c *Category) QueryPlaceInventories() *PlaceInventoryQuery {
 // QueryMedia queries the "media" edge of the Category entity.
 func (c *Category) QueryMedia() *MediaQuery {
 	return NewCategoryClient(c.config).QueryMedia(c)
+}
+
+// QueryMenus queries the "menus" edge of the Category entity.
+func (c *Category) QueryMenus() *MenuQuery {
+	return NewCategoryClient(c.config).QueryMenus(c)
 }
 
 // Update returns a builder for updating this Category.

@@ -36,6 +36,8 @@ const (
 	EdgePlace = "place"
 	// EdgePlaceInventory holds the string denoting the place_inventory edge name in mutations.
 	EdgePlaceInventory = "place_inventory"
+	// EdgeMenu holds the string denoting the menu edge name in mutations.
+	EdgeMenu = "menu"
 	// Table holds the table name of the media in the database.
 	Table = "media"
 	// PostTable is the table that holds the post relation/edge.
@@ -67,6 +69,11 @@ const (
 	// PlaceInventoryInverseTable is the table name for the PlaceInventory entity.
 	// It exists in this package in order to avoid circular dependency with the "placeinventory" package.
 	PlaceInventoryInverseTable = "place_inventories"
+	// MenuTable is the table that holds the menu relation/edge. The primary key declared below.
+	MenuTable = "menu_media"
+	// MenuInverseTable is the table name for the Menu entity.
+	// It exists in this package in order to avoid circular dependency with the "menu" package.
+	MenuInverseTable = "menus"
 )
 
 // Columns holds all SQL columns for media fields.
@@ -99,6 +106,9 @@ var (
 	// PlaceInventoryPrimaryKey and PlaceInventoryColumn2 are the table columns denoting the
 	// primary key for the place_inventory relation (M2M).
 	PlaceInventoryPrimaryKey = []string{"place_inventory_id", "media_id"}
+	// MenuPrimaryKey and MenuColumn2 are the table columns denoting the
+	// primary key for the menu relation (M2M).
+	MenuPrimaryKey = []string{"menu_id", "media_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -224,6 +234,20 @@ func ByPlaceInventory(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newPlaceInventoryStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByMenuCount orders the results by menu count.
+func ByMenuCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newMenuStep(), opts...)
+	}
+}
+
+// ByMenu orders the results by menu terms.
+func ByMenu(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newMenuStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newPostStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -257,5 +281,12 @@ func newPlaceInventoryStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(PlaceInventoryInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2M, true, PlaceInventoryTable, PlaceInventoryPrimaryKey...),
+	)
+}
+func newMenuStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(MenuInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, true, MenuTable, MenuPrimaryKey...),
 	)
 }

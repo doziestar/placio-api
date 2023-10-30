@@ -9,6 +9,7 @@ import (
 	"math"
 	"placio-app/ent/category"
 	"placio-app/ent/media"
+	"placio-app/ent/menu"
 	"placio-app/ent/place"
 	"placio-app/ent/placeinventory"
 	"placio-app/ent/post"
@@ -32,6 +33,7 @@ type MediaQuery struct {
 	withCategories     *CategoryQuery
 	withPlace          *PlaceQuery
 	withPlaceInventory *PlaceInventoryQuery
+	withMenu           *MenuQuery
 	withFKs            bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -172,6 +174,28 @@ func (mq *MediaQuery) QueryPlaceInventory() *PlaceInventoryQuery {
 			sqlgraph.From(media.Table, media.FieldID, selector),
 			sqlgraph.To(placeinventory.Table, placeinventory.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, true, media.PlaceInventoryTable, media.PlaceInventoryPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryMenu chains the current query on the "menu" edge.
+func (mq *MediaQuery) QueryMenu() *MenuQuery {
+	query := (&MenuClient{config: mq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := mq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := mq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(media.Table, media.FieldID, selector),
+			sqlgraph.To(menu.Table, menu.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, media.MenuTable, media.MenuPrimaryKey...),
 		)
 		fromU = sqlgraph.SetNeighbors(mq.driver.Dialect(), step)
 		return fromU, nil
@@ -376,6 +400,7 @@ func (mq *MediaQuery) Clone() *MediaQuery {
 		withCategories:     mq.withCategories.Clone(),
 		withPlace:          mq.withPlace.Clone(),
 		withPlaceInventory: mq.withPlaceInventory.Clone(),
+		withMenu:           mq.withMenu.Clone(),
 		// clone intermediate query.
 		sql:  mq.sql.Clone(),
 		path: mq.path,
@@ -434,6 +459,17 @@ func (mq *MediaQuery) WithPlaceInventory(opts ...func(*PlaceInventoryQuery)) *Me
 		opt(query)
 	}
 	mq.withPlaceInventory = query
+	return mq
+}
+
+// WithMenu tells the query-builder to eager-load the nodes that are connected to
+// the "menu" edge. The optional arguments are used to configure the query builder of the edge.
+func (mq *MediaQuery) WithMenu(opts ...func(*MenuQuery)) *MediaQuery {
+	query := (&MenuClient{config: mq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	mq.withMenu = query
 	return mq
 }
 
@@ -516,12 +552,13 @@ func (mq *MediaQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Media,
 		nodes       = []*Media{}
 		withFKs     = mq.withFKs
 		_spec       = mq.querySpec()
-		loadedTypes = [5]bool{
+		loadedTypes = [6]bool{
 			mq.withPost != nil,
 			mq.withReview != nil,
 			mq.withCategories != nil,
 			mq.withPlace != nil,
 			mq.withPlaceInventory != nil,
+			mq.withMenu != nil,
 		}
 	)
 	if mq.withPost != nil || mq.withReview != nil {
@@ -578,6 +615,13 @@ func (mq *MediaQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Media,
 		if err := mq.loadPlaceInventory(ctx, query, nodes,
 			func(n *Media) { n.Edges.PlaceInventory = []*PlaceInventory{} },
 			func(n *Media, e *PlaceInventory) { n.Edges.PlaceInventory = append(n.Edges.PlaceInventory, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := mq.withMenu; query != nil {
+		if err := mq.loadMenu(ctx, query, nodes,
+			func(n *Media) { n.Edges.Menu = []*Menu{} },
+			func(n *Media, e *Menu) { n.Edges.Menu = append(n.Edges.Menu, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -824,6 +868,67 @@ func (mq *MediaQuery) loadPlaceInventory(ctx context.Context, query *PlaceInvent
 		nodes, ok := nids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected "place_inventory" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
+		}
+	}
+	return nil
+}
+func (mq *MediaQuery) loadMenu(ctx context.Context, query *MenuQuery, nodes []*Media, init func(*Media), assign func(*Media, *Menu)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[string]*Media)
+	nids := make(map[string]map[*Media]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(media.MenuTable)
+		s.Join(joinT).On(s.C(menu.FieldID), joinT.C(media.MenuPrimaryKey[0]))
+		s.Where(sql.InValues(joinT.C(media.MenuPrimaryKey[1]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(media.MenuPrimaryKey[1]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(sql.NullString)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := values[0].(*sql.NullString).String
+				inValue := values[1].(*sql.NullString).String
+				if nids[inValue] == nil {
+					nids[inValue] = map[*Media]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*Menu](ctx, query, qr, query.inters)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "menu" node returned %v`, n.ID)
 		}
 		for kn := range nodes {
 			assign(kn, n)

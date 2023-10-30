@@ -84,6 +84,26 @@ func Description(v string) predicate.Menu {
 	return predicate.Menu(sql.FieldEQ(FieldDescription, v))
 }
 
+// PreparationTime applies equality check predicate on the "preparation_time" field. It's identical to PreparationTimeEQ.
+func PreparationTime(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldEQ(FieldPreparationTime, v))
+}
+
+// Options applies equality check predicate on the "options" field. It's identical to OptionsEQ.
+func Options(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldEQ(FieldOptions, v))
+}
+
+// Price applies equality check predicate on the "price" field. It's identical to PriceEQ.
+func Price(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldEQ(FieldPrice, v))
+}
+
+// IsAvailable applies equality check predicate on the "is_available" field. It's identical to IsAvailableEQ.
+func IsAvailable(v bool) predicate.Menu {
+	return predicate.Menu(sql.FieldEQ(FieldIsAvailable, v))
+}
+
 // NameEQ applies the EQ predicate on the "name" field.
 func NameEQ(v string) predicate.Menu {
 	return predicate.Menu(sql.FieldEQ(FieldName, v))
@@ -309,12 +329,247 @@ func DescriptionContainsFold(v string) predicate.Menu {
 	return predicate.Menu(sql.FieldContainsFold(FieldDescription, v))
 }
 
+// PreparationTimeEQ applies the EQ predicate on the "preparation_time" field.
+func PreparationTimeEQ(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldEQ(FieldPreparationTime, v))
+}
+
+// PreparationTimeNEQ applies the NEQ predicate on the "preparation_time" field.
+func PreparationTimeNEQ(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldNEQ(FieldPreparationTime, v))
+}
+
+// PreparationTimeIn applies the In predicate on the "preparation_time" field.
+func PreparationTimeIn(vs ...string) predicate.Menu {
+	return predicate.Menu(sql.FieldIn(FieldPreparationTime, vs...))
+}
+
+// PreparationTimeNotIn applies the NotIn predicate on the "preparation_time" field.
+func PreparationTimeNotIn(vs ...string) predicate.Menu {
+	return predicate.Menu(sql.FieldNotIn(FieldPreparationTime, vs...))
+}
+
+// PreparationTimeGT applies the GT predicate on the "preparation_time" field.
+func PreparationTimeGT(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldGT(FieldPreparationTime, v))
+}
+
+// PreparationTimeGTE applies the GTE predicate on the "preparation_time" field.
+func PreparationTimeGTE(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldGTE(FieldPreparationTime, v))
+}
+
+// PreparationTimeLT applies the LT predicate on the "preparation_time" field.
+func PreparationTimeLT(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldLT(FieldPreparationTime, v))
+}
+
+// PreparationTimeLTE applies the LTE predicate on the "preparation_time" field.
+func PreparationTimeLTE(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldLTE(FieldPreparationTime, v))
+}
+
+// PreparationTimeContains applies the Contains predicate on the "preparation_time" field.
+func PreparationTimeContains(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldContains(FieldPreparationTime, v))
+}
+
+// PreparationTimeHasPrefix applies the HasPrefix predicate on the "preparation_time" field.
+func PreparationTimeHasPrefix(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldHasPrefix(FieldPreparationTime, v))
+}
+
+// PreparationTimeHasSuffix applies the HasSuffix predicate on the "preparation_time" field.
+func PreparationTimeHasSuffix(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldHasSuffix(FieldPreparationTime, v))
+}
+
+// PreparationTimeIsNil applies the IsNil predicate on the "preparation_time" field.
+func PreparationTimeIsNil() predicate.Menu {
+	return predicate.Menu(sql.FieldIsNull(FieldPreparationTime))
+}
+
+// PreparationTimeNotNil applies the NotNil predicate on the "preparation_time" field.
+func PreparationTimeNotNil() predicate.Menu {
+	return predicate.Menu(sql.FieldNotNull(FieldPreparationTime))
+}
+
+// PreparationTimeEqualFold applies the EqualFold predicate on the "preparation_time" field.
+func PreparationTimeEqualFold(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldEqualFold(FieldPreparationTime, v))
+}
+
+// PreparationTimeContainsFold applies the ContainsFold predicate on the "preparation_time" field.
+func PreparationTimeContainsFold(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldContainsFold(FieldPreparationTime, v))
+}
+
+// OptionsEQ applies the EQ predicate on the "options" field.
+func OptionsEQ(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldEQ(FieldOptions, v))
+}
+
+// OptionsNEQ applies the NEQ predicate on the "options" field.
+func OptionsNEQ(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldNEQ(FieldOptions, v))
+}
+
+// OptionsIn applies the In predicate on the "options" field.
+func OptionsIn(vs ...string) predicate.Menu {
+	return predicate.Menu(sql.FieldIn(FieldOptions, vs...))
+}
+
+// OptionsNotIn applies the NotIn predicate on the "options" field.
+func OptionsNotIn(vs ...string) predicate.Menu {
+	return predicate.Menu(sql.FieldNotIn(FieldOptions, vs...))
+}
+
+// OptionsGT applies the GT predicate on the "options" field.
+func OptionsGT(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldGT(FieldOptions, v))
+}
+
+// OptionsGTE applies the GTE predicate on the "options" field.
+func OptionsGTE(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldGTE(FieldOptions, v))
+}
+
+// OptionsLT applies the LT predicate on the "options" field.
+func OptionsLT(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldLT(FieldOptions, v))
+}
+
+// OptionsLTE applies the LTE predicate on the "options" field.
+func OptionsLTE(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldLTE(FieldOptions, v))
+}
+
+// OptionsContains applies the Contains predicate on the "options" field.
+func OptionsContains(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldContains(FieldOptions, v))
+}
+
+// OptionsHasPrefix applies the HasPrefix predicate on the "options" field.
+func OptionsHasPrefix(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldHasPrefix(FieldOptions, v))
+}
+
+// OptionsHasSuffix applies the HasSuffix predicate on the "options" field.
+func OptionsHasSuffix(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldHasSuffix(FieldOptions, v))
+}
+
+// OptionsIsNil applies the IsNil predicate on the "options" field.
+func OptionsIsNil() predicate.Menu {
+	return predicate.Menu(sql.FieldIsNull(FieldOptions))
+}
+
+// OptionsNotNil applies the NotNil predicate on the "options" field.
+func OptionsNotNil() predicate.Menu {
+	return predicate.Menu(sql.FieldNotNull(FieldOptions))
+}
+
+// OptionsEqualFold applies the EqualFold predicate on the "options" field.
+func OptionsEqualFold(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldEqualFold(FieldOptions, v))
+}
+
+// OptionsContainsFold applies the ContainsFold predicate on the "options" field.
+func OptionsContainsFold(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldContainsFold(FieldOptions, v))
+}
+
+// PriceEQ applies the EQ predicate on the "price" field.
+func PriceEQ(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldEQ(FieldPrice, v))
+}
+
+// PriceNEQ applies the NEQ predicate on the "price" field.
+func PriceNEQ(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldNEQ(FieldPrice, v))
+}
+
+// PriceIn applies the In predicate on the "price" field.
+func PriceIn(vs ...string) predicate.Menu {
+	return predicate.Menu(sql.FieldIn(FieldPrice, vs...))
+}
+
+// PriceNotIn applies the NotIn predicate on the "price" field.
+func PriceNotIn(vs ...string) predicate.Menu {
+	return predicate.Menu(sql.FieldNotIn(FieldPrice, vs...))
+}
+
+// PriceGT applies the GT predicate on the "price" field.
+func PriceGT(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldGT(FieldPrice, v))
+}
+
+// PriceGTE applies the GTE predicate on the "price" field.
+func PriceGTE(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldGTE(FieldPrice, v))
+}
+
+// PriceLT applies the LT predicate on the "price" field.
+func PriceLT(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldLT(FieldPrice, v))
+}
+
+// PriceLTE applies the LTE predicate on the "price" field.
+func PriceLTE(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldLTE(FieldPrice, v))
+}
+
+// PriceContains applies the Contains predicate on the "price" field.
+func PriceContains(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldContains(FieldPrice, v))
+}
+
+// PriceHasPrefix applies the HasPrefix predicate on the "price" field.
+func PriceHasPrefix(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldHasPrefix(FieldPrice, v))
+}
+
+// PriceHasSuffix applies the HasSuffix predicate on the "price" field.
+func PriceHasSuffix(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldHasSuffix(FieldPrice, v))
+}
+
+// PriceIsNil applies the IsNil predicate on the "price" field.
+func PriceIsNil() predicate.Menu {
+	return predicate.Menu(sql.FieldIsNull(FieldPrice))
+}
+
+// PriceNotNil applies the NotNil predicate on the "price" field.
+func PriceNotNil() predicate.Menu {
+	return predicate.Menu(sql.FieldNotNull(FieldPrice))
+}
+
+// PriceEqualFold applies the EqualFold predicate on the "price" field.
+func PriceEqualFold(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldEqualFold(FieldPrice, v))
+}
+
+// PriceContainsFold applies the ContainsFold predicate on the "price" field.
+func PriceContainsFold(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldContainsFold(FieldPrice, v))
+}
+
+// IsAvailableEQ applies the EQ predicate on the "is_available" field.
+func IsAvailableEQ(v bool) predicate.Menu {
+	return predicate.Menu(sql.FieldEQ(FieldIsAvailable, v))
+}
+
+// IsAvailableNEQ applies the NEQ predicate on the "is_available" field.
+func IsAvailableNEQ(v bool) predicate.Menu {
+	return predicate.Menu(sql.FieldNEQ(FieldIsAvailable, v))
+}
+
 // HasPlace applies the HasEdge predicate on the "place" edge.
 func HasPlace() predicate.Menu {
 	return predicate.Menu(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, PlaceTable, PlaceColumn),
+			sqlgraph.Edge(sqlgraph.M2M, true, PlaceTable, PlacePrimaryKey...),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -337,7 +592,7 @@ func HasCategories() predicate.Menu {
 	return predicate.Menu(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, CategoriesTable, CategoriesColumn),
+			sqlgraph.Edge(sqlgraph.M2M, false, CategoriesTable, CategoriesPrimaryKey...),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -370,6 +625,29 @@ func HasMenuItems() predicate.Menu {
 func HasMenuItemsWith(preds ...predicate.MenuItem) predicate.Menu {
 	return predicate.Menu(func(s *sql.Selector) {
 		step := newMenuItemsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasMedia applies the HasEdge predicate on the "media" edge.
+func HasMedia() predicate.Menu {
+	return predicate.Menu(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, MediaTable, MediaPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasMediaWith applies the HasEdge predicate on the "media" edge with a given conditions (other predicates).
+func HasMediaWith(preds ...predicate.Media) predicate.Menu {
+	return predicate.Menu(func(s *sql.Selector) {
+		step := newMediaStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

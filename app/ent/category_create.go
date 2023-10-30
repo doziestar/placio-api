@@ -9,6 +9,7 @@ import (
 	"placio-app/ent/category"
 	"placio-app/ent/categoryassignment"
 	"placio-app/ent/media"
+	"placio-app/ent/menu"
 	"placio-app/ent/placeinventory"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -191,6 +192,21 @@ func (cc *CategoryCreate) AddMedia(m ...*Media) *CategoryCreate {
 	return cc.AddMediumIDs(ids...)
 }
 
+// AddMenuIDs adds the "menus" edge to the Menu entity by IDs.
+func (cc *CategoryCreate) AddMenuIDs(ids ...string) *CategoryCreate {
+	cc.mutation.AddMenuIDs(ids...)
+	return cc
+}
+
+// AddMenus adds the "menus" edges to the Menu entity.
+func (cc *CategoryCreate) AddMenus(m ...*Menu) *CategoryCreate {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return cc.AddMenuIDs(ids...)
+}
+
 // Mutation returns the CategoryMutation object of the builder.
 func (cc *CategoryCreate) Mutation() *CategoryMutation {
 	return cc.mutation
@@ -345,6 +361,22 @@ func (cc *CategoryCreate) createSpec() (*Category, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := cc.mutation.MenusIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   category.MenusTable,
+			Columns: category.MenusPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
