@@ -7,8 +7,6 @@ import (
 	"image/color"
 	"log"
 	"mime/multipart"
-	"net/textproto"
-	"os"
 	"placio-app/domains/media"
 	"placio-app/ent"
 	"placio-app/ent/category"
@@ -367,7 +365,6 @@ func (s *SmartMenuService) RegenerateQRCode(ctx context.Context, tableId string)
         return nil, fmt.Errorf("failed querying place table: %w", err)
     }
 
-    // 2. Generate QR code
     url := fmt.Sprintf("https://placio.io/%s/menus/?table=%d&placeId=%s", 
         table.Edges.Place.Name, 
         table.Number, 
@@ -377,20 +374,16 @@ func (s *SmartMenuService) RegenerateQRCode(ctx context.Context, tableId string)
         return nil, fmt.Errorf("failed to generate QR code: %w", err)
     }
 
-    // Set the QR code colors
     qr.ForegroundColor = color.RGBA{R: 139, G: 0, B: 0, A: 255} // Dark red
     qr.BackgroundColor = color.White
 
-    // Convert the QR code to a PNG image
     png, err := qr.PNG(256)
     if err != nil {
         return nil, fmt.Errorf("failed to convert QR code to PNG: %w", err)
     }
 
-    // 3. Create a reader from the PNG byte slice
     reader := bytes.NewReader(png)
 
-    // 4. Upload the QR code to Cloudinary
     uploadParams := uploader.UploadParams{
         Folder: "tables",
         Tags:   []string{"QRCode", "Placio"},
@@ -401,7 +394,6 @@ func (s *SmartMenuService) RegenerateQRCode(ctx context.Context, tableId string)
         return nil, fmt.Errorf("failed to upload QR code to Cloudinary: %w", err)
     }
 
-    // 6. Update the database with the URL of the QR code
     updatedTable, err := s.client.PlaceTable.
         UpdateOneID(table.ID).
         SetQrCode(uploadResult.URL).
@@ -450,29 +442,3 @@ func (s *SmartMenuService) RestoreOrder(ctx context.Context, s2 string) (*ent.Or
 	panic("implement me")
 }
 
-// createFileHeader creates a multipart.FileHeader from a file on disk.
-func createFileHeader(filePath, filename string) (*multipart.FileHeader, error) {
-	// Log the file path for debugging
-	log.Printf("Opening file: %s", filePath)
-
-	file, err := os.Open(filePath)
-	if err != nil {
-		return nil, fmt.Errorf("failed to open file: %w", err)
-	}
-	defer file.Close()
-
-	fi, err := file.Stat()
-	if err != nil {
-		return nil, fmt.Errorf("failed to stat file: %w", err)
-	}
-
-	header := make(textproto.MIMEHeader)
-	header.Set("Content-Disposition", fmt.Sprintf(`form-data; name="%s"; filename="%s"`, "file", filename))
-	header.Set("Content-Type", "image/png")
-
-	return &multipart.FileHeader{
-		Filename: filename,
-		Size:     fi.Size(),
-		Header:   header,
-	}, nil
-}
