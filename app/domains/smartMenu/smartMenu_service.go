@@ -144,6 +144,12 @@ func (s *SmartMenuService) GetMenus(ctx context.Context, placeId string) ([]*ent
 		Query().
 		Where(place.ID(placeId)).
 		QueryMenus().
+		WithCategories().
+		WithMedia().
+		WithMenuItems().
+		WithPlace(func(q *ent.PlaceQuery) {
+			q.WithBusiness()
+		}).
 		All(ctx)
 }
 
