@@ -43,7 +43,7 @@ func (c *SmartMenuController) RegisterRoutes(router *gin.RouterGroup) {
 	 menuItemRouter := router.Group("/menuItems")
     {
         // Create a new menu item
-        menuItemRouter.POST("/", middleware.ErrorMiddleware(c.createMenuItem))
+        menuItemRouter.POST("/:menuId", middleware.ErrorMiddleware(c.createMenuItem))
         // Required Body Params: name, price, status, description, menuId
 
         // Get all menu items
@@ -102,8 +102,14 @@ func (c *SmartMenuController) RegisterRoutes(router *gin.RouterGroup) {
 // @Failure 400 {object} ErrorDTO "Bad Request"
 // @Router /menuItems/{menuId} [post]
 func (c *SmartMenuController) createMenuItem(ctx *gin.Context) error {
-	menuId := ctx.Param("menuId")
+	var menuId = ctx.Param("menuId")
+	if menuId == "" {
+		ctx.JSON(http.StatusBadRequest, utility.ProcessResponse(nil, "menuId is required"))
+		return nil
+	}
 	var menuItem ent.MenuItem
+
+	log.Println("createMenuItem")
 
 	form, err := ctx.MultipartForm()
 	if err != nil {
@@ -118,6 +124,7 @@ func (c *SmartMenuController) createMenuItem(ctx *gin.Context) error {
 	if description, exists := form.Value["description"]; exists {
 		menuItem.Description = description[0]
 	}
+	
 	if price, exists := form.Value["price"]; exists {
 		menuItem.Price, err = strconv.ParseFloat(price[0], 64)
 		if err != nil {
@@ -138,14 +145,15 @@ func (c *SmartMenuController) createMenuItem(ctx *gin.Context) error {
 	if options, exists := form.Value["options"]; exists {
 		menuItem.Options = []string{options[0]}
 	}
-	if err := ctx.ShouldBindJSON(&menuItem); err != nil {
-		return err
-	}
+	
+	log.Println("menuItem", menuItem)
 
 	medias := form.File["medias"]
 	if len(medias) == 0 {
 		medias = nil
 	}
+
+	log.Println("menuId", menuId, "menuItem", menuItem, "medias", medias)
 	
 	createdMenuItem, err := c.smartMenuService.CreateMenuItem(ctx.Request.Context(), menuId, &menuItem, medias)
 	if err != nil {

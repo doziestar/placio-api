@@ -119,6 +119,7 @@ func (s *SmartMenuService) CreateMenuItem(ctx context.Context, menuId string, me
 }
 
 func (s *SmartMenuService) GetMenuItems(ctx context.Context, menuId string) ([]*ent.MenuItem, error) {
+	log.Println("Getting menu items for menu with ID", menuId)
 	return s.client.MenuItem.
 		Query().
 		Where(menuitem.HasMenuWith(menu.ID(menuId))).
