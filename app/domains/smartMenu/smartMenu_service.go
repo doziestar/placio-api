@@ -1,9 +1,14 @@
 package smartMenu
 
 import (
+	"bytes"
 	"context"
+	"fmt"
+	"image/color"
 	"log"
 	"mime/multipart"
+	"net/textproto"
+	"os"
 	"placio-app/domains/media"
 	"placio-app/ent"
 	"placio-app/ent/category"
@@ -14,12 +19,17 @@ import (
 	"strings"
 	"time"
 
+	"github.com/cloudinary/cloudinary-go/v2"
+	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
+	qrcode "github.com/skip2/go-qrcode"
+
 	"github.com/google/uuid"
 )
 
 type SmartMenuService struct {
 	client *ent.Client
 	mediaService media.MediaService
+	cloud  *cloudinary.Cloudinary
 }
 
 type ISmartMenu interface {
@@ -54,8 +64,8 @@ type ISmartMenu interface {
 	RestoreOrder(context.Context, string) (*ent.Order, error)
 }
 
-func NewSmartMenuService(client *ent.Client, mediaService media.MediaService) *SmartMenuService {
-	return &SmartMenuService{client: client, mediaService: mediaService}
+func NewSmartMenuService(client *ent.Client, mediaService media.MediaService, cloud *cloudinary.Cloudinary) *SmartMenuService {
+	return &SmartMenuService{client: client, mediaService: mediaService, cloud: cloud}
 }
 
 func (s *SmartMenuService) CreateMenuItem(ctx context.Context, menuId string, menuItemDto *ent.MenuItem, mediaFiles []*multipart.FileHeader) (*ent.MenuItem, error) {
@@ -298,6 +308,7 @@ func (s *SmartMenuService) RestoreMenu(ctx context.Context, menuId string) (*ent
 func (s *SmartMenuService) CreateTable(ctx context.Context, placeId string, table *ent.PlaceTable) (*ent.PlaceTable, error) {
 	return s.client.PlaceTable.
 		Create().
+		SetID(uuid.New().String()).
 		SetNumber(table.Number).
 		SetPlaceID(placeId).
 		Save(ctx)
@@ -342,11 +353,64 @@ func (s *SmartMenuService) RestoreTable(ctx context.Context, tableId string) (*e
 }
 
 func (s *SmartMenuService) RegenerateQRCode(ctx context.Context, tableId string) (*ent.PlaceTable, error) {
-	//return s.client.PlaceTable.
-	//	UpdateOneID(tableId).
-	//	SetQRCode("").
-	//	Save(ctx)
-	return nil, nil
+    // 1. Fetch the table and related business and place information from the database
+    table, err := s.client.PlaceTable.
+        Query().
+        Where(placetable.IDEQ(tableId)).
+        WithPlace(func(pq *ent.PlaceQuery) {
+            pq.WithBusiness(func(bq *ent.BusinessQuery) {
+                bq.WithWebsites()
+            })
+        }).
+        Only(ctx)
+    if err != nil {
+        return nil, fmt.Errorf("failed querying place table: %w", err)
+    }
+
+    // 2. Generate QR code
+    url := fmt.Sprintf("https://placio.io/%s/menus/?table=%d&placeId=%s", 
+        table.Edges.Place.Name, 
+        table.Number, 
+        table.Edges.Place.ID)
+    qr, err := qrcode.New(url, qrcode.Medium)
+    if err != nil {
+        return nil, fmt.Errorf("failed to generate QR code: %w", err)
+    }
+
+    // Set the QR code colors
+    qr.ForegroundColor = color.RGBA{R: 139, G: 0, B: 0, A: 255} // Dark red
+    qr.BackgroundColor = color.White
+
+    // Convert the QR code to a PNG image
+    png, err := qr.PNG(256)
+    if err != nil {
+        return nil, fmt.Errorf("failed to convert QR code to PNG: %w", err)
+    }
+
+    // 3. Create a reader from the PNG byte slice
+    reader := bytes.NewReader(png)
+
+    // 4. Upload the QR code to Cloudinary
+    uploadParams := uploader.UploadParams{
+        Folder: "tables",
+        Tags:   []string{"QRCode", "Placio"},
+    }
+    
+    uploadResult, err := s.cloud.Upload.Upload(ctx, reader, uploadParams)
+    if err != nil {
+        return nil, fmt.Errorf("failed to upload QR code to Cloudinary: %w", err)
+    }
+
+    // 6. Update the database with the URL of the QR code
+    updatedTable, err := s.client.PlaceTable.
+        UpdateOneID(table.ID).
+        SetQrCode(uploadResult.URL).
+        Save(ctx)
+    if err != nil {
+        return nil, fmt.Errorf("failed updating place table: %w", err)
+    }
+
+    return updatedTable, nil
 }
 
 func (s *SmartMenuService) CreateOrder(ctx context.Context, tableId string, placeId string, order *ent.Order) (*ent.Order, error) {
@@ -384,4 +448,31 @@ func (s *SmartMenuService) DeleteOrder(ctx context.Context, s2 string) error {
 func (s *SmartMenuService) RestoreOrder(ctx context.Context, s2 string) (*ent.Order, error) {
 	//TODO implement me
 	panic("implement me")
+}
+
+// createFileHeader creates a multipart.FileHeader from a file on disk.
+func createFileHeader(filePath, filename string) (*multipart.FileHeader, error) {
+	// Log the file path for debugging
+	log.Printf("Opening file: %s", filePath)
+
+	file, err := os.Open(filePath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open file: %w", err)
+	}
+	defer file.Close()
+
+	fi, err := file.Stat()
+	if err != nil {
+		return nil, fmt.Errorf("failed to stat file: %w", err)
+	}
+
+	header := make(textproto.MIMEHeader)
+	header.Set("Content-Disposition", fmt.Sprintf(`form-data; name="%s"; filename="%s"`, "file", filename))
+	header.Set("Content-Type", "image/png")
+
+	return &multipart.FileHeader{
+		Filename: filename,
+		Size:     fi.Size(),
+		Header:   header,
+	}, nil
 }

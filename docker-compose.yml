@@ -37,6 +37,7 @@ services:
     volumes:
       # - ./:/app
       - ./app:/app/app
+      - ./app/temp:/app/temp
       - ./pkg:/app/pkg
       - ./config:/app/config
     env_file:
@@ -51,8 +52,8 @@ services:
     build:
       context: ./askai
       dockerfile: ./Dockerfile
-#    entrypoint: >
-#      sh -c "sleep 5 && python /askai/askai/main.py"
+    #    entrypoint: >
+    #      sh -c "sleep 5 && python /askai/askai/main.py"
     networks:
       - default
 

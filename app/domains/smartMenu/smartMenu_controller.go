@@ -76,7 +76,7 @@ func (c *SmartMenuController) RegisterRoutes(router *gin.RouterGroup) {
 		tableRouter.PUT(fmt.Sprintf("/:%s", tableIDParam), middleware.ErrorMiddleware(c.updateTable))
 		tableRouter.DELETE(fmt.Sprintf("/:%s", tableIDParam), middleware.ErrorMiddleware(c.deleteTable))
 		tableRouter.PATCH(fmt.Sprintf("/:%s/restore", tableIDParam), middleware.ErrorMiddleware(c.restoreTable))
-		tableRouter.POST(fmt.Sprintf("/:%s/regenerate-qr", tableIDParam), middleware.ErrorMiddleware(c.regenerateQRCode))
+		tableRouter.POST(fmt.Sprintf("/:%s/generateCode", tableIDParam), middleware.ErrorMiddleware(c.regenerateQRCode))
 	}
 
 	orderRouter := router.Group("/orders")
@@ -89,6 +89,7 @@ func (c *SmartMenuController) RegisterRoutes(router *gin.RouterGroup) {
 		orderRouter.PATCH(fmt.Sprintf("/:%s/restore", orderIDParam), middleware.ErrorMiddleware(c.restoreOrder))
 	}
 }
+
 
 // CreateMenuItem creates a new menu item.
 // @Summary Create a new menu item
