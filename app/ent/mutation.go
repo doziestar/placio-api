@@ -7861,6 +7861,9 @@ type CategoryMutation struct {
 	media                      map[string]struct{}
 	removedmedia               map[string]struct{}
 	clearedmedia               bool
+	menus                      map[string]struct{}
+	removedmenus               map[string]struct{}
+	clearedmenus               bool
 	done                       bool
 	oldValue                   func(context.Context) (*Category, error)
 	predicates                 []predicate.Category
@@ -8560,6 +8563,60 @@ func (m *CategoryMutation) ResetMedia() {
 	m.removedmedia = nil
 }
 
+// AddMenuIDs adds the "menus" edge to the Menu entity by ids.
+func (m *CategoryMutation) AddMenuIDs(ids ...string) {
+	if m.menus == nil {
+		m.menus = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.menus[ids[i]] = struct{}{}
+	}
+}
+
+// ClearMenus clears the "menus" edge to the Menu entity.
+func (m *CategoryMutation) ClearMenus() {
+	m.clearedmenus = true
+}
+
+// MenusCleared reports if the "menus" edge to the Menu entity was cleared.
+func (m *CategoryMutation) MenusCleared() bool {
+	return m.clearedmenus
+}
+
+// RemoveMenuIDs removes the "menus" edge to the Menu entity by IDs.
+func (m *CategoryMutation) RemoveMenuIDs(ids ...string) {
+	if m.removedmenus == nil {
+		m.removedmenus = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.menus, ids[i])
+		m.removedmenus[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedMenus returns the removed IDs of the "menus" edge to the Menu entity.
+func (m *CategoryMutation) RemovedMenusIDs() (ids []string) {
+	for id := range m.removedmenus {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// MenusIDs returns the "menus" edge IDs in the mutation.
+func (m *CategoryMutation) MenusIDs() (ids []string) {
+	for id := range m.menus {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetMenus resets all changes to the "menus" edge.
+func (m *CategoryMutation) ResetMenus() {
+	m.menus = nil
+	m.clearedmenus = false
+	m.removedmenus = nil
+}
+
 // Where appends a list predicates to the CategoryMutation builder.
 func (m *CategoryMutation) Where(ps ...predicate.Category) {
 	m.predicates = append(m.predicates, ps...)
@@ -8880,7 +8937,7 @@ func (m *CategoryMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *CategoryMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.categoryAssignments != nil {
 		edges = append(edges, category.EdgeCategoryAssignments)
 	}
@@ -8889,6 +8946,9 @@ func (m *CategoryMutation) AddedEdges() []string {
 	}
 	if m.media != nil {
 		edges = append(edges, category.EdgeMedia)
+	}
+	if m.menus != nil {
+		edges = append(edges, category.EdgeMenus)
 	}
 	return edges
 }
@@ -8915,13 +8975,19 @@ func (m *CategoryMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case category.EdgeMenus:
+		ids := make([]ent.Value, 0, len(m.menus))
+		for id := range m.menus {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *CategoryMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.removedcategoryAssignments != nil {
 		edges = append(edges, category.EdgeCategoryAssignments)
 	}
@@ -8930,6 +8996,9 @@ func (m *CategoryMutation) RemovedEdges() []string {
 	}
 	if m.removedmedia != nil {
 		edges = append(edges, category.EdgeMedia)
+	}
+	if m.removedmenus != nil {
+		edges = append(edges, category.EdgeMenus)
 	}
 	return edges
 }
@@ -8956,13 +9025,19 @@ func (m *CategoryMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case category.EdgeMenus:
+		ids := make([]ent.Value, 0, len(m.removedmenus))
+		for id := range m.removedmenus {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *CategoryMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.clearedcategoryAssignments {
 		edges = append(edges, category.EdgeCategoryAssignments)
 	}
@@ -8971,6 +9046,9 @@ func (m *CategoryMutation) ClearedEdges() []string {
 	}
 	if m.clearedmedia {
 		edges = append(edges, category.EdgeMedia)
+	}
+	if m.clearedmenus {
+		edges = append(edges, category.EdgeMenus)
 	}
 	return edges
 }
@@ -8985,6 +9063,8 @@ func (m *CategoryMutation) EdgeCleared(name string) bool {
 		return m.clearedplace_inventories
 	case category.EdgeMedia:
 		return m.clearedmedia
+	case category.EdgeMenus:
+		return m.clearedmenus
 	}
 	return false
 }
@@ -9009,6 +9089,9 @@ func (m *CategoryMutation) ResetEdge(name string) error {
 		return nil
 	case category.EdgeMedia:
 		m.ResetMedia()
+		return nil
+	case category.EdgeMenus:
+		m.ResetMenus()
 		return nil
 	}
 	return fmt.Errorf("unknown Category edge %s", name)
@@ -20514,6 +20597,9 @@ type MediaMutation struct {
 	place_inventory        map[string]struct{}
 	removedplace_inventory map[string]struct{}
 	clearedplace_inventory bool
+	menu                   map[string]struct{}
+	removedmenu            map[string]struct{}
+	clearedmenu            bool
 	done                   bool
 	oldValue               func(context.Context) (*Media, error)
 	predicates             []predicate.Media
@@ -21119,6 +21205,60 @@ func (m *MediaMutation) ResetPlaceInventory() {
 	m.removedplace_inventory = nil
 }
 
+// AddMenuIDs adds the "menu" edge to the Menu entity by ids.
+func (m *MediaMutation) AddMenuIDs(ids ...string) {
+	if m.menu == nil {
+		m.menu = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.menu[ids[i]] = struct{}{}
+	}
+}
+
+// ClearMenu clears the "menu" edge to the Menu entity.
+func (m *MediaMutation) ClearMenu() {
+	m.clearedmenu = true
+}
+
+// MenuCleared reports if the "menu" edge to the Menu entity was cleared.
+func (m *MediaMutation) MenuCleared() bool {
+	return m.clearedmenu
+}
+
+// RemoveMenuIDs removes the "menu" edge to the Menu entity by IDs.
+func (m *MediaMutation) RemoveMenuIDs(ids ...string) {
+	if m.removedmenu == nil {
+		m.removedmenu = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.menu, ids[i])
+		m.removedmenu[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedMenu returns the removed IDs of the "menu" edge to the Menu entity.
+func (m *MediaMutation) RemovedMenuIDs() (ids []string) {
+	for id := range m.removedmenu {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// MenuIDs returns the "menu" edge IDs in the mutation.
+func (m *MediaMutation) MenuIDs() (ids []string) {
+	for id := range m.menu {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetMenu resets all changes to the "menu" edge.
+func (m *MediaMutation) ResetMenu() {
+	m.menu = nil
+	m.clearedmenu = false
+	m.removedmenu = nil
+}
+
 // Where appends a list predicates to the MediaMutation builder.
 func (m *MediaMutation) Where(ps ...predicate.Media) {
 	m.predicates = append(m.predicates, ps...)
@@ -21364,7 +21504,7 @@ func (m *MediaMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *MediaMutation) AddedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.post != nil {
 		edges = append(edges, media.EdgePost)
 	}
@@ -21379,6 +21519,9 @@ func (m *MediaMutation) AddedEdges() []string {
 	}
 	if m.place_inventory != nil {
 		edges = append(edges, media.EdgePlaceInventory)
+	}
+	if m.menu != nil {
+		edges = append(edges, media.EdgeMenu)
 	}
 	return edges
 }
@@ -21413,13 +21556,19 @@ func (m *MediaMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case media.EdgeMenu:
+		ids := make([]ent.Value, 0, len(m.menu))
+		for id := range m.menu {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *MediaMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.removedcategories != nil {
 		edges = append(edges, media.EdgeCategories)
 	}
@@ -21428,6 +21577,9 @@ func (m *MediaMutation) RemovedEdges() []string {
 	}
 	if m.removedplace_inventory != nil {
 		edges = append(edges, media.EdgePlaceInventory)
+	}
+	if m.removedmenu != nil {
+		edges = append(edges, media.EdgeMenu)
 	}
 	return edges
 }
@@ -21454,13 +21606,19 @@ func (m *MediaMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case media.EdgeMenu:
+		ids := make([]ent.Value, 0, len(m.removedmenu))
+		for id := range m.removedmenu {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *MediaMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.clearedpost {
 		edges = append(edges, media.EdgePost)
 	}
@@ -21475,6 +21633,9 @@ func (m *MediaMutation) ClearedEdges() []string {
 	}
 	if m.clearedplace_inventory {
 		edges = append(edges, media.EdgePlaceInventory)
+	}
+	if m.clearedmenu {
+		edges = append(edges, media.EdgeMenu)
 	}
 	return edges
 }
@@ -21493,6 +21654,8 @@ func (m *MediaMutation) EdgeCleared(name string) bool {
 		return m.clearedplace
 	case media.EdgePlaceInventory:
 		return m.clearedplace_inventory
+	case media.EdgeMenu:
+		return m.clearedmenu
 	}
 	return false
 }
@@ -21530,6 +21693,9 @@ func (m *MediaMutation) ResetEdge(name string) error {
 	case media.EdgePlaceInventory:
 		m.ResetPlaceInventory()
 		return nil
+	case media.EdgeMenu:
+		m.ResetMenu()
+		return nil
 	}
 	return fmt.Errorf("unknown Media edge %s", name)
 }
@@ -21544,8 +21710,13 @@ type MenuMutation struct {
 	deleted_at        *string
 	is_deleted        *bool
 	description       *string
+	preparation_time  *string
+	options           *string
+	price             *string
+	is_available      *bool
 	clearedFields     map[string]struct{}
-	place             *string
+	place             map[string]struct{}
+	removedplace      map[string]struct{}
 	clearedplace      bool
 	categories        map[string]struct{}
 	removedcategories map[string]struct{}
@@ -21553,6 +21724,9 @@ type MenuMutation struct {
 	menu_items        map[string]struct{}
 	removedmenu_items map[string]struct{}
 	clearedmenu_items bool
+	media             map[string]struct{}
+	removedmedia      map[string]struct{}
+	clearedmedia      bool
 	done              bool
 	oldValue          func(context.Context) (*Menu, error)
 	predicates        []predicate.Menu
@@ -21832,9 +22006,197 @@ func (m *MenuMutation) ResetDescription() {
 	delete(m.clearedFields, menu.FieldDescription)
 }
 
-// SetPlaceID sets the "place" edge to the Place entity by id.
-func (m *MenuMutation) SetPlaceID(id string) {
-	m.place = &id
+// SetPreparationTime sets the "preparation_time" field.
+func (m *MenuMutation) SetPreparationTime(s string) {
+	m.preparation_time = &s
+}
+
+// PreparationTime returns the value of the "preparation_time" field in the mutation.
+func (m *MenuMutation) PreparationTime() (r string, exists bool) {
+	v := m.preparation_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPreparationTime returns the old "preparation_time" field's value of the Menu entity.
+// If the Menu object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuMutation) OldPreparationTime(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPreparationTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPreparationTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPreparationTime: %w", err)
+	}
+	return oldValue.PreparationTime, nil
+}
+
+// ClearPreparationTime clears the value of the "preparation_time" field.
+func (m *MenuMutation) ClearPreparationTime() {
+	m.preparation_time = nil
+	m.clearedFields[menu.FieldPreparationTime] = struct{}{}
+}
+
+// PreparationTimeCleared returns if the "preparation_time" field was cleared in this mutation.
+func (m *MenuMutation) PreparationTimeCleared() bool {
+	_, ok := m.clearedFields[menu.FieldPreparationTime]
+	return ok
+}
+
+// ResetPreparationTime resets all changes to the "preparation_time" field.
+func (m *MenuMutation) ResetPreparationTime() {
+	m.preparation_time = nil
+	delete(m.clearedFields, menu.FieldPreparationTime)
+}
+
+// SetOptions sets the "options" field.
+func (m *MenuMutation) SetOptions(s string) {
+	m.options = &s
+}
+
+// Options returns the value of the "options" field in the mutation.
+func (m *MenuMutation) Options() (r string, exists bool) {
+	v := m.options
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOptions returns the old "options" field's value of the Menu entity.
+// If the Menu object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuMutation) OldOptions(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOptions is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOptions requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOptions: %w", err)
+	}
+	return oldValue.Options, nil
+}
+
+// ClearOptions clears the value of the "options" field.
+func (m *MenuMutation) ClearOptions() {
+	m.options = nil
+	m.clearedFields[menu.FieldOptions] = struct{}{}
+}
+
+// OptionsCleared returns if the "options" field was cleared in this mutation.
+func (m *MenuMutation) OptionsCleared() bool {
+	_, ok := m.clearedFields[menu.FieldOptions]
+	return ok
+}
+
+// ResetOptions resets all changes to the "options" field.
+func (m *MenuMutation) ResetOptions() {
+	m.options = nil
+	delete(m.clearedFields, menu.FieldOptions)
+}
+
+// SetPrice sets the "price" field.
+func (m *MenuMutation) SetPrice(s string) {
+	m.price = &s
+}
+
+// Price returns the value of the "price" field in the mutation.
+func (m *MenuMutation) Price() (r string, exists bool) {
+	v := m.price
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPrice returns the old "price" field's value of the Menu entity.
+// If the Menu object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuMutation) OldPrice(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPrice is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPrice requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPrice: %w", err)
+	}
+	return oldValue.Price, nil
+}
+
+// ClearPrice clears the value of the "price" field.
+func (m *MenuMutation) ClearPrice() {
+	m.price = nil
+	m.clearedFields[menu.FieldPrice] = struct{}{}
+}
+
+// PriceCleared returns if the "price" field was cleared in this mutation.
+func (m *MenuMutation) PriceCleared() bool {
+	_, ok := m.clearedFields[menu.FieldPrice]
+	return ok
+}
+
+// ResetPrice resets all changes to the "price" field.
+func (m *MenuMutation) ResetPrice() {
+	m.price = nil
+	delete(m.clearedFields, menu.FieldPrice)
+}
+
+// SetIsAvailable sets the "is_available" field.
+func (m *MenuMutation) SetIsAvailable(b bool) {
+	m.is_available = &b
+}
+
+// IsAvailable returns the value of the "is_available" field in the mutation.
+func (m *MenuMutation) IsAvailable() (r bool, exists bool) {
+	v := m.is_available
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsAvailable returns the old "is_available" field's value of the Menu entity.
+// If the Menu object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuMutation) OldIsAvailable(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsAvailable is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsAvailable requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsAvailable: %w", err)
+	}
+	return oldValue.IsAvailable, nil
+}
+
+// ResetIsAvailable resets all changes to the "is_available" field.
+func (m *MenuMutation) ResetIsAvailable() {
+	m.is_available = nil
+}
+
+// AddPlaceIDs adds the "place" edge to the Place entity by ids.
+func (m *MenuMutation) AddPlaceIDs(ids ...string) {
+	if m.place == nil {
+		m.place = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.place[ids[i]] = struct{}{}
+	}
 }
 
 // ClearPlace clears the "place" edge to the Place entity.
@@ -21847,20 +22209,29 @@ func (m *MenuMutation) PlaceCleared() bool {
 	return m.clearedplace
 }
 
-// PlaceID returns the "place" edge ID in the mutation.
-func (m *MenuMutation) PlaceID() (id string, exists bool) {
-	if m.place != nil {
-		return *m.place, true
+// RemovePlaceIDs removes the "place" edge to the Place entity by IDs.
+func (m *MenuMutation) RemovePlaceIDs(ids ...string) {
+	if m.removedplace == nil {
+		m.removedplace = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.place, ids[i])
+		m.removedplace[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedPlace returns the removed IDs of the "place" edge to the Place entity.
+func (m *MenuMutation) RemovedPlaceIDs() (ids []string) {
+	for id := range m.removedplace {
+		ids = append(ids, id)
 	}
 	return
 }
 
 // PlaceIDs returns the "place" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// PlaceID instead. It exists only for internal usage by the builders.
 func (m *MenuMutation) PlaceIDs() (ids []string) {
-	if id := m.place; id != nil {
-		ids = append(ids, *id)
+	for id := range m.place {
+		ids = append(ids, id)
 	}
 	return
 }
@@ -21869,6 +22240,7 @@ func (m *MenuMutation) PlaceIDs() (ids []string) {
 func (m *MenuMutation) ResetPlace() {
 	m.place = nil
 	m.clearedplace = false
+	m.removedplace = nil
 }
 
 // AddCategoryIDs adds the "categories" edge to the Category entity by ids.
@@ -21979,6 +22351,60 @@ func (m *MenuMutation) ResetMenuItems() {
 	m.removedmenu_items = nil
 }
 
+// AddMediumIDs adds the "media" edge to the Media entity by ids.
+func (m *MenuMutation) AddMediumIDs(ids ...string) {
+	if m.media == nil {
+		m.media = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.media[ids[i]] = struct{}{}
+	}
+}
+
+// ClearMedia clears the "media" edge to the Media entity.
+func (m *MenuMutation) ClearMedia() {
+	m.clearedmedia = true
+}
+
+// MediaCleared reports if the "media" edge to the Media entity was cleared.
+func (m *MenuMutation) MediaCleared() bool {
+	return m.clearedmedia
+}
+
+// RemoveMediumIDs removes the "media" edge to the Media entity by IDs.
+func (m *MenuMutation) RemoveMediumIDs(ids ...string) {
+	if m.removedmedia == nil {
+		m.removedmedia = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.media, ids[i])
+		m.removedmedia[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedMedia returns the removed IDs of the "media" edge to the Media entity.
+func (m *MenuMutation) RemovedMediaIDs() (ids []string) {
+	for id := range m.removedmedia {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// MediaIDs returns the "media" edge IDs in the mutation.
+func (m *MenuMutation) MediaIDs() (ids []string) {
+	for id := range m.media {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetMedia resets all changes to the "media" edge.
+func (m *MenuMutation) ResetMedia() {
+	m.media = nil
+	m.clearedmedia = false
+	m.removedmedia = nil
+}
+
 // Where appends a list predicates to the MenuMutation builder.
 func (m *MenuMutation) Where(ps ...predicate.Menu) {
 	m.predicates = append(m.predicates, ps...)
@@ -22013,7 +22439,7 @@ func (m *MenuMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *MenuMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 8)
 	if m.name != nil {
 		fields = append(fields, menu.FieldName)
 	}
@@ -22025,6 +22451,18 @@ func (m *MenuMutation) Fields() []string {
 	}
 	if m.description != nil {
 		fields = append(fields, menu.FieldDescription)
+	}
+	if m.preparation_time != nil {
+		fields = append(fields, menu.FieldPreparationTime)
+	}
+	if m.options != nil {
+		fields = append(fields, menu.FieldOptions)
+	}
+	if m.price != nil {
+		fields = append(fields, menu.FieldPrice)
+	}
+	if m.is_available != nil {
+		fields = append(fields, menu.FieldIsAvailable)
 	}
 	return fields
 }
@@ -22042,6 +22480,14 @@ func (m *MenuMutation) Field(name string) (ent.Value, bool) {
 		return m.IsDeleted()
 	case menu.FieldDescription:
 		return m.Description()
+	case menu.FieldPreparationTime:
+		return m.PreparationTime()
+	case menu.FieldOptions:
+		return m.Options()
+	case menu.FieldPrice:
+		return m.Price()
+	case menu.FieldIsAvailable:
+		return m.IsAvailable()
 	}
 	return nil, false
 }
@@ -22059,6 +22505,14 @@ func (m *MenuMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldIsDeleted(ctx)
 	case menu.FieldDescription:
 		return m.OldDescription(ctx)
+	case menu.FieldPreparationTime:
+		return m.OldPreparationTime(ctx)
+	case menu.FieldOptions:
+		return m.OldOptions(ctx)
+	case menu.FieldPrice:
+		return m.OldPrice(ctx)
+	case menu.FieldIsAvailable:
+		return m.OldIsAvailable(ctx)
 	}
 	return nil, fmt.Errorf("unknown Menu field %s", name)
 }
@@ -22096,6 +22550,34 @@ func (m *MenuMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDescription(v)
 		return nil
+	case menu.FieldPreparationTime:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPreparationTime(v)
+		return nil
+	case menu.FieldOptions:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOptions(v)
+		return nil
+	case menu.FieldPrice:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPrice(v)
+		return nil
+	case menu.FieldIsAvailable:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsAvailable(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Menu field %s", name)
 }
@@ -22132,6 +22614,15 @@ func (m *MenuMutation) ClearedFields() []string {
 	if m.FieldCleared(menu.FieldDescription) {
 		fields = append(fields, menu.FieldDescription)
 	}
+	if m.FieldCleared(menu.FieldPreparationTime) {
+		fields = append(fields, menu.FieldPreparationTime)
+	}
+	if m.FieldCleared(menu.FieldOptions) {
+		fields = append(fields, menu.FieldOptions)
+	}
+	if m.FieldCleared(menu.FieldPrice) {
+		fields = append(fields, menu.FieldPrice)
+	}
 	return fields
 }
 
@@ -22151,6 +22642,15 @@ func (m *MenuMutation) ClearField(name string) error {
 		return nil
 	case menu.FieldDescription:
 		m.ClearDescription()
+		return nil
+	case menu.FieldPreparationTime:
+		m.ClearPreparationTime()
+		return nil
+	case menu.FieldOptions:
+		m.ClearOptions()
+		return nil
+	case menu.FieldPrice:
+		m.ClearPrice()
 		return nil
 	}
 	return fmt.Errorf("unknown Menu nullable field %s", name)
@@ -22172,13 +22672,25 @@ func (m *MenuMutation) ResetField(name string) error {
 	case menu.FieldDescription:
 		m.ResetDescription()
 		return nil
+	case menu.FieldPreparationTime:
+		m.ResetPreparationTime()
+		return nil
+	case menu.FieldOptions:
+		m.ResetOptions()
+		return nil
+	case menu.FieldPrice:
+		m.ResetPrice()
+		return nil
+	case menu.FieldIsAvailable:
+		m.ResetIsAvailable()
+		return nil
 	}
 	return fmt.Errorf("unknown Menu field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *MenuMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.place != nil {
 		edges = append(edges, menu.EdgePlace)
 	}
@@ -22188,6 +22700,9 @@ func (m *MenuMutation) AddedEdges() []string {
 	if m.menu_items != nil {
 		edges = append(edges, menu.EdgeMenuItems)
 	}
+	if m.media != nil {
+		edges = append(edges, menu.EdgeMedia)
+	}
 	return edges
 }
 
@@ -22196,9 +22711,11 @@ func (m *MenuMutation) AddedEdges() []string {
 func (m *MenuMutation) AddedIDs(name string) []ent.Value {
 	switch name {
 	case menu.EdgePlace:
-		if id := m.place; id != nil {
-			return []ent.Value{*id}
+		ids := make([]ent.Value, 0, len(m.place))
+		for id := range m.place {
+			ids = append(ids, id)
 		}
+		return ids
 	case menu.EdgeCategories:
 		ids := make([]ent.Value, 0, len(m.categories))
 		for id := range m.categories {
@@ -22211,18 +22728,30 @@ func (m *MenuMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case menu.EdgeMedia:
+		ids := make([]ent.Value, 0, len(m.media))
+		for id := range m.media {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *MenuMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
+	if m.removedplace != nil {
+		edges = append(edges, menu.EdgePlace)
+	}
 	if m.removedcategories != nil {
 		edges = append(edges, menu.EdgeCategories)
 	}
 	if m.removedmenu_items != nil {
 		edges = append(edges, menu.EdgeMenuItems)
+	}
+	if m.removedmedia != nil {
+		edges = append(edges, menu.EdgeMedia)
 	}
 	return edges
 }
@@ -22231,6 +22760,12 @@ func (m *MenuMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *MenuMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
+	case menu.EdgePlace:
+		ids := make([]ent.Value, 0, len(m.removedplace))
+		for id := range m.removedplace {
+			ids = append(ids, id)
+		}
+		return ids
 	case menu.EdgeCategories:
 		ids := make([]ent.Value, 0, len(m.removedcategories))
 		for id := range m.removedcategories {
@@ -22243,13 +22778,19 @@ func (m *MenuMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case menu.EdgeMedia:
+		ids := make([]ent.Value, 0, len(m.removedmedia))
+		for id := range m.removedmedia {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *MenuMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.clearedplace {
 		edges = append(edges, menu.EdgePlace)
 	}
@@ -22258,6 +22799,9 @@ func (m *MenuMutation) ClearedEdges() []string {
 	}
 	if m.clearedmenu_items {
 		edges = append(edges, menu.EdgeMenuItems)
+	}
+	if m.clearedmedia {
+		edges = append(edges, menu.EdgeMedia)
 	}
 	return edges
 }
@@ -22272,6 +22816,8 @@ func (m *MenuMutation) EdgeCleared(name string) bool {
 		return m.clearedcategories
 	case menu.EdgeMenuItems:
 		return m.clearedmenu_items
+	case menu.EdgeMedia:
+		return m.clearedmedia
 	}
 	return false
 }
@@ -22280,9 +22826,6 @@ func (m *MenuMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *MenuMutation) ClearEdge(name string) error {
 	switch name {
-	case menu.EdgePlace:
-		m.ClearPlace()
-		return nil
 	}
 	return fmt.Errorf("unknown Menu unique edge %s", name)
 }
@@ -22300,6 +22843,9 @@ func (m *MenuMutation) ResetEdge(name string) error {
 	case menu.EdgeMenuItems:
 		m.ResetMenuItems()
 		return nil
+	case menu.EdgeMedia:
+		m.ResetMedia()
+		return nil
 	}
 	return fmt.Errorf("unknown Menu edge %s", name)
 }
@@ -22314,6 +22860,8 @@ type MenuItemMutation struct {
 	description         *string
 	price               *float64
 	addprice            *float64
+	currency            *string
+	is_available        *bool
 	preparation_time    *int
 	addpreparation_time *int
 	options             *[]string
@@ -22580,6 +23128,91 @@ func (m *MenuItemMutation) AddedPrice() (r float64, exists bool) {
 func (m *MenuItemMutation) ResetPrice() {
 	m.price = nil
 	m.addprice = nil
+}
+
+// SetCurrency sets the "currency" field.
+func (m *MenuItemMutation) SetCurrency(s string) {
+	m.currency = &s
+}
+
+// Currency returns the value of the "currency" field in the mutation.
+func (m *MenuItemMutation) Currency() (r string, exists bool) {
+	v := m.currency
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCurrency returns the old "currency" field's value of the MenuItem entity.
+// If the MenuItem object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuItemMutation) OldCurrency(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCurrency is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCurrency requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCurrency: %w", err)
+	}
+	return oldValue.Currency, nil
+}
+
+// ClearCurrency clears the value of the "currency" field.
+func (m *MenuItemMutation) ClearCurrency() {
+	m.currency = nil
+	m.clearedFields[menuitem.FieldCurrency] = struct{}{}
+}
+
+// CurrencyCleared returns if the "currency" field was cleared in this mutation.
+func (m *MenuItemMutation) CurrencyCleared() bool {
+	_, ok := m.clearedFields[menuitem.FieldCurrency]
+	return ok
+}
+
+// ResetCurrency resets all changes to the "currency" field.
+func (m *MenuItemMutation) ResetCurrency() {
+	m.currency = nil
+	delete(m.clearedFields, menuitem.FieldCurrency)
+}
+
+// SetIsAvailable sets the "is_available" field.
+func (m *MenuItemMutation) SetIsAvailable(b bool) {
+	m.is_available = &b
+}
+
+// IsAvailable returns the value of the "is_available" field in the mutation.
+func (m *MenuItemMutation) IsAvailable() (r bool, exists bool) {
+	v := m.is_available
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsAvailable returns the old "is_available" field's value of the MenuItem entity.
+// If the MenuItem object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuItemMutation) OldIsAvailable(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsAvailable is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsAvailable requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsAvailable: %w", err)
+	}
+	return oldValue.IsAvailable, nil
+}
+
+// ResetIsAvailable resets all changes to the "is_available" field.
+func (m *MenuItemMutation) ResetIsAvailable() {
+	m.is_available = nil
 }
 
 // SetPreparationTime sets the "preparation_time" field.
@@ -23037,7 +23670,7 @@ func (m *MenuItemMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *MenuItemMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 9)
 	if m.name != nil {
 		fields = append(fields, menuitem.FieldName)
 	}
@@ -23046,6 +23679,12 @@ func (m *MenuItemMutation) Fields() []string {
 	}
 	if m.price != nil {
 		fields = append(fields, menuitem.FieldPrice)
+	}
+	if m.currency != nil {
+		fields = append(fields, menuitem.FieldCurrency)
+	}
+	if m.is_available != nil {
+		fields = append(fields, menuitem.FieldIsAvailable)
 	}
 	if m.preparation_time != nil {
 		fields = append(fields, menuitem.FieldPreparationTime)
@@ -23073,6 +23712,10 @@ func (m *MenuItemMutation) Field(name string) (ent.Value, bool) {
 		return m.Description()
 	case menuitem.FieldPrice:
 		return m.Price()
+	case menuitem.FieldCurrency:
+		return m.Currency()
+	case menuitem.FieldIsAvailable:
+		return m.IsAvailable()
 	case menuitem.FieldPreparationTime:
 		return m.PreparationTime()
 	case menuitem.FieldOptions:
@@ -23096,6 +23739,10 @@ func (m *MenuItemMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldDescription(ctx)
 	case menuitem.FieldPrice:
 		return m.OldPrice(ctx)
+	case menuitem.FieldCurrency:
+		return m.OldCurrency(ctx)
+	case menuitem.FieldIsAvailable:
+		return m.OldIsAvailable(ctx)
 	case menuitem.FieldPreparationTime:
 		return m.OldPreparationTime(ctx)
 	case menuitem.FieldOptions:
@@ -23133,6 +23780,20 @@ func (m *MenuItemMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetPrice(v)
+		return nil
+	case menuitem.FieldCurrency:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCurrency(v)
+		return nil
+	case menuitem.FieldIsAvailable:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsAvailable(v)
 		return nil
 	case menuitem.FieldPreparationTime:
 		v, ok := value.(int)
@@ -23222,6 +23883,9 @@ func (m *MenuItemMutation) ClearedFields() []string {
 	if m.FieldCleared(menuitem.FieldDescription) {
 		fields = append(fields, menuitem.FieldDescription)
 	}
+	if m.FieldCleared(menuitem.FieldCurrency) {
+		fields = append(fields, menuitem.FieldCurrency)
+	}
 	if m.FieldCleared(menuitem.FieldPreparationTime) {
 		fields = append(fields, menuitem.FieldPreparationTime)
 	}
@@ -23248,6 +23912,9 @@ func (m *MenuItemMutation) ClearField(name string) error {
 	case menuitem.FieldDescription:
 		m.ClearDescription()
 		return nil
+	case menuitem.FieldCurrency:
+		m.ClearCurrency()
+		return nil
 	case menuitem.FieldPreparationTime:
 		m.ClearPreparationTime()
 		return nil
@@ -23273,6 +23940,12 @@ func (m *MenuItemMutation) ResetField(name string) error {
 		return nil
 	case menuitem.FieldPrice:
 		m.ResetPrice()
+		return nil
+	case menuitem.FieldCurrency:
+		m.ResetCurrency()
+		return nil
+	case menuitem.FieldIsAvailable:
+		m.ResetIsAvailable()
 		return nil
 	case menuitem.FieldPreparationTime:
 		m.ResetPreparationTime()

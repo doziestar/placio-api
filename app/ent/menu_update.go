@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"placio-app/ent/category"
+	"placio-app/ent/media"
 	"placio-app/ent/menu"
 	"placio-app/ent/menuitem"
 	"placio-app/ent/place"
@@ -90,23 +91,93 @@ func (mu *MenuUpdate) ClearDescription() *MenuUpdate {
 	return mu
 }
 
-// SetPlaceID sets the "place" edge to the Place entity by ID.
-func (mu *MenuUpdate) SetPlaceID(id string) *MenuUpdate {
-	mu.mutation.SetPlaceID(id)
+// SetPreparationTime sets the "preparation_time" field.
+func (mu *MenuUpdate) SetPreparationTime(s string) *MenuUpdate {
+	mu.mutation.SetPreparationTime(s)
 	return mu
 }
 
-// SetNillablePlaceID sets the "place" edge to the Place entity by ID if the given value is not nil.
-func (mu *MenuUpdate) SetNillablePlaceID(id *string) *MenuUpdate {
-	if id != nil {
-		mu = mu.SetPlaceID(*id)
+// SetNillablePreparationTime sets the "preparation_time" field if the given value is not nil.
+func (mu *MenuUpdate) SetNillablePreparationTime(s *string) *MenuUpdate {
+	if s != nil {
+		mu.SetPreparationTime(*s)
 	}
 	return mu
 }
 
-// SetPlace sets the "place" edge to the Place entity.
-func (mu *MenuUpdate) SetPlace(p *Place) *MenuUpdate {
-	return mu.SetPlaceID(p.ID)
+// ClearPreparationTime clears the value of the "preparation_time" field.
+func (mu *MenuUpdate) ClearPreparationTime() *MenuUpdate {
+	mu.mutation.ClearPreparationTime()
+	return mu
+}
+
+// SetOptions sets the "options" field.
+func (mu *MenuUpdate) SetOptions(s string) *MenuUpdate {
+	mu.mutation.SetOptions(s)
+	return mu
+}
+
+// SetNillableOptions sets the "options" field if the given value is not nil.
+func (mu *MenuUpdate) SetNillableOptions(s *string) *MenuUpdate {
+	if s != nil {
+		mu.SetOptions(*s)
+	}
+	return mu
+}
+
+// ClearOptions clears the value of the "options" field.
+func (mu *MenuUpdate) ClearOptions() *MenuUpdate {
+	mu.mutation.ClearOptions()
+	return mu
+}
+
+// SetPrice sets the "price" field.
+func (mu *MenuUpdate) SetPrice(s string) *MenuUpdate {
+	mu.mutation.SetPrice(s)
+	return mu
+}
+
+// SetNillablePrice sets the "price" field if the given value is not nil.
+func (mu *MenuUpdate) SetNillablePrice(s *string) *MenuUpdate {
+	if s != nil {
+		mu.SetPrice(*s)
+	}
+	return mu
+}
+
+// ClearPrice clears the value of the "price" field.
+func (mu *MenuUpdate) ClearPrice() *MenuUpdate {
+	mu.mutation.ClearPrice()
+	return mu
+}
+
+// SetIsAvailable sets the "is_available" field.
+func (mu *MenuUpdate) SetIsAvailable(b bool) *MenuUpdate {
+	mu.mutation.SetIsAvailable(b)
+	return mu
+}
+
+// SetNillableIsAvailable sets the "is_available" field if the given value is not nil.
+func (mu *MenuUpdate) SetNillableIsAvailable(b *bool) *MenuUpdate {
+	if b != nil {
+		mu.SetIsAvailable(*b)
+	}
+	return mu
+}
+
+// AddPlaceIDs adds the "place" edge to the Place entity by IDs.
+func (mu *MenuUpdate) AddPlaceIDs(ids ...string) *MenuUpdate {
+	mu.mutation.AddPlaceIDs(ids...)
+	return mu
+}
+
+// AddPlace adds the "place" edges to the Place entity.
+func (mu *MenuUpdate) AddPlace(p ...*Place) *MenuUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return mu.AddPlaceIDs(ids...)
 }
 
 // AddCategoryIDs adds the "categories" edge to the Category entity by IDs.
@@ -139,15 +210,45 @@ func (mu *MenuUpdate) AddMenuItems(m ...*MenuItem) *MenuUpdate {
 	return mu.AddMenuItemIDs(ids...)
 }
 
+// AddMediumIDs adds the "media" edge to the Media entity by IDs.
+func (mu *MenuUpdate) AddMediumIDs(ids ...string) *MenuUpdate {
+	mu.mutation.AddMediumIDs(ids...)
+	return mu
+}
+
+// AddMedia adds the "media" edges to the Media entity.
+func (mu *MenuUpdate) AddMedia(m ...*Media) *MenuUpdate {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return mu.AddMediumIDs(ids...)
+}
+
 // Mutation returns the MenuMutation object of the builder.
 func (mu *MenuUpdate) Mutation() *MenuMutation {
 	return mu.mutation
 }
 
-// ClearPlace clears the "place" edge to the Place entity.
+// ClearPlace clears all "place" edges to the Place entity.
 func (mu *MenuUpdate) ClearPlace() *MenuUpdate {
 	mu.mutation.ClearPlace()
 	return mu
+}
+
+// RemovePlaceIDs removes the "place" edge to Place entities by IDs.
+func (mu *MenuUpdate) RemovePlaceIDs(ids ...string) *MenuUpdate {
+	mu.mutation.RemovePlaceIDs(ids...)
+	return mu
+}
+
+// RemovePlace removes "place" edges to Place entities.
+func (mu *MenuUpdate) RemovePlace(p ...*Place) *MenuUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return mu.RemovePlaceIDs(ids...)
 }
 
 // ClearCategories clears all "categories" edges to the Category entity.
@@ -190,6 +291,27 @@ func (mu *MenuUpdate) RemoveMenuItems(m ...*MenuItem) *MenuUpdate {
 		ids[i] = m[i].ID
 	}
 	return mu.RemoveMenuItemIDs(ids...)
+}
+
+// ClearMedia clears all "media" edges to the Media entity.
+func (mu *MenuUpdate) ClearMedia() *MenuUpdate {
+	mu.mutation.ClearMedia()
+	return mu
+}
+
+// RemoveMediumIDs removes the "media" edge to Media entities by IDs.
+func (mu *MenuUpdate) RemoveMediumIDs(ids ...string) *MenuUpdate {
+	mu.mutation.RemoveMediumIDs(ids...)
+	return mu
+}
+
+// RemoveMedia removes "media" edges to Media entities.
+func (mu *MenuUpdate) RemoveMedia(m ...*Media) *MenuUpdate {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return mu.RemoveMediumIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -246,12 +368,33 @@ func (mu *MenuUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if mu.mutation.DescriptionCleared() {
 		_spec.ClearField(menu.FieldDescription, field.TypeString)
 	}
+	if value, ok := mu.mutation.PreparationTime(); ok {
+		_spec.SetField(menu.FieldPreparationTime, field.TypeString, value)
+	}
+	if mu.mutation.PreparationTimeCleared() {
+		_spec.ClearField(menu.FieldPreparationTime, field.TypeString)
+	}
+	if value, ok := mu.mutation.Options(); ok {
+		_spec.SetField(menu.FieldOptions, field.TypeString, value)
+	}
+	if mu.mutation.OptionsCleared() {
+		_spec.ClearField(menu.FieldOptions, field.TypeString)
+	}
+	if value, ok := mu.mutation.Price(); ok {
+		_spec.SetField(menu.FieldPrice, field.TypeString, value)
+	}
+	if mu.mutation.PriceCleared() {
+		_spec.ClearField(menu.FieldPrice, field.TypeString)
+	}
+	if value, ok := mu.mutation.IsAvailable(); ok {
+		_spec.SetField(menu.FieldIsAvailable, field.TypeBool, value)
+	}
 	if mu.mutation.PlaceCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
+			Rel:     sqlgraph.M2M,
 			Inverse: true,
 			Table:   menu.PlaceTable,
-			Columns: []string{menu.PlaceColumn},
+			Columns: menu.PlacePrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
@@ -259,12 +402,28 @@ func (mu *MenuUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := mu.mutation.PlaceIDs(); len(nodes) > 0 {
+	if nodes := mu.mutation.RemovedPlaceIDs(); len(nodes) > 0 && !mu.mutation.PlaceCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
+			Rel:     sqlgraph.M2M,
 			Inverse: true,
 			Table:   menu.PlaceTable,
-			Columns: []string{menu.PlaceColumn},
+			Columns: menu.PlacePrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.PlaceIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   menu.PlaceTable,
+			Columns: menu.PlacePrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
@@ -277,10 +436,10 @@ func (mu *MenuUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if mu.mutation.CategoriesCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
+			Rel:     sqlgraph.M2M,
 			Inverse: false,
 			Table:   menu.CategoriesTable,
-			Columns: []string{menu.CategoriesColumn},
+			Columns: menu.CategoriesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
@@ -290,10 +449,10 @@ func (mu *MenuUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if nodes := mu.mutation.RemovedCategoriesIDs(); len(nodes) > 0 && !mu.mutation.CategoriesCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
+			Rel:     sqlgraph.M2M,
 			Inverse: false,
 			Table:   menu.CategoriesTable,
-			Columns: []string{menu.CategoriesColumn},
+			Columns: menu.CategoriesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
@@ -306,10 +465,10 @@ func (mu *MenuUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if nodes := mu.mutation.CategoriesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
+			Rel:     sqlgraph.M2M,
 			Inverse: false,
 			Table:   menu.CategoriesTable,
-			Columns: []string{menu.CategoriesColumn},
+			Columns: menu.CategoriesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
@@ -358,6 +517,51 @@ func (mu *MenuUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(menuitem.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if mu.mutation.MediaCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   menu.MediaTable,
+			Columns: menu.MediaPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.RemovedMediaIDs(); len(nodes) > 0 && !mu.mutation.MediaCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   menu.MediaTable,
+			Columns: menu.MediaPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := mu.mutation.MediaIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   menu.MediaTable,
+			Columns: menu.MediaPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -445,23 +649,93 @@ func (muo *MenuUpdateOne) ClearDescription() *MenuUpdateOne {
 	return muo
 }
 
-// SetPlaceID sets the "place" edge to the Place entity by ID.
-func (muo *MenuUpdateOne) SetPlaceID(id string) *MenuUpdateOne {
-	muo.mutation.SetPlaceID(id)
+// SetPreparationTime sets the "preparation_time" field.
+func (muo *MenuUpdateOne) SetPreparationTime(s string) *MenuUpdateOne {
+	muo.mutation.SetPreparationTime(s)
 	return muo
 }
 
-// SetNillablePlaceID sets the "place" edge to the Place entity by ID if the given value is not nil.
-func (muo *MenuUpdateOne) SetNillablePlaceID(id *string) *MenuUpdateOne {
-	if id != nil {
-		muo = muo.SetPlaceID(*id)
+// SetNillablePreparationTime sets the "preparation_time" field if the given value is not nil.
+func (muo *MenuUpdateOne) SetNillablePreparationTime(s *string) *MenuUpdateOne {
+	if s != nil {
+		muo.SetPreparationTime(*s)
 	}
 	return muo
 }
 
-// SetPlace sets the "place" edge to the Place entity.
-func (muo *MenuUpdateOne) SetPlace(p *Place) *MenuUpdateOne {
-	return muo.SetPlaceID(p.ID)
+// ClearPreparationTime clears the value of the "preparation_time" field.
+func (muo *MenuUpdateOne) ClearPreparationTime() *MenuUpdateOne {
+	muo.mutation.ClearPreparationTime()
+	return muo
+}
+
+// SetOptions sets the "options" field.
+func (muo *MenuUpdateOne) SetOptions(s string) *MenuUpdateOne {
+	muo.mutation.SetOptions(s)
+	return muo
+}
+
+// SetNillableOptions sets the "options" field if the given value is not nil.
+func (muo *MenuUpdateOne) SetNillableOptions(s *string) *MenuUpdateOne {
+	if s != nil {
+		muo.SetOptions(*s)
+	}
+	return muo
+}
+
+// ClearOptions clears the value of the "options" field.
+func (muo *MenuUpdateOne) ClearOptions() *MenuUpdateOne {
+	muo.mutation.ClearOptions()
+	return muo
+}
+
+// SetPrice sets the "price" field.
+func (muo *MenuUpdateOne) SetPrice(s string) *MenuUpdateOne {
+	muo.mutation.SetPrice(s)
+	return muo
+}
+
+// SetNillablePrice sets the "price" field if the given value is not nil.
+func (muo *MenuUpdateOne) SetNillablePrice(s *string) *MenuUpdateOne {
+	if s != nil {
+		muo.SetPrice(*s)
+	}
+	return muo
+}
+
+// ClearPrice clears the value of the "price" field.
+func (muo *MenuUpdateOne) ClearPrice() *MenuUpdateOne {
+	muo.mutation.ClearPrice()
+	return muo
+}
+
+// SetIsAvailable sets the "is_available" field.
+func (muo *MenuUpdateOne) SetIsAvailable(b bool) *MenuUpdateOne {
+	muo.mutation.SetIsAvailable(b)
+	return muo
+}
+
+// SetNillableIsAvailable sets the "is_available" field if the given value is not nil.
+func (muo *MenuUpdateOne) SetNillableIsAvailable(b *bool) *MenuUpdateOne {
+	if b != nil {
+		muo.SetIsAvailable(*b)
+	}
+	return muo
+}
+
+// AddPlaceIDs adds the "place" edge to the Place entity by IDs.
+func (muo *MenuUpdateOne) AddPlaceIDs(ids ...string) *MenuUpdateOne {
+	muo.mutation.AddPlaceIDs(ids...)
+	return muo
+}
+
+// AddPlace adds the "place" edges to the Place entity.
+func (muo *MenuUpdateOne) AddPlace(p ...*Place) *MenuUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return muo.AddPlaceIDs(ids...)
 }
 
 // AddCategoryIDs adds the "categories" edge to the Category entity by IDs.
@@ -494,15 +768,45 @@ func (muo *MenuUpdateOne) AddMenuItems(m ...*MenuItem) *MenuUpdateOne {
 	return muo.AddMenuItemIDs(ids...)
 }
 
+// AddMediumIDs adds the "media" edge to the Media entity by IDs.
+func (muo *MenuUpdateOne) AddMediumIDs(ids ...string) *MenuUpdateOne {
+	muo.mutation.AddMediumIDs(ids...)
+	return muo
+}
+
+// AddMedia adds the "media" edges to the Media entity.
+func (muo *MenuUpdateOne) AddMedia(m ...*Media) *MenuUpdateOne {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return muo.AddMediumIDs(ids...)
+}
+
 // Mutation returns the MenuMutation object of the builder.
 func (muo *MenuUpdateOne) Mutation() *MenuMutation {
 	return muo.mutation
 }
 
-// ClearPlace clears the "place" edge to the Place entity.
+// ClearPlace clears all "place" edges to the Place entity.
 func (muo *MenuUpdateOne) ClearPlace() *MenuUpdateOne {
 	muo.mutation.ClearPlace()
 	return muo
+}
+
+// RemovePlaceIDs removes the "place" edge to Place entities by IDs.
+func (muo *MenuUpdateOne) RemovePlaceIDs(ids ...string) *MenuUpdateOne {
+	muo.mutation.RemovePlaceIDs(ids...)
+	return muo
+}
+
+// RemovePlace removes "place" edges to Place entities.
+func (muo *MenuUpdateOne) RemovePlace(p ...*Place) *MenuUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return muo.RemovePlaceIDs(ids...)
 }
 
 // ClearCategories clears all "categories" edges to the Category entity.
@@ -545,6 +849,27 @@ func (muo *MenuUpdateOne) RemoveMenuItems(m ...*MenuItem) *MenuUpdateOne {
 		ids[i] = m[i].ID
 	}
 	return muo.RemoveMenuItemIDs(ids...)
+}
+
+// ClearMedia clears all "media" edges to the Media entity.
+func (muo *MenuUpdateOne) ClearMedia() *MenuUpdateOne {
+	muo.mutation.ClearMedia()
+	return muo
+}
+
+// RemoveMediumIDs removes the "media" edge to Media entities by IDs.
+func (muo *MenuUpdateOne) RemoveMediumIDs(ids ...string) *MenuUpdateOne {
+	muo.mutation.RemoveMediumIDs(ids...)
+	return muo
+}
+
+// RemoveMedia removes "media" edges to Media entities.
+func (muo *MenuUpdateOne) RemoveMedia(m ...*Media) *MenuUpdateOne {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return muo.RemoveMediumIDs(ids...)
 }
 
 // Where appends a list predicates to the MenuUpdate builder.
@@ -631,12 +956,33 @@ func (muo *MenuUpdateOne) sqlSave(ctx context.Context) (_node *Menu, err error) 
 	if muo.mutation.DescriptionCleared() {
 		_spec.ClearField(menu.FieldDescription, field.TypeString)
 	}
+	if value, ok := muo.mutation.PreparationTime(); ok {
+		_spec.SetField(menu.FieldPreparationTime, field.TypeString, value)
+	}
+	if muo.mutation.PreparationTimeCleared() {
+		_spec.ClearField(menu.FieldPreparationTime, field.TypeString)
+	}
+	if value, ok := muo.mutation.Options(); ok {
+		_spec.SetField(menu.FieldOptions, field.TypeString, value)
+	}
+	if muo.mutation.OptionsCleared() {
+		_spec.ClearField(menu.FieldOptions, field.TypeString)
+	}
+	if value, ok := muo.mutation.Price(); ok {
+		_spec.SetField(menu.FieldPrice, field.TypeString, value)
+	}
+	if muo.mutation.PriceCleared() {
+		_spec.ClearField(menu.FieldPrice, field.TypeString)
+	}
+	if value, ok := muo.mutation.IsAvailable(); ok {
+		_spec.SetField(menu.FieldIsAvailable, field.TypeBool, value)
+	}
 	if muo.mutation.PlaceCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
+			Rel:     sqlgraph.M2M,
 			Inverse: true,
 			Table:   menu.PlaceTable,
-			Columns: []string{menu.PlaceColumn},
+			Columns: menu.PlacePrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
@@ -644,12 +990,28 @@ func (muo *MenuUpdateOne) sqlSave(ctx context.Context) (_node *Menu, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := muo.mutation.PlaceIDs(); len(nodes) > 0 {
+	if nodes := muo.mutation.RemovedPlaceIDs(); len(nodes) > 0 && !muo.mutation.PlaceCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
+			Rel:     sqlgraph.M2M,
 			Inverse: true,
 			Table:   menu.PlaceTable,
-			Columns: []string{menu.PlaceColumn},
+			Columns: menu.PlacePrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.PlaceIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
+			Table:   menu.PlaceTable,
+			Columns: menu.PlacePrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
@@ -662,10 +1024,10 @@ func (muo *MenuUpdateOne) sqlSave(ctx context.Context) (_node *Menu, err error) 
 	}
 	if muo.mutation.CategoriesCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
+			Rel:     sqlgraph.M2M,
 			Inverse: false,
 			Table:   menu.CategoriesTable,
-			Columns: []string{menu.CategoriesColumn},
+			Columns: menu.CategoriesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
@@ -675,10 +1037,10 @@ func (muo *MenuUpdateOne) sqlSave(ctx context.Context) (_node *Menu, err error) 
 	}
 	if nodes := muo.mutation.RemovedCategoriesIDs(); len(nodes) > 0 && !muo.mutation.CategoriesCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
+			Rel:     sqlgraph.M2M,
 			Inverse: false,
 			Table:   menu.CategoriesTable,
-			Columns: []string{menu.CategoriesColumn},
+			Columns: menu.CategoriesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
@@ -691,10 +1053,10 @@ func (muo *MenuUpdateOne) sqlSave(ctx context.Context) (_node *Menu, err error) 
 	}
 	if nodes := muo.mutation.CategoriesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
+			Rel:     sqlgraph.M2M,
 			Inverse: false,
 			Table:   menu.CategoriesTable,
-			Columns: []string{menu.CategoriesColumn},
+			Columns: menu.CategoriesPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(category.FieldID, field.TypeString),
@@ -743,6 +1105,51 @@ func (muo *MenuUpdateOne) sqlSave(ctx context.Context) (_node *Menu, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(menuitem.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if muo.mutation.MediaCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   menu.MediaTable,
+			Columns: menu.MediaPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.RemovedMediaIDs(); len(nodes) > 0 && !muo.mutation.MediaCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   menu.MediaTable,
+			Columns: menu.MediaPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := muo.mutation.MediaIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   menu.MediaTable,
+			Columns: menu.MediaPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(media.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

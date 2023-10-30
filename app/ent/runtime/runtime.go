@@ -359,14 +359,22 @@ func init() {
 	menuDescIsDeleted := menuFields[3].Descriptor()
 	// menu.DefaultIsDeleted holds the default value on creation for the is_deleted field.
 	menu.DefaultIsDeleted = menuDescIsDeleted.Default.(bool)
+	// menuDescIsAvailable is the schema descriptor for is_available field.
+	menuDescIsAvailable := menuFields[8].Descriptor()
+	// menu.DefaultIsAvailable holds the default value on creation for the is_available field.
+	menu.DefaultIsAvailable = menuDescIsAvailable.Default.(bool)
 	// menuDescID is the schema descriptor for id field.
 	menuDescID := menuFields[0].Descriptor()
 	// menu.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	menu.IDValidator = menuDescID.Validators[0].(func(string) error)
 	menuitemFields := schema.MenuItem{}.Fields()
 	_ = menuitemFields
+	// menuitemDescIsAvailable is the schema descriptor for is_available field.
+	menuitemDescIsAvailable := menuitemFields[5].Descriptor()
+	// menuitem.DefaultIsAvailable holds the default value on creation for the is_available field.
+	menuitem.DefaultIsAvailable = menuitemDescIsAvailable.Default.(bool)
 	// menuitemDescIsDeleted is the schema descriptor for is_deleted field.
-	menuitemDescIsDeleted := menuitemFields[7].Descriptor()
+	menuitemDescIsDeleted := menuitemFields[9].Descriptor()
 	// menuitem.DefaultIsDeleted holds the default value on creation for the is_deleted field.
 	menuitem.DefaultIsDeleted = menuitemDescIsDeleted.Default.(bool)
 	// menuitemDescID is the schema descriptor for id field.

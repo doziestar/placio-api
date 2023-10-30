@@ -36,6 +36,8 @@ const (
 	EdgePlaceInventories = "place_inventories"
 	// EdgeMedia holds the string denoting the media edge name in mutations.
 	EdgeMedia = "media"
+	// EdgeMenus holds the string denoting the menus edge name in mutations.
+	EdgeMenus = "menus"
 	// Table holds the table name of the category in the database.
 	Table = "categories"
 	// CategoryAssignmentsTable is the table that holds the categoryAssignments relation/edge.
@@ -57,6 +59,11 @@ const (
 	// MediaInverseTable is the table name for the Media entity.
 	// It exists in this package in order to avoid circular dependency with the "media" package.
 	MediaInverseTable = "media"
+	// MenusTable is the table that holds the menus relation/edge. The primary key declared below.
+	MenusTable = "menu_categories"
+	// MenusInverseTable is the table name for the Menu entity.
+	// It exists in this package in order to avoid circular dependency with the "menu" package.
+	MenusInverseTable = "menus"
 )
 
 // Columns holds all SQL columns for category fields.
@@ -78,7 +85,6 @@ var Columns = []string{
 var ForeignKeys = []string{
 	"business_categories",
 	"event_event_categories",
-	"menu_categories",
 	"place_categories",
 	"post_categories",
 	"user_categories",
@@ -88,6 +94,9 @@ var (
 	// MediaPrimaryKey and MediaColumn2 are the table columns denoting the
 	// primary key for the media relation (M2M).
 	MediaPrimaryKey = []string{"category_id", "media_id"}
+	// MenusPrimaryKey and MenusColumn2 are the table columns denoting the
+	// primary key for the menus relation (M2M).
+	MenusPrimaryKey = []string{"menu_id", "category_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -204,6 +213,20 @@ func ByMedia(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newMediaStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByMenusCount orders the results by menus count.
+func ByMenusCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newMenusStep(), opts...)
+	}
+}
+
+// ByMenus orders the results by menus terms.
+func ByMenus(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newMenusStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newCategoryAssignmentsStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -223,5 +246,12 @@ func newMediaStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(MediaInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2M, false, MediaTable, MediaPrimaryKey...),
+	)
+}
+func newMenusStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(MenusInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, true, MenusTable, MenusPrimaryKey...),
 	)
 }

@@ -21,6 +21,11 @@ func (Menu) Fields() []ent.Field {
 		field.String("deleted_at").Optional(),
 		field.Bool("is_deleted").Default(false),
 		field.String("description").Optional(),
+		field.String("preparation_time").Optional(),
+		field.String("options").Optional(),
+		field.String("price").Optional(),
+		field.Bool("is_available").Default(true),
+
 	}
 }
 
@@ -28,10 +33,10 @@ func (Menu) Fields() []ent.Field {
 func (Menu) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("place", Place.Type).
-			Ref("menus").
-			Unique(),
+			Ref("menus"),
 		edge.To("categories", Category.Type),
 		edge.To("menu_items", MenuItem.Type),
+		edge.To("media", Media.Type),
 		// add any other edges that a Menu would have
 	}
 }
@@ -50,6 +55,8 @@ func (MenuItem) Fields() []ent.Field {
 		field.String("name"),
 		field.String("description").Optional(),
 		field.Float("price"),
+		field.String("currency").Optional(),
+		field.Bool("is_available").Default(true),
 		field.Int("preparation_time").Optional(),
 		field.JSON("options", []string{}).Optional(),
 		field.String("deleted_at").Optional(),

@@ -20,33 +20,44 @@ const (
 	FieldIsDeleted = "is_deleted"
 	// FieldDescription holds the string denoting the description field in the database.
 	FieldDescription = "description"
+	// FieldPreparationTime holds the string denoting the preparation_time field in the database.
+	FieldPreparationTime = "preparation_time"
+	// FieldOptions holds the string denoting the options field in the database.
+	FieldOptions = "options"
+	// FieldPrice holds the string denoting the price field in the database.
+	FieldPrice = "price"
+	// FieldIsAvailable holds the string denoting the is_available field in the database.
+	FieldIsAvailable = "is_available"
 	// EdgePlace holds the string denoting the place edge name in mutations.
 	EdgePlace = "place"
 	// EdgeCategories holds the string denoting the categories edge name in mutations.
 	EdgeCategories = "categories"
 	// EdgeMenuItems holds the string denoting the menu_items edge name in mutations.
 	EdgeMenuItems = "menu_items"
+	// EdgeMedia holds the string denoting the media edge name in mutations.
+	EdgeMedia = "media"
 	// Table holds the table name of the menu in the database.
 	Table = "menus"
-	// PlaceTable is the table that holds the place relation/edge.
-	PlaceTable = "menus"
+	// PlaceTable is the table that holds the place relation/edge. The primary key declared below.
+	PlaceTable = "place_menus"
 	// PlaceInverseTable is the table name for the Place entity.
 	// It exists in this package in order to avoid circular dependency with the "place" package.
 	PlaceInverseTable = "places"
-	// PlaceColumn is the table column denoting the place relation/edge.
-	PlaceColumn = "place_menus"
-	// CategoriesTable is the table that holds the categories relation/edge.
-	CategoriesTable = "categories"
+	// CategoriesTable is the table that holds the categories relation/edge. The primary key declared below.
+	CategoriesTable = "menu_categories"
 	// CategoriesInverseTable is the table name for the Category entity.
 	// It exists in this package in order to avoid circular dependency with the "category" package.
 	CategoriesInverseTable = "categories"
-	// CategoriesColumn is the table column denoting the categories relation/edge.
-	CategoriesColumn = "menu_categories"
 	// MenuItemsTable is the table that holds the menu_items relation/edge. The primary key declared below.
 	MenuItemsTable = "menu_menu_items"
 	// MenuItemsInverseTable is the table name for the MenuItem entity.
 	// It exists in this package in order to avoid circular dependency with the "menuitem" package.
 	MenuItemsInverseTable = "menu_items"
+	// MediaTable is the table that holds the media relation/edge. The primary key declared below.
+	MediaTable = "menu_media"
+	// MediaInverseTable is the table name for the Media entity.
+	// It exists in this package in order to avoid circular dependency with the "media" package.
+	MediaInverseTable = "media"
 )
 
 // Columns holds all SQL columns for menu fields.
@@ -56,18 +67,25 @@ var Columns = []string{
 	FieldDeletedAt,
 	FieldIsDeleted,
 	FieldDescription,
-}
-
-// ForeignKeys holds the SQL foreign-keys that are owned by the "menus"
-// table and are not defined as standalone fields in the schema.
-var ForeignKeys = []string{
-	"place_menus",
+	FieldPreparationTime,
+	FieldOptions,
+	FieldPrice,
+	FieldIsAvailable,
 }
 
 var (
+	// PlacePrimaryKey and PlaceColumn2 are the table columns denoting the
+	// primary key for the place relation (M2M).
+	PlacePrimaryKey = []string{"place_id", "menu_id"}
+	// CategoriesPrimaryKey and CategoriesColumn2 are the table columns denoting the
+	// primary key for the categories relation (M2M).
+	CategoriesPrimaryKey = []string{"menu_id", "category_id"}
 	// MenuItemsPrimaryKey and MenuItemsColumn2 are the table columns denoting the
 	// primary key for the menu_items relation (M2M).
 	MenuItemsPrimaryKey = []string{"menu_id", "menu_item_id"}
+	// MediaPrimaryKey and MediaColumn2 are the table columns denoting the
+	// primary key for the media relation (M2M).
+	MediaPrimaryKey = []string{"menu_id", "media_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -77,17 +95,14 @@ func ValidColumn(column string) bool {
 			return true
 		}
 	}
-	for i := range ForeignKeys {
-		if column == ForeignKeys[i] {
-			return true
-		}
-	}
 	return false
 }
 
 var (
 	// DefaultIsDeleted holds the default value on creation for the "is_deleted" field.
 	DefaultIsDeleted bool
+	// DefaultIsAvailable holds the default value on creation for the "is_available" field.
+	DefaultIsAvailable bool
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(string) error
 )
@@ -120,10 +135,37 @@ func ByDescription(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDescription, opts...).ToFunc()
 }
 
-// ByPlaceField orders the results by place field.
-func ByPlaceField(field string, opts ...sql.OrderTermOption) OrderOption {
+// ByPreparationTime orders the results by the preparation_time field.
+func ByPreparationTime(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPreparationTime, opts...).ToFunc()
+}
+
+// ByOptions orders the results by the options field.
+func ByOptions(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldOptions, opts...).ToFunc()
+}
+
+// ByPrice orders the results by the price field.
+func ByPrice(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPrice, opts...).ToFunc()
+}
+
+// ByIsAvailable orders the results by the is_available field.
+func ByIsAvailable(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsAvailable, opts...).ToFunc()
+}
+
+// ByPlaceCount orders the results by place count.
+func ByPlaceCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newPlaceStep(), sql.OrderByField(field, opts...))
+		sqlgraph.OrderByNeighborsCount(s, newPlaceStep(), opts...)
+	}
+}
+
+// ByPlace orders the results by place terms.
+func ByPlace(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newPlaceStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
 
@@ -154,18 +196,32 @@ func ByMenuItems(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newMenuItemsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByMediaCount orders the results by media count.
+func ByMediaCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newMediaStep(), opts...)
+	}
+}
+
+// ByMedia orders the results by media terms.
+func ByMedia(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newMediaStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newPlaceStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(PlaceInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, true, PlaceTable, PlaceColumn),
+		sqlgraph.Edge(sqlgraph.M2M, true, PlaceTable, PlacePrimaryKey...),
 	)
 }
 func newCategoriesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CategoriesInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, CategoriesTable, CategoriesColumn),
+		sqlgraph.Edge(sqlgraph.M2M, false, CategoriesTable, CategoriesPrimaryKey...),
 	)
 }
 func newMenuItemsStep() *sqlgraph.Step {
@@ -173,5 +229,12 @@ func newMenuItemsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(MenuItemsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2M, false, MenuItemsTable, MenuItemsPrimaryKey...),
+	)
+}
+func newMediaStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(MediaInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, false, MediaTable, MediaPrimaryKey...),
 	)
 }

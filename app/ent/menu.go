@@ -5,7 +5,6 @@ package ent
 import (
 	"fmt"
 	"placio-app/ent/menu"
-	"placio-app/ent/place"
 	"strings"
 
 	"entgo.io/ent"
@@ -25,34 +24,39 @@ type Menu struct {
 	IsDeleted bool `json:"is_deleted,omitempty"`
 	// Description holds the value of the "description" field.
 	Description string `json:"description,omitempty"`
+	// PreparationTime holds the value of the "preparation_time" field.
+	PreparationTime string `json:"preparation_time,omitempty"`
+	// Options holds the value of the "options" field.
+	Options string `json:"options,omitempty"`
+	// Price holds the value of the "price" field.
+	Price string `json:"price,omitempty"`
+	// IsAvailable holds the value of the "is_available" field.
+	IsAvailable bool `json:"is_available,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the MenuQuery when eager-loading is set.
 	Edges        MenuEdges `json:"edges"`
-	place_menus  *string
 	selectValues sql.SelectValues
 }
 
 // MenuEdges holds the relations/edges for other nodes in the graph.
 type MenuEdges struct {
 	// Place holds the value of the place edge.
-	Place *Place `json:"place,omitempty"`
+	Place []*Place `json:"place,omitempty"`
 	// Categories holds the value of the categories edge.
 	Categories []*Category `json:"categories,omitempty"`
 	// MenuItems holds the value of the menu_items edge.
 	MenuItems []*MenuItem `json:"menu_items,omitempty"`
+	// Media holds the value of the media edge.
+	Media []*Media `json:"media,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 }
 
 // PlaceOrErr returns the Place value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e MenuEdges) PlaceOrErr() (*Place, error) {
+// was not loaded in eager-loading.
+func (e MenuEdges) PlaceOrErr() ([]*Place, error) {
 	if e.loadedTypes[0] {
-		if e.Place == nil {
-			// Edge was loaded but was not found.
-			return nil, &NotFoundError{label: place.Label}
-		}
 		return e.Place, nil
 	}
 	return nil, &NotLoadedError{edge: "place"}
@@ -76,16 +80,23 @@ func (e MenuEdges) MenuItemsOrErr() ([]*MenuItem, error) {
 	return nil, &NotLoadedError{edge: "menu_items"}
 }
 
+// MediaOrErr returns the Media value or an error if the edge
+// was not loaded in eager-loading.
+func (e MenuEdges) MediaOrErr() ([]*Media, error) {
+	if e.loadedTypes[3] {
+		return e.Media, nil
+	}
+	return nil, &NotLoadedError{edge: "media"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Menu) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case menu.FieldIsDeleted:
+		case menu.FieldIsDeleted, menu.FieldIsAvailable:
 			values[i] = new(sql.NullBool)
-		case menu.FieldID, menu.FieldName, menu.FieldDeletedAt, menu.FieldDescription:
-			values[i] = new(sql.NullString)
-		case menu.ForeignKeys[0]: // place_menus
+		case menu.FieldID, menu.FieldName, menu.FieldDeletedAt, menu.FieldDescription, menu.FieldPreparationTime, menu.FieldOptions, menu.FieldPrice:
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -132,12 +143,29 @@ func (m *Menu) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				m.Description = value.String
 			}
-		case menu.ForeignKeys[0]:
+		case menu.FieldPreparationTime:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field place_menus", values[i])
+				return fmt.Errorf("unexpected type %T for field preparation_time", values[i])
 			} else if value.Valid {
-				m.place_menus = new(string)
-				*m.place_menus = value.String
+				m.PreparationTime = value.String
+			}
+		case menu.FieldOptions:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field options", values[i])
+			} else if value.Valid {
+				m.Options = value.String
+			}
+		case menu.FieldPrice:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field price", values[i])
+			} else if value.Valid {
+				m.Price = value.String
+			}
+		case menu.FieldIsAvailable:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_available", values[i])
+			} else if value.Valid {
+				m.IsAvailable = value.Bool
 			}
 		default:
 			m.selectValues.Set(columns[i], values[i])
@@ -165,6 +193,11 @@ func (m *Menu) QueryCategories() *CategoryQuery {
 // QueryMenuItems queries the "menu_items" edge of the Menu entity.
 func (m *Menu) QueryMenuItems() *MenuItemQuery {
 	return NewMenuClient(m.config).QueryMenuItems(m)
+}
+
+// QueryMedia queries the "media" edge of the Menu entity.
+func (m *Menu) QueryMedia() *MediaQuery {
+	return NewMenuClient(m.config).QueryMedia(m)
 }
 
 // Update returns a builder for updating this Menu.
@@ -201,6 +234,18 @@ func (m *Menu) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("description=")
 	builder.WriteString(m.Description)
+	builder.WriteString(", ")
+	builder.WriteString("preparation_time=")
+	builder.WriteString(m.PreparationTime)
+	builder.WriteString(", ")
+	builder.WriteString("options=")
+	builder.WriteString(m.Options)
+	builder.WriteString(", ")
+	builder.WriteString("price=")
+	builder.WriteString(m.Price)
+	builder.WriteString(", ")
+	builder.WriteString("is_available=")
+	builder.WriteString(fmt.Sprintf("%v", m.IsAvailable))
 	builder.WriteByte(')')
 	return builder.String()
 }

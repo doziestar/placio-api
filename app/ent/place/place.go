@@ -156,13 +156,11 @@ const (
 	// AmenitiesInverseTable is the table name for the Amenity entity.
 	// It exists in this package in order to avoid circular dependency with the "amenity" package.
 	AmenitiesInverseTable = "amenities"
-	// MenusTable is the table that holds the menus relation/edge.
-	MenusTable = "menus"
+	// MenusTable is the table that holds the menus relation/edge. The primary key declared below.
+	MenusTable = "place_menus"
 	// MenusInverseTable is the table name for the Menu entity.
 	// It exists in this package in order to avoid circular dependency with the "menu" package.
 	MenusInverseTable = "menus"
-	// MenusColumn is the table column denoting the menus relation/edge.
-	MenusColumn = "place_menus"
 	// MediasTable is the table that holds the medias relation/edge. The primary key declared below.
 	MediasTable = "place_medias"
 	// MediasInverseTable is the table name for the Media entity.
@@ -305,6 +303,9 @@ var (
 	// AmenitiesPrimaryKey and AmenitiesColumn2 are the table columns denoting the
 	// primary key for the amenities relation (M2M).
 	AmenitiesPrimaryKey = []string{"amenity_id", "place_id"}
+	// MenusPrimaryKey and MenusColumn2 are the table columns denoting the
+	// primary key for the menus relation (M2M).
+	MenusPrimaryKey = []string{"place_id", "menu_id"}
 	// MediasPrimaryKey and MediasColumn2 are the table columns denoting the
 	// primary key for the medias relation (M2M).
 	MediasPrimaryKey = []string{"place_id", "media_id"}
@@ -795,7 +796,7 @@ func newMenusStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(MenusInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, MenusTable, MenusColumn),
+		sqlgraph.Edge(sqlgraph.M2M, false, MenusTable, MenusPrimaryKey...),
 	)
 }
 func newMediasStep() *sqlgraph.Step {

@@ -1,26 +1,51 @@
 package smartMenu
 
 import (
+	"bytes"
 	"context"
-	"github.com/google/uuid"
+	"fmt"
+	"image/color"
+	"log"
+	"mime/multipart"
+	"net/textproto"
+	"os"
+	"placio-app/domains/media"
 	"placio-app/ent"
+	"placio-app/ent/category"
 	"placio-app/ent/menu"
+	"placio-app/ent/menuitem"
 	"placio-app/ent/place"
 	"placio-app/ent/placetable"
+	"strings"
 	"time"
+
+	"github.com/cloudinary/cloudinary-go/v2"
+	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
+	qrcode "github.com/skip2/go-qrcode"
+
+	"github.com/google/uuid"
 )
 
 type SmartMenuService struct {
 	client *ent.Client
+	mediaService media.MediaService
+	cloud  *cloudinary.Cloudinary
 }
 
 type ISmartMenu interface {
-	CreateMenu(context.Context, string, *ent.Menu) (*ent.Menu, error)
+	CreateMenu(context.Context, string, *ent.Menu, string, []*multipart.FileHeader)(*ent.Menu, error)
 	GetMenus(context.Context, string) ([]*ent.Menu, error)
 	GetMenuByID(context.Context, string) (*ent.Menu, error)
 	UpdateMenu(context.Context, string, *ent.Menu) (*ent.Menu, error)
 	DeleteMenu(context.Context, string) error
 	RestoreMenu(context.Context, string) (*ent.Menu, error)
+
+	CreateMenuItem(context.Context, string, *ent.MenuItem, []*multipart.FileHeader) (*ent.MenuItem, error)
+	GetMenuItems(context.Context, string) ([]*ent.MenuItem, error)
+	GetMenuItemByID(context.Context, string) (*ent.MenuItem, error)
+	UpdateMenuItem(context.Context, string, *ent.MenuItem) (*ent.MenuItem, error)
+	DeleteMenuItem(context.Context, string) error
+	RestoreMenuItem(context.Context, string) (*ent.MenuItem, error)
 
 	CreateTable(context.Context, string, *ent.PlaceTable) (*ent.PlaceTable, error)
 	GetTables(context.Context, string) ([]*ent.PlaceTable, error)
@@ -39,22 +64,208 @@ type ISmartMenu interface {
 	RestoreOrder(context.Context, string) (*ent.Order, error)
 }
 
-func NewSmartMenuService(client *ent.Client) *SmartMenuService {
-	return &SmartMenuService{client: client}
+func NewSmartMenuService(client *ent.Client, mediaService media.MediaService, cloud *cloudinary.Cloudinary) *SmartMenuService {
+	return &SmartMenuService{client: client, mediaService: mediaService, cloud: cloud}
 }
 
-func (s *SmartMenuService) CreateMenu(ctx context.Context, placeId string, menu *ent.Menu) (*ent.Menu, error) {
-	return s.client.Menu.Create().
-		SetName(menu.Name).
-		SetPlaceID(placeId).
+func (s *SmartMenuService) CreateMenuItem(ctx context.Context, menuId string, menuItemDto *ent.MenuItem, mediaFiles []*multipart.FileHeader) (*ent.MenuItem, error) {
+	existingMenuItem, err := s.client.MenuItem.
+		Query().
+		Where(menuitem.Name(strings.ToLower(menuItemDto.Name))).
+		Where(menuitem.HasMenuWith(menu.ID(menuId))).
+		Only(ctx)
+	if err != nil && !ent.IsNotFound(err) {
+		log.Println("Error checking if menu item with name", menuItemDto.Name, "exists for menu", menuId, ":", err)
+		return nil, err
+	}
+	if existingMenuItem != nil {
+		log.Println("Menu item with name", menuItemDto.Name, "already exists for menu", menuId)
+		return existingMenuItem, nil
+	}
+
+	log.Println("Creating menu item with name", menuItemDto.Name)
+
+	// Create and return the new menu item
+	newMenuItem, err := s.client.MenuItem.
+		Create().
+		SetID(uuid.New().String()).
+		SetName(menuItemDto.Name).
+		SetDescription(menuItemDto.Description).
+		SetPrice(menuItemDto.Price).
+		SetIsAvailable(menuItemDto.IsAvailable).
+		AddMenuIDs(menuId).
+		Save(ctx)
+	if err != nil {
+		log.Println("Error creating menu item with name", menuItemDto.Name, ":", err)
+		return nil, err
+	}
+
+	// Create the media for the menu item
+	if len(mediaFiles) > 0 {
+		go func(menuItemID string, mediaFiles []*multipart.FileHeader) {
+			ctx := context.Background() // Use a background context for the asynchronous operation
+			log.Println("Uploading media for menu item with ID", menuItemID)
+			
+			media, err := s.mediaService.UploadAndCreateMedia(ctx, mediaFiles)
+			if err != nil {
+				log.Println("Error uploading media for menu item with ID", menuItemID, ":", err)
+				return
+			}
+			
+			_, err = s.client.MenuItem.
+				UpdateOneID(menuItemID).
+				AddMedia(media...).
+				Save(ctx)
+			if err != nil {
+				log.Println("Error adding media to menu item with ID", menuItemID, ":", err)
+				return
+			}
+			
+			log.Println("Media uploaded and added to menu item with ID", menuItemID)
+		}(newMenuItem.ID, mediaFiles)
+	}
+
+	return newMenuItem, nil
+}
+
+func (s *SmartMenuService) GetMenuItems(ctx context.Context, menuId string) ([]*ent.MenuItem, error) {
+	log.Println("Getting menu items for menu with ID", menuId)
+	return s.client.MenuItem.
+		Query().
+		Where(menuitem.HasMenuWith(menu.ID(menuId))).
+		WithMedia().
+		All(ctx)
+}
+
+func (s *SmartMenuService) GetMenuItemByID(ctx context.Context, menuItemId string) (*ent.MenuItem, error) {
+	return s.client.MenuItem.
+		Query().
+		Where(menuitem.ID(menuItemId)).
+		WithMedia().
+		Only(ctx)
+}
+
+func (s *SmartMenuService) UpdateMenuItem(ctx context.Context, menuItemId string, menuItemDto *ent.MenuItem) (*ent.MenuItem, error) {
+	return s.client.MenuItem.
+		UpdateOneID(menuItemId).
+		SetName(menuItemDto.Name).
+		SetDescription(menuItemDto.Description).
+		SetPrice(menuItemDto.Price).
+		SetIsAvailable(menuItemDto.IsAvailable).
 		Save(ctx)
 }
+
+func (s *SmartMenuService) DeleteMenuItem(ctx context.Context, menuItemId string) error {
+	return s.client.MenuItem.
+		DeleteOneID(menuItemId).
+		Exec(ctx)
+}
+
+func (s *SmartMenuService) RestoreMenuItem(ctx context.Context, menuItemId string) (*ent.MenuItem, error) {
+	// TODO: Implement restore functionality if soft delete is implemented
+	return nil, nil
+}
+
+func (s *SmartMenuService) CreateMenu(ctx context.Context, placeId string, menuDto *ent.Menu, cat string, medias []*multipart.FileHeader) (*ent.Menu, error) {
+	lowercaseCategory := strings.ToLower(cat)
+
+	// Ensure the category exists in the database, creating it if necessary
+	catData, err := s.ensureCategoryExists(ctx, lowercaseCategory)
+	if err != nil {
+		return nil, err
+	}
+
+	// Check if the menu already exists in the database for this place
+	existingMenu, err := s.client.Menu.
+		Query().
+		Where(menu.Name(strings.ToLower(menuDto.Name))).
+		Where(menu.HasPlaceWith(place.ID(placeId))).
+		Only(ctx)
+	if err != nil && !ent.IsNotFound(err) {
+		log.Println("Error checking if menu with name", menuDto.Name, "exists for place", placeId, ":", err)
+		return nil, err
+	}
+	if existingMenu != nil {
+		log.Println("Menu with name", menuDto.Name, "already exists for place", placeId)
+		return existingMenu, nil
+	}
+
+	log.Println("Creating menu with name", menuDto.Name)
+
+	// Create and return the new menu
+	newMenu, err := s.client.Menu.
+		Create().
+		SetID(uuid.New().String()).
+		SetName(menuDto.Name).
+		SetDescription(menuDto.Description).
+		SetPreparationTime(menuDto.PreparationTime).
+		SetOptions(menuDto.Options).
+		SetPrice(menuDto.Price).
+		SetIsAvailable(menuDto.IsAvailable).
+		AddCategories(catData).
+		AddPlaceIDs(placeId).
+		Save(ctx)
+
+
+	if err != nil {
+		log.Println("Error creating menu with name", menuDto.Name, ":", err)
+		return nil, err
+	}
+
+	// Create the media for the menu
+	if len(medias) > 0 {
+		go func(menuID string, mediaFiles []*multipart.FileHeader) {
+			ctx := context.Background() // Use a background context for the asynchronous operation
+			log.Println("Uploading media for menu with ID", menuID)
+			
+			media, err := s.mediaService.UploadAndCreateMedia(ctx, mediaFiles)
+			if err != nil {
+				log.Println("Error uploading media for menu with ID", menuID, ":", err)
+				return
+			}
+			
+			_, err = s.client.Menu.
+				UpdateOneID(menuID).
+				AddMedia(media...).
+				Save(ctx)
+			if err != nil {
+				log.Println("Error adding media to menu with ID", menuID, ":", err)
+				return
+			}
+			
+			log.Println("Media uploaded and added to menu with ID", menuID)
+		}(newMenu.ID, medias)
+	}
+
+	return newMenu, nil
+}
+
+func (s *SmartMenuService) ensureCategoryExists(ctx context.Context, categoryName string) (*ent.Category, error) {
+	catData, err := s.client.Category.
+		Query().
+		Where(category.Name(categoryName)).
+		Only(ctx)
+	if ent.IsNotFound(err) {
+		return s.client.Category.
+			Create().
+			SetName(categoryName).
+			Save(ctx)
+	}
+	return catData, err
+}
+
 
 func (s *SmartMenuService) GetMenus(ctx context.Context, placeId string) ([]*ent.Menu, error) {
 	return s.client.Place.
 		Query().
 		Where(place.ID(placeId)).
 		QueryMenus().
+		WithCategories().
+		WithMedia().
+		WithMenuItems().
+		WithPlace(func(q *ent.PlaceQuery) {
+			q.WithBusiness()
+		}).
 		All(ctx)
 }
 
@@ -62,6 +273,12 @@ func (s *SmartMenuService) GetMenuByID(ctx context.Context, menuId string) (*ent
 	return s.client.Menu.
 		Query().
 		Where(menu.ID(menuId)).
+		WithMedia().
+		WithPlace(func(q *ent.PlaceQuery) {
+			q.WithBusiness()
+		}).
+		WithCategories(func(q *ent.CategoryQuery) {
+		}).
 		Only(ctx)
 }
 
@@ -91,6 +308,7 @@ func (s *SmartMenuService) RestoreMenu(ctx context.Context, menuId string) (*ent
 func (s *SmartMenuService) CreateTable(ctx context.Context, placeId string, table *ent.PlaceTable) (*ent.PlaceTable, error) {
 	return s.client.PlaceTable.
 		Create().
+		SetID(uuid.New().String()).
 		SetNumber(table.Number).
 		SetPlaceID(placeId).
 		Save(ctx)
@@ -135,11 +353,64 @@ func (s *SmartMenuService) RestoreTable(ctx context.Context, tableId string) (*e
 }
 
 func (s *SmartMenuService) RegenerateQRCode(ctx context.Context, tableId string) (*ent.PlaceTable, error) {
-	//return s.client.PlaceTable.
-	//	UpdateOneID(tableId).
-	//	SetQRCode("").
-	//	Save(ctx)
-	return nil, nil
+    // 1. Fetch the table and related business and place information from the database
+    table, err := s.client.PlaceTable.
+        Query().
+        Where(placetable.IDEQ(tableId)).
+        WithPlace(func(pq *ent.PlaceQuery) {
+            pq.WithBusiness(func(bq *ent.BusinessQuery) {
+                bq.WithWebsites()
+            })
+        }).
+        Only(ctx)
+    if err != nil {
+        return nil, fmt.Errorf("failed querying place table: %w", err)
+    }
+
+    // 2. Generate QR code
+    url := fmt.Sprintf("https://placio.io/%s/menus/?table=%d&placeId=%s", 
+        table.Edges.Place.Name, 
+        table.Number, 
+        table.Edges.Place.ID)
+    qr, err := qrcode.New(url, qrcode.Medium)
+    if err != nil {
+        return nil, fmt.Errorf("failed to generate QR code: %w", err)
+    }
+
+    // Set the QR code colors
+    qr.ForegroundColor = color.RGBA{R: 139, G: 0, B: 0, A: 255} // Dark red
+    qr.BackgroundColor = color.White
+
+    // Convert the QR code to a PNG image
+    png, err := qr.PNG(256)
+    if err != nil {
+        return nil, fmt.Errorf("failed to convert QR code to PNG: %w", err)
+    }
+
+    // 3. Create a reader from the PNG byte slice
+    reader := bytes.NewReader(png)
+
+    // 4. Upload the QR code to Cloudinary
+    uploadParams := uploader.UploadParams{
+        Folder: "tables",
+        Tags:   []string{"QRCode", "Placio"},
+    }
+    
+    uploadResult, err := s.cloud.Upload.Upload(ctx, reader, uploadParams)
+    if err != nil {
+        return nil, fmt.Errorf("failed to upload QR code to Cloudinary: %w", err)
+    }
+
+    // 6. Update the database with the URL of the QR code
+    updatedTable, err := s.client.PlaceTable.
+        UpdateOneID(table.ID).
+        SetQrCode(uploadResult.URL).
+        Save(ctx)
+    if err != nil {
+        return nil, fmt.Errorf("failed updating place table: %w", err)
+    }
+
+    return updatedTable, nil
 }
 
 func (s *SmartMenuService) CreateOrder(ctx context.Context, tableId string, placeId string, order *ent.Order) (*ent.Order, error) {
@@ -177,4 +448,31 @@ func (s *SmartMenuService) DeleteOrder(ctx context.Context, s2 string) error {
 func (s *SmartMenuService) RestoreOrder(ctx context.Context, s2 string) (*ent.Order, error) {
 	//TODO implement me
 	panic("implement me")
+}
+
+// createFileHeader creates a multipart.FileHeader from a file on disk.
+func createFileHeader(filePath, filename string) (*multipart.FileHeader, error) {
+	// Log the file path for debugging
+	log.Printf("Opening file: %s", filePath)
+
+	file, err := os.Open(filePath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open file: %w", err)
+	}
+	defer file.Close()
+
+	fi, err := file.Stat()
+	if err != nil {
+		return nil, fmt.Errorf("failed to stat file: %w", err)
+	}
+
+	header := make(textproto.MIMEHeader)
+	header.Set("Content-Disposition", fmt.Sprintf(`form-data; name="%s"; filename="%s"`, "file", filename))
+	header.Set("Content-Type", "image/png")
+
+	return &multipart.FileHeader{
+		Filename: filename,
+		Size:     fi.Size(),
+		Header:   header,
+	}, nil
 }

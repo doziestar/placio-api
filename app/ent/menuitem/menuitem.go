@@ -18,6 +18,10 @@ const (
 	FieldDescription = "description"
 	// FieldPrice holds the string denoting the price field in the database.
 	FieldPrice = "price"
+	// FieldCurrency holds the string denoting the currency field in the database.
+	FieldCurrency = "currency"
+	// FieldIsAvailable holds the string denoting the is_available field in the database.
+	FieldIsAvailable = "is_available"
 	// FieldPreparationTime holds the string denoting the preparation_time field in the database.
 	FieldPreparationTime = "preparation_time"
 	// FieldOptions holds the string denoting the options field in the database.
@@ -68,6 +72,8 @@ var Columns = []string{
 	FieldName,
 	FieldDescription,
 	FieldPrice,
+	FieldCurrency,
+	FieldIsAvailable,
 	FieldPreparationTime,
 	FieldOptions,
 	FieldDeletedAt,
@@ -94,6 +100,8 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// DefaultIsAvailable holds the default value on creation for the "is_available" field.
+	DefaultIsAvailable bool
 	// DefaultIsDeleted holds the default value on creation for the "is_deleted" field.
 	DefaultIsDeleted bool
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
@@ -121,6 +129,16 @@ func ByDescription(opts ...sql.OrderTermOption) OrderOption {
 // ByPrice orders the results by the price field.
 func ByPrice(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPrice, opts...).ToFunc()
+}
+
+// ByCurrency orders the results by the currency field.
+func ByCurrency(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCurrency, opts...).ToFunc()
+}
+
+// ByIsAvailable orders the results by the is_available field.
+func ByIsAvailable(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsAvailable, opts...).ToFunc()
 }
 
 // ByPreparationTime orders the results by the preparation_time field.

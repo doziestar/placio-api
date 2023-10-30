@@ -79,6 +79,16 @@ func Price(v float64) predicate.MenuItem {
 	return predicate.MenuItem(sql.FieldEQ(FieldPrice, v))
 }
 
+// Currency applies equality check predicate on the "currency" field. It's identical to CurrencyEQ.
+func Currency(v string) predicate.MenuItem {
+	return predicate.MenuItem(sql.FieldEQ(FieldCurrency, v))
+}
+
+// IsAvailable applies equality check predicate on the "is_available" field. It's identical to IsAvailableEQ.
+func IsAvailable(v bool) predicate.MenuItem {
+	return predicate.MenuItem(sql.FieldEQ(FieldIsAvailable, v))
+}
+
 // PreparationTime applies equality check predicate on the "preparation_time" field. It's identical to PreparationTimeEQ.
 func PreparationTime(v int) predicate.MenuItem {
 	return predicate.MenuItem(sql.FieldEQ(FieldPreparationTime, v))
@@ -272,6 +282,91 @@ func PriceLT(v float64) predicate.MenuItem {
 // PriceLTE applies the LTE predicate on the "price" field.
 func PriceLTE(v float64) predicate.MenuItem {
 	return predicate.MenuItem(sql.FieldLTE(FieldPrice, v))
+}
+
+// CurrencyEQ applies the EQ predicate on the "currency" field.
+func CurrencyEQ(v string) predicate.MenuItem {
+	return predicate.MenuItem(sql.FieldEQ(FieldCurrency, v))
+}
+
+// CurrencyNEQ applies the NEQ predicate on the "currency" field.
+func CurrencyNEQ(v string) predicate.MenuItem {
+	return predicate.MenuItem(sql.FieldNEQ(FieldCurrency, v))
+}
+
+// CurrencyIn applies the In predicate on the "currency" field.
+func CurrencyIn(vs ...string) predicate.MenuItem {
+	return predicate.MenuItem(sql.FieldIn(FieldCurrency, vs...))
+}
+
+// CurrencyNotIn applies the NotIn predicate on the "currency" field.
+func CurrencyNotIn(vs ...string) predicate.MenuItem {
+	return predicate.MenuItem(sql.FieldNotIn(FieldCurrency, vs...))
+}
+
+// CurrencyGT applies the GT predicate on the "currency" field.
+func CurrencyGT(v string) predicate.MenuItem {
+	return predicate.MenuItem(sql.FieldGT(FieldCurrency, v))
+}
+
+// CurrencyGTE applies the GTE predicate on the "currency" field.
+func CurrencyGTE(v string) predicate.MenuItem {
+	return predicate.MenuItem(sql.FieldGTE(FieldCurrency, v))
+}
+
+// CurrencyLT applies the LT predicate on the "currency" field.
+func CurrencyLT(v string) predicate.MenuItem {
+	return predicate.MenuItem(sql.FieldLT(FieldCurrency, v))
+}
+
+// CurrencyLTE applies the LTE predicate on the "currency" field.
+func CurrencyLTE(v string) predicate.MenuItem {
+	return predicate.MenuItem(sql.FieldLTE(FieldCurrency, v))
+}
+
+// CurrencyContains applies the Contains predicate on the "currency" field.
+func CurrencyContains(v string) predicate.MenuItem {
+	return predicate.MenuItem(sql.FieldContains(FieldCurrency, v))
+}
+
+// CurrencyHasPrefix applies the HasPrefix predicate on the "currency" field.
+func CurrencyHasPrefix(v string) predicate.MenuItem {
+	return predicate.MenuItem(sql.FieldHasPrefix(FieldCurrency, v))
+}
+
+// CurrencyHasSuffix applies the HasSuffix predicate on the "currency" field.
+func CurrencyHasSuffix(v string) predicate.MenuItem {
+	return predicate.MenuItem(sql.FieldHasSuffix(FieldCurrency, v))
+}
+
+// CurrencyIsNil applies the IsNil predicate on the "currency" field.
+func CurrencyIsNil() predicate.MenuItem {
+	return predicate.MenuItem(sql.FieldIsNull(FieldCurrency))
+}
+
+// CurrencyNotNil applies the NotNil predicate on the "currency" field.
+func CurrencyNotNil() predicate.MenuItem {
+	return predicate.MenuItem(sql.FieldNotNull(FieldCurrency))
+}
+
+// CurrencyEqualFold applies the EqualFold predicate on the "currency" field.
+func CurrencyEqualFold(v string) predicate.MenuItem {
+	return predicate.MenuItem(sql.FieldEqualFold(FieldCurrency, v))
+}
+
+// CurrencyContainsFold applies the ContainsFold predicate on the "currency" field.
+func CurrencyContainsFold(v string) predicate.MenuItem {
+	return predicate.MenuItem(sql.FieldContainsFold(FieldCurrency, v))
+}
+
+// IsAvailableEQ applies the EQ predicate on the "is_available" field.
+func IsAvailableEQ(v bool) predicate.MenuItem {
+	return predicate.MenuItem(sql.FieldEQ(FieldIsAvailable, v))
+}
+
+// IsAvailableNEQ applies the NEQ predicate on the "is_available" field.
+func IsAvailableNEQ(v bool) predicate.MenuItem {
+	return predicate.MenuItem(sql.FieldNEQ(FieldIsAvailable, v))
 }
 
 // PreparationTimeEQ applies the EQ predicate on the "preparation_time" field.

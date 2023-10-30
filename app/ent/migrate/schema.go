@@ -243,7 +243,6 @@ var (
 		{Name: "parent_description", Type: field.TypeString, Nullable: true},
 		{Name: "business_categories", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "event_event_categories", Type: field.TypeString, Nullable: true},
-		{Name: "menu_categories", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "place_categories", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "post_categories", Type: field.TypeString, Nullable: true, Size: 36},
 		{Name: "user_categories", Type: field.TypeString, Nullable: true, Size: 36},
@@ -267,26 +266,20 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "categories_menus_categories",
-				Columns:    []*schema.Column{CategoriesColumns[12]},
-				RefColumns: []*schema.Column{MenusColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
 				Symbol:     "categories_places_categories",
-				Columns:    []*schema.Column{CategoriesColumns[13]},
+				Columns:    []*schema.Column{CategoriesColumns[12]},
 				RefColumns: []*schema.Column{PlacesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "categories_posts_categories",
-				Columns:    []*schema.Column{CategoriesColumns[14]},
+				Columns:    []*schema.Column{CategoriesColumns[13]},
 				RefColumns: []*schema.Column{PostsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "categories_users_categories",
-				Columns:    []*schema.Column{CategoriesColumns[15]},
+				Columns:    []*schema.Column{CategoriesColumns[14]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -710,21 +703,16 @@ var (
 		{Name: "deleted_at", Type: field.TypeString, Nullable: true},
 		{Name: "is_deleted", Type: field.TypeBool, Default: false},
 		{Name: "description", Type: field.TypeString, Nullable: true},
-		{Name: "place_menus", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "preparation_time", Type: field.TypeString, Nullable: true},
+		{Name: "options", Type: field.TypeString, Nullable: true},
+		{Name: "price", Type: field.TypeString, Nullable: true},
+		{Name: "is_available", Type: field.TypeBool, Default: true},
 	}
 	// MenusTable holds the schema information for the "menus" table.
 	MenusTable = &schema.Table{
 		Name:       "menus",
 		Columns:    MenusColumns,
 		PrimaryKey: []*schema.Column{MenusColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "menus_places_menus",
-				Columns:    []*schema.Column{MenusColumns[5]},
-				RefColumns: []*schema.Column{PlacesColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-		},
 	}
 	// MenuItemsColumns holds the columns for the "menu_items" table.
 	MenuItemsColumns = []*schema.Column{
@@ -732,6 +720,8 @@ var (
 		{Name: "name", Type: field.TypeString},
 		{Name: "description", Type: field.TypeString, Nullable: true},
 		{Name: "price", Type: field.TypeFloat64},
+		{Name: "currency", Type: field.TypeString, Nullable: true},
+		{Name: "is_available", Type: field.TypeBool, Default: true},
 		{Name: "preparation_time", Type: field.TypeInt, Nullable: true},
 		{Name: "options", Type: field.TypeJSON, Nullable: true},
 		{Name: "deleted_at", Type: field.TypeString, Nullable: true},
@@ -1777,6 +1767,31 @@ var (
 			},
 		},
 	}
+	// MenuCategoriesColumns holds the columns for the "menu_categories" table.
+	MenuCategoriesColumns = []*schema.Column{
+		{Name: "menu_id", Type: field.TypeString, Size: 36},
+		{Name: "category_id", Type: field.TypeString, Size: 36},
+	}
+	// MenuCategoriesTable holds the schema information for the "menu_categories" table.
+	MenuCategoriesTable = &schema.Table{
+		Name:       "menu_categories",
+		Columns:    MenuCategoriesColumns,
+		PrimaryKey: []*schema.Column{MenuCategoriesColumns[0], MenuCategoriesColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "menu_categories_menu_id",
+				Columns:    []*schema.Column{MenuCategoriesColumns[0]},
+				RefColumns: []*schema.Column{MenusColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "menu_categories_category_id",
+				Columns:    []*schema.Column{MenuCategoriesColumns[1]},
+				RefColumns: []*schema.Column{CategoriesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// MenuMenuItemsColumns holds the columns for the "menu_menu_items" table.
 	MenuMenuItemsColumns = []*schema.Column{
 		{Name: "menu_id", Type: field.TypeString, Size: 36},
@@ -1798,6 +1813,31 @@ var (
 				Symbol:     "menu_menu_items_menu_item_id",
 				Columns:    []*schema.Column{MenuMenuItemsColumns[1]},
 				RefColumns: []*schema.Column{MenuItemsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
+	// MenuMediaColumns holds the columns for the "menu_media" table.
+	MenuMediaColumns = []*schema.Column{
+		{Name: "menu_id", Type: field.TypeString, Size: 36},
+		{Name: "media_id", Type: field.TypeString, Size: 36},
+	}
+	// MenuMediaTable holds the schema information for the "menu_media" table.
+	MenuMediaTable = &schema.Table{
+		Name:       "menu_media",
+		Columns:    MenuMediaColumns,
+		PrimaryKey: []*schema.Column{MenuMediaColumns[0], MenuMediaColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "menu_media_menu_id",
+				Columns:    []*schema.Column{MenuMediaColumns[0]},
+				RefColumns: []*schema.Column{MenusColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "menu_media_media_id",
+				Columns:    []*schema.Column{MenuMediaColumns[1]},
+				RefColumns: []*schema.Column{MediaColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 		},
@@ -1848,6 +1888,31 @@ var (
 				Symbol:     "order_order_items_order_item_id",
 				Columns:    []*schema.Column{OrderOrderItemsColumns[1]},
 				RefColumns: []*schema.Column{OrderItemsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
+	// PlaceMenusColumns holds the columns for the "place_menus" table.
+	PlaceMenusColumns = []*schema.Column{
+		{Name: "place_id", Type: field.TypeString, Size: 36},
+		{Name: "menu_id", Type: field.TypeString, Size: 36},
+	}
+	// PlaceMenusTable holds the schema information for the "place_menus" table.
+	PlaceMenusTable = &schema.Table{
+		Name:       "place_menus",
+		Columns:    PlaceMenusColumns,
+		PrimaryKey: []*schema.Column{PlaceMenusColumns[0], PlaceMenusColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "place_menus_place_id",
+				Columns:    []*schema.Column{PlaceMenusColumns[0]},
+				RefColumns: []*schema.Column{PlacesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "place_menus_menu_id",
+				Columns:    []*schema.Column{PlaceMenusColumns[1]},
+				RefColumns: []*schema.Column{MenusColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 		},
@@ -2086,9 +2151,12 @@ var (
 		CommentNotificationsTable,
 		FaqPlaceTable,
 		FaqEventTable,
+		MenuCategoriesTable,
 		MenuMenuItemsTable,
+		MenuMediaTable,
 		MenuItemOrderItemsTable,
 		OrderOrderItemsTable,
+		PlaceMenusTable,
 		PlaceMediasTable,
 		PlaceNotificationsTable,
 		PlaceInventoryMediaTable,
@@ -2114,10 +2182,9 @@ func init() {
 	BusinessFollowUsersTable.ForeignKeys[1].RefTable = UsersTable
 	CategoriesTable.ForeignKeys[0].RefTable = BusinessesTable
 	CategoriesTable.ForeignKeys[1].RefTable = EventsTable
-	CategoriesTable.ForeignKeys[2].RefTable = MenusTable
-	CategoriesTable.ForeignKeys[3].RefTable = PlacesTable
-	CategoriesTable.ForeignKeys[4].RefTable = PostsTable
-	CategoriesTable.ForeignKeys[5].RefTable = UsersTable
+	CategoriesTable.ForeignKeys[2].RefTable = PlacesTable
+	CategoriesTable.ForeignKeys[3].RefTable = PostsTable
+	CategoriesTable.ForeignKeys[4].RefTable = UsersTable
 	CategoryAssignmentsTable.ForeignKeys[0].RefTable = BusinessesTable
 	CategoryAssignmentsTable.ForeignKeys[1].RefTable = CategoriesTable
 	CategoryAssignmentsTable.ForeignKeys[2].RefTable = EventsTable
@@ -2144,7 +2211,6 @@ func init() {
 	MediaTable.ForeignKeys[1].RefTable = PostsTable
 	MediaTable.ForeignKeys[2].RefTable = ReviewsTable
 	MediaTable.ForeignKeys[3].RefTable = WebsitesTable
-	MenusTable.ForeignKeys[0].RefTable = PlacesTable
 	OrdersTable.ForeignKeys[0].RefTable = UsersTable
 	PlacesTable.ForeignKeys[0].RefTable = BusinessesTable
 	PlacesTable.ForeignKeys[1].RefTable = EventsTable
@@ -2208,12 +2274,18 @@ func init() {
 	FaqPlaceTable.ForeignKeys[1].RefTable = PlacesTable
 	FaqEventTable.ForeignKeys[0].RefTable = FaQsTable
 	FaqEventTable.ForeignKeys[1].RefTable = EventsTable
+	MenuCategoriesTable.ForeignKeys[0].RefTable = MenusTable
+	MenuCategoriesTable.ForeignKeys[1].RefTable = CategoriesTable
 	MenuMenuItemsTable.ForeignKeys[0].RefTable = MenusTable
 	MenuMenuItemsTable.ForeignKeys[1].RefTable = MenuItemsTable
+	MenuMediaTable.ForeignKeys[0].RefTable = MenusTable
+	MenuMediaTable.ForeignKeys[1].RefTable = MediaTable
 	MenuItemOrderItemsTable.ForeignKeys[0].RefTable = MenuItemsTable
 	MenuItemOrderItemsTable.ForeignKeys[1].RefTable = OrderItemsTable
 	OrderOrderItemsTable.ForeignKeys[0].RefTable = OrdersTable
 	OrderOrderItemsTable.ForeignKeys[1].RefTable = OrderItemsTable
+	PlaceMenusTable.ForeignKeys[0].RefTable = PlacesTable
+	PlaceMenusTable.ForeignKeys[1].RefTable = MenusTable
 	PlaceMediasTable.ForeignKeys[0].RefTable = PlacesTable
 	PlaceMediasTable.ForeignKeys[1].RefTable = MediaTable
 	PlaceNotificationsTable.ForeignKeys[0].RefTable = PlacesTable

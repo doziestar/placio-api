@@ -1,11 +1,11 @@
 package inventory
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
 	_ "placio-app/Dto"
 	_ "placio-app/ent"
-	"placio-app/utility"
+
+	"github.com/gin-gonic/gin"
 )
 
 type MenuController struct {
@@ -17,12 +17,12 @@ func NewMenuController(menuService MenuService) *MenuController {
 }
 
 func (mc *MenuController) RegisterRoutes(router *gin.RouterGroup) {
-	menuRouter := router.Group("/menus")
+	// menuRouter := router.Group("/menus")
 	{
-		menuRouter.GET("/:id", utility.Use(mc.getMenu))
-		menuRouter.POST("/", utility.Use(mc.createMenu))
-		menuRouter.PATCH("/:id", utility.Use(mc.updateMenu))
-		menuRouter.DELETE("/:id", utility.Use(mc.deleteMenu))
+		// menuRouter.GET("/:id", utility.Use(mc.getMenu))
+		// menuRouter.POST("/", utility.Use(mc.createMenu))
+		// menuRouter.PATCH("/:id", utility.Use(mc.updateMenu))
+		// menuRouter.DELETE("/:id", utility.Use(mc.deleteMenu))
 	}
 }
 

@@ -1,8 +1,16 @@
 package smartMenu
 
 import (
-	"github.com/gin-gonic/gin"
+	"fmt"
+	"log"
+	"net/http"
+	"placio-app/ent"
+	"placio-app/utility"
+	"placio-pkg/errors"
 	"placio-pkg/middleware"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
 )
 
 type SmartMenuController struct {
@@ -14,37 +22,257 @@ func NewSmartMenuController(smartMenuService ISmartMenu) *SmartMenuController {
 }
 
 func (c *SmartMenuController) RegisterRoutes(router *gin.RouterGroup) {
-	menuRouter := router.Group("/api/menus")
-	tableRouter := router.Group("/api/tables")
-	orderRouter := router.Group("/api/orders")
+	const (
+		placeIDParam = "placeId"
+		menuIDParam  = "menuId"
+		tableIDParam = "tableId"
+		orderIDParam = "orderId"
+		menuItemIDParam = "menuItemId"
+	)
 
+	menuRouter := router.Group("/menus")
 	{
-		menuRouter.POST("/place/:placeId", middleware.ErrorMiddleware(c.createMenu))
-		menuRouter.GET("/place/:placeId", middleware.ErrorMiddleware(c.getMenus))
-		menuRouter.GET("/:menuId", middleware.ErrorMiddleware(c.getMenuByID))
-		menuRouter.PUT("/:menuId", middleware.ErrorMiddleware(c.updateMenu))
-		menuRouter.DELETE("/:menuId", middleware.ErrorMiddleware(c.deleteMenu))
-		menuRouter.PATCH("/:menuId/restore", middleware.ErrorMiddleware(c.restoreMenu))
+		menuRouter.POST(fmt.Sprintf("/place/:%s", placeIDParam), middleware.ErrorMiddleware(c.createMenu))
+		menuRouter.GET(fmt.Sprintf("/place/:%s", placeIDParam), middleware.ErrorMiddleware(c.getMenus))
+		menuRouter.GET(fmt.Sprintf("/:%s", menuIDParam), middleware.ErrorMiddleware(c.getMenuByID))
+		menuRouter.PUT(fmt.Sprintf("/:%s", menuIDParam), middleware.ErrorMiddleware(c.updateMenu))
+		menuRouter.DELETE(fmt.Sprintf("/:%s", menuIDParam), middleware.ErrorMiddleware(c.deleteMenu))
+		menuRouter.PATCH(fmt.Sprintf("/:%s/restore", menuIDParam), middleware.ErrorMiddleware(c.restoreMenu))
 	}
 
+	 menuItemRouter := router.Group("/menuItems")
+    {
+        // Create a new menu item
+        menuItemRouter.POST("/:menuId", middleware.ErrorMiddleware(c.createMenuItem))
+        // Required Body Params: name, price, status, description, menuId
+
+        // Get all menu items
+        menuItemRouter.GET("/", middleware.ErrorMiddleware(c.getMenuItems))
+        // Optional Query Params: menuId, status
+
+        // Get a specific menu item by ID
+        menuItemRouter.GET(fmt.Sprintf("/:%s", menuItemIDParam), middleware.ErrorMiddleware(c.getMenuItemByID))
+        // Required Path Params: menuItemId
+
+        // Update a specific menu item by ID
+        menuItemRouter.PUT(fmt.Sprintf("/:%s", menuItemIDParam), middleware.ErrorMiddleware(c.updateMenuItem))
+        // Required Path Params: menuItemId
+        // Required Body Params: Any of name, price, status, description
+
+        // Delete a specific menu item by ID
+        menuItemRouter.DELETE(fmt.Sprintf("/:%s", menuItemIDParam), middleware.ErrorMiddleware(c.deleteMenuItem))
+        // Required Path Params: menuItemId
+
+        // Restore a specific deleted menu item by ID
+        menuItemRouter.PATCH(fmt.Sprintf("/:%s/restore", menuItemIDParam), middleware.ErrorMiddleware(c.restoreMenuItem))
+        // Required Path Params: menuItemId
+    }
+
+	tableRouter := router.Group("/tables")
 	{
-		tableRouter.POST("/place/:placeId", middleware.ErrorMiddleware(c.createTable))
-		tableRouter.GET("/place/:placeId", middleware.ErrorMiddleware(c.getTables))
-		tableRouter.GET("/:tableId", middleware.ErrorMiddleware(c.getTableByID))
-		tableRouter.PUT("/:tableId", middleware.ErrorMiddleware(c.updateTable))
-		tableRouter.DELETE("/:tableId", middleware.ErrorMiddleware(c.deleteTable))
-		tableRouter.PATCH("/:tableId/restore", middleware.ErrorMiddleware(c.restoreTable))
-		tableRouter.POST("/:tableId/regenerate-qr", middleware.ErrorMiddleware(c.regenerateQRCode))
+		tableRouter.POST(fmt.Sprintf("/place/:%s", placeIDParam), middleware.ErrorMiddleware(c.createTable))
+		tableRouter.GET(fmt.Sprintf("/place/:%s", placeIDParam), middleware.ErrorMiddleware(c.getTables))
+		tableRouter.GET(fmt.Sprintf("/:%s", tableIDParam), middleware.ErrorMiddleware(c.getTableByID))
+		tableRouter.PUT(fmt.Sprintf("/:%s", tableIDParam), middleware.ErrorMiddleware(c.updateTable))
+		tableRouter.DELETE(fmt.Sprintf("/:%s", tableIDParam), middleware.ErrorMiddleware(c.deleteTable))
+		tableRouter.PATCH(fmt.Sprintf("/:%s/restore", tableIDParam), middleware.ErrorMiddleware(c.restoreTable))
+		tableRouter.POST(fmt.Sprintf("/:%s/generateCode", tableIDParam), middleware.ErrorMiddleware(c.regenerateQRCode))
 	}
 
+	orderRouter := router.Group("/orders")
 	{
 		orderRouter.POST("/business/:businessId", middleware.ErrorMiddleware(c.createOrder))
 		orderRouter.GET("/", middleware.ErrorMiddleware(c.getOrders))
-		orderRouter.GET("/:orderId", middleware.ErrorMiddleware(c.getOrderByID))
-		orderRouter.PUT("/:orderId", middleware.ErrorMiddleware(c.updateOrder))
-		orderRouter.DELETE("/:orderId", middleware.ErrorMiddleware(c.deleteOrder))
-		orderRouter.PATCH("/:orderId/restore", middleware.ErrorMiddleware(c.restoreOrder))
+		orderRouter.GET(fmt.Sprintf("/:%s", orderIDParam), middleware.ErrorMiddleware(c.getOrderByID))
+		orderRouter.PUT(fmt.Sprintf("/:%s", orderIDParam), middleware.ErrorMiddleware(c.updateOrder))
+		orderRouter.DELETE(fmt.Sprintf("/:%s", orderIDParam), middleware.ErrorMiddleware(c.deleteOrder))
+		orderRouter.PATCH(fmt.Sprintf("/:%s/restore", orderIDParam), middleware.ErrorMiddleware(c.restoreOrder))
 	}
+}
+
+
+// CreateMenuItem creates a new menu item.
+// @Summary Create a new menu item
+// @Description Create a new menu item for the authenticated user
+// @Tags MenuItem
+// @Accept json
+// @Produce json
+// @Param menuId path string true "Menu ID"
+// @Param menuItem body MenuItem true "Menu Item"
+// @Success 200 {object} MenuResponseDto "Successfully created a new menu item"
+// @Failure 400 {object} ErrorDTO "Bad Request"
+// @Router /menuItems/{menuId} [post]
+func (c *SmartMenuController) createMenuItem(ctx *gin.Context) error {
+	var menuId = ctx.Param("menuId")
+	if menuId == "" {
+		ctx.JSON(http.StatusBadRequest, utility.ProcessResponse(nil, "menuId is required"))
+		return nil
+	}
+	var menuItem ent.MenuItem
+
+	log.Println("createMenuItem")
+
+	form, err := ctx.MultipartForm()
+	if err != nil {
+		log.Println("Error parsing form:", err)
+		return nil
+	}
+
+	// It's a good practice to check if the form values exist before accessing them
+	if name, exists := form.Value["name"]; exists {
+		menuItem.Name = name[0]
+	}
+	if description, exists := form.Value["description"]; exists {
+		menuItem.Description = description[0]
+	}
+	
+	if price, exists := form.Value["price"]; exists {
+		menuItem.Price, err = strconv.ParseFloat(price[0], 64)
+		if err != nil {
+			log.Println("Error parsing price:", err)
+			menuItem.Price = 0
+		}
+	}
+	if preparationTime, exists := form.Value["preparationTime"]; exists {
+		menuItem.PreparationTime, err =  strconv.Atoi(preparationTime[0])
+		if err != nil {
+			log.Println("Error parsing preparationTime:", err)
+			menuItem.PreparationTime = 2
+		}
+	}
+	if isAvailable, exists := form.Value["isAvailable"]; exists {
+		menuItem.IsAvailable = isAvailable[0] == "true"
+	}
+	if options, exists := form.Value["options"]; exists {
+		menuItem.Options = []string{options[0]}
+	}
+	
+	log.Println("menuItem", menuItem)
+
+	medias := form.File["medias"]
+	if len(medias) == 0 {
+		medias = nil
+	}
+
+	log.Println("menuId", menuId, "menuItem", menuItem, "medias", medias)
+	
+	createdMenuItem, err := c.smartMenuService.CreateMenuItem(ctx.Request.Context(), menuId, &menuItem, medias)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(createdMenuItem))
+	return nil
+}
+
+// GetMenuItems retrieves a list of menu items.
+// @Summary Get menu items
+// @Description Get menu items for the authenticated user
+// @Tags MenuItem
+// @Accept json
+// @Produce json
+// @Success 200 {object} []MenuResponseDto "Successfully retrieved menu items"
+// @Failure 400 {object} ErrorDTO "Bad Request"
+// @Router /menuItems [get]
+func (c *SmartMenuController) getMenuItems(ctx *gin.Context) error {
+	menuId := ctx.Query("menuId")
+	menuItems, err := c.smartMenuService.GetMenuItems(ctx, menuId)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(menuItems))
+	return nil
+}
+
+// GetMenuItemByID retrieves a menu item by ID.
+// @Summary Get menu item by ID
+// @Description Get menu item by ID for the authenticated user
+// @Tags MenuItem
+// @Accept json
+// @Produce json
+// @Param menuItemId path string true "Menu Item ID"
+// @Success 200 {object} MenuResponseDto "Successfully retrieved menu item"
+// @Failure 400 {object} ErrorDTO "Bad Request"
+// @Router /menuItems/{menuItemId} [get]
+func (c *SmartMenuController) getMenuItemByID(ctx *gin.Context) error {
+	menuItemId := ctx.Param("menuItemId")
+	menuItem, err := c.smartMenuService.GetMenuItemByID(ctx, menuItemId)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(menuItem))
+	return nil
+}
+
+// UpdateMenuItem updates a menu item.
+// @Summary Update menu item
+// @Description Update menu item for the authenticated user
+// @Tags MenuItem
+// @Accept json
+// @Produce json
+// @Param menuItemId path string true "Menu Item ID"
+// @Param menuItem body MenuItem true "Menu Item"
+// @Success 200 {object} MenuResponseDto "Successfully updated menu item"
+// @Failure 400 {object} ErrorDTO "Bad Request"
+// @Router /menuItems/{menuItemId} [put]
+func (c *SmartMenuController) updateMenuItem(ctx *gin.Context) error {
+	menuItemId := ctx.Param("menuItemId")
+	var menuItem ent.MenuItem
+	if err := ctx.ShouldBindJSON(&menuItem); err != nil {
+		return err
+	}
+	
+	updatedMenuItem, err := c.smartMenuService.UpdateMenuItem(ctx.Request.Context(), menuItemId, &menuItem)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(updatedMenuItem))
+	return nil
+}
+
+// DeleteMenuItem deletes a menu item.
+// @Summary Delete menu item
+// @Description Delete menu item for the authenticated user
+// @Tags MenuItem
+// @Accept json
+// @Produce json
+// @Param menuItemId path string true "Menu Item ID"
+// @Success 200 {object} MenuResponseDto "Successfully deleted menu item"
+// @Failure 400 {object} ErrorDTO "Bad Request"
+// @Router /menuItems/{menuItemId} [delete]
+func (c *SmartMenuController) deleteMenuItem(ctx *gin.Context) error {
+	menuItemId := ctx.Param("menuItemId")
+	err := c.smartMenuService.DeleteMenuItem(ctx.Request.Context(), menuItemId)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse("Menu item successfully deleted"))
+	return nil
+}
+
+// RestoreMenuItem restores a menu item.
+// @Summary Restore menu item
+// @Description Restore menu item for the authenticated user
+// @Tags MenuItem
+// @Accept json
+// @Produce json
+// @Param menuItemId path string true "Menu Item ID"
+// @Success 200 {object} MenuResponseDto "Successfully restored menu item"
+// @Failure 400 {object} ErrorDTO "Bad Request"
+// @Router /menuItems/{menuItemId}/restore [patch]
+func (c *SmartMenuController) restoreMenuItem(ctx *gin.Context) error {
+	menuItemId := ctx.Param("menuItemId")
+	restoredMenuItem, err := c.smartMenuService.RestoreMenuItem(ctx, menuItemId)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(restoredMenuItem))
+	return nil
 }
 
 // CreateMenu creates a new menu.
@@ -59,8 +287,56 @@ func (c *SmartMenuController) RegisterRoutes(router *gin.RouterGroup) {
 // @Failure 400 {object} ErrorDTO "Bad Request"
 // @Router /menus/{placeId} [post]
 func (c *SmartMenuController) createMenu(ctx *gin.Context) error {
-	return nil
+	log.Println("createMenu")
+	placeId := ctx.Param("placeId")
+	var menu ent.Menu
+	
+	form, err := ctx.MultipartForm()
+	if err != nil {
+		log.Println("Error parsing form:", err)
+		return nil
+	}
+
+	// It's a good practice to check if the form values exist before accessing them
+	if name, exists := form.Value["name"]; exists {
+		menu.Name = name[0]
+	}
+	if description, exists := form.Value["description"]; exists {
+		menu.Description = description[0]
+	}
+	if price, exists := form.Value["price"]; exists {
+		menu.Price = price[0]
+	}
+	if preparationTime, exists := form.Value["preparationTime"]; exists {
+		menu.PreparationTime = preparationTime[0]
+	}
+	if isAvailable, exists := form.Value["isAvailable"]; exists {
+		menu.IsAvailable = isAvailable[0] == "true"
+	}
+	if options, exists := form.Value["options"]; exists {
+		menu.Options = options[0]
+	}
+
+	log.Println("menu", menu)
+	if category, exists := form.Value["category"]; exists && len(category) > 0 {
+		log.Println("category", category[0])
+		medias := form.File["medias"]
+		log.Println("menu", menu, "category", category[0], "medias", medias)
+
+		createdMenu, err := c.smartMenuService.CreateMenu(ctx.Request.Context(), placeId, &menu, category[0], medias)
+		if err != nil {
+			log.Println("Error creating menu:", err)
+			return nil
+		}
+
+		ctx.JSON(http.StatusOK, utility.ProcessResponse(createdMenu))
+		return nil
+	}
+
+	return errors.ErrUnprocessable
+
 }
+
 
 // GetMenus returns a list of menus.
 // @Summary Get menus
@@ -73,6 +349,13 @@ func (c *SmartMenuController) createMenu(ctx *gin.Context) error {
 // @Failure 400 {object} ErrorDTO "Bad Request"
 // @Router /menus/{placeId} [get]
 func (c *SmartMenuController) getMenus(ctx *gin.Context) error {
+	placeId := ctx.Param("placeId")
+	menus, err := c.smartMenuService.GetMenus(ctx, placeId)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(menus))
 	return nil
 }
 
@@ -87,6 +370,13 @@ func (c *SmartMenuController) getMenus(ctx *gin.Context) error {
 // @Failure 400 {object} ErrorDTO "Bad Request"
 // @Router /menus/{menuId} [get]
 func (c *SmartMenuController) getMenuByID(ctx *gin.Context) error {
+	menuId := ctx.Param("menuId")
+	menu, err := c.smartMenuService.GetMenuByID(ctx, menuId)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(menu))
 	return nil
 }
 
@@ -102,6 +392,17 @@ func (c *SmartMenuController) getMenuByID(ctx *gin.Context) error {
 // @Failure 400 {object} ErrorDTO "Bad Request"
 // @Router /menus/{menuId} [put]
 func (c *SmartMenuController) updateMenu(ctx *gin.Context) error {
+	menuId := ctx.Param("menuId")
+	var menu *ent.Menu
+	if err := ctx.ShouldBindJSON(&menu); err != nil {
+		return err
+	}
+	updatedMenu, err := c.smartMenuService.UpdateMenu(ctx, menuId, menu)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(updatedMenu))
 	return nil
 }
 
@@ -116,6 +417,13 @@ func (c *SmartMenuController) updateMenu(ctx *gin.Context) error {
 // @Failure 400 {object} ErrorDTO "Bad Request"
 // @Router /menus/{menuId} [delete]
 func (c *SmartMenuController) deleteMenu(ctx *gin.Context) error {
+	menuId := ctx.Param("menuId")
+	err := c.smartMenuService.DeleteMenu(ctx, menuId)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(nil))
 	return nil
 }
 
@@ -130,6 +438,13 @@ func (c *SmartMenuController) deleteMenu(ctx *gin.Context) error {
 // @Failure 400 {object} ErrorDTO "Bad Request"
 // @Router /menus/{menuId}/restore [patch]
 func (c *SmartMenuController) restoreMenu(ctx *gin.Context) error {
+	menuId := ctx.Param("menuId")
+	restoredMenu, err := c.smartMenuService.RestoreMenu(ctx, menuId)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(restoredMenu))
 	return nil
 }
 
@@ -145,6 +460,18 @@ func (c *SmartMenuController) restoreMenu(ctx *gin.Context) error {
 // @Failure 400 {object} ErrorDTO "Bad Request"
 // @Router /tables/{placeId} [post]
 func (c *SmartMenuController) createTable(ctx *gin.Context) error {
+	placeId := ctx.Param("placeId")
+	var table *ent.PlaceTable
+	if err := ctx.ShouldBindJSON(&table); err != nil {
+		return err
+	}
+
+	createdTable, err := c.smartMenuService.CreateTable(ctx, placeId, table)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(createdTable))
 	return nil
 }
 
@@ -159,6 +486,13 @@ func (c *SmartMenuController) createTable(ctx *gin.Context) error {
 // @Failure 400 {object} ErrorDTO "Bad Request"
 // @Router /tables/{placeId} [get]
 func (c *SmartMenuController) getTables(ctx *gin.Context) error {
+	placeId := ctx.Param("placeId")
+	tables, err := c.smartMenuService.GetTables(ctx, placeId)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(tables))
 	return nil
 }
 
@@ -173,6 +507,13 @@ func (c *SmartMenuController) getTables(ctx *gin.Context) error {
 // @Failure 400 {object} ErrorDTO "Bad Request"
 // @Router /tables/{tableId} [get]
 func (c *SmartMenuController) getTableByID(ctx *gin.Context) error {
+	tableId := ctx.Param("tableId")
+	table, err := c.smartMenuService.GetTableByID(ctx, tableId)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(table))
 	return nil
 }
 
@@ -188,6 +529,18 @@ func (c *SmartMenuController) getTableByID(ctx *gin.Context) error {
 // @Failure 400 {object} ErrorDTO "Bad Request"
 // @Router /tables/{tableId} [put]
 func (c *SmartMenuController) updateTable(ctx *gin.Context) error {
+	table := ctx.Param("tableId")
+	var tableBody *ent.PlaceTable
+	if err := ctx.ShouldBindJSON(&tableBody); err != nil {
+		return err
+	}
+
+	updatedTable, err := c.smartMenuService.UpdateTable(ctx, table, tableBody)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(updatedTable))
 	return nil
 }
 
@@ -202,6 +555,13 @@ func (c *SmartMenuController) updateTable(ctx *gin.Context) error {
 // @Failure 400 {object} ErrorDTO "Bad Request"
 // @Router /tables/{tableId} [delete]
 func (c *SmartMenuController) deleteTable(ctx *gin.Context) error {
+	tableId := ctx.Param("tableId")
+	err := c.smartMenuService.DeleteTable(ctx, tableId)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(nil))
 	return nil
 }
 
@@ -216,6 +576,13 @@ func (c *SmartMenuController) deleteTable(ctx *gin.Context) error {
 // @Failure 400 {object} ErrorDTO "Bad Request"
 // @Router /tables/{tableId}/restore [patch]
 func (c *SmartMenuController) restoreTable(ctx *gin.Context) error {
+	tableId := ctx.Param("tableId")
+	restoredTable, err := c.smartMenuService.RestoreTable(ctx, tableId)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(restoredTable))
 	return nil
 }
 
@@ -230,6 +597,13 @@ func (c *SmartMenuController) restoreTable(ctx *gin.Context) error {
 // @Failure 400 {object} ErrorDTO "Bad Request"
 // @Router /tables/{tableId}/regenerate-qr [post]
 func (c *SmartMenuController) regenerateQRCode(ctx *gin.Context) error {
+	tableId := ctx.Param("tableId")
+	qrcode, err := c.smartMenuService.RegenerateQRCode(ctx, tableId)
+	if err != nil {
+		return err
+	}
+
+	ctx.JSON(http.StatusOK, utility.ProcessResponse(qrcode))
 	return nil
 }
 
