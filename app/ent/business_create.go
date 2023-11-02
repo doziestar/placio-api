@@ -21,6 +21,7 @@ import (
 	"placio-app/ent/placeinventory"
 	"placio-app/ent/post"
 	"placio-app/ent/rating"
+	"placio-app/ent/staff"
 	"placio-app/ent/userbusiness"
 	"placio-app/ent/userfollowbusiness"
 	"placio-app/ent/website"
@@ -538,6 +539,21 @@ func (bc *BusinessCreate) SetWallet(a *AccountWallet) *BusinessCreate {
 	return bc.SetWalletID(a.ID)
 }
 
+// AddStaffIDs adds the "staffs" edge to the Staff entity by IDs.
+func (bc *BusinessCreate) AddStaffIDs(ids ...string) *BusinessCreate {
+	bc.mutation.AddStaffIDs(ids...)
+	return bc
+}
+
+// AddStaffs adds the "staffs" edges to the Staff entity.
+func (bc *BusinessCreate) AddStaffs(s ...*Staff) *BusinessCreate {
+	ids := make([]string, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return bc.AddStaffIDs(ids...)
+}
+
 // Mutation returns the BusinessMutation object of the builder.
 func (bc *BusinessCreate) Mutation() *BusinessMutation {
 	return bc.mutation
@@ -990,6 +1006,22 @@ func (bc *BusinessCreate) createSpec() (*Business, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(accountwallet.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := bc.mutation.StaffsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   business.StaffsTable,
+			Columns: business.StaffsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(staff.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

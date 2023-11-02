@@ -1593,6 +1593,29 @@ func HasWalletWith(preds ...predicate.AccountWallet) predicate.Business {
 	})
 }
 
+// HasStaffs applies the HasEdge predicate on the "staffs" edge.
+func HasStaffs() predicate.Business {
+	return predicate.Business(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, StaffsTable, StaffsPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasStaffsWith applies the HasEdge predicate on the "staffs" edge with a given conditions (other predicates).
+func HasStaffsWith(preds ...predicate.Staff) predicate.Business {
+	return predicate.Business(func(s *sql.Selector) {
+		step := newStaffsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Business) predicate.Business {
 	return predicate.Business(sql.AndPredicates(predicates...))

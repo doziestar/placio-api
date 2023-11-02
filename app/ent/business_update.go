@@ -22,6 +22,7 @@ import (
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
 	"placio-app/ent/rating"
+	"placio-app/ent/staff"
 	"placio-app/ent/userbusiness"
 	"placio-app/ent/userfollowbusiness"
 	"placio-app/ent/website"
@@ -645,6 +646,21 @@ func (bu *BusinessUpdate) SetWallet(a *AccountWallet) *BusinessUpdate {
 	return bu.SetWalletID(a.ID)
 }
 
+// AddStaffIDs adds the "staffs" edge to the Staff entity by IDs.
+func (bu *BusinessUpdate) AddStaffIDs(ids ...string) *BusinessUpdate {
+	bu.mutation.AddStaffIDs(ids...)
+	return bu
+}
+
+// AddStaffs adds the "staffs" edges to the Staff entity.
+func (bu *BusinessUpdate) AddStaffs(s ...*Staff) *BusinessUpdate {
+	ids := make([]string, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return bu.AddStaffIDs(ids...)
+}
+
 // Mutation returns the BusinessMutation object of the builder.
 func (bu *BusinessUpdate) Mutation() *BusinessMutation {
 	return bu.mutation
@@ -981,6 +997,27 @@ func (bu *BusinessUpdate) RemoveNotifications(n ...*Notification) *BusinessUpdat
 func (bu *BusinessUpdate) ClearWallet() *BusinessUpdate {
 	bu.mutation.ClearWallet()
 	return bu
+}
+
+// ClearStaffs clears all "staffs" edges to the Staff entity.
+func (bu *BusinessUpdate) ClearStaffs() *BusinessUpdate {
+	bu.mutation.ClearStaffs()
+	return bu
+}
+
+// RemoveStaffIDs removes the "staffs" edge to Staff entities by IDs.
+func (bu *BusinessUpdate) RemoveStaffIDs(ids ...string) *BusinessUpdate {
+	bu.mutation.RemoveStaffIDs(ids...)
+	return bu
+}
+
+// RemoveStaffs removes "staffs" edges to Staff entities.
+func (bu *BusinessUpdate) RemoveStaffs(s ...*Staff) *BusinessUpdate {
+	ids := make([]string, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return bu.RemoveStaffIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1883,6 +1920,51 @@ func (bu *BusinessUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if bu.mutation.StaffsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   business.StaffsTable,
+			Columns: business.StaffsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(staff.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.RemovedStaffsIDs(); len(nodes) > 0 && !bu.mutation.StaffsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   business.StaffsTable,
+			Columns: business.StaffsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(staff.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.StaffsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   business.StaffsTable,
+			Columns: business.StaffsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(staff.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, bu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{business.Label}
@@ -2504,6 +2586,21 @@ func (buo *BusinessUpdateOne) SetWallet(a *AccountWallet) *BusinessUpdateOne {
 	return buo.SetWalletID(a.ID)
 }
 
+// AddStaffIDs adds the "staffs" edge to the Staff entity by IDs.
+func (buo *BusinessUpdateOne) AddStaffIDs(ids ...string) *BusinessUpdateOne {
+	buo.mutation.AddStaffIDs(ids...)
+	return buo
+}
+
+// AddStaffs adds the "staffs" edges to the Staff entity.
+func (buo *BusinessUpdateOne) AddStaffs(s ...*Staff) *BusinessUpdateOne {
+	ids := make([]string, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return buo.AddStaffIDs(ids...)
+}
+
 // Mutation returns the BusinessMutation object of the builder.
 func (buo *BusinessUpdateOne) Mutation() *BusinessMutation {
 	return buo.mutation
@@ -2840,6 +2937,27 @@ func (buo *BusinessUpdateOne) RemoveNotifications(n ...*Notification) *BusinessU
 func (buo *BusinessUpdateOne) ClearWallet() *BusinessUpdateOne {
 	buo.mutation.ClearWallet()
 	return buo
+}
+
+// ClearStaffs clears all "staffs" edges to the Staff entity.
+func (buo *BusinessUpdateOne) ClearStaffs() *BusinessUpdateOne {
+	buo.mutation.ClearStaffs()
+	return buo
+}
+
+// RemoveStaffIDs removes the "staffs" edge to Staff entities by IDs.
+func (buo *BusinessUpdateOne) RemoveStaffIDs(ids ...string) *BusinessUpdateOne {
+	buo.mutation.RemoveStaffIDs(ids...)
+	return buo
+}
+
+// RemoveStaffs removes "staffs" edges to Staff entities.
+func (buo *BusinessUpdateOne) RemoveStaffs(s ...*Staff) *BusinessUpdateOne {
+	ids := make([]string, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return buo.RemoveStaffIDs(ids...)
 }
 
 // Where appends a list predicates to the BusinessUpdate builder.
@@ -3765,6 +3883,51 @@ func (buo *BusinessUpdateOne) sqlSave(ctx context.Context) (_node *Business, err
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(accountwallet.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if buo.mutation.StaffsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   business.StaffsTable,
+			Columns: business.StaffsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(staff.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.RemovedStaffsIDs(); len(nodes) > 0 && !buo.mutation.StaffsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   business.StaffsTable,
+			Columns: business.StaffsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(staff.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.StaffsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   business.StaffsTable,
+			Columns: business.StaffsPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(staff.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

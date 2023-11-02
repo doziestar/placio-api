@@ -25,6 +25,7 @@ import (
 	"placio-app/ent/notification"
 	"placio-app/ent/order"
 	"placio-app/ent/orderitem"
+	"placio-app/ent/permission"
 	"placio-app/ent/place"
 	"placio-app/ent/placeinventory"
 	"placio-app/ent/placeinventoryattribute"
@@ -35,6 +36,7 @@ import (
 	"placio-app/ent/review"
 	"placio-app/ent/room"
 	"placio-app/ent/schema"
+	"placio-app/ent/staff"
 	"placio-app/ent/ticket"
 	"placio-app/ent/ticketoption"
 	"placio-app/ent/transactionhistory"
@@ -457,6 +459,12 @@ func init() {
 	orderitemDescID := orderitemFields[0].Descriptor()
 	// orderitem.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	orderitem.IDValidator = orderitemDescID.Validators[0].(func(string) error)
+	permissionFields := schema.Permission{}.Fields()
+	_ = permissionFields
+	// permissionDescID is the schema descriptor for id field.
+	permissionDescID := permissionFields[0].Descriptor()
+	// permission.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	permission.IDValidator = permissionDescID.Validators[0].(func(string) error)
 	placeHooks := schema.Place{}.Hooks()
 	place.Hooks[0] = placeHooks[0]
 	placeFields := schema.Place{}.Fields()
@@ -697,6 +705,12 @@ func init() {
 	roomDescID := roomFields[0].Descriptor()
 	// room.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	room.IDValidator = roomDescID.Validators[0].(func(string) error)
+	staffFields := schema.Staff{}.Fields()
+	_ = staffFields
+	// staffDescID is the schema descriptor for id field.
+	staffDescID := staffFields[0].Descriptor()
+	// staff.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	staff.IDValidator = staffDescID.Validators[0].(func(string) error)
 	ticketFields := schema.Ticket{}.Fields()
 	_ = ticketFields
 	// ticketDescCreatedAt is the schema descriptor for createdAt field.

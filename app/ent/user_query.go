@@ -26,6 +26,7 @@ import (
 	"placio-app/ent/reservation"
 	"placio-app/ent/reservationblock"
 	"placio-app/ent/review"
+	"placio-app/ent/staff"
 	"placio-app/ent/transactionhistory"
 	"placio-app/ent/user"
 	"placio-app/ent/userbusiness"
@@ -77,6 +78,7 @@ type UserQuery struct {
 	withTablesDeleted        *PlaceTableQuery
 	withTablesReserved       *PlaceTableQuery
 	withTablesWaited         *PlaceTableQuery
+	withStaffs               *StaffQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -773,6 +775,28 @@ func (uq *UserQuery) QueryTablesWaited() *PlaceTableQuery {
 	return query
 }
 
+// QueryStaffs chains the current query on the "staffs" edge.
+func (uq *UserQuery) QueryStaffs() *StaffQuery {
+	query := (&StaffClient{config: uq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(staff.Table, staff.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.StaffsTable, user.StaffsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first User entity from the query.
 // Returns a *NotFoundError when no User was found.
 func (uq *UserQuery) First(ctx context.Context) (*User, error) {
@@ -995,6 +1019,7 @@ func (uq *UserQuery) Clone() *UserQuery {
 		withTablesDeleted:        uq.withTablesDeleted.Clone(),
 		withTablesReserved:       uq.withTablesReserved.Clone(),
 		withTablesWaited:         uq.withTablesWaited.Clone(),
+		withStaffs:               uq.withStaffs.Clone(),
 		// clone intermediate query.
 		sql:  uq.sql.Clone(),
 		path: uq.path,
@@ -1331,6 +1356,17 @@ func (uq *UserQuery) WithTablesWaited(opts ...func(*PlaceTableQuery)) *UserQuery
 	return uq
 }
 
+// WithStaffs tells the query-builder to eager-load the nodes that are connected to
+// the "staffs" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithStaffs(opts ...func(*StaffQuery)) *UserQuery {
+	query := (&StaffClient{config: uq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	uq.withStaffs = query
+	return uq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -1409,7 +1445,7 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	var (
 		nodes       = []*User{}
 		_spec       = uq.querySpec()
-		loadedTypes = [30]bool{
+		loadedTypes = [31]bool{
 			uq.withUserBusinesses != nil,
 			uq.withComments != nil,
 			uq.withLikes != nil,
@@ -1440,6 +1476,7 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 			uq.withTablesDeleted != nil,
 			uq.withTablesReserved != nil,
 			uq.withTablesWaited != nil,
+			uq.withStaffs != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -1673,6 +1710,13 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 		if err := uq.loadTablesWaited(ctx, query, nodes,
 			func(n *User) { n.Edges.TablesWaited = []*PlaceTable{} },
 			func(n *User, e *PlaceTable) { n.Edges.TablesWaited = append(n.Edges.TablesWaited, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := uq.withStaffs; query != nil {
+		if err := uq.loadStaffs(ctx, query, nodes,
+			func(n *User) { n.Edges.Staffs = []*Staff{} },
+			func(n *User, e *Staff) { n.Edges.Staffs = append(n.Edges.Staffs, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -2657,6 +2701,37 @@ func (uq *UserQuery) loadTablesWaited(ctx context.Context, query *PlaceTableQuer
 		node, ok := nodeids[*fk]
 		if !ok {
 			return fmt.Errorf(`unexpected referenced foreign-key "user_tables_waited" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (uq *UserQuery) loadStaffs(ctx context.Context, query *StaffQuery, nodes []*User, init func(*User), assign func(*User, *Staff)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.Staff(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.StaffsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.user_staffs
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "user_staffs" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "user_staffs" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

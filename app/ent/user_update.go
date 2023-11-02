@@ -24,6 +24,7 @@ import (
 	"placio-app/ent/reservation"
 	"placio-app/ent/reservationblock"
 	"placio-app/ent/review"
+	"placio-app/ent/staff"
 	"placio-app/ent/transactionhistory"
 	"placio-app/ent/user"
 	"placio-app/ent/userbusiness"
@@ -851,6 +852,21 @@ func (uu *UserUpdate) AddTablesWaited(p ...*PlaceTable) *UserUpdate {
 	return uu.AddTablesWaitedIDs(ids...)
 }
 
+// AddStaffIDs adds the "staffs" edge to the Staff entity by IDs.
+func (uu *UserUpdate) AddStaffIDs(ids ...string) *UserUpdate {
+	uu.mutation.AddStaffIDs(ids...)
+	return uu
+}
+
+// AddStaffs adds the "staffs" edges to the Staff entity.
+func (uu *UserUpdate) AddStaffs(s ...*Staff) *UserUpdate {
+	ids := make([]string, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return uu.AddStaffIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -1433,6 +1449,27 @@ func (uu *UserUpdate) RemoveTablesWaited(p ...*PlaceTable) *UserUpdate {
 		ids[i] = p[i].ID
 	}
 	return uu.RemoveTablesWaitedIDs(ids...)
+}
+
+// ClearStaffs clears all "staffs" edges to the Staff entity.
+func (uu *UserUpdate) ClearStaffs() *UserUpdate {
+	uu.mutation.ClearStaffs()
+	return uu
+}
+
+// RemoveStaffIDs removes the "staffs" edge to Staff entities by IDs.
+func (uu *UserUpdate) RemoveStaffIDs(ids ...string) *UserUpdate {
+	uu.mutation.RemoveStaffIDs(ids...)
+	return uu
+}
+
+// RemoveStaffs removes "staffs" edges to Staff entities.
+func (uu *UserUpdate) RemoveStaffs(s ...*Staff) *UserUpdate {
+	ids := make([]string, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return uu.RemoveStaffIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -2879,6 +2916,51 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if uu.mutation.StaffsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.StaffsTable,
+			Columns: []string{user.StaffsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(staff.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedStaffsIDs(); len(nodes) > 0 && !uu.mutation.StaffsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.StaffsTable,
+			Columns: []string{user.StaffsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(staff.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.StaffsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.StaffsTable,
+			Columns: []string{user.StaffsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(staff.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -3697,6 +3779,21 @@ func (uuo *UserUpdateOne) AddTablesWaited(p ...*PlaceTable) *UserUpdateOne {
 	return uuo.AddTablesWaitedIDs(ids...)
 }
 
+// AddStaffIDs adds the "staffs" edge to the Staff entity by IDs.
+func (uuo *UserUpdateOne) AddStaffIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.AddStaffIDs(ids...)
+	return uuo
+}
+
+// AddStaffs adds the "staffs" edges to the Staff entity.
+func (uuo *UserUpdateOne) AddStaffs(s ...*Staff) *UserUpdateOne {
+	ids := make([]string, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return uuo.AddStaffIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
@@ -4279,6 +4376,27 @@ func (uuo *UserUpdateOne) RemoveTablesWaited(p ...*PlaceTable) *UserUpdateOne {
 		ids[i] = p[i].ID
 	}
 	return uuo.RemoveTablesWaitedIDs(ids...)
+}
+
+// ClearStaffs clears all "staffs" edges to the Staff entity.
+func (uuo *UserUpdateOne) ClearStaffs() *UserUpdateOne {
+	uuo.mutation.ClearStaffs()
+	return uuo
+}
+
+// RemoveStaffIDs removes the "staffs" edge to Staff entities by IDs.
+func (uuo *UserUpdateOne) RemoveStaffIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.RemoveStaffIDs(ids...)
+	return uuo
+}
+
+// RemoveStaffs removes "staffs" edges to Staff entities.
+func (uuo *UserUpdateOne) RemoveStaffs(s ...*Staff) *UserUpdateOne {
+	ids := make([]string, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return uuo.RemoveStaffIDs(ids...)
 }
 
 // Where appends a list predicates to the UserUpdate builder.
@@ -5748,6 +5866,51 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.StaffsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.StaffsTable,
+			Columns: []string{user.StaffsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(staff.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedStaffsIDs(); len(nodes) > 0 && !uuo.mutation.StaffsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.StaffsTable,
+			Columns: []string{user.StaffsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(staff.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.StaffsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.StaffsTable,
+			Columns: []string{user.StaffsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(staff.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

@@ -46,6 +46,7 @@ func (User) Fields() []ent.Field {
 			Default("user"),
 		field.JSON("permissions", []string{}).Optional(),
 		field.Bool("is_premium").Default(false),
+		
 	}
 }
 
@@ -83,6 +84,7 @@ func (User) Edges() []ent.Edge {
 		edge.To("tables_deleted", PlaceTable.Type),
 		edge.To("tables_reserved", PlaceTable.Type),
 		edge.To("tables_waited", PlaceTable.Type),
+		edge.To("staffs", Staff.Type),
 	}
 }
 

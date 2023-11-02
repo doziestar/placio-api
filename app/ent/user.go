@@ -130,9 +130,11 @@ type UserEdges struct {
 	TablesReserved []*PlaceTable `json:"tables_reserved,omitempty"`
 	// TablesWaited holds the value of the tables_waited edge.
 	TablesWaited []*PlaceTable `json:"tables_waited,omitempty"`
+	// Staffs holds the value of the staffs edge.
+	Staffs []*Staff `json:"staffs,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [30]bool
+	loadedTypes [31]bool
 }
 
 // UserBusinessesOrErr returns the UserBusinesses value or an error if the edge
@@ -411,6 +413,15 @@ func (e UserEdges) TablesWaitedOrErr() ([]*PlaceTable, error) {
 		return e.TablesWaited, nil
 	}
 	return nil, &NotLoadedError{edge: "tables_waited"}
+}
+
+// StaffsOrErr returns the Staffs value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) StaffsOrErr() ([]*Staff, error) {
+	if e.loadedTypes[30] {
+		return e.Staffs, nil
+	}
+	return nil, &NotLoadedError{edge: "staffs"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -746,6 +757,11 @@ func (u *User) QueryTablesReserved() *PlaceTableQuery {
 // QueryTablesWaited queries the "tables_waited" edge of the User entity.
 func (u *User) QueryTablesWaited() *PlaceTableQuery {
 	return NewUserClient(u.config).QueryTablesWaited(u)
+}
+
+// QueryStaffs queries the "staffs" edge of the User entity.
+func (u *User) QueryStaffs() *StaffQuery {
+	return NewUserClient(u.config).QueryStaffs(u)
 }
 
 // Update returns a builder for updating this User.

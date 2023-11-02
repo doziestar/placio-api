@@ -805,6 +805,18 @@ var (
 		Columns:    PaymentsColumns,
 		PrimaryKey: []*schema.Column{PaymentsColumns[0]},
 	}
+	// PermissionsColumns holds the columns for the "permissions" table.
+	PermissionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
+		{Name: "name", Type: field.TypeString, Unique: true},
+		{Name: "description", Type: field.TypeString, Nullable: true},
+	}
+	// PermissionsTable holds the schema information for the "permissions" table.
+	PermissionsTable = &schema.Table{
+		Name:       "permissions",
+		Columns:    PermissionsColumns,
+		PrimaryKey: []*schema.Column{PermissionsColumns[0]},
+	}
 	// PlacesColumns holds the columns for the "places" table.
 	PlacesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
@@ -1290,6 +1302,26 @@ var (
 			},
 		},
 	}
+	// StaffsColumns holds the columns for the "staffs" table.
+	StaffsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString, Unique: true, Size: 36},
+		{Name: "position", Type: field.TypeString, Nullable: true},
+		{Name: "user_staffs", Type: field.TypeString, Nullable: true, Size: 36},
+	}
+	// StaffsTable holds the schema information for the "staffs" table.
+	StaffsTable = &schema.Table{
+		Name:       "staffs",
+		Columns:    StaffsColumns,
+		PrimaryKey: []*schema.Column{StaffsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "staffs_users_staffs",
+				Columns:    []*schema.Column{StaffsColumns[2]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// TemplatesColumns holds the columns for the "templates" table.
 	TemplatesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -1709,6 +1741,31 @@ var (
 			},
 		},
 	}
+	// BusinessStaffsColumns holds the columns for the "business_staffs" table.
+	BusinessStaffsColumns = []*schema.Column{
+		{Name: "business_id", Type: field.TypeString, Size: 36},
+		{Name: "staff_id", Type: field.TypeString, Size: 36},
+	}
+	// BusinessStaffsTable holds the schema information for the "business_staffs" table.
+	BusinessStaffsTable = &schema.Table{
+		Name:       "business_staffs",
+		Columns:    BusinessStaffsColumns,
+		PrimaryKey: []*schema.Column{BusinessStaffsColumns[0], BusinessStaffsColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "business_staffs_business_id",
+				Columns:    []*schema.Column{BusinessStaffsColumns[0]},
+				RefColumns: []*schema.Column{BusinessesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "business_staffs_staff_id",
+				Columns:    []*schema.Column{BusinessStaffsColumns[1]},
+				RefColumns: []*schema.Column{StaffsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// CategoryMediaColumns holds the columns for the "category_media" table.
 	CategoryMediaColumns = []*schema.Column{
 		{Name: "category_id", Type: field.TypeString, Size: 36},
@@ -2009,6 +2066,31 @@ var (
 			},
 		},
 	}
+	// PlaceStaffsColumns holds the columns for the "place_staffs" table.
+	PlaceStaffsColumns = []*schema.Column{
+		{Name: "place_id", Type: field.TypeString, Size: 36},
+		{Name: "staff_id", Type: field.TypeString, Size: 36},
+	}
+	// PlaceStaffsTable holds the schema information for the "place_staffs" table.
+	PlaceStaffsTable = &schema.Table{
+		Name:       "place_staffs",
+		Columns:    PlaceStaffsColumns,
+		PrimaryKey: []*schema.Column{PlaceStaffsColumns[0], PlaceStaffsColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "place_staffs_place_id",
+				Columns:    []*schema.Column{PlaceStaffsColumns[0]},
+				RefColumns: []*schema.Column{PlacesColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "place_staffs_staff_id",
+				Columns:    []*schema.Column{PlaceStaffsColumns[1]},
+				RefColumns: []*schema.Column{StaffsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// PlaceInventoryMediaColumns holds the columns for the "place_inventory_media" table.
 	PlaceInventoryMediaColumns = []*schema.Column{
 		{Name: "place_inventory_id", Type: field.TypeString, Size: 36},
@@ -2080,6 +2162,31 @@ var (
 				Symbol:     "post_notifications_notification_id",
 				Columns:    []*schema.Column{PostNotificationsColumns[1]},
 				RefColumns: []*schema.Column{NotificationsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
+	// StaffPermissionsColumns holds the columns for the "staff_permissions" table.
+	StaffPermissionsColumns = []*schema.Column{
+		{Name: "staff_id", Type: field.TypeString, Size: 36},
+		{Name: "permission_id", Type: field.TypeString, Size: 36},
+	}
+	// StaffPermissionsTable holds the schema information for the "staff_permissions" table.
+	StaffPermissionsTable = &schema.Table{
+		Name:       "staff_permissions",
+		Columns:    StaffPermissionsColumns,
+		PrimaryKey: []*schema.Column{StaffPermissionsColumns[0], StaffPermissionsColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "staff_permissions_staff_id",
+				Columns:    []*schema.Column{StaffPermissionsColumns[0]},
+				RefColumns: []*schema.Column{StaffsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "staff_permissions_permission_id",
+				Columns:    []*schema.Column{StaffPermissionsColumns[1]},
+				RefColumns: []*schema.Column{PermissionsColumns[0]},
 				OnDelete:   schema.Cascade,
 			},
 		},
@@ -2163,6 +2270,7 @@ var (
 		OrdersTable,
 		OrderItemsTable,
 		PaymentsTable,
+		PermissionsTable,
 		PlacesTable,
 		PlaceInventoriesTable,
 		PlaceInventoryAttributesTable,
@@ -2175,6 +2283,7 @@ var (
 		ResoursesTable,
 		ReviewsTable,
 		RoomsTable,
+		StaffsTable,
 		TemplatesTable,
 		TicketsTable,
 		TicketOptionsTable,
@@ -2189,6 +2298,7 @@ var (
 		WebsitesTable,
 		AmenityPlacesTable,
 		BusinessNotificationsTable,
+		BusinessStaffsTable,
 		CategoryMediaTable,
 		CommentNotificationsTable,
 		FaqPlaceTable,
@@ -2201,9 +2311,11 @@ var (
 		PlaceMenusTable,
 		PlaceMediasTable,
 		PlaceNotificationsTable,
+		PlaceStaffsTable,
 		PlaceInventoryMediaTable,
 		PlaceTableOrdersTable,
 		PostNotificationsTable,
+		StaffPermissionsTable,
 		UserPlacesTable,
 		UserNotificationsTable,
 	}
@@ -2289,6 +2401,7 @@ func init() {
 	ReviewsTable.ForeignKeys[3].RefTable = EventsTable
 	ReviewsTable.ForeignKeys[4].RefTable = UsersTable
 	RoomsTable.ForeignKeys[0].RefTable = PlacesTable
+	StaffsTable.ForeignKeys[0].RefTable = UsersTable
 	TicketsTable.ForeignKeys[0].RefTable = EventsTable
 	TicketOptionsTable.ForeignKeys[0].RefTable = EventsTable
 	TicketOptionsTable.ForeignKeys[1].RefTable = TicketsTable
@@ -2313,6 +2426,8 @@ func init() {
 	AmenityPlacesTable.ForeignKeys[1].RefTable = PlacesTable
 	BusinessNotificationsTable.ForeignKeys[0].RefTable = BusinessesTable
 	BusinessNotificationsTable.ForeignKeys[1].RefTable = NotificationsTable
+	BusinessStaffsTable.ForeignKeys[0].RefTable = BusinessesTable
+	BusinessStaffsTable.ForeignKeys[1].RefTable = StaffsTable
 	CategoryMediaTable.ForeignKeys[0].RefTable = CategoriesTable
 	CategoryMediaTable.ForeignKeys[1].RefTable = MediaTable
 	CommentNotificationsTable.ForeignKeys[0].RefTable = CommentsTable
@@ -2337,12 +2452,16 @@ func init() {
 	PlaceMediasTable.ForeignKeys[1].RefTable = MediaTable
 	PlaceNotificationsTable.ForeignKeys[0].RefTable = PlacesTable
 	PlaceNotificationsTable.ForeignKeys[1].RefTable = NotificationsTable
+	PlaceStaffsTable.ForeignKeys[0].RefTable = PlacesTable
+	PlaceStaffsTable.ForeignKeys[1].RefTable = StaffsTable
 	PlaceInventoryMediaTable.ForeignKeys[0].RefTable = PlaceInventoriesTable
 	PlaceInventoryMediaTable.ForeignKeys[1].RefTable = MediaTable
 	PlaceTableOrdersTable.ForeignKeys[0].RefTable = PlaceTablesTable
 	PlaceTableOrdersTable.ForeignKeys[1].RefTable = OrdersTable
 	PostNotificationsTable.ForeignKeys[0].RefTable = PostsTable
 	PostNotificationsTable.ForeignKeys[1].RefTable = NotificationsTable
+	StaffPermissionsTable.ForeignKeys[0].RefTable = StaffsTable
+	StaffPermissionsTable.ForeignKeys[1].RefTable = PermissionsTable
 	UserPlacesTable.ForeignKeys[0].RefTable = UsersTable
 	UserPlacesTable.ForeignKeys[1].RefTable = PlacesTable
 	UserNotificationsTable.ForeignKeys[0].RefTable = UsersTable

@@ -138,9 +138,11 @@ type PlaceEdges struct {
 	Notifications []*Notification `json:"notifications,omitempty"`
 	// Tables holds the value of the tables edge.
 	Tables []*PlaceTable `json:"tables,omitempty"`
+	// Staffs holds the value of the staffs edge.
+	Staffs []*Staff `json:"staffs,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [19]bool
+	loadedTypes [20]bool
 }
 
 // BusinessOrErr returns the Business value or an error if the edge
@@ -316,6 +318,15 @@ func (e PlaceEdges) TablesOrErr() ([]*PlaceTable, error) {
 		return e.Tables, nil
 	}
 	return nil, &NotLoadedError{edge: "tables"}
+}
+
+// StaffsOrErr returns the Staffs value or an error if the edge
+// was not loaded in eager-loading.
+func (e PlaceEdges) StaffsOrErr() ([]*Staff, error) {
+	if e.loadedTypes[19] {
+		return e.Staffs, nil
+	}
+	return nil, &NotLoadedError{edge: "staffs"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -714,6 +725,11 @@ func (pl *Place) QueryNotifications() *NotificationQuery {
 // QueryTables queries the "tables" edge of the Place entity.
 func (pl *Place) QueryTables() *PlaceTableQuery {
 	return NewPlaceClient(pl.config).QueryTables(pl)
+}
+
+// QueryStaffs queries the "staffs" edge of the Place entity.
+func (pl *Place) QueryStaffs() *StaffQuery {
+	return NewPlaceClient(pl.config).QueryStaffs(pl)
 }
 
 // Update returns a builder for updating this Place.

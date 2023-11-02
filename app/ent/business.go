@@ -98,9 +98,11 @@ type BusinessEdges struct {
 	Notifications []*Notification `json:"notifications,omitempty"`
 	// Wallet holds the value of the wallet edge.
 	Wallet *AccountWallet `json:"wallet,omitempty"`
+	// Staffs holds the value of the staffs edge.
+	Staffs []*Staff `json:"staffs,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [18]bool
+	loadedTypes [19]bool
 }
 
 // UserBusinessesOrErr returns the UserBusinesses value or an error if the edge
@@ -275,6 +277,15 @@ func (e BusinessEdges) WalletOrErr() (*AccountWallet, error) {
 		return e.Wallet, nil
 	}
 	return nil, &NotLoadedError{edge: "wallet"}
+}
+
+// StaffsOrErr returns the Staffs value or an error if the edge
+// was not loaded in eager-loading.
+func (e BusinessEdges) StaffsOrErr() ([]*Staff, error) {
+	if e.loadedTypes[18] {
+		return e.Staffs, nil
+	}
+	return nil, &NotLoadedError{edge: "staffs"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -518,6 +529,11 @@ func (b *Business) QueryNotifications() *NotificationQuery {
 // QueryWallet queries the "wallet" edge of the Business entity.
 func (b *Business) QueryWallet() *AccountWalletQuery {
 	return NewBusinessClient(b.config).QueryWallet(b)
+}
+
+// QueryStaffs queries the "staffs" edge of the Business entity.
+func (b *Business) QueryStaffs() *StaffQuery {
+	return NewBusinessClient(b.config).QueryStaffs(b)
 }
 
 // Update returns a builder for updating this Business.

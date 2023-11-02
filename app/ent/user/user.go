@@ -117,6 +117,8 @@ const (
 	EdgeTablesReserved = "tables_reserved"
 	// EdgeTablesWaited holds the string denoting the tables_waited edge name in mutations.
 	EdgeTablesWaited = "tables_waited"
+	// EdgeStaffs holds the string denoting the staffs edge name in mutations.
+	EdgeStaffs = "staffs"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// UserBusinessesTable is the table that holds the userBusinesses relation/edge.
@@ -325,6 +327,13 @@ const (
 	TablesWaitedInverseTable = "place_tables"
 	// TablesWaitedColumn is the table column denoting the tables_waited relation/edge.
 	TablesWaitedColumn = "user_tables_waited"
+	// StaffsTable is the table that holds the staffs relation/edge.
+	StaffsTable = "staffs"
+	// StaffsInverseTable is the table name for the Staff entity.
+	// It exists in this package in order to avoid circular dependency with the "staff" package.
+	StaffsInverseTable = "staffs"
+	// StaffsColumn is the table column denoting the staffs relation/edge.
+	StaffsColumn = "user_staffs"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -914,6 +923,20 @@ func ByTablesWaited(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newTablesWaitedStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByStaffsCount orders the results by staffs count.
+func ByStaffsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newStaffsStep(), opts...)
+	}
+}
+
+// ByStaffs orders the results by staffs terms.
+func ByStaffs(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newStaffsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newUserBusinessesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -1122,5 +1145,12 @@ func newTablesWaitedStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(TablesWaitedInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, TablesWaitedTable, TablesWaitedColumn),
+	)
+}
+func newStaffsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(StaffsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, StaffsTable, StaffsColumn),
 	)
 }
