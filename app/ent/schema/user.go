@@ -78,6 +78,11 @@ func (User) Edges() []ent.Edge {
 		edge.To("notifications", Notification.Type),
 		edge.To("wallet", AccountWallet.Type).Unique(),
 		edge.To("orders", Order.Type),
+		edge.To("tables_created", PlaceTable.Type),
+		edge.To("tables_updated", PlaceTable.Type),
+		edge.To("tables_deleted", PlaceTable.Type),
+		edge.To("tables_reserved", PlaceTable.Type),
+		edge.To("tables_waited", PlaceTable.Type),
 	}
 }
 

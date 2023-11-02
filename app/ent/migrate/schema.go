@@ -960,7 +960,19 @@ var (
 		{Name: "deleted_at", Type: field.TypeString, Nullable: true},
 		{Name: "is_deleted", Type: field.TypeBool, Default: false},
 		{Name: "qr_code", Type: field.TypeString, Nullable: true},
+		{Name: "description", Type: field.TypeString, Nullable: true},
+		{Name: "status", Type: field.TypeString, Default: "available"},
+		{Name: "type", Type: field.TypeString, Default: "table"},
+		{Name: "is_active", Type: field.TypeBool, Default: true},
+		{Name: "is_reserved", Type: field.TypeBool, Default: false},
+		{Name: "is_vip", Type: field.TypeBool, Default: false},
+		{Name: "is_premium", Type: field.TypeBool, Default: false},
 		{Name: "place_tables", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "user_tables_created", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "user_tables_updated", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "user_tables_deleted", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "user_tables_reserved", Type: field.TypeString, Nullable: true, Size: 36},
+		{Name: "user_tables_waited", Type: field.TypeString, Nullable: true, Size: 36},
 	}
 	// PlaceTablesTable holds the schema information for the "place_tables" table.
 	PlaceTablesTable = &schema.Table{
@@ -970,8 +982,38 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "place_tables_places_tables",
-				Columns:    []*schema.Column{PlaceTablesColumns[5]},
+				Columns:    []*schema.Column{PlaceTablesColumns[12]},
 				RefColumns: []*schema.Column{PlacesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "place_tables_users_tables_created",
+				Columns:    []*schema.Column{PlaceTablesColumns[13]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "place_tables_users_tables_updated",
+				Columns:    []*schema.Column{PlaceTablesColumns[14]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "place_tables_users_tables_deleted",
+				Columns:    []*schema.Column{PlaceTablesColumns[15]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "place_tables_users_tables_reserved",
+				Columns:    []*schema.Column{PlaceTablesColumns[16]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "place_tables_users_tables_waited",
+				Columns:    []*schema.Column{PlaceTablesColumns[17]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -2222,6 +2264,11 @@ func init() {
 	PlaceInventoryAttributesTable.ForeignKeys[0].RefTable = InventoryAttributesTable
 	PlaceInventoryAttributesTable.ForeignKeys[1].RefTable = PlaceInventoriesTable
 	PlaceTablesTable.ForeignKeys[0].RefTable = PlacesTable
+	PlaceTablesTable.ForeignKeys[1].RefTable = UsersTable
+	PlaceTablesTable.ForeignKeys[2].RefTable = UsersTable
+	PlaceTablesTable.ForeignKeys[3].RefTable = UsersTable
+	PlaceTablesTable.ForeignKeys[4].RefTable = UsersTable
+	PlaceTablesTable.ForeignKeys[5].RefTable = UsersTable
 	PostsTable.ForeignKeys[0].RefTable = BusinessesTable
 	PostsTable.ForeignKeys[1].RefTable = PostsTable
 	PostsTable.ForeignKeys[2].RefTable = UsersTable

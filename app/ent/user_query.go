@@ -19,6 +19,7 @@ import (
 	"placio-app/ent/notification"
 	"placio-app/ent/order"
 	"placio-app/ent/place"
+	"placio-app/ent/placetable"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
 	"placio-app/ent/rating"
@@ -71,6 +72,11 @@ type UserQuery struct {
 	withNotifications        *NotificationQuery
 	withWallet               *AccountWalletQuery
 	withOrders               *OrderQuery
+	withTablesCreated        *PlaceTableQuery
+	withTablesUpdated        *PlaceTableQuery
+	withTablesDeleted        *PlaceTableQuery
+	withTablesReserved       *PlaceTableQuery
+	withTablesWaited         *PlaceTableQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -657,6 +663,116 @@ func (uq *UserQuery) QueryOrders() *OrderQuery {
 	return query
 }
 
+// QueryTablesCreated chains the current query on the "tables_created" edge.
+func (uq *UserQuery) QueryTablesCreated() *PlaceTableQuery {
+	query := (&PlaceTableClient{config: uq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(placetable.Table, placetable.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.TablesCreatedTable, user.TablesCreatedColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryTablesUpdated chains the current query on the "tables_updated" edge.
+func (uq *UserQuery) QueryTablesUpdated() *PlaceTableQuery {
+	query := (&PlaceTableClient{config: uq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(placetable.Table, placetable.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.TablesUpdatedTable, user.TablesUpdatedColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryTablesDeleted chains the current query on the "tables_deleted" edge.
+func (uq *UserQuery) QueryTablesDeleted() *PlaceTableQuery {
+	query := (&PlaceTableClient{config: uq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(placetable.Table, placetable.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.TablesDeletedTable, user.TablesDeletedColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryTablesReserved chains the current query on the "tables_reserved" edge.
+func (uq *UserQuery) QueryTablesReserved() *PlaceTableQuery {
+	query := (&PlaceTableClient{config: uq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(placetable.Table, placetable.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.TablesReservedTable, user.TablesReservedColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryTablesWaited chains the current query on the "tables_waited" edge.
+func (uq *UserQuery) QueryTablesWaited() *PlaceTableQuery {
+	query := (&PlaceTableClient{config: uq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := uq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := uq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, selector),
+			sqlgraph.To(placetable.Table, placetable.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.TablesWaitedTable, user.TablesWaitedColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(uq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first User entity from the query.
 // Returns a *NotFoundError when no User was found.
 func (uq *UserQuery) First(ctx context.Context) (*User, error) {
@@ -874,6 +990,11 @@ func (uq *UserQuery) Clone() *UserQuery {
 		withNotifications:        uq.withNotifications.Clone(),
 		withWallet:               uq.withWallet.Clone(),
 		withOrders:               uq.withOrders.Clone(),
+		withTablesCreated:        uq.withTablesCreated.Clone(),
+		withTablesUpdated:        uq.withTablesUpdated.Clone(),
+		withTablesDeleted:        uq.withTablesDeleted.Clone(),
+		withTablesReserved:       uq.withTablesReserved.Clone(),
+		withTablesWaited:         uq.withTablesWaited.Clone(),
 		// clone intermediate query.
 		sql:  uq.sql.Clone(),
 		path: uq.path,
@@ -1155,6 +1276,61 @@ func (uq *UserQuery) WithOrders(opts ...func(*OrderQuery)) *UserQuery {
 	return uq
 }
 
+// WithTablesCreated tells the query-builder to eager-load the nodes that are connected to
+// the "tables_created" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithTablesCreated(opts ...func(*PlaceTableQuery)) *UserQuery {
+	query := (&PlaceTableClient{config: uq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	uq.withTablesCreated = query
+	return uq
+}
+
+// WithTablesUpdated tells the query-builder to eager-load the nodes that are connected to
+// the "tables_updated" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithTablesUpdated(opts ...func(*PlaceTableQuery)) *UserQuery {
+	query := (&PlaceTableClient{config: uq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	uq.withTablesUpdated = query
+	return uq
+}
+
+// WithTablesDeleted tells the query-builder to eager-load the nodes that are connected to
+// the "tables_deleted" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithTablesDeleted(opts ...func(*PlaceTableQuery)) *UserQuery {
+	query := (&PlaceTableClient{config: uq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	uq.withTablesDeleted = query
+	return uq
+}
+
+// WithTablesReserved tells the query-builder to eager-load the nodes that are connected to
+// the "tables_reserved" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithTablesReserved(opts ...func(*PlaceTableQuery)) *UserQuery {
+	query := (&PlaceTableClient{config: uq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	uq.withTablesReserved = query
+	return uq
+}
+
+// WithTablesWaited tells the query-builder to eager-load the nodes that are connected to
+// the "tables_waited" edge. The optional arguments are used to configure the query builder of the edge.
+func (uq *UserQuery) WithTablesWaited(opts ...func(*PlaceTableQuery)) *UserQuery {
+	query := (&PlaceTableClient{config: uq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	uq.withTablesWaited = query
+	return uq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -1233,7 +1409,7 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 	var (
 		nodes       = []*User{}
 		_spec       = uq.querySpec()
-		loadedTypes = [25]bool{
+		loadedTypes = [30]bool{
 			uq.withUserBusinesses != nil,
 			uq.withComments != nil,
 			uq.withLikes != nil,
@@ -1259,6 +1435,11 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 			uq.withNotifications != nil,
 			uq.withWallet != nil,
 			uq.withOrders != nil,
+			uq.withTablesCreated != nil,
+			uq.withTablesUpdated != nil,
+			uq.withTablesDeleted != nil,
+			uq.withTablesReserved != nil,
+			uq.withTablesWaited != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -1457,6 +1638,41 @@ func (uq *UserQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*User, e
 		if err := uq.loadOrders(ctx, query, nodes,
 			func(n *User) { n.Edges.Orders = []*Order{} },
 			func(n *User, e *Order) { n.Edges.Orders = append(n.Edges.Orders, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := uq.withTablesCreated; query != nil {
+		if err := uq.loadTablesCreated(ctx, query, nodes,
+			func(n *User) { n.Edges.TablesCreated = []*PlaceTable{} },
+			func(n *User, e *PlaceTable) { n.Edges.TablesCreated = append(n.Edges.TablesCreated, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := uq.withTablesUpdated; query != nil {
+		if err := uq.loadTablesUpdated(ctx, query, nodes,
+			func(n *User) { n.Edges.TablesUpdated = []*PlaceTable{} },
+			func(n *User, e *PlaceTable) { n.Edges.TablesUpdated = append(n.Edges.TablesUpdated, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := uq.withTablesDeleted; query != nil {
+		if err := uq.loadTablesDeleted(ctx, query, nodes,
+			func(n *User) { n.Edges.TablesDeleted = []*PlaceTable{} },
+			func(n *User, e *PlaceTable) { n.Edges.TablesDeleted = append(n.Edges.TablesDeleted, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := uq.withTablesReserved; query != nil {
+		if err := uq.loadTablesReserved(ctx, query, nodes,
+			func(n *User) { n.Edges.TablesReserved = []*PlaceTable{} },
+			func(n *User, e *PlaceTable) { n.Edges.TablesReserved = append(n.Edges.TablesReserved, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := uq.withTablesWaited; query != nil {
+		if err := uq.loadTablesWaited(ctx, query, nodes,
+			func(n *User) { n.Edges.TablesWaited = []*PlaceTable{} },
+			func(n *User, e *PlaceTable) { n.Edges.TablesWaited = append(n.Edges.TablesWaited, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -2286,6 +2502,161 @@ func (uq *UserQuery) loadOrders(ctx context.Context, query *OrderQuery, nodes []
 		node, ok := nodeids[*fk]
 		if !ok {
 			return fmt.Errorf(`unexpected referenced foreign-key "user_orders" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (uq *UserQuery) loadTablesCreated(ctx context.Context, query *PlaceTableQuery, nodes []*User, init func(*User), assign func(*User, *PlaceTable)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.PlaceTable(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.TablesCreatedColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.user_tables_created
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "user_tables_created" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "user_tables_created" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (uq *UserQuery) loadTablesUpdated(ctx context.Context, query *PlaceTableQuery, nodes []*User, init func(*User), assign func(*User, *PlaceTable)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.PlaceTable(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.TablesUpdatedColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.user_tables_updated
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "user_tables_updated" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "user_tables_updated" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (uq *UserQuery) loadTablesDeleted(ctx context.Context, query *PlaceTableQuery, nodes []*User, init func(*User), assign func(*User, *PlaceTable)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.PlaceTable(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.TablesDeletedColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.user_tables_deleted
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "user_tables_deleted" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "user_tables_deleted" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (uq *UserQuery) loadTablesReserved(ctx context.Context, query *PlaceTableQuery, nodes []*User, init func(*User), assign func(*User, *PlaceTable)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.PlaceTable(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.TablesReservedColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.user_tables_reserved
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "user_tables_reserved" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "user_tables_reserved" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (uq *UserQuery) loadTablesWaited(ctx context.Context, query *PlaceTableQuery, nodes []*User, init func(*User), assign func(*User, *PlaceTable)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[string]*User)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	query.withFKs = true
+	query.Where(predicate.PlaceTable(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(user.TablesWaitedColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.user_tables_waited
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "user_tables_waited" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "user_tables_waited" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

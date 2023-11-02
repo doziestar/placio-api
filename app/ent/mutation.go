@@ -34420,23 +34420,40 @@ func (m *PlaceInventoryAttributeMutation) ResetEdge(name string) error {
 // PlaceTableMutation represents an operation that mutates the PlaceTable nodes in the graph.
 type PlaceTableMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *string
-	number        *int
-	addnumber     *int
-	deleted_at    *string
-	is_deleted    *bool
-	qr_code       *string
-	clearedFields map[string]struct{}
-	place         *string
-	clearedplace  bool
-	orders        map[string]struct{}
-	removedorders map[string]struct{}
-	clearedorders bool
-	done          bool
-	oldValue      func(context.Context) (*PlaceTable, error)
-	predicates    []predicate.PlaceTable
+	op                 Op
+	typ                string
+	id                 *string
+	number             *int
+	addnumber          *int
+	deleted_at         *string
+	is_deleted         *bool
+	qr_code            *string
+	description        *string
+	status             *string
+	_type              *string
+	is_active          *bool
+	is_reserved        *bool
+	is_vip             *bool
+	is_premium         *bool
+	clearedFields      map[string]struct{}
+	place              *string
+	clearedplace       bool
+	created_by         *string
+	clearedcreated_by  bool
+	updated_by         *string
+	clearedupdated_by  bool
+	deleted_by         *string
+	cleareddeleted_by  bool
+	reserved_by        *string
+	clearedreserved_by bool
+	waiter             *string
+	clearedwaiter      bool
+	orders             map[string]struct{}
+	removedorders      map[string]struct{}
+	clearedorders      bool
+	done               bool
+	oldValue           func(context.Context) (*PlaceTable, error)
+	predicates         []predicate.PlaceTable
 }
 
 var _ ent.Mutation = (*PlaceTableMutation)(nil)
@@ -34733,6 +34750,271 @@ func (m *PlaceTableMutation) ResetQrCode() {
 	delete(m.clearedFields, placetable.FieldQrCode)
 }
 
+// SetDescription sets the "description" field.
+func (m *PlaceTableMutation) SetDescription(s string) {
+	m.description = &s
+}
+
+// Description returns the value of the "description" field in the mutation.
+func (m *PlaceTableMutation) Description() (r string, exists bool) {
+	v := m.description
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDescription returns the old "description" field's value of the PlaceTable entity.
+// If the PlaceTable object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceTableMutation) OldDescription(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDescription is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDescription requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDescription: %w", err)
+	}
+	return oldValue.Description, nil
+}
+
+// ClearDescription clears the value of the "description" field.
+func (m *PlaceTableMutation) ClearDescription() {
+	m.description = nil
+	m.clearedFields[placetable.FieldDescription] = struct{}{}
+}
+
+// DescriptionCleared returns if the "description" field was cleared in this mutation.
+func (m *PlaceTableMutation) DescriptionCleared() bool {
+	_, ok := m.clearedFields[placetable.FieldDescription]
+	return ok
+}
+
+// ResetDescription resets all changes to the "description" field.
+func (m *PlaceTableMutation) ResetDescription() {
+	m.description = nil
+	delete(m.clearedFields, placetable.FieldDescription)
+}
+
+// SetStatus sets the "status" field.
+func (m *PlaceTableMutation) SetStatus(s string) {
+	m.status = &s
+}
+
+// Status returns the value of the "status" field in the mutation.
+func (m *PlaceTableMutation) Status() (r string, exists bool) {
+	v := m.status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatus returns the old "status" field's value of the PlaceTable entity.
+// If the PlaceTable object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceTableMutation) OldStatus(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
+	}
+	return oldValue.Status, nil
+}
+
+// ResetStatus resets all changes to the "status" field.
+func (m *PlaceTableMutation) ResetStatus() {
+	m.status = nil
+}
+
+// SetType sets the "type" field.
+func (m *PlaceTableMutation) SetType(s string) {
+	m._type = &s
+}
+
+// GetType returns the value of the "type" field in the mutation.
+func (m *PlaceTableMutation) GetType() (r string, exists bool) {
+	v := m._type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldType returns the old "type" field's value of the PlaceTable entity.
+// If the PlaceTable object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceTableMutation) OldType(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldType: %w", err)
+	}
+	return oldValue.Type, nil
+}
+
+// ResetType resets all changes to the "type" field.
+func (m *PlaceTableMutation) ResetType() {
+	m._type = nil
+}
+
+// SetIsActive sets the "is_active" field.
+func (m *PlaceTableMutation) SetIsActive(b bool) {
+	m.is_active = &b
+}
+
+// IsActive returns the value of the "is_active" field in the mutation.
+func (m *PlaceTableMutation) IsActive() (r bool, exists bool) {
+	v := m.is_active
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsActive returns the old "is_active" field's value of the PlaceTable entity.
+// If the PlaceTable object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceTableMutation) OldIsActive(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsActive is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsActive requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsActive: %w", err)
+	}
+	return oldValue.IsActive, nil
+}
+
+// ResetIsActive resets all changes to the "is_active" field.
+func (m *PlaceTableMutation) ResetIsActive() {
+	m.is_active = nil
+}
+
+// SetIsReserved sets the "is_reserved" field.
+func (m *PlaceTableMutation) SetIsReserved(b bool) {
+	m.is_reserved = &b
+}
+
+// IsReserved returns the value of the "is_reserved" field in the mutation.
+func (m *PlaceTableMutation) IsReserved() (r bool, exists bool) {
+	v := m.is_reserved
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsReserved returns the old "is_reserved" field's value of the PlaceTable entity.
+// If the PlaceTable object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceTableMutation) OldIsReserved(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsReserved is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsReserved requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsReserved: %w", err)
+	}
+	return oldValue.IsReserved, nil
+}
+
+// ResetIsReserved resets all changes to the "is_reserved" field.
+func (m *PlaceTableMutation) ResetIsReserved() {
+	m.is_reserved = nil
+}
+
+// SetIsVip sets the "is_vip" field.
+func (m *PlaceTableMutation) SetIsVip(b bool) {
+	m.is_vip = &b
+}
+
+// IsVip returns the value of the "is_vip" field in the mutation.
+func (m *PlaceTableMutation) IsVip() (r bool, exists bool) {
+	v := m.is_vip
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsVip returns the old "is_vip" field's value of the PlaceTable entity.
+// If the PlaceTable object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceTableMutation) OldIsVip(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsVip is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsVip requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsVip: %w", err)
+	}
+	return oldValue.IsVip, nil
+}
+
+// ResetIsVip resets all changes to the "is_vip" field.
+func (m *PlaceTableMutation) ResetIsVip() {
+	m.is_vip = nil
+}
+
+// SetIsPremium sets the "is_premium" field.
+func (m *PlaceTableMutation) SetIsPremium(b bool) {
+	m.is_premium = &b
+}
+
+// IsPremium returns the value of the "is_premium" field in the mutation.
+func (m *PlaceTableMutation) IsPremium() (r bool, exists bool) {
+	v := m.is_premium
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsPremium returns the old "is_premium" field's value of the PlaceTable entity.
+// If the PlaceTable object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceTableMutation) OldIsPremium(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsPremium is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsPremium requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsPremium: %w", err)
+	}
+	return oldValue.IsPremium, nil
+}
+
+// ResetIsPremium resets all changes to the "is_premium" field.
+func (m *PlaceTableMutation) ResetIsPremium() {
+	m.is_premium = nil
+}
+
 // SetPlaceID sets the "place" edge to the Place entity by id.
 func (m *PlaceTableMutation) SetPlaceID(id string) {
 	m.place = &id
@@ -34770,6 +35052,201 @@ func (m *PlaceTableMutation) PlaceIDs() (ids []string) {
 func (m *PlaceTableMutation) ResetPlace() {
 	m.place = nil
 	m.clearedplace = false
+}
+
+// SetCreatedByID sets the "created_by" edge to the User entity by id.
+func (m *PlaceTableMutation) SetCreatedByID(id string) {
+	m.created_by = &id
+}
+
+// ClearCreatedBy clears the "created_by" edge to the User entity.
+func (m *PlaceTableMutation) ClearCreatedBy() {
+	m.clearedcreated_by = true
+}
+
+// CreatedByCleared reports if the "created_by" edge to the User entity was cleared.
+func (m *PlaceTableMutation) CreatedByCleared() bool {
+	return m.clearedcreated_by
+}
+
+// CreatedByID returns the "created_by" edge ID in the mutation.
+func (m *PlaceTableMutation) CreatedByID() (id string, exists bool) {
+	if m.created_by != nil {
+		return *m.created_by, true
+	}
+	return
+}
+
+// CreatedByIDs returns the "created_by" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// CreatedByID instead. It exists only for internal usage by the builders.
+func (m *PlaceTableMutation) CreatedByIDs() (ids []string) {
+	if id := m.created_by; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCreatedBy resets all changes to the "created_by" edge.
+func (m *PlaceTableMutation) ResetCreatedBy() {
+	m.created_by = nil
+	m.clearedcreated_by = false
+}
+
+// SetUpdatedByID sets the "updated_by" edge to the User entity by id.
+func (m *PlaceTableMutation) SetUpdatedByID(id string) {
+	m.updated_by = &id
+}
+
+// ClearUpdatedBy clears the "updated_by" edge to the User entity.
+func (m *PlaceTableMutation) ClearUpdatedBy() {
+	m.clearedupdated_by = true
+}
+
+// UpdatedByCleared reports if the "updated_by" edge to the User entity was cleared.
+func (m *PlaceTableMutation) UpdatedByCleared() bool {
+	return m.clearedupdated_by
+}
+
+// UpdatedByID returns the "updated_by" edge ID in the mutation.
+func (m *PlaceTableMutation) UpdatedByID() (id string, exists bool) {
+	if m.updated_by != nil {
+		return *m.updated_by, true
+	}
+	return
+}
+
+// UpdatedByIDs returns the "updated_by" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// UpdatedByID instead. It exists only for internal usage by the builders.
+func (m *PlaceTableMutation) UpdatedByIDs() (ids []string) {
+	if id := m.updated_by; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetUpdatedBy resets all changes to the "updated_by" edge.
+func (m *PlaceTableMutation) ResetUpdatedBy() {
+	m.updated_by = nil
+	m.clearedupdated_by = false
+}
+
+// SetDeletedByID sets the "deleted_by" edge to the User entity by id.
+func (m *PlaceTableMutation) SetDeletedByID(id string) {
+	m.deleted_by = &id
+}
+
+// ClearDeletedBy clears the "deleted_by" edge to the User entity.
+func (m *PlaceTableMutation) ClearDeletedBy() {
+	m.cleareddeleted_by = true
+}
+
+// DeletedByCleared reports if the "deleted_by" edge to the User entity was cleared.
+func (m *PlaceTableMutation) DeletedByCleared() bool {
+	return m.cleareddeleted_by
+}
+
+// DeletedByID returns the "deleted_by" edge ID in the mutation.
+func (m *PlaceTableMutation) DeletedByID() (id string, exists bool) {
+	if m.deleted_by != nil {
+		return *m.deleted_by, true
+	}
+	return
+}
+
+// DeletedByIDs returns the "deleted_by" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// DeletedByID instead. It exists only for internal usage by the builders.
+func (m *PlaceTableMutation) DeletedByIDs() (ids []string) {
+	if id := m.deleted_by; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetDeletedBy resets all changes to the "deleted_by" edge.
+func (m *PlaceTableMutation) ResetDeletedBy() {
+	m.deleted_by = nil
+	m.cleareddeleted_by = false
+}
+
+// SetReservedByID sets the "reserved_by" edge to the User entity by id.
+func (m *PlaceTableMutation) SetReservedByID(id string) {
+	m.reserved_by = &id
+}
+
+// ClearReservedBy clears the "reserved_by" edge to the User entity.
+func (m *PlaceTableMutation) ClearReservedBy() {
+	m.clearedreserved_by = true
+}
+
+// ReservedByCleared reports if the "reserved_by" edge to the User entity was cleared.
+func (m *PlaceTableMutation) ReservedByCleared() bool {
+	return m.clearedreserved_by
+}
+
+// ReservedByID returns the "reserved_by" edge ID in the mutation.
+func (m *PlaceTableMutation) ReservedByID() (id string, exists bool) {
+	if m.reserved_by != nil {
+		return *m.reserved_by, true
+	}
+	return
+}
+
+// ReservedByIDs returns the "reserved_by" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ReservedByID instead. It exists only for internal usage by the builders.
+func (m *PlaceTableMutation) ReservedByIDs() (ids []string) {
+	if id := m.reserved_by; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetReservedBy resets all changes to the "reserved_by" edge.
+func (m *PlaceTableMutation) ResetReservedBy() {
+	m.reserved_by = nil
+	m.clearedreserved_by = false
+}
+
+// SetWaiterID sets the "waiter" edge to the User entity by id.
+func (m *PlaceTableMutation) SetWaiterID(id string) {
+	m.waiter = &id
+}
+
+// ClearWaiter clears the "waiter" edge to the User entity.
+func (m *PlaceTableMutation) ClearWaiter() {
+	m.clearedwaiter = true
+}
+
+// WaiterCleared reports if the "waiter" edge to the User entity was cleared.
+func (m *PlaceTableMutation) WaiterCleared() bool {
+	return m.clearedwaiter
+}
+
+// WaiterID returns the "waiter" edge ID in the mutation.
+func (m *PlaceTableMutation) WaiterID() (id string, exists bool) {
+	if m.waiter != nil {
+		return *m.waiter, true
+	}
+	return
+}
+
+// WaiterIDs returns the "waiter" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// WaiterID instead. It exists only for internal usage by the builders.
+func (m *PlaceTableMutation) WaiterIDs() (ids []string) {
+	if id := m.waiter; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetWaiter resets all changes to the "waiter" edge.
+func (m *PlaceTableMutation) ResetWaiter() {
+	m.waiter = nil
+	m.clearedwaiter = false
 }
 
 // AddOrderIDs adds the "orders" edge to the Order entity by ids.
@@ -34860,7 +35337,7 @@ func (m *PlaceTableMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PlaceTableMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 11)
 	if m.number != nil {
 		fields = append(fields, placetable.FieldNumber)
 	}
@@ -34872,6 +35349,27 @@ func (m *PlaceTableMutation) Fields() []string {
 	}
 	if m.qr_code != nil {
 		fields = append(fields, placetable.FieldQrCode)
+	}
+	if m.description != nil {
+		fields = append(fields, placetable.FieldDescription)
+	}
+	if m.status != nil {
+		fields = append(fields, placetable.FieldStatus)
+	}
+	if m._type != nil {
+		fields = append(fields, placetable.FieldType)
+	}
+	if m.is_active != nil {
+		fields = append(fields, placetable.FieldIsActive)
+	}
+	if m.is_reserved != nil {
+		fields = append(fields, placetable.FieldIsReserved)
+	}
+	if m.is_vip != nil {
+		fields = append(fields, placetable.FieldIsVip)
+	}
+	if m.is_premium != nil {
+		fields = append(fields, placetable.FieldIsPremium)
 	}
 	return fields
 }
@@ -34889,6 +35387,20 @@ func (m *PlaceTableMutation) Field(name string) (ent.Value, bool) {
 		return m.IsDeleted()
 	case placetable.FieldQrCode:
 		return m.QrCode()
+	case placetable.FieldDescription:
+		return m.Description()
+	case placetable.FieldStatus:
+		return m.Status()
+	case placetable.FieldType:
+		return m.GetType()
+	case placetable.FieldIsActive:
+		return m.IsActive()
+	case placetable.FieldIsReserved:
+		return m.IsReserved()
+	case placetable.FieldIsVip:
+		return m.IsVip()
+	case placetable.FieldIsPremium:
+		return m.IsPremium()
 	}
 	return nil, false
 }
@@ -34906,6 +35418,20 @@ func (m *PlaceTableMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldIsDeleted(ctx)
 	case placetable.FieldQrCode:
 		return m.OldQrCode(ctx)
+	case placetable.FieldDescription:
+		return m.OldDescription(ctx)
+	case placetable.FieldStatus:
+		return m.OldStatus(ctx)
+	case placetable.FieldType:
+		return m.OldType(ctx)
+	case placetable.FieldIsActive:
+		return m.OldIsActive(ctx)
+	case placetable.FieldIsReserved:
+		return m.OldIsReserved(ctx)
+	case placetable.FieldIsVip:
+		return m.OldIsVip(ctx)
+	case placetable.FieldIsPremium:
+		return m.OldIsPremium(ctx)
 	}
 	return nil, fmt.Errorf("unknown PlaceTable field %s", name)
 }
@@ -34942,6 +35468,55 @@ func (m *PlaceTableMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetQrCode(v)
+		return nil
+	case placetable.FieldDescription:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDescription(v)
+		return nil
+	case placetable.FieldStatus:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatus(v)
+		return nil
+	case placetable.FieldType:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetType(v)
+		return nil
+	case placetable.FieldIsActive:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsActive(v)
+		return nil
+	case placetable.FieldIsReserved:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsReserved(v)
+		return nil
+	case placetable.FieldIsVip:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsVip(v)
+		return nil
+	case placetable.FieldIsPremium:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsPremium(v)
 		return nil
 	}
 	return fmt.Errorf("unknown PlaceTable field %s", name)
@@ -34994,6 +35569,9 @@ func (m *PlaceTableMutation) ClearedFields() []string {
 	if m.FieldCleared(placetable.FieldQrCode) {
 		fields = append(fields, placetable.FieldQrCode)
 	}
+	if m.FieldCleared(placetable.FieldDescription) {
+		fields = append(fields, placetable.FieldDescription)
+	}
 	return fields
 }
 
@@ -35013,6 +35591,9 @@ func (m *PlaceTableMutation) ClearField(name string) error {
 		return nil
 	case placetable.FieldQrCode:
 		m.ClearQrCode()
+		return nil
+	case placetable.FieldDescription:
+		m.ClearDescription()
 		return nil
 	}
 	return fmt.Errorf("unknown PlaceTable nullable field %s", name)
@@ -35034,15 +35615,51 @@ func (m *PlaceTableMutation) ResetField(name string) error {
 	case placetable.FieldQrCode:
 		m.ResetQrCode()
 		return nil
+	case placetable.FieldDescription:
+		m.ResetDescription()
+		return nil
+	case placetable.FieldStatus:
+		m.ResetStatus()
+		return nil
+	case placetable.FieldType:
+		m.ResetType()
+		return nil
+	case placetable.FieldIsActive:
+		m.ResetIsActive()
+		return nil
+	case placetable.FieldIsReserved:
+		m.ResetIsReserved()
+		return nil
+	case placetable.FieldIsVip:
+		m.ResetIsVip()
+		return nil
+	case placetable.FieldIsPremium:
+		m.ResetIsPremium()
+		return nil
 	}
 	return fmt.Errorf("unknown PlaceTable field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PlaceTableMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 7)
 	if m.place != nil {
 		edges = append(edges, placetable.EdgePlace)
+	}
+	if m.created_by != nil {
+		edges = append(edges, placetable.EdgeCreatedBy)
+	}
+	if m.updated_by != nil {
+		edges = append(edges, placetable.EdgeUpdatedBy)
+	}
+	if m.deleted_by != nil {
+		edges = append(edges, placetable.EdgeDeletedBy)
+	}
+	if m.reserved_by != nil {
+		edges = append(edges, placetable.EdgeReservedBy)
+	}
+	if m.waiter != nil {
+		edges = append(edges, placetable.EdgeWaiter)
 	}
 	if m.orders != nil {
 		edges = append(edges, placetable.EdgeOrders)
@@ -35058,6 +35675,26 @@ func (m *PlaceTableMutation) AddedIDs(name string) []ent.Value {
 		if id := m.place; id != nil {
 			return []ent.Value{*id}
 		}
+	case placetable.EdgeCreatedBy:
+		if id := m.created_by; id != nil {
+			return []ent.Value{*id}
+		}
+	case placetable.EdgeUpdatedBy:
+		if id := m.updated_by; id != nil {
+			return []ent.Value{*id}
+		}
+	case placetable.EdgeDeletedBy:
+		if id := m.deleted_by; id != nil {
+			return []ent.Value{*id}
+		}
+	case placetable.EdgeReservedBy:
+		if id := m.reserved_by; id != nil {
+			return []ent.Value{*id}
+		}
+	case placetable.EdgeWaiter:
+		if id := m.waiter; id != nil {
+			return []ent.Value{*id}
+		}
 	case placetable.EdgeOrders:
 		ids := make([]ent.Value, 0, len(m.orders))
 		for id := range m.orders {
@@ -35070,7 +35707,7 @@ func (m *PlaceTableMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PlaceTableMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 7)
 	if m.removedorders != nil {
 		edges = append(edges, placetable.EdgeOrders)
 	}
@@ -35093,9 +35730,24 @@ func (m *PlaceTableMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PlaceTableMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 7)
 	if m.clearedplace {
 		edges = append(edges, placetable.EdgePlace)
+	}
+	if m.clearedcreated_by {
+		edges = append(edges, placetable.EdgeCreatedBy)
+	}
+	if m.clearedupdated_by {
+		edges = append(edges, placetable.EdgeUpdatedBy)
+	}
+	if m.cleareddeleted_by {
+		edges = append(edges, placetable.EdgeDeletedBy)
+	}
+	if m.clearedreserved_by {
+		edges = append(edges, placetable.EdgeReservedBy)
+	}
+	if m.clearedwaiter {
+		edges = append(edges, placetable.EdgeWaiter)
 	}
 	if m.clearedorders {
 		edges = append(edges, placetable.EdgeOrders)
@@ -35109,6 +35761,16 @@ func (m *PlaceTableMutation) EdgeCleared(name string) bool {
 	switch name {
 	case placetable.EdgePlace:
 		return m.clearedplace
+	case placetable.EdgeCreatedBy:
+		return m.clearedcreated_by
+	case placetable.EdgeUpdatedBy:
+		return m.clearedupdated_by
+	case placetable.EdgeDeletedBy:
+		return m.cleareddeleted_by
+	case placetable.EdgeReservedBy:
+		return m.clearedreserved_by
+	case placetable.EdgeWaiter:
+		return m.clearedwaiter
 	case placetable.EdgeOrders:
 		return m.clearedorders
 	}
@@ -35122,6 +35784,21 @@ func (m *PlaceTableMutation) ClearEdge(name string) error {
 	case placetable.EdgePlace:
 		m.ClearPlace()
 		return nil
+	case placetable.EdgeCreatedBy:
+		m.ClearCreatedBy()
+		return nil
+	case placetable.EdgeUpdatedBy:
+		m.ClearUpdatedBy()
+		return nil
+	case placetable.EdgeDeletedBy:
+		m.ClearDeletedBy()
+		return nil
+	case placetable.EdgeReservedBy:
+		m.ClearReservedBy()
+		return nil
+	case placetable.EdgeWaiter:
+		m.ClearWaiter()
+		return nil
 	}
 	return fmt.Errorf("unknown PlaceTable unique edge %s", name)
 }
@@ -35132,6 +35809,21 @@ func (m *PlaceTableMutation) ResetEdge(name string) error {
 	switch name {
 	case placetable.EdgePlace:
 		m.ResetPlace()
+		return nil
+	case placetable.EdgeCreatedBy:
+		m.ResetCreatedBy()
+		return nil
+	case placetable.EdgeUpdatedBy:
+		m.ResetUpdatedBy()
+		return nil
+	case placetable.EdgeDeletedBy:
+		m.ResetDeletedBy()
+		return nil
+	case placetable.EdgeReservedBy:
+		m.ResetReservedBy()
+		return nil
+	case placetable.EdgeWaiter:
+		m.ResetWaiter()
 		return nil
 	case placetable.EdgeOrders:
 		m.ResetOrders()
@@ -44052,6 +44744,21 @@ type UserMutation struct {
 	orders                       map[string]struct{}
 	removedorders                map[string]struct{}
 	clearedorders                bool
+	tables_created               map[string]struct{}
+	removedtables_created        map[string]struct{}
+	clearedtables_created        bool
+	tables_updated               map[string]struct{}
+	removedtables_updated        map[string]struct{}
+	clearedtables_updated        bool
+	tables_deleted               map[string]struct{}
+	removedtables_deleted        map[string]struct{}
+	clearedtables_deleted        bool
+	tables_reserved              map[string]struct{}
+	removedtables_reserved       map[string]struct{}
+	clearedtables_reserved       bool
+	tables_waited                map[string]struct{}
+	removedtables_waited         map[string]struct{}
+	clearedtables_waited         bool
 	done                         bool
 	oldValue                     func(context.Context) (*User, error)
 	predicates                   []predicate.User
@@ -46509,6 +47216,276 @@ func (m *UserMutation) ResetOrders() {
 	m.removedorders = nil
 }
 
+// AddTablesCreatedIDs adds the "tables_created" edge to the PlaceTable entity by ids.
+func (m *UserMutation) AddTablesCreatedIDs(ids ...string) {
+	if m.tables_created == nil {
+		m.tables_created = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.tables_created[ids[i]] = struct{}{}
+	}
+}
+
+// ClearTablesCreated clears the "tables_created" edge to the PlaceTable entity.
+func (m *UserMutation) ClearTablesCreated() {
+	m.clearedtables_created = true
+}
+
+// TablesCreatedCleared reports if the "tables_created" edge to the PlaceTable entity was cleared.
+func (m *UserMutation) TablesCreatedCleared() bool {
+	return m.clearedtables_created
+}
+
+// RemoveTablesCreatedIDs removes the "tables_created" edge to the PlaceTable entity by IDs.
+func (m *UserMutation) RemoveTablesCreatedIDs(ids ...string) {
+	if m.removedtables_created == nil {
+		m.removedtables_created = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.tables_created, ids[i])
+		m.removedtables_created[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedTablesCreated returns the removed IDs of the "tables_created" edge to the PlaceTable entity.
+func (m *UserMutation) RemovedTablesCreatedIDs() (ids []string) {
+	for id := range m.removedtables_created {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// TablesCreatedIDs returns the "tables_created" edge IDs in the mutation.
+func (m *UserMutation) TablesCreatedIDs() (ids []string) {
+	for id := range m.tables_created {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetTablesCreated resets all changes to the "tables_created" edge.
+func (m *UserMutation) ResetTablesCreated() {
+	m.tables_created = nil
+	m.clearedtables_created = false
+	m.removedtables_created = nil
+}
+
+// AddTablesUpdatedIDs adds the "tables_updated" edge to the PlaceTable entity by ids.
+func (m *UserMutation) AddTablesUpdatedIDs(ids ...string) {
+	if m.tables_updated == nil {
+		m.tables_updated = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.tables_updated[ids[i]] = struct{}{}
+	}
+}
+
+// ClearTablesUpdated clears the "tables_updated" edge to the PlaceTable entity.
+func (m *UserMutation) ClearTablesUpdated() {
+	m.clearedtables_updated = true
+}
+
+// TablesUpdatedCleared reports if the "tables_updated" edge to the PlaceTable entity was cleared.
+func (m *UserMutation) TablesUpdatedCleared() bool {
+	return m.clearedtables_updated
+}
+
+// RemoveTablesUpdatedIDs removes the "tables_updated" edge to the PlaceTable entity by IDs.
+func (m *UserMutation) RemoveTablesUpdatedIDs(ids ...string) {
+	if m.removedtables_updated == nil {
+		m.removedtables_updated = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.tables_updated, ids[i])
+		m.removedtables_updated[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedTablesUpdated returns the removed IDs of the "tables_updated" edge to the PlaceTable entity.
+func (m *UserMutation) RemovedTablesUpdatedIDs() (ids []string) {
+	for id := range m.removedtables_updated {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// TablesUpdatedIDs returns the "tables_updated" edge IDs in the mutation.
+func (m *UserMutation) TablesUpdatedIDs() (ids []string) {
+	for id := range m.tables_updated {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetTablesUpdated resets all changes to the "tables_updated" edge.
+func (m *UserMutation) ResetTablesUpdated() {
+	m.tables_updated = nil
+	m.clearedtables_updated = false
+	m.removedtables_updated = nil
+}
+
+// AddTablesDeletedIDs adds the "tables_deleted" edge to the PlaceTable entity by ids.
+func (m *UserMutation) AddTablesDeletedIDs(ids ...string) {
+	if m.tables_deleted == nil {
+		m.tables_deleted = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.tables_deleted[ids[i]] = struct{}{}
+	}
+}
+
+// ClearTablesDeleted clears the "tables_deleted" edge to the PlaceTable entity.
+func (m *UserMutation) ClearTablesDeleted() {
+	m.clearedtables_deleted = true
+}
+
+// TablesDeletedCleared reports if the "tables_deleted" edge to the PlaceTable entity was cleared.
+func (m *UserMutation) TablesDeletedCleared() bool {
+	return m.clearedtables_deleted
+}
+
+// RemoveTablesDeletedIDs removes the "tables_deleted" edge to the PlaceTable entity by IDs.
+func (m *UserMutation) RemoveTablesDeletedIDs(ids ...string) {
+	if m.removedtables_deleted == nil {
+		m.removedtables_deleted = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.tables_deleted, ids[i])
+		m.removedtables_deleted[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedTablesDeleted returns the removed IDs of the "tables_deleted" edge to the PlaceTable entity.
+func (m *UserMutation) RemovedTablesDeletedIDs() (ids []string) {
+	for id := range m.removedtables_deleted {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// TablesDeletedIDs returns the "tables_deleted" edge IDs in the mutation.
+func (m *UserMutation) TablesDeletedIDs() (ids []string) {
+	for id := range m.tables_deleted {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetTablesDeleted resets all changes to the "tables_deleted" edge.
+func (m *UserMutation) ResetTablesDeleted() {
+	m.tables_deleted = nil
+	m.clearedtables_deleted = false
+	m.removedtables_deleted = nil
+}
+
+// AddTablesReservedIDs adds the "tables_reserved" edge to the PlaceTable entity by ids.
+func (m *UserMutation) AddTablesReservedIDs(ids ...string) {
+	if m.tables_reserved == nil {
+		m.tables_reserved = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.tables_reserved[ids[i]] = struct{}{}
+	}
+}
+
+// ClearTablesReserved clears the "tables_reserved" edge to the PlaceTable entity.
+func (m *UserMutation) ClearTablesReserved() {
+	m.clearedtables_reserved = true
+}
+
+// TablesReservedCleared reports if the "tables_reserved" edge to the PlaceTable entity was cleared.
+func (m *UserMutation) TablesReservedCleared() bool {
+	return m.clearedtables_reserved
+}
+
+// RemoveTablesReservedIDs removes the "tables_reserved" edge to the PlaceTable entity by IDs.
+func (m *UserMutation) RemoveTablesReservedIDs(ids ...string) {
+	if m.removedtables_reserved == nil {
+		m.removedtables_reserved = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.tables_reserved, ids[i])
+		m.removedtables_reserved[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedTablesReserved returns the removed IDs of the "tables_reserved" edge to the PlaceTable entity.
+func (m *UserMutation) RemovedTablesReservedIDs() (ids []string) {
+	for id := range m.removedtables_reserved {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// TablesReservedIDs returns the "tables_reserved" edge IDs in the mutation.
+func (m *UserMutation) TablesReservedIDs() (ids []string) {
+	for id := range m.tables_reserved {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetTablesReserved resets all changes to the "tables_reserved" edge.
+func (m *UserMutation) ResetTablesReserved() {
+	m.tables_reserved = nil
+	m.clearedtables_reserved = false
+	m.removedtables_reserved = nil
+}
+
+// AddTablesWaitedIDs adds the "tables_waited" edge to the PlaceTable entity by ids.
+func (m *UserMutation) AddTablesWaitedIDs(ids ...string) {
+	if m.tables_waited == nil {
+		m.tables_waited = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.tables_waited[ids[i]] = struct{}{}
+	}
+}
+
+// ClearTablesWaited clears the "tables_waited" edge to the PlaceTable entity.
+func (m *UserMutation) ClearTablesWaited() {
+	m.clearedtables_waited = true
+}
+
+// TablesWaitedCleared reports if the "tables_waited" edge to the PlaceTable entity was cleared.
+func (m *UserMutation) TablesWaitedCleared() bool {
+	return m.clearedtables_waited
+}
+
+// RemoveTablesWaitedIDs removes the "tables_waited" edge to the PlaceTable entity by IDs.
+func (m *UserMutation) RemoveTablesWaitedIDs(ids ...string) {
+	if m.removedtables_waited == nil {
+		m.removedtables_waited = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.tables_waited, ids[i])
+		m.removedtables_waited[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedTablesWaited returns the removed IDs of the "tables_waited" edge to the PlaceTable entity.
+func (m *UserMutation) RemovedTablesWaitedIDs() (ids []string) {
+	for id := range m.removedtables_waited {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// TablesWaitedIDs returns the "tables_waited" edge IDs in the mutation.
+func (m *UserMutation) TablesWaitedIDs() (ids []string) {
+	for id := range m.tables_waited {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetTablesWaited resets all changes to the "tables_waited" edge.
+func (m *UserMutation) ResetTablesWaited() {
+	m.tables_waited = nil
+	m.clearedtables_waited = false
+	m.removedtables_waited = nil
+}
+
 // Where appends a list predicates to the UserMutation builder.
 func (m *UserMutation) Where(ps ...predicate.User) {
 	m.predicates = append(m.predicates, ps...)
@@ -47114,7 +48091,7 @@ func (m *UserMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserMutation) AddedEdges() []string {
-	edges := make([]string, 0, 25)
+	edges := make([]string, 0, 30)
 	if m.userBusinesses != nil {
 		edges = append(edges, user.EdgeUserBusinesses)
 	}
@@ -47189,6 +48166,21 @@ func (m *UserMutation) AddedEdges() []string {
 	}
 	if m.orders != nil {
 		edges = append(edges, user.EdgeOrders)
+	}
+	if m.tables_created != nil {
+		edges = append(edges, user.EdgeTablesCreated)
+	}
+	if m.tables_updated != nil {
+		edges = append(edges, user.EdgeTablesUpdated)
+	}
+	if m.tables_deleted != nil {
+		edges = append(edges, user.EdgeTablesDeleted)
+	}
+	if m.tables_reserved != nil {
+		edges = append(edges, user.EdgeTablesReserved)
+	}
+	if m.tables_waited != nil {
+		edges = append(edges, user.EdgeTablesWaited)
 	}
 	return edges
 }
@@ -47343,13 +48335,43 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeTablesCreated:
+		ids := make([]ent.Value, 0, len(m.tables_created))
+		for id := range m.tables_created {
+			ids = append(ids, id)
+		}
+		return ids
+	case user.EdgeTablesUpdated:
+		ids := make([]ent.Value, 0, len(m.tables_updated))
+		for id := range m.tables_updated {
+			ids = append(ids, id)
+		}
+		return ids
+	case user.EdgeTablesDeleted:
+		ids := make([]ent.Value, 0, len(m.tables_deleted))
+		for id := range m.tables_deleted {
+			ids = append(ids, id)
+		}
+		return ids
+	case user.EdgeTablesReserved:
+		ids := make([]ent.Value, 0, len(m.tables_reserved))
+		for id := range m.tables_reserved {
+			ids = append(ids, id)
+		}
+		return ids
+	case user.EdgeTablesWaited:
+		ids := make([]ent.Value, 0, len(m.tables_waited))
+		for id := range m.tables_waited {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 25)
+	edges := make([]string, 0, 30)
 	if m.removeduserBusinesses != nil {
 		edges = append(edges, user.EdgeUserBusinesses)
 	}
@@ -47418,6 +48440,21 @@ func (m *UserMutation) RemovedEdges() []string {
 	}
 	if m.removedorders != nil {
 		edges = append(edges, user.EdgeOrders)
+	}
+	if m.removedtables_created != nil {
+		edges = append(edges, user.EdgeTablesCreated)
+	}
+	if m.removedtables_updated != nil {
+		edges = append(edges, user.EdgeTablesUpdated)
+	}
+	if m.removedtables_deleted != nil {
+		edges = append(edges, user.EdgeTablesDeleted)
+	}
+	if m.removedtables_reserved != nil {
+		edges = append(edges, user.EdgeTablesReserved)
+	}
+	if m.removedtables_waited != nil {
+		edges = append(edges, user.EdgeTablesWaited)
 	}
 	return edges
 }
@@ -47564,13 +48601,43 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeTablesCreated:
+		ids := make([]ent.Value, 0, len(m.removedtables_created))
+		for id := range m.removedtables_created {
+			ids = append(ids, id)
+		}
+		return ids
+	case user.EdgeTablesUpdated:
+		ids := make([]ent.Value, 0, len(m.removedtables_updated))
+		for id := range m.removedtables_updated {
+			ids = append(ids, id)
+		}
+		return ids
+	case user.EdgeTablesDeleted:
+		ids := make([]ent.Value, 0, len(m.removedtables_deleted))
+		for id := range m.removedtables_deleted {
+			ids = append(ids, id)
+		}
+		return ids
+	case user.EdgeTablesReserved:
+		ids := make([]ent.Value, 0, len(m.removedtables_reserved))
+		for id := range m.removedtables_reserved {
+			ids = append(ids, id)
+		}
+		return ids
+	case user.EdgeTablesWaited:
+		ids := make([]ent.Value, 0, len(m.removedtables_waited))
+		for id := range m.removedtables_waited {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 25)
+	edges := make([]string, 0, 30)
 	if m.cleareduserBusinesses {
 		edges = append(edges, user.EdgeUserBusinesses)
 	}
@@ -47646,6 +48713,21 @@ func (m *UserMutation) ClearedEdges() []string {
 	if m.clearedorders {
 		edges = append(edges, user.EdgeOrders)
 	}
+	if m.clearedtables_created {
+		edges = append(edges, user.EdgeTablesCreated)
+	}
+	if m.clearedtables_updated {
+		edges = append(edges, user.EdgeTablesUpdated)
+	}
+	if m.clearedtables_deleted {
+		edges = append(edges, user.EdgeTablesDeleted)
+	}
+	if m.clearedtables_reserved {
+		edges = append(edges, user.EdgeTablesReserved)
+	}
+	if m.clearedtables_waited {
+		edges = append(edges, user.EdgeTablesWaited)
+	}
 	return edges
 }
 
@@ -47703,6 +48785,16 @@ func (m *UserMutation) EdgeCleared(name string) bool {
 		return m.clearedwallet
 	case user.EdgeOrders:
 		return m.clearedorders
+	case user.EdgeTablesCreated:
+		return m.clearedtables_created
+	case user.EdgeTablesUpdated:
+		return m.clearedtables_updated
+	case user.EdgeTablesDeleted:
+		return m.clearedtables_deleted
+	case user.EdgeTablesReserved:
+		return m.clearedtables_reserved
+	case user.EdgeTablesWaited:
+		return m.clearedtables_waited
 	}
 	return false
 }
@@ -47799,6 +48891,21 @@ func (m *UserMutation) ResetEdge(name string) error {
 		return nil
 	case user.EdgeOrders:
 		m.ResetOrders()
+		return nil
+	case user.EdgeTablesCreated:
+		m.ResetTablesCreated()
+		return nil
+	case user.EdgeTablesUpdated:
+		m.ResetTablesUpdated()
+		return nil
+	case user.EdgeTablesDeleted:
+		m.ResetTablesDeleted()
+		return nil
+	case user.EdgeTablesReserved:
+		m.ResetTablesReserved()
+		return nil
+	case user.EdgeTablesWaited:
+		m.ResetTablesWaited()
 		return nil
 	}
 	return fmt.Errorf("unknown User edge %s", name)

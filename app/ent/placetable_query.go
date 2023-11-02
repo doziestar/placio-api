@@ -11,6 +11,7 @@ import (
 	"placio-app/ent/place"
 	"placio-app/ent/placetable"
 	"placio-app/ent/predicate"
+	"placio-app/ent/user"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -20,13 +21,18 @@ import (
 // PlaceTableQuery is the builder for querying PlaceTable entities.
 type PlaceTableQuery struct {
 	config
-	ctx        *QueryContext
-	order      []placetable.OrderOption
-	inters     []Interceptor
-	predicates []predicate.PlaceTable
-	withPlace  *PlaceQuery
-	withOrders *OrderQuery
-	withFKs    bool
+	ctx            *QueryContext
+	order          []placetable.OrderOption
+	inters         []Interceptor
+	predicates     []predicate.PlaceTable
+	withPlace      *PlaceQuery
+	withCreatedBy  *UserQuery
+	withUpdatedBy  *UserQuery
+	withDeletedBy  *UserQuery
+	withReservedBy *UserQuery
+	withWaiter     *UserQuery
+	withOrders     *OrderQuery
+	withFKs        bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -78,6 +84,116 @@ func (ptq *PlaceTableQuery) QueryPlace() *PlaceQuery {
 			sqlgraph.From(placetable.Table, placetable.FieldID, selector),
 			sqlgraph.To(place.Table, place.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, placetable.PlaceTable, placetable.PlaceColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(ptq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryCreatedBy chains the current query on the "created_by" edge.
+func (ptq *PlaceTableQuery) QueryCreatedBy() *UserQuery {
+	query := (&UserClient{config: ptq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := ptq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := ptq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(placetable.Table, placetable.FieldID, selector),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, placetable.CreatedByTable, placetable.CreatedByColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(ptq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryUpdatedBy chains the current query on the "updated_by" edge.
+func (ptq *PlaceTableQuery) QueryUpdatedBy() *UserQuery {
+	query := (&UserClient{config: ptq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := ptq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := ptq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(placetable.Table, placetable.FieldID, selector),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, placetable.UpdatedByTable, placetable.UpdatedByColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(ptq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryDeletedBy chains the current query on the "deleted_by" edge.
+func (ptq *PlaceTableQuery) QueryDeletedBy() *UserQuery {
+	query := (&UserClient{config: ptq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := ptq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := ptq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(placetable.Table, placetable.FieldID, selector),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, placetable.DeletedByTable, placetable.DeletedByColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(ptq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryReservedBy chains the current query on the "reserved_by" edge.
+func (ptq *PlaceTableQuery) QueryReservedBy() *UserQuery {
+	query := (&UserClient{config: ptq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := ptq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := ptq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(placetable.Table, placetable.FieldID, selector),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, placetable.ReservedByTable, placetable.ReservedByColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(ptq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryWaiter chains the current query on the "waiter" edge.
+func (ptq *PlaceTableQuery) QueryWaiter() *UserQuery {
+	query := (&UserClient{config: ptq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := ptq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := ptq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(placetable.Table, placetable.FieldID, selector),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, placetable.WaiterTable, placetable.WaiterColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(ptq.driver.Dialect(), step)
 		return fromU, nil
@@ -294,13 +410,18 @@ func (ptq *PlaceTableQuery) Clone() *PlaceTableQuery {
 		return nil
 	}
 	return &PlaceTableQuery{
-		config:     ptq.config,
-		ctx:        ptq.ctx.Clone(),
-		order:      append([]placetable.OrderOption{}, ptq.order...),
-		inters:     append([]Interceptor{}, ptq.inters...),
-		predicates: append([]predicate.PlaceTable{}, ptq.predicates...),
-		withPlace:  ptq.withPlace.Clone(),
-		withOrders: ptq.withOrders.Clone(),
+		config:         ptq.config,
+		ctx:            ptq.ctx.Clone(),
+		order:          append([]placetable.OrderOption{}, ptq.order...),
+		inters:         append([]Interceptor{}, ptq.inters...),
+		predicates:     append([]predicate.PlaceTable{}, ptq.predicates...),
+		withPlace:      ptq.withPlace.Clone(),
+		withCreatedBy:  ptq.withCreatedBy.Clone(),
+		withUpdatedBy:  ptq.withUpdatedBy.Clone(),
+		withDeletedBy:  ptq.withDeletedBy.Clone(),
+		withReservedBy: ptq.withReservedBy.Clone(),
+		withWaiter:     ptq.withWaiter.Clone(),
+		withOrders:     ptq.withOrders.Clone(),
 		// clone intermediate query.
 		sql:  ptq.sql.Clone(),
 		path: ptq.path,
@@ -315,6 +436,61 @@ func (ptq *PlaceTableQuery) WithPlace(opts ...func(*PlaceQuery)) *PlaceTableQuer
 		opt(query)
 	}
 	ptq.withPlace = query
+	return ptq
+}
+
+// WithCreatedBy tells the query-builder to eager-load the nodes that are connected to
+// the "created_by" edge. The optional arguments are used to configure the query builder of the edge.
+func (ptq *PlaceTableQuery) WithCreatedBy(opts ...func(*UserQuery)) *PlaceTableQuery {
+	query := (&UserClient{config: ptq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	ptq.withCreatedBy = query
+	return ptq
+}
+
+// WithUpdatedBy tells the query-builder to eager-load the nodes that are connected to
+// the "updated_by" edge. The optional arguments are used to configure the query builder of the edge.
+func (ptq *PlaceTableQuery) WithUpdatedBy(opts ...func(*UserQuery)) *PlaceTableQuery {
+	query := (&UserClient{config: ptq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	ptq.withUpdatedBy = query
+	return ptq
+}
+
+// WithDeletedBy tells the query-builder to eager-load the nodes that are connected to
+// the "deleted_by" edge. The optional arguments are used to configure the query builder of the edge.
+func (ptq *PlaceTableQuery) WithDeletedBy(opts ...func(*UserQuery)) *PlaceTableQuery {
+	query := (&UserClient{config: ptq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	ptq.withDeletedBy = query
+	return ptq
+}
+
+// WithReservedBy tells the query-builder to eager-load the nodes that are connected to
+// the "reserved_by" edge. The optional arguments are used to configure the query builder of the edge.
+func (ptq *PlaceTableQuery) WithReservedBy(opts ...func(*UserQuery)) *PlaceTableQuery {
+	query := (&UserClient{config: ptq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	ptq.withReservedBy = query
+	return ptq
+}
+
+// WithWaiter tells the query-builder to eager-load the nodes that are connected to
+// the "waiter" edge. The optional arguments are used to configure the query builder of the edge.
+func (ptq *PlaceTableQuery) WithWaiter(opts ...func(*UserQuery)) *PlaceTableQuery {
+	query := (&UserClient{config: ptq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	ptq.withWaiter = query
 	return ptq
 }
 
@@ -408,12 +584,17 @@ func (ptq *PlaceTableQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 		nodes       = []*PlaceTable{}
 		withFKs     = ptq.withFKs
 		_spec       = ptq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [7]bool{
 			ptq.withPlace != nil,
+			ptq.withCreatedBy != nil,
+			ptq.withUpdatedBy != nil,
+			ptq.withDeletedBy != nil,
+			ptq.withReservedBy != nil,
+			ptq.withWaiter != nil,
 			ptq.withOrders != nil,
 		}
 	)
-	if ptq.withPlace != nil {
+	if ptq.withPlace != nil || ptq.withCreatedBy != nil || ptq.withUpdatedBy != nil || ptq.withDeletedBy != nil || ptq.withReservedBy != nil || ptq.withWaiter != nil {
 		withFKs = true
 	}
 	if withFKs {
@@ -440,6 +621,36 @@ func (ptq *PlaceTableQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*
 	if query := ptq.withPlace; query != nil {
 		if err := ptq.loadPlace(ctx, query, nodes, nil,
 			func(n *PlaceTable, e *Place) { n.Edges.Place = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := ptq.withCreatedBy; query != nil {
+		if err := ptq.loadCreatedBy(ctx, query, nodes, nil,
+			func(n *PlaceTable, e *User) { n.Edges.CreatedBy = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := ptq.withUpdatedBy; query != nil {
+		if err := ptq.loadUpdatedBy(ctx, query, nodes, nil,
+			func(n *PlaceTable, e *User) { n.Edges.UpdatedBy = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := ptq.withDeletedBy; query != nil {
+		if err := ptq.loadDeletedBy(ctx, query, nodes, nil,
+			func(n *PlaceTable, e *User) { n.Edges.DeletedBy = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := ptq.withReservedBy; query != nil {
+		if err := ptq.loadReservedBy(ctx, query, nodes, nil,
+			func(n *PlaceTable, e *User) { n.Edges.ReservedBy = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := ptq.withWaiter; query != nil {
+		if err := ptq.loadWaiter(ctx, query, nodes, nil,
+			func(n *PlaceTable, e *User) { n.Edges.Waiter = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -478,6 +689,166 @@ func (ptq *PlaceTableQuery) loadPlace(ctx context.Context, query *PlaceQuery, no
 		nodes, ok := nodeids[n.ID]
 		if !ok {
 			return fmt.Errorf(`unexpected foreign-key "place_tables" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (ptq *PlaceTableQuery) loadCreatedBy(ctx context.Context, query *UserQuery, nodes []*PlaceTable, init func(*PlaceTable), assign func(*PlaceTable, *User)) error {
+	ids := make([]string, 0, len(nodes))
+	nodeids := make(map[string][]*PlaceTable)
+	for i := range nodes {
+		if nodes[i].user_tables_created == nil {
+			continue
+		}
+		fk := *nodes[i].user_tables_created
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(user.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "user_tables_created" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (ptq *PlaceTableQuery) loadUpdatedBy(ctx context.Context, query *UserQuery, nodes []*PlaceTable, init func(*PlaceTable), assign func(*PlaceTable, *User)) error {
+	ids := make([]string, 0, len(nodes))
+	nodeids := make(map[string][]*PlaceTable)
+	for i := range nodes {
+		if nodes[i].user_tables_updated == nil {
+			continue
+		}
+		fk := *nodes[i].user_tables_updated
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(user.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "user_tables_updated" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (ptq *PlaceTableQuery) loadDeletedBy(ctx context.Context, query *UserQuery, nodes []*PlaceTable, init func(*PlaceTable), assign func(*PlaceTable, *User)) error {
+	ids := make([]string, 0, len(nodes))
+	nodeids := make(map[string][]*PlaceTable)
+	for i := range nodes {
+		if nodes[i].user_tables_deleted == nil {
+			continue
+		}
+		fk := *nodes[i].user_tables_deleted
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(user.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "user_tables_deleted" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (ptq *PlaceTableQuery) loadReservedBy(ctx context.Context, query *UserQuery, nodes []*PlaceTable, init func(*PlaceTable), assign func(*PlaceTable, *User)) error {
+	ids := make([]string, 0, len(nodes))
+	nodeids := make(map[string][]*PlaceTable)
+	for i := range nodes {
+		if nodes[i].user_tables_reserved == nil {
+			continue
+		}
+		fk := *nodes[i].user_tables_reserved
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(user.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "user_tables_reserved" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (ptq *PlaceTableQuery) loadWaiter(ctx context.Context, query *UserQuery, nodes []*PlaceTable, init func(*PlaceTable), assign func(*PlaceTable, *User)) error {
+	ids := make([]string, 0, len(nodes))
+	nodeids := make(map[string][]*PlaceTable)
+	for i := range nodes {
+		if nodes[i].user_tables_waited == nil {
+			continue
+		}
+		fk := *nodes[i].user_tables_waited
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(user.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "user_tables_waited" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)

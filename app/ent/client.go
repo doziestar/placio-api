@@ -6672,6 +6672,86 @@ func (c *PlaceTableClient) QueryPlace(pt *PlaceTable) *PlaceQuery {
 	return query
 }
 
+// QueryCreatedBy queries the created_by edge of a PlaceTable.
+func (c *PlaceTableClient) QueryCreatedBy(pt *PlaceTable) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pt.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(placetable.Table, placetable.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, placetable.CreatedByTable, placetable.CreatedByColumn),
+		)
+		fromV = sqlgraph.Neighbors(pt.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryUpdatedBy queries the updated_by edge of a PlaceTable.
+func (c *PlaceTableClient) QueryUpdatedBy(pt *PlaceTable) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pt.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(placetable.Table, placetable.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, placetable.UpdatedByTable, placetable.UpdatedByColumn),
+		)
+		fromV = sqlgraph.Neighbors(pt.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryDeletedBy queries the deleted_by edge of a PlaceTable.
+func (c *PlaceTableClient) QueryDeletedBy(pt *PlaceTable) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pt.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(placetable.Table, placetable.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, placetable.DeletedByTable, placetable.DeletedByColumn),
+		)
+		fromV = sqlgraph.Neighbors(pt.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryReservedBy queries the reserved_by edge of a PlaceTable.
+func (c *PlaceTableClient) QueryReservedBy(pt *PlaceTable) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pt.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(placetable.Table, placetable.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, placetable.ReservedByTable, placetable.ReservedByColumn),
+		)
+		fromV = sqlgraph.Neighbors(pt.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryWaiter queries the waiter edge of a PlaceTable.
+func (c *PlaceTableClient) QueryWaiter(pt *PlaceTable) *UserQuery {
+	query := (&UserClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := pt.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(placetable.Table, placetable.FieldID, id),
+			sqlgraph.To(user.Table, user.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, placetable.WaiterTable, placetable.WaiterColumn),
+		)
+		fromV = sqlgraph.Neighbors(pt.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryOrders queries the orders edge of a PlaceTable.
 func (c *PlaceTableClient) QueryOrders(pt *PlaceTable) *OrderQuery {
 	query := (&OrderClient{config: c.config}).Query()
@@ -9324,6 +9404,86 @@ func (c *UserClient) QueryOrders(u *User) *OrderQuery {
 			sqlgraph.From(user.Table, user.FieldID, id),
 			sqlgraph.To(order.Table, order.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, user.OrdersTable, user.OrdersColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTablesCreated queries the tables_created edge of a User.
+func (c *UserClient) QueryTablesCreated(u *User) *PlaceTableQuery {
+	query := (&PlaceTableClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(placetable.Table, placetable.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.TablesCreatedTable, user.TablesCreatedColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTablesUpdated queries the tables_updated edge of a User.
+func (c *UserClient) QueryTablesUpdated(u *User) *PlaceTableQuery {
+	query := (&PlaceTableClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(placetable.Table, placetable.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.TablesUpdatedTable, user.TablesUpdatedColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTablesDeleted queries the tables_deleted edge of a User.
+func (c *UserClient) QueryTablesDeleted(u *User) *PlaceTableQuery {
+	query := (&PlaceTableClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(placetable.Table, placetable.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.TablesDeletedTable, user.TablesDeletedColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTablesReserved queries the tables_reserved edge of a User.
+func (c *UserClient) QueryTablesReserved(u *User) *PlaceTableQuery {
+	query := (&PlaceTableClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(placetable.Table, placetable.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.TablesReservedTable, user.TablesReservedColumn),
+		)
+		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTablesWaited queries the tables_waited edge of a User.
+func (c *UserClient) QueryTablesWaited(u *User) *PlaceTableQuery {
+	query := (&PlaceTableClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := u.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(user.Table, user.FieldID, id),
+			sqlgraph.To(placetable.Table, placetable.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, user.TablesWaitedTable, user.TablesWaitedColumn),
 		)
 		fromV = sqlgraph.Neighbors(u.driver.Dialect(), step)
 		return fromV, nil

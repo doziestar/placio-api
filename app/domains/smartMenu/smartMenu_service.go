@@ -366,15 +366,16 @@ func (s *SmartMenuService) RegenerateQRCode(ctx context.Context, tableId string)
     }
 
     url := fmt.Sprintf("https://placio.io/%s/menus/?table=%d&placeId=%s", 
-        table.Edges.Place.Name, 
+        table.Edges.Place.Edges.Business.Edges.Websites.DomainName,
         table.Number, 
-        table.Edges.Place.ID)
+        table.Edges.Place.ID,
+	)
     qr, err := qrcode.New(url, qrcode.Medium)
     if err != nil {
         return nil, fmt.Errorf("failed to generate QR code: %w", err)
     }
 
-    qr.ForegroundColor = color.RGBA{R: 139, G: 0, B: 0, A: 255} // Dark red
+    qr.ForegroundColor = color.RGBA{R: 139, G: 0, B: 0, A: 255}
     qr.BackgroundColor = color.White
 
     png, err := qr.PNG(256)

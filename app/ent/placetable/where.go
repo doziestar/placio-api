@@ -84,6 +84,41 @@ func QrCode(v string) predicate.PlaceTable {
 	return predicate.PlaceTable(sql.FieldEQ(FieldQrCode, v))
 }
 
+// Description applies equality check predicate on the "description" field. It's identical to DescriptionEQ.
+func Description(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEQ(FieldDescription, v))
+}
+
+// Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
+func Status(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEQ(FieldStatus, v))
+}
+
+// Type applies equality check predicate on the "type" field. It's identical to TypeEQ.
+func Type(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEQ(FieldType, v))
+}
+
+// IsActive applies equality check predicate on the "is_active" field. It's identical to IsActiveEQ.
+func IsActive(v bool) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEQ(FieldIsActive, v))
+}
+
+// IsReserved applies equality check predicate on the "is_reserved" field. It's identical to IsReservedEQ.
+func IsReserved(v bool) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEQ(FieldIsReserved, v))
+}
+
+// IsVip applies equality check predicate on the "is_vip" field. It's identical to IsVipEQ.
+func IsVip(v bool) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEQ(FieldIsVip, v))
+}
+
+// IsPremium applies equality check predicate on the "is_premium" field. It's identical to IsPremiumEQ.
+func IsPremium(v bool) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEQ(FieldIsPremium, v))
+}
+
 // NumberEQ applies the EQ predicate on the "number" field.
 func NumberEQ(v int) predicate.PlaceTable {
 	return predicate.PlaceTable(sql.FieldEQ(FieldNumber, v))
@@ -284,6 +319,251 @@ func QrCodeContainsFold(v string) predicate.PlaceTable {
 	return predicate.PlaceTable(sql.FieldContainsFold(FieldQrCode, v))
 }
 
+// DescriptionEQ applies the EQ predicate on the "description" field.
+func DescriptionEQ(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEQ(FieldDescription, v))
+}
+
+// DescriptionNEQ applies the NEQ predicate on the "description" field.
+func DescriptionNEQ(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNEQ(FieldDescription, v))
+}
+
+// DescriptionIn applies the In predicate on the "description" field.
+func DescriptionIn(vs ...string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldIn(FieldDescription, vs...))
+}
+
+// DescriptionNotIn applies the NotIn predicate on the "description" field.
+func DescriptionNotIn(vs ...string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNotIn(FieldDescription, vs...))
+}
+
+// DescriptionGT applies the GT predicate on the "description" field.
+func DescriptionGT(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldGT(FieldDescription, v))
+}
+
+// DescriptionGTE applies the GTE predicate on the "description" field.
+func DescriptionGTE(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldGTE(FieldDescription, v))
+}
+
+// DescriptionLT applies the LT predicate on the "description" field.
+func DescriptionLT(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldLT(FieldDescription, v))
+}
+
+// DescriptionLTE applies the LTE predicate on the "description" field.
+func DescriptionLTE(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldLTE(FieldDescription, v))
+}
+
+// DescriptionContains applies the Contains predicate on the "description" field.
+func DescriptionContains(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldContains(FieldDescription, v))
+}
+
+// DescriptionHasPrefix applies the HasPrefix predicate on the "description" field.
+func DescriptionHasPrefix(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldHasPrefix(FieldDescription, v))
+}
+
+// DescriptionHasSuffix applies the HasSuffix predicate on the "description" field.
+func DescriptionHasSuffix(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldHasSuffix(FieldDescription, v))
+}
+
+// DescriptionIsNil applies the IsNil predicate on the "description" field.
+func DescriptionIsNil() predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldIsNull(FieldDescription))
+}
+
+// DescriptionNotNil applies the NotNil predicate on the "description" field.
+func DescriptionNotNil() predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNotNull(FieldDescription))
+}
+
+// DescriptionEqualFold applies the EqualFold predicate on the "description" field.
+func DescriptionEqualFold(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEqualFold(FieldDescription, v))
+}
+
+// DescriptionContainsFold applies the ContainsFold predicate on the "description" field.
+func DescriptionContainsFold(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldContainsFold(FieldDescription, v))
+}
+
+// StatusEQ applies the EQ predicate on the "status" field.
+func StatusEQ(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEQ(FieldStatus, v))
+}
+
+// StatusNEQ applies the NEQ predicate on the "status" field.
+func StatusNEQ(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNEQ(FieldStatus, v))
+}
+
+// StatusIn applies the In predicate on the "status" field.
+func StatusIn(vs ...string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldIn(FieldStatus, vs...))
+}
+
+// StatusNotIn applies the NotIn predicate on the "status" field.
+func StatusNotIn(vs ...string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNotIn(FieldStatus, vs...))
+}
+
+// StatusGT applies the GT predicate on the "status" field.
+func StatusGT(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldGT(FieldStatus, v))
+}
+
+// StatusGTE applies the GTE predicate on the "status" field.
+func StatusGTE(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldGTE(FieldStatus, v))
+}
+
+// StatusLT applies the LT predicate on the "status" field.
+func StatusLT(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldLT(FieldStatus, v))
+}
+
+// StatusLTE applies the LTE predicate on the "status" field.
+func StatusLTE(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldLTE(FieldStatus, v))
+}
+
+// StatusContains applies the Contains predicate on the "status" field.
+func StatusContains(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldContains(FieldStatus, v))
+}
+
+// StatusHasPrefix applies the HasPrefix predicate on the "status" field.
+func StatusHasPrefix(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldHasPrefix(FieldStatus, v))
+}
+
+// StatusHasSuffix applies the HasSuffix predicate on the "status" field.
+func StatusHasSuffix(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldHasSuffix(FieldStatus, v))
+}
+
+// StatusEqualFold applies the EqualFold predicate on the "status" field.
+func StatusEqualFold(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEqualFold(FieldStatus, v))
+}
+
+// StatusContainsFold applies the ContainsFold predicate on the "status" field.
+func StatusContainsFold(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldContainsFold(FieldStatus, v))
+}
+
+// TypeEQ applies the EQ predicate on the "type" field.
+func TypeEQ(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEQ(FieldType, v))
+}
+
+// TypeNEQ applies the NEQ predicate on the "type" field.
+func TypeNEQ(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNEQ(FieldType, v))
+}
+
+// TypeIn applies the In predicate on the "type" field.
+func TypeIn(vs ...string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldIn(FieldType, vs...))
+}
+
+// TypeNotIn applies the NotIn predicate on the "type" field.
+func TypeNotIn(vs ...string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNotIn(FieldType, vs...))
+}
+
+// TypeGT applies the GT predicate on the "type" field.
+func TypeGT(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldGT(FieldType, v))
+}
+
+// TypeGTE applies the GTE predicate on the "type" field.
+func TypeGTE(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldGTE(FieldType, v))
+}
+
+// TypeLT applies the LT predicate on the "type" field.
+func TypeLT(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldLT(FieldType, v))
+}
+
+// TypeLTE applies the LTE predicate on the "type" field.
+func TypeLTE(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldLTE(FieldType, v))
+}
+
+// TypeContains applies the Contains predicate on the "type" field.
+func TypeContains(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldContains(FieldType, v))
+}
+
+// TypeHasPrefix applies the HasPrefix predicate on the "type" field.
+func TypeHasPrefix(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldHasPrefix(FieldType, v))
+}
+
+// TypeHasSuffix applies the HasSuffix predicate on the "type" field.
+func TypeHasSuffix(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldHasSuffix(FieldType, v))
+}
+
+// TypeEqualFold applies the EqualFold predicate on the "type" field.
+func TypeEqualFold(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEqualFold(FieldType, v))
+}
+
+// TypeContainsFold applies the ContainsFold predicate on the "type" field.
+func TypeContainsFold(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldContainsFold(FieldType, v))
+}
+
+// IsActiveEQ applies the EQ predicate on the "is_active" field.
+func IsActiveEQ(v bool) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEQ(FieldIsActive, v))
+}
+
+// IsActiveNEQ applies the NEQ predicate on the "is_active" field.
+func IsActiveNEQ(v bool) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNEQ(FieldIsActive, v))
+}
+
+// IsReservedEQ applies the EQ predicate on the "is_reserved" field.
+func IsReservedEQ(v bool) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEQ(FieldIsReserved, v))
+}
+
+// IsReservedNEQ applies the NEQ predicate on the "is_reserved" field.
+func IsReservedNEQ(v bool) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNEQ(FieldIsReserved, v))
+}
+
+// IsVipEQ applies the EQ predicate on the "is_vip" field.
+func IsVipEQ(v bool) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEQ(FieldIsVip, v))
+}
+
+// IsVipNEQ applies the NEQ predicate on the "is_vip" field.
+func IsVipNEQ(v bool) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNEQ(FieldIsVip, v))
+}
+
+// IsPremiumEQ applies the EQ predicate on the "is_premium" field.
+func IsPremiumEQ(v bool) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEQ(FieldIsPremium, v))
+}
+
+// IsPremiumNEQ applies the NEQ predicate on the "is_premium" field.
+func IsPremiumNEQ(v bool) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNEQ(FieldIsPremium, v))
+}
+
 // HasPlace applies the HasEdge predicate on the "place" edge.
 func HasPlace() predicate.PlaceTable {
 	return predicate.PlaceTable(func(s *sql.Selector) {
@@ -299,6 +579,121 @@ func HasPlace() predicate.PlaceTable {
 func HasPlaceWith(preds ...predicate.Place) predicate.PlaceTable {
 	return predicate.PlaceTable(func(s *sql.Selector) {
 		step := newPlaceStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasCreatedBy applies the HasEdge predicate on the "created_by" edge.
+func HasCreatedBy() predicate.PlaceTable {
+	return predicate.PlaceTable(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, CreatedByTable, CreatedByColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCreatedByWith applies the HasEdge predicate on the "created_by" edge with a given conditions (other predicates).
+func HasCreatedByWith(preds ...predicate.User) predicate.PlaceTable {
+	return predicate.PlaceTable(func(s *sql.Selector) {
+		step := newCreatedByStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasUpdatedBy applies the HasEdge predicate on the "updated_by" edge.
+func HasUpdatedBy() predicate.PlaceTable {
+	return predicate.PlaceTable(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, UpdatedByTable, UpdatedByColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasUpdatedByWith applies the HasEdge predicate on the "updated_by" edge with a given conditions (other predicates).
+func HasUpdatedByWith(preds ...predicate.User) predicate.PlaceTable {
+	return predicate.PlaceTable(func(s *sql.Selector) {
+		step := newUpdatedByStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasDeletedBy applies the HasEdge predicate on the "deleted_by" edge.
+func HasDeletedBy() predicate.PlaceTable {
+	return predicate.PlaceTable(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, DeletedByTable, DeletedByColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasDeletedByWith applies the HasEdge predicate on the "deleted_by" edge with a given conditions (other predicates).
+func HasDeletedByWith(preds ...predicate.User) predicate.PlaceTable {
+	return predicate.PlaceTable(func(s *sql.Selector) {
+		step := newDeletedByStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasReservedBy applies the HasEdge predicate on the "reserved_by" edge.
+func HasReservedBy() predicate.PlaceTable {
+	return predicate.PlaceTable(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, ReservedByTable, ReservedByColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasReservedByWith applies the HasEdge predicate on the "reserved_by" edge with a given conditions (other predicates).
+func HasReservedByWith(preds ...predicate.User) predicate.PlaceTable {
+	return predicate.PlaceTable(func(s *sql.Selector) {
+		step := newReservedByStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasWaiter applies the HasEdge predicate on the "waiter" edge.
+func HasWaiter() predicate.PlaceTable {
+	return predicate.PlaceTable(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, WaiterTable, WaiterColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasWaiterWith applies the HasEdge predicate on the "waiter" edge with a given conditions (other predicates).
+func HasWaiterWith(preds ...predicate.User) predicate.PlaceTable {
+	return predicate.PlaceTable(func(s *sql.Selector) {
+		step := newWaiterStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

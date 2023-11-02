@@ -523,6 +523,30 @@ func init() {
 	placetableDescIsDeleted := placetableFields[3].Descriptor()
 	// placetable.DefaultIsDeleted holds the default value on creation for the is_deleted field.
 	placetable.DefaultIsDeleted = placetableDescIsDeleted.Default.(bool)
+	// placetableDescStatus is the schema descriptor for status field.
+	placetableDescStatus := placetableFields[6].Descriptor()
+	// placetable.DefaultStatus holds the default value on creation for the status field.
+	placetable.DefaultStatus = placetableDescStatus.Default.(string)
+	// placetableDescType is the schema descriptor for type field.
+	placetableDescType := placetableFields[7].Descriptor()
+	// placetable.DefaultType holds the default value on creation for the type field.
+	placetable.DefaultType = placetableDescType.Default.(string)
+	// placetableDescIsActive is the schema descriptor for is_active field.
+	placetableDescIsActive := placetableFields[8].Descriptor()
+	// placetable.DefaultIsActive holds the default value on creation for the is_active field.
+	placetable.DefaultIsActive = placetableDescIsActive.Default.(bool)
+	// placetableDescIsReserved is the schema descriptor for is_reserved field.
+	placetableDescIsReserved := placetableFields[9].Descriptor()
+	// placetable.DefaultIsReserved holds the default value on creation for the is_reserved field.
+	placetable.DefaultIsReserved = placetableDescIsReserved.Default.(bool)
+	// placetableDescIsVip is the schema descriptor for is_vip field.
+	placetableDescIsVip := placetableFields[10].Descriptor()
+	// placetable.DefaultIsVip holds the default value on creation for the is_vip field.
+	placetable.DefaultIsVip = placetableDescIsVip.Default.(bool)
+	// placetableDescIsPremium is the schema descriptor for is_premium field.
+	placetableDescIsPremium := placetableFields[11].Descriptor()
+	// placetable.DefaultIsPremium holds the default value on creation for the is_premium field.
+	placetable.DefaultIsPremium = placetableDescIsPremium.Default.(bool)
 	// placetableDescID is the schema descriptor for id field.
 	placetableDescID := placetableFields[0].Descriptor()
 	// placetable.IDValidator is a validator for the "id" field. It is called by the builders before save.

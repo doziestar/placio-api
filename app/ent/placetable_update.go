@@ -10,6 +10,7 @@ import (
 	"placio-app/ent/place"
 	"placio-app/ent/placetable"
 	"placio-app/ent/predicate"
+	"placio-app/ent/user"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -96,6 +97,110 @@ func (ptu *PlaceTableUpdate) ClearQrCode() *PlaceTableUpdate {
 	return ptu
 }
 
+// SetDescription sets the "description" field.
+func (ptu *PlaceTableUpdate) SetDescription(s string) *PlaceTableUpdate {
+	ptu.mutation.SetDescription(s)
+	return ptu
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (ptu *PlaceTableUpdate) SetNillableDescription(s *string) *PlaceTableUpdate {
+	if s != nil {
+		ptu.SetDescription(*s)
+	}
+	return ptu
+}
+
+// ClearDescription clears the value of the "description" field.
+func (ptu *PlaceTableUpdate) ClearDescription() *PlaceTableUpdate {
+	ptu.mutation.ClearDescription()
+	return ptu
+}
+
+// SetStatus sets the "status" field.
+func (ptu *PlaceTableUpdate) SetStatus(s string) *PlaceTableUpdate {
+	ptu.mutation.SetStatus(s)
+	return ptu
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (ptu *PlaceTableUpdate) SetNillableStatus(s *string) *PlaceTableUpdate {
+	if s != nil {
+		ptu.SetStatus(*s)
+	}
+	return ptu
+}
+
+// SetType sets the "type" field.
+func (ptu *PlaceTableUpdate) SetType(s string) *PlaceTableUpdate {
+	ptu.mutation.SetType(s)
+	return ptu
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (ptu *PlaceTableUpdate) SetNillableType(s *string) *PlaceTableUpdate {
+	if s != nil {
+		ptu.SetType(*s)
+	}
+	return ptu
+}
+
+// SetIsActive sets the "is_active" field.
+func (ptu *PlaceTableUpdate) SetIsActive(b bool) *PlaceTableUpdate {
+	ptu.mutation.SetIsActive(b)
+	return ptu
+}
+
+// SetNillableIsActive sets the "is_active" field if the given value is not nil.
+func (ptu *PlaceTableUpdate) SetNillableIsActive(b *bool) *PlaceTableUpdate {
+	if b != nil {
+		ptu.SetIsActive(*b)
+	}
+	return ptu
+}
+
+// SetIsReserved sets the "is_reserved" field.
+func (ptu *PlaceTableUpdate) SetIsReserved(b bool) *PlaceTableUpdate {
+	ptu.mutation.SetIsReserved(b)
+	return ptu
+}
+
+// SetNillableIsReserved sets the "is_reserved" field if the given value is not nil.
+func (ptu *PlaceTableUpdate) SetNillableIsReserved(b *bool) *PlaceTableUpdate {
+	if b != nil {
+		ptu.SetIsReserved(*b)
+	}
+	return ptu
+}
+
+// SetIsVip sets the "is_vip" field.
+func (ptu *PlaceTableUpdate) SetIsVip(b bool) *PlaceTableUpdate {
+	ptu.mutation.SetIsVip(b)
+	return ptu
+}
+
+// SetNillableIsVip sets the "is_vip" field if the given value is not nil.
+func (ptu *PlaceTableUpdate) SetNillableIsVip(b *bool) *PlaceTableUpdate {
+	if b != nil {
+		ptu.SetIsVip(*b)
+	}
+	return ptu
+}
+
+// SetIsPremium sets the "is_premium" field.
+func (ptu *PlaceTableUpdate) SetIsPremium(b bool) *PlaceTableUpdate {
+	ptu.mutation.SetIsPremium(b)
+	return ptu
+}
+
+// SetNillableIsPremium sets the "is_premium" field if the given value is not nil.
+func (ptu *PlaceTableUpdate) SetNillableIsPremium(b *bool) *PlaceTableUpdate {
+	if b != nil {
+		ptu.SetIsPremium(*b)
+	}
+	return ptu
+}
+
 // SetPlaceID sets the "place" edge to the Place entity by ID.
 func (ptu *PlaceTableUpdate) SetPlaceID(id string) *PlaceTableUpdate {
 	ptu.mutation.SetPlaceID(id)
@@ -113,6 +218,101 @@ func (ptu *PlaceTableUpdate) SetNillablePlaceID(id *string) *PlaceTableUpdate {
 // SetPlace sets the "place" edge to the Place entity.
 func (ptu *PlaceTableUpdate) SetPlace(p *Place) *PlaceTableUpdate {
 	return ptu.SetPlaceID(p.ID)
+}
+
+// SetCreatedByID sets the "created_by" edge to the User entity by ID.
+func (ptu *PlaceTableUpdate) SetCreatedByID(id string) *PlaceTableUpdate {
+	ptu.mutation.SetCreatedByID(id)
+	return ptu
+}
+
+// SetNillableCreatedByID sets the "created_by" edge to the User entity by ID if the given value is not nil.
+func (ptu *PlaceTableUpdate) SetNillableCreatedByID(id *string) *PlaceTableUpdate {
+	if id != nil {
+		ptu = ptu.SetCreatedByID(*id)
+	}
+	return ptu
+}
+
+// SetCreatedBy sets the "created_by" edge to the User entity.
+func (ptu *PlaceTableUpdate) SetCreatedBy(u *User) *PlaceTableUpdate {
+	return ptu.SetCreatedByID(u.ID)
+}
+
+// SetUpdatedByID sets the "updated_by" edge to the User entity by ID.
+func (ptu *PlaceTableUpdate) SetUpdatedByID(id string) *PlaceTableUpdate {
+	ptu.mutation.SetUpdatedByID(id)
+	return ptu
+}
+
+// SetNillableUpdatedByID sets the "updated_by" edge to the User entity by ID if the given value is not nil.
+func (ptu *PlaceTableUpdate) SetNillableUpdatedByID(id *string) *PlaceTableUpdate {
+	if id != nil {
+		ptu = ptu.SetUpdatedByID(*id)
+	}
+	return ptu
+}
+
+// SetUpdatedBy sets the "updated_by" edge to the User entity.
+func (ptu *PlaceTableUpdate) SetUpdatedBy(u *User) *PlaceTableUpdate {
+	return ptu.SetUpdatedByID(u.ID)
+}
+
+// SetDeletedByID sets the "deleted_by" edge to the User entity by ID.
+func (ptu *PlaceTableUpdate) SetDeletedByID(id string) *PlaceTableUpdate {
+	ptu.mutation.SetDeletedByID(id)
+	return ptu
+}
+
+// SetNillableDeletedByID sets the "deleted_by" edge to the User entity by ID if the given value is not nil.
+func (ptu *PlaceTableUpdate) SetNillableDeletedByID(id *string) *PlaceTableUpdate {
+	if id != nil {
+		ptu = ptu.SetDeletedByID(*id)
+	}
+	return ptu
+}
+
+// SetDeletedBy sets the "deleted_by" edge to the User entity.
+func (ptu *PlaceTableUpdate) SetDeletedBy(u *User) *PlaceTableUpdate {
+	return ptu.SetDeletedByID(u.ID)
+}
+
+// SetReservedByID sets the "reserved_by" edge to the User entity by ID.
+func (ptu *PlaceTableUpdate) SetReservedByID(id string) *PlaceTableUpdate {
+	ptu.mutation.SetReservedByID(id)
+	return ptu
+}
+
+// SetNillableReservedByID sets the "reserved_by" edge to the User entity by ID if the given value is not nil.
+func (ptu *PlaceTableUpdate) SetNillableReservedByID(id *string) *PlaceTableUpdate {
+	if id != nil {
+		ptu = ptu.SetReservedByID(*id)
+	}
+	return ptu
+}
+
+// SetReservedBy sets the "reserved_by" edge to the User entity.
+func (ptu *PlaceTableUpdate) SetReservedBy(u *User) *PlaceTableUpdate {
+	return ptu.SetReservedByID(u.ID)
+}
+
+// SetWaiterID sets the "waiter" edge to the User entity by ID.
+func (ptu *PlaceTableUpdate) SetWaiterID(id string) *PlaceTableUpdate {
+	ptu.mutation.SetWaiterID(id)
+	return ptu
+}
+
+// SetNillableWaiterID sets the "waiter" edge to the User entity by ID if the given value is not nil.
+func (ptu *PlaceTableUpdate) SetNillableWaiterID(id *string) *PlaceTableUpdate {
+	if id != nil {
+		ptu = ptu.SetWaiterID(*id)
+	}
+	return ptu
+}
+
+// SetWaiter sets the "waiter" edge to the User entity.
+func (ptu *PlaceTableUpdate) SetWaiter(u *User) *PlaceTableUpdate {
+	return ptu.SetWaiterID(u.ID)
 }
 
 // AddOrderIDs adds the "orders" edge to the Order entity by IDs.
@@ -138,6 +338,36 @@ func (ptu *PlaceTableUpdate) Mutation() *PlaceTableMutation {
 // ClearPlace clears the "place" edge to the Place entity.
 func (ptu *PlaceTableUpdate) ClearPlace() *PlaceTableUpdate {
 	ptu.mutation.ClearPlace()
+	return ptu
+}
+
+// ClearCreatedBy clears the "created_by" edge to the User entity.
+func (ptu *PlaceTableUpdate) ClearCreatedBy() *PlaceTableUpdate {
+	ptu.mutation.ClearCreatedBy()
+	return ptu
+}
+
+// ClearUpdatedBy clears the "updated_by" edge to the User entity.
+func (ptu *PlaceTableUpdate) ClearUpdatedBy() *PlaceTableUpdate {
+	ptu.mutation.ClearUpdatedBy()
+	return ptu
+}
+
+// ClearDeletedBy clears the "deleted_by" edge to the User entity.
+func (ptu *PlaceTableUpdate) ClearDeletedBy() *PlaceTableUpdate {
+	ptu.mutation.ClearDeletedBy()
+	return ptu
+}
+
+// ClearReservedBy clears the "reserved_by" edge to the User entity.
+func (ptu *PlaceTableUpdate) ClearReservedBy() *PlaceTableUpdate {
+	ptu.mutation.ClearReservedBy()
+	return ptu
+}
+
+// ClearWaiter clears the "waiter" edge to the User entity.
+func (ptu *PlaceTableUpdate) ClearWaiter() *PlaceTableUpdate {
+	ptu.mutation.ClearWaiter()
 	return ptu
 }
 
@@ -219,6 +449,30 @@ func (ptu *PlaceTableUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if ptu.mutation.QrCodeCleared() {
 		_spec.ClearField(placetable.FieldQrCode, field.TypeString)
 	}
+	if value, ok := ptu.mutation.Description(); ok {
+		_spec.SetField(placetable.FieldDescription, field.TypeString, value)
+	}
+	if ptu.mutation.DescriptionCleared() {
+		_spec.ClearField(placetable.FieldDescription, field.TypeString)
+	}
+	if value, ok := ptu.mutation.Status(); ok {
+		_spec.SetField(placetable.FieldStatus, field.TypeString, value)
+	}
+	if value, ok := ptu.mutation.GetType(); ok {
+		_spec.SetField(placetable.FieldType, field.TypeString, value)
+	}
+	if value, ok := ptu.mutation.IsActive(); ok {
+		_spec.SetField(placetable.FieldIsActive, field.TypeBool, value)
+	}
+	if value, ok := ptu.mutation.IsReserved(); ok {
+		_spec.SetField(placetable.FieldIsReserved, field.TypeBool, value)
+	}
+	if value, ok := ptu.mutation.IsVip(); ok {
+		_spec.SetField(placetable.FieldIsVip, field.TypeBool, value)
+	}
+	if value, ok := ptu.mutation.IsPremium(); ok {
+		_spec.SetField(placetable.FieldIsPremium, field.TypeBool, value)
+	}
 	if ptu.mutation.PlaceCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -241,6 +495,151 @@ func (ptu *PlaceTableUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ptu.mutation.CreatedByCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   placetable.CreatedByTable,
+			Columns: []string{placetable.CreatedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ptu.mutation.CreatedByIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   placetable.CreatedByTable,
+			Columns: []string{placetable.CreatedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ptu.mutation.UpdatedByCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   placetable.UpdatedByTable,
+			Columns: []string{placetable.UpdatedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ptu.mutation.UpdatedByIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   placetable.UpdatedByTable,
+			Columns: []string{placetable.UpdatedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ptu.mutation.DeletedByCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   placetable.DeletedByTable,
+			Columns: []string{placetable.DeletedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ptu.mutation.DeletedByIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   placetable.DeletedByTable,
+			Columns: []string{placetable.DeletedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ptu.mutation.ReservedByCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   placetable.ReservedByTable,
+			Columns: []string{placetable.ReservedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ptu.mutation.ReservedByIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   placetable.ReservedByTable,
+			Columns: []string{placetable.ReservedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ptu.mutation.WaiterCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   placetable.WaiterTable,
+			Columns: []string{placetable.WaiterColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ptu.mutation.WaiterIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   placetable.WaiterTable,
+			Columns: []string{placetable.WaiterColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
@@ -380,6 +779,110 @@ func (ptuo *PlaceTableUpdateOne) ClearQrCode() *PlaceTableUpdateOne {
 	return ptuo
 }
 
+// SetDescription sets the "description" field.
+func (ptuo *PlaceTableUpdateOne) SetDescription(s string) *PlaceTableUpdateOne {
+	ptuo.mutation.SetDescription(s)
+	return ptuo
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (ptuo *PlaceTableUpdateOne) SetNillableDescription(s *string) *PlaceTableUpdateOne {
+	if s != nil {
+		ptuo.SetDescription(*s)
+	}
+	return ptuo
+}
+
+// ClearDescription clears the value of the "description" field.
+func (ptuo *PlaceTableUpdateOne) ClearDescription() *PlaceTableUpdateOne {
+	ptuo.mutation.ClearDescription()
+	return ptuo
+}
+
+// SetStatus sets the "status" field.
+func (ptuo *PlaceTableUpdateOne) SetStatus(s string) *PlaceTableUpdateOne {
+	ptuo.mutation.SetStatus(s)
+	return ptuo
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (ptuo *PlaceTableUpdateOne) SetNillableStatus(s *string) *PlaceTableUpdateOne {
+	if s != nil {
+		ptuo.SetStatus(*s)
+	}
+	return ptuo
+}
+
+// SetType sets the "type" field.
+func (ptuo *PlaceTableUpdateOne) SetType(s string) *PlaceTableUpdateOne {
+	ptuo.mutation.SetType(s)
+	return ptuo
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (ptuo *PlaceTableUpdateOne) SetNillableType(s *string) *PlaceTableUpdateOne {
+	if s != nil {
+		ptuo.SetType(*s)
+	}
+	return ptuo
+}
+
+// SetIsActive sets the "is_active" field.
+func (ptuo *PlaceTableUpdateOne) SetIsActive(b bool) *PlaceTableUpdateOne {
+	ptuo.mutation.SetIsActive(b)
+	return ptuo
+}
+
+// SetNillableIsActive sets the "is_active" field if the given value is not nil.
+func (ptuo *PlaceTableUpdateOne) SetNillableIsActive(b *bool) *PlaceTableUpdateOne {
+	if b != nil {
+		ptuo.SetIsActive(*b)
+	}
+	return ptuo
+}
+
+// SetIsReserved sets the "is_reserved" field.
+func (ptuo *PlaceTableUpdateOne) SetIsReserved(b bool) *PlaceTableUpdateOne {
+	ptuo.mutation.SetIsReserved(b)
+	return ptuo
+}
+
+// SetNillableIsReserved sets the "is_reserved" field if the given value is not nil.
+func (ptuo *PlaceTableUpdateOne) SetNillableIsReserved(b *bool) *PlaceTableUpdateOne {
+	if b != nil {
+		ptuo.SetIsReserved(*b)
+	}
+	return ptuo
+}
+
+// SetIsVip sets the "is_vip" field.
+func (ptuo *PlaceTableUpdateOne) SetIsVip(b bool) *PlaceTableUpdateOne {
+	ptuo.mutation.SetIsVip(b)
+	return ptuo
+}
+
+// SetNillableIsVip sets the "is_vip" field if the given value is not nil.
+func (ptuo *PlaceTableUpdateOne) SetNillableIsVip(b *bool) *PlaceTableUpdateOne {
+	if b != nil {
+		ptuo.SetIsVip(*b)
+	}
+	return ptuo
+}
+
+// SetIsPremium sets the "is_premium" field.
+func (ptuo *PlaceTableUpdateOne) SetIsPremium(b bool) *PlaceTableUpdateOne {
+	ptuo.mutation.SetIsPremium(b)
+	return ptuo
+}
+
+// SetNillableIsPremium sets the "is_premium" field if the given value is not nil.
+func (ptuo *PlaceTableUpdateOne) SetNillableIsPremium(b *bool) *PlaceTableUpdateOne {
+	if b != nil {
+		ptuo.SetIsPremium(*b)
+	}
+	return ptuo
+}
+
 // SetPlaceID sets the "place" edge to the Place entity by ID.
 func (ptuo *PlaceTableUpdateOne) SetPlaceID(id string) *PlaceTableUpdateOne {
 	ptuo.mutation.SetPlaceID(id)
@@ -397,6 +900,101 @@ func (ptuo *PlaceTableUpdateOne) SetNillablePlaceID(id *string) *PlaceTableUpdat
 // SetPlace sets the "place" edge to the Place entity.
 func (ptuo *PlaceTableUpdateOne) SetPlace(p *Place) *PlaceTableUpdateOne {
 	return ptuo.SetPlaceID(p.ID)
+}
+
+// SetCreatedByID sets the "created_by" edge to the User entity by ID.
+func (ptuo *PlaceTableUpdateOne) SetCreatedByID(id string) *PlaceTableUpdateOne {
+	ptuo.mutation.SetCreatedByID(id)
+	return ptuo
+}
+
+// SetNillableCreatedByID sets the "created_by" edge to the User entity by ID if the given value is not nil.
+func (ptuo *PlaceTableUpdateOne) SetNillableCreatedByID(id *string) *PlaceTableUpdateOne {
+	if id != nil {
+		ptuo = ptuo.SetCreatedByID(*id)
+	}
+	return ptuo
+}
+
+// SetCreatedBy sets the "created_by" edge to the User entity.
+func (ptuo *PlaceTableUpdateOne) SetCreatedBy(u *User) *PlaceTableUpdateOne {
+	return ptuo.SetCreatedByID(u.ID)
+}
+
+// SetUpdatedByID sets the "updated_by" edge to the User entity by ID.
+func (ptuo *PlaceTableUpdateOne) SetUpdatedByID(id string) *PlaceTableUpdateOne {
+	ptuo.mutation.SetUpdatedByID(id)
+	return ptuo
+}
+
+// SetNillableUpdatedByID sets the "updated_by" edge to the User entity by ID if the given value is not nil.
+func (ptuo *PlaceTableUpdateOne) SetNillableUpdatedByID(id *string) *PlaceTableUpdateOne {
+	if id != nil {
+		ptuo = ptuo.SetUpdatedByID(*id)
+	}
+	return ptuo
+}
+
+// SetUpdatedBy sets the "updated_by" edge to the User entity.
+func (ptuo *PlaceTableUpdateOne) SetUpdatedBy(u *User) *PlaceTableUpdateOne {
+	return ptuo.SetUpdatedByID(u.ID)
+}
+
+// SetDeletedByID sets the "deleted_by" edge to the User entity by ID.
+func (ptuo *PlaceTableUpdateOne) SetDeletedByID(id string) *PlaceTableUpdateOne {
+	ptuo.mutation.SetDeletedByID(id)
+	return ptuo
+}
+
+// SetNillableDeletedByID sets the "deleted_by" edge to the User entity by ID if the given value is not nil.
+func (ptuo *PlaceTableUpdateOne) SetNillableDeletedByID(id *string) *PlaceTableUpdateOne {
+	if id != nil {
+		ptuo = ptuo.SetDeletedByID(*id)
+	}
+	return ptuo
+}
+
+// SetDeletedBy sets the "deleted_by" edge to the User entity.
+func (ptuo *PlaceTableUpdateOne) SetDeletedBy(u *User) *PlaceTableUpdateOne {
+	return ptuo.SetDeletedByID(u.ID)
+}
+
+// SetReservedByID sets the "reserved_by" edge to the User entity by ID.
+func (ptuo *PlaceTableUpdateOne) SetReservedByID(id string) *PlaceTableUpdateOne {
+	ptuo.mutation.SetReservedByID(id)
+	return ptuo
+}
+
+// SetNillableReservedByID sets the "reserved_by" edge to the User entity by ID if the given value is not nil.
+func (ptuo *PlaceTableUpdateOne) SetNillableReservedByID(id *string) *PlaceTableUpdateOne {
+	if id != nil {
+		ptuo = ptuo.SetReservedByID(*id)
+	}
+	return ptuo
+}
+
+// SetReservedBy sets the "reserved_by" edge to the User entity.
+func (ptuo *PlaceTableUpdateOne) SetReservedBy(u *User) *PlaceTableUpdateOne {
+	return ptuo.SetReservedByID(u.ID)
+}
+
+// SetWaiterID sets the "waiter" edge to the User entity by ID.
+func (ptuo *PlaceTableUpdateOne) SetWaiterID(id string) *PlaceTableUpdateOne {
+	ptuo.mutation.SetWaiterID(id)
+	return ptuo
+}
+
+// SetNillableWaiterID sets the "waiter" edge to the User entity by ID if the given value is not nil.
+func (ptuo *PlaceTableUpdateOne) SetNillableWaiterID(id *string) *PlaceTableUpdateOne {
+	if id != nil {
+		ptuo = ptuo.SetWaiterID(*id)
+	}
+	return ptuo
+}
+
+// SetWaiter sets the "waiter" edge to the User entity.
+func (ptuo *PlaceTableUpdateOne) SetWaiter(u *User) *PlaceTableUpdateOne {
+	return ptuo.SetWaiterID(u.ID)
 }
 
 // AddOrderIDs adds the "orders" edge to the Order entity by IDs.
@@ -422,6 +1020,36 @@ func (ptuo *PlaceTableUpdateOne) Mutation() *PlaceTableMutation {
 // ClearPlace clears the "place" edge to the Place entity.
 func (ptuo *PlaceTableUpdateOne) ClearPlace() *PlaceTableUpdateOne {
 	ptuo.mutation.ClearPlace()
+	return ptuo
+}
+
+// ClearCreatedBy clears the "created_by" edge to the User entity.
+func (ptuo *PlaceTableUpdateOne) ClearCreatedBy() *PlaceTableUpdateOne {
+	ptuo.mutation.ClearCreatedBy()
+	return ptuo
+}
+
+// ClearUpdatedBy clears the "updated_by" edge to the User entity.
+func (ptuo *PlaceTableUpdateOne) ClearUpdatedBy() *PlaceTableUpdateOne {
+	ptuo.mutation.ClearUpdatedBy()
+	return ptuo
+}
+
+// ClearDeletedBy clears the "deleted_by" edge to the User entity.
+func (ptuo *PlaceTableUpdateOne) ClearDeletedBy() *PlaceTableUpdateOne {
+	ptuo.mutation.ClearDeletedBy()
+	return ptuo
+}
+
+// ClearReservedBy clears the "reserved_by" edge to the User entity.
+func (ptuo *PlaceTableUpdateOne) ClearReservedBy() *PlaceTableUpdateOne {
+	ptuo.mutation.ClearReservedBy()
+	return ptuo
+}
+
+// ClearWaiter clears the "waiter" edge to the User entity.
+func (ptuo *PlaceTableUpdateOne) ClearWaiter() *PlaceTableUpdateOne {
+	ptuo.mutation.ClearWaiter()
 	return ptuo
 }
 
@@ -533,6 +1161,30 @@ func (ptuo *PlaceTableUpdateOne) sqlSave(ctx context.Context) (_node *PlaceTable
 	if ptuo.mutation.QrCodeCleared() {
 		_spec.ClearField(placetable.FieldQrCode, field.TypeString)
 	}
+	if value, ok := ptuo.mutation.Description(); ok {
+		_spec.SetField(placetable.FieldDescription, field.TypeString, value)
+	}
+	if ptuo.mutation.DescriptionCleared() {
+		_spec.ClearField(placetable.FieldDescription, field.TypeString)
+	}
+	if value, ok := ptuo.mutation.Status(); ok {
+		_spec.SetField(placetable.FieldStatus, field.TypeString, value)
+	}
+	if value, ok := ptuo.mutation.GetType(); ok {
+		_spec.SetField(placetable.FieldType, field.TypeString, value)
+	}
+	if value, ok := ptuo.mutation.IsActive(); ok {
+		_spec.SetField(placetable.FieldIsActive, field.TypeBool, value)
+	}
+	if value, ok := ptuo.mutation.IsReserved(); ok {
+		_spec.SetField(placetable.FieldIsReserved, field.TypeBool, value)
+	}
+	if value, ok := ptuo.mutation.IsVip(); ok {
+		_spec.SetField(placetable.FieldIsVip, field.TypeBool, value)
+	}
+	if value, ok := ptuo.mutation.IsPremium(); ok {
+		_spec.SetField(placetable.FieldIsPremium, field.TypeBool, value)
+	}
 	if ptuo.mutation.PlaceCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -555,6 +1207,151 @@ func (ptuo *PlaceTableUpdateOne) sqlSave(ctx context.Context) (_node *PlaceTable
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(place.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ptuo.mutation.CreatedByCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   placetable.CreatedByTable,
+			Columns: []string{placetable.CreatedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ptuo.mutation.CreatedByIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   placetable.CreatedByTable,
+			Columns: []string{placetable.CreatedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ptuo.mutation.UpdatedByCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   placetable.UpdatedByTable,
+			Columns: []string{placetable.UpdatedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ptuo.mutation.UpdatedByIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   placetable.UpdatedByTable,
+			Columns: []string{placetable.UpdatedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ptuo.mutation.DeletedByCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   placetable.DeletedByTable,
+			Columns: []string{placetable.DeletedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ptuo.mutation.DeletedByIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   placetable.DeletedByTable,
+			Columns: []string{placetable.DeletedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ptuo.mutation.ReservedByCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   placetable.ReservedByTable,
+			Columns: []string{placetable.ReservedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ptuo.mutation.ReservedByIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   placetable.ReservedByTable,
+			Columns: []string{placetable.ReservedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ptuo.mutation.WaiterCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   placetable.WaiterTable,
+			Columns: []string{placetable.WaiterColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ptuo.mutation.WaiterIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   placetable.WaiterTable,
+			Columns: []string{placetable.WaiterColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {
