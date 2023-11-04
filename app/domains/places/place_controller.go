@@ -422,7 +422,6 @@ func (c *PlaceController) getPlacesByFilters(ctx *gin.Context) error {
 
 	places, nextPageToken, err := c.placeService.GetPlaces(ctx, &filter, page, limit)
 	if err != nil {
-
 		return err
 	}
 

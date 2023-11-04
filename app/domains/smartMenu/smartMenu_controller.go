@@ -23,10 +23,10 @@ func NewSmartMenuController(smartMenuService ISmartMenu) *SmartMenuController {
 
 func (c *SmartMenuController) RegisterRoutes(router *gin.RouterGroup) {
 	const (
-		placeIDParam = "placeId"
-		menuIDParam  = "menuId"
-		tableIDParam = "tableId"
-		orderIDParam = "orderId"
+		placeIDParam    = "placeId"
+		menuIDParam     = "menuId"
+		tableIDParam    = "tableId"
+		orderIDParam    = "orderId"
 		menuItemIDParam = "menuItemId"
 	)
 
@@ -40,33 +40,33 @@ func (c *SmartMenuController) RegisterRoutes(router *gin.RouterGroup) {
 		menuRouter.PATCH(fmt.Sprintf("/:%s/restore", menuIDParam), middleware.ErrorMiddleware(c.restoreMenu))
 	}
 
-	 menuItemRouter := router.Group("/menuItems")
-    {
-        // Create a new menu item
-        menuItemRouter.POST("/:menuId", middleware.ErrorMiddleware(c.createMenuItem))
-        // Required Body Params: name, price, status, description, menuId
+	menuItemRouter := router.Group("/menuItems")
+	{
+		// Create a new menu item
+		menuItemRouter.POST("/:menuId", middleware.ErrorMiddleware(c.createMenuItem))
+		// Required Body Params: name, price, status, description, menuId
 
-        // Get all menu items
-        menuItemRouter.GET("/", middleware.ErrorMiddleware(c.getMenuItems))
-        // Optional Query Params: menuId, status
+		// Get all menu items
+		menuItemRouter.GET("/", middleware.ErrorMiddleware(c.getMenuItems))
+		// Optional Query Params: menuId, status
 
-        // Get a specific menu item by ID
-        menuItemRouter.GET(fmt.Sprintf("/:%s", menuItemIDParam), middleware.ErrorMiddleware(c.getMenuItemByID))
-        // Required Path Params: menuItemId
+		// Get a specific menu item by ID
+		menuItemRouter.GET(fmt.Sprintf("/:%s", menuItemIDParam), middleware.ErrorMiddleware(c.getMenuItemByID))
+		// Required Path Params: menuItemId
 
-        // Update a specific menu item by ID
-        menuItemRouter.PUT(fmt.Sprintf("/:%s", menuItemIDParam), middleware.ErrorMiddleware(c.updateMenuItem))
-        // Required Path Params: menuItemId
-        // Required Body Params: Any of name, price, status, description
+		// Update a specific menu item by ID
+		menuItemRouter.PUT(fmt.Sprintf("/:%s", menuItemIDParam), middleware.ErrorMiddleware(c.updateMenuItem))
+		// Required Path Params: menuItemId
+		// Required Body Params: Any of name, price, status, description
 
-        // Delete a specific menu item by ID
-        menuItemRouter.DELETE(fmt.Sprintf("/:%s", menuItemIDParam), middleware.ErrorMiddleware(c.deleteMenuItem))
-        // Required Path Params: menuItemId
+		// Delete a specific menu item by ID
+		menuItemRouter.DELETE(fmt.Sprintf("/:%s", menuItemIDParam), middleware.ErrorMiddleware(c.deleteMenuItem))
+		// Required Path Params: menuItemId
 
-        // Restore a specific deleted menu item by ID
-        menuItemRouter.PATCH(fmt.Sprintf("/:%s/restore", menuItemIDParam), middleware.ErrorMiddleware(c.restoreMenuItem))
-        // Required Path Params: menuItemId
-    }
+		// Restore a specific deleted menu item by ID
+		menuItemRouter.PATCH(fmt.Sprintf("/:%s/restore", menuItemIDParam), middleware.ErrorMiddleware(c.restoreMenuItem))
+		// Required Path Params: menuItemId
+	}
 
 	tableRouter := router.Group("/tables")
 	{
@@ -89,7 +89,6 @@ func (c *SmartMenuController) RegisterRoutes(router *gin.RouterGroup) {
 		orderRouter.PATCH(fmt.Sprintf("/:%s/restore", orderIDParam), middleware.ErrorMiddleware(c.restoreOrder))
 	}
 }
-
 
 // CreateMenuItem creates a new menu item.
 // @Summary Create a new menu item
@@ -125,7 +124,7 @@ func (c *SmartMenuController) createMenuItem(ctx *gin.Context) error {
 	if description, exists := form.Value["description"]; exists {
 		menuItem.Description = description[0]
 	}
-	
+
 	if price, exists := form.Value["price"]; exists {
 		menuItem.Price, err = strconv.ParseFloat(price[0], 64)
 		if err != nil {
@@ -134,7 +133,7 @@ func (c *SmartMenuController) createMenuItem(ctx *gin.Context) error {
 		}
 	}
 	if preparationTime, exists := form.Value["preparationTime"]; exists {
-		menuItem.PreparationTime, err =  strconv.Atoi(preparationTime[0])
+		menuItem.PreparationTime, err = strconv.Atoi(preparationTime[0])
 		if err != nil {
 			log.Println("Error parsing preparationTime:", err)
 			menuItem.PreparationTime = 2
@@ -146,7 +145,7 @@ func (c *SmartMenuController) createMenuItem(ctx *gin.Context) error {
 	if options, exists := form.Value["options"]; exists {
 		menuItem.Options = []string{options[0]}
 	}
-	
+
 	log.Println("menuItem", menuItem)
 
 	medias := form.File["medias"]
@@ -155,7 +154,7 @@ func (c *SmartMenuController) createMenuItem(ctx *gin.Context) error {
 	}
 
 	log.Println("menuId", menuId, "menuItem", menuItem, "medias", medias)
-	
+
 	createdMenuItem, err := c.smartMenuService.CreateMenuItem(ctx.Request.Context(), menuId, &menuItem, medias)
 	if err != nil {
 		return err
@@ -223,7 +222,7 @@ func (c *SmartMenuController) updateMenuItem(ctx *gin.Context) error {
 	if err := ctx.ShouldBindJSON(&menuItem); err != nil {
 		return err
 	}
-	
+
 	updatedMenuItem, err := c.smartMenuService.UpdateMenuItem(ctx.Request.Context(), menuItemId, &menuItem)
 	if err != nil {
 		return err
@@ -290,7 +289,7 @@ func (c *SmartMenuController) createMenu(ctx *gin.Context) error {
 	log.Println("createMenu")
 	placeId := ctx.Param("placeId")
 	var menu ent.Menu
-	
+
 	form, err := ctx.MultipartForm()
 	if err != nil {
 		log.Println("Error parsing form:", err)
@@ -336,7 +335,6 @@ func (c *SmartMenuController) createMenu(ctx *gin.Context) error {
 	return errors.ErrUnprocessable
 
 }
-
 
 // GetMenus returns a list of menus.
 // @Summary Get menus

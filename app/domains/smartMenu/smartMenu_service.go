@@ -25,13 +25,13 @@ import (
 )
 
 type SmartMenuService struct {
-	client *ent.Client
+	client       *ent.Client
 	mediaService media.MediaService
-	cloud  *cloudinary.Cloudinary
+	cloud        *cloudinary.Cloudinary
 }
 
 type ISmartMenu interface {
-	CreateMenu(context.Context, string, *ent.Menu, string, []*multipart.FileHeader)(*ent.Menu, error)
+	CreateMenu(context.Context, string, *ent.Menu, string, []*multipart.FileHeader) (*ent.Menu, error)
 	GetMenus(context.Context, string) ([]*ent.Menu, error)
 	GetMenuByID(context.Context, string) (*ent.Menu, error)
 	UpdateMenu(context.Context, string, *ent.Menu) (*ent.Menu, error)
@@ -103,13 +103,13 @@ func (s *SmartMenuService) CreateMenuItem(ctx context.Context, menuId string, me
 		go func(menuItemID string, mediaFiles []*multipart.FileHeader) {
 			ctx := context.Background() // Use a background context for the asynchronous operation
 			log.Println("Uploading media for menu item with ID", menuItemID)
-			
+
 			media, err := s.mediaService.UploadAndCreateMedia(ctx, mediaFiles)
 			if err != nil {
 				log.Println("Error uploading media for menu item with ID", menuItemID, ":", err)
 				return
 			}
-			
+
 			_, err = s.client.MenuItem.
 				UpdateOneID(menuItemID).
 				AddMedia(media...).
@@ -118,7 +118,7 @@ func (s *SmartMenuService) CreateMenuItem(ctx context.Context, menuId string, me
 				log.Println("Error adding media to menu item with ID", menuItemID, ":", err)
 				return
 			}
-			
+
 			log.Println("Media uploaded and added to menu item with ID", menuItemID)
 		}(newMenuItem.ID, mediaFiles)
 	}
@@ -204,7 +204,6 @@ func (s *SmartMenuService) CreateMenu(ctx context.Context, placeId string, menuD
 		AddPlaceIDs(placeId).
 		Save(ctx)
 
-
 	if err != nil {
 		log.Println("Error creating menu with name", menuDto.Name, ":", err)
 		return nil, err
@@ -215,13 +214,13 @@ func (s *SmartMenuService) CreateMenu(ctx context.Context, placeId string, menuD
 		go func(menuID string, mediaFiles []*multipart.FileHeader) {
 			ctx := context.Background() // Use a background context for the asynchronous operation
 			log.Println("Uploading media for menu with ID", menuID)
-			
+
 			media, err := s.mediaService.UploadAndCreateMedia(ctx, mediaFiles)
 			if err != nil {
 				log.Println("Error uploading media for menu with ID", menuID, ":", err)
 				return
 			}
-			
+
 			_, err = s.client.Menu.
 				UpdateOneID(menuID).
 				AddMedia(media...).
@@ -230,7 +229,7 @@ func (s *SmartMenuService) CreateMenu(ctx context.Context, placeId string, menuD
 				log.Println("Error adding media to menu with ID", menuID, ":", err)
 				return
 			}
-			
+
 			log.Println("Media uploaded and added to menu with ID", menuID)
 		}(newMenu.ID, medias)
 	}
@@ -251,7 +250,6 @@ func (s *SmartMenuService) ensureCategoryExists(ctx context.Context, categoryNam
 	}
 	return catData, err
 }
-
 
 func (s *SmartMenuService) GetMenus(ctx context.Context, placeId string) ([]*ent.Menu, error) {
 	return s.client.Place.
@@ -351,59 +349,59 @@ func (s *SmartMenuService) RestoreTable(ctx context.Context, tableId string) (*e
 }
 
 func (s *SmartMenuService) RegenerateQRCode(ctx context.Context, tableId string) (*ent.PlaceTable, error) {
-    // 1. Fetch the table and related business and place information from the database
-    table, err := s.client.PlaceTable.
-        Query().
-        Where(placetable.IDEQ(tableId)).
-        WithPlace(func(pq *ent.PlaceQuery) {
-            pq.WithBusiness(func(bq *ent.BusinessQuery) {
-                bq.WithWebsites()
-            })
-        }).
-        Only(ctx)
-    if err != nil {
-        return nil, fmt.Errorf("failed querying place table: %w", err)
-    }
+	// 1. Fetch the table and related business and place information from the database
+	table, err := s.client.PlaceTable.
+		Query().
+		Where(placetable.IDEQ(tableId)).
+		WithPlace(func(pq *ent.PlaceQuery) {
+			pq.WithBusiness(func(bq *ent.BusinessQuery) {
+				bq.WithWebsites()
+			})
+		}).
+		Only(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed querying place table: %w", err)
+	}
 
-    url := fmt.Sprintf("https://placio.io/%s/menus/?table=%d&placeId=%s", 
-        table.Edges.Place.Edges.Business.Edges.Websites.DomainName,
-        table.Number, 
-        table.Edges.Place.ID,
+	url := fmt.Sprintf("https://placio.io/%s/menus/?table=%d&placeId=%s",
+		table.Edges.Place.Edges.Business.Edges.Websites.DomainName,
+		table.Number,
+		table.Edges.Place.ID,
 	)
-    qr, err := qrcode.New(url, qrcode.Medium)
-    if err != nil {
-        return nil, fmt.Errorf("failed to generate QR code: %w", err)
-    }
+	qr, err := qrcode.New(url, qrcode.Medium)
+	if err != nil {
+		return nil, fmt.Errorf("failed to generate QR code: %w", err)
+	}
 
-    qr.ForegroundColor = color.RGBA{R: 139, G: 0, B: 0, A: 255}
-    qr.BackgroundColor = color.White
+	qr.ForegroundColor = color.RGBA{R: 139, G: 0, B: 0, A: 255}
+	qr.BackgroundColor = color.White
 
-    png, err := qr.PNG(256)
-    if err != nil {
-        return nil, fmt.Errorf("failed to convert QR code to PNG: %w", err)
-    }
+	png, err := qr.PNG(256)
+	if err != nil {
+		return nil, fmt.Errorf("failed to convert QR code to PNG: %w", err)
+	}
 
-    reader := bytes.NewReader(png)
+	reader := bytes.NewReader(png)
 
-    uploadParams := uploader.UploadParams{
-        Folder: "tables",
-        Tags:   []string{"QRCode", "Placio"},
-    }
-    
-    uploadResult, err := s.cloud.Upload.Upload(ctx, reader, uploadParams)
-    if err != nil {
-        return nil, fmt.Errorf("failed to upload QR code to Cloudinary: %w", err)
-    }
+	uploadParams := uploader.UploadParams{
+		Folder: "tables",
+		Tags:   []string{"QRCode", "Placio"},
+	}
 
-    updatedTable, err := s.client.PlaceTable.
-        UpdateOneID(table.ID).
-        SetQrCode(uploadResult.URL).
-        Save(ctx)
-    if err != nil {
-        return nil, fmt.Errorf("failed updating place table: %w", err)
-    }
+	uploadResult, err := s.cloud.Upload.Upload(ctx, reader, uploadParams)
+	if err != nil {
+		return nil, fmt.Errorf("failed to upload QR code to Cloudinary: %w", err)
+	}
 
-    return updatedTable, nil
+	updatedTable, err := s.client.PlaceTable.
+		UpdateOneID(table.ID).
+		SetQrCode(uploadResult.URL).
+		Save(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed updating place table: %w", err)
+	}
+
+	return updatedTable, nil
 }
 
 func (s *SmartMenuService) CreateOrder(ctx context.Context, tableId string, placeId string, order *ent.Order) (*ent.Order, error) {
@@ -442,4 +440,3 @@ func (s *SmartMenuService) RestoreOrder(ctx context.Context, s2 string) (*ent.Or
 	//TODO implement me
 	panic("implement me")
 }
-

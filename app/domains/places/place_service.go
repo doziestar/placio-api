@@ -710,6 +710,8 @@ func (s *PlaceServiceImpl) GetPlaces(ctx context.Context, filter *PlaceFilter, l
 	if limit == 0 {
 		limit = 10
 	}
+
+	log.Println("getting places", filter, lastId, limit)
 	query := s.client.Place.
 		Query().
 		Order(ent.Asc(place.FieldID)).
