@@ -164,6 +164,27 @@ services:
     privileged: true
     restart: unless-stopped
 
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - proxy
+      - backend
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - portainer_data:/data
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.docker.network=default'
+      - 'traefik.http.routers.portainer-secure.entrypoints=websecure'
+      - 'traefik.http.routers.portainer-secure.rule=Host(`portainer.palnight.com`)'
+      - 'traefik.http.routers.portainer-secure.service=portainer'
+      - 'traefik.http.services.portainer.loadbalancer.server.port=9000'
+
 
 
 networks:
