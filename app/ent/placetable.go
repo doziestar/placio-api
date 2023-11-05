@@ -20,6 +20,10 @@ type PlaceTable struct {
 	ID string `json:"id,omitempty"`
 	// Number holds the value of the "number" field.
 	Number int `json:"number,omitempty"`
+	// Name holds the value of the "name" field.
+	Name string `json:"name,omitempty"`
+	// Capacity holds the value of the "capacity" field.
+	Capacity int `json:"capacity,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt string `json:"deleted_at,omitempty"`
 	// IsDeleted holds the value of the "is_deleted" field.
@@ -31,7 +35,7 @@ type PlaceTable struct {
 	// Status holds the value of the "status" field.
 	Status string `json:"status,omitempty"`
 	// Type holds the value of the "type" field.
-	Type string `json:"type,omitempty"`
+	Type placetable.Type `json:"type,omitempty"`
 	// IsActive holds the value of the "is_active" field.
 	IsActive bool `json:"is_active,omitempty"`
 	// IsReserved holds the value of the "is_reserved" field.
@@ -167,9 +171,9 @@ func (*PlaceTable) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case placetable.FieldIsDeleted, placetable.FieldIsActive, placetable.FieldIsReserved, placetable.FieldIsVip, placetable.FieldIsPremium:
 			values[i] = new(sql.NullBool)
-		case placetable.FieldNumber:
+		case placetable.FieldNumber, placetable.FieldCapacity:
 			values[i] = new(sql.NullInt64)
-		case placetable.FieldID, placetable.FieldDeletedAt, placetable.FieldQrCode, placetable.FieldDescription, placetable.FieldStatus, placetable.FieldType:
+		case placetable.FieldID, placetable.FieldName, placetable.FieldDeletedAt, placetable.FieldQrCode, placetable.FieldDescription, placetable.FieldStatus, placetable.FieldType:
 			values[i] = new(sql.NullString)
 		case placetable.ForeignKeys[0]: // place_tables
 			values[i] = new(sql.NullString)
@@ -210,6 +214,18 @@ func (pt *PlaceTable) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				pt.Number = int(value.Int64)
 			}
+		case placetable.FieldName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field name", values[i])
+			} else if value.Valid {
+				pt.Name = value.String
+			}
+		case placetable.FieldCapacity:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field capacity", values[i])
+			} else if value.Valid {
+				pt.Capacity = int(value.Int64)
+			}
 		case placetable.FieldDeletedAt:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
@@ -244,7 +260,7 @@ func (pt *PlaceTable) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field type", values[i])
 			} else if value.Valid {
-				pt.Type = value.String
+				pt.Type = placetable.Type(value.String)
 			}
 		case placetable.FieldIsActive:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -386,6 +402,12 @@ func (pt *PlaceTable) String() string {
 	builder.WriteString("number=")
 	builder.WriteString(fmt.Sprintf("%v", pt.Number))
 	builder.WriteString(", ")
+	builder.WriteString("name=")
+	builder.WriteString(pt.Name)
+	builder.WriteString(", ")
+	builder.WriteString("capacity=")
+	builder.WriteString(fmt.Sprintf("%v", pt.Capacity))
+	builder.WriteString(", ")
 	builder.WriteString("deleted_at=")
 	builder.WriteString(pt.DeletedAt)
 	builder.WriteString(", ")
@@ -402,7 +424,7 @@ func (pt *PlaceTable) String() string {
 	builder.WriteString(pt.Status)
 	builder.WriteString(", ")
 	builder.WriteString("type=")
-	builder.WriteString(pt.Type)
+	builder.WriteString(fmt.Sprintf("%v", pt.Type))
 	builder.WriteString(", ")
 	builder.WriteString("is_active=")
 	builder.WriteString(fmt.Sprintf("%v", pt.IsActive))

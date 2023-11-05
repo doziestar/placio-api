@@ -69,6 +69,16 @@ func Number(v int) predicate.PlaceTable {
 	return predicate.PlaceTable(sql.FieldEQ(FieldNumber, v))
 }
 
+// Name applies equality check predicate on the "name" field. It's identical to NameEQ.
+func Name(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEQ(FieldName, v))
+}
+
+// Capacity applies equality check predicate on the "capacity" field. It's identical to CapacityEQ.
+func Capacity(v int) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEQ(FieldCapacity, v))
+}
+
 // DeletedAt applies equality check predicate on the "deleted_at" field. It's identical to DeletedAtEQ.
 func DeletedAt(v string) predicate.PlaceTable {
 	return predicate.PlaceTable(sql.FieldEQ(FieldDeletedAt, v))
@@ -92,11 +102,6 @@ func Description(v string) predicate.PlaceTable {
 // Status applies equality check predicate on the "status" field. It's identical to StatusEQ.
 func Status(v string) predicate.PlaceTable {
 	return predicate.PlaceTable(sql.FieldEQ(FieldStatus, v))
-}
-
-// Type applies equality check predicate on the "type" field. It's identical to TypeEQ.
-func Type(v string) predicate.PlaceTable {
-	return predicate.PlaceTable(sql.FieldEQ(FieldType, v))
 }
 
 // IsActive applies equality check predicate on the "is_active" field. It's identical to IsActiveEQ.
@@ -157,6 +162,121 @@ func NumberLT(v int) predicate.PlaceTable {
 // NumberLTE applies the LTE predicate on the "number" field.
 func NumberLTE(v int) predicate.PlaceTable {
 	return predicate.PlaceTable(sql.FieldLTE(FieldNumber, v))
+}
+
+// NameEQ applies the EQ predicate on the "name" field.
+func NameEQ(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEQ(FieldName, v))
+}
+
+// NameNEQ applies the NEQ predicate on the "name" field.
+func NameNEQ(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNEQ(FieldName, v))
+}
+
+// NameIn applies the In predicate on the "name" field.
+func NameIn(vs ...string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldIn(FieldName, vs...))
+}
+
+// NameNotIn applies the NotIn predicate on the "name" field.
+func NameNotIn(vs ...string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNotIn(FieldName, vs...))
+}
+
+// NameGT applies the GT predicate on the "name" field.
+func NameGT(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldGT(FieldName, v))
+}
+
+// NameGTE applies the GTE predicate on the "name" field.
+func NameGTE(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldGTE(FieldName, v))
+}
+
+// NameLT applies the LT predicate on the "name" field.
+func NameLT(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldLT(FieldName, v))
+}
+
+// NameLTE applies the LTE predicate on the "name" field.
+func NameLTE(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldLTE(FieldName, v))
+}
+
+// NameContains applies the Contains predicate on the "name" field.
+func NameContains(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldContains(FieldName, v))
+}
+
+// NameHasPrefix applies the HasPrefix predicate on the "name" field.
+func NameHasPrefix(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldHasPrefix(FieldName, v))
+}
+
+// NameHasSuffix applies the HasSuffix predicate on the "name" field.
+func NameHasSuffix(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldHasSuffix(FieldName, v))
+}
+
+// NameIsNil applies the IsNil predicate on the "name" field.
+func NameIsNil() predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldIsNull(FieldName))
+}
+
+// NameNotNil applies the NotNil predicate on the "name" field.
+func NameNotNil() predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNotNull(FieldName))
+}
+
+// NameEqualFold applies the EqualFold predicate on the "name" field.
+func NameEqualFold(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEqualFold(FieldName, v))
+}
+
+// NameContainsFold applies the ContainsFold predicate on the "name" field.
+func NameContainsFold(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldContainsFold(FieldName, v))
+}
+
+// CapacityEQ applies the EQ predicate on the "capacity" field.
+func CapacityEQ(v int) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEQ(FieldCapacity, v))
+}
+
+// CapacityNEQ applies the NEQ predicate on the "capacity" field.
+func CapacityNEQ(v int) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNEQ(FieldCapacity, v))
+}
+
+// CapacityIn applies the In predicate on the "capacity" field.
+func CapacityIn(vs ...int) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldIn(FieldCapacity, vs...))
+}
+
+// CapacityNotIn applies the NotIn predicate on the "capacity" field.
+func CapacityNotIn(vs ...int) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNotIn(FieldCapacity, vs...))
+}
+
+// CapacityGT applies the GT predicate on the "capacity" field.
+func CapacityGT(v int) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldGT(FieldCapacity, v))
+}
+
+// CapacityGTE applies the GTE predicate on the "capacity" field.
+func CapacityGTE(v int) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldGTE(FieldCapacity, v))
+}
+
+// CapacityLT applies the LT predicate on the "capacity" field.
+func CapacityLT(v int) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldLT(FieldCapacity, v))
+}
+
+// CapacityLTE applies the LTE predicate on the "capacity" field.
+func CapacityLTE(v int) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldLTE(FieldCapacity, v))
 }
 
 // DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
@@ -460,68 +580,33 @@ func StatusContainsFold(v string) predicate.PlaceTable {
 }
 
 // TypeEQ applies the EQ predicate on the "type" field.
-func TypeEQ(v string) predicate.PlaceTable {
+func TypeEQ(v Type) predicate.PlaceTable {
 	return predicate.PlaceTable(sql.FieldEQ(FieldType, v))
 }
 
 // TypeNEQ applies the NEQ predicate on the "type" field.
-func TypeNEQ(v string) predicate.PlaceTable {
+func TypeNEQ(v Type) predicate.PlaceTable {
 	return predicate.PlaceTable(sql.FieldNEQ(FieldType, v))
 }
 
 // TypeIn applies the In predicate on the "type" field.
-func TypeIn(vs ...string) predicate.PlaceTable {
+func TypeIn(vs ...Type) predicate.PlaceTable {
 	return predicate.PlaceTable(sql.FieldIn(FieldType, vs...))
 }
 
 // TypeNotIn applies the NotIn predicate on the "type" field.
-func TypeNotIn(vs ...string) predicate.PlaceTable {
+func TypeNotIn(vs ...Type) predicate.PlaceTable {
 	return predicate.PlaceTable(sql.FieldNotIn(FieldType, vs...))
 }
 
-// TypeGT applies the GT predicate on the "type" field.
-func TypeGT(v string) predicate.PlaceTable {
-	return predicate.PlaceTable(sql.FieldGT(FieldType, v))
+// TypeIsNil applies the IsNil predicate on the "type" field.
+func TypeIsNil() predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldIsNull(FieldType))
 }
 
-// TypeGTE applies the GTE predicate on the "type" field.
-func TypeGTE(v string) predicate.PlaceTable {
-	return predicate.PlaceTable(sql.FieldGTE(FieldType, v))
-}
-
-// TypeLT applies the LT predicate on the "type" field.
-func TypeLT(v string) predicate.PlaceTable {
-	return predicate.PlaceTable(sql.FieldLT(FieldType, v))
-}
-
-// TypeLTE applies the LTE predicate on the "type" field.
-func TypeLTE(v string) predicate.PlaceTable {
-	return predicate.PlaceTable(sql.FieldLTE(FieldType, v))
-}
-
-// TypeContains applies the Contains predicate on the "type" field.
-func TypeContains(v string) predicate.PlaceTable {
-	return predicate.PlaceTable(sql.FieldContains(FieldType, v))
-}
-
-// TypeHasPrefix applies the HasPrefix predicate on the "type" field.
-func TypeHasPrefix(v string) predicate.PlaceTable {
-	return predicate.PlaceTable(sql.FieldHasPrefix(FieldType, v))
-}
-
-// TypeHasSuffix applies the HasSuffix predicate on the "type" field.
-func TypeHasSuffix(v string) predicate.PlaceTable {
-	return predicate.PlaceTable(sql.FieldHasSuffix(FieldType, v))
-}
-
-// TypeEqualFold applies the EqualFold predicate on the "type" field.
-func TypeEqualFold(v string) predicate.PlaceTable {
-	return predicate.PlaceTable(sql.FieldEqualFold(FieldType, v))
-}
-
-// TypeContainsFold applies the ContainsFold predicate on the "type" field.
-func TypeContainsFold(v string) predicate.PlaceTable {
-	return predicate.PlaceTable(sql.FieldContainsFold(FieldType, v))
+// TypeNotNil applies the NotNil predicate on the "type" field.
+func TypeNotNil() predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNotNull(FieldType))
 }
 
 // IsActiveEQ applies the EQ predicate on the "is_active" field.

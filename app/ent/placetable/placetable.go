@@ -3,6 +3,8 @@
 package placetable
 
 import (
+	"fmt"
+
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 )
@@ -14,6 +16,10 @@ const (
 	FieldID = "id"
 	// FieldNumber holds the string denoting the number field in the database.
 	FieldNumber = "number"
+	// FieldName holds the string denoting the name field in the database.
+	FieldName = "name"
+	// FieldCapacity holds the string denoting the capacity field in the database.
+	FieldCapacity = "capacity"
 	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
 	FieldDeletedAt = "deleted_at"
 	// FieldIsDeleted holds the string denoting the is_deleted field in the database.
@@ -103,6 +109,8 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldNumber,
+	FieldName,
+	FieldCapacity,
 	FieldDeletedAt,
 	FieldIsDeleted,
 	FieldQrCode,
@@ -148,12 +156,12 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// DefaultCapacity holds the default value on creation for the "capacity" field.
+	DefaultCapacity int
 	// DefaultIsDeleted holds the default value on creation for the "is_deleted" field.
 	DefaultIsDeleted bool
 	// DefaultStatus holds the default value on creation for the "status" field.
 	DefaultStatus string
-	// DefaultType holds the default value on creation for the "type" field.
-	DefaultType string
 	// DefaultIsActive holds the default value on creation for the "is_active" field.
 	DefaultIsActive bool
 	// DefaultIsReserved holds the default value on creation for the "is_reserved" field.
@@ -166,6 +174,30 @@ var (
 	IDValidator func(string) error
 )
 
+// Type defines the type for the "type" enum field.
+type Type string
+
+// Type values.
+const (
+	TypeRegular Type = "regular"
+	TypeVip     Type = "vip"
+	TypePremium Type = "premium"
+)
+
+func (_type Type) String() string {
+	return string(_type)
+}
+
+// TypeValidator is a validator for the "type" field enum values. It is called by the builders before save.
+func TypeValidator(_type Type) error {
+	switch _type {
+	case TypeRegular, TypeVip, TypePremium:
+		return nil
+	default:
+		return fmt.Errorf("placetable: invalid enum value for type field: %q", _type)
+	}
+}
+
 // OrderOption defines the ordering options for the PlaceTable queries.
 type OrderOption func(*sql.Selector)
 
@@ -177,6 +209,16 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 // ByNumber orders the results by the number field.
 func ByNumber(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldNumber, opts...).ToFunc()
+}
+
+// ByName orders the results by the name field.
+func ByName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldName, opts...).ToFunc()
+}
+
+// ByCapacity orders the results by the capacity field.
+func ByCapacity(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCapacity, opts...).ToFunc()
 }
 
 // ByDeletedAt orders the results by the deleted_at field.

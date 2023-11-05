@@ -43,6 +43,47 @@ func (ptu *PlaceTableUpdate) AddNumber(i int) *PlaceTableUpdate {
 	return ptu
 }
 
+// SetName sets the "name" field.
+func (ptu *PlaceTableUpdate) SetName(s string) *PlaceTableUpdate {
+	ptu.mutation.SetName(s)
+	return ptu
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (ptu *PlaceTableUpdate) SetNillableName(s *string) *PlaceTableUpdate {
+	if s != nil {
+		ptu.SetName(*s)
+	}
+	return ptu
+}
+
+// ClearName clears the value of the "name" field.
+func (ptu *PlaceTableUpdate) ClearName() *PlaceTableUpdate {
+	ptu.mutation.ClearName()
+	return ptu
+}
+
+// SetCapacity sets the "capacity" field.
+func (ptu *PlaceTableUpdate) SetCapacity(i int) *PlaceTableUpdate {
+	ptu.mutation.ResetCapacity()
+	ptu.mutation.SetCapacity(i)
+	return ptu
+}
+
+// SetNillableCapacity sets the "capacity" field if the given value is not nil.
+func (ptu *PlaceTableUpdate) SetNillableCapacity(i *int) *PlaceTableUpdate {
+	if i != nil {
+		ptu.SetCapacity(*i)
+	}
+	return ptu
+}
+
+// AddCapacity adds i to the "capacity" field.
+func (ptu *PlaceTableUpdate) AddCapacity(i int) *PlaceTableUpdate {
+	ptu.mutation.AddCapacity(i)
+	return ptu
+}
+
 // SetDeletedAt sets the "deleted_at" field.
 func (ptu *PlaceTableUpdate) SetDeletedAt(s string) *PlaceTableUpdate {
 	ptu.mutation.SetDeletedAt(s)
@@ -132,16 +173,22 @@ func (ptu *PlaceTableUpdate) SetNillableStatus(s *string) *PlaceTableUpdate {
 }
 
 // SetType sets the "type" field.
-func (ptu *PlaceTableUpdate) SetType(s string) *PlaceTableUpdate {
-	ptu.mutation.SetType(s)
+func (ptu *PlaceTableUpdate) SetType(pl placetable.Type) *PlaceTableUpdate {
+	ptu.mutation.SetType(pl)
 	return ptu
 }
 
 // SetNillableType sets the "type" field if the given value is not nil.
-func (ptu *PlaceTableUpdate) SetNillableType(s *string) *PlaceTableUpdate {
-	if s != nil {
-		ptu.SetType(*s)
+func (ptu *PlaceTableUpdate) SetNillableType(pl *placetable.Type) *PlaceTableUpdate {
+	if pl != nil {
+		ptu.SetType(*pl)
 	}
+	return ptu
+}
+
+// ClearType clears the value of the "type" field.
+func (ptu *PlaceTableUpdate) ClearType() *PlaceTableUpdate {
+	ptu.mutation.ClearType()
 	return ptu
 }
 
@@ -419,7 +466,20 @@ func (ptu *PlaceTableUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (ptu *PlaceTableUpdate) check() error {
+	if v, ok := ptu.mutation.GetType(); ok {
+		if err := placetable.TypeValidator(v); err != nil {
+			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "PlaceTable.type": %w`, err)}
+		}
+	}
+	return nil
+}
+
 func (ptu *PlaceTableUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := ptu.check(); err != nil {
+		return n, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(placetable.Table, placetable.Columns, sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString))
 	if ps := ptu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -433,6 +493,18 @@ func (ptu *PlaceTableUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := ptu.mutation.AddedNumber(); ok {
 		_spec.AddField(placetable.FieldNumber, field.TypeInt, value)
+	}
+	if value, ok := ptu.mutation.Name(); ok {
+		_spec.SetField(placetable.FieldName, field.TypeString, value)
+	}
+	if ptu.mutation.NameCleared() {
+		_spec.ClearField(placetable.FieldName, field.TypeString)
+	}
+	if value, ok := ptu.mutation.Capacity(); ok {
+		_spec.SetField(placetable.FieldCapacity, field.TypeInt, value)
+	}
+	if value, ok := ptu.mutation.AddedCapacity(); ok {
+		_spec.AddField(placetable.FieldCapacity, field.TypeInt, value)
 	}
 	if value, ok := ptu.mutation.DeletedAt(); ok {
 		_spec.SetField(placetable.FieldDeletedAt, field.TypeString, value)
@@ -459,7 +531,10 @@ func (ptu *PlaceTableUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.SetField(placetable.FieldStatus, field.TypeString, value)
 	}
 	if value, ok := ptu.mutation.GetType(); ok {
-		_spec.SetField(placetable.FieldType, field.TypeString, value)
+		_spec.SetField(placetable.FieldType, field.TypeEnum, value)
+	}
+	if ptu.mutation.TypeCleared() {
+		_spec.ClearField(placetable.FieldType, field.TypeEnum)
 	}
 	if value, ok := ptu.mutation.IsActive(); ok {
 		_spec.SetField(placetable.FieldIsActive, field.TypeBool, value)
@@ -725,6 +800,47 @@ func (ptuo *PlaceTableUpdateOne) AddNumber(i int) *PlaceTableUpdateOne {
 	return ptuo
 }
 
+// SetName sets the "name" field.
+func (ptuo *PlaceTableUpdateOne) SetName(s string) *PlaceTableUpdateOne {
+	ptuo.mutation.SetName(s)
+	return ptuo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (ptuo *PlaceTableUpdateOne) SetNillableName(s *string) *PlaceTableUpdateOne {
+	if s != nil {
+		ptuo.SetName(*s)
+	}
+	return ptuo
+}
+
+// ClearName clears the value of the "name" field.
+func (ptuo *PlaceTableUpdateOne) ClearName() *PlaceTableUpdateOne {
+	ptuo.mutation.ClearName()
+	return ptuo
+}
+
+// SetCapacity sets the "capacity" field.
+func (ptuo *PlaceTableUpdateOne) SetCapacity(i int) *PlaceTableUpdateOne {
+	ptuo.mutation.ResetCapacity()
+	ptuo.mutation.SetCapacity(i)
+	return ptuo
+}
+
+// SetNillableCapacity sets the "capacity" field if the given value is not nil.
+func (ptuo *PlaceTableUpdateOne) SetNillableCapacity(i *int) *PlaceTableUpdateOne {
+	if i != nil {
+		ptuo.SetCapacity(*i)
+	}
+	return ptuo
+}
+
+// AddCapacity adds i to the "capacity" field.
+func (ptuo *PlaceTableUpdateOne) AddCapacity(i int) *PlaceTableUpdateOne {
+	ptuo.mutation.AddCapacity(i)
+	return ptuo
+}
+
 // SetDeletedAt sets the "deleted_at" field.
 func (ptuo *PlaceTableUpdateOne) SetDeletedAt(s string) *PlaceTableUpdateOne {
 	ptuo.mutation.SetDeletedAt(s)
@@ -814,16 +930,22 @@ func (ptuo *PlaceTableUpdateOne) SetNillableStatus(s *string) *PlaceTableUpdateO
 }
 
 // SetType sets the "type" field.
-func (ptuo *PlaceTableUpdateOne) SetType(s string) *PlaceTableUpdateOne {
-	ptuo.mutation.SetType(s)
+func (ptuo *PlaceTableUpdateOne) SetType(pl placetable.Type) *PlaceTableUpdateOne {
+	ptuo.mutation.SetType(pl)
 	return ptuo
 }
 
 // SetNillableType sets the "type" field if the given value is not nil.
-func (ptuo *PlaceTableUpdateOne) SetNillableType(s *string) *PlaceTableUpdateOne {
-	if s != nil {
-		ptuo.SetType(*s)
+func (ptuo *PlaceTableUpdateOne) SetNillableType(pl *placetable.Type) *PlaceTableUpdateOne {
+	if pl != nil {
+		ptuo.SetType(*pl)
 	}
+	return ptuo
+}
+
+// ClearType clears the value of the "type" field.
+func (ptuo *PlaceTableUpdateOne) ClearType() *PlaceTableUpdateOne {
+	ptuo.mutation.ClearType()
 	return ptuo
 }
 
@@ -1114,7 +1236,20 @@ func (ptuo *PlaceTableUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (ptuo *PlaceTableUpdateOne) check() error {
+	if v, ok := ptuo.mutation.GetType(); ok {
+		if err := placetable.TypeValidator(v); err != nil {
+			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "PlaceTable.type": %w`, err)}
+		}
+	}
+	return nil
+}
+
 func (ptuo *PlaceTableUpdateOne) sqlSave(ctx context.Context) (_node *PlaceTable, err error) {
+	if err := ptuo.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(placetable.Table, placetable.Columns, sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString))
 	id, ok := ptuo.mutation.ID()
 	if !ok {
@@ -1146,6 +1281,18 @@ func (ptuo *PlaceTableUpdateOne) sqlSave(ctx context.Context) (_node *PlaceTable
 	if value, ok := ptuo.mutation.AddedNumber(); ok {
 		_spec.AddField(placetable.FieldNumber, field.TypeInt, value)
 	}
+	if value, ok := ptuo.mutation.Name(); ok {
+		_spec.SetField(placetable.FieldName, field.TypeString, value)
+	}
+	if ptuo.mutation.NameCleared() {
+		_spec.ClearField(placetable.FieldName, field.TypeString)
+	}
+	if value, ok := ptuo.mutation.Capacity(); ok {
+		_spec.SetField(placetable.FieldCapacity, field.TypeInt, value)
+	}
+	if value, ok := ptuo.mutation.AddedCapacity(); ok {
+		_spec.AddField(placetable.FieldCapacity, field.TypeInt, value)
+	}
 	if value, ok := ptuo.mutation.DeletedAt(); ok {
 		_spec.SetField(placetable.FieldDeletedAt, field.TypeString, value)
 	}
@@ -1171,7 +1318,10 @@ func (ptuo *PlaceTableUpdateOne) sqlSave(ctx context.Context) (_node *PlaceTable
 		_spec.SetField(placetable.FieldStatus, field.TypeString, value)
 	}
 	if value, ok := ptuo.mutation.GetType(); ok {
-		_spec.SetField(placetable.FieldType, field.TypeString, value)
+		_spec.SetField(placetable.FieldType, field.TypeEnum, value)
+	}
+	if ptuo.mutation.TypeCleared() {
+		_spec.ClearField(placetable.FieldType, field.TypeEnum)
 	}
 	if value, ok := ptuo.mutation.IsActive(); ok {
 		_spec.SetField(placetable.FieldIsActive, field.TypeBool, value)

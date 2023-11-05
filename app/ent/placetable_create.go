@@ -28,6 +28,34 @@ func (ptc *PlaceTableCreate) SetNumber(i int) *PlaceTableCreate {
 	return ptc
 }
 
+// SetName sets the "name" field.
+func (ptc *PlaceTableCreate) SetName(s string) *PlaceTableCreate {
+	ptc.mutation.SetName(s)
+	return ptc
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (ptc *PlaceTableCreate) SetNillableName(s *string) *PlaceTableCreate {
+	if s != nil {
+		ptc.SetName(*s)
+	}
+	return ptc
+}
+
+// SetCapacity sets the "capacity" field.
+func (ptc *PlaceTableCreate) SetCapacity(i int) *PlaceTableCreate {
+	ptc.mutation.SetCapacity(i)
+	return ptc
+}
+
+// SetNillableCapacity sets the "capacity" field if the given value is not nil.
+func (ptc *PlaceTableCreate) SetNillableCapacity(i *int) *PlaceTableCreate {
+	if i != nil {
+		ptc.SetCapacity(*i)
+	}
+	return ptc
+}
+
 // SetDeletedAt sets the "deleted_at" field.
 func (ptc *PlaceTableCreate) SetDeletedAt(s string) *PlaceTableCreate {
 	ptc.mutation.SetDeletedAt(s)
@@ -99,15 +127,15 @@ func (ptc *PlaceTableCreate) SetNillableStatus(s *string) *PlaceTableCreate {
 }
 
 // SetType sets the "type" field.
-func (ptc *PlaceTableCreate) SetType(s string) *PlaceTableCreate {
-	ptc.mutation.SetType(s)
+func (ptc *PlaceTableCreate) SetType(pl placetable.Type) *PlaceTableCreate {
+	ptc.mutation.SetType(pl)
 	return ptc
 }
 
 // SetNillableType sets the "type" field if the given value is not nil.
-func (ptc *PlaceTableCreate) SetNillableType(s *string) *PlaceTableCreate {
-	if s != nil {
-		ptc.SetType(*s)
+func (ptc *PlaceTableCreate) SetNillableType(pl *placetable.Type) *PlaceTableCreate {
+	if pl != nil {
+		ptc.SetType(*pl)
 	}
 	return ptc
 }
@@ -338,6 +366,10 @@ func (ptc *PlaceTableCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (ptc *PlaceTableCreate) defaults() {
+	if _, ok := ptc.mutation.Capacity(); !ok {
+		v := placetable.DefaultCapacity
+		ptc.mutation.SetCapacity(v)
+	}
 	if _, ok := ptc.mutation.IsDeleted(); !ok {
 		v := placetable.DefaultIsDeleted
 		ptc.mutation.SetIsDeleted(v)
@@ -345,10 +377,6 @@ func (ptc *PlaceTableCreate) defaults() {
 	if _, ok := ptc.mutation.Status(); !ok {
 		v := placetable.DefaultStatus
 		ptc.mutation.SetStatus(v)
-	}
-	if _, ok := ptc.mutation.GetType(); !ok {
-		v := placetable.DefaultType
-		ptc.mutation.SetType(v)
 	}
 	if _, ok := ptc.mutation.IsActive(); !ok {
 		v := placetable.DefaultIsActive
@@ -373,14 +401,19 @@ func (ptc *PlaceTableCreate) check() error {
 	if _, ok := ptc.mutation.Number(); !ok {
 		return &ValidationError{Name: "number", err: errors.New(`ent: missing required field "PlaceTable.number"`)}
 	}
+	if _, ok := ptc.mutation.Capacity(); !ok {
+		return &ValidationError{Name: "capacity", err: errors.New(`ent: missing required field "PlaceTable.capacity"`)}
+	}
 	if _, ok := ptc.mutation.IsDeleted(); !ok {
 		return &ValidationError{Name: "is_deleted", err: errors.New(`ent: missing required field "PlaceTable.is_deleted"`)}
 	}
 	if _, ok := ptc.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "PlaceTable.status"`)}
 	}
-	if _, ok := ptc.mutation.GetType(); !ok {
-		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "PlaceTable.type"`)}
+	if v, ok := ptc.mutation.GetType(); ok {
+		if err := placetable.TypeValidator(v); err != nil {
+			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "PlaceTable.type": %w`, err)}
+		}
 	}
 	if _, ok := ptc.mutation.IsActive(); !ok {
 		return &ValidationError{Name: "is_active", err: errors.New(`ent: missing required field "PlaceTable.is_active"`)}
@@ -438,6 +471,14 @@ func (ptc *PlaceTableCreate) createSpec() (*PlaceTable, *sqlgraph.CreateSpec) {
 		_spec.SetField(placetable.FieldNumber, field.TypeInt, value)
 		_node.Number = value
 	}
+	if value, ok := ptc.mutation.Name(); ok {
+		_spec.SetField(placetable.FieldName, field.TypeString, value)
+		_node.Name = value
+	}
+	if value, ok := ptc.mutation.Capacity(); ok {
+		_spec.SetField(placetable.FieldCapacity, field.TypeInt, value)
+		_node.Capacity = value
+	}
 	if value, ok := ptc.mutation.DeletedAt(); ok {
 		_spec.SetField(placetable.FieldDeletedAt, field.TypeString, value)
 		_node.DeletedAt = value
@@ -459,7 +500,7 @@ func (ptc *PlaceTableCreate) createSpec() (*PlaceTable, *sqlgraph.CreateSpec) {
 		_node.Status = value
 	}
 	if value, ok := ptc.mutation.GetType(); ok {
-		_spec.SetField(placetable.FieldType, field.TypeString, value)
+		_spec.SetField(placetable.FieldType, field.TypeEnum, value)
 		_node.Type = value
 	}
 	if value, ok := ptc.mutation.IsActive(); ok {

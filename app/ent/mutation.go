@@ -35096,12 +35096,15 @@ type PlaceTableMutation struct {
 	id                 *string
 	number             *int
 	addnumber          *int
+	name               *string
+	capacity           *int
+	addcapacity        *int
 	deleted_at         *string
 	is_deleted         *bool
 	qr_code            *string
 	description        *string
 	status             *string
-	_type              *string
+	_type              *placetable.Type
 	is_active          *bool
 	is_reserved        *bool
 	is_vip             *bool
@@ -35285,6 +35288,111 @@ func (m *PlaceTableMutation) AddedNumber() (r int, exists bool) {
 func (m *PlaceTableMutation) ResetNumber() {
 	m.number = nil
 	m.addnumber = nil
+}
+
+// SetName sets the "name" field.
+func (m *PlaceTableMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *PlaceTableMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the PlaceTable entity.
+// If the PlaceTable object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceTableMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ClearName clears the value of the "name" field.
+func (m *PlaceTableMutation) ClearName() {
+	m.name = nil
+	m.clearedFields[placetable.FieldName] = struct{}{}
+}
+
+// NameCleared returns if the "name" field was cleared in this mutation.
+func (m *PlaceTableMutation) NameCleared() bool {
+	_, ok := m.clearedFields[placetable.FieldName]
+	return ok
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *PlaceTableMutation) ResetName() {
+	m.name = nil
+	delete(m.clearedFields, placetable.FieldName)
+}
+
+// SetCapacity sets the "capacity" field.
+func (m *PlaceTableMutation) SetCapacity(i int) {
+	m.capacity = &i
+	m.addcapacity = nil
+}
+
+// Capacity returns the value of the "capacity" field in the mutation.
+func (m *PlaceTableMutation) Capacity() (r int, exists bool) {
+	v := m.capacity
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCapacity returns the old "capacity" field's value of the PlaceTable entity.
+// If the PlaceTable object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceTableMutation) OldCapacity(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCapacity is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCapacity requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCapacity: %w", err)
+	}
+	return oldValue.Capacity, nil
+}
+
+// AddCapacity adds i to the "capacity" field.
+func (m *PlaceTableMutation) AddCapacity(i int) {
+	if m.addcapacity != nil {
+		*m.addcapacity += i
+	} else {
+		m.addcapacity = &i
+	}
+}
+
+// AddedCapacity returns the value that was added to the "capacity" field in this mutation.
+func (m *PlaceTableMutation) AddedCapacity() (r int, exists bool) {
+	v := m.addcapacity
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetCapacity resets all changes to the "capacity" field.
+func (m *PlaceTableMutation) ResetCapacity() {
+	m.capacity = nil
+	m.addcapacity = nil
 }
 
 // SetDeletedAt sets the "deleted_at" field.
@@ -35507,12 +35615,12 @@ func (m *PlaceTableMutation) ResetStatus() {
 }
 
 // SetType sets the "type" field.
-func (m *PlaceTableMutation) SetType(s string) {
-	m._type = &s
+func (m *PlaceTableMutation) SetType(pl placetable.Type) {
+	m._type = &pl
 }
 
 // GetType returns the value of the "type" field in the mutation.
-func (m *PlaceTableMutation) GetType() (r string, exists bool) {
+func (m *PlaceTableMutation) GetType() (r placetable.Type, exists bool) {
 	v := m._type
 	if v == nil {
 		return
@@ -35523,7 +35631,7 @@ func (m *PlaceTableMutation) GetType() (r string, exists bool) {
 // OldType returns the old "type" field's value of the PlaceTable entity.
 // If the PlaceTable object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PlaceTableMutation) OldType(ctx context.Context) (v string, err error) {
+func (m *PlaceTableMutation) OldType(ctx context.Context) (v placetable.Type, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldType is only allowed on UpdateOne operations")
 	}
@@ -35537,9 +35645,22 @@ func (m *PlaceTableMutation) OldType(ctx context.Context) (v string, err error) 
 	return oldValue.Type, nil
 }
 
+// ClearType clears the value of the "type" field.
+func (m *PlaceTableMutation) ClearType() {
+	m._type = nil
+	m.clearedFields[placetable.FieldType] = struct{}{}
+}
+
+// TypeCleared returns if the "type" field was cleared in this mutation.
+func (m *PlaceTableMutation) TypeCleared() bool {
+	_, ok := m.clearedFields[placetable.FieldType]
+	return ok
+}
+
 // ResetType resets all changes to the "type" field.
 func (m *PlaceTableMutation) ResetType() {
 	m._type = nil
+	delete(m.clearedFields, placetable.FieldType)
 }
 
 // SetIsActive sets the "is_active" field.
@@ -36008,9 +36129,15 @@ func (m *PlaceTableMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PlaceTableMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 13)
 	if m.number != nil {
 		fields = append(fields, placetable.FieldNumber)
+	}
+	if m.name != nil {
+		fields = append(fields, placetable.FieldName)
+	}
+	if m.capacity != nil {
+		fields = append(fields, placetable.FieldCapacity)
 	}
 	if m.deleted_at != nil {
 		fields = append(fields, placetable.FieldDeletedAt)
@@ -36052,6 +36179,10 @@ func (m *PlaceTableMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case placetable.FieldNumber:
 		return m.Number()
+	case placetable.FieldName:
+		return m.Name()
+	case placetable.FieldCapacity:
+		return m.Capacity()
 	case placetable.FieldDeletedAt:
 		return m.DeletedAt()
 	case placetable.FieldIsDeleted:
@@ -36083,6 +36214,10 @@ func (m *PlaceTableMutation) OldField(ctx context.Context, name string) (ent.Val
 	switch name {
 	case placetable.FieldNumber:
 		return m.OldNumber(ctx)
+	case placetable.FieldName:
+		return m.OldName(ctx)
+	case placetable.FieldCapacity:
+		return m.OldCapacity(ctx)
 	case placetable.FieldDeletedAt:
 		return m.OldDeletedAt(ctx)
 	case placetable.FieldIsDeleted:
@@ -36118,6 +36253,20 @@ func (m *PlaceTableMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetNumber(v)
+		return nil
+	case placetable.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	case placetable.FieldCapacity:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCapacity(v)
 		return nil
 	case placetable.FieldDeletedAt:
 		v, ok := value.(string)
@@ -36155,7 +36304,7 @@ func (m *PlaceTableMutation) SetField(name string, value ent.Value) error {
 		m.SetStatus(v)
 		return nil
 	case placetable.FieldType:
-		v, ok := value.(string)
+		v, ok := value.(placetable.Type)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -36200,6 +36349,9 @@ func (m *PlaceTableMutation) AddedFields() []string {
 	if m.addnumber != nil {
 		fields = append(fields, placetable.FieldNumber)
 	}
+	if m.addcapacity != nil {
+		fields = append(fields, placetable.FieldCapacity)
+	}
 	return fields
 }
 
@@ -36210,6 +36362,8 @@ func (m *PlaceTableMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
 	case placetable.FieldNumber:
 		return m.AddedNumber()
+	case placetable.FieldCapacity:
+		return m.AddedCapacity()
 	}
 	return nil, false
 }
@@ -36226,6 +36380,13 @@ func (m *PlaceTableMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddNumber(v)
 		return nil
+	case placetable.FieldCapacity:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCapacity(v)
+		return nil
 	}
 	return fmt.Errorf("unknown PlaceTable numeric field %s", name)
 }
@@ -36234,6 +36395,9 @@ func (m *PlaceTableMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *PlaceTableMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(placetable.FieldName) {
+		fields = append(fields, placetable.FieldName)
+	}
 	if m.FieldCleared(placetable.FieldDeletedAt) {
 		fields = append(fields, placetable.FieldDeletedAt)
 	}
@@ -36242,6 +36406,9 @@ func (m *PlaceTableMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(placetable.FieldDescription) {
 		fields = append(fields, placetable.FieldDescription)
+	}
+	if m.FieldCleared(placetable.FieldType) {
+		fields = append(fields, placetable.FieldType)
 	}
 	return fields
 }
@@ -36257,6 +36424,9 @@ func (m *PlaceTableMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *PlaceTableMutation) ClearField(name string) error {
 	switch name {
+	case placetable.FieldName:
+		m.ClearName()
+		return nil
 	case placetable.FieldDeletedAt:
 		m.ClearDeletedAt()
 		return nil
@@ -36265,6 +36435,9 @@ func (m *PlaceTableMutation) ClearField(name string) error {
 		return nil
 	case placetable.FieldDescription:
 		m.ClearDescription()
+		return nil
+	case placetable.FieldType:
+		m.ClearType()
 		return nil
 	}
 	return fmt.Errorf("unknown PlaceTable nullable field %s", name)
@@ -36276,6 +36449,12 @@ func (m *PlaceTableMutation) ResetField(name string) error {
 	switch name {
 	case placetable.FieldNumber:
 		m.ResetNumber()
+		return nil
+	case placetable.FieldName:
+		m.ResetName()
+		return nil
+	case placetable.FieldCapacity:
+		m.ResetCapacity()
 		return nil
 	case placetable.FieldDeletedAt:
 		m.ResetDeletedAt()
