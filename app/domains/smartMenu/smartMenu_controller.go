@@ -21,7 +21,7 @@ func NewSmartMenuController(smartMenuService ISmartMenu) *SmartMenuController {
 	return &SmartMenuController{smartMenuService: smartMenuService}
 }
 
-func (c *SmartMenuController) RegisterRoutes(router *gin.RouterGroup) {
+func (c *SmartMenuController) RegisterRoutes(router, routerWithAuth *gin.RouterGroup) {
 	const (
 		placeIDParam    = "placeId"
 		menuIDParam     = "menuId"
@@ -31,19 +31,21 @@ func (c *SmartMenuController) RegisterRoutes(router *gin.RouterGroup) {
 	)
 
 	menuRouter := router.Group("/menus")
+	menuRouterWithAuth := routerWithAuth.Group("/menus")
 	{
-		menuRouter.POST(fmt.Sprintf("/place/:%s", placeIDParam), middleware.ErrorMiddleware(c.createMenu))
+		menuRouterWithAuth.POST(fmt.Sprintf("/place/:%s", placeIDParam), middleware.ErrorMiddleware(c.createMenu))
 		menuRouter.GET(fmt.Sprintf("/place/:%s", placeIDParam), middleware.ErrorMiddleware(c.getMenus))
 		menuRouter.GET(fmt.Sprintf("/:%s", menuIDParam), middleware.ErrorMiddleware(c.getMenuByID))
-		menuRouter.PUT(fmt.Sprintf("/:%s", menuIDParam), middleware.ErrorMiddleware(c.updateMenu))
-		menuRouter.DELETE(fmt.Sprintf("/:%s", menuIDParam), middleware.ErrorMiddleware(c.deleteMenu))
-		menuRouter.PATCH(fmt.Sprintf("/:%s/restore", menuIDParam), middleware.ErrorMiddleware(c.restoreMenu))
+		menuRouterWithAuth.PUT(fmt.Sprintf("/:%s", menuIDParam), middleware.ErrorMiddleware(c.updateMenu))
+		menuRouterWithAuth.DELETE(fmt.Sprintf("/:%s", menuIDParam), middleware.ErrorMiddleware(c.deleteMenu))
+		menuRouterWithAuth.PATCH(fmt.Sprintf("/:%s/restore", menuIDParam), middleware.ErrorMiddleware(c.restoreMenu))
 	}
 
 	menuItemRouter := router.Group("/menuItems")
+	menuItemRouterWithAuth := routerWithAuth.Group("/menuItems")
 	{
 		// Create a new menu item
-		menuItemRouter.POST("/:menuId", middleware.ErrorMiddleware(c.createMenuItem))
+		menuItemRouterWithAuth.POST("/:menuId", middleware.ErrorMiddleware(c.createMenuItem))
 		// Required Body Params: name, price, status, description, menuId
 
 		// Get all menu items
@@ -55,28 +57,29 @@ func (c *SmartMenuController) RegisterRoutes(router *gin.RouterGroup) {
 		// Required Path Params: menuItemId
 
 		// Update a specific menu item by ID
-		menuItemRouter.PUT(fmt.Sprintf("/:%s", menuItemIDParam), middleware.ErrorMiddleware(c.updateMenuItem))
+		menuItemRouterWithAuth.PUT(fmt.Sprintf("/:%s", menuItemIDParam), middleware.ErrorMiddleware(c.updateMenuItem))
 		// Required Path Params: menuItemId
 		// Required Body Params: Any of name, price, status, description
 
 		// Delete a specific menu item by ID
-		menuItemRouter.DELETE(fmt.Sprintf("/:%s", menuItemIDParam), middleware.ErrorMiddleware(c.deleteMenuItem))
+		menuItemRouterWithAuth.DELETE(fmt.Sprintf("/:%s", menuItemIDParam), middleware.ErrorMiddleware(c.deleteMenuItem))
 		// Required Path Params: menuItemId
 
 		// Restore a specific deleted menu item by ID
-		menuItemRouter.PATCH(fmt.Sprintf("/:%s/restore", menuItemIDParam), middleware.ErrorMiddleware(c.restoreMenuItem))
+		menuItemRouterWithAuth.PATCH(fmt.Sprintf("/:%s/restore", menuItemIDParam), middleware.ErrorMiddleware(c.restoreMenuItem))
 		// Required Path Params: menuItemId
 	}
 
 	tableRouter := router.Group("/tables")
+	tableRouterWithAuth := routerWithAuth.Group("/tables")
 	{
-		tableRouter.POST(fmt.Sprintf("/place/:%s", placeIDParam), middleware.ErrorMiddleware(c.createTable))
+		tableRouterWithAuth.POST(fmt.Sprintf("/place/:%s", placeIDParam), middleware.ErrorMiddleware(c.createTable))
 		tableRouter.GET(fmt.Sprintf("/place/:%s", placeIDParam), middleware.ErrorMiddleware(c.getTables))
 		tableRouter.GET(fmt.Sprintf("/:%s", tableIDParam), middleware.ErrorMiddleware(c.getTableByID))
-		tableRouter.PUT(fmt.Sprintf("/:%s", tableIDParam), middleware.ErrorMiddleware(c.updateTable))
+		tableRouterWithAuth.PUT(fmt.Sprintf("/:%s", tableIDParam), middleware.ErrorMiddleware(c.updateTable))
 		tableRouter.DELETE(fmt.Sprintf("/:%s", tableIDParam), middleware.ErrorMiddleware(c.deleteTable))
-		tableRouter.PATCH(fmt.Sprintf("/:%s/restore", tableIDParam), middleware.ErrorMiddleware(c.restoreTable))
-		tableRouter.POST(fmt.Sprintf("/:%s/generateCode", tableIDParam), middleware.ErrorMiddleware(c.regenerateQRCode))
+		tableRouterWithAuth.PATCH(fmt.Sprintf("/:%s/restore", tableIDParam), middleware.ErrorMiddleware(c.restoreTable))
+		tableRouterWithAuth.POST(fmt.Sprintf("/:%s/generateCode", tableIDParam), middleware.ErrorMiddleware(c.regenerateQRCode))
 	}
 
 	orderRouter := router.Group("/orders")
@@ -464,7 +467,9 @@ func (c *SmartMenuController) createTable(ctx *gin.Context) error {
 		return err
 	}
 
-	createdTable, err := c.smartMenuService.CreateTable(ctx, placeId, table)
+	user := ctx.MustGet("user").(string)
+
+	createdTable, err := c.smartMenuService.CreateTable(ctx, placeId, user, table)
 	if err != nil {
 		return err
 	}
@@ -533,7 +538,9 @@ func (c *SmartMenuController) updateTable(ctx *gin.Context) error {
 		return err
 	}
 
-	updatedTable, err := c.smartMenuService.UpdateTable(ctx, table, tableBody)
+	user := ctx.MustGet("user").(string)
+
+	updatedTable, err := c.smartMenuService.UpdateTable(ctx, table, user, tableBody)
 	if err != nil {
 		return err
 	}

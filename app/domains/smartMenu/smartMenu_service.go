@@ -45,10 +45,10 @@ type ISmartMenu interface {
 	DeleteMenuItem(context.Context, string) error
 	RestoreMenuItem(context.Context, string) (*ent.MenuItem, error)
 
-	CreateTable(context.Context, string, *ent.PlaceTable) (*ent.PlaceTable, error)
+	CreateTable(context.Context, string, string, *ent.PlaceTable) (*ent.PlaceTable, error)
 	GetTables(context.Context, string) ([]*ent.PlaceTable, error)
 	GetTableByID(context.Context, string) (*ent.PlaceTable, error)
-	UpdateTable(context.Context, string, *ent.PlaceTable) (*ent.PlaceTable, error)
+	UpdateTable(context.Context, string, string, *ent.PlaceTable) (*ent.PlaceTable, error)
 	DeleteTable(context.Context, string) error
 	RestoreTable(context.Context, string) (*ent.PlaceTable, error)
 	RegenerateQRCode(context.Context, string) (*ent.PlaceTable, error)
@@ -301,11 +301,19 @@ func (s *SmartMenuService) RestoreMenu(ctx context.Context, menuId string) (*ent
 		Save(ctx)
 }
 
-func (s *SmartMenuService) CreateTable(ctx context.Context, placeId string, table *ent.PlaceTable) (*ent.PlaceTable, error) {
+func (s *SmartMenuService) CreateTable(ctx context.Context, placeId, userId string, table *ent.PlaceTable) (*ent.PlaceTable, error) {
 	return s.client.PlaceTable.
 		Create().
 		SetID(uuid.New().String()).
 		SetNumber(table.Number).
+		SetCapacity(table.Capacity).
+		SetName(table.Name).
+		SetType(table.Type).
+		SetIsPremium(table.IsPremium).
+		SetIsVip(table.IsVip).
+		SetIsActive(table.IsActive).
+		SetIsReserved(table.IsReserved).
+		SetCreatedByID(userId).
 		SetPlaceID(placeId).
 		Save(ctx)
 }
@@ -325,10 +333,19 @@ func (s *SmartMenuService) GetTableByID(ctx context.Context, tableId string) (*e
 		Only(ctx)
 }
 
-func (s *SmartMenuService) UpdateTable(ctx context.Context, tableId string, table *ent.PlaceTable) (*ent.PlaceTable, error) {
+func (s *SmartMenuService) UpdateTable(ctx context.Context, tableId, userId string, table *ent.PlaceTable) (*ent.PlaceTable, error) {
 	return s.client.PlaceTable.
 		UpdateOneID(tableId).
 		SetNumber(table.Number).
+		SetNumber(table.Number).
+		SetCapacity(table.Capacity).
+		SetName(table.Name).
+		SetType(table.Type).
+		SetIsPremium(table.IsPremium).
+		SetIsVip(table.IsVip).
+		SetIsActive(table.IsActive).
+		SetIsReserved(table.IsReserved).
+		SetUpdatedByID(userId).
 		Save(ctx)
 }
 
