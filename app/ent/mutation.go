@@ -37755,43 +37755,59 @@ func (m *PlaceInventoryAttributeMutation) ResetEdge(name string) error {
 // PlaceTableMutation represents an operation that mutates the PlaceTable nodes in the graph.
 type PlaceTableMutation struct {
 	config
-	op                 Op
-	typ                string
-	id                 *string
-	number             *int
-	addnumber          *int
-	name               *string
-	capacity           *int
-	addcapacity        *int
-	deleted_at         *string
-	is_deleted         *bool
-	qr_code            *string
-	description        *string
-	status             *string
-	_type              *placetable.Type
-	is_active          *bool
-	is_reserved        *bool
-	is_vip             *bool
-	is_premium         *bool
-	clearedFields      map[string]struct{}
-	place              *string
-	clearedplace       bool
-	created_by         *string
-	clearedcreated_by  bool
-	updated_by         *string
-	clearedupdated_by  bool
-	deleted_by         *string
-	cleareddeleted_by  bool
-	reserved_by        *string
-	clearedreserved_by bool
-	waiter             *string
-	clearedwaiter      bool
-	orders             map[string]struct{}
-	removedorders      map[string]struct{}
-	clearedorders      bool
-	done               bool
-	oldValue           func(context.Context) (*PlaceTable, error)
-	predicates         []predicate.PlaceTable
+	op                         Op
+	typ                        string
+	id                         *string
+	number                     *int
+	addnumber                  *int
+	name                       *string
+	capacity                   *int
+	addcapacity                *int
+	deleted_at                 *string
+	is_deleted                 *bool
+	qr_code                    *string
+	description                *string
+	status                     *string
+	_type                      *placetable.Type
+	is_active                  *bool
+	is_reserved                *bool
+	is_vip                     *bool
+	is_premium                 *bool
+	location_description       *string
+	minimum_spend              *float64
+	addminimum_spend           *float64
+	reservation_time           *time.Time
+	next_available_time        *time.Time
+	special_requirements       *[]string
+	appendspecial_requirements []string
+	layout                     *string
+	service_area               *string
+	ambient                    *string
+	image_url                  *string
+	rating                     *float64
+	addrating                  *float64
+	tags                       *[]string
+	appendtags                 []string
+	metadata                   *map[string]interface{}
+	clearedFields              map[string]struct{}
+	place                      *string
+	clearedplace               bool
+	created_by                 *string
+	clearedcreated_by          bool
+	updated_by                 *string
+	clearedupdated_by          bool
+	deleted_by                 *string
+	cleareddeleted_by          bool
+	reserved_by                *string
+	clearedreserved_by         bool
+	waiter                     *string
+	clearedwaiter              bool
+	orders                     map[string]struct{}
+	removedorders              map[string]struct{}
+	clearedorders              bool
+	done                       bool
+	oldValue                   func(context.Context) (*PlaceTable, error)
+	predicates                 []predicate.PlaceTable
 }
 
 var _ ent.Mutation = (*PlaceTableMutation)(nil)
@@ -38471,6 +38487,668 @@ func (m *PlaceTableMutation) ResetIsPremium() {
 	m.is_premium = nil
 }
 
+// SetLocationDescription sets the "location_description" field.
+func (m *PlaceTableMutation) SetLocationDescription(s string) {
+	m.location_description = &s
+}
+
+// LocationDescription returns the value of the "location_description" field in the mutation.
+func (m *PlaceTableMutation) LocationDescription() (r string, exists bool) {
+	v := m.location_description
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLocationDescription returns the old "location_description" field's value of the PlaceTable entity.
+// If the PlaceTable object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceTableMutation) OldLocationDescription(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLocationDescription is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLocationDescription requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLocationDescription: %w", err)
+	}
+	return oldValue.LocationDescription, nil
+}
+
+// ClearLocationDescription clears the value of the "location_description" field.
+func (m *PlaceTableMutation) ClearLocationDescription() {
+	m.location_description = nil
+	m.clearedFields[placetable.FieldLocationDescription] = struct{}{}
+}
+
+// LocationDescriptionCleared returns if the "location_description" field was cleared in this mutation.
+func (m *PlaceTableMutation) LocationDescriptionCleared() bool {
+	_, ok := m.clearedFields[placetable.FieldLocationDescription]
+	return ok
+}
+
+// ResetLocationDescription resets all changes to the "location_description" field.
+func (m *PlaceTableMutation) ResetLocationDescription() {
+	m.location_description = nil
+	delete(m.clearedFields, placetable.FieldLocationDescription)
+}
+
+// SetMinimumSpend sets the "minimum_spend" field.
+func (m *PlaceTableMutation) SetMinimumSpend(f float64) {
+	m.minimum_spend = &f
+	m.addminimum_spend = nil
+}
+
+// MinimumSpend returns the value of the "minimum_spend" field in the mutation.
+func (m *PlaceTableMutation) MinimumSpend() (r float64, exists bool) {
+	v := m.minimum_spend
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMinimumSpend returns the old "minimum_spend" field's value of the PlaceTable entity.
+// If the PlaceTable object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceTableMutation) OldMinimumSpend(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMinimumSpend is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMinimumSpend requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMinimumSpend: %w", err)
+	}
+	return oldValue.MinimumSpend, nil
+}
+
+// AddMinimumSpend adds f to the "minimum_spend" field.
+func (m *PlaceTableMutation) AddMinimumSpend(f float64) {
+	if m.addminimum_spend != nil {
+		*m.addminimum_spend += f
+	} else {
+		m.addminimum_spend = &f
+	}
+}
+
+// AddedMinimumSpend returns the value that was added to the "minimum_spend" field in this mutation.
+func (m *PlaceTableMutation) AddedMinimumSpend() (r float64, exists bool) {
+	v := m.addminimum_spend
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearMinimumSpend clears the value of the "minimum_spend" field.
+func (m *PlaceTableMutation) ClearMinimumSpend() {
+	m.minimum_spend = nil
+	m.addminimum_spend = nil
+	m.clearedFields[placetable.FieldMinimumSpend] = struct{}{}
+}
+
+// MinimumSpendCleared returns if the "minimum_spend" field was cleared in this mutation.
+func (m *PlaceTableMutation) MinimumSpendCleared() bool {
+	_, ok := m.clearedFields[placetable.FieldMinimumSpend]
+	return ok
+}
+
+// ResetMinimumSpend resets all changes to the "minimum_spend" field.
+func (m *PlaceTableMutation) ResetMinimumSpend() {
+	m.minimum_spend = nil
+	m.addminimum_spend = nil
+	delete(m.clearedFields, placetable.FieldMinimumSpend)
+}
+
+// SetReservationTime sets the "reservation_time" field.
+func (m *PlaceTableMutation) SetReservationTime(t time.Time) {
+	m.reservation_time = &t
+}
+
+// ReservationTime returns the value of the "reservation_time" field in the mutation.
+func (m *PlaceTableMutation) ReservationTime() (r time.Time, exists bool) {
+	v := m.reservation_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldReservationTime returns the old "reservation_time" field's value of the PlaceTable entity.
+// If the PlaceTable object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceTableMutation) OldReservationTime(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldReservationTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldReservationTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldReservationTime: %w", err)
+	}
+	return oldValue.ReservationTime, nil
+}
+
+// ClearReservationTime clears the value of the "reservation_time" field.
+func (m *PlaceTableMutation) ClearReservationTime() {
+	m.reservation_time = nil
+	m.clearedFields[placetable.FieldReservationTime] = struct{}{}
+}
+
+// ReservationTimeCleared returns if the "reservation_time" field was cleared in this mutation.
+func (m *PlaceTableMutation) ReservationTimeCleared() bool {
+	_, ok := m.clearedFields[placetable.FieldReservationTime]
+	return ok
+}
+
+// ResetReservationTime resets all changes to the "reservation_time" field.
+func (m *PlaceTableMutation) ResetReservationTime() {
+	m.reservation_time = nil
+	delete(m.clearedFields, placetable.FieldReservationTime)
+}
+
+// SetNextAvailableTime sets the "next_available_time" field.
+func (m *PlaceTableMutation) SetNextAvailableTime(t time.Time) {
+	m.next_available_time = &t
+}
+
+// NextAvailableTime returns the value of the "next_available_time" field in the mutation.
+func (m *PlaceTableMutation) NextAvailableTime() (r time.Time, exists bool) {
+	v := m.next_available_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNextAvailableTime returns the old "next_available_time" field's value of the PlaceTable entity.
+// If the PlaceTable object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceTableMutation) OldNextAvailableTime(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNextAvailableTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNextAvailableTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNextAvailableTime: %w", err)
+	}
+	return oldValue.NextAvailableTime, nil
+}
+
+// ClearNextAvailableTime clears the value of the "next_available_time" field.
+func (m *PlaceTableMutation) ClearNextAvailableTime() {
+	m.next_available_time = nil
+	m.clearedFields[placetable.FieldNextAvailableTime] = struct{}{}
+}
+
+// NextAvailableTimeCleared returns if the "next_available_time" field was cleared in this mutation.
+func (m *PlaceTableMutation) NextAvailableTimeCleared() bool {
+	_, ok := m.clearedFields[placetable.FieldNextAvailableTime]
+	return ok
+}
+
+// ResetNextAvailableTime resets all changes to the "next_available_time" field.
+func (m *PlaceTableMutation) ResetNextAvailableTime() {
+	m.next_available_time = nil
+	delete(m.clearedFields, placetable.FieldNextAvailableTime)
+}
+
+// SetSpecialRequirements sets the "special_requirements" field.
+func (m *PlaceTableMutation) SetSpecialRequirements(s []string) {
+	m.special_requirements = &s
+	m.appendspecial_requirements = nil
+}
+
+// SpecialRequirements returns the value of the "special_requirements" field in the mutation.
+func (m *PlaceTableMutation) SpecialRequirements() (r []string, exists bool) {
+	v := m.special_requirements
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSpecialRequirements returns the old "special_requirements" field's value of the PlaceTable entity.
+// If the PlaceTable object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceTableMutation) OldSpecialRequirements(ctx context.Context) (v []string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSpecialRequirements is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSpecialRequirements requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSpecialRequirements: %w", err)
+	}
+	return oldValue.SpecialRequirements, nil
+}
+
+// AppendSpecialRequirements adds s to the "special_requirements" field.
+func (m *PlaceTableMutation) AppendSpecialRequirements(s []string) {
+	m.appendspecial_requirements = append(m.appendspecial_requirements, s...)
+}
+
+// AppendedSpecialRequirements returns the list of values that were appended to the "special_requirements" field in this mutation.
+func (m *PlaceTableMutation) AppendedSpecialRequirements() ([]string, bool) {
+	if len(m.appendspecial_requirements) == 0 {
+		return nil, false
+	}
+	return m.appendspecial_requirements, true
+}
+
+// ClearSpecialRequirements clears the value of the "special_requirements" field.
+func (m *PlaceTableMutation) ClearSpecialRequirements() {
+	m.special_requirements = nil
+	m.appendspecial_requirements = nil
+	m.clearedFields[placetable.FieldSpecialRequirements] = struct{}{}
+}
+
+// SpecialRequirementsCleared returns if the "special_requirements" field was cleared in this mutation.
+func (m *PlaceTableMutation) SpecialRequirementsCleared() bool {
+	_, ok := m.clearedFields[placetable.FieldSpecialRequirements]
+	return ok
+}
+
+// ResetSpecialRequirements resets all changes to the "special_requirements" field.
+func (m *PlaceTableMutation) ResetSpecialRequirements() {
+	m.special_requirements = nil
+	m.appendspecial_requirements = nil
+	delete(m.clearedFields, placetable.FieldSpecialRequirements)
+}
+
+// SetLayout sets the "layout" field.
+func (m *PlaceTableMutation) SetLayout(s string) {
+	m.layout = &s
+}
+
+// Layout returns the value of the "layout" field in the mutation.
+func (m *PlaceTableMutation) Layout() (r string, exists bool) {
+	v := m.layout
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLayout returns the old "layout" field's value of the PlaceTable entity.
+// If the PlaceTable object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceTableMutation) OldLayout(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLayout is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLayout requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLayout: %w", err)
+	}
+	return oldValue.Layout, nil
+}
+
+// ClearLayout clears the value of the "layout" field.
+func (m *PlaceTableMutation) ClearLayout() {
+	m.layout = nil
+	m.clearedFields[placetable.FieldLayout] = struct{}{}
+}
+
+// LayoutCleared returns if the "layout" field was cleared in this mutation.
+func (m *PlaceTableMutation) LayoutCleared() bool {
+	_, ok := m.clearedFields[placetable.FieldLayout]
+	return ok
+}
+
+// ResetLayout resets all changes to the "layout" field.
+func (m *PlaceTableMutation) ResetLayout() {
+	m.layout = nil
+	delete(m.clearedFields, placetable.FieldLayout)
+}
+
+// SetServiceArea sets the "service_area" field.
+func (m *PlaceTableMutation) SetServiceArea(s string) {
+	m.service_area = &s
+}
+
+// ServiceArea returns the value of the "service_area" field in the mutation.
+func (m *PlaceTableMutation) ServiceArea() (r string, exists bool) {
+	v := m.service_area
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldServiceArea returns the old "service_area" field's value of the PlaceTable entity.
+// If the PlaceTable object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceTableMutation) OldServiceArea(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldServiceArea is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldServiceArea requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldServiceArea: %w", err)
+	}
+	return oldValue.ServiceArea, nil
+}
+
+// ClearServiceArea clears the value of the "service_area" field.
+func (m *PlaceTableMutation) ClearServiceArea() {
+	m.service_area = nil
+	m.clearedFields[placetable.FieldServiceArea] = struct{}{}
+}
+
+// ServiceAreaCleared returns if the "service_area" field was cleared in this mutation.
+func (m *PlaceTableMutation) ServiceAreaCleared() bool {
+	_, ok := m.clearedFields[placetable.FieldServiceArea]
+	return ok
+}
+
+// ResetServiceArea resets all changes to the "service_area" field.
+func (m *PlaceTableMutation) ResetServiceArea() {
+	m.service_area = nil
+	delete(m.clearedFields, placetable.FieldServiceArea)
+}
+
+// SetAmbient sets the "ambient" field.
+func (m *PlaceTableMutation) SetAmbient(s string) {
+	m.ambient = &s
+}
+
+// Ambient returns the value of the "ambient" field in the mutation.
+func (m *PlaceTableMutation) Ambient() (r string, exists bool) {
+	v := m.ambient
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAmbient returns the old "ambient" field's value of the PlaceTable entity.
+// If the PlaceTable object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceTableMutation) OldAmbient(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAmbient is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAmbient requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAmbient: %w", err)
+	}
+	return oldValue.Ambient, nil
+}
+
+// ClearAmbient clears the value of the "ambient" field.
+func (m *PlaceTableMutation) ClearAmbient() {
+	m.ambient = nil
+	m.clearedFields[placetable.FieldAmbient] = struct{}{}
+}
+
+// AmbientCleared returns if the "ambient" field was cleared in this mutation.
+func (m *PlaceTableMutation) AmbientCleared() bool {
+	_, ok := m.clearedFields[placetable.FieldAmbient]
+	return ok
+}
+
+// ResetAmbient resets all changes to the "ambient" field.
+func (m *PlaceTableMutation) ResetAmbient() {
+	m.ambient = nil
+	delete(m.clearedFields, placetable.FieldAmbient)
+}
+
+// SetImageURL sets the "image_url" field.
+func (m *PlaceTableMutation) SetImageURL(s string) {
+	m.image_url = &s
+}
+
+// ImageURL returns the value of the "image_url" field in the mutation.
+func (m *PlaceTableMutation) ImageURL() (r string, exists bool) {
+	v := m.image_url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldImageURL returns the old "image_url" field's value of the PlaceTable entity.
+// If the PlaceTable object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceTableMutation) OldImageURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldImageURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldImageURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldImageURL: %w", err)
+	}
+	return oldValue.ImageURL, nil
+}
+
+// ClearImageURL clears the value of the "image_url" field.
+func (m *PlaceTableMutation) ClearImageURL() {
+	m.image_url = nil
+	m.clearedFields[placetable.FieldImageURL] = struct{}{}
+}
+
+// ImageURLCleared returns if the "image_url" field was cleared in this mutation.
+func (m *PlaceTableMutation) ImageURLCleared() bool {
+	_, ok := m.clearedFields[placetable.FieldImageURL]
+	return ok
+}
+
+// ResetImageURL resets all changes to the "image_url" field.
+func (m *PlaceTableMutation) ResetImageURL() {
+	m.image_url = nil
+	delete(m.clearedFields, placetable.FieldImageURL)
+}
+
+// SetRating sets the "rating" field.
+func (m *PlaceTableMutation) SetRating(f float64) {
+	m.rating = &f
+	m.addrating = nil
+}
+
+// Rating returns the value of the "rating" field in the mutation.
+func (m *PlaceTableMutation) Rating() (r float64, exists bool) {
+	v := m.rating
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRating returns the old "rating" field's value of the PlaceTable entity.
+// If the PlaceTable object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceTableMutation) OldRating(ctx context.Context) (v *float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRating is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRating requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRating: %w", err)
+	}
+	return oldValue.Rating, nil
+}
+
+// AddRating adds f to the "rating" field.
+func (m *PlaceTableMutation) AddRating(f float64) {
+	if m.addrating != nil {
+		*m.addrating += f
+	} else {
+		m.addrating = &f
+	}
+}
+
+// AddedRating returns the value that was added to the "rating" field in this mutation.
+func (m *PlaceTableMutation) AddedRating() (r float64, exists bool) {
+	v := m.addrating
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearRating clears the value of the "rating" field.
+func (m *PlaceTableMutation) ClearRating() {
+	m.rating = nil
+	m.addrating = nil
+	m.clearedFields[placetable.FieldRating] = struct{}{}
+}
+
+// RatingCleared returns if the "rating" field was cleared in this mutation.
+func (m *PlaceTableMutation) RatingCleared() bool {
+	_, ok := m.clearedFields[placetable.FieldRating]
+	return ok
+}
+
+// ResetRating resets all changes to the "rating" field.
+func (m *PlaceTableMutation) ResetRating() {
+	m.rating = nil
+	m.addrating = nil
+	delete(m.clearedFields, placetable.FieldRating)
+}
+
+// SetTags sets the "tags" field.
+func (m *PlaceTableMutation) SetTags(s []string) {
+	m.tags = &s
+	m.appendtags = nil
+}
+
+// Tags returns the value of the "tags" field in the mutation.
+func (m *PlaceTableMutation) Tags() (r []string, exists bool) {
+	v := m.tags
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTags returns the old "tags" field's value of the PlaceTable entity.
+// If the PlaceTable object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceTableMutation) OldTags(ctx context.Context) (v []string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTags is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTags requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTags: %w", err)
+	}
+	return oldValue.Tags, nil
+}
+
+// AppendTags adds s to the "tags" field.
+func (m *PlaceTableMutation) AppendTags(s []string) {
+	m.appendtags = append(m.appendtags, s...)
+}
+
+// AppendedTags returns the list of values that were appended to the "tags" field in this mutation.
+func (m *PlaceTableMutation) AppendedTags() ([]string, bool) {
+	if len(m.appendtags) == 0 {
+		return nil, false
+	}
+	return m.appendtags, true
+}
+
+// ClearTags clears the value of the "tags" field.
+func (m *PlaceTableMutation) ClearTags() {
+	m.tags = nil
+	m.appendtags = nil
+	m.clearedFields[placetable.FieldTags] = struct{}{}
+}
+
+// TagsCleared returns if the "tags" field was cleared in this mutation.
+func (m *PlaceTableMutation) TagsCleared() bool {
+	_, ok := m.clearedFields[placetable.FieldTags]
+	return ok
+}
+
+// ResetTags resets all changes to the "tags" field.
+func (m *PlaceTableMutation) ResetTags() {
+	m.tags = nil
+	m.appendtags = nil
+	delete(m.clearedFields, placetable.FieldTags)
+}
+
+// SetMetadata sets the "metadata" field.
+func (m *PlaceTableMutation) SetMetadata(value map[string]interface{}) {
+	m.metadata = &value
+}
+
+// Metadata returns the value of the "metadata" field in the mutation.
+func (m *PlaceTableMutation) Metadata() (r map[string]interface{}, exists bool) {
+	v := m.metadata
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMetadata returns the old "metadata" field's value of the PlaceTable entity.
+// If the PlaceTable object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlaceTableMutation) OldMetadata(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMetadata is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMetadata requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMetadata: %w", err)
+	}
+	return oldValue.Metadata, nil
+}
+
+// ClearMetadata clears the value of the "metadata" field.
+func (m *PlaceTableMutation) ClearMetadata() {
+	m.metadata = nil
+	m.clearedFields[placetable.FieldMetadata] = struct{}{}
+}
+
+// MetadataCleared returns if the "metadata" field was cleared in this mutation.
+func (m *PlaceTableMutation) MetadataCleared() bool {
+	_, ok := m.clearedFields[placetable.FieldMetadata]
+	return ok
+}
+
+// ResetMetadata resets all changes to the "metadata" field.
+func (m *PlaceTableMutation) ResetMetadata() {
+	m.metadata = nil
+	delete(m.clearedFields, placetable.FieldMetadata)
+}
+
 // SetPlaceID sets the "place" edge to the Place entity by id.
 func (m *PlaceTableMutation) SetPlaceID(id string) {
 	m.place = &id
@@ -38793,7 +39471,7 @@ func (m *PlaceTableMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PlaceTableMutation) Fields() []string {
-	fields := make([]string, 0, 13)
+	fields := make([]string, 0, 25)
 	if m.number != nil {
 		fields = append(fields, placetable.FieldNumber)
 	}
@@ -38833,6 +39511,42 @@ func (m *PlaceTableMutation) Fields() []string {
 	if m.is_premium != nil {
 		fields = append(fields, placetable.FieldIsPremium)
 	}
+	if m.location_description != nil {
+		fields = append(fields, placetable.FieldLocationDescription)
+	}
+	if m.minimum_spend != nil {
+		fields = append(fields, placetable.FieldMinimumSpend)
+	}
+	if m.reservation_time != nil {
+		fields = append(fields, placetable.FieldReservationTime)
+	}
+	if m.next_available_time != nil {
+		fields = append(fields, placetable.FieldNextAvailableTime)
+	}
+	if m.special_requirements != nil {
+		fields = append(fields, placetable.FieldSpecialRequirements)
+	}
+	if m.layout != nil {
+		fields = append(fields, placetable.FieldLayout)
+	}
+	if m.service_area != nil {
+		fields = append(fields, placetable.FieldServiceArea)
+	}
+	if m.ambient != nil {
+		fields = append(fields, placetable.FieldAmbient)
+	}
+	if m.image_url != nil {
+		fields = append(fields, placetable.FieldImageURL)
+	}
+	if m.rating != nil {
+		fields = append(fields, placetable.FieldRating)
+	}
+	if m.tags != nil {
+		fields = append(fields, placetable.FieldTags)
+	}
+	if m.metadata != nil {
+		fields = append(fields, placetable.FieldMetadata)
+	}
 	return fields
 }
 
@@ -38867,6 +39581,30 @@ func (m *PlaceTableMutation) Field(name string) (ent.Value, bool) {
 		return m.IsVip()
 	case placetable.FieldIsPremium:
 		return m.IsPremium()
+	case placetable.FieldLocationDescription:
+		return m.LocationDescription()
+	case placetable.FieldMinimumSpend:
+		return m.MinimumSpend()
+	case placetable.FieldReservationTime:
+		return m.ReservationTime()
+	case placetable.FieldNextAvailableTime:
+		return m.NextAvailableTime()
+	case placetable.FieldSpecialRequirements:
+		return m.SpecialRequirements()
+	case placetable.FieldLayout:
+		return m.Layout()
+	case placetable.FieldServiceArea:
+		return m.ServiceArea()
+	case placetable.FieldAmbient:
+		return m.Ambient()
+	case placetable.FieldImageURL:
+		return m.ImageURL()
+	case placetable.FieldRating:
+		return m.Rating()
+	case placetable.FieldTags:
+		return m.Tags()
+	case placetable.FieldMetadata:
+		return m.Metadata()
 	}
 	return nil, false
 }
@@ -38902,6 +39640,30 @@ func (m *PlaceTableMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldIsVip(ctx)
 	case placetable.FieldIsPremium:
 		return m.OldIsPremium(ctx)
+	case placetable.FieldLocationDescription:
+		return m.OldLocationDescription(ctx)
+	case placetable.FieldMinimumSpend:
+		return m.OldMinimumSpend(ctx)
+	case placetable.FieldReservationTime:
+		return m.OldReservationTime(ctx)
+	case placetable.FieldNextAvailableTime:
+		return m.OldNextAvailableTime(ctx)
+	case placetable.FieldSpecialRequirements:
+		return m.OldSpecialRequirements(ctx)
+	case placetable.FieldLayout:
+		return m.OldLayout(ctx)
+	case placetable.FieldServiceArea:
+		return m.OldServiceArea(ctx)
+	case placetable.FieldAmbient:
+		return m.OldAmbient(ctx)
+	case placetable.FieldImageURL:
+		return m.OldImageURL(ctx)
+	case placetable.FieldRating:
+		return m.OldRating(ctx)
+	case placetable.FieldTags:
+		return m.OldTags(ctx)
+	case placetable.FieldMetadata:
+		return m.OldMetadata(ctx)
 	}
 	return nil, fmt.Errorf("unknown PlaceTable field %s", name)
 }
@@ -39002,6 +39764,90 @@ func (m *PlaceTableMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetIsPremium(v)
 		return nil
+	case placetable.FieldLocationDescription:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLocationDescription(v)
+		return nil
+	case placetable.FieldMinimumSpend:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMinimumSpend(v)
+		return nil
+	case placetable.FieldReservationTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetReservationTime(v)
+		return nil
+	case placetable.FieldNextAvailableTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNextAvailableTime(v)
+		return nil
+	case placetable.FieldSpecialRequirements:
+		v, ok := value.([]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSpecialRequirements(v)
+		return nil
+	case placetable.FieldLayout:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLayout(v)
+		return nil
+	case placetable.FieldServiceArea:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetServiceArea(v)
+		return nil
+	case placetable.FieldAmbient:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAmbient(v)
+		return nil
+	case placetable.FieldImageURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetImageURL(v)
+		return nil
+	case placetable.FieldRating:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRating(v)
+		return nil
+	case placetable.FieldTags:
+		v, ok := value.([]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTags(v)
+		return nil
+	case placetable.FieldMetadata:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMetadata(v)
+		return nil
 	}
 	return fmt.Errorf("unknown PlaceTable field %s", name)
 }
@@ -39016,6 +39862,12 @@ func (m *PlaceTableMutation) AddedFields() []string {
 	if m.addcapacity != nil {
 		fields = append(fields, placetable.FieldCapacity)
 	}
+	if m.addminimum_spend != nil {
+		fields = append(fields, placetable.FieldMinimumSpend)
+	}
+	if m.addrating != nil {
+		fields = append(fields, placetable.FieldRating)
+	}
 	return fields
 }
 
@@ -39028,6 +39880,10 @@ func (m *PlaceTableMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedNumber()
 	case placetable.FieldCapacity:
 		return m.AddedCapacity()
+	case placetable.FieldMinimumSpend:
+		return m.AddedMinimumSpend()
+	case placetable.FieldRating:
+		return m.AddedRating()
 	}
 	return nil, false
 }
@@ -39051,6 +39907,20 @@ func (m *PlaceTableMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddCapacity(v)
 		return nil
+	case placetable.FieldMinimumSpend:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddMinimumSpend(v)
+		return nil
+	case placetable.FieldRating:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddRating(v)
+		return nil
 	}
 	return fmt.Errorf("unknown PlaceTable numeric field %s", name)
 }
@@ -39073,6 +39943,42 @@ func (m *PlaceTableMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(placetable.FieldType) {
 		fields = append(fields, placetable.FieldType)
+	}
+	if m.FieldCleared(placetable.FieldLocationDescription) {
+		fields = append(fields, placetable.FieldLocationDescription)
+	}
+	if m.FieldCleared(placetable.FieldMinimumSpend) {
+		fields = append(fields, placetable.FieldMinimumSpend)
+	}
+	if m.FieldCleared(placetable.FieldReservationTime) {
+		fields = append(fields, placetable.FieldReservationTime)
+	}
+	if m.FieldCleared(placetable.FieldNextAvailableTime) {
+		fields = append(fields, placetable.FieldNextAvailableTime)
+	}
+	if m.FieldCleared(placetable.FieldSpecialRequirements) {
+		fields = append(fields, placetable.FieldSpecialRequirements)
+	}
+	if m.FieldCleared(placetable.FieldLayout) {
+		fields = append(fields, placetable.FieldLayout)
+	}
+	if m.FieldCleared(placetable.FieldServiceArea) {
+		fields = append(fields, placetable.FieldServiceArea)
+	}
+	if m.FieldCleared(placetable.FieldAmbient) {
+		fields = append(fields, placetable.FieldAmbient)
+	}
+	if m.FieldCleared(placetable.FieldImageURL) {
+		fields = append(fields, placetable.FieldImageURL)
+	}
+	if m.FieldCleared(placetable.FieldRating) {
+		fields = append(fields, placetable.FieldRating)
+	}
+	if m.FieldCleared(placetable.FieldTags) {
+		fields = append(fields, placetable.FieldTags)
+	}
+	if m.FieldCleared(placetable.FieldMetadata) {
+		fields = append(fields, placetable.FieldMetadata)
 	}
 	return fields
 }
@@ -39102,6 +40008,42 @@ func (m *PlaceTableMutation) ClearField(name string) error {
 		return nil
 	case placetable.FieldType:
 		m.ClearType()
+		return nil
+	case placetable.FieldLocationDescription:
+		m.ClearLocationDescription()
+		return nil
+	case placetable.FieldMinimumSpend:
+		m.ClearMinimumSpend()
+		return nil
+	case placetable.FieldReservationTime:
+		m.ClearReservationTime()
+		return nil
+	case placetable.FieldNextAvailableTime:
+		m.ClearNextAvailableTime()
+		return nil
+	case placetable.FieldSpecialRequirements:
+		m.ClearSpecialRequirements()
+		return nil
+	case placetable.FieldLayout:
+		m.ClearLayout()
+		return nil
+	case placetable.FieldServiceArea:
+		m.ClearServiceArea()
+		return nil
+	case placetable.FieldAmbient:
+		m.ClearAmbient()
+		return nil
+	case placetable.FieldImageURL:
+		m.ClearImageURL()
+		return nil
+	case placetable.FieldRating:
+		m.ClearRating()
+		return nil
+	case placetable.FieldTags:
+		m.ClearTags()
+		return nil
+	case placetable.FieldMetadata:
+		m.ClearMetadata()
 		return nil
 	}
 	return fmt.Errorf("unknown PlaceTable nullable field %s", name)
@@ -39149,6 +40091,42 @@ func (m *PlaceTableMutation) ResetField(name string) error {
 		return nil
 	case placetable.FieldIsPremium:
 		m.ResetIsPremium()
+		return nil
+	case placetable.FieldLocationDescription:
+		m.ResetLocationDescription()
+		return nil
+	case placetable.FieldMinimumSpend:
+		m.ResetMinimumSpend()
+		return nil
+	case placetable.FieldReservationTime:
+		m.ResetReservationTime()
+		return nil
+	case placetable.FieldNextAvailableTime:
+		m.ResetNextAvailableTime()
+		return nil
+	case placetable.FieldSpecialRequirements:
+		m.ResetSpecialRequirements()
+		return nil
+	case placetable.FieldLayout:
+		m.ResetLayout()
+		return nil
+	case placetable.FieldServiceArea:
+		m.ResetServiceArea()
+		return nil
+	case placetable.FieldAmbient:
+		m.ResetAmbient()
+		return nil
+	case placetable.FieldImageURL:
+		m.ResetImageURL()
+		return nil
+	case placetable.FieldRating:
+		m.ResetRating()
+		return nil
+	case placetable.FieldTags:
+		m.ResetTags()
+		return nil
+	case placetable.FieldMetadata:
+		m.ResetMetadata()
 		return nil
 	}
 	return fmt.Errorf("unknown PlaceTable field %s", name)

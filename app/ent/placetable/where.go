@@ -4,6 +4,7 @@ package placetable
 
 import (
 	"placio-app/ent/predicate"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -122,6 +123,51 @@ func IsVip(v bool) predicate.PlaceTable {
 // IsPremium applies equality check predicate on the "is_premium" field. It's identical to IsPremiumEQ.
 func IsPremium(v bool) predicate.PlaceTable {
 	return predicate.PlaceTable(sql.FieldEQ(FieldIsPremium, v))
+}
+
+// LocationDescription applies equality check predicate on the "location_description" field. It's identical to LocationDescriptionEQ.
+func LocationDescription(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEQ(FieldLocationDescription, v))
+}
+
+// MinimumSpend applies equality check predicate on the "minimum_spend" field. It's identical to MinimumSpendEQ.
+func MinimumSpend(v float64) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEQ(FieldMinimumSpend, v))
+}
+
+// ReservationTime applies equality check predicate on the "reservation_time" field. It's identical to ReservationTimeEQ.
+func ReservationTime(v time.Time) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEQ(FieldReservationTime, v))
+}
+
+// NextAvailableTime applies equality check predicate on the "next_available_time" field. It's identical to NextAvailableTimeEQ.
+func NextAvailableTime(v time.Time) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEQ(FieldNextAvailableTime, v))
+}
+
+// Layout applies equality check predicate on the "layout" field. It's identical to LayoutEQ.
+func Layout(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEQ(FieldLayout, v))
+}
+
+// ServiceArea applies equality check predicate on the "service_area" field. It's identical to ServiceAreaEQ.
+func ServiceArea(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEQ(FieldServiceArea, v))
+}
+
+// Ambient applies equality check predicate on the "ambient" field. It's identical to AmbientEQ.
+func Ambient(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEQ(FieldAmbient, v))
+}
+
+// ImageURL applies equality check predicate on the "image_url" field. It's identical to ImageURLEQ.
+func ImageURL(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEQ(FieldImageURL, v))
+}
+
+// Rating applies equality check predicate on the "rating" field. It's identical to RatingEQ.
+func Rating(v float64) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEQ(FieldRating, v))
 }
 
 // NumberEQ applies the EQ predicate on the "number" field.
@@ -647,6 +693,611 @@ func IsPremiumEQ(v bool) predicate.PlaceTable {
 // IsPremiumNEQ applies the NEQ predicate on the "is_premium" field.
 func IsPremiumNEQ(v bool) predicate.PlaceTable {
 	return predicate.PlaceTable(sql.FieldNEQ(FieldIsPremium, v))
+}
+
+// LocationDescriptionEQ applies the EQ predicate on the "location_description" field.
+func LocationDescriptionEQ(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEQ(FieldLocationDescription, v))
+}
+
+// LocationDescriptionNEQ applies the NEQ predicate on the "location_description" field.
+func LocationDescriptionNEQ(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNEQ(FieldLocationDescription, v))
+}
+
+// LocationDescriptionIn applies the In predicate on the "location_description" field.
+func LocationDescriptionIn(vs ...string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldIn(FieldLocationDescription, vs...))
+}
+
+// LocationDescriptionNotIn applies the NotIn predicate on the "location_description" field.
+func LocationDescriptionNotIn(vs ...string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNotIn(FieldLocationDescription, vs...))
+}
+
+// LocationDescriptionGT applies the GT predicate on the "location_description" field.
+func LocationDescriptionGT(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldGT(FieldLocationDescription, v))
+}
+
+// LocationDescriptionGTE applies the GTE predicate on the "location_description" field.
+func LocationDescriptionGTE(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldGTE(FieldLocationDescription, v))
+}
+
+// LocationDescriptionLT applies the LT predicate on the "location_description" field.
+func LocationDescriptionLT(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldLT(FieldLocationDescription, v))
+}
+
+// LocationDescriptionLTE applies the LTE predicate on the "location_description" field.
+func LocationDescriptionLTE(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldLTE(FieldLocationDescription, v))
+}
+
+// LocationDescriptionContains applies the Contains predicate on the "location_description" field.
+func LocationDescriptionContains(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldContains(FieldLocationDescription, v))
+}
+
+// LocationDescriptionHasPrefix applies the HasPrefix predicate on the "location_description" field.
+func LocationDescriptionHasPrefix(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldHasPrefix(FieldLocationDescription, v))
+}
+
+// LocationDescriptionHasSuffix applies the HasSuffix predicate on the "location_description" field.
+func LocationDescriptionHasSuffix(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldHasSuffix(FieldLocationDescription, v))
+}
+
+// LocationDescriptionIsNil applies the IsNil predicate on the "location_description" field.
+func LocationDescriptionIsNil() predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldIsNull(FieldLocationDescription))
+}
+
+// LocationDescriptionNotNil applies the NotNil predicate on the "location_description" field.
+func LocationDescriptionNotNil() predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNotNull(FieldLocationDescription))
+}
+
+// LocationDescriptionEqualFold applies the EqualFold predicate on the "location_description" field.
+func LocationDescriptionEqualFold(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEqualFold(FieldLocationDescription, v))
+}
+
+// LocationDescriptionContainsFold applies the ContainsFold predicate on the "location_description" field.
+func LocationDescriptionContainsFold(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldContainsFold(FieldLocationDescription, v))
+}
+
+// MinimumSpendEQ applies the EQ predicate on the "minimum_spend" field.
+func MinimumSpendEQ(v float64) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEQ(FieldMinimumSpend, v))
+}
+
+// MinimumSpendNEQ applies the NEQ predicate on the "minimum_spend" field.
+func MinimumSpendNEQ(v float64) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNEQ(FieldMinimumSpend, v))
+}
+
+// MinimumSpendIn applies the In predicate on the "minimum_spend" field.
+func MinimumSpendIn(vs ...float64) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldIn(FieldMinimumSpend, vs...))
+}
+
+// MinimumSpendNotIn applies the NotIn predicate on the "minimum_spend" field.
+func MinimumSpendNotIn(vs ...float64) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNotIn(FieldMinimumSpend, vs...))
+}
+
+// MinimumSpendGT applies the GT predicate on the "minimum_spend" field.
+func MinimumSpendGT(v float64) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldGT(FieldMinimumSpend, v))
+}
+
+// MinimumSpendGTE applies the GTE predicate on the "minimum_spend" field.
+func MinimumSpendGTE(v float64) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldGTE(FieldMinimumSpend, v))
+}
+
+// MinimumSpendLT applies the LT predicate on the "minimum_spend" field.
+func MinimumSpendLT(v float64) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldLT(FieldMinimumSpend, v))
+}
+
+// MinimumSpendLTE applies the LTE predicate on the "minimum_spend" field.
+func MinimumSpendLTE(v float64) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldLTE(FieldMinimumSpend, v))
+}
+
+// MinimumSpendIsNil applies the IsNil predicate on the "minimum_spend" field.
+func MinimumSpendIsNil() predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldIsNull(FieldMinimumSpend))
+}
+
+// MinimumSpendNotNil applies the NotNil predicate on the "minimum_spend" field.
+func MinimumSpendNotNil() predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNotNull(FieldMinimumSpend))
+}
+
+// ReservationTimeEQ applies the EQ predicate on the "reservation_time" field.
+func ReservationTimeEQ(v time.Time) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEQ(FieldReservationTime, v))
+}
+
+// ReservationTimeNEQ applies the NEQ predicate on the "reservation_time" field.
+func ReservationTimeNEQ(v time.Time) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNEQ(FieldReservationTime, v))
+}
+
+// ReservationTimeIn applies the In predicate on the "reservation_time" field.
+func ReservationTimeIn(vs ...time.Time) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldIn(FieldReservationTime, vs...))
+}
+
+// ReservationTimeNotIn applies the NotIn predicate on the "reservation_time" field.
+func ReservationTimeNotIn(vs ...time.Time) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNotIn(FieldReservationTime, vs...))
+}
+
+// ReservationTimeGT applies the GT predicate on the "reservation_time" field.
+func ReservationTimeGT(v time.Time) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldGT(FieldReservationTime, v))
+}
+
+// ReservationTimeGTE applies the GTE predicate on the "reservation_time" field.
+func ReservationTimeGTE(v time.Time) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldGTE(FieldReservationTime, v))
+}
+
+// ReservationTimeLT applies the LT predicate on the "reservation_time" field.
+func ReservationTimeLT(v time.Time) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldLT(FieldReservationTime, v))
+}
+
+// ReservationTimeLTE applies the LTE predicate on the "reservation_time" field.
+func ReservationTimeLTE(v time.Time) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldLTE(FieldReservationTime, v))
+}
+
+// ReservationTimeIsNil applies the IsNil predicate on the "reservation_time" field.
+func ReservationTimeIsNil() predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldIsNull(FieldReservationTime))
+}
+
+// ReservationTimeNotNil applies the NotNil predicate on the "reservation_time" field.
+func ReservationTimeNotNil() predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNotNull(FieldReservationTime))
+}
+
+// NextAvailableTimeEQ applies the EQ predicate on the "next_available_time" field.
+func NextAvailableTimeEQ(v time.Time) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEQ(FieldNextAvailableTime, v))
+}
+
+// NextAvailableTimeNEQ applies the NEQ predicate on the "next_available_time" field.
+func NextAvailableTimeNEQ(v time.Time) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNEQ(FieldNextAvailableTime, v))
+}
+
+// NextAvailableTimeIn applies the In predicate on the "next_available_time" field.
+func NextAvailableTimeIn(vs ...time.Time) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldIn(FieldNextAvailableTime, vs...))
+}
+
+// NextAvailableTimeNotIn applies the NotIn predicate on the "next_available_time" field.
+func NextAvailableTimeNotIn(vs ...time.Time) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNotIn(FieldNextAvailableTime, vs...))
+}
+
+// NextAvailableTimeGT applies the GT predicate on the "next_available_time" field.
+func NextAvailableTimeGT(v time.Time) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldGT(FieldNextAvailableTime, v))
+}
+
+// NextAvailableTimeGTE applies the GTE predicate on the "next_available_time" field.
+func NextAvailableTimeGTE(v time.Time) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldGTE(FieldNextAvailableTime, v))
+}
+
+// NextAvailableTimeLT applies the LT predicate on the "next_available_time" field.
+func NextAvailableTimeLT(v time.Time) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldLT(FieldNextAvailableTime, v))
+}
+
+// NextAvailableTimeLTE applies the LTE predicate on the "next_available_time" field.
+func NextAvailableTimeLTE(v time.Time) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldLTE(FieldNextAvailableTime, v))
+}
+
+// NextAvailableTimeIsNil applies the IsNil predicate on the "next_available_time" field.
+func NextAvailableTimeIsNil() predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldIsNull(FieldNextAvailableTime))
+}
+
+// NextAvailableTimeNotNil applies the NotNil predicate on the "next_available_time" field.
+func NextAvailableTimeNotNil() predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNotNull(FieldNextAvailableTime))
+}
+
+// SpecialRequirementsIsNil applies the IsNil predicate on the "special_requirements" field.
+func SpecialRequirementsIsNil() predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldIsNull(FieldSpecialRequirements))
+}
+
+// SpecialRequirementsNotNil applies the NotNil predicate on the "special_requirements" field.
+func SpecialRequirementsNotNil() predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNotNull(FieldSpecialRequirements))
+}
+
+// LayoutEQ applies the EQ predicate on the "layout" field.
+func LayoutEQ(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEQ(FieldLayout, v))
+}
+
+// LayoutNEQ applies the NEQ predicate on the "layout" field.
+func LayoutNEQ(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNEQ(FieldLayout, v))
+}
+
+// LayoutIn applies the In predicate on the "layout" field.
+func LayoutIn(vs ...string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldIn(FieldLayout, vs...))
+}
+
+// LayoutNotIn applies the NotIn predicate on the "layout" field.
+func LayoutNotIn(vs ...string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNotIn(FieldLayout, vs...))
+}
+
+// LayoutGT applies the GT predicate on the "layout" field.
+func LayoutGT(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldGT(FieldLayout, v))
+}
+
+// LayoutGTE applies the GTE predicate on the "layout" field.
+func LayoutGTE(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldGTE(FieldLayout, v))
+}
+
+// LayoutLT applies the LT predicate on the "layout" field.
+func LayoutLT(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldLT(FieldLayout, v))
+}
+
+// LayoutLTE applies the LTE predicate on the "layout" field.
+func LayoutLTE(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldLTE(FieldLayout, v))
+}
+
+// LayoutContains applies the Contains predicate on the "layout" field.
+func LayoutContains(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldContains(FieldLayout, v))
+}
+
+// LayoutHasPrefix applies the HasPrefix predicate on the "layout" field.
+func LayoutHasPrefix(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldHasPrefix(FieldLayout, v))
+}
+
+// LayoutHasSuffix applies the HasSuffix predicate on the "layout" field.
+func LayoutHasSuffix(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldHasSuffix(FieldLayout, v))
+}
+
+// LayoutIsNil applies the IsNil predicate on the "layout" field.
+func LayoutIsNil() predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldIsNull(FieldLayout))
+}
+
+// LayoutNotNil applies the NotNil predicate on the "layout" field.
+func LayoutNotNil() predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNotNull(FieldLayout))
+}
+
+// LayoutEqualFold applies the EqualFold predicate on the "layout" field.
+func LayoutEqualFold(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEqualFold(FieldLayout, v))
+}
+
+// LayoutContainsFold applies the ContainsFold predicate on the "layout" field.
+func LayoutContainsFold(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldContainsFold(FieldLayout, v))
+}
+
+// ServiceAreaEQ applies the EQ predicate on the "service_area" field.
+func ServiceAreaEQ(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEQ(FieldServiceArea, v))
+}
+
+// ServiceAreaNEQ applies the NEQ predicate on the "service_area" field.
+func ServiceAreaNEQ(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNEQ(FieldServiceArea, v))
+}
+
+// ServiceAreaIn applies the In predicate on the "service_area" field.
+func ServiceAreaIn(vs ...string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldIn(FieldServiceArea, vs...))
+}
+
+// ServiceAreaNotIn applies the NotIn predicate on the "service_area" field.
+func ServiceAreaNotIn(vs ...string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNotIn(FieldServiceArea, vs...))
+}
+
+// ServiceAreaGT applies the GT predicate on the "service_area" field.
+func ServiceAreaGT(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldGT(FieldServiceArea, v))
+}
+
+// ServiceAreaGTE applies the GTE predicate on the "service_area" field.
+func ServiceAreaGTE(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldGTE(FieldServiceArea, v))
+}
+
+// ServiceAreaLT applies the LT predicate on the "service_area" field.
+func ServiceAreaLT(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldLT(FieldServiceArea, v))
+}
+
+// ServiceAreaLTE applies the LTE predicate on the "service_area" field.
+func ServiceAreaLTE(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldLTE(FieldServiceArea, v))
+}
+
+// ServiceAreaContains applies the Contains predicate on the "service_area" field.
+func ServiceAreaContains(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldContains(FieldServiceArea, v))
+}
+
+// ServiceAreaHasPrefix applies the HasPrefix predicate on the "service_area" field.
+func ServiceAreaHasPrefix(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldHasPrefix(FieldServiceArea, v))
+}
+
+// ServiceAreaHasSuffix applies the HasSuffix predicate on the "service_area" field.
+func ServiceAreaHasSuffix(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldHasSuffix(FieldServiceArea, v))
+}
+
+// ServiceAreaIsNil applies the IsNil predicate on the "service_area" field.
+func ServiceAreaIsNil() predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldIsNull(FieldServiceArea))
+}
+
+// ServiceAreaNotNil applies the NotNil predicate on the "service_area" field.
+func ServiceAreaNotNil() predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNotNull(FieldServiceArea))
+}
+
+// ServiceAreaEqualFold applies the EqualFold predicate on the "service_area" field.
+func ServiceAreaEqualFold(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEqualFold(FieldServiceArea, v))
+}
+
+// ServiceAreaContainsFold applies the ContainsFold predicate on the "service_area" field.
+func ServiceAreaContainsFold(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldContainsFold(FieldServiceArea, v))
+}
+
+// AmbientEQ applies the EQ predicate on the "ambient" field.
+func AmbientEQ(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEQ(FieldAmbient, v))
+}
+
+// AmbientNEQ applies the NEQ predicate on the "ambient" field.
+func AmbientNEQ(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNEQ(FieldAmbient, v))
+}
+
+// AmbientIn applies the In predicate on the "ambient" field.
+func AmbientIn(vs ...string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldIn(FieldAmbient, vs...))
+}
+
+// AmbientNotIn applies the NotIn predicate on the "ambient" field.
+func AmbientNotIn(vs ...string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNotIn(FieldAmbient, vs...))
+}
+
+// AmbientGT applies the GT predicate on the "ambient" field.
+func AmbientGT(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldGT(FieldAmbient, v))
+}
+
+// AmbientGTE applies the GTE predicate on the "ambient" field.
+func AmbientGTE(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldGTE(FieldAmbient, v))
+}
+
+// AmbientLT applies the LT predicate on the "ambient" field.
+func AmbientLT(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldLT(FieldAmbient, v))
+}
+
+// AmbientLTE applies the LTE predicate on the "ambient" field.
+func AmbientLTE(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldLTE(FieldAmbient, v))
+}
+
+// AmbientContains applies the Contains predicate on the "ambient" field.
+func AmbientContains(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldContains(FieldAmbient, v))
+}
+
+// AmbientHasPrefix applies the HasPrefix predicate on the "ambient" field.
+func AmbientHasPrefix(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldHasPrefix(FieldAmbient, v))
+}
+
+// AmbientHasSuffix applies the HasSuffix predicate on the "ambient" field.
+func AmbientHasSuffix(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldHasSuffix(FieldAmbient, v))
+}
+
+// AmbientIsNil applies the IsNil predicate on the "ambient" field.
+func AmbientIsNil() predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldIsNull(FieldAmbient))
+}
+
+// AmbientNotNil applies the NotNil predicate on the "ambient" field.
+func AmbientNotNil() predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNotNull(FieldAmbient))
+}
+
+// AmbientEqualFold applies the EqualFold predicate on the "ambient" field.
+func AmbientEqualFold(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEqualFold(FieldAmbient, v))
+}
+
+// AmbientContainsFold applies the ContainsFold predicate on the "ambient" field.
+func AmbientContainsFold(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldContainsFold(FieldAmbient, v))
+}
+
+// ImageURLEQ applies the EQ predicate on the "image_url" field.
+func ImageURLEQ(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEQ(FieldImageURL, v))
+}
+
+// ImageURLNEQ applies the NEQ predicate on the "image_url" field.
+func ImageURLNEQ(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNEQ(FieldImageURL, v))
+}
+
+// ImageURLIn applies the In predicate on the "image_url" field.
+func ImageURLIn(vs ...string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldIn(FieldImageURL, vs...))
+}
+
+// ImageURLNotIn applies the NotIn predicate on the "image_url" field.
+func ImageURLNotIn(vs ...string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNotIn(FieldImageURL, vs...))
+}
+
+// ImageURLGT applies the GT predicate on the "image_url" field.
+func ImageURLGT(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldGT(FieldImageURL, v))
+}
+
+// ImageURLGTE applies the GTE predicate on the "image_url" field.
+func ImageURLGTE(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldGTE(FieldImageURL, v))
+}
+
+// ImageURLLT applies the LT predicate on the "image_url" field.
+func ImageURLLT(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldLT(FieldImageURL, v))
+}
+
+// ImageURLLTE applies the LTE predicate on the "image_url" field.
+func ImageURLLTE(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldLTE(FieldImageURL, v))
+}
+
+// ImageURLContains applies the Contains predicate on the "image_url" field.
+func ImageURLContains(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldContains(FieldImageURL, v))
+}
+
+// ImageURLHasPrefix applies the HasPrefix predicate on the "image_url" field.
+func ImageURLHasPrefix(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldHasPrefix(FieldImageURL, v))
+}
+
+// ImageURLHasSuffix applies the HasSuffix predicate on the "image_url" field.
+func ImageURLHasSuffix(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldHasSuffix(FieldImageURL, v))
+}
+
+// ImageURLIsNil applies the IsNil predicate on the "image_url" field.
+func ImageURLIsNil() predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldIsNull(FieldImageURL))
+}
+
+// ImageURLNotNil applies the NotNil predicate on the "image_url" field.
+func ImageURLNotNil() predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNotNull(FieldImageURL))
+}
+
+// ImageURLEqualFold applies the EqualFold predicate on the "image_url" field.
+func ImageURLEqualFold(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEqualFold(FieldImageURL, v))
+}
+
+// ImageURLContainsFold applies the ContainsFold predicate on the "image_url" field.
+func ImageURLContainsFold(v string) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldContainsFold(FieldImageURL, v))
+}
+
+// RatingEQ applies the EQ predicate on the "rating" field.
+func RatingEQ(v float64) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldEQ(FieldRating, v))
+}
+
+// RatingNEQ applies the NEQ predicate on the "rating" field.
+func RatingNEQ(v float64) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNEQ(FieldRating, v))
+}
+
+// RatingIn applies the In predicate on the "rating" field.
+func RatingIn(vs ...float64) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldIn(FieldRating, vs...))
+}
+
+// RatingNotIn applies the NotIn predicate on the "rating" field.
+func RatingNotIn(vs ...float64) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNotIn(FieldRating, vs...))
+}
+
+// RatingGT applies the GT predicate on the "rating" field.
+func RatingGT(v float64) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldGT(FieldRating, v))
+}
+
+// RatingGTE applies the GTE predicate on the "rating" field.
+func RatingGTE(v float64) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldGTE(FieldRating, v))
+}
+
+// RatingLT applies the LT predicate on the "rating" field.
+func RatingLT(v float64) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldLT(FieldRating, v))
+}
+
+// RatingLTE applies the LTE predicate on the "rating" field.
+func RatingLTE(v float64) predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldLTE(FieldRating, v))
+}
+
+// RatingIsNil applies the IsNil predicate on the "rating" field.
+func RatingIsNil() predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldIsNull(FieldRating))
+}
+
+// RatingNotNil applies the NotNil predicate on the "rating" field.
+func RatingNotNil() predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNotNull(FieldRating))
+}
+
+// TagsIsNil applies the IsNil predicate on the "tags" field.
+func TagsIsNil() predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldIsNull(FieldTags))
+}
+
+// TagsNotNil applies the NotNil predicate on the "tags" field.
+func TagsNotNil() predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNotNull(FieldTags))
+}
+
+// MetadataIsNil applies the IsNil predicate on the "metadata" field.
+func MetadataIsNil() predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldIsNull(FieldMetadata))
+}
+
+// MetadataNotNil applies the NotNil predicate on the "metadata" field.
+func MetadataNotNil() predicate.PlaceTable {
+	return predicate.PlaceTable(sql.FieldNotNull(FieldMetadata))
 }
 
 // HasPlace applies the HasEdge predicate on the "place" edge.

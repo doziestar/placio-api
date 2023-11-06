@@ -10,6 +10,7 @@ import (
 	"placio-app/ent/place"
 	"placio-app/ent/placetable"
 	"placio-app/ent/user"
+	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -193,6 +194,150 @@ func (ptc *PlaceTableCreate) SetNillableIsPremium(b *bool) *PlaceTableCreate {
 	if b != nil {
 		ptc.SetIsPremium(*b)
 	}
+	return ptc
+}
+
+// SetLocationDescription sets the "location_description" field.
+func (ptc *PlaceTableCreate) SetLocationDescription(s string) *PlaceTableCreate {
+	ptc.mutation.SetLocationDescription(s)
+	return ptc
+}
+
+// SetNillableLocationDescription sets the "location_description" field if the given value is not nil.
+func (ptc *PlaceTableCreate) SetNillableLocationDescription(s *string) *PlaceTableCreate {
+	if s != nil {
+		ptc.SetLocationDescription(*s)
+	}
+	return ptc
+}
+
+// SetMinimumSpend sets the "minimum_spend" field.
+func (ptc *PlaceTableCreate) SetMinimumSpend(f float64) *PlaceTableCreate {
+	ptc.mutation.SetMinimumSpend(f)
+	return ptc
+}
+
+// SetNillableMinimumSpend sets the "minimum_spend" field if the given value is not nil.
+func (ptc *PlaceTableCreate) SetNillableMinimumSpend(f *float64) *PlaceTableCreate {
+	if f != nil {
+		ptc.SetMinimumSpend(*f)
+	}
+	return ptc
+}
+
+// SetReservationTime sets the "reservation_time" field.
+func (ptc *PlaceTableCreate) SetReservationTime(t time.Time) *PlaceTableCreate {
+	ptc.mutation.SetReservationTime(t)
+	return ptc
+}
+
+// SetNillableReservationTime sets the "reservation_time" field if the given value is not nil.
+func (ptc *PlaceTableCreate) SetNillableReservationTime(t *time.Time) *PlaceTableCreate {
+	if t != nil {
+		ptc.SetReservationTime(*t)
+	}
+	return ptc
+}
+
+// SetNextAvailableTime sets the "next_available_time" field.
+func (ptc *PlaceTableCreate) SetNextAvailableTime(t time.Time) *PlaceTableCreate {
+	ptc.mutation.SetNextAvailableTime(t)
+	return ptc
+}
+
+// SetNillableNextAvailableTime sets the "next_available_time" field if the given value is not nil.
+func (ptc *PlaceTableCreate) SetNillableNextAvailableTime(t *time.Time) *PlaceTableCreate {
+	if t != nil {
+		ptc.SetNextAvailableTime(*t)
+	}
+	return ptc
+}
+
+// SetSpecialRequirements sets the "special_requirements" field.
+func (ptc *PlaceTableCreate) SetSpecialRequirements(s []string) *PlaceTableCreate {
+	ptc.mutation.SetSpecialRequirements(s)
+	return ptc
+}
+
+// SetLayout sets the "layout" field.
+func (ptc *PlaceTableCreate) SetLayout(s string) *PlaceTableCreate {
+	ptc.mutation.SetLayout(s)
+	return ptc
+}
+
+// SetNillableLayout sets the "layout" field if the given value is not nil.
+func (ptc *PlaceTableCreate) SetNillableLayout(s *string) *PlaceTableCreate {
+	if s != nil {
+		ptc.SetLayout(*s)
+	}
+	return ptc
+}
+
+// SetServiceArea sets the "service_area" field.
+func (ptc *PlaceTableCreate) SetServiceArea(s string) *PlaceTableCreate {
+	ptc.mutation.SetServiceArea(s)
+	return ptc
+}
+
+// SetNillableServiceArea sets the "service_area" field if the given value is not nil.
+func (ptc *PlaceTableCreate) SetNillableServiceArea(s *string) *PlaceTableCreate {
+	if s != nil {
+		ptc.SetServiceArea(*s)
+	}
+	return ptc
+}
+
+// SetAmbient sets the "ambient" field.
+func (ptc *PlaceTableCreate) SetAmbient(s string) *PlaceTableCreate {
+	ptc.mutation.SetAmbient(s)
+	return ptc
+}
+
+// SetNillableAmbient sets the "ambient" field if the given value is not nil.
+func (ptc *PlaceTableCreate) SetNillableAmbient(s *string) *PlaceTableCreate {
+	if s != nil {
+		ptc.SetAmbient(*s)
+	}
+	return ptc
+}
+
+// SetImageURL sets the "image_url" field.
+func (ptc *PlaceTableCreate) SetImageURL(s string) *PlaceTableCreate {
+	ptc.mutation.SetImageURL(s)
+	return ptc
+}
+
+// SetNillableImageURL sets the "image_url" field if the given value is not nil.
+func (ptc *PlaceTableCreate) SetNillableImageURL(s *string) *PlaceTableCreate {
+	if s != nil {
+		ptc.SetImageURL(*s)
+	}
+	return ptc
+}
+
+// SetRating sets the "rating" field.
+func (ptc *PlaceTableCreate) SetRating(f float64) *PlaceTableCreate {
+	ptc.mutation.SetRating(f)
+	return ptc
+}
+
+// SetNillableRating sets the "rating" field if the given value is not nil.
+func (ptc *PlaceTableCreate) SetNillableRating(f *float64) *PlaceTableCreate {
+	if f != nil {
+		ptc.SetRating(*f)
+	}
+	return ptc
+}
+
+// SetTags sets the "tags" field.
+func (ptc *PlaceTableCreate) SetTags(s []string) *PlaceTableCreate {
+	ptc.mutation.SetTags(s)
+	return ptc
+}
+
+// SetMetadata sets the "metadata" field.
+func (ptc *PlaceTableCreate) SetMetadata(m map[string]interface{}) *PlaceTableCreate {
+	ptc.mutation.SetMetadata(m)
 	return ptc
 }
 
@@ -518,6 +663,54 @@ func (ptc *PlaceTableCreate) createSpec() (*PlaceTable, *sqlgraph.CreateSpec) {
 	if value, ok := ptc.mutation.IsPremium(); ok {
 		_spec.SetField(placetable.FieldIsPremium, field.TypeBool, value)
 		_node.IsPremium = value
+	}
+	if value, ok := ptc.mutation.LocationDescription(); ok {
+		_spec.SetField(placetable.FieldLocationDescription, field.TypeString, value)
+		_node.LocationDescription = value
+	}
+	if value, ok := ptc.mutation.MinimumSpend(); ok {
+		_spec.SetField(placetable.FieldMinimumSpend, field.TypeFloat64, value)
+		_node.MinimumSpend = value
+	}
+	if value, ok := ptc.mutation.ReservationTime(); ok {
+		_spec.SetField(placetable.FieldReservationTime, field.TypeTime, value)
+		_node.ReservationTime = &value
+	}
+	if value, ok := ptc.mutation.NextAvailableTime(); ok {
+		_spec.SetField(placetable.FieldNextAvailableTime, field.TypeTime, value)
+		_node.NextAvailableTime = &value
+	}
+	if value, ok := ptc.mutation.SpecialRequirements(); ok {
+		_spec.SetField(placetable.FieldSpecialRequirements, field.TypeJSON, value)
+		_node.SpecialRequirements = value
+	}
+	if value, ok := ptc.mutation.Layout(); ok {
+		_spec.SetField(placetable.FieldLayout, field.TypeString, value)
+		_node.Layout = value
+	}
+	if value, ok := ptc.mutation.ServiceArea(); ok {
+		_spec.SetField(placetable.FieldServiceArea, field.TypeString, value)
+		_node.ServiceArea = value
+	}
+	if value, ok := ptc.mutation.Ambient(); ok {
+		_spec.SetField(placetable.FieldAmbient, field.TypeString, value)
+		_node.Ambient = value
+	}
+	if value, ok := ptc.mutation.ImageURL(); ok {
+		_spec.SetField(placetable.FieldImageURL, field.TypeString, value)
+		_node.ImageURL = value
+	}
+	if value, ok := ptc.mutation.Rating(); ok {
+		_spec.SetField(placetable.FieldRating, field.TypeFloat64, value)
+		_node.Rating = &value
+	}
+	if value, ok := ptc.mutation.Tags(); ok {
+		_spec.SetField(placetable.FieldTags, field.TypeJSON, value)
+		_node.Tags = value
+	}
+	if value, ok := ptc.mutation.Metadata(); ok {
+		_spec.SetField(placetable.FieldMetadata, field.TypeJSON, value)
+		_node.Metadata = value
 	}
 	if nodes := ptc.mutation.PlaceIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
