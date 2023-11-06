@@ -19,6 +19,7 @@ import (
 	"placio-app/ent/place"
 	"placio-app/utility"
 	"placio-pkg/errors"
+	"strings"
 	"sync"
 )
 
@@ -320,14 +321,14 @@ func (s *PlaceServiceImpl) CreatePlace(ctx context.Context, placeData CreatePlac
 	place, err := tx.Place.
 		Create().
 		SetID(uuid.New().String()).
-		SetName(placeData.Name).
+		SetName(strings.ToLower(placeData.Name)).
 		SetDescription(placeData.Description).
 		SetPicture(placeData.Picture).
 		SetCoverImage(placeData.CoverImage).
-		SetWebsite(placeData.Website).
-		SetLocation(placeData.Location).
-		SetCountry(placeData.Country).
-		SetCity(placeData.City).
+		SetWebsite(strings.ToLower(placeData.Website)).
+		SetLocation(strings.ToLower(placeData.Location)).
+		SetCountry(strings.ToLower(placeData.Country)).
+		SetCity(strings.ToLower(placeData.City)).
 		SetState(placeData.State).
 		SetEmail(placeData.Email).
 		SetPhone(placeData.Phone).

@@ -219,7 +219,7 @@ func (s *BusinessAccountServiceImpl) CreateBusinessAccount(ctx context.Context, 
 	businessAccount, err := tx.Business.
 		Create().
 		SetID(uuid.New().String()).
-		SetName(businessData.Name).
+		SetName(strings.ToLower(businessData.Name)).
 		SetDescription(businessData.Description).
 		SetWebsite(businessData.Website).
 		SetEmail(businessData.Email).

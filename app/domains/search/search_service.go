@@ -103,8 +103,8 @@ func (s *SearchServiceImpl) SearchUsersDB(ctx context.Context, searchText string
 	var err error
 
 	predicates := []predicate.User{
-		user.NameContains(searchText),
-		user.UsernameContains(searchText),
+		user.NameContainsFold(searchText),
+		user.UsernameContainsFold(searchText),
 		user.NameHasPrefix(searchText),
 		user.UsernameHasPrefix(searchText),
 		user.NameHasSuffix(searchText),
@@ -114,7 +114,7 @@ func (s *SearchServiceImpl) SearchUsersDB(ctx context.Context, searchText string
 	// we also need those that have any of the words in the search text in their username or name
 	words := strings.Split(searchText, " ")
 	for _, word := range words {
-		predicates = append(predicates, user.NameContains(word), user.UsernameContains(word))
+		predicates = append(predicates, user.NameContainsFold(word), user.UsernameContainsFold(word))
 	}
 
 	users, err = s.entClient.User.
@@ -137,8 +137,8 @@ func (s *SearchServiceImpl) SearchBusinessesDB(ctx context.Context, searchText s
 	var err error
 
 	predicates := []predicate.Business{
-		business.NameContains(searchText),
-		business.DescriptionContains(searchText),
+		business.NameContainsFold(searchText),
+		business.DescriptionContainsFold(searchText),
 		business.NameHasPrefix(searchText),
 		business.DescriptionHasPrefix(searchText),
 		business.NameHasSuffix(searchText),
@@ -148,7 +148,7 @@ func (s *SearchServiceImpl) SearchBusinessesDB(ctx context.Context, searchText s
 	// we also need those that have any of the words in the search text in their name or description
 	words := strings.Split(searchText, " ")
 	for _, word := range words {
-		predicates = append(predicates, business.NameContains(word), business.DescriptionContains(word))
+		predicates = append(predicates, business.NameContainsFold(word), business.DescriptionContainsFold(word))
 	}
 
 	businesses, err = s.entClient.Business.
@@ -173,8 +173,8 @@ func (s *SearchServiceImpl) SearchEventsDB(ctx context.Context, searchText strin
 	var err error
 
 	predicates := []predicate.Event{
-		event.NameContains(searchText),
-		event.DescriptionContains(searchText),
+		event.NameContainsFold(searchText),
+		event.DescriptionContainsFold(searchText),
 		event.NameHasPrefix(searchText),
 		event.DescriptionHasPrefix(searchText),
 		event.NameHasSuffix(searchText),
@@ -184,7 +184,7 @@ func (s *SearchServiceImpl) SearchEventsDB(ctx context.Context, searchText strin
 	// we also need those that have any of the words in the search text in their name or description
 	words := strings.Split(searchText, " ")
 	for _, word := range words {
-		predicates = append(predicates, event.NameContains(word), event.DescriptionContains(word))
+		predicates = append(predicates, event.NameContainsFold(word), event.DescriptionContainsFold(word))
 	}
 
 	events, err = s.entClient.Event.
@@ -203,8 +203,8 @@ func (s *SearchServiceImpl) SearchPlacesDB(ctx context.Context, searchText strin
 	var err error
 
 	predicates := []predicate.Place{
-		place.NameContains(searchText),
-		place.DescriptionContains(searchText),
+		place.NameContainsFold(searchText),
+		place.DescriptionContainsFold(searchText),
 		place.NameHasPrefix(searchText),
 		place.DescriptionHasPrefix(searchText),
 		place.NameHasSuffix(searchText),
@@ -214,7 +214,7 @@ func (s *SearchServiceImpl) SearchPlacesDB(ctx context.Context, searchText strin
 	// we also need those that have any of the words in the search text in their name or description
 	words := strings.Split(searchText, " ")
 	for _, word := range words {
-		predicates = append(predicates, place.NameContains(word), place.DescriptionContains(word))
+		predicates = append(predicates, place.NameContainsFold(word), place.DescriptionContainsFold(word))
 	}
 
 	places, err = s.entClient.Place.
