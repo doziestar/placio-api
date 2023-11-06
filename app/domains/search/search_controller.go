@@ -6,6 +6,7 @@ import (
 	"placio-app/ent"
 	_ "placio-app/ent"
 	"placio-app/utility"
+	"sync"
 
 	"github.com/gin-gonic/gin"
 )
@@ -86,44 +87,78 @@ func (ss *SearchController) searchDB(ctx *gin.Context) error {
 	searchType := ctx.Query("type")
 	searchText := ctx.Query("searchText")
 
-	searchAll := false
-	if searchType == "" {
-		searchAll = true
+	// Define a struct to encapsulate search results and possible error
+	type searchResult struct {
+		Users      []*ent.User
+		Businesses []*ent.Business
+		Events     []*ent.Event
+		Places     []*ent.Place
+		Err        error
 	}
 
+	// Make searches concurrently
+	resultsChan := make(chan *searchResult, 4) // Buffer to avoid blocking
+
+	searchAll := searchType == ""
+	var wg sync.WaitGroup // Use wait group to wait for all goroutines to finish
+
+	// Define a closure for concurrent searches
+	performSearch := func(searchType string) {
+		defer wg.Done() // Ensure the wait group is signaled upon completion
+		result := &searchResult{}
+
+		switch searchType {
+		case "user":
+			result.Users, result.Err = ss.searchService.SearchUsersDB(ctx, searchText)
+		case "business":
+			result.Businesses, result.Err = ss.searchService.SearchBusinessesDB(ctx, searchText)
+		case "event":
+			result.Events, result.Err = ss.searchService.SearchEventsDB(ctx, searchText)
+		case "place":
+			result.Places, result.Err = ss.searchService.SearchPlacesDB(ctx, searchText)
+		}
+
+		resultsChan <- result // Send the result to the channel
+	}
+
+	// Start concurrent searches depending on the searchType
+	if searchAll || searchType == "user" {
+		wg.Add(1)
+		go performSearch("user")
+	}
+	if searchAll || searchType == "business" {
+		wg.Add(1)
+		go performSearch("business")
+	}
+	if searchAll || searchType == "event" {
+		wg.Add(1)
+		go performSearch("event")
+	}
+	if searchAll || searchType == "place" {
+		wg.Add(1)
+		go performSearch("place")
+	}
+
+	// Close the channel once all goroutines are done
+	go func() {
+		wg.Wait()
+		close(resultsChan)
+	}()
+
+	// Collect the results
 	var users []*ent.User
 	var businesses []*ent.Business
 	var events []*ent.Event
 	var places []*ent.Place
-	var err error
 
-	if searchAll || searchType == "user" {
-		users, err = ss.searchService.SearchUsersDB(ctx, searchText)
-		if err != nil {
-
-			return err
+	for result := range resultsChan {
+		if result.Err != nil {
+			return result.Err
 		}
-	}
-	if searchAll || searchType == "business" {
-		businesses, err = ss.searchService.SearchBusinessesDB(ctx, searchText)
-		if err != nil {
-
-			return err
-		}
-	}
-	if searchAll || searchType == "event" {
-		events, err = ss.searchService.SearchEventsDB(ctx, searchText)
-		if err != nil {
-
-			return err
-		}
-	}
-	if searchAll || searchType == "place" {
-		places, err = ss.searchService.SearchPlacesDB(ctx, searchText)
-		if err != nil {
-
-			return err
-		}
+		users = append(users, result.Users...)
+		businesses = append(businesses, result.Businesses...)
+		events = append(events, result.Events...)
+		places = append(places, result.Places...)
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{

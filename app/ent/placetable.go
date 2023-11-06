@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"placio-app/ent/place"
 	"placio-app/ent/placetable"
+	"placio-app/ent/user"
 	"strings"
 
 	"entgo.io/ent"
@@ -19,28 +20,61 @@ type PlaceTable struct {
 	ID string `json:"id,omitempty"`
 	// Number holds the value of the "number" field.
 	Number int `json:"number,omitempty"`
+	// Name holds the value of the "name" field.
+	Name string `json:"name,omitempty"`
+	// Capacity holds the value of the "capacity" field.
+	Capacity int `json:"capacity,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt string `json:"deleted_at,omitempty"`
 	// IsDeleted holds the value of the "is_deleted" field.
 	IsDeleted bool `json:"is_deleted,omitempty"`
 	// QrCode holds the value of the "qr_code" field.
 	QrCode string `json:"qr_code,omitempty"`
+	// Description holds the value of the "description" field.
+	Description string `json:"description,omitempty"`
+	// Status holds the value of the "status" field.
+	Status string `json:"status,omitempty"`
+	// Type holds the value of the "type" field.
+	Type placetable.Type `json:"type,omitempty"`
+	// IsActive holds the value of the "is_active" field.
+	IsActive bool `json:"is_active,omitempty"`
+	// IsReserved holds the value of the "is_reserved" field.
+	IsReserved bool `json:"is_reserved,omitempty"`
+	// IsVip holds the value of the "is_vip" field.
+	IsVip bool `json:"is_vip,omitempty"`
+	// IsPremium holds the value of the "is_premium" field.
+	IsPremium bool `json:"is_premium,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the PlaceTableQuery when eager-loading is set.
-	Edges        PlaceTableEdges `json:"edges"`
-	place_tables *string
-	selectValues sql.SelectValues
+	Edges                PlaceTableEdges `json:"edges"`
+	place_tables         *string
+	user_tables_created  *string
+	user_tables_updated  *string
+	user_tables_deleted  *string
+	user_tables_reserved *string
+	user_tables_waited   *string
+	selectValues         sql.SelectValues
 }
 
 // PlaceTableEdges holds the relations/edges for other nodes in the graph.
 type PlaceTableEdges struct {
 	// Place holds the value of the place edge.
 	Place *Place `json:"place,omitempty"`
+	// CreatedBy holds the value of the created_by edge.
+	CreatedBy *User `json:"created_by,omitempty"`
+	// UpdatedBy holds the value of the updated_by edge.
+	UpdatedBy *User `json:"updated_by,omitempty"`
+	// DeletedBy holds the value of the deleted_by edge.
+	DeletedBy *User `json:"deleted_by,omitempty"`
+	// ReservedBy holds the value of the reserved_by edge.
+	ReservedBy *User `json:"reserved_by,omitempty"`
+	// Waiter holds the value of the waiter edge.
+	Waiter *User `json:"waiter,omitempty"`
 	// Orders holds the value of the orders edge.
 	Orders []*Order `json:"orders,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [7]bool
 }
 
 // PlaceOrErr returns the Place value or an error if the edge
@@ -56,10 +90,75 @@ func (e PlaceTableEdges) PlaceOrErr() (*Place, error) {
 	return nil, &NotLoadedError{edge: "place"}
 }
 
+// CreatedByOrErr returns the CreatedBy value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e PlaceTableEdges) CreatedByOrErr() (*User, error) {
+	if e.loadedTypes[1] {
+		if e.CreatedBy == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: user.Label}
+		}
+		return e.CreatedBy, nil
+	}
+	return nil, &NotLoadedError{edge: "created_by"}
+}
+
+// UpdatedByOrErr returns the UpdatedBy value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e PlaceTableEdges) UpdatedByOrErr() (*User, error) {
+	if e.loadedTypes[2] {
+		if e.UpdatedBy == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: user.Label}
+		}
+		return e.UpdatedBy, nil
+	}
+	return nil, &NotLoadedError{edge: "updated_by"}
+}
+
+// DeletedByOrErr returns the DeletedBy value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e PlaceTableEdges) DeletedByOrErr() (*User, error) {
+	if e.loadedTypes[3] {
+		if e.DeletedBy == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: user.Label}
+		}
+		return e.DeletedBy, nil
+	}
+	return nil, &NotLoadedError{edge: "deleted_by"}
+}
+
+// ReservedByOrErr returns the ReservedBy value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e PlaceTableEdges) ReservedByOrErr() (*User, error) {
+	if e.loadedTypes[4] {
+		if e.ReservedBy == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: user.Label}
+		}
+		return e.ReservedBy, nil
+	}
+	return nil, &NotLoadedError{edge: "reserved_by"}
+}
+
+// WaiterOrErr returns the Waiter value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e PlaceTableEdges) WaiterOrErr() (*User, error) {
+	if e.loadedTypes[5] {
+		if e.Waiter == nil {
+			// Edge was loaded but was not found.
+			return nil, &NotFoundError{label: user.Label}
+		}
+		return e.Waiter, nil
+	}
+	return nil, &NotLoadedError{edge: "waiter"}
+}
+
 // OrdersOrErr returns the Orders value or an error if the edge
 // was not loaded in eager-loading.
 func (e PlaceTableEdges) OrdersOrErr() ([]*Order, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[6] {
 		return e.Orders, nil
 	}
 	return nil, &NotLoadedError{edge: "orders"}
@@ -70,13 +169,23 @@ func (*PlaceTable) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case placetable.FieldIsDeleted:
+		case placetable.FieldIsDeleted, placetable.FieldIsActive, placetable.FieldIsReserved, placetable.FieldIsVip, placetable.FieldIsPremium:
 			values[i] = new(sql.NullBool)
-		case placetable.FieldNumber:
+		case placetable.FieldNumber, placetable.FieldCapacity:
 			values[i] = new(sql.NullInt64)
-		case placetable.FieldID, placetable.FieldDeletedAt, placetable.FieldQrCode:
+		case placetable.FieldID, placetable.FieldName, placetable.FieldDeletedAt, placetable.FieldQrCode, placetable.FieldDescription, placetable.FieldStatus, placetable.FieldType:
 			values[i] = new(sql.NullString)
 		case placetable.ForeignKeys[0]: // place_tables
+			values[i] = new(sql.NullString)
+		case placetable.ForeignKeys[1]: // user_tables_created
+			values[i] = new(sql.NullString)
+		case placetable.ForeignKeys[2]: // user_tables_updated
+			values[i] = new(sql.NullString)
+		case placetable.ForeignKeys[3]: // user_tables_deleted
+			values[i] = new(sql.NullString)
+		case placetable.ForeignKeys[4]: // user_tables_reserved
+			values[i] = new(sql.NullString)
+		case placetable.ForeignKeys[5]: // user_tables_waited
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -105,6 +214,18 @@ func (pt *PlaceTable) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				pt.Number = int(value.Int64)
 			}
+		case placetable.FieldName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field name", values[i])
+			} else if value.Valid {
+				pt.Name = value.String
+			}
+		case placetable.FieldCapacity:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field capacity", values[i])
+			} else if value.Valid {
+				pt.Capacity = int(value.Int64)
+			}
 		case placetable.FieldDeletedAt:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
@@ -123,12 +244,89 @@ func (pt *PlaceTable) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				pt.QrCode = value.String
 			}
+		case placetable.FieldDescription:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field description", values[i])
+			} else if value.Valid {
+				pt.Description = value.String
+			}
+		case placetable.FieldStatus:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field status", values[i])
+			} else if value.Valid {
+				pt.Status = value.String
+			}
+		case placetable.FieldType:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field type", values[i])
+			} else if value.Valid {
+				pt.Type = placetable.Type(value.String)
+			}
+		case placetable.FieldIsActive:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_active", values[i])
+			} else if value.Valid {
+				pt.IsActive = value.Bool
+			}
+		case placetable.FieldIsReserved:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_reserved", values[i])
+			} else if value.Valid {
+				pt.IsReserved = value.Bool
+			}
+		case placetable.FieldIsVip:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_vip", values[i])
+			} else if value.Valid {
+				pt.IsVip = value.Bool
+			}
+		case placetable.FieldIsPremium:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_premium", values[i])
+			} else if value.Valid {
+				pt.IsPremium = value.Bool
+			}
 		case placetable.ForeignKeys[0]:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field place_tables", values[i])
 			} else if value.Valid {
 				pt.place_tables = new(string)
 				*pt.place_tables = value.String
+			}
+		case placetable.ForeignKeys[1]:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field user_tables_created", values[i])
+			} else if value.Valid {
+				pt.user_tables_created = new(string)
+				*pt.user_tables_created = value.String
+			}
+		case placetable.ForeignKeys[2]:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field user_tables_updated", values[i])
+			} else if value.Valid {
+				pt.user_tables_updated = new(string)
+				*pt.user_tables_updated = value.String
+			}
+		case placetable.ForeignKeys[3]:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field user_tables_deleted", values[i])
+			} else if value.Valid {
+				pt.user_tables_deleted = new(string)
+				*pt.user_tables_deleted = value.String
+			}
+		case placetable.ForeignKeys[4]:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field user_tables_reserved", values[i])
+			} else if value.Valid {
+				pt.user_tables_reserved = new(string)
+				*pt.user_tables_reserved = value.String
+			}
+		case placetable.ForeignKeys[5]:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field user_tables_waited", values[i])
+			} else if value.Valid {
+				pt.user_tables_waited = new(string)
+				*pt.user_tables_waited = value.String
 			}
 		default:
 			pt.selectValues.Set(columns[i], values[i])
@@ -146,6 +344,31 @@ func (pt *PlaceTable) Value(name string) (ent.Value, error) {
 // QueryPlace queries the "place" edge of the PlaceTable entity.
 func (pt *PlaceTable) QueryPlace() *PlaceQuery {
 	return NewPlaceTableClient(pt.config).QueryPlace(pt)
+}
+
+// QueryCreatedBy queries the "created_by" edge of the PlaceTable entity.
+func (pt *PlaceTable) QueryCreatedBy() *UserQuery {
+	return NewPlaceTableClient(pt.config).QueryCreatedBy(pt)
+}
+
+// QueryUpdatedBy queries the "updated_by" edge of the PlaceTable entity.
+func (pt *PlaceTable) QueryUpdatedBy() *UserQuery {
+	return NewPlaceTableClient(pt.config).QueryUpdatedBy(pt)
+}
+
+// QueryDeletedBy queries the "deleted_by" edge of the PlaceTable entity.
+func (pt *PlaceTable) QueryDeletedBy() *UserQuery {
+	return NewPlaceTableClient(pt.config).QueryDeletedBy(pt)
+}
+
+// QueryReservedBy queries the "reserved_by" edge of the PlaceTable entity.
+func (pt *PlaceTable) QueryReservedBy() *UserQuery {
+	return NewPlaceTableClient(pt.config).QueryReservedBy(pt)
+}
+
+// QueryWaiter queries the "waiter" edge of the PlaceTable entity.
+func (pt *PlaceTable) QueryWaiter() *UserQuery {
+	return NewPlaceTableClient(pt.config).QueryWaiter(pt)
 }
 
 // QueryOrders queries the "orders" edge of the PlaceTable entity.
@@ -179,6 +402,12 @@ func (pt *PlaceTable) String() string {
 	builder.WriteString("number=")
 	builder.WriteString(fmt.Sprintf("%v", pt.Number))
 	builder.WriteString(", ")
+	builder.WriteString("name=")
+	builder.WriteString(pt.Name)
+	builder.WriteString(", ")
+	builder.WriteString("capacity=")
+	builder.WriteString(fmt.Sprintf("%v", pt.Capacity))
+	builder.WriteString(", ")
 	builder.WriteString("deleted_at=")
 	builder.WriteString(pt.DeletedAt)
 	builder.WriteString(", ")
@@ -187,6 +416,27 @@ func (pt *PlaceTable) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("qr_code=")
 	builder.WriteString(pt.QrCode)
+	builder.WriteString(", ")
+	builder.WriteString("description=")
+	builder.WriteString(pt.Description)
+	builder.WriteString(", ")
+	builder.WriteString("status=")
+	builder.WriteString(pt.Status)
+	builder.WriteString(", ")
+	builder.WriteString("type=")
+	builder.WriteString(fmt.Sprintf("%v", pt.Type))
+	builder.WriteString(", ")
+	builder.WriteString("is_active=")
+	builder.WriteString(fmt.Sprintf("%v", pt.IsActive))
+	builder.WriteString(", ")
+	builder.WriteString("is_reserved=")
+	builder.WriteString(fmt.Sprintf("%v", pt.IsReserved))
+	builder.WriteString(", ")
+	builder.WriteString("is_vip=")
+	builder.WriteString(fmt.Sprintf("%v", pt.IsVip))
+	builder.WriteString(", ")
+	builder.WriteString("is_premium=")
+	builder.WriteString(fmt.Sprintf("%v", pt.IsPremium))
 	builder.WriteByte(')')
 	return builder.String()
 }

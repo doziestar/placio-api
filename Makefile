@@ -87,8 +87,8 @@ grpc: ## Run Go generate
 
 migrate: ## Run database migration. Pass migration name as a parameter, eg: make migrate migration_name=init_schema
 	atlas migrate diff $(migration_name) \
-  	--dir "file://ent/migrate/migrations" \
-  	--to "file://./cmd/app/ent/schema" \
+  	--dir "file://./pkg/ent/migrate/migrations" \
+  	--to "file://./app/ent/schema" \
   	--dev-url "docker://postgres/15/test?search_path=public"
 
 

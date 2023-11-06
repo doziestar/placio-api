@@ -17,12 +17,14 @@ import (
 	"placio-app/ent/notification"
 	"placio-app/ent/order"
 	"placio-app/ent/place"
+	"placio-app/ent/placetable"
 	"placio-app/ent/post"
 	"placio-app/ent/predicate"
 	"placio-app/ent/rating"
 	"placio-app/ent/reservation"
 	"placio-app/ent/reservationblock"
 	"placio-app/ent/review"
+	"placio-app/ent/staff"
 	"placio-app/ent/transactionhistory"
 	"placio-app/ent/user"
 	"placio-app/ent/userbusiness"
@@ -775,6 +777,96 @@ func (uu *UserUpdate) AddOrders(o ...*Order) *UserUpdate {
 	return uu.AddOrderIDs(ids...)
 }
 
+// AddTablesCreatedIDs adds the "tables_created" edge to the PlaceTable entity by IDs.
+func (uu *UserUpdate) AddTablesCreatedIDs(ids ...string) *UserUpdate {
+	uu.mutation.AddTablesCreatedIDs(ids...)
+	return uu
+}
+
+// AddTablesCreated adds the "tables_created" edges to the PlaceTable entity.
+func (uu *UserUpdate) AddTablesCreated(p ...*PlaceTable) *UserUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uu.AddTablesCreatedIDs(ids...)
+}
+
+// AddTablesUpdatedIDs adds the "tables_updated" edge to the PlaceTable entity by IDs.
+func (uu *UserUpdate) AddTablesUpdatedIDs(ids ...string) *UserUpdate {
+	uu.mutation.AddTablesUpdatedIDs(ids...)
+	return uu
+}
+
+// AddTablesUpdated adds the "tables_updated" edges to the PlaceTable entity.
+func (uu *UserUpdate) AddTablesUpdated(p ...*PlaceTable) *UserUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uu.AddTablesUpdatedIDs(ids...)
+}
+
+// AddTablesDeletedIDs adds the "tables_deleted" edge to the PlaceTable entity by IDs.
+func (uu *UserUpdate) AddTablesDeletedIDs(ids ...string) *UserUpdate {
+	uu.mutation.AddTablesDeletedIDs(ids...)
+	return uu
+}
+
+// AddTablesDeleted adds the "tables_deleted" edges to the PlaceTable entity.
+func (uu *UserUpdate) AddTablesDeleted(p ...*PlaceTable) *UserUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uu.AddTablesDeletedIDs(ids...)
+}
+
+// AddTablesReservedIDs adds the "tables_reserved" edge to the PlaceTable entity by IDs.
+func (uu *UserUpdate) AddTablesReservedIDs(ids ...string) *UserUpdate {
+	uu.mutation.AddTablesReservedIDs(ids...)
+	return uu
+}
+
+// AddTablesReserved adds the "tables_reserved" edges to the PlaceTable entity.
+func (uu *UserUpdate) AddTablesReserved(p ...*PlaceTable) *UserUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uu.AddTablesReservedIDs(ids...)
+}
+
+// AddTablesWaitedIDs adds the "tables_waited" edge to the PlaceTable entity by IDs.
+func (uu *UserUpdate) AddTablesWaitedIDs(ids ...string) *UserUpdate {
+	uu.mutation.AddTablesWaitedIDs(ids...)
+	return uu
+}
+
+// AddTablesWaited adds the "tables_waited" edges to the PlaceTable entity.
+func (uu *UserUpdate) AddTablesWaited(p ...*PlaceTable) *UserUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uu.AddTablesWaitedIDs(ids...)
+}
+
+// AddStaffIDs adds the "staffs" edge to the Staff entity by IDs.
+func (uu *UserUpdate) AddStaffIDs(ids ...string) *UserUpdate {
+	uu.mutation.AddStaffIDs(ids...)
+	return uu
+}
+
+// AddStaffs adds the "staffs" edges to the Staff entity.
+func (uu *UserUpdate) AddStaffs(s ...*Staff) *UserUpdate {
+	ids := make([]string, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return uu.AddStaffIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uu *UserUpdate) Mutation() *UserMutation {
 	return uu.mutation
@@ -1252,6 +1344,132 @@ func (uu *UserUpdate) RemoveOrders(o ...*Order) *UserUpdate {
 		ids[i] = o[i].ID
 	}
 	return uu.RemoveOrderIDs(ids...)
+}
+
+// ClearTablesCreated clears all "tables_created" edges to the PlaceTable entity.
+func (uu *UserUpdate) ClearTablesCreated() *UserUpdate {
+	uu.mutation.ClearTablesCreated()
+	return uu
+}
+
+// RemoveTablesCreatedIDs removes the "tables_created" edge to PlaceTable entities by IDs.
+func (uu *UserUpdate) RemoveTablesCreatedIDs(ids ...string) *UserUpdate {
+	uu.mutation.RemoveTablesCreatedIDs(ids...)
+	return uu
+}
+
+// RemoveTablesCreated removes "tables_created" edges to PlaceTable entities.
+func (uu *UserUpdate) RemoveTablesCreated(p ...*PlaceTable) *UserUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uu.RemoveTablesCreatedIDs(ids...)
+}
+
+// ClearTablesUpdated clears all "tables_updated" edges to the PlaceTable entity.
+func (uu *UserUpdate) ClearTablesUpdated() *UserUpdate {
+	uu.mutation.ClearTablesUpdated()
+	return uu
+}
+
+// RemoveTablesUpdatedIDs removes the "tables_updated" edge to PlaceTable entities by IDs.
+func (uu *UserUpdate) RemoveTablesUpdatedIDs(ids ...string) *UserUpdate {
+	uu.mutation.RemoveTablesUpdatedIDs(ids...)
+	return uu
+}
+
+// RemoveTablesUpdated removes "tables_updated" edges to PlaceTable entities.
+func (uu *UserUpdate) RemoveTablesUpdated(p ...*PlaceTable) *UserUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uu.RemoveTablesUpdatedIDs(ids...)
+}
+
+// ClearTablesDeleted clears all "tables_deleted" edges to the PlaceTable entity.
+func (uu *UserUpdate) ClearTablesDeleted() *UserUpdate {
+	uu.mutation.ClearTablesDeleted()
+	return uu
+}
+
+// RemoveTablesDeletedIDs removes the "tables_deleted" edge to PlaceTable entities by IDs.
+func (uu *UserUpdate) RemoveTablesDeletedIDs(ids ...string) *UserUpdate {
+	uu.mutation.RemoveTablesDeletedIDs(ids...)
+	return uu
+}
+
+// RemoveTablesDeleted removes "tables_deleted" edges to PlaceTable entities.
+func (uu *UserUpdate) RemoveTablesDeleted(p ...*PlaceTable) *UserUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uu.RemoveTablesDeletedIDs(ids...)
+}
+
+// ClearTablesReserved clears all "tables_reserved" edges to the PlaceTable entity.
+func (uu *UserUpdate) ClearTablesReserved() *UserUpdate {
+	uu.mutation.ClearTablesReserved()
+	return uu
+}
+
+// RemoveTablesReservedIDs removes the "tables_reserved" edge to PlaceTable entities by IDs.
+func (uu *UserUpdate) RemoveTablesReservedIDs(ids ...string) *UserUpdate {
+	uu.mutation.RemoveTablesReservedIDs(ids...)
+	return uu
+}
+
+// RemoveTablesReserved removes "tables_reserved" edges to PlaceTable entities.
+func (uu *UserUpdate) RemoveTablesReserved(p ...*PlaceTable) *UserUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uu.RemoveTablesReservedIDs(ids...)
+}
+
+// ClearTablesWaited clears all "tables_waited" edges to the PlaceTable entity.
+func (uu *UserUpdate) ClearTablesWaited() *UserUpdate {
+	uu.mutation.ClearTablesWaited()
+	return uu
+}
+
+// RemoveTablesWaitedIDs removes the "tables_waited" edge to PlaceTable entities by IDs.
+func (uu *UserUpdate) RemoveTablesWaitedIDs(ids ...string) *UserUpdate {
+	uu.mutation.RemoveTablesWaitedIDs(ids...)
+	return uu
+}
+
+// RemoveTablesWaited removes "tables_waited" edges to PlaceTable entities.
+func (uu *UserUpdate) RemoveTablesWaited(p ...*PlaceTable) *UserUpdate {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uu.RemoveTablesWaitedIDs(ids...)
+}
+
+// ClearStaffs clears all "staffs" edges to the Staff entity.
+func (uu *UserUpdate) ClearStaffs() *UserUpdate {
+	uu.mutation.ClearStaffs()
+	return uu
+}
+
+// RemoveStaffIDs removes the "staffs" edge to Staff entities by IDs.
+func (uu *UserUpdate) RemoveStaffIDs(ids ...string) *UserUpdate {
+	uu.mutation.RemoveStaffIDs(ids...)
+	return uu
+}
+
+// RemoveStaffs removes "staffs" edges to Staff entities.
+func (uu *UserUpdate) RemoveStaffs(s ...*Staff) *UserUpdate {
+	ids := make([]string, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return uu.RemoveStaffIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -2473,6 +2691,276 @@ func (uu *UserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if uu.mutation.TablesCreatedCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TablesCreatedTable,
+			Columns: []string{user.TablesCreatedColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedTablesCreatedIDs(); len(nodes) > 0 && !uu.mutation.TablesCreatedCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TablesCreatedTable,
+			Columns: []string{user.TablesCreatedColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.TablesCreatedIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TablesCreatedTable,
+			Columns: []string{user.TablesCreatedColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uu.mutation.TablesUpdatedCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TablesUpdatedTable,
+			Columns: []string{user.TablesUpdatedColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedTablesUpdatedIDs(); len(nodes) > 0 && !uu.mutation.TablesUpdatedCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TablesUpdatedTable,
+			Columns: []string{user.TablesUpdatedColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.TablesUpdatedIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TablesUpdatedTable,
+			Columns: []string{user.TablesUpdatedColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uu.mutation.TablesDeletedCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TablesDeletedTable,
+			Columns: []string{user.TablesDeletedColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedTablesDeletedIDs(); len(nodes) > 0 && !uu.mutation.TablesDeletedCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TablesDeletedTable,
+			Columns: []string{user.TablesDeletedColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.TablesDeletedIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TablesDeletedTable,
+			Columns: []string{user.TablesDeletedColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uu.mutation.TablesReservedCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TablesReservedTable,
+			Columns: []string{user.TablesReservedColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedTablesReservedIDs(); len(nodes) > 0 && !uu.mutation.TablesReservedCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TablesReservedTable,
+			Columns: []string{user.TablesReservedColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.TablesReservedIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TablesReservedTable,
+			Columns: []string{user.TablesReservedColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uu.mutation.TablesWaitedCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TablesWaitedTable,
+			Columns: []string{user.TablesWaitedColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedTablesWaitedIDs(); len(nodes) > 0 && !uu.mutation.TablesWaitedCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TablesWaitedTable,
+			Columns: []string{user.TablesWaitedColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.TablesWaitedIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TablesWaitedTable,
+			Columns: []string{user.TablesWaitedColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uu.mutation.StaffsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.StaffsTable,
+			Columns: []string{user.StaffsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(staff.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.RemovedStaffsIDs(); len(nodes) > 0 && !uu.mutation.StaffsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.StaffsTable,
+			Columns: []string{user.StaffsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(staff.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uu.mutation.StaffsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.StaffsTable,
+			Columns: []string{user.StaffsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(staff.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, uu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{user.Label}
@@ -3216,6 +3704,96 @@ func (uuo *UserUpdateOne) AddOrders(o ...*Order) *UserUpdateOne {
 	return uuo.AddOrderIDs(ids...)
 }
 
+// AddTablesCreatedIDs adds the "tables_created" edge to the PlaceTable entity by IDs.
+func (uuo *UserUpdateOne) AddTablesCreatedIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.AddTablesCreatedIDs(ids...)
+	return uuo
+}
+
+// AddTablesCreated adds the "tables_created" edges to the PlaceTable entity.
+func (uuo *UserUpdateOne) AddTablesCreated(p ...*PlaceTable) *UserUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uuo.AddTablesCreatedIDs(ids...)
+}
+
+// AddTablesUpdatedIDs adds the "tables_updated" edge to the PlaceTable entity by IDs.
+func (uuo *UserUpdateOne) AddTablesUpdatedIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.AddTablesUpdatedIDs(ids...)
+	return uuo
+}
+
+// AddTablesUpdated adds the "tables_updated" edges to the PlaceTable entity.
+func (uuo *UserUpdateOne) AddTablesUpdated(p ...*PlaceTable) *UserUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uuo.AddTablesUpdatedIDs(ids...)
+}
+
+// AddTablesDeletedIDs adds the "tables_deleted" edge to the PlaceTable entity by IDs.
+func (uuo *UserUpdateOne) AddTablesDeletedIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.AddTablesDeletedIDs(ids...)
+	return uuo
+}
+
+// AddTablesDeleted adds the "tables_deleted" edges to the PlaceTable entity.
+func (uuo *UserUpdateOne) AddTablesDeleted(p ...*PlaceTable) *UserUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uuo.AddTablesDeletedIDs(ids...)
+}
+
+// AddTablesReservedIDs adds the "tables_reserved" edge to the PlaceTable entity by IDs.
+func (uuo *UserUpdateOne) AddTablesReservedIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.AddTablesReservedIDs(ids...)
+	return uuo
+}
+
+// AddTablesReserved adds the "tables_reserved" edges to the PlaceTable entity.
+func (uuo *UserUpdateOne) AddTablesReserved(p ...*PlaceTable) *UserUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uuo.AddTablesReservedIDs(ids...)
+}
+
+// AddTablesWaitedIDs adds the "tables_waited" edge to the PlaceTable entity by IDs.
+func (uuo *UserUpdateOne) AddTablesWaitedIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.AddTablesWaitedIDs(ids...)
+	return uuo
+}
+
+// AddTablesWaited adds the "tables_waited" edges to the PlaceTable entity.
+func (uuo *UserUpdateOne) AddTablesWaited(p ...*PlaceTable) *UserUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uuo.AddTablesWaitedIDs(ids...)
+}
+
+// AddStaffIDs adds the "staffs" edge to the Staff entity by IDs.
+func (uuo *UserUpdateOne) AddStaffIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.AddStaffIDs(ids...)
+	return uuo
+}
+
+// AddStaffs adds the "staffs" edges to the Staff entity.
+func (uuo *UserUpdateOne) AddStaffs(s ...*Staff) *UserUpdateOne {
+	ids := make([]string, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return uuo.AddStaffIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uuo *UserUpdateOne) Mutation() *UserMutation {
 	return uuo.mutation
@@ -3693,6 +4271,132 @@ func (uuo *UserUpdateOne) RemoveOrders(o ...*Order) *UserUpdateOne {
 		ids[i] = o[i].ID
 	}
 	return uuo.RemoveOrderIDs(ids...)
+}
+
+// ClearTablesCreated clears all "tables_created" edges to the PlaceTable entity.
+func (uuo *UserUpdateOne) ClearTablesCreated() *UserUpdateOne {
+	uuo.mutation.ClearTablesCreated()
+	return uuo
+}
+
+// RemoveTablesCreatedIDs removes the "tables_created" edge to PlaceTable entities by IDs.
+func (uuo *UserUpdateOne) RemoveTablesCreatedIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.RemoveTablesCreatedIDs(ids...)
+	return uuo
+}
+
+// RemoveTablesCreated removes "tables_created" edges to PlaceTable entities.
+func (uuo *UserUpdateOne) RemoveTablesCreated(p ...*PlaceTable) *UserUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uuo.RemoveTablesCreatedIDs(ids...)
+}
+
+// ClearTablesUpdated clears all "tables_updated" edges to the PlaceTable entity.
+func (uuo *UserUpdateOne) ClearTablesUpdated() *UserUpdateOne {
+	uuo.mutation.ClearTablesUpdated()
+	return uuo
+}
+
+// RemoveTablesUpdatedIDs removes the "tables_updated" edge to PlaceTable entities by IDs.
+func (uuo *UserUpdateOne) RemoveTablesUpdatedIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.RemoveTablesUpdatedIDs(ids...)
+	return uuo
+}
+
+// RemoveTablesUpdated removes "tables_updated" edges to PlaceTable entities.
+func (uuo *UserUpdateOne) RemoveTablesUpdated(p ...*PlaceTable) *UserUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uuo.RemoveTablesUpdatedIDs(ids...)
+}
+
+// ClearTablesDeleted clears all "tables_deleted" edges to the PlaceTable entity.
+func (uuo *UserUpdateOne) ClearTablesDeleted() *UserUpdateOne {
+	uuo.mutation.ClearTablesDeleted()
+	return uuo
+}
+
+// RemoveTablesDeletedIDs removes the "tables_deleted" edge to PlaceTable entities by IDs.
+func (uuo *UserUpdateOne) RemoveTablesDeletedIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.RemoveTablesDeletedIDs(ids...)
+	return uuo
+}
+
+// RemoveTablesDeleted removes "tables_deleted" edges to PlaceTable entities.
+func (uuo *UserUpdateOne) RemoveTablesDeleted(p ...*PlaceTable) *UserUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uuo.RemoveTablesDeletedIDs(ids...)
+}
+
+// ClearTablesReserved clears all "tables_reserved" edges to the PlaceTable entity.
+func (uuo *UserUpdateOne) ClearTablesReserved() *UserUpdateOne {
+	uuo.mutation.ClearTablesReserved()
+	return uuo
+}
+
+// RemoveTablesReservedIDs removes the "tables_reserved" edge to PlaceTable entities by IDs.
+func (uuo *UserUpdateOne) RemoveTablesReservedIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.RemoveTablesReservedIDs(ids...)
+	return uuo
+}
+
+// RemoveTablesReserved removes "tables_reserved" edges to PlaceTable entities.
+func (uuo *UserUpdateOne) RemoveTablesReserved(p ...*PlaceTable) *UserUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uuo.RemoveTablesReservedIDs(ids...)
+}
+
+// ClearTablesWaited clears all "tables_waited" edges to the PlaceTable entity.
+func (uuo *UserUpdateOne) ClearTablesWaited() *UserUpdateOne {
+	uuo.mutation.ClearTablesWaited()
+	return uuo
+}
+
+// RemoveTablesWaitedIDs removes the "tables_waited" edge to PlaceTable entities by IDs.
+func (uuo *UserUpdateOne) RemoveTablesWaitedIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.RemoveTablesWaitedIDs(ids...)
+	return uuo
+}
+
+// RemoveTablesWaited removes "tables_waited" edges to PlaceTable entities.
+func (uuo *UserUpdateOne) RemoveTablesWaited(p ...*PlaceTable) *UserUpdateOne {
+	ids := make([]string, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return uuo.RemoveTablesWaitedIDs(ids...)
+}
+
+// ClearStaffs clears all "staffs" edges to the Staff entity.
+func (uuo *UserUpdateOne) ClearStaffs() *UserUpdateOne {
+	uuo.mutation.ClearStaffs()
+	return uuo
+}
+
+// RemoveStaffIDs removes the "staffs" edge to Staff entities by IDs.
+func (uuo *UserUpdateOne) RemoveStaffIDs(ids ...string) *UserUpdateOne {
+	uuo.mutation.RemoveStaffIDs(ids...)
+	return uuo
+}
+
+// RemoveStaffs removes "staffs" edges to Staff entities.
+func (uuo *UserUpdateOne) RemoveStaffs(s ...*Staff) *UserUpdateOne {
+	ids := make([]string, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return uuo.RemoveStaffIDs(ids...)
 }
 
 // Where appends a list predicates to the UserUpdate builder.
@@ -4937,6 +5641,276 @@ func (uuo *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(order.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.TablesCreatedCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TablesCreatedTable,
+			Columns: []string{user.TablesCreatedColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedTablesCreatedIDs(); len(nodes) > 0 && !uuo.mutation.TablesCreatedCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TablesCreatedTable,
+			Columns: []string{user.TablesCreatedColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.TablesCreatedIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TablesCreatedTable,
+			Columns: []string{user.TablesCreatedColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.TablesUpdatedCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TablesUpdatedTable,
+			Columns: []string{user.TablesUpdatedColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedTablesUpdatedIDs(); len(nodes) > 0 && !uuo.mutation.TablesUpdatedCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TablesUpdatedTable,
+			Columns: []string{user.TablesUpdatedColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.TablesUpdatedIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TablesUpdatedTable,
+			Columns: []string{user.TablesUpdatedColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.TablesDeletedCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TablesDeletedTable,
+			Columns: []string{user.TablesDeletedColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedTablesDeletedIDs(); len(nodes) > 0 && !uuo.mutation.TablesDeletedCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TablesDeletedTable,
+			Columns: []string{user.TablesDeletedColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.TablesDeletedIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TablesDeletedTable,
+			Columns: []string{user.TablesDeletedColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.TablesReservedCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TablesReservedTable,
+			Columns: []string{user.TablesReservedColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedTablesReservedIDs(); len(nodes) > 0 && !uuo.mutation.TablesReservedCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TablesReservedTable,
+			Columns: []string{user.TablesReservedColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.TablesReservedIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TablesReservedTable,
+			Columns: []string{user.TablesReservedColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.TablesWaitedCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TablesWaitedTable,
+			Columns: []string{user.TablesWaitedColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedTablesWaitedIDs(); len(nodes) > 0 && !uuo.mutation.TablesWaitedCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TablesWaitedTable,
+			Columns: []string{user.TablesWaitedColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.TablesWaitedIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.TablesWaitedTable,
+			Columns: []string{user.TablesWaitedColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(placetable.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if uuo.mutation.StaffsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.StaffsTable,
+			Columns: []string{user.StaffsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(staff.FieldID, field.TypeString),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.RemovedStaffsIDs(); len(nodes) > 0 && !uuo.mutation.StaffsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.StaffsTable,
+			Columns: []string{user.StaffsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(staff.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := uuo.mutation.StaffsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   user.StaffsTable,
+			Columns: []string{user.StaffsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(staff.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

@@ -87,6 +87,9 @@ type OrderItem func(*sql.Selector)
 // Payment is the predicate function for payment builders.
 type Payment func(*sql.Selector)
 
+// Permission is the predicate function for permission builders.
+type Permission func(*sql.Selector)
+
 // Place is the predicate function for place builders.
 type Place func(*sql.Selector)
 
@@ -122,6 +125,9 @@ type Review func(*sql.Selector)
 
 // Room is the predicate function for room builders.
 type Room func(*sql.Selector)
+
+// Staff is the predicate function for staff builders.
+type Staff func(*sql.Selector)
 
 // Template is the predicate function for template builders.
 type Template func(*sql.Selector)

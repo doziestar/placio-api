@@ -66,6 +66,8 @@ type Tx struct {
 	OrderItem *OrderItemClient
 	// Payment is the client for interacting with the Payment builders.
 	Payment *PaymentClient
+	// Permission is the client for interacting with the Permission builders.
+	Permission *PermissionClient
 	// Place is the client for interacting with the Place builders.
 	Place *PlaceClient
 	// PlaceInventory is the client for interacting with the PlaceInventory builders.
@@ -90,6 +92,8 @@ type Tx struct {
 	Review *ReviewClient
 	// Room is the client for interacting with the Room builders.
 	Room *RoomClient
+	// Staff is the client for interacting with the Staff builders.
+	Staff *StaffClient
 	// Template is the client for interacting with the Template builders.
 	Template *TemplateClient
 	// Ticket is the client for interacting with the Ticket builders.
@@ -272,6 +276,7 @@ func (tx *Tx) init() {
 	tx.Order = NewOrderClient(tx.config)
 	tx.OrderItem = NewOrderItemClient(tx.config)
 	tx.Payment = NewPaymentClient(tx.config)
+	tx.Permission = NewPermissionClient(tx.config)
 	tx.Place = NewPlaceClient(tx.config)
 	tx.PlaceInventory = NewPlaceInventoryClient(tx.config)
 	tx.PlaceInventoryAttribute = NewPlaceInventoryAttributeClient(tx.config)
@@ -284,6 +289,7 @@ func (tx *Tx) init() {
 	tx.Resourse = NewResourseClient(tx.config)
 	tx.Review = NewReviewClient(tx.config)
 	tx.Room = NewRoomClient(tx.config)
+	tx.Staff = NewStaffClient(tx.config)
 	tx.Template = NewTemplateClient(tx.config)
 	tx.Ticket = NewTicketClient(tx.config)
 	tx.TicketOption = NewTicketOptionClient(tx.config)

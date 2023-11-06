@@ -25,6 +25,7 @@ import (
 	"placio-app/ent/notification"
 	"placio-app/ent/order"
 	"placio-app/ent/orderitem"
+	"placio-app/ent/permission"
 	"placio-app/ent/place"
 	"placio-app/ent/placeinventory"
 	"placio-app/ent/placeinventoryattribute"
@@ -35,6 +36,7 @@ import (
 	"placio-app/ent/review"
 	"placio-app/ent/room"
 	"placio-app/ent/schema"
+	"placio-app/ent/staff"
 	"placio-app/ent/ticket"
 	"placio-app/ent/ticketoption"
 	"placio-app/ent/transactionhistory"
@@ -457,6 +459,12 @@ func init() {
 	orderitemDescID := orderitemFields[0].Descriptor()
 	// orderitem.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	orderitem.IDValidator = orderitemDescID.Validators[0].(func(string) error)
+	permissionFields := schema.Permission{}.Fields()
+	_ = permissionFields
+	// permissionDescID is the schema descriptor for id field.
+	permissionDescID := permissionFields[0].Descriptor()
+	// permission.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	permission.IDValidator = permissionDescID.Validators[0].(func(string) error)
 	placeHooks := schema.Place{}.Hooks()
 	place.Hooks[0] = placeHooks[0]
 	placeFields := schema.Place{}.Fields()
@@ -519,10 +527,34 @@ func init() {
 	placeinventoryattribute.IDValidator = placeinventoryattributeDescID.Validators[0].(func(string) error)
 	placetableFields := schema.PlaceTable{}.Fields()
 	_ = placetableFields
+	// placetableDescCapacity is the schema descriptor for capacity field.
+	placetableDescCapacity := placetableFields[3].Descriptor()
+	// placetable.DefaultCapacity holds the default value on creation for the capacity field.
+	placetable.DefaultCapacity = placetableDescCapacity.Default.(int)
 	// placetableDescIsDeleted is the schema descriptor for is_deleted field.
-	placetableDescIsDeleted := placetableFields[3].Descriptor()
+	placetableDescIsDeleted := placetableFields[5].Descriptor()
 	// placetable.DefaultIsDeleted holds the default value on creation for the is_deleted field.
 	placetable.DefaultIsDeleted = placetableDescIsDeleted.Default.(bool)
+	// placetableDescStatus is the schema descriptor for status field.
+	placetableDescStatus := placetableFields[8].Descriptor()
+	// placetable.DefaultStatus holds the default value on creation for the status field.
+	placetable.DefaultStatus = placetableDescStatus.Default.(string)
+	// placetableDescIsActive is the schema descriptor for is_active field.
+	placetableDescIsActive := placetableFields[10].Descriptor()
+	// placetable.DefaultIsActive holds the default value on creation for the is_active field.
+	placetable.DefaultIsActive = placetableDescIsActive.Default.(bool)
+	// placetableDescIsReserved is the schema descriptor for is_reserved field.
+	placetableDescIsReserved := placetableFields[11].Descriptor()
+	// placetable.DefaultIsReserved holds the default value on creation for the is_reserved field.
+	placetable.DefaultIsReserved = placetableDescIsReserved.Default.(bool)
+	// placetableDescIsVip is the schema descriptor for is_vip field.
+	placetableDescIsVip := placetableFields[12].Descriptor()
+	// placetable.DefaultIsVip holds the default value on creation for the is_vip field.
+	placetable.DefaultIsVip = placetableDescIsVip.Default.(bool)
+	// placetableDescIsPremium is the schema descriptor for is_premium field.
+	placetableDescIsPremium := placetableFields[13].Descriptor()
+	// placetable.DefaultIsPremium holds the default value on creation for the is_premium field.
+	placetable.DefaultIsPremium = placetableDescIsPremium.Default.(bool)
 	// placetableDescID is the schema descriptor for id field.
 	placetableDescID := placetableFields[0].Descriptor()
 	// placetable.IDValidator is a validator for the "id" field. It is called by the builders before save.
@@ -673,6 +705,12 @@ func init() {
 	roomDescID := roomFields[0].Descriptor()
 	// room.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	room.IDValidator = roomDescID.Validators[0].(func(string) error)
+	staffFields := schema.Staff{}.Fields()
+	_ = staffFields
+	// staffDescID is the schema descriptor for id field.
+	staffDescID := staffFields[0].Descriptor()
+	// staff.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	staff.IDValidator = staffDescID.Validators[0].(func(string) error)
 	ticketFields := schema.Ticket{}.Fields()
 	_ = ticketFields
 	// ticketDescCreatedAt is the schema descriptor for createdAt field.

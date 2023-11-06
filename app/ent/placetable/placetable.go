@@ -3,6 +3,8 @@
 package placetable
 
 import (
+	"fmt"
+
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 )
@@ -14,14 +16,42 @@ const (
 	FieldID = "id"
 	// FieldNumber holds the string denoting the number field in the database.
 	FieldNumber = "number"
+	// FieldName holds the string denoting the name field in the database.
+	FieldName = "name"
+	// FieldCapacity holds the string denoting the capacity field in the database.
+	FieldCapacity = "capacity"
 	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
 	FieldDeletedAt = "deleted_at"
 	// FieldIsDeleted holds the string denoting the is_deleted field in the database.
 	FieldIsDeleted = "is_deleted"
 	// FieldQrCode holds the string denoting the qr_code field in the database.
 	FieldQrCode = "qr_code"
+	// FieldDescription holds the string denoting the description field in the database.
+	FieldDescription = "description"
+	// FieldStatus holds the string denoting the status field in the database.
+	FieldStatus = "status"
+	// FieldType holds the string denoting the type field in the database.
+	FieldType = "type"
+	// FieldIsActive holds the string denoting the is_active field in the database.
+	FieldIsActive = "is_active"
+	// FieldIsReserved holds the string denoting the is_reserved field in the database.
+	FieldIsReserved = "is_reserved"
+	// FieldIsVip holds the string denoting the is_vip field in the database.
+	FieldIsVip = "is_vip"
+	// FieldIsPremium holds the string denoting the is_premium field in the database.
+	FieldIsPremium = "is_premium"
 	// EdgePlace holds the string denoting the place edge name in mutations.
 	EdgePlace = "place"
+	// EdgeCreatedBy holds the string denoting the created_by edge name in mutations.
+	EdgeCreatedBy = "created_by"
+	// EdgeUpdatedBy holds the string denoting the updated_by edge name in mutations.
+	EdgeUpdatedBy = "updated_by"
+	// EdgeDeletedBy holds the string denoting the deleted_by edge name in mutations.
+	EdgeDeletedBy = "deleted_by"
+	// EdgeReservedBy holds the string denoting the reserved_by edge name in mutations.
+	EdgeReservedBy = "reserved_by"
+	// EdgeWaiter holds the string denoting the waiter edge name in mutations.
+	EdgeWaiter = "waiter"
 	// EdgeOrders holds the string denoting the orders edge name in mutations.
 	EdgeOrders = "orders"
 	// Table holds the table name of the placetable in the database.
@@ -33,6 +63,41 @@ const (
 	PlaceInverseTable = "places"
 	// PlaceColumn is the table column denoting the place relation/edge.
 	PlaceColumn = "place_tables"
+	// CreatedByTable is the table that holds the created_by relation/edge.
+	CreatedByTable = "place_tables"
+	// CreatedByInverseTable is the table name for the User entity.
+	// It exists in this package in order to avoid circular dependency with the "user" package.
+	CreatedByInverseTable = "users"
+	// CreatedByColumn is the table column denoting the created_by relation/edge.
+	CreatedByColumn = "user_tables_created"
+	// UpdatedByTable is the table that holds the updated_by relation/edge.
+	UpdatedByTable = "place_tables"
+	// UpdatedByInverseTable is the table name for the User entity.
+	// It exists in this package in order to avoid circular dependency with the "user" package.
+	UpdatedByInverseTable = "users"
+	// UpdatedByColumn is the table column denoting the updated_by relation/edge.
+	UpdatedByColumn = "user_tables_updated"
+	// DeletedByTable is the table that holds the deleted_by relation/edge.
+	DeletedByTable = "place_tables"
+	// DeletedByInverseTable is the table name for the User entity.
+	// It exists in this package in order to avoid circular dependency with the "user" package.
+	DeletedByInverseTable = "users"
+	// DeletedByColumn is the table column denoting the deleted_by relation/edge.
+	DeletedByColumn = "user_tables_deleted"
+	// ReservedByTable is the table that holds the reserved_by relation/edge.
+	ReservedByTable = "place_tables"
+	// ReservedByInverseTable is the table name for the User entity.
+	// It exists in this package in order to avoid circular dependency with the "user" package.
+	ReservedByInverseTable = "users"
+	// ReservedByColumn is the table column denoting the reserved_by relation/edge.
+	ReservedByColumn = "user_tables_reserved"
+	// WaiterTable is the table that holds the waiter relation/edge.
+	WaiterTable = "place_tables"
+	// WaiterInverseTable is the table name for the User entity.
+	// It exists in this package in order to avoid circular dependency with the "user" package.
+	WaiterInverseTable = "users"
+	// WaiterColumn is the table column denoting the waiter relation/edge.
+	WaiterColumn = "user_tables_waited"
 	// OrdersTable is the table that holds the orders relation/edge. The primary key declared below.
 	OrdersTable = "place_table_orders"
 	// OrdersInverseTable is the table name for the Order entity.
@@ -44,15 +109,29 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldNumber,
+	FieldName,
+	FieldCapacity,
 	FieldDeletedAt,
 	FieldIsDeleted,
 	FieldQrCode,
+	FieldDescription,
+	FieldStatus,
+	FieldType,
+	FieldIsActive,
+	FieldIsReserved,
+	FieldIsVip,
+	FieldIsPremium,
 }
 
 // ForeignKeys holds the SQL foreign-keys that are owned by the "place_tables"
 // table and are not defined as standalone fields in the schema.
 var ForeignKeys = []string{
 	"place_tables",
+	"user_tables_created",
+	"user_tables_updated",
+	"user_tables_deleted",
+	"user_tables_reserved",
+	"user_tables_waited",
 }
 
 var (
@@ -77,11 +156,47 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// DefaultCapacity holds the default value on creation for the "capacity" field.
+	DefaultCapacity int
 	// DefaultIsDeleted holds the default value on creation for the "is_deleted" field.
 	DefaultIsDeleted bool
+	// DefaultStatus holds the default value on creation for the "status" field.
+	DefaultStatus string
+	// DefaultIsActive holds the default value on creation for the "is_active" field.
+	DefaultIsActive bool
+	// DefaultIsReserved holds the default value on creation for the "is_reserved" field.
+	DefaultIsReserved bool
+	// DefaultIsVip holds the default value on creation for the "is_vip" field.
+	DefaultIsVip bool
+	// DefaultIsPremium holds the default value on creation for the "is_premium" field.
+	DefaultIsPremium bool
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(string) error
 )
+
+// Type defines the type for the "type" enum field.
+type Type string
+
+// Type values.
+const (
+	TypeRegular Type = "regular"
+	TypeVip     Type = "vip"
+	TypePremium Type = "premium"
+)
+
+func (_type Type) String() string {
+	return string(_type)
+}
+
+// TypeValidator is a validator for the "type" field enum values. It is called by the builders before save.
+func TypeValidator(_type Type) error {
+	switch _type {
+	case TypeRegular, TypeVip, TypePremium:
+		return nil
+	default:
+		return fmt.Errorf("placetable: invalid enum value for type field: %q", _type)
+	}
+}
 
 // OrderOption defines the ordering options for the PlaceTable queries.
 type OrderOption func(*sql.Selector)
@@ -94,6 +209,16 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 // ByNumber orders the results by the number field.
 func ByNumber(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldNumber, opts...).ToFunc()
+}
+
+// ByName orders the results by the name field.
+func ByName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldName, opts...).ToFunc()
+}
+
+// ByCapacity orders the results by the capacity field.
+func ByCapacity(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCapacity, opts...).ToFunc()
 }
 
 // ByDeletedAt orders the results by the deleted_at field.
@@ -111,10 +236,80 @@ func ByQrCode(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldQrCode, opts...).ToFunc()
 }
 
+// ByDescription orders the results by the description field.
+func ByDescription(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDescription, opts...).ToFunc()
+}
+
+// ByStatus orders the results by the status field.
+func ByStatus(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldStatus, opts...).ToFunc()
+}
+
+// ByType orders the results by the type field.
+func ByType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldType, opts...).ToFunc()
+}
+
+// ByIsActive orders the results by the is_active field.
+func ByIsActive(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsActive, opts...).ToFunc()
+}
+
+// ByIsReserved orders the results by the is_reserved field.
+func ByIsReserved(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsReserved, opts...).ToFunc()
+}
+
+// ByIsVip orders the results by the is_vip field.
+func ByIsVip(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsVip, opts...).ToFunc()
+}
+
+// ByIsPremium orders the results by the is_premium field.
+func ByIsPremium(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsPremium, opts...).ToFunc()
+}
+
 // ByPlaceField orders the results by place field.
 func ByPlaceField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
 		sqlgraph.OrderByNeighborTerms(s, newPlaceStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByCreatedByField orders the results by created_by field.
+func ByCreatedByField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCreatedByStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByUpdatedByField orders the results by updated_by field.
+func ByUpdatedByField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newUpdatedByStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByDeletedByField orders the results by deleted_by field.
+func ByDeletedByField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newDeletedByStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByReservedByField orders the results by reserved_by field.
+func ByReservedByField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newReservedByStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByWaiterField orders the results by waiter field.
+func ByWaiterField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newWaiterStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -136,6 +331,41 @@ func newPlaceStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(PlaceInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, true, PlaceTable, PlaceColumn),
+	)
+}
+func newCreatedByStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CreatedByInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, CreatedByTable, CreatedByColumn),
+	)
+}
+func newUpdatedByStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(UpdatedByInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, UpdatedByTable, UpdatedByColumn),
+	)
+}
+func newDeletedByStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(DeletedByInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, DeletedByTable, DeletedByColumn),
+	)
+}
+func newReservedByStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ReservedByInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, ReservedByTable, ReservedByColumn),
+	)
+}
+func newWaiterStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(WaiterInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, WaiterTable, WaiterColumn),
 	)
 }
 func newOrdersStep() *sqlgraph.Step {

@@ -67,6 +67,8 @@ func (Business) Edges() []ent.Edge {
 		edge.To("websites", Website.Type).Unique(),
 		edge.To("notifications", Notification.Type),
 		edge.To("wallet", AccountWallet.Type).Unique(),
+		edge.To("staffs", Staff.Type),
+		
 	}
 }
 

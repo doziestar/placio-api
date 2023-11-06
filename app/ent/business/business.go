@@ -83,6 +83,8 @@ const (
 	EdgeNotifications = "notifications"
 	// EdgeWallet holds the string denoting the wallet edge name in mutations.
 	EdgeWallet = "wallet"
+	// EdgeStaffs holds the string denoting the staffs edge name in mutations.
+	EdgeStaffs = "staffs"
 	// Table holds the table name of the business in the database.
 	Table = "businesses"
 	// UserBusinessesTable is the table that holds the userBusinesses relation/edge.
@@ -209,6 +211,11 @@ const (
 	WalletInverseTable = "account_wallets"
 	// WalletColumn is the table column denoting the wallet relation/edge.
 	WalletColumn = "business_wallet"
+	// StaffsTable is the table that holds the staffs relation/edge. The primary key declared below.
+	StaffsTable = "business_staffs"
+	// StaffsInverseTable is the table name for the Staff entity.
+	// It exists in this package in order to avoid circular dependency with the "staff" package.
+	StaffsInverseTable = "staffs"
 )
 
 // Columns holds all SQL columns for business fields.
@@ -237,6 +244,9 @@ var (
 	// NotificationsPrimaryKey and NotificationsColumn2 are the table columns denoting the
 	// primary key for the notifications relation (M2M).
 	NotificationsPrimaryKey = []string{"business_id", "notification_id"}
+	// StaffsPrimaryKey and StaffsColumn2 are the table columns denoting the
+	// primary key for the staffs relation (M2M).
+	StaffsPrimaryKey = []string{"business_id", "staff_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -579,6 +589,20 @@ func ByWalletField(field string, opts ...sql.OrderTermOption) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newWalletStep(), sql.OrderByField(field, opts...))
 	}
 }
+
+// ByStaffsCount orders the results by staffs count.
+func ByStaffsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newStaffsStep(), opts...)
+	}
+}
+
+// ByStaffs orders the results by staffs terms.
+func ByStaffs(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newStaffsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newUserBusinessesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -703,5 +727,12 @@ func newWalletStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(WalletInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2O, false, WalletTable, WalletColumn),
+	)
+}
+func newStaffsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(StaffsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, false, StaffsTable, StaffsPrimaryKey...),
 	)
 }

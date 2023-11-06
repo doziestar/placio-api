@@ -9,6 +9,7 @@ import (
 	"placio-app/ent/order"
 	"placio-app/ent/place"
 	"placio-app/ent/placetable"
+	"placio-app/ent/user"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -24,6 +25,34 @@ type PlaceTableCreate struct {
 // SetNumber sets the "number" field.
 func (ptc *PlaceTableCreate) SetNumber(i int) *PlaceTableCreate {
 	ptc.mutation.SetNumber(i)
+	return ptc
+}
+
+// SetName sets the "name" field.
+func (ptc *PlaceTableCreate) SetName(s string) *PlaceTableCreate {
+	ptc.mutation.SetName(s)
+	return ptc
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (ptc *PlaceTableCreate) SetNillableName(s *string) *PlaceTableCreate {
+	if s != nil {
+		ptc.SetName(*s)
+	}
+	return ptc
+}
+
+// SetCapacity sets the "capacity" field.
+func (ptc *PlaceTableCreate) SetCapacity(i int) *PlaceTableCreate {
+	ptc.mutation.SetCapacity(i)
+	return ptc
+}
+
+// SetNillableCapacity sets the "capacity" field if the given value is not nil.
+func (ptc *PlaceTableCreate) SetNillableCapacity(i *int) *PlaceTableCreate {
+	if i != nil {
+		ptc.SetCapacity(*i)
+	}
 	return ptc
 }
 
@@ -69,6 +98,104 @@ func (ptc *PlaceTableCreate) SetNillableQrCode(s *string) *PlaceTableCreate {
 	return ptc
 }
 
+// SetDescription sets the "description" field.
+func (ptc *PlaceTableCreate) SetDescription(s string) *PlaceTableCreate {
+	ptc.mutation.SetDescription(s)
+	return ptc
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (ptc *PlaceTableCreate) SetNillableDescription(s *string) *PlaceTableCreate {
+	if s != nil {
+		ptc.SetDescription(*s)
+	}
+	return ptc
+}
+
+// SetStatus sets the "status" field.
+func (ptc *PlaceTableCreate) SetStatus(s string) *PlaceTableCreate {
+	ptc.mutation.SetStatus(s)
+	return ptc
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (ptc *PlaceTableCreate) SetNillableStatus(s *string) *PlaceTableCreate {
+	if s != nil {
+		ptc.SetStatus(*s)
+	}
+	return ptc
+}
+
+// SetType sets the "type" field.
+func (ptc *PlaceTableCreate) SetType(pl placetable.Type) *PlaceTableCreate {
+	ptc.mutation.SetType(pl)
+	return ptc
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (ptc *PlaceTableCreate) SetNillableType(pl *placetable.Type) *PlaceTableCreate {
+	if pl != nil {
+		ptc.SetType(*pl)
+	}
+	return ptc
+}
+
+// SetIsActive sets the "is_active" field.
+func (ptc *PlaceTableCreate) SetIsActive(b bool) *PlaceTableCreate {
+	ptc.mutation.SetIsActive(b)
+	return ptc
+}
+
+// SetNillableIsActive sets the "is_active" field if the given value is not nil.
+func (ptc *PlaceTableCreate) SetNillableIsActive(b *bool) *PlaceTableCreate {
+	if b != nil {
+		ptc.SetIsActive(*b)
+	}
+	return ptc
+}
+
+// SetIsReserved sets the "is_reserved" field.
+func (ptc *PlaceTableCreate) SetIsReserved(b bool) *PlaceTableCreate {
+	ptc.mutation.SetIsReserved(b)
+	return ptc
+}
+
+// SetNillableIsReserved sets the "is_reserved" field if the given value is not nil.
+func (ptc *PlaceTableCreate) SetNillableIsReserved(b *bool) *PlaceTableCreate {
+	if b != nil {
+		ptc.SetIsReserved(*b)
+	}
+	return ptc
+}
+
+// SetIsVip sets the "is_vip" field.
+func (ptc *PlaceTableCreate) SetIsVip(b bool) *PlaceTableCreate {
+	ptc.mutation.SetIsVip(b)
+	return ptc
+}
+
+// SetNillableIsVip sets the "is_vip" field if the given value is not nil.
+func (ptc *PlaceTableCreate) SetNillableIsVip(b *bool) *PlaceTableCreate {
+	if b != nil {
+		ptc.SetIsVip(*b)
+	}
+	return ptc
+}
+
+// SetIsPremium sets the "is_premium" field.
+func (ptc *PlaceTableCreate) SetIsPremium(b bool) *PlaceTableCreate {
+	ptc.mutation.SetIsPremium(b)
+	return ptc
+}
+
+// SetNillableIsPremium sets the "is_premium" field if the given value is not nil.
+func (ptc *PlaceTableCreate) SetNillableIsPremium(b *bool) *PlaceTableCreate {
+	if b != nil {
+		ptc.SetIsPremium(*b)
+	}
+	return ptc
+}
+
 // SetID sets the "id" field.
 func (ptc *PlaceTableCreate) SetID(s string) *PlaceTableCreate {
 	ptc.mutation.SetID(s)
@@ -92,6 +219,101 @@ func (ptc *PlaceTableCreate) SetNillablePlaceID(id *string) *PlaceTableCreate {
 // SetPlace sets the "place" edge to the Place entity.
 func (ptc *PlaceTableCreate) SetPlace(p *Place) *PlaceTableCreate {
 	return ptc.SetPlaceID(p.ID)
+}
+
+// SetCreatedByID sets the "created_by" edge to the User entity by ID.
+func (ptc *PlaceTableCreate) SetCreatedByID(id string) *PlaceTableCreate {
+	ptc.mutation.SetCreatedByID(id)
+	return ptc
+}
+
+// SetNillableCreatedByID sets the "created_by" edge to the User entity by ID if the given value is not nil.
+func (ptc *PlaceTableCreate) SetNillableCreatedByID(id *string) *PlaceTableCreate {
+	if id != nil {
+		ptc = ptc.SetCreatedByID(*id)
+	}
+	return ptc
+}
+
+// SetCreatedBy sets the "created_by" edge to the User entity.
+func (ptc *PlaceTableCreate) SetCreatedBy(u *User) *PlaceTableCreate {
+	return ptc.SetCreatedByID(u.ID)
+}
+
+// SetUpdatedByID sets the "updated_by" edge to the User entity by ID.
+func (ptc *PlaceTableCreate) SetUpdatedByID(id string) *PlaceTableCreate {
+	ptc.mutation.SetUpdatedByID(id)
+	return ptc
+}
+
+// SetNillableUpdatedByID sets the "updated_by" edge to the User entity by ID if the given value is not nil.
+func (ptc *PlaceTableCreate) SetNillableUpdatedByID(id *string) *PlaceTableCreate {
+	if id != nil {
+		ptc = ptc.SetUpdatedByID(*id)
+	}
+	return ptc
+}
+
+// SetUpdatedBy sets the "updated_by" edge to the User entity.
+func (ptc *PlaceTableCreate) SetUpdatedBy(u *User) *PlaceTableCreate {
+	return ptc.SetUpdatedByID(u.ID)
+}
+
+// SetDeletedByID sets the "deleted_by" edge to the User entity by ID.
+func (ptc *PlaceTableCreate) SetDeletedByID(id string) *PlaceTableCreate {
+	ptc.mutation.SetDeletedByID(id)
+	return ptc
+}
+
+// SetNillableDeletedByID sets the "deleted_by" edge to the User entity by ID if the given value is not nil.
+func (ptc *PlaceTableCreate) SetNillableDeletedByID(id *string) *PlaceTableCreate {
+	if id != nil {
+		ptc = ptc.SetDeletedByID(*id)
+	}
+	return ptc
+}
+
+// SetDeletedBy sets the "deleted_by" edge to the User entity.
+func (ptc *PlaceTableCreate) SetDeletedBy(u *User) *PlaceTableCreate {
+	return ptc.SetDeletedByID(u.ID)
+}
+
+// SetReservedByID sets the "reserved_by" edge to the User entity by ID.
+func (ptc *PlaceTableCreate) SetReservedByID(id string) *PlaceTableCreate {
+	ptc.mutation.SetReservedByID(id)
+	return ptc
+}
+
+// SetNillableReservedByID sets the "reserved_by" edge to the User entity by ID if the given value is not nil.
+func (ptc *PlaceTableCreate) SetNillableReservedByID(id *string) *PlaceTableCreate {
+	if id != nil {
+		ptc = ptc.SetReservedByID(*id)
+	}
+	return ptc
+}
+
+// SetReservedBy sets the "reserved_by" edge to the User entity.
+func (ptc *PlaceTableCreate) SetReservedBy(u *User) *PlaceTableCreate {
+	return ptc.SetReservedByID(u.ID)
+}
+
+// SetWaiterID sets the "waiter" edge to the User entity by ID.
+func (ptc *PlaceTableCreate) SetWaiterID(id string) *PlaceTableCreate {
+	ptc.mutation.SetWaiterID(id)
+	return ptc
+}
+
+// SetNillableWaiterID sets the "waiter" edge to the User entity by ID if the given value is not nil.
+func (ptc *PlaceTableCreate) SetNillableWaiterID(id *string) *PlaceTableCreate {
+	if id != nil {
+		ptc = ptc.SetWaiterID(*id)
+	}
+	return ptc
+}
+
+// SetWaiter sets the "waiter" edge to the User entity.
+func (ptc *PlaceTableCreate) SetWaiter(u *User) *PlaceTableCreate {
+	return ptc.SetWaiterID(u.ID)
 }
 
 // AddOrderIDs adds the "orders" edge to the Order entity by IDs.
@@ -144,9 +366,33 @@ func (ptc *PlaceTableCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (ptc *PlaceTableCreate) defaults() {
+	if _, ok := ptc.mutation.Capacity(); !ok {
+		v := placetable.DefaultCapacity
+		ptc.mutation.SetCapacity(v)
+	}
 	if _, ok := ptc.mutation.IsDeleted(); !ok {
 		v := placetable.DefaultIsDeleted
 		ptc.mutation.SetIsDeleted(v)
+	}
+	if _, ok := ptc.mutation.Status(); !ok {
+		v := placetable.DefaultStatus
+		ptc.mutation.SetStatus(v)
+	}
+	if _, ok := ptc.mutation.IsActive(); !ok {
+		v := placetable.DefaultIsActive
+		ptc.mutation.SetIsActive(v)
+	}
+	if _, ok := ptc.mutation.IsReserved(); !ok {
+		v := placetable.DefaultIsReserved
+		ptc.mutation.SetIsReserved(v)
+	}
+	if _, ok := ptc.mutation.IsVip(); !ok {
+		v := placetable.DefaultIsVip
+		ptc.mutation.SetIsVip(v)
+	}
+	if _, ok := ptc.mutation.IsPremium(); !ok {
+		v := placetable.DefaultIsPremium
+		ptc.mutation.SetIsPremium(v)
 	}
 }
 
@@ -155,8 +401,31 @@ func (ptc *PlaceTableCreate) check() error {
 	if _, ok := ptc.mutation.Number(); !ok {
 		return &ValidationError{Name: "number", err: errors.New(`ent: missing required field "PlaceTable.number"`)}
 	}
+	if _, ok := ptc.mutation.Capacity(); !ok {
+		return &ValidationError{Name: "capacity", err: errors.New(`ent: missing required field "PlaceTable.capacity"`)}
+	}
 	if _, ok := ptc.mutation.IsDeleted(); !ok {
 		return &ValidationError{Name: "is_deleted", err: errors.New(`ent: missing required field "PlaceTable.is_deleted"`)}
+	}
+	if _, ok := ptc.mutation.Status(); !ok {
+		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "PlaceTable.status"`)}
+	}
+	if v, ok := ptc.mutation.GetType(); ok {
+		if err := placetable.TypeValidator(v); err != nil {
+			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "PlaceTable.type": %w`, err)}
+		}
+	}
+	if _, ok := ptc.mutation.IsActive(); !ok {
+		return &ValidationError{Name: "is_active", err: errors.New(`ent: missing required field "PlaceTable.is_active"`)}
+	}
+	if _, ok := ptc.mutation.IsReserved(); !ok {
+		return &ValidationError{Name: "is_reserved", err: errors.New(`ent: missing required field "PlaceTable.is_reserved"`)}
+	}
+	if _, ok := ptc.mutation.IsVip(); !ok {
+		return &ValidationError{Name: "is_vip", err: errors.New(`ent: missing required field "PlaceTable.is_vip"`)}
+	}
+	if _, ok := ptc.mutation.IsPremium(); !ok {
+		return &ValidationError{Name: "is_premium", err: errors.New(`ent: missing required field "PlaceTable.is_premium"`)}
 	}
 	if v, ok := ptc.mutation.ID(); ok {
 		if err := placetable.IDValidator(v); err != nil {
@@ -202,6 +471,14 @@ func (ptc *PlaceTableCreate) createSpec() (*PlaceTable, *sqlgraph.CreateSpec) {
 		_spec.SetField(placetable.FieldNumber, field.TypeInt, value)
 		_node.Number = value
 	}
+	if value, ok := ptc.mutation.Name(); ok {
+		_spec.SetField(placetable.FieldName, field.TypeString, value)
+		_node.Name = value
+	}
+	if value, ok := ptc.mutation.Capacity(); ok {
+		_spec.SetField(placetable.FieldCapacity, field.TypeInt, value)
+		_node.Capacity = value
+	}
 	if value, ok := ptc.mutation.DeletedAt(); ok {
 		_spec.SetField(placetable.FieldDeletedAt, field.TypeString, value)
 		_node.DeletedAt = value
@@ -213,6 +490,34 @@ func (ptc *PlaceTableCreate) createSpec() (*PlaceTable, *sqlgraph.CreateSpec) {
 	if value, ok := ptc.mutation.QrCode(); ok {
 		_spec.SetField(placetable.FieldQrCode, field.TypeString, value)
 		_node.QrCode = value
+	}
+	if value, ok := ptc.mutation.Description(); ok {
+		_spec.SetField(placetable.FieldDescription, field.TypeString, value)
+		_node.Description = value
+	}
+	if value, ok := ptc.mutation.Status(); ok {
+		_spec.SetField(placetable.FieldStatus, field.TypeString, value)
+		_node.Status = value
+	}
+	if value, ok := ptc.mutation.GetType(); ok {
+		_spec.SetField(placetable.FieldType, field.TypeEnum, value)
+		_node.Type = value
+	}
+	if value, ok := ptc.mutation.IsActive(); ok {
+		_spec.SetField(placetable.FieldIsActive, field.TypeBool, value)
+		_node.IsActive = value
+	}
+	if value, ok := ptc.mutation.IsReserved(); ok {
+		_spec.SetField(placetable.FieldIsReserved, field.TypeBool, value)
+		_node.IsReserved = value
+	}
+	if value, ok := ptc.mutation.IsVip(); ok {
+		_spec.SetField(placetable.FieldIsVip, field.TypeBool, value)
+		_node.IsVip = value
+	}
+	if value, ok := ptc.mutation.IsPremium(); ok {
+		_spec.SetField(placetable.FieldIsPremium, field.TypeBool, value)
+		_node.IsPremium = value
 	}
 	if nodes := ptc.mutation.PlaceIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -229,6 +534,91 @@ func (ptc *PlaceTableCreate) createSpec() (*PlaceTable, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.place_tables = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ptc.mutation.CreatedByIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   placetable.CreatedByTable,
+			Columns: []string{placetable.CreatedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.user_tables_created = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ptc.mutation.UpdatedByIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   placetable.UpdatedByTable,
+			Columns: []string{placetable.UpdatedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.user_tables_updated = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ptc.mutation.DeletedByIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   placetable.DeletedByTable,
+			Columns: []string{placetable.DeletedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.user_tables_deleted = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ptc.mutation.ReservedByIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   placetable.ReservedByTable,
+			Columns: []string{placetable.ReservedByColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.user_tables_reserved = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ptc.mutation.WaiterIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   placetable.WaiterTable,
+			Columns: []string{placetable.WaiterColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.user_tables_waited = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := ptc.mutation.OrdersIDs(); len(nodes) > 0 {

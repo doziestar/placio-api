@@ -107,6 +107,18 @@ const (
 	EdgeWallet = "wallet"
 	// EdgeOrders holds the string denoting the orders edge name in mutations.
 	EdgeOrders = "orders"
+	// EdgeTablesCreated holds the string denoting the tables_created edge name in mutations.
+	EdgeTablesCreated = "tables_created"
+	// EdgeTablesUpdated holds the string denoting the tables_updated edge name in mutations.
+	EdgeTablesUpdated = "tables_updated"
+	// EdgeTablesDeleted holds the string denoting the tables_deleted edge name in mutations.
+	EdgeTablesDeleted = "tables_deleted"
+	// EdgeTablesReserved holds the string denoting the tables_reserved edge name in mutations.
+	EdgeTablesReserved = "tables_reserved"
+	// EdgeTablesWaited holds the string denoting the tables_waited edge name in mutations.
+	EdgeTablesWaited = "tables_waited"
+	// EdgeStaffs holds the string denoting the staffs edge name in mutations.
+	EdgeStaffs = "staffs"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// UserBusinessesTable is the table that holds the userBusinesses relation/edge.
@@ -280,6 +292,48 @@ const (
 	OrdersInverseTable = "orders"
 	// OrdersColumn is the table column denoting the orders relation/edge.
 	OrdersColumn = "user_orders"
+	// TablesCreatedTable is the table that holds the tables_created relation/edge.
+	TablesCreatedTable = "place_tables"
+	// TablesCreatedInverseTable is the table name for the PlaceTable entity.
+	// It exists in this package in order to avoid circular dependency with the "placetable" package.
+	TablesCreatedInverseTable = "place_tables"
+	// TablesCreatedColumn is the table column denoting the tables_created relation/edge.
+	TablesCreatedColumn = "user_tables_created"
+	// TablesUpdatedTable is the table that holds the tables_updated relation/edge.
+	TablesUpdatedTable = "place_tables"
+	// TablesUpdatedInverseTable is the table name for the PlaceTable entity.
+	// It exists in this package in order to avoid circular dependency with the "placetable" package.
+	TablesUpdatedInverseTable = "place_tables"
+	// TablesUpdatedColumn is the table column denoting the tables_updated relation/edge.
+	TablesUpdatedColumn = "user_tables_updated"
+	// TablesDeletedTable is the table that holds the tables_deleted relation/edge.
+	TablesDeletedTable = "place_tables"
+	// TablesDeletedInverseTable is the table name for the PlaceTable entity.
+	// It exists in this package in order to avoid circular dependency with the "placetable" package.
+	TablesDeletedInverseTable = "place_tables"
+	// TablesDeletedColumn is the table column denoting the tables_deleted relation/edge.
+	TablesDeletedColumn = "user_tables_deleted"
+	// TablesReservedTable is the table that holds the tables_reserved relation/edge.
+	TablesReservedTable = "place_tables"
+	// TablesReservedInverseTable is the table name for the PlaceTable entity.
+	// It exists in this package in order to avoid circular dependency with the "placetable" package.
+	TablesReservedInverseTable = "place_tables"
+	// TablesReservedColumn is the table column denoting the tables_reserved relation/edge.
+	TablesReservedColumn = "user_tables_reserved"
+	// TablesWaitedTable is the table that holds the tables_waited relation/edge.
+	TablesWaitedTable = "place_tables"
+	// TablesWaitedInverseTable is the table name for the PlaceTable entity.
+	// It exists in this package in order to avoid circular dependency with the "placetable" package.
+	TablesWaitedInverseTable = "place_tables"
+	// TablesWaitedColumn is the table column denoting the tables_waited relation/edge.
+	TablesWaitedColumn = "user_tables_waited"
+	// StaffsTable is the table that holds the staffs relation/edge.
+	StaffsTable = "staffs"
+	// StaffsInverseTable is the table name for the Staff entity.
+	// It exists in this package in order to avoid circular dependency with the "staff" package.
+	StaffsInverseTable = "staffs"
+	// StaffsColumn is the table column denoting the staffs relation/edge.
+	StaffsColumn = "user_staffs"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -799,6 +853,90 @@ func ByOrders(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newOrdersStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByTablesCreatedCount orders the results by tables_created count.
+func ByTablesCreatedCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newTablesCreatedStep(), opts...)
+	}
+}
+
+// ByTablesCreated orders the results by tables_created terms.
+func ByTablesCreated(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newTablesCreatedStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByTablesUpdatedCount orders the results by tables_updated count.
+func ByTablesUpdatedCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newTablesUpdatedStep(), opts...)
+	}
+}
+
+// ByTablesUpdated orders the results by tables_updated terms.
+func ByTablesUpdated(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newTablesUpdatedStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByTablesDeletedCount orders the results by tables_deleted count.
+func ByTablesDeletedCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newTablesDeletedStep(), opts...)
+	}
+}
+
+// ByTablesDeleted orders the results by tables_deleted terms.
+func ByTablesDeleted(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newTablesDeletedStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByTablesReservedCount orders the results by tables_reserved count.
+func ByTablesReservedCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newTablesReservedStep(), opts...)
+	}
+}
+
+// ByTablesReserved orders the results by tables_reserved terms.
+func ByTablesReserved(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newTablesReservedStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByTablesWaitedCount orders the results by tables_waited count.
+func ByTablesWaitedCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newTablesWaitedStep(), opts...)
+	}
+}
+
+// ByTablesWaited orders the results by tables_waited terms.
+func ByTablesWaited(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newTablesWaitedStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByStaffsCount orders the results by staffs count.
+func ByStaffsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newStaffsStep(), opts...)
+	}
+}
+
+// ByStaffs orders the results by staffs terms.
+func ByStaffs(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newStaffsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newUserBusinessesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -972,5 +1110,47 @@ func newOrdersStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(OrdersInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, OrdersTable, OrdersColumn),
+	)
+}
+func newTablesCreatedStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(TablesCreatedInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, TablesCreatedTable, TablesCreatedColumn),
+	)
+}
+func newTablesUpdatedStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(TablesUpdatedInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, TablesUpdatedTable, TablesUpdatedColumn),
+	)
+}
+func newTablesDeletedStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(TablesDeletedInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, TablesDeletedTable, TablesDeletedColumn),
+	)
+}
+func newTablesReservedStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(TablesReservedInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, TablesReservedTable, TablesReservedColumn),
+	)
+}
+func newTablesWaitedStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(TablesWaitedInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, TablesWaitedTable, TablesWaitedColumn),
+	)
+}
+func newStaffsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(StaffsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, StaffsTable, StaffsColumn),
 	)
 }

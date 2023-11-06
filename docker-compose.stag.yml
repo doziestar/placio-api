@@ -2,6 +2,7 @@ version: "3.3"
 volumes:
   prometheus_data:
   grafana_data:
+  portainer_data:
 
 
 services:
@@ -163,6 +164,26 @@ services:
       - /dev/kmsg
     privileged: true
     restart: unless-stopped
+
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - default
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - portainer_data:/data
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.docker.network=default'
+      - 'traefik.http.routers.portainer-secure.entrypoints=websecure'
+      - 'traefik.http.routers.portainer-secure.rule=Host(`portainer.palnight.com`)'
+      - 'traefik.http.routers.portainer-secure.service=portainer'
+      - 'traefik.http.services.portainer.loadbalancer.server.port=9000'
 
 
 

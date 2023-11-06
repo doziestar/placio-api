@@ -332,6 +332,18 @@ func (f PaymentFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, err
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PaymentMutation", m)
 }
 
+// The PermissionFunc type is an adapter to allow the use of ordinary
+// function as Permission mutator.
+type PermissionFunc func(context.Context, *ent.PermissionMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PermissionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.PermissionMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PermissionMutation", m)
+}
+
 // The PlaceFunc type is an adapter to allow the use of ordinary
 // function as Place mutator.
 type PlaceFunc func(context.Context, *ent.PlaceMutation) (ent.Value, error)
@@ -474,6 +486,18 @@ func (f RoomFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error)
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.RoomMutation", m)
+}
+
+// The StaffFunc type is an adapter to allow the use of ordinary
+// function as Staff mutator.
+type StaffFunc func(context.Context, *ent.StaffMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f StaffFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.StaffMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.StaffMutation", m)
 }
 
 // The TemplateFunc type is an adapter to allow the use of ordinary

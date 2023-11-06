@@ -276,8 +276,8 @@ func (s *UserServiceImpl) GetUser(ctx context.Context, auth0ID string) (*ent.Use
 			Create().
 			SetID(userId).
 			SetAuth0ID(auth0ID).
-			SetName(*auth0Data.Name).
-			SetUsername(utility.GenerateRandomUsername()).
+			SetName(strings.ToLower(*auth0Data.Name)).
+			SetUsername(strings.ToLower(utility.GenerateRandomUsername())).
 			SetPicture(*auth0Data.Picture).
 			Save(ctx)
 
@@ -286,12 +286,13 @@ func (s *UserServiceImpl) GetUser(ctx context.Context, auth0ID string) (*ent.Use
 			return nil, err
 		}
 
-		// add user to search index
-		err = s.searchService.CreateOrUpdateUser(ctx, newUser)
-		if err != nil {
-			log.Println("GetUser", auth0ID, "error adding user to search index", err)
-			return nil, err
-		}
+		go func() {
+			// add user to search index
+			err = s.searchService.CreateOrUpdateUser(ctx, newUser)
+			if err != nil {
+				log.Println("GetUser", auth0ID, "error adding user to search index", err)
+			}
+		}()
 
 		//newUser.AppSettings = *auth0Data.AppMetadata
 		//newUser.UserSettings = *auth0Data.UserMetadata

@@ -120,9 +120,21 @@ type UserEdges struct {
 	Wallet *AccountWallet `json:"wallet,omitempty"`
 	// Orders holds the value of the orders edge.
 	Orders []*Order `json:"orders,omitempty"`
+	// TablesCreated holds the value of the tables_created edge.
+	TablesCreated []*PlaceTable `json:"tables_created,omitempty"`
+	// TablesUpdated holds the value of the tables_updated edge.
+	TablesUpdated []*PlaceTable `json:"tables_updated,omitempty"`
+	// TablesDeleted holds the value of the tables_deleted edge.
+	TablesDeleted []*PlaceTable `json:"tables_deleted,omitempty"`
+	// TablesReserved holds the value of the tables_reserved edge.
+	TablesReserved []*PlaceTable `json:"tables_reserved,omitempty"`
+	// TablesWaited holds the value of the tables_waited edge.
+	TablesWaited []*PlaceTable `json:"tables_waited,omitempty"`
+	// Staffs holds the value of the staffs edge.
+	Staffs []*Staff `json:"staffs,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [25]bool
+	loadedTypes [31]bool
 }
 
 // UserBusinessesOrErr returns the UserBusinesses value or an error if the edge
@@ -356,6 +368,60 @@ func (e UserEdges) OrdersOrErr() ([]*Order, error) {
 		return e.Orders, nil
 	}
 	return nil, &NotLoadedError{edge: "orders"}
+}
+
+// TablesCreatedOrErr returns the TablesCreated value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) TablesCreatedOrErr() ([]*PlaceTable, error) {
+	if e.loadedTypes[25] {
+		return e.TablesCreated, nil
+	}
+	return nil, &NotLoadedError{edge: "tables_created"}
+}
+
+// TablesUpdatedOrErr returns the TablesUpdated value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) TablesUpdatedOrErr() ([]*PlaceTable, error) {
+	if e.loadedTypes[26] {
+		return e.TablesUpdated, nil
+	}
+	return nil, &NotLoadedError{edge: "tables_updated"}
+}
+
+// TablesDeletedOrErr returns the TablesDeleted value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) TablesDeletedOrErr() ([]*PlaceTable, error) {
+	if e.loadedTypes[27] {
+		return e.TablesDeleted, nil
+	}
+	return nil, &NotLoadedError{edge: "tables_deleted"}
+}
+
+// TablesReservedOrErr returns the TablesReserved value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) TablesReservedOrErr() ([]*PlaceTable, error) {
+	if e.loadedTypes[28] {
+		return e.TablesReserved, nil
+	}
+	return nil, &NotLoadedError{edge: "tables_reserved"}
+}
+
+// TablesWaitedOrErr returns the TablesWaited value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) TablesWaitedOrErr() ([]*PlaceTable, error) {
+	if e.loadedTypes[29] {
+		return e.TablesWaited, nil
+	}
+	return nil, &NotLoadedError{edge: "tables_waited"}
+}
+
+// StaffsOrErr returns the Staffs value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) StaffsOrErr() ([]*Staff, error) {
+	if e.loadedTypes[30] {
+		return e.Staffs, nil
+	}
+	return nil, &NotLoadedError{edge: "staffs"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -666,6 +732,36 @@ func (u *User) QueryWallet() *AccountWalletQuery {
 // QueryOrders queries the "orders" edge of the User entity.
 func (u *User) QueryOrders() *OrderQuery {
 	return NewUserClient(u.config).QueryOrders(u)
+}
+
+// QueryTablesCreated queries the "tables_created" edge of the User entity.
+func (u *User) QueryTablesCreated() *PlaceTableQuery {
+	return NewUserClient(u.config).QueryTablesCreated(u)
+}
+
+// QueryTablesUpdated queries the "tables_updated" edge of the User entity.
+func (u *User) QueryTablesUpdated() *PlaceTableQuery {
+	return NewUserClient(u.config).QueryTablesUpdated(u)
+}
+
+// QueryTablesDeleted queries the "tables_deleted" edge of the User entity.
+func (u *User) QueryTablesDeleted() *PlaceTableQuery {
+	return NewUserClient(u.config).QueryTablesDeleted(u)
+}
+
+// QueryTablesReserved queries the "tables_reserved" edge of the User entity.
+func (u *User) QueryTablesReserved() *PlaceTableQuery {
+	return NewUserClient(u.config).QueryTablesReserved(u)
+}
+
+// QueryTablesWaited queries the "tables_waited" edge of the User entity.
+func (u *User) QueryTablesWaited() *PlaceTableQuery {
+	return NewUserClient(u.config).QueryTablesWaited(u)
+}
+
+// QueryStaffs queries the "staffs" edge of the User entity.
+func (u *User) QueryStaffs() *StaffQuery {
+	return NewUserClient(u.config).QueryStaffs(u)
 }
 
 // Update returns a builder for updating this User.
