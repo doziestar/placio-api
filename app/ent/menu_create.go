@@ -113,6 +113,76 @@ func (mc *MenuCreate) SetNillablePrice(s *string) *MenuCreate {
 	return mc
 }
 
+// SetCurrency sets the "currency" field.
+func (mc *MenuCreate) SetCurrency(s string) *MenuCreate {
+	mc.mutation.SetCurrency(s)
+	return mc
+}
+
+// SetNillableCurrency sets the "currency" field if the given value is not nil.
+func (mc *MenuCreate) SetNillableCurrency(s *string) *MenuCreate {
+	if s != nil {
+		mc.SetCurrency(*s)
+	}
+	return mc
+}
+
+// SetType sets the "type" field.
+func (mc *MenuCreate) SetType(m menu.Type) *MenuCreate {
+	mc.mutation.SetType(m)
+	return mc
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (mc *MenuCreate) SetNillableType(m *menu.Type) *MenuCreate {
+	if m != nil {
+		mc.SetType(*m)
+	}
+	return mc
+}
+
+// SetStatus sets the "status" field.
+func (mc *MenuCreate) SetStatus(m menu.Status) *MenuCreate {
+	mc.mutation.SetStatus(m)
+	return mc
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (mc *MenuCreate) SetNillableStatus(m *menu.Status) *MenuCreate {
+	if m != nil {
+		mc.SetStatus(*m)
+	}
+	return mc
+}
+
+// SetDrinkType sets the "DrinkType" field.
+func (mc *MenuCreate) SetDrinkType(mt menu.DrinkType) *MenuCreate {
+	mc.mutation.SetDrinkType(mt)
+	return mc
+}
+
+// SetNillableDrinkType sets the "DrinkType" field if the given value is not nil.
+func (mc *MenuCreate) SetNillableDrinkType(mt *menu.DrinkType) *MenuCreate {
+	if mt != nil {
+		mc.SetDrinkType(*mt)
+	}
+	return mc
+}
+
+// SetDietaryType sets the "DietaryType" field.
+func (mc *MenuCreate) SetDietaryType(mt menu.DietaryType) *MenuCreate {
+	mc.mutation.SetDietaryType(mt)
+	return mc
+}
+
+// SetNillableDietaryType sets the "DietaryType" field if the given value is not nil.
+func (mc *MenuCreate) SetNillableDietaryType(mt *menu.DietaryType) *MenuCreate {
+	if mt != nil {
+		mc.SetDietaryType(*mt)
+	}
+	return mc
+}
+
 // SetIsAvailable sets the "is_available" field.
 func (mc *MenuCreate) SetIsAvailable(b bool) *MenuCreate {
 	mc.mutation.SetIsAvailable(b)
@@ -246,6 +316,26 @@ func (mc *MenuCreate) check() error {
 	if _, ok := mc.mutation.IsDeleted(); !ok {
 		return &ValidationError{Name: "is_deleted", err: errors.New(`ent: missing required field "Menu.is_deleted"`)}
 	}
+	if v, ok := mc.mutation.GetType(); ok {
+		if err := menu.TypeValidator(v); err != nil {
+			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Menu.type": %w`, err)}
+		}
+	}
+	if v, ok := mc.mutation.Status(); ok {
+		if err := menu.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Menu.status": %w`, err)}
+		}
+	}
+	if v, ok := mc.mutation.DrinkType(); ok {
+		if err := menu.DrinkTypeValidator(v); err != nil {
+			return &ValidationError{Name: "DrinkType", err: fmt.Errorf(`ent: validator failed for field "Menu.DrinkType": %w`, err)}
+		}
+	}
+	if v, ok := mc.mutation.DietaryType(); ok {
+		if err := menu.DietaryTypeValidator(v); err != nil {
+			return &ValidationError{Name: "DietaryType", err: fmt.Errorf(`ent: validator failed for field "Menu.DietaryType": %w`, err)}
+		}
+	}
 	if _, ok := mc.mutation.IsAvailable(); !ok {
 		return &ValidationError{Name: "is_available", err: errors.New(`ent: missing required field "Menu.is_available"`)}
 	}
@@ -316,6 +406,26 @@ func (mc *MenuCreate) createSpec() (*Menu, *sqlgraph.CreateSpec) {
 	if value, ok := mc.mutation.Price(); ok {
 		_spec.SetField(menu.FieldPrice, field.TypeString, value)
 		_node.Price = value
+	}
+	if value, ok := mc.mutation.Currency(); ok {
+		_spec.SetField(menu.FieldCurrency, field.TypeString, value)
+		_node.Currency = value
+	}
+	if value, ok := mc.mutation.GetType(); ok {
+		_spec.SetField(menu.FieldType, field.TypeEnum, value)
+		_node.Type = value
+	}
+	if value, ok := mc.mutation.Status(); ok {
+		_spec.SetField(menu.FieldStatus, field.TypeEnum, value)
+		_node.Status = value
+	}
+	if value, ok := mc.mutation.DrinkType(); ok {
+		_spec.SetField(menu.FieldDrinkType, field.TypeEnum, value)
+		_node.DrinkType = value
+	}
+	if value, ok := mc.mutation.DietaryType(); ok {
+		_spec.SetField(menu.FieldDietaryType, field.TypeEnum, value)
+		_node.DietaryType = value
 	}
 	if value, ok := mc.mutation.IsAvailable(); ok {
 		_spec.SetField(menu.FieldIsAvailable, field.TypeBool, value)

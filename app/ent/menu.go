@@ -30,6 +30,16 @@ type Menu struct {
 	Options string `json:"options,omitempty"`
 	// Price holds the value of the "price" field.
 	Price string `json:"price,omitempty"`
+	// Currency holds the value of the "currency" field.
+	Currency string `json:"currency,omitempty"`
+	// Type holds the value of the "type" field.
+	Type menu.Type `json:"type,omitempty"`
+	// Status holds the value of the "status" field.
+	Status menu.Status `json:"status,omitempty"`
+	// DrinkType holds the value of the "DrinkType" field.
+	DrinkType menu.DrinkType `json:"DrinkType,omitempty"`
+	// DietaryType holds the value of the "DietaryType" field.
+	DietaryType menu.DietaryType `json:"DietaryType,omitempty"`
 	// IsAvailable holds the value of the "is_available" field.
 	IsAvailable bool `json:"is_available,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -96,7 +106,7 @@ func (*Menu) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case menu.FieldIsDeleted, menu.FieldIsAvailable:
 			values[i] = new(sql.NullBool)
-		case menu.FieldID, menu.FieldName, menu.FieldDeletedAt, menu.FieldDescription, menu.FieldPreparationTime, menu.FieldOptions, menu.FieldPrice:
+		case menu.FieldID, menu.FieldName, menu.FieldDeletedAt, menu.FieldDescription, menu.FieldPreparationTime, menu.FieldOptions, menu.FieldPrice, menu.FieldCurrency, menu.FieldType, menu.FieldStatus, menu.FieldDrinkType, menu.FieldDietaryType:
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -160,6 +170,36 @@ func (m *Menu) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field price", values[i])
 			} else if value.Valid {
 				m.Price = value.String
+			}
+		case menu.FieldCurrency:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field currency", values[i])
+			} else if value.Valid {
+				m.Currency = value.String
+			}
+		case menu.FieldType:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field type", values[i])
+			} else if value.Valid {
+				m.Type = menu.Type(value.String)
+			}
+		case menu.FieldStatus:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field status", values[i])
+			} else if value.Valid {
+				m.Status = menu.Status(value.String)
+			}
+		case menu.FieldDrinkType:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field DrinkType", values[i])
+			} else if value.Valid {
+				m.DrinkType = menu.DrinkType(value.String)
+			}
+		case menu.FieldDietaryType:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field DietaryType", values[i])
+			} else if value.Valid {
+				m.DietaryType = menu.DietaryType(value.String)
 			}
 		case menu.FieldIsAvailable:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -243,6 +283,21 @@ func (m *Menu) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("price=")
 	builder.WriteString(m.Price)
+	builder.WriteString(", ")
+	builder.WriteString("currency=")
+	builder.WriteString(m.Currency)
+	builder.WriteString(", ")
+	builder.WriteString("type=")
+	builder.WriteString(fmt.Sprintf("%v", m.Type))
+	builder.WriteString(", ")
+	builder.WriteString("status=")
+	builder.WriteString(fmt.Sprintf("%v", m.Status))
+	builder.WriteString(", ")
+	builder.WriteString("DrinkType=")
+	builder.WriteString(fmt.Sprintf("%v", m.DrinkType))
+	builder.WriteString(", ")
+	builder.WriteString("DietaryType=")
+	builder.WriteString(fmt.Sprintf("%v", m.DietaryType))
 	builder.WriteString(", ")
 	builder.WriteString("is_available=")
 	builder.WriteString(fmt.Sprintf("%v", m.IsAvailable))

@@ -21800,6 +21800,11 @@ type MenuMutation struct {
 	preparation_time  *string
 	options           *string
 	price             *string
+	currency          *string
+	_type             *menu.Type
+	status            *menu.Status
+	_DrinkType        *menu.DrinkType
+	_DietaryType      *menu.DietaryType
 	is_available      *bool
 	clearedFields     map[string]struct{}
 	place             map[string]struct{}
@@ -22240,6 +22245,251 @@ func (m *MenuMutation) ResetPrice() {
 	delete(m.clearedFields, menu.FieldPrice)
 }
 
+// SetCurrency sets the "currency" field.
+func (m *MenuMutation) SetCurrency(s string) {
+	m.currency = &s
+}
+
+// Currency returns the value of the "currency" field in the mutation.
+func (m *MenuMutation) Currency() (r string, exists bool) {
+	v := m.currency
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCurrency returns the old "currency" field's value of the Menu entity.
+// If the Menu object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuMutation) OldCurrency(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCurrency is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCurrency requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCurrency: %w", err)
+	}
+	return oldValue.Currency, nil
+}
+
+// ClearCurrency clears the value of the "currency" field.
+func (m *MenuMutation) ClearCurrency() {
+	m.currency = nil
+	m.clearedFields[menu.FieldCurrency] = struct{}{}
+}
+
+// CurrencyCleared returns if the "currency" field was cleared in this mutation.
+func (m *MenuMutation) CurrencyCleared() bool {
+	_, ok := m.clearedFields[menu.FieldCurrency]
+	return ok
+}
+
+// ResetCurrency resets all changes to the "currency" field.
+func (m *MenuMutation) ResetCurrency() {
+	m.currency = nil
+	delete(m.clearedFields, menu.FieldCurrency)
+}
+
+// SetType sets the "type" field.
+func (m *MenuMutation) SetType(value menu.Type) {
+	m._type = &value
+}
+
+// GetType returns the value of the "type" field in the mutation.
+func (m *MenuMutation) GetType() (r menu.Type, exists bool) {
+	v := m._type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldType returns the old "type" field's value of the Menu entity.
+// If the Menu object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuMutation) OldType(ctx context.Context) (v menu.Type, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldType: %w", err)
+	}
+	return oldValue.Type, nil
+}
+
+// ClearType clears the value of the "type" field.
+func (m *MenuMutation) ClearType() {
+	m._type = nil
+	m.clearedFields[menu.FieldType] = struct{}{}
+}
+
+// TypeCleared returns if the "type" field was cleared in this mutation.
+func (m *MenuMutation) TypeCleared() bool {
+	_, ok := m.clearedFields[menu.FieldType]
+	return ok
+}
+
+// ResetType resets all changes to the "type" field.
+func (m *MenuMutation) ResetType() {
+	m._type = nil
+	delete(m.clearedFields, menu.FieldType)
+}
+
+// SetStatus sets the "status" field.
+func (m *MenuMutation) SetStatus(value menu.Status) {
+	m.status = &value
+}
+
+// Status returns the value of the "status" field in the mutation.
+func (m *MenuMutation) Status() (r menu.Status, exists bool) {
+	v := m.status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatus returns the old "status" field's value of the Menu entity.
+// If the Menu object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuMutation) OldStatus(ctx context.Context) (v menu.Status, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
+	}
+	return oldValue.Status, nil
+}
+
+// ClearStatus clears the value of the "status" field.
+func (m *MenuMutation) ClearStatus() {
+	m.status = nil
+	m.clearedFields[menu.FieldStatus] = struct{}{}
+}
+
+// StatusCleared returns if the "status" field was cleared in this mutation.
+func (m *MenuMutation) StatusCleared() bool {
+	_, ok := m.clearedFields[menu.FieldStatus]
+	return ok
+}
+
+// ResetStatus resets all changes to the "status" field.
+func (m *MenuMutation) ResetStatus() {
+	m.status = nil
+	delete(m.clearedFields, menu.FieldStatus)
+}
+
+// SetDrinkType sets the "DrinkType" field.
+func (m *MenuMutation) SetDrinkType(mt menu.DrinkType) {
+	m._DrinkType = &mt
+}
+
+// DrinkType returns the value of the "DrinkType" field in the mutation.
+func (m *MenuMutation) DrinkType() (r menu.DrinkType, exists bool) {
+	v := m._DrinkType
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDrinkType returns the old "DrinkType" field's value of the Menu entity.
+// If the Menu object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuMutation) OldDrinkType(ctx context.Context) (v menu.DrinkType, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDrinkType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDrinkType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDrinkType: %w", err)
+	}
+	return oldValue.DrinkType, nil
+}
+
+// ClearDrinkType clears the value of the "DrinkType" field.
+func (m *MenuMutation) ClearDrinkType() {
+	m._DrinkType = nil
+	m.clearedFields[menu.FieldDrinkType] = struct{}{}
+}
+
+// DrinkTypeCleared returns if the "DrinkType" field was cleared in this mutation.
+func (m *MenuMutation) DrinkTypeCleared() bool {
+	_, ok := m.clearedFields[menu.FieldDrinkType]
+	return ok
+}
+
+// ResetDrinkType resets all changes to the "DrinkType" field.
+func (m *MenuMutation) ResetDrinkType() {
+	m._DrinkType = nil
+	delete(m.clearedFields, menu.FieldDrinkType)
+}
+
+// SetDietaryType sets the "DietaryType" field.
+func (m *MenuMutation) SetDietaryType(mt menu.DietaryType) {
+	m._DietaryType = &mt
+}
+
+// DietaryType returns the value of the "DietaryType" field in the mutation.
+func (m *MenuMutation) DietaryType() (r menu.DietaryType, exists bool) {
+	v := m._DietaryType
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDietaryType returns the old "DietaryType" field's value of the Menu entity.
+// If the Menu object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuMutation) OldDietaryType(ctx context.Context) (v menu.DietaryType, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDietaryType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDietaryType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDietaryType: %w", err)
+	}
+	return oldValue.DietaryType, nil
+}
+
+// ClearDietaryType clears the value of the "DietaryType" field.
+func (m *MenuMutation) ClearDietaryType() {
+	m._DietaryType = nil
+	m.clearedFields[menu.FieldDietaryType] = struct{}{}
+}
+
+// DietaryTypeCleared returns if the "DietaryType" field was cleared in this mutation.
+func (m *MenuMutation) DietaryTypeCleared() bool {
+	_, ok := m.clearedFields[menu.FieldDietaryType]
+	return ok
+}
+
+// ResetDietaryType resets all changes to the "DietaryType" field.
+func (m *MenuMutation) ResetDietaryType() {
+	m._DietaryType = nil
+	delete(m.clearedFields, menu.FieldDietaryType)
+}
+
 // SetIsAvailable sets the "is_available" field.
 func (m *MenuMutation) SetIsAvailable(b bool) {
 	m.is_available = &b
@@ -22526,7 +22776,7 @@ func (m *MenuMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *MenuMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 13)
 	if m.name != nil {
 		fields = append(fields, menu.FieldName)
 	}
@@ -22547,6 +22797,21 @@ func (m *MenuMutation) Fields() []string {
 	}
 	if m.price != nil {
 		fields = append(fields, menu.FieldPrice)
+	}
+	if m.currency != nil {
+		fields = append(fields, menu.FieldCurrency)
+	}
+	if m._type != nil {
+		fields = append(fields, menu.FieldType)
+	}
+	if m.status != nil {
+		fields = append(fields, menu.FieldStatus)
+	}
+	if m._DrinkType != nil {
+		fields = append(fields, menu.FieldDrinkType)
+	}
+	if m._DietaryType != nil {
+		fields = append(fields, menu.FieldDietaryType)
 	}
 	if m.is_available != nil {
 		fields = append(fields, menu.FieldIsAvailable)
@@ -22573,6 +22838,16 @@ func (m *MenuMutation) Field(name string) (ent.Value, bool) {
 		return m.Options()
 	case menu.FieldPrice:
 		return m.Price()
+	case menu.FieldCurrency:
+		return m.Currency()
+	case menu.FieldType:
+		return m.GetType()
+	case menu.FieldStatus:
+		return m.Status()
+	case menu.FieldDrinkType:
+		return m.DrinkType()
+	case menu.FieldDietaryType:
+		return m.DietaryType()
 	case menu.FieldIsAvailable:
 		return m.IsAvailable()
 	}
@@ -22598,6 +22873,16 @@ func (m *MenuMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldOptions(ctx)
 	case menu.FieldPrice:
 		return m.OldPrice(ctx)
+	case menu.FieldCurrency:
+		return m.OldCurrency(ctx)
+	case menu.FieldType:
+		return m.OldType(ctx)
+	case menu.FieldStatus:
+		return m.OldStatus(ctx)
+	case menu.FieldDrinkType:
+		return m.OldDrinkType(ctx)
+	case menu.FieldDietaryType:
+		return m.OldDietaryType(ctx)
 	case menu.FieldIsAvailable:
 		return m.OldIsAvailable(ctx)
 	}
@@ -22658,6 +22943,41 @@ func (m *MenuMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetPrice(v)
 		return nil
+	case menu.FieldCurrency:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCurrency(v)
+		return nil
+	case menu.FieldType:
+		v, ok := value.(menu.Type)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetType(v)
+		return nil
+	case menu.FieldStatus:
+		v, ok := value.(menu.Status)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatus(v)
+		return nil
+	case menu.FieldDrinkType:
+		v, ok := value.(menu.DrinkType)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDrinkType(v)
+		return nil
+	case menu.FieldDietaryType:
+		v, ok := value.(menu.DietaryType)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDietaryType(v)
+		return nil
 	case menu.FieldIsAvailable:
 		v, ok := value.(bool)
 		if !ok {
@@ -22710,6 +23030,21 @@ func (m *MenuMutation) ClearedFields() []string {
 	if m.FieldCleared(menu.FieldPrice) {
 		fields = append(fields, menu.FieldPrice)
 	}
+	if m.FieldCleared(menu.FieldCurrency) {
+		fields = append(fields, menu.FieldCurrency)
+	}
+	if m.FieldCleared(menu.FieldType) {
+		fields = append(fields, menu.FieldType)
+	}
+	if m.FieldCleared(menu.FieldStatus) {
+		fields = append(fields, menu.FieldStatus)
+	}
+	if m.FieldCleared(menu.FieldDrinkType) {
+		fields = append(fields, menu.FieldDrinkType)
+	}
+	if m.FieldCleared(menu.FieldDietaryType) {
+		fields = append(fields, menu.FieldDietaryType)
+	}
 	return fields
 }
 
@@ -22739,6 +23074,21 @@ func (m *MenuMutation) ClearField(name string) error {
 	case menu.FieldPrice:
 		m.ClearPrice()
 		return nil
+	case menu.FieldCurrency:
+		m.ClearCurrency()
+		return nil
+	case menu.FieldType:
+		m.ClearType()
+		return nil
+	case menu.FieldStatus:
+		m.ClearStatus()
+		return nil
+	case menu.FieldDrinkType:
+		m.ClearDrinkType()
+		return nil
+	case menu.FieldDietaryType:
+		m.ClearDietaryType()
+		return nil
 	}
 	return fmt.Errorf("unknown Menu nullable field %s", name)
 }
@@ -22767,6 +23117,21 @@ func (m *MenuMutation) ResetField(name string) error {
 		return nil
 	case menu.FieldPrice:
 		m.ResetPrice()
+		return nil
+	case menu.FieldCurrency:
+		m.ResetCurrency()
+		return nil
+	case menu.FieldType:
+		m.ResetType()
+		return nil
+	case menu.FieldStatus:
+		m.ResetStatus()
+		return nil
+	case menu.FieldDrinkType:
+		m.ResetDrinkType()
+		return nil
+	case menu.FieldDietaryType:
+		m.ResetDietaryType()
 		return nil
 	case menu.FieldIsAvailable:
 		m.ResetIsAvailable()
@@ -22940,36 +23305,73 @@ func (m *MenuMutation) ResetEdge(name string) error {
 // MenuItemMutation represents an operation that mutates the MenuItem nodes in the graph.
 type MenuItemMutation struct {
 	config
-	op                  Op
-	typ                 string
-	id                  *string
-	name                *string
-	description         *string
-	price               *float64
-	addprice            *float64
-	currency            *string
-	is_available        *bool
-	preparation_time    *int
-	addpreparation_time *int
-	options             *[]string
-	appendoptions       []string
-	deleted_at          *string
-	is_deleted          *bool
-	clearedFields       map[string]struct{}
-	menu                map[string]struct{}
-	removedmenu         map[string]struct{}
-	clearedmenu         bool
-	inventory           *string
-	clearedinventory    bool
-	media               map[string]struct{}
-	removedmedia        map[string]struct{}
-	clearedmedia        bool
-	order_items         map[string]struct{}
-	removedorder_items  map[string]struct{}
-	clearedorder_items  bool
-	done                bool
-	oldValue            func(context.Context) (*MenuItem, error)
-	predicates          []predicate.MenuItem
+	op                     Op
+	typ                    string
+	id                     *string
+	name                   *string
+	description            *string
+	price                  *float64
+	addprice               *float64
+	currency               *string
+	is_available           *bool
+	preparation_time       *int
+	addpreparation_time    *int
+	options                *[]string
+	appendoptions          []string
+	deleted_at             *string
+	_type                  *menuitem.Type
+	status                 *menuitem.Status
+	_DrinkType             *menuitem.DrinkType
+	_DietaryType           *menuitem.DietaryType
+	_MenuItemType          *menuitem.MenuItemType
+	is_deleted             *bool
+	calories               *int
+	addcalories            *int
+	serve_size             *int
+	addserve_size          *int
+	available_from         *time.Time
+	available_until        *time.Time
+	image_url              *string
+	spiciness_level        *menuitem.SpicinessLevel
+	allergens              *[]string
+	appendallergens        []string
+	chef_special_note      *string
+	rating                 *int
+	addrating              *int
+	review_count           *int
+	addreview_count        *int
+	category               *string
+	order_count            *int
+	addorder_count         *int
+	sku                    *string
+	is_featured            *bool
+	is_new                 *bool
+	is_seasonal            *bool
+	season                 *string
+	discount_percentage    *int
+	adddiscount_percentage *int
+	promotion_description  *string
+	promotion_start        *time.Time
+	promotion_end          *time.Time
+	tags                   *[]string
+	appendtags             []string
+	related_items          *[]string
+	appendrelated_items    []string
+	clearedFields          map[string]struct{}
+	menu                   map[string]struct{}
+	removedmenu            map[string]struct{}
+	clearedmenu            bool
+	inventory              *string
+	clearedinventory       bool
+	media                  map[string]struct{}
+	removedmedia           map[string]struct{}
+	clearedmedia           bool
+	order_items            map[string]struct{}
+	removedorder_items     map[string]struct{}
+	clearedorder_items     bool
+	done                   bool
+	oldValue               func(context.Context) (*MenuItem, error)
+	predicates             []predicate.MenuItem
 }
 
 var _ ent.Mutation = (*MenuItemMutation)(nil)
@@ -23486,6 +23888,251 @@ func (m *MenuItemMutation) ResetDeletedAt() {
 	delete(m.clearedFields, menuitem.FieldDeletedAt)
 }
 
+// SetType sets the "type" field.
+func (m *MenuItemMutation) SetType(value menuitem.Type) {
+	m._type = &value
+}
+
+// GetType returns the value of the "type" field in the mutation.
+func (m *MenuItemMutation) GetType() (r menuitem.Type, exists bool) {
+	v := m._type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldType returns the old "type" field's value of the MenuItem entity.
+// If the MenuItem object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuItemMutation) OldType(ctx context.Context) (v menuitem.Type, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldType: %w", err)
+	}
+	return oldValue.Type, nil
+}
+
+// ClearType clears the value of the "type" field.
+func (m *MenuItemMutation) ClearType() {
+	m._type = nil
+	m.clearedFields[menuitem.FieldType] = struct{}{}
+}
+
+// TypeCleared returns if the "type" field was cleared in this mutation.
+func (m *MenuItemMutation) TypeCleared() bool {
+	_, ok := m.clearedFields[menuitem.FieldType]
+	return ok
+}
+
+// ResetType resets all changes to the "type" field.
+func (m *MenuItemMutation) ResetType() {
+	m._type = nil
+	delete(m.clearedFields, menuitem.FieldType)
+}
+
+// SetStatus sets the "status" field.
+func (m *MenuItemMutation) SetStatus(value menuitem.Status) {
+	m.status = &value
+}
+
+// Status returns the value of the "status" field in the mutation.
+func (m *MenuItemMutation) Status() (r menuitem.Status, exists bool) {
+	v := m.status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatus returns the old "status" field's value of the MenuItem entity.
+// If the MenuItem object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuItemMutation) OldStatus(ctx context.Context) (v menuitem.Status, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
+	}
+	return oldValue.Status, nil
+}
+
+// ClearStatus clears the value of the "status" field.
+func (m *MenuItemMutation) ClearStatus() {
+	m.status = nil
+	m.clearedFields[menuitem.FieldStatus] = struct{}{}
+}
+
+// StatusCleared returns if the "status" field was cleared in this mutation.
+func (m *MenuItemMutation) StatusCleared() bool {
+	_, ok := m.clearedFields[menuitem.FieldStatus]
+	return ok
+}
+
+// ResetStatus resets all changes to the "status" field.
+func (m *MenuItemMutation) ResetStatus() {
+	m.status = nil
+	delete(m.clearedFields, menuitem.FieldStatus)
+}
+
+// SetDrinkType sets the "DrinkType" field.
+func (m *MenuItemMutation) SetDrinkType(mt menuitem.DrinkType) {
+	m._DrinkType = &mt
+}
+
+// DrinkType returns the value of the "DrinkType" field in the mutation.
+func (m *MenuItemMutation) DrinkType() (r menuitem.DrinkType, exists bool) {
+	v := m._DrinkType
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDrinkType returns the old "DrinkType" field's value of the MenuItem entity.
+// If the MenuItem object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuItemMutation) OldDrinkType(ctx context.Context) (v menuitem.DrinkType, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDrinkType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDrinkType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDrinkType: %w", err)
+	}
+	return oldValue.DrinkType, nil
+}
+
+// ClearDrinkType clears the value of the "DrinkType" field.
+func (m *MenuItemMutation) ClearDrinkType() {
+	m._DrinkType = nil
+	m.clearedFields[menuitem.FieldDrinkType] = struct{}{}
+}
+
+// DrinkTypeCleared returns if the "DrinkType" field was cleared in this mutation.
+func (m *MenuItemMutation) DrinkTypeCleared() bool {
+	_, ok := m.clearedFields[menuitem.FieldDrinkType]
+	return ok
+}
+
+// ResetDrinkType resets all changes to the "DrinkType" field.
+func (m *MenuItemMutation) ResetDrinkType() {
+	m._DrinkType = nil
+	delete(m.clearedFields, menuitem.FieldDrinkType)
+}
+
+// SetDietaryType sets the "DietaryType" field.
+func (m *MenuItemMutation) SetDietaryType(mt menuitem.DietaryType) {
+	m._DietaryType = &mt
+}
+
+// DietaryType returns the value of the "DietaryType" field in the mutation.
+func (m *MenuItemMutation) DietaryType() (r menuitem.DietaryType, exists bool) {
+	v := m._DietaryType
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDietaryType returns the old "DietaryType" field's value of the MenuItem entity.
+// If the MenuItem object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuItemMutation) OldDietaryType(ctx context.Context) (v menuitem.DietaryType, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDietaryType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDietaryType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDietaryType: %w", err)
+	}
+	return oldValue.DietaryType, nil
+}
+
+// ClearDietaryType clears the value of the "DietaryType" field.
+func (m *MenuItemMutation) ClearDietaryType() {
+	m._DietaryType = nil
+	m.clearedFields[menuitem.FieldDietaryType] = struct{}{}
+}
+
+// DietaryTypeCleared returns if the "DietaryType" field was cleared in this mutation.
+func (m *MenuItemMutation) DietaryTypeCleared() bool {
+	_, ok := m.clearedFields[menuitem.FieldDietaryType]
+	return ok
+}
+
+// ResetDietaryType resets all changes to the "DietaryType" field.
+func (m *MenuItemMutation) ResetDietaryType() {
+	m._DietaryType = nil
+	delete(m.clearedFields, menuitem.FieldDietaryType)
+}
+
+// SetMenuItemType sets the "MenuItemType" field.
+func (m *MenuItemMutation) SetMenuItemType(mit menuitem.MenuItemType) {
+	m._MenuItemType = &mit
+}
+
+// MenuItemType returns the value of the "MenuItemType" field in the mutation.
+func (m *MenuItemMutation) MenuItemType() (r menuitem.MenuItemType, exists bool) {
+	v := m._MenuItemType
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMenuItemType returns the old "MenuItemType" field's value of the MenuItem entity.
+// If the MenuItem object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuItemMutation) OldMenuItemType(ctx context.Context) (v menuitem.MenuItemType, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMenuItemType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMenuItemType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMenuItemType: %w", err)
+	}
+	return oldValue.MenuItemType, nil
+}
+
+// ClearMenuItemType clears the value of the "MenuItemType" field.
+func (m *MenuItemMutation) ClearMenuItemType() {
+	m._MenuItemType = nil
+	m.clearedFields[menuitem.FieldMenuItemType] = struct{}{}
+}
+
+// MenuItemTypeCleared returns if the "MenuItemType" field was cleared in this mutation.
+func (m *MenuItemMutation) MenuItemTypeCleared() bool {
+	_, ok := m.clearedFields[menuitem.FieldMenuItemType]
+	return ok
+}
+
+// ResetMenuItemType resets all changes to the "MenuItemType" field.
+func (m *MenuItemMutation) ResetMenuItemType() {
+	m._MenuItemType = nil
+	delete(m.clearedFields, menuitem.FieldMenuItemType)
+}
+
 // SetIsDeleted sets the "is_deleted" field.
 func (m *MenuItemMutation) SetIsDeleted(b bool) {
 	m.is_deleted = &b
@@ -23520,6 +24167,1307 @@ func (m *MenuItemMutation) OldIsDeleted(ctx context.Context) (v bool, err error)
 // ResetIsDeleted resets all changes to the "is_deleted" field.
 func (m *MenuItemMutation) ResetIsDeleted() {
 	m.is_deleted = nil
+}
+
+// SetCalories sets the "calories" field.
+func (m *MenuItemMutation) SetCalories(i int) {
+	m.calories = &i
+	m.addcalories = nil
+}
+
+// Calories returns the value of the "calories" field in the mutation.
+func (m *MenuItemMutation) Calories() (r int, exists bool) {
+	v := m.calories
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCalories returns the old "calories" field's value of the MenuItem entity.
+// If the MenuItem object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuItemMutation) OldCalories(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCalories is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCalories requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCalories: %w", err)
+	}
+	return oldValue.Calories, nil
+}
+
+// AddCalories adds i to the "calories" field.
+func (m *MenuItemMutation) AddCalories(i int) {
+	if m.addcalories != nil {
+		*m.addcalories += i
+	} else {
+		m.addcalories = &i
+	}
+}
+
+// AddedCalories returns the value that was added to the "calories" field in this mutation.
+func (m *MenuItemMutation) AddedCalories() (r int, exists bool) {
+	v := m.addcalories
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearCalories clears the value of the "calories" field.
+func (m *MenuItemMutation) ClearCalories() {
+	m.calories = nil
+	m.addcalories = nil
+	m.clearedFields[menuitem.FieldCalories] = struct{}{}
+}
+
+// CaloriesCleared returns if the "calories" field was cleared in this mutation.
+func (m *MenuItemMutation) CaloriesCleared() bool {
+	_, ok := m.clearedFields[menuitem.FieldCalories]
+	return ok
+}
+
+// ResetCalories resets all changes to the "calories" field.
+func (m *MenuItemMutation) ResetCalories() {
+	m.calories = nil
+	m.addcalories = nil
+	delete(m.clearedFields, menuitem.FieldCalories)
+}
+
+// SetServeSize sets the "serve_size" field.
+func (m *MenuItemMutation) SetServeSize(i int) {
+	m.serve_size = &i
+	m.addserve_size = nil
+}
+
+// ServeSize returns the value of the "serve_size" field in the mutation.
+func (m *MenuItemMutation) ServeSize() (r int, exists bool) {
+	v := m.serve_size
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldServeSize returns the old "serve_size" field's value of the MenuItem entity.
+// If the MenuItem object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuItemMutation) OldServeSize(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldServeSize is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldServeSize requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldServeSize: %w", err)
+	}
+	return oldValue.ServeSize, nil
+}
+
+// AddServeSize adds i to the "serve_size" field.
+func (m *MenuItemMutation) AddServeSize(i int) {
+	if m.addserve_size != nil {
+		*m.addserve_size += i
+	} else {
+		m.addserve_size = &i
+	}
+}
+
+// AddedServeSize returns the value that was added to the "serve_size" field in this mutation.
+func (m *MenuItemMutation) AddedServeSize() (r int, exists bool) {
+	v := m.addserve_size
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearServeSize clears the value of the "serve_size" field.
+func (m *MenuItemMutation) ClearServeSize() {
+	m.serve_size = nil
+	m.addserve_size = nil
+	m.clearedFields[menuitem.FieldServeSize] = struct{}{}
+}
+
+// ServeSizeCleared returns if the "serve_size" field was cleared in this mutation.
+func (m *MenuItemMutation) ServeSizeCleared() bool {
+	_, ok := m.clearedFields[menuitem.FieldServeSize]
+	return ok
+}
+
+// ResetServeSize resets all changes to the "serve_size" field.
+func (m *MenuItemMutation) ResetServeSize() {
+	m.serve_size = nil
+	m.addserve_size = nil
+	delete(m.clearedFields, menuitem.FieldServeSize)
+}
+
+// SetAvailableFrom sets the "available_from" field.
+func (m *MenuItemMutation) SetAvailableFrom(t time.Time) {
+	m.available_from = &t
+}
+
+// AvailableFrom returns the value of the "available_from" field in the mutation.
+func (m *MenuItemMutation) AvailableFrom() (r time.Time, exists bool) {
+	v := m.available_from
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAvailableFrom returns the old "available_from" field's value of the MenuItem entity.
+// If the MenuItem object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuItemMutation) OldAvailableFrom(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAvailableFrom is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAvailableFrom requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAvailableFrom: %w", err)
+	}
+	return oldValue.AvailableFrom, nil
+}
+
+// ClearAvailableFrom clears the value of the "available_from" field.
+func (m *MenuItemMutation) ClearAvailableFrom() {
+	m.available_from = nil
+	m.clearedFields[menuitem.FieldAvailableFrom] = struct{}{}
+}
+
+// AvailableFromCleared returns if the "available_from" field was cleared in this mutation.
+func (m *MenuItemMutation) AvailableFromCleared() bool {
+	_, ok := m.clearedFields[menuitem.FieldAvailableFrom]
+	return ok
+}
+
+// ResetAvailableFrom resets all changes to the "available_from" field.
+func (m *MenuItemMutation) ResetAvailableFrom() {
+	m.available_from = nil
+	delete(m.clearedFields, menuitem.FieldAvailableFrom)
+}
+
+// SetAvailableUntil sets the "available_until" field.
+func (m *MenuItemMutation) SetAvailableUntil(t time.Time) {
+	m.available_until = &t
+}
+
+// AvailableUntil returns the value of the "available_until" field in the mutation.
+func (m *MenuItemMutation) AvailableUntil() (r time.Time, exists bool) {
+	v := m.available_until
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAvailableUntil returns the old "available_until" field's value of the MenuItem entity.
+// If the MenuItem object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuItemMutation) OldAvailableUntil(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAvailableUntil is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAvailableUntil requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAvailableUntil: %w", err)
+	}
+	return oldValue.AvailableUntil, nil
+}
+
+// ClearAvailableUntil clears the value of the "available_until" field.
+func (m *MenuItemMutation) ClearAvailableUntil() {
+	m.available_until = nil
+	m.clearedFields[menuitem.FieldAvailableUntil] = struct{}{}
+}
+
+// AvailableUntilCleared returns if the "available_until" field was cleared in this mutation.
+func (m *MenuItemMutation) AvailableUntilCleared() bool {
+	_, ok := m.clearedFields[menuitem.FieldAvailableUntil]
+	return ok
+}
+
+// ResetAvailableUntil resets all changes to the "available_until" field.
+func (m *MenuItemMutation) ResetAvailableUntil() {
+	m.available_until = nil
+	delete(m.clearedFields, menuitem.FieldAvailableUntil)
+}
+
+// SetImageURL sets the "image_url" field.
+func (m *MenuItemMutation) SetImageURL(s string) {
+	m.image_url = &s
+}
+
+// ImageURL returns the value of the "image_url" field in the mutation.
+func (m *MenuItemMutation) ImageURL() (r string, exists bool) {
+	v := m.image_url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldImageURL returns the old "image_url" field's value of the MenuItem entity.
+// If the MenuItem object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuItemMutation) OldImageURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldImageURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldImageURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldImageURL: %w", err)
+	}
+	return oldValue.ImageURL, nil
+}
+
+// ClearImageURL clears the value of the "image_url" field.
+func (m *MenuItemMutation) ClearImageURL() {
+	m.image_url = nil
+	m.clearedFields[menuitem.FieldImageURL] = struct{}{}
+}
+
+// ImageURLCleared returns if the "image_url" field was cleared in this mutation.
+func (m *MenuItemMutation) ImageURLCleared() bool {
+	_, ok := m.clearedFields[menuitem.FieldImageURL]
+	return ok
+}
+
+// ResetImageURL resets all changes to the "image_url" field.
+func (m *MenuItemMutation) ResetImageURL() {
+	m.image_url = nil
+	delete(m.clearedFields, menuitem.FieldImageURL)
+}
+
+// SetSpicinessLevel sets the "spiciness_level" field.
+func (m *MenuItemMutation) SetSpicinessLevel(ml menuitem.SpicinessLevel) {
+	m.spiciness_level = &ml
+}
+
+// SpicinessLevel returns the value of the "spiciness_level" field in the mutation.
+func (m *MenuItemMutation) SpicinessLevel() (r menuitem.SpicinessLevel, exists bool) {
+	v := m.spiciness_level
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSpicinessLevel returns the old "spiciness_level" field's value of the MenuItem entity.
+// If the MenuItem object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuItemMutation) OldSpicinessLevel(ctx context.Context) (v menuitem.SpicinessLevel, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSpicinessLevel is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSpicinessLevel requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSpicinessLevel: %w", err)
+	}
+	return oldValue.SpicinessLevel, nil
+}
+
+// ClearSpicinessLevel clears the value of the "spiciness_level" field.
+func (m *MenuItemMutation) ClearSpicinessLevel() {
+	m.spiciness_level = nil
+	m.clearedFields[menuitem.FieldSpicinessLevel] = struct{}{}
+}
+
+// SpicinessLevelCleared returns if the "spiciness_level" field was cleared in this mutation.
+func (m *MenuItemMutation) SpicinessLevelCleared() bool {
+	_, ok := m.clearedFields[menuitem.FieldSpicinessLevel]
+	return ok
+}
+
+// ResetSpicinessLevel resets all changes to the "spiciness_level" field.
+func (m *MenuItemMutation) ResetSpicinessLevel() {
+	m.spiciness_level = nil
+	delete(m.clearedFields, menuitem.FieldSpicinessLevel)
+}
+
+// SetAllergens sets the "allergens" field.
+func (m *MenuItemMutation) SetAllergens(s []string) {
+	m.allergens = &s
+	m.appendallergens = nil
+}
+
+// Allergens returns the value of the "allergens" field in the mutation.
+func (m *MenuItemMutation) Allergens() (r []string, exists bool) {
+	v := m.allergens
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAllergens returns the old "allergens" field's value of the MenuItem entity.
+// If the MenuItem object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuItemMutation) OldAllergens(ctx context.Context) (v []string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAllergens is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAllergens requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAllergens: %w", err)
+	}
+	return oldValue.Allergens, nil
+}
+
+// AppendAllergens adds s to the "allergens" field.
+func (m *MenuItemMutation) AppendAllergens(s []string) {
+	m.appendallergens = append(m.appendallergens, s...)
+}
+
+// AppendedAllergens returns the list of values that were appended to the "allergens" field in this mutation.
+func (m *MenuItemMutation) AppendedAllergens() ([]string, bool) {
+	if len(m.appendallergens) == 0 {
+		return nil, false
+	}
+	return m.appendallergens, true
+}
+
+// ClearAllergens clears the value of the "allergens" field.
+func (m *MenuItemMutation) ClearAllergens() {
+	m.allergens = nil
+	m.appendallergens = nil
+	m.clearedFields[menuitem.FieldAllergens] = struct{}{}
+}
+
+// AllergensCleared returns if the "allergens" field was cleared in this mutation.
+func (m *MenuItemMutation) AllergensCleared() bool {
+	_, ok := m.clearedFields[menuitem.FieldAllergens]
+	return ok
+}
+
+// ResetAllergens resets all changes to the "allergens" field.
+func (m *MenuItemMutation) ResetAllergens() {
+	m.allergens = nil
+	m.appendallergens = nil
+	delete(m.clearedFields, menuitem.FieldAllergens)
+}
+
+// SetChefSpecialNote sets the "chef_special_note" field.
+func (m *MenuItemMutation) SetChefSpecialNote(s string) {
+	m.chef_special_note = &s
+}
+
+// ChefSpecialNote returns the value of the "chef_special_note" field in the mutation.
+func (m *MenuItemMutation) ChefSpecialNote() (r string, exists bool) {
+	v := m.chef_special_note
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldChefSpecialNote returns the old "chef_special_note" field's value of the MenuItem entity.
+// If the MenuItem object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuItemMutation) OldChefSpecialNote(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldChefSpecialNote is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldChefSpecialNote requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldChefSpecialNote: %w", err)
+	}
+	return oldValue.ChefSpecialNote, nil
+}
+
+// ClearChefSpecialNote clears the value of the "chef_special_note" field.
+func (m *MenuItemMutation) ClearChefSpecialNote() {
+	m.chef_special_note = nil
+	m.clearedFields[menuitem.FieldChefSpecialNote] = struct{}{}
+}
+
+// ChefSpecialNoteCleared returns if the "chef_special_note" field was cleared in this mutation.
+func (m *MenuItemMutation) ChefSpecialNoteCleared() bool {
+	_, ok := m.clearedFields[menuitem.FieldChefSpecialNote]
+	return ok
+}
+
+// ResetChefSpecialNote resets all changes to the "chef_special_note" field.
+func (m *MenuItemMutation) ResetChefSpecialNote() {
+	m.chef_special_note = nil
+	delete(m.clearedFields, menuitem.FieldChefSpecialNote)
+}
+
+// SetRating sets the "rating" field.
+func (m *MenuItemMutation) SetRating(i int) {
+	m.rating = &i
+	m.addrating = nil
+}
+
+// Rating returns the value of the "rating" field in the mutation.
+func (m *MenuItemMutation) Rating() (r int, exists bool) {
+	v := m.rating
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRating returns the old "rating" field's value of the MenuItem entity.
+// If the MenuItem object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuItemMutation) OldRating(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRating is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRating requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRating: %w", err)
+	}
+	return oldValue.Rating, nil
+}
+
+// AddRating adds i to the "rating" field.
+func (m *MenuItemMutation) AddRating(i int) {
+	if m.addrating != nil {
+		*m.addrating += i
+	} else {
+		m.addrating = &i
+	}
+}
+
+// AddedRating returns the value that was added to the "rating" field in this mutation.
+func (m *MenuItemMutation) AddedRating() (r int, exists bool) {
+	v := m.addrating
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearRating clears the value of the "rating" field.
+func (m *MenuItemMutation) ClearRating() {
+	m.rating = nil
+	m.addrating = nil
+	m.clearedFields[menuitem.FieldRating] = struct{}{}
+}
+
+// RatingCleared returns if the "rating" field was cleared in this mutation.
+func (m *MenuItemMutation) RatingCleared() bool {
+	_, ok := m.clearedFields[menuitem.FieldRating]
+	return ok
+}
+
+// ResetRating resets all changes to the "rating" field.
+func (m *MenuItemMutation) ResetRating() {
+	m.rating = nil
+	m.addrating = nil
+	delete(m.clearedFields, menuitem.FieldRating)
+}
+
+// SetReviewCount sets the "review_count" field.
+func (m *MenuItemMutation) SetReviewCount(i int) {
+	m.review_count = &i
+	m.addreview_count = nil
+}
+
+// ReviewCount returns the value of the "review_count" field in the mutation.
+func (m *MenuItemMutation) ReviewCount() (r int, exists bool) {
+	v := m.review_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldReviewCount returns the old "review_count" field's value of the MenuItem entity.
+// If the MenuItem object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuItemMutation) OldReviewCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldReviewCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldReviewCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldReviewCount: %w", err)
+	}
+	return oldValue.ReviewCount, nil
+}
+
+// AddReviewCount adds i to the "review_count" field.
+func (m *MenuItemMutation) AddReviewCount(i int) {
+	if m.addreview_count != nil {
+		*m.addreview_count += i
+	} else {
+		m.addreview_count = &i
+	}
+}
+
+// AddedReviewCount returns the value that was added to the "review_count" field in this mutation.
+func (m *MenuItemMutation) AddedReviewCount() (r int, exists bool) {
+	v := m.addreview_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearReviewCount clears the value of the "review_count" field.
+func (m *MenuItemMutation) ClearReviewCount() {
+	m.review_count = nil
+	m.addreview_count = nil
+	m.clearedFields[menuitem.FieldReviewCount] = struct{}{}
+}
+
+// ReviewCountCleared returns if the "review_count" field was cleared in this mutation.
+func (m *MenuItemMutation) ReviewCountCleared() bool {
+	_, ok := m.clearedFields[menuitem.FieldReviewCount]
+	return ok
+}
+
+// ResetReviewCount resets all changes to the "review_count" field.
+func (m *MenuItemMutation) ResetReviewCount() {
+	m.review_count = nil
+	m.addreview_count = nil
+	delete(m.clearedFields, menuitem.FieldReviewCount)
+}
+
+// SetCategory sets the "category" field.
+func (m *MenuItemMutation) SetCategory(s string) {
+	m.category = &s
+}
+
+// Category returns the value of the "category" field in the mutation.
+func (m *MenuItemMutation) Category() (r string, exists bool) {
+	v := m.category
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCategory returns the old "category" field's value of the MenuItem entity.
+// If the MenuItem object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuItemMutation) OldCategory(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCategory is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCategory requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCategory: %w", err)
+	}
+	return oldValue.Category, nil
+}
+
+// ClearCategory clears the value of the "category" field.
+func (m *MenuItemMutation) ClearCategory() {
+	m.category = nil
+	m.clearedFields[menuitem.FieldCategory] = struct{}{}
+}
+
+// CategoryCleared returns if the "category" field was cleared in this mutation.
+func (m *MenuItemMutation) CategoryCleared() bool {
+	_, ok := m.clearedFields[menuitem.FieldCategory]
+	return ok
+}
+
+// ResetCategory resets all changes to the "category" field.
+func (m *MenuItemMutation) ResetCategory() {
+	m.category = nil
+	delete(m.clearedFields, menuitem.FieldCategory)
+}
+
+// SetOrderCount sets the "order_count" field.
+func (m *MenuItemMutation) SetOrderCount(i int) {
+	m.order_count = &i
+	m.addorder_count = nil
+}
+
+// OrderCount returns the value of the "order_count" field in the mutation.
+func (m *MenuItemMutation) OrderCount() (r int, exists bool) {
+	v := m.order_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOrderCount returns the old "order_count" field's value of the MenuItem entity.
+// If the MenuItem object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuItemMutation) OldOrderCount(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOrderCount is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOrderCount requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOrderCount: %w", err)
+	}
+	return oldValue.OrderCount, nil
+}
+
+// AddOrderCount adds i to the "order_count" field.
+func (m *MenuItemMutation) AddOrderCount(i int) {
+	if m.addorder_count != nil {
+		*m.addorder_count += i
+	} else {
+		m.addorder_count = &i
+	}
+}
+
+// AddedOrderCount returns the value that was added to the "order_count" field in this mutation.
+func (m *MenuItemMutation) AddedOrderCount() (r int, exists bool) {
+	v := m.addorder_count
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearOrderCount clears the value of the "order_count" field.
+func (m *MenuItemMutation) ClearOrderCount() {
+	m.order_count = nil
+	m.addorder_count = nil
+	m.clearedFields[menuitem.FieldOrderCount] = struct{}{}
+}
+
+// OrderCountCleared returns if the "order_count" field was cleared in this mutation.
+func (m *MenuItemMutation) OrderCountCleared() bool {
+	_, ok := m.clearedFields[menuitem.FieldOrderCount]
+	return ok
+}
+
+// ResetOrderCount resets all changes to the "order_count" field.
+func (m *MenuItemMutation) ResetOrderCount() {
+	m.order_count = nil
+	m.addorder_count = nil
+	delete(m.clearedFields, menuitem.FieldOrderCount)
+}
+
+// SetSku sets the "sku" field.
+func (m *MenuItemMutation) SetSku(s string) {
+	m.sku = &s
+}
+
+// Sku returns the value of the "sku" field in the mutation.
+func (m *MenuItemMutation) Sku() (r string, exists bool) {
+	v := m.sku
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSku returns the old "sku" field's value of the MenuItem entity.
+// If the MenuItem object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuItemMutation) OldSku(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSku is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSku requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSku: %w", err)
+	}
+	return oldValue.Sku, nil
+}
+
+// ClearSku clears the value of the "sku" field.
+func (m *MenuItemMutation) ClearSku() {
+	m.sku = nil
+	m.clearedFields[menuitem.FieldSku] = struct{}{}
+}
+
+// SkuCleared returns if the "sku" field was cleared in this mutation.
+func (m *MenuItemMutation) SkuCleared() bool {
+	_, ok := m.clearedFields[menuitem.FieldSku]
+	return ok
+}
+
+// ResetSku resets all changes to the "sku" field.
+func (m *MenuItemMutation) ResetSku() {
+	m.sku = nil
+	delete(m.clearedFields, menuitem.FieldSku)
+}
+
+// SetIsFeatured sets the "is_featured" field.
+func (m *MenuItemMutation) SetIsFeatured(b bool) {
+	m.is_featured = &b
+}
+
+// IsFeatured returns the value of the "is_featured" field in the mutation.
+func (m *MenuItemMutation) IsFeatured() (r bool, exists bool) {
+	v := m.is_featured
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsFeatured returns the old "is_featured" field's value of the MenuItem entity.
+// If the MenuItem object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuItemMutation) OldIsFeatured(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsFeatured is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsFeatured requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsFeatured: %w", err)
+	}
+	return oldValue.IsFeatured, nil
+}
+
+// ClearIsFeatured clears the value of the "is_featured" field.
+func (m *MenuItemMutation) ClearIsFeatured() {
+	m.is_featured = nil
+	m.clearedFields[menuitem.FieldIsFeatured] = struct{}{}
+}
+
+// IsFeaturedCleared returns if the "is_featured" field was cleared in this mutation.
+func (m *MenuItemMutation) IsFeaturedCleared() bool {
+	_, ok := m.clearedFields[menuitem.FieldIsFeatured]
+	return ok
+}
+
+// ResetIsFeatured resets all changes to the "is_featured" field.
+func (m *MenuItemMutation) ResetIsFeatured() {
+	m.is_featured = nil
+	delete(m.clearedFields, menuitem.FieldIsFeatured)
+}
+
+// SetIsNew sets the "is_new" field.
+func (m *MenuItemMutation) SetIsNew(b bool) {
+	m.is_new = &b
+}
+
+// IsNew returns the value of the "is_new" field in the mutation.
+func (m *MenuItemMutation) IsNew() (r bool, exists bool) {
+	v := m.is_new
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsNew returns the old "is_new" field's value of the MenuItem entity.
+// If the MenuItem object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuItemMutation) OldIsNew(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsNew is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsNew requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsNew: %w", err)
+	}
+	return oldValue.IsNew, nil
+}
+
+// ClearIsNew clears the value of the "is_new" field.
+func (m *MenuItemMutation) ClearIsNew() {
+	m.is_new = nil
+	m.clearedFields[menuitem.FieldIsNew] = struct{}{}
+}
+
+// IsNewCleared returns if the "is_new" field was cleared in this mutation.
+func (m *MenuItemMutation) IsNewCleared() bool {
+	_, ok := m.clearedFields[menuitem.FieldIsNew]
+	return ok
+}
+
+// ResetIsNew resets all changes to the "is_new" field.
+func (m *MenuItemMutation) ResetIsNew() {
+	m.is_new = nil
+	delete(m.clearedFields, menuitem.FieldIsNew)
+}
+
+// SetIsSeasonal sets the "is_seasonal" field.
+func (m *MenuItemMutation) SetIsSeasonal(b bool) {
+	m.is_seasonal = &b
+}
+
+// IsSeasonal returns the value of the "is_seasonal" field in the mutation.
+func (m *MenuItemMutation) IsSeasonal() (r bool, exists bool) {
+	v := m.is_seasonal
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsSeasonal returns the old "is_seasonal" field's value of the MenuItem entity.
+// If the MenuItem object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuItemMutation) OldIsSeasonal(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsSeasonal is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsSeasonal requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsSeasonal: %w", err)
+	}
+	return oldValue.IsSeasonal, nil
+}
+
+// ClearIsSeasonal clears the value of the "is_seasonal" field.
+func (m *MenuItemMutation) ClearIsSeasonal() {
+	m.is_seasonal = nil
+	m.clearedFields[menuitem.FieldIsSeasonal] = struct{}{}
+}
+
+// IsSeasonalCleared returns if the "is_seasonal" field was cleared in this mutation.
+func (m *MenuItemMutation) IsSeasonalCleared() bool {
+	_, ok := m.clearedFields[menuitem.FieldIsSeasonal]
+	return ok
+}
+
+// ResetIsSeasonal resets all changes to the "is_seasonal" field.
+func (m *MenuItemMutation) ResetIsSeasonal() {
+	m.is_seasonal = nil
+	delete(m.clearedFields, menuitem.FieldIsSeasonal)
+}
+
+// SetSeason sets the "season" field.
+func (m *MenuItemMutation) SetSeason(s string) {
+	m.season = &s
+}
+
+// Season returns the value of the "season" field in the mutation.
+func (m *MenuItemMutation) Season() (r string, exists bool) {
+	v := m.season
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSeason returns the old "season" field's value of the MenuItem entity.
+// If the MenuItem object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuItemMutation) OldSeason(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSeason is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSeason requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSeason: %w", err)
+	}
+	return oldValue.Season, nil
+}
+
+// ClearSeason clears the value of the "season" field.
+func (m *MenuItemMutation) ClearSeason() {
+	m.season = nil
+	m.clearedFields[menuitem.FieldSeason] = struct{}{}
+}
+
+// SeasonCleared returns if the "season" field was cleared in this mutation.
+func (m *MenuItemMutation) SeasonCleared() bool {
+	_, ok := m.clearedFields[menuitem.FieldSeason]
+	return ok
+}
+
+// ResetSeason resets all changes to the "season" field.
+func (m *MenuItemMutation) ResetSeason() {
+	m.season = nil
+	delete(m.clearedFields, menuitem.FieldSeason)
+}
+
+// SetDiscountPercentage sets the "discount_percentage" field.
+func (m *MenuItemMutation) SetDiscountPercentage(i int) {
+	m.discount_percentage = &i
+	m.adddiscount_percentage = nil
+}
+
+// DiscountPercentage returns the value of the "discount_percentage" field in the mutation.
+func (m *MenuItemMutation) DiscountPercentage() (r int, exists bool) {
+	v := m.discount_percentage
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDiscountPercentage returns the old "discount_percentage" field's value of the MenuItem entity.
+// If the MenuItem object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuItemMutation) OldDiscountPercentage(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDiscountPercentage is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDiscountPercentage requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDiscountPercentage: %w", err)
+	}
+	return oldValue.DiscountPercentage, nil
+}
+
+// AddDiscountPercentage adds i to the "discount_percentage" field.
+func (m *MenuItemMutation) AddDiscountPercentage(i int) {
+	if m.adddiscount_percentage != nil {
+		*m.adddiscount_percentage += i
+	} else {
+		m.adddiscount_percentage = &i
+	}
+}
+
+// AddedDiscountPercentage returns the value that was added to the "discount_percentage" field in this mutation.
+func (m *MenuItemMutation) AddedDiscountPercentage() (r int, exists bool) {
+	v := m.adddiscount_percentage
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearDiscountPercentage clears the value of the "discount_percentage" field.
+func (m *MenuItemMutation) ClearDiscountPercentage() {
+	m.discount_percentage = nil
+	m.adddiscount_percentage = nil
+	m.clearedFields[menuitem.FieldDiscountPercentage] = struct{}{}
+}
+
+// DiscountPercentageCleared returns if the "discount_percentage" field was cleared in this mutation.
+func (m *MenuItemMutation) DiscountPercentageCleared() bool {
+	_, ok := m.clearedFields[menuitem.FieldDiscountPercentage]
+	return ok
+}
+
+// ResetDiscountPercentage resets all changes to the "discount_percentage" field.
+func (m *MenuItemMutation) ResetDiscountPercentage() {
+	m.discount_percentage = nil
+	m.adddiscount_percentage = nil
+	delete(m.clearedFields, menuitem.FieldDiscountPercentage)
+}
+
+// SetPromotionDescription sets the "promotion_description" field.
+func (m *MenuItemMutation) SetPromotionDescription(s string) {
+	m.promotion_description = &s
+}
+
+// PromotionDescription returns the value of the "promotion_description" field in the mutation.
+func (m *MenuItemMutation) PromotionDescription() (r string, exists bool) {
+	v := m.promotion_description
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPromotionDescription returns the old "promotion_description" field's value of the MenuItem entity.
+// If the MenuItem object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuItemMutation) OldPromotionDescription(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPromotionDescription is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPromotionDescription requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPromotionDescription: %w", err)
+	}
+	return oldValue.PromotionDescription, nil
+}
+
+// ClearPromotionDescription clears the value of the "promotion_description" field.
+func (m *MenuItemMutation) ClearPromotionDescription() {
+	m.promotion_description = nil
+	m.clearedFields[menuitem.FieldPromotionDescription] = struct{}{}
+}
+
+// PromotionDescriptionCleared returns if the "promotion_description" field was cleared in this mutation.
+func (m *MenuItemMutation) PromotionDescriptionCleared() bool {
+	_, ok := m.clearedFields[menuitem.FieldPromotionDescription]
+	return ok
+}
+
+// ResetPromotionDescription resets all changes to the "promotion_description" field.
+func (m *MenuItemMutation) ResetPromotionDescription() {
+	m.promotion_description = nil
+	delete(m.clearedFields, menuitem.FieldPromotionDescription)
+}
+
+// SetPromotionStart sets the "promotion_start" field.
+func (m *MenuItemMutation) SetPromotionStart(t time.Time) {
+	m.promotion_start = &t
+}
+
+// PromotionStart returns the value of the "promotion_start" field in the mutation.
+func (m *MenuItemMutation) PromotionStart() (r time.Time, exists bool) {
+	v := m.promotion_start
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPromotionStart returns the old "promotion_start" field's value of the MenuItem entity.
+// If the MenuItem object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuItemMutation) OldPromotionStart(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPromotionStart is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPromotionStart requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPromotionStart: %w", err)
+	}
+	return oldValue.PromotionStart, nil
+}
+
+// ClearPromotionStart clears the value of the "promotion_start" field.
+func (m *MenuItemMutation) ClearPromotionStart() {
+	m.promotion_start = nil
+	m.clearedFields[menuitem.FieldPromotionStart] = struct{}{}
+}
+
+// PromotionStartCleared returns if the "promotion_start" field was cleared in this mutation.
+func (m *MenuItemMutation) PromotionStartCleared() bool {
+	_, ok := m.clearedFields[menuitem.FieldPromotionStart]
+	return ok
+}
+
+// ResetPromotionStart resets all changes to the "promotion_start" field.
+func (m *MenuItemMutation) ResetPromotionStart() {
+	m.promotion_start = nil
+	delete(m.clearedFields, menuitem.FieldPromotionStart)
+}
+
+// SetPromotionEnd sets the "promotion_end" field.
+func (m *MenuItemMutation) SetPromotionEnd(t time.Time) {
+	m.promotion_end = &t
+}
+
+// PromotionEnd returns the value of the "promotion_end" field in the mutation.
+func (m *MenuItemMutation) PromotionEnd() (r time.Time, exists bool) {
+	v := m.promotion_end
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPromotionEnd returns the old "promotion_end" field's value of the MenuItem entity.
+// If the MenuItem object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuItemMutation) OldPromotionEnd(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPromotionEnd is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPromotionEnd requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPromotionEnd: %w", err)
+	}
+	return oldValue.PromotionEnd, nil
+}
+
+// ClearPromotionEnd clears the value of the "promotion_end" field.
+func (m *MenuItemMutation) ClearPromotionEnd() {
+	m.promotion_end = nil
+	m.clearedFields[menuitem.FieldPromotionEnd] = struct{}{}
+}
+
+// PromotionEndCleared returns if the "promotion_end" field was cleared in this mutation.
+func (m *MenuItemMutation) PromotionEndCleared() bool {
+	_, ok := m.clearedFields[menuitem.FieldPromotionEnd]
+	return ok
+}
+
+// ResetPromotionEnd resets all changes to the "promotion_end" field.
+func (m *MenuItemMutation) ResetPromotionEnd() {
+	m.promotion_end = nil
+	delete(m.clearedFields, menuitem.FieldPromotionEnd)
+}
+
+// SetTags sets the "tags" field.
+func (m *MenuItemMutation) SetTags(s []string) {
+	m.tags = &s
+	m.appendtags = nil
+}
+
+// Tags returns the value of the "tags" field in the mutation.
+func (m *MenuItemMutation) Tags() (r []string, exists bool) {
+	v := m.tags
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTags returns the old "tags" field's value of the MenuItem entity.
+// If the MenuItem object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuItemMutation) OldTags(ctx context.Context) (v []string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTags is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTags requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTags: %w", err)
+	}
+	return oldValue.Tags, nil
+}
+
+// AppendTags adds s to the "tags" field.
+func (m *MenuItemMutation) AppendTags(s []string) {
+	m.appendtags = append(m.appendtags, s...)
+}
+
+// AppendedTags returns the list of values that were appended to the "tags" field in this mutation.
+func (m *MenuItemMutation) AppendedTags() ([]string, bool) {
+	if len(m.appendtags) == 0 {
+		return nil, false
+	}
+	return m.appendtags, true
+}
+
+// ClearTags clears the value of the "tags" field.
+func (m *MenuItemMutation) ClearTags() {
+	m.tags = nil
+	m.appendtags = nil
+	m.clearedFields[menuitem.FieldTags] = struct{}{}
+}
+
+// TagsCleared returns if the "tags" field was cleared in this mutation.
+func (m *MenuItemMutation) TagsCleared() bool {
+	_, ok := m.clearedFields[menuitem.FieldTags]
+	return ok
+}
+
+// ResetTags resets all changes to the "tags" field.
+func (m *MenuItemMutation) ResetTags() {
+	m.tags = nil
+	m.appendtags = nil
+	delete(m.clearedFields, menuitem.FieldTags)
+}
+
+// SetRelatedItems sets the "related_items" field.
+func (m *MenuItemMutation) SetRelatedItems(s []string) {
+	m.related_items = &s
+	m.appendrelated_items = nil
+}
+
+// RelatedItems returns the value of the "related_items" field in the mutation.
+func (m *MenuItemMutation) RelatedItems() (r []string, exists bool) {
+	v := m.related_items
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRelatedItems returns the old "related_items" field's value of the MenuItem entity.
+// If the MenuItem object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MenuItemMutation) OldRelatedItems(ctx context.Context) (v []string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRelatedItems is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRelatedItems requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRelatedItems: %w", err)
+	}
+	return oldValue.RelatedItems, nil
+}
+
+// AppendRelatedItems adds s to the "related_items" field.
+func (m *MenuItemMutation) AppendRelatedItems(s []string) {
+	m.appendrelated_items = append(m.appendrelated_items, s...)
+}
+
+// AppendedRelatedItems returns the list of values that were appended to the "related_items" field in this mutation.
+func (m *MenuItemMutation) AppendedRelatedItems() ([]string, bool) {
+	if len(m.appendrelated_items) == 0 {
+		return nil, false
+	}
+	return m.appendrelated_items, true
+}
+
+// ClearRelatedItems clears the value of the "related_items" field.
+func (m *MenuItemMutation) ClearRelatedItems() {
+	m.related_items = nil
+	m.appendrelated_items = nil
+	m.clearedFields[menuitem.FieldRelatedItems] = struct{}{}
+}
+
+// RelatedItemsCleared returns if the "related_items" field was cleared in this mutation.
+func (m *MenuItemMutation) RelatedItemsCleared() bool {
+	_, ok := m.clearedFields[menuitem.FieldRelatedItems]
+	return ok
+}
+
+// ResetRelatedItems resets all changes to the "related_items" field.
+func (m *MenuItemMutation) ResetRelatedItems() {
+	m.related_items = nil
+	m.appendrelated_items = nil
+	delete(m.clearedFields, menuitem.FieldRelatedItems)
 }
 
 // AddMenuIDs adds the "menu" edge to the Menu entity by ids.
@@ -23757,7 +25705,7 @@ func (m *MenuItemMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *MenuItemMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 37)
 	if m.name != nil {
 		fields = append(fields, menuitem.FieldName)
 	}
@@ -23782,8 +25730,92 @@ func (m *MenuItemMutation) Fields() []string {
 	if m.deleted_at != nil {
 		fields = append(fields, menuitem.FieldDeletedAt)
 	}
+	if m._type != nil {
+		fields = append(fields, menuitem.FieldType)
+	}
+	if m.status != nil {
+		fields = append(fields, menuitem.FieldStatus)
+	}
+	if m._DrinkType != nil {
+		fields = append(fields, menuitem.FieldDrinkType)
+	}
+	if m._DietaryType != nil {
+		fields = append(fields, menuitem.FieldDietaryType)
+	}
+	if m._MenuItemType != nil {
+		fields = append(fields, menuitem.FieldMenuItemType)
+	}
 	if m.is_deleted != nil {
 		fields = append(fields, menuitem.FieldIsDeleted)
+	}
+	if m.calories != nil {
+		fields = append(fields, menuitem.FieldCalories)
+	}
+	if m.serve_size != nil {
+		fields = append(fields, menuitem.FieldServeSize)
+	}
+	if m.available_from != nil {
+		fields = append(fields, menuitem.FieldAvailableFrom)
+	}
+	if m.available_until != nil {
+		fields = append(fields, menuitem.FieldAvailableUntil)
+	}
+	if m.image_url != nil {
+		fields = append(fields, menuitem.FieldImageURL)
+	}
+	if m.spiciness_level != nil {
+		fields = append(fields, menuitem.FieldSpicinessLevel)
+	}
+	if m.allergens != nil {
+		fields = append(fields, menuitem.FieldAllergens)
+	}
+	if m.chef_special_note != nil {
+		fields = append(fields, menuitem.FieldChefSpecialNote)
+	}
+	if m.rating != nil {
+		fields = append(fields, menuitem.FieldRating)
+	}
+	if m.review_count != nil {
+		fields = append(fields, menuitem.FieldReviewCount)
+	}
+	if m.category != nil {
+		fields = append(fields, menuitem.FieldCategory)
+	}
+	if m.order_count != nil {
+		fields = append(fields, menuitem.FieldOrderCount)
+	}
+	if m.sku != nil {
+		fields = append(fields, menuitem.FieldSku)
+	}
+	if m.is_featured != nil {
+		fields = append(fields, menuitem.FieldIsFeatured)
+	}
+	if m.is_new != nil {
+		fields = append(fields, menuitem.FieldIsNew)
+	}
+	if m.is_seasonal != nil {
+		fields = append(fields, menuitem.FieldIsSeasonal)
+	}
+	if m.season != nil {
+		fields = append(fields, menuitem.FieldSeason)
+	}
+	if m.discount_percentage != nil {
+		fields = append(fields, menuitem.FieldDiscountPercentage)
+	}
+	if m.promotion_description != nil {
+		fields = append(fields, menuitem.FieldPromotionDescription)
+	}
+	if m.promotion_start != nil {
+		fields = append(fields, menuitem.FieldPromotionStart)
+	}
+	if m.promotion_end != nil {
+		fields = append(fields, menuitem.FieldPromotionEnd)
+	}
+	if m.tags != nil {
+		fields = append(fields, menuitem.FieldTags)
+	}
+	if m.related_items != nil {
+		fields = append(fields, menuitem.FieldRelatedItems)
 	}
 	return fields
 }
@@ -23809,8 +25841,64 @@ func (m *MenuItemMutation) Field(name string) (ent.Value, bool) {
 		return m.Options()
 	case menuitem.FieldDeletedAt:
 		return m.DeletedAt()
+	case menuitem.FieldType:
+		return m.GetType()
+	case menuitem.FieldStatus:
+		return m.Status()
+	case menuitem.FieldDrinkType:
+		return m.DrinkType()
+	case menuitem.FieldDietaryType:
+		return m.DietaryType()
+	case menuitem.FieldMenuItemType:
+		return m.MenuItemType()
 	case menuitem.FieldIsDeleted:
 		return m.IsDeleted()
+	case menuitem.FieldCalories:
+		return m.Calories()
+	case menuitem.FieldServeSize:
+		return m.ServeSize()
+	case menuitem.FieldAvailableFrom:
+		return m.AvailableFrom()
+	case menuitem.FieldAvailableUntil:
+		return m.AvailableUntil()
+	case menuitem.FieldImageURL:
+		return m.ImageURL()
+	case menuitem.FieldSpicinessLevel:
+		return m.SpicinessLevel()
+	case menuitem.FieldAllergens:
+		return m.Allergens()
+	case menuitem.FieldChefSpecialNote:
+		return m.ChefSpecialNote()
+	case menuitem.FieldRating:
+		return m.Rating()
+	case menuitem.FieldReviewCount:
+		return m.ReviewCount()
+	case menuitem.FieldCategory:
+		return m.Category()
+	case menuitem.FieldOrderCount:
+		return m.OrderCount()
+	case menuitem.FieldSku:
+		return m.Sku()
+	case menuitem.FieldIsFeatured:
+		return m.IsFeatured()
+	case menuitem.FieldIsNew:
+		return m.IsNew()
+	case menuitem.FieldIsSeasonal:
+		return m.IsSeasonal()
+	case menuitem.FieldSeason:
+		return m.Season()
+	case menuitem.FieldDiscountPercentage:
+		return m.DiscountPercentage()
+	case menuitem.FieldPromotionDescription:
+		return m.PromotionDescription()
+	case menuitem.FieldPromotionStart:
+		return m.PromotionStart()
+	case menuitem.FieldPromotionEnd:
+		return m.PromotionEnd()
+	case menuitem.FieldTags:
+		return m.Tags()
+	case menuitem.FieldRelatedItems:
+		return m.RelatedItems()
 	}
 	return nil, false
 }
@@ -23836,8 +25924,64 @@ func (m *MenuItemMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldOptions(ctx)
 	case menuitem.FieldDeletedAt:
 		return m.OldDeletedAt(ctx)
+	case menuitem.FieldType:
+		return m.OldType(ctx)
+	case menuitem.FieldStatus:
+		return m.OldStatus(ctx)
+	case menuitem.FieldDrinkType:
+		return m.OldDrinkType(ctx)
+	case menuitem.FieldDietaryType:
+		return m.OldDietaryType(ctx)
+	case menuitem.FieldMenuItemType:
+		return m.OldMenuItemType(ctx)
 	case menuitem.FieldIsDeleted:
 		return m.OldIsDeleted(ctx)
+	case menuitem.FieldCalories:
+		return m.OldCalories(ctx)
+	case menuitem.FieldServeSize:
+		return m.OldServeSize(ctx)
+	case menuitem.FieldAvailableFrom:
+		return m.OldAvailableFrom(ctx)
+	case menuitem.FieldAvailableUntil:
+		return m.OldAvailableUntil(ctx)
+	case menuitem.FieldImageURL:
+		return m.OldImageURL(ctx)
+	case menuitem.FieldSpicinessLevel:
+		return m.OldSpicinessLevel(ctx)
+	case menuitem.FieldAllergens:
+		return m.OldAllergens(ctx)
+	case menuitem.FieldChefSpecialNote:
+		return m.OldChefSpecialNote(ctx)
+	case menuitem.FieldRating:
+		return m.OldRating(ctx)
+	case menuitem.FieldReviewCount:
+		return m.OldReviewCount(ctx)
+	case menuitem.FieldCategory:
+		return m.OldCategory(ctx)
+	case menuitem.FieldOrderCount:
+		return m.OldOrderCount(ctx)
+	case menuitem.FieldSku:
+		return m.OldSku(ctx)
+	case menuitem.FieldIsFeatured:
+		return m.OldIsFeatured(ctx)
+	case menuitem.FieldIsNew:
+		return m.OldIsNew(ctx)
+	case menuitem.FieldIsSeasonal:
+		return m.OldIsSeasonal(ctx)
+	case menuitem.FieldSeason:
+		return m.OldSeason(ctx)
+	case menuitem.FieldDiscountPercentage:
+		return m.OldDiscountPercentage(ctx)
+	case menuitem.FieldPromotionDescription:
+		return m.OldPromotionDescription(ctx)
+	case menuitem.FieldPromotionStart:
+		return m.OldPromotionStart(ctx)
+	case menuitem.FieldPromotionEnd:
+		return m.OldPromotionEnd(ctx)
+	case menuitem.FieldTags:
+		return m.OldTags(ctx)
+	case menuitem.FieldRelatedItems:
+		return m.OldRelatedItems(ctx)
 	}
 	return nil, fmt.Errorf("unknown MenuItem field %s", name)
 }
@@ -23903,12 +26047,208 @@ func (m *MenuItemMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDeletedAt(v)
 		return nil
+	case menuitem.FieldType:
+		v, ok := value.(menuitem.Type)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetType(v)
+		return nil
+	case menuitem.FieldStatus:
+		v, ok := value.(menuitem.Status)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatus(v)
+		return nil
+	case menuitem.FieldDrinkType:
+		v, ok := value.(menuitem.DrinkType)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDrinkType(v)
+		return nil
+	case menuitem.FieldDietaryType:
+		v, ok := value.(menuitem.DietaryType)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDietaryType(v)
+		return nil
+	case menuitem.FieldMenuItemType:
+		v, ok := value.(menuitem.MenuItemType)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMenuItemType(v)
+		return nil
 	case menuitem.FieldIsDeleted:
 		v, ok := value.(bool)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetIsDeleted(v)
+		return nil
+	case menuitem.FieldCalories:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCalories(v)
+		return nil
+	case menuitem.FieldServeSize:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetServeSize(v)
+		return nil
+	case menuitem.FieldAvailableFrom:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAvailableFrom(v)
+		return nil
+	case menuitem.FieldAvailableUntil:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAvailableUntil(v)
+		return nil
+	case menuitem.FieldImageURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetImageURL(v)
+		return nil
+	case menuitem.FieldSpicinessLevel:
+		v, ok := value.(menuitem.SpicinessLevel)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSpicinessLevel(v)
+		return nil
+	case menuitem.FieldAllergens:
+		v, ok := value.([]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAllergens(v)
+		return nil
+	case menuitem.FieldChefSpecialNote:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetChefSpecialNote(v)
+		return nil
+	case menuitem.FieldRating:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRating(v)
+		return nil
+	case menuitem.FieldReviewCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetReviewCount(v)
+		return nil
+	case menuitem.FieldCategory:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCategory(v)
+		return nil
+	case menuitem.FieldOrderCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOrderCount(v)
+		return nil
+	case menuitem.FieldSku:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSku(v)
+		return nil
+	case menuitem.FieldIsFeatured:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsFeatured(v)
+		return nil
+	case menuitem.FieldIsNew:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsNew(v)
+		return nil
+	case menuitem.FieldIsSeasonal:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsSeasonal(v)
+		return nil
+	case menuitem.FieldSeason:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSeason(v)
+		return nil
+	case menuitem.FieldDiscountPercentage:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDiscountPercentage(v)
+		return nil
+	case menuitem.FieldPromotionDescription:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPromotionDescription(v)
+		return nil
+	case menuitem.FieldPromotionStart:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPromotionStart(v)
+		return nil
+	case menuitem.FieldPromotionEnd:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPromotionEnd(v)
+		return nil
+	case menuitem.FieldTags:
+		v, ok := value.([]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTags(v)
+		return nil
+	case menuitem.FieldRelatedItems:
+		v, ok := value.([]string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRelatedItems(v)
 		return nil
 	}
 	return fmt.Errorf("unknown MenuItem field %s", name)
@@ -23924,6 +26264,24 @@ func (m *MenuItemMutation) AddedFields() []string {
 	if m.addpreparation_time != nil {
 		fields = append(fields, menuitem.FieldPreparationTime)
 	}
+	if m.addcalories != nil {
+		fields = append(fields, menuitem.FieldCalories)
+	}
+	if m.addserve_size != nil {
+		fields = append(fields, menuitem.FieldServeSize)
+	}
+	if m.addrating != nil {
+		fields = append(fields, menuitem.FieldRating)
+	}
+	if m.addreview_count != nil {
+		fields = append(fields, menuitem.FieldReviewCount)
+	}
+	if m.addorder_count != nil {
+		fields = append(fields, menuitem.FieldOrderCount)
+	}
+	if m.adddiscount_percentage != nil {
+		fields = append(fields, menuitem.FieldDiscountPercentage)
+	}
 	return fields
 }
 
@@ -23936,6 +26294,18 @@ func (m *MenuItemMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedPrice()
 	case menuitem.FieldPreparationTime:
 		return m.AddedPreparationTime()
+	case menuitem.FieldCalories:
+		return m.AddedCalories()
+	case menuitem.FieldServeSize:
+		return m.AddedServeSize()
+	case menuitem.FieldRating:
+		return m.AddedRating()
+	case menuitem.FieldReviewCount:
+		return m.AddedReviewCount()
+	case menuitem.FieldOrderCount:
+		return m.AddedOrderCount()
+	case menuitem.FieldDiscountPercentage:
+		return m.AddedDiscountPercentage()
 	}
 	return nil, false
 }
@@ -23959,6 +26329,48 @@ func (m *MenuItemMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddPreparationTime(v)
 		return nil
+	case menuitem.FieldCalories:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCalories(v)
+		return nil
+	case menuitem.FieldServeSize:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddServeSize(v)
+		return nil
+	case menuitem.FieldRating:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddRating(v)
+		return nil
+	case menuitem.FieldReviewCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddReviewCount(v)
+		return nil
+	case menuitem.FieldOrderCount:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddOrderCount(v)
+		return nil
+	case menuitem.FieldDiscountPercentage:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDiscountPercentage(v)
+		return nil
 	}
 	return fmt.Errorf("unknown MenuItem numeric field %s", name)
 }
@@ -23981,6 +26393,90 @@ func (m *MenuItemMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(menuitem.FieldDeletedAt) {
 		fields = append(fields, menuitem.FieldDeletedAt)
+	}
+	if m.FieldCleared(menuitem.FieldType) {
+		fields = append(fields, menuitem.FieldType)
+	}
+	if m.FieldCleared(menuitem.FieldStatus) {
+		fields = append(fields, menuitem.FieldStatus)
+	}
+	if m.FieldCleared(menuitem.FieldDrinkType) {
+		fields = append(fields, menuitem.FieldDrinkType)
+	}
+	if m.FieldCleared(menuitem.FieldDietaryType) {
+		fields = append(fields, menuitem.FieldDietaryType)
+	}
+	if m.FieldCleared(menuitem.FieldMenuItemType) {
+		fields = append(fields, menuitem.FieldMenuItemType)
+	}
+	if m.FieldCleared(menuitem.FieldCalories) {
+		fields = append(fields, menuitem.FieldCalories)
+	}
+	if m.FieldCleared(menuitem.FieldServeSize) {
+		fields = append(fields, menuitem.FieldServeSize)
+	}
+	if m.FieldCleared(menuitem.FieldAvailableFrom) {
+		fields = append(fields, menuitem.FieldAvailableFrom)
+	}
+	if m.FieldCleared(menuitem.FieldAvailableUntil) {
+		fields = append(fields, menuitem.FieldAvailableUntil)
+	}
+	if m.FieldCleared(menuitem.FieldImageURL) {
+		fields = append(fields, menuitem.FieldImageURL)
+	}
+	if m.FieldCleared(menuitem.FieldSpicinessLevel) {
+		fields = append(fields, menuitem.FieldSpicinessLevel)
+	}
+	if m.FieldCleared(menuitem.FieldAllergens) {
+		fields = append(fields, menuitem.FieldAllergens)
+	}
+	if m.FieldCleared(menuitem.FieldChefSpecialNote) {
+		fields = append(fields, menuitem.FieldChefSpecialNote)
+	}
+	if m.FieldCleared(menuitem.FieldRating) {
+		fields = append(fields, menuitem.FieldRating)
+	}
+	if m.FieldCleared(menuitem.FieldReviewCount) {
+		fields = append(fields, menuitem.FieldReviewCount)
+	}
+	if m.FieldCleared(menuitem.FieldCategory) {
+		fields = append(fields, menuitem.FieldCategory)
+	}
+	if m.FieldCleared(menuitem.FieldOrderCount) {
+		fields = append(fields, menuitem.FieldOrderCount)
+	}
+	if m.FieldCleared(menuitem.FieldSku) {
+		fields = append(fields, menuitem.FieldSku)
+	}
+	if m.FieldCleared(menuitem.FieldIsFeatured) {
+		fields = append(fields, menuitem.FieldIsFeatured)
+	}
+	if m.FieldCleared(menuitem.FieldIsNew) {
+		fields = append(fields, menuitem.FieldIsNew)
+	}
+	if m.FieldCleared(menuitem.FieldIsSeasonal) {
+		fields = append(fields, menuitem.FieldIsSeasonal)
+	}
+	if m.FieldCleared(menuitem.FieldSeason) {
+		fields = append(fields, menuitem.FieldSeason)
+	}
+	if m.FieldCleared(menuitem.FieldDiscountPercentage) {
+		fields = append(fields, menuitem.FieldDiscountPercentage)
+	}
+	if m.FieldCleared(menuitem.FieldPromotionDescription) {
+		fields = append(fields, menuitem.FieldPromotionDescription)
+	}
+	if m.FieldCleared(menuitem.FieldPromotionStart) {
+		fields = append(fields, menuitem.FieldPromotionStart)
+	}
+	if m.FieldCleared(menuitem.FieldPromotionEnd) {
+		fields = append(fields, menuitem.FieldPromotionEnd)
+	}
+	if m.FieldCleared(menuitem.FieldTags) {
+		fields = append(fields, menuitem.FieldTags)
+	}
+	if m.FieldCleared(menuitem.FieldRelatedItems) {
+		fields = append(fields, menuitem.FieldRelatedItems)
 	}
 	return fields
 }
@@ -24010,6 +26506,90 @@ func (m *MenuItemMutation) ClearField(name string) error {
 		return nil
 	case menuitem.FieldDeletedAt:
 		m.ClearDeletedAt()
+		return nil
+	case menuitem.FieldType:
+		m.ClearType()
+		return nil
+	case menuitem.FieldStatus:
+		m.ClearStatus()
+		return nil
+	case menuitem.FieldDrinkType:
+		m.ClearDrinkType()
+		return nil
+	case menuitem.FieldDietaryType:
+		m.ClearDietaryType()
+		return nil
+	case menuitem.FieldMenuItemType:
+		m.ClearMenuItemType()
+		return nil
+	case menuitem.FieldCalories:
+		m.ClearCalories()
+		return nil
+	case menuitem.FieldServeSize:
+		m.ClearServeSize()
+		return nil
+	case menuitem.FieldAvailableFrom:
+		m.ClearAvailableFrom()
+		return nil
+	case menuitem.FieldAvailableUntil:
+		m.ClearAvailableUntil()
+		return nil
+	case menuitem.FieldImageURL:
+		m.ClearImageURL()
+		return nil
+	case menuitem.FieldSpicinessLevel:
+		m.ClearSpicinessLevel()
+		return nil
+	case menuitem.FieldAllergens:
+		m.ClearAllergens()
+		return nil
+	case menuitem.FieldChefSpecialNote:
+		m.ClearChefSpecialNote()
+		return nil
+	case menuitem.FieldRating:
+		m.ClearRating()
+		return nil
+	case menuitem.FieldReviewCount:
+		m.ClearReviewCount()
+		return nil
+	case menuitem.FieldCategory:
+		m.ClearCategory()
+		return nil
+	case menuitem.FieldOrderCount:
+		m.ClearOrderCount()
+		return nil
+	case menuitem.FieldSku:
+		m.ClearSku()
+		return nil
+	case menuitem.FieldIsFeatured:
+		m.ClearIsFeatured()
+		return nil
+	case menuitem.FieldIsNew:
+		m.ClearIsNew()
+		return nil
+	case menuitem.FieldIsSeasonal:
+		m.ClearIsSeasonal()
+		return nil
+	case menuitem.FieldSeason:
+		m.ClearSeason()
+		return nil
+	case menuitem.FieldDiscountPercentage:
+		m.ClearDiscountPercentage()
+		return nil
+	case menuitem.FieldPromotionDescription:
+		m.ClearPromotionDescription()
+		return nil
+	case menuitem.FieldPromotionStart:
+		m.ClearPromotionStart()
+		return nil
+	case menuitem.FieldPromotionEnd:
+		m.ClearPromotionEnd()
+		return nil
+	case menuitem.FieldTags:
+		m.ClearTags()
+		return nil
+	case menuitem.FieldRelatedItems:
+		m.ClearRelatedItems()
 		return nil
 	}
 	return fmt.Errorf("unknown MenuItem nullable field %s", name)
@@ -24043,8 +26623,92 @@ func (m *MenuItemMutation) ResetField(name string) error {
 	case menuitem.FieldDeletedAt:
 		m.ResetDeletedAt()
 		return nil
+	case menuitem.FieldType:
+		m.ResetType()
+		return nil
+	case menuitem.FieldStatus:
+		m.ResetStatus()
+		return nil
+	case menuitem.FieldDrinkType:
+		m.ResetDrinkType()
+		return nil
+	case menuitem.FieldDietaryType:
+		m.ResetDietaryType()
+		return nil
+	case menuitem.FieldMenuItemType:
+		m.ResetMenuItemType()
+		return nil
 	case menuitem.FieldIsDeleted:
 		m.ResetIsDeleted()
+		return nil
+	case menuitem.FieldCalories:
+		m.ResetCalories()
+		return nil
+	case menuitem.FieldServeSize:
+		m.ResetServeSize()
+		return nil
+	case menuitem.FieldAvailableFrom:
+		m.ResetAvailableFrom()
+		return nil
+	case menuitem.FieldAvailableUntil:
+		m.ResetAvailableUntil()
+		return nil
+	case menuitem.FieldImageURL:
+		m.ResetImageURL()
+		return nil
+	case menuitem.FieldSpicinessLevel:
+		m.ResetSpicinessLevel()
+		return nil
+	case menuitem.FieldAllergens:
+		m.ResetAllergens()
+		return nil
+	case menuitem.FieldChefSpecialNote:
+		m.ResetChefSpecialNote()
+		return nil
+	case menuitem.FieldRating:
+		m.ResetRating()
+		return nil
+	case menuitem.FieldReviewCount:
+		m.ResetReviewCount()
+		return nil
+	case menuitem.FieldCategory:
+		m.ResetCategory()
+		return nil
+	case menuitem.FieldOrderCount:
+		m.ResetOrderCount()
+		return nil
+	case menuitem.FieldSku:
+		m.ResetSku()
+		return nil
+	case menuitem.FieldIsFeatured:
+		m.ResetIsFeatured()
+		return nil
+	case menuitem.FieldIsNew:
+		m.ResetIsNew()
+		return nil
+	case menuitem.FieldIsSeasonal:
+		m.ResetIsSeasonal()
+		return nil
+	case menuitem.FieldSeason:
+		m.ResetSeason()
+		return nil
+	case menuitem.FieldDiscountPercentage:
+		m.ResetDiscountPercentage()
+		return nil
+	case menuitem.FieldPromotionDescription:
+		m.ResetPromotionDescription()
+		return nil
+	case menuitem.FieldPromotionStart:
+		m.ResetPromotionStart()
+		return nil
+	case menuitem.FieldPromotionEnd:
+		m.ResetPromotionEnd()
+		return nil
+	case menuitem.FieldTags:
+		m.ResetTags()
+		return nil
+	case menuitem.FieldRelatedItems:
+		m.ResetRelatedItems()
 		return nil
 	}
 	return fmt.Errorf("unknown MenuItem field %s", name)

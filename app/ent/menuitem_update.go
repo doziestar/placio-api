@@ -12,6 +12,7 @@ import (
 	"placio-app/ent/orderitem"
 	"placio-app/ent/placeinventory"
 	"placio-app/ent/predicate"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -170,6 +171,106 @@ func (miu *MenuItemUpdate) ClearDeletedAt() *MenuItemUpdate {
 	return miu
 }
 
+// SetType sets the "type" field.
+func (miu *MenuItemUpdate) SetType(m menuitem.Type) *MenuItemUpdate {
+	miu.mutation.SetType(m)
+	return miu
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (miu *MenuItemUpdate) SetNillableType(m *menuitem.Type) *MenuItemUpdate {
+	if m != nil {
+		miu.SetType(*m)
+	}
+	return miu
+}
+
+// ClearType clears the value of the "type" field.
+func (miu *MenuItemUpdate) ClearType() *MenuItemUpdate {
+	miu.mutation.ClearType()
+	return miu
+}
+
+// SetStatus sets the "status" field.
+func (miu *MenuItemUpdate) SetStatus(m menuitem.Status) *MenuItemUpdate {
+	miu.mutation.SetStatus(m)
+	return miu
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (miu *MenuItemUpdate) SetNillableStatus(m *menuitem.Status) *MenuItemUpdate {
+	if m != nil {
+		miu.SetStatus(*m)
+	}
+	return miu
+}
+
+// ClearStatus clears the value of the "status" field.
+func (miu *MenuItemUpdate) ClearStatus() *MenuItemUpdate {
+	miu.mutation.ClearStatus()
+	return miu
+}
+
+// SetDrinkType sets the "DrinkType" field.
+func (miu *MenuItemUpdate) SetDrinkType(mt menuitem.DrinkType) *MenuItemUpdate {
+	miu.mutation.SetDrinkType(mt)
+	return miu
+}
+
+// SetNillableDrinkType sets the "DrinkType" field if the given value is not nil.
+func (miu *MenuItemUpdate) SetNillableDrinkType(mt *menuitem.DrinkType) *MenuItemUpdate {
+	if mt != nil {
+		miu.SetDrinkType(*mt)
+	}
+	return miu
+}
+
+// ClearDrinkType clears the value of the "DrinkType" field.
+func (miu *MenuItemUpdate) ClearDrinkType() *MenuItemUpdate {
+	miu.mutation.ClearDrinkType()
+	return miu
+}
+
+// SetDietaryType sets the "DietaryType" field.
+func (miu *MenuItemUpdate) SetDietaryType(mt menuitem.DietaryType) *MenuItemUpdate {
+	miu.mutation.SetDietaryType(mt)
+	return miu
+}
+
+// SetNillableDietaryType sets the "DietaryType" field if the given value is not nil.
+func (miu *MenuItemUpdate) SetNillableDietaryType(mt *menuitem.DietaryType) *MenuItemUpdate {
+	if mt != nil {
+		miu.SetDietaryType(*mt)
+	}
+	return miu
+}
+
+// ClearDietaryType clears the value of the "DietaryType" field.
+func (miu *MenuItemUpdate) ClearDietaryType() *MenuItemUpdate {
+	miu.mutation.ClearDietaryType()
+	return miu
+}
+
+// SetMenuItemType sets the "MenuItemType" field.
+func (miu *MenuItemUpdate) SetMenuItemType(mit menuitem.MenuItemType) *MenuItemUpdate {
+	miu.mutation.SetMenuItemType(mit)
+	return miu
+}
+
+// SetNillableMenuItemType sets the "MenuItemType" field if the given value is not nil.
+func (miu *MenuItemUpdate) SetNillableMenuItemType(mit *menuitem.MenuItemType) *MenuItemUpdate {
+	if mit != nil {
+		miu.SetMenuItemType(*mit)
+	}
+	return miu
+}
+
+// ClearMenuItemType clears the value of the "MenuItemType" field.
+func (miu *MenuItemUpdate) ClearMenuItemType() *MenuItemUpdate {
+	miu.mutation.ClearMenuItemType()
+	return miu
+}
+
 // SetIsDeleted sets the "is_deleted" field.
 func (miu *MenuItemUpdate) SetIsDeleted(b bool) *MenuItemUpdate {
 	miu.mutation.SetIsDeleted(b)
@@ -181,6 +282,502 @@ func (miu *MenuItemUpdate) SetNillableIsDeleted(b *bool) *MenuItemUpdate {
 	if b != nil {
 		miu.SetIsDeleted(*b)
 	}
+	return miu
+}
+
+// SetCalories sets the "calories" field.
+func (miu *MenuItemUpdate) SetCalories(i int) *MenuItemUpdate {
+	miu.mutation.ResetCalories()
+	miu.mutation.SetCalories(i)
+	return miu
+}
+
+// SetNillableCalories sets the "calories" field if the given value is not nil.
+func (miu *MenuItemUpdate) SetNillableCalories(i *int) *MenuItemUpdate {
+	if i != nil {
+		miu.SetCalories(*i)
+	}
+	return miu
+}
+
+// AddCalories adds i to the "calories" field.
+func (miu *MenuItemUpdate) AddCalories(i int) *MenuItemUpdate {
+	miu.mutation.AddCalories(i)
+	return miu
+}
+
+// ClearCalories clears the value of the "calories" field.
+func (miu *MenuItemUpdate) ClearCalories() *MenuItemUpdate {
+	miu.mutation.ClearCalories()
+	return miu
+}
+
+// SetServeSize sets the "serve_size" field.
+func (miu *MenuItemUpdate) SetServeSize(i int) *MenuItemUpdate {
+	miu.mutation.ResetServeSize()
+	miu.mutation.SetServeSize(i)
+	return miu
+}
+
+// SetNillableServeSize sets the "serve_size" field if the given value is not nil.
+func (miu *MenuItemUpdate) SetNillableServeSize(i *int) *MenuItemUpdate {
+	if i != nil {
+		miu.SetServeSize(*i)
+	}
+	return miu
+}
+
+// AddServeSize adds i to the "serve_size" field.
+func (miu *MenuItemUpdate) AddServeSize(i int) *MenuItemUpdate {
+	miu.mutation.AddServeSize(i)
+	return miu
+}
+
+// ClearServeSize clears the value of the "serve_size" field.
+func (miu *MenuItemUpdate) ClearServeSize() *MenuItemUpdate {
+	miu.mutation.ClearServeSize()
+	return miu
+}
+
+// SetAvailableFrom sets the "available_from" field.
+func (miu *MenuItemUpdate) SetAvailableFrom(t time.Time) *MenuItemUpdate {
+	miu.mutation.SetAvailableFrom(t)
+	return miu
+}
+
+// SetNillableAvailableFrom sets the "available_from" field if the given value is not nil.
+func (miu *MenuItemUpdate) SetNillableAvailableFrom(t *time.Time) *MenuItemUpdate {
+	if t != nil {
+		miu.SetAvailableFrom(*t)
+	}
+	return miu
+}
+
+// ClearAvailableFrom clears the value of the "available_from" field.
+func (miu *MenuItemUpdate) ClearAvailableFrom() *MenuItemUpdate {
+	miu.mutation.ClearAvailableFrom()
+	return miu
+}
+
+// SetAvailableUntil sets the "available_until" field.
+func (miu *MenuItemUpdate) SetAvailableUntil(t time.Time) *MenuItemUpdate {
+	miu.mutation.SetAvailableUntil(t)
+	return miu
+}
+
+// SetNillableAvailableUntil sets the "available_until" field if the given value is not nil.
+func (miu *MenuItemUpdate) SetNillableAvailableUntil(t *time.Time) *MenuItemUpdate {
+	if t != nil {
+		miu.SetAvailableUntil(*t)
+	}
+	return miu
+}
+
+// ClearAvailableUntil clears the value of the "available_until" field.
+func (miu *MenuItemUpdate) ClearAvailableUntil() *MenuItemUpdate {
+	miu.mutation.ClearAvailableUntil()
+	return miu
+}
+
+// SetImageURL sets the "image_url" field.
+func (miu *MenuItemUpdate) SetImageURL(s string) *MenuItemUpdate {
+	miu.mutation.SetImageURL(s)
+	return miu
+}
+
+// SetNillableImageURL sets the "image_url" field if the given value is not nil.
+func (miu *MenuItemUpdate) SetNillableImageURL(s *string) *MenuItemUpdate {
+	if s != nil {
+		miu.SetImageURL(*s)
+	}
+	return miu
+}
+
+// ClearImageURL clears the value of the "image_url" field.
+func (miu *MenuItemUpdate) ClearImageURL() *MenuItemUpdate {
+	miu.mutation.ClearImageURL()
+	return miu
+}
+
+// SetSpicinessLevel sets the "spiciness_level" field.
+func (miu *MenuItemUpdate) SetSpicinessLevel(ml menuitem.SpicinessLevel) *MenuItemUpdate {
+	miu.mutation.SetSpicinessLevel(ml)
+	return miu
+}
+
+// SetNillableSpicinessLevel sets the "spiciness_level" field if the given value is not nil.
+func (miu *MenuItemUpdate) SetNillableSpicinessLevel(ml *menuitem.SpicinessLevel) *MenuItemUpdate {
+	if ml != nil {
+		miu.SetSpicinessLevel(*ml)
+	}
+	return miu
+}
+
+// ClearSpicinessLevel clears the value of the "spiciness_level" field.
+func (miu *MenuItemUpdate) ClearSpicinessLevel() *MenuItemUpdate {
+	miu.mutation.ClearSpicinessLevel()
+	return miu
+}
+
+// SetAllergens sets the "allergens" field.
+func (miu *MenuItemUpdate) SetAllergens(s []string) *MenuItemUpdate {
+	miu.mutation.SetAllergens(s)
+	return miu
+}
+
+// AppendAllergens appends s to the "allergens" field.
+func (miu *MenuItemUpdate) AppendAllergens(s []string) *MenuItemUpdate {
+	miu.mutation.AppendAllergens(s)
+	return miu
+}
+
+// ClearAllergens clears the value of the "allergens" field.
+func (miu *MenuItemUpdate) ClearAllergens() *MenuItemUpdate {
+	miu.mutation.ClearAllergens()
+	return miu
+}
+
+// SetChefSpecialNote sets the "chef_special_note" field.
+func (miu *MenuItemUpdate) SetChefSpecialNote(s string) *MenuItemUpdate {
+	miu.mutation.SetChefSpecialNote(s)
+	return miu
+}
+
+// SetNillableChefSpecialNote sets the "chef_special_note" field if the given value is not nil.
+func (miu *MenuItemUpdate) SetNillableChefSpecialNote(s *string) *MenuItemUpdate {
+	if s != nil {
+		miu.SetChefSpecialNote(*s)
+	}
+	return miu
+}
+
+// ClearChefSpecialNote clears the value of the "chef_special_note" field.
+func (miu *MenuItemUpdate) ClearChefSpecialNote() *MenuItemUpdate {
+	miu.mutation.ClearChefSpecialNote()
+	return miu
+}
+
+// SetRating sets the "rating" field.
+func (miu *MenuItemUpdate) SetRating(i int) *MenuItemUpdate {
+	miu.mutation.ResetRating()
+	miu.mutation.SetRating(i)
+	return miu
+}
+
+// SetNillableRating sets the "rating" field if the given value is not nil.
+func (miu *MenuItemUpdate) SetNillableRating(i *int) *MenuItemUpdate {
+	if i != nil {
+		miu.SetRating(*i)
+	}
+	return miu
+}
+
+// AddRating adds i to the "rating" field.
+func (miu *MenuItemUpdate) AddRating(i int) *MenuItemUpdate {
+	miu.mutation.AddRating(i)
+	return miu
+}
+
+// ClearRating clears the value of the "rating" field.
+func (miu *MenuItemUpdate) ClearRating() *MenuItemUpdate {
+	miu.mutation.ClearRating()
+	return miu
+}
+
+// SetReviewCount sets the "review_count" field.
+func (miu *MenuItemUpdate) SetReviewCount(i int) *MenuItemUpdate {
+	miu.mutation.ResetReviewCount()
+	miu.mutation.SetReviewCount(i)
+	return miu
+}
+
+// SetNillableReviewCount sets the "review_count" field if the given value is not nil.
+func (miu *MenuItemUpdate) SetNillableReviewCount(i *int) *MenuItemUpdate {
+	if i != nil {
+		miu.SetReviewCount(*i)
+	}
+	return miu
+}
+
+// AddReviewCount adds i to the "review_count" field.
+func (miu *MenuItemUpdate) AddReviewCount(i int) *MenuItemUpdate {
+	miu.mutation.AddReviewCount(i)
+	return miu
+}
+
+// ClearReviewCount clears the value of the "review_count" field.
+func (miu *MenuItemUpdate) ClearReviewCount() *MenuItemUpdate {
+	miu.mutation.ClearReviewCount()
+	return miu
+}
+
+// SetCategory sets the "category" field.
+func (miu *MenuItemUpdate) SetCategory(s string) *MenuItemUpdate {
+	miu.mutation.SetCategory(s)
+	return miu
+}
+
+// SetNillableCategory sets the "category" field if the given value is not nil.
+func (miu *MenuItemUpdate) SetNillableCategory(s *string) *MenuItemUpdate {
+	if s != nil {
+		miu.SetCategory(*s)
+	}
+	return miu
+}
+
+// ClearCategory clears the value of the "category" field.
+func (miu *MenuItemUpdate) ClearCategory() *MenuItemUpdate {
+	miu.mutation.ClearCategory()
+	return miu
+}
+
+// SetOrderCount sets the "order_count" field.
+func (miu *MenuItemUpdate) SetOrderCount(i int) *MenuItemUpdate {
+	miu.mutation.ResetOrderCount()
+	miu.mutation.SetOrderCount(i)
+	return miu
+}
+
+// SetNillableOrderCount sets the "order_count" field if the given value is not nil.
+func (miu *MenuItemUpdate) SetNillableOrderCount(i *int) *MenuItemUpdate {
+	if i != nil {
+		miu.SetOrderCount(*i)
+	}
+	return miu
+}
+
+// AddOrderCount adds i to the "order_count" field.
+func (miu *MenuItemUpdate) AddOrderCount(i int) *MenuItemUpdate {
+	miu.mutation.AddOrderCount(i)
+	return miu
+}
+
+// ClearOrderCount clears the value of the "order_count" field.
+func (miu *MenuItemUpdate) ClearOrderCount() *MenuItemUpdate {
+	miu.mutation.ClearOrderCount()
+	return miu
+}
+
+// SetSku sets the "sku" field.
+func (miu *MenuItemUpdate) SetSku(s string) *MenuItemUpdate {
+	miu.mutation.SetSku(s)
+	return miu
+}
+
+// SetNillableSku sets the "sku" field if the given value is not nil.
+func (miu *MenuItemUpdate) SetNillableSku(s *string) *MenuItemUpdate {
+	if s != nil {
+		miu.SetSku(*s)
+	}
+	return miu
+}
+
+// ClearSku clears the value of the "sku" field.
+func (miu *MenuItemUpdate) ClearSku() *MenuItemUpdate {
+	miu.mutation.ClearSku()
+	return miu
+}
+
+// SetIsFeatured sets the "is_featured" field.
+func (miu *MenuItemUpdate) SetIsFeatured(b bool) *MenuItemUpdate {
+	miu.mutation.SetIsFeatured(b)
+	return miu
+}
+
+// SetNillableIsFeatured sets the "is_featured" field if the given value is not nil.
+func (miu *MenuItemUpdate) SetNillableIsFeatured(b *bool) *MenuItemUpdate {
+	if b != nil {
+		miu.SetIsFeatured(*b)
+	}
+	return miu
+}
+
+// ClearIsFeatured clears the value of the "is_featured" field.
+func (miu *MenuItemUpdate) ClearIsFeatured() *MenuItemUpdate {
+	miu.mutation.ClearIsFeatured()
+	return miu
+}
+
+// SetIsNew sets the "is_new" field.
+func (miu *MenuItemUpdate) SetIsNew(b bool) *MenuItemUpdate {
+	miu.mutation.SetIsNew(b)
+	return miu
+}
+
+// SetNillableIsNew sets the "is_new" field if the given value is not nil.
+func (miu *MenuItemUpdate) SetNillableIsNew(b *bool) *MenuItemUpdate {
+	if b != nil {
+		miu.SetIsNew(*b)
+	}
+	return miu
+}
+
+// ClearIsNew clears the value of the "is_new" field.
+func (miu *MenuItemUpdate) ClearIsNew() *MenuItemUpdate {
+	miu.mutation.ClearIsNew()
+	return miu
+}
+
+// SetIsSeasonal sets the "is_seasonal" field.
+func (miu *MenuItemUpdate) SetIsSeasonal(b bool) *MenuItemUpdate {
+	miu.mutation.SetIsSeasonal(b)
+	return miu
+}
+
+// SetNillableIsSeasonal sets the "is_seasonal" field if the given value is not nil.
+func (miu *MenuItemUpdate) SetNillableIsSeasonal(b *bool) *MenuItemUpdate {
+	if b != nil {
+		miu.SetIsSeasonal(*b)
+	}
+	return miu
+}
+
+// ClearIsSeasonal clears the value of the "is_seasonal" field.
+func (miu *MenuItemUpdate) ClearIsSeasonal() *MenuItemUpdate {
+	miu.mutation.ClearIsSeasonal()
+	return miu
+}
+
+// SetSeason sets the "season" field.
+func (miu *MenuItemUpdate) SetSeason(s string) *MenuItemUpdate {
+	miu.mutation.SetSeason(s)
+	return miu
+}
+
+// SetNillableSeason sets the "season" field if the given value is not nil.
+func (miu *MenuItemUpdate) SetNillableSeason(s *string) *MenuItemUpdate {
+	if s != nil {
+		miu.SetSeason(*s)
+	}
+	return miu
+}
+
+// ClearSeason clears the value of the "season" field.
+func (miu *MenuItemUpdate) ClearSeason() *MenuItemUpdate {
+	miu.mutation.ClearSeason()
+	return miu
+}
+
+// SetDiscountPercentage sets the "discount_percentage" field.
+func (miu *MenuItemUpdate) SetDiscountPercentage(i int) *MenuItemUpdate {
+	miu.mutation.ResetDiscountPercentage()
+	miu.mutation.SetDiscountPercentage(i)
+	return miu
+}
+
+// SetNillableDiscountPercentage sets the "discount_percentage" field if the given value is not nil.
+func (miu *MenuItemUpdate) SetNillableDiscountPercentage(i *int) *MenuItemUpdate {
+	if i != nil {
+		miu.SetDiscountPercentage(*i)
+	}
+	return miu
+}
+
+// AddDiscountPercentage adds i to the "discount_percentage" field.
+func (miu *MenuItemUpdate) AddDiscountPercentage(i int) *MenuItemUpdate {
+	miu.mutation.AddDiscountPercentage(i)
+	return miu
+}
+
+// ClearDiscountPercentage clears the value of the "discount_percentage" field.
+func (miu *MenuItemUpdate) ClearDiscountPercentage() *MenuItemUpdate {
+	miu.mutation.ClearDiscountPercentage()
+	return miu
+}
+
+// SetPromotionDescription sets the "promotion_description" field.
+func (miu *MenuItemUpdate) SetPromotionDescription(s string) *MenuItemUpdate {
+	miu.mutation.SetPromotionDescription(s)
+	return miu
+}
+
+// SetNillablePromotionDescription sets the "promotion_description" field if the given value is not nil.
+func (miu *MenuItemUpdate) SetNillablePromotionDescription(s *string) *MenuItemUpdate {
+	if s != nil {
+		miu.SetPromotionDescription(*s)
+	}
+	return miu
+}
+
+// ClearPromotionDescription clears the value of the "promotion_description" field.
+func (miu *MenuItemUpdate) ClearPromotionDescription() *MenuItemUpdate {
+	miu.mutation.ClearPromotionDescription()
+	return miu
+}
+
+// SetPromotionStart sets the "promotion_start" field.
+func (miu *MenuItemUpdate) SetPromotionStart(t time.Time) *MenuItemUpdate {
+	miu.mutation.SetPromotionStart(t)
+	return miu
+}
+
+// SetNillablePromotionStart sets the "promotion_start" field if the given value is not nil.
+func (miu *MenuItemUpdate) SetNillablePromotionStart(t *time.Time) *MenuItemUpdate {
+	if t != nil {
+		miu.SetPromotionStart(*t)
+	}
+	return miu
+}
+
+// ClearPromotionStart clears the value of the "promotion_start" field.
+func (miu *MenuItemUpdate) ClearPromotionStart() *MenuItemUpdate {
+	miu.mutation.ClearPromotionStart()
+	return miu
+}
+
+// SetPromotionEnd sets the "promotion_end" field.
+func (miu *MenuItemUpdate) SetPromotionEnd(t time.Time) *MenuItemUpdate {
+	miu.mutation.SetPromotionEnd(t)
+	return miu
+}
+
+// SetNillablePromotionEnd sets the "promotion_end" field if the given value is not nil.
+func (miu *MenuItemUpdate) SetNillablePromotionEnd(t *time.Time) *MenuItemUpdate {
+	if t != nil {
+		miu.SetPromotionEnd(*t)
+	}
+	return miu
+}
+
+// ClearPromotionEnd clears the value of the "promotion_end" field.
+func (miu *MenuItemUpdate) ClearPromotionEnd() *MenuItemUpdate {
+	miu.mutation.ClearPromotionEnd()
+	return miu
+}
+
+// SetTags sets the "tags" field.
+func (miu *MenuItemUpdate) SetTags(s []string) *MenuItemUpdate {
+	miu.mutation.SetTags(s)
+	return miu
+}
+
+// AppendTags appends s to the "tags" field.
+func (miu *MenuItemUpdate) AppendTags(s []string) *MenuItemUpdate {
+	miu.mutation.AppendTags(s)
+	return miu
+}
+
+// ClearTags clears the value of the "tags" field.
+func (miu *MenuItemUpdate) ClearTags() *MenuItemUpdate {
+	miu.mutation.ClearTags()
+	return miu
+}
+
+// SetRelatedItems sets the "related_items" field.
+func (miu *MenuItemUpdate) SetRelatedItems(s []string) *MenuItemUpdate {
+	miu.mutation.SetRelatedItems(s)
+	return miu
+}
+
+// AppendRelatedItems appends s to the "related_items" field.
+func (miu *MenuItemUpdate) AppendRelatedItems(s []string) *MenuItemUpdate {
+	miu.mutation.AppendRelatedItems(s)
+	return miu
+}
+
+// ClearRelatedItems clears the value of the "related_items" field.
+func (miu *MenuItemUpdate) ClearRelatedItems() *MenuItemUpdate {
+	miu.mutation.ClearRelatedItems()
 	return miu
 }
 
@@ -349,7 +946,45 @@ func (miu *MenuItemUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (miu *MenuItemUpdate) check() error {
+	if v, ok := miu.mutation.GetType(); ok {
+		if err := menuitem.TypeValidator(v); err != nil {
+			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "MenuItem.type": %w`, err)}
+		}
+	}
+	if v, ok := miu.mutation.Status(); ok {
+		if err := menuitem.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "MenuItem.status": %w`, err)}
+		}
+	}
+	if v, ok := miu.mutation.DrinkType(); ok {
+		if err := menuitem.DrinkTypeValidator(v); err != nil {
+			return &ValidationError{Name: "DrinkType", err: fmt.Errorf(`ent: validator failed for field "MenuItem.DrinkType": %w`, err)}
+		}
+	}
+	if v, ok := miu.mutation.DietaryType(); ok {
+		if err := menuitem.DietaryTypeValidator(v); err != nil {
+			return &ValidationError{Name: "DietaryType", err: fmt.Errorf(`ent: validator failed for field "MenuItem.DietaryType": %w`, err)}
+		}
+	}
+	if v, ok := miu.mutation.MenuItemType(); ok {
+		if err := menuitem.MenuItemTypeValidator(v); err != nil {
+			return &ValidationError{Name: "MenuItemType", err: fmt.Errorf(`ent: validator failed for field "MenuItem.MenuItemType": %w`, err)}
+		}
+	}
+	if v, ok := miu.mutation.SpicinessLevel(); ok {
+		if err := menuitem.SpicinessLevelValidator(v); err != nil {
+			return &ValidationError{Name: "spiciness_level", err: fmt.Errorf(`ent: validator failed for field "MenuItem.spiciness_level": %w`, err)}
+		}
+	}
+	return nil
+}
+
 func (miu *MenuItemUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := miu.check(); err != nil {
+		return n, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(menuitem.Table, menuitem.Columns, sqlgraph.NewFieldSpec(menuitem.FieldID, field.TypeString))
 	if ps := miu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -408,8 +1043,209 @@ func (miu *MenuItemUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if miu.mutation.DeletedAtCleared() {
 		_spec.ClearField(menuitem.FieldDeletedAt, field.TypeString)
 	}
+	if value, ok := miu.mutation.GetType(); ok {
+		_spec.SetField(menuitem.FieldType, field.TypeEnum, value)
+	}
+	if miu.mutation.TypeCleared() {
+		_spec.ClearField(menuitem.FieldType, field.TypeEnum)
+	}
+	if value, ok := miu.mutation.Status(); ok {
+		_spec.SetField(menuitem.FieldStatus, field.TypeEnum, value)
+	}
+	if miu.mutation.StatusCleared() {
+		_spec.ClearField(menuitem.FieldStatus, field.TypeEnum)
+	}
+	if value, ok := miu.mutation.DrinkType(); ok {
+		_spec.SetField(menuitem.FieldDrinkType, field.TypeEnum, value)
+	}
+	if miu.mutation.DrinkTypeCleared() {
+		_spec.ClearField(menuitem.FieldDrinkType, field.TypeEnum)
+	}
+	if value, ok := miu.mutation.DietaryType(); ok {
+		_spec.SetField(menuitem.FieldDietaryType, field.TypeEnum, value)
+	}
+	if miu.mutation.DietaryTypeCleared() {
+		_spec.ClearField(menuitem.FieldDietaryType, field.TypeEnum)
+	}
+	if value, ok := miu.mutation.MenuItemType(); ok {
+		_spec.SetField(menuitem.FieldMenuItemType, field.TypeEnum, value)
+	}
+	if miu.mutation.MenuItemTypeCleared() {
+		_spec.ClearField(menuitem.FieldMenuItemType, field.TypeEnum)
+	}
 	if value, ok := miu.mutation.IsDeleted(); ok {
 		_spec.SetField(menuitem.FieldIsDeleted, field.TypeBool, value)
+	}
+	if value, ok := miu.mutation.Calories(); ok {
+		_spec.SetField(menuitem.FieldCalories, field.TypeInt, value)
+	}
+	if value, ok := miu.mutation.AddedCalories(); ok {
+		_spec.AddField(menuitem.FieldCalories, field.TypeInt, value)
+	}
+	if miu.mutation.CaloriesCleared() {
+		_spec.ClearField(menuitem.FieldCalories, field.TypeInt)
+	}
+	if value, ok := miu.mutation.ServeSize(); ok {
+		_spec.SetField(menuitem.FieldServeSize, field.TypeInt, value)
+	}
+	if value, ok := miu.mutation.AddedServeSize(); ok {
+		_spec.AddField(menuitem.FieldServeSize, field.TypeInt, value)
+	}
+	if miu.mutation.ServeSizeCleared() {
+		_spec.ClearField(menuitem.FieldServeSize, field.TypeInt)
+	}
+	if value, ok := miu.mutation.AvailableFrom(); ok {
+		_spec.SetField(menuitem.FieldAvailableFrom, field.TypeTime, value)
+	}
+	if miu.mutation.AvailableFromCleared() {
+		_spec.ClearField(menuitem.FieldAvailableFrom, field.TypeTime)
+	}
+	if value, ok := miu.mutation.AvailableUntil(); ok {
+		_spec.SetField(menuitem.FieldAvailableUntil, field.TypeTime, value)
+	}
+	if miu.mutation.AvailableUntilCleared() {
+		_spec.ClearField(menuitem.FieldAvailableUntil, field.TypeTime)
+	}
+	if value, ok := miu.mutation.ImageURL(); ok {
+		_spec.SetField(menuitem.FieldImageURL, field.TypeString, value)
+	}
+	if miu.mutation.ImageURLCleared() {
+		_spec.ClearField(menuitem.FieldImageURL, field.TypeString)
+	}
+	if value, ok := miu.mutation.SpicinessLevel(); ok {
+		_spec.SetField(menuitem.FieldSpicinessLevel, field.TypeEnum, value)
+	}
+	if miu.mutation.SpicinessLevelCleared() {
+		_spec.ClearField(menuitem.FieldSpicinessLevel, field.TypeEnum)
+	}
+	if value, ok := miu.mutation.Allergens(); ok {
+		_spec.SetField(menuitem.FieldAllergens, field.TypeJSON, value)
+	}
+	if value, ok := miu.mutation.AppendedAllergens(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, menuitem.FieldAllergens, value)
+		})
+	}
+	if miu.mutation.AllergensCleared() {
+		_spec.ClearField(menuitem.FieldAllergens, field.TypeJSON)
+	}
+	if value, ok := miu.mutation.ChefSpecialNote(); ok {
+		_spec.SetField(menuitem.FieldChefSpecialNote, field.TypeString, value)
+	}
+	if miu.mutation.ChefSpecialNoteCleared() {
+		_spec.ClearField(menuitem.FieldChefSpecialNote, field.TypeString)
+	}
+	if value, ok := miu.mutation.Rating(); ok {
+		_spec.SetField(menuitem.FieldRating, field.TypeInt, value)
+	}
+	if value, ok := miu.mutation.AddedRating(); ok {
+		_spec.AddField(menuitem.FieldRating, field.TypeInt, value)
+	}
+	if miu.mutation.RatingCleared() {
+		_spec.ClearField(menuitem.FieldRating, field.TypeInt)
+	}
+	if value, ok := miu.mutation.ReviewCount(); ok {
+		_spec.SetField(menuitem.FieldReviewCount, field.TypeInt, value)
+	}
+	if value, ok := miu.mutation.AddedReviewCount(); ok {
+		_spec.AddField(menuitem.FieldReviewCount, field.TypeInt, value)
+	}
+	if miu.mutation.ReviewCountCleared() {
+		_spec.ClearField(menuitem.FieldReviewCount, field.TypeInt)
+	}
+	if value, ok := miu.mutation.Category(); ok {
+		_spec.SetField(menuitem.FieldCategory, field.TypeString, value)
+	}
+	if miu.mutation.CategoryCleared() {
+		_spec.ClearField(menuitem.FieldCategory, field.TypeString)
+	}
+	if value, ok := miu.mutation.OrderCount(); ok {
+		_spec.SetField(menuitem.FieldOrderCount, field.TypeInt, value)
+	}
+	if value, ok := miu.mutation.AddedOrderCount(); ok {
+		_spec.AddField(menuitem.FieldOrderCount, field.TypeInt, value)
+	}
+	if miu.mutation.OrderCountCleared() {
+		_spec.ClearField(menuitem.FieldOrderCount, field.TypeInt)
+	}
+	if value, ok := miu.mutation.Sku(); ok {
+		_spec.SetField(menuitem.FieldSku, field.TypeString, value)
+	}
+	if miu.mutation.SkuCleared() {
+		_spec.ClearField(menuitem.FieldSku, field.TypeString)
+	}
+	if value, ok := miu.mutation.IsFeatured(); ok {
+		_spec.SetField(menuitem.FieldIsFeatured, field.TypeBool, value)
+	}
+	if miu.mutation.IsFeaturedCleared() {
+		_spec.ClearField(menuitem.FieldIsFeatured, field.TypeBool)
+	}
+	if value, ok := miu.mutation.IsNew(); ok {
+		_spec.SetField(menuitem.FieldIsNew, field.TypeBool, value)
+	}
+	if miu.mutation.IsNewCleared() {
+		_spec.ClearField(menuitem.FieldIsNew, field.TypeBool)
+	}
+	if value, ok := miu.mutation.IsSeasonal(); ok {
+		_spec.SetField(menuitem.FieldIsSeasonal, field.TypeBool, value)
+	}
+	if miu.mutation.IsSeasonalCleared() {
+		_spec.ClearField(menuitem.FieldIsSeasonal, field.TypeBool)
+	}
+	if value, ok := miu.mutation.Season(); ok {
+		_spec.SetField(menuitem.FieldSeason, field.TypeString, value)
+	}
+	if miu.mutation.SeasonCleared() {
+		_spec.ClearField(menuitem.FieldSeason, field.TypeString)
+	}
+	if value, ok := miu.mutation.DiscountPercentage(); ok {
+		_spec.SetField(menuitem.FieldDiscountPercentage, field.TypeInt, value)
+	}
+	if value, ok := miu.mutation.AddedDiscountPercentage(); ok {
+		_spec.AddField(menuitem.FieldDiscountPercentage, field.TypeInt, value)
+	}
+	if miu.mutation.DiscountPercentageCleared() {
+		_spec.ClearField(menuitem.FieldDiscountPercentage, field.TypeInt)
+	}
+	if value, ok := miu.mutation.PromotionDescription(); ok {
+		_spec.SetField(menuitem.FieldPromotionDescription, field.TypeString, value)
+	}
+	if miu.mutation.PromotionDescriptionCleared() {
+		_spec.ClearField(menuitem.FieldPromotionDescription, field.TypeString)
+	}
+	if value, ok := miu.mutation.PromotionStart(); ok {
+		_spec.SetField(menuitem.FieldPromotionStart, field.TypeTime, value)
+	}
+	if miu.mutation.PromotionStartCleared() {
+		_spec.ClearField(menuitem.FieldPromotionStart, field.TypeTime)
+	}
+	if value, ok := miu.mutation.PromotionEnd(); ok {
+		_spec.SetField(menuitem.FieldPromotionEnd, field.TypeTime, value)
+	}
+	if miu.mutation.PromotionEndCleared() {
+		_spec.ClearField(menuitem.FieldPromotionEnd, field.TypeTime)
+	}
+	if value, ok := miu.mutation.Tags(); ok {
+		_spec.SetField(menuitem.FieldTags, field.TypeJSON, value)
+	}
+	if value, ok := miu.mutation.AppendedTags(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, menuitem.FieldTags, value)
+		})
+	}
+	if miu.mutation.TagsCleared() {
+		_spec.ClearField(menuitem.FieldTags, field.TypeJSON)
+	}
+	if value, ok := miu.mutation.RelatedItems(); ok {
+		_spec.SetField(menuitem.FieldRelatedItems, field.TypeJSON, value)
+	}
+	if value, ok := miu.mutation.AppendedRelatedItems(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, menuitem.FieldRelatedItems, value)
+		})
+	}
+	if miu.mutation.RelatedItemsCleared() {
+		_spec.ClearField(menuitem.FieldRelatedItems, field.TypeJSON)
 	}
 	if miu.mutation.MenuCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -733,6 +1569,106 @@ func (miuo *MenuItemUpdateOne) ClearDeletedAt() *MenuItemUpdateOne {
 	return miuo
 }
 
+// SetType sets the "type" field.
+func (miuo *MenuItemUpdateOne) SetType(m menuitem.Type) *MenuItemUpdateOne {
+	miuo.mutation.SetType(m)
+	return miuo
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (miuo *MenuItemUpdateOne) SetNillableType(m *menuitem.Type) *MenuItemUpdateOne {
+	if m != nil {
+		miuo.SetType(*m)
+	}
+	return miuo
+}
+
+// ClearType clears the value of the "type" field.
+func (miuo *MenuItemUpdateOne) ClearType() *MenuItemUpdateOne {
+	miuo.mutation.ClearType()
+	return miuo
+}
+
+// SetStatus sets the "status" field.
+func (miuo *MenuItemUpdateOne) SetStatus(m menuitem.Status) *MenuItemUpdateOne {
+	miuo.mutation.SetStatus(m)
+	return miuo
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (miuo *MenuItemUpdateOne) SetNillableStatus(m *menuitem.Status) *MenuItemUpdateOne {
+	if m != nil {
+		miuo.SetStatus(*m)
+	}
+	return miuo
+}
+
+// ClearStatus clears the value of the "status" field.
+func (miuo *MenuItemUpdateOne) ClearStatus() *MenuItemUpdateOne {
+	miuo.mutation.ClearStatus()
+	return miuo
+}
+
+// SetDrinkType sets the "DrinkType" field.
+func (miuo *MenuItemUpdateOne) SetDrinkType(mt menuitem.DrinkType) *MenuItemUpdateOne {
+	miuo.mutation.SetDrinkType(mt)
+	return miuo
+}
+
+// SetNillableDrinkType sets the "DrinkType" field if the given value is not nil.
+func (miuo *MenuItemUpdateOne) SetNillableDrinkType(mt *menuitem.DrinkType) *MenuItemUpdateOne {
+	if mt != nil {
+		miuo.SetDrinkType(*mt)
+	}
+	return miuo
+}
+
+// ClearDrinkType clears the value of the "DrinkType" field.
+func (miuo *MenuItemUpdateOne) ClearDrinkType() *MenuItemUpdateOne {
+	miuo.mutation.ClearDrinkType()
+	return miuo
+}
+
+// SetDietaryType sets the "DietaryType" field.
+func (miuo *MenuItemUpdateOne) SetDietaryType(mt menuitem.DietaryType) *MenuItemUpdateOne {
+	miuo.mutation.SetDietaryType(mt)
+	return miuo
+}
+
+// SetNillableDietaryType sets the "DietaryType" field if the given value is not nil.
+func (miuo *MenuItemUpdateOne) SetNillableDietaryType(mt *menuitem.DietaryType) *MenuItemUpdateOne {
+	if mt != nil {
+		miuo.SetDietaryType(*mt)
+	}
+	return miuo
+}
+
+// ClearDietaryType clears the value of the "DietaryType" field.
+func (miuo *MenuItemUpdateOne) ClearDietaryType() *MenuItemUpdateOne {
+	miuo.mutation.ClearDietaryType()
+	return miuo
+}
+
+// SetMenuItemType sets the "MenuItemType" field.
+func (miuo *MenuItemUpdateOne) SetMenuItemType(mit menuitem.MenuItemType) *MenuItemUpdateOne {
+	miuo.mutation.SetMenuItemType(mit)
+	return miuo
+}
+
+// SetNillableMenuItemType sets the "MenuItemType" field if the given value is not nil.
+func (miuo *MenuItemUpdateOne) SetNillableMenuItemType(mit *menuitem.MenuItemType) *MenuItemUpdateOne {
+	if mit != nil {
+		miuo.SetMenuItemType(*mit)
+	}
+	return miuo
+}
+
+// ClearMenuItemType clears the value of the "MenuItemType" field.
+func (miuo *MenuItemUpdateOne) ClearMenuItemType() *MenuItemUpdateOne {
+	miuo.mutation.ClearMenuItemType()
+	return miuo
+}
+
 // SetIsDeleted sets the "is_deleted" field.
 func (miuo *MenuItemUpdateOne) SetIsDeleted(b bool) *MenuItemUpdateOne {
 	miuo.mutation.SetIsDeleted(b)
@@ -744,6 +1680,502 @@ func (miuo *MenuItemUpdateOne) SetNillableIsDeleted(b *bool) *MenuItemUpdateOne 
 	if b != nil {
 		miuo.SetIsDeleted(*b)
 	}
+	return miuo
+}
+
+// SetCalories sets the "calories" field.
+func (miuo *MenuItemUpdateOne) SetCalories(i int) *MenuItemUpdateOne {
+	miuo.mutation.ResetCalories()
+	miuo.mutation.SetCalories(i)
+	return miuo
+}
+
+// SetNillableCalories sets the "calories" field if the given value is not nil.
+func (miuo *MenuItemUpdateOne) SetNillableCalories(i *int) *MenuItemUpdateOne {
+	if i != nil {
+		miuo.SetCalories(*i)
+	}
+	return miuo
+}
+
+// AddCalories adds i to the "calories" field.
+func (miuo *MenuItemUpdateOne) AddCalories(i int) *MenuItemUpdateOne {
+	miuo.mutation.AddCalories(i)
+	return miuo
+}
+
+// ClearCalories clears the value of the "calories" field.
+func (miuo *MenuItemUpdateOne) ClearCalories() *MenuItemUpdateOne {
+	miuo.mutation.ClearCalories()
+	return miuo
+}
+
+// SetServeSize sets the "serve_size" field.
+func (miuo *MenuItemUpdateOne) SetServeSize(i int) *MenuItemUpdateOne {
+	miuo.mutation.ResetServeSize()
+	miuo.mutation.SetServeSize(i)
+	return miuo
+}
+
+// SetNillableServeSize sets the "serve_size" field if the given value is not nil.
+func (miuo *MenuItemUpdateOne) SetNillableServeSize(i *int) *MenuItemUpdateOne {
+	if i != nil {
+		miuo.SetServeSize(*i)
+	}
+	return miuo
+}
+
+// AddServeSize adds i to the "serve_size" field.
+func (miuo *MenuItemUpdateOne) AddServeSize(i int) *MenuItemUpdateOne {
+	miuo.mutation.AddServeSize(i)
+	return miuo
+}
+
+// ClearServeSize clears the value of the "serve_size" field.
+func (miuo *MenuItemUpdateOne) ClearServeSize() *MenuItemUpdateOne {
+	miuo.mutation.ClearServeSize()
+	return miuo
+}
+
+// SetAvailableFrom sets the "available_from" field.
+func (miuo *MenuItemUpdateOne) SetAvailableFrom(t time.Time) *MenuItemUpdateOne {
+	miuo.mutation.SetAvailableFrom(t)
+	return miuo
+}
+
+// SetNillableAvailableFrom sets the "available_from" field if the given value is not nil.
+func (miuo *MenuItemUpdateOne) SetNillableAvailableFrom(t *time.Time) *MenuItemUpdateOne {
+	if t != nil {
+		miuo.SetAvailableFrom(*t)
+	}
+	return miuo
+}
+
+// ClearAvailableFrom clears the value of the "available_from" field.
+func (miuo *MenuItemUpdateOne) ClearAvailableFrom() *MenuItemUpdateOne {
+	miuo.mutation.ClearAvailableFrom()
+	return miuo
+}
+
+// SetAvailableUntil sets the "available_until" field.
+func (miuo *MenuItemUpdateOne) SetAvailableUntil(t time.Time) *MenuItemUpdateOne {
+	miuo.mutation.SetAvailableUntil(t)
+	return miuo
+}
+
+// SetNillableAvailableUntil sets the "available_until" field if the given value is not nil.
+func (miuo *MenuItemUpdateOne) SetNillableAvailableUntil(t *time.Time) *MenuItemUpdateOne {
+	if t != nil {
+		miuo.SetAvailableUntil(*t)
+	}
+	return miuo
+}
+
+// ClearAvailableUntil clears the value of the "available_until" field.
+func (miuo *MenuItemUpdateOne) ClearAvailableUntil() *MenuItemUpdateOne {
+	miuo.mutation.ClearAvailableUntil()
+	return miuo
+}
+
+// SetImageURL sets the "image_url" field.
+func (miuo *MenuItemUpdateOne) SetImageURL(s string) *MenuItemUpdateOne {
+	miuo.mutation.SetImageURL(s)
+	return miuo
+}
+
+// SetNillableImageURL sets the "image_url" field if the given value is not nil.
+func (miuo *MenuItemUpdateOne) SetNillableImageURL(s *string) *MenuItemUpdateOne {
+	if s != nil {
+		miuo.SetImageURL(*s)
+	}
+	return miuo
+}
+
+// ClearImageURL clears the value of the "image_url" field.
+func (miuo *MenuItemUpdateOne) ClearImageURL() *MenuItemUpdateOne {
+	miuo.mutation.ClearImageURL()
+	return miuo
+}
+
+// SetSpicinessLevel sets the "spiciness_level" field.
+func (miuo *MenuItemUpdateOne) SetSpicinessLevel(ml menuitem.SpicinessLevel) *MenuItemUpdateOne {
+	miuo.mutation.SetSpicinessLevel(ml)
+	return miuo
+}
+
+// SetNillableSpicinessLevel sets the "spiciness_level" field if the given value is not nil.
+func (miuo *MenuItemUpdateOne) SetNillableSpicinessLevel(ml *menuitem.SpicinessLevel) *MenuItemUpdateOne {
+	if ml != nil {
+		miuo.SetSpicinessLevel(*ml)
+	}
+	return miuo
+}
+
+// ClearSpicinessLevel clears the value of the "spiciness_level" field.
+func (miuo *MenuItemUpdateOne) ClearSpicinessLevel() *MenuItemUpdateOne {
+	miuo.mutation.ClearSpicinessLevel()
+	return miuo
+}
+
+// SetAllergens sets the "allergens" field.
+func (miuo *MenuItemUpdateOne) SetAllergens(s []string) *MenuItemUpdateOne {
+	miuo.mutation.SetAllergens(s)
+	return miuo
+}
+
+// AppendAllergens appends s to the "allergens" field.
+func (miuo *MenuItemUpdateOne) AppendAllergens(s []string) *MenuItemUpdateOne {
+	miuo.mutation.AppendAllergens(s)
+	return miuo
+}
+
+// ClearAllergens clears the value of the "allergens" field.
+func (miuo *MenuItemUpdateOne) ClearAllergens() *MenuItemUpdateOne {
+	miuo.mutation.ClearAllergens()
+	return miuo
+}
+
+// SetChefSpecialNote sets the "chef_special_note" field.
+func (miuo *MenuItemUpdateOne) SetChefSpecialNote(s string) *MenuItemUpdateOne {
+	miuo.mutation.SetChefSpecialNote(s)
+	return miuo
+}
+
+// SetNillableChefSpecialNote sets the "chef_special_note" field if the given value is not nil.
+func (miuo *MenuItemUpdateOne) SetNillableChefSpecialNote(s *string) *MenuItemUpdateOne {
+	if s != nil {
+		miuo.SetChefSpecialNote(*s)
+	}
+	return miuo
+}
+
+// ClearChefSpecialNote clears the value of the "chef_special_note" field.
+func (miuo *MenuItemUpdateOne) ClearChefSpecialNote() *MenuItemUpdateOne {
+	miuo.mutation.ClearChefSpecialNote()
+	return miuo
+}
+
+// SetRating sets the "rating" field.
+func (miuo *MenuItemUpdateOne) SetRating(i int) *MenuItemUpdateOne {
+	miuo.mutation.ResetRating()
+	miuo.mutation.SetRating(i)
+	return miuo
+}
+
+// SetNillableRating sets the "rating" field if the given value is not nil.
+func (miuo *MenuItemUpdateOne) SetNillableRating(i *int) *MenuItemUpdateOne {
+	if i != nil {
+		miuo.SetRating(*i)
+	}
+	return miuo
+}
+
+// AddRating adds i to the "rating" field.
+func (miuo *MenuItemUpdateOne) AddRating(i int) *MenuItemUpdateOne {
+	miuo.mutation.AddRating(i)
+	return miuo
+}
+
+// ClearRating clears the value of the "rating" field.
+func (miuo *MenuItemUpdateOne) ClearRating() *MenuItemUpdateOne {
+	miuo.mutation.ClearRating()
+	return miuo
+}
+
+// SetReviewCount sets the "review_count" field.
+func (miuo *MenuItemUpdateOne) SetReviewCount(i int) *MenuItemUpdateOne {
+	miuo.mutation.ResetReviewCount()
+	miuo.mutation.SetReviewCount(i)
+	return miuo
+}
+
+// SetNillableReviewCount sets the "review_count" field if the given value is not nil.
+func (miuo *MenuItemUpdateOne) SetNillableReviewCount(i *int) *MenuItemUpdateOne {
+	if i != nil {
+		miuo.SetReviewCount(*i)
+	}
+	return miuo
+}
+
+// AddReviewCount adds i to the "review_count" field.
+func (miuo *MenuItemUpdateOne) AddReviewCount(i int) *MenuItemUpdateOne {
+	miuo.mutation.AddReviewCount(i)
+	return miuo
+}
+
+// ClearReviewCount clears the value of the "review_count" field.
+func (miuo *MenuItemUpdateOne) ClearReviewCount() *MenuItemUpdateOne {
+	miuo.mutation.ClearReviewCount()
+	return miuo
+}
+
+// SetCategory sets the "category" field.
+func (miuo *MenuItemUpdateOne) SetCategory(s string) *MenuItemUpdateOne {
+	miuo.mutation.SetCategory(s)
+	return miuo
+}
+
+// SetNillableCategory sets the "category" field if the given value is not nil.
+func (miuo *MenuItemUpdateOne) SetNillableCategory(s *string) *MenuItemUpdateOne {
+	if s != nil {
+		miuo.SetCategory(*s)
+	}
+	return miuo
+}
+
+// ClearCategory clears the value of the "category" field.
+func (miuo *MenuItemUpdateOne) ClearCategory() *MenuItemUpdateOne {
+	miuo.mutation.ClearCategory()
+	return miuo
+}
+
+// SetOrderCount sets the "order_count" field.
+func (miuo *MenuItemUpdateOne) SetOrderCount(i int) *MenuItemUpdateOne {
+	miuo.mutation.ResetOrderCount()
+	miuo.mutation.SetOrderCount(i)
+	return miuo
+}
+
+// SetNillableOrderCount sets the "order_count" field if the given value is not nil.
+func (miuo *MenuItemUpdateOne) SetNillableOrderCount(i *int) *MenuItemUpdateOne {
+	if i != nil {
+		miuo.SetOrderCount(*i)
+	}
+	return miuo
+}
+
+// AddOrderCount adds i to the "order_count" field.
+func (miuo *MenuItemUpdateOne) AddOrderCount(i int) *MenuItemUpdateOne {
+	miuo.mutation.AddOrderCount(i)
+	return miuo
+}
+
+// ClearOrderCount clears the value of the "order_count" field.
+func (miuo *MenuItemUpdateOne) ClearOrderCount() *MenuItemUpdateOne {
+	miuo.mutation.ClearOrderCount()
+	return miuo
+}
+
+// SetSku sets the "sku" field.
+func (miuo *MenuItemUpdateOne) SetSku(s string) *MenuItemUpdateOne {
+	miuo.mutation.SetSku(s)
+	return miuo
+}
+
+// SetNillableSku sets the "sku" field if the given value is not nil.
+func (miuo *MenuItemUpdateOne) SetNillableSku(s *string) *MenuItemUpdateOne {
+	if s != nil {
+		miuo.SetSku(*s)
+	}
+	return miuo
+}
+
+// ClearSku clears the value of the "sku" field.
+func (miuo *MenuItemUpdateOne) ClearSku() *MenuItemUpdateOne {
+	miuo.mutation.ClearSku()
+	return miuo
+}
+
+// SetIsFeatured sets the "is_featured" field.
+func (miuo *MenuItemUpdateOne) SetIsFeatured(b bool) *MenuItemUpdateOne {
+	miuo.mutation.SetIsFeatured(b)
+	return miuo
+}
+
+// SetNillableIsFeatured sets the "is_featured" field if the given value is not nil.
+func (miuo *MenuItemUpdateOne) SetNillableIsFeatured(b *bool) *MenuItemUpdateOne {
+	if b != nil {
+		miuo.SetIsFeatured(*b)
+	}
+	return miuo
+}
+
+// ClearIsFeatured clears the value of the "is_featured" field.
+func (miuo *MenuItemUpdateOne) ClearIsFeatured() *MenuItemUpdateOne {
+	miuo.mutation.ClearIsFeatured()
+	return miuo
+}
+
+// SetIsNew sets the "is_new" field.
+func (miuo *MenuItemUpdateOne) SetIsNew(b bool) *MenuItemUpdateOne {
+	miuo.mutation.SetIsNew(b)
+	return miuo
+}
+
+// SetNillableIsNew sets the "is_new" field if the given value is not nil.
+func (miuo *MenuItemUpdateOne) SetNillableIsNew(b *bool) *MenuItemUpdateOne {
+	if b != nil {
+		miuo.SetIsNew(*b)
+	}
+	return miuo
+}
+
+// ClearIsNew clears the value of the "is_new" field.
+func (miuo *MenuItemUpdateOne) ClearIsNew() *MenuItemUpdateOne {
+	miuo.mutation.ClearIsNew()
+	return miuo
+}
+
+// SetIsSeasonal sets the "is_seasonal" field.
+func (miuo *MenuItemUpdateOne) SetIsSeasonal(b bool) *MenuItemUpdateOne {
+	miuo.mutation.SetIsSeasonal(b)
+	return miuo
+}
+
+// SetNillableIsSeasonal sets the "is_seasonal" field if the given value is not nil.
+func (miuo *MenuItemUpdateOne) SetNillableIsSeasonal(b *bool) *MenuItemUpdateOne {
+	if b != nil {
+		miuo.SetIsSeasonal(*b)
+	}
+	return miuo
+}
+
+// ClearIsSeasonal clears the value of the "is_seasonal" field.
+func (miuo *MenuItemUpdateOne) ClearIsSeasonal() *MenuItemUpdateOne {
+	miuo.mutation.ClearIsSeasonal()
+	return miuo
+}
+
+// SetSeason sets the "season" field.
+func (miuo *MenuItemUpdateOne) SetSeason(s string) *MenuItemUpdateOne {
+	miuo.mutation.SetSeason(s)
+	return miuo
+}
+
+// SetNillableSeason sets the "season" field if the given value is not nil.
+func (miuo *MenuItemUpdateOne) SetNillableSeason(s *string) *MenuItemUpdateOne {
+	if s != nil {
+		miuo.SetSeason(*s)
+	}
+	return miuo
+}
+
+// ClearSeason clears the value of the "season" field.
+func (miuo *MenuItemUpdateOne) ClearSeason() *MenuItemUpdateOne {
+	miuo.mutation.ClearSeason()
+	return miuo
+}
+
+// SetDiscountPercentage sets the "discount_percentage" field.
+func (miuo *MenuItemUpdateOne) SetDiscountPercentage(i int) *MenuItemUpdateOne {
+	miuo.mutation.ResetDiscountPercentage()
+	miuo.mutation.SetDiscountPercentage(i)
+	return miuo
+}
+
+// SetNillableDiscountPercentage sets the "discount_percentage" field if the given value is not nil.
+func (miuo *MenuItemUpdateOne) SetNillableDiscountPercentage(i *int) *MenuItemUpdateOne {
+	if i != nil {
+		miuo.SetDiscountPercentage(*i)
+	}
+	return miuo
+}
+
+// AddDiscountPercentage adds i to the "discount_percentage" field.
+func (miuo *MenuItemUpdateOne) AddDiscountPercentage(i int) *MenuItemUpdateOne {
+	miuo.mutation.AddDiscountPercentage(i)
+	return miuo
+}
+
+// ClearDiscountPercentage clears the value of the "discount_percentage" field.
+func (miuo *MenuItemUpdateOne) ClearDiscountPercentage() *MenuItemUpdateOne {
+	miuo.mutation.ClearDiscountPercentage()
+	return miuo
+}
+
+// SetPromotionDescription sets the "promotion_description" field.
+func (miuo *MenuItemUpdateOne) SetPromotionDescription(s string) *MenuItemUpdateOne {
+	miuo.mutation.SetPromotionDescription(s)
+	return miuo
+}
+
+// SetNillablePromotionDescription sets the "promotion_description" field if the given value is not nil.
+func (miuo *MenuItemUpdateOne) SetNillablePromotionDescription(s *string) *MenuItemUpdateOne {
+	if s != nil {
+		miuo.SetPromotionDescription(*s)
+	}
+	return miuo
+}
+
+// ClearPromotionDescription clears the value of the "promotion_description" field.
+func (miuo *MenuItemUpdateOne) ClearPromotionDescription() *MenuItemUpdateOne {
+	miuo.mutation.ClearPromotionDescription()
+	return miuo
+}
+
+// SetPromotionStart sets the "promotion_start" field.
+func (miuo *MenuItemUpdateOne) SetPromotionStart(t time.Time) *MenuItemUpdateOne {
+	miuo.mutation.SetPromotionStart(t)
+	return miuo
+}
+
+// SetNillablePromotionStart sets the "promotion_start" field if the given value is not nil.
+func (miuo *MenuItemUpdateOne) SetNillablePromotionStart(t *time.Time) *MenuItemUpdateOne {
+	if t != nil {
+		miuo.SetPromotionStart(*t)
+	}
+	return miuo
+}
+
+// ClearPromotionStart clears the value of the "promotion_start" field.
+func (miuo *MenuItemUpdateOne) ClearPromotionStart() *MenuItemUpdateOne {
+	miuo.mutation.ClearPromotionStart()
+	return miuo
+}
+
+// SetPromotionEnd sets the "promotion_end" field.
+func (miuo *MenuItemUpdateOne) SetPromotionEnd(t time.Time) *MenuItemUpdateOne {
+	miuo.mutation.SetPromotionEnd(t)
+	return miuo
+}
+
+// SetNillablePromotionEnd sets the "promotion_end" field if the given value is not nil.
+func (miuo *MenuItemUpdateOne) SetNillablePromotionEnd(t *time.Time) *MenuItemUpdateOne {
+	if t != nil {
+		miuo.SetPromotionEnd(*t)
+	}
+	return miuo
+}
+
+// ClearPromotionEnd clears the value of the "promotion_end" field.
+func (miuo *MenuItemUpdateOne) ClearPromotionEnd() *MenuItemUpdateOne {
+	miuo.mutation.ClearPromotionEnd()
+	return miuo
+}
+
+// SetTags sets the "tags" field.
+func (miuo *MenuItemUpdateOne) SetTags(s []string) *MenuItemUpdateOne {
+	miuo.mutation.SetTags(s)
+	return miuo
+}
+
+// AppendTags appends s to the "tags" field.
+func (miuo *MenuItemUpdateOne) AppendTags(s []string) *MenuItemUpdateOne {
+	miuo.mutation.AppendTags(s)
+	return miuo
+}
+
+// ClearTags clears the value of the "tags" field.
+func (miuo *MenuItemUpdateOne) ClearTags() *MenuItemUpdateOne {
+	miuo.mutation.ClearTags()
+	return miuo
+}
+
+// SetRelatedItems sets the "related_items" field.
+func (miuo *MenuItemUpdateOne) SetRelatedItems(s []string) *MenuItemUpdateOne {
+	miuo.mutation.SetRelatedItems(s)
+	return miuo
+}
+
+// AppendRelatedItems appends s to the "related_items" field.
+func (miuo *MenuItemUpdateOne) AppendRelatedItems(s []string) *MenuItemUpdateOne {
+	miuo.mutation.AppendRelatedItems(s)
+	return miuo
+}
+
+// ClearRelatedItems clears the value of the "related_items" field.
+func (miuo *MenuItemUpdateOne) ClearRelatedItems() *MenuItemUpdateOne {
+	miuo.mutation.ClearRelatedItems()
 	return miuo
 }
 
@@ -925,7 +2357,45 @@ func (miuo *MenuItemUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (miuo *MenuItemUpdateOne) check() error {
+	if v, ok := miuo.mutation.GetType(); ok {
+		if err := menuitem.TypeValidator(v); err != nil {
+			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "MenuItem.type": %w`, err)}
+		}
+	}
+	if v, ok := miuo.mutation.Status(); ok {
+		if err := menuitem.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "MenuItem.status": %w`, err)}
+		}
+	}
+	if v, ok := miuo.mutation.DrinkType(); ok {
+		if err := menuitem.DrinkTypeValidator(v); err != nil {
+			return &ValidationError{Name: "DrinkType", err: fmt.Errorf(`ent: validator failed for field "MenuItem.DrinkType": %w`, err)}
+		}
+	}
+	if v, ok := miuo.mutation.DietaryType(); ok {
+		if err := menuitem.DietaryTypeValidator(v); err != nil {
+			return &ValidationError{Name: "DietaryType", err: fmt.Errorf(`ent: validator failed for field "MenuItem.DietaryType": %w`, err)}
+		}
+	}
+	if v, ok := miuo.mutation.MenuItemType(); ok {
+		if err := menuitem.MenuItemTypeValidator(v); err != nil {
+			return &ValidationError{Name: "MenuItemType", err: fmt.Errorf(`ent: validator failed for field "MenuItem.MenuItemType": %w`, err)}
+		}
+	}
+	if v, ok := miuo.mutation.SpicinessLevel(); ok {
+		if err := menuitem.SpicinessLevelValidator(v); err != nil {
+			return &ValidationError{Name: "spiciness_level", err: fmt.Errorf(`ent: validator failed for field "MenuItem.spiciness_level": %w`, err)}
+		}
+	}
+	return nil
+}
+
 func (miuo *MenuItemUpdateOne) sqlSave(ctx context.Context) (_node *MenuItem, err error) {
+	if err := miuo.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(menuitem.Table, menuitem.Columns, sqlgraph.NewFieldSpec(menuitem.FieldID, field.TypeString))
 	id, ok := miuo.mutation.ID()
 	if !ok {
@@ -1001,8 +2471,209 @@ func (miuo *MenuItemUpdateOne) sqlSave(ctx context.Context) (_node *MenuItem, er
 	if miuo.mutation.DeletedAtCleared() {
 		_spec.ClearField(menuitem.FieldDeletedAt, field.TypeString)
 	}
+	if value, ok := miuo.mutation.GetType(); ok {
+		_spec.SetField(menuitem.FieldType, field.TypeEnum, value)
+	}
+	if miuo.mutation.TypeCleared() {
+		_spec.ClearField(menuitem.FieldType, field.TypeEnum)
+	}
+	if value, ok := miuo.mutation.Status(); ok {
+		_spec.SetField(menuitem.FieldStatus, field.TypeEnum, value)
+	}
+	if miuo.mutation.StatusCleared() {
+		_spec.ClearField(menuitem.FieldStatus, field.TypeEnum)
+	}
+	if value, ok := miuo.mutation.DrinkType(); ok {
+		_spec.SetField(menuitem.FieldDrinkType, field.TypeEnum, value)
+	}
+	if miuo.mutation.DrinkTypeCleared() {
+		_spec.ClearField(menuitem.FieldDrinkType, field.TypeEnum)
+	}
+	if value, ok := miuo.mutation.DietaryType(); ok {
+		_spec.SetField(menuitem.FieldDietaryType, field.TypeEnum, value)
+	}
+	if miuo.mutation.DietaryTypeCleared() {
+		_spec.ClearField(menuitem.FieldDietaryType, field.TypeEnum)
+	}
+	if value, ok := miuo.mutation.MenuItemType(); ok {
+		_spec.SetField(menuitem.FieldMenuItemType, field.TypeEnum, value)
+	}
+	if miuo.mutation.MenuItemTypeCleared() {
+		_spec.ClearField(menuitem.FieldMenuItemType, field.TypeEnum)
+	}
 	if value, ok := miuo.mutation.IsDeleted(); ok {
 		_spec.SetField(menuitem.FieldIsDeleted, field.TypeBool, value)
+	}
+	if value, ok := miuo.mutation.Calories(); ok {
+		_spec.SetField(menuitem.FieldCalories, field.TypeInt, value)
+	}
+	if value, ok := miuo.mutation.AddedCalories(); ok {
+		_spec.AddField(menuitem.FieldCalories, field.TypeInt, value)
+	}
+	if miuo.mutation.CaloriesCleared() {
+		_spec.ClearField(menuitem.FieldCalories, field.TypeInt)
+	}
+	if value, ok := miuo.mutation.ServeSize(); ok {
+		_spec.SetField(menuitem.FieldServeSize, field.TypeInt, value)
+	}
+	if value, ok := miuo.mutation.AddedServeSize(); ok {
+		_spec.AddField(menuitem.FieldServeSize, field.TypeInt, value)
+	}
+	if miuo.mutation.ServeSizeCleared() {
+		_spec.ClearField(menuitem.FieldServeSize, field.TypeInt)
+	}
+	if value, ok := miuo.mutation.AvailableFrom(); ok {
+		_spec.SetField(menuitem.FieldAvailableFrom, field.TypeTime, value)
+	}
+	if miuo.mutation.AvailableFromCleared() {
+		_spec.ClearField(menuitem.FieldAvailableFrom, field.TypeTime)
+	}
+	if value, ok := miuo.mutation.AvailableUntil(); ok {
+		_spec.SetField(menuitem.FieldAvailableUntil, field.TypeTime, value)
+	}
+	if miuo.mutation.AvailableUntilCleared() {
+		_spec.ClearField(menuitem.FieldAvailableUntil, field.TypeTime)
+	}
+	if value, ok := miuo.mutation.ImageURL(); ok {
+		_spec.SetField(menuitem.FieldImageURL, field.TypeString, value)
+	}
+	if miuo.mutation.ImageURLCleared() {
+		_spec.ClearField(menuitem.FieldImageURL, field.TypeString)
+	}
+	if value, ok := miuo.mutation.SpicinessLevel(); ok {
+		_spec.SetField(menuitem.FieldSpicinessLevel, field.TypeEnum, value)
+	}
+	if miuo.mutation.SpicinessLevelCleared() {
+		_spec.ClearField(menuitem.FieldSpicinessLevel, field.TypeEnum)
+	}
+	if value, ok := miuo.mutation.Allergens(); ok {
+		_spec.SetField(menuitem.FieldAllergens, field.TypeJSON, value)
+	}
+	if value, ok := miuo.mutation.AppendedAllergens(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, menuitem.FieldAllergens, value)
+		})
+	}
+	if miuo.mutation.AllergensCleared() {
+		_spec.ClearField(menuitem.FieldAllergens, field.TypeJSON)
+	}
+	if value, ok := miuo.mutation.ChefSpecialNote(); ok {
+		_spec.SetField(menuitem.FieldChefSpecialNote, field.TypeString, value)
+	}
+	if miuo.mutation.ChefSpecialNoteCleared() {
+		_spec.ClearField(menuitem.FieldChefSpecialNote, field.TypeString)
+	}
+	if value, ok := miuo.mutation.Rating(); ok {
+		_spec.SetField(menuitem.FieldRating, field.TypeInt, value)
+	}
+	if value, ok := miuo.mutation.AddedRating(); ok {
+		_spec.AddField(menuitem.FieldRating, field.TypeInt, value)
+	}
+	if miuo.mutation.RatingCleared() {
+		_spec.ClearField(menuitem.FieldRating, field.TypeInt)
+	}
+	if value, ok := miuo.mutation.ReviewCount(); ok {
+		_spec.SetField(menuitem.FieldReviewCount, field.TypeInt, value)
+	}
+	if value, ok := miuo.mutation.AddedReviewCount(); ok {
+		_spec.AddField(menuitem.FieldReviewCount, field.TypeInt, value)
+	}
+	if miuo.mutation.ReviewCountCleared() {
+		_spec.ClearField(menuitem.FieldReviewCount, field.TypeInt)
+	}
+	if value, ok := miuo.mutation.Category(); ok {
+		_spec.SetField(menuitem.FieldCategory, field.TypeString, value)
+	}
+	if miuo.mutation.CategoryCleared() {
+		_spec.ClearField(menuitem.FieldCategory, field.TypeString)
+	}
+	if value, ok := miuo.mutation.OrderCount(); ok {
+		_spec.SetField(menuitem.FieldOrderCount, field.TypeInt, value)
+	}
+	if value, ok := miuo.mutation.AddedOrderCount(); ok {
+		_spec.AddField(menuitem.FieldOrderCount, field.TypeInt, value)
+	}
+	if miuo.mutation.OrderCountCleared() {
+		_spec.ClearField(menuitem.FieldOrderCount, field.TypeInt)
+	}
+	if value, ok := miuo.mutation.Sku(); ok {
+		_spec.SetField(menuitem.FieldSku, field.TypeString, value)
+	}
+	if miuo.mutation.SkuCleared() {
+		_spec.ClearField(menuitem.FieldSku, field.TypeString)
+	}
+	if value, ok := miuo.mutation.IsFeatured(); ok {
+		_spec.SetField(menuitem.FieldIsFeatured, field.TypeBool, value)
+	}
+	if miuo.mutation.IsFeaturedCleared() {
+		_spec.ClearField(menuitem.FieldIsFeatured, field.TypeBool)
+	}
+	if value, ok := miuo.mutation.IsNew(); ok {
+		_spec.SetField(menuitem.FieldIsNew, field.TypeBool, value)
+	}
+	if miuo.mutation.IsNewCleared() {
+		_spec.ClearField(menuitem.FieldIsNew, field.TypeBool)
+	}
+	if value, ok := miuo.mutation.IsSeasonal(); ok {
+		_spec.SetField(menuitem.FieldIsSeasonal, field.TypeBool, value)
+	}
+	if miuo.mutation.IsSeasonalCleared() {
+		_spec.ClearField(menuitem.FieldIsSeasonal, field.TypeBool)
+	}
+	if value, ok := miuo.mutation.Season(); ok {
+		_spec.SetField(menuitem.FieldSeason, field.TypeString, value)
+	}
+	if miuo.mutation.SeasonCleared() {
+		_spec.ClearField(menuitem.FieldSeason, field.TypeString)
+	}
+	if value, ok := miuo.mutation.DiscountPercentage(); ok {
+		_spec.SetField(menuitem.FieldDiscountPercentage, field.TypeInt, value)
+	}
+	if value, ok := miuo.mutation.AddedDiscountPercentage(); ok {
+		_spec.AddField(menuitem.FieldDiscountPercentage, field.TypeInt, value)
+	}
+	if miuo.mutation.DiscountPercentageCleared() {
+		_spec.ClearField(menuitem.FieldDiscountPercentage, field.TypeInt)
+	}
+	if value, ok := miuo.mutation.PromotionDescription(); ok {
+		_spec.SetField(menuitem.FieldPromotionDescription, field.TypeString, value)
+	}
+	if miuo.mutation.PromotionDescriptionCleared() {
+		_spec.ClearField(menuitem.FieldPromotionDescription, field.TypeString)
+	}
+	if value, ok := miuo.mutation.PromotionStart(); ok {
+		_spec.SetField(menuitem.FieldPromotionStart, field.TypeTime, value)
+	}
+	if miuo.mutation.PromotionStartCleared() {
+		_spec.ClearField(menuitem.FieldPromotionStart, field.TypeTime)
+	}
+	if value, ok := miuo.mutation.PromotionEnd(); ok {
+		_spec.SetField(menuitem.FieldPromotionEnd, field.TypeTime, value)
+	}
+	if miuo.mutation.PromotionEndCleared() {
+		_spec.ClearField(menuitem.FieldPromotionEnd, field.TypeTime)
+	}
+	if value, ok := miuo.mutation.Tags(); ok {
+		_spec.SetField(menuitem.FieldTags, field.TypeJSON, value)
+	}
+	if value, ok := miuo.mutation.AppendedTags(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, menuitem.FieldTags, value)
+		})
+	}
+	if miuo.mutation.TagsCleared() {
+		_spec.ClearField(menuitem.FieldTags, field.TypeJSON)
+	}
+	if value, ok := miuo.mutation.RelatedItems(); ok {
+		_spec.SetField(menuitem.FieldRelatedItems, field.TypeJSON, value)
+	}
+	if value, ok := miuo.mutation.AppendedRelatedItems(); ok {
+		_spec.AddModifier(func(u *sql.UpdateBuilder) {
+			sqljson.Append(u, menuitem.FieldRelatedItems, value)
+		})
+	}
+	if miuo.mutation.RelatedItemsCleared() {
+		_spec.ClearField(menuitem.FieldRelatedItems, field.TypeJSON)
 	}
 	if miuo.mutation.MenuCleared() {
 		edge := &sqlgraph.EdgeSpec{

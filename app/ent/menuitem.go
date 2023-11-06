@@ -8,6 +8,7 @@ import (
 	"placio-app/ent/menuitem"
 	"placio-app/ent/placeinventory"
 	"strings"
+	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -34,8 +35,64 @@ type MenuItem struct {
 	Options []string `json:"options,omitempty"`
 	// DeletedAt holds the value of the "deleted_at" field.
 	DeletedAt string `json:"deleted_at,omitempty"`
+	// Type holds the value of the "type" field.
+	Type menuitem.Type `json:"type,omitempty"`
+	// Status holds the value of the "status" field.
+	Status menuitem.Status `json:"status,omitempty"`
+	// DrinkType holds the value of the "DrinkType" field.
+	DrinkType menuitem.DrinkType `json:"DrinkType,omitempty"`
+	// DietaryType holds the value of the "DietaryType" field.
+	DietaryType menuitem.DietaryType `json:"DietaryType,omitempty"`
+	// MenuItemType holds the value of the "MenuItemType" field.
+	MenuItemType menuitem.MenuItemType `json:"MenuItemType,omitempty"`
 	// IsDeleted holds the value of the "is_deleted" field.
 	IsDeleted bool `json:"is_deleted,omitempty"`
+	// Calories holds the value of the "calories" field.
+	Calories int `json:"calories,omitempty"`
+	// ServeSize holds the value of the "serve_size" field.
+	ServeSize int `json:"serve_size,omitempty"`
+	// AvailableFrom holds the value of the "available_from" field.
+	AvailableFrom time.Time `json:"available_from,omitempty"`
+	// AvailableUntil holds the value of the "available_until" field.
+	AvailableUntil time.Time `json:"available_until,omitempty"`
+	// ImageURL holds the value of the "image_url" field.
+	ImageURL string `json:"image_url,omitempty"`
+	// SpicinessLevel holds the value of the "spiciness_level" field.
+	SpicinessLevel menuitem.SpicinessLevel `json:"spiciness_level,omitempty"`
+	// Allergens holds the value of the "allergens" field.
+	Allergens []string `json:"allergens,omitempty"`
+	// ChefSpecialNote holds the value of the "chef_special_note" field.
+	ChefSpecialNote string `json:"chef_special_note,omitempty"`
+	// Rating holds the value of the "rating" field.
+	Rating int `json:"rating,omitempty"`
+	// ReviewCount holds the value of the "review_count" field.
+	ReviewCount int `json:"review_count,omitempty"`
+	// Category holds the value of the "category" field.
+	Category string `json:"category,omitempty"`
+	// OrderCount holds the value of the "order_count" field.
+	OrderCount int `json:"order_count,omitempty"`
+	// Sku holds the value of the "sku" field.
+	Sku string `json:"sku,omitempty"`
+	// IsFeatured holds the value of the "is_featured" field.
+	IsFeatured bool `json:"is_featured,omitempty"`
+	// IsNew holds the value of the "is_new" field.
+	IsNew bool `json:"is_new,omitempty"`
+	// IsSeasonal holds the value of the "is_seasonal" field.
+	IsSeasonal bool `json:"is_seasonal,omitempty"`
+	// Season holds the value of the "season" field.
+	Season string `json:"season,omitempty"`
+	// DiscountPercentage holds the value of the "discount_percentage" field.
+	DiscountPercentage int `json:"discount_percentage,omitempty"`
+	// PromotionDescription holds the value of the "promotion_description" field.
+	PromotionDescription string `json:"promotion_description,omitempty"`
+	// PromotionStart holds the value of the "promotion_start" field.
+	PromotionStart time.Time `json:"promotion_start,omitempty"`
+	// PromotionEnd holds the value of the "promotion_end" field.
+	PromotionEnd time.Time `json:"promotion_end,omitempty"`
+	// Tags holds the value of the "tags" field.
+	Tags []string `json:"tags,omitempty"`
+	// RelatedItems holds the value of the "related_items" field.
+	RelatedItems []string `json:"related_items,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the MenuItemQuery when eager-loading is set.
 	Edges        MenuItemEdges `json:"edges"`
@@ -102,16 +159,18 @@ func (*MenuItem) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case menuitem.FieldOptions:
+		case menuitem.FieldOptions, menuitem.FieldAllergens, menuitem.FieldTags, menuitem.FieldRelatedItems:
 			values[i] = new([]byte)
-		case menuitem.FieldIsAvailable, menuitem.FieldIsDeleted:
+		case menuitem.FieldIsAvailable, menuitem.FieldIsDeleted, menuitem.FieldIsFeatured, menuitem.FieldIsNew, menuitem.FieldIsSeasonal:
 			values[i] = new(sql.NullBool)
 		case menuitem.FieldPrice:
 			values[i] = new(sql.NullFloat64)
-		case menuitem.FieldPreparationTime:
+		case menuitem.FieldPreparationTime, menuitem.FieldCalories, menuitem.FieldServeSize, menuitem.FieldRating, menuitem.FieldReviewCount, menuitem.FieldOrderCount, menuitem.FieldDiscountPercentage:
 			values[i] = new(sql.NullInt64)
-		case menuitem.FieldID, menuitem.FieldName, menuitem.FieldDescription, menuitem.FieldCurrency, menuitem.FieldDeletedAt:
+		case menuitem.FieldID, menuitem.FieldName, menuitem.FieldDescription, menuitem.FieldCurrency, menuitem.FieldDeletedAt, menuitem.FieldType, menuitem.FieldStatus, menuitem.FieldDrinkType, menuitem.FieldDietaryType, menuitem.FieldMenuItemType, menuitem.FieldImageURL, menuitem.FieldSpicinessLevel, menuitem.FieldChefSpecialNote, menuitem.FieldCategory, menuitem.FieldSku, menuitem.FieldSeason, menuitem.FieldPromotionDescription:
 			values[i] = new(sql.NullString)
+		case menuitem.FieldAvailableFrom, menuitem.FieldAvailableUntil, menuitem.FieldPromotionStart, menuitem.FieldPromotionEnd:
+			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -183,11 +242,185 @@ func (mi *MenuItem) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				mi.DeletedAt = value.String
 			}
+		case menuitem.FieldType:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field type", values[i])
+			} else if value.Valid {
+				mi.Type = menuitem.Type(value.String)
+			}
+		case menuitem.FieldStatus:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field status", values[i])
+			} else if value.Valid {
+				mi.Status = menuitem.Status(value.String)
+			}
+		case menuitem.FieldDrinkType:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field DrinkType", values[i])
+			} else if value.Valid {
+				mi.DrinkType = menuitem.DrinkType(value.String)
+			}
+		case menuitem.FieldDietaryType:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field DietaryType", values[i])
+			} else if value.Valid {
+				mi.DietaryType = menuitem.DietaryType(value.String)
+			}
+		case menuitem.FieldMenuItemType:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field MenuItemType", values[i])
+			} else if value.Valid {
+				mi.MenuItemType = menuitem.MenuItemType(value.String)
+			}
 		case menuitem.FieldIsDeleted:
 			if value, ok := values[i].(*sql.NullBool); !ok {
 				return fmt.Errorf("unexpected type %T for field is_deleted", values[i])
 			} else if value.Valid {
 				mi.IsDeleted = value.Bool
+			}
+		case menuitem.FieldCalories:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field calories", values[i])
+			} else if value.Valid {
+				mi.Calories = int(value.Int64)
+			}
+		case menuitem.FieldServeSize:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field serve_size", values[i])
+			} else if value.Valid {
+				mi.ServeSize = int(value.Int64)
+			}
+		case menuitem.FieldAvailableFrom:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field available_from", values[i])
+			} else if value.Valid {
+				mi.AvailableFrom = value.Time
+			}
+		case menuitem.FieldAvailableUntil:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field available_until", values[i])
+			} else if value.Valid {
+				mi.AvailableUntil = value.Time
+			}
+		case menuitem.FieldImageURL:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field image_url", values[i])
+			} else if value.Valid {
+				mi.ImageURL = value.String
+			}
+		case menuitem.FieldSpicinessLevel:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field spiciness_level", values[i])
+			} else if value.Valid {
+				mi.SpicinessLevel = menuitem.SpicinessLevel(value.String)
+			}
+		case menuitem.FieldAllergens:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field allergens", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &mi.Allergens); err != nil {
+					return fmt.Errorf("unmarshal field allergens: %w", err)
+				}
+			}
+		case menuitem.FieldChefSpecialNote:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field chef_special_note", values[i])
+			} else if value.Valid {
+				mi.ChefSpecialNote = value.String
+			}
+		case menuitem.FieldRating:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field rating", values[i])
+			} else if value.Valid {
+				mi.Rating = int(value.Int64)
+			}
+		case menuitem.FieldReviewCount:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field review_count", values[i])
+			} else if value.Valid {
+				mi.ReviewCount = int(value.Int64)
+			}
+		case menuitem.FieldCategory:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field category", values[i])
+			} else if value.Valid {
+				mi.Category = value.String
+			}
+		case menuitem.FieldOrderCount:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field order_count", values[i])
+			} else if value.Valid {
+				mi.OrderCount = int(value.Int64)
+			}
+		case menuitem.FieldSku:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field sku", values[i])
+			} else if value.Valid {
+				mi.Sku = value.String
+			}
+		case menuitem.FieldIsFeatured:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_featured", values[i])
+			} else if value.Valid {
+				mi.IsFeatured = value.Bool
+			}
+		case menuitem.FieldIsNew:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_new", values[i])
+			} else if value.Valid {
+				mi.IsNew = value.Bool
+			}
+		case menuitem.FieldIsSeasonal:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_seasonal", values[i])
+			} else if value.Valid {
+				mi.IsSeasonal = value.Bool
+			}
+		case menuitem.FieldSeason:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field season", values[i])
+			} else if value.Valid {
+				mi.Season = value.String
+			}
+		case menuitem.FieldDiscountPercentage:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field discount_percentage", values[i])
+			} else if value.Valid {
+				mi.DiscountPercentage = int(value.Int64)
+			}
+		case menuitem.FieldPromotionDescription:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field promotion_description", values[i])
+			} else if value.Valid {
+				mi.PromotionDescription = value.String
+			}
+		case menuitem.FieldPromotionStart:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field promotion_start", values[i])
+			} else if value.Valid {
+				mi.PromotionStart = value.Time
+			}
+		case menuitem.FieldPromotionEnd:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field promotion_end", values[i])
+			} else if value.Valid {
+				mi.PromotionEnd = value.Time
+			}
+		case menuitem.FieldTags:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field tags", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &mi.Tags); err != nil {
+					return fmt.Errorf("unmarshal field tags: %w", err)
+				}
+			}
+		case menuitem.FieldRelatedItems:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field related_items", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &mi.RelatedItems); err != nil {
+					return fmt.Errorf("unmarshal field related_items: %w", err)
+				}
 			}
 		default:
 			mi.selectValues.Set(columns[i], values[i])
@@ -269,8 +502,92 @@ func (mi *MenuItem) String() string {
 	builder.WriteString("deleted_at=")
 	builder.WriteString(mi.DeletedAt)
 	builder.WriteString(", ")
+	builder.WriteString("type=")
+	builder.WriteString(fmt.Sprintf("%v", mi.Type))
+	builder.WriteString(", ")
+	builder.WriteString("status=")
+	builder.WriteString(fmt.Sprintf("%v", mi.Status))
+	builder.WriteString(", ")
+	builder.WriteString("DrinkType=")
+	builder.WriteString(fmt.Sprintf("%v", mi.DrinkType))
+	builder.WriteString(", ")
+	builder.WriteString("DietaryType=")
+	builder.WriteString(fmt.Sprintf("%v", mi.DietaryType))
+	builder.WriteString(", ")
+	builder.WriteString("MenuItemType=")
+	builder.WriteString(fmt.Sprintf("%v", mi.MenuItemType))
+	builder.WriteString(", ")
 	builder.WriteString("is_deleted=")
 	builder.WriteString(fmt.Sprintf("%v", mi.IsDeleted))
+	builder.WriteString(", ")
+	builder.WriteString("calories=")
+	builder.WriteString(fmt.Sprintf("%v", mi.Calories))
+	builder.WriteString(", ")
+	builder.WriteString("serve_size=")
+	builder.WriteString(fmt.Sprintf("%v", mi.ServeSize))
+	builder.WriteString(", ")
+	builder.WriteString("available_from=")
+	builder.WriteString(mi.AvailableFrom.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("available_until=")
+	builder.WriteString(mi.AvailableUntil.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("image_url=")
+	builder.WriteString(mi.ImageURL)
+	builder.WriteString(", ")
+	builder.WriteString("spiciness_level=")
+	builder.WriteString(fmt.Sprintf("%v", mi.SpicinessLevel))
+	builder.WriteString(", ")
+	builder.WriteString("allergens=")
+	builder.WriteString(fmt.Sprintf("%v", mi.Allergens))
+	builder.WriteString(", ")
+	builder.WriteString("chef_special_note=")
+	builder.WriteString(mi.ChefSpecialNote)
+	builder.WriteString(", ")
+	builder.WriteString("rating=")
+	builder.WriteString(fmt.Sprintf("%v", mi.Rating))
+	builder.WriteString(", ")
+	builder.WriteString("review_count=")
+	builder.WriteString(fmt.Sprintf("%v", mi.ReviewCount))
+	builder.WriteString(", ")
+	builder.WriteString("category=")
+	builder.WriteString(mi.Category)
+	builder.WriteString(", ")
+	builder.WriteString("order_count=")
+	builder.WriteString(fmt.Sprintf("%v", mi.OrderCount))
+	builder.WriteString(", ")
+	builder.WriteString("sku=")
+	builder.WriteString(mi.Sku)
+	builder.WriteString(", ")
+	builder.WriteString("is_featured=")
+	builder.WriteString(fmt.Sprintf("%v", mi.IsFeatured))
+	builder.WriteString(", ")
+	builder.WriteString("is_new=")
+	builder.WriteString(fmt.Sprintf("%v", mi.IsNew))
+	builder.WriteString(", ")
+	builder.WriteString("is_seasonal=")
+	builder.WriteString(fmt.Sprintf("%v", mi.IsSeasonal))
+	builder.WriteString(", ")
+	builder.WriteString("season=")
+	builder.WriteString(mi.Season)
+	builder.WriteString(", ")
+	builder.WriteString("discount_percentage=")
+	builder.WriteString(fmt.Sprintf("%v", mi.DiscountPercentage))
+	builder.WriteString(", ")
+	builder.WriteString("promotion_description=")
+	builder.WriteString(mi.PromotionDescription)
+	builder.WriteString(", ")
+	builder.WriteString("promotion_start=")
+	builder.WriteString(mi.PromotionStart.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("promotion_end=")
+	builder.WriteString(mi.PromotionEnd.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("tags=")
+	builder.WriteString(fmt.Sprintf("%v", mi.Tags))
+	builder.WriteString(", ")
+	builder.WriteString("related_items=")
+	builder.WriteString(fmt.Sprintf("%v", mi.RelatedItems))
 	builder.WriteByte(')')
 	return builder.String()
 }

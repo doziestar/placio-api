@@ -3,6 +3,8 @@
 package menu
 
 import (
+	"fmt"
+
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 )
@@ -26,6 +28,16 @@ const (
 	FieldOptions = "options"
 	// FieldPrice holds the string denoting the price field in the database.
 	FieldPrice = "price"
+	// FieldCurrency holds the string denoting the currency field in the database.
+	FieldCurrency = "currency"
+	// FieldType holds the string denoting the type field in the database.
+	FieldType = "type"
+	// FieldStatus holds the string denoting the status field in the database.
+	FieldStatus = "status"
+	// FieldDrinkType holds the string denoting the drinktype field in the database.
+	FieldDrinkType = "drink_type"
+	// FieldDietaryType holds the string denoting the dietarytype field in the database.
+	FieldDietaryType = "dietary_type"
 	// FieldIsAvailable holds the string denoting the is_available field in the database.
 	FieldIsAvailable = "is_available"
 	// EdgePlace holds the string denoting the place edge name in mutations.
@@ -70,6 +82,11 @@ var Columns = []string{
 	FieldPreparationTime,
 	FieldOptions,
 	FieldPrice,
+	FieldCurrency,
+	FieldType,
+	FieldStatus,
+	FieldDrinkType,
+	FieldDietaryType,
 	FieldIsAvailable,
 }
 
@@ -106,6 +123,104 @@ var (
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(string) error
 )
+
+// Type defines the type for the "type" enum field.
+type Type string
+
+// Type values.
+const (
+	TypeLocal            Type = "local"
+	TypeIntercontinental Type = "intercontinental"
+	TypeNational         Type = "national"
+	TypeRegional         Type = "regional"
+	TypeContinental      Type = "continental"
+)
+
+func (_type Type) String() string {
+	return string(_type)
+}
+
+// TypeValidator is a validator for the "type" field enum values. It is called by the builders before save.
+func TypeValidator(_type Type) error {
+	switch _type {
+	case TypeLocal, TypeIntercontinental, TypeNational, TypeRegional, TypeContinental:
+		return nil
+	default:
+		return fmt.Errorf("menu: invalid enum value for type field: %q", _type)
+	}
+}
+
+// Status defines the type for the "status" enum field.
+type Status string
+
+// Status values.
+const (
+	StatusAvailable   Status = "available"
+	StatusUnavailable Status = "unavailable"
+)
+
+func (s Status) String() string {
+	return string(s)
+}
+
+// StatusValidator is a validator for the "status" field enum values. It is called by the builders before save.
+func StatusValidator(s Status) error {
+	switch s {
+	case StatusAvailable, StatusUnavailable:
+		return nil
+	default:
+		return fmt.Errorf("menu: invalid enum value for status field: %q", s)
+	}
+}
+
+// DrinkType defines the type for the "DrinkType" enum field.
+type DrinkType string
+
+// DrinkType values.
+const (
+	DrinkTypeAlcoholic    DrinkType = "alcoholic"
+	DrinkTypeNonAlcoholic DrinkType = "non-alcoholic"
+	DrinkTypeBoth         DrinkType = "both"
+)
+
+func (_drinktype DrinkType) String() string {
+	return string(_drinktype)
+}
+
+// DrinkTypeValidator is a validator for the "DrinkType" field enum values. It is called by the builders before save.
+func DrinkTypeValidator(_drinktype DrinkType) error {
+	switch _drinktype {
+	case DrinkTypeAlcoholic, DrinkTypeNonAlcoholic, DrinkTypeBoth:
+		return nil
+	default:
+		return fmt.Errorf("menu: invalid enum value for DrinkType field: %q", _drinktype)
+	}
+}
+
+// DietaryType defines the type for the "DietaryType" enum field.
+type DietaryType string
+
+// DietaryType values.
+const (
+	DietaryTypeVegan         DietaryType = "vegan"
+	DietaryTypeVegetarian    DietaryType = "vegetarian"
+	DietaryTypeNonVegetarian DietaryType = "non-vegetarian"
+	DietaryTypeBoth          DietaryType = "both"
+)
+
+func (_dietarytype DietaryType) String() string {
+	return string(_dietarytype)
+}
+
+// DietaryTypeValidator is a validator for the "DietaryType" field enum values. It is called by the builders before save.
+func DietaryTypeValidator(_dietarytype DietaryType) error {
+	switch _dietarytype {
+	case DietaryTypeVegan, DietaryTypeVegetarian, DietaryTypeNonVegetarian, DietaryTypeBoth:
+		return nil
+	default:
+		return fmt.Errorf("menu: invalid enum value for DietaryType field: %q", _dietarytype)
+	}
+}
 
 // OrderOption defines the ordering options for the Menu queries.
 type OrderOption func(*sql.Selector)
@@ -148,6 +263,31 @@ func ByOptions(opts ...sql.OrderTermOption) OrderOption {
 // ByPrice orders the results by the price field.
 func ByPrice(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPrice, opts...).ToFunc()
+}
+
+// ByCurrency orders the results by the currency field.
+func ByCurrency(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCurrency, opts...).ToFunc()
+}
+
+// ByType orders the results by the type field.
+func ByType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldType, opts...).ToFunc()
+}
+
+// ByStatus orders the results by the status field.
+func ByStatus(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldStatus, opts...).ToFunc()
+}
+
+// ByDrinkType orders the results by the DrinkType field.
+func ByDrinkType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDrinkType, opts...).ToFunc()
+}
+
+// ByDietaryType orders the results by the DietaryType field.
+func ByDietaryType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDietaryType, opts...).ToFunc()
 }
 
 // ByIsAvailable orders the results by the is_available field.

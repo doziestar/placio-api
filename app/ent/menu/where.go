@@ -99,6 +99,11 @@ func Price(v string) predicate.Menu {
 	return predicate.Menu(sql.FieldEQ(FieldPrice, v))
 }
 
+// Currency applies equality check predicate on the "currency" field. It's identical to CurrencyEQ.
+func Currency(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldEQ(FieldCurrency, v))
+}
+
 // IsAvailable applies equality check predicate on the "is_available" field. It's identical to IsAvailableEQ.
 func IsAvailable(v bool) predicate.Menu {
 	return predicate.Menu(sql.FieldEQ(FieldIsAvailable, v))
@@ -552,6 +557,201 @@ func PriceEqualFold(v string) predicate.Menu {
 // PriceContainsFold applies the ContainsFold predicate on the "price" field.
 func PriceContainsFold(v string) predicate.Menu {
 	return predicate.Menu(sql.FieldContainsFold(FieldPrice, v))
+}
+
+// CurrencyEQ applies the EQ predicate on the "currency" field.
+func CurrencyEQ(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldEQ(FieldCurrency, v))
+}
+
+// CurrencyNEQ applies the NEQ predicate on the "currency" field.
+func CurrencyNEQ(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldNEQ(FieldCurrency, v))
+}
+
+// CurrencyIn applies the In predicate on the "currency" field.
+func CurrencyIn(vs ...string) predicate.Menu {
+	return predicate.Menu(sql.FieldIn(FieldCurrency, vs...))
+}
+
+// CurrencyNotIn applies the NotIn predicate on the "currency" field.
+func CurrencyNotIn(vs ...string) predicate.Menu {
+	return predicate.Menu(sql.FieldNotIn(FieldCurrency, vs...))
+}
+
+// CurrencyGT applies the GT predicate on the "currency" field.
+func CurrencyGT(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldGT(FieldCurrency, v))
+}
+
+// CurrencyGTE applies the GTE predicate on the "currency" field.
+func CurrencyGTE(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldGTE(FieldCurrency, v))
+}
+
+// CurrencyLT applies the LT predicate on the "currency" field.
+func CurrencyLT(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldLT(FieldCurrency, v))
+}
+
+// CurrencyLTE applies the LTE predicate on the "currency" field.
+func CurrencyLTE(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldLTE(FieldCurrency, v))
+}
+
+// CurrencyContains applies the Contains predicate on the "currency" field.
+func CurrencyContains(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldContains(FieldCurrency, v))
+}
+
+// CurrencyHasPrefix applies the HasPrefix predicate on the "currency" field.
+func CurrencyHasPrefix(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldHasPrefix(FieldCurrency, v))
+}
+
+// CurrencyHasSuffix applies the HasSuffix predicate on the "currency" field.
+func CurrencyHasSuffix(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldHasSuffix(FieldCurrency, v))
+}
+
+// CurrencyIsNil applies the IsNil predicate on the "currency" field.
+func CurrencyIsNil() predicate.Menu {
+	return predicate.Menu(sql.FieldIsNull(FieldCurrency))
+}
+
+// CurrencyNotNil applies the NotNil predicate on the "currency" field.
+func CurrencyNotNil() predicate.Menu {
+	return predicate.Menu(sql.FieldNotNull(FieldCurrency))
+}
+
+// CurrencyEqualFold applies the EqualFold predicate on the "currency" field.
+func CurrencyEqualFold(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldEqualFold(FieldCurrency, v))
+}
+
+// CurrencyContainsFold applies the ContainsFold predicate on the "currency" field.
+func CurrencyContainsFold(v string) predicate.Menu {
+	return predicate.Menu(sql.FieldContainsFold(FieldCurrency, v))
+}
+
+// TypeEQ applies the EQ predicate on the "type" field.
+func TypeEQ(v Type) predicate.Menu {
+	return predicate.Menu(sql.FieldEQ(FieldType, v))
+}
+
+// TypeNEQ applies the NEQ predicate on the "type" field.
+func TypeNEQ(v Type) predicate.Menu {
+	return predicate.Menu(sql.FieldNEQ(FieldType, v))
+}
+
+// TypeIn applies the In predicate on the "type" field.
+func TypeIn(vs ...Type) predicate.Menu {
+	return predicate.Menu(sql.FieldIn(FieldType, vs...))
+}
+
+// TypeNotIn applies the NotIn predicate on the "type" field.
+func TypeNotIn(vs ...Type) predicate.Menu {
+	return predicate.Menu(sql.FieldNotIn(FieldType, vs...))
+}
+
+// TypeIsNil applies the IsNil predicate on the "type" field.
+func TypeIsNil() predicate.Menu {
+	return predicate.Menu(sql.FieldIsNull(FieldType))
+}
+
+// TypeNotNil applies the NotNil predicate on the "type" field.
+func TypeNotNil() predicate.Menu {
+	return predicate.Menu(sql.FieldNotNull(FieldType))
+}
+
+// StatusEQ applies the EQ predicate on the "status" field.
+func StatusEQ(v Status) predicate.Menu {
+	return predicate.Menu(sql.FieldEQ(FieldStatus, v))
+}
+
+// StatusNEQ applies the NEQ predicate on the "status" field.
+func StatusNEQ(v Status) predicate.Menu {
+	return predicate.Menu(sql.FieldNEQ(FieldStatus, v))
+}
+
+// StatusIn applies the In predicate on the "status" field.
+func StatusIn(vs ...Status) predicate.Menu {
+	return predicate.Menu(sql.FieldIn(FieldStatus, vs...))
+}
+
+// StatusNotIn applies the NotIn predicate on the "status" field.
+func StatusNotIn(vs ...Status) predicate.Menu {
+	return predicate.Menu(sql.FieldNotIn(FieldStatus, vs...))
+}
+
+// StatusIsNil applies the IsNil predicate on the "status" field.
+func StatusIsNil() predicate.Menu {
+	return predicate.Menu(sql.FieldIsNull(FieldStatus))
+}
+
+// StatusNotNil applies the NotNil predicate on the "status" field.
+func StatusNotNil() predicate.Menu {
+	return predicate.Menu(sql.FieldNotNull(FieldStatus))
+}
+
+// DrinkTypeEQ applies the EQ predicate on the "DrinkType" field.
+func DrinkTypeEQ(v DrinkType) predicate.Menu {
+	return predicate.Menu(sql.FieldEQ(FieldDrinkType, v))
+}
+
+// DrinkTypeNEQ applies the NEQ predicate on the "DrinkType" field.
+func DrinkTypeNEQ(v DrinkType) predicate.Menu {
+	return predicate.Menu(sql.FieldNEQ(FieldDrinkType, v))
+}
+
+// DrinkTypeIn applies the In predicate on the "DrinkType" field.
+func DrinkTypeIn(vs ...DrinkType) predicate.Menu {
+	return predicate.Menu(sql.FieldIn(FieldDrinkType, vs...))
+}
+
+// DrinkTypeNotIn applies the NotIn predicate on the "DrinkType" field.
+func DrinkTypeNotIn(vs ...DrinkType) predicate.Menu {
+	return predicate.Menu(sql.FieldNotIn(FieldDrinkType, vs...))
+}
+
+// DrinkTypeIsNil applies the IsNil predicate on the "DrinkType" field.
+func DrinkTypeIsNil() predicate.Menu {
+	return predicate.Menu(sql.FieldIsNull(FieldDrinkType))
+}
+
+// DrinkTypeNotNil applies the NotNil predicate on the "DrinkType" field.
+func DrinkTypeNotNil() predicate.Menu {
+	return predicate.Menu(sql.FieldNotNull(FieldDrinkType))
+}
+
+// DietaryTypeEQ applies the EQ predicate on the "DietaryType" field.
+func DietaryTypeEQ(v DietaryType) predicate.Menu {
+	return predicate.Menu(sql.FieldEQ(FieldDietaryType, v))
+}
+
+// DietaryTypeNEQ applies the NEQ predicate on the "DietaryType" field.
+func DietaryTypeNEQ(v DietaryType) predicate.Menu {
+	return predicate.Menu(sql.FieldNEQ(FieldDietaryType, v))
+}
+
+// DietaryTypeIn applies the In predicate on the "DietaryType" field.
+func DietaryTypeIn(vs ...DietaryType) predicate.Menu {
+	return predicate.Menu(sql.FieldIn(FieldDietaryType, vs...))
+}
+
+// DietaryTypeNotIn applies the NotIn predicate on the "DietaryType" field.
+func DietaryTypeNotIn(vs ...DietaryType) predicate.Menu {
+	return predicate.Menu(sql.FieldNotIn(FieldDietaryType, vs...))
+}
+
+// DietaryTypeIsNil applies the IsNil predicate on the "DietaryType" field.
+func DietaryTypeIsNil() predicate.Menu {
+	return predicate.Menu(sql.FieldIsNull(FieldDietaryType))
+}
+
+// DietaryTypeNotNil applies the NotNil predicate on the "DietaryType" field.
+func DietaryTypeNotNil() predicate.Menu {
+	return predicate.Menu(sql.FieldNotNull(FieldDietaryType))
 }
 
 // IsAvailableEQ applies the EQ predicate on the "is_available" field.
