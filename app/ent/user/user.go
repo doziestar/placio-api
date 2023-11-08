@@ -119,6 +119,10 @@ const (
 	EdgeTablesWaited = "tables_waited"
 	// EdgeStaffs holds the string denoting the staffs edge name in mutations.
 	EdgeStaffs = "staffs"
+	// EdgeCreatedMenus holds the string denoting the created_menus edge name in mutations.
+	EdgeCreatedMenus = "created_menus"
+	// EdgeUpdatedMenus holds the string denoting the updated_menus edge name in mutations.
+	EdgeUpdatedMenus = "updated_menus"
 	// Table holds the table name of the user in the database.
 	Table = "users"
 	// UserBusinessesTable is the table that holds the userBusinesses relation/edge.
@@ -334,6 +338,16 @@ const (
 	StaffsInverseTable = "staffs"
 	// StaffsColumn is the table column denoting the staffs relation/edge.
 	StaffsColumn = "user_staffs"
+	// CreatedMenusTable is the table that holds the created_menus relation/edge. The primary key declared below.
+	CreatedMenusTable = "user_created_menus"
+	// CreatedMenusInverseTable is the table name for the Menu entity.
+	// It exists in this package in order to avoid circular dependency with the "menu" package.
+	CreatedMenusInverseTable = "menus"
+	// UpdatedMenusTable is the table that holds the updated_menus relation/edge. The primary key declared below.
+	UpdatedMenusTable = "user_updated_menus"
+	// UpdatedMenusInverseTable is the table name for the Menu entity.
+	// It exists in this package in order to avoid circular dependency with the "menu" package.
+	UpdatedMenusInverseTable = "menus"
 )
 
 // Columns holds all SQL columns for user fields.
@@ -362,13 +376,6 @@ var Columns = []string{
 	FieldIsPremium,
 }
 
-// ForeignKeys holds the SQL foreign-keys that are owned by the "users"
-// table and are not defined as standalone fields in the schema.
-var ForeignKeys = []string{
-	"menu_created_by",
-	"menu_updated_by",
-}
-
 var (
 	// PlacesPrimaryKey and PlacesColumn2 are the table columns denoting the
 	// primary key for the places relation (M2M).
@@ -376,17 +383,18 @@ var (
 	// NotificationsPrimaryKey and NotificationsColumn2 are the table columns denoting the
 	// primary key for the notifications relation (M2M).
 	NotificationsPrimaryKey = []string{"user_id", "notification_id"}
+	// CreatedMenusPrimaryKey and CreatedMenusColumn2 are the table columns denoting the
+	// primary key for the created_menus relation (M2M).
+	CreatedMenusPrimaryKey = []string{"user_id", "menu_id"}
+	// UpdatedMenusPrimaryKey and UpdatedMenusColumn2 are the table columns denoting the
+	// primary key for the updated_menus relation (M2M).
+	UpdatedMenusPrimaryKey = []string{"user_id", "menu_id"}
 )
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
-			return true
-		}
-	}
-	for i := range ForeignKeys {
-		if column == ForeignKeys[i] {
 			return true
 		}
 	}
@@ -949,6 +957,34 @@ func ByStaffs(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newStaffsStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByCreatedMenusCount orders the results by created_menus count.
+func ByCreatedMenusCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newCreatedMenusStep(), opts...)
+	}
+}
+
+// ByCreatedMenus orders the results by created_menus terms.
+func ByCreatedMenus(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCreatedMenusStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByUpdatedMenusCount orders the results by updated_menus count.
+func ByUpdatedMenusCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newUpdatedMenusStep(), opts...)
+	}
+}
+
+// ByUpdatedMenus orders the results by updated_menus terms.
+func ByUpdatedMenus(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newUpdatedMenusStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newUserBusinessesStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -1164,5 +1200,19 @@ func newStaffsStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(StaffsInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, StaffsTable, StaffsColumn),
+	)
+}
+func newCreatedMenusStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CreatedMenusInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, false, CreatedMenusTable, CreatedMenusPrimaryKey...),
+	)
+}
+func newUpdatedMenusStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(UpdatedMenusInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2M, false, UpdatedMenusTable, UpdatedMenusPrimaryKey...),
 	)
 }

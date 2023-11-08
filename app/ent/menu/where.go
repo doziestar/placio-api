@@ -677,7 +677,7 @@ func HasCreatedBy() predicate.Menu {
 	return predicate.Menu(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, CreatedByTable, CreatedByColumn),
+			sqlgraph.Edge(sqlgraph.M2M, true, CreatedByTable, CreatedByPrimaryKey...),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -700,7 +700,7 @@ func HasUpdatedBy() predicate.Menu {
 	return predicate.Menu(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, UpdatedByTable, UpdatedByColumn),
+			sqlgraph.Edge(sqlgraph.M2M, true, UpdatedByTable, UpdatedByPrimaryKey...),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})

@@ -751,10 +751,10 @@ func (mu *MenuUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if mu.mutation.CreatedByCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
 			Table:   menu.CreatedByTable,
-			Columns: []string{menu.CreatedByColumn},
+			Columns: menu.CreatedByPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
@@ -764,10 +764,10 @@ func (mu *MenuUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if nodes := mu.mutation.RemovedCreatedByIDs(); len(nodes) > 0 && !mu.mutation.CreatedByCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
 			Table:   menu.CreatedByTable,
-			Columns: []string{menu.CreatedByColumn},
+			Columns: menu.CreatedByPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
@@ -780,10 +780,10 @@ func (mu *MenuUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if nodes := mu.mutation.CreatedByIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
 			Table:   menu.CreatedByTable,
-			Columns: []string{menu.CreatedByColumn},
+			Columns: menu.CreatedByPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
@@ -796,10 +796,10 @@ func (mu *MenuUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if mu.mutation.UpdatedByCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
 			Table:   menu.UpdatedByTable,
-			Columns: []string{menu.UpdatedByColumn},
+			Columns: menu.UpdatedByPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
@@ -809,10 +809,10 @@ func (mu *MenuUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if nodes := mu.mutation.RemovedUpdatedByIDs(); len(nodes) > 0 && !mu.mutation.UpdatedByCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
 			Table:   menu.UpdatedByTable,
-			Columns: []string{menu.UpdatedByColumn},
+			Columns: menu.UpdatedByPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
@@ -825,10 +825,10 @@ func (mu *MenuUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if nodes := mu.mutation.UpdatedByIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
 			Table:   menu.UpdatedByTable,
-			Columns: []string{menu.UpdatedByColumn},
+			Columns: menu.UpdatedByPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
@@ -1607,10 +1607,10 @@ func (muo *MenuUpdateOne) sqlSave(ctx context.Context) (_node *Menu, err error) 
 	}
 	if muo.mutation.CreatedByCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
 			Table:   menu.CreatedByTable,
-			Columns: []string{menu.CreatedByColumn},
+			Columns: menu.CreatedByPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
@@ -1620,10 +1620,10 @@ func (muo *MenuUpdateOne) sqlSave(ctx context.Context) (_node *Menu, err error) 
 	}
 	if nodes := muo.mutation.RemovedCreatedByIDs(); len(nodes) > 0 && !muo.mutation.CreatedByCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
 			Table:   menu.CreatedByTable,
-			Columns: []string{menu.CreatedByColumn},
+			Columns: menu.CreatedByPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
@@ -1636,10 +1636,10 @@ func (muo *MenuUpdateOne) sqlSave(ctx context.Context) (_node *Menu, err error) 
 	}
 	if nodes := muo.mutation.CreatedByIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
 			Table:   menu.CreatedByTable,
-			Columns: []string{menu.CreatedByColumn},
+			Columns: menu.CreatedByPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
@@ -1652,10 +1652,10 @@ func (muo *MenuUpdateOne) sqlSave(ctx context.Context) (_node *Menu, err error) 
 	}
 	if muo.mutation.UpdatedByCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
 			Table:   menu.UpdatedByTable,
-			Columns: []string{menu.UpdatedByColumn},
+			Columns: menu.UpdatedByPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
@@ -1665,10 +1665,10 @@ func (muo *MenuUpdateOne) sqlSave(ctx context.Context) (_node *Menu, err error) 
 	}
 	if nodes := muo.mutation.RemovedUpdatedByIDs(); len(nodes) > 0 && !muo.mutation.UpdatedByCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
 			Table:   menu.UpdatedByTable,
-			Columns: []string{menu.UpdatedByColumn},
+			Columns: menu.UpdatedByPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),
@@ -1681,10 +1681,10 @@ func (muo *MenuUpdateOne) sqlSave(ctx context.Context) (_node *Menu, err error) 
 	}
 	if nodes := muo.mutation.UpdatedByIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
+			Rel:     sqlgraph.M2M,
+			Inverse: true,
 			Table:   menu.UpdatedByTable,
-			Columns: []string{menu.UpdatedByColumn},
+			Columns: menu.UpdatedByPrimaryKey,
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeString),

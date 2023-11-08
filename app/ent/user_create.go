@@ -15,6 +15,7 @@ import (
 	"placio-app/ent/event"
 	"placio-app/ent/help"
 	"placio-app/ent/like"
+	"placio-app/ent/menu"
 	"placio-app/ent/notification"
 	"placio-app/ent/order"
 	"placio-app/ent/place"
@@ -763,6 +764,36 @@ func (uc *UserCreate) AddStaffs(s ...*Staff) *UserCreate {
 	return uc.AddStaffIDs(ids...)
 }
 
+// AddCreatedMenuIDs adds the "created_menus" edge to the Menu entity by IDs.
+func (uc *UserCreate) AddCreatedMenuIDs(ids ...string) *UserCreate {
+	uc.mutation.AddCreatedMenuIDs(ids...)
+	return uc
+}
+
+// AddCreatedMenus adds the "created_menus" edges to the Menu entity.
+func (uc *UserCreate) AddCreatedMenus(m ...*Menu) *UserCreate {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return uc.AddCreatedMenuIDs(ids...)
+}
+
+// AddUpdatedMenuIDs adds the "updated_menus" edge to the Menu entity by IDs.
+func (uc *UserCreate) AddUpdatedMenuIDs(ids ...string) *UserCreate {
+	uc.mutation.AddUpdatedMenuIDs(ids...)
+	return uc
+}
+
+// AddUpdatedMenus adds the "updated_menus" edges to the Menu entity.
+func (uc *UserCreate) AddUpdatedMenus(m ...*Menu) *UserCreate {
+	ids := make([]string, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return uc.AddUpdatedMenuIDs(ids...)
+}
+
 // Mutation returns the UserMutation object of the builder.
 func (uc *UserCreate) Mutation() *UserMutation {
 	return uc.mutation
@@ -1465,6 +1496,38 @@ func (uc *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(staff.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.CreatedMenusIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   user.CreatedMenusTable,
+			Columns: user.CreatedMenusPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := uc.mutation.UpdatedMenusIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   user.UpdatedMenusTable,
+			Columns: user.UpdatedMenusPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(menu.FieldID, field.TypeString),
 			},
 		}
 		for _, k := range nodes {

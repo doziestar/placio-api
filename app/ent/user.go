@@ -64,10 +64,8 @@ type User struct {
 	IsPremium bool `json:"is_premium,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UserQuery when eager-loading is set.
-	Edges           UserEdges `json:"edges"`
-	menu_created_by *string
-	menu_updated_by *string
-	selectValues    sql.SelectValues
+	Edges        UserEdges `json:"edges"`
+	selectValues sql.SelectValues
 }
 
 // UserEdges holds the relations/edges for other nodes in the graph.
@@ -134,9 +132,13 @@ type UserEdges struct {
 	TablesWaited []*PlaceTable `json:"tables_waited,omitempty"`
 	// Staffs holds the value of the staffs edge.
 	Staffs []*Staff `json:"staffs,omitempty"`
+	// CreatedMenus holds the value of the created_menus edge.
+	CreatedMenus []*Menu `json:"created_menus,omitempty"`
+	// UpdatedMenus holds the value of the updated_menus edge.
+	UpdatedMenus []*Menu `json:"updated_menus,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [31]bool
+	loadedTypes [33]bool
 }
 
 // UserBusinessesOrErr returns the UserBusinesses value or an error if the edge
@@ -426,6 +428,24 @@ func (e UserEdges) StaffsOrErr() ([]*Staff, error) {
 	return nil, &NotLoadedError{edge: "staffs"}
 }
 
+// CreatedMenusOrErr returns the CreatedMenus value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) CreatedMenusOrErr() ([]*Menu, error) {
+	if e.loadedTypes[31] {
+		return e.CreatedMenus, nil
+	}
+	return nil, &NotLoadedError{edge: "created_menus"}
+}
+
+// UpdatedMenusOrErr returns the UpdatedMenus value or an error if the edge
+// was not loaded in eager-loading.
+func (e UserEdges) UpdatedMenusOrErr() ([]*Menu, error) {
+	if e.loadedTypes[32] {
+		return e.UpdatedMenus, nil
+	}
+	return nil, &NotLoadedError{edge: "updated_menus"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*User) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -440,10 +460,6 @@ func (*User) scanValues(columns []string) ([]any, error) {
 		case user.FieldFollowerCount, user.FieldFollowingCount:
 			values[i] = new(sql.NullInt64)
 		case user.FieldID, user.FieldAuth0ID, user.FieldName, user.FieldPicture, user.FieldCoverImage, user.FieldUsername, user.FieldWebsite, user.FieldLocation, user.FieldLongitude, user.FieldLatitude, user.FieldBio, user.FieldSearchText, user.FieldRole:
-			values[i] = new(sql.NullString)
-		case user.ForeignKeys[0]: // menu_created_by
-			values[i] = new(sql.NullString)
-		case user.ForeignKeys[1]: // menu_updated_by
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -601,20 +617,6 @@ func (u *User) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field is_premium", values[i])
 			} else if value.Valid {
 				u.IsPremium = value.Bool
-			}
-		case user.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field menu_created_by", values[i])
-			} else if value.Valid {
-				u.menu_created_by = new(string)
-				*u.menu_created_by = value.String
-			}
-		case user.ForeignKeys[1]:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field menu_updated_by", values[i])
-			} else if value.Valid {
-				u.menu_updated_by = new(string)
-				*u.menu_updated_by = value.String
 			}
 		default:
 			u.selectValues.Set(columns[i], values[i])
@@ -782,6 +784,16 @@ func (u *User) QueryTablesWaited() *PlaceTableQuery {
 // QueryStaffs queries the "staffs" edge of the User entity.
 func (u *User) QueryStaffs() *StaffQuery {
 	return NewUserClient(u.config).QueryStaffs(u)
+}
+
+// QueryCreatedMenus queries the "created_menus" edge of the User entity.
+func (u *User) QueryCreatedMenus() *MenuQuery {
+	return NewUserClient(u.config).QueryCreatedMenus(u)
+}
+
+// QueryUpdatedMenus queries the "updated_menus" edge of the User entity.
+func (u *User) QueryUpdatedMenus() *MenuQuery {
+	return NewUserClient(u.config).QueryUpdatedMenus(u)
 }
 
 // Update returns a builder for updating this User.

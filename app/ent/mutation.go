@@ -49873,6 +49873,12 @@ type UserMutation struct {
 	staffs                       map[string]struct{}
 	removedstaffs                map[string]struct{}
 	clearedstaffs                bool
+	created_menus                map[string]struct{}
+	removedcreated_menus         map[string]struct{}
+	clearedcreated_menus         bool
+	updated_menus                map[string]struct{}
+	removedupdated_menus         map[string]struct{}
+	clearedupdated_menus         bool
 	done                         bool
 	oldValue                     func(context.Context) (*User, error)
 	predicates                   []predicate.User
@@ -52654,6 +52660,114 @@ func (m *UserMutation) ResetStaffs() {
 	m.removedstaffs = nil
 }
 
+// AddCreatedMenuIDs adds the "created_menus" edge to the Menu entity by ids.
+func (m *UserMutation) AddCreatedMenuIDs(ids ...string) {
+	if m.created_menus == nil {
+		m.created_menus = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.created_menus[ids[i]] = struct{}{}
+	}
+}
+
+// ClearCreatedMenus clears the "created_menus" edge to the Menu entity.
+func (m *UserMutation) ClearCreatedMenus() {
+	m.clearedcreated_menus = true
+}
+
+// CreatedMenusCleared reports if the "created_menus" edge to the Menu entity was cleared.
+func (m *UserMutation) CreatedMenusCleared() bool {
+	return m.clearedcreated_menus
+}
+
+// RemoveCreatedMenuIDs removes the "created_menus" edge to the Menu entity by IDs.
+func (m *UserMutation) RemoveCreatedMenuIDs(ids ...string) {
+	if m.removedcreated_menus == nil {
+		m.removedcreated_menus = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.created_menus, ids[i])
+		m.removedcreated_menus[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedCreatedMenus returns the removed IDs of the "created_menus" edge to the Menu entity.
+func (m *UserMutation) RemovedCreatedMenusIDs() (ids []string) {
+	for id := range m.removedcreated_menus {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// CreatedMenusIDs returns the "created_menus" edge IDs in the mutation.
+func (m *UserMutation) CreatedMenusIDs() (ids []string) {
+	for id := range m.created_menus {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetCreatedMenus resets all changes to the "created_menus" edge.
+func (m *UserMutation) ResetCreatedMenus() {
+	m.created_menus = nil
+	m.clearedcreated_menus = false
+	m.removedcreated_menus = nil
+}
+
+// AddUpdatedMenuIDs adds the "updated_menus" edge to the Menu entity by ids.
+func (m *UserMutation) AddUpdatedMenuIDs(ids ...string) {
+	if m.updated_menus == nil {
+		m.updated_menus = make(map[string]struct{})
+	}
+	for i := range ids {
+		m.updated_menus[ids[i]] = struct{}{}
+	}
+}
+
+// ClearUpdatedMenus clears the "updated_menus" edge to the Menu entity.
+func (m *UserMutation) ClearUpdatedMenus() {
+	m.clearedupdated_menus = true
+}
+
+// UpdatedMenusCleared reports if the "updated_menus" edge to the Menu entity was cleared.
+func (m *UserMutation) UpdatedMenusCleared() bool {
+	return m.clearedupdated_menus
+}
+
+// RemoveUpdatedMenuIDs removes the "updated_menus" edge to the Menu entity by IDs.
+func (m *UserMutation) RemoveUpdatedMenuIDs(ids ...string) {
+	if m.removedupdated_menus == nil {
+		m.removedupdated_menus = make(map[string]struct{})
+	}
+	for i := range ids {
+		delete(m.updated_menus, ids[i])
+		m.removedupdated_menus[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedUpdatedMenus returns the removed IDs of the "updated_menus" edge to the Menu entity.
+func (m *UserMutation) RemovedUpdatedMenusIDs() (ids []string) {
+	for id := range m.removedupdated_menus {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// UpdatedMenusIDs returns the "updated_menus" edge IDs in the mutation.
+func (m *UserMutation) UpdatedMenusIDs() (ids []string) {
+	for id := range m.updated_menus {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetUpdatedMenus resets all changes to the "updated_menus" edge.
+func (m *UserMutation) ResetUpdatedMenus() {
+	m.updated_menus = nil
+	m.clearedupdated_menus = false
+	m.removedupdated_menus = nil
+}
+
 // Where appends a list predicates to the UserMutation builder.
 func (m *UserMutation) Where(ps ...predicate.User) {
 	m.predicates = append(m.predicates, ps...)
@@ -53259,7 +53373,7 @@ func (m *UserMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UserMutation) AddedEdges() []string {
-	edges := make([]string, 0, 31)
+	edges := make([]string, 0, 33)
 	if m.userBusinesses != nil {
 		edges = append(edges, user.EdgeUserBusinesses)
 	}
@@ -53352,6 +53466,12 @@ func (m *UserMutation) AddedEdges() []string {
 	}
 	if m.staffs != nil {
 		edges = append(edges, user.EdgeStaffs)
+	}
+	if m.created_menus != nil {
+		edges = append(edges, user.EdgeCreatedMenus)
+	}
+	if m.updated_menus != nil {
+		edges = append(edges, user.EdgeUpdatedMenus)
 	}
 	return edges
 }
@@ -53542,13 +53662,25 @@ func (m *UserMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeCreatedMenus:
+		ids := make([]ent.Value, 0, len(m.created_menus))
+		for id := range m.created_menus {
+			ids = append(ids, id)
+		}
+		return ids
+	case user.EdgeUpdatedMenus:
+		ids := make([]ent.Value, 0, len(m.updated_menus))
+		for id := range m.updated_menus {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UserMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 31)
+	edges := make([]string, 0, 33)
 	if m.removeduserBusinesses != nil {
 		edges = append(edges, user.EdgeUserBusinesses)
 	}
@@ -53635,6 +53767,12 @@ func (m *UserMutation) RemovedEdges() []string {
 	}
 	if m.removedstaffs != nil {
 		edges = append(edges, user.EdgeStaffs)
+	}
+	if m.removedcreated_menus != nil {
+		edges = append(edges, user.EdgeCreatedMenus)
+	}
+	if m.removedupdated_menus != nil {
+		edges = append(edges, user.EdgeUpdatedMenus)
 	}
 	return edges
 }
@@ -53817,13 +53955,25 @@ func (m *UserMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case user.EdgeCreatedMenus:
+		ids := make([]ent.Value, 0, len(m.removedcreated_menus))
+		for id := range m.removedcreated_menus {
+			ids = append(ids, id)
+		}
+		return ids
+	case user.EdgeUpdatedMenus:
+		ids := make([]ent.Value, 0, len(m.removedupdated_menus))
+		for id := range m.removedupdated_menus {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UserMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 31)
+	edges := make([]string, 0, 33)
 	if m.cleareduserBusinesses {
 		edges = append(edges, user.EdgeUserBusinesses)
 	}
@@ -53917,6 +54067,12 @@ func (m *UserMutation) ClearedEdges() []string {
 	if m.clearedstaffs {
 		edges = append(edges, user.EdgeStaffs)
 	}
+	if m.clearedcreated_menus {
+		edges = append(edges, user.EdgeCreatedMenus)
+	}
+	if m.clearedupdated_menus {
+		edges = append(edges, user.EdgeUpdatedMenus)
+	}
 	return edges
 }
 
@@ -53986,6 +54142,10 @@ func (m *UserMutation) EdgeCleared(name string) bool {
 		return m.clearedtables_waited
 	case user.EdgeStaffs:
 		return m.clearedstaffs
+	case user.EdgeCreatedMenus:
+		return m.clearedcreated_menus
+	case user.EdgeUpdatedMenus:
+		return m.clearedupdated_menus
 	}
 	return false
 }
@@ -54100,6 +54260,12 @@ func (m *UserMutation) ResetEdge(name string) error {
 		return nil
 	case user.EdgeStaffs:
 		m.ResetStaffs()
+		return nil
+	case user.EdgeCreatedMenus:
+		m.ResetCreatedMenus()
+		return nil
+	case user.EdgeUpdatedMenus:
+		m.ResetUpdatedMenus()
 		return nil
 	}
 	return fmt.Errorf("unknown User edge %s", name)

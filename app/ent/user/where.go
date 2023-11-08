@@ -1867,6 +1867,52 @@ func HasStaffsWith(preds ...predicate.Staff) predicate.User {
 	})
 }
 
+// HasCreatedMenus applies the HasEdge predicate on the "created_menus" edge.
+func HasCreatedMenus() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, CreatedMenusTable, CreatedMenusPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCreatedMenusWith applies the HasEdge predicate on the "created_menus" edge with a given conditions (other predicates).
+func HasCreatedMenusWith(preds ...predicate.Menu) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newCreatedMenusStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasUpdatedMenus applies the HasEdge predicate on the "updated_menus" edge.
+func HasUpdatedMenus() predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, UpdatedMenusTable, UpdatedMenusPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasUpdatedMenusWith applies the HasEdge predicate on the "updated_menus" edge with a given conditions (other predicates).
+func HasUpdatedMenusWith(preds ...predicate.Menu) predicate.User {
+	return predicate.User(func(s *sql.Selector) {
+		step := newUpdatedMenusStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.User) predicate.User {
 	return predicate.User(sql.AndPredicates(predicates...))
