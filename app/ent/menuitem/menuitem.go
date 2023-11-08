@@ -38,8 +38,6 @@ const (
 	FieldDrinkType = "drink_type"
 	// FieldDietaryType holds the string denoting the dietarytype field in the database.
 	FieldDietaryType = "dietary_type"
-	// FieldMenuItemType holds the string denoting the menuitemtype field in the database.
-	FieldMenuItemType = "menu_item_type"
 	// FieldIsDeleted holds the string denoting the is_deleted field in the database.
 	FieldIsDeleted = "is_deleted"
 	// FieldCalories holds the string denoting the calories field in the database.
@@ -139,7 +137,6 @@ var Columns = []string{
 	FieldStatus,
 	FieldDrinkType,
 	FieldDietaryType,
-	FieldMenuItemType,
 	FieldIsDeleted,
 	FieldCalories,
 	FieldServeSize,
@@ -298,29 +295,6 @@ func DietaryTypeValidator(_dietarytype DietaryType) error {
 	}
 }
 
-// MenuItemType defines the type for the "MenuItemType" enum field.
-type MenuItemType string
-
-// MenuItemType values.
-const (
-	MenuItemTypeFood  MenuItemType = "food"
-	MenuItemTypeDrink MenuItemType = "drink"
-)
-
-func (_menuitemtype MenuItemType) String() string {
-	return string(_menuitemtype)
-}
-
-// MenuItemTypeValidator is a validator for the "MenuItemType" field enum values. It is called by the builders before save.
-func MenuItemTypeValidator(_menuitemtype MenuItemType) error {
-	switch _menuitemtype {
-	case MenuItemTypeFood, MenuItemTypeDrink:
-		return nil
-	default:
-		return fmt.Errorf("menuitem: invalid enum value for MenuItemType field: %q", _menuitemtype)
-	}
-}
-
 // SpicinessLevel defines the type for the "spiciness_level" enum field.
 type SpicinessLevel string
 
@@ -406,11 +380,6 @@ func ByDrinkType(opts ...sql.OrderTermOption) OrderOption {
 // ByDietaryType orders the results by the DietaryType field.
 func ByDietaryType(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDietaryType, opts...).ToFunc()
-}
-
-// ByMenuItemType orders the results by the MenuItemType field.
-func ByMenuItemType(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldMenuItemType, opts...).ToFunc()
 }
 
 // ByIsDeleted orders the results by the is_deleted field.

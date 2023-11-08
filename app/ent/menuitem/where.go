@@ -720,36 +720,6 @@ func DietaryTypeNotNil() predicate.MenuItem {
 	return predicate.MenuItem(sql.FieldNotNull(FieldDietaryType))
 }
 
-// MenuItemTypeEQ applies the EQ predicate on the "MenuItemType" field.
-func MenuItemTypeEQ(v MenuItemType) predicate.MenuItem {
-	return predicate.MenuItem(sql.FieldEQ(FieldMenuItemType, v))
-}
-
-// MenuItemTypeNEQ applies the NEQ predicate on the "MenuItemType" field.
-func MenuItemTypeNEQ(v MenuItemType) predicate.MenuItem {
-	return predicate.MenuItem(sql.FieldNEQ(FieldMenuItemType, v))
-}
-
-// MenuItemTypeIn applies the In predicate on the "MenuItemType" field.
-func MenuItemTypeIn(vs ...MenuItemType) predicate.MenuItem {
-	return predicate.MenuItem(sql.FieldIn(FieldMenuItemType, vs...))
-}
-
-// MenuItemTypeNotIn applies the NotIn predicate on the "MenuItemType" field.
-func MenuItemTypeNotIn(vs ...MenuItemType) predicate.MenuItem {
-	return predicate.MenuItem(sql.FieldNotIn(FieldMenuItemType, vs...))
-}
-
-// MenuItemTypeIsNil applies the IsNil predicate on the "MenuItemType" field.
-func MenuItemTypeIsNil() predicate.MenuItem {
-	return predicate.MenuItem(sql.FieldIsNull(FieldMenuItemType))
-}
-
-// MenuItemTypeNotNil applies the NotNil predicate on the "MenuItemType" field.
-func MenuItemTypeNotNil() predicate.MenuItem {
-	return predicate.MenuItem(sql.FieldNotNull(FieldMenuItemType))
-}
-
 // IsDeletedEQ applies the EQ predicate on the "is_deleted" field.
 func IsDeletedEQ(v bool) predicate.MenuItem {
 	return predicate.MenuItem(sql.FieldEQ(FieldIsDeleted, v))

@@ -43,8 +43,6 @@ type MenuItem struct {
 	DrinkType menuitem.DrinkType `json:"DrinkType,omitempty"`
 	// DietaryType holds the value of the "DietaryType" field.
 	DietaryType menuitem.DietaryType `json:"DietaryType,omitempty"`
-	// MenuItemType holds the value of the "MenuItemType" field.
-	MenuItemType menuitem.MenuItemType `json:"MenuItemType,omitempty"`
 	// IsDeleted holds the value of the "is_deleted" field.
 	IsDeleted bool `json:"is_deleted,omitempty"`
 	// Calories holds the value of the "calories" field.
@@ -167,7 +165,7 @@ func (*MenuItem) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullFloat64)
 		case menuitem.FieldPreparationTime, menuitem.FieldCalories, menuitem.FieldServeSize, menuitem.FieldRating, menuitem.FieldReviewCount, menuitem.FieldOrderCount, menuitem.FieldDiscountPercentage:
 			values[i] = new(sql.NullInt64)
-		case menuitem.FieldID, menuitem.FieldName, menuitem.FieldDescription, menuitem.FieldCurrency, menuitem.FieldDeletedAt, menuitem.FieldType, menuitem.FieldStatus, menuitem.FieldDrinkType, menuitem.FieldDietaryType, menuitem.FieldMenuItemType, menuitem.FieldImageURL, menuitem.FieldSpicinessLevel, menuitem.FieldChefSpecialNote, menuitem.FieldCategory, menuitem.FieldSku, menuitem.FieldSeason, menuitem.FieldPromotionDescription:
+		case menuitem.FieldID, menuitem.FieldName, menuitem.FieldDescription, menuitem.FieldCurrency, menuitem.FieldDeletedAt, menuitem.FieldType, menuitem.FieldStatus, menuitem.FieldDrinkType, menuitem.FieldDietaryType, menuitem.FieldImageURL, menuitem.FieldSpicinessLevel, menuitem.FieldChefSpecialNote, menuitem.FieldCategory, menuitem.FieldSku, menuitem.FieldSeason, menuitem.FieldPromotionDescription:
 			values[i] = new(sql.NullString)
 		case menuitem.FieldAvailableFrom, menuitem.FieldAvailableUntil, menuitem.FieldPromotionStart, menuitem.FieldPromotionEnd:
 			values[i] = new(sql.NullTime)
@@ -265,12 +263,6 @@ func (mi *MenuItem) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field DietaryType", values[i])
 			} else if value.Valid {
 				mi.DietaryType = menuitem.DietaryType(value.String)
-			}
-		case menuitem.FieldMenuItemType:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field MenuItemType", values[i])
-			} else if value.Valid {
-				mi.MenuItemType = menuitem.MenuItemType(value.String)
 			}
 		case menuitem.FieldIsDeleted:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -513,9 +505,6 @@ func (mi *MenuItem) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("DietaryType=")
 	builder.WriteString(fmt.Sprintf("%v", mi.DietaryType))
-	builder.WriteString(", ")
-	builder.WriteString("MenuItemType=")
-	builder.WriteString(fmt.Sprintf("%v", mi.MenuItemType))
 	builder.WriteString(", ")
 	builder.WriteString("is_deleted=")
 	builder.WriteString(fmt.Sprintf("%v", mi.IsDeleted))

@@ -22,18 +22,12 @@ const (
 	FieldIsDeleted = "is_deleted"
 	// FieldDescription holds the string denoting the description field in the database.
 	FieldDescription = "description"
-	// FieldPreparationTime holds the string denoting the preparation_time field in the database.
-	FieldPreparationTime = "preparation_time"
 	// FieldOptions holds the string denoting the options field in the database.
 	FieldOptions = "options"
-	// FieldPrice holds the string denoting the price field in the database.
-	FieldPrice = "price"
-	// FieldCurrency holds the string denoting the currency field in the database.
-	FieldCurrency = "currency"
-	// FieldType holds the string denoting the type field in the database.
-	FieldType = "type"
-	// FieldStatus holds the string denoting the status field in the database.
-	FieldStatus = "status"
+	// FieldFoodType holds the string denoting the foodtype field in the database.
+	FieldFoodType = "food_type"
+	// FieldMenuItemType holds the string denoting the menuitemtype field in the database.
+	FieldMenuItemType = "menu_item_type"
 	// FieldDrinkType holds the string denoting the drinktype field in the database.
 	FieldDrinkType = "drink_type"
 	// FieldDietaryType holds the string denoting the dietarytype field in the database.
@@ -79,12 +73,9 @@ var Columns = []string{
 	FieldDeletedAt,
 	FieldIsDeleted,
 	FieldDescription,
-	FieldPreparationTime,
 	FieldOptions,
-	FieldPrice,
-	FieldCurrency,
-	FieldType,
-	FieldStatus,
+	FieldFoodType,
+	FieldMenuItemType,
 	FieldDrinkType,
 	FieldDietaryType,
 	FieldIsAvailable,
@@ -124,56 +115,56 @@ var (
 	IDValidator func(string) error
 )
 
-// Type defines the type for the "type" enum field.
-type Type string
+// FoodType defines the type for the "foodType" enum field.
+type FoodType string
 
-// Type values.
+// FoodType values.
 const (
-	TypeLocal            Type = "local"
-	TypeIntercontinental Type = "intercontinental"
-	TypeNational         Type = "national"
-	TypeRegional         Type = "regional"
-	TypeContinental      Type = "continental"
+	FoodTypeLocal            FoodType = "local"
+	FoodTypeIntercontinental FoodType = "intercontinental"
+	FoodTypeNational         FoodType = "national"
+	FoodTypeRegional         FoodType = "regional"
+	FoodTypeContinental      FoodType = "continental"
 )
 
-func (_type Type) String() string {
-	return string(_type)
+func (ft FoodType) String() string {
+	return string(ft)
 }
 
-// TypeValidator is a validator for the "type" field enum values. It is called by the builders before save.
-func TypeValidator(_type Type) error {
-	switch _type {
-	case TypeLocal, TypeIntercontinental, TypeNational, TypeRegional, TypeContinental:
+// FoodTypeValidator is a validator for the "foodType" field enum values. It is called by the builders before save.
+func FoodTypeValidator(ft FoodType) error {
+	switch ft {
+	case FoodTypeLocal, FoodTypeIntercontinental, FoodTypeNational, FoodTypeRegional, FoodTypeContinental:
 		return nil
 	default:
-		return fmt.Errorf("menu: invalid enum value for type field: %q", _type)
+		return fmt.Errorf("menu: invalid enum value for foodType field: %q", ft)
 	}
 }
 
-// Status defines the type for the "status" enum field.
-type Status string
+// MenuItemType defines the type for the "menuItemType" enum field.
+type MenuItemType string
 
-// Status values.
+// MenuItemType values.
 const (
-	StatusAvailable   Status = "available"
-	StatusUnavailable Status = "unavailable"
+	MenuItemTypeFood  MenuItemType = "food"
+	MenuItemTypeDrink MenuItemType = "drink"
 )
 
-func (s Status) String() string {
-	return string(s)
+func (mit MenuItemType) String() string {
+	return string(mit)
 }
 
-// StatusValidator is a validator for the "status" field enum values. It is called by the builders before save.
-func StatusValidator(s Status) error {
-	switch s {
-	case StatusAvailable, StatusUnavailable:
+// MenuItemTypeValidator is a validator for the "menuItemType" field enum values. It is called by the builders before save.
+func MenuItemTypeValidator(mit MenuItemType) error {
+	switch mit {
+	case MenuItemTypeFood, MenuItemTypeDrink:
 		return nil
 	default:
-		return fmt.Errorf("menu: invalid enum value for status field: %q", s)
+		return fmt.Errorf("menu: invalid enum value for menuItemType field: %q", mit)
 	}
 }
 
-// DrinkType defines the type for the "DrinkType" enum field.
+// DrinkType defines the type for the "drinkType" enum field.
 type DrinkType string
 
 // DrinkType values.
@@ -183,21 +174,21 @@ const (
 	DrinkTypeBoth         DrinkType = "both"
 )
 
-func (_drinktype DrinkType) String() string {
-	return string(_drinktype)
+func (dt DrinkType) String() string {
+	return string(dt)
 }
 
-// DrinkTypeValidator is a validator for the "DrinkType" field enum values. It is called by the builders before save.
-func DrinkTypeValidator(_drinktype DrinkType) error {
-	switch _drinktype {
+// DrinkTypeValidator is a validator for the "drinkType" field enum values. It is called by the builders before save.
+func DrinkTypeValidator(dt DrinkType) error {
+	switch dt {
 	case DrinkTypeAlcoholic, DrinkTypeNonAlcoholic, DrinkTypeBoth:
 		return nil
 	default:
-		return fmt.Errorf("menu: invalid enum value for DrinkType field: %q", _drinktype)
+		return fmt.Errorf("menu: invalid enum value for drinkType field: %q", dt)
 	}
 }
 
-// DietaryType defines the type for the "DietaryType" enum field.
+// DietaryType defines the type for the "dietaryType" enum field.
 type DietaryType string
 
 // DietaryType values.
@@ -208,17 +199,17 @@ const (
 	DietaryTypeBoth          DietaryType = "both"
 )
 
-func (_dietarytype DietaryType) String() string {
-	return string(_dietarytype)
+func (dt DietaryType) String() string {
+	return string(dt)
 }
 
-// DietaryTypeValidator is a validator for the "DietaryType" field enum values. It is called by the builders before save.
-func DietaryTypeValidator(_dietarytype DietaryType) error {
-	switch _dietarytype {
+// DietaryTypeValidator is a validator for the "dietaryType" field enum values. It is called by the builders before save.
+func DietaryTypeValidator(dt DietaryType) error {
+	switch dt {
 	case DietaryTypeVegan, DietaryTypeVegetarian, DietaryTypeNonVegetarian, DietaryTypeBoth:
 		return nil
 	default:
-		return fmt.Errorf("menu: invalid enum value for DietaryType field: %q", _dietarytype)
+		return fmt.Errorf("menu: invalid enum value for dietaryType field: %q", dt)
 	}
 }
 
@@ -250,42 +241,27 @@ func ByDescription(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDescription, opts...).ToFunc()
 }
 
-// ByPreparationTime orders the results by the preparation_time field.
-func ByPreparationTime(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldPreparationTime, opts...).ToFunc()
-}
-
 // ByOptions orders the results by the options field.
 func ByOptions(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldOptions, opts...).ToFunc()
 }
 
-// ByPrice orders the results by the price field.
-func ByPrice(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldPrice, opts...).ToFunc()
+// ByFoodType orders the results by the foodType field.
+func ByFoodType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFoodType, opts...).ToFunc()
 }
 
-// ByCurrency orders the results by the currency field.
-func ByCurrency(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldCurrency, opts...).ToFunc()
+// ByMenuItemType orders the results by the menuItemType field.
+func ByMenuItemType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldMenuItemType, opts...).ToFunc()
 }
 
-// ByType orders the results by the type field.
-func ByType(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldType, opts...).ToFunc()
-}
-
-// ByStatus orders the results by the status field.
-func ByStatus(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldStatus, opts...).ToFunc()
-}
-
-// ByDrinkType orders the results by the DrinkType field.
+// ByDrinkType orders the results by the drinkType field.
 func ByDrinkType(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDrinkType, opts...).ToFunc()
 }
 
-// ByDietaryType orders the results by the DietaryType field.
+// ByDietaryType orders the results by the dietaryType field.
 func ByDietaryType(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDietaryType, opts...).ToFunc()
 }

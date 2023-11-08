@@ -168,20 +168,6 @@ func (mic *MenuItemCreate) SetNillableDietaryType(mt *menuitem.DietaryType) *Men
 	return mic
 }
 
-// SetMenuItemType sets the "MenuItemType" field.
-func (mic *MenuItemCreate) SetMenuItemType(mit menuitem.MenuItemType) *MenuItemCreate {
-	mic.mutation.SetMenuItemType(mit)
-	return mic
-}
-
-// SetNillableMenuItemType sets the "MenuItemType" field if the given value is not nil.
-func (mic *MenuItemCreate) SetNillableMenuItemType(mit *menuitem.MenuItemType) *MenuItemCreate {
-	if mit != nil {
-		mic.SetMenuItemType(*mit)
-	}
-	return mic
-}
-
 // SetIsDeleted sets the "is_deleted" field.
 func (mic *MenuItemCreate) SetIsDeleted(b bool) *MenuItemCreate {
 	mic.mutation.SetIsDeleted(b)
@@ -652,11 +638,6 @@ func (mic *MenuItemCreate) check() error {
 			return &ValidationError{Name: "DietaryType", err: fmt.Errorf(`ent: validator failed for field "MenuItem.DietaryType": %w`, err)}
 		}
 	}
-	if v, ok := mic.mutation.MenuItemType(); ok {
-		if err := menuitem.MenuItemTypeValidator(v); err != nil {
-			return &ValidationError{Name: "MenuItemType", err: fmt.Errorf(`ent: validator failed for field "MenuItem.MenuItemType": %w`, err)}
-		}
-	}
 	if _, ok := mic.mutation.IsDeleted(); !ok {
 		return &ValidationError{Name: "is_deleted", err: errors.New(`ent: missing required field "MenuItem.is_deleted"`)}
 	}
@@ -752,10 +733,6 @@ func (mic *MenuItemCreate) createSpec() (*MenuItem, *sqlgraph.CreateSpec) {
 	if value, ok := mic.mutation.DietaryType(); ok {
 		_spec.SetField(menuitem.FieldDietaryType, field.TypeEnum, value)
 		_node.DietaryType = value
-	}
-	if value, ok := mic.mutation.MenuItemType(); ok {
-		_spec.SetField(menuitem.FieldMenuItemType, field.TypeEnum, value)
-		_node.MenuItemType = value
 	}
 	if value, ok := mic.mutation.IsDeleted(); ok {
 		_spec.SetField(menuitem.FieldIsDeleted, field.TypeBool, value)

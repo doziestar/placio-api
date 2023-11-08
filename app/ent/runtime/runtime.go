@@ -362,7 +362,7 @@ func init() {
 	// menu.DefaultIsDeleted holds the default value on creation for the is_deleted field.
 	menu.DefaultIsDeleted = menuDescIsDeleted.Default.(bool)
 	// menuDescIsAvailable is the schema descriptor for is_available field.
-	menuDescIsAvailable := menuFields[13].Descriptor()
+	menuDescIsAvailable := menuFields[10].Descriptor()
 	// menu.DefaultIsAvailable holds the default value on creation for the is_available field.
 	menu.DefaultIsAvailable = menuDescIsAvailable.Default.(bool)
 	// menuDescID is the schema descriptor for id field.
@@ -376,19 +376,19 @@ func init() {
 	// menuitem.DefaultIsAvailable holds the default value on creation for the is_available field.
 	menuitem.DefaultIsAvailable = menuitemDescIsAvailable.Default.(bool)
 	// menuitemDescIsDeleted is the schema descriptor for is_deleted field.
-	menuitemDescIsDeleted := menuitemFields[14].Descriptor()
+	menuitemDescIsDeleted := menuitemFields[13].Descriptor()
 	// menuitem.DefaultIsDeleted holds the default value on creation for the is_deleted field.
 	menuitem.DefaultIsDeleted = menuitemDescIsDeleted.Default.(bool)
 	// menuitemDescIsFeatured is the schema descriptor for is_featured field.
-	menuitemDescIsFeatured := menuitemFields[28].Descriptor()
+	menuitemDescIsFeatured := menuitemFields[27].Descriptor()
 	// menuitem.DefaultIsFeatured holds the default value on creation for the is_featured field.
 	menuitem.DefaultIsFeatured = menuitemDescIsFeatured.Default.(bool)
 	// menuitemDescIsNew is the schema descriptor for is_new field.
-	menuitemDescIsNew := menuitemFields[29].Descriptor()
+	menuitemDescIsNew := menuitemFields[28].Descriptor()
 	// menuitem.DefaultIsNew holds the default value on creation for the is_new field.
 	menuitem.DefaultIsNew = menuitemDescIsNew.Default.(bool)
 	// menuitemDescIsSeasonal is the schema descriptor for is_seasonal field.
-	menuitemDescIsSeasonal := menuitemFields[30].Descriptor()
+	menuitemDescIsSeasonal := menuitemFields[29].Descriptor()
 	// menuitem.DefaultIsSeasonal holds the default value on creation for the is_seasonal field.
 	menuitem.DefaultIsSeasonal = menuitemDescIsSeasonal.Default.(bool)
 	// menuitemDescID is the schema descriptor for id field.

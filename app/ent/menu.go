@@ -24,22 +24,16 @@ type Menu struct {
 	IsDeleted bool `json:"is_deleted,omitempty"`
 	// Description holds the value of the "description" field.
 	Description string `json:"description,omitempty"`
-	// PreparationTime holds the value of the "preparation_time" field.
-	PreparationTime string `json:"preparation_time,omitempty"`
 	// Options holds the value of the "options" field.
 	Options string `json:"options,omitempty"`
-	// Price holds the value of the "price" field.
-	Price string `json:"price,omitempty"`
-	// Currency holds the value of the "currency" field.
-	Currency string `json:"currency,omitempty"`
-	// Type holds the value of the "type" field.
-	Type menu.Type `json:"type,omitempty"`
-	// Status holds the value of the "status" field.
-	Status menu.Status `json:"status,omitempty"`
-	// DrinkType holds the value of the "DrinkType" field.
-	DrinkType menu.DrinkType `json:"DrinkType,omitempty"`
-	// DietaryType holds the value of the "DietaryType" field.
-	DietaryType menu.DietaryType `json:"DietaryType,omitempty"`
+	// FoodType holds the value of the "foodType" field.
+	FoodType menu.FoodType `json:"foodType,omitempty"`
+	// MenuItemType holds the value of the "menuItemType" field.
+	MenuItemType menu.MenuItemType `json:"menuItemType,omitempty"`
+	// DrinkType holds the value of the "drinkType" field.
+	DrinkType menu.DrinkType `json:"drinkType,omitempty"`
+	// DietaryType holds the value of the "dietaryType" field.
+	DietaryType menu.DietaryType `json:"dietaryType,omitempty"`
 	// IsAvailable holds the value of the "is_available" field.
 	IsAvailable bool `json:"is_available,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -106,7 +100,7 @@ func (*Menu) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case menu.FieldIsDeleted, menu.FieldIsAvailable:
 			values[i] = new(sql.NullBool)
-		case menu.FieldID, menu.FieldName, menu.FieldDeletedAt, menu.FieldDescription, menu.FieldPreparationTime, menu.FieldOptions, menu.FieldPrice, menu.FieldCurrency, menu.FieldType, menu.FieldStatus, menu.FieldDrinkType, menu.FieldDietaryType:
+		case menu.FieldID, menu.FieldName, menu.FieldDeletedAt, menu.FieldDescription, menu.FieldOptions, menu.FieldFoodType, menu.FieldMenuItemType, menu.FieldDrinkType, menu.FieldDietaryType:
 			values[i] = new(sql.NullString)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -153,51 +147,33 @@ func (m *Menu) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				m.Description = value.String
 			}
-		case menu.FieldPreparationTime:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field preparation_time", values[i])
-			} else if value.Valid {
-				m.PreparationTime = value.String
-			}
 		case menu.FieldOptions:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field options", values[i])
 			} else if value.Valid {
 				m.Options = value.String
 			}
-		case menu.FieldPrice:
+		case menu.FieldFoodType:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field price", values[i])
+				return fmt.Errorf("unexpected type %T for field foodType", values[i])
 			} else if value.Valid {
-				m.Price = value.String
+				m.FoodType = menu.FoodType(value.String)
 			}
-		case menu.FieldCurrency:
+		case menu.FieldMenuItemType:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field currency", values[i])
+				return fmt.Errorf("unexpected type %T for field menuItemType", values[i])
 			} else if value.Valid {
-				m.Currency = value.String
-			}
-		case menu.FieldType:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field type", values[i])
-			} else if value.Valid {
-				m.Type = menu.Type(value.String)
-			}
-		case menu.FieldStatus:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field status", values[i])
-			} else if value.Valid {
-				m.Status = menu.Status(value.String)
+				m.MenuItemType = menu.MenuItemType(value.String)
 			}
 		case menu.FieldDrinkType:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field DrinkType", values[i])
+				return fmt.Errorf("unexpected type %T for field drinkType", values[i])
 			} else if value.Valid {
 				m.DrinkType = menu.DrinkType(value.String)
 			}
 		case menu.FieldDietaryType:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field DietaryType", values[i])
+				return fmt.Errorf("unexpected type %T for field dietaryType", values[i])
 			} else if value.Valid {
 				m.DietaryType = menu.DietaryType(value.String)
 			}
@@ -275,28 +251,19 @@ func (m *Menu) String() string {
 	builder.WriteString("description=")
 	builder.WriteString(m.Description)
 	builder.WriteString(", ")
-	builder.WriteString("preparation_time=")
-	builder.WriteString(m.PreparationTime)
-	builder.WriteString(", ")
 	builder.WriteString("options=")
 	builder.WriteString(m.Options)
 	builder.WriteString(", ")
-	builder.WriteString("price=")
-	builder.WriteString(m.Price)
+	builder.WriteString("foodType=")
+	builder.WriteString(fmt.Sprintf("%v", m.FoodType))
 	builder.WriteString(", ")
-	builder.WriteString("currency=")
-	builder.WriteString(m.Currency)
+	builder.WriteString("menuItemType=")
+	builder.WriteString(fmt.Sprintf("%v", m.MenuItemType))
 	builder.WriteString(", ")
-	builder.WriteString("type=")
-	builder.WriteString(fmt.Sprintf("%v", m.Type))
-	builder.WriteString(", ")
-	builder.WriteString("status=")
-	builder.WriteString(fmt.Sprintf("%v", m.Status))
-	builder.WriteString(", ")
-	builder.WriteString("DrinkType=")
+	builder.WriteString("drinkType=")
 	builder.WriteString(fmt.Sprintf("%v", m.DrinkType))
 	builder.WriteString(", ")
-	builder.WriteString("DietaryType=")
+	builder.WriteString("dietaryType=")
 	builder.WriteString(fmt.Sprintf("%v", m.DietaryType))
 	builder.WriteString(", ")
 	builder.WriteString("is_available=")

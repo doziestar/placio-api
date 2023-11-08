@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"placio-app/ent"
+	"placio-app/ent/menu"
 	"placio-app/utility"
 	"placio-pkg/middleware"
 	"strconv"
@@ -290,7 +291,7 @@ func (c *SmartMenuController) restoreMenuItem(ctx *gin.Context) error {
 func (c *SmartMenuController) createMenu(ctx *gin.Context) error {
 	log.Println("createMenu")
 	placeId := ctx.Param("placeId")
-	var menu ent.Menu
+	var menuData ent.Menu
 
 	form, err := ctx.MultipartForm()
 	if err != nil {
@@ -300,21 +301,42 @@ func (c *SmartMenuController) createMenu(ctx *gin.Context) error {
 
 	// It's a good practice to check if the form values exist before accessing them
 	if name, exists := form.Value["name"]; exists {
-		menu.Name = name[0]
+		menuData.Name = name[0]
 	}
+
+	if menuType, exists := form.Value["type"]; exists {
+		menuData.FoodType = menu.FoodType(menuType[0])
+	}
+
 	if description, exists := form.Value["description"]; exists {
-		menu.Description = description[0]
+		menuData.Description = description[0]
 	}
 
 	if options, exists := form.Value["options"]; exists {
-		menu.Options = options[0]
+		menuData.Options = options[0]
+	}
+
+	if drinkType, exists := form.Value["drinkType"]; exists {
+		menuData.DrinkType = menu.DrinkType(drinkType[0])
+	}
+
+	if dietaryType, exists := form.Value["dietaryType"]; exists {
+		menuData.DietaryType = menu.DietaryType(dietaryType[0])
+	}
+
+	if menuItemType, exists := form.Value["menuItemType"]; exists {
+		menuData.MenuItemType = menu.MenuItemType(menuItemType[0])
+	}
+
+	if isAvailable, exists := form.Value["isAvailable"]; exists {
+		menuData.IsAvailable = isAvailable[0] == "true"
 	}
 
 	medias := form.File["medias"]
 
-	createdMenu, err := c.smartMenuService.CreateMenu(ctx.Request.Context(), placeId, &menu, medias)
+	createdMenu, err := c.smartMenuService.CreateMenu(ctx.Request.Context(), placeId, &menuData, medias)
 	if err != nil {
-		log.Println("Error creating menu:", err)
+		log.Println("Error creating menuData:", err)
 		return err
 	}
 

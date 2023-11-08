@@ -251,26 +251,6 @@ func (miu *MenuItemUpdate) ClearDietaryType() *MenuItemUpdate {
 	return miu
 }
 
-// SetMenuItemType sets the "MenuItemType" field.
-func (miu *MenuItemUpdate) SetMenuItemType(mit menuitem.MenuItemType) *MenuItemUpdate {
-	miu.mutation.SetMenuItemType(mit)
-	return miu
-}
-
-// SetNillableMenuItemType sets the "MenuItemType" field if the given value is not nil.
-func (miu *MenuItemUpdate) SetNillableMenuItemType(mit *menuitem.MenuItemType) *MenuItemUpdate {
-	if mit != nil {
-		miu.SetMenuItemType(*mit)
-	}
-	return miu
-}
-
-// ClearMenuItemType clears the value of the "MenuItemType" field.
-func (miu *MenuItemUpdate) ClearMenuItemType() *MenuItemUpdate {
-	miu.mutation.ClearMenuItemType()
-	return miu
-}
-
 // SetIsDeleted sets the "is_deleted" field.
 func (miu *MenuItemUpdate) SetIsDeleted(b bool) *MenuItemUpdate {
 	miu.mutation.SetIsDeleted(b)
@@ -968,11 +948,6 @@ func (miu *MenuItemUpdate) check() error {
 			return &ValidationError{Name: "DietaryType", err: fmt.Errorf(`ent: validator failed for field "MenuItem.DietaryType": %w`, err)}
 		}
 	}
-	if v, ok := miu.mutation.MenuItemType(); ok {
-		if err := menuitem.MenuItemTypeValidator(v); err != nil {
-			return &ValidationError{Name: "MenuItemType", err: fmt.Errorf(`ent: validator failed for field "MenuItem.MenuItemType": %w`, err)}
-		}
-	}
 	if v, ok := miu.mutation.SpicinessLevel(); ok {
 		if err := menuitem.SpicinessLevelValidator(v); err != nil {
 			return &ValidationError{Name: "spiciness_level", err: fmt.Errorf(`ent: validator failed for field "MenuItem.spiciness_level": %w`, err)}
@@ -1066,12 +1041,6 @@ func (miu *MenuItemUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if miu.mutation.DietaryTypeCleared() {
 		_spec.ClearField(menuitem.FieldDietaryType, field.TypeEnum)
-	}
-	if value, ok := miu.mutation.MenuItemType(); ok {
-		_spec.SetField(menuitem.FieldMenuItemType, field.TypeEnum, value)
-	}
-	if miu.mutation.MenuItemTypeCleared() {
-		_spec.ClearField(menuitem.FieldMenuItemType, field.TypeEnum)
 	}
 	if value, ok := miu.mutation.IsDeleted(); ok {
 		_spec.SetField(menuitem.FieldIsDeleted, field.TypeBool, value)
@@ -1646,26 +1615,6 @@ func (miuo *MenuItemUpdateOne) SetNillableDietaryType(mt *menuitem.DietaryType) 
 // ClearDietaryType clears the value of the "DietaryType" field.
 func (miuo *MenuItemUpdateOne) ClearDietaryType() *MenuItemUpdateOne {
 	miuo.mutation.ClearDietaryType()
-	return miuo
-}
-
-// SetMenuItemType sets the "MenuItemType" field.
-func (miuo *MenuItemUpdateOne) SetMenuItemType(mit menuitem.MenuItemType) *MenuItemUpdateOne {
-	miuo.mutation.SetMenuItemType(mit)
-	return miuo
-}
-
-// SetNillableMenuItemType sets the "MenuItemType" field if the given value is not nil.
-func (miuo *MenuItemUpdateOne) SetNillableMenuItemType(mit *menuitem.MenuItemType) *MenuItemUpdateOne {
-	if mit != nil {
-		miuo.SetMenuItemType(*mit)
-	}
-	return miuo
-}
-
-// ClearMenuItemType clears the value of the "MenuItemType" field.
-func (miuo *MenuItemUpdateOne) ClearMenuItemType() *MenuItemUpdateOne {
-	miuo.mutation.ClearMenuItemType()
 	return miuo
 }
 
@@ -2379,11 +2328,6 @@ func (miuo *MenuItemUpdateOne) check() error {
 			return &ValidationError{Name: "DietaryType", err: fmt.Errorf(`ent: validator failed for field "MenuItem.DietaryType": %w`, err)}
 		}
 	}
-	if v, ok := miuo.mutation.MenuItemType(); ok {
-		if err := menuitem.MenuItemTypeValidator(v); err != nil {
-			return &ValidationError{Name: "MenuItemType", err: fmt.Errorf(`ent: validator failed for field "MenuItem.MenuItemType": %w`, err)}
-		}
-	}
 	if v, ok := miuo.mutation.SpicinessLevel(); ok {
 		if err := menuitem.SpicinessLevelValidator(v); err != nil {
 			return &ValidationError{Name: "spiciness_level", err: fmt.Errorf(`ent: validator failed for field "MenuItem.spiciness_level": %w`, err)}
@@ -2494,12 +2438,6 @@ func (miuo *MenuItemUpdateOne) sqlSave(ctx context.Context) (_node *MenuItem, er
 	}
 	if miuo.mutation.DietaryTypeCleared() {
 		_spec.ClearField(menuitem.FieldDietaryType, field.TypeEnum)
-	}
-	if value, ok := miuo.mutation.MenuItemType(); ok {
-		_spec.SetField(menuitem.FieldMenuItemType, field.TypeEnum, value)
-	}
-	if miuo.mutation.MenuItemTypeCleared() {
-		_spec.ClearField(menuitem.FieldMenuItemType, field.TypeEnum)
 	}
 	if value, ok := miuo.mutation.IsDeleted(); ok {
 		_spec.SetField(menuitem.FieldIsDeleted, field.TypeBool, value)

@@ -91,26 +91,6 @@ func (mu *MenuUpdate) ClearDescription() *MenuUpdate {
 	return mu
 }
 
-// SetPreparationTime sets the "preparation_time" field.
-func (mu *MenuUpdate) SetPreparationTime(s string) *MenuUpdate {
-	mu.mutation.SetPreparationTime(s)
-	return mu
-}
-
-// SetNillablePreparationTime sets the "preparation_time" field if the given value is not nil.
-func (mu *MenuUpdate) SetNillablePreparationTime(s *string) *MenuUpdate {
-	if s != nil {
-		mu.SetPreparationTime(*s)
-	}
-	return mu
-}
-
-// ClearPreparationTime clears the value of the "preparation_time" field.
-func (mu *MenuUpdate) ClearPreparationTime() *MenuUpdate {
-	mu.mutation.ClearPreparationTime()
-	return mu
-}
-
 // SetOptions sets the "options" field.
 func (mu *MenuUpdate) SetOptions(s string) *MenuUpdate {
 	mu.mutation.SetOptions(s)
@@ -131,93 +111,53 @@ func (mu *MenuUpdate) ClearOptions() *MenuUpdate {
 	return mu
 }
 
-// SetPrice sets the "price" field.
-func (mu *MenuUpdate) SetPrice(s string) *MenuUpdate {
-	mu.mutation.SetPrice(s)
+// SetFoodType sets the "foodType" field.
+func (mu *MenuUpdate) SetFoodType(mt menu.FoodType) *MenuUpdate {
+	mu.mutation.SetFoodType(mt)
 	return mu
 }
 
-// SetNillablePrice sets the "price" field if the given value is not nil.
-func (mu *MenuUpdate) SetNillablePrice(s *string) *MenuUpdate {
-	if s != nil {
-		mu.SetPrice(*s)
+// SetNillableFoodType sets the "foodType" field if the given value is not nil.
+func (mu *MenuUpdate) SetNillableFoodType(mt *menu.FoodType) *MenuUpdate {
+	if mt != nil {
+		mu.SetFoodType(*mt)
 	}
 	return mu
 }
 
-// ClearPrice clears the value of the "price" field.
-func (mu *MenuUpdate) ClearPrice() *MenuUpdate {
-	mu.mutation.ClearPrice()
+// ClearFoodType clears the value of the "foodType" field.
+func (mu *MenuUpdate) ClearFoodType() *MenuUpdate {
+	mu.mutation.ClearFoodType()
 	return mu
 }
 
-// SetCurrency sets the "currency" field.
-func (mu *MenuUpdate) SetCurrency(s string) *MenuUpdate {
-	mu.mutation.SetCurrency(s)
+// SetMenuItemType sets the "menuItemType" field.
+func (mu *MenuUpdate) SetMenuItemType(mit menu.MenuItemType) *MenuUpdate {
+	mu.mutation.SetMenuItemType(mit)
 	return mu
 }
 
-// SetNillableCurrency sets the "currency" field if the given value is not nil.
-func (mu *MenuUpdate) SetNillableCurrency(s *string) *MenuUpdate {
-	if s != nil {
-		mu.SetCurrency(*s)
+// SetNillableMenuItemType sets the "menuItemType" field if the given value is not nil.
+func (mu *MenuUpdate) SetNillableMenuItemType(mit *menu.MenuItemType) *MenuUpdate {
+	if mit != nil {
+		mu.SetMenuItemType(*mit)
 	}
 	return mu
 }
 
-// ClearCurrency clears the value of the "currency" field.
-func (mu *MenuUpdate) ClearCurrency() *MenuUpdate {
-	mu.mutation.ClearCurrency()
+// ClearMenuItemType clears the value of the "menuItemType" field.
+func (mu *MenuUpdate) ClearMenuItemType() *MenuUpdate {
+	mu.mutation.ClearMenuItemType()
 	return mu
 }
 
-// SetType sets the "type" field.
-func (mu *MenuUpdate) SetType(m menu.Type) *MenuUpdate {
-	mu.mutation.SetType(m)
-	return mu
-}
-
-// SetNillableType sets the "type" field if the given value is not nil.
-func (mu *MenuUpdate) SetNillableType(m *menu.Type) *MenuUpdate {
-	if m != nil {
-		mu.SetType(*m)
-	}
-	return mu
-}
-
-// ClearType clears the value of the "type" field.
-func (mu *MenuUpdate) ClearType() *MenuUpdate {
-	mu.mutation.ClearType()
-	return mu
-}
-
-// SetStatus sets the "status" field.
-func (mu *MenuUpdate) SetStatus(m menu.Status) *MenuUpdate {
-	mu.mutation.SetStatus(m)
-	return mu
-}
-
-// SetNillableStatus sets the "status" field if the given value is not nil.
-func (mu *MenuUpdate) SetNillableStatus(m *menu.Status) *MenuUpdate {
-	if m != nil {
-		mu.SetStatus(*m)
-	}
-	return mu
-}
-
-// ClearStatus clears the value of the "status" field.
-func (mu *MenuUpdate) ClearStatus() *MenuUpdate {
-	mu.mutation.ClearStatus()
-	return mu
-}
-
-// SetDrinkType sets the "DrinkType" field.
+// SetDrinkType sets the "drinkType" field.
 func (mu *MenuUpdate) SetDrinkType(mt menu.DrinkType) *MenuUpdate {
 	mu.mutation.SetDrinkType(mt)
 	return mu
 }
 
-// SetNillableDrinkType sets the "DrinkType" field if the given value is not nil.
+// SetNillableDrinkType sets the "drinkType" field if the given value is not nil.
 func (mu *MenuUpdate) SetNillableDrinkType(mt *menu.DrinkType) *MenuUpdate {
 	if mt != nil {
 		mu.SetDrinkType(*mt)
@@ -225,19 +165,19 @@ func (mu *MenuUpdate) SetNillableDrinkType(mt *menu.DrinkType) *MenuUpdate {
 	return mu
 }
 
-// ClearDrinkType clears the value of the "DrinkType" field.
+// ClearDrinkType clears the value of the "drinkType" field.
 func (mu *MenuUpdate) ClearDrinkType() *MenuUpdate {
 	mu.mutation.ClearDrinkType()
 	return mu
 }
 
-// SetDietaryType sets the "DietaryType" field.
+// SetDietaryType sets the "dietaryType" field.
 func (mu *MenuUpdate) SetDietaryType(mt menu.DietaryType) *MenuUpdate {
 	mu.mutation.SetDietaryType(mt)
 	return mu
 }
 
-// SetNillableDietaryType sets the "DietaryType" field if the given value is not nil.
+// SetNillableDietaryType sets the "dietaryType" field if the given value is not nil.
 func (mu *MenuUpdate) SetNillableDietaryType(mt *menu.DietaryType) *MenuUpdate {
 	if mt != nil {
 		mu.SetDietaryType(*mt)
@@ -245,7 +185,7 @@ func (mu *MenuUpdate) SetNillableDietaryType(mt *menu.DietaryType) *MenuUpdate {
 	return mu
 }
 
-// ClearDietaryType clears the value of the "DietaryType" field.
+// ClearDietaryType clears the value of the "dietaryType" field.
 func (mu *MenuUpdate) ClearDietaryType() *MenuUpdate {
 	mu.mutation.ClearDietaryType()
 	return mu
@@ -443,24 +383,24 @@ func (mu *MenuUpdate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (mu *MenuUpdate) check() error {
-	if v, ok := mu.mutation.GetType(); ok {
-		if err := menu.TypeValidator(v); err != nil {
-			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Menu.type": %w`, err)}
+	if v, ok := mu.mutation.FoodType(); ok {
+		if err := menu.FoodTypeValidator(v); err != nil {
+			return &ValidationError{Name: "foodType", err: fmt.Errorf(`ent: validator failed for field "Menu.foodType": %w`, err)}
 		}
 	}
-	if v, ok := mu.mutation.Status(); ok {
-		if err := menu.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Menu.status": %w`, err)}
+	if v, ok := mu.mutation.MenuItemType(); ok {
+		if err := menu.MenuItemTypeValidator(v); err != nil {
+			return &ValidationError{Name: "menuItemType", err: fmt.Errorf(`ent: validator failed for field "Menu.menuItemType": %w`, err)}
 		}
 	}
 	if v, ok := mu.mutation.DrinkType(); ok {
 		if err := menu.DrinkTypeValidator(v); err != nil {
-			return &ValidationError{Name: "DrinkType", err: fmt.Errorf(`ent: validator failed for field "Menu.DrinkType": %w`, err)}
+			return &ValidationError{Name: "drinkType", err: fmt.Errorf(`ent: validator failed for field "Menu.drinkType": %w`, err)}
 		}
 	}
 	if v, ok := mu.mutation.DietaryType(); ok {
 		if err := menu.DietaryTypeValidator(v); err != nil {
-			return &ValidationError{Name: "DietaryType", err: fmt.Errorf(`ent: validator failed for field "Menu.DietaryType": %w`, err)}
+			return &ValidationError{Name: "dietaryType", err: fmt.Errorf(`ent: validator failed for field "Menu.dietaryType": %w`, err)}
 		}
 	}
 	return nil
@@ -496,41 +436,23 @@ func (mu *MenuUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if mu.mutation.DescriptionCleared() {
 		_spec.ClearField(menu.FieldDescription, field.TypeString)
 	}
-	if value, ok := mu.mutation.PreparationTime(); ok {
-		_spec.SetField(menu.FieldPreparationTime, field.TypeString, value)
-	}
-	if mu.mutation.PreparationTimeCleared() {
-		_spec.ClearField(menu.FieldPreparationTime, field.TypeString)
-	}
 	if value, ok := mu.mutation.Options(); ok {
 		_spec.SetField(menu.FieldOptions, field.TypeString, value)
 	}
 	if mu.mutation.OptionsCleared() {
 		_spec.ClearField(menu.FieldOptions, field.TypeString)
 	}
-	if value, ok := mu.mutation.Price(); ok {
-		_spec.SetField(menu.FieldPrice, field.TypeString, value)
+	if value, ok := mu.mutation.FoodType(); ok {
+		_spec.SetField(menu.FieldFoodType, field.TypeEnum, value)
 	}
-	if mu.mutation.PriceCleared() {
-		_spec.ClearField(menu.FieldPrice, field.TypeString)
+	if mu.mutation.FoodTypeCleared() {
+		_spec.ClearField(menu.FieldFoodType, field.TypeEnum)
 	}
-	if value, ok := mu.mutation.Currency(); ok {
-		_spec.SetField(menu.FieldCurrency, field.TypeString, value)
+	if value, ok := mu.mutation.MenuItemType(); ok {
+		_spec.SetField(menu.FieldMenuItemType, field.TypeEnum, value)
 	}
-	if mu.mutation.CurrencyCleared() {
-		_spec.ClearField(menu.FieldCurrency, field.TypeString)
-	}
-	if value, ok := mu.mutation.GetType(); ok {
-		_spec.SetField(menu.FieldType, field.TypeEnum, value)
-	}
-	if mu.mutation.TypeCleared() {
-		_spec.ClearField(menu.FieldType, field.TypeEnum)
-	}
-	if value, ok := mu.mutation.Status(); ok {
-		_spec.SetField(menu.FieldStatus, field.TypeEnum, value)
-	}
-	if mu.mutation.StatusCleared() {
-		_spec.ClearField(menu.FieldStatus, field.TypeEnum)
+	if mu.mutation.MenuItemTypeCleared() {
+		_spec.ClearField(menu.FieldMenuItemType, field.TypeEnum)
 	}
 	if value, ok := mu.mutation.DrinkType(); ok {
 		_spec.SetField(menu.FieldDrinkType, field.TypeEnum, value)
@@ -807,26 +729,6 @@ func (muo *MenuUpdateOne) ClearDescription() *MenuUpdateOne {
 	return muo
 }
 
-// SetPreparationTime sets the "preparation_time" field.
-func (muo *MenuUpdateOne) SetPreparationTime(s string) *MenuUpdateOne {
-	muo.mutation.SetPreparationTime(s)
-	return muo
-}
-
-// SetNillablePreparationTime sets the "preparation_time" field if the given value is not nil.
-func (muo *MenuUpdateOne) SetNillablePreparationTime(s *string) *MenuUpdateOne {
-	if s != nil {
-		muo.SetPreparationTime(*s)
-	}
-	return muo
-}
-
-// ClearPreparationTime clears the value of the "preparation_time" field.
-func (muo *MenuUpdateOne) ClearPreparationTime() *MenuUpdateOne {
-	muo.mutation.ClearPreparationTime()
-	return muo
-}
-
 // SetOptions sets the "options" field.
 func (muo *MenuUpdateOne) SetOptions(s string) *MenuUpdateOne {
 	muo.mutation.SetOptions(s)
@@ -847,93 +749,53 @@ func (muo *MenuUpdateOne) ClearOptions() *MenuUpdateOne {
 	return muo
 }
 
-// SetPrice sets the "price" field.
-func (muo *MenuUpdateOne) SetPrice(s string) *MenuUpdateOne {
-	muo.mutation.SetPrice(s)
+// SetFoodType sets the "foodType" field.
+func (muo *MenuUpdateOne) SetFoodType(mt menu.FoodType) *MenuUpdateOne {
+	muo.mutation.SetFoodType(mt)
 	return muo
 }
 
-// SetNillablePrice sets the "price" field if the given value is not nil.
-func (muo *MenuUpdateOne) SetNillablePrice(s *string) *MenuUpdateOne {
-	if s != nil {
-		muo.SetPrice(*s)
+// SetNillableFoodType sets the "foodType" field if the given value is not nil.
+func (muo *MenuUpdateOne) SetNillableFoodType(mt *menu.FoodType) *MenuUpdateOne {
+	if mt != nil {
+		muo.SetFoodType(*mt)
 	}
 	return muo
 }
 
-// ClearPrice clears the value of the "price" field.
-func (muo *MenuUpdateOne) ClearPrice() *MenuUpdateOne {
-	muo.mutation.ClearPrice()
+// ClearFoodType clears the value of the "foodType" field.
+func (muo *MenuUpdateOne) ClearFoodType() *MenuUpdateOne {
+	muo.mutation.ClearFoodType()
 	return muo
 }
 
-// SetCurrency sets the "currency" field.
-func (muo *MenuUpdateOne) SetCurrency(s string) *MenuUpdateOne {
-	muo.mutation.SetCurrency(s)
+// SetMenuItemType sets the "menuItemType" field.
+func (muo *MenuUpdateOne) SetMenuItemType(mit menu.MenuItemType) *MenuUpdateOne {
+	muo.mutation.SetMenuItemType(mit)
 	return muo
 }
 
-// SetNillableCurrency sets the "currency" field if the given value is not nil.
-func (muo *MenuUpdateOne) SetNillableCurrency(s *string) *MenuUpdateOne {
-	if s != nil {
-		muo.SetCurrency(*s)
+// SetNillableMenuItemType sets the "menuItemType" field if the given value is not nil.
+func (muo *MenuUpdateOne) SetNillableMenuItemType(mit *menu.MenuItemType) *MenuUpdateOne {
+	if mit != nil {
+		muo.SetMenuItemType(*mit)
 	}
 	return muo
 }
 
-// ClearCurrency clears the value of the "currency" field.
-func (muo *MenuUpdateOne) ClearCurrency() *MenuUpdateOne {
-	muo.mutation.ClearCurrency()
+// ClearMenuItemType clears the value of the "menuItemType" field.
+func (muo *MenuUpdateOne) ClearMenuItemType() *MenuUpdateOne {
+	muo.mutation.ClearMenuItemType()
 	return muo
 }
 
-// SetType sets the "type" field.
-func (muo *MenuUpdateOne) SetType(m menu.Type) *MenuUpdateOne {
-	muo.mutation.SetType(m)
-	return muo
-}
-
-// SetNillableType sets the "type" field if the given value is not nil.
-func (muo *MenuUpdateOne) SetNillableType(m *menu.Type) *MenuUpdateOne {
-	if m != nil {
-		muo.SetType(*m)
-	}
-	return muo
-}
-
-// ClearType clears the value of the "type" field.
-func (muo *MenuUpdateOne) ClearType() *MenuUpdateOne {
-	muo.mutation.ClearType()
-	return muo
-}
-
-// SetStatus sets the "status" field.
-func (muo *MenuUpdateOne) SetStatus(m menu.Status) *MenuUpdateOne {
-	muo.mutation.SetStatus(m)
-	return muo
-}
-
-// SetNillableStatus sets the "status" field if the given value is not nil.
-func (muo *MenuUpdateOne) SetNillableStatus(m *menu.Status) *MenuUpdateOne {
-	if m != nil {
-		muo.SetStatus(*m)
-	}
-	return muo
-}
-
-// ClearStatus clears the value of the "status" field.
-func (muo *MenuUpdateOne) ClearStatus() *MenuUpdateOne {
-	muo.mutation.ClearStatus()
-	return muo
-}
-
-// SetDrinkType sets the "DrinkType" field.
+// SetDrinkType sets the "drinkType" field.
 func (muo *MenuUpdateOne) SetDrinkType(mt menu.DrinkType) *MenuUpdateOne {
 	muo.mutation.SetDrinkType(mt)
 	return muo
 }
 
-// SetNillableDrinkType sets the "DrinkType" field if the given value is not nil.
+// SetNillableDrinkType sets the "drinkType" field if the given value is not nil.
 func (muo *MenuUpdateOne) SetNillableDrinkType(mt *menu.DrinkType) *MenuUpdateOne {
 	if mt != nil {
 		muo.SetDrinkType(*mt)
@@ -941,19 +803,19 @@ func (muo *MenuUpdateOne) SetNillableDrinkType(mt *menu.DrinkType) *MenuUpdateOn
 	return muo
 }
 
-// ClearDrinkType clears the value of the "DrinkType" field.
+// ClearDrinkType clears the value of the "drinkType" field.
 func (muo *MenuUpdateOne) ClearDrinkType() *MenuUpdateOne {
 	muo.mutation.ClearDrinkType()
 	return muo
 }
 
-// SetDietaryType sets the "DietaryType" field.
+// SetDietaryType sets the "dietaryType" field.
 func (muo *MenuUpdateOne) SetDietaryType(mt menu.DietaryType) *MenuUpdateOne {
 	muo.mutation.SetDietaryType(mt)
 	return muo
 }
 
-// SetNillableDietaryType sets the "DietaryType" field if the given value is not nil.
+// SetNillableDietaryType sets the "dietaryType" field if the given value is not nil.
 func (muo *MenuUpdateOne) SetNillableDietaryType(mt *menu.DietaryType) *MenuUpdateOne {
 	if mt != nil {
 		muo.SetDietaryType(*mt)
@@ -961,7 +823,7 @@ func (muo *MenuUpdateOne) SetNillableDietaryType(mt *menu.DietaryType) *MenuUpda
 	return muo
 }
 
-// ClearDietaryType clears the value of the "DietaryType" field.
+// ClearDietaryType clears the value of the "dietaryType" field.
 func (muo *MenuUpdateOne) ClearDietaryType() *MenuUpdateOne {
 	muo.mutation.ClearDietaryType()
 	return muo
@@ -1172,24 +1034,24 @@ func (muo *MenuUpdateOne) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (muo *MenuUpdateOne) check() error {
-	if v, ok := muo.mutation.GetType(); ok {
-		if err := menu.TypeValidator(v); err != nil {
-			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Menu.type": %w`, err)}
+	if v, ok := muo.mutation.FoodType(); ok {
+		if err := menu.FoodTypeValidator(v); err != nil {
+			return &ValidationError{Name: "foodType", err: fmt.Errorf(`ent: validator failed for field "Menu.foodType": %w`, err)}
 		}
 	}
-	if v, ok := muo.mutation.Status(); ok {
-		if err := menu.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Menu.status": %w`, err)}
+	if v, ok := muo.mutation.MenuItemType(); ok {
+		if err := menu.MenuItemTypeValidator(v); err != nil {
+			return &ValidationError{Name: "menuItemType", err: fmt.Errorf(`ent: validator failed for field "Menu.menuItemType": %w`, err)}
 		}
 	}
 	if v, ok := muo.mutation.DrinkType(); ok {
 		if err := menu.DrinkTypeValidator(v); err != nil {
-			return &ValidationError{Name: "DrinkType", err: fmt.Errorf(`ent: validator failed for field "Menu.DrinkType": %w`, err)}
+			return &ValidationError{Name: "drinkType", err: fmt.Errorf(`ent: validator failed for field "Menu.drinkType": %w`, err)}
 		}
 	}
 	if v, ok := muo.mutation.DietaryType(); ok {
 		if err := menu.DietaryTypeValidator(v); err != nil {
-			return &ValidationError{Name: "DietaryType", err: fmt.Errorf(`ent: validator failed for field "Menu.DietaryType": %w`, err)}
+			return &ValidationError{Name: "dietaryType", err: fmt.Errorf(`ent: validator failed for field "Menu.dietaryType": %w`, err)}
 		}
 	}
 	return nil
@@ -1242,41 +1104,23 @@ func (muo *MenuUpdateOne) sqlSave(ctx context.Context) (_node *Menu, err error) 
 	if muo.mutation.DescriptionCleared() {
 		_spec.ClearField(menu.FieldDescription, field.TypeString)
 	}
-	if value, ok := muo.mutation.PreparationTime(); ok {
-		_spec.SetField(menu.FieldPreparationTime, field.TypeString, value)
-	}
-	if muo.mutation.PreparationTimeCleared() {
-		_spec.ClearField(menu.FieldPreparationTime, field.TypeString)
-	}
 	if value, ok := muo.mutation.Options(); ok {
 		_spec.SetField(menu.FieldOptions, field.TypeString, value)
 	}
 	if muo.mutation.OptionsCleared() {
 		_spec.ClearField(menu.FieldOptions, field.TypeString)
 	}
-	if value, ok := muo.mutation.Price(); ok {
-		_spec.SetField(menu.FieldPrice, field.TypeString, value)
+	if value, ok := muo.mutation.FoodType(); ok {
+		_spec.SetField(menu.FieldFoodType, field.TypeEnum, value)
 	}
-	if muo.mutation.PriceCleared() {
-		_spec.ClearField(menu.FieldPrice, field.TypeString)
+	if muo.mutation.FoodTypeCleared() {
+		_spec.ClearField(menu.FieldFoodType, field.TypeEnum)
 	}
-	if value, ok := muo.mutation.Currency(); ok {
-		_spec.SetField(menu.FieldCurrency, field.TypeString, value)
+	if value, ok := muo.mutation.MenuItemType(); ok {
+		_spec.SetField(menu.FieldMenuItemType, field.TypeEnum, value)
 	}
-	if muo.mutation.CurrencyCleared() {
-		_spec.ClearField(menu.FieldCurrency, field.TypeString)
-	}
-	if value, ok := muo.mutation.GetType(); ok {
-		_spec.SetField(menu.FieldType, field.TypeEnum, value)
-	}
-	if muo.mutation.TypeCleared() {
-		_spec.ClearField(menu.FieldType, field.TypeEnum)
-	}
-	if value, ok := muo.mutation.Status(); ok {
-		_spec.SetField(menu.FieldStatus, field.TypeEnum, value)
-	}
-	if muo.mutation.StatusCleared() {
-		_spec.ClearField(menu.FieldStatus, field.TypeEnum)
+	if muo.mutation.MenuItemTypeCleared() {
+		_spec.ClearField(menu.FieldMenuItemType, field.TypeEnum)
 	}
 	if value, ok := muo.mutation.DrinkType(); ok {
 		_spec.SetField(menu.FieldDrinkType, field.TypeEnum, value)
