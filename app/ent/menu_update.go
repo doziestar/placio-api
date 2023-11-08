@@ -221,6 +221,12 @@ func (mu *MenuUpdate) SetNillableUpdatedAt(t *time.Time) *MenuUpdate {
 	return mu
 }
 
+// ClearUpdatedAt clears the value of the "updated_at" field.
+func (mu *MenuUpdate) ClearUpdatedAt() *MenuUpdate {
+	mu.mutation.ClearUpdatedAt()
+	return mu
+}
+
 // AddPlaceIDs adds the "place" edge to the Place entity by IDs.
 func (mu *MenuUpdate) AddPlaceIDs(ids ...string) *MenuUpdate {
 	mu.mutation.AddPlaceIDs(ids...)
@@ -559,6 +565,9 @@ func (mu *MenuUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := mu.mutation.UpdatedAt(); ok {
 		_spec.SetField(menu.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if mu.mutation.UpdatedAtCleared() {
+		_spec.ClearField(menu.FieldUpdatedAt, field.TypeTime)
 	}
 	if mu.mutation.PlaceCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1038,6 +1047,12 @@ func (muo *MenuUpdateOne) SetNillableUpdatedAt(t *time.Time) *MenuUpdateOne {
 	return muo
 }
 
+// ClearUpdatedAt clears the value of the "updated_at" field.
+func (muo *MenuUpdateOne) ClearUpdatedAt() *MenuUpdateOne {
+	muo.mutation.ClearUpdatedAt()
+	return muo
+}
+
 // AddPlaceIDs adds the "place" edge to the Place entity by IDs.
 func (muo *MenuUpdateOne) AddPlaceIDs(ids ...string) *MenuUpdateOne {
 	muo.mutation.AddPlaceIDs(ids...)
@@ -1406,6 +1421,9 @@ func (muo *MenuUpdateOne) sqlSave(ctx context.Context) (_node *Menu, err error) 
 	}
 	if value, ok := muo.mutation.UpdatedAt(); ok {
 		_spec.SetField(menu.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if muo.mutation.UpdatedAtCleared() {
+		_spec.ClearField(menu.FieldUpdatedAt, field.TypeTime)
 	}
 	if muo.mutation.PlaceCleared() {
 		edge := &sqlgraph.EdgeSpec{

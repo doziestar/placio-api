@@ -347,9 +347,6 @@ func (mc *MenuCreate) check() error {
 	if _, ok := mc.mutation.IsAvailable(); !ok {
 		return &ValidationError{Name: "is_available", err: errors.New(`ent: missing required field "Menu.is_available"`)}
 	}
-	if _, ok := mc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Menu.updated_at"`)}
-	}
 	if v, ok := mc.mutation.ID(); ok {
 		if err := menu.IDValidator(v); err != nil {
 			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "Menu.id": %w`, err)}

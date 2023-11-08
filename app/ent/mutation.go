@@ -22414,9 +22414,22 @@ func (m *MenuMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error
 	return oldValue.UpdatedAt, nil
 }
 
+// ClearUpdatedAt clears the value of the "updated_at" field.
+func (m *MenuMutation) ClearUpdatedAt() {
+	m.updated_at = nil
+	m.clearedFields[menu.FieldUpdatedAt] = struct{}{}
+}
+
+// UpdatedAtCleared returns if the "updated_at" field was cleared in this mutation.
+func (m *MenuMutation) UpdatedAtCleared() bool {
+	_, ok := m.clearedFields[menu.FieldUpdatedAt]
+	return ok
+}
+
 // ResetUpdatedAt resets all changes to the "updated_at" field.
 func (m *MenuMutation) ResetUpdatedAt() {
 	m.updated_at = nil
+	delete(m.clearedFields, menu.FieldUpdatedAt)
 }
 
 // AddPlaceIDs adds the "place" edge to the Place entity by ids.
@@ -23009,6 +23022,9 @@ func (m *MenuMutation) ClearedFields() []string {
 	if m.FieldCleared(menu.FieldDietaryType) {
 		fields = append(fields, menu.FieldDietaryType)
 	}
+	if m.FieldCleared(menu.FieldUpdatedAt) {
+		fields = append(fields, menu.FieldUpdatedAt)
+	}
 	return fields
 }
 
@@ -23043,6 +23059,9 @@ func (m *MenuMutation) ClearField(name string) error {
 		return nil
 	case menu.FieldDietaryType:
 		m.ClearDietaryType()
+		return nil
+	case menu.FieldUpdatedAt:
+		m.ClearUpdatedAt()
 		return nil
 	}
 	return fmt.Errorf("unknown Menu nullable field %s", name)

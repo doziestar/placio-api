@@ -709,7 +709,7 @@ var (
 		{Name: "drink_type", Type: field.TypeEnum, Nullable: true, Enums: []string{"alcoholic", "non-alcoholic", "both"}},
 		{Name: "dietary_type", Type: field.TypeEnum, Nullable: true, Enums: []string{"vegan", "vegetarian", "non-vegetarian", "both"}},
 		{Name: "is_available", Type: field.TypeBool, Default: true},
-		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime, Nullable: true},
 	}
 	// MenusTable holds the schema information for the "menus" table.
 	MenusTable = &schema.Table{

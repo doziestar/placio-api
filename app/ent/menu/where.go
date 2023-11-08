@@ -570,6 +570,16 @@ func UpdatedAtLTE(v time.Time) predicate.Menu {
 	return predicate.Menu(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
+// UpdatedAtIsNil applies the IsNil predicate on the "updated_at" field.
+func UpdatedAtIsNil() predicate.Menu {
+	return predicate.Menu(sql.FieldIsNull(FieldUpdatedAt))
+}
+
+// UpdatedAtNotNil applies the NotNil predicate on the "updated_at" field.
+func UpdatedAtNotNil() predicate.Menu {
+	return predicate.Menu(sql.FieldNotNull(FieldUpdatedAt))
+}
+
 // HasPlace applies the HasEdge predicate on the "place" edge.
 func HasPlace() predicate.Menu {
 	return predicate.Menu(func(s *sql.Selector) {
